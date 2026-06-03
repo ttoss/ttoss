@@ -61,7 +61,7 @@ export const formatRangeLabel = (
   const { lower, upper, isFirst, isLast, withSuffix } = ctx;
   if (isFirst) return withSuffix(`< ${fmt(upper!)}`);
   if (isLast) return withSuffix(`>= ${fmt(lower!)}`);
-  return withSuffix(`${fmt(lower!)}${separator}< ${fmt(upper!)}`);
+  return withSuffix(`${fmt(lower!)}${separator}${fmt(upper!)}`);
 };
 
 export const formatCountLabel = (
@@ -75,8 +75,8 @@ export const formatCountLabel = (
       };
   const { lower, upper, isFirst, isLast, withSuffix } = ctx;
   if (isFirst) return withSuffix(`< ${fmt(upper!)}`);
-  if (isLast) return withSuffix(`\u2265 ${fmt(lower!)}`);
-  return withSuffix(`${fmt(lower!)} \u2013 < ${fmt(upper!)}`);
+  if (isLast) return withSuffix(`≥ ${fmt(lower!)}`);
+  return withSuffix(`${fmt(lower!)} ≤ ${fmt(upper!)}`);
 };
 
 export const formatPercentageLabel = (
@@ -84,8 +84,9 @@ export const formatPercentageLabel = (
   spec: Extract<LabelFormatSpec, { type: 'percentage' }>
 ): string => {
   const decimals = spec.decimals ?? 0;
+  const denominator = spec.denominator ?? 1;
   const fmt = (v: number) => {
-    return `${(v * 100).toFixed(decimals)}%`;
+    return `${((v / denominator) * 100).toFixed(decimals)}%`;
   };
   const { lower, upper, isFirst, isLast, withSuffix } = ctx;
   if (isFirst && lower === null) return withSuffix(`< ${fmt(upper!)}`);

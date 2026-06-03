@@ -83,9 +83,9 @@ export type ColorByTemplate =
  * Controls how quantitative legend bin labels are formatted.
  *
  * - `'range'`      – raw break values joined by a configurable separator.
- *   Example: `50k – 100k` or `50k – < 100k`.
+ *   Example: `50k – 100k`.
  * - `'count'`      – compact integer counts with optional SI abbreviation.
- *   Example: `< 50k`, `50k – < 100k`, `≥ 250k`.
+ *   Example: `< 50k`, `50k ≤ 100k`, `≥ 250k`.
  * - `'percentage'` – percentage display for values already in the [0, 1] range.
  *   Example: `0% – 10%`.
  * - `'stdDev'`     – standard deviation labels for diverging schemes.
@@ -100,7 +100,12 @@ export type ColorByTemplate =
 export type LabelFormatSpec =
   | { type: 'range'; separator?: string; unit?: string; extended?: boolean }
   | { type: 'count'; abbreviate?: boolean; extended?: boolean }
-  | { type: 'percentage'; decimals?: number; extended?: boolean }
+  | {
+      type: 'percentage';
+      decimals?: number;
+      denominator?: number;
+      extended?: boolean;
+    }
   | { type: 'stdDev'; unit?: 'σ' | 'sd'; extended?: boolean }
   | {
       type: 'custom';
@@ -122,9 +127,6 @@ export type LabelFormatSpec =
  * Describes the statistical normalisation applied to the mapped data values.
  * This metadata is used to enrich legend bin labels when `extended: true` is
  * set on the `labelFormat` spec.
- *
- * `denominatorLabel` is canonical; `denomitorLabel` is accepted as an alias
- * for backward compatibility with data sources that contain the typo.
  */
 export type NormalizationSpec =
   | {
@@ -136,22 +138,16 @@ export type NormalizationSpec =
       type: 'ratio';
       numeratorLabel: string;
       denominatorLabel: string;
-      /** @deprecated Use `denominatorLabel`. */
-      denomitorLabel?: string;
     }
   | {
       type: 'percentage';
       numeratorLabel: string;
       denominatorLabel: string;
-      /** @deprecated Use `denominatorLabel`. */
-      denomitorLabel?: string;
     }
   | {
       type: 'rate';
       numeratorLabel: string;
       denominatorLabel: string;
-      /** @deprecated Use `denominatorLabel`. */
-      denomitorLabel?: string;
       /** The population base, e.g. `100000` for "cases per 100k inhabitants". */
       rateBase: number;
     };

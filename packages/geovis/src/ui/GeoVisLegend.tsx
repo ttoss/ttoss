@@ -149,6 +149,15 @@ const buildQuantitativeItems = ({
   const palette = resolvePalette(colorBy, total);
   const { labelFormat, normalization } = legend;
 
+  // When `percentage` format has no explicit `denominator`, auto-derive it
+  // from the max break so callers don't need to know the data scale.
+  const effectiveLabelFormat =
+    labelFormat?.type === 'percentage' &&
+    !labelFormat.denominator &&
+    breaks.length > 0
+      ? { ...labelFormat, denominator: breaks[breaks.length - 1] }
+      : labelFormat;
+
   const mkLabel = (
     lower: number | null,
     upper: number | null,
@@ -159,7 +168,7 @@ const buildQuantitativeItems = ({
       upper,
       index,
       total,
-      spec: labelFormat,
+      spec: effectiveLabelFormat,
       normalization,
       formatValue,
     });
@@ -295,8 +304,19 @@ export const GeoVisLegend = ({
   const positionStyle = resolvePositionStyle(legend.position);
   const referenceContent = buildReferenceContent(sourceNode, legend);
 
+  const containerStyle: React.CSSProperties = positionStyle
+    ? {
+        ...positionStyle,
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        borderRadius: 6,
+        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+        padding: '8px 12px',
+        width: '16rem',
+      }
+    : {};
+
   return (
-    <div style={positionStyle}>
+    <div style={containerStyle}>
       {legend.title && (
         <p style={{ fontWeight: 600, margin: '0 0 2px' }}>{legend.title}</p>
       )}
@@ -328,6 +348,7 @@ export const GeoVisLegend = ({
                 aria-hidden="true"
                 style={{
                   backgroundColor: item.color,
+                  border: '1px solid #d1d5db',
                   display: 'inline-block',
                   height: 12,
                   marginRight: 8,
