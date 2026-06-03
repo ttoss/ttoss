@@ -955,4 +955,40 @@ describe('GeoVisLegend — normalization extended suffix', () => {
 
     expect(getByText('< 5 cases/population')).toBeTruthy();
   });
+
+  test('denominatorLabel takes precedence over deprecated denomitorLabel when both present', () => {
+    const spec: VisualizationSpec = {
+      ...baseSpec,
+      legends: [
+        {
+          id: 'ratio',
+          labelFormat: { type: 'count', extended: true },
+          normalization: {
+            type: 'ratio',
+            numeratorLabel: 'cases',
+            denominatorLabel: 'residents',
+            // @ts-expect-error — testing deprecated alias is overridden
+            denomitorLabel: 'population',
+          },
+          colorBy: {
+            type: 'quantitative',
+            property: 'ratio',
+            scale: 'threshold',
+            thresholds: [5],
+            colors: ['#dbeafe', '#1d4ed8'],
+          },
+        },
+      ],
+    };
+
+    const { getByText, queryByText } = render(
+      <GeoVisProvider spec={spec}>
+        <GeoVisLegend legendId="ratio" />
+      </GeoVisProvider>
+    );
+
+    // denominatorLabel ('residents') should win over denomitorLabel ('population')
+    expect(getByText('< 5 cases/residents')).toBeTruthy();
+    expect(queryByText('< 5 cases/population')).toBeNull();
+  });
 });
