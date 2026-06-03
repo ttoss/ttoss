@@ -14,7 +14,7 @@ export const defaultConfig: Config = {
   /**
    * https://github.com/jestjs/jest/issues/13739#issuecomment-1517190965
    */
-  extensionsToTreatAsEsm: ['', '.tsx'],
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
   fakeTimers: {
     advanceTimers: true,
     enableGlobally: true,

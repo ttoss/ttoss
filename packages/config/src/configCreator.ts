@@ -14,7 +14,9 @@ export const configCreator = <T extends Record<string, any>>(
   ) => {
     return deepmerge<T>(defaultConfig, config, {
       arrayMerge:
-        deepmergeConfig?.arrayMerge === 'append' ? undefined : overwriteMerge,
+        deepmergeConfig?.arrayMerge === 'overwrite'
+          ? overwriteMerge
+          : undefined,
     });
   };
 };

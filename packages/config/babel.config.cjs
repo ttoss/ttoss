@@ -18,20 +18,27 @@ module.exports = {
      */
     'babel-plugin-transform-import-meta',
     /**
-     * This plugin is needed to create a unique ID for each message in the
-     * translation files.
-     */
-    [
-      'formatjs',
-      {
-        idInterpolationPattern: '[sha512:contenthash:base64:6]',
-        ast: true,
-      },
-    ],
-    /**
      * Decorators are not supported in ES6, so we need to use this plugin to
      * transpile decorators to ES5.
      */
     ['@babel/plugin-proposal-decorators', { version: 'legacy' }],
+  ],
+  overrides: [
+    {
+      /**
+       * formatjs plugin must not run on node_modules (e.g. react-intl's own
+       * source contains dynamic defineMessages that the plugin cannot evaluate).
+       */
+      exclude: /node_modules/,
+      plugins: [
+        [
+          'formatjs',
+          {
+            idInterpolationPattern: '[sha512:contenthash:base64:6]',
+            ast: true,
+          },
+        ],
+      ],
+    },
   ],
 };
