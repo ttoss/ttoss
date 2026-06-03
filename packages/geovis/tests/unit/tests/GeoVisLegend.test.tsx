@@ -315,4 +315,51 @@ describe('GeoVisLegend', () => {
     expect(getByText('200 - < 300')).toBeTruthy();
     expect(getByText('>= 300')).toBeTruthy();
   });
+
+  test('formats quantitative bins with percentages greater than 100', () => {
+    // Test for handling of percentage values that exceed 100%, such as
+    // coefficient of variation (standard deviation / mean * 100).
+    const spec: VisualizationSpec = {
+      ...baseSpec,
+      legends: [
+        {
+          id: 'cv',
+          label: 'Coefficient of Variation (%)',
+          colorBy: {
+            type: 'quantitative',
+            property: 'cv',
+            scale: 'threshold',
+            thresholds: [50, 100, 150, 200],
+            colors: [
+              '#dbeafe',
+              '#60a5fa',
+              '#3b82f6',
+              '#1d4ed8',
+              '#1e3a8a',
+            ],
+            defaultColor: '#9ca3af',
+          },
+        },
+      ],
+    };
+
+    const { getAllByRole, getByText } = render(
+      <GeoVisProvider spec={spec}>
+        <GeoVisLegend
+          legendId="cv"
+          formatValue={(v) => {
+            return `${v}%`;
+          }}
+        />
+      </GeoVisProvider>
+    );
+
+    // 4 thresholds → 5 bins
+    expect(getAllByRole('listitem')).toHaveLength(5);
+    expect(getByText('< 50%')).toBeTruthy();
+    expect(getByText('50% - < 100%')).toBeTruthy();
+    expect(getByText('100% - < 150%')).toBeTruthy();
+    expect(getByText('150% - < 200%')).toBeTruthy();
+    expect(getByText('>= 200%')).toBeTruthy();
+  });
 });
