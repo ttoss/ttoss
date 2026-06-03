@@ -1,6 +1,6 @@
 import { defineConfig } from 'tsdown';
 
-import pkg from './package.json';
+import pkg from './package.json' with { type: 'json' };
 
 const dependencies = Object.keys(pkg.dependencies || {});
 

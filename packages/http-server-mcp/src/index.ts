@@ -4,8 +4,10 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { Router } from '@ttoss/http-server';
-import type { Context } from 'koa';
+import type Koa from 'koa';
 import { z } from 'zod';
+
+type Context = Koa.Context;
 
 interface RequestContext {
   apiBaseUrl?: string;
@@ -89,6 +91,7 @@ export const apiCall = async (
   method: string,
   url: string,
   options?: ApiCallOptions
+  // eslint-disable-next-line complexity
 ): Promise<unknown> => {
   const context = requestContextStore.getStore();
 
@@ -242,6 +245,7 @@ export interface McpRouterOptions {
  * app.listen(3000);
  * ```
  */
+// eslint-disable-next-line max-lines-per-function
 export const createMcpRouter = (
   server: McpServer,
   options: McpRouterOptions = {}

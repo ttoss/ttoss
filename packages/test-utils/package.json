@@ -18,7 +18,6 @@
   "contributors": [
     "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
   ],
-  "type": "commonjs",
   "exports": {
     ".": "./src/index.ts",
     "./faker": "./src/faker.ts",
@@ -64,24 +63,24 @@
     "access": "public",
     "exports": {
       ".": {
-        "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.mts"
       },
       "./faker": {
-        "import": "./dist/esm/faker.js",
-        "require": "./dist/faker.js",
-        "types": "./dist/faker.d.ts"
+        "import": "./dist/faker.mjs",
+        "require": "./dist/faker.cjs",
+        "types": "./dist/faker.d.mts"
       },
       "./react": {
-        "import": "./dist/esm/react.js",
-        "require": "./dist/react.js",
-        "types": "./dist/react.d.ts"
+        "import": "./dist/react.mjs",
+        "require": "./dist/react.cjs",
+        "types": "./dist/react.d.mts"
       },
       "./relay": {
-        "import": "./dist/esm/relay.js",
-        "require": "./dist/relay.js",
-        "types": "./dist/relay.d.ts"
+        "import": "./dist/relay.mjs",
+        "require": "./dist/relay.cjs",
+        "types": "./dist/relay.d.mts"
       }
     },
     "provenance": true

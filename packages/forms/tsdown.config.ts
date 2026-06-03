@@ -8,6 +8,9 @@ export default tsdownConfig(
       'src/Brazil/index.ts',
     ],
     format: ['esm'],
+    dts: {
+      eager: true,
+    },
   },
   {
     arrayMerge: 'overwrite',
