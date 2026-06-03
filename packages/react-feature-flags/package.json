@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-feature-flags",
-  "version": "0.4.12",
+  "version": "0.4.13",
   "description": "React Feature Flags",
   "keywords": [
     "feature-flags",

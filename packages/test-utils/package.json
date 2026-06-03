@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/test-utils",
-  "version": "4.2.12",
+  "version": "4.2.13",
   "description": "This package provides a number of utilities and re-exports for testing using Jest, React Testing Library, and Relay.",
   "keywords": [
     "Jest",

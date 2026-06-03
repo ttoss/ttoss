@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-wizard",
-  "version": "0.4.8",
+  "version": "0.4.9",
   "description": "A React wizard component for guiding users through multi-step flows with configurable step list layouts.",
   "keywords": [
     "React",
