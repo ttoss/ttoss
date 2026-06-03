@@ -33,6 +33,15 @@ export const defaultConfig: Config = {
      */
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
+  /**
+   * Also transform .mjs files with babel-jest so that ESM-only dist outputs
+   * (e.g. @ttoss/config's chunk-*.mjs) are compiled to CJS for Jest's
+   * CommonJS test environment.
+   */
+  transform: {
+    '^.+\\.[jt]sx?$': 'babel-jest',
+    '^.+\\.mjs$': 'babel-jest',
+  },
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
