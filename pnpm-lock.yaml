@@ -2249,6 +2249,9 @@ importers:
       '@ttoss/i18n-cli':
         specifier: workspace:^
         version: link:../../packages/i18n-cli
+      '@types/node':
+        specifier: ^24.12.0
+        version: 24.12.4
       '@types/react':
         specifier: ^19.2.14
         version: 19.2.15

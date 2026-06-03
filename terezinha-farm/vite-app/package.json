@@ -39,6 +39,7 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
+    "@types/node": "^24.12.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.0.2",
     "@types/react-relay": "^18.0.0",
