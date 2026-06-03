@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 
+import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
 import { render } from '@testing-library/react';
 import { GeoVisProvider } from 'src/react/GeoVisProvider';
 import type { VisualizationSpec } from 'src/spec/types';
@@ -390,7 +391,7 @@ describe('GeoVisLegend — noDataLabel', () => {
       legends: [
         {
           id: 'status',
-          noDataLabel: 'Sem dados',
+          noDataLabel: 'No data',
           colorBy: {
             type: 'categorical',
             property: 'status',
@@ -408,7 +409,7 @@ describe('GeoVisLegend — noDataLabel', () => {
 
     // 1 mapping entry + 1 noDataLabel = 2 list items
     expect(getAllByRole('listitem')).toHaveLength(2);
-    expect(getByText('Sem dados')).toBeTruthy();
+    expect(getByText('No data')).toBeTruthy();
   });
 
   test('does not render noDataLabel item when absent', () => {
@@ -433,7 +434,7 @@ describe('GeoVisLegend — noDataLabel', () => {
     );
 
     expect(getAllByRole('listitem')).toHaveLength(1);
-    expect(queryByText('Sem dados')).toBeNull();
+    expect(queryByText('No data')).toBeNull();
   });
 });
 
@@ -480,9 +481,11 @@ describe('GeoVisLegend — reference field', () => {
     };
 
     const { container } = render(
-      <GeoVisProvider spec={spec}>
-        <GeoVisLegend legendId="status" />
-      </GeoVisProvider>
+      <ChakraProvider value={defaultSystem}>
+        <GeoVisProvider spec={spec}>
+          <GeoVisLegend legendId="status" />
+        </GeoVisProvider>
+      </ChakraProvider>
     );
 
     const link = container.querySelector('a');
@@ -672,7 +675,7 @@ describe('GeoVisLegend — labelFormat: count', () => {
         {
           id: 'pop',
           labelFormat: { type: 'count', abbreviate: true, extended: true },
-          normalization: { type: 'raw', numeratorLabel: 'habitantes' },
+          normalization: { type: 'raw', numeratorLabel: 'inhabitants' },
           colorBy: {
             type: 'quantitative',
             property: 'pop',
@@ -690,8 +693,8 @@ describe('GeoVisLegend — labelFormat: count', () => {
       </GeoVisProvider>
     );
 
-    expect(getByText('< 50k habitantes')).toBeTruthy();
-    expect(getByText('\u2265 50k habitantes')).toBeTruthy();
+    expect(getByText('< 50k inhabitants')).toBeTruthy();
+    expect(getByText('\u2265 50k inhabitants')).toBeTruthy();
   });
 });
 
@@ -772,7 +775,7 @@ describe('GeoVisLegend — labelFormat: custom', () => {
           labelFormat: {
             type: 'custom',
             formatter: (lo, hi, i) => {
-              if (i === 0) return `até ${hi} km²`;
+              if (i === 0) return `up to ${hi} km²`;
               if (hi === null) return `> ${lo} km²`;
               return `${lo}–${hi} km²`;
             },
@@ -795,7 +798,7 @@ describe('GeoVisLegend — labelFormat: custom', () => {
     );
 
     expect(getAllByRole('listitem')).toHaveLength(3);
-    expect(getByText('até 100 km²')).toBeTruthy();
+    expect(getByText('up to 100 km²')).toBeTruthy();
     expect(getByText('100–500 km²')).toBeTruthy();
     expect(getByText('> 500 km²')).toBeTruthy();
   });
@@ -885,8 +888,8 @@ describe('GeoVisLegend — normalization extended suffix', () => {
           labelFormat: { type: 'count', extended: true },
           normalization: {
             type: 'rate',
-            numeratorLabel: 'casos',
-            denominatorLabel: 'habitantes',
+            numeratorLabel: 'cases',
+            denominatorLabel: 'inhabitants',
             rateBase: 100000,
           },
           colorBy: {
@@ -914,7 +917,7 @@ describe('GeoVisLegend — normalization extended suffix', () => {
     });
     expect(
       texts.some((t) => {
-        return t.includes('casos') && t.includes('habitantes');
+        return t.includes('cases') && t.includes('inhabitants');
       })
     ).toBe(true);
   });
@@ -928,8 +931,10 @@ describe('GeoVisLegend — normalization extended suffix', () => {
           labelFormat: { type: 'count', extended: true },
           normalization: {
             type: 'ratio',
-            numeratorLabel: 'casos',
-            denominatorLabel: 'populacao',
+            numeratorLabel: 'cases',
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error — testing deprecated alias path
+            denomitorLabel: 'population',
           },
           colorBy: {
             type: 'quantitative',
@@ -948,6 +953,6 @@ describe('GeoVisLegend — normalization extended suffix', () => {
       </GeoVisProvider>
     );
 
-    expect(getByText('< 5 casos/populacao')).toBeTruthy();
+    expect(getByText('< 5 cases/population')).toBeTruthy();
   });
 });

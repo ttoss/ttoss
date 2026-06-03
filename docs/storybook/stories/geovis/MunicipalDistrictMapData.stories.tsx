@@ -60,16 +60,18 @@ const fmtPop = (v: number) => {
  * variable — the `formatter` function receives `(lower, upper, index)` and
  * the `extended` suffix is applied automatically via `withSuffix`.
  */
+const numeratorLabel = 'inhabitants';
 const customRangeFormatter = (
   lower: number | null,
-  upper: number | null
+  upper: number | null,
+  _index: number
 ): string => {
   const fmt = (v: number) => {
     return `${(v / 1_000).toFixed(0)}k`;
   };
-  if (lower === null) return `0 - ${fmt(upper!)} inhabitants`;
-  if (upper === null) return `${fmt(lower!)} inhabitants or more`;
-  return `${fmt(lower!)} – ${fmt(upper!)} inhabitants`;
+  if (lower === null) return `0 - ${fmt(upper!)} ${numeratorLabel}`;
+  if (upper === null) return `${fmt(lower!)} ${numeratorLabel} or more`;
+  return `${fmt(lower!)} – ${fmt(upper!)} ${numeratorLabel}`;
 };
 
 /** Raw shape returned by the external API (Portuguese field names). */

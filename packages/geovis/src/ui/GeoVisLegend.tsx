@@ -1,3 +1,4 @@
+import { Link } from '@chakra-ui/react';
 import * as React from 'react';
 
 import {
@@ -51,9 +52,24 @@ const defaultFormatValue = (value: number): string => {
 };
 
 /**
+ * Returns `true` when the URL is safe to use as an `href` (i.e. its scheme
+ * is limited to `http:` or `https:`). Rejects `javascript:`, `data:`, and
+ * other potentially dangerous schemes.
+ */
+const isSafeUrl = (url: string): boolean => {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+};
+
+/**
  * Parses a `reference` string and returns an array of React nodes.
  * Inline link syntax: `{link:visible text|https://example.com}` is
- * rendered as an `<a>` element.
+ * rendered as a Chakra UI `Link` element. URLs with non-http(s) schemes
+ * are rendered as plain text to prevent unsafe navigation.
  */
 const parseReference = (text: string): React.ReactNode[] => {
   const nodes: React.ReactNode[] = [];
@@ -66,11 +82,16 @@ const parseReference = (text: string): React.ReactNode[] => {
     if (match.index > lastIndex) {
       nodes.push(text.slice(lastIndex, match.index));
     }
-    nodes.push(
-      <a key={key++} href={match[2]} rel="noopener noreferrer" target="_blank">
-        {match[1]}
-      </a>
-    );
+    const url = match[2];
+    if (isSafeUrl(url)) {
+      nodes.push(
+        <Link key={key++} href={url} rel="noopener noreferrer" target="_blank">
+          {match[1]}
+        </Link>
+      );
+    } else {
+      nodes.push(match[1]);
+    }
     lastIndex = pattern.lastIndex;
   }
 
@@ -316,7 +337,7 @@ export const GeoVisLegend = ({
     : {};
 
   return (
-    <div style={containerStyle}>
+    <div className={className} style={containerStyle}>
       {legend.title && (
         <p style={{ fontWeight: 600, margin: '0 0 2px' }}>{legend.title}</p>
       )}
@@ -327,7 +348,6 @@ export const GeoVisLegend = ({
       )}
       <ul
         aria-label={legend.title ?? legend.id}
-        className={className}
         style={{
           display: 'flex',
           flexDirection: 'column',

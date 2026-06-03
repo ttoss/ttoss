@@ -34,8 +34,8 @@ export const getExtendedSuffix = (
     return ` ${normalization.numeratorLabel}/${denominator}`;
   }
   if (normalization.type === 'rate') {
-    const base = normalization.rateBase.toLocaleString();
-    return ` ${normalization.numeratorLabel} por ${base} ${denominator}`;
+    const base = normalization.rateBase.toLocaleString('en');
+    return ` ${normalization.numeratorLabel} per ${base} ${denominator}`;
   }
   return '';
 };

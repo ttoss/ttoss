@@ -613,6 +613,7 @@
           "properties": {
             "type": { "const": "percentage" },
             "decimals": { "type": "integer", "minimum": 0 },
+            "denominator": { "type": "number" },
             "extended": { "type": "boolean" }
           }
         },
@@ -634,6 +635,15 @@
             "type": { "const": "auto" },
             "extended": { "type": "boolean" }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "custom" },
+            "extended": { "type": "boolean" }
+          }
         }
       ]
     },
@@ -651,7 +661,11 @@
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["type", "numeratorLabel", "denominatorLabel"],
+          "required": ["type", "numeratorLabel"],
+          "anyOf": [
+            { "required": ["denominatorLabel"] },
+            { "required": ["denomitorLabel"] }
+          ],
           "properties": {
             "type": { "const": "ratio" },
             "numeratorLabel": { "type": "string" },
@@ -665,7 +679,11 @@
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["type", "numeratorLabel", "denominatorLabel"],
+          "required": ["type", "numeratorLabel"],
+          "anyOf": [
+            { "required": ["denominatorLabel"] },
+            { "required": ["denomitorLabel"] }
+          ],
           "properties": {
             "type": { "const": "percentage" },
             "numeratorLabel": { "type": "string" },
@@ -679,11 +697,10 @@
         {
           "type": "object",
           "additionalProperties": false,
-          "required": [
-            "type",
-            "numeratorLabel",
-            "denominatorLabel",
-            "rateBase"
+          "required": ["type", "numeratorLabel", "rateBase"],
+          "anyOf": [
+            { "required": ["denominatorLabel"] },
+            { "required": ["denomitorLabel"] }
           ],
           "properties": {
             "type": { "const": "rate" },

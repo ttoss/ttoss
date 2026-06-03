@@ -35,7 +35,7 @@ test('spec types expose legend configuration through the public contract', () =>
 
   const normalization: NormalizationSpec = {
     type: 'raw',
-    numeratorLabel: 'habitantes',
+    numeratorLabel: 'inhabitants',
   };
 
   const legend: LegendSpec = {
@@ -46,7 +46,7 @@ test('spec types expose legend configuration through the public contract', () =>
     normalization,
     classCount: 4,
     reference: 'Data: Census Bureau 2020',
-    noDataLabel: 'Sem dados',
+    noDataLabel: 'No data',
     position: 'bottom-right',
   };
 
@@ -72,7 +72,7 @@ test('spec types expose legend configuration through the public contract', () =>
   expect(spec.legends?.[0].title).toBe('Status');
   expect(spec.legends?.[0].classCount).toBe(4);
   expect(spec.legends?.[0].reference).toBe('Data: Census Bureau 2020');
-  expect(spec.legends?.[0].noDataLabel).toBe('Sem dados');
+  expect(spec.legends?.[0].noDataLabel).toBe('No data');
   expect(spec.legends?.[0].position).toBe('bottom-right');
   expect(spec.layers[0].activeLegendId).toBe('status-legend');
 });
