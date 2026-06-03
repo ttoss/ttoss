@@ -115,12 +115,21 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../../../packages/config
+      '@types/node':
+        specifier: ^24.12.0
+        version: 24.12.4
       '@types/react':
         specifier: ^19.2.14
         version: 19.2.15
       '@types/react-dom':
         specifier: ^19.0.2
         version: 19.2.3(@types/react@19.2.15)
+      '@types/react-relay':
+        specifier: ^18.0.0
+        version: 18.2.1
+      '@types/relay-runtime':
+        specifier: ^14.1.23
+        version: 14.1.24
       '@vitejs/plugin-react':
         specifier: ^4.3.4
         version: 4.7.0(vite@6.4.2(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0))
@@ -2247,8 +2256,8 @@ importers:
         specifier: ^19.0.2
         version: 19.2.3(@types/react@19.2.15)
       '@types/react-relay':
-        specifier: ^16.0.6
-        version: 16.0.6
+        specifier: ^18.0.0
+        version: 18.2.1
       '@types/relay-runtime':
         specifier: ^14.1.23
         version: 14.1.24
@@ -7314,6 +7323,9 @@ packages:
 
   '@types/react-relay@16.0.6':
     resolution: {integrity: sha512-VTntVQJhlwQYNUlbNgGf8RYy7EtQPRZqsD/w2Si0ygZspJXuNlVdRkklWMFN99EMRhHDpqlNHD8i3wIs7QRz9g==}
+
+  '@types/react-relay@18.2.1':
+    resolution: {integrity: sha512-KgmFapsxAylhxcFfaAv5GZZJhTHnDvV8IDZVsUm5afpJUvgZC1Y68ssfOGsFfiFY/2EhxHM/YPfpdKbfmF3Ecg==}
 
   '@types/react-router-config@5.0.11':
     resolution: {integrity: sha512-WmSAg7WgqW7m4x8Mt4N6ZyKz0BubSj/2tVUMsAHp+Yd2AMwcSbeFq9WympT19p5heCFmF97R9eD5uUR/t4HEqw==}
@@ -22299,6 +22311,11 @@ snapshots:
       '@types/react': 19.2.15
 
   '@types/react-relay@16.0.6':
+    dependencies:
+      '@types/react': 19.2.15
+      '@types/relay-runtime': 14.1.24
+
+  '@types/react-relay@18.2.1':
     dependencies:
       '@types/react': 19.2.15
       '@types/relay-runtime': 14.1.24

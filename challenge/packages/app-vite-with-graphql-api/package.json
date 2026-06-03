@@ -23,8 +23,11 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
+    "@types/node": "^24.12.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.0.2",
+    "@types/react-relay": "^18.0.0",
+    "@types/relay-runtime": "^14.1.23",
     "@vitejs/plugin-react": "^4.3.4",
     "relay-compiler": "^18.2.0",
     "typescript": "~6.0.3",
