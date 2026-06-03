@@ -1,20 +1,27 @@
 {
-  "private": true,
   "name": "ttoss-monorepo",
   "version": "2.0.0",
+  "private": true,
+  "keywords": [
+    "cli",
+    "monorepo",
+    "node",
+    "ttoss",
+    "typescript"
+  ],
+  "homepage": "https://github.com/ttoss/ttoss#readme",
+  "bugs": {
+    "url": "https://github.com/ttoss/ttoss/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ttoss/ttoss.git"
+  },
   "license": "MIT",
   "contributors": [
     "Pedro Arantes <arantespp@gmail.com> (https://arantespp.com)",
     "Rayza Oliveira <rayza.ocr@gmail.com> (https://github.com/RayzaOliveira)"
   ],
-  "homepage": "https://github.com/ttoss/ttoss#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ttoss/ttoss.git"
-  },
-  "bugs": {
-    "url": "https://github.com/ttoss/ttoss/issues"
-  },
   "type": "module",
   "scripts": {
     "i18n": "turbo run i18n",
@@ -27,40 +34,27 @@
     "syncpack:lint": "syncpack lint"
   },
   "devDependencies": {
-    "@commitlint/cli": "^20.5.0",
-    "@lerna-lite/changed": "^5.1.0",
-    "@lerna-lite/cli": "^5.1.0",
-    "@lerna-lite/list": "^5.1.0",
-    "@lerna-lite/version": "^5.1.0",
+    "@commitlint/cli": "^21.0.1",
+    "@lerna-lite/changed": "^5.2.2",
+    "@lerna-lite/cli": "^5.2.2",
+    "@lerna-lite/list": "^5.2.2",
+    "@lerna-lite/version": "^5.2.2",
     "@ttoss/config": "workspace:^",
     "@ttoss/eslint-config": "workspace:^",
     "@ttoss/monorepo": "workspace:^",
     "carlin": "workspace:^",
     "eslint": "^9.39.4",
     "husky": "^9.1.7",
-    "lint-staged": "^16.4.0",
-    "playwright": "1.59.1",
+    "lint-staged": "^17.0.5",
+    "playwright": "1.60.0",
     "prettier": "^3.8.3",
-    "syncpack": "14.3.0",
-    "turbo": "^2.9.6",
+    "syncpack": "15.3.1",
+    "turbo": "^2.9.15",
     "typescript": "~6.0.3"
   },
-  "keywords": [
-    "cli",
-    "monorepo",
-    "node",
-    "ttoss",
-    "typescript"
-  ],
+  "packageManager": "pnpm@11.4.0",
   "engines": {
-    "node": "^24.0.0",
-    "pnpm": "^10.0.0"
-  },
-  "packageManager": "pnpm@10.33.2",
-  "pnpm": {
-    "overrides": {
-      "@types/parse-path": "7.0.3",
-      "@types/json-stable-stringify": "1.1.0"
-    }
+    "node": ">=24.0.0",
+    "pnpm": ">=11.2.2"
   }
 }

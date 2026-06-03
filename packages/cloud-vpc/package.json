@@ -24,7 +24,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
@@ -35,7 +35,7 @@
     "@ttoss/test-utils": "workspace:^",
     "@types/jest": "^30.0.0",
     "jest": "^30.3.0",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.22.0"
   },
   "publishConfig": {
     "access": "public",

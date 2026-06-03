@@ -9,5 +9,6 @@ export {
 export { lintstagedConfig } from './lintstaged';
 export { prettierConfig } from './prettier';
 export { syncpackConfig } from './syncpack';
+export { tsdownConfig } from './tsdown';
 export { tsupConfig } from './tsup';
 export * as typescriptConfig from './typescriptConfig';

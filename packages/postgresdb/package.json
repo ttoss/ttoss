@@ -26,8 +26,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
-    "pretest": "tsup --config ./tests/tsup.pretest.config.ts",
+    "build": "tsdown",
+    "pretest": "tsdown --config ./tests/tsdown.pretest.config.ts",
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
@@ -40,7 +40,7 @@
     "@testcontainers/postgresql": "^11.14.0",
     "@ttoss/config": "workspace:^",
     "jest": "^30.3.0",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.22.0"
   },
   "publishConfig": {
     "access": "public",
