@@ -117,7 +117,7 @@ describe('GeoVisLegend', () => {
     // Two unique finite breaks → 3 bins (< first, range, >= last).
     expect(getAllByRole('listitem')).toHaveLength(3);
     expect(getByText('< 20k')).toBeTruthy();
-    expect(getByText('20k - < 30k')).toBeTruthy();
+    expect(getByText('20k - 30k')).toBeTruthy();
     expect(getByText('>= 30k')).toBeTruthy();
   });
 
@@ -299,8 +299,8 @@ describe('GeoVisLegend', () => {
     // 3 thresholds → 4 bins; legend must derive them from the spec.
     expect(getAllByRole('listitem')).toHaveLength(4);
     expect(getByText('< 100')).toBeTruthy();
-    expect(getByText('100 - < 200')).toBeTruthy();
-    expect(getByText('200 - < 300')).toBeTruthy();
+    expect(getByText('100 - 200')).toBeTruthy();
+    expect(getByText('200 - 300')).toBeTruthy();
     expect(getByText('>= 300')).toBeTruthy();
   });
 });
@@ -660,8 +660,8 @@ describe('GeoVisLegend — labelFormat: count', () => {
 
     expect(getAllByRole('listitem')).toHaveLength(4);
     expect(getByText('< 50k')).toBeTruthy();
-    expect(getByText('50k – < 100k')).toBeTruthy();
-    expect(getByText('100k – < 250k')).toBeTruthy();
+    expect(getByText('50k ≤ 100k')).toBeTruthy();
+    expect(getByText('100k ≤ 250k')).toBeTruthy();
     expect(getByText('\u2265 250k')).toBeTruthy();
   });
 
@@ -721,10 +721,10 @@ describe('GeoVisLegend — labelFormat: percentage', () => {
     );
 
     expect(getAllByRole('listitem')).toHaveLength(4);
-    expect(getByText('< 10%')).toBeTruthy();
-    expect(getByText('10% \u2013 50%')).toBeTruthy();
-    expect(getByText('50% \u2013 80%')).toBeTruthy();
-    expect(getByText('\u2265 80%')).toBeTruthy();
+    expect(getByText('< 13%')).toBeTruthy();
+    expect(getByText('13% \u2013 63%')).toBeTruthy();
+    expect(getByText('63% \u2013 100%')).toBeTruthy();
+    expect(getByText('\u2265 100%')).toBeTruthy();
   });
 });
 
@@ -870,7 +870,7 @@ describe('GeoVisLegend — labelFormat: range', () => {
 
     expect(getAllByRole('listitem')).toHaveLength(3);
     expect(getByText('< 10 km')).toBeTruthy();
-    expect(getByText('10 km to < 50 km')).toBeTruthy();
+    expect(getByText('10 km to 50 km')).toBeTruthy();
     expect(getByText('>= 50 km')).toBeTruthy();
   });
 });
