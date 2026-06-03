@@ -1,6 +1,6 @@
 {
   "name": "@docs/website",
-  "version": "2.7.16",
+  "version": "2.7.17",
   "private": true,
   "scripts": {
     "build": "NODE_OPTIONS=--max-old-space-size=4096 docusaurus build",

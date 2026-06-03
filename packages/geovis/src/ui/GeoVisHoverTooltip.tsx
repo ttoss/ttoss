@@ -1,7 +1,7 @@
 import type * as React from 'react';
 import ReactDOM from 'react-dom';
 
-import type { MapHoverInfo } from './contexts';
+import type { MapClickInfo, MapHoverInfo } from './contexts';
 import { useGeoVisHover } from './contexts';
 
 const defaultFormatValue = (value: number | string): string => {
@@ -38,6 +38,12 @@ export interface GeoVisHoverTooltipProps {
   offset?: { x: number; y: number };
   /** Label shown when `info.value` is `null` (no `mapData` for the feature). */
   emptyValueLabel?: string;
+  /**
+   * Custom content rendered inside the tooltip container. Takes precedence over
+   * `render` and the default value layout. Use `useGeoVisHover()` or
+   * `useGeoVisClick()` inside the children for live data.
+   */
+  children?: React.ReactNode;
 }
 
 /**
@@ -60,6 +66,29 @@ export interface GeoVisHoverTooltipProps {
  * `MapHoverInfo.point` already carries viewport-absolute coordinates, so the
  * tooltip is positioned correctly without any additional offset math.
  */
+const renderTooltipBody = (
+  info: MapHoverInfo | MapClickInfo,
+  children: React.ReactNode | undefined,
+  render: ((info: MapHoverInfo) => React.ReactNode) | undefined,
+  formatValue: (value: number | string) => string,
+  emptyValueLabel: string
+): React.ReactNode => {
+  if (children != null) {
+    return children;
+  }
+  if (render) {
+    return render(info as MapHoverInfo);
+  }
+  return (
+    <>
+      <div style={{ fontWeight: 600 }}>Feature #{String(info.featureId)}</div>
+      <div>
+        {info.value == null ? emptyValueLabel : formatValue(info.value)}
+      </div>
+    </>
+  );
+};
+
 export const GeoVisHoverTooltip = ({
   render,
   formatValue = defaultFormatValue,
@@ -67,33 +96,29 @@ export const GeoVisHoverTooltip = ({
   style,
   offset = { x: 12, y: 12 },
   emptyValueLabel = 'No data',
+  children,
 }: GeoVisHoverTooltipProps) => {
   const hoveredMapFeature = useGeoVisHover();
-  if (!hoveredMapFeature) return null;
+
+  const activeInfo = hoveredMapFeature;
+  if (!activeInfo) return null;
   if (typeof document === 'undefined' || !document.body) return null;
 
   const mergedStyle: React.CSSProperties = {
     ...baseTooltipStyle,
-    left: hoveredMapFeature.point.x + offset.x,
-    top: hoveredMapFeature.point.y + offset.y,
+    left: activeInfo.point.x + offset.x,
+    top: activeInfo.point.y + offset.y,
     ...style,
   };
 
   return ReactDOM.createPortal(
     <div className={className} role="tooltip" style={mergedStyle}>
-      {render ? (
-        render(hoveredMapFeature)
-      ) : (
-        <>
-          <div style={{ fontWeight: 600 }}>
-            Feature #{String(hoveredMapFeature.featureId)}
-          </div>
-          <div>
-            {hoveredMapFeature.value == null
-              ? emptyValueLabel
-              : formatValue(hoveredMapFeature.value)}
-          </div>
-        </>
+      {renderTooltipBody(
+        activeInfo,
+        children,
+        render,
+        formatValue,
+        emptyValueLabel
       )}
     </div>,
     document.body

@@ -3,9 +3,9 @@
  */
 
 import { render } from '@testing-library/react';
-import { GeoVisLegend } from 'src/react/GeoVisLegend';
 import { GeoVisProvider } from 'src/react/GeoVisProvider';
 import type { VisualizationSpec } from 'src/spec/types';
+import { GeoVisLegend } from 'src/ui/GeoVisLegend';
 
 jest.mock('src/adapters/maplibre/MapLibreAdapter', () => {
   return {

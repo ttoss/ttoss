@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-auth-core",
-  "version": "0.4.28",
+  "version": "0.4.29",
   "description": "Core authentication components and abstractions for React apps.",
   "keywords": [
     "React",

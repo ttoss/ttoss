@@ -85,9 +85,15 @@
                     "type": "string",
                     "description": "URL pointing to a GeoJSON resource (RFC 7946)"
                   },
-                  { "$ref": "#/$defs/FeatureCollection" },
-                  { "$ref": "#/$defs/Feature" },
-                  { "$ref": "#/$defs/Geometry" }
+                  {
+                    "$ref": "#/$defs/FeatureCollection"
+                  },
+                  {
+                    "$ref": "#/$defs/Feature"
+                  },
+                  {
+                    "$ref": "#/$defs/Geometry"
+                  }
                 ]
               },
               "attribution": {
@@ -196,7 +202,14 @@
             "type": "object",
             "additionalProperties": false,
             "required": ["id", "type"],
-            "anyOf": [{ "required": ["tiles"] }, { "required": ["url"] }],
+            "anyOf": [
+              {
+                "required": ["tiles"]
+              },
+              {
+                "required": ["url"]
+              }
+            ],
             "properties": {
               "id": {
                 "type": "string"
@@ -206,7 +219,9 @@
               },
               "tiles": {
                 "type": "array",
-                "items": { "type": "string" },
+                "items": {
+                  "type": "string"
+                },
                 "minItems": 1
               },
               "url": {
@@ -243,7 +258,9 @@
               },
               "urls": {
                 "type": "array",
-                "items": { "type": "string" },
+                "items": {
+                  "type": "string"
+                },
                 "minItems": 1
               },
               "coordinates": {
@@ -252,7 +269,9 @@
                 "maxItems": 4,
                 "items": {
                   "type": "array",
-                  "items": { "type": "number" },
+                  "items": {
+                    "type": "number"
+                  },
                   "minItems": 2,
                   "maxItems": 2
                 }
@@ -300,7 +319,9 @@
           },
           "legends": {
             "type": "array",
-            "items": { "$ref": "#/$defs/LegendSpec" }
+            "items": {
+              "$ref": "#/$defs/LegendSpec"
+            }
           },
           "activeLegendId": {
             "type": "string",
@@ -309,6 +330,53 @@
           "mapDataId": {
             "type": "string",
             "minLength": 1
+          },
+          "hoverPaint": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "lineColor": {
+                "type": "string"
+              },
+              "lineWidth": {
+                "type": "number"
+              }
+            }
+          },
+          "selectedPaint": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "lineColor": {
+                "type": "string"
+              },
+              "lineWidth": {
+                "type": "number"
+              }
+            }
+          },
+          "clickAnchor": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "iconImage": {
+                "type": "string"
+              },
+              "iconSize": {
+                "type": "number"
+              },
+              "color": {
+                "type": "string"
+              },
+              "offset": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 2,
+                "maxItems": 2
+              }
+            }
           }
         }
       }
@@ -320,7 +388,9 @@
     "adapterHints": {},
     "legends": {
       "type": "array",
-      "items": { "$ref": "#/$defs/LegendSpec" }
+      "items": {
+        "$ref": "#/$defs/LegendSpec"
+      }
     },
     "mapData": {
       "type": "array",
@@ -329,11 +399,24 @@
         "additionalProperties": false,
         "required": ["mapDataId", "mapId", "data"],
         "properties": {
-          "mapDataId": { "type": "string", "minLength": 1 },
-          "mapId": { "type": "string", "minLength": 1 },
-          "title": { "type": "string" },
-          "description": { "type": "string" },
-          "joinKey": { "type": "string", "minLength": 1 },
+          "mapDataId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "mapId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "joinKey": {
+            "type": "string",
+            "minLength": 1
+          },
           "data": {
             "type": "array",
             "items": {
@@ -342,13 +425,26 @@
               "required": ["geometryId", "value"],
               "properties": {
                 "geometryId": {
-                  "oneOf": [{ "type": "string" }, { "type": "number" }]
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ]
                 },
                 "value": {
                   "oneOf": [
-                    { "type": "string" },
-                    { "type": "number" },
-                    { "type": "null" }
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
                   ]
                 }
               }
@@ -364,18 +460,31 @@
       "additionalProperties": false,
       "required": ["type", "property"],
       "properties": {
-        "type": { "const": "categorical" },
-        "property": { "type": "string", "minLength": 1 },
-        "palette": { "type": "string" },
+        "type": {
+          "const": "categorical"
+        },
+        "property": {
+          "type": "string",
+          "minLength": 1
+        },
+        "palette": {
+          "type": "string"
+        },
         "colors": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
         "mapping": {
           "type": "object",
-          "additionalProperties": { "type": "string" }
+          "additionalProperties": {
+            "type": "string"
+          }
         },
-        "defaultColor": { "type": "string" }
+        "defaultColor": {
+          "type": "string"
+        }
       }
     },
     "QuantitativeColorBy": {
@@ -383,25 +492,44 @@
       "additionalProperties": false,
       "required": ["type", "property", "scale"],
       "properties": {
-        "type": { "const": "quantitative" },
-        "property": { "type": "string", "minLength": 1 },
-        "scale": { "const": "threshold" },
+        "type": {
+          "const": "quantitative"
+        },
+        "property": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scale": {
+          "const": "threshold"
+        },
         "thresholds": {
           "type": "array",
-          "items": { "type": "number" }
+          "items": {
+            "type": "number"
+          }
         },
-        "palette": { "type": "string" },
+        "palette": {
+          "type": "string"
+        },
         "colors": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
-        "defaultColor": { "type": "string" }
+        "defaultColor": {
+          "type": "string"
+        }
       }
     },
     "ColorBy": {
       "oneOf": [
-        { "$ref": "#/$defs/CategoricalColorBy" },
-        { "$ref": "#/$defs/QuantitativeColorBy" }
+        {
+          "$ref": "#/$defs/CategoricalColorBy"
+        },
+        {
+          "$ref": "#/$defs/QuantitativeColorBy"
+        }
       ]
     },
     "LegendSpec": {
@@ -409,37 +537,56 @@
       "additionalProperties": false,
       "required": ["id", "colorBy"],
       "properties": {
-        "id": { "type": "string", "minLength": 1 },
-        "label": { "type": "string" },
-        "colorBy": { "$ref": "#/$defs/ColorBy" }
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string"
+        },
+        "colorBy": {
+          "$ref": "#/$defs/ColorBy"
+        }
       }
     },
     "Position": {
       "type": "array",
-      "items": { "type": "number" },
+      "items": {
+        "type": "number"
+      },
       "minItems": 2
     },
     "LinearRing": {
       "type": "array",
-      "items": { "$ref": "#/$defs/Position" },
+      "items": {
+        "$ref": "#/$defs/Position"
+      },
       "minItems": 4
     },
     "Point": {
       "type": "object",
       "required": ["type", "coordinates"],
       "properties": {
-        "type": { "const": "Point" },
-        "coordinates": { "$ref": "#/$defs/Position" }
+        "type": {
+          "const": "Point"
+        },
+        "coordinates": {
+          "$ref": "#/$defs/Position"
+        }
       }
     },
     "MultiPoint": {
       "type": "object",
       "required": ["type", "coordinates"],
       "properties": {
-        "type": { "const": "MultiPoint" },
+        "type": {
+          "const": "MultiPoint"
+        },
         "coordinates": {
           "type": "array",
-          "items": { "$ref": "#/$defs/Position" }
+          "items": {
+            "$ref": "#/$defs/Position"
+          }
         }
       }
     },
@@ -447,10 +594,14 @@
       "type": "object",
       "required": ["type", "coordinates"],
       "properties": {
-        "type": { "const": "LineString" },
+        "type": {
+          "const": "LineString"
+        },
         "coordinates": {
           "type": "array",
-          "items": { "$ref": "#/$defs/Position" },
+          "items": {
+            "$ref": "#/$defs/Position"
+          },
           "minItems": 2
         }
       }
@@ -459,12 +610,16 @@
       "type": "object",
       "required": ["type", "coordinates"],
       "properties": {
-        "type": { "const": "MultiLineString" },
+        "type": {
+          "const": "MultiLineString"
+        },
         "coordinates": {
           "type": "array",
           "items": {
             "type": "array",
-            "items": { "$ref": "#/$defs/Position" },
+            "items": {
+              "$ref": "#/$defs/Position"
+            },
             "minItems": 2
           }
         }
@@ -474,10 +629,14 @@
       "type": "object",
       "required": ["type", "coordinates"],
       "properties": {
-        "type": { "const": "Polygon" },
+        "type": {
+          "const": "Polygon"
+        },
         "coordinates": {
           "type": "array",
-          "items": { "$ref": "#/$defs/LinearRing" }
+          "items": {
+            "$ref": "#/$defs/LinearRing"
+          }
         }
       }
     },
@@ -485,12 +644,16 @@
       "type": "object",
       "required": ["type", "coordinates"],
       "properties": {
-        "type": { "const": "MultiPolygon" },
+        "type": {
+          "const": "MultiPolygon"
+        },
         "coordinates": {
           "type": "array",
           "items": {
             "type": "array",
-            "items": { "$ref": "#/$defs/LinearRing" }
+            "items": {
+              "$ref": "#/$defs/LinearRing"
+            }
           }
         }
       }
@@ -499,37 +662,78 @@
       "type": "object",
       "required": ["type", "geometries"],
       "properties": {
-        "type": { "const": "GeometryCollection" },
+        "type": {
+          "const": "GeometryCollection"
+        },
         "geometries": {
           "type": "array",
-          "items": { "$ref": "#/$defs/Geometry" }
+          "items": {
+            "$ref": "#/$defs/Geometry"
+          }
         }
       }
     },
     "Geometry": {
       "oneOf": [
-        { "$ref": "#/$defs/Point" },
-        { "$ref": "#/$defs/MultiPoint" },
-        { "$ref": "#/$defs/LineString" },
-        { "$ref": "#/$defs/MultiLineString" },
-        { "$ref": "#/$defs/Polygon" },
-        { "$ref": "#/$defs/MultiPolygon" },
-        { "$ref": "#/$defs/GeometryCollection" }
+        {
+          "$ref": "#/$defs/Point"
+        },
+        {
+          "$ref": "#/$defs/MultiPoint"
+        },
+        {
+          "$ref": "#/$defs/LineString"
+        },
+        {
+          "$ref": "#/$defs/MultiLineString"
+        },
+        {
+          "$ref": "#/$defs/Polygon"
+        },
+        {
+          "$ref": "#/$defs/MultiPolygon"
+        },
+        {
+          "$ref": "#/$defs/GeometryCollection"
+        }
       ]
     },
     "Feature": {
       "type": "object",
       "required": ["type", "geometry", "properties"],
       "properties": {
-        "type": { "const": "Feature" },
+        "type": {
+          "const": "Feature"
+        },
         "id": {
-          "oneOf": [{ "type": "string" }, { "type": "number" }]
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ]
         },
         "geometry": {
-          "oneOf": [{ "$ref": "#/$defs/Geometry" }, { "type": "null" }]
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Geometry"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "properties": {
-          "oneOf": [{ "type": "object" }, { "type": "null" }]
+          "oneOf": [
+            {
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
@@ -537,10 +741,14 @@
       "type": "object",
       "required": ["type", "features"],
       "properties": {
-        "type": { "const": "FeatureCollection" },
+        "type": {
+          "const": "FeatureCollection"
+        },
         "features": {
           "type": "array",
-          "items": { "$ref": "#/$defs/Feature" }
+          "items": {
+            "$ref": "#/$defs/Feature"
+          }
         }
       }
     }

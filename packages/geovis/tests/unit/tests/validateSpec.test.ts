@@ -272,3 +272,99 @@ describe('validateSpec — mapData', () => {
     }
   });
 });
+
+describe('validateSpec — layer interaction fields (hoverPaint, selectedPaint, clickAnchor)', () => {
+  const baseSpec = {
+    id: 'interaction-test',
+    engine: 'maplibre' as const,
+    view: { center: [0, 0] as [number, number], zoom: 1 },
+    sources: [
+      {
+        id: 'regions',
+        type: 'geojson' as const,
+        data: { type: 'FeatureCollection' as const, features: [] },
+      },
+    ],
+    layers: [
+      { id: 'regions-fill', sourceId: 'regions', geometry: 'polygon' as const },
+    ],
+  };
+
+  test('accepts layer with hoverPaint', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      layers: [
+        {
+          ...baseSpec.layers[0],
+          hoverPaint: { lineColor: '#ff0000', lineWidth: 2 },
+        },
+      ],
+    });
+    expect(result.valid).toBe(true);
+  });
+
+  test('accepts layer with selectedPaint', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      layers: [
+        {
+          ...baseSpec.layers[0],
+          selectedPaint: { lineColor: '#0000ff', lineWidth: 3 },
+        },
+      ],
+    });
+    expect(result.valid).toBe(true);
+  });
+
+  test('accepts layer with clickAnchor using iconImage', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      layers: [
+        {
+          ...baseSpec.layers[0],
+          clickAnchor: { iconImage: 'marker-15', iconSize: 1.5 },
+        },
+      ],
+    });
+    expect(result.valid).toBe(true);
+  });
+
+  test('accepts layer with clickAnchor using color and offset', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      layers: [
+        {
+          ...baseSpec.layers[0],
+          clickAnchor: { color: '#3FB1CE', offset: [0, -10] },
+        },
+      ],
+    });
+    expect(result.valid).toBe(true);
+  });
+
+  test('rejects hoverPaint with unknown property', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      layers: [
+        {
+          ...baseSpec.layers[0],
+          hoverPaint: { lineColor: '#ff0000', unknownProp: true },
+        },
+      ],
+    });
+    expect(result.valid).toBe(false);
+  });
+
+  test('rejects clickAnchor with unknown property', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      layers: [
+        {
+          ...baseSpec.layers[0],
+          clickAnchor: { iconImage: 'pin', unknownProp: 'bad' },
+        },
+      ],
+    });
+    expect(result.valid).toBe(false);
+  });
+});
