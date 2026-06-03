@@ -23,7 +23,7 @@ export default defineConfig({
   dts: true,
   entry: ['src/index.ts', 'src/defineConfig.ts'],
   format: 'esm',
-  noExternal,
+  deps: { alwaysBundle: noExternal },
   target: 'es2024',
   treeshake: true,
   clean: false,

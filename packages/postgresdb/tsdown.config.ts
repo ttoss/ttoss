@@ -1,8 +1,6 @@
 import { tsdownConfig } from '@ttoss/config';
-import { defineConfig } from 'tsdown';
 
-export const tsdown = defineConfig({
-  ...tsdownConfig(),
+export default tsdownConfig({
   format: ['esm'],
   /**
    * sequelize-typescript as noExternal doesn't work because it raises the

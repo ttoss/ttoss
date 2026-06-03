@@ -1,5 +1,5 @@
 import { transformAsync } from '@babel/core';
-import type { Plugin, PluginBuild } from 'esbuild';
+import type { Rolldown } from 'tsdown';
 
 import { configCreator } from './configCreator';
 import * as typescriptConfig from './typescriptConfig';
@@ -12,48 +12,46 @@ import * as typescriptConfig from './typescriptConfig';
  * Check [Automatic ID Generation](https://formatjs.github.io/docs/getting-started/message-extraction#automatic-id-generation)
  * for more information.
  */
-const formatjsPlugin: Plugin = {
+const formatjsPlugin: Rolldown.Plugin = {
   name: 'formatjs',
-  setup: (build: PluginBuild) => {
-    build.onEnd(async (result) => {
-      await Promise.all(
-        (result.outputFiles || []).map(async (outputFile) => {
-          if (
-            !outputFile.path.endsWith('.js') &&
-            !outputFile.path.endsWith('.mjs') &&
-            !outputFile.path.endsWith('.cjs')
-          ) {
-            return;
-          }
+  renderChunk: async (code, chunk) => {
+    if (
+      !chunk.fileName.endsWith('.js') &&
+      !chunk.fileName.endsWith('.mjs') &&
+      !chunk.fileName.endsWith('.cjs')
+    ) {
+      return null;
+    }
 
-          const transformedFile = await transformAsync(outputFile.text, {
-            caller: {
-              name: 'formatjs-transformer',
-              supportsStaticESM: true,
-            },
-            filename: outputFile.path,
-            plugins: [
-              [
-                'formatjs',
-                {
-                  idInterpolationPattern: '[sha512:contenthash:base64:6]',
-                  ast: true,
-                },
-              ],
-            ],
-          });
-
-          if (transformedFile?.code) {
-            outputFile.contents = Buffer.from(transformedFile.code);
-          }
-        })
-      );
+    const transformedFile = await transformAsync(code, {
+      caller: {
+        name: 'formatjs-transformer',
+        supportsStaticESM: true,
+      },
+      filename: chunk.fileName,
+      configFile: false,
+      babelrc: false,
+      plugins: [
+        [
+          'formatjs',
+          {
+            idInterpolationPattern: '[sha512:contenthash:base64:6]',
+            ast: true,
+          },
+        ],
+      ],
     });
+
+    if (transformedFile?.code) {
+      return { code: transformedFile.code };
+    }
+
+    return null;
   },
 };
 
 /**
- * ESBuild plugin to automatically inject React import.
+ * Rolldown plugin to automatically inject React import.
  *
  * Adds "import * as React from 'react';" if:
  * - Code uses React. (like React.createElement)
@@ -61,67 +59,55 @@ const formatjsPlugin: Plugin = {
  *
  * Fix: https://github.com/egoist/tsup/issues/792
  */
-export const injectReactImport = (): Plugin => {
+export const injectReactImport = (): Rolldown.Plugin => {
   return {
-    name: '@ttoss/esbuild-inject-react-import',
-    setup: (build) => {
-      build.onEnd((result) => {
-        if (result.outputFiles) {
-          for (const outputFile of result.outputFiles) {
-            if (!outputFile.path.endsWith('.js')) {
-              continue;
-            }
+    name: '@ttoss/inject-react-import',
+    renderChunk: (code, chunk) => {
+      if (!chunk.fileName.endsWith('.js')) {
+        return null;
+      }
 
-            let contents = outputFile.text;
+      // Skip files that do not use the React namespace.
+      if (!/React\./.test(code)) {
+        return null;
+      }
 
-            // Skip files that do not use the React namespace.
-            if (!/React\./.test(contents)) {
-              continue;
-            }
+      // Check if star React import already exists (e.g., import * as React from 'react';)
+      const hasStarReactImport =
+        /import\s+\*\s+as\s+React\s+from\s+['"]react['"]/.test(code);
 
-            // Check if star React import already exists (e.g., import * as React from 'react';)
-            const hasStarReactImport =
-              /import\s+\*\s+as\s+React\s+from\s+['"]react['"]/.test(contents);
+      // Check if any basic React import exists (e.g., import React from 'react'; or const React = require('react');)
+      const hasDefaultReactImport =
+        /import\s+React\s+from\s+['"]react['"]/.test(code) ||
+        /const\s+React\s+=\s+require\(['"]react['"]\)/.test(code);
 
-            // Check if any basic React import exists (e.g., import React from 'react'; or const React = require('react');)
-            const hasDefaultReactImport =
-              /import\s+React\s+from\s+['"]react['"]/.test(contents) ||
-              /const\s+React\s+=\s+require\(['"]react['"]\)/.test(contents);
+      if (hasStarReactImport || hasDefaultReactImport) {
+        return null;
+      }
 
-            if (hasStarReactImport || hasDefaultReactImport) {
-              continue;
-            }
+      // Match various comment styles at the start (e.g. banner injected before renderChunk)
+      const bannerMatch = code.match(/^((?:\/\/[^\n]*\n|\/\*[^]*?\*\/)\s*)*/);
+      const insertPosition = bannerMatch ? bannerMatch[0].length : 0;
 
-            // Match various comment styles at the start
-            const bannerMatch = contents.match(
-              /^((?:\/\/[^\n]*\n|\/\*[^]*?\*\/)\s*)*/
-            );
-            const insertPosition = bannerMatch ? bannerMatch[0].length : 0;
+      const isESM = /\bimport\b|\bexport\b/.test(code);
+      const isCJS = /\brequire\(|module\.exports\b/.test(code);
 
-            // Add basic React import
-            const isESM = /\bimport\b|\bexport\b/.test(contents);
-            const isCJS = /\brequire\(|module\.exports\b/.test(contents);
-
-            const importStatement = (() => {
-              if (isESM && !isCJS) {
-                return `import * as React from 'react';\n`;
-              } else if (isCJS && !isESM) {
-                return `const React = require('react');\n`;
-              }
-              // If both ESM and CJS patterns are found, default to ESM import
-              return `import * as React from 'react';\n`;
-            })();
-
-            contents =
-              contents.slice(0, insertPosition) +
-              importStatement +
-              contents.slice(insertPosition);
-
-            // Update file contents
-            outputFile.contents = new TextEncoder().encode(contents);
-          }
+      const importStatement = (() => {
+        if (isESM && !isCJS) {
+          return `import * as React from 'react';\n`;
+        } else if (isCJS && !isESM) {
+          return `const React = require('react');\n`;
         }
-      });
+        // If both ESM and CJS patterns are found, default to ESM import
+        return `import * as React from 'react';\n`;
+      })();
+
+      return {
+        code:
+          code.slice(0, insertPosition) +
+          importStatement +
+          code.slice(insertPosition),
+      };
     },
   };
 };
@@ -129,7 +115,7 @@ export const injectReactImport = (): Plugin => {
 export const defaultConfig = {
   clean: true,
   dts: true,
-  entry: ['src/index.ts'],
+  entry: ['src/index'],
   format: ['cjs', 'esm'],
   /**
    * Becomes difficult to debug if code is minified.
@@ -138,7 +124,7 @@ export const defaultConfig = {
   banner: {
     js: `/** Powered by @ttoss/config. https://ttoss.dev/docs/modules/packages/config/ */`,
   },
-  esbuildPlugins: [formatjsPlugin, injectReactImport()],
+  plugins: [formatjsPlugin, injectReactImport()],
   target: typescriptConfig.target,
 };
 

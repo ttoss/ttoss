@@ -1,11 +1,10 @@
 import { tsdownConfig } from '@ttoss/config';
 
-export const tsdown = {
-  ...tsdownConfig(),
+export default tsdownConfig({
   format: ['esm'],
   dts: {
     compilerOptions: {
       noCheck: true,
     },
   },
-};
+});

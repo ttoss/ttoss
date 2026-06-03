@@ -14,7 +14,7 @@ export const defaultConfig: Config = {
   /**
    * https://github.com/jestjs/jest/issues/13739#issuecomment-1517190965
    */
-  extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  extensionsToTreatAsEsm: ['', '.tsx'],
   fakeTimers: {
     advanceTimers: true,
     enableGlobally: true,
@@ -57,7 +57,7 @@ export const jestUnitConfig = configCreator<any>({
   collectCoverage: true,
   collectCoverageFrom: [
     '<rootDir>/../../src/**/*.{ts,tsx,js,jsx}',
-    '!<rootDir>/../../src/**/*.d.ts',
+    '!<rootDir>/../../src/**/*.d',
   ],
   roots: ['<rootDir>'],
 });

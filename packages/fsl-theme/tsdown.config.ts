@@ -1,7 +1,6 @@
 import { tsdownConfig } from '@ttoss/config';
 
-export const tsdown = {
-  ...tsdownConfig(),
+export default tsdownConfig({
   entry: [
     'src/index.ts',
     'src/css.ts',
@@ -16,4 +15,4 @@ export const tsdown = {
     'src/themes/oca.ts',
   ],
   format: ['esm'],
-};
+});

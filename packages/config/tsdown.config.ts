@@ -1,3 +1,3 @@
-import { tsdownConfig } from './src/index.ts';
+import { tsdownConfig } from './src/tsdown';
 
-export const tsdown = tsdownConfig();
+export default tsdownConfig({ format: ['esm'] });

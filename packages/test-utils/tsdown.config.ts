@@ -1,6 +1,6 @@
 import { tsdownConfig } from '@ttoss/config';
 
-export const tsdown = tsdownConfig({
+export default tsdownConfig({
   dts: {
     banner: '/// <reference types="@testing-library/jest-dom" />',
   },
