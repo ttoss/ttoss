@@ -235,12 +235,12 @@ AppSidebar.displayName = Layout.Sidebar.displayName; // Required for layout dete
 
 All layout slot components have a `displayName` that must be preserved when wrapping:
 
-| Component | Required `displayName` |
-|-----------|------------------------|
-| `Layout.Header` | `Layout.Header.displayName` |
+| Component        | Required `displayName`       |
+| ---------------- | ---------------------------- |
+| `Layout.Header`  | `Layout.Header.displayName`  |
 | `Layout.Sidebar` | `Layout.Sidebar.displayName` |
-| `Layout.Main` | `Layout.Main.displayName` |
-| `Layout.Footer` | `Layout.Footer.displayName` |
+| `Layout.Main`    | `Layout.Main.displayName`    |
+| `Layout.Footer`  | `Layout.Footer.displayName`  |
 
 ### Sidebar with Logo Slot
 
