@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.13.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.12.5...@ttoss/http-server-mcp@0.13.0) (2026-06-04)
+
+### Features
+
+- **@ttoss/http-server-mcp:** add OAuth/JWT authentication support ([#1016](https://github.com/ttoss/ttoss/issues/1016)) ([fe29eef](https://github.com/ttoss/ttoss/commit/fe29eef22336df2a577df3a007ddd2d8237b0013))
+
 ## [0.12.5](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.12.4...@ttoss/http-server-mcp@0.12.5) (2026-06-03)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp
