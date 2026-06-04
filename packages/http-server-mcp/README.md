@@ -127,6 +127,137 @@ const data = await apiCall('GET', 'https://partner.api.com/data', {
 
 `apiCall` throws with a clear message when called with a relative path and no `apiBaseUrl` is configured in the context.
 
+## Authentication
+
+`createMcpRouter` supports OAuth 2.0 Bearer token authentication via the `auth` option. Every incoming MCP request must include a valid `Authorization: Bearer <token>` header — invalid or missing tokens receive a `401 Unauthorized` response.
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant MCP Server
+    participant Verifier
+
+    Client->>MCP Server: POST /mcp + Authorization: Bearer &lt;token&gt;
+    MCP Server->>Verifier: verify(token)
+    alt valid token
+        Verifier-->>MCP Server: identity payload
+        MCP Server->>MCP Server: run tool (identity available via getIdentity())
+        MCP Server-->>Client: 200 OK
+    else invalid or missing token
+        Verifier-->>MCP Server: error
+        MCP Server-->>Client: 401 Unauthorized
+    end
+```
+
+### Amazon Cognito
+
+Pass `cognitoUserPool` and the router creates a `CognitoJwtVerifier` (from `@ttoss/auth-core`) internally:
+
+```typescript
+import { createMcpRouter, McpServer } from '@ttoss/http-server-mcp';
+
+const mcpRouter = createMcpRouter(mcpServer, {
+  auth: {
+    cognitoUserPool: {
+      userPoolId: process.env.COGNITO_USER_POOL_ID!,
+      clientId: process.env.COGNITO_CLIENT_ID!,
+      tokenUse: 'access', // default
+    },
+  },
+});
+```
+
+### Custom verifier
+
+Pass an async `verifyToken` function for any other provider (Auth0, Keycloak, etc.):
+
+```typescript
+import { createMcpRouter } from '@ttoss/http-server-mcp';
+import { jwtVerify, createRemoteJWKSet } from 'jose';
+
+const JWKS = createRemoteJWKSet(
+  new URL('https://your-auth-server/.well-known/jwks.json')
+);
+
+const mcpRouter = createMcpRouter(mcpServer, {
+  auth: {
+    verifyToken: async (token) => {
+      const { payload } = await jwtVerify(token, JWKS);
+      return payload;
+    },
+  },
+});
+```
+
+### Accessing the verified identity
+
+Inside any tool handler, call `getIdentity()` to retrieve the verified JWT payload:
+
+```typescript
+import { getIdentity, createMcpRouter, McpServer } from '@ttoss/http-server-mcp';
+
+mcpServer.registerTool(
+  'get-profile',
+  { description: 'Return the caller's profile', inputSchema: {} },
+  async () => {
+    const identity = getIdentity() as { sub: string; email: string };
+    return {
+      content: [{ type: 'text', text: `Hello, ${identity.email}` }],
+    };
+  }
+);
+```
+
+### Scope enforcement
+
+Scopes can be enforced at two levels.
+
+**Router-level** — gate the entire MCP endpoint. Any token missing a required scope receives a `403 Forbidden` before any tool runs:
+
+```typescript
+createMcpRouter(mcpServer, {
+  auth: {
+    cognitoUserPool: { userPoolId: '...', clientId: '...' },
+    requiredScopes: ['mcp:access'],
+  },
+});
+```
+
+**Per-tool** — use `checkScopes()` inside individual handlers for fine-grained control. It throws an error that the MCP SDK returns as a tool error to the client:
+
+```typescript
+import { checkScopes, getIdentity } from '@ttoss/http-server-mcp';
+
+mcpServer.registerTool(
+  'delete-user',
+  { description: 'Delete a user', inputSchema: { userId: z.string() } },
+  async ({ userId }) => {
+    checkScopes(['admin', 'write:users']); // throws if either scope is missing
+
+    const identity = getIdentity() as { sub: string };
+    // proceed with deletion...
+    return { content: [{ type: 'text', text: `Deleted ${userId}` }] };
+  }
+);
+```
+
+Cognito encodes scopes as a space-separated string in `payload.scope` (e.g. `"openid mcp:access admin"`).
+
+### OAuth Protected Resource Metadata
+
+For MCP clients that support OAuth auto-discovery, add `resourceServerUrl` and `authorizationServerUrl` to expose the `/.well-known/oauth-protected-resource` endpoint (RFC 9728):
+
+```typescript
+createMcpRouter(mcpServer, {
+  auth: {
+    cognitoUserPool: { userPoolId: '...', clientId: '...' },
+    resourceServerUrl: 'https://mcp.example.com',
+    authorizationServerUrl:
+      'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_xxx',
+  },
+});
+```
+
 ## API Reference
 
 ### `createMcpRouter(server, options?)`
@@ -135,14 +266,19 @@ Creates a Koa router configured to handle MCP protocol requests.
 
 **Parameters:**
 
-- `server` (`McpServer`) - MCP server instance with registered tools and resources
-- `options` (`McpRouterOptions`) - Optional configuration
-  - `path` (`string`) - HTTP path for MCP endpoint (default: `'/mcp'`)
-  - `sessionIdGenerator` (`() => string`) - Session ID generator for stateful servers (default: `undefined` for stateless)
-  - `apiBaseUrl` (`string`) - Base URL prepended to relative paths in `apiCall`
-  - `getApiHeaders` (`(ctx: Context) => Record<string, string>`) - Return headers to inject into every `apiCall` for this request (auth tokens, API keys, trace headers, etc.)
+- `server` (`McpServer`) — MCP server instance with registered tools and resources
+- `options` (`McpRouterOptions`) — Optional configuration
+  - `path` (`string`) — HTTP path for MCP endpoint (default: `'/mcp'`)
+  - `sessionIdGenerator` (`() => string`) — Session ID generator for stateful servers (default: `undefined` for stateless)
+  - `apiBaseUrl` (`string`) — Base URL prepended to relative paths in `apiCall`
+  - `getApiHeaders` (`(ctx: Context) => Record<string, string>`) — Return headers to inject into every `apiCall` for this request
+  - `auth` (`McpAuthOptions`) — OAuth/JWT authentication; see [Authentication](#authentication)
+    - `auth.cognitoUserPool` — Cognito user pool config (`userPoolId`, `clientId`, `tokenUse`)
+    - `auth.verifyToken` — Custom async token verifier `(token: string) => Promise<unknown>`
+    - `auth.requiredScopes` — Router-level scope guard; returns 403 if any scope is missing
+    - `auth.resourceServerUrl` + `auth.authorizationServerUrl` — Enable `/.well-known/oauth-protected-resource`
 
-**Returns:** `Router` - Koa router instance
+**Returns:** `Router` — Koa router instance
 
 ### `apiCall(method, url, options?)`
 
@@ -150,12 +286,26 @@ Generic HTTP helper for use inside MCP tool handlers.
 
 **Parameters:**
 
-- `method` (`string`) - HTTP method (`'GET'`, `'POST'`, `'PUT'`, `'DELETE'`, …)
-- `url` (`string`) - Full URL **or** a path starting with `/` (prepended with `apiBaseUrl`)
-- `options.body` (`unknown`, optional) - Request body, serialised as JSON
-- `options.headers` (`Record<string, string>`, optional) - Per-call header overrides; merged on top of context-injected headers
+- `method` (`string`) — HTTP method (`'GET'`, `'POST'`, `'PUT'`, `'DELETE'`, …)
+- `url` (`string`) — Full URL **or** a path starting with `/` (prepended with `apiBaseUrl`)
+- `options.body` (`unknown`, optional) — Request body, serialised as JSON
+- `options.headers` (`Record<string, string>`, optional) — Per-call header overrides; merged on top of context-injected headers
 
-**Returns:** `Promise<unknown>` - Parsed JSON response body
+**Returns:** `Promise<unknown>` — Parsed JSON response body
+
+### `getIdentity()`
+
+Returns the verified JWT payload for the current MCP request. Only available inside a tool handler when `auth` is configured. Returns `undefined` when called outside an authenticated context.
+
+**Returns:** `unknown` — Verified token payload (cast to your expected shape)
+
+### `checkScopes(required)`
+
+Asserts that the current request token contains all required scopes. Throws `Error: Insufficient scopes. Required: …` if any scope is missing — the MCP SDK catches this and returns a tool error to the client.
+
+**Parameters:**
+
+- `required` (`string[]`) — Scope strings that must all be present in `payload.scope`
 
 ### `registerToolFromSchema(server, params)`
 
@@ -165,11 +315,11 @@ Use this when tool definitions are shared between the MCP server and an AI SDK a
 
 **Parameters:**
 
-- `server` (`McpServer`) - The MCP server instance
-- `params.name` (`string`) - Unique tool name
-- `params.description` (`string`, optional) - Human-readable description
-- `params.inputSchema` (`JsonObjectSchema`, optional) - Plain JSON Schema object (defaults to `{ type: 'object', properties: {} }`)
-- `params.handler` (`(args: Record<string, unknown>) => CallToolResult | Promise<CallToolResult>`) - Tool handler receiving the raw request arguments
+- `server` (`McpServer`) — The MCP server instance
+- `params.name` (`string`) — Unique tool name
+- `params.description` (`string`, optional) — Human-readable description
+- `params.inputSchema` (`JsonObjectSchema`, optional) — Plain JSON Schema object (defaults to `{ type: 'object', properties: {} }`)
+- `params.handler` (`(args: Record<string, unknown>) => CallToolResult | Promise<CallToolResult>`) — Tool handler receiving the raw request arguments
 
 **Returns:** `void`
 

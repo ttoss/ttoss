@@ -4,10 +4,10 @@ export default {
   ...jestUnitConfig(),
   coverageThreshold: {
     global: {
-      statements: 85,
-      branches: 75,
-      functions: 83,
-      lines: 85,
+      statements: 89.9,
+      branches: 80.1,
+      functions: 87.9,
+      lines: 89.75,
     },
   },
 };
