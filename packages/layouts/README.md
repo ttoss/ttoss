@@ -210,7 +210,7 @@ The inner `Container` uses the `layout.container` variant, which by default limi
 
 ### Custom Components with displayName
 
-Create reusable layout components by preserving the required `displayName`:
+Create reusable layout components by preserving the required `displayName`. This is necessary because the layout system detects components by their `displayName` — wrapping a layout component without preserving it will cause that slot to be invisible.
 
 ```tsx
 const AppHeader = ({ children, ...props }) => (
@@ -222,7 +222,25 @@ const AppHeader = ({ children, ...props }) => (
 );
 
 AppHeader.displayName = Layout.Header.displayName; // Required for layout detection
+
+const AppSidebar = ({ children }) => (
+  <Layout.Sidebar showSidebarButtonInDrawer>
+    <NavMenu />
+    {children}
+  </Layout.Sidebar>
+);
+
+AppSidebar.displayName = Layout.Sidebar.displayName; // Required for layout detection
 ```
+
+All layout slot components have a `displayName` that must be preserved when wrapping:
+
+| Component | Required `displayName` |
+|-----------|------------------------|
+| `Layout.Header` | `Layout.Header.displayName` |
+| `Layout.Sidebar` | `Layout.Sidebar.displayName` |
+| `Layout.Main` | `Layout.Main.displayName` |
+| `Layout.Footer` | `Layout.Footer.displayName` |
 
 ### Sidebar with Logo Slot
 
