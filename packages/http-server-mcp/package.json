@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
+    "@ttoss/auth-core": "workspace:^",
     "@ttoss/http-server": "workspace:^",
     "zod": "^4.3.6"
   },
