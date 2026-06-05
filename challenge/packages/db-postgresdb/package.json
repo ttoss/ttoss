@@ -1,6 +1,6 @@
 {
   "name": "@ttoss-challenge/db-postgresdb",
-  "version": "0.2.15",
+  "version": "0.2.20",
   "private": true,
   "type": "module",
   "scripts": {

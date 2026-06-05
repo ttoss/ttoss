@@ -4,9 +4,9 @@
 
 import { act, render, waitFor } from '@testing-library/react';
 import * as React from 'react';
-import { GeoVisHoverTooltip } from 'src/react/GeoVisHoverTooltip';
 import { GeoVisProvider, useGeoVis } from 'src/react/GeoVisProvider';
 import type { VisualizationSpec } from 'src/spec/types';
+import { GeoVisHoverTooltip } from 'src/ui/GeoVisHoverTooltip';
 
 type MapMouseHandler = (event: {
   point: { x: number; y: number };

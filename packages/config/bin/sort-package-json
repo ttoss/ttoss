@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-const fs = require('node:fs');
-const path = require('node:path');
+import fs from 'node:fs';
+import path from 'node:path';
 
-const { sortPackageJson } = require('sort-package-json');
+import { sortPackageJson } from 'sort-package-json';
 
 const files = process.argv
   .slice(2)
@@ -34,14 +34,9 @@ for (const filePath of files) {
 }
 
 if (failedFiles.length > 0) {
-  for (const failedFile of failedFiles) {
-    const message =
-      failedFile.error instanceof Error
-        ? failedFile.error.message
-        : String(failedFile.error);
-
-    console.error(`Failed to sort ${failedFile.filePath}: ${message}`);
+  console.error('Failed to sort package.json files:');
+  for (const { filePath, error } of failedFiles) {
+    console.error(`  - ${filePath}: ${error.message}`);
   }
-
   process.exit(1);
 }

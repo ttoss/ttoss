@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.16](https://github.com/ttoss/ttoss/compare/@ttoss/react-hooks@2.3.15...@ttoss/react-hooks@2.3.16) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/react-hooks
+
+## [2.3.15](https://github.com/ttoss/ttoss/compare/@ttoss/react-hooks@2.3.14...@ttoss/react-hooks@2.3.15) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/react-hooks
+
+## [2.3.14](https://github.com/ttoss/ttoss/compare/@ttoss/react-hooks@2.3.13...@ttoss/react-hooks@2.3.14) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [2.3.13](https://github.com/ttoss/ttoss/compare/@ttoss/react-hooks@2.3.12...@ttoss/react-hooks@2.3.13) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/react-hooks
+
+## [2.3.12](https://github.com/ttoss/ttoss/compare/@ttoss/react-hooks@2.3.11...@ttoss/react-hooks@2.3.12) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/react-hooks
+
 ## 2.3.11 (2026-05-13)
 
 ### Bug Fixes

@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-auth-core",
-  "version": "0.4.28",
+  "version": "0.4.33",
   "description": "Core authentication components and abstractions for React apps.",
   "keywords": [
     "React",
@@ -28,7 +28,7 @@
     "i18n"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "i18n": "ttoss-i18n",
     "test": "jest --projects tests/unit"
   },
@@ -48,8 +48,8 @@
     "@ttoss/ui": "workspace:^",
     "@types/react": "^19.2.14",
     "jest": "^30.3.0",
-    "react": "^19.2.4",
-    "tsup": "^8.5.1"
+    "react": "^19.2.6",
+    "tsdown": "^0.22.0"
   },
   "peerDependencies": {
     "@ttoss/components": "workspace:^",
@@ -64,8 +64,8 @@
     "access": "public",
     "exports": {
       ".": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/esm/index.js"
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
       }
     },
     "provenance": true

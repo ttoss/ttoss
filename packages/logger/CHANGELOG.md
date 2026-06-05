@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.16](https://github.com/ttoss/ttoss/compare/@ttoss/logger@0.8.15...@ttoss/logger@0.8.16) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/logger
+
+## [0.8.15](https://github.com/ttoss/ttoss/compare/@ttoss/logger@0.8.14...@ttoss/logger@0.8.15) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/logger
+
+## [0.8.14](https://github.com/ttoss/ttoss/compare/@ttoss/logger@0.8.13...@ttoss/logger@0.8.14) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [0.8.13](https://github.com/ttoss/ttoss/compare/@ttoss/logger@0.8.12...@ttoss/logger@0.8.13) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/logger
+
+## [0.8.12](https://github.com/ttoss/ttoss/compare/@ttoss/logger@0.8.11...@ttoss/logger@0.8.12) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/logger
+
 ## 0.8.11 (2026-05-13)
 
 ### Bug Fixes

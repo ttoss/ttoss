@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.23](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.15.22...@ttoss/landing-pages@0.15.23) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.15.22](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.15.21...@ttoss/landing-pages@0.15.22) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.15.21](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.15.20...@ttoss/landing-pages@0.15.21) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [0.15.20](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.15.19...@ttoss/landing-pages@0.15.20) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
+## [0.15.19](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.15.18...@ttoss/landing-pages@0.15.19) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/landing-pages
+
 ## [0.15.18](https://github.com/ttoss/ttoss/compare/@ttoss/landing-pages@0.15.17...@ttoss/landing-pages@0.15.18) (2026-05-13)
 
 **Note:** Version bump only for package @ttoss/landing-pages

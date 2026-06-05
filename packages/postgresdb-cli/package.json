@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/postgresdb-cli",
-  "version": "0.2.11",
+  "version": "0.2.15",
   "description": "A library to handle PostgreSQL database actions through the command line",
   "keywords": [
     "database",
@@ -27,7 +27,7 @@
     "dist"
   ],
   "scripts": {
-    "build-config": "tsup-node"
+    "build-config": "tsdown"
   },
   "dependencies": {
     "commander": "^14.0.3",
@@ -38,7 +38,7 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "jest": "^30.3.0",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.22.0"
   },
   "publishConfig": {
     "access": "public",

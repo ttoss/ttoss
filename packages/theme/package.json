@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/theme",
-  "version": "2.11.18",
+  "version": "2.11.23",
   "description": "Theme for packages.",
   "keywords": [],
   "repository": {
@@ -24,7 +24,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
@@ -39,7 +39,7 @@
     "@ttoss/test-utils": "workspace:^",
     "jest": "^30.3.0",
     "theme-ui": "^0.17.2",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.22.0"
   },
   "peerDependencies": {
     "@ttoss/react-icons": "workspace:^"
@@ -48,16 +48,16 @@
     "access": "public",
     "exports": {
       ".": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/esm/index.js"
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
       },
       "./Bruttal": {
-        "types": "./dist/themes/Bruttal/Bruttal.d.ts",
-        "default": "./dist/esm/themes/Bruttal/Bruttal.js"
+        "types": "./dist/themes/Bruttal/Bruttal.d.mts",
+        "default": "./dist/themes/Bruttal/Bruttal.mjs"
       },
       "./Oca": {
-        "types": "./dist/themes/Oca/Oca.d.ts",
-        "default": "./dist/esm/themes/Oca/Oca.js"
+        "types": "./dist/themes/Oca/Oca.d.mts",
+        "default": "./dist/themes/Oca/Oca.mjs"
       }
     },
     "provenance": true

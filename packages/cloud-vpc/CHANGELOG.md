@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.52](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.51...@ttoss/cloud-vpc@0.1.52) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/cloud-vpc
+
+## [0.1.51](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.50...@ttoss/cloud-vpc@0.1.51) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/cloud-vpc
+
+## [0.1.50](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.49...@ttoss/cloud-vpc@0.1.50) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [0.1.49](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.48...@ttoss/cloud-vpc@0.1.49) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/cloud-vpc
+
+## [0.1.48](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.47...@ttoss/cloud-vpc@0.1.48) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/cloud-vpc
+
 ## [0.1.47](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.46...@ttoss/cloud-vpc@0.1.47) (2026-05-18)
 
 **Note:** Version bump only for package @ttoss/cloud-vpc

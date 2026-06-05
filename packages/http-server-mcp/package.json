@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/http-server-mcp",
-  "version": "0.12.3",
+  "version": "0.13.3",
   "description": "Model Context Protocol (MCP) server integration for @ttoss/http-server",
   "keywords": [
     "ai",
@@ -29,11 +29,12 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
+    "@ttoss/auth-core": "workspace:^",
     "@ttoss/http-server": "workspace:^",
     "zod": "^4.3.6"
   },
@@ -42,7 +43,7 @@
     "@types/koa": "^3.0.2",
     "jest": "^30.3.0",
     "supertest": "^7.2.2",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.22.0"
   },
   "peerDependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0"
@@ -51,9 +52,9 @@
     "access": "public",
     "exports": {
       ".": {
-        "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.mts"
       }
     },
     "provenance": true

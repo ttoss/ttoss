@@ -1,4 +1,7 @@
 {
   "extends": "@ttoss/config/tsconfig.json",
+  "compilerOptions": {
+    "ignoreDeprecations": "6.0"
+  },
   "exclude": ["tests"]
 }

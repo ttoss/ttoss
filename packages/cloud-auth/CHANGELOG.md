@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.36](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.35...@ttoss/cloud-auth@0.13.36) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
+## [0.13.35](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.34...@ttoss/cloud-auth@0.13.35) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
+## [0.13.34](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.33...@ttoss/cloud-auth@0.13.34) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [0.13.33](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.32...@ttoss/cloud-auth@0.13.33) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
+## [0.13.32](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.31...@ttoss/cloud-auth@0.13.32) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
 ## [0.13.31](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.30...@ttoss/cloud-auth@0.13.31) (2026-05-18)
 
 **Note:** Version bump only for package @ttoss/cloud-auth

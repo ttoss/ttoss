@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/fsl-theme",
-  "version": "1.1.12",
+  "version": "1.1.17",
   "description": "ttoss theme provider for UI.",
   "keywords": [
     "css-variables",
@@ -38,7 +38,7 @@
     "llms.txt"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "build:verify": "pnpm run build && tsx scripts/probe-jsdoc-propagation.ts",
     "test": "jest --projects tests/unit"
   },
@@ -47,9 +47,9 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "jest": "^30.3.0",
-    "react": "^19.2.4",
+    "react": "^19.2.6",
     "ts-morph": "^28.0.0",
-    "tsup": "^8.5.1",
+    "tsdown": "^0.22.0",
     "tsx": "^4.21.0"
   },
   "peerDependencies": {
@@ -64,32 +64,32 @@
     "access": "public",
     "exports": {
       ".": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/esm/index.js"
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
       },
       "./css": {
-        "types": "./dist/css.d.ts",
-        "default": "./dist/esm/css.js"
+        "types": "./dist/css.d.mts",
+        "default": "./dist/css.mjs"
       },
       "./runtime": {
-        "types": "./dist/runtime-entry.d.ts",
-        "default": "./dist/esm/runtime-entry.js"
+        "types": "./dist/runtime-entry.d.mts",
+        "default": "./dist/runtime-entry.mjs"
       },
       "./react": {
-        "types": "./dist/react.d.ts",
-        "default": "./dist/esm/react.js"
+        "types": "./dist/react.d.mts",
+        "default": "./dist/react.mjs"
       },
       "./vars": {
-        "types": "./dist/vars.d.ts",
-        "default": "./dist/esm/vars.js"
+        "types": "./dist/vars.d.mts",
+        "default": "./dist/vars.mjs"
       },
       "./dtcg": {
-        "types": "./dist/dtcg.d.ts",
-        "default": "./dist/esm/dtcg.js"
+        "types": "./dist/dtcg.d.mts",
+        "default": "./dist/dtcg.mjs"
       },
       "./dataviz": {
-        "types": "./dist/dataviz/index.d.ts",
-        "default": "./dist/esm/dataviz/index.js"
+        "types": "./dist/dataviz/index.d.mts",
+        "default": "./dist/dataviz/index.mjs"
       }
     },
     "provenance": true

@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.12](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.11...@ttoss/react-wizard@0.4.12) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.4.11](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.10...@ttoss/react-wizard@0.4.11) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.4.10](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.9...@ttoss/react-wizard@0.4.10) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [0.4.9](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.8...@ttoss/react-wizard@0.4.9) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.4.8](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.7...@ttoss/react-wizard@0.4.8) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
 ## [0.4.7](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.6...@ttoss/react-wizard@0.4.7) (2026-05-13)
 
 **Note:** Version bump only for package @ttoss/react-wizard

@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/graphql-api-cli",
-  "version": "0.10.11",
+  "version": "0.10.15",
   "description": "A library for building GraphQL APIs types and schema.",
   "keywords": [
     "api",
@@ -25,7 +25,7 @@
     "dist"
   ],
   "scripts": {
-    "build-config": "tsup-node"
+    "build-config": "tsdown"
   },
   "dependencies": {
     "@graphql-codegen/core": "^4.0.2",
@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.22.0"
   },
   "peerDependencies": {
     "graphql": "^16.6.0"

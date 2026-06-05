@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.6](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api@0.10.5...@ttoss/graphql-api@0.10.6) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/graphql-api
+
+## [0.10.5](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api@0.10.4...@ttoss/graphql-api@0.10.5) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/graphql-api
+
+## [0.10.4](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api@0.10.3...@ttoss/graphql-api@0.10.4) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [0.10.3](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api@0.10.2...@ttoss/graphql-api@0.10.3) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/graphql-api
+
+## [0.10.2](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api@0.10.1...@ttoss/graphql-api@0.10.2) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/graphql-api
+
 ## 0.10.1 (2026-05-13)
 
 ### Bug Fixes

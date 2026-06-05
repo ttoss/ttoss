@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.3](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.13.2...@ttoss/http-server-mcp@0.13.3) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp
+
+## [0.13.2](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.13.1...@ttoss/http-server-mcp@0.13.2) (2026-06-05)
+
+### Bug Fixes
+
+- **http-server-mcp:** export McpServer as value to fix TS1362 ([#1018](https://github.com/ttoss/ttoss/issues/1018)) ([#1019](https://github.com/ttoss/ttoss/issues/1019)) ([cd86b89](https://github.com/ttoss/ttoss/commit/cd86b89c47eb2ce828ac24b5dac551d21530090a))
+
+## [0.13.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.13.0...@ttoss/http-server-mcp@0.13.1) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** replace InstanceType<typeof Router> with Router type alias ([2deda45](https://github.com/ttoss/ttoss/commit/2deda45bfb5fd84643f0a23e230e15c263041d8a))
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+# [0.13.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.12.5...@ttoss/http-server-mcp@0.13.0) (2026-06-04)
+
+### Features
+
+- **@ttoss/http-server-mcp:** add OAuth/JWT authentication support ([#1016](https://github.com/ttoss/ttoss/issues/1016)) ([fe29eef](https://github.com/ttoss/ttoss/commit/fe29eef22336df2a577df3a007ddd2d8237b0013))
+
+## [0.12.5](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.12.4...@ttoss/http-server-mcp@0.12.5) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp
+
+## [0.12.4](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.12.3...@ttoss/http-server-mcp@0.12.4) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp
+
 ## 0.12.3 (2026-05-13)
 
 ### Bug Fixes

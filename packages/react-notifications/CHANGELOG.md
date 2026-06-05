@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.24](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.23...@ttoss/react-notifications@2.7.24) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.7.23](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.22...@ttoss/react-notifications@2.7.23) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.7.22](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.21...@ttoss/react-notifications@2.7.22) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [2.7.21](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.20...@ttoss/react-notifications@2.7.21) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.7.20](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.19...@ttoss/react-notifications@2.7.20) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
 ## [2.7.19](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.18...@ttoss/react-notifications@2.7.19) (2026-05-13)
 
 **Note:** Version bump only for package @ttoss/react-notifications
