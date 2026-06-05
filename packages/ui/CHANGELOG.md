@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.9.24](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.9.23...@ttoss/ui@6.9.24) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** improve test coverage and fix peerDependencies ([#1022](https://github.com/ttoss/ttoss/issues/1022)) ([253bd98](https://github.com/ttoss/ttoss/commit/253bd98eaa29f690d4e198ad994b5d1aed4e89c5))
+
 ## [6.9.23](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.9.22...@ttoss/ui@6.9.23) (2026-06-05)
 
 **Note:** Version bump only for package @ttoss/ui
