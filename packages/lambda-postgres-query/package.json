@@ -48,14 +48,14 @@
     "access": "public",
     "exports": {
       ".": {
-        "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.mts"
       },
       "./cloudformation": {
-        "import": "./dist/esm/cloudformation/index.js",
-        "require": "./dist/cloudformation/index.js",
-        "types": "./dist/cloudformation/index.d.ts"
+        "import": "./dist/cloudformation/index.mjs",
+        "require": "./dist/cloudformation/index.cjs",
+        "types": "./dist/cloudformation/index.d.mts"
       }
     },
     "provenance": true

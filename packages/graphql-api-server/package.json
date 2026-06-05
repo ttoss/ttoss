@@ -51,8 +51,8 @@
     "access": "public",
     "exports": {
       ".": {
-        "import": "./dist/esm/index.js",
-        "types": "./dist/index.d.ts"
+        "import": "./dist/index.mjs",
+        "types": "./dist/index.d.mts"
       }
     },
     "provenance": true
