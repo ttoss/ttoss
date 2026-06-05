@@ -170,14 +170,10 @@ const buildQuantitativeItems = ({
   const palette = resolvePalette(colorBy, total);
   const { labelFormat, normalization } = legend;
 
-  // When `percentage` format has no explicit `denominator`, auto-derive it
-  // from the max break so callers don't need to know the data scale.
-  const effectiveLabelFormat =
-    labelFormat?.type === 'percentage' &&
-    !labelFormat.denominator &&
-    breaks.length > 0
-      ? { ...labelFormat, denominator: breaks[breaks.length - 1] }
-      : labelFormat;
+  // Use labelFormat as-is. For percentage format on [0, 1] range data,
+  // the default denominator of 1 is semantically correct and produces
+  // the expected [0%, 100%] range output.
+  const effectiveLabelFormat = labelFormat;
 
   const mkLabel = (
     lower: number | null,

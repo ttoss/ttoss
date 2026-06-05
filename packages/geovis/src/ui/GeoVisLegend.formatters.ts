@@ -59,7 +59,7 @@ export const formatRangeLabel = (
   };
   const { lower, upper, isFirst, isLast, withSuffix } = ctx;
   if (isFirst) return withSuffix(`< ${fmt(upper!)}`);
-  if (isLast) return withSuffix(`>= ${fmt(lower!)}`);
+  if (isLast) return withSuffix(`> ${fmt(lower!)}`);
   return withSuffix(`${fmt(lower!)}${separator}${fmt(upper!)}`);
 };
 
@@ -74,7 +74,7 @@ export const formatCountLabel = (
       };
   const { lower, upper, isFirst, isLast, withSuffix } = ctx;
   if (isFirst) return withSuffix(`< ${fmt(upper!)}`);
-  if (isLast) return withSuffix(`≥ ${fmt(lower!)}`);
+  if (isLast) return withSuffix(`> ${fmt(lower!)}`);
   return withSuffix(`${fmt(lower!)} ≤ ${fmt(upper!)}`);
 };
 
@@ -89,7 +89,7 @@ export const formatPercentageLabel = (
   };
   const { lower, upper, isFirst, isLast, withSuffix } = ctx;
   if (isFirst && lower === null) return withSuffix(`< ${fmt(upper!)}`);
-  if (isLast && upper === null) return withSuffix(`\u2265 ${fmt(lower!)}`);
+  if (isLast && upper === null) return withSuffix(`> ${fmt(lower!)}`);
   return withSuffix(`${fmt(lower!)} \u2013 ${fmt(upper!)}`);
 };
 
@@ -114,7 +114,7 @@ export const formatAutoLabel = (
 ): string => {
   const { lower, upper, isFirst, isLast, withSuffix } = ctx;
   if (isFirst) return withSuffix(`< ${formatValue(upper!)}`);
-  if (isLast) return withSuffix(`\u2265 ${formatValue(lower!)}`);
+  if (isLast) return withSuffix(`> ${formatValue(lower!)}`);
   return withSuffix(`${formatValue(lower!)} \u2013 ${formatValue(upper!)}`);
 };
 

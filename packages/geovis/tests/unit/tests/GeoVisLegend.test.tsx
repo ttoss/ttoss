@@ -115,11 +115,11 @@ describe('GeoVisLegend', () => {
       </GeoVisProvider>
     );
 
-    // Two unique finite breaks → 3 bins (< first, range, >= last).
+    // Two unique finite breaks → 3 bins (< first, range, > last).
     expect(getAllByRole('listitem')).toHaveLength(3);
     expect(getByText('< 20k')).toBeTruthy();
     expect(getByText('20k - 30k')).toBeTruthy();
-    expect(getByText('>= 30k')).toBeTruthy();
+    expect(getByText('> 30k')).toBeTruthy();
   });
 
   test('renders single quantitative bin when no breaks are provided', () => {
@@ -302,7 +302,7 @@ describe('GeoVisLegend', () => {
     expect(getByText('< 100')).toBeTruthy();
     expect(getByText('100 - 200')).toBeTruthy();
     expect(getByText('200 - 300')).toBeTruthy();
-    expect(getByText('>= 300')).toBeTruthy();
+    expect(getByText('> 300')).toBeTruthy();
   });
 });
 
@@ -665,7 +665,7 @@ describe('GeoVisLegend — labelFormat: count', () => {
     expect(getByText('< 50k')).toBeTruthy();
     expect(getByText('50k ≤ 100k')).toBeTruthy();
     expect(getByText('100k ≤ 250k')).toBeTruthy();
-    expect(getByText('\u2265 250k')).toBeTruthy();
+    expect(getByText('> 250k')).toBeTruthy();
   });
 
   test('renders count format with extended normalization suffix', () => {
@@ -694,7 +694,7 @@ describe('GeoVisLegend — labelFormat: count', () => {
     );
 
     expect(getByText('< 50k inhabitants')).toBeTruthy();
-    expect(getByText('\u2265 50k inhabitants')).toBeTruthy();
+    expect(getByText('> 50k inhabitants')).toBeTruthy();
   });
 });
 
@@ -724,10 +724,10 @@ describe('GeoVisLegend — labelFormat: percentage', () => {
     );
 
     expect(getAllByRole('listitem')).toHaveLength(4);
-    expect(getByText('< 13%')).toBeTruthy();
-    expect(getByText('13% \u2013 63%')).toBeTruthy();
-    expect(getByText('63% \u2013 100%')).toBeTruthy();
-    expect(getByText('\u2265 100%')).toBeTruthy();
+    expect(getByText('< 10%')).toBeTruthy();
+    expect(getByText('10% \u2013 50%')).toBeTruthy();
+    expect(getByText('50% \u2013 80%')).toBeTruthy();
+    expect(getByText('> 80%')).toBeTruthy();
   });
 });
 
@@ -837,7 +837,7 @@ describe('GeoVisLegend — labelFormat: auto', () => {
     expect(getAllByRole('listitem')).toHaveLength(3);
     expect(getByText('< 100')).toBeTruthy();
     expect(getByText('100 \u2013 200')).toBeTruthy();
-    expect(getByText('\u2265 200')).toBeTruthy();
+    expect(getByText('> 200')).toBeTruthy();
   });
 });
 
@@ -874,7 +874,7 @@ describe('GeoVisLegend — labelFormat: range', () => {
     expect(getAllByRole('listitem')).toHaveLength(3);
     expect(getByText('< 10 km')).toBeTruthy();
     expect(getByText('10 km to 50 km')).toBeTruthy();
-    expect(getByText('>= 50 km')).toBeTruthy();
+    expect(getByText('> 50 km')).toBeTruthy();
   });
 });
 
