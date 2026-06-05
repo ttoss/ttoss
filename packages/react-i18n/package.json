@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-i18n",
-  "version": "2.2.17",
+  "version": "2.2.18",
   "keywords": [
     "React",
     "ui",
@@ -41,9 +41,9 @@
     "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@types/react": "^19.2.14",
-    "jest": "^30.3.0",
+    "jest": "^30.4.2",
     "react": "^19.2.6",
-    "tsdown": "^0.22.0",
+    "tsdown": "^0.22.2",
     "typescript": "~6.0.3"
   },
   "peerDependencies": {

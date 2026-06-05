@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/ui",
-  "version": "6.9.23",
+  "version": "6.9.24",
   "description": "Primitive layout, typographic, and other components for styling applications.",
   "keywords": [
     "React",
@@ -48,9 +48,9 @@
     "@ttoss/test-utils": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.2.14",
-    "jest": "^30.3.0",
+    "jest": "^30.4.2",
     "react": "^19.2.6",
-    "tsdown": "^0.22.0"
+    "tsdown": "^0.22.2"
   },
   "peerDependencies": {
     "@emotion/react": "^11",

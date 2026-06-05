@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-notifications",
-  "version": "2.7.24",
+  "version": "2.7.25",
   "description": "ttoss notifications module for React apps.",
   "keywords": [
     "React",
@@ -35,9 +35,9 @@
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "@types/react": "^19.2.14",
-    "jest": "^30.3.0",
+    "jest": "^30.4.2",
     "react": "^19.2.6",
-    "tsdown": "^0.22.0"
+    "tsdown": "^0.22.2"
   },
   "peerDependencies": {
     "@ttoss/components": "workspace:^",

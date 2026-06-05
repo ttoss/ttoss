@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/appsync-api",
-  "version": "0.24.12",
+  "version": "0.24.13",
   "description": "A library for building GraphQL APIs for AWS AppSync.",
   "keywords": [
     "api",
@@ -39,8 +39,8 @@
     "@types/aws-lambda": "^8.10.152",
     "graphql": "^16.11.0",
     "graphql-shield": "^7.6.5",
-    "jest": "^30.3.0",
-    "tsdown": "^0.22.0"
+    "jest": "^30.4.2",
+    "tsdown": "^0.22.2"
   },
   "peerDependencies": {
     "@ttoss/graphql-api": "workspace:^",

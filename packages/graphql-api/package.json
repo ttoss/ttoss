@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/graphql-api",
-  "version": "0.10.6",
+  "version": "0.10.7",
   "description": "A library for building GraphQL APIs using ttoss ecosystem.",
   "keywords": [
     "api",
@@ -40,8 +40,8 @@
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "graphql": "^16.11.0",
-    "jest": "^30.3.0",
-    "tsdown": "^0.22.0"
+    "jest": "^30.4.2",
+    "tsdown": "^0.22.2"
   },
   "peerDependencies": {
     "graphql": "^16.6.0"

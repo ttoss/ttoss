@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/landing-pages",
-  "version": "0.15.23",
+  "version": "0.15.24",
   "description": "Package for creating landing pages.",
   "keywords": [
     "React",
@@ -40,8 +40,8 @@
     "@types/jest": "^30.0.0",
     "@types/react": "^19.2.14",
     "@types/react-collapse": "^5.0.4",
-    "jest": "^30.3.0",
-    "tsdown": "^0.22.0"
+    "jest": "^30.4.2",
+    "tsdown": "^0.22.2"
   },
   "peerDependencies": {
     "@ttoss/react-icons": "workspace:^",

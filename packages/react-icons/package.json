@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-icons",
-  "version": "0.7.17",
+  "version": "0.7.18",
   "description": "React icons library for @ttoss ecosystem",
   "keywords": [
     "Icons",
@@ -36,9 +36,9 @@
     "@ttoss/test-utils": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.2.14",
-    "jest": "^30.3.0",
+    "jest": "^30.4.2",
     "react": "^19.2.6",
-    "tsdown": "^0.22.0"
+    "tsdown": "^0.22.2"
   },
   "peerDependencies": {
     "react": ">=16.8.0"

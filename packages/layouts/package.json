@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/layouts",
-  "version": "0.11.25",
+  "version": "0.11.26",
   "description": "Layout components for React",
   "keywords": [
     "React"
@@ -35,9 +35,9 @@
     "@ttoss/ui": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.2.14",
-    "jest": "^30.3.0",
+    "jest": "^30.4.2",
     "react": "^19.2.6",
-    "tsdown": "^0.22.0"
+    "tsdown": "^0.22.2"
   },
   "peerDependencies": {
     "@ttoss/components": "workspace:^",

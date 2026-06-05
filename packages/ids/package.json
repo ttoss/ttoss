@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/ids",
-  "version": "0.4.16",
+  "version": "0.4.17",
   "description": "A library to handle the different ids used in the ttoss ecosystem applications",
   "keywords": [
     "api",
@@ -30,8 +30,8 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "jest": "^30.3.0",
-    "tsdown": "^0.22.0"
+    "jest": "^30.4.2",
+    "tsdown": "^0.22.2"
   },
   "publishConfig": {
     "access": "public",
