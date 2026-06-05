@@ -67,59 +67,53 @@ const formatjsPlugin: any = {
  * Fix: https://github.com/egoist/tsup/issues/792
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+const processOutputFile = (outputFile: any): void => {
+  if (!outputFile.path.endsWith('.js')) {
+    return;
+  }
+
+  let contents: string = outputFile.text;
+
+  if (!/React\./.test(contents)) {
+    return;
+  }
+
+  const hasStarReactImport =
+    /import\s+\*\s+as\s+React\s+from\s+['"]react['"]/.test(contents);
+  const hasDefaultReactImport =
+    /import\s+React\s+from\s+['"]react['"]/.test(contents) ||
+    /const\s+React\s+=\s+require\(['"]react['"]\)/.test(contents);
+
+  if (hasStarReactImport || hasDefaultReactImport) {
+    return;
+  }
+
+  const bannerMatch = contents.match(/^((?:\/\/[^\n]*\n|\/\*[^]*?\*\/)\s*)*/);
+  const insertPosition = bannerMatch ? bannerMatch[0].length : 0;
+
+  const isESM = /\bimport\b|\bexport\b/.test(contents);
+  const isCJS = /\brequire\(|module\.exports\b/.test(contents);
+  const importStatement =
+    isCJS && !isESM
+      ? `const React = require('react');\n`
+      : `import * as React from 'react';\n`;
+
+  contents =
+    contents.slice(0, insertPosition) +
+    importStatement +
+    contents.slice(insertPosition);
+
+  outputFile.contents = new TextEncoder().encode(contents);
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const injectReactImport = (): any => {
   return {
     name: '@ttoss/esbuild-inject-react-import',
-    setup: (build) => {
-      build.onEnd((result) => {
-        if (result.outputFiles) {
-          for (const outputFile of result.outputFiles) {
-            if (outputFile.path.endsWith('.js')) {
-              let contents = outputFile.text;
-
-              const usesReact = /React\./.test(contents);
-
-              if (usesReact) {
-                const hasStarReactImport =
-                  /import\s+\*\s+as\s+React\s+from\s+['"]react['"]/.test(
-                    contents
-                  );
-
-                const hasDefaultReactImport =
-                  /import\s+React\s+from\s+['"]react['"]/.test(contents) ||
-                  /const\s+React\s+=\s+require\(['"]react['"]\)/.test(contents);
-
-                if (!hasStarReactImport && !hasDefaultReactImport) {
-                  const bannerMatch = contents.match(
-                    /^((?:\/\/[^\n]*\n|\/\*[^]*?\*\/)\s*)*/
-                  );
-                  const insertPosition = bannerMatch
-                    ? bannerMatch[0].length
-                    : 0;
-
-                  const isESM = /\bimport\b|\bexport\b/.test(contents);
-                  const isCJS = /\brequire\(|module\.exports\b/.test(contents);
-
-                  const importStatement = (() => {
-                    if (isESM && !isCJS) {
-                      return `import * as React from 'react';\n`;
-                    } else if (isCJS && !isESM) {
-                      return `const React = require('react');\n`;
-                    } else {
-                      return `import * as React from 'react';\n`;
-                    }
-                  })();
-
-                  contents =
-                    contents.slice(0, insertPosition) +
-                    importStatement +
-                    contents.slice(insertPosition);
-
-                  outputFile.contents = new TextEncoder().encode(contents);
-                }
-              }
-            }
-          }
+    setup: (build: any) => {
+      build.onEnd((result: any) => {
+        for (const outputFile of result.outputFiles || []) {
+          processOutputFile(outputFile);
         }
       });
     },
