@@ -27,7 +27,7 @@ export default () => {
           S3Key: { Ref: 'LambdaS3Key' },
           S3ObjectVersion: { Ref: 'LambdaS3ObjectVersion' },
         },
-        Role: 'arn:aws:iam::483684946879:role/custom-iam/TerezinhaFarmIam-Producti-CognitoTriggersLambdaFunc-xXhqccloisep',
+        Role: 'arn:aws:iam::228368756364:role/custom-iam/TerezinhaFarmIam-Producti-CognitoTriggersLambdaFunc-xXhqccloisep',
         Runtime: 'nodejs22.x',
       },
     },
