@@ -37,9 +37,9 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "jest": "^30.3.0",
+    "jest": "^30.4.2",
     "theme-ui": "^0.17.2",
-    "tsdown": "^0.22.0"
+    "tsdown": "^0.22.2"
   },
   "peerDependencies": {
     "@ttoss/react-icons": "workspace:^"

@@ -46,10 +46,10 @@
     "@testing-library/react": "^16.3.2",
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "jest": "^30.3.0",
+    "jest": "^30.4.2",
     "react": "^19.2.6",
     "ts-morph": "^28.0.0",
-    "tsdown": "^0.22.0",
+    "tsdown": "^0.22.2",
     "tsx": "^4.21.0"
   },
   "peerDependencies": {
