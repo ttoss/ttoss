@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-auth-cognito",
-  "version": "2.8.37",
+  "version": "2.8.38",
   "description": "React authentication components using AWS Cognito",
   "keywords": [
     "React",
@@ -48,9 +48,9 @@
     "@ttoss/ui": "workspace:^",
     "@types/react": "^19.2.14",
     "aws-amplify": "^6.11.0",
-    "jest": "^30.3.0",
+    "jest": "^30.4.2",
     "react": "^19.2.6",
-    "tsdown": "^0.22.0"
+    "tsdown": "^0.22.2"
   },
   "peerDependencies": {
     "@ttoss/components": "workspace:^",

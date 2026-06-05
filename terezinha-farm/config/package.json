@@ -1,6 +1,6 @@
 {
   "name": "@terezinha-farm/config",
-  "version": "0.6.15",
+  "version": "0.6.16",
   "private": true,
   "exports": {
     ".": "./src/index.ts"
@@ -13,6 +13,6 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "tsdown": "^0.22.0"
+    "tsdown": "^0.22.2"
   }
 }

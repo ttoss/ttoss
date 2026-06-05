@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/postgresdb",
-  "version": "0.9.6",
+  "version": "0.9.7",
   "description": "A library to handle PostgreSQL database connections and queries",
   "keywords": [
     "database",
@@ -39,8 +39,8 @@
   "devDependencies": {
     "@testcontainers/postgresql": "^11.14.0",
     "@ttoss/config": "workspace:^",
-    "jest": "^30.3.0",
-    "tsdown": "^0.22.0"
+    "jest": "^30.4.2",
+    "tsdown": "^0.22.2"
   },
   "publishConfig": {
     "access": "public",

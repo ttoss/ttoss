@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-billing",
-  "version": "0.5.16",
+  "version": "0.5.17",
   "description": "Billing UI components for React apps.",
   "keywords": [
     "React",
@@ -35,9 +35,9 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@types/react": "^19.2.14",
-    "jest": "^30.3.0",
+    "jest": "^30.4.2",
     "react": "^19.2.6",
-    "tsdown": "^0.22.0"
+    "tsdown": "^0.22.2"
   },
   "peerDependencies": {
     "react": ">=16.8.0"

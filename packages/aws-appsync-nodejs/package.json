@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/aws-appsync-nodejs",
-  "version": "1.9.16",
+  "version": "1.9.17",
   "description": "",
   "keywords": [],
   "repository": {
@@ -33,8 +33,8 @@
     "@aws-sdk/types": "^3.502.0",
     "@ttoss/config": "workspace:^",
     "@types/jest": "^30.0.0",
-    "jest": "^30.3.0",
-    "tsdown": "^0.22.0"
+    "jest": "^30.4.2",
+    "tsdown": "^0.22.2"
   },
   "publishConfig": {
     "access": "public",

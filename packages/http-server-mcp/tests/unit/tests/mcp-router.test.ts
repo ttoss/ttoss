@@ -157,6 +157,126 @@ describe('createMcpRouter', () => {
     expect(response.status).toBe(404);
   });
 
+  test('should support stateful mode with sessionIdGenerator', async () => {
+    const mcpServer = new McpServer({
+      name: 'test-server',
+      version: '1.0.0',
+    });
+
+    const app = new App();
+    app.use(bodyParser());
+
+    let sessionCounter = 0;
+    const router = createMcpRouter(mcpServer, {
+      sessionIdGenerator: () => {
+        return `session-${++sessionCounter}`;
+      },
+    });
+    app.use(router.routes());
+
+    const response = await request(app.callback())
+      .post('/mcp')
+      .send({
+        jsonrpc: '2.0',
+        method: 'initialize',
+        params: {
+          protocolVersion: '2024-11-05',
+          capabilities: {},
+          clientInfo: { name: 'test-client', version: '1.0.0' },
+        },
+        id: 1,
+      })
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json, text/event-stream');
+
+    expect(response.status).not.toBe(404);
+  });
+
+  test('should support stateful mode with sessionIdGenerator and apiBaseUrl', async () => {
+    const mcpServer = new McpServer({
+      name: 'test-server',
+      version: '1.0.0',
+    });
+
+    const app = new App();
+    app.use(bodyParser());
+
+    let sessionCounter = 0;
+    const router = createMcpRouter(mcpServer, {
+      sessionIdGenerator: () => {
+        return `session-${++sessionCounter}`;
+      },
+      apiBaseUrl: 'http://localhost:9999/api',
+    });
+    app.use(router.routes());
+
+    const response = await request(app.callback())
+      .post('/mcp')
+      .send({
+        jsonrpc: '2.0',
+        method: 'initialize',
+        params: {
+          protocolVersion: '2024-11-05',
+          capabilities: {},
+          clientInfo: { name: 'test-client', version: '1.0.0' },
+        },
+        id: 1,
+      })
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json, text/event-stream');
+
+    expect(response.status).not.toBe(404);
+  });
+
+  test('POST handler returns 500 when internal transport connect throws', async () => {
+    const mcpServer = new McpServer({
+      name: 'test-server',
+      version: '1.0.0',
+    });
+
+    const app = new App();
+    app.use(bodyParser());
+    const router = createMcpRouter(mcpServer);
+    app.use(router.routes());
+
+    const connectSpy = jest
+      .spyOn(mcpServer, 'connect')
+      .mockRejectedValueOnce(new Error('Transport connect failed'));
+
+    const response = await request(app.callback())
+      .post('/mcp')
+      .send({ jsonrpc: '2.0', method: 'initialize', params: {}, id: 1 })
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json, text/event-stream');
+
+    expect(response.status).toBe(500);
+    expect(response.body.error).toMatch(/Transport connect failed/);
+
+    connectSpy.mockRestore();
+  });
+
+  test('DELETE handler returns 500 when internal transport connect throws', async () => {
+    const mcpServer = new McpServer({
+      name: 'test-server',
+      version: '1.0.0',
+    });
+
+    const app = new App();
+    const router = createMcpRouter(mcpServer);
+    app.use(router.routes());
+
+    const connectSpy = jest
+      .spyOn(mcpServer, 'connect')
+      .mockRejectedValueOnce(new Error('Transport connect failed'));
+
+    const response = await request(app.callback()).delete('/mcp');
+
+    expect(response.status).toBe(500);
+    expect(response.body.error).toMatch(/Transport connect failed/);
+
+    connectSpy.mockRestore();
+  });
+
   test('should support multiple tools registration', () => {
     const mcpServer = new McpServer({
       name: 'test-server',
