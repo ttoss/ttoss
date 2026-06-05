@@ -6,6 +6,7 @@ import App from 'koa';
 import serve from 'koa-static';
 
 export { App, bodyParser, cors, multer, Router, serve };
+export type { Context, Middleware, Next } from 'koa';
 
 export * from './addHealthCheck';
 export type { File as MulterFile } from '@koa/multer';
