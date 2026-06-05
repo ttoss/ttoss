@@ -163,12 +163,15 @@ describe('GeoVisHoverTooltip', () => {
     mockCurrentMap = buildMockMap();
   });
 
-  test('renders nothing when no feature is hovered', () => {
-    render(
-      <GeoVisProvider spec={buildSpec()}>
-        <GeoVisHoverTooltip />
-      </GeoVisProvider>
-    );
+  test('renders nothing when no feature is hovered', async () => {
+    await act(async () => {
+      render(
+        <GeoVisProvider spec={buildSpec()}>
+          <GeoVisHoverTooltip />
+        </GeoVisProvider>
+      );
+    });
+
     expect(document.querySelector('[role="tooltip"]')).toBeNull();
   });
 

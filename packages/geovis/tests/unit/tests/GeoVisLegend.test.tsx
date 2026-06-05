@@ -3,7 +3,7 @@
  */
 
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import { GeoVisProvider } from 'src/react/GeoVisProvider';
 import type { VisualizationSpec } from 'src/spec/types';
 import { GeoVisLegend } from 'src/ui/GeoVisLegend';
@@ -43,17 +43,21 @@ const baseSpec: VisualizationSpec = {
 };
 
 describe('GeoVisLegend', () => {
-  test('returns null when legendId does not resolve', () => {
+  test('returns null when legendId does not resolve', async () => {
     const { container } = render(
       <GeoVisProvider spec={baseSpec}>
         <GeoVisLegend legendId="missing" />
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     expect(container.firstChild).toBeNull();
   });
 
-  test('renders categorical swatches from explicit mapping', () => {
+  test('renders categorical swatches from explicit mapping', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -78,6 +82,10 @@ describe('GeoVisLegend', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     expect(getByText('open')).toBeTruthy();
     expect(getByText('closed')).toBeTruthy();
     expect(getAllByRole('listitem')).toHaveLength(2);
@@ -85,7 +93,7 @@ describe('GeoVisLegend', () => {
     expect(queryByRole('button')).toBeNull();
   });
 
-  test('renders quantitative bins using externally provided breaks', () => {
+  test('renders quantitative bins using externally provided breaks', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -115,6 +123,10 @@ describe('GeoVisLegend', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     // Two unique finite breaks → 3 bins (< first, range, > last).
     expect(getAllByRole('listitem')).toHaveLength(3);
     expect(getByText('< 20k')).toBeTruthy();
@@ -122,7 +134,7 @@ describe('GeoVisLegend', () => {
     expect(getByText('> 30k')).toBeTruthy();
   });
 
-  test('renders single quantitative bin when no breaks are provided', () => {
+  test('renders single quantitative bin when no breaks are provided', async () => {
     // `breaks` omitted AND no spec thresholds → falls back to [] → "All values".
     const spec: VisualizationSpec = {
       ...baseSpec,
@@ -144,11 +156,15 @@ describe('GeoVisLegend', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     expect(getAllByRole('listitem')).toHaveLength(1);
     expect(getByText('All values')).toBeTruthy();
   });
 
-  test('renders single quantitative bin when breaks={[]} is explicitly passed even if spec has thresholds', () => {
+  test('renders single quantitative bin when breaks={[]} is explicitly passed even if spec has thresholds', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -171,12 +187,16 @@ describe('GeoVisLegend', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     // Explicit [] bypasses the 3 spec thresholds → single "All values" bin.
     expect(getAllByRole('listitem')).toHaveLength(1);
     expect(getByText('All values')).toBeTruthy();
   });
 
-  test('resolves legend defined at the layer level when not at top level', () => {
+  test('resolves legend defined at the layer level when not at top level', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       layers: [
@@ -204,10 +224,14 @@ describe('GeoVisLegend', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     expect(getByText('a')).toBeTruthy();
   });
 
-  test('renders a single "All" swatch with the adapter fallback color when categorical mapping is empty', () => {
+  test('renders a single "All" swatch with the adapter fallback color when categorical mapping is empty', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -229,6 +253,10 @@ describe('GeoVisLegend', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     const items = getAllByRole('listitem');
     expect(items).toHaveLength(1);
     expect(getByText('All')).toBeTruthy();
@@ -239,7 +267,7 @@ describe('GeoVisLegend', () => {
     );
   });
 
-  test('quantitative fallback follows the adapter chain (defaultColor ?? palette[0])', () => {
+  test('quantitative fallback follows the adapter chain (defaultColor ?? palette[0])', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -261,6 +289,10 @@ describe('GeoVisLegend', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     const items = getAllByRole('listitem');
     expect(items).toHaveLength(1);
     const swatch = items[0].querySelector('span[aria-hidden="true"]');
@@ -269,7 +301,7 @@ describe('GeoVisLegend', () => {
     );
   });
 
-  test('derives breaks from spec thresholds when no breaks prop is provided', () => {
+  test('derives breaks from spec thresholds when no breaks prop is provided', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -297,6 +329,10 @@ describe('GeoVisLegend', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     // 3 thresholds → 4 bins; legend must derive them from the spec.
     expect(getAllByRole('listitem')).toHaveLength(4);
     expect(getByText('< 100')).toBeTruthy();
@@ -307,7 +343,7 @@ describe('GeoVisLegend', () => {
 });
 
 describe('GeoVisLegend — title and subtitle', () => {
-  test('renders title above the list', () => {
+  test('renders title above the list', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -329,10 +365,14 @@ describe('GeoVisLegend — title and subtitle', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     expect(getByText('Population')).toBeTruthy();
   });
 
-  test('renders subtitle below title when provided', () => {
+  test('renders subtitle below title when provided', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -355,10 +395,14 @@ describe('GeoVisLegend — title and subtitle', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     expect(getByText('Residents per district')).toBeTruthy();
   });
 
-  test('does not render title or subtitle elements when absent', () => {
+  test('does not render title or subtitle elements when absent', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -379,13 +423,17 @@ describe('GeoVisLegend — title and subtitle', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     expect(queryByText('Population')).toBeNull();
     expect(queryByText('Residents per district')).toBeNull();
   });
 });
 
 describe('GeoVisLegend — noDataLabel', () => {
-  test('renders noDataLabel item at the bottom of the list', () => {
+  test('renders noDataLabel item at the bottom of the list', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -407,12 +455,16 @@ describe('GeoVisLegend — noDataLabel', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     // 1 mapping entry + 1 noDataLabel = 2 list items
     expect(getAllByRole('listitem')).toHaveLength(2);
     expect(getByText('No data')).toBeTruthy();
   });
 
-  test('does not render noDataLabel item when absent', () => {
+  test('does not render noDataLabel item when absent', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -433,13 +485,17 @@ describe('GeoVisLegend — noDataLabel', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     expect(getAllByRole('listitem')).toHaveLength(1);
     expect(queryByText('No data')).toBeNull();
   });
 });
 
 describe('GeoVisLegend — reference field', () => {
-  test('renders plain text reference below legend items', () => {
+  test('renders plain text reference below legend items', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -461,10 +517,14 @@ describe('GeoVisLegend — reference field', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     expect(getByText('Data: Census Bureau 2020')).toBeTruthy();
   });
 
-  test('parses {link:text|url} markup in reference into anchor elements', () => {
+  test('parses {link:text|url} markup in reference into anchor elements', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -488,6 +548,10 @@ describe('GeoVisLegend — reference field', () => {
       </ChakraProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     const link = container.querySelector('a');
     expect(link).not.toBeNull();
     expect(link?.textContent).toBe('IBGE Censo');
@@ -498,7 +562,7 @@ describe('GeoVisLegend — reference field', () => {
     expect(para?.textContent).toContain('2022');
   });
 
-  test('does not render reference element when reference is not provided', () => {
+  test('does not render reference element when reference is not provided', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -519,10 +583,14 @@ describe('GeoVisLegend — reference field', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     expect(container.querySelector('p:last-child')).toBeNull();
   });
 
-  test('sourceNode prop takes precedence over spec reference string', () => {
+  test('sourceNode prop takes precedence over spec reference string', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -547,13 +615,17 @@ describe('GeoVisLegend — reference field', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     expect(getByText('Rich source link')).toBeTruthy();
     expect(queryByText('Plain text reference')).toBeNull();
   });
 });
 
 describe('GeoVisLegend — classCount field', () => {
-  test('classCount is accepted as spec metadata without affecting rendering', () => {
+  test('classCount is accepted as spec metadata without affecting rendering', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -577,12 +649,16 @@ describe('GeoVisLegend — classCount field', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     expect(getAllByRole('listitem')).toHaveLength(3);
   });
 });
 
 describe('GeoVisLegend — position', () => {
-  test('applies absolute CSS positioning when position is set', () => {
+  test('applies absolute CSS positioning when position is set', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -604,13 +680,17 @@ describe('GeoVisLegend — position', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     const div = container.firstChild as HTMLElement;
     expect(div.style.position).toBe('absolute');
     expect(div.style.bottom).toBeTruthy();
     expect(div.style.right).toBeTruthy();
   });
 
-  test('does not apply absolute positioning when position is omitted', () => {
+  test('does not apply absolute positioning when position is omitted', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -631,13 +711,17 @@ describe('GeoVisLegend — position', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     const div = container.firstChild as HTMLElement;
     expect(div.style.position).toBe('');
   });
 });
 
 describe('GeoVisLegend — labelFormat: count', () => {
-  test('renders count format with abbreviation', () => {
+  test('renders count format with abbreviation', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -661,6 +745,10 @@ describe('GeoVisLegend — labelFormat: count', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     expect(getAllByRole('listitem')).toHaveLength(4);
     expect(getByText('< 50k')).toBeTruthy();
     expect(getByText('50k ≤ 100k')).toBeTruthy();
@@ -668,7 +756,7 @@ describe('GeoVisLegend — labelFormat: count', () => {
     expect(getByText('> 250k')).toBeTruthy();
   });
 
-  test('renders count format with extended normalization suffix', () => {
+  test('renders count format with extended normalization suffix', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -693,13 +781,17 @@ describe('GeoVisLegend — labelFormat: count', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     expect(getByText('< 50k inhabitants')).toBeTruthy();
     expect(getByText('> 50k inhabitants')).toBeTruthy();
   });
 });
 
 describe('GeoVisLegend — labelFormat: percentage', () => {
-  test('renders percentage format for [0-1] range values', () => {
+  test('renders percentage format for [0-1] range values', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -723,6 +815,10 @@ describe('GeoVisLegend — labelFormat: percentage', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     expect(getAllByRole('listitem')).toHaveLength(4);
     expect(getByText('< 10%')).toBeTruthy();
     expect(getByText('10% \u2013 50%')).toBeTruthy();
@@ -732,7 +828,7 @@ describe('GeoVisLegend — labelFormat: percentage', () => {
 });
 
 describe('GeoVisLegend — labelFormat: stdDev', () => {
-  test('renders stdDev format with sigma symbol', () => {
+  test('renders stdDev format with sigma symbol', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -761,12 +857,16 @@ describe('GeoVisLegend — labelFormat: stdDev', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     expect(getAllByRole('listitem')).toHaveLength(4);
   });
 });
 
 describe('GeoVisLegend — labelFormat: custom', () => {
-  test('renders custom formatter output', () => {
+  test('renders custom formatter output', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -797,6 +897,10 @@ describe('GeoVisLegend — labelFormat: custom', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     expect(getAllByRole('listitem')).toHaveLength(3);
     expect(getByText('up to 100 km²')).toBeTruthy();
     expect(getByText('100–500 km²')).toBeTruthy();
@@ -805,7 +909,7 @@ describe('GeoVisLegend — labelFormat: custom', () => {
 });
 
 describe('GeoVisLegend — labelFormat: auto', () => {
-  test('renders auto format labels', () => {
+  test('renders auto format labels', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -834,6 +938,10 @@ describe('GeoVisLegend — labelFormat: auto', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     expect(getAllByRole('listitem')).toHaveLength(3);
     expect(getByText('< 100')).toBeTruthy();
     expect(getByText('100 \u2013 200')).toBeTruthy();
@@ -842,7 +950,7 @@ describe('GeoVisLegend — labelFormat: auto', () => {
 });
 
 describe('GeoVisLegend — labelFormat: range', () => {
-  test('renders range format with custom separator and unit', () => {
+  test('renders range format with custom separator and unit', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -871,6 +979,10 @@ describe('GeoVisLegend — labelFormat: range', () => {
       </GeoVisProvider>
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     expect(getAllByRole('listitem')).toHaveLength(3);
     expect(getByText('< 10 km')).toBeTruthy();
     expect(getByText('10 km to 50 km')).toBeTruthy();
@@ -879,7 +991,7 @@ describe('GeoVisLegend — labelFormat: range', () => {
 });
 
 describe('GeoVisLegend — normalization extended suffix', () => {
-  test('rate normalization extended suffix', () => {
+  test('rate normalization extended suffix', async () => {
     const spec: VisualizationSpec = {
       ...baseSpec,
       legends: [
@@ -908,6 +1020,10 @@ describe('GeoVisLegend — normalization extended suffix', () => {
         <GeoVisLegend legendId="incidence" />
       </GeoVisProvider>
     );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
 
     // Labels should have the rate suffix appended
     const items = container.querySelectorAll('li span:last-child');
