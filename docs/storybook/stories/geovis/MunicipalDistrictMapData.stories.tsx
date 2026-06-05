@@ -1,6 +1,7 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import type {
   GeoJSONFeatureCollection,
+  LabelFormatSpec,
   VisualizationSpec,
 } from '@ttoss/geovis';
 import {
@@ -180,7 +181,7 @@ export const MunicipalDistrictMapData: StoryFn<{
     });
   }, [populationData, year]);
 
-  const getLabelFormat = (): any => {
+  const getLabelFormat = (): LabelFormatSpec => {
     switch (labelFormatType) {
       case 'range':
         return { type: 'range', separator: ' ≤ ', extended };

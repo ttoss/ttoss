@@ -673,10 +673,13 @@
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["type"],
+          "required": ["type", "formatter"],
           "properties": {
             "type": {
               "const": "custom"
+            },
+            "formatter": {
+              "description": "Custom formatter function. Not serializable to JSON; use this variant only in TypeScript-driven specs passed directly to GeoVisLegend, not in JSON files."
             },
             "extended": {
               "type": "boolean"

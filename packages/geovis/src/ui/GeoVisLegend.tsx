@@ -71,7 +71,7 @@ const isSafeUrl = (url: string): boolean => {
  * rendered as a `@ttoss/ui` Link component. URLs with non-http(s) schemes
  * are rendered as plain text to prevent unsafe navigation.
  */
-const parseReference = (text: string): React.ReactNode[] => {
+export const parseReference = (text: string): React.ReactNode[] => {
   const nodes: React.ReactNode[] = [];
   const pattern = /\{link:([^|{}\r\n]+)\|([^{}\r\n]+)\}/g;
   let lastIndex = 0;

@@ -70,7 +70,7 @@ export const formatCountLabel = (
   const fmt = spec.abbreviate
     ? abbreviateNumber
     : (v: number) => {
-        return v.toLocaleString();
+        return String(v);
       };
   const { lower, upper, isFirst, isLast, withSuffix } = ctx;
   if (isFirst) return withSuffix(`< ${fmt(upper!)}`);
