@@ -110,7 +110,9 @@ const processOutputFile = (outputFile: any): void => {
 export const injectReactImport = (): any => {
   return {
     name: '@ttoss/esbuild-inject-react-import',
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setup: (build: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       build.onEnd((result: any) => {
         for (const outputFile of result.outputFiles || []) {
           processOutputFile(outputFile);
