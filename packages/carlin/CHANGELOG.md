@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.49.16](https://github.com/ttoss/ttoss/compare/carlin@1.49.15...carlin@1.49.16) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
 ## [1.49.15](https://github.com/ttoss/ttoss/compare/carlin@1.49.14...carlin@1.49.15) (2026-06-03)
 
 **Note:** Version bump only for package carlin

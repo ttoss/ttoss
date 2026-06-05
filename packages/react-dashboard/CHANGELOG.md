@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.11](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.10...@ttoss/react-dashboard@0.7.11) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
 ## [0.7.10](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.9...@ttoss/react-dashboard@0.7.10) (2026-06-03)
 
 **Note:** Version bump only for package @ttoss/react-dashboard

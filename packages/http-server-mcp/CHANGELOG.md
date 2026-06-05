@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.13.0...@ttoss/http-server-mcp@0.13.1) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** replace InstanceType<typeof Router> with Router type alias ([2deda45](https://github.com/ttoss/ttoss/commit/2deda45bfb5fd84643f0a23e230e15c263041d8a))
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
 # [0.13.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.12.5...@ttoss/http-server-mcp@0.13.0) (2026-06-04)
 
 ### Features
