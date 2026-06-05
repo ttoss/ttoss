@@ -50,6 +50,9 @@ const AVAILABLE_YEARS = [
 
 type Year = (typeof AVAILABLE_YEARS)[number];
 
+/** Approximate population of São Paulo Municipality (2020 estimate) — used as denominator for percentage calculations. */
+const SAO_PAULO_POPULATION = 12_272_000;
+
 const fmtPop = (v: number) => {
   return `${(v / 1_000).toFixed(0)}k`;
 };
@@ -182,7 +185,12 @@ export const MunicipalDistrictMapData: StoryFn<{
       case 'range':
         return { type: 'range', separator: ' ≤ ', extended };
       case 'percentage':
-        return { type: 'percentage', decimals: 1, extended };
+        return {
+          type: 'percentage',
+          decimals: 1,
+          denominator: SAO_PAULO_POPULATION,
+          extended,
+        };
       case 'stdDev':
         return { type: 'stdDev', unit: 'σ', extended };
       case 'auto':
@@ -232,10 +240,17 @@ export const MunicipalDistrictMapData: StoryFn<{
           subtitle: `São Paulo Municipality (SMUL/GEOINFO, 2000–2050 projection)`,
           classCount: populationBreaks.length + 1,
           labelFormat: getLabelFormat(),
-          normalization: {
-            type: 'raw',
-            numeratorLabel: 'inhabitants',
-          },
+          normalization:
+            labelFormatType === 'percentage'
+              ? {
+                  type: 'percentage',
+                  numeratorLabel: 'inhabitants',
+                  denominatorLabel: 'São Paulo Municipality',
+                }
+              : {
+                  type: 'raw',
+                  numeratorLabel: 'inhabitants',
+                },
           reference:
             'Population by district, {link:São Paulo Municipality (SMUL/GEOINFO, 2000–2050 projection)|https://example.com}',
           ...(noDataLabel && { noDataLabel }),
