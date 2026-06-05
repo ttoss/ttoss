@@ -352,7 +352,7 @@ const buildTokenVerifier = (
 };
 
 const registerAuthRoutes = (
-  router: InstanceType<typeof Router>,
+  router: Router,
   path: string,
   auth: McpAuthOptions,
   tokenVerifier: (token: string) => Promise<unknown>
