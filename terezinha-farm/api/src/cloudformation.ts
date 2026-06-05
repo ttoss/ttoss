@@ -14,7 +14,7 @@ const template = createApiTemplate({
   customDomain: {
     domainName: 'api.terezinha-farm.ttoss.dev',
     certificateArn:
-      'arn:aws:acm:us-east-1:483684946879:certificate/c7608b43-720e-49fb-b75b-d3d492ef121a',
+      'arn:aws:acm:us-east-1:228368756364:certificate/c7608b43-720e-49fb-b75b-d3d492ef121a',
     hostedZoneName: 'ttoss.dev.',
   },
   dataSource: {
