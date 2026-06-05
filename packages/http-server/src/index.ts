@@ -6,9 +6,9 @@ import App from 'koa';
 import serve from 'koa-static';
 
 export { App, bodyParser, cors, multer, Router, serve };
-
 export * from './addHealthCheck';
 export type { File as MulterFile } from '@koa/multer';
+export type { Context, Middleware, Next } from 'koa';
 
 /**
  * Export types to avoid The inferred type of cannot be named without a reference to
