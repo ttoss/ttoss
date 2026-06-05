@@ -46,7 +46,7 @@
     "tsdown": "^0.22.0"
   },
   "peerDependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0"
+    "@modelcontextprotocol/sdk": "^1.29.0"
   },
   "publishConfig": {
     "access": "public",
