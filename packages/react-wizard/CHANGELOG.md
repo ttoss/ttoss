@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.12](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.11...@ttoss/react-wizard@0.4.12) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
 ## [0.4.11](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.10...@ttoss/react-wizard@0.4.11) (2026-06-05)
 
 **Note:** Version bump only for package @ttoss/react-wizard

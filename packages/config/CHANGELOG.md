@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.37.15](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.37.14...@ttoss/config@1.37.15) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/config:** add topLevelVar to tsdown output to prevent TDZ ReferenceError ([#1021](https://github.com/ttoss/ttoss/issues/1021)) ([6dbffcc](https://github.com/ttoss/ttoss/commit/6dbffcc63534cb9e772dee584900527050c15c0b)), closes [#1020](https://github.com/ttoss/ttoss/issues/1020)
+
 ## [1.37.14](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.37.13...@ttoss/config@1.37.14) (2026-06-05)
 
 ### Bug Fixes

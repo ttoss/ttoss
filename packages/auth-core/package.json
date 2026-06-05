@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/auth-core",
-  "version": "0.4.15",
+  "version": "0.4.16",
   "description": "Core authentication library for ttoss",
   "keywords": [
     "auth",
