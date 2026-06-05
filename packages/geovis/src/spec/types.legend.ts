@@ -121,7 +121,23 @@ export type LabelFormatSpec =
       ) => string;
       extended?: boolean;
     }
-  | { type: 'auto'; extended?: boolean };
+  | { type: 'auto'; extended?: boolean }
+  | {
+      /**
+       * Explicit label list. Each entry maps to the bin at the same position
+       * (zero-based). Bins without a corresponding entry fall back to the
+       * default range-style formatting (`< N`, `N - M`, `> N`).
+       *
+       * This variant is JSON-serialisable and is the recommended choice when
+       * the label text is known ahead of time (e.g. classification categories
+       * such as `'Low'`, `'Medium'`, `'High'`). Prefer `'custom'` only when
+       * runtime computation is needed.
+       */
+      type: 'labels';
+      /** Ordered list of explicit labels, one entry per legend bin. */
+      labels: string[];
+      extended?: boolean;
+    };
 
 /**
  * Describes the statistical normalisation applied to the mapped data values.

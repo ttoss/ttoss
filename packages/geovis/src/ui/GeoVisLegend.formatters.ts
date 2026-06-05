@@ -118,6 +118,24 @@ export const formatAutoLabel = (
   return withSuffix(`${formatValue(lower!)} \u2013 ${formatValue(upper!)}`);
 };
 
+/**
+ * Returns the explicit label at `index` when available. Falls back to the
+ * default range-style formatter for bins beyond the `labels` array length.
+ *
+ * This allows partial overrides: the consumer can supply labels only for the
+ * first N bins while leaving the rest computed automatically.
+ */
+export const formatLabelsLabel = (
+  ctx: BinCtx,
+  spec: Extract<LabelFormatSpec, { type: 'labels' }>,
+  formatValue: (v: number) => string,
+  index: number
+): string => {
+  const explicit = spec.labels[index];
+  if (explicit !== undefined) return ctx.withSuffix(explicit);
+  return formatRangeLabel(ctx, undefined, formatValue);
+};
+
 type DispatchFn = (
   ctx: BinCtx,
   spec: LabelFormatSpec,
@@ -156,6 +174,14 @@ const FORMAT_DISPATCH: Partial<Record<string, DispatchFn>> = {
   },
   auto: (ctx, _spec, fv) => {
     return formatAutoLabel(ctx, fv);
+  },
+  labels: (ctx, spec, fv, idx) => {
+    return formatLabelsLabel(
+      ctx,
+      spec as Extract<LabelFormatSpec, { type: 'labels' }>,
+      fv,
+      idx
+    );
   },
 };
 

@@ -76,3 +76,23 @@ test('spec types expose legend configuration through the public contract', () =>
   expect(spec.legends?.[0].position).toBe('bottom-right');
   expect(spec.layers[0].activeLegendId).toBe('status-legend');
 });
+
+test("LabelFormatSpec 'labels' variant is part of the public contract", () => {
+  const labelFormat: LabelFormatSpec = {
+    type: 'labels',
+    labels: ['Low', 'Medium', 'High'],
+    extended: false,
+  };
+
+  const legend: LegendSpec = {
+    id: 'category-legend',
+    colorBy: { type: 'quantitative', property: 'value', scale: 'threshold' },
+    labelFormat,
+  };
+
+  expect(legend.labelFormat).toEqual({
+    type: 'labels',
+    labels: ['Low', 'Medium', 'High'],
+    extended: false,
+  });
+});

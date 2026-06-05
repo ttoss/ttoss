@@ -2,6 +2,7 @@ import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import type {
   GeoJSONFeatureCollection,
   LabelFormatSpec,
+  LabelFormatType,
   VisualizationSpec,
 } from '@ttoss/geovis';
 import {
@@ -39,9 +40,17 @@ const populationSteps: ColorStep[] = [
   { threshold: 250_000, color: '#1e3a8a' },
 ];
 
-const populationBreaks = populationSteps.map((step) => {
-  return step.threshold;
-});
+// IBGE urban classification thresholds (used only for 'labels' type demonstration).
+// Aligns with official Brazilian census categorization:
+// < 20k (Rural) | 20k–50k (Small Settlement) | 50k–100k (Medium City) |
+// 100k–250k (Large City) | 250k–500k (Metropolitan) | ≥ 500k (Mega Metropolitan)
+const populationStepsIBGE: ColorStep[] = [
+  { threshold: 20_000, color: '#bfdbfe' },
+  { threshold: 50_000, color: '#60a5fa' },
+  { threshold: 100_000, color: '#3b82f6' },
+  { threshold: 250_000, color: '#1d4ed8' },
+  { threshold: 500_000, color: '#1e3a8a' },
+];
 
 const DEFAULT_COLOR = '#f0f9ff';
 
@@ -137,13 +146,7 @@ export const MunicipalDistrictMapData: StoryFn<{
   abbreviate?: boolean;
   extended?: boolean;
   position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
-  labelFormatType?:
-    | 'count'
-    | 'range'
-    | 'percentage'
-    | 'stdDev'
-    | 'auto'
-    | 'custom';
+  labelFormatType?: LabelFormatType;
   noDataLabel?: string;
 }> = ({
   year,
@@ -198,6 +201,22 @@ export const MunicipalDistrictMapData: StoryFn<{
         return { type: 'auto', extended };
       case 'custom':
         return { type: 'custom', formatter: customRangeFormatter, extended };
+      case 'labels':
+        // Explicit labels using IBGE urban classification for São Paulo districts.
+        // Based on official Brazilian census categorization: Rural → Small Settlement →
+        // Medium City → Large City → Metropolitan → Mega Metropolitan.
+        return {
+          type: 'labels',
+          labels: [
+            'Rural',
+            'Small Settlement',
+            'Medium City',
+            'Large City',
+            'Metropolitan',
+            'Mega Metropolitan',
+          ],
+          extended,
+        };
       case 'count':
       default:
         return { type: 'count', abbreviate, extended };
@@ -205,6 +224,13 @@ export const MunicipalDistrictMapData: StoryFn<{
   };
 
   const spec = React.useMemo<VisualizationSpec>(() => {
+    // Use IBGE thresholds for 'labels' type; standard thresholds for all others.
+    const effectiveSteps =
+      labelFormatType === 'labels' ? populationStepsIBGE : populationSteps;
+    const effectiveBreaks = effectiveSteps.map((step) => {
+      return step.threshold;
+    });
+
     return {
       id: 'municipal-district-mapdata',
       engine: 'maplibre',
@@ -239,7 +265,7 @@ export const MunicipalDistrictMapData: StoryFn<{
           id: 'population',
           title: 'Population by district',
           subtitle: `São Paulo Municipality (SMUL/GEOINFO, 2000–2050 projection)`,
-          classCount: populationBreaks.length + 1,
+          classCount: effectiveBreaks.length + 1,
           labelFormat: getLabelFormat(),
           normalization:
             labelFormatType === 'percentage'
@@ -260,13 +286,13 @@ export const MunicipalDistrictMapData: StoryFn<{
             type: 'quantitative',
             property: 'value',
             scale: 'threshold',
-            thresholds: populationBreaks,
-            classCount: populationBreaks.length + 1,
+            thresholds: effectiveBreaks,
+            classCount: effectiveBreaks.length + 1,
             // First color matches `defaultColor` so the legend swatch for the
             // "< first threshold" bin lines up with the in-map fill.
             colors: [
               DEFAULT_COLOR,
-              ...populationSteps.map((step) => {
+              ...effectiveSteps.map((step) => {
                 return step.color;
               }),
             ],
@@ -395,7 +421,15 @@ MunicipalDistrictMapData.argTypes = {
   },
   labelFormatType: {
     control: { type: 'select' },
-    options: ['count', 'range', 'percentage', 'stdDev', 'auto', 'custom'],
+    options: [
+      'count',
+      'range',
+      'percentage',
+      'stdDev',
+      'auto',
+      'custom',
+      'labels',
+    ],
     description: 'Type of label format to use in the legend',
   },
   noDataLabel: {
@@ -465,4 +499,19 @@ WithCustomLabel.args = {
   extended: false,
   position: undefined,
   labelFormatType: 'custom',
+};
+
+/**
+ * Variation with `type: 'labels'` — explicit, human-readable strings for each
+ * population bin. No numeric formatting involved; the spec author controls the
+ * exact label text. Demonstrates the JSON-serialisable alternative to `'custom'`.
+ */
+export const WithLabelsFormat = MunicipalDistrictMapData.bind({});
+WithLabelsFormat.args = {
+  year: 2020,
+  abbreviate: false,
+  extended: false,
+  position: undefined,
+  labelFormatType: 'labels',
+  noDataLabel: 'No data',
 };

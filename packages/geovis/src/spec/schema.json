@@ -686,6 +686,27 @@
             }
           },
           "description": "Custom formatter (TypeScript-only). The spec object must have a `formatter` property at runtime: (lower: number | null, upper: number | null, index: number) => string. Not serializable to JSON; use this variant only in TypeScript-driven specs passed directly to GeoVisLegend, not in JSON files."
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "labels"],
+          "properties": {
+            "type": {
+              "const": "labels"
+            },
+            "labels": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Ordered list of explicit labels, one entry per legend bin. Bins beyond the array length fall back to range-style formatting."
+            },
+            "extended": {
+              "type": "boolean"
+            }
+          },
+          "description": "Explicit label list. JSON-serialisable alternative to 'custom'. Bins without a matching entry fall back to range-style formatting."
         }
       ]
     },
