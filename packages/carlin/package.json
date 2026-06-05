@@ -84,12 +84,12 @@
     "access": "public",
     "exports": {
       ".": {
-        "import": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        "import": "./dist/index.mjs",
+        "types": "./dist/index.d.mts"
       },
       "./config": {
-        "import": "./dist/defineConfig.js",
-        "types": "./dist/defineConfig.d.ts"
+        "import": "./dist/defineConfig.mjs",
+        "types": "./dist/defineConfig.d.mts"
       }
     },
     "provenance": true

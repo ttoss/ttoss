@@ -50,14 +50,14 @@
     "access": "public",
     "exports": {
       ".": {
-        "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.mts"
       },
       "./shield": {
-        "import": "./dist/esm/shield.js",
-        "require": "./dist/shield.js",
-        "types": "./dist/shield.d.ts"
+        "import": "./dist/shield.mjs",
+        "require": "./dist/shield.cjs",
+        "types": "./dist/shield.d.mts"
       }
     },
     "provenance": true
