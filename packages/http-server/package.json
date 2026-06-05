@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/http-server",
-  "version": "0.5.13",
+  "version": "0.6.0",
   "description": "HTTP Server for ttoss environment",
   "keywords": [
     "koa",
@@ -25,35 +25,35 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
     "@koa/bodyparser": "^6.1.0",
     "@koa/cors": "^5.0.0",
     "@koa/multer": "^4.0.0",
-    "@koa/router": "^15.4.0",
-    "koa": "^3.2.0",
+    "@koa/router": "^15.6.0",
+    "koa": "^3.2.1",
     "koa-static": "^5.0.0",
     "multer": "2.1.1"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "@types/koa": "^3.0.2",
+    "@types/koa": "^3.0.3",
     "@types/koa-static": "^4.0.4",
     "@types/koa__cors": "^5.0.1",
     "@types/koa__multer": "^2.0.8",
-    "jest": "^30.3.0",
+    "jest": "^30.4.2",
     "supertest": "^7.2.2",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.22.2"
   },
   "publishConfig": {
     "access": "public",
     "exports": {
       ".": {
-        "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.mts"
       }
     },
     "provenance": true

@@ -1,15 +1,20 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports -- value import required so declaration bundler emits `export { McpServer }` not `export type { McpServer }`
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { CognitoJwtVerifier } from '@ttoss/auth-core/amazon-cognito';
 import { Router } from '@ttoss/http-server';
-import type { Context } from 'koa';
+import type Koa from 'koa';
 import { z } from 'zod';
+
+type Context = Koa.Context;
 
 interface RequestContext {
   apiBaseUrl?: string;
   apiHeaders: Record<string, string>;
+  identity?: unknown;
 }
 
 const requestContextStore = new AsyncLocalStorage<RequestContext>();
@@ -89,6 +94,7 @@ export const apiCall = async (
   method: string,
   url: string,
   options?: ApiCallOptions
+  // eslint-disable-next-line complexity
 ): Promise<unknown> => {
   const context = requestContextStore.getStore();
 
@@ -152,6 +158,94 @@ export const apiCall = async (
 };
 
 /**
+ * Returns the verified JWT payload for the current MCP request.
+ * Only available inside a tool handler when `auth` is configured on the router.
+ */
+export const getIdentity = (): unknown => {
+  return requestContextStore.getStore()?.identity;
+};
+
+/**
+ * Asserts that the current request's token contains all required scopes.
+ * Throws if any scope is missing — the MCP SDK catches this and returns a
+ * tool error to the client. Use inside tool handlers for per-tool authorization.
+ *
+ * Cognito tokens carry scopes as a space-separated string in `payload.scope`.
+ *
+ * @example
+ * ```typescript
+ * server.tool('delete-user', schema, async (args) => {
+ *   checkScopes(['admin', 'write:users']);
+ *   // proceed only if caller has both scopes
+ * });
+ * ```
+ */
+export const checkScopes = (required: string[]): void => {
+  const identity = getIdentity() as { scope?: string } | undefined;
+  const tokenScopes = (identity?.scope ?? '').split(' ');
+  const missing = required.filter((s) => {
+    return !tokenScopes.includes(s);
+  });
+  if (missing.length > 0) {
+    throw new Error(`Insufficient scopes. Required: ${required.join(', ')}`);
+  }
+};
+
+/** Amazon Cognito user pool configuration for JWT verification. */
+export interface CognitoUserPoolConfig {
+  /** The Cognito User Pool ID (e.g. `us-east-1_abc123`). */
+  userPoolId: string;
+  /**
+   * Which token type to verify.
+   * @default 'access'
+   */
+  tokenUse?: 'access' | 'id';
+  /** The app client ID registered in the User Pool. */
+  clientId: string;
+}
+
+/**
+ * Authentication options for the MCP router.
+ *
+ * Supply either `cognitoUserPool` (uses `CognitoJwtVerifier` from
+ * `@ttoss/auth-core`) or a custom `verifyToken` function — not both.
+ */
+export interface McpAuthOptions {
+  /**
+   * Amazon Cognito user pool config. When provided, the router creates a
+   * `CognitoJwtVerifier` and validates every incoming Bearer token against it.
+   */
+  cognitoUserPool?: CognitoUserPoolConfig;
+  /**
+   * Custom token verifier for non-Cognito providers (Auth0, Keycloak, …).
+   * Receives the raw Bearer token string. Should resolve with the verified
+   * payload or reject/throw on failure.
+   */
+  verifyToken?: (token: string) => Promise<unknown>;
+  /**
+   * Router-level scope guard. All listed scopes must be present on the token
+   * for any MCP request to be allowed. Returns 403 if any scope is missing.
+   *
+   * Cognito encodes scopes as a space-separated string in `payload.scope`.
+   *
+   * @example ['mcp:access']
+   */
+  requiredScopes?: string[];
+  /**
+   * URL of this MCP server, used in the OAuth Protected Resource Metadata
+   * response (`/.well-known/oauth-protected-resource`). Both this field and
+   * `authorizationServerUrl` must be provided to enable the endpoint.
+   */
+  resourceServerUrl?: string;
+  /**
+   * URL of the OAuth Authorization Server that issues tokens for this resource.
+   * Enables `/.well-known/oauth-protected-resource` for MCP client auto-discovery
+   * (RFC 9728) when combined with `resourceServerUrl`.
+   */
+  authorizationServerUrl?: string;
+}
+
+/**
  * Options for configuring the MCP router
  */
 export interface McpRouterOptions {
@@ -203,7 +297,108 @@ export interface McpRouterOptions {
    * ```
    */
   getApiHeaders?: (ctx: Context) => Record<string, string>;
+
+  /**
+   * OAuth / JWT authentication configuration for the MCP endpoint.
+   *
+   * When set, every incoming MCP request must include a valid Bearer token in
+   * the `Authorization` header. Invalid or missing tokens receive a `401`
+   * response with `WWW-Authenticate: Bearer`. Tokens that fail a
+   * `requiredScopes` check receive `403`.
+   *
+   * The verified token payload is accessible inside tool handlers via
+   * {@link getIdentity}. Fine-grained per-tool scope checks can be done with
+   * {@link checkScopes}.
+   *
+   * @example Cognito
+   * ```typescript
+   * createMcpRouter(server, {
+   *   auth: {
+   *     cognitoUserPool: { userPoolId: 'us-east-1_xxx', clientId: 'yyy' },
+   *     requiredScopes: ['mcp:access'],
+   *   },
+   * });
+   * ```
+   *
+   * @example Custom verifier
+   * ```typescript
+   * createMcpRouter(server, {
+   *   auth: {
+   *     verifyToken: async (token) => myJwtLib.verify(token),
+   *   },
+   * });
+   * ```
+   */
+  auth?: McpAuthOptions;
 }
+
+const buildTokenVerifier = (
+  auth: McpAuthOptions
+): ((token: string) => Promise<unknown>) => {
+  if (auth.cognitoUserPool) {
+    const v = CognitoJwtVerifier.create({
+      tokenUse: 'access',
+      ...auth.cognitoUserPool,
+    });
+    return (t) => {
+      return v.verify(t);
+    };
+  }
+  if (auth.verifyToken) {
+    return auth.verifyToken;
+  }
+  throw new Error(
+    'McpAuthOptions requires either cognitoUserPool or verifyToken'
+  );
+};
+
+const registerAuthRoutes = (
+  router: Router,
+  path: string,
+  auth: McpAuthOptions,
+  tokenVerifier: (token: string) => Promise<unknown>
+): void => {
+  router.use(path, async (ctx: Context, next) => {
+    const authHeader = ctx.headers.authorization;
+    const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : '';
+
+    let identity: unknown;
+    try {
+      identity = await tokenVerifier(token);
+    } catch {
+      ctx.status = 401;
+      ctx.set('WWW-Authenticate', 'Bearer');
+      ctx.body = 'Unauthorized';
+      return;
+    }
+
+    if (auth.requiredScopes?.length) {
+      const tokenScopes = ((identity as { scope?: string })?.scope ?? '').split(
+        ' '
+      );
+      const missing = auth.requiredScopes.filter((s) => {
+        return !tokenScopes.includes(s);
+      });
+      if (missing.length > 0) {
+        ctx.status = 403;
+        ctx.body = 'Forbidden';
+        return;
+      }
+    }
+
+    (ctx.state as { identity?: unknown }).identity = identity;
+    await next();
+  });
+
+  if (auth.resourceServerUrl && auth.authorizationServerUrl) {
+    router.get('/.well-known/oauth-protected-resource', (ctx: Context) => {
+      ctx.body = {
+        resource: auth.resourceServerUrl,
+        authorization_servers: [auth.authorizationServerUrl],
+      };
+    });
+  }
+};
 
 /**
  * Creates a Koa router configured to handle MCP protocol requests
@@ -242,6 +437,7 @@ export interface McpRouterOptions {
  * app.listen(3000);
  * ```
  */
+// eslint-disable-next-line max-lines-per-function
 export const createMcpRouter = (
   server: McpServer,
   options: McpRouterOptions = {}
@@ -251,9 +447,13 @@ export const createMcpRouter = (
     sessionIdGenerator,
     apiBaseUrl,
     getApiHeaders,
+    auth,
   } = options;
   const isStateful = sessionIdGenerator !== undefined;
-  const needsContext = apiBaseUrl !== undefined || getApiHeaders !== undefined;
+  const needsContext =
+    apiBaseUrl !== undefined ||
+    getApiHeaders !== undefined ||
+    auth !== undefined;
 
   // Stateful mode: single shared transport connected once at startup
   let sharedTransport: StreamableHTTPServerTransport | undefined;
@@ -282,11 +482,16 @@ export const createMcpRouter = (
 
   const router = new Router();
 
+  if (auth) {
+    registerAuthRoutes(router, path, auth, buildTokenVerifier(auth));
+  }
+
   const handleWithContext = async (
     ctx: Context,
     body?: unknown
   ): Promise<void> => {
     const apiHeaders = getApiHeaders ? getApiHeaders(ctx) : {};
+    const identity = (ctx.state as { identity?: unknown }).identity;
 
     const runRequest = async (
       transport: StreamableHTTPServerTransport
@@ -300,9 +505,12 @@ export const createMcpRouter = (
     if (isStateful && sharedTransport) {
       // Stateful mode: reuse the shared transport
       if (needsContext) {
-        await requestContextStore.run({ apiBaseUrl, apiHeaders }, () => {
-          return runRequest(sharedTransport!);
-        });
+        await requestContextStore.run(
+          { apiBaseUrl, apiHeaders, identity },
+          () => {
+            return runRequest(sharedTransport!);
+          }
+        );
       } else {
         await runRequest(sharedTransport);
       }
@@ -319,9 +527,12 @@ export const createMcpRouter = (
         try {
           await server.connect(transport);
           if (needsContext) {
-            await requestContextStore.run({ apiBaseUrl, apiHeaders }, () => {
-              return runRequest(transport);
-            });
+            await requestContextStore.run(
+              { apiBaseUrl, apiHeaders, identity },
+              () => {
+                return runRequest(transport);
+              }
+            );
           } else {
             await runRequest(transport);
           }

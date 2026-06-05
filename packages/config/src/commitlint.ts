@@ -3,7 +3,7 @@
  */
 import { configCreator } from './configCreator';
 
-export const defaultConfig: any = {
+export const defaultConfig = {
   extends: ['@commitlint/config-conventional'],
 };
 

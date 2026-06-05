@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.37](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.36...@ttoss/cloud-auth@0.13.37) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** improve test coverage and fix peerDependencies ([#1022](https://github.com/ttoss/ttoss/issues/1022)) ([253bd98](https://github.com/ttoss/ttoss/commit/253bd98eaa29f690d4e198ad994b5d1aed4e89c5))
+
+## [0.13.36](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.35...@ttoss/cloud-auth@0.13.36) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
+## [0.13.35](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.34...@ttoss/cloud-auth@0.13.35) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
+## [0.13.34](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.33...@ttoss/cloud-auth@0.13.34) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [0.13.33](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.32...@ttoss/cloud-auth@0.13.33) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
 ## [0.13.32](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.31...@ttoss/cloud-auth@0.13.32) (2026-06-02)
 
 **Note:** Version bump only for package @ttoss/cloud-auth

@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/monorepo",
-  "version": "1.29.12",
+  "version": "1.29.16",
   "description": "Monorepo setup for ttoss",
   "repository": {
     "type": "git",
@@ -20,7 +20,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup-node",
+    "build": "tsdown",
     "test": "echo test"
   },
   "dependencies": {
@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.22.2"
   },
   "publishConfig": {
     "access": "public",

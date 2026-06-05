@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/postgresdb",
-  "version": "0.9.2",
+  "version": "0.9.7",
   "description": "A library to handle PostgreSQL database connections and queries",
   "keywords": [
     "database",
@@ -26,8 +26,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
-    "pretest": "tsup --config ./tests/tsup.pretest.config.ts",
+    "build": "tsdown",
+    "pretest": "tsdown --config ./tests/tsdown.pretest.config.ts",
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
@@ -39,15 +39,15 @@
   "devDependencies": {
     "@testcontainers/postgresql": "^11.14.0",
     "@ttoss/config": "workspace:^",
-    "jest": "^30.3.0",
-    "tsup": "^8.5.1"
+    "jest": "^30.4.2",
+    "tsdown": "^0.22.2"
   },
   "publishConfig": {
     "access": "public",
     "exports": {
       ".": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/esm/index.js"
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
       }
     },
     "provenance": true

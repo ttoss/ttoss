@@ -222,7 +222,7 @@ github-app/
 **/i18n/compiled/
 **/i18n/missing/
 **/i18n/unused/
-tsup.config.bundled*.mjs
+tsdown.config.bundled*.mjs
 `;
 
 const npmrcConfig = `enable-pre-post-scripts=true

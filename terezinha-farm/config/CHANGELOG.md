@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.16](https://github.com/ttoss/ttoss/compare/@terezinha-farm/config@0.6.15...@terezinha-farm/config@0.6.16) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** improve test coverage and fix peerDependencies ([#1022](https://github.com/ttoss/ttoss/issues/1022)) ([253bd98](https://github.com/ttoss/ttoss/commit/253bd98eaa29f690d4e198ad994b5d1aed4e89c5))
+
+## [0.6.15](https://github.com/ttoss/ttoss/compare/@terezinha-farm/config@0.6.14...@terezinha-farm/config@0.6.15) (2026-06-05)
+
+**Note:** Version bump only for package @terezinha-farm/config
+
+## [0.6.14](https://github.com/ttoss/ttoss/compare/@terezinha-farm/config@0.6.13...@terezinha-farm/config@0.6.14) (2026-06-05)
+
+**Note:** Version bump only for package @terezinha-farm/config
+
+## [0.6.13](https://github.com/ttoss/ttoss/compare/@terezinha-farm/config@0.6.12...@terezinha-farm/config@0.6.13) (2026-06-03)
+
+**Note:** Version bump only for package @terezinha-farm/config
+
 ## [0.6.12](https://github.com/ttoss/ttoss/compare/@terezinha-farm/config@0.6.11...@terezinha-farm/config@0.6.12) (2026-06-02)
 
 **Note:** Version bump only for package @terezinha-farm/config

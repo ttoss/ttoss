@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.9](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.13.8...@ttoss/cloudformation@0.13.9) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** improve test coverage and fix peerDependencies ([#1022](https://github.com/ttoss/ttoss/issues/1022)) ([253bd98](https://github.com/ttoss/ttoss/commit/253bd98eaa29f690d4e198ad994b5d1aed4e89c5))
+
+## [0.13.8](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.13.7...@ttoss/cloudformation@0.13.8) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/cloudformation
+
+## [0.13.7](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.13.6...@ttoss/cloudformation@0.13.7) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/cloudformation
+
+## [0.13.6](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.13.5...@ttoss/cloudformation@0.13.6) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [0.13.5](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.13.4...@ttoss/cloudformation@0.13.5) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/cloudformation
+
 ## [0.13.4](https://github.com/ttoss/ttoss/compare/@ttoss/cloudformation@0.13.3...@ttoss/cloudformation@0.13.4) (2026-06-02)
 
 **Note:** Version bump only for package @ttoss/cloudformation

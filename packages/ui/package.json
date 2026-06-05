@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/ui",
-  "version": "6.9.19",
+  "version": "6.9.24",
   "description": "Primitive layout, typographic, and other components for styling applications.",
   "keywords": [
     "React",
@@ -27,12 +27,12 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "dev": "pnpm --filter @docs/storybook run dev",
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
-    "@chakra-ui/react": "^3.34.0",
+    "@chakra-ui/react": "^3.35.0",
     "@theme-ui/match-media": "^0.17.2",
     "@ttoss/theme": "workspace:^",
     "rc-segmented": "^2.7.0",
@@ -48,9 +48,9 @@
     "@ttoss/test-utils": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.2.14",
-    "jest": "^30.3.0",
-    "react": "^19.2.4",
-    "tsup": "^8.5.1"
+    "jest": "^30.4.2",
+    "react": "^19.2.6",
+    "tsdown": "^0.22.2"
   },
   "peerDependencies": {
     "@emotion/react": "^11",
@@ -61,8 +61,8 @@
     "access": "public",
     "exports": {
       ".": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/esm/index.js"
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
       }
     },
     "provenance": true

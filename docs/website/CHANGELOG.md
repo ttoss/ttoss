@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.22](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.21...@docs/website@2.7.22) (2026-06-05)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.7.21](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.20...@docs/website@2.7.21) (2026-06-05)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.7.20](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.19...@docs/website@2.7.20) (2026-06-05)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.7.19](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.18...@docs/website@2.7.19) (2026-06-05)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.7.18](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.17...@docs/website@2.7.18) (2026-06-03)
+
+**Note:** Version bump only for package @docs/website
+
 ## [2.7.17](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.16...@docs/website@2.7.17) (2026-06-02)
 
 **Note:** Version bump only for package @docs/website

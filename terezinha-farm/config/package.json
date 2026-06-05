@@ -1,18 +1,18 @@
 {
   "name": "@terezinha-farm/config",
-  "version": "0.6.12",
+  "version": "0.6.16",
   "private": true,
   "exports": {
     ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "tsup"
+    "build": "tsdown"
   },
   "dependencies": {
     "dotenv": "^17.4.2"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.22.2"
   }
 }

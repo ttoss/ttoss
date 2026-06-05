@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.29.16](https://github.com/ttoss/ttoss/compare/@ttoss/monorepo@1.29.15...@ttoss/monorepo@1.29.16) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** improve test coverage and fix peerDependencies ([#1022](https://github.com/ttoss/ttoss/issues/1022)) ([253bd98](https://github.com/ttoss/ttoss/commit/253bd98eaa29f690d4e198ad994b5d1aed4e89c5))
+
+## [1.29.15](https://github.com/ttoss/ttoss/compare/@ttoss/monorepo@1.29.14...@ttoss/monorepo@1.29.15) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/monorepo
+
+## [1.29.14](https://github.com/ttoss/ttoss/compare/@ttoss/monorepo@1.29.13...@ttoss/monorepo@1.29.14) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/monorepo
+
+## [1.29.13](https://github.com/ttoss/ttoss/compare/@ttoss/monorepo@1.29.12...@ttoss/monorepo@1.29.13) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/monorepo
+
 ## [1.29.12](https://github.com/ttoss/ttoss/compare/@ttoss/monorepo@1.29.11...@ttoss/monorepo@1.29.12) (2026-06-02)
 
 **Note:** Version bump only for package @ttoss/monorepo

@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/cloud-vpc",
-  "version": "0.1.48",
+  "version": "0.1.53",
   "description": "Deploy a VPC with public and private subnets",
   "keywords": [
     "aws",
@@ -24,7 +24,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
@@ -34,16 +34,16 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@types/jest": "^30.0.0",
-    "jest": "^30.3.0",
-    "tsup": "^8.5.1"
+    "jest": "^30.4.2",
+    "tsdown": "^0.22.2"
   },
   "publishConfig": {
     "access": "public",
     "exports": {
       ".": {
-        "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.mts"
       }
     },
     "provenance": true

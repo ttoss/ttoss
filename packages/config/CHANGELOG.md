@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.37.16](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.37.15...@ttoss/config@1.37.16) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** improve test coverage and fix peerDependencies ([#1022](https://github.com/ttoss/ttoss/issues/1022)) ([253bd98](https://github.com/ttoss/ttoss/commit/253bd98eaa29f690d4e198ad994b5d1aed4e89c5))
+
+## [1.37.15](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.37.14...@ttoss/config@1.37.15) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/config:** add topLevelVar to tsdown output to prevent TDZ ReferenceError ([#1021](https://github.com/ttoss/ttoss/issues/1021)) ([6dbffcc](https://github.com/ttoss/ttoss/commit/6dbffcc63534cb9e772dee584900527050c15c0b)), closes [#1020](https://github.com/ttoss/ttoss/issues/1020)
+
+## [1.37.14](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.37.13...@ttoss/config@1.37.14) (2026-06-05)
+
+### Bug Fixes
+
+- **http-server-mcp:** export McpServer as value to fix TS1362 ([#1018](https://github.com/ttoss/ttoss/issues/1018)) ([#1019](https://github.com/ttoss/ttoss/issues/1019)) ([cd86b89](https://github.com/ttoss/ttoss/commit/cd86b89c47eb2ce828ac24b5dac551d21530090a))
+
+## [1.37.13](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.37.12...@ttoss/config@1.37.13) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/config
+
 ## [1.37.12](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.37.11...@ttoss/config@1.37.12) (2026-06-02)
 
 **Note:** Version bump only for package @ttoss/config
