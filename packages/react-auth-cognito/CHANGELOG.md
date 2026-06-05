@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.36](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.8.35...@ttoss/react-auth-cognito@2.8.36) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/react-auth-cognito
+
 ## [2.8.35](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.8.34...@ttoss/react-auth-cognito@2.8.35) (2026-06-05)
 
 ### Bug Fixes

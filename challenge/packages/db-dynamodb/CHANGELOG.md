@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.14](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/db-dynamodb@0.3.13...@ttoss-challenge/db-dynamodb@0.3.14) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss-challenge/db-dynamodb
+
 ## [0.3.13](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/db-dynamodb@0.3.12...@ttoss-challenge/db-dynamodb@0.3.13) (2026-06-03)
 
 **Note:** Version bump only for package @ttoss-challenge/db-dynamodb

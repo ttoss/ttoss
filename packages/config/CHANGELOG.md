@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.37.14](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.37.13...@ttoss/config@1.37.14) (2026-06-05)
+
+### Bug Fixes
+
+- **http-server-mcp:** export McpServer as value to fix TS1362 ([#1018](https://github.com/ttoss/ttoss/issues/1018)) ([#1019](https://github.com/ttoss/ttoss/issues/1019)) ([cd86b89](https://github.com/ttoss/ttoss/commit/cd86b89c47eb2ce828ac24b5dac551d21530090a))
+
 ## [1.37.13](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.37.12...@ttoss/config@1.37.13) (2026-06-03)
 
 **Note:** Version bump only for package @ttoss/config

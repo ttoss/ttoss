@@ -1,6 +1,6 @@
 {
   "name": "@ttoss-challenge/db-dynamodb",
-  "version": "0.3.13",
+  "version": "0.3.14",
   "private": true,
   "scripts": {
     "deploy-challenge": "carlin deploy",

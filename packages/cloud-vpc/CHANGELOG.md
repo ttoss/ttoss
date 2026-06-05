@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.51](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.50...@ttoss/cloud-vpc@0.1.51) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/cloud-vpc
+
 ## [0.1.50](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.49...@ttoss/cloud-vpc@0.1.50) (2026-06-05)
 
 ### Bug Fixes

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.15](https://github.com/ttoss/ttoss/compare/@ttoss/ids@0.4.14...@ttoss/ids@0.4.15) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/ids
+
 ## [0.4.14](https://github.com/ttoss/ttoss/compare/@ttoss/ids@0.4.13...@ttoss/ids@0.4.14) (2026-06-05)
 
 ### Bug Fixes
