@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server@0.5.18...@ttoss/http-server@0.6.0) (2026-06-05)
+
+### Features
+
+- **http-server:** re-export Context, Next, and Middleware types from koa ([#1025](https://github.com/ttoss/ttoss/issues/1025)) ([7be08d5](https://github.com/ttoss/ttoss/commit/7be08d57c222f954ecf79119afb2219db5245116))
+
 ## [0.5.18](https://github.com/ttoss/ttoss/compare/@ttoss/http-server@0.5.17...@ttoss/http-server@0.5.18) (2026-06-05)
 
 ### Bug Fixes
