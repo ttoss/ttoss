@@ -3,5 +3,3 @@ skipDeploy: true
 environments:
   Production:
     skipDeploy: false
-  Staging:
-    skipDeploy: false
