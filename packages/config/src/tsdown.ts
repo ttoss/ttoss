@@ -126,6 +126,15 @@ export const defaultConfig = {
   },
   plugins: [formatjsPlugin, injectReactImport()],
   target: typescriptConfig.target,
+  /**
+   * Rewrite top-level `let`/`const` to `var` in CJS output so that
+   * TypeScript's `typeof X === "undefined"` guard (emitted by
+   * `emitDecoratorMetadata`) works correctly when circular imports cause a
+   * class to be referenced before its initializer runs. With `let`/`const`,
+   * `typeof X` throws a ReferenceError (TDZ); with `var`, it safely returns
+   * `"undefined"` and the guard falls through to `Object` as intended.
+   */
+  outputOptions: { topLevelVar: true },
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
