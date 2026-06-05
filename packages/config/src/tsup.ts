@@ -1,6 +1,4 @@
 import { transformAsync } from '@babel/core';
-import { Plugin, PluginBuild } from 'esbuild';
-import type { Options } from 'tsup';
 
 import { configCreator } from './configCreator';
 import * as typescriptConfig from './typescriptConfig';
@@ -15,9 +13,11 @@ import * as typescriptConfig from './typescriptConfig';
  * Check [Automatic ID Generation](https://formatjs.github.io/docs/getting-started/message-extraction#automatic-id-generation)
  * for more information.
  */
-const formatjsPlugin: Plugin = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const formatjsPlugin: any = {
   name: 'formatjs',
-  setup: (build: PluginBuild) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  setup: (build: any) => {
     build.onEnd(async (result) => {
       await Promise.all(
         (result.outputFiles || []).map(async (outputFile) => {
@@ -66,7 +66,8 @@ const formatjsPlugin: Plugin = {
  *
  * Fix: https://github.com/egoist/tsup/issues/792
  */
-export const injectReactImport = (): Plugin => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const injectReactImport = (): any => {
   return {
     name: '@ttoss/esbuild-inject-react-import',
     setup: (build) => {
@@ -128,7 +129,8 @@ export const injectReactImport = (): Plugin => {
 /**
  * @deprecated Use `defaultConfig` from `src/tsdown` instead.
  */
-export const defaultConfig: Options = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const defaultConfig: any = {
   clean: true,
   dts: true,
   entryPoints: ['src/index.ts'],
