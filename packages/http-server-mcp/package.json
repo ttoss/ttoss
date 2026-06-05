@@ -36,17 +36,17 @@
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@ttoss/auth-core": "workspace:^",
     "@ttoss/http-server": "workspace:^",
-    "zod": "^4.3.6"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
-    "@types/koa": "^3.0.2",
-    "jest": "^30.3.0",
+    "@types/koa": "^3.0.3",
+    "jest": "^30.4.2",
     "supertest": "^7.2.2",
-    "tsdown": "^0.22.0"
+    "tsdown": "^0.22.2"
   },
   "peerDependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0"
+    "@modelcontextprotocol/sdk": "^1.29.0"
   },
   "publishConfig": {
     "access": "public",

@@ -48,11 +48,11 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^24.12.0",
     "@types/react": "^19.2.14",
-    "jest": "^30.3.0",
+    "jest": "^30.4.2",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "ts-node": "^10.9.2",
-    "tsdown": "^0.22.0"
+    "tsdown": "^0.22.2"
   },
   "peerDependencies": {
     "jest": "^30.0.0",

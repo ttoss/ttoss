@@ -41,8 +41,8 @@
     "@types/jest": "^30.0.0",
     "@types/pg": "^8.20.0",
     "aws-sdk-client-mock": "^4.1.0",
-    "jest": "^30.3.0",
-    "tsdown": "^0.22.0"
+    "jest": "^30.4.2",
+    "tsdown": "^0.22.2"
   },
   "publishConfig": {
     "access": "public",
