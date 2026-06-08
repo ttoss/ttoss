@@ -28,8 +28,10 @@
     "build": "tsdown",
     "test": "jest --projects tests/unit"
   },
+  "dependencies": {
+    "@ttoss/components": "workspace:^"
+  },
   "devDependencies": {
-    "@ttoss/components": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
@@ -40,7 +42,6 @@
     "tsdown": "^0.22.2"
   },
   "peerDependencies": {
-    "@ttoss/components": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "react": ">=16.8.0"
