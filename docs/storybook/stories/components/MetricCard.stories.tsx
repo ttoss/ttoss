@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import { MetricCard } from '@ttoss/components/MetricCard';
+import { MetricCard } from '@ttoss/components';
 
 const meta: Meta<typeof MetricCard> = {
   title: 'Components/MetricCard',

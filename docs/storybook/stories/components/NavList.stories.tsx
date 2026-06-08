@@ -1,5 +1,5 @@
-import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { type LinkComponentProps, NavList } from '@ttoss/components/NavList';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import { type LinkComponentProps, NavList } from '@ttoss/components';
 
 const meta: Meta<typeof NavList> = {
   title: 'Components/NavList',

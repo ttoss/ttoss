@@ -1,9 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { Meta, StoryObj } from '@storybook/react-webpack5';
-import {
-  Notification,
-  NotificationsMenu,
-} from '@ttoss/components/NotificationsMenu';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Notification } from '@ttoss/components';
+import { NotificationsMenu } from '@ttoss/components';
 import * as React from 'react';
 
 export default {

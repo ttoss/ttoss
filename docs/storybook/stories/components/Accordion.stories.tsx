@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import { Accordion } from '@ttoss/components/Accordion';
+import { Accordion } from '@ttoss/components';
 import { Badge, Box, Button, Flex, IconButton, Text } from '@ttoss/ui';
 import * as React from 'react';
 
