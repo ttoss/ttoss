@@ -1,39 +1,39 @@
 {
-  "EO/33N": {
-    "defaultMessage": "Signed in successfully",
-    "description": "Success notification after sign in."
-  },
-  "Si5KBb": {
-    "defaultMessage": "Your account is not verified. Please contact support to verify your account before resetting your password.",
-    "description": "Shown on forgot-password when the account has no verified email."
-  },
-  "hiDBb8": {
-    "defaultMessage": "For your security, please reset your password using 'Forgot password?' before continuing.",
-    "description": "Shown when Cognito requires a password reset on sign in."
-  },
-  "Xkk5+j": {
+  "4iVwXU": {
     "defaultMessage": "Incorrect email or password.",
     "description": "Shown when the user enters wrong sign-in credentials."
   },
-  "GQwU6M": {
-    "defaultMessage": "No account found with this email address.",
-    "description": "Shown when no Cognito user exists for the given email."
-  },
-  "00V+36": {
+  "DMiLA3": {
     "defaultMessage": "The code you entered is incorrect. Please try again.",
     "description": "Shown when the user types a wrong confirmation code."
   },
-  "PmLYMO": {
+  "DZm5/m": {
+    "defaultMessage": "For your security, please reset your password using 'Forgot password?' before continuing.",
+    "description": "Shown when Cognito requires a password reset on sign in."
+  },
+  "FGojIS": {
+    "defaultMessage": "Your account is not verified. Please contact support to verify your account before resetting your password.",
+    "description": "Shown on forgot-password when the account has no verified email."
+  },
+  "H8LG4D": {
+    "defaultMessage": "No account found with this email address.",
+    "description": "Shown when no Cognito user exists for the given email."
+  },
+  "MJ01Sw": {
     "defaultMessage": "An account with this email already exists. Please sign in.",
     "description": "Shown when a user tries to sign up with an existing email."
   },
-  "5QwUU+": {
-    "defaultMessage": "Your session expired. Please sign in again.",
-    "description": "Shown when a stale Amplify session is detected."
+  "NJvJrM": {
+    "defaultMessage": "Signed in successfully",
+    "description": "Success notification after sign in."
   },
-  "W/5hwr": {
+  "ay85xa": {
     "defaultMessage": "Something went wrong. Please try again.",
     "description": "Fallback message for unexpected authentication errors."
+  },
+  "nL+H/D": {
+    "defaultMessage": "Your session expired. Please sign in again.",
+    "description": "Shown when a stale Amplify session is detected."
   },
   "0XOzcH": {
     "module": "@ttoss/react-auth-core",
