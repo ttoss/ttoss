@@ -2,7 +2,8 @@ import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import type {
   GeoJSONFeatureCollection,
   LabelFormatSpec,
-  LabelFormatType,
+  LegendPosition,
+  NormalizationSpec,
   VisualizationSpec,
 } from '@ttoss/geovis';
 import {
@@ -22,10 +23,36 @@ const DISTRICT_BBOX = computeBbox(
   districtGeoJson as unknown as GeoJSON.FeatureCollection
 );
 
-export default {
-  title: 'GeoVis/Fixtures/MunicipalDistrictMapData',
-  tags: ['autodocs'],
-} as Meta;
+type LabelFormatType = LabelFormatSpec['type'];
+
+type DataProperty = 'total' | 'men' | 'women';
+
+type ThresholdPreset = 'standard' | 'ibge';
+
+type LegendPositionControl = 'none' | LegendPosition;
+
+type NormalizationType = 'raw' | 'percentage';
+
+/** Storybook controls mapped to `VisualizationSpec` input fields. */
+type MunicipalDistrictStoryArgs = {
+  year: Year;
+  dataProperty: DataProperty;
+  abbreviate: boolean;
+  extended: boolean;
+  legendPosition: LegendPositionControl;
+  labelFormatType: LabelFormatType;
+  noDataLabel: string;
+  thresholdPreset: ThresholdPreset;
+  basemapVisible: boolean;
+  showOutline: boolean;
+  showClickAnchor: boolean;
+  hoverLineColor: string;
+  hoverLineWidth: number;
+  selectedLineColor: string;
+  selectedLineWidth: number;
+  clickAnchorColor: string;
+  normalizationType: NormalizationType;
+};
 
 const DATA_URL =
   'https://api-forja.triangulos.tech/v1/files/8b7b245c-06e2-42de-9764-a2c180a75304/download';
@@ -129,6 +156,185 @@ const normalizePopulationData = (
   );
 };
 
+const getDistrictValue = (
+  entry: DistrictEntry,
+  dataProperty: DataProperty
+): number => {
+  switch (dataProperty) {
+    case 'men':
+      return Object.values(entry.men).reduce((sum, value) => {
+        return sum + value;
+      }, 0);
+    case 'women':
+      return Object.values(entry.women).reduce((sum, value) => {
+        return sum + value;
+      }, 0);
+    case 'total':
+    default:
+      return entry.total;
+  }
+};
+
+const resolveLegendPosition = (
+  legendPosition: LegendPositionControl
+): LegendPosition | undefined => {
+  return legendPosition === 'none' ? undefined : legendPosition;
+};
+
+const resolveThresholdSteps = ({
+  labelFormatType,
+  thresholdPreset,
+}: {
+  labelFormatType: LabelFormatType;
+  thresholdPreset: ThresholdPreset;
+}): ColorStep[] => {
+  if (labelFormatType === 'labels' || thresholdPreset === 'ibge') {
+    return populationStepsIBGE;
+  }
+  return populationSteps;
+};
+
+const resolveNormalization = ({
+  labelFormatType,
+  normalizationType,
+}: {
+  labelFormatType: LabelFormatType;
+  normalizationType: NormalizationType;
+}): NormalizationSpec => {
+  if (labelFormatType === 'percentage' || normalizationType === 'percentage') {
+    return {
+      type: 'percentage',
+      numeratorLabel: 'inhabitants',
+      denominatorLabel: 'São Paulo Municipality',
+    };
+  }
+  return {
+    type: 'raw',
+    numeratorLabel: 'inhabitants',
+  };
+};
+
+export default {
+  title: 'GeoVis/Fixtures/MunicipalDistrictMapData',
+  tags: ['autodocs'],
+  argTypes: {
+    year: {
+      control: { type: 'select' },
+      options: AVAILABLE_YEARS,
+      description: 'Census / projection year used in `mapData` rows',
+    },
+    dataProperty: {
+      control: { type: 'select' },
+      options: ['total', 'men', 'women'] satisfies DataProperty[],
+      description:
+        'District attribute joined via `mapData` (`total`, summed `men`, or summed `women`)',
+    },
+    abbreviate: {
+      control: { type: 'boolean' },
+      description: '`labelFormat.type: count` — abbreviate values (e.g. 50k)',
+    },
+    extended: {
+      control: { type: 'boolean' },
+      description:
+        '`labelFormat.extended` — append normalization suffix to legend labels',
+    },
+    legendPosition: {
+      control: { type: 'select' },
+      options: [
+        'none',
+        'top-left',
+        'top-right',
+        'bottom-left',
+        'bottom-right',
+      ] satisfies LegendPositionControl[],
+      description:
+        '`legends[].position` — overlay corner; `none` keeps legend in document flow',
+    },
+    labelFormatType: {
+      control: { type: 'select' },
+      options: [
+        'count',
+        'range',
+        'percentage',
+        'stdDev',
+        'auto',
+        'custom',
+        'labels',
+      ] satisfies LabelFormatType[],
+      description: '`legends[].labelFormat.type`',
+    },
+    noDataLabel: {
+      control: { type: 'text' },
+      description:
+        '`legends[].noDataLabel` — empty string omits the no-data swatch',
+    },
+    thresholdPreset: {
+      control: { type: 'select' },
+      options: ['standard', 'ibge'] satisfies ThresholdPreset[],
+      description:
+        '`colorBy.thresholds` preset — IBGE urban classes or standard district bins',
+    },
+    basemapVisible: {
+      control: { type: 'boolean' },
+      description: '`basemap.visible` — hide tile basemap while keeping layers',
+    },
+    showOutline: {
+      control: { type: 'boolean' },
+      description: '`layers[].visible` for the `districts-outline` line layer',
+    },
+    showClickAnchor: {
+      control: { type: 'boolean' },
+      description:
+        'Toggle `layers[].clickAnchor` on the fill layer (click marker)',
+    },
+    hoverLineColor: {
+      control: { type: 'color' },
+      description: '`layers[].hoverPaint.lineColor`',
+    },
+    hoverLineWidth: {
+      control: { type: 'range', min: 0, max: 8, step: 0.5 },
+      description: '`layers[].hoverPaint.lineWidth`',
+    },
+    selectedLineColor: {
+      control: { type: 'color' },
+      description: '`layers[].selectedPaint.lineColor`',
+    },
+    selectedLineWidth: {
+      control: { type: 'range', min: 0, max: 8, step: 0.5 },
+      description: '`layers[].selectedPaint.lineWidth`',
+    },
+    clickAnchorColor: {
+      control: { type: 'color' },
+      description: '`layers[].clickAnchor.color`',
+    },
+    normalizationType: {
+      control: { type: 'select' },
+      options: ['raw', 'percentage'] satisfies NormalizationType[],
+      description:
+        '`legends[].normalization.type` — forced to `percentage` when `labelFormatType` is `percentage`',
+    },
+  },
+  args: {
+    year: 2020,
+    dataProperty: 'total',
+    abbreviate: false,
+    extended: false,
+    legendPosition: 'none',
+    labelFormatType: 'count',
+    noDataLabel: '',
+    thresholdPreset: 'standard',
+    basemapVisible: true,
+    showOutline: true,
+    showClickAnchor: true,
+    hoverLineColor: '#333333',
+    hoverLineWidth: 2,
+    selectedLineColor: '#1a1a1a',
+    selectedLineWidth: 3,
+    clickAnchorColor: '#2171b5',
+    normalizationType: 'raw',
+  },
+} satisfies Meta<MunicipalDistrictStoryArgs>;
+
 /**
  * Choropleth of São Paulo municipal districts coloured by total population
  * for a selected census year (2000–2050, projected past 2025).
@@ -141,21 +347,27 @@ const normalizePopulationData = (
  * Source: SMUL/GEOINFO — Resident population evolution, São Paulo Municipality.
  */
 /* eslint-disable react/prop-types, max-lines-per-function, max-lines, @typescript-eslint/no-explicit-any -- Storybook fixture story: TypeScript generics validate props, component integrates data + spec + UI, file contains comprehensive fixture data */
-export const MunicipalDistrictMapData: StoryFn<{
-  year: Year;
-  abbreviate?: boolean;
-  extended?: boolean;
-  position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
-  labelFormatType?: LabelFormatType;
-  noDataLabel?: string;
-}> = ({
+export const MunicipalDistrictMapData: StoryFn<MunicipalDistrictStoryArgs> = ({
   year,
-  abbreviate = false,
-  extended = false,
-  position,
-  labelFormatType = 'count',
+  dataProperty,
+  abbreviate,
+  extended,
+  legendPosition,
+  labelFormatType,
   noDataLabel,
+  thresholdPreset,
+  basemapVisible,
+  showOutline,
+  showClickAnchor,
+  hoverLineColor,
+  hoverLineWidth,
+  selectedLineColor,
+  selectedLineWidth,
+  clickAnchorColor,
+  normalizationType,
 }) => {
+  const position = resolveLegendPosition(legendPosition);
+  const trimmedNoDataLabel = noDataLabel.trim() || undefined;
   const [populationData, setPopulationData] = React.useState<Record<
     string,
     Record<string, DistrictEntry>
@@ -180,9 +392,12 @@ export const MunicipalDistrictMapData: StoryFn<{
     const yearData = populationData[String(year)];
     if (!yearData) return [];
     return Object.entries(yearData).map(([districtId, entry]) => {
-      return { geometryId: parseInt(districtId, 10), value: entry.total };
+      return {
+        geometryId: parseInt(districtId, 10),
+        value: getDistrictValue(entry as DistrictEntry, dataProperty),
+      };
     });
-  }, [populationData, year]);
+  }, [populationData, year, dataProperty]);
 
   const getLabelFormat = (): LabelFormatSpec => {
     switch (labelFormatType) {
@@ -224,9 +439,10 @@ export const MunicipalDistrictMapData: StoryFn<{
   };
 
   const spec = React.useMemo<VisualizationSpec>(() => {
-    // Use IBGE thresholds for 'labels' type; standard thresholds for all others.
-    const effectiveSteps =
-      labelFormatType === 'labels' ? populationStepsIBGE : populationSteps;
+    const effectiveSteps = resolveThresholdSteps({
+      labelFormatType,
+      thresholdPreset,
+    });
     const effectiveBreaks = effectiveSteps.map((step) => {
       return step.threshold;
     });
@@ -234,7 +450,10 @@ export const MunicipalDistrictMapData: StoryFn<{
     return {
       id: 'municipal-district-mapdata',
       engine: 'maplibre',
-      basemap: { styleUrl: 'https://tiles.openfreemap.org/styles/bright' },
+      basemap: {
+        styleUrl: 'https://tiles.openfreemap.org/styles/bright',
+        visible: basemapVisible,
+      },
       sources: [
         {
           id: 'districts',
@@ -249,14 +468,18 @@ export const MunicipalDistrictMapData: StoryFn<{
           geometry: 'polygon',
           mapDataId: 'population',
           activeLegendId: 'population',
-          hoverPaint: { lineColor: '#333333', lineWidth: 2 },
-          selectedPaint: { lineColor: '#1a1a1a', lineWidth: 3 },
-          clickAnchor: { color: '#2171b5' },
+          hoverPaint: { lineColor: hoverLineColor, lineWidth: hoverLineWidth },
+          selectedPaint: {
+            lineColor: selectedLineColor,
+            lineWidth: selectedLineWidth,
+          },
+          ...(showClickAnchor && { clickAnchor: { color: clickAnchorColor } }),
         },
         {
           id: 'districts-outline',
           sourceId: 'districts',
           geometry: 'line',
+          visible: showOutline,
           paint: { lineColor: '#93c5fd', lineWidth: 0.5 },
         },
       ],
@@ -267,20 +490,13 @@ export const MunicipalDistrictMapData: StoryFn<{
           subtitle: `São Paulo Municipality (SMUL/GEOINFO, 2000–2050 projection)`,
           classCount: effectiveBreaks.length + 1,
           labelFormat: getLabelFormat(),
-          normalization:
-            labelFormatType === 'percentage'
-              ? {
-                  type: 'percentage',
-                  numeratorLabel: 'inhabitants',
-                  denominatorLabel: 'São Paulo Municipality',
-                }
-              : {
-                  type: 'raw',
-                  numeratorLabel: 'inhabitants',
-                },
+          normalization: resolveNormalization({
+            labelFormatType,
+            normalizationType,
+          }),
           reference:
             'Population by district, {link:São Paulo Municipality (SMUL/GEOINFO, 2000–2050 projection)|https://example.com}',
-          ...(noDataLabel && { noDataLabel }),
+          ...(trimmedNoDataLabel && { noDataLabel: trimmedNoDataLabel }),
           ...(position && { position }),
           colorBy: {
             type: 'quantitative',
@@ -310,12 +526,21 @@ export const MunicipalDistrictMapData: StoryFn<{
     };
   }, [
     mapDataEntries,
-    year,
     labelFormatType,
     abbreviate,
     extended,
     position,
-    noDataLabel,
+    trimmedNoDataLabel,
+    thresholdPreset,
+    basemapVisible,
+    showOutline,
+    showClickAnchor,
+    hoverLineColor,
+    hoverLineWidth,
+    selectedLineColor,
+    selectedLineWidth,
+    clickAnchorColor,
+    normalizationType,
   ]);
 
   // When the GeoVisLegend is overlaid at a corner (16rem wide, ~285px tall),
@@ -348,7 +573,9 @@ export const MunicipalDistrictMapData: StoryFn<{
             border: '1px solid #d4d4d8',
           }}
         >
-          <MapLabel>São Paulo — population {year}</MapLabel>
+          <MapLabel>
+            São Paulo — {dataProperty} {year}
+          </MapLabel>
           <GeoVisCanvas
             viewId="primary"
             style={{ width: '100%', height: '100%' }}
@@ -358,6 +585,10 @@ export const MunicipalDistrictMapData: StoryFn<{
             render={(info) => {
               const district =
                 populationData?.[String(year)]?.[String(info.featureId)];
+              const value =
+                district !== undefined
+                  ? getDistrictValue(district, dataProperty)
+                  : info.value;
               return (
                 <>
                   <div style={{ fontWeight: 600 }}>
@@ -365,8 +596,8 @@ export const MunicipalDistrictMapData: StoryFn<{
                       `District #${String(info.featureId)}`}
                   </div>
                   <div>
-                    {typeof info.value === 'number'
-                      ? `${fmtPop(info.value)} inhabitants`
+                    {typeof value === 'number'
+                      ? `${fmtPop(value)} inhabitants`
                       : 'No data'}
                   </div>
                 </>
@@ -375,9 +606,12 @@ export const MunicipalDistrictMapData: StoryFn<{
           />
           {!position && (
             <MapOverlayLegend
-              label="Total population"
+              label={`${dataProperty} population`}
               defaultColor={DEFAULT_COLOR}
-              steps={populationSteps}
+              steps={resolveThresholdSteps({
+                labelFormatType,
+                thresholdPreset,
+              })}
               formatValue={fmtPop}
             />
           )}
@@ -393,66 +627,13 @@ export const MunicipalDistrictMapData: StoryFn<{
   );
 };
 
-MunicipalDistrictMapData.argTypes = {
-  year: {
-    control: { type: 'select' },
-    options: AVAILABLE_YEARS,
-    description: 'Census / projection year',
-  },
-  abbreviate: {
-    control: { type: 'boolean' },
-    description: 'Abbreviate population counts (e.g., 50k instead of 50000)',
-  },
-  extended: {
-    control: { type: 'boolean' },
-    description:
-      'Show extended labels with semantic suffixes (e.g., "inhabitants")',
-  },
-  position: {
-    control: { type: 'select' },
-    options: [
-      undefined,
-      'top-left',
-      'top-right',
-      'bottom-left',
-      'bottom-right',
-    ],
-    description: 'Legend position overlay on the map',
-  },
-  labelFormatType: {
-    control: { type: 'select' },
-    options: [
-      'count',
-      'range',
-      'percentage',
-      'stdDev',
-      'auto',
-      'custom',
-      'labels',
-    ],
-    description: 'Type of label format to use in the legend',
-  },
-  noDataLabel: {
-    control: { type: 'text' },
-    description: 'Label for features with no data value',
-  },
-};
-
-MunicipalDistrictMapData.args = {
-  year: 2020,
-  abbreviate: false,
-  extended: false,
-  position: undefined,
-  noDataLabel: undefined,
-};
-
 /** Variation with labelFormat type='range' (abbreviated and extended) */
 export const WithRangeLabel = MunicipalDistrictMapData.bind({});
 WithRangeLabel.args = {
   year: 2020,
   abbreviate: true,
   extended: true,
-  position: undefined,
+  legendPosition: 'none',
   labelFormatType: 'range',
 };
 
@@ -462,7 +643,7 @@ WithPercentageLabel.args = {
   year: 2020,
   abbreviate: false,
   extended: true,
-  position: undefined,
+  legendPosition: 'none',
   labelFormatType: 'percentage',
 };
 
@@ -472,7 +653,7 @@ WithStdDevLabel.args = {
   year: 2020,
   abbreviate: true,
   extended: true,
-  position: undefined,
+  legendPosition: 'none',
   labelFormatType: 'stdDev',
 };
 
@@ -482,7 +663,7 @@ WithPositionedLegend.args = {
   year: 2020,
   abbreviate: true,
   extended: true,
-  position: 'bottom-left',
+  legendPosition: 'bottom-left',
   labelFormatType: 'auto',
   noDataLabel: 'No data',
 };
@@ -497,7 +678,7 @@ WithCustomLabel.args = {
   year: 2020,
   abbreviate: false,
   extended: false,
-  position: undefined,
+  legendPosition: 'none',
   labelFormatType: 'custom',
 };
 
@@ -511,7 +692,8 @@ WithLabelsFormat.args = {
   year: 2020,
   abbreviate: false,
   extended: false,
-  position: undefined,
+  legendPosition: 'none',
   labelFormatType: 'labels',
+  thresholdPreset: 'ibge',
   noDataLabel: 'No data',
 };
