@@ -20,7 +20,7 @@ jest.mock('aws-amplify/auth', () => {
       .fn()
       .mockRejectedValue(new Error('Not authenticated')),
     getCurrentUser: jest.fn().mockRejectedValue(new Error('Not authenticated')),
-    signOut: jest.fn(),
+    signOut: jest.fn().mockResolvedValue(undefined),
     confirmResetPassword: jest.fn(),
     resetPassword: jest.fn(),
   };
@@ -373,6 +373,283 @@ describe('onError callback', () => {
 
     await waitFor(() => {
       expect(onError).toHaveBeenCalledWith(testError);
+    });
+  });
+});
+
+describe('Cognito exception handling', () => {
+  const makeError = (name: string, message: string) => {
+    const err = new Error(message);
+    err.name = name;
+    return err;
+  };
+
+  describe('NotAuthorizedException — wrong password', () => {
+    test('should show toast and NOT call onError', async () => {
+      const onError = jest.fn();
+      const err = makeError(
+        'NotAuthorizedException',
+        'Incorrect username or password.'
+      );
+      (amplifyAuth.signIn as jest.Mock).mockRejectedValueOnce(err);
+
+      const user = userEvent.setup({ delay: null });
+      render(
+        <AuthProvider>
+          <Auth onError={onError} />
+        </AuthProvider>
+      );
+
+      await screen.findByLabelText('Email');
+      await user.type(screen.getByLabelText('Email'), email);
+      await user.type(screen.getByLabelText('Password'), password);
+      await user.click(screen.getByRole('button', { name: /Sign in/i }));
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Incorrect username or password.', { exact: false })
+        ).toBeInTheDocument();
+      });
+      expect(onError).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('UserNotFoundException — unknown email', () => {
+    test('should show toast on signIn and NOT call onError', async () => {
+      const onError = jest.fn();
+      const err = makeError('UserNotFoundException', 'User does not exist.');
+      (amplifyAuth.signIn as jest.Mock).mockRejectedValueOnce(err);
+
+      const user = userEvent.setup({ delay: null });
+      render(
+        <AuthProvider>
+          <Auth onError={onError} />
+        </AuthProvider>
+      );
+
+      await screen.findByLabelText('Email');
+      await user.type(screen.getByLabelText('Email'), email);
+      await user.type(screen.getByLabelText('Password'), password);
+      await user.click(screen.getByRole('button', { name: /Sign in/i }));
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('User does not exist.', { exact: false })
+        ).toBeInTheDocument();
+      });
+      expect(onError).not.toHaveBeenCalled();
+    });
+
+    test('should show toast on forgotPassword and NOT call onError', async () => {
+      const onError = jest.fn();
+      const err = makeError('UserNotFoundException', 'User does not exist.');
+      (amplifyAuth.resetPassword as jest.Mock).mockRejectedValueOnce(err);
+
+      const user = userEvent.setup({ delay: null });
+      render(
+        <AuthProvider>
+          <Auth onError={onError} />
+        </AuthProvider>
+      );
+
+      await screen.findByLabelText('Email');
+      await user.click(screen.getByText('Forgot password?'));
+      await user.type(screen.getByLabelText('Registered Email'), email);
+      await user.click(
+        screen.getByRole('button', { name: 'Recover Password' })
+      );
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('User does not exist.', { exact: false })
+        ).toBeInTheDocument();
+      });
+      expect(onError).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('CodeMismatchException — wrong confirmation code', () => {
+    test('should call confirmSignUp and NOT call onError', async () => {
+      const onError = jest.fn();
+      const err = makeError(
+        'CodeMismatchException',
+        'Invalid verification code provided, please try again.'
+      );
+      (amplifyAuth.signUp as jest.Mock).mockResolvedValueOnce({});
+      (amplifyAuth.confirmSignUp as jest.Mock).mockRejectedValueOnce(err);
+
+      const user = userEvent.setup();
+      render(
+        <AuthProvider>
+          <Auth onError={onError} />
+        </AuthProvider>
+      );
+
+      await waitFor(() => {
+        return expect(screen.getByText('Sign up')).toBeInTheDocument();
+      });
+      await user.click(screen.getByText('Sign up'));
+      await user.type(screen.getByLabelText('Email'), email);
+      await user.type(screen.getByLabelText('Password'), password);
+      await user.type(screen.getByLabelText('Confirm password'), password);
+      await user.click(screen.getByRole('button', { name: /Sign up/i }));
+
+      await waitFor(() => {
+        return expect(screen.getByLabelText('Code')).toBeInTheDocument();
+      });
+      await user.type(screen.getByLabelText('Code'), '000000');
+      await user.click(screen.getByRole('button', { name: 'Confirm' }));
+
+      await waitFor(() => {
+        expect(amplifyAuth.confirmSignUp).toHaveBeenCalled();
+        // stayed on confirm screen (did not navigate away)
+        expect(screen.getByLabelText('Code')).toBeInTheDocument();
+      });
+      expect(onError).not.toHaveBeenCalled();
+    });
+
+    test('should show toast on confirmResetPassword and NOT call onError', async () => {
+      const onError = jest.fn();
+      const err = makeError(
+        'CodeMismatchException',
+        'Invalid verification code provided, please try again.'
+      );
+      (amplifyAuth.resetPassword as jest.Mock).mockResolvedValueOnce({});
+      (amplifyAuth.confirmResetPassword as jest.Mock).mockRejectedValueOnce(
+        err
+      );
+
+      const user = userEvent.setup({ delay: null });
+      render(
+        <AuthProvider>
+          <Auth onError={onError} />
+        </AuthProvider>
+      );
+
+      await screen.findByLabelText('Email');
+      await user.click(screen.getByText('Forgot password?'));
+      await user.type(screen.getByLabelText('Registered Email'), email);
+      await user.click(
+        screen.getByRole('button', { name: 'Recover Password' })
+      );
+
+      await waitFor(() => {
+        return expect(
+          screen.getByLabelText('Confirmation code')
+        ).toBeInTheDocument();
+      });
+      await user.type(screen.getByLabelText('Confirmation code'), '678901');
+      await user.type(screen.getByLabelText('New Password'), password);
+      await user.click(screen.getByRole('button', { name: 'Reset Password' }));
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            'Invalid verification code provided, please try again.',
+            { exact: false }
+          )
+        ).toBeInTheDocument();
+      });
+      expect(onError).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('UsernameExistsException — duplicate sign-up', () => {
+    test('should redirect to signIn screen and NOT call onError', async () => {
+      const onError = jest.fn();
+      const err = makeError(
+        'UsernameExistsException',
+        'An account with the given email already exists.'
+      );
+      (amplifyAuth.signUp as jest.Mock).mockRejectedValueOnce(err);
+
+      const user = userEvent.setup();
+      render(
+        <AuthProvider>
+          <Auth onError={onError} />
+        </AuthProvider>
+      );
+
+      await waitFor(() => {
+        return expect(screen.getByText('Sign up')).toBeInTheDocument();
+      });
+      await user.click(screen.getByText('Sign up'));
+      await user.type(screen.getByLabelText('Email'), email);
+      await user.type(screen.getByLabelText('Password'), password);
+      await user.type(screen.getByLabelText('Confirm password'), password);
+      await user.click(screen.getByRole('button', { name: /Sign up/i }));
+
+      await waitFor(() => {
+        // Should navigate back to sign-in
+        expect(
+          screen.getByRole('button', { name: /Sign in/i })
+        ).toBeInTheDocument();
+      });
+      expect(onError).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('UserAlreadyAuthenticatedException — stale session', () => {
+    test('should call signOut and NOT call onError', async () => {
+      const onError = jest.fn();
+      const err = makeError(
+        'UserAlreadyAuthenticatedException',
+        'There is already a signed in user.'
+      );
+      (amplifyAuth.signIn as jest.Mock)
+        .mockRejectedValueOnce(err)
+        .mockResolvedValueOnce({ nextStep: { signInStep: 'DONE' } });
+
+      const user = userEvent.setup({ delay: null });
+      render(
+        <AuthProvider>
+          <Auth onError={onError} />
+        </AuthProvider>
+      );
+
+      await screen.findByLabelText('Email');
+      await user.type(screen.getByLabelText('Email'), email);
+      await user.type(screen.getByLabelText('Password'), password);
+      await user.click(screen.getByRole('button', { name: /Sign in/i }));
+
+      await waitFor(() => {
+        expect(amplifyAuth.signOut).toHaveBeenCalled();
+      });
+      expect(onError).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('InvalidParameterException — unverified account reset', () => {
+    test('should show specific guidance message and NOT call onError', async () => {
+      const onError = jest.fn();
+      const err = makeError(
+        'InvalidParameterException',
+        'Cannot reset password for the user as there is no registered/verified email or phone_number'
+      );
+      (amplifyAuth.resetPassword as jest.Mock).mockRejectedValueOnce(err);
+
+      const user = userEvent.setup({ delay: null });
+      render(
+        <AuthProvider>
+          <Auth onError={onError} />
+        </AuthProvider>
+      );
+
+      await screen.findByLabelText('Email');
+      await user.click(screen.getByText('Forgot password?'));
+      await user.type(screen.getByLabelText('Registered Email'), email);
+      await user.click(
+        screen.getByRole('button', { name: 'Recover Password' })
+      );
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            /account.*not.*verified|not.*verified.*account|verify.*account|unverified/i
+          )
+        ).toBeInTheDocument();
+      });
+      expect(onError).not.toHaveBeenCalled();
     });
   });
 });

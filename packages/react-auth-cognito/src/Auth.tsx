@@ -16,9 +16,20 @@ import {
   resendSignUpCode,
   resetPassword,
   signIn,
+  signOut,
   signUp,
 } from 'aws-amplify/auth';
 import * as React from 'react';
+
+const USER_ERROR_NAMES = new Set([
+  'NotAuthorizedException',
+  'UserNotFoundException',
+  'CodeMismatchException',
+]);
+
+const isUserError = (error: { name?: string }) => {
+  return Boolean(error.name && USER_ERROR_NAMES.has(error.name));
+};
 
 export type AuthProps = Pick<
   AuthCoreProps,
@@ -65,7 +76,15 @@ export const Auth = (props: AuthProps) => {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
-        onError?.(error);
+        if (error.name === 'UserAlreadyAuthenticatedException') {
+          await signOut();
+          return;
+        }
+
+        if (!isUserError(error)) {
+          onError?.(error);
+        }
+
         addNotification({ type: 'error', message: error.message });
       }
     },
@@ -88,7 +107,15 @@ export const Auth = (props: AuthProps) => {
         setScreen({ value: 'confirmSignUpWithCode', context: { email } });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
-        onError?.(error);
+        if (error.name === 'UsernameExistsException') {
+          setScreen({ value: 'signIn' });
+          return;
+        }
+
+        if (!isUserError(error)) {
+          onError?.(error);
+        }
+
         addNotification({ type: 'error', message: error.message });
       }
     },
@@ -102,7 +129,10 @@ export const Auth = (props: AuthProps) => {
         setScreen({ value: 'signIn' });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
-        onError?.(error);
+        if (!isUserError(error)) {
+          onError?.(error);
+        }
+
         addNotification({ type: 'error', message: error.message });
       }
     },
@@ -116,11 +146,25 @@ export const Auth = (props: AuthProps) => {
         setScreen({ value: 'confirmResetPassword', context: { email } });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
-        onError?.(error);
+        if (error.name === 'InvalidParameterException') {
+          addNotification({
+            type: 'error',
+            message: intl.formatMessage({
+              defaultMessage:
+                'Your account is not verified. Please contact support to verify your account before resetting your password.',
+            }),
+          });
+          return;
+        }
+
+        if (!isUserError(error)) {
+          onError?.(error);
+        }
+
         addNotification({ type: 'error', message: error.message });
       }
     },
-    [setScreen, addNotification, onError]
+    [setScreen, addNotification, onError, intl]
   );
 
   const onForgotPasswordResetPassword =
@@ -144,7 +188,10 @@ export const Auth = (props: AuthProps) => {
           setScreen({ value: 'signIn' });
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
-          onError?.(error);
+          if (!isUserError(error)) {
+            onError?.(error);
+          }
+
           addNotification({ type: 'error', message: error.message });
         }
       },
