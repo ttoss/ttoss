@@ -1,4 +1,4 @@
-import { NotificationCard } from '@ttoss/components/NotificationCard';
+import { NotificationCard } from '@ttoss/components';
 import { notify } from '@ttoss/logger';
 import { useI18n } from '@ttoss/react-i18n';
 import type * as React from 'react';
