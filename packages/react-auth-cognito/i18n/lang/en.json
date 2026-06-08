@@ -2,6 +2,9 @@
   "EO/33N": {
     "defaultMessage": "Signed in successfully"
   },
+  "Si5KBb": {
+    "defaultMessage": "Your account is not verified. Please contact support to verify your account before resetting your password."
+  },
   "0XOzcH": {
     "module": "@ttoss/react-auth-core",
     "defaultMessage": "Required field",
