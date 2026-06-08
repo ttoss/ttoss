@@ -30,6 +30,7 @@ export const SubscriptionPanelActionsSlot = ({
         flexDirection: ['column', 'row'],
         flexWrap: 'wrap',
         flexShrink: 0,
+        maxWidth: ['100%', '100%', '50%'],
         paddingX: '6',
         paddingBottom: '6',
       }}
