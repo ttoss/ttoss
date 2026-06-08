@@ -163,7 +163,6 @@ const useSignHandlers = ({
             type: 'error',
             message: fm(messages.usernameExists),
           });
-          setScreen({ value: 'signIn' });
           return;
         }
         if (!isUserError(error)) onError?.(error);

@@ -561,7 +561,7 @@ describe('Cognito exception handling', () => {
   });
 
   describe('UsernameExistsException — duplicate sign-up', () => {
-    test('should redirect to signIn screen and NOT call onError', async () => {
+    test('should show friendly message, stay on sign-up screen, NOT call onError', async () => {
       const onError = jest.fn();
       const err = makeError(
         'UsernameExistsException',
@@ -586,9 +586,14 @@ describe('Cognito exception handling', () => {
       await user.click(screen.getByRole('button', { name: /Sign up/i }));
 
       await waitFor(() => {
-        // Should navigate back to sign-in
         expect(
-          screen.getByRole('button', { name: /Sign in/i })
+          screen.getByText('An account with this email already exists.', {
+            exact: false,
+          })
+        ).toBeInTheDocument();
+        // Should stay on the sign-up screen
+        expect(
+          screen.getByRole('button', { name: /Sign up/i })
         ).toBeInTheDocument();
       });
       expect(onError).not.toHaveBeenCalled();
