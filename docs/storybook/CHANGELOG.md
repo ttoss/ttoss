@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.25.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.24.20...@docs/storybook@3.25.0) (2026-06-08)
+
+### Features
+
+- **react-billing:** add flexWrap to SubscriptionPanel actions ([#1026](https://github.com/ttoss/ttoss/issues/1026)) ([7362f97](https://github.com/ttoss/ttoss/commit/7362f97a2f5ed89e36054e4efe0ab7cbbbe834fa))
+
 ## [3.24.20](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.24.19...@docs/storybook@3.24.20) (2026-06-05)
 
 **Note:** Version bump only for package @docs/storybook
