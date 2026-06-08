@@ -452,6 +452,49 @@ export const MinimalWithoutMetrics: Story = {
 };
 
 /**
+ * Subscription with four action buttons to demonstrate flexWrap behavior.
+ * Buttons wrap gracefully instead of overflowing the card width.
+ */
+export const ManyActions: Story = {
+  args: {
+    ...Default.args,
+    variant: 'spotlight-accent',
+    planName: 'Starter Giovane Test Tracking',
+    price: { value: 'R$ 5,00', interval: 'ano' },
+    status: {
+      status: 'active',
+      interval: 'Anual',
+      cancellationPending: true,
+    },
+    actions: [
+      {
+        label: 'Alteração de Plano',
+        onClick: () => {},
+        variant: 'accent',
+        leftIcon: 'fluent:arrow-sync-24-regular',
+      },
+      {
+        label: 'Gerenciar Assinatura',
+        onClick: () => {},
+        variant: 'secondary',
+        leftIcon: 'fluent:arrow-right-24-regular',
+      },
+      {
+        label: 'Alterar Método de Pagamento',
+        onClick: () => {},
+        variant: 'secondary',
+        leftIcon: 'fluent:payment-24-regular',
+      },
+      {
+        label: 'Cancelar Assinatura',
+        onClick: () => {},
+        variant: 'secondary',
+      },
+    ],
+  },
+};
+
+/**
  * Annual subscription example.
  */
 export const AnnualSubscription: Story = {
