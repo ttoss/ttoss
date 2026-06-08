@@ -407,7 +407,7 @@ describe('Cognito exception handling', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText('Incorrect username or password.', { exact: false })
+          screen.getByText('Incorrect email or password.', { exact: false })
         ).toBeInTheDocument();
       });
       expect(onError).not.toHaveBeenCalled();
@@ -434,7 +434,9 @@ describe('Cognito exception handling', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText('User does not exist.', { exact: false })
+          screen.getByText('No account found with this email address.', {
+            exact: false,
+          })
         ).toBeInTheDocument();
       });
       expect(onError).not.toHaveBeenCalled();
@@ -461,7 +463,9 @@ describe('Cognito exception handling', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText('User does not exist.', { exact: false })
+          screen.getByText('No account found with this email address.', {
+            exact: false,
+          })
         ).toBeInTheDocument();
       });
       expect(onError).not.toHaveBeenCalled();
@@ -545,8 +549,10 @@ describe('Cognito exception handling', () => {
       await waitFor(() => {
         expect(
           screen.getByText(
-            'Invalid verification code provided, please try again.',
-            { exact: false }
+            'The code you entered is incorrect. Please try again.',
+            {
+              exact: false,
+            }
           )
         ).toBeInTheDocument();
       });
@@ -596,9 +602,7 @@ describe('Cognito exception handling', () => {
         'UserAlreadyAuthenticatedException',
         'There is already a signed in user.'
       );
-      (amplifyAuth.signIn as jest.Mock)
-        .mockRejectedValueOnce(err)
-        .mockResolvedValueOnce({ nextStep: { signInStep: 'DONE' } });
+      (amplifyAuth.signIn as jest.Mock).mockRejectedValueOnce(err);
 
       const user = userEvent.setup({ delay: null });
       render(
@@ -614,6 +618,11 @@ describe('Cognito exception handling', () => {
 
       await waitFor(() => {
         expect(amplifyAuth.signOut).toHaveBeenCalled();
+        expect(
+          screen.getByText('Your session expired. Please sign in again.', {
+            exact: false,
+          })
+        ).toBeInTheDocument();
       });
       expect(onError).not.toHaveBeenCalled();
     });
@@ -645,12 +654,69 @@ describe('Cognito exception handling', () => {
       await waitFor(() => {
         expect(
           screen.getByText(
-            /account.*not.*verified|not.*verified.*account|verify.*account|unverified/i
+            'Your account is not verified. Please contact support to verify your account before resetting your password.',
+            { exact: false }
           )
         ).toBeInTheDocument();
       });
       expect(onError).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe('friendly messages for known errors', () => {
+  test('signIn RESET_PASSWORD step shows friendly message', async () => {
+    (amplifyAuth.signIn as jest.Mock).mockResolvedValueOnce({
+      nextStep: { signInStep: 'RESET_PASSWORD' },
+    });
+
+    const user = userEvent.setup({ delay: null });
+    render(
+      <AuthProvider>
+        <Auth />
+      </AuthProvider>
+    );
+
+    await screen.findByLabelText('Email');
+    await user.type(screen.getByLabelText('Email'), email);
+    await user.type(screen.getByLabelText('Password'), password);
+    await user.click(screen.getByRole('button', { name: /Sign in/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "For your security, please reset your password using 'Forgot password?' before continuing.",
+          { exact: false }
+        )
+      ).toBeInTheDocument();
+    });
+  });
+
+  test('generic signIn error shows fallback message', async () => {
+    const onError = jest.fn();
+    const err = new Error('Network error');
+    (amplifyAuth.signIn as jest.Mock).mockRejectedValueOnce(err);
+
+    const user = userEvent.setup({ delay: null });
+    render(
+      <AuthProvider>
+        <Auth onError={onError} />
+      </AuthProvider>
+    );
+
+    await screen.findByLabelText('Email');
+    await user.type(screen.getByLabelText('Email'), email);
+    await user.type(screen.getByLabelText('Password'), password);
+    await user.click(screen.getByRole('button', { name: /Sign in/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Something went wrong. Please try again.', {
+          exact: false,
+        })
+      ).toBeInTheDocument();
+    });
+    expect(onError).toHaveBeenCalledWith(err);
   });
 });
 

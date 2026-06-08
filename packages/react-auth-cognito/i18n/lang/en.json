@@ -5,6 +5,27 @@
   "Si5KBb": {
     "defaultMessage": "Your account is not verified. Please contact support to verify your account before resetting your password."
   },
+  "hiDBb8": {
+    "defaultMessage": "For your security, please reset your password using 'Forgot password?' before continuing."
+  },
+  "Xkk5+j": {
+    "defaultMessage": "Incorrect email or password."
+  },
+  "GQwU6M": {
+    "defaultMessage": "No account found with this email address."
+  },
+  "00V+36": {
+    "defaultMessage": "The code you entered is incorrect. Please try again."
+  },
+  "PmLYMO": {
+    "defaultMessage": "An account with this email already exists. Please sign in."
+  },
+  "5QwUU+": {
+    "defaultMessage": "Your session expired. Please sign in again."
+  },
+  "W/5hwr": {
+    "defaultMessage": "Something went wrong. Please try again."
+  },
   "0XOzcH": {
     "module": "@ttoss/react-auth-core",
     "defaultMessage": "Required field",
