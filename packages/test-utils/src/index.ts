@@ -7,6 +7,14 @@ const TTOSS_ESM_MODULES = [
   'change-case',
   'rehype-raw',
   '@iconify-icons',
+  'react-markdown',
+  'remark-gfm',
+  'remark-parse',
+  'unified',
+  'mdast-util-from-markdown',
+  'mdast-util-to-hast',
+  'hast-util-to-jsx-runtime',
+  'vfile',
 ];
 
 /**
