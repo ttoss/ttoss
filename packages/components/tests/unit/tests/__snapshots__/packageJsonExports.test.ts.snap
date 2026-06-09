@@ -9,7 +9,10 @@ exports[`package.json exports should export all components 1`] = `
 exports[`package.json exports should export all components 2`] = `
 {
   ".": {
+    "browser": "./dist/index.mjs",
     "default": "./dist/index.mjs",
+    "import": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
     "types": "./dist/index.d.mts",
   },
 }
