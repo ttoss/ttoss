@@ -1,4 +1,4 @@
-import { NotificationCard } from '@ttoss/components/NotificationCard';
+import { NotificationCard } from '@ttoss/components';
 import { Stack } from '@ttoss/ui';
 
 import { type Notification, useNotifications } from './Provider';

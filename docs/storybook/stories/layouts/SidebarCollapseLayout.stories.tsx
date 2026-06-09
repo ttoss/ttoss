@@ -1,7 +1,7 @@
 /* eslint-disable formatjs/no-literal-string-in-jsx */
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import type { Notification } from '@ttoss/components/NotificationsMenu';
-import { NotificationsMenu } from '@ttoss/components/NotificationsMenu';
+import type { Notification } from '@ttoss/components';
+import { NotificationsMenu } from '@ttoss/components';
 import { Layout, SidebarCollapseLayout } from '@ttoss/layouts';
 import {
   NotificationsProvider,

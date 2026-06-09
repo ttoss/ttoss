@@ -1,6 +1,5 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
-import { Menu } from '@ttoss/components/Menu';
-import { NotificationCard } from '@ttoss/components/NotificationCard';
+import { Menu, NotificationCard } from '@ttoss/components';
 import { Icon } from '@ttoss/react-icons';
 import { Flex } from '@ttoss/ui';
 

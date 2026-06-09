@@ -1,4 +1,4 @@
-import type { DateRange } from '@ttoss/components/DatePicker';
+import type { DateRange } from '@ttoss/components';
 import { render, screen, userEvent, waitFor } from '@ttoss/test-utils/react';
 import { Button } from '@ttoss/ui';
 

@@ -1,5 +1,5 @@
-import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { FileUploader } from '@ttoss/components/FileUploader';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import { FileUploader } from '@ttoss/components';
 import { action } from 'storybook/actions';
 
 // Mock upload function that simulates successful upload

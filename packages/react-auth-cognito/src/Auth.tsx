@@ -266,7 +266,9 @@ export const Auth = (props: AuthProps) => {
   const { intl } = useI18n();
   const { screen, setScreen } = useAuthScreen();
   const { addNotification } = useNotifications();
-  const fm = intl.formatMessage.bind(intl) as Fm;
+  const fm: Fm = (m) => {
+    return intl.formatMessage(m) as unknown as string;
+  };
 
   const { onSignIn, onSignUp, onConfirmSignUpWithCode } = useSignHandlers({
     onError,

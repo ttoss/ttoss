@@ -3,7 +3,7 @@ import {
   ToastContainer,
   type ToastContainerProps,
   type ToastOptions,
-} from '@ttoss/components/Toast';
+} from '@ttoss/components';
 import { Flex, InfiniteLinearProgress } from '@ttoss/ui';
 import * as React from 'react';
 

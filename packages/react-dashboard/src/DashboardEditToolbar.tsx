@@ -1,5 +1,4 @@
-import { Drawer } from '@ttoss/components/Drawer';
-import { Search } from '@ttoss/components/Search';
+import { Drawer, Search } from '@ttoss/components';
 import { Box, Button, Flex, Input, Label, Text, useTheme } from '@ttoss/ui';
 import * as React from 'react';
 
@@ -44,6 +43,7 @@ const GROUP_LABELS: Record<CardCatalogGroup, string> = {
   oneclickads: 'OneClickAds',
 };
 
+// eslint-disable-next-line max-lines-per-function, complexity
 export const DashboardEditToolbar = () => {
   const { theme } = useTheme();
   const {
@@ -72,6 +72,7 @@ export const DashboardEditToolbar = () => {
 
   React.useEffect(() => {
     if (saveAsNewModalOpen && selectedTemplate) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSaveAsNewTitle(`Clone de ${selectedTemplate.name}`);
     }
   }, [saveAsNewModalOpen, selectedTemplate]);

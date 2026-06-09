@@ -1,5 +1,5 @@
-import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { NotificationCard } from '@ttoss/components/NotificationCard';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import { NotificationCard } from '@ttoss/components';
 import { Flex } from '@ttoss/ui';
 
 export default {

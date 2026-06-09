@@ -1,4 +1,4 @@
-import { SpotlightCard } from '@ttoss/components/SpotlightCard';
+import { SpotlightCard } from '@ttoss/components';
 import { fireEvent, render, screen } from '@ttoss/test-utils/react';
 
 describe('SpotlightCard', () => {
