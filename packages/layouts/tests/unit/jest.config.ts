@@ -2,6 +2,7 @@ import { jestUnitConfig } from '@ttoss/config';
 
 const config = jestUnitConfig({
   testEnvironment: 'jsdom',
+  transformIgnorePatterns: ['node_modules/(?!rehype-raw)/'],
   coverageThreshold: {
     global: {
       statements: 92.37,
