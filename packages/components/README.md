@@ -19,7 +19,7 @@ All components are theme-aware and integrate seamlessly with `@ttoss/ui`.
 Accessible accordion component with collapsible content sections. [Docs](https://storybook.ttoss.dev/?path=/docs/components-accordion--docs)
 
 ```tsx
-import { Accordion } from '@ttoss/components/Accordion';
+import { Accordion } from '@ttoss/components';
 
 <Accordion
   items={[
@@ -40,7 +40,7 @@ import { Accordion } from '@ttoss/components/Accordion';
 Date range picker with presets and mobile support. [Docs](https://storybook.ttoss.dev/?path=/docs/components-datepicker--docs)
 
 ```tsx
-import { DatePicker } from '@ttoss/components/DatePicker';
+import { DatePicker } from '@ttoss/components';
 
 <DatePicker
   label="Select period"
@@ -63,7 +63,7 @@ import { DatePicker } from '@ttoss/components/DatePicker';
 Slide-out panels from screen edges. [Docs](https://storybook.ttoss.dev/?path=/docs/components-drawer--docs)
 
 ```tsx
-import { Drawer } from '@ttoss/components/Drawer';
+import { Drawer } from '@ttoss/components';
 
 <Drawer open={isOpen} direction="right" size="300px">
   <div>Drawer content</div>
@@ -75,7 +75,7 @@ import { Drawer } from '@ttoss/components/Drawer';
 Structured title section with icon, badges, and metadata. [Docs](https://storybook.ttoss.dev/?path=/docs/components-enhancedtitle--docs)
 
 ```tsx
-import { EnhancedTitle } from '@ttoss/components/EnhancedTitle';
+import { EnhancedTitle } from '@ttoss/components';
 
 <EnhancedTitle
   icon="fluent:shield-24-filled"
@@ -101,7 +101,7 @@ import { EnhancedTitle } from '@ttoss/components/EnhancedTitle';
 Controlled file uploader with drag-and-drop, previews, and validation. [Docs](https://storybook.ttoss.dev/?path=/docs/components-fileuploader--docs)
 
 ```tsx
-import { FileUploader } from '@ttoss/components/FileUploader';
+import { FileUploader } from '@ttoss/components';
 
 <FileUploader
   onUpload={async (file, onProgress) => {
@@ -122,7 +122,7 @@ import { FileUploader } from '@ttoss/components/FileUploader';
 PWA installation prompt component.
 
 ```tsx
-import { InstallPwa } from '@ttoss/components/InstallPwa';
+import { InstallPwa } from '@ttoss/components';
 
 <InstallPwa />;
 ```
@@ -132,7 +132,7 @@ import { InstallPwa } from '@ttoss/components/InstallPwa';
 JSON editor component. Re-exports from [json-edit-react](https://carlosdevpereira.github.io/json-edit-react/). [Docs](https://storybook.ttoss.dev/?path=/docs/components-jsoneditor--docs)
 
 ```tsx
-import { JsonEditor } from '@ttoss/components/JsonEditor';
+import { JsonEditor } from '@ttoss/components';
 
 <JsonEditor data={jsonData} setData={setJsonData} />;
 ```
@@ -142,7 +142,7 @@ import { JsonEditor } from '@ttoss/components/JsonEditor';
 JSON viewer component. Re-exports from [react-json-view-lite](https://github.com/AnyRoad/react-json-view-lite).
 
 ```tsx
-import { JsonView } from '@ttoss/components/JsonView';
+import { JsonView } from '@ttoss/components';
 
 <JsonView data={jsonData} />;
 ```
@@ -152,7 +152,7 @@ import { JsonView } from '@ttoss/components/JsonView';
 Unordered lists with customizable items. [Docs](https://storybook.ttoss.dev/?path=/docs/components-list--docs)
 
 ```tsx
-import { List, ListItem } from '@ttoss/components/List';
+import { List, ListItem } from '@ttoss/components';
 
 <List>
   <ListItem>First item</ListItem>
@@ -165,7 +165,7 @@ import { List, ListItem } from '@ttoss/components/List';
 Block and display locked features or restricted content within a container. Unlike modals, overlays block only their parent container. [Docs](https://storybook.ttoss.dev/?path=/docs/components-lockedoverlay--docs)
 
 ```tsx
-import { LockedOverlay } from '@ttoss/components/LockedOverlay';
+import { LockedOverlay } from '@ttoss/components';
 
 <Box sx={{ position: 'relative' }}>
   <LockedOverlay
@@ -196,7 +196,7 @@ import { LockedOverlay } from '@ttoss/components/LockedOverlay';
 Render markdown content with theme integration. [Docs](https://storybook.ttoss.dev/?path=/docs/components-markdown--docs)
 
 ```tsx
-import { Markdown } from '@ttoss/components/Markdown';
+import { Markdown } from '@ttoss/components';
 
 <Markdown
   components={{
@@ -212,7 +212,7 @@ import { Markdown } from '@ttoss/components/Markdown';
 Dropdown menus with customizable triggers. [Docs](https://storybook.ttoss.dev/?path=/docs/components-menu--docs)
 
 ```tsx
-import { Menu } from '@ttoss/components/Menu';
+import { Menu } from '@ttoss/components';
 
 <Menu trigger={<Button>Open Menu</Button>}>
   <Menu.Item onClick={() => {}}>Action 1</Menu.Item>
@@ -225,7 +225,7 @@ import { Menu } from '@ttoss/components/Menu';
 Display metrics with progress visualization, status indicators, and contextual information. [Docs](https://storybook.ttoss.dev/?path=/docs/components-metriccard--docs)
 
 ```tsx
-import { MetricCard } from '@ttoss/components/MetricCard';
+import { MetricCard } from '@ttoss/components';
 
 <MetricCard
   metric={{
@@ -243,7 +243,7 @@ import { MetricCard } from '@ttoss/components/MetricCard';
 Navigation lists for sidebars, menus, and dropdowns with icons, grouping, and routing integration. [Docs](https://storybook.ttoss.dev/?path=/docs/components-navlist--docs)
 
 ```tsx
-import { NavList } from '@ttoss/components/NavList';
+import { NavList } from '@ttoss/components';
 
 <NavList
   items={[
@@ -260,7 +260,7 @@ import { NavList } from '@ttoss/components/NavList';
 Theme-aware modals with accessibility features. [Docs](https://storybook.ttoss.dev/?path=/docs/components-modal--docs)
 
 ```tsx
-import { Modal } from '@ttoss/components/Modal';
+import { Modal } from '@ttoss/components';
 
 <Modal
   isOpen={isOpen}
@@ -276,7 +276,7 @@ import { Modal } from '@ttoss/components/Modal';
 Display notification messages with actions. [Docs](https://storybook.ttoss.dev/?path=/docs/components-notificationcard--docs)
 
 ```tsx
-import { NotificationCard } from '@ttoss/components/NotificationCard';
+import { NotificationCard } from '@ttoss/components';
 
 <NotificationCard
   title="Notification Title"
@@ -290,7 +290,7 @@ import { NotificationCard } from '@ttoss/components/NotificationCard';
 Menu component for displaying notifications. [Docs](https://storybook.ttoss.dev/?path=/docs/components-notificationsmenu--docs)
 
 ```tsx
-import { NotificationsMenu } from '@ttoss/components/NotificationsMenu';
+import { NotificationsMenu } from '@ttoss/components';
 
 <NotificationsMenu
   notifications={[{ id: '1', title: 'New message', read: false }]}
@@ -303,7 +303,7 @@ import { NotificationsMenu } from '@ttoss/components/NotificationsMenu';
 Debounced search input with loading states. [Docs](https://storybook.ttoss.dev/?path=/docs/components-search--docs)
 
 ```tsx
-import { Search } from '@ttoss/components/Search';
+import { Search } from '@ttoss/components';
 
 <Search
   value={searchText}
@@ -318,7 +318,7 @@ import { Search } from '@ttoss/components/Search';
 Interactive card with spotlight effect, icon, and action buttons. [Docs](https://storybook.ttoss.dev/?path=/docs/components-spotlightcard--docs)
 
 ```tsx
-import { SpotlightCard } from '@ttoss/components/SpotlightCard';
+import { SpotlightCard } from '@ttoss/components';
 
 <SpotlightCard
   icon="mdi:rocket-launch"
@@ -334,11 +334,7 @@ import { SpotlightCard } from '@ttoss/components/SpotlightCard';
 Flexible tables with sorting and pagination. Uses [TanStack Table](https://tanstack.com/table/latest). [Docs](https://storybook.ttoss.dev/?path=/docs/components-table--docs)
 
 ```tsx
-import {
-  Table,
-  useReactTable,
-  createColumnHelper,
-} from '@ttoss/components/Table';
+import { Table, useReactTable, createColumnHelper } from '@ttoss/components';
 
 const table = useReactTable({
   data,
@@ -380,7 +376,7 @@ const table = useReactTable({
 Tab navigation with content panels. [Docs](https://storybook.ttoss.dev/?path=/docs/components-tabs--docs)
 
 ```tsx
-import { Tabs } from '@ttoss/components/Tabs';
+import { Tabs } from '@ttoss/components';
 
 <Tabs>
   <Tabs.TabList>
@@ -399,7 +395,7 @@ import { Tabs } from '@ttoss/components/Tabs';
 Toast notification system. [Docs](https://storybook.ttoss.dev/?path=/docs/components-toast--docs)
 
 ```tsx
-import { Toast } from '@ttoss/components/Toast';
+import { Toast } from '@ttoss/components';
 
 <Toast
   message="Success message"
