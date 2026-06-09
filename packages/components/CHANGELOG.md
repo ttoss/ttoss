@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.14.26](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.14.25...@ttoss/components@2.14.26) (2026-06-09)
+
+### Bug Fixes
+
+- **@ttoss/react-notifications:** move @ttoss/components to dependencies ([#1029](https://github.com/ttoss/ttoss/issues/1029)) ([51c5d30](https://github.com/ttoss/ttoss/commit/51c5d30602c44d3620fab2072969c7b12d6243d0)), closes [#1028](https://github.com/ttoss/ttoss/issues/1028)
+
 ## [2.14.25](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.14.24...@ttoss/components@2.14.25) (2026-06-05)
 
 ### Bug Fixes
