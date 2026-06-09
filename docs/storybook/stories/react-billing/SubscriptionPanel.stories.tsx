@@ -55,10 +55,7 @@ const formatNumber = (value: number) => {
   return new Intl.NumberFormat('pt-BR').format(value);
 };
 
-/**
- * Default subscription card showing an active subscription with all metric types.
- * Use the controls to change the variant and see different visual styles.
- */
+/** Default active subscription with all metric types. Use controls to change the variant. */
 export const Default: Story = {
   args: {
     variant: 'spotlight-accent',
@@ -379,55 +376,6 @@ export const ActionLoading: Story = {
 };
 
 /**
- * Clickable metric cards.
- */
-export const ClickableMetrics: Story = {
-  args: {
-    ...Default.args,
-    variant: 'primary',
-    planName: 'Premium Plan',
-    price: { value: 'R$ 99,00', interval: 'mês' },
-    actions: undefined,
-    metrics: [
-      {
-        type: 'date',
-        label: 'Acesso válido até',
-        tooltip: 'Clique para ver detalhes da renovação',
-        date: '11/12/2026',
-        remainingDaysMessage: 'Faltam 358 dias',
-        icon: 'fluent:calendar-24-regular',
-        onClick: () => {
-          alert('Clicou em: Acesso válido até');
-        },
-      },
-      {
-        type: 'percentage',
-        label: 'Conversões rastreadas',
-        tooltip: 'Clique para ver relatório de conversões',
-        current: 1250,
-        max: 2500,
-        formatValue: formatNumber,
-        icon: 'fluent:target-24-regular',
-        onClick: () => {
-          alert('Clicou em: Conversões rastreadas');
-        },
-      },
-      {
-        type: 'number',
-        label: 'Contas de anúncios',
-        tooltip: 'Clique para gerenciar contas',
-        current: 3,
-        max: 10,
-        icon: 'fluent:people-24-regular',
-        helpArticleAction: () => {
-          alert('Abrindo artigo de ajuda sobre contas');
-        },
-      },
-    ],
-  },
-};
-
-/**
  * Minimal subscription card without metrics.
  */
 export const MinimalWithoutMetrics: Story = {
@@ -448,81 +396,5 @@ export const MinimalWithoutMetrics: Story = {
       },
     ],
     metrics: undefined,
-  },
-};
-
-/**
- * Annual subscription example.
- */
-export const AnnualSubscription: Story = {
-  args: {
-    ...Default.args,
-    variant: 'accent',
-    planName: 'Starter Anual',
-    price: { value: 'R$ 5,00', interval: 'ano' },
-    status: {
-      status: 'active',
-      interval: 'Anual',
-    },
-    features: [
-      { label: 'OneClick Tracking' },
-      { label: 'Otimização de Campanhas' },
-    ],
-    actions: [
-      {
-        label: 'Alteração de Plano',
-        onClick: () => {},
-        variant: 'secondary',
-        leftIcon: 'fluent:arrow-sync-24-regular',
-      },
-      {
-        label: 'Gerenciar Assinatura',
-        onClick: () => {},
-        variant: 'accent',
-        leftIcon: 'fluent:arrow-right-24-regular',
-      },
-    ],
-    metrics: [
-      {
-        type: 'date',
-        label: 'Acesso válido até',
-        tooltip: 'Data em que sua assinatura expira e precisa ser renovada',
-        date: '11/12/2026',
-        remainingDaysMessage: 'Faltam 358 dias',
-        icon: 'fluent:calendar-24-regular',
-      },
-      {
-        type: 'percentage',
-        label: 'Conversões rastreadas',
-        tooltip: 'Número de conversões que você já rastreou neste período',
-        current: 0,
-        max: 2500,
-        formatValue: formatNumber,
-        showAlertThreshold: 80,
-        icon: 'fluent:target-24-regular',
-      },
-      {
-        type: 'number',
-        label: 'Contas de anúncios',
-        tooltip: () => {
-          // eslint-disable-next-line no-console
-          console.log('Abrindo artigo de ajuda sobre contas');
-        },
-        current: 2,
-        max: null,
-        footerText: 'Adicione mais contas para expandir seu alcance',
-        icon: 'fluent:people-24-regular',
-      },
-      {
-        type: 'percentage',
-        label: 'Limite de investimento',
-        tooltip: 'Valor total que você pode investir em anúncios neste período',
-        current: 4200,
-        max: 5000,
-        formatValue: formatCurrency,
-        showAlertThreshold: 80,
-        icon: 'fluent:arrow-trending-24-regular',
-      },
-    ],
   },
 };

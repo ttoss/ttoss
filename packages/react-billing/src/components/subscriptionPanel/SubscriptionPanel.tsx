@@ -69,6 +69,7 @@ export const SubscriptionPanel = ({
   actions = [],
   metrics = [],
   isLoading = false,
+  // eslint-disable-next-line complexity
 }: SubscriptionPanelProps) => {
   if (isLoading) {
     /**
