@@ -4,72 +4,30 @@
     "defaultMessage": "∞",
     "description": "Infinity symbol used when the maximum limit is unlimited."
   },
+  "0XOzcH": {
+    "module": "@ttoss/react-auth-core",
+    "defaultMessage": "Required field",
+    "description": "Required field."
+  },
   "1DbX9V": {
     "module": "@ttoss/components",
     "defaultMessage": "Near limit",
     "description": "Alert shown when usage is close to the limit."
+  },
+  "38HSjr": {
+    "module": "@ttoss/react-auth-core",
+    "defaultMessage": "Sign In",
+    "description": "Sign In"
   },
   "4NwCn9": {
     "module": "@ttoss/components",
     "defaultMessage": "Reached limit",
     "description": "Alert shown when usage has reached or exceeded the limit."
   },
-  "G/yZLu": {
-    "module": "@ttoss/components",
-    "defaultMessage": "Remove"
-  },
-  "JEsxDw": {
-    "module": "@ttoss/components",
-    "defaultMessage": "Uploading..."
-  },
-  "XKyo5X": {
-    "module": "@ttoss/components",
-    "defaultMessage": "File Upload"
-  },
-  "eRShvB": {
-    "module": "@ttoss/components",
-    "defaultMessage": "Maximum files reached"
-  },
-  "fDCMA6": {
-    "module": "@ttoss/components",
-    "defaultMessage": "Select Files"
-  },
-  "fOOwej": {
-    "module": "@ttoss/components",
-    "defaultMessage": "{max_files, plural, one {Up to # file} other {Up to # files}}"
-  },
-  "gy0Ynb": {
-    "module": "@ttoss/components",
-    "defaultMessage": "Click or drag files here"
-  },
-  "oYpm71": {
-    "module": "@ttoss/components",
-    "defaultMessage": "of {max}",
-    "description": "Text shown before the max value, e.g. \"of 10\" or \"of ∞\"."
-  },
-  "rskBv4": {
-    "module": "@ttoss/components",
-    "defaultMessage": "Unlimited",
-    "description": "Shown when a metric has no maximum limit."
-  },
-  "zr0OS6": {
-    "module": "@ttoss/components",
-    "defaultMessage": "{percentage}% used",
-    "description": "Footer shown for percentage metrics, e.g. \"80% used\"."
-  },
-  "EO/33N": {
-    "module": "@ttoss/react-auth-cognito",
-    "defaultMessage": "Signed in successfully"
-  },
-  "0XOzcH": {
-    "module": "@ttoss/react-auth-core",
-    "defaultMessage": "Required field",
-    "description": "Required field."
-  },
-  "38HSjr": {
-    "module": "@ttoss/react-auth-core",
-    "defaultMessage": "Sign In",
-    "description": "Sign In"
+  "4iVwXU": {
+    "defaultMessage": "Incorrect email or password.",
+    "description": "Shown when the user enters wrong sign-in credentials.",
+    "module": "@ttoss/react-auth-cognito"
   },
   "5E12mO": {
     "module": "@ttoss/react-auth-core",
@@ -100,25 +58,77 @@
     "module": "@ttoss/react-auth-core",
     "defaultMessage": "By signing up, you agree to the following Terms and Conditions."
   },
+  "D1C6fR": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "Field must be at least {min} characters",
+    "description": "Min length field"
+  },
+  "DMiLA3": {
+    "defaultMessage": "The code you entered is incorrect. Please try again.",
+    "description": "Shown when the user types a wrong confirmation code.",
+    "module": "@ttoss/react-auth-cognito"
+  },
+  "DZm5/m": {
+    "defaultMessage": "For your security, please reset your password using 'Forgot password?' before continuing.",
+    "description": "Shown when Cognito requires a password reset on sign in.",
+    "module": "@ttoss/react-auth-cognito"
+  },
+  "EO/33N": {
+    "module": "@ttoss/react-auth-cognito",
+    "defaultMessage": "Signed in successfully"
+  },
   "EZ3YF2": {
     "module": "@ttoss/react-auth-core",
     "defaultMessage": "Sign up",
     "description": "Sign up"
+  },
+  "FGojIS": {
+    "defaultMessage": "Your account is not verified. Please contact support to verify your account before resetting your password.",
+    "description": "Shown on forgot-password when the account has no verified email.",
+    "module": "@ttoss/react-auth-cognito"
+  },
+  "G/yZLu": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Remove"
+  },
+  "H8LG4D": {
+    "defaultMessage": "No account found with this email address.",
+    "description": "Shown when no Cognito user exists for the given email.",
+    "module": "@ttoss/react-auth-cognito"
   },
   "HT4tSM": {
     "module": "@ttoss/react-auth-core",
     "defaultMessage": "Reset Password",
     "description": "Reset Password"
   },
+  "JEsxDw": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Uploading..."
+  },
   "KY2T6J": {
     "module": "@ttoss/react-auth-core",
     "defaultMessage": "Code",
     "description": "Sign up confirmation code"
   },
+  "MJ01Sw": {
+    "defaultMessage": "An account with this email already exists. Please sign in.",
+    "description": "Shown when a user tries to sign up with an existing email.",
+    "module": "@ttoss/react-auth-cognito"
+  },
+  "MfWGyg": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "Field is required",
+    "description": "Field is required"
+  },
   "NJ57Qj": {
     "module": "@ttoss/react-auth-core",
     "defaultMessage": "Confirm password field is required",
     "description": "Confirm Password is required."
+  },
+  "NJvJrM": {
+    "defaultMessage": "Signed in successfully",
+    "description": "Success notification after sign in.",
+    "module": "@ttoss/react-auth-cognito"
   },
   "OhDL0i": {
     "module": "@ttoss/react-auth-core",
@@ -169,10 +179,24 @@
     "defaultMessage": "Passwords are not the same",
     "description": "Passwords are not the same"
   },
+  "XKyo5X": {
+    "module": "@ttoss/components",
+    "defaultMessage": "File Upload"
+  },
   "XreZg+": {
     "module": "@ttoss/react-auth-core",
     "defaultMessage": "Registered Email",
     "description": "Registered Email"
+  },
+  "ZhaPt0": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "Invalid Value for Field of type {type}",
+    "description": "Invalid Value"
+  },
+  "ay85xa": {
+    "defaultMessage": "Something went wrong. Please try again.",
+    "description": "Fallback message for unexpected authentication errors.",
+    "module": "@ttoss/react-auth-cognito"
   },
   "cGR2eI": {
     "module": "@ttoss/react-auth-core",
@@ -188,6 +212,27 @@
     "module": "@ttoss/react-auth-core",
     "defaultMessage": "New Password",
     "description": "New Password"
+  },
+  "eRShvB": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Maximum files reached"
+  },
+  "fDCMA6": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Select Files"
+  },
+  "fOOwej": {
+    "module": "@ttoss/components",
+    "defaultMessage": "{max_files, plural, one {Up to # file} other {Up to # files}}"
+  },
+  "gy0Ynb": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Click or drag files here"
+  },
+  "i6IsKy": {
+    "module": "@ttoss/forms",
+    "defaultMessage": ".",
+    "description": "Decimal separator for number formatting (e.g., \".\" for 1.23 or \",\" for 1,23)"
   },
   "kdFYba": {
     "module": "@ttoss/react-auth-core",
@@ -213,6 +258,16 @@
     "defaultMessage": "Recover Password",
     "description": "Recover Password"
   },
+  "nL+H/D": {
+    "defaultMessage": "Your session expired. Please sign in again.",
+    "description": "Shown when a stale Amplify session is detected.",
+    "module": "@ttoss/react-auth-cognito"
+  },
+  "oYpm71": {
+    "module": "@ttoss/components",
+    "defaultMessage": "of {max}",
+    "description": "Text shown before the max value, e.g. \"of 10\" or \"of ∞\"."
+  },
   "oayEC3": {
     "module": "@ttoss/react-auth-core",
     "defaultMessage": "Sign up",
@@ -230,34 +285,24 @@
     "module": "@ttoss/react-auth-core",
     "defaultMessage": "You must accept the terms and conditions"
   },
+  "rskBv4": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Unlimited",
+    "description": "Shown when a metric has no maximum limit."
+  },
   "s1OmP0": {
     "module": "@ttoss/react-auth-core",
     "defaultMessage": "Confirmation code",
     "description": "Confirmation code"
   },
-  "D1C6fR": {
-    "module": "@ttoss/forms",
-    "defaultMessage": "Field must be at least {min} characters",
-    "description": "Min length field"
-  },
-  "MfWGyg": {
-    "module": "@ttoss/forms",
-    "defaultMessage": "Field is required",
-    "description": "Field is required"
-  },
-  "ZhaPt0": {
-    "module": "@ttoss/forms",
-    "defaultMessage": "Invalid Value for Field of type {type}",
-    "description": "Invalid Value"
-  },
-  "i6IsKy": {
-    "module": "@ttoss/forms",
-    "defaultMessage": ".",
-    "description": "Decimal separator for number formatting (e.g., \".\" for 1.23 or \",\" for 1,23)"
-  },
   "yktL1M": {
     "module": "@ttoss/forms",
     "defaultMessage": ",",
     "description": "Thousand separator for number formatting (e.g., \",\" for 1,000 or \".\" for 1.000)"
+  },
+  "zr0OS6": {
+    "module": "@ttoss/components",
+    "defaultMessage": "{percentage}% used",
+    "description": "Footer shown for percentage metrics, e.g. \"80% used\"."
   }
 }
