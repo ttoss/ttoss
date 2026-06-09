@@ -29,7 +29,6 @@
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
-    "@ttoss/components": "workspace:^",
     "@ttoss/forms": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
@@ -38,6 +37,7 @@
     "react-grid-layout": "^1.5.2"
   },
   "devDependencies": {
+    "@ttoss/components": "workspace:^",
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@types/react": "^19.2.14",
@@ -47,6 +47,7 @@
     "tsdown": "^0.22.2"
   },
   "peerDependencies": {
+    "@ttoss/components": "workspace:^",
     "react": ">=16.8.0"
   },
   "publishConfig": {
@@ -54,6 +55,9 @@
     "exports": {
       ".": {
         "types": "./dist/index.d.mts",
+        "module": "./dist/index.mjs",
+        "browser": "./dist/index.mjs",
+        "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
       }
     },

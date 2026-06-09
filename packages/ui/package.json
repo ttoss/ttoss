@@ -62,6 +62,9 @@
     "exports": {
       ".": {
         "types": "./dist/index.d.mts",
+        "module": "./dist/index.mjs",
+        "browser": "./dist/index.mjs",
+        "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
       }
     },
