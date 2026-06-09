@@ -1,11 +1,8 @@
-import { Modal } from '@ttoss/components/Modal';
+import { Modal } from '@ttoss/components';
 import { render, screen, userEvent } from '@ttoss/test-utils/react';
 import { Button } from '@ttoss/ui';
-import {
-  Notification,
-  NotificationsProvider,
-  useNotifications,
-} from 'src/index';
+import type { Notification } from 'src/index';
+import { NotificationsProvider, useNotifications } from 'src/index';
 
 const expectNotBeInDocument = (element: HTMLElement) => {
   expect(() => {

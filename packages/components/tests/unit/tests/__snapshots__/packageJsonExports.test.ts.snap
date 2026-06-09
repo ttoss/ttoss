@@ -2,120 +2,15 @@
 
 exports[`package.json exports should export all components 1`] = `
 {
-  "./Accordion": "./src/components/Accordion/index.ts",
-  "./DatePicker": "./src/components/DatePicker/index.ts",
-  "./Drawer": "./src/components/Drawer/index.ts",
-  "./EnhancedTitle": "./src/components/EnhancedTitle/index.ts",
-  "./FileUploader": "./src/components/FileUploader/index.ts",
-  "./InstallPwa": "./src/components/InstallPwa/index.ts",
-  "./JsonEditor": "./src/components/JsonEditor/index.ts",
-  "./JsonView": "./src/components/JsonView/index.ts",
-  "./List": "./src/components/List/index.ts",
-  "./LockedOverlay": "./src/components/LockedOverlay/index.ts",
-  "./Markdown": "./src/components/Markdown/index.ts",
-  "./Menu": "./src/components/Menu/index.ts",
-  "./MetricCard": "./src/components/MetricCard/index.ts",
-  "./Modal": "./src/components/Modal/index.ts",
-  "./NavList": "./src/components/NavList/index.ts",
-  "./NotificationCard": "./src/components/NotificationCard/index.ts",
-  "./NotificationsMenu": "./src/components/NotificationsMenu/index.ts",
-  "./Search": "./src/components/Search/index.ts",
-  "./SpotlightCard": "./src/components/SpotlightCard/index.ts",
-  "./Table": "./src/components/Table/index.ts",
-  "./Tabs": "./src/components/Tabs/index.ts",
-  "./Toast": "./src/components/Toast/index.ts",
+  ".": "./src/index.ts",
 }
 `;
 
 exports[`package.json exports should export all components 2`] = `
 {
-  "./Accordion": {
-    "default": "./dist/esm/Accordion/index.js",
-    "types": "./dist/Accordion/index.d.ts",
-  },
-  "./DatePicker": {
-    "default": "./dist/esm/DatePicker/index.js",
-    "types": "./dist/DatePicker/index.d.ts",
-  },
-  "./Drawer": {
-    "default": "./dist/esm/Drawer/index.js",
-    "types": "./dist/Drawer/index.d.ts",
-  },
-  "./EnhancedTitle": {
-    "default": "./dist/esm/EnhancedTitle/index.js",
-    "types": "./dist/EnhancedTitle/index.d.ts",
-  },
-  "./FileUploader": {
-    "default": "./dist/esm/FileUploader/index.js",
-    "types": "./dist/FileUploader/index.d.ts",
-  },
-  "./InstallPwa": {
-    "default": "./dist/esm/InstallPwa/index.js",
-    "types": "./dist/InstallPwa/index.d.ts",
-  },
-  "./JsonEditor": {
-    "default": "./dist/esm/JsonEditor/index.js",
-    "types": "./dist/JsonEditor/index.d.ts",
-  },
-  "./JsonView": {
-    "default": "./dist/esm/JsonView/index.js",
-    "types": "./dist/JsonView/index.d.ts",
-  },
-  "./List": {
-    "default": "./dist/esm/List/index.js",
-    "types": "./dist/List/index.d.ts",
-  },
-  "./LockedOverlay": {
-    "default": "./dist/esm/LockedOverlay/index.js",
-    "types": "./dist/LockedOverlay/index.d.ts",
-  },
-  "./Markdown": {
-    "default": "./dist/esm/Markdown/index.js",
-    "types": "./dist/Markdown/index.d.ts",
-  },
-  "./Menu": {
-    "default": "./dist/esm/Menu/index.js",
-    "types": "./dist/Menu/index.d.ts",
-  },
-  "./MetricCard": {
-    "default": "./dist/esm/MetricCard/index.js",
-    "types": "./dist/MetricCard/index.d.ts",
-  },
-  "./Modal": {
-    "default": "./dist/esm/Modal/index.js",
-    "types": "./dist/Modal/index.d.ts",
-  },
-  "./NavList": {
-    "default": "./dist/esm/NavList/index.js",
-    "types": "./dist/NavList/index.d.ts",
-  },
-  "./NotificationCard": {
-    "default": "./dist/esm/NotificationCard/index.js",
-    "types": "./dist/NotificationCard/index.d.ts",
-  },
-  "./NotificationsMenu": {
-    "default": "./dist/esm/NotificationsMenu/index.js",
-    "types": "./dist/NotificationsMenu/index.d.ts",
-  },
-  "./Search": {
-    "default": "./dist/esm/Search/index.js",
-    "types": "./dist/Search/index.d.ts",
-  },
-  "./SpotlightCard": {
-    "default": "./dist/esm/SpotlightCard/index.js",
-    "types": "./dist/SpotlightCard/index.d.ts",
-  },
-  "./Table": {
-    "default": "./dist/esm/Table/index.js",
-    "types": "./dist/Table/index.d.ts",
-  },
-  "./Tabs": {
-    "default": "./dist/esm/Tabs/index.js",
-    "types": "./dist/Tabs/index.d.ts",
-  },
-  "./Toast": {
-    "default": "./dist/esm/Toast/index.js",
-    "types": "./dist/Toast/index.d.ts",
+  ".": {
+    "default": "./dist/index.mjs",
+    "types": "./dist/index.d.mts",
   },
 }
 `;

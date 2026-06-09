@@ -1,4 +1,5 @@
-import { Markdown } from '@ttoss/components/Markdown';
+/* eslint-disable max-lines */
+import { Markdown } from '@ttoss/components';
 import { Auth, useAuth } from '@ttoss/react-auth-cognito';
 import type { CardCatalogItem, DashboardFilter } from '@ttoss/react-dashboard';
 import { Dashboard, DashboardFilterType } from '@ttoss/react-dashboard';
@@ -1441,6 +1442,7 @@ export const App = () => {
           return t.id === value;
         })
       : undefined;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedTemplate(newSelectedTemplate ?? undefined);
   }, [dashboardFilters, templatesState]);
 

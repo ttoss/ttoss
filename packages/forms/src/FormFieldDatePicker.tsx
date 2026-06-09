@@ -1,4 +1,4 @@
-import { DatePicker, type DateRange } from '@ttoss/components/DatePicker';
+import { DatePicker, type DateRange } from '@ttoss/components';
 import type { FieldPath, FieldValues } from 'react-hook-form';
 
 import { FormField, type FormFieldProps } from './FormField';

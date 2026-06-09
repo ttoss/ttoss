@@ -1,5 +1,4 @@
-import { EnhancedTitle } from '@ttoss/components/EnhancedTitle';
-import { MetricCard } from '@ttoss/components/MetricCard';
+import { EnhancedTitle, MetricCard } from '@ttoss/components';
 import { Card, Flex, Spinner } from '@ttoss/ui';
 
 import { getSubscriptionPanelAccentBarSx } from './SubscriptionPanel.styles';

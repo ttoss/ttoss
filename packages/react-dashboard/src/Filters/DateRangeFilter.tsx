@@ -3,7 +3,7 @@ import { FormProvider, useForm } from '@ttoss/forms';
 import type { SxProp } from '@ttoss/ui';
 import * as React from 'react';
 
-export type { DateRange } from '@ttoss/components/DatePicker';
+export type { DateRange } from '@ttoss/components';
 
 interface DateRangePickerProps {
   sx?: SxProp['sx'];

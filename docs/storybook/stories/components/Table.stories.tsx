@@ -5,7 +5,7 @@ import {
   getCoreRowModel,
   Table,
   useReactTable,
-} from '@ttoss/components/Table';
+} from '@ttoss/components';
 import * as React from 'react';
 
 const meta: Meta = {
