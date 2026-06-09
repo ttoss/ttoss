@@ -36,11 +36,13 @@ pnpm turbo run build-config
 # Check dependencies versions.
 pnpm run syncpack:lint
 
-# Publish packages only if `pnpm lerna changed` is success. This happens when
-# exists an update on root and no packages changes. This way, `version` won't
-# create tags and `git diff HEAD^1 origin/main --quiet` will fail because
-# HEAD^1 will diff from origin/main.
-if pnpm lerna changed; then
+# Publish packages only if there are versioned changes since the last tag.
+# Pass --since=$LATEST_TAG explicitly so lerna uses the same baseline the
+# rest of this script uses, rather than auto-detecting from the shallow clone
+# (fetch-depth: 20). Without --since, lerna cannot find the baseline tag in
+# the shallow history and logs "Assuming all packages changed" — a false
+# positive that wastes the entire build/test/version pipeline.
+if pnpm lerna changed --since=$LATEST_TAG; then
   echo "Changes detected on packages, publishing them..."
 
   # Run i18n, build, and test BEFORE lerna version so turbo cache is warm.
