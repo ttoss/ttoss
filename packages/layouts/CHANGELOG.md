@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.28](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.11.27...@ttoss/layouts@0.11.28) (2026-06-09)
+
+### Bug Fixes
+
+- add rolldown/vite 8 export conditions and move @ttoss/components to peerDep ([c85efe3](https://github.com/ttoss/ttoss/commit/c85efe3b91f4af2405515bd6fa20227579869583))
+
 ## [0.11.27](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.11.26...@ttoss/layouts@0.11.27) (2026-06-09)
 
 ### Bug Fixes

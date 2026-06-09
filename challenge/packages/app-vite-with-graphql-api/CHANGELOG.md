@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.28](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/app-vite-with-graphql-api@0.4.27...@ttoss-challenge/app-vite-with-graphql-api@0.4.28) (2026-06-09)
+
+### Bug Fixes
+
+- add rolldown/vite 8 export conditions and move @ttoss/components to peerDep ([c85efe3](https://github.com/ttoss/ttoss/commit/c85efe3b91f4af2405515bd6fa20227579869583))
+
 ## [0.4.27](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/app-vite-with-graphql-api@0.4.26...@ttoss-challenge/app-vite-with-graphql-api@0.4.27) (2026-06-09)
 
 **Note:** Version bump only for package @ttoss-challenge/app-vite-with-graphql-api

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.27](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.26...@ttoss/react-notifications@2.7.27) (2026-06-09)
+
+### Bug Fixes
+
+- add rolldown/vite 8 export conditions and move @ttoss/components to peerDep ([c85efe3](https://github.com/ttoss/ttoss/commit/c85efe3b91f4af2405515bd6fa20227579869583))
+
 ## [2.7.26](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.25...@ttoss/react-notifications@2.7.26) (2026-06-09)
 
 ### Bug Fixes

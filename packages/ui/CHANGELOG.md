@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.9.26](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.9.25...@ttoss/ui@6.9.26) (2026-06-09)
+
+### Bug Fixes
+
+- add rolldown/vite 8 export conditions and move @ttoss/components to peerDep ([c85efe3](https://github.com/ttoss/ttoss/commit/c85efe3b91f4af2405515bd6fa20227579869583))
+
 ## [6.9.25](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.9.24...@ttoss/ui@6.9.25) (2026-06-09)
 
 **Note:** Version bump only for package @ttoss/ui

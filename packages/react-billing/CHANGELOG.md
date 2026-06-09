@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-billing@0.6.1...@ttoss/react-billing@0.6.2) (2026-06-09)
+
+### Bug Fixes
+
+- add rolldown/vite 8 export conditions and move @ttoss/components to peerDep ([c85efe3](https://github.com/ttoss/ttoss/commit/c85efe3b91f4af2405515bd6fa20227579869583))
+
 ## [0.6.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-billing@0.6.0...@ttoss/react-billing@0.6.1) (2026-06-09)
 
 ### Bug Fixes
