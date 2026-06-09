@@ -48,14 +48,23 @@
     "access": "public",
     "exports": {
       ".": {
+        "module": "./dist/index.mjs",
+        "browser": "./dist/index.mjs",
+        "import": "./dist/index.mjs",
         "types": "./dist/index.d.mts",
         "default": "./dist/index.mjs"
       },
       "./Bruttal": {
+        "module": "./dist/themes/Bruttal/Bruttal.mjs",
+        "browser": "./dist/themes/Bruttal/Bruttal.mjs",
+        "import": "./dist/themes/Bruttal/Bruttal.mjs",
         "types": "./dist/themes/Bruttal/Bruttal.d.mts",
         "default": "./dist/themes/Bruttal/Bruttal.mjs"
       },
       "./Oca": {
+        "module": "./dist/themes/Oca/Oca.mjs",
+        "browser": "./dist/themes/Oca/Oca.mjs",
+        "import": "./dist/themes/Oca/Oca.mjs",
         "types": "./dist/themes/Oca/Oca.d.mts",
         "default": "./dist/themes/Oca/Oca.mjs"
       }
