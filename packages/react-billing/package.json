@@ -12,7 +12,7 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/react-billing"
   },
-  "author": "Giovane Guimar\u00e3es",
+  "author": "Giovane Guimarães",
   "sideEffects": false,
   "type": "module",
   "exports": {
