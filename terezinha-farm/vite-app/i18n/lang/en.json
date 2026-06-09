@@ -25,9 +25,9 @@
     "description": "Alert shown when usage has reached or exceeded the limit."
   },
   "4iVwXU": {
+    "module": "@ttoss/react-auth-cognito",
     "defaultMessage": "Incorrect email or password.",
-    "description": "Shown when the user enters wrong sign-in credentials.",
-    "module": "@ttoss/react-auth-cognito"
+    "description": "Shown when the user enters wrong sign-in credentials."
   },
   "5E12mO": {
     "module": "@ttoss/react-auth-core",
@@ -64,18 +64,14 @@
     "description": "Min length field"
   },
   "DMiLA3": {
+    "module": "@ttoss/react-auth-cognito",
     "defaultMessage": "The code you entered is incorrect. Please try again.",
-    "description": "Shown when the user types a wrong confirmation code.",
-    "module": "@ttoss/react-auth-cognito"
+    "description": "Shown when the user types a wrong confirmation code."
   },
   "DZm5/m": {
-    "defaultMessage": "For your security, please reset your password using 'Forgot password?' before continuing.",
-    "description": "Shown when Cognito requires a password reset on sign in.",
-    "module": "@ttoss/react-auth-cognito"
-  },
-  "EO/33N": {
     "module": "@ttoss/react-auth-cognito",
-    "defaultMessage": "Signed in successfully"
+    "defaultMessage": "For your security, please reset your password using 'Forgot password?' before continuing.",
+    "description": "Shown when Cognito requires a password reset on sign in."
   },
   "EZ3YF2": {
     "module": "@ttoss/react-auth-core",
@@ -83,18 +79,18 @@
     "description": "Sign up"
   },
   "FGojIS": {
+    "module": "@ttoss/react-auth-cognito",
     "defaultMessage": "Your account is not verified. Please contact support to verify your account before resetting your password.",
-    "description": "Shown on forgot-password when the account has no verified email.",
-    "module": "@ttoss/react-auth-cognito"
+    "description": "Shown on forgot-password when the account has no verified email."
   },
   "G/yZLu": {
     "module": "@ttoss/components",
     "defaultMessage": "Remove"
   },
   "H8LG4D": {
+    "module": "@ttoss/react-auth-cognito",
     "defaultMessage": "No account found with this email address.",
-    "description": "Shown when no Cognito user exists for the given email.",
-    "module": "@ttoss/react-auth-cognito"
+    "description": "Shown when no Cognito user exists for the given email."
   },
   "HT4tSM": {
     "module": "@ttoss/react-auth-core",
@@ -111,9 +107,9 @@
     "description": "Sign up confirmation code"
   },
   "MJ01Sw": {
+    "module": "@ttoss/react-auth-cognito",
     "defaultMessage": "An account with this email already exists. Please sign in.",
-    "description": "Shown when a user tries to sign up with an existing email.",
-    "module": "@ttoss/react-auth-cognito"
+    "description": "Shown when a user tries to sign up with an existing email."
   },
   "MfWGyg": {
     "module": "@ttoss/forms",
@@ -126,9 +122,9 @@
     "description": "Confirm Password is required."
   },
   "NJvJrM": {
+    "module": "@ttoss/react-auth-cognito",
     "defaultMessage": "Signed in successfully",
-    "description": "Success notification after sign in.",
-    "module": "@ttoss/react-auth-cognito"
+    "description": "Success notification after sign in."
   },
   "OhDL0i": {
     "module": "@ttoss/react-auth-core",
@@ -194,9 +190,9 @@
     "description": "Invalid Value"
   },
   "ay85xa": {
+    "module": "@ttoss/react-auth-cognito",
     "defaultMessage": "Something went wrong. Please try again.",
-    "description": "Fallback message for unexpected authentication errors.",
-    "module": "@ttoss/react-auth-cognito"
+    "description": "Fallback message for unexpected authentication errors."
   },
   "cGR2eI": {
     "module": "@ttoss/react-auth-core",
@@ -259,9 +255,9 @@
     "description": "Recover Password"
   },
   "nL+H/D": {
+    "module": "@ttoss/react-auth-cognito",
     "defaultMessage": "Your session expired. Please sign in again.",
-    "description": "Shown when a stale Amplify session is detected.",
-    "module": "@ttoss/react-auth-cognito"
+    "description": "Shown when a stale Amplify session is detected."
   },
   "oYpm71": {
     "module": "@ttoss/components",
