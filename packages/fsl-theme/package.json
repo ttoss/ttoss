@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/fsl-theme",
-  "version": "1.1.18",
+  "version": "1.1.19",
   "description": "ttoss theme provider for UI.",
   "keywords": [
     "css-variables",
@@ -65,6 +65,9 @@
     "exports": {
       ".": {
         "types": "./dist/index.d.mts",
+        "module": "./dist/index.mjs",
+        "browser": "./dist/index.mjs",
+        "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
       },
       "./css": {

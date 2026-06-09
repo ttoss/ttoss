@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/components",
-  "version": "2.14.25",
+  "version": "2.14.26",
   "description": "React components for ttoss ecosystem.",
   "keywords": [
     "React",
@@ -73,6 +73,9 @@
     "exports": {
       ".": {
         "types": "./dist/index.d.mts",
+        "module": "./dist/index.mjs",
+        "browser": "./dist/index.mjs",
+        "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
       }
     },

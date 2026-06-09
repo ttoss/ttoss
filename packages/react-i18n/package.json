@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-i18n",
-  "version": "2.2.18",
+  "version": "2.2.19",
   "keywords": [
     "React",
     "ui",
@@ -54,6 +54,9 @@
     "exports": {
       ".": {
         "types": "./dist/index.d.mts",
+        "module": "./dist/index.mjs",
+        "browser": "./dist/index.mjs",
+        "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
       }
     },

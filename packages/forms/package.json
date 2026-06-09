@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/forms",
-  "version": "0.43.29",
+  "version": "0.43.30",
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
@@ -61,6 +61,9 @@
     "exports": {
       ".": {
         "types": "./dist/index.d.mts",
+        "module": "./dist/index.mjs",
+        "browser": "./dist/index.mjs",
+        "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
       },
       "./multistep-form": {

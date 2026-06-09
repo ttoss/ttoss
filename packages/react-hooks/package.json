@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-hooks",
-  "version": "2.3.17",
+  "version": "2.3.18",
   "description": "React hooks.",
   "keywords": [
     "React",
@@ -43,6 +43,9 @@
     "exports": {
       ".": {
         "types": "./dist/index.d.mts",
+        "module": "./dist/index.mjs",
+        "browser": "./dist/index.mjs",
+        "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
       }
     },

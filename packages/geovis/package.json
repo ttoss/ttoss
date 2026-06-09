@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/geovis",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "description": "Geovisualization components for React applications.",
   "keywords": [
     "Geovis",
@@ -60,6 +60,8 @@
     "exports": {
       ".": {
         "types": "./dist/index.d.mts",
+        "module": "./dist/index.mjs",
+        "browser": "./dist/index.mjs",
         "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
       }
