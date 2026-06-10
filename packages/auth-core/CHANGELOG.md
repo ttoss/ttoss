@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.1](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.5.0...@ttoss/auth-core@0.5.1) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/auth-core
+
+# [0.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.4.17...@ttoss/auth-core@0.5.0) (2026-06-10)
+
+### Features
+
+- **@ttoss/auth-core:** add JWT, one-time token, and API token primitives; harden password hashing ([#1035](https://github.com/ttoss/ttoss/issues/1035)) ([ae6b5a5](https://github.com/ttoss/ttoss/commit/ae6b5a56ec40b0dae855299703f82df393d36e4f))
+
 ## [0.4.17](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.4.16...@ttoss/auth-core@0.4.17) (2026-06-05)
 
 ### Bug Fixes

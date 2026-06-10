@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.38](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.4.37...@ttoss/react-auth-strapi@0.4.38) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## [0.4.37](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.4.36...@ttoss/react-auth-strapi@0.4.37) (2026-06-09)
+
+**Note:** Version bump only for package @ttoss/react-auth-strapi
+
+## [0.4.36](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.4.35...@ttoss/react-auth-strapi@0.4.36) (2026-06-09)
+
+### Bug Fixes
+
+- add rolldown/vite 8 export conditions and move @ttoss/components to peerDep ([c85efe3](https://github.com/ttoss/ttoss/commit/c85efe3b91f4af2405515bd6fa20227579869583))
+
 ## [0.4.35](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.4.34...@ttoss/react-auth-strapi@0.4.35) (2026-06-09)
 
 **Note:** Version bump only for package @ttoss/react-auth-strapi

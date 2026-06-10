@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.17](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.16...@ttoss/react-wizard@0.4.17) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.4.16](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.15...@ttoss/react-wizard@0.4.16) (2026-06-09)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.4.15](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.14...@ttoss/react-wizard@0.4.15) (2026-06-09)
+
+### Bug Fixes
+
+- add rolldown/vite 8 export conditions and move @ttoss/components to peerDep ([c85efe3](https://github.com/ttoss/ttoss/commit/c85efe3b91f4af2405515bd6fa20227579869583))
+
 ## [0.4.14](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.13...@ttoss/react-wizard@0.4.14) (2026-06-09)
 
 **Note:** Version bump only for package @ttoss/react-wizard

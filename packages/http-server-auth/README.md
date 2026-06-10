@@ -1,0 +1,121 @@
+# @ttoss/http-server-auth
+
+Authentication middleware for `@ttoss/http-server` (Koa). Wraps `@ttoss/auth-core` primitives into a ready-to-use Bearer-token strategy chain.
+
+## Installation
+
+```bash
+pnpm add @ttoss/http-server-auth
+```
+
+## Usage
+
+### Global middleware
+
+```ts
+import { authMiddleware } from '@ttoss/http-server-auth';
+import { App } from '@ttoss/http-server';
+
+const app = new App();
+
+app.use(
+  authMiddleware({
+    strategies: ['jwt', 'apiToken', 'system'],
+
+    jwt: {
+      secret: process.env.JWT_SECRET,
+    },
+
+    apiToken: {
+      lookup: async (tokenHash) => {
+        const record = await ApiTokenModel.findOne({
+          where: { tokenHash, revoked: false },
+        });
+        if (!record) return null;
+        await record.update({ lastUsedAt: new Date() });
+        return { id: record.user.publicId, email: record.user.email };
+      },
+    },
+
+    system: {
+      secret: process.env.INTERNAL_API_SECRET,
+      user: { id: 'system', email: 'system@internal' },
+    },
+
+    allowedOrigins: [
+      process.env.APP_URL,
+      'http://localhost:3000',
+      /\.vercel\.app$/,
+    ],
+
+    required: true, // default
+  })
+);
+```
+
+### Per-route middleware
+
+```ts
+import { requireAuth } from '@ttoss/http-server-auth';
+import { Router } from '@ttoss/http-server';
+
+const router = new Router();
+
+router.get(
+  '/internal/revalidate',
+  requireAuth({
+    strategies: ['system'],
+    system: { secret: process.env.INTERNAL_API_SECRET, user: { id: 'system' } },
+  }),
+  handler
+);
+
+router.get(
+  '/me',
+  requireAuth({
+    strategies: ['jwt', 'apiToken'],
+    jwt: { secret: process.env.JWT_SECRET },
+    apiToken: { lookup },
+  }),
+  handler
+);
+```
+
+### Optional auth
+
+```ts
+app.use(
+  authMiddleware({
+    strategies: ['jwt'],
+    jwt: { secret: process.env.JWT_SECRET },
+    required: false, // unauthenticated requests pass through with ctx.state.user === undefined
+  })
+);
+```
+
+## Context types
+
+On successful authentication the middleware sets:
+
+```ts
+ctx.state.user; // AuthenticatedUser
+ctx.state.authStrategy; // 'jwt' | 'apiToken' | 'system'
+```
+
+```ts
+type AuthenticatedUser = {
+  id: string;
+  email?: string;
+  [key: string]: unknown;
+};
+```
+
+## Behavior
+
+1. Reads `Authorization: Bearer <token>`; missing header → 401 if `required`.
+2. If `allowedOrigins` is configured and the `Origin` header doesn't match → 403. Requests without an Origin header are never rejected.
+3. Tries each strategy in `strategies` order; first match wins.
+   - `jwt` — verifies HS256 JWT via `@ttoss/auth-core verifyJwt`; maps `sub`/`email` to user (override with `jwt.mapPayload`).
+   - `apiToken` — hashes the token (SHA-256) and calls `apiToken.lookup(hash)`.
+   - `system` — constant-time comparison against `system.secret`.
+4. All strategies fail and `required` → 401. Failure reason is never leaked.

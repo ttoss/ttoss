@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.42](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.8.41...@ttoss/react-auth-cognito@2.8.42) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/react-auth-cognito
+
+## [2.8.41](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.8.40...@ttoss/react-auth-cognito@2.8.41) (2026-06-09)
+
+**Note:** Version bump only for package @ttoss/react-auth-cognito
+
+## [2.8.40](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.8.39...@ttoss/react-auth-cognito@2.8.40) (2026-06-09)
+
+### Bug Fixes
+
+- add rolldown/vite 8 export conditions and move @ttoss/components to peerDep ([c85efe3](https://github.com/ttoss/ttoss/commit/c85efe3b91f4af2405515bd6fa20227579869583))
+
 ## [2.8.39](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.8.38...@ttoss/react-auth-cognito@2.8.39) (2026-06-09)
 
 ### Bug Fixes

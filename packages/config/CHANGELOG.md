@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.37.17 (2026-06-10)
+
+### Bug Fixes
+
+- **config:** add .d.mts moduleNameMapper to jestUnitConfig ([#1037](https://github.com/ttoss/ttoss/issues/1037)) ([88ac175](https://github.com/ttoss/ttoss/commit/88ac17584cddf28ea25ffcfe62173d7d97cb1508)), closes [#1036](https://github.com/ttoss/ttoss/issues/1036)
+
 ## [1.37.16](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.37.15...@ttoss/config@1.37.16) (2026-06-05)
 
 ### Bug Fixes
