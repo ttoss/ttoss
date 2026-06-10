@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.4](https://github.com/ttoss/ttoss/compare/@ttoss/react-billing@0.6.3...@ttoss/react-billing@0.6.4) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/react-billing
+
 ## [0.6.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-billing@0.6.2...@ttoss/react-billing@0.6.3) (2026-06-09)
 
 **Note:** Version bump only for package @ttoss/react-billing

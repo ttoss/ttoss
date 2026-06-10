@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.14.29](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.14.28...@ttoss/components@2.14.29) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/components
+
 ## [2.14.28](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.14.27...@ttoss/components@2.14.28) (2026-06-09)
 
 **Note:** Version bump only for package @ttoss/components

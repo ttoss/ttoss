@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.9.27](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.9.26...@ttoss/ui@6.9.27) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/ui
+
 ## [6.9.26](https://github.com/ttoss/ttoss/compare/@ttoss/ui@6.9.25...@ttoss/ui@6.9.26) (2026-06-09)
 
 ### Bug Fixes

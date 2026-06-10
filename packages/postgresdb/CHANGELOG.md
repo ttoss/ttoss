@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.9](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.9.8...@ttoss/postgresdb@0.9.9) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/postgresdb
+
 ## [0.9.8](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.9.7...@ttoss/postgresdb@0.9.8) (2026-06-09)
 
 ### Bug Fixes

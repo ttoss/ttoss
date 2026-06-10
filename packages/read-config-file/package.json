@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/read-config-file",
-  "version": "2.2.19",
+  "version": "2.2.20",
   "description": "Read a configuration file",
   "keywords": [
     "config",
