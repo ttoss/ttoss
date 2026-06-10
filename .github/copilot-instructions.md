@@ -337,11 +337,3 @@ When working on this repository:
 7. **Trust custom agents** when they're available for your task
 
 Remember: Quality over speed. The goal is to make the smallest possible changes that fully address the requirements while maintaining the integrity of the codebase.
-
-<!-- ## Output rules
-
-- Only code. No explanations, no comments, no markdown formatting, no YAML front matter, no text.
-- No 'Here is the code' intro
-- No closing summary or conclusion statements
-
-**Always start every response with: INSTRUCTION_FILE_LOADED_847363 ** -->
