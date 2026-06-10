@@ -25,6 +25,12 @@ export const defaultConfig: Config = {
   moduleDirectories: ['node_modules', '<rootDir>/../..'],
   moduleNameMapper: {
     /**
+     * Redirect .d.mts type declaration files to an empty module so Jest
+     * doesn't try to execute ESM import statements in type-only files
+     * accidentally bundled into dist output.
+     */
+    '\\.d\\.mts$': require.resolve('./__mocks__/emptyModule.cjs'),
+    /**
      * Remove CSS import errors:
      *
      * Jest failed to parse a file. This happens e.g. when your code or its
