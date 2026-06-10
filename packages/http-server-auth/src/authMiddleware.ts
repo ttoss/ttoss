@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 
 import { hashApiToken, verifyJwt } from '@ttoss/auth-core';
-import type { Context, Next } from 'koa';
+import type { Context, Next } from '@ttoss/http-server';
 
 import { isOriginAllowed } from './origin';
 import type {

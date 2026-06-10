@@ -1,4 +1,4 @@
-import type { Context, Next } from 'koa';
+import type { Context, Next } from '@ttoss/http-server';
 
 import { authMiddleware } from './authMiddleware';
 import type { AuthMiddlewareOptions } from './types';
