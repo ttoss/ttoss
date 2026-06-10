@@ -22,7 +22,9 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./amazon-cognito": "./src/AmazonCognito/index.ts"
+    "./amazon-cognito": "./src/AmazonCognito/index.ts",
+    "./flows": "./src/flows/index.ts",
+    "./emails": "./src/emails/index.ts"
   },
   "files": [
     "dist"
@@ -51,6 +53,16 @@
         "import": "./dist/AmazonCognito/index.mjs",
         "require": "./dist/AmazonCognito/index.cjs",
         "types": "./dist/AmazonCognito/index.d.mts"
+      },
+      "./flows": {
+        "import": "./dist/flows/index.mjs",
+        "require": "./dist/flows/index.cjs",
+        "types": "./dist/flows/index.d.mts"
+      },
+      "./emails": {
+        "import": "./dist/emails/index.mjs",
+        "require": "./dist/emails/index.cjs",
+        "types": "./dist/emails/index.d.mts"
       }
     },
     "provenance": true
