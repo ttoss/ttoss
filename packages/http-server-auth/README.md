@@ -1,6 +1,6 @@
 # @ttoss/http-server-auth
 
-Authentication middleware for [`@ttoss/http-server`](../http-server) (Koa). Wraps [`@ttoss/auth-core`](../auth-core) primitives into a ready-to-use Bearer-token strategy chain.
+Authentication middleware for `@ttoss/http-server` (Koa). Wraps `@ttoss/auth-core` primitives into a ready-to-use Bearer-token strategy chain.
 
 ## Installation
 
