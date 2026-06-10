@@ -87,6 +87,49 @@ const isValid = verifyApiToken({
 });
 ```
 
+## Encryption at rest
+
+AES-256-GCM helpers for storing sensitive values (e.g., third-party API
+keys) in a database. The ciphertext is a single base64 string containing
+the IV, auth tag, and payload. Decryption throws on a wrong key or
+tampered ciphertext.
+
+```ts
+import {
+  decryptValue,
+  encryptValue,
+  generateEncryptionKey,
+} from '@ttoss/auth-core';
+
+// Generate once and store in a secret manager:
+const key = generateEncryptionKey(); // 64-char hex (32 bytes)
+
+const ciphertext = encryptValue({ plaintext: 'third-party-api-key', key });
+const plaintext = decryptValue({ ciphertext, key });
+```
+
+## Webhook signatures
+
+HMAC-SHA256 payload signing using the common `sha256=<hex>` header
+convention (e.g., GitHub's `X-Hub-Signature-256`), with constant-time
+verification on the receiving side.
+
+```ts
+import {
+  generateWebhookSecret,
+  signWebhookPayload,
+  verifyWebhookSignature,
+} from '@ttoss/auth-core';
+
+// Sender:
+const secret = generateWebhookSecret();
+const signature = signWebhookPayload({ payload: body, secret });
+// send as a header, e.g. `X-Myapp-Signature: ${signature}`
+
+// Receiver:
+const isValid = verifyWebhookSignature({ payload: body, secret, signature });
+```
+
 ## Encoding helpers
 
 ```ts
