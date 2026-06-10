@@ -11,16 +11,15 @@ import {
 } from './methods';
 import type { AuthFlowsConfig, AuthFlowsUser } from './types';
 
-export {
-  AuthFlowError,
-  AuthFlowErrorCode,
-  type AuthFlowErrorCodeType,
+export type {
+  AuthFlowErrorCodeType,
   AuthFlowsConfig,
   AuthFlowsUser,
   EmailSender,
   OneTimeTokenStore,
   UserStore,
 } from './types';
+export { AuthFlowError, AuthFlowErrorCode } from './types';
 
 export const createAuthFlows = (config: AuthFlowsConfig) => {
   const deps = buildDeps(config);
