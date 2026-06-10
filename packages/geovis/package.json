@@ -36,13 +36,13 @@
   },
   "dependencies": {
     "@ttoss/logger": "workspace:^",
+    "@ttoss/ui": "workspace:^",
     "ajv": "^8.18.0"
   },
   "devDependencies": {
     "@emotion/react": "^11.14.0",
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "@ttoss/ui": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.2.14",
     "jest": "^30.4.2",
