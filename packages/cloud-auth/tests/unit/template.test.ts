@@ -366,6 +366,268 @@ describe('identity pool', () => {
   );
 });
 
+describe('domain', () => {
+  test('should not add domain resource if domain not provided', () => {
+    const template = createAuthTemplate();
+    expect(template.Resources.CognitoUserPoolDomain).toBeUndefined();
+    expect(template.Outputs?.CognitoUserPoolDomainUrl).toBeUndefined();
+  });
+
+  test('should add domain resource with prefix domain', () => {
+    const template = createAuthTemplate({
+      domain: { domainName: 'my-auth-prefix' },
+    });
+
+    expect(template.Resources.CognitoUserPoolDomain).toEqual({
+      Type: 'AWS::Cognito::UserPoolDomain',
+      Properties: {
+        Domain: 'my-auth-prefix',
+        UserPoolId: { Ref: 'CognitoUserPool' },
+      },
+    });
+  });
+
+  test('should output Fn::Sub URL for prefix domain', () => {
+    const template = createAuthTemplate({
+      domain: { domainName: 'my-auth-prefix' },
+    });
+
+    expect(template.Outputs?.CognitoUserPoolDomainUrl?.Value).toEqual({
+      'Fn::Sub': 'https://my-auth-prefix.auth.${AWS::Region}.amazoncognito.com',
+    });
+  });
+
+  test('should add domain resource with custom domain and certificate', () => {
+    const template = createAuthTemplate({
+      domain: {
+        domainName: 'auth.example.com',
+        certificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/abc',
+      },
+    });
+
+    expect(template.Resources.CognitoUserPoolDomain).toEqual({
+      Type: 'AWS::Cognito::UserPoolDomain',
+      Properties: {
+        Domain: 'auth.example.com',
+        UserPoolId: { Ref: 'CognitoUserPool' },
+        CustomDomainConfig: {
+          CertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/abc',
+        },
+      },
+    });
+  });
+
+  test('should output plain URL for custom domain', () => {
+    const template = createAuthTemplate({
+      domain: {
+        domainName: 'auth.example.com',
+        certificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/abc',
+      },
+    });
+
+    expect(template.Outputs?.CognitoUserPoolDomainUrl?.Value).toBe(
+      'https://auth.example.com'
+    );
+  });
+
+  test('should export domain URL output', () => {
+    const template = createAuthTemplate({
+      domain: { domainName: 'my-auth-prefix' },
+    });
+
+    expect(template.Outputs?.CognitoUserPoolDomainUrl?.Export?.Name).toEqual({
+      'Fn::Join': [
+        ':',
+        [{ Ref: 'AWS::StackName' }, 'CognitoUserPoolDomainUrl'],
+      ],
+    });
+  });
+});
+
+describe('resourceServers', () => {
+  test('should not add resource server resources if not provided', () => {
+    const template = createAuthTemplate();
+    const resourceServers = Object.keys(template.Resources).filter((key) => {
+      return (
+        template.Resources[key].Type === 'AWS::Cognito::UserPoolResourceServer'
+      );
+    });
+    expect(resourceServers).toHaveLength(0);
+  });
+
+  test('should add a resource server', () => {
+    const template = createAuthTemplate({
+      resourceServers: [
+        {
+          identifier: 'mcp',
+          name: 'MCP Server',
+          scopes: [
+            { scopeName: 'access', scopeDescription: 'Access the MCP server' },
+          ],
+        },
+      ],
+    });
+
+    expect(template.Resources.CognitoUserPoolResourceServerMcp).toEqual({
+      Type: 'AWS::Cognito::UserPoolResourceServer',
+      Properties: {
+        Identifier: 'mcp',
+        Name: 'MCP Server',
+        Scopes: [
+          { ScopeName: 'access', ScopeDescription: 'Access the MCP server' },
+        ],
+        UserPoolId: { Ref: 'CognitoUserPool' },
+      },
+    });
+  });
+
+  test('should add multiple resource servers', () => {
+    const template = createAuthTemplate({
+      resourceServers: [
+        {
+          identifier: 'mcp',
+          name: 'MCP Server',
+          scopes: [
+            { scopeName: 'access', scopeDescription: 'Access the MCP server' },
+          ],
+        },
+        {
+          identifier: 'api',
+          name: 'API Server',
+          scopes: [
+            { scopeName: 'read', scopeDescription: 'Read access' },
+            { scopeName: 'write', scopeDescription: 'Write access' },
+          ],
+        },
+      ],
+    });
+
+    expect(template.Resources.CognitoUserPoolResourceServerMcp).toBeDefined();
+    expect(template.Resources.CognitoUserPoolResourceServerApi).toBeDefined();
+    expect(
+      template.Resources.CognitoUserPoolResourceServerApi.Properties?.Scopes
+    ).toHaveLength(2);
+  });
+});
+
+describe('additionalAppClients', () => {
+  test('should not add additional clients if not provided', () => {
+    const template = createAuthTemplate();
+    const clients = Object.keys(template.Resources).filter((key) => {
+      return (
+        key !== 'CognitoUserPoolClient' &&
+        template.Resources[key].Type === 'AWS::Cognito::UserPoolClient'
+      );
+    });
+    expect(clients).toHaveLength(0);
+  });
+
+  test('should leave default CognitoUserPoolClient untouched', () => {
+    const template = createAuthTemplate({
+      additionalAppClients: [{ name: 'mcp-client', generateSecret: true }],
+    });
+
+    expect(template.Resources.CognitoUserPoolClient).toEqual({
+      Type: 'AWS::Cognito::UserPoolClient',
+      Properties: {
+        SupportedIdentityProviders: ['COGNITO'],
+        UserPoolId: { Ref: 'CognitoUserPool' },
+      },
+    });
+
+    expect(template.Outputs?.AppClientId).toBeDefined();
+  });
+
+  test('should add an additional app client without OAuth', () => {
+    const template = createAuthTemplate({
+      additionalAppClients: [{ name: 'mcp-client', generateSecret: true }],
+    });
+
+    expect(template.Resources.AppClientMcpClient).toEqual({
+      Type: 'AWS::Cognito::UserPoolClient',
+      Properties: {
+        ClientName: 'mcp-client',
+        UserPoolId: { Ref: 'CognitoUserPool' },
+        SupportedIdentityProviders: ['COGNITO'],
+        GenerateSecret: true,
+      },
+    });
+  });
+
+  test('should add an additional app client with OAuth config', () => {
+    const template = createAuthTemplate({
+      additionalAppClients: [
+        {
+          name: 'mcp-client',
+          generateSecret: true,
+          oauth: {
+            flows: ['code'],
+            scopes: ['openid', 'mcp/access'],
+            callbackUrls: ['https://claude.ai/api/mcp/auth_callback'],
+          },
+        },
+      ],
+    });
+
+    expect(template.Resources.AppClientMcpClient).toEqual({
+      Type: 'AWS::Cognito::UserPoolClient',
+      Properties: {
+        ClientName: 'mcp-client',
+        UserPoolId: { Ref: 'CognitoUserPool' },
+        SupportedIdentityProviders: ['COGNITO'],
+        GenerateSecret: true,
+        AllowedOAuthFlows: ['code'],
+        AllowedOAuthFlowsUserPoolClient: true,
+        AllowedOAuthScopes: ['openid', 'mcp/access'],
+        CallbackURLs: ['https://claude.ai/api/mcp/auth_callback'],
+      },
+    });
+  });
+
+  test('should output app client ID for additional client', () => {
+    const template = createAuthTemplate({
+      additionalAppClients: [{ name: 'mcp-client' }],
+    });
+
+    expect(template.Outputs?.AppClientIdMcpClient).toEqual({
+      Description: 'App client ID for mcp-client.',
+      Value: { Ref: 'AppClientMcpClient' },
+      Export: {
+        Name: {
+          'Fn::Join': [
+            ':',
+            [{ Ref: 'AWS::StackName' }, 'AppClientIdMcpClient'],
+          ],
+        },
+      },
+    });
+  });
+
+  test('should add multiple additional app clients', () => {
+    const template = createAuthTemplate({
+      additionalAppClients: [
+        { name: 'mcp-client', generateSecret: true },
+        { name: 'another-client' },
+      ],
+    });
+
+    expect(template.Resources.AppClientMcpClient).toBeDefined();
+    expect(template.Resources.AppClientAnotherClient).toBeDefined();
+    expect(template.Outputs?.AppClientIdMcpClient).toBeDefined();
+    expect(template.Outputs?.AppClientIdAnotherClient).toBeDefined();
+  });
+
+  test('should default GenerateSecret to false if not provided', () => {
+    const template = createAuthTemplate({
+      additionalAppClients: [{ name: 'my-client' }],
+    });
+
+    expect(
+      template.Resources.AppClientMyClient.Properties?.GenerateSecret
+    ).toBe(false);
+  });
+});
+
 describe('lambda triggers', () => {
   test('should not add LambdaConfig if no lambda triggers provided', () => {
     const template = createAuthTemplate();
