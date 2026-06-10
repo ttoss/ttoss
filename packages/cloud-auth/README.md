@@ -264,14 +264,91 @@ const template = createAuthTemplate({
 });
 ```
 
+### Hosted UI Domain
+
+Add a Cognito hosted UI so OAuth clients can redirect users to the login page. Use a Cognito prefix domain or bring your own custom domain with an ACM certificate:
+
+```typescript
+// Cognito prefix domain (e.g. https://my-app.auth.us-east-1.amazoncognito.com)
+const template = createAuthTemplate({
+  domain: { domainName: 'my-app' },
+});
+
+// Custom domain
+const template = createAuthTemplate({
+  domain: {
+    domainName: 'auth.example.com',
+    certificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/abc',
+  },
+});
+```
+
+Output `CognitoUserPoolDomainUrl` is exported with the full URL.
+
+### Resource Servers and Custom Scopes
+
+Define resource servers with custom OAuth scopes to gate access to your APIs:
+
+```typescript
+const template = createAuthTemplate({
+  resourceServers: [
+    {
+      identifier: 'mcp',
+      name: 'MCP Server',
+      scopes: [
+        { scopeName: 'access', scopeDescription: 'Access the MCP server' },
+      ],
+    },
+  ],
+});
+```
+
+The scope `mcp/access` (format: `<identifier>/<scopeName>`) can then be required by your API.
+
+### Additional App Clients (OAuth / Confidential Clients)
+
+The default app client (`AppClientId`) is a public client used by Amplify and must not have a secret. Use `additionalAppClients` to create separate confidential OAuth clients — for example, a client for a remote MCP connector:
+
+```typescript
+const template = createAuthTemplate({
+  domain: { domainName: 'my-app' },
+  resourceServers: [
+    {
+      identifier: 'mcp',
+      name: 'MCP Server',
+      scopes: [
+        { scopeName: 'access', scopeDescription: 'Access the MCP server' },
+      ],
+    },
+  ],
+  additionalAppClients: [
+    {
+      name: 'mcp-client',
+      generateSecret: true,
+      oauth: {
+        flows: ['code'],
+        scopes: ['openid', 'mcp/access'],
+        callbackUrls: ['https://claude.ai/api/mcp/auth_callback'],
+      },
+    },
+  ],
+});
+```
+
+Each additional client gets its own `AppClientId<PascalName>` output (e.g. `AppClientIdMcpClient`).
+
 ## Template Outputs
 
 The template provides these CloudFormation outputs for integration:
 
-- **Region**: AWS region for Amplify Auth configuration
-- **UserPoolId**: Cognito User Pool ID
-- **AppClientId**: User Pool Client ID for applications
-- **IdentityPoolId**: Identity Pool ID (when enabled)
+| Output                     | Description                                                | Condition                           |
+| -------------------------- | ---------------------------------------------------------- | ----------------------------------- |
+| `Region`                   | AWS region for Amplify Auth `region`                       | Always                              |
+| `UserPoolId`               | Cognito User Pool ID                                       | Always                              |
+| `AppClientId`              | Default public client ID for Amplify `userPoolWebClientId` | Always                              |
+| `IdentityPoolId`           | Identity Pool ID                                           | When `identityPool.enabled`         |
+| `CognitoUserPoolDomainUrl` | Hosted UI domain URL                                       | When `domain` is set                |
+| `AppClientId<PascalName>`  | Additional app client IDs                                  | Per entry in `additionalAppClients` |
 
 Access outputs in other CloudFormation templates:
 
@@ -279,6 +356,7 @@ Access outputs in other CloudFormation templates:
 AuthConfig:
   UserPoolId: !ImportValue MyAuthStack:UserPoolId
   AppClientId: !ImportValue MyAuthStack:AppClientId
+  McpClientId: !ImportValue MyAuthStack:AppClientIdMcpClient
 ```
 
 ## Advanced Configuration
@@ -313,6 +391,60 @@ const template = createAuthTemplate({
   ],
 });
 ```
+
+### End-to-End OAuth for Remote MCP Connectors
+
+This example wires `@ttoss/cloud-auth` with `@ttoss/http-server-mcp` so Claude (or any OAuth 2.1 client) can authenticate against your MCP server using authorization code + PKCE:
+
+```typescript
+// cloudformation.ts
+import { createAuthTemplate } from '@ttoss/cloud-auth';
+
+export default createAuthTemplate({
+  domain: { domainName: 'my-app' },
+  resourceServers: [
+    {
+      identifier: 'mcp',
+      name: 'MCP Server',
+      scopes: [{ scopeName: 'access', scopeDescription: 'Full MCP access' }],
+    },
+  ],
+  additionalAppClients: [
+    {
+      name: 'mcp-client',
+      generateSecret: true,
+      oauth: {
+        flows: ['code'],
+        scopes: ['openid', 'mcp/access'],
+        callbackUrls: ['https://claude.ai/api/mcp/auth_callback'],
+      },
+    },
+  ],
+});
+```
+
+```typescript
+// server.ts
+import { createMcpRouter } from '@ttoss/http-server-mcp';
+
+const mcpRouter = createMcpRouter({
+  auth: {
+    cognitoUserPool: {
+      userPoolId: process.env.USER_POOL_ID,
+      clientId: process.env.MCP_CLIENT_ID, // AppClientIdMcpClient output
+      requiredScopes: ['mcp/access'],
+    },
+  },
+  // ...tools
+});
+```
+
+The MCP client flow:
+
+1. Client calls your MCP server → `401`.
+2. Client reads `/.well-known/oauth-protected-resource` → discovers the Cognito authorization server URL (`CognitoUserPoolDomainUrl` output).
+3. Client runs authorization code + PKCE through the Cognito hosted UI.
+4. `createMcpRouter` verifies the access token and enforces `mcp/access`.
 
 ### Production Considerations
 
