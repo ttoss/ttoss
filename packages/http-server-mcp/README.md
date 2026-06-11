@@ -169,7 +169,7 @@ const mcpRouter = createMcpRouter(mcpServer, {
 
 ### Custom verifier
 
-Pass an async `verifyToken` function for any other provider (Auth0, Keycloak, etc.):
+Pass an async `verifyToken` function for any provider — JWT-based or opaque. The contract is simply: resolve with an identity payload on success, or throw on failure.
 
 ```typescript
 import { createMcpRouter } from '@ttoss/http-server-mcp';
@@ -188,6 +188,25 @@ const mcpRouter = createMcpRouter(mcpServer, {
   },
 });
 ```
+
+**Opaque token (database lookup):** `verifyToken` does not have to be JWT-based — a plain API-key lookup works equally well:
+
+```typescript
+const mcpRouter = createMcpRouter(mcpServer, {
+  auth: {
+    verifyToken: async (token) => {
+      // Look up the hashed token in your database
+      const record = await db.apiKeys.findByHash(sha256(token));
+      if (!record || record.revokedAt) {
+        throw new Error('Invalid API key');
+      }
+      return { sub: record.userId, scope: record.scopes.join(' ') };
+    },
+  },
+});
+```
+
+The router emits `401 Unauthorized` whenever `verifyToken` throws, regardless of whether you are using JWTs or opaque tokens.
 
 ### Accessing the verified identity
 
@@ -245,7 +264,9 @@ Cognito encodes scopes as a space-separated string in `payload.scope` (e.g. `"op
 
 ### OAuth Protected Resource Metadata
 
-For MCP clients that support OAuth auto-discovery, add `resourceServerUrl` and `authorizationServerUrl` to expose the `/.well-known/oauth-protected-resource` endpoint (RFC 9728):
+MCP clients (Claude, Cursor, etc.) fetch `/.well-known/oauth-protected-resource` to discover which authorization server issues tokens for your MCP server. The endpoint must be **unauthenticated** — MCP clients call it before they have a token.
+
+**With the built-in `auth` option** — add `resourceServerUrl` and `authorizationServerUrl`:
 
 ```typescript
 createMcpRouter(mcpServer, {
@@ -257,6 +278,42 @@ createMcpRouter(mcpServer, {
   },
 });
 ```
+
+**With your own auth middleware** — use `createProtectedResourceMetadataMiddleware` as a standalone middleware, mounted _before_ your auth layer so discovery stays unauthenticated:
+
+```typescript
+import {
+  createProtectedResourceMetadataMiddleware,
+  getWwwAuthenticateHeader,
+} from '@ttoss/http-server-mcp';
+
+// Mount the discovery endpoint before your own auth middleware
+app.use(
+  createProtectedResourceMetadataMiddleware({
+    resource: 'https://mcp.example.com',
+    authorizationServers: ['https://api.example.com'],
+  })
+);
+
+// Your own auth middleware — emit the spec-compliant WWW-Authenticate header on 401s
+app.use(async (ctx, next) => {
+  const token = ctx.headers.authorization?.replace('Bearer ', '');
+  if (!token || !(await myVerify(token))) {
+    ctx.status = 401;
+    ctx.set(
+      'WWW-Authenticate',
+      getWwwAuthenticateHeader({ resource: 'https://mcp.example.com' })
+    );
+    ctx.body = 'Unauthorized';
+    return;
+  }
+  await next();
+});
+
+app.use(createMcpRouter(mcpServer).routes());
+```
+
+The `WWW-Authenticate: Bearer resource_metadata="…"` header is how MCP clients bootstrap OAuth discovery after their first unauthorized request.
 
 ## API Reference
 
@@ -306,6 +363,27 @@ Asserts that the current request token contains all required scopes. Throws `Err
 **Parameters:**
 
 - `required` (`string[]`) — Scope strings that must all be present in `payload.scope`
+
+### `createProtectedResourceMetadataMiddleware(args)`
+
+Creates a standalone Koa middleware that serves `GET /.well-known/oauth-protected-resource` (RFC 9728). Use this when you have your own auth middleware and don't want to tie the discovery endpoint to the built-in `auth` option.
+
+**Parameters:**
+
+- `args.resource` (`string`) — The protected resource's identifier URI (your MCP server URL)
+- `args.authorizationServers` (`string[]`) — Issuer URIs of the authorization servers that protect this resource
+
+**Returns:** `Koa.Middleware`
+
+### `getWwwAuthenticateHeader(args)`
+
+Returns the `WWW-Authenticate` header value for a 401 response, formatted per the MCP auth spec: `Bearer resource_metadata="<resource>/.well-known/oauth-protected-resource"`.
+
+**Parameters:**
+
+- `args.resource` (`string`) — The protected resource URL (trailing slash is stripped automatically)
+
+**Returns:** `string` — The full `WWW-Authenticate` header value
 
 ### `registerToolFromSchema(server, params)`
 
