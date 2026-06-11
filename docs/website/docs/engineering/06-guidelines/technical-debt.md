@@ -47,7 +47,7 @@ We structure our codebase into small, independent **packages**, **modules**, and
 
 ### 2. Automated Verification for Every Change
 
-**Aligns with:** [The Principle of Intrinsic Verification](/docs/ai/agentic-development-principles#the-principle-of-intrinsic-verification)
+**Aligns with:** [The Corollary of Intrinsic Verification](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-corollary-of-intrinsic-verification)
 
 We never trade speed for correctness. Even "quick and dirty" code must be verified.
 
@@ -68,7 +68,7 @@ We protect our core domain logic from the volatility of external tools, framewor
 
 ### 4. Observability as Interest Payments
 
-**Aligns with:** [The Corollary of Invisible Risk](/docs/ai/agentic-development-principles#the-corollary-of-invisible-risk)
+**Aligns with:** [The Principle of Invisible Risk](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-principle-of-invisible-risk)
 
 If we choose to ship a sub-optimal solution to move fast, we must pay the "interest" in the form of higher observability.
 

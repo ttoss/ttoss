@@ -12,21 +12,37 @@ _Agentic development means intentionally designing workflows, feedback loops, an
 
 This section defines principles for integrating AI agents into product development workflows, building on [The Principles of Product Development Flow](/docs/product/product-development/principles) and focusing on effective human-AI collaboration. The principles are now organized by chapter so each page stays focused.
 
-## What is a Principle?
+## Principles, Corollaries, and Design Patterns
 
-A **Principle** is a fundamental truth or proposition that serves as the foundation for a chain of reasoning. It is not a best practice or a suggestion. It describes the underlying physics and economics of Human-AI interaction.
+This documentation is organized in three layers, and each layer makes a different kind of claim. Confusing them weakens all three, so the distinction is worth stating precisely.
+
+A **Principle** is a fundamental truth or proposition that serves as the foundation for a chain of reasoning. It is not a best practice or a suggestion. It describes the underlying physics and economics of Human-AI interaction. A principle is purely descriptive: it tells you how the world is, whether or not you act on it.
+
+A **Corollary** is a constraint that follows necessarily from one or more principles. Corollaries are allowed to be prescriptive ("verification must be structurally enforced"), but they are not optional advice: if you accept the principle, you cannot coherently reject its corollary. A corollary remains implementation-agnostic — it constrains every solution without choosing one.
+
+A **Design Pattern** is a named, optional, concrete solution to a recurring problem within those constraints. Patterns have alternatives and trade-offs: a competent team can accept every principle and corollary and still legitimately solve the same problem with a different pattern. Patterns live in [Agentic Design Patterns](/docs/ai/agentic-design-patterns).
+
+```mermaid
+flowchart LR
+    P["Principle<br/>(a truth)"] -->|entails| C["Corollary<br/>(a constraint on any solution)"]
+    C -->|satisfied by| D["Design Pattern<br/>(one chosen solution among alternatives)"]
+```
+
+A simple litmus test: a true principle survives being prefixed with "It is true that…"; a practice survives being prefixed with "You should…". For the middle layer, ask: "Can I accept the principle but reject this?" — if no, it is a corollary; if yes, and it names one concrete mechanism among several viable ones, it is a design pattern.
+
+For example: [The Principle of Asymmetric Risk](/docs/ai/agentic-development-principles/governance-of-agency#the-principle-of-asymmetric-risk) (truth: failure cost is convex while verification cost is linear) entails [The Corollary of Bounded Edit Radius](/docs/ai/agentic-development-principles/governance-of-agency#the-corollary-of-bounded-edit-radius) (constraint: the agent's editable surface must be bounded), which is satisfied by the [Layered Autonomy](/docs/ai/agentic-design-patterns#layered-autonomy) pattern (one solution: clearance levels) — but veto gates or sandboxing could satisfy the same constraint.
 
 Each chapter includes the core principle statements, failure scenarios, and corollaries derived from those principles.
 
 ## Chapters
 
-- [Foundations of Hybrid Allocation](/docs/ai/agentic-development-principles/foundations-of-hybrid-allocation) - 4 principles, 6 corollaries.
+- [Foundations of Hybrid Allocation](/docs/ai/agentic-development-principles/foundations-of-hybrid-allocation) - 3 principles, 5 corollaries.
 - [Physics of AI Integration](/docs/ai/agentic-development-principles/physics-of-ai-integration) - 9 principles, 22 corollaries.
 - [Economics of Interaction](/docs/ai/agentic-development-principles/economics-of-interaction) - 4 principles, 5 corollaries.
 - [Governance of Technical Debt](/docs/ai/agentic-development-principles/governance-of-technical-debt) - 6 principles, 5 corollaries.
-- [Architecture of Flow](/docs/ai/agentic-development-principles/architecture-of-flow) - 5 principles, 15 corollaries.
+- [Architecture of Flow](/docs/ai/agentic-development-principles/architecture-of-flow) - 5 principles, 14 corollaries.
 - [Protocol of Communication](/docs/ai/agentic-development-principles/protocol-of-communication) - 3 principles, 5 corollaries.
-- [Governance of Agency](/docs/ai/agentic-development-principles/governance-of-agency) - 3 principles, 5 corollaries.
+- [Governance of Agency](/docs/ai/agentic-development-principles/governance-of-agency) - 3 principles, 7 corollaries.
 - [Symbiosis of Human-AI Agency](/docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency) - 7 principles, 16 corollaries.
 
 ## Principle Index
@@ -71,11 +87,11 @@ Moved to [Foundations of Hybrid Allocation](/docs/ai/agentic-development-princip
 
 #### The Principle of Graduated Agency by Structure and Risk
 
-Moved to [Foundations of Hybrid Allocation](/docs/ai/agentic-development-principles/foundations-of-hybrid-allocation#the-principle-of-graduated-agency-by-structure-and-risk).
+Reclassified as a corollary of The Principle of Asymmetric Risk. Now [The Corollary of Graduated Agency by Structure and Risk](/docs/ai/agentic-development-principles/governance-of-agency#the-corollary-of-graduated-agency-by-structure-and-risk) in Governance of Agency.
 
 #### The Corollary of Risk-Structured Delegation
 
-Moved to [Foundations of Hybrid Allocation](/docs/ai/agentic-development-principles/foundations-of-hybrid-allocation#the-corollary-of-risk-structured-delegation).
+Moved to [Governance of Agency](/docs/ai/agentic-development-principles/governance-of-agency#the-corollary-of-risk-structured-delegation).
 
 ### The Physics of AI Integration
 
@@ -255,11 +271,11 @@ Moved to [Governance of Technical Debt](/docs/ai/agentic-development-principles/
 
 #### The Principle of Intrinsic Verification
 
-Moved to [Governance of Technical Debt](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-principle-of-intrinsic-verification).
+Reclassified as a corollary of The Principle of Invisible Risk. Now [The Corollary of Intrinsic Verification](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-corollary-of-intrinsic-verification) in Governance of Technical Debt.
 
 #### The Corollary of Invisible Risk
 
-Moved to [Governance of Technical Debt](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-corollary-of-invisible-risk).
+Promoted to a principle. Now [The Principle of Invisible Risk](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-principle-of-invisible-risk) in Governance of Technical Debt.
 
 #### The Principle of Execution Isolation
 
@@ -307,7 +323,7 @@ Moved to [Architecture of Flow](/docs/ai/agentic-development-principles/architec
 
 #### The Corollary of The Next Move Test
 
-Moved to [Architecture of Flow](/docs/ai/agentic-development-principles/architecture-of-flow#the-corollary-of-the-next-move-test).
+Reclassified as a design pattern. Now [The Next Move Test](/docs/ai/agentic-design-patterns#the-next-move-test) in Agentic Design Patterns.
 
 #### The Corollary of Boundary Enforcement
 

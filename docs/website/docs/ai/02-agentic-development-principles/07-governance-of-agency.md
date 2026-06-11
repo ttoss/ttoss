@@ -9,7 +9,7 @@ Humans must explicitly define the scope, authority, escalation paths, and risk b
 
 ### The Principle of Delegated Agency Scaling
 
-Autonomy is not a binary setting but a variable slider dependent on verification capability. We scale AI agency in proportion to our ability to automatically validate the output. Low-risk or easily verifiable tasks allow for high autonomy; high-risk or subjective tasks require restricted agency (consultant mode). You cannot delegate authority where you cannot automate accountability. This scales agency according to [The Principle of Graduated Agency by Structure and Risk](/docs/ai/agentic-development-principles/foundations-of-hybrid-allocation#the-principle-of-graduated-agency-by-structure-and-risk) and is constrained by [The Principle of Verification Asymmetry](/docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency#the-principle-of-verification-asymmetry).
+Autonomy is not a binary setting but a variable bounded by verification capability: you cannot delegate authority where you cannot automate accountability. Agency granted beyond the system's capacity to automatically validate output does not produce more throughput—it produces unverified risk. Low-risk or easily verifiable tasks therefore admit high autonomy; high-risk or subjective tasks admit only restricted agency (consultant mode). This bound operationalizes [The Corollary of Graduated Agency by Structure and Risk](/docs/ai/agentic-development-principles/governance-of-agency#the-corollary-of-graduated-agency-by-structure-and-risk) and is constrained by [The Principle of Verification Asymmetry](/docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency#the-principle-of-verification-asymmetry).
 
 **Failure Scenario:** Delegating complex build optimization to AI leads to short-term gains but introduces critical errors, increasing rework and risk.
 
@@ -32,6 +32,16 @@ The economics of automation are governed by convexity: the cost of verification 
 #### The Corollary of Bounded Edit Radius
 
 An agent given write access to a region treats the entire region as eligible for modification; edits diffuse outward from the requested target because each local change is locally plausible. Because blast radius is what governs risk, the agent's _editable surface_—not just its _executable actions_—must be constrained: scoped to specific files, specific functions, or change budgets enforced by tooling. Without this, a one-line bug fix can return as a 200-line PR that is individually defensible and collectively unreviewable, silently expanding the asymmetric downside this principle exists to bound.
+
+#### The Corollary of Graduated Agency by Structure and Risk
+
+Agency—the degree of autonomous decision-making granted to an agent—must scale inversely with problem structure and consequence severity. Grant high autonomy only to probabilistic components operating in ill-structured, low-risk domains where variability is tolerable and exploration adds value. In well-structured or high-stakes contexts, constrain agency through deterministic rules, mandatory verification steps, or human-in-the-loop escalation. This follows necessarily from Asymmetric Risk combined with [The Principle of Problem Structure Allocation](/docs/ai/agentic-development-principles/foundations-of-hybrid-allocation#the-principle-of-problem-structure-allocation): given convex downside, and variability that adds value only in ill-structured domains, no other distribution of autonomy is coherent.
+
+**Failure Scenario:** An enterprise deploys a fully autonomous agent for customer refund processing (a partially structured task with high financial risk). The LLM probabilistically interprets ambiguous return policies, occasionally approving ineligible claims and causing significant revenue leakage—because agency was not calibrated to the mixed structure and elevated risk profile.
+
+#### The Corollary of Risk-Structured Delegation
+
+Map every agent workflow to a risk-structure matrix: low-risk/ill-structured → maximal LLM agency; high-risk/well-structured → minimal agency with deterministic overrides. Intermediate cases require hybrid escalation paths, ensuring probabilistic flexibility never bypasses non-negotiable constraints. This calibration aligns with asymmetric risk tolerance: accept variability where upside outweighs downside, enforce certainty elsewhere.
 
 ### The Principle of Contextual Authority
 

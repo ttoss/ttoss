@@ -66,7 +66,7 @@ This is the organizational consequence of [The Principle of Compounding Context]
 
 Agentic teams need systems that fail loudly and explain themselves. Logs, traces, metrics, domain events, assertions, and debugging hooks are essential because they give humans the evidence needed to validate whether agent-produced changes behave correctly in the real world. Without observability, humans are asked to approve outputs they cannot truly evaluate.
 
-This pillar follows from [The Principle of Intrinsic Verification](/docs/ai/agentic-development-principles#the-principle-of-intrinsic-verification), [The Corollary of Invisible Risk](/docs/ai/agentic-development-principles#the-corollary-of-invisible-risk), and [The Principle of Trust-Gated Orchestration](/docs/ai/agentic-development-principles#the-corollary-of-trust-gated-orchestration).
+This pillar follows from [The Principle of Invisible Risk](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-principle-of-invisible-risk), [The Corollary of Intrinsic Verification](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-corollary-of-intrinsic-verification), and [The Corollary of Trust-Gated Orchestration](/docs/ai/agentic-development-principles/governance-of-agency#the-corollary-of-trust-gated-orchestration).
 
 **Failure mode:** The agent's code passes tests, but the runtime has weak telemetry. When behavior drifts under real traffic, no one can tell whether the system is healthy, degraded, or silently wrong.
 

@@ -9,6 +9,8 @@ While [Agentic Development Principles](/docs/ai/agentic-development-principles) 
 
 These are not theoretical concepts; they are reusable design patterns. They provide specific solutions to the recurring problems of cost, latency, reliability, and risk that every agentic system encounters. Use these patterns to bridge the gap between abstract principles and production code.
 
+A pattern differs from a principle and from a corollary: a principle is a truth (it survives being prefixed with "It is true that…"), a corollary is a constraint entailed by a principle (you cannot accept the principle and reject it), and a pattern is one chosen solution among alternatives (it survives "You should…", and a competent team could satisfy the same constraint differently). See [Principles, Corollaries, and Design Patterns](/docs/ai/agentic-development-principles#principles-corollaries-and-design-patterns) for the full distinction. Every pattern below cites the principle it serves; none of them is the only valid way to serve it.
+
 ## Table of Contents
 
 <TOCInline toc={toc} />
@@ -49,15 +51,29 @@ These are not theoretical concepts; they are reusable design patterns. They prov
 
 Assigning multiple agents to work simultaneously on the same critical path increases the risk of conflict, redundant work, and integration errors. Effective orchestration requires that only one agent (or a tightly coordinated group) operates on the critical path at any time.
 
+### Shared Memory Layer
+
+**The Problem:** Agent intelligence resets at task boundaries. Decisions, constraints, and conclusions produced in one session are lost when the context window closes, so downstream agents (and humans) repeatedly pay to reconstruct knowledge the system already produced.
+
+**The Underlying Principle:** Derived from [The Principle of Compounding Context](/docs/ai/agentic-development-principles#the-principle-of-compounding-context) and [The Principle of Finite Context Window](/docs/ai/agentic-development-principles#the-principle-of-finite-context-window).
+
+**The Strategy:** Design the workflow as interconnected layers where the output of each agent automatically persists into a shared, durable memory layer (docs, ADRs, tickets, structured knowledge bases) that becomes retrievable context for downstream agents. Treat every AI interaction as an artifact-generation step, not a conversation: decisions are written where the next agent will look, not where the last chat happened. Alternatives that satisfy the same constraint include long-lived orchestrator state or retrieval over a curated corpus — the pattern is the persistence boundary, not a specific storage technology.
+
+**Failure Scenario:** A team uses AI to architect a new feature and agrees on specific constraints in the chat. Because the decision is never persisted into a shared memory layer, the agent that writes the code is unaware of the constraints. It generates code that works but violates the architecture, forcing a human to manually refactor it.
+
 ### Artificial Friction
 
-**The Problem:** AI removes the natural "pain signal" of complexity. When the cost of adding a patch drops below the cost of refactoring, systems inevitably trend toward entropy.
+**The Problem:** AI removes the natural "pain signal" of complexity. Manually, writing a tangled patch hurts enough to suggest refactoring; with AI, adding "just one more if-statement" is always the path of least resistance. When the cost of adding a patch drops below the cost of refactoring, systems inevitably trend toward entropy.
 
 **The Underlying Principle:** Derived from [The Principle of Zero-Cost Erosion](/docs/ai/agentic-development-principles#the-principle-of-zero-cost-erosion).
 
-**The Strategy:** Re-introduce deliberate barriers, checks, and vetoes that force the agent to "pay" a cost (in time or compute) before committing low-quality work. Configure CI/CD to reject changes that increase complexity beyond thresholds.
+**The Strategy:** Re-introduce deliberate barriers, checks, and vetoes that force the agent to "pay" a cost (in time or compute) before committing low-quality work.
 
 **Failure Scenario:** A team removes all barriers to "move fast," allowing agents to commit code directly. Within a month, the codebase bloats by 300% with redundant logic because there was no friction to stop the agent from taking the easiest path.
+
+#### The Complexity Brake
+
+The canonical implementation of Artificial Friction: configure CI/CD or agent orchestrators to calculate the cyclomatic complexity of the agent's output. If a PR increases the complexity score of a function beyond a threshold (e.g., >10), the system automatically rejects the change or demands a "Refactor Plan" before acceptance. An agent tasked with an edge case will otherwise add a 5th nested if/else block because it was the easiest valid solution—a human would have felt the pain and refactored; the agent felt nothing.
 
 ## Communication Patterns
 
@@ -186,16 +202,6 @@ Level 3 (Employee): Can deploy to production, but only for specific, whitelisted
 
 **Failure Scenario:** A "Documentation Agent" is given the same permission set as a "DevOps Agent." A prompt injection in the documentation pipeline allows an attacker to gain write access to the production deployment keys.
 
-### The Complexity Brake
-
-**The Problem:** AI makes adding complexity (patching) nearly free, while refactoring remains expensive (requires deep thought). This economic imbalance leads to "Zero-Cost Erosion," where systems degrade rapidly because "just one more if-statement" is always the path of least resistance.
-
-**The Underlying Principle:** Derived from [The Principle of Zero-Cost Erosion](/docs/ai/agentic-development-principles#the-principle-of-zero-cost-erosion).
-
-**The Strategy:** Re-introduce artificial friction for "lazy" coding. Configure CI/CD or Agent Orchestrators to calculate the Cyclomatic Complexity of the agent's output. If the agent's PR increases the complexity score of a function beyond a threshold (e.g., >10), the system automatically rejects the change or demands a "Refactor Plan" before acceptance.
-
-**Failure Scenario:** An agent is tasked with handling a new edge case. It adds a 5th nested if/else block to a function because that was the easiest valid solution. The function becomes unreadable. A human would have felt the pain and refactored; the agent felt nothing.
-
 ### The Semantic Validator
 
 **The Problem:** AI models excel at syntax (style, formatting) but struggle with semantics (logic, truth). They can generate code that looks "perfect" (correct indentation, professional comments) but contains subtle logical flaws or security vulnerabilities. The visual of the code deceives the human reviewer.
@@ -210,43 +216,37 @@ Level 3 (Employee): Can deploy to production, but only for specific, whitelisted
 
 **Failure Scenario:** An agent generates a Regex for validating emails. It looks complex and professional. The developer merges it. In reality, the Regex allows catastrophic backtracking (ReDoS), crashing the production server when a malicious user sends a long string. A simple functional test would have caught this, but the visual masked it.
 
+### The Next Move Test
+
+**The Problem:** AI-generated code that works today can still make tomorrow more expensive. Reviewers need a fast, repeatable way to decide "merge or rework" that accounts for structural cost, not just functional correctness.
+
+**The Underlying Principle:** Derived from [The Principle of Architecture over Artifacts](/docs/ai/agentic-development-principles#the-principle-of-architecture-over-artifacts) and [The Principle of Economic Technical Debt](/docs/ai/agentic-development-principles#the-principle-of-economic-technical-debt).
+
+**The Strategy:** At the decision point, evaluate the change by asking: "Does this make the next related feature easier or harder to implement?" If it requires duplication or increases complexity, reject it, even if it works — the cost of the next change is the interest rate on the debt you are incurring. Alternatives that price the same debt include automated complexity gates (see [Artificial Friction](/docs/ai/agentic-design-patterns#artificial-friction)); the Next Move Test is the human-judgment version, cheap enough to apply to every merge.
+
+**Failure Scenario:** A developer accepts an AI-generated payment integration that adds conditional logic directly to a core function. It works immediately, but subsequent integrations follow the pattern, creating a fragile, nested monolith where every future change carries disproportionate risk.
+
 ## Orchestration Patterns
 
 ### Role-Based Routing
 
 **The Problem:** Not all failures are due to a lack of intelligence; many are due to a mismatch in ambiguity tolerance. Assigning a high-ambiguity task (e.g., "Analyze market trends") to an agent designed for rigid execution leads to crashes or hallucinated assumptions. Conversely, assigning a rote data-entry task to a creative "Reasoning Agent" often leads to "boredom errors," where the model over-complicates simple logic or tries to refactor data it was only meant to copy.
 
-**The Underlying Principle:** Derived from The Principle of Allocative Efficiency and The Principle of Signal Entropy.
+**The Underlying Principle:** Derived from [The Principle of Allocative Efficiency](/docs/ai/agentic-development-principles#the-principle-of-allocative-efficiency) and [The Principle of Signal Entropy](/docs/ai/agentic-development-principles#the-principle-of-signal-entropy).
 
-**The Strategy:** Classify your agents not just by the model they use, but by their Functional Role:
-
-1. The Executor (Doer): Zero ambiguity tolerance. Follows strict Standard Operating Procedures (SOPs). Best for defined inputs/outputs (e.g., SQL queries, API calls).
-
-2. The Collaborator (Clarifier): Moderate ambiguity tolerance. Has the explicit instruction and permission to ask questions back to the user if parameters are missing.
-
-3. The Architect (Planner): High ambiguity tolerance. Breaks down abstract goals into concrete steps for Executors.
-
-_Route tasks based on the level of definition required, not just the difficulty._
+**The Strategy:** Classify your agents not just by the model they use, but by their Functional Role, and route tasks based on the level of definition required, not just the difficulty.
 
 **Failure Scenario:** A user asks a "Database Agent" (Executor Role) to "Find the best users." Because "best" is subjective and undefined, the agent—lacking the "Architect" permission to define terms—hallucinates a metric (e.g., purely alphabetical order or random selection) and returns confident, meaningless data. The task required an "Architect" agent to first define "best" or a "Collaborator" to ask the user, "By 'best', do you mean highest revenue or most recent login?"
 
-### Collaborative Ability Distinction
+#### Collaborative Ability Distinction
 
-**The Problem:** Not all tasks have clear definitions. Assigning a high-ambiguity task (e.g., "Research market trends") to an agent designed for low-ambiguity execution (e.g., "Scrape this specific URL") leads to failure. The "Executor" agent will either crash because it lacks parameters or hallucinate a rigid path where none exists. Conversely, asking a creative "Architect" agent to perform rigid data entry leads to "boredom" errors (over-complicating simple tasks).
+The role taxonomy that routing decisions are made against:
 
-**The Underlying Principle:** Derived from The Principle of Allocative Efficiency and Signal Entropy.
+1. **The Executor (Doer):** Zero ambiguity tolerance. Follows strict Standard Operating Procedures (SOPs). Best for defined inputs/outputs (e.g., SQL queries, API calls).
 
-1. The Strategy Classify agents not just by model intelligence, but by Functional Role:
+2. **The Collaborator (Clarifier):** Moderate ambiguity tolerance. Has the explicit instruction and permission to ask questions back to the user if parameters are missing.
 
-2. The Executor: Follows strict SOPs. Zero ambiguity tolerance. Best for defined inputs/outputs.
-
-3. The Collaborator: Can handle partial ambiguity and has permission to ask clarifying questions back to the user.
-
-4. The Architect: Handles high ambiguity. Can breakdown abstract goals into concrete plans for Executors.
-
-_Route the task based on the level of definition, not just difficulty._
-
-**Failure Scenario:** A user asks a "SQL Database Agent" (Executor Role) to "Analyze the user retention trends." Because the agent expects a specific SQL query or strict table parameters, it attempts to guess the definition of "retention," writes a flawed query based on assumptions, and returns confident but misleading data. The task required an "Architect" to first define "retention" with the user.
+3. **The Architect (Planner):** High ambiguity tolerance. Breaks down abstract goals into concrete steps for Executors.
 
 ### Idempotent Handoffs
 

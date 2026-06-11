@@ -37,7 +37,7 @@ If you want an agent to surface uncertainty, the _output schema_ must require it
 
 #### The Corollary of Interpretation Enumeration
 
-For high-risk or ill-structured tasks, force the agent to enumerate at least two viable interpretations _before_ committing to an implementation. This converts silent sampling into an explicit branch a human (or a downstream deterministic check) can adjudicate, and it aligns with [The Corollary of Risk-Structured Delegation](/docs/ai/agentic-development-principles/foundations-of-hybrid-allocation#the-corollary-of-risk-structured-delegation) by raising the cost of commitment in proportion to the cost of being wrong.
+For high-risk or ill-structured tasks, force the agent to enumerate at least two viable interpretations _before_ committing to an implementation. This converts silent sampling into an explicit branch a human (or a downstream deterministic check) can adjudicate, and it aligns with [The Corollary of Risk-Structured Delegation](/docs/ai/agentic-development-principles/governance-of-agency#the-corollary-of-risk-structured-delegation) by raising the cost of commitment in proportion to the cost of being wrong.
 
 ### The Principle of Structural Determinism
 
@@ -158,7 +158,7 @@ To prevent total system corruption from partial failure, agent actions must be t
 
 ### The Principle of Automated Closed Loops
 
-AI agents function as control systems where the codebase is the plant and the prompt is the controller. Open-loop systems (prompt → code) are inherently unstable because errors accumulate without correction. Stability requires a closed loop where the output is measured against a reference (tests, types, linters) and the error signal is fed back to the agent. Because human feedback is high-latency and expensive, this loop must be closed by automated systems to be economically viable.
+AI agents function as control systems where the codebase is the plant and the prompt is the controller. Open-loop systems (prompt → code) are inherently unstable because errors accumulate without correction. Stability exists only in closed loops, where the output is measured against a reference (tests, types, linters) and the error signal is fed back to the agent. And because human feedback is high-latency and expensive, only loops closed by automated systems are economically viable at scale—a human-closed loop is stable but consumes the very economics that made delegation attractive.
 
 **Failure Scenario:** A developer uses an LLM to generate a large feature in one go. The code looks correct but contains subtle logic errors. The developer spends hours debugging (acting as the slow feedback loop), negating the speed advantage of the AI.
 
