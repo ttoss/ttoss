@@ -11,7 +11,7 @@ import {
 } from '@ttoss/geovis';
 import * as React from 'react';
 
-import districtGeoJson from '../../../../packages/geovis/src/fixtures/distrito-municipal-v2.json';
+import districtGeoJson from '../../../../packages/geovis/src/sources/br-sp-distritos-municipais.json';
 import type { ColorStep } from './_choropleth-helpers';
 import { MapOverlayLegend } from './_choropleth-helpers';
 import { computeBbox, FitBoundsToBbox, MapLabel } from './_map-story-helpers';
