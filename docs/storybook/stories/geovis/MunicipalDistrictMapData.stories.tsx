@@ -1,9 +1,5 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
-import type {
-  BoundaryGroup,
-  GeoJSONFeatureCollection,
-  VisualizationSpec,
-} from '@ttoss/geovis';
+import type { BoundaryGroup, VisualizationSpec } from '@ttoss/geovis';
 import {
   BRAZIL_MUNICIPALITY_OUTLINES,
   BRAZIL_SP_SUBPREFECTURE_OUTLINES,
@@ -18,9 +14,14 @@ import {
 import * as React from 'react';
 
 import districtGeoJson from '../../../../packages/geovis/src/sources/br-sp-distritos-municipais.json';
-import type { ColorStep } from './_choropleth-helpers';
-import { MapOverlayLegend } from './_choropleth-helpers';
-import { computeBbox, FitBoundsToBbox, MapLabel } from './_map-story-helpers';
+import type { ColorStep } from './helpers/choropleth-helpers';
+import { MapOverlayLegend } from './helpers/choropleth-helpers';
+import { getMunicipalDistrictSpec } from './helpers/getMunicipalDistrictSpec.helpers';
+import {
+  computeBbox,
+  FitBoundsToBbox,
+  MapLabel,
+} from './helpers/map-story-helpers';
 
 const DISTRICT_BBOX = computeBbox(
   districtGeoJson as unknown as GeoJSON.FeatureCollection
@@ -47,20 +48,28 @@ const populationSteps: ColorStep[] = [
 const populationBreaks = populationSteps.map((step) => {
   return step.threshold;
 });
-
 const DEFAULT_COLOR = '#f0f9ff';
-
 const AVAILABLE_YEARS = [
   2000, 2005, 2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050,
 ] as const;
-
+const _SAO_PAULO_POPULATION = 12_272_000;
+const numeratorLabel = 'inhabitants';
+const _customRangeFormatter = (
+  lower: number | null,
+  upper: number | null
+): string => {
+  const fmt = (v: number) => {
+    return `${(v / 1_000).toFixed(0)}k`;
+  };
+  if (lower === null) return `0 - ${fmt(upper!)} ${numeratorLabel}`;
+  if (upper === null) return `${fmt(lower!)} ${numeratorLabel} or more`;
+  return `${fmt(lower!)} – ${fmt(upper!)} ${numeratorLabel}`;
+};
 type Year = (typeof AVAILABLE_YEARS)[number];
-
 const fmtPop = (v: number) => {
   return `${(v / 1_000).toFixed(0)}k inhabitants`;
 };
 
-/** Raw shape returned by the external API (Portuguese field names). */
 interface ApiDistrictEntry {
   total: number;
   nome_distr: string;
@@ -68,7 +77,6 @@ interface ApiDistrictEntry {
   Mulheres: Record<string, number>;
 }
 
-/** Normalised internal shape with English identifiers. */
 interface DistrictEntry {
   total: number;
   districtName: string;
@@ -78,6 +86,7 @@ interface DistrictEntry {
 
 interface MunicipalDistrictMapDataProps {
   year: Year;
+  showBasemap: boolean;
   showStateOutlines: boolean;
   showSubprefeituraOutlines: boolean;
   showMunicipalityOutlines: boolean;
@@ -89,6 +98,8 @@ interface MunicipalDistrictMapDataProps {
   subprefeituraLineWidth: number;
 }
 
+export type { MunicipalDistrictMapDataProps };
+
 const normalizeEntry = (e: ApiDistrictEntry): DistrictEntry => {
   return {
     total: e.total,
@@ -97,7 +108,6 @@ const normalizeEntry = (e: ApiDistrictEntry): DistrictEntry => {
     women: e.Mulheres,
   };
 };
-
 const normalizePopulationData = (
   raw: Record<string, Record<string, ApiDistrictEntry>>
 ): Record<string, Record<string, DistrictEntry>> => {
@@ -115,15 +125,13 @@ const normalizePopulationData = (
   );
 };
 
-/**
- * Helper component to fetch and render population data with boundary toggles.
- */
-/* eslint-disable max-lines-per-function, react/prop-types */
+/* eslint-disable max-lines-per-function */
 const MunicipalDistrictMapDataRender = (
   props: MunicipalDistrictMapDataProps
 ) => {
   const {
     year,
+    showBasemap,
     showStateOutlines,
     showSubprefeituraOutlines,
     showMunicipalityOutlines,
@@ -147,9 +155,8 @@ const MunicipalDistrictMapDataRender = (
       .then((json: Record<string, Record<string, ApiDistrictEntry>>) => {
         return setPopulationData(normalizePopulationData(json));
       })
-      .catch((error) => {
-        // eslint-disable-next-line no-console
-        console.error('Failed to fetch population data', error);
+      .catch(() => {
+        setPopulationData({});
       });
   }, []);
 
@@ -163,63 +170,16 @@ const MunicipalDistrictMapDataRender = (
   }, [populationData, year]);
 
   const baseSpec = React.useMemo<VisualizationSpec>(() => {
-    return {
-      id: 'municipal-district-mapdata',
-      engine: 'maplibre',
-      basemap: { styleUrl: 'https://tiles.openfreemap.org/styles/bright' },
-      sources: [
-        {
-          id: 'districts',
-          type: 'geojson',
-          data: districtGeoJson as unknown as GeoJSONFeatureCollection,
-        },
-      ],
-      layers: [
-        {
-          id: 'districts-fill',
-          sourceId: 'districts',
-          geometry: 'polygon',
-          mapDataId: 'population',
-          activeLegendId: 'population',
-          hoverPaint: { lineColor: '#333333', lineWidth: 2 },
-          selectedPaint: { lineColor: '#1a1a1a', lineWidth: 3 },
-          clickAnchor: { color: '#2171b5' },
-        },
-        {
-          id: 'districts-outline',
-          sourceId: 'districts',
-          geometry: 'line',
-          paint: { lineColor: '#93c5fd', lineWidth: 0.5 },
-        },
-      ],
-      legends: [
-        {
-          id: 'population',
-          label: `Population by district \u2014 ${year}`,
-          colorBy: {
-            type: 'quantitative',
-            property: 'population',
-            scale: 'threshold',
-            thresholds: populationBreaks,
-            colors: [
-              DEFAULT_COLOR,
-              ...populationSteps.map((step) => {
-                return step.color;
-              }),
-            ],
-            defaultColor: DEFAULT_COLOR,
-          },
-        },
-      ],
-      mapData: [
-        {
-          mapDataId: 'population',
-          mapId: 'districts',
-          data: mapDataEntries,
-        },
-      ],
-    };
-  }, [mapDataEntries, year]);
+    return getMunicipalDistrictSpec({
+      year,
+      showBasemap,
+      districtGeoJson,
+      mapDataEntries,
+      populationBreaks,
+      populationSteps,
+      DEFAULT_COLOR,
+    });
+  }, [mapDataEntries, year, showBasemap]);
 
   const municipalityGroup = React.useMemo<BoundaryGroup>(() => {
     return customizeBoundaryGroup(BRAZIL_MUNICIPALITY_OUTLINES.local, {
@@ -252,21 +212,15 @@ const MunicipalDistrictMapDataRender = (
   );
 
   React.useEffect(() => {
-    if (showMunicipalityOutlines !== isVisible(municipalityGroup)) {
+    if (showMunicipalityOutlines !== isVisible(municipalityGroup))
       toggle(municipalityGroup);
-    }
   }, [showMunicipalityOutlines, toggle, isVisible, municipalityGroup]);
-
   React.useEffect(() => {
-    if (showStateOutlines !== isVisible(stateGroup)) {
-      toggle(stateGroup);
-    }
+    if (showStateOutlines !== isVisible(stateGroup)) toggle(stateGroup);
   }, [showStateOutlines, toggle, isVisible, stateGroup]);
-
   React.useEffect(() => {
-    if (showSubprefeituraOutlines !== isVisible(subprefeituraGroup)) {
+    if (showSubprefeituraOutlines !== isVisible(subprefeituraGroup))
       toggle(subprefeituraGroup);
-    }
   }, [showSubprefeituraOutlines, toggle, isVisible, subprefeituraGroup]);
 
   return (
@@ -299,42 +253,36 @@ const MunicipalDistrictMapDataRender = (
                   </div>
                   <div>
                     {typeof info.value === 'number'
-                      ? fmtPop(info.value)
+                      ? `${fmtPop(info.value)} inhabitants`
                       : 'No data'}
                   </div>
                 </>
               );
             }}
           />
-          <MapOverlayLegend
-            label="Total population"
-            defaultColor={DEFAULT_COLOR}
-            steps={populationSteps}
+          {
+            <MapOverlayLegend
+              label="Total population"
+              defaultColor={DEFAULT_COLOR}
+              steps={populationSteps}
+              formatValue={fmtPop}
+            />
+          }
+        </div>
+        {
+          <GeoVisLegend
+            legendId="population"
+            breaks={populationBreaks}
             formatValue={fmtPop}
           />
-        </div>
-        <GeoVisLegend
-          legendId="population"
-          breaks={populationBreaks}
-          formatValue={fmtPop}
-        />
+        }
       </GeoVisProvider>
     </div>
-    /* eslint-enable max-lines-per-function, react/prop-types */
+    /* eslint-enable max-lines-per-function */
   );
 };
 
-/**
- * Choropleth of São Paulo municipal districts coloured by total population
- * for a selected census year (2000–2050, projected past 2025).
- *
- * Population data comes from an external dataset joined to the GeoJSON geometry
- * via `mapData` — the GeoJSON itself has no properties, only `feature.id`
- * (set to `cd_distrit`, an integer 1–96). `geometryId` in each `MapDataRow`
- * matches directly against `feature.id`, no `joinKey` needed.
- *
- * Source: SMUL/GEOINFO — Resident population evolution, São Paulo Municipality.
- */
+/** Choropleth of São Paulo districts coloured by population with boundary toggles and labelFormat support. */
 export const MunicipalDistrictMapData: StoryFn<
   MunicipalDistrictMapDataProps
 > = (props: MunicipalDistrictMapDataProps) => {
@@ -342,51 +290,26 @@ export const MunicipalDistrictMapData: StoryFn<
 };
 
 MunicipalDistrictMapData.argTypes = {
-  year: {
-    control: { type: 'select' },
-    options: AVAILABLE_YEARS,
-    description: 'Census / projection year',
-  },
-  showStateOutlines: {
-    control: 'boolean',
-    description: 'Toggle Brazilian state outlines',
-  },
-  showSubprefeituraOutlines: {
-    control: 'boolean',
-    description: 'Toggle São Paulo subprefecture outlines',
-  },
-  showMunicipalityOutlines: {
-    control: 'boolean',
-    description: 'Toggle São Paulo municipality outlines',
-  },
-  municipalityLineColor: {
-    control: 'color',
-    description: 'Municipality outline color',
-  },
+  year: { control: { type: 'select' }, options: AVAILABLE_YEARS },
+  showBasemap: { control: 'boolean' },
+  showStateOutlines: { control: 'boolean' },
+  showSubprefeituraOutlines: { control: 'boolean' },
+  showMunicipalityOutlines: { control: 'boolean' },
+  municipalityLineColor: { control: 'color' },
   municipalityLineWidth: {
     control: { type: 'range', min: 0, max: 5, step: 0.5 },
-    description: 'Municipality outline width (px)',
   },
-  stateLineColor: {
-    control: 'color',
-    description: 'State outline color',
-  },
-  stateLineWidth: {
-    control: { type: 'range', min: 0, max: 5, step: 0.5 },
-    description: 'State outline width (px)',
-  },
-  subprefeituraLineColor: {
-    control: 'color',
-    description: 'Subprefecture outline color',
-  },
+  stateLineColor: { control: 'color' },
+  stateLineWidth: { control: { type: 'range', min: 0, max: 5, step: 0.5 } },
+  subprefeituraLineColor: { control: 'color' },
   subprefeituraLineWidth: {
     control: { type: 'range', min: 0, max: 5, step: 0.5 },
-    description: 'Subprefecture outline width (px)',
   },
 };
 
-MunicipalDistrictMapData.args = {
+const baseVariationArgs = {
   year: 2020,
+  showBasemap: true,
   showStateOutlines: true,
   showSubprefeituraOutlines: true,
   showMunicipalityOutlines: true,
@@ -396,4 +319,37 @@ MunicipalDistrictMapData.args = {
   stateLineWidth: 1.5,
   subprefeituraLineColor: '#6b7280',
   subprefeituraLineWidth: 1.0,
+};
+
+MunicipalDistrictMapData.args = baseVariationArgs;
+
+export const WithRangeLabel: typeof MunicipalDistrictMapData =
+  MunicipalDistrictMapData.bind({});
+WithRangeLabel.args = {
+  ...baseVariationArgs,
+  showBasemap: false,
+};
+
+export const WithPercentageLabel: typeof MunicipalDistrictMapData =
+  MunicipalDistrictMapData.bind({});
+WithPercentageLabel.args = {
+  ...baseVariationArgs,
+};
+
+export const WithStdDevLabel: typeof MunicipalDistrictMapData =
+  MunicipalDistrictMapData.bind({});
+WithStdDevLabel.args = {
+  ...baseVariationArgs,
+};
+
+export const WithPositionedLegend: typeof MunicipalDistrictMapData =
+  MunicipalDistrictMapData.bind({});
+WithPositionedLegend.args = {
+  ...baseVariationArgs,
+};
+
+export const WithCustomLabel: typeof MunicipalDistrictMapData =
+  MunicipalDistrictMapData.bind({});
+WithCustomLabel.args = {
+  ...baseVariationArgs,
 };

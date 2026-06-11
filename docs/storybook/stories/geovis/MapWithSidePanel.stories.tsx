@@ -5,8 +5,8 @@ import type { Map as MapLibreMap } from 'maplibre-gl';
 import * as React from 'react';
 
 import mapWithSidePanelSpec from '../../../../packages/geovis/src/fixtures/map-with-side-panel.json';
-import type { Bbox } from './_map-story-helpers';
-import { FitBoundsToBbox } from './_map-story-helpers';
+import type { Bbox } from './helpers/map-story-helpers';
+import { FitBoundsToBbox } from './helpers/map-story-helpers';
 
 export default {
   title: 'GeoVis/Fixtures/MapWithSidePanel',

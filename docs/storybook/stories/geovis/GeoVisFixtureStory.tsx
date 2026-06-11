@@ -1,8 +1,11 @@
 import type { VisualizationSpec } from '@ttoss/geovis';
 import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
 
-import type { Bbox } from './_map-story-helpers';
-import { FitBoundsToBbox, FitBoundsToUrlSource } from './_map-story-helpers';
+import type { Bbox } from './helpers/map-story-helpers';
+import {
+  FitBoundsToBbox,
+  FitBoundsToUrlSource,
+} from './helpers/map-story-helpers';
 
 /**
  * Generic fixture story shell.
