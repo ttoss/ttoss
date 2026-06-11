@@ -163,6 +163,11 @@ export const BRAZIL_SP_SUBPREFECTURE_OUTLINES: {
   },
 };
 
+export interface BoundaryPaintOverrides {
+  lineColor?: string;
+  lineWidth?: number;
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -192,12 +197,15 @@ export const appendBoundaryGroup = (
  * Sets the `visible` flag on every layer in `spec` whose `id` matches any
  * layer ID in `group`.
  *
+ * When `visible` is `true` the property is omitted (default-visible).
+ * When `visible` is `false` the property is explicitly set to `false`.
+ *
  * Layers not belonging to the group are left untouched.
  * Returns a new spec object — the original is not mutated.
  *
  * @param spec - The spec containing the layers to toggle.
  * @param group - The boundary group whose layers should be toggled.
- * @param visible - `true` to show, `false` to hide.
+ * @param visible - `true` to show (omit visible property), `false` to hide.
  * @returns A new spec with the updated visibility flags.
  */
 export const toggleBoundaryGroup = (
@@ -210,10 +218,57 @@ export const toggleBoundaryGroup = (
       return l.id;
     })
   );
+  const updateLayer = (layer: VisualizationLayer): VisualizationLayer => {
+    if (!groupLayerIds.has(layer.id)) return layer;
+    if (visible) {
+      const { visible: _omit, ...rest } = layer;
+      return rest;
+    }
+    return { ...layer, visible: false };
+  };
   return {
     ...spec,
-    layers: spec.layers.map((l) => {
-      return groupLayerIds.has(l.id) ? { ...l, visible } : l;
+    layers: spec.layers.map(updateLayer),
+  };
+};
+
+/**
+ * Returns a new `BoundaryGroup` with overridden paint properties on every
+ * line layer. The original group is not mutated.
+ *
+ * Only `lineColor` and `lineWidth` are supported — non-line layers are
+ * returned unchanged.
+ *
+ * @param group - The boundary group to customize.
+ * @param overrides - Partial paint properties to apply.
+ * @returns A new BoundaryGroup with the overridden paint.
+ *
+ * @example
+ * ```ts
+ * const thickStates = customizeBoundaryGroup(BRAZIL_STATE_OUTLINES.local, {
+ *   lineColor: '#ef4444',
+ *   lineWidth: 3,
+ * });
+ * ```
+ */
+export const customizeBoundaryGroup = (
+  group: BoundaryGroup,
+  overrides: BoundaryPaintOverrides
+): BoundaryGroup => {
+  const paintOverride: Record<string, unknown> = {};
+  if (overrides.lineColor !== undefined) {
+    paintOverride.lineColor = overrides.lineColor;
+  }
+  if (overrides.lineWidth !== undefined) {
+    paintOverride.lineWidth = overrides.lineWidth;
+  }
+  return {
+    sources: group.sources,
+    layers: group.layers.map((layer) => {
+      return {
+        ...layer,
+        paint: { ...layer.paint, ...paintOverride },
+      };
     }),
   };
 };

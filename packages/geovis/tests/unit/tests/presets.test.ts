@@ -3,6 +3,7 @@ import {
   BRAZIL_MUNICIPALITY_OUTLINES,
   BRAZIL_SP_SUBPREFECTURE_OUTLINES,
   BRAZIL_STATE_OUTLINES,
+  customizeBoundaryGroup,
   toggleBoundaryGroup,
 } from 'src/spec/presets';
 import type { VisualizationSpec } from 'src/spec/types';
@@ -238,7 +239,7 @@ describe('toggleBoundaryGroup', () => {
       BRAZIL_STATE_OUTLINES.local,
       true
     );
-    expect(result.layers[0].visible).toBe(true);
+    expect(result.layers[0].visible).toBeUndefined();
   });
 
   test('sets visible=false on matching layers', () => {
@@ -297,5 +298,65 @@ describe('chain appendBoundaryGroup + toggleBoundaryGroup', () => {
       false
     );
     expect(toggled.layers[0].visible).toBe(false);
+  });
+});
+
+describe('customizeBoundaryGroup', () => {
+  test('overrides lineColor on all layers', () => {
+    const customized = customizeBoundaryGroup(BRAZIL_STATE_OUTLINES.local, {
+      lineColor: '#ff0000',
+    });
+    expect(customized.layers[0].paint).toMatchObject({
+      lineColor: '#ff0000',
+    });
+  });
+
+  test('overrides lineWidth on all layers', () => {
+    const customized = customizeBoundaryGroup(BRAZIL_STATE_OUTLINES.local, {
+      lineWidth: 5,
+    });
+    expect(customized.layers[0].paint).toMatchObject({
+      lineWidth: 5,
+    });
+  });
+
+  test('overrides both color and width simultaneously', () => {
+    const customized = customizeBoundaryGroup(BRAZIL_STATE_OUTLINES.local, {
+      lineColor: '#00ff00',
+      lineWidth: 3,
+    });
+    expect(customized.layers[0].paint).toEqual({
+      lineColor: '#00ff00',
+      lineWidth: 3,
+    });
+  });
+
+  test('preserves unoverridden paint properties', () => {
+    const customized = customizeBoundaryGroup(BRAZIL_STATE_OUTLINES.local, {
+      lineColor: '#0000ff',
+    });
+    expect(customized.layers[0].paint).toMatchObject({
+      lineColor: '#0000ff',
+      lineWidth: PRESET.states.lineWidth,
+    });
+  });
+
+  test('does not mutate the original group', () => {
+    const original = BRAZIL_STATE_OUTLINES.local;
+    const originalPaint = { ...original.layers[0].paint };
+
+    customizeBoundaryGroup(original, { lineColor: '#ff0000', lineWidth: 10 });
+
+    expect(original.layers[0].paint).toEqual(originalPaint);
+  });
+
+  test('returns a new group object (immutable)', () => {
+    const customized = customizeBoundaryGroup(BRAZIL_STATE_OUTLINES.local, {
+      lineColor: '#ff0000',
+    });
+    expect(customized).not.toBe(BRAZIL_STATE_OUTLINES.local);
+    expect(customized.layers[0]).not.toBe(
+      BRAZIL_STATE_OUTLINES.local.layers[0]
+    );
   });
 });
