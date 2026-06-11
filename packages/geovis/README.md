@@ -102,7 +102,6 @@ The `paint` field accepts different shapes depending on `geometry`. The three mo
 ```typescript
 paint: {
   fillColor: '#3b82f6',   // fill-color
-  fillOpacity: 0.6,       // fill-opacity
   lineColor: '#1d4ed8',   // outline color (fill-outline-color)
 }
 ```
@@ -113,7 +112,6 @@ paint: {
 paint: {
   lineColor: '#ef4444',   // line-color
   lineWidth: 2,           // line-width (pixels)
-  lineOpacity: 0.8,       // line-opacity
 }
 ```
 

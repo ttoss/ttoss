@@ -101,7 +101,6 @@
       "visible": true,
       "paint": {
         "fillColor": "#3b82f6",
-        "fillOpacity": 0.45,
         "lineColor": "#1d4ed8",
         "lineWidth": 1
       }
