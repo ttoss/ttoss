@@ -4,6 +4,7 @@ export type { UseMapDataResult } from './react/hooks';
 export { useMapData } from './react/hooks';
 export * from './runtime/adapter';
 export * from './runtime/createRuntime';
+export * from './spec/presets';
 export * from './spec/types';
 export * from './spec/validateSpec';
 export * from './ui/GeoVisHoverTooltip';
