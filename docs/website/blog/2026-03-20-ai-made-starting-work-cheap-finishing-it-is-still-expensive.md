@@ -20,7 +20,7 @@ The cost of generation has collapsed. The cost of commitment has not.
 
 <!-- truncate -->
 
-This is the core of [The Principle of Cheap Generation, Expensive Commitment](/docs/ai/agentic-development-principles#the-principle-of-cheap-generation-expensive-commitment): AI makes it cheap to produce candidates, but the expensive parts of software development still remain. Someone still has to validate the output, integrate it into the real system, review the trade-offs, own the risk, and maintain the result over time.
+This is the core of [The Principle of Cheap Generation, Expensive Commitment](/docs/ai/agentic-development-principles/economics-of-interaction#the-principle-of-cheap-generation-expensive-commitment): AI makes it cheap to produce candidates, but the expensive parts of software development still remain. Someone still has to validate the output, integrate it into the real system, review the trade-offs, own the risk, and maintain the result over time.
 
 Before AI, generation and commitment were roughly coupled. If creating something took meaningful effort, teams naturally limited how much work they started. That friction acted as a governor.
 
@@ -62,7 +62,7 @@ Every task must justify more than its own local value. It must justify the valid
 
 Without admission control, AI becomes a queue amplifier.
 
-This is also why [The Principle of Zero-Cost Erosion](/docs/ai/agentic-development-principles#the-principle-of-zero-cost-erosion) matters. When patching becomes nearly free, teams stop feeling the friction that used to warn them that the system was becoming harder to change. Complexity enters quietly.
+This is also why [The Principle of Zero-Cost Erosion](/docs/ai/agentic-development-principles/economics-of-interaction#the-principle-of-zero-cost-erosion) matters. When patching becomes nearly free, teams stop feeling the friction that used to warn them that the system was becoming harder to change. Complexity enters quietly.
 
 ## What Good Teams Do Instead
 

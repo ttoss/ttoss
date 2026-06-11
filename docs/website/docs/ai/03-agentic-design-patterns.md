@@ -21,7 +21,7 @@ A pattern differs from a principle and from a corollary: a principle is a truth 
 
 **The Problem:** Context switching and delays kill developer flow. When AI tools have latency, developers either wait (breaking concentration) or ignore the tool entirely.
 
-**The Underlying Principle:** Derived from [The Principle of Cognitive Bandwidth Conservation](/docs/ai/agentic-development-principles#the-principle-of-cognitive-bandwidth-conservation) and [B3: The Batch Size Feedback Principle](/docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback).
+**The Underlying Principle:** Derived from [The Principle of Cognitive Bandwidth Conservation](/docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency#the-principle-of-cognitive-bandwidth-conservation) and [B3: The Batch Size Feedback Principle](/docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback).
 
 **The Strategy:** Integrate AI tools directly into the coding environment to deliver instant suggestions and error checking, minimizing context switching and delays.
 
@@ -41,7 +41,7 @@ A pattern differs from a principle and from a corollary: a principle is a truth 
 
 **The Problem:** Sequential agent execution creates bottlenecks. Without clear task boundaries, parallel agents conflict or duplicate work.
 
-**The Underlying Principle:** Derived from [The Principle of Compounding Context](/docs/ai/agentic-development-principles#the-principle-of-compounding-context) and [D10. The Main Effort Principle](/docs/product/product-development/principles#d10-the-main-effort-principle-designate-a-main-effort-and-subordinate-other-activities).
+**The Underlying Principle:** Derived from [The Principle of Compounding Context](/docs/ai/agentic-development-principles/architecture-of-flow#the-principle-of-compounding-context) and [D10. The Main Effort Principle](/docs/product/product-development/principles#d10-the-main-effort-principle-designate-a-main-effort-and-subordinate-other-activities).
 
 **The Strategy:** Agent parallelism is most effective when the critical path is clearly defined and agents are orchestrated to work on independent, non-overlapping tasks.
 
@@ -55,7 +55,7 @@ Assigning multiple agents to work simultaneously on the same critical path incre
 
 **The Problem:** Agent intelligence resets at task boundaries. Decisions, constraints, and conclusions produced in one session are lost when the context window closes, so downstream agents (and humans) repeatedly pay to reconstruct knowledge the system already produced.
 
-**The Underlying Principle:** Derived from [The Principle of Compounding Context](/docs/ai/agentic-development-principles#the-principle-of-compounding-context) and [The Principle of Finite Context Window](/docs/ai/agentic-development-principles#the-principle-of-finite-context-window).
+**The Underlying Principle:** Derived from [The Principle of Compounding Context](/docs/ai/agentic-development-principles/architecture-of-flow#the-principle-of-compounding-context) and [The Principle of Finite Context Window](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-finite-context-window).
 
 **The Strategy:** Design the workflow as interconnected layers where the output of each agent automatically persists into a shared, durable memory layer (docs, ADRs, tickets, structured knowledge bases) that becomes retrievable context for downstream agents. Treat every AI interaction as an artifact-generation step, not a conversation: decisions are written where the next agent will look, not where the last chat happened. Alternatives that satisfy the same constraint include long-lived orchestrator state or retrieval over a curated corpus — the pattern is the persistence boundary, not a specific storage technology.
 
@@ -65,7 +65,7 @@ Assigning multiple agents to work simultaneously on the same critical path incre
 
 **The Problem:** AI removes the natural "pain signal" of complexity. Manually, writing a tangled patch hurts enough to suggest refactoring; with AI, adding "just one more if-statement" is always the path of least resistance. When the cost of adding a patch drops below the cost of refactoring, systems inevitably trend toward entropy.
 
-**The Underlying Principle:** Derived from [The Principle of Zero-Cost Erosion](/docs/ai/agentic-development-principles#the-principle-of-zero-cost-erosion).
+**The Underlying Principle:** Derived from [The Principle of Zero-Cost Erosion](/docs/ai/agentic-development-principles/economics-of-interaction#the-principle-of-zero-cost-erosion).
 
 **The Strategy:** Re-introduce deliberate barriers, checks, and vetoes that force the agent to "pay" a cost (in time or compute) before committing low-quality work.
 
@@ -81,7 +81,7 @@ The canonical implementation of Artificial Friction: configure CI/CD or agent or
 
 **The Problem:** LLMs are probabilistic machines that "auto-complete" based on statistical likelihood, not shared understanding. When instructions are vague, the model "hallucinates" the missing context, introducing noise and error into the workflow.
 
-**The Underlying Principle:** Derived from [The Principle of Signal Entropy](/docs/ai/agentic-development-principles#the-principle-of-signal-entropy).
+**The Underlying Principle:** Derived from [The Principle of Signal Entropy](/docs/ai/agentic-development-principles/protocol-of-communication#the-principle-of-signal-entropy).
 
 **The Strategy:** Treat every prompt as a standalone communication packet that must contain all necessary context, constraints, and definitions. Do not rely on "implied" knowledge. Use structured formats (XML tags, JSON schemas) to force the model to parse intent rather than guess it.
 
@@ -91,7 +91,7 @@ The canonical implementation of Artificial Friction: configure CI/CD or agent or
 
 **The Problem:** Agents lack "Theory of Mind"—the ability to model what the user knows or doesn't know. They often provide answers that are factually correct but contextually useless because they assume the wrong level of user expertise.
 
-**The Underlying Principle:** Derived from [The Principle of Signal Entropy](/docs/ai/agentic-development-principles#the-principle-of-signal-entropy).
+**The Underlying Principle:** Derived from [The Principle of Signal Entropy](/docs/ai/agentic-development-principles/protocol-of-communication#the-principle-of-signal-entropy).
 
 **The Strategy:** Explicitly prime the agent with a specific "Persona" and "Audience" definition. Instruct the agent to simulate the mental state of the recipient (e.g., "Explain this to a Junior React Developer" vs. "Explain this to the CTO"). This forces the model to adjust its complexity and tone to match the cognitive bandwidth of the user.
 
@@ -101,7 +101,7 @@ The canonical implementation of Artificial Friction: configure CI/CD or agent or
 
 **The Problem:** LLMs have a "cognitive attention limit." When a single prompt contains multiple distinct requests (e.g., "Analyze this, then summarize it, then translate it, and format it as JSON"), the model often suffers from the "Lost in the Middle" phenomenon. It prioritizes the beginning and end of the prompt, ignoring instructions buried in the center, or it degrades in quality because it is trying to optimize for too many variables simultaneously.
 
-**The Underlying Principle:** Derived from [The Principle of Signal Entropy](/docs/ai/agentic-development-principles#the-principle-of-signal-entropy).
+**The Underlying Principle:** Derived from [The Principle of Signal Entropy](/docs/ai/agentic-development-principles/protocol-of-communication#the-principle-of-signal-entropy).
 
 **The Strategy:** Break complex workflows into a sequential chain of atomic prompts. Instead of a "One-Shot" attempt, force the model to generate an intermediate artifact (a plan, an outline, or a draft) before generating the final result. This allows the model to "reset" its attention span for each specific step.
 
@@ -114,7 +114,7 @@ The canonical implementation of Artificial Friction: configure CI/CD or agent or
 
 **The Problem:** Agents amplify the existing patterns in their context window. If a developer asks an agent to add a feature to a file containing "spaghetti code," the agent will mimic that messy style to ensure local consistency, effectively hardening the technical debt.
 
-**The Underlying Principle:** Derived from [The Principle of Pattern Inertia](/docs/ai/agentic-development-principles#the-principle-of-pattern-inertia).
+**The Underlying Principle:** Derived from [The Principle of Pattern Inertia](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-pattern-inertia).
 
 **The Strategy:** Before an agent is allowed to generate code for a legacy module, the context must be "sanitized." This can be achieved by:
 
@@ -127,7 +127,7 @@ The canonical implementation of Artificial Friction: configure CI/CD or agent or
 
 **The Problem:** Requirements and business rules live in external tools (Confluence, Figma comments, Slack) or human memory. Agents see only the artifact — code, design file, doc, dashboard — which shows _what_ exists but not _why_ or _what constraints_ apply. This is domain-agnostic: it affects engineers, designers, PMs, and analysts equally.
 
-**The Underlying Principle:** Derived from [The Principle of Context Compressibility](/docs/ai/agentic-development-principles#the-principle-of-context-compressibility) and [The Corollary of Complementary Specification](/docs/ai/agentic-development-principles#the-corollary-of-complementary-specification).
+**The Underlying Principle:** Derived from [The Principle of Context Compressibility](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-context-compressibility) and [The Corollary of Complementary Specification](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-corollary-of-complementary-specification).
 
 **The Strategy:** Embed specs _co-located with the artifacts they govern_, containing only what the artifact cannot express:
 
@@ -150,9 +150,9 @@ Exclude anything the agent can obtain by inspecting the artifact directly.
 
 ### Ownership-Preserving Delegation
 
-**The Problem:** When developers delegate implementation tasks to an AI agent in systems they do not fully master (operating in "Contracting" mode), the AI produces working code but obscures critical implementation details, side effects, and design rationales. Over time, this erodes the developer's mental model of the system, making it impossible to predict the side effects of future changes—directly violating the [Principle of Contextual Authority](/docs/ai/agentic-development-principles#the-principle-of-contextual-authority). The developer gradually becomes a mere approver of black-box patches, leading to progressive loss of ownership.
+**The Problem:** When developers delegate implementation tasks to an AI agent in systems they do not fully master (operating in "Contracting" mode), the AI produces working code but obscures critical implementation details, side effects, and design rationales. Over time, this erodes the developer's mental model of the system, making it impossible to predict the side effects of future changes—directly violating the [Principle of Contextual Authority](/docs/ai/agentic-development-principles/governance-of-agency#the-principle-of-contextual-authority). The developer gradually becomes a mere approver of black-box patches, leading to progressive loss of ownership.
 
-**The Underlying Principle:** Derived from [The Principle of Contextual Authority](/docs/ai/agentic-development-principles#the-principle-of-contextual-authority).
+**The Underlying Principle:** Derived from [The Principle of Contextual Authority](/docs/ai/agentic-development-principles/governance-of-agency#the-principle-of-contextual-authority).
 
 **The Strategy:** Structure every delegation of implementation tasks to mandate that the AI agent produces transparency artifacts alongside (or prior to) the final final code. These artifacts act as "living documentation" that actively maintain and update the human's mental model.
 
@@ -180,7 +180,7 @@ Required artifacts the agent can generate:
 
 **The Problem:** AI agents can act with high confidence even when completely wrong. In high-stakes environments (production databases, public communications), a single error can have infinite downside cost.
 
-**The Underlying Principle:** Derived from [The Principle of Asymmetric Risk](/docs/ai/agentic-development-principles#the-principle-of-asymmetric-risk).
+**The Underlying Principle:** Derived from [The Principle of Asymmetric Risk](/docs/ai/agentic-development-principles/governance-of-agency#the-principle-of-asymmetric-risk).
 
 **The Strategy:** Implement a mandatory "Veto State" for all actions with non-linear downside. The agent can propose an action and prepare the payload, but it cannot execute without a cryptographically signed signal (e.g., clicking a button) from a human. The system defaults to "Deny."
 
@@ -190,7 +190,7 @@ Required artifacts the agent can generate:
 
 **The Problem:** Different tasks carry different risk profiles. Applying a "zero-trust" policy to everything slows down development (micromanagement), while applying "full autonomy" to everything creates unacceptable risk.
 
-**The Underlying Principle:** Derived from [The Principle of Asymmetric Risk](/docs/ai/agentic-development-principles#the-principle-of-asymmetric-risk).
+**The Underlying Principle:** Derived from [The Principle of Asymmetric Risk](/docs/ai/agentic-development-principles/governance-of-agency#the-principle-of-asymmetric-risk).
 
 **The Strategy:** Assign "Clearance Levels" to agents similar to security clearances.
 
@@ -206,7 +206,7 @@ Level 3 (Employee): Can deploy to production, but only for specific, whitelisted
 
 **The Problem:** AI models excel at syntax (style, formatting) but struggle with semantics (logic, truth). They can generate code that looks "perfect" (correct indentation, professional comments) but contains subtle logical flaws or security vulnerabilities. The visual of the code deceives the human reviewer.
 
-**The Underlying Principle:** Derived from [The Principle of Syntactic-Semantic Decoupling](/docs/ai/agentic-development-principles#the-principle-of-syntactic-semantic-decoupling).
+**The Underlying Principle:** Derived from [The Principle of Syntactic-Semantic Decoupling](/docs/ai/agentic-development-principles/architecture-of-flow#the-principle-of-syntactic-semantic-decoupling).
 
 **The Strategy:** Invert the verification workflow. Do not rely on visual code review ("Does this look right?"). Instead, enforce Test-Driven Generation:
 
@@ -220,7 +220,7 @@ Level 3 (Employee): Can deploy to production, but only for specific, whitelisted
 
 **The Problem:** AI-generated code that works today can still make tomorrow more expensive. Reviewers need a fast, repeatable way to decide "merge or rework" that accounts for structural cost, not just functional correctness.
 
-**The Underlying Principle:** Derived from [The Principle of Architecture over Artifacts](/docs/ai/agentic-development-principles#the-principle-of-architecture-over-artifacts) and [The Principle of Economic Technical Debt](/docs/ai/agentic-development-principles#the-principle-of-economic-technical-debt).
+**The Underlying Principle:** Derived from [The Principle of Architecture over Artifacts](/docs/ai/agentic-development-principles/architecture-of-flow#the-principle-of-architecture-over-artifacts) and [The Principle of Economic Technical Debt](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-principle-of-economic-technical-debt).
 
 **The Strategy:** At the decision point, evaluate the change by asking: "Does this make the next related feature easier or harder to implement?" If it requires duplication or increases complexity, reject it, even if it works — the cost of the next change is the interest rate on the debt you are incurring. Alternatives that price the same debt include automated complexity gates (see [Artificial Friction](/docs/ai/agentic-design-patterns#artificial-friction)); the Next Move Test is the human-judgment version, cheap enough to apply to every merge.
 
@@ -232,7 +232,7 @@ Level 3 (Employee): Can deploy to production, but only for specific, whitelisted
 
 **The Problem:** Not all failures are due to a lack of intelligence; many are due to a mismatch in ambiguity tolerance. Assigning a high-ambiguity task (e.g., "Analyze market trends") to an agent designed for rigid execution leads to crashes or hallucinated assumptions. Conversely, assigning a rote data-entry task to a creative "Reasoning Agent" often leads to "boredom errors," where the model over-complicates simple logic or tries to refactor data it was only meant to copy.
 
-**The Underlying Principle:** Derived from [The Principle of Allocative Efficiency](/docs/ai/agentic-development-principles#the-principle-of-allocative-efficiency) and [The Principle of Signal Entropy](/docs/ai/agentic-development-principles#the-principle-of-signal-entropy).
+**The Underlying Principle:** Derived from [The Principle of Allocative Efficiency](/docs/ai/agentic-development-principles/economics-of-interaction#the-principle-of-allocative-efficiency) and [The Principle of Signal Entropy](/docs/ai/agentic-development-principles/protocol-of-communication#the-principle-of-signal-entropy).
 
 **The Strategy:** Classify your agents not just by the model they use, but by their Functional Role, and route tasks based on the level of definition required, not just the difficulty.
 
@@ -252,7 +252,7 @@ The role taxonomy that routing decisions are made against:
 
 **The Problem:** Agents fail, timeout, and hallucinate. If an orchestrator simply "retries" a failed task without safety checks, it may execute a side-effect (like a payment or database write) twice, corrupting the system state.
 
-**The Underlying Principle:** Derived from [The Principle of Distributed Unreliability](/docs/ai/agentic-development-principles#the-principle-of-distributed-unreliability) and [The Corollary of Atomic State Isolation](/docs/ai/agentic-development-principles#the-corollary-of-atomic-state-isolation).
+**The Underlying Principle:** Derived from [The Principle of Distributed Unreliability](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-distributed-unreliability) and [The Corollary of Atomic State Isolation](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-corollary-of-atomic-state-isolation).
 
 **The Strategy:** Ensure every agent action is idempotent—meaning it can be applied multiple times without changing the result beyond the initial application. Use unique interaction_ids for every request. If an agent receives a task with an ID it has already processed, it should return the cached result rather than executing the logic again.
 
@@ -262,7 +262,7 @@ The role taxonomy that routing decisions are made against:
 
 **The Problem:** AI generation scales infinitely; human review does not. When teams adopt AI agents for code generation, they often discover that the bottleneck shifts from "writing code" to "reviewing code." Engineers become full-time reviewers, velocity stalls, and the promised productivity gains evaporate.
 
-**The Underlying Principle:** Derived from [The Principle of Verification Asymmetry](/docs/ai/agentic-development-principles#the-principle-of-verification-asymmetry) and [The Corollary of Verification Investment](/docs/ai/agentic-development-principles#the-corollary-of-verification-investment).
+**The Underlying Principle:** Derived from [The Principle of Verification Asymmetry](/docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency#the-principle-of-verification-asymmetry) and [The Corollary of Verification Investment](/docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency#the-corollary-of-verification-investment).
 
 **The Strategy:** Shift verification burden from humans to machines by building a multi-layered automated verification pipeline:
 

@@ -16,7 +16,7 @@ The real shift occurs when the human starts delegating governing judgment rather
 
 <!-- truncate -->
 
-This is the core of [The Principle of Compressed Delegation](/docs/ai/agentic-development-principles#the-principle-of-compressed-delegation): AI leverage is determined by how much human judgment is encoded into executable constraints before execution begins.
+This is the core of [The Principle of Compressed Delegation](/docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency#the-principle-of-compressed-delegation): AI leverage is determined by how much human judgment is encoded into executable constraints before execution begins.
 
 If the operator has to decide every next move, AI behaves like a fast typist. If the operator can encode goals, boundaries, interfaces, and acceptance checks once, AI can apply that judgment across many downstream tasks.
 
@@ -113,9 +113,9 @@ The slope of output per human decision is what changes. Linear usage scales with
 
 This is about strategic delegation, not unconditional delegation.
 
-Its scale is limited by [The Principle of Verification Asymmetry](/docs/ai/agentic-development-principles#the-principle-of-verification-asymmetry). Teams can generate more work than they can safely verify. If a single instruction causes ten files to change, the benefit disappears when review, testing, and integration cannot keep up.
+Its scale is limited by [The Principle of Verification Asymmetry](/docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency#the-principle-of-verification-asymmetry). Teams can generate more work than they can safely verify. If a single instruction causes ten files to change, the benefit disappears when review, testing, and integration cannot keep up.
 
-That is why compressed delegation only becomes reliable inside [The Principle of Automated Closed Loops](/docs/ai/agentic-development-principles#the-principle-of-automated-closed-loops). Tests, types, linters, and CI give the system fast feedback, reducing the cost of validating broader delegation.
+That is why compressed delegation only becomes reliable inside [The Principle of Automated Closed Loops](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-automated-closed-loops). Tests, types, linters, and CI give the system fast feedback, reducing the cost of validating broader delegation.
 
 This also connects directly to [B3: The Batch Size Feedback Principle](/docs/product/product-development/principles#b3-the-batch-size-feedback-principle-reducing-batch-sizes-accelerates-feedback). High leverage does not justify giant blind batches. The winning move is to delegate at a higher level while still keeping feedback loops tight.
 

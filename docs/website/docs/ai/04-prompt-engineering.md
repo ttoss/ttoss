@@ -79,7 +79,7 @@ Here is a systematic list of the most reliable ways to sabotage a prompt, groupe
 
 **The Mistake:** Asking the model to "Check if this code is good" or relying on the visual cleanliness of the output (formatting, variable names) as a proxy for correctness.
 
-**Why it fails:** This falls victim to the [Principle of Syntactic-Semantic Decoupling](/docs/ai/agentic-development-principles#the-principle-of-syntactic-semantic-decoupling). The model will optimize for "vibes"—producing code that looks professional, passes linters, and has great comments—while hiding deep logical flaws or security vulnerabilities that don't "look" wrong.
+**Why it fails:** This falls victim to the [Principle of Syntactic-Semantic Decoupling](/docs/ai/agentic-development-principles/architecture-of-flow#the-principle-of-syntactic-semantic-decoupling). The model will optimize for "vibes"—producing code that looks professional, passes linters, and has great comments—while hiding deep logical flaws or security vulnerabilities that don't "look" wrong.
 
 **Anti-Prompt:** "Review this code and tell me if it's clean." OR (implicitly) merging code just because it looks like the rest of the file.
 
