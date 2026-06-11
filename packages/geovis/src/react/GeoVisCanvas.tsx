@@ -25,7 +25,7 @@ export const GeoVisCanvas = ({
   style,
   className,
 }: GeoVisCanvasProps) => {
-  const { runtime } = useGeoVis();
+  const { runtime, spec } = useGeoVis();
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -38,11 +38,15 @@ export const GeoVisCanvas = ({
     };
   }, [runtime, viewId]);
 
+  const isBasemapHidden = spec.basemap?.visible === false;
+  const containerStyle: React.CSSProperties = {
+    width: '100%',
+    height: '100%',
+    ...style,
+    ...(isBasemapHidden && { backgroundColor: '#fcfcfc' }),
+  };
+
   return (
-    <div
-      ref={containerRef}
-      style={{ width: '100%', height: '100%', ...style }}
-      className={className}
-    />
+    <div ref={containerRef} style={containerStyle} className={className} />
   );
 };
