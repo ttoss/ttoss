@@ -5,11 +5,11 @@ import { appendBoundaryGroup, toggleBoundaryGroup } from '../spec/presets';
 import type { VisualizationSpec } from '../spec/types';
 
 export interface BoundaryToggleResult {
-  /** Spec com todos os grupos appended e visibilidade sincronizada. */
+  /** Spec with all groups appended and visibility synchronized. */
   spec: VisualizationSpec;
-  /** Inverte a visibilidade do grupo informado. */
+  /** Toggles the visibility of the specified group. */
   toggle: (group: BoundaryGroup) => void;
-  /** Retorna true quando o grupo está visível. */
+  /** Returns true when the group is visible. */
   isVisible: (group: BoundaryGroup) => boolean;
 }
 
@@ -39,7 +39,7 @@ export interface BoundaryToggleResult {
  *   <>
  *     <GeoVisProvider spec={spec}><GeoVisCanvas /></GeoVisProvider>
  *     <button onClick={() => toggle(BRAZIL_STATE_OUTLINES.local)}>
- *       {isVisible(BRAZIL_STATE_OUTLINES.local) ? 'Ocultar estados' : 'Mostrar estados'}
+ *       {isVisible(BRAZIL_STATE_OUTLINES.local) ? 'Hide states' : 'Show states'}
  *     </button>
  *   </>
  * );

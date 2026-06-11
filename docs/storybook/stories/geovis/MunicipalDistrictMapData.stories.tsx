@@ -115,19 +115,6 @@ const normalizePopulationData = (
   );
 };
 
-interface MunicipalDistrictMapDataProps {
-  year: Year;
-  showStateOutlines: boolean;
-  showSubprefeituraOutlines: boolean;
-  showMunicipalityOutlines: boolean;
-  municipalityLineColor: string;
-  municipalityLineWidth: number;
-  stateLineColor: string;
-  stateLineWidth: number;
-  subprefeituraLineColor: string;
-  subprefeituraLineWidth: number;
-}
-
 /**
  * Helper component to fetch and render population data with boundary toggles.
  */
@@ -255,11 +242,14 @@ const MunicipalDistrictMapDataRender = (
     });
   }, [subprefeituraLineColor, subprefeituraLineWidth]);
 
-  const { spec, toggle, isVisible } = useBoundaryToggle(baseSpec, [
-    municipalityGroup,
-    stateGroup,
-    subprefeituraGroup,
-  ]);
+  const boundaryGroups = React.useMemo(() => {
+    return [municipalityGroup, stateGroup, subprefeituraGroup];
+  }, [municipalityGroup, stateGroup, subprefeituraGroup]);
+
+  const { spec, toggle, isVisible } = useBoundaryToggle(
+    baseSpec,
+    boundaryGroups
+  );
 
   React.useEffect(() => {
     if (showMunicipalityOutlines !== isVisible(municipalityGroup)) {

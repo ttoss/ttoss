@@ -237,11 +237,12 @@ export const toggleBoundaryGroup = (
  * line layer. The original group is not mutated.
  *
  * Only `lineColor` and `lineWidth` are supported — non-line layers are
- * returned unchanged.
+ * returned unchanged. Safely handles missing paint properties by using an
+ * empty object as a fallback.
  *
  * @param group - The boundary group to customize.
  * @param overrides - Partial paint properties to apply.
- * @returns A new BoundaryGroup with the overridden paint.
+ * @returns A new BoundaryGroup with the overridden paint applied to line layers.
  *
  * @example
  * ```ts
@@ -265,9 +266,13 @@ export const customizeBoundaryGroup = (
   return {
     sources: group.sources,
     layers: group.layers.map((layer) => {
+      // Only apply paint overrides to line layers; return other geometries unchanged
+      if (layer.geometry !== 'line') {
+        return layer;
+      }
       return {
         ...layer,
-        paint: { ...layer.paint, ...paintOverride },
+        paint: { ...(layer.paint ?? {}), ...paintOverride },
       };
     }),
   };
