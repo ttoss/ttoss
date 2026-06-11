@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.14.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.13.8...@ttoss/http-server-mcp@0.14.0) (2026-06-11)
+
+### Features
+
+- **auth-core, http-server-mcp:** OAuth 2.1 primitives + standalone RFC 9728 discovery middleware ([#1047](https://github.com/ttoss/ttoss/issues/1047)) ([fde1141](https://github.com/ttoss/ttoss/commit/fde114185cbbb83270cdd9f439db63c65111dba5)), closes [#1046](https://github.com/ttoss/ttoss/issues/1046)
+
 ## [0.13.8](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.13.7...@ttoss/http-server-mcp@0.13.8) (2026-06-11)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp
