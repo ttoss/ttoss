@@ -16,6 +16,13 @@ test('package exports expected public symbols', () => {
   expect(typeof geovis.validateSpec).toBe('function');
   // 5.1: useMapData is part of the public contract
   expect(typeof geovis.useMapData).toBe('function');
+  // Boundary presets and hook
+  expect(typeof geovis.useBoundaryToggle).toBe('function');
+  expect(typeof geovis.BRAZIL_STATE_OUTLINES).toBe('object');
+  expect(typeof geovis.BRAZIL_MUNICIPALITY_OUTLINES).toBe('object');
+  expect(typeof geovis.BRAZIL_SP_SUBPREFECTURE_OUTLINES).toBe('object');
+  expect(typeof geovis.appendBoundaryGroup).toBe('function');
+  expect(typeof geovis.toggleBoundaryGroup).toBe('function');
 });
 
 test('spec types expose legend configuration through the public contract', () => {
