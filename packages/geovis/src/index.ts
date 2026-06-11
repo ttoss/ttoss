@@ -2,6 +2,8 @@ export * from './react/GeoVisCanvas';
 export * from './react/GeoVisProvider';
 export type { UseMapDataResult } from './react/hooks';
 export { useMapData } from './react/hooks';
+export type { BoundaryToggleResult } from './react/useBoundaryToggle';
+export { useBoundaryToggle } from './react/useBoundaryToggle';
 export * from './runtime/adapter';
 export * from './runtime/createRuntime';
 export * from './spec/presets';
