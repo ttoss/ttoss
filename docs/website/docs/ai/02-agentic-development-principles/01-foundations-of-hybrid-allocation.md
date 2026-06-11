@@ -39,7 +39,7 @@ Because AI agents are exploratory pattern-matchers, defining what _not_ to do is
 
 #### The Corollary of Agency Calibration
 
-An agent-ready specification must signal the task's risk profile upfront (e.g., "This task affects billing execution" vs. "This task alters a visual banner state"). This explicit calibration defines the level of autonomy the agent is granted within the boundaries of the PRD, automatically triggering the safety rails outlined in [The Principle of Graduated Agency by Structure and Risk](/docs/ai/agentic-development-principles/foundations-of-hybrid-allocation#the-principle-of-graduated-agency-by-structure-and-risk).
+An agent-ready specification must signal the task's risk profile upfront (e.g., "This task affects billing execution" vs. "This task alters a visual banner state"). This explicit calibration defines the level of autonomy the agent is granted within the boundaries of the PRD, automatically triggering the safety rails outlined in [The Corollary of Graduated Agency by Structure and Risk](/docs/ai/agentic-development-principles/governance-of-agency#the-corollary-of-graduated-agency-by-structure-and-risk).
 
 ### The Principle of Mandatory Hybridization
 
@@ -51,12 +51,4 @@ No production-grade agentic system can rely solely on probabilistic AI for end-t
 
 Wherever a reliability requirement exists (data integrity, compliance, financial transactions, user-facing actions), probabilistic outputs must pass through rigid, code-enforced guardrails before commitment. Prompts alone cannot substitute for schemas, type systems, or transaction rollbacks; attempting "semantic persuasion" to achieve structural guarantees inevitably fails under distribution shift.
 
-### The Principle of Graduated Agency by Structure and Risk
-
-Agency—the degree of autonomous decision-making granted to an agent—must scale inversely with problem structure and consequence severity. Grant high autonomy only to probabilistic components operating in ill-structured, low-risk domains where variability is tolerable and exploration adds value. In well-structured or high-stakes contexts, constrain agency through deterministic rules, mandatory verification steps, or human-in-the-loop escalation. This asymmetric approach prevents catastrophic failure while preserving the benefits of AI where they matter most. It manages [The Principle of Asymmetric Risk](/docs/ai/agentic-development-principles/governance-of-agency#the-principle-of-asymmetric-risk).
-
-**Failure Scenario:** An enterprise deploys a fully autonomous agent for customer refund processing (a partially structured task with high financial risk). The LLM probabilistically interprets ambiguous return policies, occasionally approving ineligible claims and causing significant revenue leakage—because agency was not calibrated to the mixed structure and elevated risk profile.
-
-#### The Corollary of Risk-Structured Delegation
-
-Map every agent workflow to a risk-structure matrix: low-risk/ill-structured → maximal LLM agency; high-risk/well-structured → minimal agency with deterministic overrides. Intermediate cases require hybrid escalation paths, ensuring probabilistic flexibility never bypasses non-negotiable constraints. This calibration aligns with asymmetric risk tolerance: accept variability where upside outweighs downside, enforce certainty elsewhere.
+How much autonomy to grant within a hybrid system follows from risk, not from allocation alone—see [The Corollary of Graduated Agency by Structure and Risk](/docs/ai/agentic-development-principles/governance-of-agency#the-corollary-of-graduated-agency-by-structure-and-risk) in Governance of Agency.

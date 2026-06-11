@@ -31,7 +31,7 @@ Here's how it unfolds:
 6. You're shipping faster, but your engineering capacity is misallocated
 7. Competitors who automated verification are shipping faster AND building better
 
-This trap is a direct consequence of [The Principle of Verification Asymmetry](/docs/ai/agentic-development-principles#the-principle-of-verification-asymmetry): generating AI output is cheap, verifying it is expensive. When you 10x generation without automating verification, you create a misallocation crisis—expensive human attention spent on problems machines could solve.
+This trap is a direct consequence of [The Principle of Verification Asymmetry](/docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency#the-principle-of-verification-asymmetry): generating AI output is cheap, verifying it is expensive. When you 10x generation without automating verification, you create a misallocation crisis—expensive human attention spent on problems machines could solve.
 
 ## The False Dichotomy
 

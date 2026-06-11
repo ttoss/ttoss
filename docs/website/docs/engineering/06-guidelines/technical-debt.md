@@ -4,7 +4,7 @@ title: Technical Debt
 
 Technical debt is often viewed solely as a negative consequence of poor engineering. However, at **ttoss**, we view technical debt as a financial instrument: **leverage**. When used consciously, it allows us to ship faster and learn earlier. When accumulated unconsciously, it becomes **entropy** that grinds development to a halt.
 
-This guideline outlines our strategy for managing technical debt, grounded in [The Governance of Technical Debt](/docs/ai/agentic-development-principles#the-governance-of-technical-debt).
+This guideline outlines our strategy for managing technical debt, grounded in [The Governance of Technical Debt](/docs/ai/agentic-development-principles/governance-of-technical-debt).
 
 ## The Philosophy of Managed Debt
 
@@ -38,7 +38,7 @@ To ensure technical debt remains a tool rather than a trap, we apply the followi
 
 ### 1. Modularization and Componentization
 
-**Aligns with:** [The Principle of Contractual Specialization](/docs/ai/agentic-development-principles#the-principle-of-contractual-specialization)
+**Aligns with:** [The Principle of Contractual Specialization](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-principle-of-contractual-specialization)
 
 We structure our codebase into small, independent **packages**, **modules**, and **components**.
 
@@ -47,7 +47,7 @@ We structure our codebase into small, independent **packages**, **modules**, and
 
 ### 2. Automated Verification for Every Change
 
-**Aligns with:** [The Principle of Intrinsic Verification](/docs/ai/agentic-development-principles#the-principle-of-intrinsic-verification)
+**Aligns with:** [The Corollary of Intrinsic Verification](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-corollary-of-intrinsic-verification)
 
 We never trade speed for correctness. Even "quick and dirty" code must be verified.
 
@@ -59,7 +59,7 @@ We never trade speed for correctness. Even "quick and dirty" code must be verifi
 
 ### 3. Isolation of Business Logic
 
-**Aligns with:** [The Principle of Execution Isolation](/docs/ai/agentic-development-principles#the-principle-of-execution-isolation)
+**Aligns with:** [The Principle of Execution Isolation](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-principle-of-execution-isolation)
 
 We protect our core domain logic from the volatility of external tools, frameworks, and UI libraries.
 
@@ -68,7 +68,7 @@ We protect our core domain logic from the volatility of external tools, framewor
 
 ### 4. Observability as Interest Payments
 
-**Aligns with:** [The Corollary of Invisible Risk](/docs/ai/agentic-development-principles#the-corollary-of-invisible-risk)
+**Aligns with:** [The Principle of Invisible Risk](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-principle-of-invisible-risk)
 
 If we choose to ship a sub-optimal solution to move fast, we must pay the "interest" in the form of higher observability.
 
@@ -77,7 +77,7 @@ If we choose to ship a sub-optimal solution to move fast, we must pay the "inter
 
 ### 5. Atomic State Decomposition
 
-**Aligns with:** [The Principle of Atomic Debt Containment](/docs/ai/agentic-development-principles#the-principle-of-atomic-debt-containment)
+**Aligns with:** [The Principle of Atomic Debt Containment](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-principle-of-atomic-debt-containment)
 
 Break complex workflows into discrete, atomic steps.
 
