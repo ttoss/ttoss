@@ -37,7 +37,7 @@ Each chapter includes the core principle statements, failure scenarios, and coro
 ## Chapters
 
 - [Foundations of Hybrid Allocation](/docs/ai/agentic-development-principles/foundations-of-hybrid-allocation) — What to delegate to AI versus code; the prerequisite structure for applying every other chapter.
-- [Physics of AI Integration](/docs/ai/agentic-development-principles/physics-of-ai-integration) — How AI systems behave as probabilistic machines: context limits, pattern inertia, and the closed-loop requirement.
+- [Physics of AI Integration](/docs/ai/agentic-development-principles/physics-of-ai-integration) — How AI systems behave as probabilistic machines: context limits, pattern inertia, the closed-loop requirement, adversarial input conflation, proxy collapse, and substrate drift.
 - [Economics of Interaction](/docs/ai/agentic-development-principles/economics-of-interaction) — The cost structure of prompts and model selection; why cheap generation does not mean cheap commitment.
 - [Governance of Technical Debt](/docs/ai/agentic-development-principles/governance-of-technical-debt) — How debt accumulates invisibly in agentic workflows and the constraints that keep it recoverable.
 - [Architecture of Flow](/docs/ai/agentic-development-principles/architecture-of-flow) — How context compounds, tools should be designed, and why architecture outlasts any individual artifact.
