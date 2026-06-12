@@ -1,7 +1,10 @@
 import * as React from 'react';
 
-import type { BoundaryGroup } from '../spec/presets';
-import { appendBoundaryGroup, toggleBoundaryGroup } from '../spec/presets';
+import type { BoundaryGroup } from '../spec/boundaryGroup';
+import {
+  appendBoundaryGroup,
+  toggleBoundaryGroup,
+} from '../spec/boundaryGroup';
 import type { VisualizationSpec } from '../spec/types';
 
 export interface BoundaryToggleResult {
@@ -31,15 +34,16 @@ export interface BoundaryToggleResult {
  *
  * @example
  * ```tsx
- * const { spec, toggle, isVisible } = useBoundaryToggle(baseSpec, [
- *   BRAZIL_STATE_OUTLINES.local,
- *   BRAZIL_SP_SUBPREFECTURE_OUTLINES.local,
- * ]);
+ * const statesGroup = createBoundaryGroup({
+ *   id: 'brazil-states',
+ *   data: 'https://example.com/estados.geojson',
+ * });
+ * const { spec, toggle, isVisible } = useBoundaryToggle(baseSpec, [statesGroup]);
  * return (
  *   <>
  *     <GeoVisProvider spec={spec}><GeoVisCanvas /></GeoVisProvider>
- *     <button onClick={() => toggle(BRAZIL_STATE_OUTLINES.local)}>
- *       {isVisible(BRAZIL_STATE_OUTLINES.local) ? 'Hide states' : 'Show states'}
+ *     <button onClick={() => toggle(statesGroup)}>
+ *       {isVisible(statesGroup) ? 'Hide states' : 'Show states'}
  *     </button>
  *   </>
  * );

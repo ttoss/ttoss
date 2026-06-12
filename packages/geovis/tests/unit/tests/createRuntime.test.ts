@@ -120,7 +120,6 @@ describe('createRuntime — applyPatch target:mapData', () => {
     };
   };
 
-  // 2.1
   test('op:add appends the dataset to currentSpec.mapData', () => {
     const adapter = makeAdapter();
     const runtime = createRuntime(adapter, makeSpec());
@@ -134,7 +133,6 @@ describe('createRuntime — applyPatch target:mapData', () => {
     expect(runtime.spec.mapData?.[0]).toEqual(newMd);
   });
 
-  // 2.2
   test('op:remove removes the dataset by mapDataId', () => {
     const adapter = makeAdapter();
     const runtime = createRuntime(adapter, makeMapDataSpec());
@@ -146,7 +144,6 @@ describe('createRuntime — applyPatch target:mapData', () => {
     expect(runtime.spec.mapData).toHaveLength(0);
   });
 
-  // 2.3
   test('op:replace at granular path updates a single row value', () => {
     const adapter = makeAdapter();
     const runtime = createRuntime(adapter, makeMapDataSpec());
@@ -162,7 +159,6 @@ describe('createRuntime — applyPatch target:mapData', () => {
     expect(updated?.value).toBe(215);
   });
 
-  // 2.4
   test('forwards the patch to the adapter', () => {
     const adapter = makeAdapter();
     const runtime = createRuntime(adapter, makeMapDataSpec());
@@ -177,7 +173,6 @@ describe('createRuntime — applyPatch target:mapData', () => {
     );
   });
 
-  // 2.5 — append preserves numeric geometryId type
   test('op:replace appends new row with numeric geometryId type when id is numeric', () => {
     const adapter = makeAdapter();
     const runtime = createRuntime(adapter, makeMapDataSpec());
@@ -194,7 +189,6 @@ describe('createRuntime — applyPatch target:mapData', () => {
     expect(appended?.value).toBe(99);
   });
 
-  // 2.6 — append preserves string geometryId type when id is not numeric
   test('op:replace appends new row with string geometryId type when id is not numeric', () => {
     const adapter = makeAdapter();
     const runtime = createRuntime(adapter, makeMapDataSpec());
@@ -211,7 +205,6 @@ describe('createRuntime — applyPatch target:mapData', () => {
     expect(appended?.value).toBe(7);
   });
 
-  // 2.7 — full-entry replace (path depth 2)
   test('op:replace at path depth 2 replaces the full MapData entry', () => {
     const adapter = makeAdapter();
     const runtime = createRuntime(adapter, makeMapDataSpec());

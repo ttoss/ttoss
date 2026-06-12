@@ -6,7 +6,7 @@ export type { BoundaryToggleResult } from './react/useBoundaryToggle';
 export { useBoundaryToggle } from './react/useBoundaryToggle';
 export * from './runtime/adapter';
 export * from './runtime/createRuntime';
-export * from './spec/presets';
+export * from './spec/boundaryGroup';
 export * from './spec/types';
 export * from './spec/validateSpec';
 export * from './ui/GeoVisHoverTooltip';
