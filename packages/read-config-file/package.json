@@ -56,5 +56,9 @@
       }
     },
     "provenance": true
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/ttoss/ttoss/issues"
+  },
+  "homepage": "https://github.com/ttoss/ttoss#readme"
 }
