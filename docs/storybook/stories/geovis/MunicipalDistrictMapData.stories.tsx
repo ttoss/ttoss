@@ -1,9 +1,11 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
-import type { BoundaryGroup, VisualizationSpec } from '@ttoss/geovis';
+import type {
+  BoundaryGroup,
+  GeoJSONFeatureCollection,
+  VisualizationSpec,
+} from '@ttoss/geovis';
 import {
-  BRAZIL_MUNICIPALITY_OUTLINES,
-  BRAZIL_SP_SUBPREFECTURE_OUTLINES,
-  BRAZIL_STATE_OUTLINES,
+  createBoundaryGroup,
   customizeBoundaryGroup,
   GeoVisCanvas,
   GeoVisHoverTooltip,
@@ -13,7 +15,6 @@ import {
 } from '@ttoss/geovis';
 import * as React from 'react';
 
-import districtGeoJson from '../../../../packages/geovis/src/sources/br-sp-distritos-municipais.json';
 import type { ColorStep } from './helpers/choropleth-helpers';
 import { MapOverlayLegend } from './helpers/choropleth-helpers';
 import { getMunicipalDistrictSpec } from './helpers/getMunicipalDistrictSpec.helpers';
@@ -23,9 +24,14 @@ import {
   MapLabel,
 } from './helpers/map-story-helpers';
 
-const DISTRICT_BBOX = computeBbox(
-  districtGeoJson as unknown as GeoJSON.FeatureCollection
-);
+const DISTRICTS_URL =
+  'https://cdn.jsdelivr.net/npm/@ttoss/geovis-data@latest/municipios-simplificado.geojson';
+const STATES_URL =
+  'https://cdn.jsdelivr.net/npm/@ttoss/geovis-data@latest/estados-simplificado.geojson';
+const SUBPREFECTURES_URL =
+  'https://cdn.jsdelivr.net/npm/@ttoss/geovis-data@latest/sp-subprefeituras.geojson';
+const MUNICIPALITIES_URL =
+  'https://cdn.jsdelivr.net/npm/@ttoss/geovis-data@latest/municipios-simplificado.geojson';
 
 export default {
   title: 'GeoVis/Fixtures/MunicipalDistrictMapData',
@@ -35,8 +41,6 @@ export default {
 const DATA_URL =
   'https://api-forja.triangulos.tech/v1/files/8b7b245c-06e2-42de-9764-a2c180a75304/download';
 
-// Population ranges for São Paulo districts (estimated from census data).
-// Most districts: 30k–250k. Outliers: Marsilac ~8k, Grajaú/Campo Limpo ~240k+.
 const populationSteps: ColorStep[] = [
   { threshold: 50_000, color: '#bfdbfe' },
   { threshold: 100_000, color: '#60a5fa' },
@@ -146,6 +150,8 @@ const MunicipalDistrictMapDataRender = (
     string,
     Record<string, DistrictEntry>
   > | null>(null);
+  const [districtGeoJson, setDistrictGeoJson] =
+    React.useState<GeoJSONFeatureCollection | null>(null);
 
   React.useEffect(() => {
     fetch(DATA_URL)
@@ -160,6 +166,25 @@ const MunicipalDistrictMapDataRender = (
       });
   }, []);
 
+  // Fetch GeoJSON only for bbox computation — data flows to the map via URL
+  React.useEffect(() => {
+    fetch(DISTRICTS_URL)
+      .then((res) => {
+        return res.json();
+      })
+      .then((json: GeoJSONFeatureCollection) => {
+        setDistrictGeoJson(json);
+      })
+      .catch(() => {
+        setDistrictGeoJson(null);
+      });
+  }, []);
+
+  const districtBbox = React.useMemo(() => {
+    if (!districtGeoJson) return undefined;
+    return computeBbox(districtGeoJson as GeoJSON.FeatureCollection);
+  }, [districtGeoJson]);
+
   const mapDataEntries = React.useMemo(() => {
     if (!populationData) return [];
     const yearData = populationData[String(year)];
@@ -172,8 +197,8 @@ const MunicipalDistrictMapDataRender = (
   const baseSpec = React.useMemo<VisualizationSpec>(() => {
     return getMunicipalDistrictSpec({
       year,
+      districtDataUrl: DISTRICTS_URL,
       showBasemap,
-      districtGeoJson,
       mapDataEntries,
       populationBreaks,
       populationSteps,
@@ -182,24 +207,30 @@ const MunicipalDistrictMapDataRender = (
   }, [mapDataEntries, year, showBasemap]);
 
   const municipalityGroup = React.useMemo<BoundaryGroup>(() => {
-    return customizeBoundaryGroup(BRAZIL_MUNICIPALITY_OUTLINES.local, {
-      lineColor: municipalityLineColor,
-      lineWidth: municipalityLineWidth,
-    });
+    return customizeBoundaryGroup(
+      createBoundaryGroup({
+        id: 'brazil-municipalities',
+        data: MUNICIPALITIES_URL,
+      }),
+      { lineColor: municipalityLineColor, lineWidth: municipalityLineWidth }
+    );
   }, [municipalityLineColor, municipalityLineWidth]);
 
   const stateGroup = React.useMemo<BoundaryGroup>(() => {
-    return customizeBoundaryGroup(BRAZIL_STATE_OUTLINES.local, {
-      lineColor: stateLineColor,
-      lineWidth: stateLineWidth,
-    });
+    return customizeBoundaryGroup(
+      createBoundaryGroup({ id: 'brazil-states', data: STATES_URL }),
+      { lineColor: stateLineColor, lineWidth: stateLineWidth }
+    );
   }, [stateLineColor, stateLineWidth]);
 
   const subprefeituraGroup = React.useMemo<BoundaryGroup>(() => {
-    return customizeBoundaryGroup(BRAZIL_SP_SUBPREFECTURE_OUTLINES.local, {
-      lineColor: subprefeituraLineColor,
-      lineWidth: subprefeituraLineWidth,
-    });
+    return customizeBoundaryGroup(
+      createBoundaryGroup({
+        id: 'brazil-sp-subprefectures',
+        data: SUBPREFECTURES_URL,
+      }),
+      { lineColor: subprefeituraLineColor, lineWidth: subprefeituraLineWidth }
+    );
   }, [subprefeituraLineColor, subprefeituraLineWidth]);
 
   const boundaryGroups = React.useMemo(() => {
@@ -240,7 +271,7 @@ const MunicipalDistrictMapDataRender = (
             viewId="primary"
             style={{ width: '100%', height: '100%' }}
           />
-          <FitBoundsToBbox bbox={DISTRICT_BBOX} />
+          {districtBbox && <FitBoundsToBbox bbox={districtBbox} />}
           <GeoVisHoverTooltip
             render={(info) => {
               const district =
