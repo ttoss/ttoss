@@ -1,11 +1,14 @@
-import type { VisualizationSpec } from '@ttoss/geovis';
+import type {
+  GeoJSONFeatureCollection,
+  VisualizationSpec,
+} from '@ttoss/geovis';
 
 import type { ColorStep } from './choropleth-helpers';
 
 interface SpecParams {
   year: string | number;
-  districtDataUrl: string;
-  mapDataEntries: Array<{ geometryId: number; value: number }>;
+  districtData: GeoJSONFeatureCollection | null;
+  mapDataEntries: Array<{ geometryId: string | number; value: number }>;
   populationBreaks: number[];
   populationSteps: ColorStep[];
   DEFAULT_COLOR: string;
@@ -14,7 +17,7 @@ interface SpecParams {
 
 export const getMunicipalDistrictSpec = ({
   year,
-  districtDataUrl,
+  districtData,
   mapDataEntries,
   populationBreaks,
   populationSteps,
@@ -32,7 +35,7 @@ export const getMunicipalDistrictSpec = ({
       {
         id: 'districts',
         type: 'geojson',
-        data: districtDataUrl,
+        data: districtData ?? { type: 'FeatureCollection', features: [] },
       },
     ],
     layers: [

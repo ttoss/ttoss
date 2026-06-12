@@ -164,14 +164,22 @@ const MunicipalDistrictMapDataRender = (
       });
   }, []);
 
-  // Fetch GeoJSON only for bbox computation — data flows to the map via URL
   React.useEffect(() => {
     fetch(DISTRICTS_URL)
       .then((res) => {
         return res.json();
       })
       .then((json: GeoJSONFeatureCollection) => {
-        setDistrictGeoJson(json);
+        const withIds: GeoJSONFeatureCollection = {
+          ...json,
+          features: json.features.map((f) => {
+            return {
+              ...f,
+              id: String(f.properties?.cd_distrit),
+            };
+          }),
+        };
+        setDistrictGeoJson(withIds);
       })
       .catch(() => {
         setDistrictGeoJson(null);
@@ -183,26 +191,42 @@ const MunicipalDistrictMapDataRender = (
     return computeBbox(districtGeoJson as GeoJSON.FeatureCollection);
   }, [districtGeoJson]);
 
+  const nameToFeatureId = React.useMemo(() => {
+    if (!districtGeoJson) return new Map<string, string>();
+    const map = new Map<string, string>();
+    for (const f of districtGeoJson.features) {
+      const name = f.properties?.['nm_distrit'];
+      if (name && f.id != null) map.set(String(name), String(f.id));
+    }
+    return map;
+  }, [districtGeoJson]);
+
   const mapDataEntries = React.useMemo(() => {
     if (!populationData) return [];
     const yearData = populationData[String(year)];
     if (!yearData) return [];
-    return Object.entries(yearData).map(([districtId, entry]) => {
-      return { geometryId: parseInt(districtId, 10), value: entry.total };
-    });
-  }, [populationData, year]);
+    return Object.entries(yearData)
+      .map(([_districtId, entry]) => {
+        const featureId = nameToFeatureId.get(entry.districtName);
+        if (!featureId) return null;
+        return { geometryId: featureId, value: entry.total };
+      })
+      .filter((e): e is NonNullable<typeof e> => {
+        return e != null;
+      });
+  }, [populationData, year, nameToFeatureId]);
 
   const baseSpec = React.useMemo<VisualizationSpec>(() => {
     return getMunicipalDistrictSpec({
       year,
-      districtDataUrl: DISTRICTS_URL,
+      districtData: districtGeoJson,
       showBasemap,
       mapDataEntries,
       populationBreaks,
       populationSteps,
       DEFAULT_COLOR,
     });
-  }, [mapDataEntries, year, showBasemap]);
+  }, [districtGeoJson, mapDataEntries, year, showBasemap]);
 
   const districtsGroup = React.useMemo<BoundaryGroup>(() => {
     return customizeBoundaryGroup(
@@ -283,7 +307,7 @@ const MunicipalDistrictMapDataRender = (
                   </div>
                   <div>
                     {typeof info.value === 'number'
-                      ? `${fmtPop(info.value)} inhabitants`
+                      ? fmtPop(info.value)
                       : 'No data'}
                   </div>
                 </>
