@@ -25,13 +25,11 @@ import {
 } from './helpers/map-story-helpers';
 
 const DISTRICTS_URL =
-  'https://cdn.jsdelivr.net/npm/@ttoss/geovis-data@latest/municipios-simplificado.geojson';
+  'https://api-forja.triangulos.tech/v1/files/13984ef1-a4b4-4476-869d-9b9cfd9c6788/download';
 const STATES_URL =
-  'https://cdn.jsdelivr.net/npm/@ttoss/geovis-data@latest/estados-simplificado.geojson';
+  'https://api-forja.triangulos.tech/v1/multifiles/5e09f03c-bfe9-4cfb-b2dc-63676f95c19c/3bc26e1e-f2cb-4dd2-be21-ea4bd76ec40b/download';
 const SUBPREFECTURES_URL =
-  'https://cdn.jsdelivr.net/npm/@ttoss/geovis-data@latest/sp-subprefeituras.geojson';
-const MUNICIPALITIES_URL =
-  'https://cdn.jsdelivr.net/npm/@ttoss/geovis-data@latest/municipios-simplificado.geojson';
+  'https://api-forja.triangulos.tech/v1/files/265eb8bb-7a49-4164-86c3-24c207c1d228/download';
 
 export default {
   title: 'GeoVis/Fixtures/MunicipalDistrictMapData',
@@ -93,9 +91,9 @@ interface MunicipalDistrictMapDataProps {
   showBasemap: boolean;
   showStateOutlines: boolean;
   showSubprefeituraOutlines: boolean;
-  showMunicipalityOutlines: boolean;
-  municipalityLineColor: string;
-  municipalityLineWidth: number;
+  showDistrictOutlines: boolean;
+  districtLineColor: string;
+  districtLineWidth: number;
   stateLineColor: string;
   stateLineWidth: number;
   subprefeituraLineColor: string;
@@ -138,9 +136,9 @@ const MunicipalDistrictMapDataRender = (
     showBasemap,
     showStateOutlines,
     showSubprefeituraOutlines,
-    showMunicipalityOutlines,
-    municipalityLineColor,
-    municipalityLineWidth,
+    showDistrictOutlines,
+    districtLineColor,
+    districtLineWidth,
     stateLineColor,
     stateLineWidth,
     subprefeituraLineColor,
@@ -206,15 +204,16 @@ const MunicipalDistrictMapDataRender = (
     });
   }, [mapDataEntries, year, showBasemap]);
 
-  const municipalityGroup = React.useMemo<BoundaryGroup>(() => {
+  const districtsGroup = React.useMemo<BoundaryGroup>(() => {
     return customizeBoundaryGroup(
       createBoundaryGroup({
-        id: 'brazil-municipalities',
-        data: MUNICIPALITIES_URL,
+        id: 'districts-outline-src',
+        data: DISTRICTS_URL,
+        layerId: 'districts-outline-toggle',
       }),
-      { lineColor: municipalityLineColor, lineWidth: municipalityLineWidth }
+      { lineColor: districtLineColor, lineWidth: districtLineWidth }
     );
-  }, [municipalityLineColor, municipalityLineWidth]);
+  }, [districtLineColor, districtLineWidth]);
 
   const stateGroup = React.useMemo<BoundaryGroup>(() => {
     return customizeBoundaryGroup(
@@ -234,8 +233,8 @@ const MunicipalDistrictMapDataRender = (
   }, [subprefeituraLineColor, subprefeituraLineWidth]);
 
   const boundaryGroups = React.useMemo(() => {
-    return [municipalityGroup, stateGroup, subprefeituraGroup];
-  }, [municipalityGroup, stateGroup, subprefeituraGroup]);
+    return [districtsGroup, stateGroup, subprefeituraGroup];
+  }, [districtsGroup, stateGroup, subprefeituraGroup]);
 
   const { spec, toggle, isVisible } = useBoundaryToggle(
     baseSpec,
@@ -243,9 +242,9 @@ const MunicipalDistrictMapDataRender = (
   );
 
   React.useEffect(() => {
-    if (showMunicipalityOutlines !== isVisible(municipalityGroup))
-      toggle(municipalityGroup);
-  }, [showMunicipalityOutlines, toggle, isVisible, municipalityGroup]);
+    if (showDistrictOutlines !== isVisible(districtsGroup))
+      toggle(districtsGroup);
+  }, [showDistrictOutlines, toggle, isVisible, districtsGroup]);
   React.useEffect(() => {
     if (showStateOutlines !== isVisible(stateGroup)) toggle(stateGroup);
   }, [showStateOutlines, toggle, isVisible, stateGroup]);
@@ -325,9 +324,9 @@ MunicipalDistrictMapData.argTypes = {
   showBasemap: { control: 'boolean' },
   showStateOutlines: { control: 'boolean' },
   showSubprefeituraOutlines: { control: 'boolean' },
-  showMunicipalityOutlines: { control: 'boolean' },
-  municipalityLineColor: { control: 'color' },
-  municipalityLineWidth: {
+  showDistrictOutlines: { control: 'boolean' },
+  districtLineColor: { control: 'color' },
+  districtLineWidth: {
     control: { type: 'range', min: 0, max: 5, step: 0.5 },
   },
   stateLineColor: { control: 'color' },
@@ -343,9 +342,9 @@ const baseVariationArgs = {
   showBasemap: true,
   showStateOutlines: true,
   showSubprefeituraOutlines: true,
-  showMunicipalityOutlines: true,
-  municipalityLineColor: '#d1d5db',
-  municipalityLineWidth: 0.5,
+  showDistrictOutlines: true,
+  districtLineColor: '#d1d5db',
+  districtLineWidth: 0.5,
   stateLineColor: '#374151',
   stateLineWidth: 1.5,
   subprefeituraLineColor: '#6b7280',
