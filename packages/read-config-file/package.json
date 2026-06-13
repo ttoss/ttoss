@@ -1,6 +1,9 @@
 {
   "name": "@ttoss/read-config-file",
   "version": "2.2.20",
+  "bugs": {
+    "url": "https://github.com/ttoss/ttoss/issues"
+  },
   "description": "Read a configuration file",
   "keywords": [
     "config",
