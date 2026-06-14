@@ -677,36 +677,6 @@ export const registerToolFromSchema = (
 };
 
 /**
- * Re-export the OAuth building blocks from `@ttoss/http-server-oauth` so MCP
- * consumers can configure token verification and (optionally) run an
- * authorization server from a single import. The runner-agnostic OAuth engine
- * itself lives in `@ttoss/auth-core`.
- */
-export {
-  type AuthCodeStore,
-  type AuthorizeRequest,
-  type ClientStore,
-  type CognitoUserPoolConfig,
-  createOAuthHandlers,
-  createProtectedResourceMetadataMiddleware,
-  getWwwAuthenticateHeader,
-  type IssuedTokens,
-  type IssueTokensArgs,
-  type OAuthClient,
-  type OAuthClientMetadata,
-  type OAuthHandlers,
-  oauthServer,
-  type OAuthServerOptions,
-  oauthVerify,
-  type OAuthVerifyOptions,
-  type OnAuthorizeArgs,
-  type OnAuthorizeResult,
-  type OnRefreshTokenArgs,
-  type OnRefreshTokenResult,
-  type StoredAuthorizationCode,
-} from '@ttoss/http-server-oauth';
-
-/**
  * Re-export MCP SDK types and classes for convenience
  */
 export { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
