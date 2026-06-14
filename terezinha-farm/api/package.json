@@ -1,6 +1,6 @@
 {
   "name": "@terezinha-farm/api",
-  "version": "0.19.71",
+  "version": "0.19.72",
   "private": true,
   "type": "module",
   "scripts": {

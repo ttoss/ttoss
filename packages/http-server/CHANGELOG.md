@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server@0.7.0...@ttoss/http-server@0.7.1) (2026-06-14)
+
+**Note:** Version bump only for package @ttoss/http-server
+
 # 0.7.0 (2026-06-14)
 
 ### Features
