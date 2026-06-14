@@ -26,7 +26,7 @@ The **resource server** is the MCP endpoint itself: it verifies the Bearer token
 
 ## Resource server: verifying tokens
 
-`createMcpRouter` gates every request through its `auth` option. Invalid or missing tokens get `401 Unauthorized` before any tool runs.
+`createMcpRouter` gates requests through its `auth` option. Invalid or missing tokens get `401 Unauthorized` before any tool runs — except for the MCP lifecycle methods `initialize` and `tools/list`, which stay public so a client can discover the server before it has a token (see [Client discovery](#client-discovery)).
 
 ### Against Amazon Cognito
 
@@ -87,6 +87,27 @@ const mcpRouter = createMcpRouter(mcpServer, {
 ```
 
 Opaque API tokens work the same way — hash the presented token with `@ttoss/auth-core` and look it up in your database, throwing when it is missing or revoked. See the [`@ttoss/http-server-mcp` README](/docs/modules/packages/http-server-mcp) for the opaque-token recipe and the `getIdentity()` / `checkScopes()` helpers used inside tool handlers.
+
+### Client discovery
+
+The [MCP authorization spec](https://spec.modelcontextprotocol.io/specification/2025-03-26/basic/authorization/) requires two behaviors so clients like Claude and Cursor can bootstrap OAuth without being pre-configured, and `createMcpRouter` handles both. The lifecycle methods `initialize` and `tools/list` bypass verification so the client can discover the server before authenticating — override the set with `publicMethods` (pass `[]` to require a token for every method). And when `resourceMetadataUrl` is set, a `401` advertises the [RFC 9728](https://www.rfc-editor.org/rfc/rfc9728) protected-resource document via `WWW-Authenticate: Bearer resource_metadata="…"`, pointing the client at the metadata that names the authorization server.
+
+```typescript
+const mcpRouter = createMcpRouter(mcpServer, {
+  auth: {
+    cognitoUserPool: { userPoolId: '...', clientId: '...' },
+    resourceServerUrl: 'https://mcp.example.com',
+    authorizationServerUrl: process.env.COGNITO_ISSUER_URL!,
+    // Emit RFC 9728 discovery on 401.
+    resourceMetadataUrl:
+      'https://mcp.example.com/.well-known/oauth-protected-resource',
+    // Defaults to ['initialize', 'tools/list'].
+    publicMethods: ['initialize', 'tools/list'],
+  },
+});
+```
+
+Setting both `resourceServerUrl` and `authorizationServerUrl` also serves that metadata document at `/.well-known/oauth-protected-resource`, completing the discovery chain the `WWW-Authenticate` header points to.
 
 ## Authorization server: issuing tokens
 

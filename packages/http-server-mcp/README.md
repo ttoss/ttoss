@@ -129,7 +129,7 @@ const data = await apiCall('GET', 'https://partner.api.com/data', {
 
 ## Authentication
 
-`createMcpRouter` supports OAuth 2.0 Bearer token authentication via the `auth` option. Every incoming MCP request must include a valid `Authorization: Bearer <token>` header — invalid or missing tokens receive a `401 Unauthorized` response.
+`createMcpRouter` supports OAuth 2.0 Bearer token authentication via the `auth` option. Incoming MCP requests must include a valid `Authorization: Bearer <token>` header — invalid or missing tokens receive a `401 Unauthorized` response. The MCP lifecycle methods `initialize` and `tools/list` are exempt by default so clients can discover the server before authenticating (see [Public methods and discovery](#public-methods-and-discovery)).
 
 ```mermaid
 sequenceDiagram
@@ -315,6 +315,31 @@ app.use(createMcpRouter(mcpServer).routes());
 
 The `WWW-Authenticate: Bearer resource_metadata="…"` header is how MCP clients bootstrap OAuth discovery after their first unauthorized request.
 
+### Public methods and discovery
+
+The two behaviors the [MCP authorization spec](https://spec.modelcontextprotocol.io/specification/2025-03-26/basic/authorization/) requires for client bootstrapping are built into the `auth` option, so you no longer need the hand-rolled middleware shown above:
+
+- **`publicMethods`** — JSON-RPC methods that bypass verification, read from the request body's `method` field. Defaults to `['initialize', 'tools/list']` so clients can discover the server before authenticating. Pass `[]` to require a token for every method, or a custom list to change the exempt set.
+- **`resourceMetadataUrl`** — when set, a `401` responds with `WWW-Authenticate: Bearer resource_metadata="<resourceMetadataUrl>"` (RFC 9728) instead of a bare `Bearer`, pointing MCP clients at the protected-resource metadata document. When omitted, the header falls back to `Bearer`.
+
+```typescript
+createMcpRouter(mcpServer, {
+  auth: {
+    cognitoUserPool: { userPoolId: '...', clientId: '...' },
+    // Serve the metadata document (unauthenticated)...
+    resourceServerUrl: 'https://mcp.example.com',
+    authorizationServerUrl:
+      'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_xxx',
+    // ...and point 401s at it for auto-discovery.
+    resourceMetadataUrl:
+      'https://mcp.example.com/.well-known/oauth-protected-resource',
+    // publicMethods defaults to ['initialize', 'tools/list'].
+  },
+});
+```
+
+Both fields are optional. Omitting `resourceMetadataUrl` keeps the bare `Bearer` header, and the `publicMethods` default matches what MCP clients expect for discovery.
+
 ## OAuth 2.1 Authorization Server
 
 The `auth` option above covers the **resource-server** half of MCP authorization — it verifies tokens issued by an external authorization server (Cognito, Auth0, …). When you want your own first-party server to _issue_ the tokens, `createMcpAuthServer` provides the **authorization-server** half: the `/authorize`, `/token`, `/register`, and discovery endpoints an MCP client (Claude, Cursor, VS Code) auto-discovers and runs the full OAuth 2.1 flow against.
@@ -403,6 +428,8 @@ Creates a Koa router configured to handle MCP protocol requests.
     - `auth.verifyToken` — Custom async token verifier `(token: string) => Promise<unknown>`
     - `auth.requiredScopes` — Router-level scope guard; returns 403 if any scope is missing
     - `auth.resourceServerUrl` + `auth.authorizationServerUrl` — Enable `/.well-known/oauth-protected-resource`
+    - `auth.publicMethods` — JSON-RPC methods that bypass verification (default `['initialize', 'tools/list']`)
+    - `auth.resourceMetadataUrl` — Emit RFC 9728 `WWW-Authenticate: Bearer resource_metadata="…"` on 401
 
 **Returns:** `Router` — Koa router instance
 

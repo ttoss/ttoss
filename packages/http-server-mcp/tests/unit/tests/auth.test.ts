@@ -99,7 +99,7 @@ describe('auth — verifyToken', () => {
 
     const res = await request(app.callback())
       .post('/mcp')
-      .send(makeMcpRequest('initialize', initializeParams, 1))
+      .send(makeMcpRequest('tools/call', { name: 'whoami', arguments: {} }, 1))
       .set('Content-Type', 'application/json')
       .set('Accept', MCP_ACCEPT);
 
@@ -114,7 +114,7 @@ describe('auth — verifyToken', () => {
 
     const res = await request(app.callback())
       .post('/mcp')
-      .send(makeMcpRequest('initialize', initializeParams, 1))
+      .send(makeMcpRequest('tools/call', { name: 'whoami', arguments: {} }, 1))
       .set('Content-Type', 'application/json')
       .set('Accept', MCP_ACCEPT)
       .set('Authorization', 'Bearer bad-token');
@@ -175,7 +175,22 @@ describe('auth — verifyToken', () => {
 
     const res = await request(app.callback())
       .post('/mcp')
-      .send(makeMcpRequest('initialize', initializeParams, 1))
+      .send(makeMcpRequest('tools/call', { name: 'whoami', arguments: {} }, 1))
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT)
+      .set('Authorization', 'Bearer tok');
+
+    expect(res.status).toBe(403);
+  });
+
+  test('returns 403 when the token carries no scope claim at all', async () => {
+    const app = buildApp(() => {
+      return Promise.resolve({ sub: 'u1' }); // no `scope` property
+    }, ['mcp:access']);
+
+    const res = await request(app.callback())
+      .post('/mcp')
+      .send(makeMcpRequest('tools/call', { name: 'whoami', arguments: {} }, 1))
       .set('Content-Type', 'application/json')
       .set('Accept', MCP_ACCEPT)
       .set('Authorization', 'Bearer tok');
@@ -189,9 +204,18 @@ describe('auth — verifyToken', () => {
       return Promise.resolve(payload);
     }, ['mcp:access']);
 
-    const res = await request(app.callback())
+    const callback = app.callback();
+
+    await request(callback)
       .post('/mcp')
       .send(makeMcpRequest('initialize', initializeParams, 1))
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT)
+      .set('Authorization', 'Bearer tok');
+
+    const res = await request(callback)
+      .post('/mcp')
+      .send(makeMcpRequest('tools/call', { name: 'whoami', arguments: {} }, 2))
       .set('Content-Type', 'application/json')
       .set('Accept', MCP_ACCEPT)
       .set('Authorization', 'Bearer tok');
@@ -275,6 +299,106 @@ describe('auth — verifyToken', () => {
   });
 });
 
+describe('auth — public methods and RFC 9728 discovery', () => {
+  const buildApp = (authOverrides: {
+    publicMethods?: string[];
+    resourceMetadataUrl?: string;
+  }) => {
+    const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+    mcpServer.registerTool(
+      'whoami',
+      { description: 'Returns identity', inputSchema: {} },
+      async () => {
+        return { content: [{ type: 'text', text: 'ok' }] };
+      }
+    );
+
+    const app = new App();
+    app.use(bodyParser());
+    app.use(
+      createMcpRouter(mcpServer, {
+        auth: {
+          // Always rejects so any verified path returns 401.
+          verifyToken: () => {
+            return Promise.reject(new Error('invalid'));
+          },
+          ...authOverrides,
+        },
+      }).routes()
+    );
+    return app;
+  };
+
+  const post = (app: ReturnType<typeof buildApp>, method: string) => {
+    return request(app.callback())
+      .post('/mcp')
+      .send(makeMcpRequest(method, initializeParams, 1))
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT);
+  };
+
+  test('initialize is public by default (no token required)', async () => {
+    const res = await post(buildApp({}), 'initialize');
+    expect(res.status).not.toBe(401);
+  });
+
+  test('tools/list is public by default (no token required)', async () => {
+    const res = await post(buildApp({}), 'tools/list');
+    expect(res.status).not.toBe(401);
+  });
+
+  test('protected methods still require a token by default', async () => {
+    const res = await post(buildApp({}), 'tools/call');
+    expect(res.status).toBe(401);
+  });
+
+  test('publicMethods overrides the default set', async () => {
+    const app = buildApp({ publicMethods: ['ping'] });
+
+    // 'ping' now bypasses verification...
+    const pingRes = await post(app, 'ping');
+    expect(pingRes.status).not.toBe(401);
+
+    // ...while 'initialize' is no longer public.
+    const initRes = await post(app, 'initialize');
+    expect(initRes.status).toBe(401);
+  });
+
+  test('empty publicMethods requires a token for every method', async () => {
+    const res = await post(buildApp({ publicMethods: [] }), 'initialize');
+    expect(res.status).toBe(401);
+  });
+
+  test('a request without a method is treated as protected', async () => {
+    const res = await request(buildApp({}).callback())
+      .post('/mcp')
+      .send({ jsonrpc: '2.0', id: 1 })
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT);
+
+    expect(res.status).toBe(401);
+  });
+
+  test('401 emits RFC 9728 header when resourceMetadataUrl is set', async () => {
+    const app = buildApp({
+      resourceMetadataUrl:
+        'https://mcp.example.com/.well-known/oauth-protected-resource',
+    });
+    const res = await post(app, 'tools/call');
+
+    expect(res.status).toBe(401);
+    expect(res.headers['www-authenticate']).toBe(
+      'Bearer resource_metadata="https://mcp.example.com/.well-known/oauth-protected-resource"'
+    );
+  });
+
+  test('401 falls back to bare Bearer when resourceMetadataUrl is omitted', async () => {
+    const res = await post(buildApp({}), 'tools/call');
+    expect(res.status).toBe(401);
+    expect(res.headers['www-authenticate']).toBe('Bearer');
+  });
+});
+
 describe('auth — OAuth Protected Resource metadata endpoint', () => {
   test('serves /.well-known/oauth-protected-resource when configured', async () => {
     const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
@@ -352,7 +476,7 @@ describe('auth — cognitoUserPool', () => {
 
     const res = await request(app.callback())
       .post('/mcp')
-      .send(makeMcpRequest('initialize', initializeParams, 1))
+      .send(makeMcpRequest('tools/call', { name: 'whoami', arguments: {} }, 1))
       .set('Content-Type', 'application/json')
       .set('Accept', MCP_ACCEPT)
       .set('Authorization', 'Bearer bad-token');
@@ -383,9 +507,19 @@ describe('auth — cognitoUserPool', () => {
       }).routes()
     );
 
-    const res = await request(app.callback())
+    const callback = app.callback();
+
+    await request(callback)
       .post('/mcp')
       .send(makeMcpRequest('initialize', initializeParams, 1))
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT)
+      .set('Authorization', 'Bearer valid-token');
+
+    // A protected method exercises the Cognito verifier.
+    const res = await request(callback)
+      .post('/mcp')
+      .send(makeMcpRequest('tools/call', { name: 'whoami', arguments: {} }, 2))
       .set('Content-Type', 'application/json')
       .set('Accept', MCP_ACCEPT)
       .set('Authorization', 'Bearer valid-token');
