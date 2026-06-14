@@ -93,7 +93,7 @@ Opaque API tokens work the same way — hash the presented token with `@ttoss/au
 To make your server first-party — so an MCP client discovers it, registers itself, and runs the full login flow against it — add `createMcpAuthServer`. ttoss owns only PKCE, discovery metadata, code exchange, and dynamic client registration; everything app-specific stays behind pluggable hooks.
 
 ```typescript
-import { signJwt } from '@ttoss/auth-core';
+import { signJwt, verifyJwt } from '@ttoss/auth-core';
 import { App, bodyParser } from '@ttoss/http-server';
 import { createMcpAuthServer } from '@ttoss/http-server-mcp';
 
@@ -108,6 +108,11 @@ const authServer = createMcpAuthServer({
       secret: process.env.JWT_SECRET!,
       expiresInSeconds: 3600,
     }),
+    refreshToken: signJwt({
+      payload: { sub: subject, scope: scopes.join(' ') },
+      secret: process.env.JWT_REFRESH_SECRET!,
+      expiresInSeconds: 60 * 60 * 24 * 30,
+    }),
     expiresIn: 3600,
   }),
   // App-owned login/consent — render your own UI, then approve.
@@ -119,6 +124,15 @@ const authServer = createMcpAuthServer({
     }
     return { approved: true, subject: session.userId, scopes: request.scopes };
   },
+  // App-owned refresh validation — enables the refresh_token grant.
+  onRefreshToken: async ({ refreshToken }) => {
+    const payload = verifyJwt({
+      token: refreshToken,
+      secret: process.env.JWT_REFRESH_SECRET!,
+    });
+    if (!payload) return undefined; // reject — client must re-authorize
+    return { subject: payload.sub, scopes: payload.scope.split(' ') };
+  },
   scopesSupported: ['mcp:access'],
 });
 
@@ -128,6 +142,8 @@ app.use(authServer.routes());
 ```
 
 This mounts the discovery (`/.well-known/oauth-authorization-server`), `/authorize`, `/token`, and `/register` endpoints that MCP clients auto-discover. Pair it with the `verifyToken` resource server above so the same deployment both issues and verifies its tokens. The endpoint table and store interfaces are documented in the [package README](/docs/modules/packages/http-server-mcp#oauth-21-authorization-server).
+
+The `/token` endpoint handles two grants. The `authorization_code` grant runs once at the end of the login flow, verifying the PKCE `code_verifier` before calling `issueTokens`. The `refresh_token` grant lets a client renew an expired access token without sending the user back through login: it is enabled only when you supply `onRefreshToken`, which validates the presented refresh token and returns the `subject` and `scopes` to re-issue (return `undefined` to reject and force re-authorization). Omit `onRefreshToken` and refresh requests get `unsupported_grant_type`.
 
 ## Enforcing scopes
 
