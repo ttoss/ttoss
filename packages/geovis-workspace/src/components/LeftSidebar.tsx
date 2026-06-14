@@ -1,0 +1,91 @@
+import { useI18n } from '@ttoss/react-i18n';
+import { Box, Flex, IconButton, Text } from '@ttoss/ui';
+
+import { useGeovisWorkspace } from '../hooks/useGeovisWorkspace';
+import { messages } from '../messages';
+import { MenuButton } from './MenuButton';
+
+/**
+ * Internal left sidebar that renders the menu groups defined in the spec.
+ * Reads and writes the per-group selection via GeovisWorkspaceContext.
+ */
+export const LeftSidebar = () => {
+  const {
+    intl: { formatMessage },
+  } = useI18n();
+
+  const { spec, selection, setSelection, setLeftSidebarOpen } =
+    useGeovisWorkspace();
+
+  const menus = spec.leftSidebar?.menus ?? [];
+
+  return (
+    <Flex
+      sx={{
+        position: 'relative',
+        flexDirection: 'column',
+        gap: '5',
+        width: '256px',
+        height: '100%',
+        flexShrink: 0,
+        paddingX: '4',
+        paddingTop: '5',
+        paddingBottom: '4',
+        backgroundColor: '#ffffff',
+        borderRight: '1px solid #e5e7eb',
+        overflowY: 'auto',
+      }}
+    >
+      <IconButton
+        icon="lucide:chevron-left"
+        aria-label={formatMessage(messages.closeMenu)}
+        onClick={() => {
+          setLeftSidebarOpen({ open: false });
+        }}
+        sx={{
+          position: 'absolute',
+          top: '3',
+          right: '3',
+          color: '#6b7280',
+          backgroundColor: 'transparent',
+          borderRadius: 'md',
+          '&:hover': {
+            color: '#4338ca',
+          },
+        }}
+      />
+
+      {menus.map((menu) => {
+        return (
+          <Box key={menu.id} sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Text
+              sx={{
+                fontSize: 'xs',
+                fontWeight: 'semibold',
+                color: '#6b7280',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                marginBottom: '2',
+              }}
+            >
+              {menu.title}
+            </Text>
+
+            {menu.items.map((item) => {
+              return (
+                <MenuButton
+                  key={item.value}
+                  label={item.label}
+                  active={selection[menu.id] === item.value}
+                  onClick={() => {
+                    setSelection({ menuId: menu.id, value: item.value });
+                  }}
+                />
+              );
+            })}
+          </Box>
+        );
+      })}
+    </Flex>
+  );
+};
