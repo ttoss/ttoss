@@ -12,11 +12,15 @@ import type {
   SystemOptions,
 } from './types';
 
-const tryJwt = (token: string, opts: JwtOptions): AuthenticatedUser | null => {
+const tryJwt = (
+  token: string,
+  opts: JwtOptions,
+  ctx: Context
+): AuthenticatedUser | null => {
   const payload = verifyJwt({ token, secret: opts.secret });
   if (!payload) return null;
   if (opts.mapPayload)
-    return opts.mapPayload(payload as Record<string, unknown>);
+    return opts.mapPayload(payload as Record<string, unknown>, ctx);
   return {
     id: String(payload.sub ?? ''),
     ...(payload.email !== undefined && { email: String(payload.email) }),
@@ -25,9 +29,10 @@ const tryJwt = (token: string, opts: JwtOptions): AuthenticatedUser | null => {
 
 const tryApiToken = async (
   token: string,
-  opts: ApiTokenOptions
+  opts: ApiTokenOptions,
+  ctx: Context
 ): Promise<AuthenticatedUser | null> => {
-  return opts.lookup(hashApiToken(token));
+  return opts.lookup(hashApiToken(token), ctx);
 };
 
 const trySystem = (
@@ -42,15 +47,16 @@ const trySystem = (
 
 const resolveUser = async (
   token: string,
-  options: AuthMiddlewareOptions
+  options: AuthMiddlewareOptions,
+  ctx: Context
 ): Promise<{ user: AuthenticatedUser; strategy: string } | null> => {
   for (const strategy of options.strategies) {
     let user: AuthenticatedUser | null = null;
 
     if (strategy === 'jwt' && options.jwt) {
-      user = tryJwt(token, options.jwt);
+      user = tryJwt(token, options.jwt, ctx);
     } else if (strategy === 'apiToken' && options.apiToken) {
-      user = await tryApiToken(token, options.apiToken);
+      user = await tryApiToken(token, options.apiToken, ctx);
     } else if (strategy === 'system' && options.system) {
       user = trySystem(token, options.system);
     }
@@ -87,7 +93,7 @@ export const authMiddleware = (options: AuthMiddlewareOptions) => {
       return next();
     }
 
-    const result = await resolveUser(token, options);
+    const result = await resolveUser(token, options, ctx);
 
     if (!result) {
       if (required) ctx.throw(401, 'Unauthorized');
