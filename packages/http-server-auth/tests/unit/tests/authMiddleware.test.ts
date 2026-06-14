@@ -298,3 +298,203 @@ describe('allowedOrigins', () => {
     expect(res.status).toBe(200);
   });
 });
+
+// OAuth strategy
+describe('oauth strategy', () => {
+  test('authenticates a verified token and exposes claims on ctx.state.user', async () => {
+    const app = makeApp({
+      strategies: ['oauth'],
+      oauth: {
+        verify: () => {
+          return { sub: 'u1', scope: 'read write', email: 'u@x.com' };
+        },
+      },
+    });
+    const res = await request(app.callback())
+      .get('/')
+      .set('Authorization', 'Bearer tok');
+    expect(res.status).toBe(200);
+    expect(res.body.user).toMatchObject({
+      id: 'u1',
+      scope: 'read write',
+      email: 'u@x.com',
+    });
+    expect(res.body.strategy).toBe('oauth');
+  });
+
+  test('receives ctx in verify', async () => {
+    const verify = jest.fn(() => {
+      return { sub: 'u1' };
+    });
+    const app = makeApp({ strategies: ['oauth'], oauth: { verify } });
+    await request(app.callback()).get('/').set('Authorization', 'Bearer tok');
+    expect(verify).toHaveBeenCalledWith(
+      'tok',
+      expect.objectContaining({ request: expect.anything() })
+    );
+  });
+
+  test('401 when verify throws', async () => {
+    const app = makeApp({
+      strategies: ['oauth'],
+      oauth: {
+        verify: () => {
+          return Promise.reject(new Error('bad'));
+        },
+      },
+    });
+    const res = await request(app.callback())
+      .get('/')
+      .set('Authorization', 'Bearer tok');
+    expect(res.status).toBe(401);
+    expect(res.headers['www-authenticate']).toBe('Bearer');
+  });
+
+  test('401 when verify returns null', async () => {
+    const app = makeApp({
+      strategies: ['oauth'],
+      oauth: {
+        verify: () => {
+          return null;
+        },
+      },
+    });
+    const res = await request(app.callback())
+      .get('/')
+      .set('Authorization', 'Bearer tok');
+    expect(res.status).toBe(401);
+  });
+
+  test('401 carries RFC 9728 header when resourceMetadataUrl is set', async () => {
+    const app = makeApp({
+      strategies: ['oauth'],
+      oauth: {
+        verify: () => {
+          return null;
+        },
+      },
+      resourceMetadataUrl:
+        'https://mcp.example.com/.well-known/oauth-protected-resource',
+    });
+    const res = await request(app.callback())
+      .get('/')
+      .set('Authorization', 'Bearer tok');
+    expect(res.status).toBe(401);
+    expect(res.headers['www-authenticate']).toBe(
+      'Bearer resource_metadata="https://mcp.example.com/.well-known/oauth-protected-resource"'
+    );
+  });
+
+  test('403 when a required scope is missing', async () => {
+    const app = makeApp({
+      strategies: ['oauth'],
+      oauth: {
+        verify: () => {
+          return { sub: 'u1', scope: 'read' };
+        },
+        requiredScopes: ['write'],
+      },
+    });
+    const res = await request(app.callback())
+      .get('/')
+      .set('Authorization', 'Bearer tok');
+    expect(res.status).toBe(403);
+  });
+
+  test('403 when the token has no scope claim at all', async () => {
+    const app = makeApp({
+      strategies: ['oauth'],
+      oauth: {
+        verify: () => {
+          return { sub: 'u1' };
+        },
+        requiredScopes: ['write'],
+      },
+    });
+    const res = await request(app.callback())
+      .get('/')
+      .set('Authorization', 'Bearer tok');
+    expect(res.status).toBe(403);
+  });
+
+  test('allows when all required scopes are present', async () => {
+    const app = makeApp({
+      strategies: ['oauth'],
+      oauth: {
+        verify: () => {
+          return { sub: 'u1', scope: 'read write' };
+        },
+        requiredScopes: ['write'],
+      },
+    });
+    const res = await request(app.callback())
+      .get('/')
+      .set('Authorization', 'Bearer tok');
+    expect(res.status).toBe(200);
+  });
+
+  test('honours a custom mapPayload (null → 401)', async () => {
+    const app = makeApp({
+      strategies: ['oauth'],
+      oauth: {
+        verify: () => {
+          return { sub: 'u1' };
+        },
+        mapPayload: () => {
+          return null;
+        },
+      },
+    });
+    const res = await request(app.callback())
+      .get('/')
+      .set('Authorization', 'Bearer tok');
+    expect(res.status).toBe(401);
+  });
+
+  test('honours a custom mapPayload (mapped user)', async () => {
+    const app = makeApp({
+      strategies: ['oauth'],
+      oauth: {
+        verify: () => {
+          return { sub: 'u1', org: 'acme' };
+        },
+        mapPayload: (payload) => {
+          return { id: String(payload.sub), org: String(payload.org) };
+        },
+      },
+    });
+    const res = await request(app.callback())
+      .get('/')
+      .set('Authorization', 'Bearer tok');
+    expect(res.body.user).toMatchObject({ id: 'u1', org: 'acme' });
+  });
+});
+
+describe('oauth strategy — default id mapping', () => {
+  test('defaults id to empty string when the payload has no sub', async () => {
+    const app = makeApp({
+      strategies: ['oauth'],
+      oauth: {
+        verify: () => {
+          return { scope: 'read' };
+        },
+      },
+    });
+    const res = await request(app.callback())
+      .get('/')
+      .set('Authorization', 'Bearer tok');
+    expect(res.status).toBe(200);
+    expect(res.body.user).toMatchObject({ id: '', scope: 'read' });
+  });
+});
+
+describe('strategy without matching options', () => {
+  test('401 when a listed strategy has no configuration', async () => {
+    // 'oauth' is listed but no `oauth` option is provided → no strategy matches.
+    const app = makeApp({ strategies: ['oauth'] });
+    const res = await request(app.callback())
+      .get('/')
+      .set('Authorization', 'Bearer tok');
+    expect(res.status).toBe(401);
+  });
+});

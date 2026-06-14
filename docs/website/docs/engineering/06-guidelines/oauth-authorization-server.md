@@ -2,7 +2,7 @@
 title: OAuth Authorization Server — Issuing Tokens for Your Own App
 ---
 
-This guideline covers an app acting as an **OAuth 2.1 authorization server**: it lets clients register, runs the login/consent flow against your existing user model, and issues access and refresh tokens. The spec mechanics (RFC 8414, 7591, 7636, 6749, 9728) live in a **runner-agnostic engine** — `createOAuthHandlers` in [`@ttoss/auth-core`](/docs/modules/packages/auth-core) — that operates on plain request/response objects, so any runtime can host it. [`@ttoss/http-server-oauth`](/docs/modules/packages/http-server-oauth) ships the Koa adapter, `oauthServer()`, as an opt-in plugin (keeping the base `@ttoss/http-server` runner auth-free); an AWS Lambda or GraphQL runner would adapt the same engine. Your app keeps its user model, signing keys, and login UI behind hooks.
+This guideline covers an app acting as an **OAuth 2.1 authorization server**: it lets clients register, runs the login/consent flow against your existing user model, and issues access and refresh tokens. The spec mechanics (RFC 8414, 7591, 7636, 6749, 9728) live in a **runner-agnostic engine** — `createOAuthHandlers` in [`@ttoss/auth-core`](/docs/modules/packages/auth-core) — that operates on plain request/response objects, so any runtime can host it. [`@ttoss/http-server-auth`](/docs/modules/packages/http-server-auth) ships the Koa adapter, `oauthServer()`; an AWS Lambda or GraphQL runner would adapt the same engine. Your app keeps its user model, signing keys, and login UI behind hooks.
 
 | Role             | You are…                                 | Covered by                                                             |
 | ---------------- | ---------------------------------------- | ---------------------------------------------------------------------- |
@@ -43,7 +43,7 @@ sequenceDiagram
 ```typescript
 import { signJwt, verifyJwt } from '@ttoss/auth-core';
 import { App, bodyParser } from '@ttoss/http-server';
-import { oauthServer } from '@ttoss/http-server-oauth';
+import { oauthServer } from '@ttoss/http-server-auth';
 
 const authServer = oauthServer({
   issuer: 'https://api.example.com',
@@ -115,7 +115,7 @@ The `subject` you return is the only link between OAuth and your user model — 
 
 ## Scopes
 
-Advertise the scopes your server issues via `scopesSupported`, and grant a subset per request in `onAuthorize`. Enforcement happens on the **resource server** that consumes the tokens: pass `requiredScopes` to `oauthVerify()` (from `@ttoss/http-server-oauth`) to gate an endpoint, or check scopes per-route in your handler. The same option flows through `createMcpRouter`'s `auth` — see [MCP Server with OAuth](/docs/engineering/guidelines/mcp-server-oauth#enforcing-scopes).
+Advertise the scopes your server issues via `scopesSupported`, and grant a subset per request in `onAuthorize`. Enforcement happens on the **resource server** that consumes the tokens: use `authMiddleware`'s `oauth` strategy with `requiredScopes` (from `@ttoss/http-server-auth`) to gate an endpoint, or check scopes per-route in your handler. The same option flows through `createMcpRouter`'s `auth` — see [MCP Server with OAuth](/docs/engineering/guidelines/mcp-server-oauth#enforcing-scopes).
 
 ## Related
 

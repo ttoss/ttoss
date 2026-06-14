@@ -1,18 +1,12 @@
 import { createHash } from 'node:crypto';
 
-import { type ClientStore } from '@ttoss/auth-core';
-import { CognitoJwtVerifier } from '@ttoss/auth-core/amazon-cognito';
+import type { ClientStore } from '@ttoss/auth-core';
 import { App, bodyParser, type Context } from '@ttoss/http-server';
 import {
   createProtectedResourceMetadataMiddleware,
   oauthServer,
-  oauthVerify,
 } from 'src/index';
 import request from 'supertest';
-
-jest.mock('@ttoss/auth-core/amazon-cognito', () => {
-  return { CognitoJwtVerifier: { create: jest.fn() } };
-});
 
 const base64Url = (buffer: Buffer): string => {
   return buffer
@@ -64,7 +58,7 @@ const createAuthCodeStore = () => {
   };
 };
 
-const buildServerApp = (overrides = {}) => {
+const buildApp = (overrides = {}) => {
   const app = new App();
   app.use(bodyParser());
   app.use(
@@ -90,7 +84,7 @@ const buildServerApp = (overrides = {}) => {
 
 describe('oauthServer (Koa adapter)', () => {
   test('serves authorization server metadata', async () => {
-    const res = await request(buildServerApp().callback()).get(
+    const res = await request(buildApp().callback()).get(
       '/.well-known/oauth-authorization-server'
     );
     expect(res.status).toBe(200);
@@ -98,7 +92,7 @@ describe('oauthServer (Koa adapter)', () => {
   });
 
   test('does not serve protected-resource metadata unless resource is set', async () => {
-    const res = await request(buildServerApp().callback()).get(
+    const res = await request(buildApp().callback()).get(
       '/.well-known/oauth-protected-resource'
     );
     expect(res.status).toBe(404);
@@ -106,14 +100,14 @@ describe('oauthServer (Koa adapter)', () => {
 
   test('serves protected-resource metadata when resource is set', async () => {
     const res = await request(
-      buildServerApp({ resource: 'https://mcp.example.com' }).callback()
+      buildApp({ resource: 'https://mcp.example.com' }).callback()
     ).get('/.well-known/oauth-protected-resource');
     expect(res.status).toBe(200);
     expect(res.body.resource).toBe('https://mcp.example.com');
   });
 
   test('authorize redirects with a code (normalizes array query params)', async () => {
-    const res = await request(buildServerApp().callback())
+    const res = await request(buildApp().callback())
       .get('/authorize')
       // Duplicate client_id exercises the array→string query normalization.
       .query(
@@ -128,7 +122,7 @@ describe('oauthServer (Koa adapter)', () => {
   });
 
   test('full register → authorize → token round-trip', async () => {
-    const app = buildServerApp();
+    const app = buildApp();
     const callback = app.callback();
 
     const reg = await request(callback)
@@ -157,134 +151,6 @@ describe('oauthServer (Koa adapter)', () => {
     });
     expect(tokenRes.status).toBe(200);
     expect(tokenRes.body.access_token).toBe('access');
-  });
-});
-
-describe('oauthVerify (Koa adapter)', () => {
-  const buildApp = (options: Parameters<typeof oauthVerify>[0]) => {
-    const app = new App();
-    app.use(bodyParser());
-    app.use(oauthVerify(options));
-    app.use((ctx: Context) => {
-      ctx.body = { identity: ctx.state.identity };
-    });
-    return app;
-  };
-
-  test('throws at setup when neither cognitoUserPool nor verifyToken is given', () => {
-    expect(() => {
-      return oauthVerify({});
-    }).toThrow(
-      'OAuthVerifyOptions requires either cognitoUserPool or verifyToken'
-    );
-  });
-
-  test('401 with bare Bearer when verification fails', async () => {
-    const app = buildApp({
-      verifyToken: () => {
-        return Promise.reject(new Error('bad'));
-      },
-    });
-    const res = await request(app.callback())
-      .get('/')
-      .set('Authorization', 'Bearer x');
-    expect(res.status).toBe(401);
-    expect(res.headers['www-authenticate']).toBe('Bearer');
-  });
-
-  test('401 with RFC 9728 header when resourceMetadataUrl is set', async () => {
-    const app = buildApp({
-      verifyToken: () => {
-        return Promise.reject(new Error('bad'));
-      },
-      resourceMetadataUrl:
-        'https://mcp.example.com/.well-known/oauth-protected-resource',
-    });
-    const res = await request(app.callback()).get('/');
-    expect(res.status).toBe(401);
-    expect(res.headers['www-authenticate']).toBe(
-      'Bearer resource_metadata="https://mcp.example.com/.well-known/oauth-protected-resource"'
-    );
-  });
-
-  test('sets ctx.state.identity on success', async () => {
-    const app = buildApp({
-      verifyToken: () => {
-        return Promise.resolve({ sub: 'u1', scope: 'read' });
-      },
-    });
-    const res = await request(app.callback())
-      .get('/')
-      .set('Authorization', 'Bearer ok');
-    expect(res.status).toBe(200);
-    expect(res.body.identity).toEqual({ sub: 'u1', scope: 'read' });
-  });
-
-  test('403 when a required scope is missing', async () => {
-    const app = buildApp({
-      verifyToken: () => {
-        return Promise.resolve({ scope: 'read' });
-      },
-      requiredScopes: ['write'],
-    });
-    const res = await request(app.callback())
-      .get('/')
-      .set('Authorization', 'Bearer ok');
-    expect(res.status).toBe(403);
-  });
-
-  test('403 when the token has no scope claim at all', async () => {
-    const app = buildApp({
-      verifyToken: () => {
-        return Promise.resolve({ sub: 'u' });
-      },
-      requiredScopes: ['write'],
-    });
-    const res = await request(app.callback())
-      .get('/')
-      .set('Authorization', 'Bearer ok');
-    expect(res.status).toBe(403);
-  });
-
-  test('allows when all required scopes are present', async () => {
-    const app = buildApp({
-      verifyToken: () => {
-        return Promise.resolve({ scope: 'read write' });
-      },
-      requiredScopes: ['write'],
-    });
-    const res = await request(app.callback())
-      .get('/')
-      .set('Authorization', 'Bearer ok');
-    expect(res.status).toBe(200);
-  });
-
-  test('public methods bypass verification', async () => {
-    const app = buildApp({
-      verifyToken: () => {
-        return Promise.reject(new Error('should not be called'));
-      },
-      publicMethods: ['ping'],
-    });
-    const res = await request(app.callback())
-      .post('/')
-      .send({ jsonrpc: '2.0', method: 'ping', id: 1 })
-      .set('Content-Type', 'application/json');
-    expect(res.status).toBe(200);
-  });
-
-  test('uses CognitoJwtVerifier when cognitoUserPool is set', async () => {
-    const verify = jest.fn().mockResolvedValue({ sub: 'cognito' });
-    jest.mocked(CognitoJwtVerifier.create).mockReturnValue({ verify } as never);
-
-    const app = buildApp({
-      cognitoUserPool: { userPoolId: 'us-east-1_x', clientId: 'c' },
-    });
-    const res = await request(app.callback())
-      .get('/')
-      .set('Authorization', 'Bearer tok');
-    expect(res.status).toBe(200);
-    expect(verify).toHaveBeenCalledWith('tok');
   });
 });
 

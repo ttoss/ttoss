@@ -1248,40 +1248,18 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.29.0
         version: 1.29.0(zod@4.4.3)
-      '@ttoss/http-server':
-        specifier: workspace:^
-        version: link:../http-server
-      '@ttoss/http-server-oauth':
-        specifier: workspace:^
-        version: link:../http-server-oauth
-      zod:
-        specifier: ^4.4.3
-        version: 4.4.3
-    devDependencies:
-      '@ttoss/config':
-        specifier: workspace:^
-        version: link:../config
-      '@types/koa':
-        specifier: ^3.0.3
-        version: 3.0.3
-      jest:
-        specifier: ^30.4.2
-        version: 30.4.2(@types/node@24.12.4)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.15.40(@swc/helpers@0.5.23))(@types/node@24.12.4)(typescript@6.0.3))
-      supertest:
-        specifier: ^7.2.2
-        version: 7.2.2
-      tsdown:
-        specifier: ^0.22.2
-        version: 0.22.2(oxc-resolver@11.19.1(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0))(tsx@4.22.3)(typescript@6.0.3)
-
-  packages/http-server-oauth:
-    dependencies:
       '@ttoss/auth-core':
         specifier: workspace:^
         version: link:../auth-core
       '@ttoss/http-server':
         specifier: workspace:^
         version: link:../http-server
+      '@ttoss/http-server-auth':
+        specifier: workspace:^
+        version: link:../http-server-auth
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
     devDependencies:
       '@ttoss/config':
         specifier: workspace:^
