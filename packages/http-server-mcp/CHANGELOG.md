@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.16.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.15.0...@ttoss/http-server-mcp@0.16.0) (2026-06-14)
+
+### Features
+
+- **http-server-mcp:** public MCP methods and RFC 9728 discovery in createMcpRouter ([#1068](https://github.com/ttoss/ttoss/issues/1068)) ([d78a476](https://github.com/ttoss/ttoss/commit/d78a4767400bed67cbe5a1dfef822b76f26366a3)), closes [#1065](https://github.com/ttoss/ttoss/issues/1065)
+
 # [0.15.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.14.0...@ttoss/http-server-mcp@0.15.0) (2026-06-14)
 
 ### Features
