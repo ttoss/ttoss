@@ -197,4 +197,4 @@ OAuth adapters (see [OAuth](#oauth-opt-in)):
 - **`oauthServer(options)`** - Authorization-server `Router` (issues tokens): `/authorize`, `/token`, `/register`, discovery
 - **`oauthVerify(options)`** - Resource-server middleware (verifies Bearer tokens; sets `ctx.state.identity`)
 - **`createProtectedResourceMetadataMiddleware({ resource, authorizationServers })`** - Serves RFC 9728 metadata
-- **`createOAuthServer`**, **`getWwwAuthenticateHeader`** - Re-exported from `@ttoss/auth-core` for convenience
+- **`createOAuthHandlers`**, **`getWwwAuthenticateHeader`** - Re-exported from `@ttoss/auth-core` for convenience

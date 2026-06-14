@@ -199,7 +199,7 @@ export type OnRefreshTokenResult =
   | { subject: string; scopes: string[] }
   | undefined;
 
-/** Configuration for {@link createOAuthServer}. */
+/** Configuration for {@link createOAuthHandlers}. */
 export interface OAuthServerOptions {
   /** The authorization server's issuer identifier (its base URL). */
   issuer: string;
@@ -230,7 +230,7 @@ export interface OAuthServerOptions {
   /** Scopes advertised in discovery metadata (`scopes_supported`). */
   scopesSupported?: string[];
   /**
-   * When set, {@link OAuthServer.protectedResourceMetadata} is served, pairing
+   * When set, {@link OAuthHandlers.protectedResourceMetadata} is served, pairing
    * this resource URL with the issuer as its authorization server (RFC 9728).
    */
   resource?: string;
@@ -250,8 +250,8 @@ export interface OAuthServerOptions {
   };
 }
 
-/** The runner-agnostic OAuth server handlers returned by {@link createOAuthServer}. */
-export interface OAuthServer {
+/** The runner-agnostic OAuth server handlers returned by {@link createOAuthHandlers}. */
+export interface OAuthHandlers {
   /** Resolved endpoint paths, for an adapter to mount routes on. */
   paths: { authorize: string; token: string; register: string };
   /** RFC 8414 Authorization Server Metadata response. */

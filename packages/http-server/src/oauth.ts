@@ -1,6 +1,6 @@
 import Router from '@koa/router';
 import {
-  createOAuthServer,
+  createOAuthHandlers,
   type OAuthRequest,
   type OAuthResponse,
   type OAuthServerOptions,
@@ -18,13 +18,13 @@ export {
   type AuthCodeStore,
   type AuthorizeRequest,
   type ClientStore,
-  createOAuthServer,
+  createOAuthHandlers,
   getWwwAuthenticateHeader,
   type IssuedTokens,
   type IssueTokensArgs,
   type OAuthClient,
   type OAuthClientMetadata,
-  type OAuthServer,
+  type OAuthHandlers,
   type OAuthServerOptions,
   type OnAuthorizeArgs,
   type OnAuthorizeResult,
@@ -88,7 +88,7 @@ const applyResponse = (ctx: Context, res: OAuthResponse): void => {
  * ```
  */
 export const oauthServer = (options: OAuthServerOptions): Router => {
-  const engine = createOAuthServer(options);
+  const engine = createOAuthHandlers(options);
   const router = new Router();
 
   router.get('/.well-known/oauth-authorization-server', (ctx: Context) => {

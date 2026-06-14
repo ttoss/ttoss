@@ -2,7 +2,7 @@
 title: OAuth Authorization Server — Issuing Tokens for Your Own App
 ---
 
-This guideline covers an app acting as an **OAuth 2.1 authorization server**: it lets clients register, runs the login/consent flow against your existing user model, and issues access and refresh tokens. The spec mechanics (RFC 8414, 7591, 7636, 6749, 9728) live in a **runner-agnostic engine** — `createOAuthServer` in [`@ttoss/auth-core`](/docs/modules/packages/auth-core) — that operates on plain request/response objects, so any runtime can host it. [`@ttoss/http-server`](/docs/modules/packages/http-server) ships the Koa adapter, `oauthServer()`; an AWS Lambda or GraphQL runner would adapt the same engine. Your app keeps its user model, signing keys, and login UI behind hooks.
+This guideline covers an app acting as an **OAuth 2.1 authorization server**: it lets clients register, runs the login/consent flow against your existing user model, and issues access and refresh tokens. The spec mechanics (RFC 8414, 7591, 7636, 6749, 9728) live in a **runner-agnostic engine** — `createOAuthHandlers` in [`@ttoss/auth-core`](/docs/modules/packages/auth-core) — that operates on plain request/response objects, so any runtime can host it. [`@ttoss/http-server`](/docs/modules/packages/http-server) ships the Koa adapter, `oauthServer()`; an AWS Lambda or GraphQL runner would adapt the same engine. Your app keeps its user model, signing keys, and login UI behind hooks.
 
 | Role             | You are…                                 | Covered by                                                             |
 | ---------------- | ---------------------------------------- | ---------------------------------------------------------------------- |
@@ -14,12 +14,12 @@ This guideline covers an app acting as an **OAuth 2.1 authorization server**: it
 
 ttoss owns only the protocol: discovery metadata, PKCE verification, code exchange, and dynamic client registration. Everything app-specific stays behind pluggable hooks, so your user model, signing keys, and authentication never leave your app.
 
-| ttoss (`createOAuthServer` + `oauthServer`) | Your app (hooks & stores)                                    |
-| ------------------------------------------- | ------------------------------------------------------------ |
-| `/authorize`, `/token`, `/register` wiring  | `clientStore`, `authCodeStore` — persistence                 |
-| PKCE S256 verification, single-use codes    | `onAuthorize` — login + consent UI, bound to your user model |
-| Discovery metadata (RFC 8414 / 9728)        | `issueTokens` — mint tokens with your signing keys           |
-| `authorization_code` + `refresh_token` flow | `onRefreshToken` — validate refresh tokens                   |
+| ttoss (`createOAuthHandlers` + `oauthServer`) | Your app (hooks & stores)                                    |
+| --------------------------------------------- | ------------------------------------------------------------ |
+| `/authorize`, `/token`, `/register` wiring    | `clientStore`, `authCodeStore` — persistence                 |
+| PKCE S256 verification, single-use codes      | `onAuthorize` — login + consent UI, bound to your user model |
+| Discovery metadata (RFC 8414 / 9728)          | `issueTokens` — mint tokens with your signing keys           |
+| `authorization_code` + `refresh_token` flow   | `onRefreshToken` — validate refresh tokens                   |
 
 ```mermaid
 sequenceDiagram
@@ -38,7 +38,7 @@ sequenceDiagram
 
 ## Setup
 
-`oauthServer()` returns a Koa router you mount on your `@ttoss/http-server` app (it wraps the `createOAuthServer` engine). The four hooks below are the entire app-specific surface.
+`oauthServer()` returns a Koa router you mount on your `@ttoss/http-server` app (it wraps the `createOAuthHandlers` engine). The four hooks below are the entire app-specific surface.
 
 ```typescript
 import { signJwt, verifyJwt } from '@ttoss/auth-core';

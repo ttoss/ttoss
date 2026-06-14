@@ -342,7 +342,7 @@ Both fields are optional. Omitting `resourceMetadataUrl` keeps the bare `Bearer`
 
 ## OAuth 2.1 Authorization Server
 
-The `auth` option above covers the **resource-server** half of MCP authorization — it verifies tokens issued by an external authorization server (Cognito, Auth0, …). When you want your own first-party server to _issue_ the tokens, `oauthServer` (from [`@ttoss/http-server`](https://ttoss.dev/docs/modules/packages/http-server), re-exported here) provides the **authorization-server** half: the `/authorize`, `/token`, `/register`, and discovery endpoints an MCP client (Claude, Cursor, VS Code) auto-discovers and runs the full OAuth 2.1 flow against. It is a thin Koa adapter over the runner-agnostic `createOAuthServer` engine in [`@ttoss/auth-core`](https://ttoss.dev/docs/modules/packages/auth-core).
+The `auth` option above covers the **resource-server** half of MCP authorization — it verifies tokens issued by an external authorization server (Cognito, Auth0, …). When you want your own first-party server to _issue_ the tokens, `oauthServer` (from [`@ttoss/http-server`](https://ttoss.dev/docs/modules/packages/http-server), re-exported here) provides the **authorization-server** half: the `/authorize`, `/token`, `/register`, and discovery endpoints an MCP client (Claude, Cursor, VS Code) auto-discovers and runs the full OAuth 2.1 flow against. It is a thin Koa adapter over the runner-agnostic `createOAuthHandlers` engine in [`@ttoss/auth-core`](https://ttoss.dev/docs/modules/packages/auth-core).
 
 ttoss owns only the protocol mechanics (PKCE, discovery metadata, code exchange, dynamic client registration). Your app keeps its own user model, token signing, and login/consent UI through pluggable hooks — the user model never leaves your app.
 
@@ -433,7 +433,7 @@ Creates a Koa router configured to handle MCP protocol requests.
 
 ### `oauthServer(options)`
 
-Creates an OAuth 2.1 Authorization Server (`/authorize`, `/token`, `/register`, and discovery metadata) as a Koa `Router`. Re-exported from [`@ttoss/http-server`](https://ttoss.dev/docs/modules/packages/http-server); it wraps the runner-agnostic `createOAuthServer` engine in `@ttoss/auth-core`. See [OAuth 2.1 Authorization Server](#oauth-21-authorization-server).
+Creates an OAuth 2.1 Authorization Server (`/authorize`, `/token`, `/register`, and discovery metadata) as a Koa `Router`. Re-exported from [`@ttoss/http-server`](https://ttoss.dev/docs/modules/packages/http-server); it wraps the runner-agnostic `createOAuthHandlers` engine in `@ttoss/auth-core`. See [OAuth 2.1 Authorization Server](#oauth-21-authorization-server).
 
 **Parameters (`OAuthServerOptions`):**
 

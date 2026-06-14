@@ -5,9 +5,9 @@ import type {
   ClientStore,
   IssuedTokens,
   OAuthClient,
+  OAuthHandlers,
   OAuthRequest,
   OAuthResponse,
-  OAuthServer,
   OAuthServerOptions,
 } from './oauthServerTypes';
 
@@ -425,11 +425,13 @@ const handleRegister = async (
  *
  * @example
  * ```typescript
- * const oauth = createOAuthServer({ issuer, clientStore, authCodeStore, issueTokens, onAuthorize });
+ * const oauth = createOAuthHandlers({ issuer, clientStore, authCodeStore, issueTokens, onAuthorize });
  * const res = await oauth.token({ query: {}, body, headers });
  * ```
  */
-export const createOAuthServer = (options: OAuthServerOptions): OAuthServer => {
+export const createOAuthHandlers = (
+  options: OAuthServerOptions
+): OAuthHandlers => {
   const { issuer, scopesSupported, resource } = options;
   const paths = {
     authorize: options.endpoints?.authorize ?? '/authorize',

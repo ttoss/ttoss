@@ -141,12 +141,12 @@ const obj = decode(encoded);
 
 ## OAuth 2.1 authorization server
 
-`createOAuthServer` is a **runner-agnostic** OAuth 2.1 authorization-server engine: it implements the authorize/token/register flow and discovery metadata (RFC 8414, 7591, 7636, 6749, 9728) on top of the PKCE/code/JWT primitives above. It operates on plain `{ query, body, headers }` → `{ status, body, redirect }` objects, with no HTTP framework coupling, so any runtime (Koa, AWS Lambda, GraphQL) can host it through a thin adapter — [`@ttoss/http-server`](https://ttoss.dev/docs/modules/packages/http-server) ships the Koa one as `oauthServer()`.
+`createOAuthHandlers` is a **runner-agnostic** OAuth 2.1 authorization-server engine: it implements the authorize/token/register flow and discovery metadata (RFC 8414, 7591, 7636, 6749, 9728) on top of the PKCE/code/JWT primitives above. It operates on plain `{ query, body, headers }` → `{ status, body, redirect }` objects, with no HTTP framework coupling, so any runtime (Koa, AWS Lambda, GraphQL) can host it through a thin adapter — [`@ttoss/http-server`](https://ttoss.dev/docs/modules/packages/http-server) ships the Koa one as `oauthServer()`.
 
 ```ts
-import { createOAuthServer } from '@ttoss/auth-core';
+import { createOAuthHandlers } from '@ttoss/auth-core';
 
-const oauth = createOAuthServer({
+const oauth = createOAuthHandlers({
   issuer,
   clientStore,
   authCodeStore,

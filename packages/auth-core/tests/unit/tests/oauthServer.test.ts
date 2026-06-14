@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import {
   type AuthCodeStore,
   type ClientStore,
-  createOAuthServer,
+  createOAuthHandlers,
   getWwwAuthenticateHeader,
   type OAuthClient,
   type OAuthServerOptions,
@@ -67,7 +67,7 @@ const publicClient: OAuthClient = {
 };
 
 const build = (options: Partial<OAuthServerOptions> = {}) => {
-  return createOAuthServer({
+  return createOAuthHandlers({
     issuer: 'https://api.example.com',
     clientStore: createClientStore([confidentialClient, publicClient]),
     authCodeStore: createAuthCodeStore(),
@@ -99,7 +99,7 @@ const locationParams = (redirect: string | undefined) => {
   return new URL(redirect!).searchParams;
 };
 
-describe('createOAuthServer — discovery metadata', () => {
+describe('createOAuthHandlers — discovery metadata', () => {
   test('builds RFC 8414 authorization server metadata', () => {
     const res = build().authorizationServerMetadata();
 
@@ -183,7 +183,7 @@ describe('createOAuthServer — discovery metadata', () => {
   });
 });
 
-describe('createOAuthServer — authorize', () => {
+describe('createOAuthHandlers — authorize', () => {
   const authorize = (
     server: ReturnType<typeof build>,
     query: Record<string, string>
@@ -330,7 +330,7 @@ describe('createOAuthServer — authorize', () => {
   });
 });
 
-describe('createOAuthServer — token (authorization_code)', () => {
+describe('createOAuthHandlers — token (authorization_code)', () => {
   const setup = (options: Partial<OAuthServerOptions> = {}) => {
     const server = build(options);
     return server;
@@ -627,7 +627,7 @@ describe('createOAuthServer — token (authorization_code)', () => {
   });
 });
 
-describe('createOAuthServer — token (refresh_token)', () => {
+describe('createOAuthHandlers — token (refresh_token)', () => {
   const token = (
     server: ReturnType<typeof build>,
     body: Record<string, unknown>
@@ -731,7 +731,7 @@ describe('createOAuthServer — token (refresh_token)', () => {
   });
 });
 
-describe('createOAuthServer — token (grant types)', () => {
+describe('createOAuthHandlers — token (grant types)', () => {
   test('unsupported_grant_type for an unknown grant', async () => {
     const res = await build().token({
       query: {},
@@ -751,7 +751,7 @@ describe('createOAuthServer — token (grant types)', () => {
   });
 });
 
-describe('createOAuthServer — register (RFC 7591)', () => {
+describe('createOAuthHandlers — register (RFC 7591)', () => {
   const register = (
     server: ReturnType<typeof build>,
     body: Record<string, unknown>
@@ -812,7 +812,7 @@ describe('createOAuthServer — register (RFC 7591)', () => {
   });
 });
 
-describe('createOAuthServer — end-to-end', () => {
+describe('createOAuthHandlers — end-to-end', () => {
   test('register → authorize → token round-trip', async () => {
     const clientStore = createClientStore();
     const server = build({
