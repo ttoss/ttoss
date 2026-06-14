@@ -113,9 +113,9 @@ Setting both `resourceServerUrl` and `authorizationServerUrl` also serves that m
 
 ## Authorization server: issuing tokens
 
-To make your server first-party — so an MCP client discovers it, registers itself, and runs the full login flow against it — add `createMcpAuthServer` from the same package. It mounts the discovery, `/authorize`, `/token`, and `/register` endpoints that MCP clients auto-discover, and you pair it with the `verifyToken` resource server above so one deployment both issues and verifies its tokens (set `scopesSupported: ['mcp:access']`).
+To make your server first-party — so an MCP client discovers it, registers itself, and runs the full login flow against it — mount `oauthServer()` from `@ttoss/http-server` (also re-exported from `@ttoss/http-server-mcp`). It serves the discovery, `/authorize`, `/token`, and `/register` endpoints that MCP clients auto-discover, and you pair it with the `verifyToken` resource server above so one deployment both issues and verifies its tokens (set `scopesSupported: ['mcp:access']`).
 
-These are general OAuth 2.1 primitives, not MCP-specific. The full setup — discovery, dynamic client registration, the authorize/PKCE flow, the token grants, and the ttoss-vs-app responsibility split — lives in the [OAuth Authorization Server](/docs/engineering/guidelines/oauth-authorization-server) guideline.
+These are general OAuth 2.1 primitives, not MCP-specific — the runner-agnostic engine is `createOAuthServer` in `@ttoss/auth-core`. The full setup — discovery, dynamic client registration, the authorize/PKCE flow, the token grants, and the ttoss-vs-app responsibility split — lives in the [OAuth Authorization Server](/docs/engineering/guidelines/oauth-authorization-server) guideline.
 
 ## Enforcing scopes
 
@@ -132,10 +132,10 @@ createMcpRouter(mcpServer, {
 
 ## Choosing your setup
 
-| You authenticate against… | Use                                                                  |
-| ------------------------- | -------------------------------------------------------------------- |
-| Amazon Cognito            | `createMcpRouter({ auth: { cognitoUserPool } })`                     |
-| Another OAuth provider    | `createMcpRouter({ auth: { verifyToken } })` with `jose`             |
-| Tokens your app issues    | `createMcpAuthServer` + `createMcpRouter({ auth: { verifyToken } })` |
+| You authenticate against… | Use                                                          |
+| ------------------------- | ------------------------------------------------------------ |
+| Amazon Cognito            | `createMcpRouter({ auth: { cognitoUserPool } })`             |
+| Another OAuth provider    | `createMcpRouter({ auth: { verifyToken } })` with `jose`     |
+| Tokens your app issues    | `oauthServer` + `createMcpRouter({ auth: { verifyToken } })` |
 
 In every case the only runtime dependencies are ttoss packages. Refer to the [`@ttoss/http-server-mcp`](/docs/modules/packages/http-server-mcp) and [`@ttoss/auth-core`](/docs/modules/packages/auth-core) documentation for the complete API surface.

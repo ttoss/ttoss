@@ -27,6 +27,26 @@ export {
   verifyPkceChallenge,
 } from './oauth';
 export {
+  type AuthCodeStore,
+  type AuthorizeRequest,
+  type ClientStore,
+  createOAuthServer,
+  getWwwAuthenticateHeader,
+  type IssuedTokens,
+  type IssueTokensArgs,
+  type OAuthClient,
+  type OAuthClientMetadata,
+  type OAuthRequest,
+  type OAuthResponse,
+  type OAuthServer,
+  type OAuthServerOptions,
+  type OnAuthorizeArgs,
+  type OnAuthorizeResult,
+  type OnRefreshTokenArgs,
+  type OnRefreshTokenResult,
+  type StoredAuthorizationCode,
+} from './oauthServer';
+export {
   generateOneTimeToken,
   hashOneTimeToken,
   type OneTimeToken,

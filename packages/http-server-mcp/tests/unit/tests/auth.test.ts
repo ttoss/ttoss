@@ -295,7 +295,9 @@ describe('auth — verifyToken', () => {
     const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
     expect(() => {
       createMcpRouter(mcpServer, { auth: {} });
-    }).toThrow('McpAuthOptions requires either cognitoUserPool or verifyToken');
+    }).toThrow(
+      'OAuthVerifyOptions requires either cognitoUserPool or verifyToken'
+    );
   });
 });
 

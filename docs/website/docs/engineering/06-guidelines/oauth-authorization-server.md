@@ -2,7 +2,7 @@
 title: OAuth Authorization Server — Issuing Tokens for Your Own App
 ---
 
-This guideline covers an app acting as an **OAuth 2.1 authorization server**: it lets clients register, runs the login/consent flow against your existing user model, and issues access and refresh tokens. [`@ttoss/http-server-mcp`](/docs/modules/packages/http-server-mcp)'s `createMcpAuthServer` provides the spec mechanics (RFC 8414, 7591, 7636, 6749, 9728); your app keeps its user model, signing keys, and login UI. Despite the `Mcp` prefix the primitives are transport-agnostic — any OAuth client can use them, not just MCP clients.
+This guideline covers an app acting as an **OAuth 2.1 authorization server**: it lets clients register, runs the login/consent flow against your existing user model, and issues access and refresh tokens. The spec mechanics (RFC 8414, 7591, 7636, 6749, 9728) live in a **runner-agnostic engine** — `createOAuthServer` in [`@ttoss/auth-core`](/docs/modules/packages/auth-core) — that operates on plain request/response objects, so any runtime can host it. [`@ttoss/http-server`](/docs/modules/packages/http-server) ships the Koa adapter, `oauthServer()`; an AWS Lambda or GraphQL runner would adapt the same engine. Your app keeps its user model, signing keys, and login UI behind hooks.
 
 | Role             | You are…                                 | Covered by                                                             |
 | ---------------- | ---------------------------------------- | ---------------------------------------------------------------------- |
@@ -14,7 +14,7 @@ This guideline covers an app acting as an **OAuth 2.1 authorization server**: it
 
 ttoss owns only the protocol: discovery metadata, PKCE verification, code exchange, and dynamic client registration. Everything app-specific stays behind pluggable hooks, so your user model, signing keys, and authentication never leave your app.
 
-| ttoss (`createMcpAuthServer`)               | Your app (hooks & stores)                                    |
+| ttoss (`createOAuthServer` + `oauthServer`) | Your app (hooks & stores)                                    |
 | ------------------------------------------- | ------------------------------------------------------------ |
 | `/authorize`, `/token`, `/register` wiring  | `clientStore`, `authCodeStore` — persistence                 |
 | PKCE S256 verification, single-use codes    | `onAuthorize` — login + consent UI, bound to your user model |
@@ -38,14 +38,13 @@ sequenceDiagram
 
 ## Setup
 
-`createMcpAuthServer` returns a Koa router you mount on your `@ttoss/http-server` app. The four hooks below are the entire app-specific surface.
+`oauthServer()` returns a Koa router you mount on your `@ttoss/http-server` app (it wraps the `createOAuthServer` engine). The four hooks below are the entire app-specific surface.
 
 ```typescript
 import { signJwt, verifyJwt } from '@ttoss/auth-core';
-import { App, bodyParser } from '@ttoss/http-server';
-import { createMcpAuthServer } from '@ttoss/http-server-mcp';
+import { App, bodyParser, oauthServer } from '@ttoss/http-server';
 
-const authServer = createMcpAuthServer({
+const authServer = oauthServer({
   issuer: 'https://api.example.com',
   clientStore, // register/lookup clients in your datastore
   authCodeStore, // short-lived codes + PKCE challenge in your datastore
@@ -66,12 +65,12 @@ const authServer = createMcpAuthServer({
     expiresIn: 3600,
   }),
 
-  // App-owned login/consent — render your own UI, then approve.
-  onAuthorize: async ({ ctx, request }) => {
-    const session = await getSession(ctx);
+  // App-owned login/consent — read your own session, then approve or redirect.
+  // Runner-agnostic: you get the request headers, not a framework context.
+  onAuthorize: async ({ headers, request }) => {
+    const session = await getSession(headers.cookie);
     if (!session) {
-      ctx.redirect(`/login?return_to=${encodeURIComponent(ctx.url)}`);
-      return { approved: false };
+      return { approved: false, redirect: '/login' };
     }
     return { approved: true, subject: session.userId, scopes: request.scopes };
   },
@@ -105,7 +104,7 @@ Clients bootstrap by fetching metadata, so they need no manual configuration. Th
 
 ## Authorization endpoint and PKCE
 
-`GET /authorize` validates the `client_id` and `redirect_uri` against the store, then calls your `onAuthorize` hook. Return `{ approved: true, subject }` once the user is authenticated and has consented — the server issues a single-use code bound to the user, the requested scopes, and the PKCE challenge. Return `{ approved: false }` after taking over the response (e.g. redirecting to your own login page); the server does nothing further. **PKCE S256 is mandatory** ([RFC 7636](https://www.rfc-editor.org/rfc/rfc7636)): the `code_challenge` is bound to the code and verified at the token endpoint, so codes are useless if intercepted.
+`GET /authorize` validates the `client_id` and `redirect_uri` against the store, then calls your `onAuthorize` hook with the request and its headers. Return `{ approved: true, subject }` once the user is authenticated and has consented — the server issues a single-use code bound to the user, the requested scopes, and the PKCE challenge. Return `{ approved: false, redirect }` to send the user to your own login page (or `{ approved: false, status, body }` for an inline response); the adapter performs it. **PKCE S256 is mandatory** ([RFC 7636](https://www.rfc-editor.org/rfc/rfc7636)): the `code_challenge` is bound to the code and verified at the token endpoint, so codes are useless if intercepted.
 
 The `subject` you return is the only link between OAuth and your user model — it is whatever stable user identifier you put in the issued token.
 
@@ -115,7 +114,7 @@ The `subject` you return is the only link between OAuth and your user model — 
 
 ## Scopes
 
-Advertise the scopes your server issues via `scopesSupported`, and grant a subset per request in `onAuthorize`. Enforcement happens on the **resource server** that consumes the tokens: gate an endpoint with `requiredScopes`, or call `checkScopes()` inside a handler for per-route control. Both are documented in the [MCP Server with OAuth](/docs/engineering/guidelines/mcp-server-oauth#enforcing-scopes) guideline — the same `@ttoss/http-server-mcp` helpers apply to any resource server, MCP or not.
+Advertise the scopes your server issues via `scopesSupported`, and grant a subset per request in `onAuthorize`. Enforcement happens on the **resource server** that consumes the tokens: pass `requiredScopes` to `oauthVerify()` (from `@ttoss/http-server`) to gate an endpoint, or check scopes per-route in your handler. The same option flows through `createMcpRouter`'s `auth` — see [MCP Server with OAuth](/docs/engineering/guidelines/mcp-server-oauth#enforcing-scopes).
 
 ## Related
 

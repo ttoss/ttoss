@@ -342,15 +342,14 @@ Both fields are optional. Omitting `resourceMetadataUrl` keeps the bare `Bearer`
 
 ## OAuth 2.1 Authorization Server
 
-The `auth` option above covers the **resource-server** half of MCP authorization — it verifies tokens issued by an external authorization server (Cognito, Auth0, …). When you want your own first-party server to _issue_ the tokens, `createMcpAuthServer` provides the **authorization-server** half: the `/authorize`, `/token`, `/register`, and discovery endpoints an MCP client (Claude, Cursor, VS Code) auto-discovers and runs the full OAuth 2.1 flow against.
+The `auth` option above covers the **resource-server** half of MCP authorization — it verifies tokens issued by an external authorization server (Cognito, Auth0, …). When you want your own first-party server to _issue_ the tokens, `oauthServer` (from [`@ttoss/http-server`](https://ttoss.dev/docs/modules/packages/http-server), re-exported here) provides the **authorization-server** half: the `/authorize`, `/token`, `/register`, and discovery endpoints an MCP client (Claude, Cursor, VS Code) auto-discovers and runs the full OAuth 2.1 flow against. It is a thin Koa adapter over the runner-agnostic `createOAuthServer` engine in [`@ttoss/auth-core`](https://ttoss.dev/docs/modules/packages/auth-core).
 
 ttoss owns only the protocol mechanics (PKCE, discovery metadata, code exchange, dynamic client registration). Your app keeps its own user model, token signing, and login/consent UI through pluggable hooks — the user model never leaves your app.
 
 ```typescript
-import { App, bodyParser } from '@ttoss/http-server';
-import { createMcpAuthServer } from '@ttoss/http-server-mcp';
+import { App, bodyParser, oauthServer } from '@ttoss/http-server';
 
-const authServer = createMcpAuthServer({
+const authServer = oauthServer({
   issuer: 'https://api.example.com',
   clientStore, // register/lookup dynamic clients
   authCodeStore, // persist short-lived codes + PKCE challenge
@@ -360,12 +359,11 @@ const authServer = createMcpAuthServer({
     refreshToken: createRefreshToken(subject),
     expiresIn: 3600,
   }),
-  // App-owned login/consent — show your own UI, then approve
-  onAuthorize: async ({ ctx, request }) => {
-    const session = await getSession(ctx);
+  // App-owned login/consent — read your session from headers, then approve
+  onAuthorize: async ({ headers, request }) => {
+    const session = await getSession(headers.cookie);
     if (!session) {
-      ctx.redirect(`/login?return_to=${encodeURIComponent(ctx.url)}`);
-      return { approved: false };
+      return { approved: false, redirect: '/login' };
     }
     return { approved: true, subject: session.userId, scopes: request.scopes };
   },
@@ -433,17 +431,17 @@ Creates a Koa router configured to handle MCP protocol requests.
 
 **Returns:** `Router` — Koa router instance
 
-### `createMcpAuthServer(options)`
+### `oauthServer(options)`
 
-Creates an OAuth 2.1 Authorization Server (`/authorize`, `/token`, `/register`, and discovery metadata) for MCP clients. See [OAuth 2.1 Authorization Server](#oauth-21-authorization-server).
+Creates an OAuth 2.1 Authorization Server (`/authorize`, `/token`, `/register`, and discovery metadata) as a Koa `Router`. Re-exported from [`@ttoss/http-server`](https://ttoss.dev/docs/modules/packages/http-server); it wraps the runner-agnostic `createOAuthServer` engine in `@ttoss/auth-core`. See [OAuth 2.1 Authorization Server](#oauth-21-authorization-server).
 
-**Parameters (`McpAuthServerOptions`):**
+**Parameters (`OAuthServerOptions`):**
 
 - `issuer` (`string`) — The authorization server's issuer identifier (its base URL); used to build absolute endpoint URLs in the discovery document
 - `clientStore` (`ClientStore`) — `{ get(clientId), register(client) }` for dynamic clients
 - `authCodeStore` (`AuthCodeStore`) — `{ save(code), get(code), delete(code) }` for short-lived authorization codes (codes are single-use)
 - `issueTokens` (`({ subject, scopes, client }) => IssuedTokens`) — App-owned token minting; returns `{ accessToken, refreshToken?, expiresIn?, scope? }`
-- `onAuthorize` (`({ ctx, client, request }) => OnAuthorizeResult`) — App-owned login/consent; return `{ approved: true, subject, scopes? }` to issue a code, or take over the response and return `{ approved: false }`
+- `onAuthorize` (`({ headers, client, request }) => OnAuthorizeResult`) — App-owned login/consent; return `{ approved: true, subject, scopes? }` to issue a code, or `{ approved: false, redirect }` (or `{ approved: false, status, body }`) to decline
 - `onRefreshToken` (`({ refreshToken, client, scopes }) => { subject, scopes } | undefined`, optional) — App-owned refresh-token validation; required to enable the `refresh_token` grant
 - `scopesSupported` (`string[]`, optional) — Advertised in discovery metadata as `scopes_supported`
 - `resource` (`string`, optional) — When set, also serves `/.well-known/oauth-protected-resource`

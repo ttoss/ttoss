@@ -151,6 +151,33 @@ app.use(async (ctx, next) => {
 });
 ```
 
+## OAuth (opt-in)
+
+OAuth is an opt-in feature you enable by passing options — there is no separate package. The runner-agnostic OAuth 2.1 engine lives in [`@ttoss/auth-core`](https://ttoss.dev/docs/modules/packages/auth-core); this package ships the Koa adapters.
+
+```typescript
+import { App, bodyParser, oauthServer, oauthVerify } from '@ttoss/http-server';
+
+const app = new App();
+app.use(bodyParser());
+
+// Issue tokens (authorization server): mount the endpoints
+app.use(
+  oauthServer({
+    issuer,
+    clientStore,
+    authCodeStore,
+    issueTokens,
+    onAuthorize,
+  }).routes()
+);
+
+// Verify tokens (resource server): protect downstream routes
+app.use(oauthVerify({ verifyToken, requiredScopes: ['read'] }));
+```
+
+See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline for the full flow and the ttoss-vs-app responsibility split.
+
 ## API Reference
 
 All exports are re-exported from established Koa ecosystem packages:
@@ -164,3 +191,10 @@ All exports are re-exported from established Koa ecosystem packages:
 - **`addHealthCheck({ app, path? })`** - Adds a health endpoint (defaults to `/health`) returning `{ status: 'ok' }`
 - **`MulterFile`** (type) - File type for uploaded files
 - **`RouterContext<StateT, ContextT>`** (type) - Generic Koa router context for type-safe route handlers
+
+OAuth adapters (see [OAuth](#oauth-opt-in)):
+
+- **`oauthServer(options)`** - Authorization-server `Router` (issues tokens): `/authorize`, `/token`, `/register`, discovery
+- **`oauthVerify(options)`** - Resource-server middleware (verifies Bearer tokens; sets `ctx.state.identity`)
+- **`createProtectedResourceMetadataMiddleware({ resource, authorizationServers })`** - Serves RFC 9728 metadata
+- **`createOAuthServer`**, **`getWwwAuthenticateHeader`** - Re-exported from `@ttoss/auth-core` for convenience
