@@ -138,6 +138,9 @@ describe('auth — verifyToken', () => {
 
   test('getIdentity() returns verified payload inside tool handler', async () => {
     const payload = { sub: 'user-abc', email: 'user@example.com' };
+    // The verifier's payload is exposed as the authenticated user, with an
+    // `id` aliased from `sub` (the http-server-auth convention).
+    const expectedIdentity = { ...payload, id: 'user-abc' };
     const app = buildApp(() => {
       return Promise.resolve(payload);
     });
@@ -161,7 +164,7 @@ describe('auth — verifyToken', () => {
     expect(toolRes.status).toBe(200);
     const body = toolRes.body;
     const text = body?.result?.content?.[0]?.text;
-    expect(JSON.parse(text)).toEqual(payload);
+    expect(JSON.parse(text)).toEqual(expectedIdentity);
   });
 
   test('returns 403 when requiredScopes are not satisfied', async () => {
@@ -292,9 +295,7 @@ describe('auth — verifyToken', () => {
     const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
     expect(() => {
       createMcpRouter(mcpServer, { auth: {} });
-    }).toThrow(
-      'OAuthVerifyOptions requires either cognitoUserPool or verifyToken'
-    );
+    }).toThrow('McpAuthOptions requires either cognitoUserPool or verifyToken');
   });
 });
 
@@ -552,4 +553,4 @@ describe('auth — cognitoUserPool', () => {
 });
 
 // `getWwwAuthenticateHeader` and `createProtectedResourceMetadataMiddleware`
-// live in @ttoss/auth-core / @ttoss/http-server-oauth and are tested there.
+// live in @ttoss/auth-core / @ttoss/http-server-auth and are tested there.

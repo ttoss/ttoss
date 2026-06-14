@@ -4,19 +4,52 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { CognitoJwtVerifier } from '@ttoss/auth-core/amazon-cognito';
 import { Router } from '@ttoss/http-server';
-import { oauthVerify, type OAuthVerifyOptions } from '@ttoss/http-server-oauth';
+import { authMiddleware } from '@ttoss/http-server-auth';
 import type Koa from 'koa';
 import { z } from 'zod';
 
 type Context = Koa.Context;
 
+/** Amazon Cognito user pool configuration for JWT verification. */
+export interface CognitoUserPoolConfig {
+  /** The Cognito User Pool ID (e.g. `us-east-1_abc123`). */
+  userPoolId: string;
+  /**
+   * Which token type to verify.
+   * @default 'access'
+   */
+  tokenUse?: 'access' | 'id';
+  /** The app client ID registered in the User Pool. */
+  clientId: string;
+}
+
 /**
- * Authentication options for the MCP endpoint. Extends the `@ttoss/http-server`
- * OAuth verification options with the optional protected-resource metadata
- * endpoint that MCP clients fetch for discovery.
+ * Authentication options for the MCP endpoint. Verification runs through
+ * `@ttoss/http-server-auth`'s `oauth` strategy; supply either a Cognito user
+ * pool or a custom `verifyToken`.
  */
-export interface McpAuthOptions extends OAuthVerifyOptions {
+export interface McpAuthOptions {
+  /** Amazon Cognito user pool config; a `CognitoJwtVerifier` is built from it. */
+  cognitoUserPool?: CognitoUserPoolConfig;
+  /**
+   * Custom token verifier for non-Cognito providers (Auth0, Keycloak, your own
+   * JWTs, opaque tokens). Resolve with the verified payload, or throw to reject.
+   */
+  verifyToken?: (token: string) => Promise<unknown>;
+  /** Scopes that must all be present on the token's `scope` claim, else `403`. */
+  requiredScopes?: string[];
+  /**
+   * JSON-RPC methods (read from `body.method`) that bypass verification.
+   * @default ['initialize', 'tools/list']
+   */
+  publicMethods?: string[];
+  /**
+   * When set, a `401` carries `WWW-Authenticate: Bearer resource_metadata="…"`
+   * (RFC 9728) so MCP clients can discover the authorization server.
+   */
+  resourceMetadataUrl?: string;
   /**
    * URL of this MCP server, surfaced in the OAuth Protected Resource Metadata
    * response. Both this and `authorizationServerUrl` must be set to serve
@@ -29,6 +62,27 @@ export interface McpAuthOptions extends OAuthVerifyOptions {
 
 /** MCP lifecycle/discovery methods reachable before a client authenticates. */
 const DEFAULT_PUBLIC_METHODS = ['initialize', 'tools/list'];
+
+/** Builds the token verifier from the MCP auth options. */
+const buildVerifyToken = (
+  auth: McpAuthOptions
+): ((token: string) => Promise<unknown>) => {
+  if (auth.cognitoUserPool) {
+    const verifier = CognitoJwtVerifier.create({
+      tokenUse: 'access',
+      ...auth.cognitoUserPool,
+    });
+    return (token) => {
+      return verifier.verify(token);
+    };
+  }
+  if (auth.verifyToken) {
+    return auth.verifyToken;
+  }
+  throw new Error(
+    'McpAuthOptions requires either cognitoUserPool or verifyToken'
+  );
+};
 
 interface RequestContext {
   apiBaseUrl?: string;
@@ -383,22 +437,37 @@ export const createMcpRouter = (
   const router = new Router();
 
   if (auth) {
-    const { resourceServerUrl, authorizationServerUrl, ...verifyOptions } =
-      auth;
+    const verifyToken = buildVerifyToken(auth);
+    const publicMethods = new Set(auth.publicMethods ?? DEFAULT_PUBLIC_METHODS);
 
-    router.use(
-      path,
-      oauthVerify({
-        ...verifyOptions,
-        publicMethods: verifyOptions.publicMethods ?? DEFAULT_PUBLIC_METHODS,
-      })
-    );
+    const verify = authMiddleware({
+      strategies: ['oauth'],
+      oauth: {
+        verify: (token) => {
+          return verifyToken(token) as Promise<Record<string, unknown>>;
+        },
+        requiredScopes: auth.requiredScopes,
+      },
+      resourceMetadataUrl: auth.resourceMetadataUrl,
+    });
 
-    if (resourceServerUrl && authorizationServerUrl) {
+    // Public lifecycle/discovery methods bypass verification so clients can
+    // discover the server before they have a token (MCP authorization spec).
+    router.use(path, async (ctx: Context, next) => {
+      const method = (ctx.request.body as { method?: string } | undefined)
+        ?.method;
+      if (publicMethods.has(method ?? '')) {
+        await next();
+        return;
+      }
+      await verify(ctx, next);
+    });
+
+    if (auth.resourceServerUrl && auth.authorizationServerUrl) {
       router.get('/.well-known/oauth-protected-resource', (ctx: Context) => {
         ctx.body = {
-          resource: resourceServerUrl,
-          authorization_servers: [authorizationServerUrl],
+          resource: auth.resourceServerUrl,
+          authorization_servers: [auth.authorizationServerUrl],
         };
       });
     }
@@ -409,7 +478,8 @@ export const createMcpRouter = (
     body?: unknown
   ): Promise<void> => {
     const apiHeaders = getApiHeaders ? getApiHeaders(ctx) : {};
-    const identity = (ctx.state as { identity?: unknown }).identity;
+    // `authMiddleware` stores the verified payload on `ctx.state.user`.
+    const identity = (ctx.state as { user?: unknown }).user;
 
     const runRequest = async (
       transport: StreamableHTTPServerTransport
