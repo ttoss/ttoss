@@ -315,6 +315,75 @@ app.use(createMcpRouter(mcpServer).routes());
 
 The `WWW-Authenticate: Bearer resource_metadata="…"` header is how MCP clients bootstrap OAuth discovery after their first unauthorized request.
 
+## OAuth 2.1 Authorization Server
+
+The `auth` option above covers the **resource-server** half of MCP authorization — it verifies tokens issued by an external authorization server (Cognito, Auth0, …). When you want your own first-party server to _issue_ the tokens, `createMcpAuthServer` provides the **authorization-server** half: the `/authorize`, `/token`, `/register`, and discovery endpoints an MCP client (Claude, Cursor, VS Code) auto-discovers and runs the full OAuth 2.1 flow against.
+
+ttoss owns only the protocol mechanics (PKCE, discovery metadata, code exchange, dynamic client registration). Your app keeps its own user model, token signing, and login/consent UI through pluggable hooks — the user model never leaves your app.
+
+```typescript
+import { App, bodyParser } from '@ttoss/http-server';
+import { createMcpAuthServer } from '@ttoss/http-server-mcp';
+
+const authServer = createMcpAuthServer({
+  issuer: 'https://api.example.com',
+  clientStore, // register/lookup dynamic clients
+  authCodeStore, // persist short-lived codes + PKCE challenge
+  // App-owned token minting — ttoss never sees your signing keys
+  issueTokens: async ({ subject, scopes }) => ({
+    accessToken: signJwt({ sub: subject, scope: scopes.join(' ') }),
+    refreshToken: createRefreshToken(subject),
+    expiresIn: 3600,
+  }),
+  // App-owned login/consent — show your own UI, then approve
+  onAuthorize: async ({ ctx, request }) => {
+    const session = await getSession(ctx);
+    if (!session) {
+      ctx.redirect(`/login?return_to=${encodeURIComponent(ctx.url)}`);
+      return { approved: false };
+    }
+    return { approved: true, subject: session.userId, scopes: request.scopes };
+  },
+  // App-owned refresh validation — required to enable the refresh_token grant
+  onRefreshToken: async ({ refreshToken }) => {
+    const claims = await verifyRefreshToken(refreshToken);
+    return claims ? { subject: claims.sub, scopes: claims.scopes } : undefined;
+  },
+  scopesSupported: ['mcp:access'],
+});
+
+const app = new App();
+app.use(bodyParser());
+app.use(authServer.routes());
+```
+
+This mounts:
+
+| Endpoint                                  | Spec      | Purpose                                              |
+| ----------------------------------------- | --------- | ---------------------------------------------------- |
+| `/.well-known/oauth-authorization-server` | RFC 8414  | Authorization server metadata discovery              |
+| `/.well-known/oauth-protected-resource`   | RFC 9728  | Protected-resource metadata (when `resource` is set) |
+| `/authorize`                              | OAuth 2.1 | Authorization endpoint — **PKCE (S256) required**    |
+| `/token`                                  | OAuth 2.1 | `authorization_code` + `refresh_token` grants        |
+| `/register`                               | RFC 7591  | Dynamic Client Registration                          |
+
+The full flow an MCP client runs: it fetches the discovery document, self-registers at `/register`, opens `/authorize` (your `onAuthorize` handles login/consent), exchanges the returned code at `/token` with its PKCE verifier, and uses the access token against your `createMcpRouter` endpoint. Pair this with `createMcpRouter({ auth: { verifyToken } })` so the same server both issues and verifies tokens.
+
+The pluggable stores let you keep persistence in your own datastore:
+
+```typescript
+const clientStore: ClientStore = {
+  get: (clientId) => db.clients.findById(clientId),
+  register: (client) => db.clients.put(client),
+};
+
+const authCodeStore: AuthCodeStore = {
+  save: (code) => db.codes.put(code), // set a TTL matching authorizationCodeTtl
+  get: (code) => db.codes.findById(code),
+  delete: (code) => db.codes.remove(code),
+};
+```
+
 ## API Reference
 
 ### `createMcpRouter(server, options?)`
@@ -336,6 +405,25 @@ Creates a Koa router configured to handle MCP protocol requests.
     - `auth.resourceServerUrl` + `auth.authorizationServerUrl` — Enable `/.well-known/oauth-protected-resource`
 
 **Returns:** `Router` — Koa router instance
+
+### `createMcpAuthServer(options)`
+
+Creates an OAuth 2.1 Authorization Server (`/authorize`, `/token`, `/register`, and discovery metadata) for MCP clients. See [OAuth 2.1 Authorization Server](#oauth-21-authorization-server).
+
+**Parameters (`McpAuthServerOptions`):**
+
+- `issuer` (`string`) — The authorization server's issuer identifier (its base URL); used to build absolute endpoint URLs in the discovery document
+- `clientStore` (`ClientStore`) — `{ get(clientId), register(client) }` for dynamic clients
+- `authCodeStore` (`AuthCodeStore`) — `{ save(code), get(code), delete(code) }` for short-lived authorization codes (codes are single-use)
+- `issueTokens` (`({ subject, scopes, client }) => IssuedTokens`) — App-owned token minting; returns `{ accessToken, refreshToken?, expiresIn?, scope? }`
+- `onAuthorize` (`({ ctx, client, request }) => OnAuthorizeResult`) — App-owned login/consent; return `{ approved: true, subject, scopes? }` to issue a code, or take over the response and return `{ approved: false }`
+- `onRefreshToken` (`({ refreshToken, client, scopes }) => { subject, scopes } | undefined`, optional) — App-owned refresh-token validation; required to enable the `refresh_token` grant
+- `scopesSupported` (`string[]`, optional) — Advertised in discovery metadata as `scopes_supported`
+- `resource` (`string`, optional) — When set, also serves `/.well-known/oauth-protected-resource`
+- `authorizationCodeTtl` (`number`, optional) — Authorization code lifetime in seconds (default: `600`)
+- `endpoints` (`{ authorize?, token?, register? }`, optional) — Override the default endpoint paths
+
+**Returns:** `Router` — Koa router instance exposing `routes()` / `allowedMethods()`
 
 ### `apiCall(method, url, options?)`
 
