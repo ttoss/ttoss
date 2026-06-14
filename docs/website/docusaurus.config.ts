@@ -47,6 +47,9 @@ const config: Config = {
           'docusaurus-plugin-llms',
           {
             generateMarkdownFiles: true,
+            excludeImports: true,
+            removeDuplicateHeadings: true,
+            includeBlog: true,
           },
         ],
     './plugins/principles-graph/index.mjs',
