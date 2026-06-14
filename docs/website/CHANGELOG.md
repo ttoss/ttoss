@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.10.0](https://github.com/ttoss/ttoss/compare/@docs/website@2.9.2...@docs/website@2.10.0) (2026-06-14)
+
+### Features
+
+- **auth-core:** refresh-token rotation + in-memory OAuth stores ([#1072](https://github.com/ttoss/ttoss/issues/1072)) ([c1a51b1](https://github.com/ttoss/ttoss/commit/c1a51b1fd7e83412e5824708f7106567787613b1)), closes [ttoss/ttoss#1062](https://github.com/ttoss/ttoss/issues/1062)
+
 ## [2.9.2](https://github.com/ttoss/ttoss/compare/@docs/website@2.9.1...@docs/website@2.9.2) (2026-06-14)
 
 **Note:** Version bump only for package @docs/website

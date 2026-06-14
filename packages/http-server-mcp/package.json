@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/http-server-mcp",
-  "version": "0.16.2",
+  "version": "0.16.3",
   "description": "Model Context Protocol (MCP) server integration for @ttoss/http-server",
   "keywords": [
     "ai",
