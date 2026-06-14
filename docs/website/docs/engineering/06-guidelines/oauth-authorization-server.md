@@ -113,6 +113,38 @@ The `subject` you return is the only link between OAuth and your user model — 
 
 `POST /token` handles two grants ([RFC 6749](https://www.rfc-editor.org/rfc/rfc6749)). The `authorization_code` grant runs once at the end of login, verifying the PKCE `code_verifier` against the stored challenge before calling `issueTokens` and deleting the single-use code. The `refresh_token` grant lets a client renew an expired access token without sending the user back through login; it is enabled only when you supply `onRefreshToken`, which validates the presented token and returns the `subject` and `scopes` to re-issue (return `undefined` to reject). Omit `onRefreshToken` and refresh requests get `unsupported_grant_type`.
 
+## Refresh token rotation
+
+A self-validating JWT refresh token (as in the setup example) is simple but cannot be revoked before it expires and offers no protection if it leaks. When that matters, use **opaque, server-stored refresh tokens with rotation** — the OAuth 2.1 recommendation. `createRefreshRotation` from `@ttoss/auth-core` implements the mechanics that are a common source of security bugs when hand-rolled, against any [`RefreshTokenStore`](/docs/modules/packages/auth-core) backend (DynamoDB, Postgres, …): single use, expiry with sweep-on-access, scope narrowing, and **reuse detection** — replaying an already-rotated token revokes the owner's entire token set, forcing re-authentication.
+
+Wire it through the two existing hooks: `issue` mints a tracked token inside `issueTokens`, and the ready `onRefreshToken` validates and rotates.
+
+```typescript
+import { createRefreshRotation } from '@ttoss/auth-core';
+
+const refresh = createRefreshRotation({ store: refreshTokenStore });
+
+const authServer = oauthServer({
+  // …issuer, clientStore, authCodeStore, onAuthorize…
+  issueTokens: async ({ subject, scopes, client }) => ({
+    accessToken: signJwt({
+      payload: { sub: subject, scope: scopes.join(' ') },
+      secret: process.env.JWT_SECRET!,
+      expiresInSeconds: 3600,
+    }),
+    refreshToken: await refresh.issue({ client, subject, scopes }),
+    expiresIn: 3600,
+  }),
+  onRefreshToken: refresh.onRefreshToken,
+});
+```
+
+The store persists only token hashes — plaintext tokens never touch your database — keyed so the `(clientId, subject)` owner is the unit revoked on reuse.
+
+## In-memory reference stores
+
+`@ttoss/auth-core` ships `createMemoryClientStore`, `createMemoryAuthCodeStore`, and `createMemoryRefreshTokenStore` — `Map`-backed implementations of the three store contracts. They are for tests, local development, and examples (state is lost on restart); production swaps in a durable backend behind the same interfaces.
+
 ## Scopes
 
 Advertise the scopes your server issues via `scopesSupported`, and grant a subset per request in `onAuthorize`. Enforcement happens on the **resource server** that consumes the tokens: use `authMiddleware`'s `oauth` strategy with `requiredScopes` (from `@ttoss/http-server-auth`) to gate an endpoint, or check scopes per-route in your handler. The same option flows through `createMcpRouter`'s `auth` — see [MCP Server with OAuth](/docs/engineering/guidelines/mcp-server-oauth#enforcing-scopes).
