@@ -1,0 +1,180 @@
+---
+title: CloudFormation Driven Development
+sidebar_position: 5
+---
+
+CloudFormation Driven Development (CFNDD) is a methodology for building and maintaining cloud applications by thinking infrastructure-first, using [AWS CloudFormation](https://aws.amazon.com/cloudformation/) templates as the foundation for all features and deployments.
+
+## Philosophy
+
+Instead of manually creating AWS resources through the console or CLI, CFNDD advocates:
+
+1. **Template-First Design**: Every feature begins as a CloudFormation template
+2. **Infrastructure as Code**: All resources are version-controlled and reproducible
+3. **Declarative Architecture**: Define the desired state; AWS handles the how
+4. **Automated Deployment**: Use tools like carlin to deploy templates consistently
+
+## Core Principles
+
+### 1. Think in Templates
+
+When building a new feature, ask:
+
+- "What AWS resources does this need?"
+- "How would I define this in CloudFormation?"
+- "Can I reuse existing resource patterns?"
+
+**Traditional Approach:**
+
+```plaintext
+1. Create Lambda via console
+2. Set up API Gateway manually
+3. Configure IAM roles by clicking
+4. Hope you remember for next environment
+```
+
+**CFNDD Approach:**
+
+```yaml
+Resources:
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /users
+            Method: GET
+```
+
+### 2. Version Control Everything
+
+All CloudFormation templates live in your repository:
+
+```plaintext
+project/
+├── src/
+│   └── lambdas/
+│       └── api/
+│           └── handler.ts
+├── cloudformation/
+│   └── template.yml       # Infrastructure definition
+├── carlin.yml              # Deployment config
+└── package.json
+```
+
+**Benefits:**
+
+- Track infrastructure changes over time
+- Review infrastructure in pull requests
+- Roll back to previous versions
+- Share knowledge across team
+
+### 3. Repeatability and Consistency
+
+Deploy the same template to multiple environments:
+
+```bash
+# Staging
+ENVIRONMENT=staging carlin deploy
+
+# Production
+ENVIRONMENT=production carlin deploy
+```
+
+**Same template, different contexts:**
+
+- Stack names: `my-app-staging`, `my-app-production`
+- Resource names: `my-app-staging-function`, `my-app-production-function`
+- Parameters: Different values per environment
+
+### 4. Automation Over Manual Steps
+
+Eliminate click-ops:
+
+| Manual Process                | CFNDD Automation             |
+| ----------------------------- | ---------------------------- |
+| Console → Lambda → Create     | `carlin deploy`              |
+| Console → S3 → Create Bucket  | CloudFormation resource      |
+| Console → IAM → Attach Policy | Template `Policies` property |
+| Remember what you did         | Git history                  |
+
+## AWS Well-Architected Alignment
+
+CFNDD directly supports the [AWS Well-Architected Framework](https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html) pillars:
+
+| Pillar                     | CFNDD Benefit                                                                                  |
+| -------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Operational Excellence** | Infrastructure as code enables change tracking, automated deployments, and rollback capability |
+| **Security**               | Consistent IAM policies, encryption settings, and network configurations across environments   |
+| **Reliability**            | Reproducible deployments reduce human error; disaster recovery via template redeployment       |
+| **Performance Efficiency** | Parameterized templates allow right-sizing resources per environment                           |
+| **Cost Optimization**      | Version-controlled resources prevent orphaned infrastructure; easy teardown of unused stacks   |
+
+## CFNDD with carlin
+
+carlin embodies CFNDD by:
+
+- Supporting custom [CloudFormation templates](/docs/carlin/core-concepts/cloudformation-templates) (TypeScript, YAML, JSON)
+- [Auto-detecting Lambda functions](/docs/carlin/core-concepts/cloudformation-templates#lambda-function-handling) from templates and building code with esbuild
+- Managing stack lifecycle (create, update, delete)
+- Enforcing [naming conventions](/docs/carlin/core-concepts/stack-naming) and best practices
+
+**Example Workflow:**
+
+```bash
+# 1. Define your CloudFormation template with a Lambda function
+# src/cloudformation.ts
+
+# 2. Deploy (carlin auto-detects Lambda, builds code, uploads to S3, deploys stack)
+carlin deploy
+```
+
+See [CloudFormation Templates](/docs/carlin/core-concepts/cloudformation-templates) for details on template discovery and Lambda handling.
+
+## Common Patterns
+
+For template examples, see:
+
+- [CloudFormation Templates](/docs/carlin/core-concepts/cloudformation-templates) — Template format, Lambda handling, and TypeScript benefits
+- [Deploy](/docs/carlin/commands/deploy) — Deployment options and stack lifecycle
+- [Deploy Static App](/docs/carlin/commands/deploy-static-app) — Static website deployment with CloudFront
+
+## Best Practices
+
+1. **Small, focused templates**: One stack per application component
+2. **Use TypeScript templates**: Get type safety and reusable helper functions
+3. **Export outputs**: Make ARNs/URLs available to other stacks via [`generate-env`](/docs/carlin/commands/generate-env)
+4. **Review change sets**: Preview updates before applying
+5. **Tag everything**: Include `Environment`, `Application`, `ManagedBy`
+6. **Enable termination protection**: Protect production stacks
+
+## Challenges and Solutions
+
+| Challenge                           | Solution                                              |
+| ----------------------------------- | ----------------------------------------------------- |
+| Steep learning curve                | Start with carlin-generated templates; study AWS docs |
+| Template size limits (51,200 bytes) | Use nested stacks or split into multiple stacks       |
+| Complex intrinsic functions         | Use helper scripts or tools like `cfn-lint`           |
+| Slow stack updates                  | Parallelize independent stacks; use `AWS::NoValue`    |
+| Drift detection                     | Regularly run `aws cloudformation detect-stack-drift` |
+
+## CFNDD vs Other IaC Tools
+
+| Tool               | Pros                                     | Cons                                 |
+| ------------------ | ---------------------------------------- | ------------------------------------ |
+| **CloudFormation** | Native AWS; free; broad resource support | Verbose YAML; slower updates         |
+| **Terraform**      | Multi-cloud; HCL syntax; faster          | State management complexity; cost    |
+| **CDK**            | Type-safe; familiar languages            | Synthesizes to CloudFormation anyway |
+| **Pulumi**         | Real programming languages               | Smaller community; state management  |
+
+**carlin's stance:** Use CloudFormation as the deployment engine, but abstract complexity where possible (auto-generation, conventions).
+
+## Related
+
+- [CloudFormation Templates](/docs/carlin/core-concepts/cloudformation-templates)
+- [Stack Naming](/docs/carlin/core-concepts/stack-naming)
+- [Base Stack](/docs/carlin/core-concepts/base-stack)
+- [AWS CloudFormation Best Practices](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/best-practices.html)
