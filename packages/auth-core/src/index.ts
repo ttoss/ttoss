@@ -13,6 +13,11 @@ export {
 export { comparePassword, hashPassword, needsRehash } from './hash';
 export { type JwtPayload, signJwt, verifyJwt } from './jwt';
 export {
+  createMemoryAuthCodeStore,
+  createMemoryClientStore,
+  createMemoryRefreshTokenStore,
+} from './memoryStores';
+export {
   buildAuthorizationServerMetadata,
   buildProtectedResourceMetadata,
   generateAuthorizationCode,
@@ -44,7 +49,9 @@ export {
   type OnAuthorizeResult,
   type OnRefreshTokenArgs,
   type OnRefreshTokenResult,
+  type RefreshTokenStore,
   type StoredAuthorizationCode,
+  type StoredRefreshToken,
 } from './oauthServer';
 export {
   generateOneTimeToken,
@@ -52,6 +59,12 @@ export {
   type OneTimeToken,
   verifyOneTimeToken,
 } from './oneTimeToken';
+export {
+  createRefreshRotation,
+  type IssueRefreshTokenArgs,
+  type RefreshRotation,
+  type RefreshRotationOptions,
+} from './refreshTokenRotation';
 export {
   generateWebhookSecret,
   signWebhookPayload,

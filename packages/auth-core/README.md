@@ -157,3 +157,31 @@ const res = await oauth.token({ query: {}, body, headers }); // { status, body }
 ```
 
 Your app keeps its user model, signing keys, and login/consent UI behind the hooks. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline for the full flow.
+
+### Refresh token rotation
+
+`createRefreshRotation` implements opaque, server-stored refresh tokens with OAuth 2.1 rotation against any `RefreshTokenStore`: single use, expiry, scope narrowing, and reuse detection (replaying a rotated token revokes the owner's whole token set). Only token hashes are persisted. Wire `issue` into `issueTokens` and pass the ready `onRefreshToken` straight through.
+
+```ts
+import { createRefreshRotation } from '@ttoss/auth-core';
+
+const refresh = createRefreshRotation({ store: refreshTokenStore });
+
+createOAuthHandlers({
+  // …,
+  issueTokens: async ({ subject, scopes, client }) => ({
+    accessToken: signJwt({
+      payload: { sub: subject },
+      secret,
+      expiresInSeconds: 3600,
+    }),
+    refreshToken: await refresh.issue({ client, subject, scopes }),
+    expiresIn: 3600,
+  }),
+  onRefreshToken: refresh.onRefreshToken,
+});
+```
+
+### In-memory reference stores
+
+`createMemoryClientStore`, `createMemoryAuthCodeStore`, and `createMemoryRefreshTokenStore` are `Map`-backed implementations of the three store contracts — for tests, local development, and examples. Production swaps in a durable backend behind the same interfaces.

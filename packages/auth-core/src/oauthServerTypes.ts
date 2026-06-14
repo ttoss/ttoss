@@ -116,6 +116,55 @@ export interface AuthCodeStore {
   delete: (code: string) => Promise<void> | void;
 }
 
+/**
+ * A persisted refresh token, stored by its hash (never the plaintext value) so
+ * a store compromise does not leak usable tokens. Owned by the
+ * {@link RefreshTokenStore}; minted and rotated by `createRefreshRotation`.
+ */
+export interface StoredRefreshToken {
+  /** SHA-256 hash (hex) of the opaque refresh token. Plaintext is never stored. */
+  tokenHash: string;
+  /** The `client_id` the token was issued to. */
+  clientId: string;
+  /** The authenticated end-user subject identifier. */
+  subject: string;
+  /** The scopes granted to this token. */
+  scopes: string[];
+  /** Unix timestamp (milliseconds) after which the token is invalid. */
+  expiresAt: number;
+  /**
+   * Unix timestamp (milliseconds) when the token was rotated (consumed). A
+   * consumed token that is presented again signals reuse (theft or a replay)
+   * and triggers revocation of the owner's whole token set.
+   */
+  consumedAt?: number;
+}
+
+/**
+ * App-provided store for refresh tokens, backing OAuth 2.1 rotation. The store
+ * is pure persistence — the rotation mechanics (single-use, expiry, reuse
+ * detection) live in `createRefreshRotation`. Back it with DynamoDB, Postgres,
+ * in-memory, … The "owner" of a token is the `(clientId, subject)` pair.
+ */
+export interface RefreshTokenStore {
+  /** Persist a refresh token, upserting by `tokenHash`. */
+  save: (token: StoredRefreshToken) => Promise<void> | void;
+  /** Look up a refresh token by its hash. Return `undefined` if unknown. */
+  get: (
+    tokenHash: string
+  ) => Promise<StoredRefreshToken | undefined> | StoredRefreshToken | undefined;
+  /** Remove a single refresh token by its hash. */
+  delete: (tokenHash: string) => Promise<void> | void;
+  /**
+   * Remove every refresh token belonging to an owner. Called on reuse detection
+   * to revoke the entire chain (the live token included), forcing re-auth.
+   */
+  deleteByOwner: (owner: {
+    clientId: string;
+    subject: string;
+  }) => Promise<void> | void;
+}
+
 // ---------------------------------------------------------------------------
 // Hook contracts (app-owned token minting, login/consent, refresh validation)
 // ---------------------------------------------------------------------------
