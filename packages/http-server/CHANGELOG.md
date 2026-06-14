@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.7.0 (2026-06-14)
+
+### Features
+
+- **auth-core:** add OAuth 2.1 authorization-server primitives ([#1045](https://github.com/ttoss/ttoss/issues/1045)) ([7b8e90d](https://github.com/ttoss/ttoss/commit/7b8e90d5d47d9d993279f650c22156be6e4eef43))
+
 ## [0.6.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server@0.6.0...@ttoss/http-server@0.6.1) (2026-06-10)
 
 **Note:** Version bump only for package @ttoss/http-server
