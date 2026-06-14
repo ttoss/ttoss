@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.8.0](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.27...@docs/website@2.8.0) (2026-06-14)
+
+### Features
+
+- **http-server-auth:** pass ctx to auth callbacks + MCP OAuth guideline ([#1061](https://github.com/ttoss/ttoss/issues/1061)) ([c627241](https://github.com/ttoss/ttoss/commit/c627241748d27d93849cb81569d08e0773a466f3)), closes [#1058](https://github.com/ttoss/ttoss/issues/1058)
+
 ## [2.7.27](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.26...@docs/website@2.7.27) (2026-06-14)
 
 ### Bug Fixes
