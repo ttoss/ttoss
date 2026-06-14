@@ -1,19 +1,18 @@
 {
-  "name": "@ttoss/http-server-mcp",
-  "version": "0.15.0",
-  "description": "Model Context Protocol (MCP) server integration for @ttoss/http-server",
+  "name": "@ttoss/http-server-oauth",
+  "version": "0.1.0",
+  "description": "OAuth 2.1 plugin for @ttoss/http-server (Koa adapter over @ttoss/auth-core)",
   "keywords": [
-    "ai",
     "koa",
-    "llm",
-    "mcp",
-    "model-context-protocol",
+    "oauth",
+    "oauth2",
+    "authorization-server",
     "server"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
-    "directory": "packages/http-server-mcp"
+    "directory": "packages/http-server-oauth"
   },
   "license": "MIT",
   "author": "ttoss",
@@ -33,10 +32,8 @@
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.29.0",
-    "@ttoss/http-server": "workspace:^",
-    "@ttoss/http-server-oauth": "workspace:^",
-    "zod": "^4.4.3"
+    "@ttoss/auth-core": "workspace:^",
+    "@ttoss/http-server": "workspace:^"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
@@ -44,9 +41,6 @@
     "jest": "^30.4.2",
     "supertest": "^7.2.2",
     "tsdown": "^0.22.2"
-  },
-  "peerDependencies": {
-    "@modelcontextprotocol/sdk": "^1.29.0"
   },
   "publishConfig": {
     "access": "public",

@@ -4,11 +4,8 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import {
-  oauthVerify,
-  type OAuthVerifyOptions,
-  Router,
-} from '@ttoss/http-server';
+import { Router } from '@ttoss/http-server';
+import { oauthVerify, type OAuthVerifyOptions } from '@ttoss/http-server-oauth';
 import type Koa from 'koa';
 import { z } from 'zod';
 
@@ -680,7 +677,7 @@ export const registerToolFromSchema = (
 };
 
 /**
- * Re-export the OAuth building blocks from `@ttoss/http-server` so MCP
+ * Re-export the OAuth building blocks from `@ttoss/http-server-oauth` so MCP
  * consumers can configure token verification and (optionally) run an
  * authorization server from a single import. The runner-agnostic OAuth engine
  * itself lives in `@ttoss/auth-core`.
@@ -707,7 +704,7 @@ export {
   type OnRefreshTokenArgs,
   type OnRefreshTokenResult,
   type StoredAuthorizationCode,
-} from '@ttoss/http-server';
+} from '@ttoss/http-server-oauth';
 
 /**
  * Re-export MCP SDK types and classes for convenience

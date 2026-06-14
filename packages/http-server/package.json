@@ -33,7 +33,6 @@
     "@koa/cors": "^5.0.0",
     "@koa/multer": "^4.0.0",
     "@koa/router": "^15.6.0",
-    "@ttoss/auth-core": "workspace:^",
     "koa": "^3.2.1",
     "koa-static": "^5.0.0",
     "multer": "2.1.1"

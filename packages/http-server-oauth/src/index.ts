@@ -1,4 +1,3 @@
-import Router from '@koa/router';
 import {
   createOAuthHandlers,
   type OAuthRequest,
@@ -6,7 +5,7 @@ import {
   type OAuthServerOptions,
 } from '@ttoss/auth-core';
 import { CognitoJwtVerifier } from '@ttoss/auth-core/amazon-cognito';
-import type { Context, Middleware } from 'koa';
+import { type Context, type Middleware, Router } from '@ttoss/http-server';
 
 /**
  * The OAuth authorization-server option types and runner-agnostic engine live

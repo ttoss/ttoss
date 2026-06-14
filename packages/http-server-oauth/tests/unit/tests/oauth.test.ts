@@ -1,11 +1,9 @@
 import { createHash } from 'node:crypto';
 
+import { type ClientStore } from '@ttoss/auth-core';
 import { CognitoJwtVerifier } from '@ttoss/auth-core/amazon-cognito';
+import { App, bodyParser, type Context } from '@ttoss/http-server';
 import {
-  App,
-  bodyParser,
-  type ClientStore,
-  type Context,
   createProtectedResourceMetadataMiddleware,
   oauthServer,
   oauthVerify,
