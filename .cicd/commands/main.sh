@@ -1,15 +1,20 @@
 export ENVIRONMENT=Production
 
+# Cache all remote tags once to avoid repeated git ls-remote calls.
+REMOTE_TAGS_FULL=$(git ls-remote --tags origin)
+
 # Check if the current HEAD is already tagged on the remote.
-# Uses git ls-remote to avoid the cost of fetching all tags locally.
 HEAD_SHA=$(git rev-parse HEAD)
-if git ls-remote --tags origin | awk '{print $1}' | grep -q "^$HEAD_SHA$"; then
+if echo "$REMOTE_TAGS_FULL" | awk '{print $1}' | grep -q "^$HEAD_SHA$"; then
   echo "There are tags in the current commit, exiting main workflow"
   exit 0
 fi
 
-# Find the latest tag name without fetching all tags locally.
-export LATEST_TAG=$(git ls-remote --tags origin | grep -v '\^{}' | awk '{print $2}' | sed 's|refs/tags/||' | sort -V | tail -1)
+# Extract tag names (excluding peeled annotated-tag objects ^{}).
+REMOTE_TAGS=$(echo "$REMOTE_TAGS_FULL" | grep -v '\^{}' | awk '{print $2}' | sed 's|refs/tags/||')
+
+# Find the latest tag name.
+export LATEST_TAG=$(echo "$REMOTE_TAGS" | sort -V | tail -1)
 
 # Fetch only that one tag so its commit object exists in the local repo.
 # This avoids downloading all tags while still letting turbo resolve the SHA.
@@ -86,6 +91,18 @@ if pnpm lerna changed --since=$LATEST_TAG; then
 
   # Push changes.
   git push --follow-tags
+
+  # Delete old remote tags for each package that was just versioned.
+  # git tag -l lists only the new tags (OLD_TAGS were deleted locally above).
+  # REMOTE_TAGS was captured before this run, so it holds only the old tags —
+  # the new ones were never in it, so we can safely delete everything that matches.
+  for new_tag in $(git tag -l); do
+    prefix=$(echo "$new_tag" | sed 's/@[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*$//')
+    old=$(echo "$REMOTE_TAGS" | grep "^${prefix}@" || true)
+    if [ -n "$old" ]; then
+      echo "$old" | xargs git push origin --delete 2>/dev/null || true
+    fi
+  done
 
   # Publish packages with retry logic.
   # `pnpm -r publish` reads versions from package.json and skips packages already
