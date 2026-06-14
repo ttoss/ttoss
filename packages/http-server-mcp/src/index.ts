@@ -5,16 +5,30 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { Router } from '@ttoss/http-server';
+import { oauthVerify, type OAuthVerifyOptions } from '@ttoss/http-server-oauth';
 import type Koa from 'koa';
 import { z } from 'zod';
 
-import {
-  buildTokenVerifier,
-  type McpAuthOptions,
-  registerAuthRoutes,
-} from './auth';
-
 type Context = Koa.Context;
+
+/**
+ * Authentication options for the MCP endpoint. Extends the `@ttoss/http-server`
+ * OAuth verification options with the optional protected-resource metadata
+ * endpoint that MCP clients fetch for discovery.
+ */
+export interface McpAuthOptions extends OAuthVerifyOptions {
+  /**
+   * URL of this MCP server, surfaced in the OAuth Protected Resource Metadata
+   * response. Both this and `authorizationServerUrl` must be set to serve
+   * `/.well-known/oauth-protected-resource`.
+   */
+  resourceServerUrl?: string;
+  /** URL of the OAuth Authorization Server that issues tokens for this resource. */
+  authorizationServerUrl?: string;
+}
+
+/** MCP lifecycle/discovery methods reachable before a client authenticates. */
+const DEFAULT_PUBLIC_METHODS = ['initialize', 'tools/list'];
 
 interface RequestContext {
   apiBaseUrl?: string;
@@ -369,7 +383,25 @@ export const createMcpRouter = (
   const router = new Router();
 
   if (auth) {
-    registerAuthRoutes(router, path, auth, buildTokenVerifier(auth));
+    const { resourceServerUrl, authorizationServerUrl, ...verifyOptions } =
+      auth;
+
+    router.use(
+      path,
+      oauthVerify({
+        ...verifyOptions,
+        publicMethods: verifyOptions.publicMethods ?? DEFAULT_PUBLIC_METHODS,
+      })
+    );
+
+    if (resourceServerUrl && authorizationServerUrl) {
+      router.get('/.well-known/oauth-protected-resource', (ctx: Context) => {
+        ctx.body = {
+          resource: resourceServerUrl,
+          authorization_servers: [authorizationServerUrl],
+        };
+      });
+    }
   }
 
   const handleWithContext = async (
@@ -643,94 +675,6 @@ export const registerToolFromSchema = (
     }
   }
 };
-
-/**
- * Returns the `WWW-Authenticate` header value for a 401 response on a
- * protected resource, following the MCP auth spec requirement that
- * unauthorized responses advertise the resource metadata URL so MCP
- * clients can bootstrap OAuth discovery.
- *
- * Use this in your own auth middleware when you are not using the built-in
- * `auth` option on `createMcpRouter`.
- *
- * @example
- * ```typescript
- * import { getWwwAuthenticateHeader } from '@ttoss/http-server-mcp';
- *
- * // Inside a Koa middleware
- * ctx.status = 401;
- * ctx.set('WWW-Authenticate', getWwwAuthenticateHeader({ resource: 'https://mcp.example.com' }));
- * ```
- */
-export const getWwwAuthenticateHeader = (args: {
-  /**
-   * The resource server URL. The metadata URL is derived as
-   * `<resource>/.well-known/oauth-protected-resource` per RFC 9728.
-   */
-  resource: string;
-}): string => {
-  const metadataUrl = `${args.resource.replace(/\/$/, '')}/.well-known/oauth-protected-resource`;
-  return `Bearer resource_metadata="${metadataUrl}"`;
-};
-
-/**
- * Creates a standalone Koa middleware that serves
- * `GET /.well-known/oauth-protected-resource` (RFC 9728) without requiring
- * the built-in `auth` option on `createMcpRouter`.
- *
- * Mount this **before** your own auth middleware so the discovery endpoint
- * remains unauthenticated (MCP clients fetch it before they have a token).
- *
- * @example
- * ```typescript
- * import Koa from 'koa';
- * import { createProtectedResourceMetadataMiddleware } from '@ttoss/http-server-mcp';
- *
- * const app = new Koa();
- * app.use(
- *   createProtectedResourceMetadataMiddleware({
- *     resource: 'https://mcp.example.com',
- *     authorizationServers: ['https://api.example.com'],
- *   })
- * );
- * app.use(myOwnAuthMiddleware);
- * ```
- */
-export const createProtectedResourceMetadataMiddleware = (args: {
-  /**
-   * The protected resource's identifier URI (the MCP server URL).
-   */
-  resource: string;
-  /**
-   * List of authorization server issuer URIs that issue tokens for this
-   * resource.
-   */
-  authorizationServers: string[];
-}): Koa.Middleware => {
-  return async (ctx: Context, next) => {
-    if (
-      ctx.method === 'GET' &&
-      ctx.path === '/.well-known/oauth-protected-resource'
-    ) {
-      ctx.body = {
-        resource: args.resource,
-        authorization_servers: args.authorizationServers,
-      };
-      return;
-    }
-    await next();
-  };
-};
-
-/**
- * Re-export the MCP router authentication option types.
- */
-export type { CognitoUserPoolConfig, McpAuthOptions } from './auth';
-
-/**
- * Re-export OAuth 2.1 Authorization Server primitives for MCP.
- */
-export * from './authServer';
 
 /**
  * Re-export MCP SDK types and classes for convenience

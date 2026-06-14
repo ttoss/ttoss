@@ -1,11 +1,39 @@
-import type Koa from 'koa';
+// ---------------------------------------------------------------------------
+// Runner-agnostic HTTP shapes
+//
+// The OAuth server logic (see ./oauthServer) is decoupled from any HTTP
+// framework. An adapter (Koa via @ttoss/http-server, AWS API Gateway, …)
+// translates its own request/response objects to and from these plain shapes.
+// ---------------------------------------------------------------------------
 
-export type Context = Koa.Context;
+/** A normalized inbound HTTP request, framework-agnostic. */
+export interface OAuthRequest {
+  /** Query-string parameters (e.g. from `/authorize?client_id=...`). */
+  query: Record<string, string | undefined>;
+  /** Parsed request body (e.g. form-encoded `/token` or JSON `/register`). */
+  body: Record<string, unknown>;
+  /** Request headers, lower-cased keys recommended (e.g. `authorization`). */
+  headers: Record<string, string | undefined>;
+}
 
 /**
- * OAuth 2.0 client metadata as supplied by a client during Dynamic Client
- * Registration (RFC 7591). Apps may persist additional fields verbatim.
+ * A normalized outbound HTTP response. Either a JSON `body` with `status`, or a
+ * `redirect` (302) — never both. Adapters apply this to their own response.
  */
+export interface OAuthResponse {
+  /** HTTP status code. Defaults to 200 when `redirect` is unset. */
+  status: number;
+  /** JSON-serializable response body. */
+  body?: unknown;
+  /** When set, the adapter should issue a 302 redirect to this URL. */
+  redirect?: string;
+}
+
+// ---------------------------------------------------------------------------
+// Client + store contracts (app-provided persistence)
+// ---------------------------------------------------------------------------
+
+/** Client metadata as submitted to Dynamic Client Registration (RFC 7591). */
 export interface OAuthClientMetadata {
   /** Allowed redirect URIs. At least one is required for the auth-code flow. */
   redirect_uris: string[];
@@ -26,9 +54,7 @@ export interface OAuthClientMetadata {
   [key: string]: unknown;
 }
 
-/**
- * A registered OAuth client as persisted by the app's {@link ClientStore}.
- */
+/** A registered OAuth client as persisted by the app's {@link ClientStore}. */
 export interface OAuthClient extends OAuthClientMetadata {
   /** Unique client identifier issued by the authorization server. */
   client_id: string;
@@ -39,8 +65,8 @@ export interface OAuthClient extends OAuthClientMetadata {
 }
 
 /**
- * App-provided store for OAuth clients. ttoss owns protocol mechanics; the app
- * owns persistence (DynamoDB, Postgres, in-memory, …).
+ * App-provided store for OAuth clients. The core owns protocol mechanics; the
+ * app owns persistence (DynamoDB, Postgres, in-memory, …).
  */
 export interface ClientStore {
   /** Look up a client by its `client_id`. Return `undefined` if unknown. */
@@ -90,7 +116,11 @@ export interface AuthCodeStore {
   delete: (code: string) => Promise<void> | void;
 }
 
-/** Tokens returned by the app's {@link McpAuthServerOptions.issueTokens} hook. */
+// ---------------------------------------------------------------------------
+// Hook contracts (app-owned token minting, login/consent, refresh validation)
+// ---------------------------------------------------------------------------
+
+/** Tokens returned by the app's {@link OAuthServerOptions.issueTokens} hook. */
 export interface IssuedTokens {
   /** The access token string (JWT, opaque, …). */
   accessToken: string;
@@ -102,7 +132,7 @@ export interface IssuedTokens {
   scope?: string;
 }
 
-/** Arguments passed to {@link McpAuthServerOptions.issueTokens}. */
+/** Arguments passed to {@link OAuthServerOptions.issueTokens}. */
 export interface IssueTokensArgs {
   /** The authenticated end-user subject identifier. */
   subject: string;
@@ -128,29 +158,33 @@ export interface AuthorizeRequest {
   codeChallengeMethod: string;
 }
 
-/** Arguments passed to {@link McpAuthServerOptions.onAuthorize}. */
+/** Arguments passed to {@link OAuthServerOptions.onAuthorize}. */
 export interface OnAuthorizeArgs {
-  /** The Koa context, so the app can read cookies/session or write a response. */
-  ctx: Context;
   /** The resolved client making the request. */
   client: OAuthClient;
   /** The validated authorization request. */
   request: AuthorizeRequest;
+  /**
+   * The inbound request headers, so the app can read its own session cookie
+   * to decide whether the user is authenticated. Runner-agnostic: there is no
+   * framework context here.
+   */
+  headers: Record<string, string | undefined>;
 }
 
 /**
  * Result of the app's consent/login hook.
  *
- * `approved: true` means the end-user is authenticated and has consented — the
- * authorization server issues a code and redirects. `approved: false` means the
- * app has taken over the response (e.g. redirected to its own login/consent
- * page); the authorization server does nothing further.
+ * `approved: true` issues a code and redirects back to the client. When the
+ * user is not authenticated, return `approved: false` with a `redirect` to your
+ * own login page (the adapter performs the redirect), or a `status`/`body` to
+ * render an inline response.
  */
 export type OnAuthorizeResult =
   | { approved: true; subject: string; scopes?: string[] }
-  | { approved: false };
+  | { approved: false; redirect?: string; status?: number; body?: unknown };
 
-/** Arguments passed to {@link McpAuthServerOptions.onRefreshToken}. */
+/** Arguments passed to {@link OAuthServerOptions.onRefreshToken}. */
 export interface OnRefreshTokenArgs {
   /** The refresh token presented by the client. */
   refreshToken: string;
@@ -160,15 +194,13 @@ export interface OnRefreshTokenArgs {
   scopes: string[];
 }
 
-/**
- * Result of validating a refresh token. Return `undefined` to reject the token.
- */
+/** Result of validating a refresh token. Return `undefined` to reject. */
 export type OnRefreshTokenResult =
   | { subject: string; scopes: string[] }
   | undefined;
 
-/** Configuration for {@link createMcpAuthServer}. */
-export interface McpAuthServerOptions {
+/** Configuration for {@link createOAuthHandlers}. */
+export interface OAuthServerOptions {
   /** The authorization server's issuer identifier (its base URL). */
   issuer: string;
   /** App-provided store for dynamic clients. */
@@ -176,14 +208,14 @@ export interface McpAuthServerOptions {
   /** App-provided store for short-lived authorization codes. */
   authCodeStore: AuthCodeStore;
   /**
-   * App-owned token minting. ttoss never sees the user model or signing keys —
-   * it hands you the subject/scopes/client and you return the tokens.
+   * App-owned token minting. The core never sees the user model or signing keys
+   * — it hands you the subject/scopes/client and you return the tokens.
    */
   issueTokens: (args: IssueTokensArgs) => Promise<IssuedTokens> | IssuedTokens;
   /**
-   * App-owned login/consent. Called on every `/authorize` request; return the
-   * authenticated subject to approve, or take over the response to show your
-   * own login/consent UI and return `{ approved: false }`.
+   * App-owned login/consent. Called on every authorize request; return the
+   * authenticated subject to approve, or `{ approved: false, redirect }` to send
+   * the user to your own login/consent UI.
    */
   onAuthorize: (
     args: OnAuthorizeArgs
@@ -198,8 +230,8 @@ export interface McpAuthServerOptions {
   /** Scopes advertised in discovery metadata (`scopes_supported`). */
   scopesSupported?: string[];
   /**
-   * When set, also serves `/.well-known/oauth-protected-resource` (RFC 9728)
-   * pairing this resource URL with the issuer as its authorization server.
+   * When set, {@link OAuthHandlers.protectedResourceMetadata} is served, pairing
+   * this resource URL with the issuer as its authorization server (RFC 9728).
    */
   resource?: string;
   /**
@@ -216,4 +248,20 @@ export interface McpAuthServerOptions {
     /** @default '/register' */
     register?: string;
   };
+}
+
+/** The runner-agnostic OAuth server handlers returned by {@link createOAuthHandlers}. */
+export interface OAuthHandlers {
+  /** Resolved endpoint paths, for an adapter to mount routes on. */
+  paths: { authorize: string; token: string; register: string };
+  /** RFC 8414 Authorization Server Metadata response. */
+  authorizationServerMetadata: () => OAuthResponse;
+  /** RFC 9728 Protected Resource Metadata response, or `undefined` if `resource` is unset. */
+  protectedResourceMetadata: () => OAuthResponse | undefined;
+  /** Handle a `GET /authorize` request. */
+  authorize: (request: OAuthRequest) => Promise<OAuthResponse>;
+  /** Handle a `POST /token` request (authorization_code + refresh_token grants). */
+  token: (request: OAuthRequest) => Promise<OAuthResponse>;
+  /** Handle a `POST /register` request (Dynamic Client Registration, RFC 7591). */
+  register: (request: OAuthRequest) => Promise<OAuthResponse>;
 }

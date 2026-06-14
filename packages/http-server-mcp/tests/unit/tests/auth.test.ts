@@ -1,12 +1,9 @@
 import { CognitoJwtVerifier } from '@ttoss/auth-core/amazon-cognito';
 import { App, bodyParser } from '@ttoss/http-server';
-import type { Context as KoaContext } from 'koa';
 import {
   checkScopes,
   createMcpRouter,
-  createProtectedResourceMetadataMiddleware,
   getIdentity,
-  getWwwAuthenticateHeader,
   McpServer,
   z,
 } from 'src/index';
@@ -295,7 +292,9 @@ describe('auth — verifyToken', () => {
     const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
     expect(() => {
       createMcpRouter(mcpServer, { auth: {} });
-    }).toThrow('McpAuthOptions requires either cognitoUserPool or verifyToken');
+    }).toThrow(
+      'OAuthVerifyOptions requires either cognitoUserPool or verifyToken'
+    );
   });
 });
 
@@ -552,103 +551,5 @@ describe('auth — cognitoUserPool', () => {
   });
 });
 
-describe('getWwwAuthenticateHeader', () => {
-  test('returns Bearer header with resource_metadata URL', () => {
-    const header = getWwwAuthenticateHeader({
-      resource: 'https://mcp.example.com',
-    });
-    expect(header).toBe(
-      'Bearer resource_metadata="https://mcp.example.com/.well-known/oauth-protected-resource"'
-    );
-  });
-
-  test('strips trailing slash from resource before appending metadata path', () => {
-    const header = getWwwAuthenticateHeader({
-      resource: 'https://mcp.example.com/',
-    });
-    expect(header).toBe(
-      'Bearer resource_metadata="https://mcp.example.com/.well-known/oauth-protected-resource"'
-    );
-  });
-});
-
-describe('createProtectedResourceMetadataMiddleware', () => {
-  const buildApp = (resource: string, authorizationServers: string[]) => {
-    const app = new App();
-    app.use(
-      createProtectedResourceMetadataMiddleware({
-        resource,
-        authorizationServers,
-      })
-    );
-    return app;
-  };
-
-  test('serves /.well-known/oauth-protected-resource without auth config', async () => {
-    const app = buildApp('https://mcp.example.com', [
-      'https://auth.example.com',
-    ]);
-
-    const res = await request(app.callback()).get(
-      '/.well-known/oauth-protected-resource'
-    );
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual({
-      resource: 'https://mcp.example.com',
-      authorization_servers: ['https://auth.example.com'],
-    });
-  });
-
-  test('does not intercept other paths', async () => {
-    const app = buildApp('https://mcp.example.com', [
-      'https://auth.example.com',
-    ]);
-
-    const res = await request(app.callback()).get('/other-path');
-
-    expect(res.status).toBe(404);
-  });
-
-  test('middleware passes through non-matching requests to next', async () => {
-    const app = new App();
-    app.use(
-      createProtectedResourceMetadataMiddleware({
-        resource: 'https://mcp.example.com',
-        authorizationServers: ['https://auth.example.com'],
-      })
-    );
-    app.use((ctx: KoaContext) => {
-      ctx.body = 'downstream';
-    });
-
-    const res = await request(app.callback()).get('/mcp');
-    expect(res.status).toBe(200);
-    expect(res.text).toBe('downstream');
-  });
-
-  test('can be mounted before own auth middleware (discovery stays unauthenticated)', async () => {
-    const app = new App();
-    app.use(
-      createProtectedResourceMetadataMiddleware({
-        resource: 'https://mcp.example.com',
-        authorizationServers: ['https://auth.example.com'],
-      })
-    );
-    // Simulate auth middleware that rejects everything
-    app.use((ctx: KoaContext) => {
-      ctx.status = 401;
-      ctx.body = 'Unauthorized';
-    });
-
-    // Discovery endpoint bypasses the auth middleware
-    const discoveryRes = await request(app.callback()).get(
-      '/.well-known/oauth-protected-resource'
-    );
-    expect(discoveryRes.status).toBe(200);
-
-    // Other paths hit the auth middleware
-    const mcpRes = await request(app.callback()).get('/mcp');
-    expect(mcpRes.status).toBe(401);
-  });
-});
+// `getWwwAuthenticateHeader` and `createProtectedResourceMetadataMiddleware`
+// live in @ttoss/auth-core / @ttoss/http-server-oauth and are tested there.

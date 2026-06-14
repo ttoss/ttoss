@@ -151,6 +151,10 @@ app.use(async (ctx, next) => {
 });
 ```
 
+## OAuth
+
+OAuth is an opt-in plugin, [`@ttoss/http-server-oauth`](https://ttoss.dev/docs/modules/packages/http-server-oauth) — it adds `oauthServer()` (issue tokens) and `oauthVerify()` (verify tokens) as a thin Koa adapter over the runner-agnostic engine in [`@ttoss/auth-core`](https://ttoss.dev/docs/modules/packages/auth-core), keeping this base runner auth-free. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline.
+
 ## API Reference
 
 All exports are re-exported from established Koa ecosystem packages:

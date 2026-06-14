@@ -4,6 +4,8 @@ title: MCP Server with OAuth
 
 This guideline shows how to build a [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server that authenticates MCP clients (Claude, Cursor, VS Code) with OAuth 2.1, using **only ttoss packages**. No external auth framework is required: [`@ttoss/http-server`](/docs/modules/packages/http-server) provides the Koa runtime, [`@ttoss/http-server-mcp`](/docs/modules/packages/http-server-mcp) provides both halves of MCP authorization, and [`@ttoss/auth-core`](/docs/modules/packages/auth-core) provides the token primitives. Your app keeps its own user model, signing keys, and login UI — ttoss owns only the protocol mechanics.
 
+It is the MCP-specific application of two general patterns: issuing tokens ([OAuth Authorization Server](/docs/engineering/guidelines/oauth-authorization-server)) and consuming a third party's tokens ([OAuth Client](/docs/engineering/guidelines/oauth-third-party-client)).
+
 ## The two halves
 
 OAuth for MCP splits into two independent responsibilities. A server can play either role, or both.
@@ -111,60 +113,9 @@ Setting both `resourceServerUrl` and `authorizationServerUrl` also serves that m
 
 ## Authorization server: issuing tokens
 
-To make your server first-party — so an MCP client discovers it, registers itself, and runs the full login flow against it — add `createMcpAuthServer`. ttoss owns only PKCE, discovery metadata, code exchange, and dynamic client registration; everything app-specific stays behind pluggable hooks.
+To make your server first-party — so an MCP client discovers it, registers itself, and runs the full login flow against it — mount `oauthServer()` from `@ttoss/http-server-oauth`. It serves the discovery, `/authorize`, `/token`, and `/register` endpoints that MCP clients auto-discover, and you pair it with the `verifyToken` resource server above so one deployment both issues and verifies its tokens (set `scopesSupported: ['mcp:access']`).
 
-```typescript
-import { signJwt, verifyJwt } from '@ttoss/auth-core';
-import { App, bodyParser } from '@ttoss/http-server';
-import { createMcpAuthServer } from '@ttoss/http-server-mcp';
-
-const authServer = createMcpAuthServer({
-  issuer: 'https://api.example.com',
-  clientStore, // dynamic client register/lookup, in your datastore
-  authCodeStore, // short-lived codes + PKCE challenge, in your datastore
-  // App-owned token minting — ttoss never sees your signing keys.
-  issueTokens: async ({ subject, scopes }) => ({
-    accessToken: signJwt({
-      payload: { sub: subject, scope: scopes.join(' ') },
-      secret: process.env.JWT_SECRET!,
-      expiresInSeconds: 3600,
-    }),
-    refreshToken: signJwt({
-      payload: { sub: subject, scope: scopes.join(' ') },
-      secret: process.env.JWT_REFRESH_SECRET!,
-      expiresInSeconds: 60 * 60 * 24 * 30,
-    }),
-    expiresIn: 3600,
-  }),
-  // App-owned login/consent — render your own UI, then approve.
-  onAuthorize: async ({ ctx, request }) => {
-    const session = await getSession(ctx);
-    if (!session) {
-      ctx.redirect(`/login?return_to=${encodeURIComponent(ctx.url)}`);
-      return { approved: false };
-    }
-    return { approved: true, subject: session.userId, scopes: request.scopes };
-  },
-  // App-owned refresh validation — enables the refresh_token grant.
-  onRefreshToken: async ({ refreshToken }) => {
-    const payload = verifyJwt({
-      token: refreshToken,
-      secret: process.env.JWT_REFRESH_SECRET!,
-    });
-    if (!payload) return undefined; // reject — client must re-authorize
-    return { subject: payload.sub, scopes: payload.scope.split(' ') };
-  },
-  scopesSupported: ['mcp:access'],
-});
-
-const app = new App();
-app.use(bodyParser());
-app.use(authServer.routes());
-```
-
-This mounts the discovery (`/.well-known/oauth-authorization-server`), `/authorize`, `/token`, and `/register` endpoints that MCP clients auto-discover. Pair it with the `verifyToken` resource server above so the same deployment both issues and verifies its tokens. The endpoint table and store interfaces are documented in the [package README](/docs/modules/packages/http-server-mcp#oauth-21-authorization-server).
-
-The `/token` endpoint handles two grants. The `authorization_code` grant runs once at the end of the login flow, verifying the PKCE `code_verifier` before calling `issueTokens`. The `refresh_token` grant lets a client renew an expired access token without sending the user back through login: it is enabled only when you supply `onRefreshToken`, which validates the presented refresh token and returns the `subject` and `scopes` to re-issue (return `undefined` to reject and force re-authorization). Omit `onRefreshToken` and refresh requests get `unsupported_grant_type`.
+These are general OAuth 2.1 primitives, not MCP-specific — the runner-agnostic engine is `createOAuthHandlers` in `@ttoss/auth-core`. The full setup — discovery, dynamic client registration, the authorize/PKCE flow, the token grants, and the ttoss-vs-app responsibility split — lives in the [OAuth Authorization Server](/docs/engineering/guidelines/oauth-authorization-server) guideline.
 
 ## Enforcing scopes
 
@@ -181,10 +132,10 @@ createMcpRouter(mcpServer, {
 
 ## Choosing your setup
 
-| You authenticate against… | Use                                                                  |
-| ------------------------- | -------------------------------------------------------------------- |
-| Amazon Cognito            | `createMcpRouter({ auth: { cognitoUserPool } })`                     |
-| Another OAuth provider    | `createMcpRouter({ auth: { verifyToken } })` with `jose`             |
-| Tokens your app issues    | `createMcpAuthServer` + `createMcpRouter({ auth: { verifyToken } })` |
+| You authenticate against… | Use                                                          |
+| ------------------------- | ------------------------------------------------------------ |
+| Amazon Cognito            | `createMcpRouter({ auth: { cognitoUserPool } })`             |
+| Another OAuth provider    | `createMcpRouter({ auth: { verifyToken } })` with `jose`     |
+| Tokens your app issues    | `oauthServer` + `createMcpRouter({ auth: { verifyToken } })` |
 
 In every case the only runtime dependencies are ttoss packages. Refer to the [`@ttoss/http-server-mcp`](/docs/modules/packages/http-server-mcp) and [`@ttoss/auth-core`](/docs/modules/packages/auth-core) documentation for the complete API surface.
