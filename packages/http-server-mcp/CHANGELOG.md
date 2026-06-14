@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.15.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.14.0...@ttoss/http-server-mcp@0.15.0) (2026-06-14)
+
+### Features
+
+- **http-server-mcp:** add OAuth 2.1 Authorization Server primitives for MCP ([#1059](https://github.com/ttoss/ttoss/issues/1059)) ([b350bd1](https://github.com/ttoss/ttoss/commit/b350bd181668dd1b19ad18c2c27831ee0f28dfb9))
+
 # [0.14.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.13.8...@ttoss/http-server-mcp@0.14.0) (2026-06-11)
 
 ### Features
