@@ -1,3 +1,5 @@
+import type { Context } from '@ttoss/http-server';
+
 export type AuthenticatedUser = {
   id: string;
   email?: string;
@@ -11,16 +13,28 @@ export type JwtOptions = {
   /**
    * Override how the JWT payload maps to an AuthenticatedUser.
    * Defaults to `{ id: payload.sub, email: payload.email }`.
+   *
+   * Receives the Koa `ctx` as a second argument so the mapping can do
+   * request-scoped work (e.g. reading from `ctx.db`).
    */
-  mapPayload?: (payload: Record<string, unknown>) => AuthenticatedUser | null;
+  mapPayload?: (
+    payload: Record<string, unknown>,
+    ctx: Context
+  ) => AuthenticatedUser | null;
 };
 
 export type ApiTokenOptions = {
   /**
    * Receives the SHA-256 hash of the presented token and returns the
    * authenticated user, or null if not found / revoked.
+   *
+   * Receives the Koa `ctx` as a second argument so the lookup can do
+   * request-scoped work (e.g. bumping `lastUsedAt` or reading `ctx.db`).
    */
-  lookup: (tokenHash: string) => Promise<AuthenticatedUser | null>;
+  lookup: (
+    tokenHash: string,
+    ctx: Context
+  ) => Promise<AuthenticatedUser | null>;
 };
 
 export type SystemOptions = {

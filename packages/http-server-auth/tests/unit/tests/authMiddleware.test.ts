@@ -74,6 +74,25 @@ describe('jwt strategy', () => {
       .set('Authorization', `Bearer ${token}`);
     expect(res.body.user.id).toBe('mapped_user_1');
   });
+
+  test('passes ctx to mapPayload', async () => {
+    const mapPayload = jest.fn((p, ctx) => {
+      return { id: String(p.sub), method: ctx.method };
+    });
+    const appCustomMap = makeApp({
+      strategies: ['jwt'],
+      jwt: { secret: jwtSecret, mapPayload },
+    });
+    const token = signJwt({ payload: { sub: 'user_1' }, secret: jwtSecret });
+    const res = await request(appCustomMap.callback())
+      .get('/')
+      .set('Authorization', `Bearer ${token}`);
+    expect(mapPayload).toHaveBeenCalledWith(
+      expect.objectContaining({ sub: 'user_1' }),
+      expect.anything()
+    );
+    expect(res.body.user.method).toBe('GET');
+  });
 });
 
 // apiToken strategy
@@ -106,11 +125,40 @@ describe('apiToken strategy', () => {
     expect(res.status).toBe(401);
   });
 
-  test('calls lookup with SHA-256 hash of the token', async () => {
+  test('calls lookup with SHA-256 hash of the token and ctx', async () => {
     await request(app.callback())
       .get('/')
       .set('Authorization', 'Bearer my-api-token');
-    expect(lookup).toHaveBeenCalledWith(storedHash);
+    expect(lookup).toHaveBeenCalledWith(storedHash, expect.anything());
+  });
+
+  test('passes ctx to lookup so it can do request-scoped work', async () => {
+    const lastUsed: string[] = [];
+    const lookupWithCtx = jest.fn(async (tokenHash: string, ctx) => {
+      if (tokenHash !== storedHash) return null;
+      // mutate request-scoped state via ctx, e.g. bumping lastUsedAt
+      ctx.state.lastUsedAt = 'now';
+      lastUsed.push(ctx.method);
+      return { id: 'user_2' };
+    });
+    const appWithCtx = new App();
+    appWithCtx.use(
+      authMiddleware({
+        strategies: ['apiToken'],
+        apiToken: { lookup: lookupWithCtx },
+      })
+    );
+    appWithCtx.use((ctx) => {
+      ctx.body = { lastUsedAt: ctx.state.lastUsedAt };
+    });
+
+    const res = await request(appWithCtx.callback())
+      .get('/')
+      .set('Authorization', 'Bearer my-api-token');
+
+    expect(res.status).toBe(200);
+    expect(res.body.lastUsedAt).toBe('now');
+    expect(lastUsed).toEqual(['GET']);
   });
 });
 
