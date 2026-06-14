@@ -41,7 +41,14 @@ const config: Config = {
   },
 
   plugins: [
-    isDevelopment ? null : 'docusaurus-plugin-llms',
+    isDevelopment
+      ? null
+      : [
+          'docusaurus-plugin-llms',
+          {
+            generateMarkdownFiles: true,
+          },
+        ],
     './plugins/principles-graph/index.mjs',
     /**
      * Only include these plugins in production. We remove them in development
