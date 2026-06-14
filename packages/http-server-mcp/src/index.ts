@@ -837,6 +837,11 @@ export const createProtectedResourceMetadataMiddleware = (args: {
 };
 
 /**
+ * Re-export OAuth 2.1 Authorization Server primitives for MCP.
+ */
+export * from './authServer';
+
+/**
  * Re-export MCP SDK types and classes for convenience
  */
 export { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
