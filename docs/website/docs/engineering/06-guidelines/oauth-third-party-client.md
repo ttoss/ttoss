@@ -4,10 +4,11 @@ title: OAuth Client — Connecting to Third-Party Providers
 
 This guideline covers an app acting as an **OAuth client**: it sends a user to a third-party provider (TikTok, Instagram, YouTube, Google, …), receives an access token on their behalf, stores it, and uses it later — including from background jobs where no user is present. It is the inverse of [MCP Server with OAuth](/docs/engineering/guidelines/mcp-server-oauth), where _your_ app is the authorization/resource server that MCP clients authenticate against. Here a remote provider owns the tokens and your app is the one logging in.
 
-| Role             | You are…                                 | Covered by                                                             |
-| ---------------- | ---------------------------------------- | ---------------------------------------------------------------------- |
-| OAuth **server** | issuing/verifying tokens for MCP clients | [MCP Server with OAuth](/docs/engineering/guidelines/mcp-server-oauth) |
-| OAuth **client** | obtaining/storing tokens from a provider | this guideline                                                         |
+| Role             | You are…                                 | Covered by                                                                            |
+| ---------------- | ---------------------------------------- | ------------------------------------------------------------------------------------- |
+| OAuth **client** | obtaining/storing tokens from a provider | this guideline                                                                        |
+| OAuth **server** | issuing tokens for your own app          | [OAuth Authorization Server](/docs/engineering/guidelines/oauth-authorization-server) |
+| MCP application  | the MCP-specific use of these primitives | [MCP Server with OAuth](/docs/engineering/guidelines/mcp-server-oauth)                |
 
 The only runtime dependencies are ttoss packages: [`@ttoss/http-server`](/docs/modules/packages/http-server) for the endpoints and [`@ttoss/auth-core`](/docs/modules/packages/auth-core) for token encryption and the internal service token. The examples use TikTok, but the pattern is provider-agnostic — swap the URLs, scopes, and parameter names.
 
