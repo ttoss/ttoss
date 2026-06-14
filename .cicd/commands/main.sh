@@ -92,18 +92,6 @@ if pnpm lerna changed --since=$LATEST_TAG; then
   # Push changes.
   git push --follow-tags
 
-  # Delete old remote tags for each package that was just versioned.
-  # git tag -l lists only the new tags (OLD_TAGS were deleted locally above).
-  # REMOTE_TAGS was captured before this run, so it holds only the old tags —
-  # the new ones were never in it, so we can safely delete everything that matches.
-  for new_tag in $(git tag -l); do
-    prefix=$(echo "$new_tag" | sed 's/@[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*$//')
-    old=$(echo "$REMOTE_TAGS" | grep "^${prefix}@" || true)
-    if [ -n "$old" ]; then
-      echo "$old" | xargs git push origin --delete 2>/dev/null || true
-    fi
-  done
-
   # Publish packages with retry logic.
   # `pnpm -r publish` reads versions from package.json and skips packages already
   # on the registry, so retries never re-publish already-published packages.
