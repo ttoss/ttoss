@@ -1,8 +1,11 @@
 name: cleanup-tags
 on:
   workflow_dispatch: {}
-  schedule:
-    - cron: '0 3 1 * *'
+  workflow_run:
+    workflows:
+      - main
+    types:
+      - completed
 jobs:
   cleanup-tags:
     runs-on: ubuntu-latest
