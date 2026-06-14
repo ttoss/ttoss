@@ -50,16 +50,16 @@ Single navigation table for all foundational design-system documents. Open the f
 
 ### Foundational Semantic Language (FSL)
 
-| Document                                                                   | Read when you need…                                                                                                              |
-| -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Document                                                             | Read when you need…                                                                                                              |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | [`fsl/index.md`](./fsl/index.md)                                     | Overview of FSL: what it is, the two normative artifacts, what derives from it.                                                  |
 | [`fsl/fsl-lexicon.md`](./fsl/fsl-lexicon.md)                         | Canonical dictionary — the meaning of every core term across the nine semantic dimensions (Entity Kind, Structural Role, etc.).  |
 | [`fsl/fsl-structural-language.md`](./fsl/fsl-structural-language.md) | Grammar — how lexicon terms combine into valid expressions, legality rules, and how downstream projections must derive from FSL. |
 
 ### Design Tokens — architecture & governance
 
-| Document                                                                       | Read when you need…                                                                               |
-| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| Document                                                                 | Read when you need…                                                                               |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
 | [`design-tokens/index.md`](./design-tokens/index.md)                     | Entry point: layered architecture (`core → semantic → component`) and the full family map.        |
 | [`design-tokens/quick-reference.md`](./design-tokens/quick-reference.md) | Intent → token cheatsheet for quick selection.                                                    |
 | [`design-tokens/model.md`](./design-tokens/model.md)                     | Architectural contract: invariants, RawValue exception inventory, FSL → token grammar projection. |
@@ -69,8 +69,8 @@ Single navigation table for all foundational design-system documents. Open the f
 
 ### Token families (foundation)
 
-| Document                                                                                       | Family                                                                            |
-| ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| Document                                                                           | Family                                                                            |
+| ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | [`design-tokens/families/colors.md`](./design-tokens/families/colors.md)           | Colors — UX/role/dimension/state grammar, FSL Entity Kind mapping, role coverage. |
 | [`design-tokens/families/typography.md`](./design-tokens/families/typography.md)   | Typography — families, weights, ramps, semantic text styles.                      |
 | [`design-tokens/families/spacing.md`](./design-tokens/families/spacing.md)         | Spacing — inset/gap/gutter/separation patterns and the responsive engine.         |
@@ -85,8 +85,8 @@ Single navigation table for all foundational design-system documents. Open the f
 
 ### Data Visualization (optional extension)
 
-| Document                                                                                                                       | Read when you need…                                                |
-| ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| Document                                                                                                           | Read when you need…                                                |
+| ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
 | [`design-tokens/data-visualization/index.md`](./design-tokens/data-visualization/index.md)                         | Overview of the dataviz extension — when and how to enable it.     |
 | [`design-tokens/data-visualization/dataviz-model.md`](./design-tokens/data-visualization/dataviz-model.md)         | Architectural extension of the token model for analytical meaning. |
 | [`design-tokens/data-visualization/dataviz-colors.md`](./design-tokens/data-visualization/dataviz-colors.md)       | Semantic roles for color in analytical contexts.                   |
@@ -94,8 +94,8 @@ Single navigation table for all foundational design-system documents. Open the f
 
 ### Components
 
-| Document                                                                 | Read when you need…                                                                          |
-| ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| Document                                                           | Read when you need…                                                                          |
+| ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
 | [`components/index.md`](./components/index.md)                     | Overview of the component framework.                                                         |
 | [`components/component-model.md`](./components/component-model.md) | Component Semantics Projection — how components derive from FSL and consume semantic tokens. |
 | [`components/icon-system.md`](./components/icon-system.md)         | Icon model and conventions.                                                                  |

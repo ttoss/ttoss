@@ -20,13 +20,11 @@ Once the **subtask** is created, the developer can work within it.
 The **subtask** is divided into two parts, the first is the task description and the second is the chat, where the team can talk about the development of the work.
 
 - Task description:
-
   - Title;
   - Detail description of what will be done in the task;
   - Evidence (images, GIF, videos etc);
 
 - Chat:
-
   - Dialogue between team;
   - To tag the whole team at once, just put `@watcher` and leave a comment.
 

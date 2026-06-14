@@ -41,13 +41,11 @@ Imagine a technology company is developing a new software product with two poten
 #### Analysis
 
 1. **Feature A**:
-
    - Time to complete: 28 days.
    - Additional revenue per day: \$10,000.
    - Total cost of delay: \$280,000.
 
 1. **Feature B**:
-
    - Time to complete: 14 days.
    - Additional revenue per day: \$6,000.
    - Total cost of delay: \$84,000.

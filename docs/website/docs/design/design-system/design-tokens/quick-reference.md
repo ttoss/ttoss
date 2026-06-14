@@ -100,21 +100,21 @@ See [Typography](./families/typography.md).
 
 ## Borders, radii, elevation — by intent
 
-| I want…                                 | Token                                                                           |
-| :-------------------------------------- | :------------------------------------------------------------------------------ |
-| 1px divider (width + style)             | `semantic.border.divider.{width,style}`                                         |
-| Control outline (button, input)         | `semantic.border.outline.control.{width,style}`                                 |
-| Surface outline (card)                  | `semantic.border.outline.surface.{width,style}`                                 |
-| Selected-state line                     | `semantic.border.outline.selected.{width,style}`                                |
-| Focus ring (width + style)              | `semantic.focus.ring.{width,style}`                                             |
+| I want…                                 | Token                                                                        |
+| :-------------------------------------- | :--------------------------------------------------------------------------- |
+| 1px divider (width + style)             | `semantic.border.divider.{width,style}`                                      |
+| Control outline (button, input)         | `semantic.border.outline.control.{width,style}`                              |
+| Surface outline (card)                  | `semantic.border.outline.surface.{width,style}`                              |
+| Selected-state line                     | `semantic.border.outline.selected.{width,style}`                             |
+| Focus ring (width + style)              | `semantic.focus.ring.{width,style}`                                          |
 | Focus ring color                        | see [Borders § Which focus colour](./families/borders.md#which-focus-colour) |
-| Control corner radius (buttons, inputs) | `semantic.radii.control`                                                        |
-| Surface corner radius (cards, dialogs)  | `semantic.radii.surface`                                                        |
-| Pill / fully round                      | `semantic.radii.round`                                                          |
-| Resting surface (no shadow)             | `semantic.elevation.surface.flat`                                               |
-| Card shadow                             | `semantic.elevation.surface.raised`                                             |
-| Dropdown / popover shadow               | `semantic.elevation.surface.overlay`                                            |
-| Modal / drawer shadow                   | `semantic.elevation.surface.blocking`                                           |
+| Control corner radius (buttons, inputs) | `semantic.radii.control`                                                     |
+| Surface corner radius (cards, dialogs)  | `semantic.radii.surface`                                                     |
+| Pill / fully round                      | `semantic.radii.round`                                                       |
+| Resting surface (no shadow)             | `semantic.elevation.surface.flat`                                            |
+| Card shadow                             | `semantic.elevation.surface.raised`                                          |
+| Dropdown / popover shadow               | `semantic.elevation.surface.overlay`                                         |
+| Modal / drawer shadow                   | `semantic.elevation.surface.blocking`                                        |
 
 See [Borders](./families/borders.md), [Radii](./families/radii.md), [Elevation](./families/elevation.md).
 
