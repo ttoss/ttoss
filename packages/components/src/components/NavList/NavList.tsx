@@ -62,7 +62,7 @@ const getVariantStyles = (variant: NavListProps['variant']) => {
           width: 'full',
         },
         item: {
-          backgroundColor: 'transparent',
+          backgroundColor: 'navigation.background.muted.default',
           color: 'navigation.text.primary.default',
           padding: '3',
           borderRadius: 'none',
@@ -100,7 +100,7 @@ const getVariantStyles = (variant: NavListProps['variant']) => {
           width: 'full',
         },
         item: {
-          backgroundColor: 'transparent',
+          backgroundColor: 'navigation.background.muted.default',
           color: 'navigation.text.primary.default',
           borderRadius: 'md',
           padding: '2',
@@ -136,7 +136,7 @@ const getVariantStyles = (variant: NavListProps['variant']) => {
           width: 'full',
         },
         item: {
-          backgroundColor: 'transparent',
+          backgroundColor: 'navigation.background.muted.default',
           color: 'navigation.text.primary.default',
           padding: '2',
           fontSize: 'sm',
