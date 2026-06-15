@@ -70,7 +70,7 @@ Expert developers have deep mental models of how systems work. They're accustome
 - "This code pattern always produces this behavior"
 - "When I see this error, it always means this problem"
 
-[AI agents are **probabilistic**](/docs/ai/agentic-development-principles#the-principle-of-probabilistic-ai-output). The same prompt can yield different responses. The same context can lead to different interpretations.
+[AI agents are **probabilistic**](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-probabilistic-ai-output). The same prompt can yield different responses. The same context can lead to different interpretations.
 
 Expert developers expect precision. When they don't get it, they blame the tool: "This AI doesn't understand the problem."
 
@@ -99,7 +99,7 @@ Smart developers love **systems**. When they discover AI, they follow a natural 
 
 This works brilliantly for deterministic tools. It **fails catastrophically for AI**.
 
-Why? Because effective AI collaboration requires **dynamic adaptation** (see **[The Corollary of Dynamic Adaptation](/docs/ai/agentic-development-principles#the-corollary-of-dynamic-adaptation)**). The same prompt produces different results depending on:
+Why? Because effective AI collaboration requires **dynamic adaptation** (see **[The Corollary of Dynamic Adaptation](/docs/ai/agentic-development-principles/protocol-of-communication#the-corollary-of-dynamic-adaptation)**). The same prompt produces different results depending on:
 
 - The accumulated context in the conversation
 - The specific nuances of the current task

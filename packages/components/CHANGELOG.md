@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.14.30](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.14.29...@ttoss/components@2.14.30) (2026-06-12)
+
+### Bug Fixes
+
+- **components:** hide Menu panel during first-frame position calculation ([#1054](https://github.com/ttoss/ttoss/issues/1054)) ([5e8d7a9](https://github.com/ttoss/ttoss/commit/5e8d7a91fd4652499455bb538581bb3ce79ea3c4)), closes [#1053](https://github.com/ttoss/ttoss/issues/1053)
+
 ## [2.14.29](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.14.28...@ttoss/components@2.14.29) (2026-06-10)
 
 **Note:** Version bump only for package @ttoss/components

@@ -1,0 +1,24 @@
+name: cleanup-tags
+on:
+  workflow_dispatch: {}
+  workflow_run:
+    workflows:
+      - main
+    types:
+      - completed
+jobs:
+  cleanup-tags:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+          fetch-tags: false
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Setup git user
+        run: |
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+      - name: Clean up old tags
+        run: bash ./.cicd/commands/cleanup-tags.sh

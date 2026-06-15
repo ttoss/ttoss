@@ -177,7 +177,7 @@ export default function principlesGraphPlugin(context, _options) {
       // Read the principle chapter files.
       const principlesDir = path.join(
         context.siteDir,
-        'docs/ai/02-agentic-development-principles'
+        'docs/ai/agentic-development-principles'
       );
 
       const markdownContent = fs

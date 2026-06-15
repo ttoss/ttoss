@@ -10,7 +10,7 @@ tags:
   - technical-debt
 ---
 
-We are witnessing a new phenomenon in AI-assisted teams: **[The Principle of Zero-Cost Erosion](/docs/ai/agentic-development-principles#the-principle-of-zero-cost-erosion)**.
+We are witnessing a new phenomenon in AI-assisted teams: **[The Principle of Zero-Cost Erosion](/docs/ai/agentic-development-principles/economics-of-interaction#the-principle-of-zero-cost-erosion)**.
 Because AI makes adding complexity (patching) nearly free, while refactoring remains expensive (requiring deep thought), teams are defaulting to infinite patching.
 
 <!-- truncate -->

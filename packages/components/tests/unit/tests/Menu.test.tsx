@@ -436,6 +436,102 @@ describe('Menu', () => {
     }
   });
 
+  test('panel has visibility:hidden on first open before position is computed', () => {
+    // Prevent RAF from executing so stylePos stays at initial value
+    const rafSpy = jest
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation(() => {
+        return 1; // never invoke the callback
+      });
+
+    try {
+      render(
+        <Menu>
+          <div>Menu Content</div>
+        </Menu>
+      );
+
+      fireEvent.click(screen.getByRole('button'));
+
+      const content = screen.getByText('Menu Content');
+      let node = content.parentElement;
+      while (node && node !== document.body) {
+        const styleAttr = node.getAttribute && node.getAttribute('style');
+        if (styleAttr && /pointer-events/.test(styleAttr)) break;
+        node = node.parentElement;
+      }
+      expect(node).toBeTruthy();
+      if (!node) return;
+      const vis =
+        node.style.visibility ||
+        (node.getAttribute('style') || '')
+          .match(/visibility\s*:\s*([^;]+)/)?.[1]
+          ?.trim();
+      expect(vis).toBe('hidden');
+    } finally {
+      rafSpy.mockRestore();
+    }
+  });
+
+  test('panel becomes visible after position is computed', async () => {
+    const rafSpy = jest
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation((cb: FrameRequestCallback) => {
+        cb(0);
+        return 1;
+      });
+
+    jest
+      .spyOn(Element.prototype, 'getBoundingClientRect')
+      .mockImplementation(function (this: Element) {
+        if (this.tagName === 'BUTTON') {
+          return {
+            left: 100,
+            width: 40,
+            right: 140,
+            top: 100,
+            bottom: 140,
+            height: 40,
+          } as DOMRect;
+        }
+        return {
+          left: 0,
+          width: 200,
+          right: 200,
+          top: 0,
+          bottom: 100,
+          height: 100,
+        } as DOMRect;
+      });
+
+    try {
+      render(
+        <Menu>
+          <div>Menu Content</div>
+        </Menu>
+      );
+
+      fireEvent.click(screen.getByRole('button'));
+
+      await waitFor(() => {
+        const content = screen.getByText('Menu Content');
+        let node = content.parentElement;
+        while (node && node !== document.body) {
+          const styleAttr = node.getAttribute && node.getAttribute('style');
+          if (styleAttr && /position\s*:\s*fixed/.test(styleAttr)) break;
+          node = node.parentElement;
+        }
+        expect(node).toBeTruthy();
+        if (!node) return;
+        const vis = node.style.visibility;
+        expect(vis).not.toBe('hidden');
+      });
+    } finally {
+      rafSpy.mockRestore();
+      jest.restoreAllMocks();
+    }
+  });
+
   test('adds resize and scroll listeners (scroll with capture true)', () => {
     const addSpy = jest.spyOn(window, 'addEventListener');
 
