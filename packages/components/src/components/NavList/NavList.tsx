@@ -63,12 +63,14 @@ const getVariantStyles = (variant: NavListProps['variant']) => {
         },
         item: {
           backgroundColor: 'transparent',
+          color: 'navigation.text.primary.default',
           padding: '3',
           borderRadius: 'none',
           fontSize: 'md',
-          transition: 'background-color 0.15s ease',
+          transition: 'background-color 0.15s ease, color 0.15s ease',
           '&:hover': {
             backgroundColor: 'navigation.background.muted.hover',
+            color: 'navigation.text.primary.hover',
             textDecoration: 'none',
           },
         },
@@ -99,12 +101,14 @@ const getVariantStyles = (variant: NavListProps['variant']) => {
         },
         item: {
           backgroundColor: 'transparent',
+          color: 'navigation.text.primary.default',
           borderRadius: 'md',
           padding: '2',
           fontSize: 'md',
           transition: 'all 0.2s ease',
           '&:hover': {
             backgroundColor: 'navigation.background.muted.hover',
+            color: 'navigation.text.primary.hover',
             transform: 'translateX(4px)',
             textDecoration: 'none',
           },
@@ -133,13 +137,15 @@ const getVariantStyles = (variant: NavListProps['variant']) => {
         },
         item: {
           backgroundColor: 'transparent',
+          color: 'navigation.text.primary.default',
           padding: '2',
           fontSize: 'sm',
           borderBottom: 'sm',
           borderColor: 'display.border.muted.default',
-          transition: 'background-color 0.1s ease',
+          transition: 'background-color 0.1s ease, color 0.1s ease',
           '&:hover': {
             backgroundColor: 'navigation.background.muted.hover',
+            color: 'navigation.text.primary.hover',
             textDecoration: 'none',
           },
         },
@@ -162,6 +168,19 @@ const getVariantStyles = (variant: NavListProps['variant']) => {
     default:
       return getVariantStyles('menu');
   }
+};
+
+const resolveItemStyles = (
+  item: NavListItem,
+  variantStyles: ReturnType<typeof getVariantStyles>
+) => {
+  return {
+    ...variantStyles.item,
+    ...(item.active ? variantStyles.activeItem : {}),
+    ...(item.disabled
+      ? { opacity: 0.5, cursor: 'not-allowed', pointerEvents: 'none' as const }
+      : {}),
+  };
 };
 
 const NavListItemComponent = ({
@@ -189,18 +208,8 @@ const NavListItemComponent = ({
     onItemClick?.(item);
   };
 
-  const itemStyles = {
-    ...variantStyles.item,
-    ...(item.active ? variantStyles.activeItem : {}),
-    ...(item.disabled
-      ? {
-          opacity: 0.5,
-          cursor: 'not-allowed',
-          pointerEvents: 'none' as const,
-        }
-      : {}),
-  };
-
+  const itemStyles = resolveItemStyles(item, variantStyles);
+  const ariaCurrent = item.active ? ('page' as const) : undefined;
   const isDefaultLink = LinkComponent === Link;
 
   const linkContent = (
@@ -208,7 +217,6 @@ const NavListItemComponent = ({
       sx={{
         alignItems: 'center',
         gap: '2',
-        color: 'navigation.text.primary.default',
       }}
     >
       {item.icon && (
@@ -230,7 +238,7 @@ const NavListItemComponent = ({
           onClick={handleClick}
           sx={itemStyles}
           aria-disabled={item.disabled}
-          aria-current={item.active ? ('page' as const) : undefined}
+          aria-current={ariaCurrent}
           quiet={true}
         >
           {linkContent}
@@ -242,7 +250,7 @@ const NavListItemComponent = ({
           onClick={handleClick}
           sx={itemStyles}
           aria-disabled={item.disabled}
-          aria-current={item.active ? ('page' as const) : undefined}
+          aria-current={ariaCurrent}
           quiet={true}
         >
           {linkContent}
