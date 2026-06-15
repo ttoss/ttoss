@@ -57,19 +57,19 @@ const MyMap = () => (
 
 Top-level spec object passed to `GeoVisProvider`.
 
-| Field         | Type                      | Required | Description                                                                                                                                |
-| ------------- | ------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `id`          | `string`                  | ✓        | Unique spec identifier.                                                                                                                    |
-| `engine`      | `'maplibre'`              | ✓        | Engine adapter to use. Currently only `'maplibre'` is supported.                                                                           |
-| `sources`     | `DataSource[]`            | ✓        | Data sources referenced by layers. Supported types: `'geojson'`, `'vector-tiles'`, `'raster-tiles'`, `'raster-dem'`, `'image'`, `'video'`. |
-| `layers`      | `VisualizationLayer[]`    | ✓        | Ordered list of layers to render (bottom-to-top).                                                                                          |
-| `title`       | `string`                  |          | Human-readable title.                                                                                                                      |
-| `description` | `string`                  |          | Human-readable description.                                                                                                                |
-| `view`        | `ViewState`               |          | Initial camera state: `center`, `zoom`, `pitch`, `bearing`, `projection`.                                                                  |
-| `basemap`     | `BaseMapSpec`             |          | Basemap tile style. Pass `visible: false` to hide tiles and show only GeoJSON layers.                                                      |
-| `legends`     | `LegendSpec[]`            |          | Shared legend registry. Layers reference entries via `activeLegendId`.                                                                     |
-| `mapData`     | `MapData[]`               |          | Attribute datasets joined to GeoJSON sources for choropleth coloring and tooltips.                                                         |
-| `metadata`    | `Record<string, unknown>` |          | Arbitrary consumer metadata; not read by the runtime.                                                                                      |
+| Field         | Type                      | Required | Description                                                                                                                                              |
+| ------------- | ------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`          | `string`                  | ✓        | Unique spec identifier.                                                                                                                                  |
+| `engine`      | `'maplibre'`              | ✓        | Engine adapter to use. Currently only `'maplibre'` is supported.                                                                                         |
+| `sources`     | `DataSource[]`            | ✓        | Data sources referenced by layers. Supported types: `'geojson'`, `'vector-tiles'`, `'raster-tiles'`, `'raster-dem'`, `'image'`, `'video'`.               |
+| `layers`      | `VisualizationLayer[]`    | ✓        | Ordered list of layers to render (bottom-to-top).                                                                                                        |
+| `title`       | `string`                  |          | Human-readable title.                                                                                                                                    |
+| `description` | `string`                  |          | Human-readable description.                                                                                                                              |
+| `view`        | `ViewState`               |          | Initial camera state: `center`, `zoom`, `pitch`, `bearing`, `projection`.                                                                                |
+| `basemap`     | `BaseMapSpec`             |          | Basemap tile style. Pass `visible: false` to hide tiles and show only GeoJSON layers. When hidden, the canvas container receives a `#fcfcfc` background. |
+| `legends`     | `LegendSpec[]`            |          | Shared legend registry. Layers reference entries via `activeLegendId`.                                                                                   |
+| `mapData`     | `MapData[]`               |          | Attribute datasets joined to GeoJSON sources for choropleth coloring and tooltips.                                                                       |
+| `metadata`    | `Record<string, unknown>` |          | Arbitrary consumer metadata; not read by the runtime.                                                                                                    |
 
 ### `VisualizationLayer`
 
@@ -270,6 +270,93 @@ applyPatch({
   value: 210_000,
 });
 ```
+
+## Boundary Groups
+
+Boundary groups let you overlay administrative boundaries (states, municipalities,
+sub-prefectures) on top of a base spec. Each group bundles its own GeoJSON source
+and line layer so you can toggle visibility without removing or re-adding sources.
+
+### Creating a group
+
+Use `createBoundaryGroup` to build a group from a URL or inline GeoJSON:
+
+```ts
+import { createBoundaryGroup } from '@ttoss/geovis';
+
+// URL — MapLibre fetches the GeoJSON internally
+const statesGroup = createBoundaryGroup({
+  id: 'brazil-states',
+  data: 'https://example.com/estados.geojson',
+});
+
+// Inline GeoJSON with custom paint
+const districtsGroup = createBoundaryGroup({
+  id: 'sp-districts',
+  data: { type: 'FeatureCollection', features: [...] },
+  paint: { lineColor: '#ef4444', lineWidth: 2 },
+});
+```
+
+The factory creates a single GeoJSON source and a companion line layer with
+sensible defaults (`lineColor: '#6b7280'`, `lineWidth: 1`).
+
+### Appending and toggling (imperative)
+
+Three pure helpers manipulate groups on a spec without React:
+
+| Function                 | Purpose                                                          |
+| ------------------------ | ---------------------------------------------------------------- |
+| `appendBoundaryGroup`    | Appends group sources and layers to a spec (returns new object). |
+| `toggleBoundaryGroup`    | Sets `visible` on every layer matching the group's layer IDs.    |
+| `customizeBoundaryGroup` | Returns a new group with overridden `lineColor`/`lineWidth`.     |
+
+```ts
+import { appendBoundaryGroup, toggleBoundaryGroup } from '@ttoss/geovis';
+
+let spec = appendBoundaryGroup(baseSpec, statesGroup);
+spec = toggleBoundaryGroup(spec, statesGroup, false); // hide
+```
+
+### Toggle hook (React)
+
+`useBoundaryToggle` manages visibility state for a set of groups inside React.
+All groups start visible. Toggling flips `layer.visible` — sources are never
+removed or re-added, so there is no map flicker.
+
+```tsx
+import {
+  createBoundaryGroup,
+  GeoVisCanvas,
+  GeoVisProvider,
+  useBoundaryToggle,
+} from '@ttoss/geovis';
+
+const statesGroup = createBoundaryGroup({
+  id: 'brazil-states',
+  data: 'https://example.com/estados.geojson',
+});
+
+const MyMap = ({ spec }) => {
+  const {
+    spec: liveSpec,
+    toggle,
+    isVisible,
+  } = useBoundaryToggle(spec, [statesGroup]);
+
+  return (
+    <GeoVisProvider spec={liveSpec}>
+      <GeoVisCanvas viewId="main" style={{ width: '100%', height: '400px' }} />
+      <button onClick={() => toggle(statesGroup)}>
+        {isVisible(statesGroup) ? 'Hide states' : 'Show states'}
+      </button>
+    </GeoVisProvider>
+  );
+};
+```
+
+> **Important:** pass a stable array reference for `groups` (module constant or
+> `useMemo`). Changing the array reference re-appends all groups to the spec.
 
 ## Spec Validation
 
@@ -616,6 +703,66 @@ import { GeoVisCanvas, GeoVisMarker, GeoVisProvider } from '@ttoss/geovis';
   </GeoVisMarker>
 </GeoVisProvider>;
 ```
+
+### `createBoundaryGroup`
+
+Creates a `BoundaryGroup` containing a single GeoJSON source and a companion line layer.
+
+| Param     | Type                                         | Required | Description                                                           |
+| --------- | -------------------------------------------- | -------- | --------------------------------------------------------------------- |
+| `id`      | `string`                                     | ✓        | Source ID — referenced by the layer's `sourceId`.                     |
+| `data`    | `string \| GeoJSONObject`                    | ✓        | Inline GeoJSON object or a URL string that MapLibre will fetch.       |
+| `layerId` | `string`                                     |          | Layer ID. Defaults to `${id}-line`.                                   |
+| `paint`   | `{ lineColor?: string; lineWidth?: number }` |          | Line paint overrides. Defaults: `lineColor '#6b7280'`, `lineWidth 1`. |
+
+Returns a `BoundaryGroup` ready for `appendBoundaryGroup`, `toggleBoundaryGroup`, or `useBoundaryToggle`.
+
+### `appendBoundaryGroup`
+
+Merges a `BoundaryGroup` into a `VisualizationSpec`. Appends the group's sources and layers to the spec's arrays. Returns a **new** spec object — the original is not mutated.
+
+| Param   | Type                | Description                        |
+| ------- | ------------------- | ---------------------------------- |
+| `spec`  | `VisualizationSpec` | The base spec (without the group). |
+| `group` | `BoundaryGroup`     | The boundary group to append.      |
+
+### `toggleBoundaryGroup`
+
+Sets the `visible` flag on every layer in `spec` whose `id` matches any layer ID in `group`. When `visible` is `true`, the property is omitted (default-visible). When `false`, it is explicitly set. Returns a new spec.
+
+| Param     | Type                | Description                                        |
+| --------- | ------------------- | -------------------------------------------------- |
+| `spec`    | `VisualizationSpec` | The spec containing the layers to toggle.          |
+| `group`   | `BoundaryGroup`     | The boundary group whose layers should be toggled. |
+| `visible` | `boolean`           | `true` to show, `false` to hide.                   |
+
+### `customizeBoundaryGroup`
+
+Returns a new `BoundaryGroup` with overridden paint properties on every line layer. Non-line layers are returned unchanged.
+
+| Param       | Type                                         | Description                        |
+| ----------- | -------------------------------------------- | ---------------------------------- |
+| `group`     | `BoundaryGroup`                              | The boundary group to customize.   |
+| `overrides` | `{ lineColor?: string; lineWidth?: number }` | Partial paint properties to apply. |
+
+### `useBoundaryToggle`
+
+React hook that manages visibility state for a set of `BoundaryGroup`s over a base spec. All groups start **visible**. The hook appends groups once and then drives `layer.visible` via `toggleBoundaryGroup` — sources are never removed or re-added, so there is no map flicker.
+
+Must be called inside `GeoVisProvider` (or with a spec that will be passed to one).
+
+| Param      | Type                           | Description                                                                                  |
+| ---------- | ------------------------------ | -------------------------------------------------------------------------------------------- |
+| `baseSpec` | `VisualizationSpec`            | Spec without any boundary groups.                                                            |
+| `groups`   | `ReadonlyArray<BoundaryGroup>` | Ordered list of groups to manage. Must be a stable reference (module constant or `useMemo`). |
+
+Returns `BoundaryToggleResult`:
+
+| Field       | Type                                | Description                                                |
+| ----------- | ----------------------------------- | ---------------------------------------------------------- |
+| `spec`      | `VisualizationSpec`                 | Spec with all groups appended and visibility synchronized. |
+| `toggle`    | `(group: BoundaryGroup) => void`    | Toggles the visibility of the specified group.             |
+| `isVisible` | `(group: BoundaryGroup) => boolean` | Returns `true` when the group is visible.                  |
 
 ### `validateSpec`
 
