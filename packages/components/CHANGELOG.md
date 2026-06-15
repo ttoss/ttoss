@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.14.31 (2026-06-15)
+
+### Bug Fixes
+
+- **components:** remove redundant nav element from Menu ([#1076](https://github.com/ttoss/ttoss/issues/1076)) ([52f11c8](https://github.com/ttoss/ttoss/commit/52f11c8468eb6ada306a8930271ac299a43ca9ff))
+- **website:** generate markdown files for llms.txt references ([#1060](https://github.com/ttoss/ttoss/issues/1060)) ([8785a31](https://github.com/ttoss/ttoss/commit/8785a31af53fcd5d3899c08b06de4b9f157c9d8d))
+
 ## [2.14.30](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.14.29...@ttoss/components@2.14.30) (2026-06-12)
 
 ### Bug Fixes
