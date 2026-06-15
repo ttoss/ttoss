@@ -42,8 +42,8 @@ export const GeoVisCanvas = ({
   const containerStyle: React.CSSProperties = {
     width: '100%',
     height: '100%',
-    ...style,
     ...(isBasemapHidden && { backgroundColor: '#fcfcfc' }),
+    ...style,
   };
 
   return (

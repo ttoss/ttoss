@@ -23,9 +23,6 @@ export const getMunicipalDistrictSpec = ({
   populationSteps,
   DEFAULT_COLOR,
   showBasemap,
-  labelFormat,
-  noDataLabel,
-  position,
 }: SpecParams): VisualizationSpec => {
   return {
     id: 'municipal-district-mapdata',
@@ -60,9 +57,6 @@ export const getMunicipalDistrictSpec = ({
       {
         id: 'population',
         label: `Population by district \u2014 ${year}`,
-        labelFormat,
-        ...(noDataLabel && { noDataLabel }),
-        ...(position && { position }),
         colorBy: {
           type: 'quantitative',
           property: 'population',

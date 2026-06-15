@@ -54,19 +54,6 @@ const DEFAULT_COLOR = '#f0f9ff';
 const AVAILABLE_YEARS = [
   2000, 2005, 2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050,
 ] as const;
-const _SAO_PAULO_POPULATION = 12_272_000;
-const numeratorLabel = 'inhabitants';
-const _customRangeFormatter = (
-  lower: number | null,
-  upper: number | null
-): string => {
-  const fmt = (v: number) => {
-    return `${(v / 1_000).toFixed(0)}k`;
-  };
-  if (lower === null) return `0 - ${fmt(upper!)} ${numeratorLabel}`;
-  if (upper === null) return `${fmt(lower!)} ${numeratorLabel} or more`;
-  return `${fmt(lower!)} – ${fmt(upper!)} ${numeratorLabel}`;
-};
 type Year = (typeof AVAILABLE_YEARS)[number];
 const fmtPop = (v: number) => {
   return `${(v / 1_000).toFixed(0)}k inhabitants`;
@@ -376,34 +363,3 @@ const baseVariationArgs = {
 };
 
 MunicipalDistrictMapData.args = baseVariationArgs;
-
-export const WithRangeLabel: typeof MunicipalDistrictMapData =
-  MunicipalDistrictMapData.bind({});
-WithRangeLabel.args = {
-  ...baseVariationArgs,
-  showBasemap: false,
-};
-
-export const WithPercentageLabel: typeof MunicipalDistrictMapData =
-  MunicipalDistrictMapData.bind({});
-WithPercentageLabel.args = {
-  ...baseVariationArgs,
-};
-
-export const WithStdDevLabel: typeof MunicipalDistrictMapData =
-  MunicipalDistrictMapData.bind({});
-WithStdDevLabel.args = {
-  ...baseVariationArgs,
-};
-
-export const WithPositionedLegend: typeof MunicipalDistrictMapData =
-  MunicipalDistrictMapData.bind({});
-WithPositionedLegend.args = {
-  ...baseVariationArgs,
-};
-
-export const WithCustomLabel: typeof MunicipalDistrictMapData =
-  MunicipalDistrictMapData.bind({});
-WithCustomLabel.args = {
-  ...baseVariationArgs,
-};
