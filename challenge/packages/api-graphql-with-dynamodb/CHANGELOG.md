@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.27](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.2.26...@ttoss-challenge/api-graphql-with-dynamodb@0.2.27) (2026-06-14)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## [0.2.26](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.2.25...@ttoss-challenge/api-graphql-with-dynamodb@0.2.26) (2026-06-14)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## [0.2.25](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.2.24...@ttoss-challenge/api-graphql-with-dynamodb@0.2.25) (2026-06-14)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
 ## [0.2.24](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.2.23...@ttoss-challenge/api-graphql-with-dynamodb@0.2.24) (2026-06-11)
 
 **Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb

@@ -6,10 +6,83 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { CognitoJwtVerifier } from '@ttoss/auth-core/amazon-cognito';
 import { Router } from '@ttoss/http-server';
+import { authMiddleware } from '@ttoss/http-server-auth';
 import type Koa from 'koa';
 import { z } from 'zod';
 
 type Context = Koa.Context;
+
+/** Amazon Cognito user pool configuration for JWT verification. */
+export interface CognitoUserPoolConfig {
+  /** The Cognito User Pool ID (e.g. `us-east-1_abc123`). */
+  userPoolId: string;
+  /**
+   * Which token type to verify.
+   * @default 'access'
+   */
+  tokenUse?: 'access' | 'id';
+  /** The app client ID registered in the User Pool. */
+  clientId: string;
+}
+
+/**
+ * Authentication options for the MCP endpoint. Verification runs through
+ * `@ttoss/http-server-auth`'s `oauth` strategy; supply either a Cognito user
+ * pool or a custom `verifyToken`.
+ */
+export interface McpAuthOptions {
+  /** Amazon Cognito user pool config; a `CognitoJwtVerifier` is built from it. */
+  cognitoUserPool?: CognitoUserPoolConfig;
+  /**
+   * Custom token verifier for non-Cognito providers (Auth0, Keycloak, your own
+   * JWTs, opaque tokens). Resolve with the verified payload, or throw to reject.
+   */
+  verifyToken?: (token: string) => Promise<unknown>;
+  /** Scopes that must all be present on the token's `scope` claim, else `403`. */
+  requiredScopes?: string[];
+  /**
+   * JSON-RPC methods (read from `body.method`) that bypass verification.
+   * @default ['initialize', 'tools/list']
+   */
+  publicMethods?: string[];
+  /**
+   * When set, a `401` carries `WWW-Authenticate: Bearer resource_metadata="…"`
+   * (RFC 9728) so MCP clients can discover the authorization server.
+   */
+  resourceMetadataUrl?: string;
+  /**
+   * URL of this MCP server, surfaced in the OAuth Protected Resource Metadata
+   * response. Both this and `authorizationServerUrl` must be set to serve
+   * `/.well-known/oauth-protected-resource`.
+   */
+  resourceServerUrl?: string;
+  /** URL of the OAuth Authorization Server that issues tokens for this resource. */
+  authorizationServerUrl?: string;
+}
+
+/** MCP lifecycle/discovery methods reachable before a client authenticates. */
+const DEFAULT_PUBLIC_METHODS = ['initialize', 'tools/list'];
+
+/** Builds the token verifier from the MCP auth options. */
+const buildVerifyToken = (
+  auth: McpAuthOptions
+): ((token: string) => Promise<unknown>) => {
+  if (auth.cognitoUserPool) {
+    const verifier = CognitoJwtVerifier.create({
+      tokenUse: 'access',
+      ...auth.cognitoUserPool,
+    });
+    return (token) => {
+      return verifier.verify(token);
+    };
+  }
+  if (auth.verifyToken) {
+    return auth.verifyToken;
+  }
+  throw new Error(
+    'McpAuthOptions requires either cognitoUserPool or verifyToken'
+  );
+};
 
 interface RequestContext {
   apiBaseUrl?: string;
@@ -191,60 +264,6 @@ export const checkScopes = (required: string[]): void => {
   }
 };
 
-/** Amazon Cognito user pool configuration for JWT verification. */
-export interface CognitoUserPoolConfig {
-  /** The Cognito User Pool ID (e.g. `us-east-1_abc123`). */
-  userPoolId: string;
-  /**
-   * Which token type to verify.
-   * @default 'access'
-   */
-  tokenUse?: 'access' | 'id';
-  /** The app client ID registered in the User Pool. */
-  clientId: string;
-}
-
-/**
- * Authentication options for the MCP router.
- *
- * Supply either `cognitoUserPool` (uses `CognitoJwtVerifier` from
- * `@ttoss/auth-core`) or a custom `verifyToken` function — not both.
- */
-export interface McpAuthOptions {
-  /**
-   * Amazon Cognito user pool config. When provided, the router creates a
-   * `CognitoJwtVerifier` and validates every incoming Bearer token against it.
-   */
-  cognitoUserPool?: CognitoUserPoolConfig;
-  /**
-   * Custom token verifier for non-Cognito providers (Auth0, Keycloak, …).
-   * Receives the raw Bearer token string. Should resolve with the verified
-   * payload or reject/throw on failure.
-   */
-  verifyToken?: (token: string) => Promise<unknown>;
-  /**
-   * Router-level scope guard. All listed scopes must be present on the token
-   * for any MCP request to be allowed. Returns 403 if any scope is missing.
-   *
-   * Cognito encodes scopes as a space-separated string in `payload.scope`.
-   *
-   * @example ['mcp:access']
-   */
-  requiredScopes?: string[];
-  /**
-   * URL of this MCP server, used in the OAuth Protected Resource Metadata
-   * response (`/.well-known/oauth-protected-resource`). Both this field and
-   * `authorizationServerUrl` must be provided to enable the endpoint.
-   */
-  resourceServerUrl?: string;
-  /**
-   * URL of the OAuth Authorization Server that issues tokens for this resource.
-   * Enables `/.well-known/oauth-protected-resource` for MCP client auto-discovery
-   * (RFC 9728) when combined with `resourceServerUrl`.
-   */
-  authorizationServerUrl?: string;
-}
-
 /**
  * Options for configuring the MCP router
  */
@@ -301,10 +320,13 @@ export interface McpRouterOptions {
   /**
    * OAuth / JWT authentication configuration for the MCP endpoint.
    *
-   * When set, every incoming MCP request must include a valid Bearer token in
-   * the `Authorization` header. Invalid or missing tokens receive a `401`
-   * response with `WWW-Authenticate: Bearer`. Tokens that fail a
-   * `requiredScopes` check receive `403`.
+   * When set, incoming MCP requests must include a valid Bearer token in the
+   * `Authorization` header — except for `publicMethods` (by default
+   * `initialize` and `tools/list`), which bypass verification so clients can
+   * discover the server before authenticating. Invalid or missing tokens
+   * receive a `401` response with `WWW-Authenticate: Bearer` (or
+   * `Bearer resource_metadata="..."` when `resourceMetadataUrl` is set, per
+   * RFC 9728). Tokens that fail a `requiredScopes` check receive `403`.
    *
    * The verified token payload is accessible inside tool handlers via
    * {@link getIdentity}. Fine-grained per-tool scope checks can be done with
@@ -331,74 +353,6 @@ export interface McpRouterOptions {
    */
   auth?: McpAuthOptions;
 }
-
-const buildTokenVerifier = (
-  auth: McpAuthOptions
-): ((token: string) => Promise<unknown>) => {
-  if (auth.cognitoUserPool) {
-    const v = CognitoJwtVerifier.create({
-      tokenUse: 'access',
-      ...auth.cognitoUserPool,
-    });
-    return (t) => {
-      return v.verify(t);
-    };
-  }
-  if (auth.verifyToken) {
-    return auth.verifyToken;
-  }
-  throw new Error(
-    'McpAuthOptions requires either cognitoUserPool or verifyToken'
-  );
-};
-
-const registerAuthRoutes = (
-  router: Router,
-  path: string,
-  auth: McpAuthOptions,
-  tokenVerifier: (token: string) => Promise<unknown>
-): void => {
-  router.use(path, async (ctx: Context, next) => {
-    const authHeader = ctx.headers.authorization;
-    const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : '';
-
-    let identity: unknown;
-    try {
-      identity = await tokenVerifier(token);
-    } catch {
-      ctx.status = 401;
-      ctx.set('WWW-Authenticate', 'Bearer');
-      ctx.body = 'Unauthorized';
-      return;
-    }
-
-    if (auth.requiredScopes?.length) {
-      const tokenScopes = ((identity as { scope?: string })?.scope ?? '').split(
-        ' '
-      );
-      const missing = auth.requiredScopes.filter((s) => {
-        return !tokenScopes.includes(s);
-      });
-      if (missing.length > 0) {
-        ctx.status = 403;
-        ctx.body = 'Forbidden';
-        return;
-      }
-    }
-
-    (ctx.state as { identity?: unknown }).identity = identity;
-    await next();
-  });
-
-  if (auth.resourceServerUrl && auth.authorizationServerUrl) {
-    router.get('/.well-known/oauth-protected-resource', (ctx: Context) => {
-      ctx.body = {
-        resource: auth.resourceServerUrl,
-        authorization_servers: [auth.authorizationServerUrl],
-      };
-    });
-  }
-};
 
 /**
  * Creates a Koa router configured to handle MCP protocol requests
@@ -483,7 +437,40 @@ export const createMcpRouter = (
   const router = new Router();
 
   if (auth) {
-    registerAuthRoutes(router, path, auth, buildTokenVerifier(auth));
+    const verifyToken = buildVerifyToken(auth);
+    const publicMethods = new Set(auth.publicMethods ?? DEFAULT_PUBLIC_METHODS);
+
+    const verify = authMiddleware({
+      strategies: ['oauth'],
+      oauth: {
+        verify: (token) => {
+          return verifyToken(token) as Promise<Record<string, unknown>>;
+        },
+        requiredScopes: auth.requiredScopes,
+      },
+      resourceMetadataUrl: auth.resourceMetadataUrl,
+    });
+
+    // Public lifecycle/discovery methods bypass verification so clients can
+    // discover the server before they have a token (MCP authorization spec).
+    router.use(path, async (ctx: Context, next) => {
+      const method = (ctx.request.body as { method?: string } | undefined)
+        ?.method;
+      if (publicMethods.has(method ?? '')) {
+        await next();
+        return;
+      }
+      await verify(ctx, next);
+    });
+
+    if (auth.resourceServerUrl && auth.authorizationServerUrl) {
+      router.get('/.well-known/oauth-protected-resource', (ctx: Context) => {
+        ctx.body = {
+          resource: auth.resourceServerUrl,
+          authorization_servers: [auth.authorizationServerUrl],
+        };
+      });
+    }
   }
 
   const handleWithContext = async (
@@ -491,7 +478,8 @@ export const createMcpRouter = (
     body?: unknown
   ): Promise<void> => {
     const apiHeaders = getApiHeaders ? getApiHeaders(ctx) : {};
-    const identity = (ctx.state as { identity?: unknown }).identity;
+    // `authMiddleware` stores the verified payload on `ctx.state.user`.
+    const identity = (ctx.state as { user?: unknown }).user;
 
     const runRequest = async (
       transport: StreamableHTTPServerTransport
@@ -756,84 +744,6 @@ export const registerToolFromSchema = (
       );
     }
   }
-};
-
-/**
- * Returns the `WWW-Authenticate` header value for a 401 response on a
- * protected resource, following the MCP auth spec requirement that
- * unauthorized responses advertise the resource metadata URL so MCP
- * clients can bootstrap OAuth discovery.
- *
- * Use this in your own auth middleware when you are not using the built-in
- * `auth` option on `createMcpRouter`.
- *
- * @example
- * ```typescript
- * import { getWwwAuthenticateHeader } from '@ttoss/http-server-mcp';
- *
- * // Inside a Koa middleware
- * ctx.status = 401;
- * ctx.set('WWW-Authenticate', getWwwAuthenticateHeader({ resource: 'https://mcp.example.com' }));
- * ```
- */
-export const getWwwAuthenticateHeader = (args: {
-  /**
-   * The resource server URL. The metadata URL is derived as
-   * `<resource>/.well-known/oauth-protected-resource` per RFC 9728.
-   */
-  resource: string;
-}): string => {
-  const metadataUrl = `${args.resource.replace(/\/$/, '')}/.well-known/oauth-protected-resource`;
-  return `Bearer resource_metadata="${metadataUrl}"`;
-};
-
-/**
- * Creates a standalone Koa middleware that serves
- * `GET /.well-known/oauth-protected-resource` (RFC 9728) without requiring
- * the built-in `auth` option on `createMcpRouter`.
- *
- * Mount this **before** your own auth middleware so the discovery endpoint
- * remains unauthenticated (MCP clients fetch it before they have a token).
- *
- * @example
- * ```typescript
- * import Koa from 'koa';
- * import { createProtectedResourceMetadataMiddleware } from '@ttoss/http-server-mcp';
- *
- * const app = new Koa();
- * app.use(
- *   createProtectedResourceMetadataMiddleware({
- *     resource: 'https://mcp.example.com',
- *     authorizationServers: ['https://api.example.com'],
- *   })
- * );
- * app.use(myOwnAuthMiddleware);
- * ```
- */
-export const createProtectedResourceMetadataMiddleware = (args: {
-  /**
-   * The protected resource's identifier URI (the MCP server URL).
-   */
-  resource: string;
-  /**
-   * List of authorization server issuer URIs that issue tokens for this
-   * resource.
-   */
-  authorizationServers: string[];
-}): Koa.Middleware => {
-  return async (ctx: Context, next) => {
-    if (
-      ctx.method === 'GET' &&
-      ctx.path === '/.well-known/oauth-protected-resource'
-    ) {
-      ctx.body = {
-        resource: args.resource,
-        authorization_servers: args.authorizationServers,
-      };
-      return;
-    }
-    await next();
-  };
 };
 
 /**

@@ -1,15 +1,20 @@
 export ENVIRONMENT=Production
 
+# Cache all remote tags once to avoid repeated git ls-remote calls.
+REMOTE_TAGS_FULL=$(git ls-remote --tags origin)
+
 # Check if the current HEAD is already tagged on the remote.
-# Uses git ls-remote to avoid the cost of fetching all tags locally.
 HEAD_SHA=$(git rev-parse HEAD)
-if git ls-remote --tags origin | awk '{print $1}' | grep -q "^$HEAD_SHA$"; then
+if echo "$REMOTE_TAGS_FULL" | awk '{print $1}' | grep -q "^$HEAD_SHA$"; then
   echo "There are tags in the current commit, exiting main workflow"
   exit 0
 fi
 
-# Find the latest tag name without fetching all tags locally.
-export LATEST_TAG=$(git ls-remote --tags origin | grep -v '\^{}' | awk '{print $2}' | sed 's|refs/tags/||' | sort -V | tail -1)
+# Extract tag names (excluding peeled annotated-tag objects ^{}).
+REMOTE_TAGS=$(echo "$REMOTE_TAGS_FULL" | grep -v '\^{}' | awk '{print $2}' | sed 's|refs/tags/||')
+
+# Find the latest tag name.
+export LATEST_TAG=$(echo "$REMOTE_TAGS" | sort -V | tail -1)
 
 # Fetch only that one tag so its commit object exists in the local repo.
 # This avoids downloading all tags while still letting turbo resolve the SHA.

@@ -1,0 +1,142 @@
+---
+title: Introduction
+sidebar_position: 1
+slug: ./
+---
+
+import { Carlin } from '../../src/components/Carlin';
+
+**carlin** is a CLI tool for deploying AWS infrastructure using CloudFormation templates. It automates Lambda code building, S3 uploads, stack naming, multi-environment deployments, and CI/CD pipelines.
+
+## What is carlin?
+
+carlin started in 2018 as deployment scripts for managing CloudFormation stacks across multiple environments (development, staging, production). After streamlining numerous deployments, we packaged these scripts into a unified CLI tool.
+
+Today, carlin handles:
+
+- **CloudFormation deployments** with automatic stack naming
+- **Lambda functions** with code building and S3 uploads
+- **Static websites** via S3 and CloudFront
+- **CI/CD pipelines** with GitHub and Slack integration
+- **Environment variables** generation from stack outputs
+- **Multi-environment** configurations with termination protection
+- **Deploy reports** posted to GitHub PR comments via `carlin deploy report`
+
+## Why Use carlin?
+
+### Simplified AWS Deployments
+
+Deploy CloudFormation stacks with a single command:
+
+```bash
+carlin deploy
+```
+
+carlin automatically:
+
+- Finds your CloudFormation template
+- Builds Lambda function code
+- Uploads to S3 with versioning
+- Creates or updates stacks
+- Displays outputs
+
+### Automatic Lambda Handling
+
+No manual Lambda packaging—carlin detects Lambda functions in templates, builds code with esbuild, uploads to S3, and injects parameters automatically.
+
+### Multi-Environment Support
+
+Deploy to multiple environments with built-in protection:
+
+```bash
+carlin deploy --environment Staging
+carlin deploy --environment Production # includes termination protection
+```
+
+This supports the [E6: U-curve Principle](https://ttoss.dev/docs/product/product-development/principles#e6-the-u-curve-principle-important-trade-offs-are-likely-to-have-u-curve-optimizations) by balancing automation with safety controls.
+
+### Branch-Based Deployments
+
+Test feature branches with automatic stack naming:
+
+```bash
+# On feature/auth branch
+carlin deploy
+# Creates: my-app-feature-auth
+```
+
+### Infrastructure as TypeScript
+
+Write CloudFormation templates in TypeScript with type safety and dynamic generation:
+
+```typescript
+export const template = {
+  Resources: {
+    Bucket: {
+      Type: 'AWS::S3::Bucket',
+      Properties: {
+        BucketName: `my-app-${process.env.NODE_ENV}`,
+      },
+    },
+  },
+};
+```
+
+## Use Cases
+
+- **Serverless APIs** — Deploy Lambda functions with API Gateway via [CloudFormation templates](/docs/carlin/core-concepts/cloudformation-templates)
+- **Static Websites** — Deploy React/Vue/Vite apps to S3 + CloudFront via [`deploy static-app`](/docs/carlin/commands/deploy-static-app)
+- **Full-Stack Applications** — Combine infrastructure, APIs, and frontends using [`deploy`](/docs/carlin/commands/deploy) and [`generate-env`](/docs/carlin/commands/generate-env)
+
+## Quick Start
+
+Get started in 5 minutes:
+
+1. **Install carlin**:
+
+```bash
+pnpm add -D carlin
+```
+
+2. **Create CloudFormation template** (`cloudformation.ts`):
+
+```typescript
+export const template = {
+  Resources: {
+    MyBucket: {
+      Type: 'AWS::S3::Bucket',
+    },
+  },
+  Outputs: {
+    BucketName: {
+      Value: { Ref: 'MyBucket' },
+    },
+  },
+};
+```
+
+3. **Deploy**:
+
+```bash
+carlin deploy
+```
+
+## Documentation Structure
+
+- **[Core Concepts](/docs/carlin/core-concepts/stack-naming)** - Stack naming, environments, configuration, base stack, templates
+- **[Commands](/docs/carlin/commands/deploy)** - Complete command reference
+
+## Key Features
+
+- **[Automatic Stack Naming](/docs/carlin/core-concepts/stack-naming)** — Generates stack names from `package.json` and branch/environment
+- **[Typed Configuration](/docs/carlin/core-concepts/configuration)** — Connect `.env`, `carlin.ts`, and CloudFormation parameters with validation
+- **[Lambda Code Building](/docs/carlin/commands/deploy#lambda)** — Automatic code bundling with esbuild, S3 upload, and parameter injection
+- **[Static App Deployment](/docs/carlin/commands/deploy-static-app)** — One command deploys to S3 + CloudFront
+- **[Environment Variables](/docs/carlin/commands/generate-env)** — Generate `.env` files from stack outputs
+- **[Multi-Environment Support](/docs/carlin/core-concepts/environments)** — Automatic termination protection for environment-based deployments
+
+## Community and Support
+
+- **GitHub**: [ttoss/ttoss](https://github.com/ttoss/ttoss)
+- **Issues**: [Report bugs or request features](https://github.com/ttoss/ttoss/issues)
+- **Examples**: [Terezinha Farm API](https://github.com/ttoss/ttoss/tree/main/terezinha-farm/api)

@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/http-server-mcp",
-  "version": "0.14.0",
+  "version": "0.16.3",
   "description": "Model Context Protocol (MCP) server integration for @ttoss/http-server",
   "keywords": [
     "ai",
@@ -36,6 +36,7 @@
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@ttoss/auth-core": "workspace:^",
     "@ttoss/http-server": "workspace:^",
+    "@ttoss/http-server-auth": "workspace:^",
     "zod": "^4.4.3"
   },
   "devDependencies": {
