@@ -10,7 +10,7 @@ This guideline covers an app acting as an **OAuth client**: it sends a user to a
 | OAuth **server** | issuing tokens for your own app          | [OAuth Authorization Server](/docs/engineering/guidelines/oauth-authorization-server) |
 | MCP application  | the MCP-specific use of these primitives | [MCP Server with OAuth](/docs/engineering/guidelines/mcp-server-oauth)                |
 
-The only runtime dependencies are ttoss packages: [`@ttoss/http-server`](/docs/modules/packages/http-server) for the endpoints and [`@ttoss/auth-core`](/docs/modules/packages/auth-core) for token encryption and the internal service token. The examples use TikTok, but the pattern is provider-agnostic — swap the URLs, scopes, and parameter names.
+The only runtime dependencies are ttoss packages: [`@ttoss/oauth-client`](/docs/modules/packages/oauth-client) for the OAuth flow itself (authorization URL, code exchange, refresh), [`@ttoss/http-server`](/docs/modules/packages/http-server) for the endpoints, and [`@ttoss/auth-core`](/docs/modules/packages/auth-core) for token encryption and the internal service token. `@ttoss/oauth-client` ships provider presets — the examples use `createTikTokClient`; other providers are one preset over the same core, or `createOAuthClient` for one without a preset yet.
 
 ```mermaid
 sequenceDiagram
@@ -34,62 +34,55 @@ sequenceDiagram
 
 ## 1. Authorization redirect
 
-A `connect-url` endpoint builds the provider's `/authorize` URL and returns it (or redirects to it). Generate a random `state`, persist it against the session, and verify it on callback to prevent CSRF.
+A `connect-url` endpoint builds the provider's `/authorize` URL with `client.buildAuthUrl` and returns it (or redirects to it). Generate a random `state`, persist it against the session, and verify it on callback to prevent CSRF — `state` and its verification stay app-side, since they belong to your session store.
 
 ```typescript
+import { createTikTokClient } from '@ttoss/oauth-client';
 import { Router } from '@ttoss/http-server';
 import crypto from 'node:crypto';
 
 const router = new Router();
+const tiktok = createTikTokClient({
+  clientKey: process.env.TIKTOK_CLIENT_KEY!,
+  clientSecret: process.env.TIKTOK_CLIENT_SECRET!,
+});
 
 router.get('/social/tiktok/connect-url', (ctx) => {
   const state = crypto.randomBytes(16).toString('hex');
   // Persist `state` against the user's session for later verification.
   saveOAuthState(ctx, state);
 
-  const url = new URL('https://www.tiktok.com/v2/auth/authorize/');
-  url.searchParams.set('client_key', process.env.TIKTOK_CLIENT_KEY!);
-  url.searchParams.set('scope', 'user.info.basic,video.publish');
-  url.searchParams.set('response_type', 'code');
-  url.searchParams.set(
-    'redirect_uri',
-    `${process.env.APP_URL}/my/settings/social`
-  );
-  url.searchParams.set('state', state);
-
-  ctx.body = { url: url.toString() };
+  ctx.body = {
+    url: tiktok.buildAuthUrl({
+      redirectUri: `${process.env.APP_URL}/my/settings/social`,
+      scope: ['user.info.basic', 'video.publish'],
+      state,
+    }),
+  };
 });
 ```
 
 ## 2. Callback exchange
 
-The provider redirects the user back to the settings page with `?code=`. The page posts that code to a `connect` endpoint, which verifies `state` and exchanges the code for tokens at the provider's `/token` endpoint.
+The provider redirects the user back to the settings page with `?code=`. The page posts that code to a `connect` endpoint, which verifies `state` and exchanges the code for tokens with `client.exchangeCode`. Provider-specific fields (TikTok's `open_id`) come back on `raw`.
 
 ```typescript
 router.post('/social/tiktok/connect', async (ctx) => {
   const { code, state } = ctx.request.body as { code: string; state: string };
   assertOAuthState(ctx, state); // throws on mismatch
 
-  const res = await fetch('https://open.tiktokapis.com/v2/oauth/token/', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      client_key: process.env.TIKTOK_CLIENT_KEY!,
-      client_secret: process.env.TIKTOK_CLIENT_SECRET!,
-      grant_type: 'authorization_code',
-      code,
-      redirect_uri: `${process.env.APP_URL}/my/settings/social`,
-    }),
+  const tokens = await tiktok.exchangeCode({
+    code,
+    redirectUri: `${process.env.APP_URL}/my/settings/social`,
   });
-  const data = await res.json();
 
   await saveSocialToken({
     userId: ctx.state.userId,
     platform: 'tiktok',
-    accessToken: data.access_token,
-    refreshToken: data.refresh_token,
-    accessTokenExpiresAt: new Date(Date.now() + data.expires_in * 1000),
-    openId: data.open_id,
+    accessToken: tokens.accessToken,
+    refreshToken: tokens.refreshToken,
+    accessTokenExpiresAt: new Date(Date.now() + tokens.expiresIn * 1000),
+    openId: tokens.raw.open_id,
   });
 
   ctx.body = { connected: true };
@@ -127,34 +120,49 @@ The ciphertext is a single base64 string (IV + auth tag + payload), so no extra 
 
 Access tokens are short-lived; refresh tokens last longer. Use two complementary strategies.
 
-**Lazy refresh at call time** — `getValidToken` returns a usable access token, refreshing first if it expires within a safety window (e.g. 2 hours). Every code path that calls the provider goes through this helper, so callers never handle expiry.
+**Lazy refresh at call time** — `client.getValidToken` returns a usable access token, refreshing first if it expires within a safety window (default 2 hours) and handing the new tokens to `onRefresh` so you can re-store them. Every code path that calls the provider goes through this helper, so callers never handle expiry. The client works with plaintext, so decrypt on the way in and encrypt inside `onRefresh`.
 
 ```typescript
-const REFRESH_WINDOW_MS = 2 * 60 * 60 * 1000; // 2h
-
 export const getValidTikTokToken = async (userId: string): Promise<string> => {
   const token = await loadSocialToken({ userId, platform: 'tiktok' });
-  const expiringSoon =
-    token.accessTokenExpiresAt.getTime() - Date.now() < REFRESH_WINDOW_MS;
-  if (expiringSoon) {
-    return refreshTikTokToken(token); // calls /token with grant_type=refresh_token, re-stores
-  }
-  return decryptValue({ ciphertext: token.accessToken, key: KEY });
+  return tiktok.getValidToken(
+    {
+      accessToken: decryptValue({ ciphertext: token.accessToken, key: KEY }),
+      refreshToken: decryptValue({ ciphertext: token.refreshToken, key: KEY }),
+      accessTokenExpiresAt: token.accessTokenExpiresAt,
+    },
+    {
+      onRefresh: (updated) =>
+        saveSocialToken({
+          userId,
+          platform: 'tiktok',
+          accessToken: encryptValue({
+            plaintext: updated.accessToken,
+            key: KEY,
+          }),
+          refreshToken: encryptValue({
+            plaintext: updated.refreshToken,
+            key: KEY,
+          }),
+          accessTokenExpiresAt: new Date(Date.now() + updated.expiresIn * 1000),
+        }),
+    }
+  );
 };
 ```
 
-**Scheduled refresh** — a cron job refreshes tokens expiring within a wider window (e.g. 6 hours) so connections stay alive even for users who are inactive. This guards against refresh tokens that themselves expire if never used.
+**Scheduled refresh** — a cron job refreshes tokens expiring within a wider window (default 6 hours) so connections stay alive even for users who are inactive. This guards against refresh tokens that themselves expire if never used. `findExpiringTokens` selects the records due for refresh.
 
 ```typescript
+import { findExpiringTokens } from '@ttoss/oauth-client';
+
 // jobs/tiktokTokenRefresher.ts — scheduled (e.g. hourly) by your deploy infra
 export const tiktokTokenRefresher = async () => {
-  const soon = new Date(Date.now() + 6 * 60 * 60 * 1000);
-  const tokens = await listSocialTokensExpiringBefore({
-    platform: 'tiktok',
-    before: soon,
-  });
+  const tokens = findExpiringTokens(
+    await listSocialTokens({ platform: 'tiktok' })
+  );
   for (const token of tokens) {
-    await refreshTikTokToken(token).catch((error) =>
+    await getValidTikTokToken(token.userId).catch((error) =>
       logRefreshFailure(token, error)
     );
   }
