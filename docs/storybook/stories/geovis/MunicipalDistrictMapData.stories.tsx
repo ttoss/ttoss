@@ -101,7 +101,7 @@ interface MunicipalDistrictMapDataProps {
   subprefeituraLineWidth: number;
 }
 
-export type { MunicipalDistrictMapDataProps };
+// export type { MunicipalDistrictMapDataProps };
 
 const normalizeEntry = (e: ApiDistrictEntry): DistrictEntry => {
   return {
@@ -341,14 +341,14 @@ MunicipalDistrictMapData.argTypes = {
   year: { control: { type: 'select' }, options: AVAILABLE_YEARS },
   showBasemap: { control: 'boolean' },
   showStateOutlines: { control: 'boolean' },
-  showSubprefeituraOutlines: { control: 'boolean' },
   showDistrictOutlines: { control: 'boolean' },
+  showSubprefeituraOutlines: { control: 'boolean' },
+  stateLineColor: { control: 'color' },
+  stateLineWidth: { control: { type: 'range', min: 0, max: 5, step: 0.5 } },
   districtLineColor: { control: 'color' },
   districtLineWidth: {
     control: { type: 'range', min: 0, max: 5, step: 0.5 },
   },
-  stateLineColor: { control: 'color' },
-  stateLineWidth: { control: { type: 'range', min: 0, max: 5, step: 0.5 } },
   subprefeituraLineColor: { control: 'color' },
   subprefeituraLineWidth: {
     control: { type: 'range', min: 0, max: 5, step: 0.5 },
@@ -359,12 +359,12 @@ const baseVariationArgs = {
   year: 2020,
   showBasemap: true,
   showStateOutlines: true,
-  showSubprefeituraOutlines: true,
   showDistrictOutlines: true,
-  districtLineColor: '#d1d5db',
-  districtLineWidth: 0.5,
+  showSubprefeituraOutlines: true,
   stateLineColor: '#374151',
   stateLineWidth: 1.5,
+  districtLineColor: '#d1d5db',
+  districtLineWidth: 0.5,
   subprefeituraLineColor: '#6b7280',
   subprefeituraLineWidth: 1.0,
 };
