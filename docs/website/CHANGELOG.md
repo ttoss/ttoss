@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.11.0](https://github.com/ttoss/ttoss/compare/@docs/website@2.10.1...@docs/website@2.11.0) (2026-06-15)
+
+### Features
+
+- **oauth-client:** add reusable third-party OAuth client package ([#1074](https://github.com/ttoss/ttoss/issues/1074)) ([11a4ab7](https://github.com/ttoss/ttoss/commit/11a4ab7879571419b31a6f188aafadf4bdc75588))
+
 ## [2.10.1](https://github.com/ttoss/ttoss/compare/@docs/website@2.10.0...@docs/website@2.10.1) (2026-06-14)
 
 **Note:** Version bump only for package @docs/website
