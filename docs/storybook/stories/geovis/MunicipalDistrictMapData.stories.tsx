@@ -31,6 +31,20 @@ const STATES_URL =
 const SUBPREFECTURES_URL =
   'https://api-forja.triangulos.tech/v1/files/265eb8bb-7a49-4164-86c3-24c207c1d228/download';
 
+const baseDistrictsGroup = createBoundaryGroup({
+  id: 'districts-outline-src',
+  data: DISTRICTS_URL,
+  layerId: 'districts-outline-toggle',
+});
+const baseStateGroup = createBoundaryGroup({
+  id: 'brazil-states',
+  data: STATES_URL,
+});
+const baseSubprefeituraGroup = createBoundaryGroup({
+  id: 'brazil-sp-subprefectures',
+  data: SUBPREFECTURES_URL,
+});
+
 export default {
   title: 'GeoVis/Fixtures/MunicipalDistrictMapData',
   tags: ['autodocs'],
@@ -216,31 +230,24 @@ const MunicipalDistrictMapDataRender = (
   }, [districtGeoJson, mapDataEntries, year, showBasemap]);
 
   const districtsGroup = React.useMemo<BoundaryGroup>(() => {
-    return customizeBoundaryGroup(
-      createBoundaryGroup({
-        id: 'districts-outline-src',
-        data: DISTRICTS_URL,
-        layerId: 'districts-outline-toggle',
-      }),
-      { lineColor: districtLineColor, lineWidth: districtLineWidth }
-    );
+    return customizeBoundaryGroup(baseDistrictsGroup, {
+      lineColor: districtLineColor,
+      lineWidth: districtLineWidth,
+    });
   }, [districtLineColor, districtLineWidth]);
 
   const stateGroup = React.useMemo<BoundaryGroup>(() => {
-    return customizeBoundaryGroup(
-      createBoundaryGroup({ id: 'brazil-states', data: STATES_URL }),
-      { lineColor: stateLineColor, lineWidth: stateLineWidth }
-    );
+    return customizeBoundaryGroup(baseStateGroup, {
+      lineColor: stateLineColor,
+      lineWidth: stateLineWidth,
+    });
   }, [stateLineColor, stateLineWidth]);
 
   const subprefeituraGroup = React.useMemo<BoundaryGroup>(() => {
-    return customizeBoundaryGroup(
-      createBoundaryGroup({
-        id: 'brazil-sp-subprefectures',
-        data: SUBPREFECTURES_URL,
-      }),
-      { lineColor: subprefeituraLineColor, lineWidth: subprefeituraLineWidth }
-    );
+    return customizeBoundaryGroup(baseSubprefeituraGroup, {
+      lineColor: subprefeituraLineColor,
+      lineWidth: subprefeituraLineWidth,
+    });
   }, [subprefeituraLineColor, subprefeituraLineWidth]);
 
   const boundaryGroups = React.useMemo(() => {
