@@ -228,6 +228,30 @@ Level 3 (Employee): Can deploy to production, but only for specific, whitelisted
 
 ## Orchestration Patterns
 
+### Skilled Generalist vs. Specialist Pipeline
+
+**The Problem:** A workflow spans several phases—product, design, implementation, test. Two topologies can deliver it: one agent that loads a skill per phase against a single growing context, or a chain of specialized agents each owning one phase. Choosing by fashion rather than by cost fails both ways—a generalist drowns when phases are independent, parallelizable, or high-blast-radius; a pipeline bleeds handoff taxes when phases are sequential, coupled, and rationale-heavy.
+
+**The Underlying Principle:** Derived from [The Principle of the Decomposition Boundary](/docs/ai/agentic-development-principles/architecture-of-flow#the-principle-of-the-decomposition-boundary), [The Principle of Compounding Context](/docs/ai/agentic-development-principles/architecture-of-flow#the-principle-of-compounding-context), and [The Corollary of Agentic Single Responsibility](/docs/ai/agentic-development-principles/architecture-of-flow#the-corollary-of-agentic-single-responsibility).
+
+**The Strategy:** Default to the skilled generalist—one agent, one compounding context, a skill loaded per phase—because most product work is sequential and coupled, and continuity is free only inside a single context. Promote a phase to its own agent only when it earns a boundary: it can run in parallel, it must be verified by something that did not write it, its blast radius or trust profile must be contained, or its context genuinely conflicts with the others. Most mature systems are hybrids: a generalist that spawns isolated sub-agents for the few phases that justify the wall, with a [Shared Memory Layer](/docs/ai/agentic-design-patterns#shared-memory-layer) carrying rationale across every seam.
+
+```mermaid
+flowchart TD
+    A["New phase in the workflow"] --> B{"Can it run in parallel<br/>on an independent slice?"}
+    B -->|Yes| S["Separate agent"]
+    B -->|No| C{"Must it be verified by<br/>an authority that did not write it?"}
+    C -->|Yes| S
+    C -->|No| D{"Must its blast radius or<br/>trust profile be contained?"}
+    D -->|Yes| S
+    D -->|No| E{"Does its context conflict with<br/>or overflow the others?"}
+    E -->|Yes| S
+    E -->|No| G["Skill inside the generalist"]
+    S --> M["Persist rationale to shared memory"]
+```
+
+**Failure Scenario:** A team copies a reference "agentic SDLC" of five chained role-agents into a codebase whose features are small and tightly coupled. Velocity drops: every change now requires orchestrating five context resets and reconstructing rationale lost at each handoff, where a single agent loading role-specific skills would have carried the full intent end to end. The topology was chosen by analogy, not by the cost of its boundaries.
+
 ### Role-Based Routing
 
 **The Problem:** Not all failures are due to a lack of intelligence; many are due to a mismatch in ambiguity tolerance. Assigning a high-ambiguity task (e.g., "Analyze market trends") to an agent designed for rigid execution leads to crashes or hallucinated assumptions. Conversely, assigning a rote data-entry task to a creative "Reasoning Agent" often leads to "boredom errors," where the model over-complicates simple logic or tries to refactor data it was only meant to copy.
