@@ -653,14 +653,14 @@ WithStdDevLabel.args = {
   labelFormatType: 'stdDev',
 };
 
-/** Variation with auto label format, positioned legend at bottom-left and no-data label */
+/** Variation with range label format, positioned legend at bottom-left and no-data label */
 export const WithPositionedLegend = MunicipalDistrictMapData.bind({});
 WithPositionedLegend.args = {
   year: 2020,
   abbreviate: true,
   extended: true,
   legendPosition: 'bottom-left',
-  labelFormatType: 'auto',
+  labelFormatType: 'range',
   noDataLabel: 'No data',
 };
 

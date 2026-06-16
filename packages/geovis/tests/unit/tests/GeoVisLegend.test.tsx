@@ -875,47 +875,6 @@ describe('GeoVisLegend — labelFormat: custom', () => {
   });
 });
 
-describe('GeoVisLegend — labelFormat: auto', () => {
-  test('renders auto format labels', async () => {
-    const spec: VisualizationSpec = {
-      ...baseSpec,
-      legends: [
-        {
-          id: 'pop',
-          labelFormat: { type: 'auto' },
-          colorBy: {
-            type: 'quantitative',
-            property: 'pop',
-            scale: 'threshold',
-            thresholds: [100, 200],
-            colors: ['#dbeafe', '#60a5fa', '#1d4ed8'],
-          },
-        },
-      ],
-    };
-
-    const { getAllByRole, getByText } = render(
-      <GeoVisProvider spec={spec}>
-        <GeoVisLegend
-          legendId="pop"
-          formatValue={(v) => {
-            return String(v);
-          }}
-        />
-      </GeoVisProvider>
-    );
-
-    await act(async () => {
-      // Await for any pending state updates from GeoVisProvider
-    });
-
-    expect(getAllByRole('listitem')).toHaveLength(3);
-    expect(getByText('< 100')).toBeTruthy();
-    expect(getByText('100 \u2013 200')).toBeTruthy();
-    expect(getByText('> 200')).toBeTruthy();
-  });
-});
-
 describe('GeoVisLegend — labelFormat: range', () => {
   test('renders range format with custom separator and unit', async () => {
     const spec: VisualizationSpec = {

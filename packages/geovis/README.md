@@ -99,7 +99,6 @@ Controls how quantitative legend bin labels are generated. Set on `LegendSpec.la
 | `'stdDev'`     | `unit?: 'σ' \| 'sd'`, `extended?`                         | Standard deviation labels for diverging schemes. Example: `< −2σ`, `+1σ – +2σ`.                                                            |
 | `'labels'`     | `labels: string[]`, `extended?`                           | **Explicit label list.** One string per bin, in ascending order. JSON-serialisable. Bins beyond the array length fall back to range style. |
 | `'custom'`     | `formatter: (lower, upper, index) => string`, `extended?` | Runtime formatter function. Not JSON-serialisable; TypeScript-only.                                                                        |
-| `'auto'`       | `extended?`                                               | Heuristic detection; falls back to range-style output.                                                                                     |
 
 All variants support `extended?: boolean`. When `true`, a semantic suffix from the legend's `normalization` field is appended to every label (e.g. `< 50k inhabitants`).
 

@@ -650,19 +650,6 @@
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["type"],
-          "properties": {
-            "type": {
-              "const": "auto"
-            },
-            "extended": {
-              "type": "boolean"
-            }
-          }
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
           "required": ["type", "formatter"],
           "properties": {
             "type": {

@@ -108,16 +108,6 @@ export const formatStdDevLabel = (
   return withSuffix(`${fmt(lower!)} \u2013 ${fmt(upper!)}`);
 };
 
-export const formatAutoLabel = (
-  ctx: BinCtx,
-  formatValue: (v: number) => string
-): string => {
-  const { lower, upper, isFirst, isLast, withSuffix } = ctx;
-  if (isFirst) return withSuffix(`< ${formatValue(upper!)}`);
-  if (isLast) return withSuffix(`> ${formatValue(lower!)}`);
-  return withSuffix(`${formatValue(lower!)} \u2013 ${formatValue(upper!)}`);
-};
-
 /**
  * Returns the explicit label at `index` when available. Falls back to the
  * default range-style formatter for bins beyond the `labels` array length.
@@ -171,9 +161,6 @@ const FORMAT_DISPATCH: Partial<Record<string, DispatchFn>> = {
         idx
       )
     );
-  },
-  auto: (ctx, _spec, fv) => {
-    return formatAutoLabel(ctx, fv);
   },
   labels: (ctx, spec, fv, idx) => {
     return formatLabelsLabel(

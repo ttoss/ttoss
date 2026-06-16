@@ -84,7 +84,6 @@ export type ColorByTemplate =
  * - `'stdDev'`     – standard deviation labels for diverging schemes.
  *   Example: `< −2σ`, `−1σ – +1σ`, `> +2σ`.
  * - `'custom'`     – escape hatch; caller supplies a `formatter` function.
- * - `'auto'`       – heuristic detection (falls back to range-style output).
  *
  * All variants support an optional `extended` flag. When `true`, a semantic
  * suffix derived from the legend's `normalization` metadata is appended to
@@ -114,7 +113,6 @@ export type LabelFormatSpec =
       ) => string;
       extended?: boolean;
     }
-  | { type: 'auto'; extended?: boolean }
   | {
       /**
        * Explicit label list. Each entry maps to the bin at the same position
