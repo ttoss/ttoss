@@ -1,7 +1,6 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
-import { Menu, NotificationCard } from '@ttoss/components';
-import { Icon } from '@ttoss/react-icons';
-import { Flex } from '@ttoss/ui';
+import type { NavListItem } from '@ttoss/components';
+import { Menu, NavList, NotificationCard } from '@ttoss/components';
 
 export default {
   title: 'Components/Menu',
@@ -24,25 +23,19 @@ export default {
   },
 } as Meta;
 
-interface MenuItem {
-  path: string;
-  label: string;
-  icon: string;
-}
-
-const menuItems: MenuItem[] = [
+const menuItems: NavListItem[] = [
   {
-    path: '#link1',
+    href: '#link1',
     label: 'Link 1',
     icon: 'streamline:customer-support-1',
   },
   {
-    path: '#link2',
+    href: '#link2',
     label: 'Link 2',
     icon: 'cil:bus-alt',
   },
   {
-    path: '#link3',
+    href: '#link3',
     label: 'Link 3',
     icon: 'ep:document',
   },
@@ -55,47 +48,7 @@ const menuItems: MenuItem[] = [
 export const Example: StoryFn = () => {
   return (
     <Menu>
-      {menuItems.map((item) => {
-        return (
-          <a
-            key={item.label}
-            href={item.path}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ textDecoration: 'none', display: 'block' }}
-          >
-            <Flex
-              sx={{
-                backgroundColor: 'input.background.muted.default',
-                textDecoration: 'none',
-                borderRadius: 'md',
-                padding: '3',
-                color: 'display.text.secondary.default',
-                alignItems: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  backgroundColor: 'display.background.secondary.default',
-                  transform: 'translateX(4px)',
-                },
-              }}
-            >
-              <Flex
-                sx={{
-                  alignItems: 'center',
-                  marginLeft: '4',
-                  cursor: 'pointer',
-                  fontSize: 'md',
-                  gap: '2',
-                }}
-              >
-                <Icon icon={item.icon} width={18} height={18} />
-                {item.label}
-              </Flex>
-            </Flex>
-          </a>
-        );
-      })}
+      <NavList variant="menu" items={menuItems} />
     </Menu>
   );
 };

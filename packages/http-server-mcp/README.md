@@ -634,10 +634,57 @@ This package implements the [Model Context Protocol](https://spec.modelcontextpr
 - `Content-Type: application/json`
 - `Accept: application/json, text/event-stream`
 
-**Stateless vs stateful mode:**
+### Stateless vs stateful mode
 
 - **Stateless** (default, `sessionIdGenerator: undefined`) — a fresh transport is created per HTTP request. No session tracking. Suitable for serverless environments and simple integrations.
 - **Stateful** (`sessionIdGenerator` provided) — a single shared transport handles all requests and tracks sessions by ID.
+
+## AWS Lambda Deployment
+
+The default **stateless** mode (see [Stateless vs stateful mode](#stateless-vs-stateful-mode)) is built for serverless: a fresh transport is created per request, nothing is kept in memory between invocations, and responses are plain JSON (no SSE) — exactly the request/response shape API Gateway and Lambda Function URLs expect. Because the router is a regular Koa app, you wrap it with any Koa-to-Lambda adapter (e.g. [`serverless-http`](https://github.com/dougmoscrop/serverless-http)) and front it with an HTTP API Gateway or a Function URL.
+
+```mermaid
+flowchart LR
+    Client[MCP Client] -->|POST /mcp| GW[API Gateway / Function URL]
+    GW --> L[Lambda]
+    subgraph L[Lambda]
+        H[serverless-http handler] --> App[Koa App + createMcpRouter]
+    end
+```
+
+```typescript
+import serverless from 'serverless-http';
+import { App, bodyParser } from '@ttoss/http-server';
+import { createMcpRouter, McpServer, z } from '@ttoss/http-server-mcp';
+
+const mcpServer = new McpServer({ name: 'my-mcp-server', version: '1.0.0' });
+
+mcpServer.registerTool(
+  'get-weather',
+  {
+    description: 'Get weather for a location',
+    inputSchema: { location: z.string() },
+  },
+  async ({ location }) => ({
+    content: [{ type: 'text', text: `Weather in ${location}: Sunny` }],
+  })
+);
+
+const app = new App();
+app.use(bodyParser());
+// Stateless by default — no sessionIdGenerator
+app.use(createMcpRouter(mcpServer).routes());
+
+export const handler = serverless(app.callback());
+```
+
+Keep the following in mind:
+
+- **Do not pass `sessionIdGenerator`.** Stateful mode relies on a shared in-memory transport that does not survive across Lambda containers; each invocation may land on a different one.
+- **Authentication** via the [`auth`](#authentication) option (Cognito or a custom `verifyToken`) runs inside the handler and pairs naturally with API Gateway — you can also delegate to a Gateway authorizer.
+- **SSE streaming is not used** (`enableJsonResponse: true`), so a standard API Gateway integration is enough; Function URL response streaming is not required.
+
+> This differs from [`awslabs/run-model-context-protocol-servers-with-aws-lambda`](https://github.com/awslabs/run-model-context-protocol-servers-with-aws-lambda), which wraps **stdio**-based MCP servers into Lambda by spawning a child process per invocation. `@ttoss/http-server-mcp` already speaks Streamable HTTP, so that wrapper is unnecessary — you deploy it like any other HTTP handler.
 
 ## Related Packages
 
