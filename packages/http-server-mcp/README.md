@@ -634,7 +634,7 @@ This package implements the [Model Context Protocol](https://spec.modelcontextpr
 - `Content-Type: application/json`
 - `Accept: application/json, text/event-stream`
 
-**Stateless vs stateful mode:**
+### Stateless vs stateful mode
 
 - **Stateless** (default, `sessionIdGenerator: undefined`) — a fresh transport is created per HTTP request. No session tracking. Suitable for serverless environments and simple integrations.
 - **Stateful** (`sessionIdGenerator` provided) — a single shared transport handles all requests and tracks sessions by ID.
