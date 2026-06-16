@@ -81,7 +81,6 @@ Each entry in `spec.legends` (or `layer.legends`) defines one choropleth legend.
 | `colorBy`       | `ColorBy`           | ✓        | Color-by configuration (`categorical` or `quantitative`).                                                                                           |
 | `title`         | `string`            |          | Short heading rendered above the swatches.                                                                                                          |
 | `subtitle`      | `string`            |          | Secondary description rendered below the title.                                                                                                     |
-| `classCount`    | `number`            |          | Number of bins. Hint for auto-computing thresholds; informational when `colorBy.thresholds` is already set.                                         |
 | `labelFormat`   | `LabelFormatSpec`   |          | Controls how quantitative bin labels are generated. Defaults to `'range'` style when omitted. See [LabelFormatSpec](#labelformatspec) table below.  |
 | `normalization` | `NormalizationSpec` |          | Statistical normalisation metadata for the mapped values. Used to append semantic suffixes when `labelFormat.extended` is `true`.                   |
 | `position`      | `LegendPosition`    |          | Corner overlay position: `'top-left'`, `'top-right'`, `'bottom-left'`, `'bottom-right'`. When set, `GeoVisLegend` applies absolute CSS positioning. |

@@ -272,7 +272,7 @@ describe('validateSpec — mapData', () => {
     }
   });
 
-  test('accepts legends with labelFormat, classCount and reference fields', () => {
+  test('accepts legends with labelFormat and reference fields', () => {
     const result = validateSpec({
       ...baseSpec,
       legends: [
@@ -280,7 +280,6 @@ describe('validateSpec — mapData', () => {
           id: 'pop',
           title: 'Population',
           subtitle: 'Residents per district',
-          classCount: 5,
           labelFormat: { type: 'count', abbreviate: true, extended: true },
           normalization: { type: 'raw', numeratorLabel: 'inhabitants' },
           reference: 'SMUL/GEOINFO — Resident population evolution',

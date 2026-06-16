@@ -508,11 +508,6 @@
             "type": "number"
           }
         },
-        "classCount": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "Number of classes (colour bins). Used as a hint to auto-compute thresholds; informational when thresholds is already set."
-        },
         "palette": {
           "type": "string"
         },
@@ -553,11 +548,6 @@
         "subtitle": {
           "type": "string",
           "description": "Secondary description rendered below the title."
-        },
-        "classCount": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "Number of classes (colour bins). Acts as a hint to auto-compute thresholds; informational when colorBy.thresholds is already set."
         },
         "labelFormat": {
           "$ref": "#/$defs/LabelFormatSpec"

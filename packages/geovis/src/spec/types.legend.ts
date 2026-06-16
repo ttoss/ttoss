@@ -42,13 +42,6 @@ export interface QuantitativeColorBy {
   scale: 'threshold';
   /** Explicit break points for the `threshold` scale. */
   thresholds?: number[];
-  /**
-   * Number of classes (colour bins).
-   * Acts as a hint for consumers to auto-compute thresholds via classification
-   * algorithms (quantile, equal-interval, jenks, etc.).
-   * When `thresholds` is already set, `classCount` is informational.
-   */
-  classCount?: number;
   /** Named palette key (resolved by the adapter/consumer). */
   palette?: string;
   /** Explicit ordered list of colors; overrides `palette` when provided. */
@@ -194,13 +187,6 @@ export interface LegendSpec {
   title?: string;
   /** Secondary description rendered below the title. */
   subtitle?: string;
-  /**
-   * Number of classes (colour bins) in the legend.
-   * Acts as a hint for consumers to auto-compute thresholds via classification
-   * algorithms (quantile, equal-interval, jenks, etc.).
-   * When `colorBy.thresholds` is already set, `classCount` is informational.
-   */
-  classCount?: number;
   /**
    * Controls how quantitative bin labels are generated.
    * When omitted the default `range` style is used.

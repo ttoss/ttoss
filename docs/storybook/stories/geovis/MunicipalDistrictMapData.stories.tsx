@@ -488,7 +488,6 @@ export const MunicipalDistrictMapData: StoryFn<MunicipalDistrictStoryArgs> = ({
           id: 'population',
           title: 'Population by district',
           subtitle: `São Paulo Municipality (SMUL/GEOINFO, 2000–2050 projection)`,
-          classCount: effectiveBreaks.length + 1,
           labelFormat: getLabelFormat(),
           normalization: resolveNormalization({
             labelFormatType,
@@ -503,9 +502,6 @@ export const MunicipalDistrictMapData: StoryFn<MunicipalDistrictStoryArgs> = ({
             property: 'value',
             scale: 'threshold',
             thresholds: effectiveBreaks,
-            classCount: effectiveBreaks.length + 1,
-            // First color matches `defaultColor` so the legend swatch for the
-            // "< first threshold" bin lines up with the in-map fill.
             colors: [
               DEFAULT_COLOR,
               ...effectiveSteps.map((step) => {

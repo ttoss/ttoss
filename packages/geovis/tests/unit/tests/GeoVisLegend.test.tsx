@@ -624,39 +624,6 @@ describe('GeoVisLegend — reference field', () => {
   });
 });
 
-describe('GeoVisLegend — classCount field', () => {
-  test('classCount is accepted as spec metadata without affecting rendering', async () => {
-    const spec: VisualizationSpec = {
-      ...baseSpec,
-      legends: [
-        {
-          id: 'pop',
-          classCount: 3,
-          colorBy: {
-            type: 'quantitative',
-            property: 'pop',
-            scale: 'threshold',
-            thresholds: [10, 20],
-            colors: ['#dbeafe', '#60a5fa', '#1d4ed8'],
-          },
-        },
-      ],
-    };
-
-    const { getAllByRole } = render(
-      <GeoVisProvider spec={spec}>
-        <GeoVisLegend legendId="pop" />
-      </GeoVisProvider>
-    );
-
-    await act(async () => {
-      // Await for any pending state updates from GeoVisProvider
-    });
-
-    expect(getAllByRole('listitem')).toHaveLength(3);
-  });
-});
-
 describe('GeoVisLegend — position', () => {
   test('applies absolute CSS positioning when position is set', async () => {
     const spec: VisualizationSpec = {
