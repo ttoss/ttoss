@@ -1,12 +1,13 @@
 import { useI18n } from '@ttoss/react-i18n';
 import { Box, Flex, IconButton, Text } from '@ttoss/ui';
+import type * as React from 'react';
 
 import { useGeovisWorkspace } from '../hooks/useGeovisWorkspace';
 import { messages } from '../messages';
 import { MenuButton } from './MenuButton';
 
 /**
- * Internal left sidebar that renders the menu groups defined in the spec.
+ * Internal left sidebar that renders the menu groups defined in the config.
  * Reads and writes the per-group selection via GeovisWorkspaceContext.
  */
 export const LeftSidebar = () => {
@@ -14,10 +15,10 @@ export const LeftSidebar = () => {
     intl: { formatMessage },
   } = useI18n();
 
-  const { spec, selection, setSelection, setLeftSidebarOpen } =
+  const { config, selection, setSelection, setLeftSidebarOpen } =
     useGeovisWorkspace();
 
-  const menus = spec.leftSidebar?.menus ?? [];
+  const menus = config.leftSidebar?.menus ?? [];
 
   return (
     <Flex
@@ -39,7 +40,10 @@ export const LeftSidebar = () => {
       <IconButton
         icon="lucide:chevron-left"
         aria-label={formatMessage(messages.closeMenu)}
-        onClick={() => {
+        onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+          // Release focus before the sidebar hides itself (aria-hidden), so a
+          // focused element is never hidden from assistive technology.
+          event.currentTarget.blur();
           setLeftSidebarOpen({ open: false });
         }}
         sx={{

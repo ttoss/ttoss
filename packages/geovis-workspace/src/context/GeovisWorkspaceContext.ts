@@ -23,12 +23,51 @@ export interface GeovisWorkspaceLeftSidebar {
   menus: GeovisWorkspaceMenu[];
 }
 
+export interface GeovisWorkspaceLegendItem {
+  /** Swatch fill color (any CSS color string or theme color token). */
+  color: string;
+  /** Text shown next to the swatch, e.g. a value range like "0% – 5%". */
+  label: string;
+}
+
+export interface GeovisWorkspaceLegend {
+  /** Optional heading rendered above the legend swatches. */
+  title?: string;
+  /** One entry per legend class. */
+  items: GeovisWorkspaceLegendItem[];
+}
+
+export interface GeovisWorkspaceSource {
+  /** Source description text. */
+  label: string;
+  /** Optional URL — when set, the label becomes an external link. */
+  href?: string;
+}
+
+export interface GeovisWorkspaceSources {
+  /** Optional heading rendered above the source list. */
+  title?: string;
+  /** One entry per data source. */
+  items: GeovisWorkspaceSource[];
+}
+
+export interface GeovisWorkspaceLegendWithColor {
+  /** Descriptive paragraph rendered under the right sidebar title. */
+  description?: string;
+  /** Color legend (a swatch and label per class). */
+  legend?: GeovisWorkspaceLegend;
+  /** Data sources, each optionally rendered as an external link. */
+  sources?: GeovisWorkspaceSources;
+}
+
 export interface GeovisWorkspaceRightSidebar {
   /** Title displayed at the top of the right sidebar. */
   title?: string;
+  /** Color legend panel: description, class swatches and data sources. */
+  legendWithColor?: GeovisWorkspaceLegendWithColor;
 }
 
-export interface GeovisWorkspaceSpec {
+export interface GeovisWorkspaceConfig {
   /** Configuration for the left sidebar. Omit to hide it entirely. */
   leftSidebar?: GeovisWorkspaceLeftSidebar;
   /** Configuration for the right sidebar. Omit to hide it entirely. */
@@ -39,8 +78,8 @@ export interface GeovisWorkspaceSpec {
 export type GeovisWorkspaceSelection = Record<string, string | undefined>;
 
 export interface GeovisWorkspaceContextValue {
-  /** The spec that drives the sidebars. */
-  spec: GeovisWorkspaceSpec;
+  /** The config that drives the sidebars. */
+  config: GeovisWorkspaceConfig;
   /** Active item value per menu group, keyed by menu id. */
   selection: GeovisWorkspaceSelection;
   /** Sets the active item for a given menu group. */

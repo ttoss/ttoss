@@ -59,7 +59,10 @@ const OpenLeftSidebarButton = () => {
     <IconButton
       icon="lucide:sliders-horizontal"
       aria-label={formatMessage(messages.openMenu)}
-      onClick={() => {
+      onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+        // Release focus before the button hides itself (aria-hidden), so a
+        // focused element is never hidden from assistive technology.
+        event.currentTarget.blur();
         setLeftSidebarOpen({ open: true });
       }}
       aria-hidden={isLeftSidebarOpen}
@@ -101,7 +104,10 @@ const OpenRightSidebarButton = () => {
     <IconButton
       icon="lucide:chevrons-left"
       aria-label={formatMessage(messages.openDetails)}
-      onClick={() => {
+      onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+        // Release focus before the button hides itself (aria-hidden), so a
+        // focused element is never hidden from assistive technology.
+        event.currentTarget.blur();
         setRightSidebarOpen({ open: true });
       }}
       aria-hidden={isRightSidebarOpen}
@@ -143,11 +149,12 @@ interface LayoutProps {
  * section is defined in the spec.
  */
 export const Layout = ({ children }: LayoutProps) => {
-  const { spec, isLeftSidebarOpen, isRightSidebarOpen } = useGeovisWorkspace();
+  const { config, isLeftSidebarOpen, isRightSidebarOpen } =
+    useGeovisWorkspace();
 
-  const hasLeftSidebar = spec.leftSidebar !== undefined;
+  const hasLeftSidebar = config.leftSidebar !== undefined;
 
-  const hasRightSidebar = spec.rightSidebar !== undefined;
+  const hasRightSidebar = config.rightSidebar !== undefined;
 
   return (
     <Flex

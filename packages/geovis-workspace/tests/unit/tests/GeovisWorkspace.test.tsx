@@ -2,16 +2,28 @@ import { I18nProvider } from '@ttoss/react-i18n';
 import { act, fireEvent, render, screen } from '@ttoss/test-utils/react';
 import {
   GeovisWorkspace,
+  type GeovisWorkspaceConfig,
   GeovisWorkspaceProvider,
-  type GeovisWorkspaceSpec,
+  getInitialSelection,
   useGeovisWorkspace,
 } from 'src';
+
+jest.mock('@ttoss/geovis', () => {
+  return {
+    GeoVisProvider: ({ children }: React.PropsWithChildren) => {
+      return <div data-testid="geovis-provider">{children}</div>;
+    },
+    GeoVisCanvas: () => {
+      return <div data-testid="geovis-canvas" />;
+    },
+  };
+});
 
 const Provider = ({ children }: React.PropsWithChildren) => {
   return <I18nProvider>{children}</I18nProvider>;
 };
 
-const spec: GeovisWorkspaceSpec = {
+const config: GeovisWorkspaceConfig = {
   leftSidebar: {
     menus: [
       {
@@ -35,31 +47,42 @@ const spec: GeovisWorkspaceSpec = {
   rightSidebar: {},
 };
 
+const visualizationSpec = {
+  id: 'test-spec',
+  engine: 'maplibre' as const,
+  sources: [],
+  layers: [],
+};
+
 const openLeftSidebar = async () => {
   await act(async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Open menu' }));
   });
 };
 
-test('renders children inside the main content area', () => {
+test('renders the GeoVis map canvas inside the main content area', () => {
   render(
-    <GeovisWorkspace spec={spec}>
-      <div>Map Content</div>
-    </GeovisWorkspace>,
+    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
     { wrapper: Provider }
   );
 
-  expect(screen.getByText('Map Content')).toBeInTheDocument();
+  expect(screen.getByTestId('geovis-canvas')).toBeInTheDocument();
 });
 
 test('left sidebar is closed by default and shows the open button', () => {
-  render(<GeovisWorkspace spec={spec} />, { wrapper: Provider });
+  render(
+    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
+    { wrapper: Provider }
+  );
 
   expect(screen.getByRole('button', { name: 'Open menu' })).toBeInTheDocument();
 });
 
 test('clicking the open button reveals the menu groups and items', async () => {
-  render(<GeovisWorkspace spec={spec} />, { wrapper: Provider });
+  render(
+    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
+    { wrapper: Provider }
+  );
 
   await openLeftSidebar();
 
@@ -72,7 +95,10 @@ test('clicking the open button reveals the menu groups and items', async () => {
 });
 
 test('closing the left sidebar brings the open button back', async () => {
-  render(<GeovisWorkspace spec={spec} />, { wrapper: Provider });
+  render(
+    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
+    { wrapper: Provider }
+  );
 
   await openLeftSidebar();
 
@@ -84,7 +110,10 @@ test('closing the left sidebar brings the open button back', async () => {
 });
 
 test('selecting an item marks it active without affecting other groups', async () => {
-  render(<GeovisWorkspace spec={spec} />, { wrapper: Provider });
+  render(
+    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
+    { wrapper: Provider }
+  );
 
   await openLeftSidebar();
 
@@ -101,12 +130,17 @@ test('selecting an item marks it active without affecting other groups', async (
   ).toHaveAttribute('aria-pressed', 'false');
 });
 
-test('calls onSelect with the menu id and value', async () => {
-  const onSelect = jest.fn();
+test('calls onSelectionChange with the full next selection', async () => {
+  const onSelectionChange = jest.fn();
 
-  render(<GeovisWorkspace spec={spec} onSelect={onSelect} />, {
-    wrapper: Provider,
-  });
+  render(
+    <GeovisWorkspace
+      config={config}
+      visualizationSpec={visualizationSpec}
+      onSelectionChange={onSelectionChange}
+    />,
+    { wrapper: Provider }
+  );
 
   await openLeftSidebar();
 
@@ -114,14 +148,14 @@ test('calls onSelect with the menu id and value', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Renda média' }));
   });
 
-  expect(onSelect).toHaveBeenCalledWith({
-    menuId: 'economy',
-    value: 'income',
+  expect(onSelectionChange).toHaveBeenCalledWith({
+    population: undefined,
+    economy: 'income',
   });
 });
 
 test('initializes selection from defaultValue', async () => {
-  const specWithDefault: GeovisWorkspaceSpec = {
+  const configWithDefault: GeovisWorkspaceConfig = {
     leftSidebar: {
       menus: [
         {
@@ -137,7 +171,13 @@ test('initializes selection from defaultValue', async () => {
     },
   };
 
-  render(<GeovisWorkspace spec={specWithDefault} />, { wrapper: Provider });
+  render(
+    <GeovisWorkspace
+      config={configWithDefault}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
 
   await openLeftSidebar();
 
@@ -147,9 +187,35 @@ test('initializes selection from defaultValue', async () => {
   );
 });
 
-test('right sidebar renders only when defined in the spec', () => {
+test('controlled selection prop drives the active item', async () => {
+  render(
+    <GeovisWorkspace
+      config={config}
+      visualizationSpec={visualizationSpec}
+      selection={{ economy: 'income' }}
+      onSelectionChange={jest.fn()}
+    />,
+    { wrapper: Provider }
+  );
+
+  await openLeftSidebar();
+
+  expect(screen.getByRole('button', { name: 'Renda média' })).toHaveAttribute(
+    'aria-pressed',
+    'true'
+  );
+  expect(screen.getByRole('button', { name: 'PIB' })).toHaveAttribute(
+    'aria-pressed',
+    'false'
+  );
+});
+
+test('right sidebar renders only when defined in the config', () => {
   const { rerender } = render(
-    <GeovisWorkspace spec={{ leftSidebar: spec.leftSidebar }} />,
+    <GeovisWorkspace
+      config={{ leftSidebar: config.leftSidebar }}
+      visualizationSpec={visualizationSpec}
+    />,
     { wrapper: Provider }
   );
 
@@ -157,7 +223,9 @@ test('right sidebar renders only when defined in the spec', () => {
     screen.queryByRole('button', { name: 'Open details' })
   ).not.toBeInTheDocument();
 
-  rerender(<GeovisWorkspace spec={spec} />);
+  rerender(
+    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />
+  );
 
   expect(
     screen.getByRole('button', { name: 'Open details' })
@@ -165,35 +233,128 @@ test('right sidebar renders only when defined in the spec', () => {
 });
 
 test('left sidebar controls are absent when leftSidebar is undefined', () => {
-  render(<GeovisWorkspace spec={{ rightSidebar: {} }} />, {
-    wrapper: Provider,
-  });
+  render(
+    <GeovisWorkspace
+      config={{ rightSidebar: {} }}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
 
   expect(
     screen.queryByRole('button', { name: 'Open menu' })
   ).not.toBeInTheDocument();
 });
 
-test('right sidebar shows the selected item and a custom title', async () => {
+test('right sidebar shows a custom title', async () => {
   render(
-    <GeovisWorkspace spec={{ ...spec, rightSidebar: { title: 'Camadas' } }} />,
+    <GeovisWorkspace
+      config={{ ...config, rightSidebar: { title: 'Camadas' } }}
+      visualizationSpec={visualizationSpec}
+    />,
     { wrapper: Provider }
   );
-
-  await openLeftSidebar();
-
-  await act(async () => {
-    fireEvent.click(screen.getByRole('button', { name: 'PIB' }));
-  });
 
   await act(async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Open details' }));
   });
 
   expect(screen.getByText('Camadas')).toBeInTheDocument();
+});
+
+test('right sidebar renders the legendWithColor panel from the config', async () => {
+  const configWithLegend: GeovisWorkspaceConfig = {
+    ...config,
+    rightSidebar: {
+      title: 'População 65+',
+      legendWithColor: {
+        description: 'Proporção da população total com 65 anos ou mais.',
+        legend: {
+          title: 'Classes',
+          items: [
+            { color: '#eff3ff', label: '0% – 5%' },
+            { color: '#08519c', label: '20% – 100%' },
+          ],
+        },
+        sources: {
+          title: 'Fonte dos dados:',
+          items: [
+            { label: 'SEADE (2025)', href: 'https://example.com/seade' },
+            { label: 'Geometria: Distritos Municipais.' },
+          ],
+        },
+      },
+    },
+  };
+
+  render(
+    <GeovisWorkspace
+      config={configWithLegend}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'Open details' }));
+  });
+
   expect(
-    screen.queryByText('Select an item to view details.')
-  ).not.toBeInTheDocument();
+    screen.getByText('Proporção da população total com 65 anos ou mais.')
+  ).toBeInTheDocument();
+  expect(screen.getByText('Classes')).toBeInTheDocument();
+  expect(screen.getByText('0% – 5%')).toBeInTheDocument();
+  expect(screen.getByText('Fonte dos dados:')).toBeInTheDocument();
+  expect(
+    screen.getByText('Geometria: Distritos Municipais.')
+  ).toBeInTheDocument();
+
+  const link = screen.getByRole('link', { name: 'SEADE (2025)' });
+  expect(link).toHaveAttribute('href', 'https://example.com/seade');
+  expect(link).toHaveAttribute('target', '_blank');
+});
+
+test('closing the right sidebar brings its open button back', async () => {
+  render(
+    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
+    { wrapper: Provider }
+  );
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'Open details' }));
+  });
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'Close details' }));
+  });
+
+  expect(
+    screen.getByRole('button', { name: 'Open details' })
+  ).toBeInTheDocument();
+});
+
+test('getInitialSelection seeds the selection from menu defaultValues', () => {
+  expect(getInitialSelection({ config })).toEqual({
+    population: undefined,
+    economy: undefined,
+  });
+
+  expect(
+    getInitialSelection({
+      config: {
+        leftSidebar: {
+          menus: [
+            {
+              id: 'economy',
+              title: 'Economia',
+              defaultValue: 'gdp',
+              items: [{ value: 'gdp', label: 'PIB' }],
+            },
+          ],
+        },
+      },
+    })
+  ).toEqual({ economy: 'gdp' });
 });
 
 test('useGeovisWorkspace throws when used outside provider', () => {
@@ -216,7 +377,7 @@ test('GeovisWorkspaceProvider exposes context to consumers', () => {
   };
 
   render(
-    <GeovisWorkspaceProvider spec={spec}>
+    <GeovisWorkspaceProvider config={config}>
       <Consumer />
     </GeovisWorkspaceProvider>,
     { wrapper: Provider }

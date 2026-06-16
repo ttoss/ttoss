@@ -1047,6 +1047,9 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
+      '@ttoss/geovis':
+        specifier: workspace:^
+        version: link:../geovis
       '@ttoss/i18n-cli':
         specifier: workspace:^
         version: link:../i18n-cli

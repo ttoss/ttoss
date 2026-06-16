@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
+    "@ttoss/geovis": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
@@ -43,6 +44,7 @@
     "tsdown": "^0.22.2"
   },
   "peerDependencies": {
+    "@ttoss/geovis": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "react": ">=16.8.0"
