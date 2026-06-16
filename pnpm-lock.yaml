@@ -1004,9 +1004,6 @@ importers:
       '@ttoss/logger':
         specifier: workspace:^
         version: link:../logger
-      '@ttoss/ui':
-        specifier: workspace:^
-        version: link:../ui
       ajv:
         specifier: ^8.18.0
         version: 8.20.0
@@ -1023,6 +1020,9 @@ importers:
       '@ttoss/test-utils':
         specifier: workspace:^
         version: link:../test-utils
+      '@ttoss/ui':
+        specifier: workspace:^
+        version: link:../ui
       '@types/jest':
         specifier: ^30.0.0
         version: 30.0.0
