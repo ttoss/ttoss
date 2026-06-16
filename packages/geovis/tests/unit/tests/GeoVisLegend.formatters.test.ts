@@ -1,5 +1,5 @@
 import type { LabelFormatSpec, NormalizationSpec } from 'src/spec/types';
-import { formatLabel } from 'src/ui/GeoVisLegend.formatters';
+import { formatLabel, getExtendedSuffix } from 'src/ui/GeoVisLegend.formatters';
 
 const noNorm: NormalizationSpec | undefined = undefined;
 const rawNorm: NormalizationSpec = {
@@ -153,5 +153,28 @@ describe("formatLabel — type: 'labels'", () => {
         formatValue: fv,
       })
     ).toBe('High inhabitants');
+  });
+});
+
+describe('getExtendedSuffix — rate normalization', () => {
+  test('formats rate with "/" separator using runtime locale', () => {
+    const norm: NormalizationSpec = {
+      type: 'rate',
+      numeratorLabel: 'cases',
+      denominatorLabel: 'inhabitants',
+      rateBase: 100000,
+    };
+    const result = getExtendedSuffix(norm);
+    const expectedBase = (100000).toLocaleString();
+    expect(result).toBe(` cases/${expectedBase} inhabitants`);
+  });
+
+  test('returns empty string for undefined normalization', () => {
+    expect(getExtendedSuffix(undefined)).toBe('');
+  });
+
+  test('returns empty string when numeratorLabel is missing on raw', () => {
+    const norm: NormalizationSpec = { type: 'raw' };
+    expect(getExtendedSuffix(norm)).toBe('');
   });
 });

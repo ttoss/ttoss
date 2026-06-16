@@ -33,8 +33,8 @@ export const getExtendedSuffix = (
     return ` ${normalization.numeratorLabel}/${denominator}`;
   }
   if (normalization.type === 'rate') {
-    const base = new Intl.NumberFormat('pt-BR').format(normalization.rateBase);
-    return ` ${normalization.numeratorLabel} por ${base} ${denominator}`;
+    const base = normalization.rateBase.toLocaleString();
+    return ` ${normalization.numeratorLabel}/${base} ${denominator}`;
   }
   return '';
 };
