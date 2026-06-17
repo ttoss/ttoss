@@ -20,7 +20,6 @@
       "geometry": "polygon",
       "visible": true,
       "paint": {
-        "fillOpacity": 0.85,
         "lineColor": "#94a3b8",
         "lineWidth": 0.5
       }

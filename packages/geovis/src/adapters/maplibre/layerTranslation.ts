@@ -110,7 +110,7 @@ const buildPolygon: Builder = (base, layer, paint, specLegends) => {
     type: 'fill',
     paint: {
       'fill-color': legendFillColor ?? fp.fillColor ?? '#3b82f6',
-      'fill-opacity': fp.fillOpacity ?? 0.6,
+      'fill-opacity': fp.fillOpacity ?? 1,
       'fill-outline-color': fp.lineColor ?? '#1d4ed8',
     },
   } as maplibregl.LayerSpecification;
