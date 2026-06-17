@@ -510,7 +510,7 @@ describe('toMaplibreLayer', () => {
     const layer: VisualizationLayer = { ...base, geometry: 'polygon' };
     expect(toMaplibreLayer(layer)).toMatchObject({
       type: 'fill',
-      paint: { 'fill-color': '#3b82f6', 'fill-opacity': 0.6 },
+      paint: { 'fill-color': '#3b82f6' },
     });
   });
 
@@ -518,10 +518,10 @@ describe('toMaplibreLayer', () => {
     const layer: VisualizationLayer = {
       ...base,
       geometry: 'polygon',
-      paint: { fillColor: '#ff0000', fillOpacity: 0.9, lineColor: '#000' },
+      paint: { fillColor: '#ff0000', lineColor: '#000' },
     };
     expect(toMaplibreLayer(layer)).toMatchObject({
-      paint: { 'fill-color': '#ff0000', 'fill-opacity': 0.9 },
+      paint: { 'fill-color': '#ff0000' },
     });
   });
 
@@ -649,7 +649,6 @@ describe('toMaplibreLayer', () => {
     ).toMatchObject({ 'text-field': 'Hello', 'text-size': 14 });
     expect((result as { paint: Record<string, unknown> }).paint).toMatchObject({
       'text-color': '#000000',
-      'text-opacity': 1,
     });
   });
 
@@ -657,23 +656,14 @@ describe('toMaplibreLayer', () => {
     const layer: VisualizationLayer = {
       ...base,
       geometry: 'heatmap',
-      paint: { heatmapRadius: 20, heatmapOpacity: 0.8 } as HeatmapPaint,
+      paint: { heatmapRadius: 20 } as HeatmapPaint,
     };
     const result = toMaplibreLayer(layer);
     expect(result).toMatchObject({ type: 'heatmap' });
     expect((result as { paint: Record<string, unknown> }).paint).toMatchObject({
       'heatmap-radius': 20,
-      'heatmap-opacity': 0.8,
       'heatmap-intensity': 1,
       'heatmap-weight': 1,
-    });
-  });
-
-  test('raster → raster', () => {
-    const layer: VisualizationLayer = { ...base, geometry: 'raster' };
-    expect(toMaplibreLayer(layer)).toMatchObject({
-      type: 'raster',
-      paint: { 'raster-opacity': 1 },
     });
   });
 

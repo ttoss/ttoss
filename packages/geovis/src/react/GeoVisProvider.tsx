@@ -187,7 +187,7 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
       activeRuntime?.destroy();
       setRuntime(null);
     };
-    // Re-create runtime only when the engine changes, not on every spec update.
+    // Re-create runtime when the engine changes, not on every spec update.
     // Spec updates reach the runtime via runtime.update() instead.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spec.engine]);

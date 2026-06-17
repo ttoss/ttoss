@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.26.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.25.6...@docs/storybook@3.26.0) (2026-06-17)
+
+### Features
+
+- **geovis:** basemap presets and administrative boundaries of Brazil layers ([#1049](https://github.com/ttoss/ttoss/issues/1049)) ([8d33e8a](https://github.com/ttoss/ttoss/commit/8d33e8a8bc2837e63050e0331707501af7582b16))
+
+## 3.25.6 (2026-06-15)
+
+### Bug Fixes
+
+- **components:** remove redundant nav element from Menu ([#1076](https://github.com/ttoss/ttoss/issues/1076)) ([52f11c8](https://github.com/ttoss/ttoss/commit/52f11c8468eb6ada306a8930271ac299a43ca9ff))
+- **website:** generate markdown files for llms.txt references ([#1060](https://github.com/ttoss/ttoss/issues/1060)) ([8785a31](https://github.com/ttoss/ttoss/commit/8785a31af53fcd5d3899c08b06de4b9f157c9d8d))
+
 ## [3.25.5](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.25.4...@docs/storybook@3.25.5) (2026-06-12)
 
 **Note:** Version bump only for package @docs/storybook

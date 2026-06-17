@@ -124,7 +124,7 @@ export const Menu = ({ children, sx, menuIcon = 'menu-open' }: MenuProps) => {
       }}
       style={{ pointerEvents: 'auto', ...stylePos }}
     >
-      <Box as="nav">{children}</Box>
+      <Box>{children}</Box>
     </Flex>
   ) : null;
 

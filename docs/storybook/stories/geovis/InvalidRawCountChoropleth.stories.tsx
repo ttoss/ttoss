@@ -12,9 +12,13 @@ import {
   ColorSwatchLegend,
   FeatureStatePainter,
   MapOverlayLegend,
-} from './_choropleth-helpers';
-import type { LockRef, MapRef } from './_map-story-helpers';
-import { FitBoundsToUrlSource, MapLabel, MapSync } from './_map-story-helpers';
+} from './helpers/choropleth-helpers';
+import type { LockRef, MapRef } from './helpers/map-story-helpers';
+import {
+  FitBoundsToUrlSource,
+  MapLabel,
+  MapSync,
+} from './helpers/map-story-helpers';
 
 export default {
   title: 'GeoVis/Fixtures/InvalidRawCountChoropleth',
