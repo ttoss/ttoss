@@ -78,6 +78,17 @@ export const formatCountLabel = (
   return withSuffix(`${fmt(lower!)} ≤ ${fmt(upper!)}`);
 };
 
+/**
+ * Formats a percentage label for a single legend bin.
+ *
+ * IMPORTANT: The `lower === null` / `upper === null` guards on the first and
+ * last branches are intentional and must not be simplified to a bare
+ * `isFirst` / `isLast` check. This function is the only formatter that
+ * explicitly verifies the null boundary before using the non-null assertion
+ * on the opposite bound. Removing the null check would cause mid-range labels
+ * to be rendered when the first/last bin has non-null bounds, diverging from
+ * the `< N` / `> M` format that consumers expect.
+ */
 export const formatPercentageLabel = (
   ctx: BinCtx,
   spec: Extract<LabelFormatSpec, { type: 'percentage' }>
