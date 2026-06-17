@@ -28,15 +28,24 @@ const App = () => (
 
 ### SidebarCollapseLayout - Dashboard & Admin Interfaces
 
-Responsive sidebar that collapses on mobile, perfect for dashboards and admin panels.
+Responsive sidebar that collapses on mobile, perfect for dashboards and admin panels. Use `NavList` from `@ttoss/components` to populate the sidebar navigation.
 
 ```tsx
+import { NavList } from '@ttoss/components';
 import { Layout, SidebarCollapseLayout } from '@ttoss/layouts';
+
+const navItems = [
+  { href: '/dashboard', label: 'Dashboard', icon: 'mdi:home-outline' },
+  { href: '/analytics', label: 'Analytics', icon: 'mdi:chart-bar' },
+  { href: '/settings', label: 'Settings', icon: 'mdi:cog-outline' },
+];
 
 const Dashboard = () => (
   <SidebarCollapseLayout>
     <Layout.Header showSidebarButton>App Header with Menu Toggle</Layout.Header>
-    <Layout.Sidebar>Navigation Menu</Layout.Sidebar>
+    <Layout.Sidebar>
+      <NavList variant="sidebar" items={navItems} />
+    </Layout.Sidebar>
     <Layout.Main>
       <Layout.Main.Header>Page Title & Actions</Layout.Main.Header>
       <Layout.Main.Body>Dashboard Content</Layout.Main.Body>

@@ -209,14 +209,24 @@ import { Markdown } from '@ttoss/components';
 
 ### Menu
 
-Dropdown menus with customizable triggers. [Docs](https://storybook.ttoss.dev/?path=/docs/components-menu--docs)
+Floating dropdown panel with a configurable trigger icon. Use `NavList` as children for navigation items. [Docs](https://storybook.ttoss.dev/?path=/docs/components-menu--docs)
 
 ```tsx
-import { Menu } from '@ttoss/components';
+import { Menu, NavList } from '@ttoss/components';
 
-<Menu trigger={<Button>Open Menu</Button>}>
-  <Menu.Item onClick={() => {}}>Action 1</Menu.Item>
-  <Menu.Item onClick={() => {}}>Action 2</Menu.Item>
+<Menu>
+  <NavList
+    variant="menu"
+    items={[
+      { href: '/dashboard', label: 'Dashboard', icon: 'mdi:home-outline' },
+      { href: '/settings', label: 'Settings', icon: 'mdi:cog-outline' },
+    ]}
+  />
+</Menu>;
+
+// Custom trigger icon
+<Menu menuIcon="mdi:dots-vertical">
+  <NavList variant="menu" items={items} />
 </Menu>;
 ```
 

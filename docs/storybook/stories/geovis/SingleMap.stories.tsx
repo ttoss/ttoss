@@ -2,8 +2,8 @@ import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import type { VisualizationSpec } from '@ttoss/geovis';
 
 import singleMapSpec from '../../../../packages/geovis/src/fixtures/single-map.json';
-import { computeBbox } from './_map-story-helpers';
 import { GeoVisFixtureStory } from './GeoVisFixtureStory';
+import { computeBbox } from './helpers/map-story-helpers';
 
 export default {
   title: 'GeoVis/Fixtures/SingleMap',

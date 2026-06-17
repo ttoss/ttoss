@@ -10,7 +10,9 @@ export type MenuProps = {
 
 export const Menu = ({ children, sx, menuIcon = 'menu-open' }: MenuProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [stylePos, setStylePos] = React.useState<React.CSSProperties>({});
+  const [stylePos, setStylePos] = React.useState<React.CSSProperties>({
+    visibility: 'hidden',
+  });
   const triggerRef = React.useRef<HTMLButtonElement>(null);
   const panelRef = React.useRef<HTMLDivElement>(null);
 
@@ -122,7 +124,7 @@ export const Menu = ({ children, sx, menuIcon = 'menu-open' }: MenuProps) => {
       }}
       style={{ pointerEvents: 'auto', ...stylePos }}
     >
-      <Box as="nav">{children}</Box>
+      <Box>{children}</Box>
     </Flex>
   ) : null;
 

@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.7.20 (2026-06-15)
+
+### Bug Fixes
+
+- **website:** generate markdown files for llms.txt references ([#1060](https://github.com/ttoss/ttoss/issues/1060)) ([8785a31](https://github.com/ttoss/ttoss/commit/8785a31af53fcd5d3899c08b06de4b9f157c9d8d))
+
+## [0.7.19](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.18...@ttoss/react-dashboard@0.7.19) (2026-06-12)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
 ## [0.7.18](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.17...@ttoss/react-dashboard@0.7.18) (2026-06-10)
 
 **Note:** Version bump only for package @ttoss/react-dashboard

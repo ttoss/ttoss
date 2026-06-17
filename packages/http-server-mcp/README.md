@@ -129,7 +129,7 @@ const data = await apiCall('GET', 'https://partner.api.com/data', {
 
 ## Authentication
 
-`createMcpRouter` supports OAuth 2.0 Bearer token authentication via the `auth` option. Every incoming MCP request must include a valid `Authorization: Bearer <token>` header — invalid or missing tokens receive a `401 Unauthorized` response.
+`createMcpRouter` supports OAuth 2.0 Bearer token authentication via the `auth` option. Incoming MCP requests must include a valid `Authorization: Bearer <token>` header — invalid or missing tokens receive a `401 Unauthorized` response. The MCP lifecycle methods `initialize` and `tools/list` are exempt by default so clients can discover the server before authenticating (see [Public methods and discovery](#public-methods-and-discovery)).
 
 ```mermaid
 sequenceDiagram
@@ -169,7 +169,7 @@ const mcpRouter = createMcpRouter(mcpServer, {
 
 ### Custom verifier
 
-Pass an async `verifyToken` function for any other provider (Auth0, Keycloak, etc.):
+Pass an async `verifyToken` function for any provider — JWT-based or opaque. The contract is simply: resolve with an identity payload on success, or throw on failure.
 
 ```typescript
 import { createMcpRouter } from '@ttoss/http-server-mcp';
@@ -188,6 +188,25 @@ const mcpRouter = createMcpRouter(mcpServer, {
   },
 });
 ```
+
+**Opaque token (database lookup):** `verifyToken` does not have to be JWT-based — a plain API-key lookup works equally well:
+
+```typescript
+const mcpRouter = createMcpRouter(mcpServer, {
+  auth: {
+    verifyToken: async (token) => {
+      // Look up the hashed token in your database
+      const record = await db.apiKeys.findByHash(sha256(token));
+      if (!record || record.revokedAt) {
+        throw new Error('Invalid API key');
+      }
+      return { sub: record.userId, scope: record.scopes.join(' ') };
+    },
+  },
+});
+```
+
+The router emits `401 Unauthorized` whenever `verifyToken` throws, regardless of whether you are using JWTs or opaque tokens.
 
 ### Accessing the verified identity
 
@@ -245,7 +264,9 @@ Cognito encodes scopes as a space-separated string in `payload.scope` (e.g. `"op
 
 ### OAuth Protected Resource Metadata
 
-For MCP clients that support OAuth auto-discovery, add `resourceServerUrl` and `authorizationServerUrl` to expose the `/.well-known/oauth-protected-resource` endpoint (RFC 9728):
+MCP clients (Claude, Cursor, etc.) fetch `/.well-known/oauth-protected-resource` to discover which authorization server issues tokens for your MCP server. The endpoint must be **unauthenticated** — MCP clients call it before they have a token.
+
+**With the built-in `auth` option** — add `resourceServerUrl` and `authorizationServerUrl`:
 
 ```typescript
 createMcpRouter(mcpServer, {
@@ -257,6 +278,71 @@ createMcpRouter(mcpServer, {
   },
 });
 ```
+
+**With your own auth middleware** — use `createProtectedResourceMetadataMiddleware` as a standalone middleware, mounted _before_ your auth layer so discovery stays unauthenticated:
+
+```typescript
+import {
+  createProtectedResourceMetadataMiddleware,
+  getWwwAuthenticateHeader,
+} from '@ttoss/http-server-mcp';
+
+// Mount the discovery endpoint before your own auth middleware
+app.use(
+  createProtectedResourceMetadataMiddleware({
+    resource: 'https://mcp.example.com',
+    authorizationServers: ['https://api.example.com'],
+  })
+);
+
+// Your own auth middleware — emit the spec-compliant WWW-Authenticate header on 401s
+app.use(async (ctx, next) => {
+  const token = ctx.headers.authorization?.replace('Bearer ', '');
+  if (!token || !(await myVerify(token))) {
+    ctx.status = 401;
+    ctx.set(
+      'WWW-Authenticate',
+      getWwwAuthenticateHeader({ resource: 'https://mcp.example.com' })
+    );
+    ctx.body = 'Unauthorized';
+    return;
+  }
+  await next();
+});
+
+app.use(createMcpRouter(mcpServer).routes());
+```
+
+The `WWW-Authenticate: Bearer resource_metadata="…"` header is how MCP clients bootstrap OAuth discovery after their first unauthorized request.
+
+### Public methods and discovery
+
+The two behaviors the [MCP authorization spec](https://spec.modelcontextprotocol.io/specification/2025-03-26/basic/authorization/) requires for client bootstrapping are built into the `auth` option, so you no longer need the hand-rolled middleware shown above:
+
+- **`publicMethods`** — JSON-RPC methods that bypass verification, read from the request body's `method` field. Defaults to `['initialize', 'tools/list']` so clients can discover the server before authenticating. Pass `[]` to require a token for every method, or a custom list to change the exempt set.
+- **`resourceMetadataUrl`** — when set, a `401` responds with `WWW-Authenticate: Bearer resource_metadata="<resourceMetadataUrl>"` (RFC 9728) instead of a bare `Bearer`, pointing MCP clients at the protected-resource metadata document. When omitted, the header falls back to `Bearer`.
+
+```typescript
+createMcpRouter(mcpServer, {
+  auth: {
+    cognitoUserPool: { userPoolId: '...', clientId: '...' },
+    // Serve the metadata document (unauthenticated)...
+    resourceServerUrl: 'https://mcp.example.com',
+    authorizationServerUrl:
+      'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_xxx',
+    // ...and point 401s at it for auto-discovery.
+    resourceMetadataUrl:
+      'https://mcp.example.com/.well-known/oauth-protected-resource',
+    // publicMethods defaults to ['initialize', 'tools/list'].
+  },
+});
+```
+
+Both fields are optional. Omitting `resourceMetadataUrl` keeps the bare `Bearer` header, and the `publicMethods` default matches what MCP clients expect for discovery.
+
+## Issuing tokens for MCP clients
+
+The `auth` option above covers the **resource-server** half of MCP authorization — it verifies tokens issued by an external authorization server (Cognito, Auth0, …). To make your own first-party server _issue_ the tokens an MCP client runs the full OAuth flow against, add the [`@ttoss/http-server-auth`](https://ttoss.dev/docs/modules/packages/http-server-auth) plugin's `oauthServer()` and pair it with `createMcpRouter({ auth: { verifyToken } })` so one deployment both issues and verifies tokens. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline.
 
 ## API Reference
 
@@ -277,6 +363,8 @@ Creates a Koa router configured to handle MCP protocol requests.
     - `auth.verifyToken` — Custom async token verifier `(token: string) => Promise<unknown>`
     - `auth.requiredScopes` — Router-level scope guard; returns 403 if any scope is missing
     - `auth.resourceServerUrl` + `auth.authorizationServerUrl` — Enable `/.well-known/oauth-protected-resource`
+    - `auth.publicMethods` — JSON-RPC methods that bypass verification (default `['initialize', 'tools/list']`)
+    - `auth.resourceMetadataUrl` — Emit RFC 9728 `WWW-Authenticate: Bearer resource_metadata="…"` on 401
 
 **Returns:** `Router` — Koa router instance
 
@@ -306,6 +394,27 @@ Asserts that the current request token contains all required scopes. Throws `Err
 **Parameters:**
 
 - `required` (`string[]`) — Scope strings that must all be present in `payload.scope`
+
+### `createProtectedResourceMetadataMiddleware(args)`
+
+Creates a standalone Koa middleware that serves `GET /.well-known/oauth-protected-resource` (RFC 9728). Use this when you have your own auth middleware and don't want to tie the discovery endpoint to the built-in `auth` option.
+
+**Parameters:**
+
+- `args.resource` (`string`) — The protected resource's identifier URI (your MCP server URL)
+- `args.authorizationServers` (`string[]`) — Issuer URIs of the authorization servers that protect this resource
+
+**Returns:** `Koa.Middleware`
+
+### `getWwwAuthenticateHeader(args)`
+
+Returns the `WWW-Authenticate` header value for a 401 response, formatted per the MCP auth spec: `Bearer resource_metadata="<resource>/.well-known/oauth-protected-resource"`.
+
+**Parameters:**
+
+- `args.resource` (`string`) — The protected resource URL (trailing slash is stripped automatically)
+
+**Returns:** `string` — The full `WWW-Authenticate` header value
 
 ### `registerToolFromSchema(server, params)`
 
@@ -525,10 +634,57 @@ This package implements the [Model Context Protocol](https://spec.modelcontextpr
 - `Content-Type: application/json`
 - `Accept: application/json, text/event-stream`
 
-**Stateless vs stateful mode:**
+### Stateless vs stateful mode
 
 - **Stateless** (default, `sessionIdGenerator: undefined`) — a fresh transport is created per HTTP request. No session tracking. Suitable for serverless environments and simple integrations.
 - **Stateful** (`sessionIdGenerator` provided) — a single shared transport handles all requests and tracks sessions by ID.
+
+## AWS Lambda Deployment
+
+The default **stateless** mode (see [Stateless vs stateful mode](#stateless-vs-stateful-mode)) is built for serverless: a fresh transport is created per request, nothing is kept in memory between invocations, and responses are plain JSON (no SSE) — exactly the request/response shape API Gateway and Lambda Function URLs expect. Because the router is a regular Koa app, you wrap it with any Koa-to-Lambda adapter (e.g. [`serverless-http`](https://github.com/dougmoscrop/serverless-http)) and front it with an HTTP API Gateway or a Function URL.
+
+```mermaid
+flowchart LR
+    Client[MCP Client] -->|POST /mcp| GW[API Gateway / Function URL]
+    GW --> L[Lambda]
+    subgraph L[Lambda]
+        H[serverless-http handler] --> App[Koa App + createMcpRouter]
+    end
+```
+
+```typescript
+import serverless from 'serverless-http';
+import { App, bodyParser } from '@ttoss/http-server';
+import { createMcpRouter, McpServer, z } from '@ttoss/http-server-mcp';
+
+const mcpServer = new McpServer({ name: 'my-mcp-server', version: '1.0.0' });
+
+mcpServer.registerTool(
+  'get-weather',
+  {
+    description: 'Get weather for a location',
+    inputSchema: { location: z.string() },
+  },
+  async ({ location }) => ({
+    content: [{ type: 'text', text: `Weather in ${location}: Sunny` }],
+  })
+);
+
+const app = new App();
+app.use(bodyParser());
+// Stateless by default — no sessionIdGenerator
+app.use(createMcpRouter(mcpServer).routes());
+
+export const handler = serverless(app.callback());
+```
+
+Keep the following in mind:
+
+- **Do not pass `sessionIdGenerator`.** Stateful mode relies on a shared in-memory transport that does not survive across Lambda containers; each invocation may land on a different one.
+- **Authentication** via the [`auth`](#authentication) option (Cognito or a custom `verifyToken`) runs inside the handler and pairs naturally with API Gateway — you can also delegate to a Gateway authorizer.
+- **SSE streaming is not used** (`enableJsonResponse: true`), so a standard API Gateway integration is enough; Function URL response streaming is not required.
+
+> This differs from [`awslabs/run-model-context-protocol-servers-with-aws-lambda`](https://github.com/awslabs/run-model-context-protocol-servers-with-aws-lambda), which wraps **stdio**-based MCP servers into Lambda by spawning a child process per invocation. `@ttoss/http-server-mcp` already speaks Streamable HTTP, so that wrapper is unnecessary — you deploy it like any other HTTP handler.
 
 ## Related Packages
 

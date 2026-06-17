@@ -42,7 +42,7 @@ The shift is simple: **Stop reviewing the lowest level** (functions, in this exa
 
 If a product has a Stripe integration, you should not care if the code uses a ternary operator or an `if-else` block. You should care that there is a **Billing System** containing a **Stripe Module** that adheres to a specific contract.
 
-Your job is to maintain a clear mental model of the higher levels (Product and Systems). This aligns with [The Principle of Contractual Specialization](/docs/ai/agentic-development-principles#the-principle-of-contractual-specialization). By keeping the boundaries rigid, you can let the AI handle the implementation details within those boundaries. As noted in [Coding is Now a Commodity](/blog/2025/12/26/coding-is-now-a-commodity), the value has shifted from the "bricks" (functions) to the "blueprint" (system architecture).
+Your job is to maintain a clear mental model of the higher levels (Product and Systems). This aligns with [The Principle of Contractual Specialization](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-principle-of-contractual-specialization). By keeping the boundaries rigid, you can let the AI handle the implementation details within those boundaries. As noted in [Coding is Now a Commodity](/blog/2025/12/26/coding-is-now-a-commodity), the value has shifted from the "bricks" (functions) to the "blueprint" (system architecture).
 
 ## Strategy 2: Review Instructions, Not Code
 
@@ -62,7 +62,7 @@ When you stop reviewing functions, you lose the ability to spot subtle logical b
 
 Tests are the guarantee that allows you to be "ignorant" of the details. When an engineer (or AI) needs to fix a bug in a low-level module they don't fully understand, the test suite acts as the guardrail. It ensures that fixing the Stripe integration doesn't break the User Auth flow.
 
-This approach implements [The Principle of Intrinsic Verification](/docs/ai/agentic-development-principles#the-principle-of-intrinsic-verification). You are trading the high-friction cost of manual review for the upfront cost of writing robust tests. This allows you to escape the [AI Verification Trap](/blog/2025/12/18/from-reviewer-to-architect) and focus on system-level constraints rather than syntax.
+This approach implements [The Principle of Intrinsic Verification](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-corollary-of-intrinsic-verification). You are trading the high-friction cost of manual review for the upfront cost of writing robust tests. This allows you to escape the [AI Verification Trap](/blog/2025/12/18/from-reviewer-to-architect) and focus on system-level constraints rather than syntax.
 
 ## Strategy 4: Enforce Schema Supremacy
 

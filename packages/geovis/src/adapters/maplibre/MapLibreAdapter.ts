@@ -26,7 +26,7 @@ import { syncSourcesAndLayers } from './syncSourcesAndLayers';
 // Re-exports preserved for public API and historical test imports.
 export { toMaplibreLayer, toMaplibreSource };
 
-const DEFAULT_STYLE = 'https://demotiles.maplibre.org/style.json';
+const DEFAULT_STYLE = 'https://tiles.openfreemap.org/styles/positron';
 
 /**
  * A valid MapLibre style with no sources and no layers, producing a blank canvas.
