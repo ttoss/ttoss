@@ -85,7 +85,7 @@ export const parseReference = (text: string): React.ReactNode[] => {
     const url = match[2];
     if (isSafeUrl(url)) {
       nodes.push(
-        <Link key={key++} href={url} target="_blank">
+        <Link key={key++} href={url} target="_blank" rel="noopener noreferrer">
           {match[1]}
         </Link>
       );
@@ -170,11 +170,6 @@ const buildQuantitativeItems = ({
   const palette = resolvePalette(colorBy, total);
   const { labelFormat, normalization } = legend;
 
-  // Use labelFormat as-is. For percentage format on [0, 1] range data,
-  // the default denominator of 1 is semantically correct and produces
-  // the expected [0%, 100%] range output.
-  const effectiveLabelFormat = labelFormat;
-
   const mkLabel = (
     lower: number | null,
     upper: number | null,
@@ -185,7 +180,7 @@ const buildQuantitativeItems = ({
       upper,
       index,
       total,
-      spec: effectiveLabelFormat,
+      spec: labelFormat,
       normalization,
       formatValue,
     });
