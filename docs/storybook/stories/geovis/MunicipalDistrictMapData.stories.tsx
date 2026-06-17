@@ -257,7 +257,6 @@ export default {
         'range',
         'percentage',
         'stdDev',
-        'auto',
         'custom',
         'labels',
       ] satisfies LabelFormatType[],
@@ -412,8 +411,6 @@ export const MunicipalDistrictMapData: StoryFn<MunicipalDistrictStoryArgs> = ({
         };
       case 'stdDev':
         return { type: 'stdDev', unit: 'σ', extended };
-      case 'auto':
-        return { type: 'auto', extended };
       case 'custom':
         return { type: 'custom', formatter: customRangeFormatter, extended };
       case 'labels':
