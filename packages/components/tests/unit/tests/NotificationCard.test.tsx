@@ -80,15 +80,17 @@ describe('NotificationCard', () => {
     expect(screen.queryByRole('button')).toBeNull();
   });
 
-  test('renders nothing for action without open_url type', () => {
+  test('renders callback action button and calls onClick', () => {
+    const onClick = jest.fn();
     render(
       <NotificationCard
         type="info"
         message="msg"
-        actions={[{ url: 'https://example.com', label: 'Click' }]}
+        actions={[{ action: 'callback', onClick, label: 'Retry' }]}
       />
     );
-    expect(screen.queryByRole('button')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Retry' }));
+    expect(onClick).toHaveBeenCalledTimes(1);
   });
 
   test('renders nothing when empty tags array is passed', () => {

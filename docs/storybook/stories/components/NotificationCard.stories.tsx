@@ -131,6 +131,45 @@ export const WithSingleAction: StoryObj = {
   },
 };
 
+export const WithCallbackAction: StoryObj = {
+  args: {
+    type: 'warning',
+    title: 'Sync required',
+    message: 'Your data is out of sync. Run a manual sync to update.',
+    actions: [
+      {
+        action: 'callback',
+        label: 'Sync now',
+        onClick: () => {
+          alert('Sync triggered!');
+        },
+      },
+    ],
+  },
+};
+
+export const WithMixedActions: StoryObj = {
+  args: {
+    type: 'info',
+    title: 'Update available',
+    message: 'A new version is ready. Review the changelog or update now.',
+    actions: [
+      {
+        action: 'open_url',
+        url: 'https://example.com/changelog',
+        label: 'See changelog',
+      },
+      {
+        action: 'callback',
+        label: 'Update now',
+        onClick: () => {
+          alert('Update started!');
+        },
+      },
+    ],
+  },
+};
+
 export const WithOCANotification: StoryObj = {
   args: {
     title: `Sua campanha está ganhando performance!`,

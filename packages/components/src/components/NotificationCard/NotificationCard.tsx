@@ -4,11 +4,9 @@ import type * as React from 'react';
 
 type NotificationType = 'success' | 'error' | 'warning' | 'info' | 'neutral';
 
-export type NotificationAction = {
-  action?: 'open_url';
-  url?: string;
-  label?: string;
-};
+export type NotificationAction =
+  | { action: 'open_url'; url: string; label?: string }
+  | { action: 'callback'; onClick: () => void; label?: string };
 
 export type NotificationCardProps = {
   type: NotificationType;
@@ -153,17 +151,15 @@ const NotificationCardActions = ({
       }}
     >
       {actions.map((action, index) => {
-        if (action.action !== 'open_url') {
-          return null;
-        }
+        const onClick =
+          action.action === 'open_url'
+            ? () => {
+                return window.open(action.url, '_blank');
+              }
+            : action.onClick;
+
         return (
-          <Button
-            key={index}
-            variant="secondary"
-            onClick={() => {
-              return window.open(action.url, '_blank');
-            }}
-          >
+          <Button key={index} variant="secondary" onClick={onClick}>
             {action.label || 'Acessar'}
           </Button>
         );
