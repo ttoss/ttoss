@@ -37,7 +37,11 @@ describe('NotificationCard', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  test('renders actions with open_url as buttons linking to the url', () => {
+  test('renders actions with open_url as buttons that open the url', () => {
+    const windowOpenSpy = jest.spyOn(window, 'open').mockImplementation(() => {
+      return null;
+    });
+
     render(
       <NotificationCard
         type="info"
@@ -51,10 +55,13 @@ describe('NotificationCard', () => {
         ]}
       />
     );
-    const actionLink = screen.getByRole('link', { name: 'Click here' });
-    expect(actionLink).toBeInTheDocument();
-    expect(actionLink).toHaveAttribute('href', 'https://example.com');
-    expect(actionLink).toHaveAttribute('target', '_blank');
+
+    const actionButton = screen.getByRole('button', { name: 'Click here' });
+    expect(actionButton).toBeInTheDocument();
+    fireEvent.click(actionButton);
+    expect(windowOpenSpy).toHaveBeenCalledWith('https://example.com', '_blank');
+
+    windowOpenSpy.mockRestore();
   });
 
   test('renders action without label uses default label', () => {
@@ -65,25 +72,23 @@ describe('NotificationCard', () => {
         actions={[{ action: 'open_url', url: 'https://example.com' }]}
       />
     );
-    expect(screen.getByRole('link', { name: 'Acessar' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Acessar' })).toBeInTheDocument();
   });
 
   test('renders nothing for actions when array is empty', () => {
-    const { container } = render(
-      <NotificationCard type="info" message="msg" actions={[]} />
-    );
-    expect(container.querySelector('a')).toBeNull();
+    render(<NotificationCard type="info" message="msg" actions={[]} />);
+    expect(screen.queryByRole('button')).toBeNull();
   });
 
   test('renders nothing for action without open_url type', () => {
-    const { container } = render(
+    render(
       <NotificationCard
         type="info"
         message="msg"
         actions={[{ url: 'https://example.com', label: 'Click' }]}
       />
     );
-    expect(container.querySelector('a')).toBeNull();
+    expect(screen.queryByRole('button')).toBeNull();
   });
 
   test('renders nothing when empty tags array is passed', () => {
@@ -94,6 +99,10 @@ describe('NotificationCard', () => {
   });
 
   test('renders multiple actions as separate buttons', () => {
+    const windowOpenSpy = jest.spyOn(window, 'open').mockImplementation(() => {
+      return null;
+    });
+
     render(
       <NotificationCard
         type="warning"
@@ -108,14 +117,20 @@ describe('NotificationCard', () => {
         ]}
       />
     );
-    expect(screen.getByRole('link', { name: 'View' })).toHaveAttribute(
-      'href',
-      'https://example.com/a'
+
+    fireEvent.click(screen.getByRole('button', { name: 'View' }));
+    expect(windowOpenSpy).toHaveBeenCalledWith(
+      'https://example.com/a',
+      '_blank'
     );
-    expect(screen.getByRole('link', { name: 'Dismiss' })).toHaveAttribute(
-      'href',
-      'https://example.com/b'
+
+    fireEvent.click(screen.getByRole('button', { name: 'Dismiss' }));
+    expect(windowOpenSpy).toHaveBeenCalledWith(
+      'https://example.com/b',
+      '_blank'
     );
+
+    windowOpenSpy.mockRestore();
   });
 
   test('renders caption when provided', () => {

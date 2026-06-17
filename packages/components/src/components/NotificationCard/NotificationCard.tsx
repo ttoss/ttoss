@@ -1,5 +1,5 @@
 import { Icon } from '@ttoss/react-icons';
-import { Box, Card, CloseButton, Link, Tag, Text } from '@ttoss/ui';
+import { Box, Button, Card, CloseButton, Tag, Text } from '@ttoss/ui';
 import type * as React from 'react';
 
 type NotificationType = 'success' | 'error' | 'warning' | 'info' | 'neutral';
@@ -157,15 +157,15 @@ const NotificationCardActions = ({
           return null;
         }
         return (
-          <Link
+          <Button
             key={index}
-            href={action.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            sx={{ variant: 'buttons.primary' }}
+            variant="secondary"
+            onClick={() => {
+              return window.open(action.url, '_blank');
+            }}
           >
             {action.label || 'Acessar'}
-          </Link>
+          </Button>
         );
       })}
     </Box>
