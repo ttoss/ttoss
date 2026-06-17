@@ -37,7 +37,7 @@ describe('NotificationCard', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  test('renders actions with open_url', () => {
+  test('renders actions with open_url as buttons linking to the url', () => {
     render(
       <NotificationCard
         type="info"
@@ -51,9 +51,10 @@ describe('NotificationCard', () => {
         ]}
       />
     );
-    const link = screen.getByText('Click here');
-    expect(link).toBeInTheDocument();
-    expect(link.closest('a')).toHaveAttribute('href', 'https://example.com');
+    const actionLink = screen.getByRole('link', { name: 'Click here' });
+    expect(actionLink).toBeInTheDocument();
+    expect(actionLink).toHaveAttribute('href', 'https://example.com');
+    expect(actionLink).toHaveAttribute('target', '_blank');
   });
 
   test('renders action without label uses default label', () => {
@@ -64,7 +65,57 @@ describe('NotificationCard', () => {
         actions={[{ action: 'open_url', url: 'https://example.com' }]}
       />
     );
-    expect(screen.getByText('Acessar')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Acessar' })).toBeInTheDocument();
+  });
+
+  test('renders nothing for actions when array is empty', () => {
+    const { container } = render(
+      <NotificationCard type="info" message="msg" actions={[]} />
+    );
+    expect(container.querySelector('a')).toBeNull();
+  });
+
+  test('renders nothing for action without open_url type', () => {
+    const { container } = render(
+      <NotificationCard
+        type="info"
+        message="msg"
+        actions={[{ url: 'https://example.com', label: 'Click' }]}
+      />
+    );
+    expect(container.querySelector('a')).toBeNull();
+  });
+
+  test('renders nothing when empty tags array is passed', () => {
+    render(
+      <NotificationCard type="info" title="Title" message="msg" tags={[]} />
+    );
+    expect(document.querySelectorAll('[class*="tag"]').length).toBe(0);
+  });
+
+  test('renders multiple actions as separate buttons', () => {
+    render(
+      <NotificationCard
+        type="warning"
+        message="Action required"
+        actions={[
+          { action: 'open_url', url: 'https://example.com/a', label: 'View' },
+          {
+            action: 'open_url',
+            url: 'https://example.com/b',
+            label: 'Dismiss',
+          },
+        ]}
+      />
+    );
+    expect(screen.getByRole('link', { name: 'View' })).toHaveAttribute(
+      'href',
+      'https://example.com/a'
+    );
+    expect(screen.getByRole('link', { name: 'Dismiss' })).toHaveAttribute(
+      'href',
+      'https://example.com/b'
+    );
   });
 
   test('renders caption when provided', () => {

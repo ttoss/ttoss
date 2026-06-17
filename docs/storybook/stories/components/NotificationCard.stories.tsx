@@ -5,6 +5,7 @@ import { Flex } from '@ttoss/ui';
 export default {
   title: 'Components/NotificationCard',
   component: NotificationCard,
+  tags: ['autodocs'],
 } as Meta;
 
 export const Success: StoryObj = {
@@ -92,6 +93,41 @@ export const WithTag: StoryObj = {
     message: 'Your action has been completed and new features are now working.',
     caption: '2d ago',
     tags: ['New', 'Feature', 'Available'],
+  },
+};
+
+export const WithActions: StoryObj = {
+  args: {
+    type: 'info',
+    title: 'Action required',
+    message: 'Your account needs attention. Please review the details below.',
+    actions: [
+      {
+        action: 'open_url',
+        url: 'https://example.com/details',
+        label: 'View details',
+      },
+      {
+        action: 'open_url',
+        url: 'https://example.com/docs',
+        label: 'Read docs',
+      },
+    ],
+  },
+};
+
+export const WithSingleAction: StoryObj = {
+  args: {
+    type: 'warning',
+    title: 'Payment overdue',
+    message: 'Your subscription payment is overdue. Update your billing info.',
+    actions: [
+      {
+        action: 'open_url',
+        url: 'https://example.com/billing',
+        label: 'Update billing',
+      },
+    ],
   },
 };
 

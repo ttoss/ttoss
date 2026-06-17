@@ -335,6 +335,31 @@ describe('Notifications Box Test', () => {
     expect(screen.getByText('Message with title')).toBeInTheDocument();
   });
 
+  test('should render action buttons when notification has actions', async () => {
+    render(
+      <Component
+        notifications={{
+          message: NOTIFICATION_MESSAGE,
+          type: 'info',
+          actions: [
+            {
+              action: 'open_url',
+              url: 'https://example.com',
+              label: 'View details',
+            },
+          ],
+        }}
+      />,
+      { wrapper: NotificationsProvider }
+    );
+
+    await user.click(screen.getByRole('button'));
+
+    const actionLink = screen.getByRole('link', { name: 'View details' });
+    expect(actionLink).toBeInTheDocument();
+    expect(actionLink).toHaveAttribute('href', 'https://example.com');
+  });
+
   test('should handle multiple boxes with different ids correctly', async () => {
     const ComponentWithMultipleBoxes = () => {
       const { addNotification } = useNotifications();
