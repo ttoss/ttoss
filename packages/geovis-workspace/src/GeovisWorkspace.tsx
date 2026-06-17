@@ -10,22 +10,10 @@ import {
 import { GeovisWorkspaceProvider } from './GeovisWorkspaceProvider';
 
 export interface GeovisWorkspaceProps {
-  /** Config describing the left and right sidebars. */
   config: GeovisWorkspaceConfig;
-  /** GeoVis spec rendered in the main map area. */
   visualizationSpec: VisualizationSpec;
-  /**
-   * Active item value per menu group, keyed by menu id. Provide it to control
-   * the selection from the parent and rebuild `visualizationSpec` in response.
-   * Omit it to let the workspace manage the selection internally (seeded from
-   * each menu's `defaultValue`).
-   */
-  selection?: GeovisWorkspaceSelection;
-  /**
-   * Called with the full next selection whenever a menu item is selected. Use
-   * it to derive the next `visualizationSpec`.
-   */
-  onSelectionChange?: (selection: GeovisWorkspaceSelection) => void;
+  variables?: GeovisWorkspaceSelection;
+  onVariableChange?: (variables: GeovisWorkspaceSelection) => void;
 }
 
 /**
@@ -54,45 +42,17 @@ const GeovisWorkspaceMap = ({
   );
 };
 
-/**
- * High-level component that composes a left sidebar (menu groups), a GeoVis map
- * in the main area, and an optional right sidebar — the sidebars driven by
- * `config` and the map driven by `visualizationSpec`. Sidebars only render when
- * defined in the config.
- *
- * The selection that drives the menus is reported through `onSelectionChange`;
- * the parent derives the next `visualizationSpec` from it so picking a menu item
- * recolors the map:
- *
- * ```tsx
- * const [selection, setSelection] = React.useState(
- *   getInitialSelection({ config })
- * );
- *
- * const visualizationSpec = React.useMemo(
- *   () => buildSpec(selection),
- *   [selection]
- * );
- *
- * <GeovisWorkspace
- *   config={config}
- *   visualizationSpec={visualizationSpec}
- *   selection={selection}
- *   onSelectionChange={setSelection}
- * />
- * ```
- */
 export const GeovisWorkspace = ({
   config,
   visualizationSpec,
-  selection,
-  onSelectionChange,
+  variables,
+  onVariableChange,
 }: GeovisWorkspaceProps) => {
   return (
     <GeovisWorkspaceProvider
       config={config}
-      selection={selection}
-      onSelectionChange={onSelectionChange}
+      selection={variables}
+      onSelectionChange={onVariableChange}
     >
       <Layout>
         <GeovisWorkspaceMap visualizationSpec={visualizationSpec} />

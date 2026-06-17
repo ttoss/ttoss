@@ -69,14 +69,14 @@ export const Example = () => {
     <GeovisWorkspace
       config={config}
       visualizationSpec={visualizationSpec}
-      selection={selection}
-      onSelectionChange={setSelection}
+      variables={selection}
+      onVariableChange={setSelection}
     />
   );
 };
 ```
 
-`selection` and `onSelectionChange` are optional: omit both to let the workspace
+`variables` and `onVariableChange` are optional: omit both to let the workspace
 manage the selection internally (seeded from `defaultValue`). Provide them to
 control it from the parent — required when the selection must drive the
 `visualizationSpec`. Selection is per menu group: choosing an item only affects
@@ -91,8 +91,8 @@ its own group. Read the current selection anywhere inside the workspace with
 | ------------------- | ------------------------------------- | ----------------------------------------------------------- |
 | `config`            | `GeovisWorkspaceConfig`               | Describes the sidebars. Required.                           |
 | `visualizationSpec` | `VisualizationSpec`                   | GeoVis spec rendered in the main map area. Required.        |
-| `selection`         | `Record<string, string \| undefined>` | Controlled selection per menu group. Omit for uncontrolled. |
-| `onSelectionChange` | `(selection) => void`                 | Called with the full next selection when an item is picked. |
+| `variables`         | `Record<string, string \| undefined>` | Controlled selection per menu group. Omit for uncontrolled. |
+| `onVariableChange`  | `(variables) => void`                 | Called with the full next selection when an item is picked. |
 
 ### `GeovisWorkspaceConfig`
 

@@ -130,14 +130,14 @@ test('selecting an item marks it active without affecting other groups', async (
   ).toHaveAttribute('aria-pressed', 'false');
 });
 
-test('calls onSelectionChange with the full next selection', async () => {
-  const onSelectionChange = jest.fn();
+test('calls onVariableChange with the full next selection', async () => {
+  const onVariableChange = jest.fn();
 
   render(
     <GeovisWorkspace
       config={config}
       visualizationSpec={visualizationSpec}
-      onSelectionChange={onSelectionChange}
+      onVariableChange={onVariableChange}
     />,
     { wrapper: Provider }
   );
@@ -148,7 +148,7 @@ test('calls onSelectionChange with the full next selection', async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Renda média' }));
   });
 
-  expect(onSelectionChange).toHaveBeenCalledWith({
+  expect(onVariableChange).toHaveBeenCalledWith({
     population: undefined,
     economy: 'income',
   });
@@ -187,13 +187,13 @@ test('initializes selection from defaultValue', async () => {
   );
 });
 
-test('controlled selection prop drives the active item', async () => {
+test('controlled variables prop drives the active item', async () => {
   render(
     <GeovisWorkspace
       config={config}
       visualizationSpec={visualizationSpec}
-      selection={{ economy: 'income' }}
-      onSelectionChange={jest.fn()}
+      variables={{ economy: 'income' }}
+      onVariableChange={jest.fn()}
     />,
     { wrapper: Provider }
   );
