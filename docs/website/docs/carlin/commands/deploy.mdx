@@ -202,18 +202,18 @@ flowchart TD
 
 The comment looks like this:
 
-| Package | Stack | Output Key | Output Value |
-|---------|-------|------------|--------------|
-| `@acme/api` | `acme-api-pr-42` | `ApiUrl` | https://... |
+| Package     | Stack            | Output Key   | Output Value |
+| ----------- | ---------------- | ------------ | ------------ |
+| `@acme/api` | `acme-api-pr-42` | `ApiUrl`     | https://...  |
 | `@acme/web` | `acme-web-pr-42` | `BucketName` | acme-web-... |
 
 #### Required environment variables
 
-| Variable | Description |
-|----------|-------------|
-| `GH_TOKEN` | GitHub token with `pull-requests: write` permission. |
+| Variable            | Description                                                              |
+| ------------------- | ------------------------------------------------------------------------ |
+| `GH_TOKEN`          | GitHub token with `pull-requests: write` permission.                     |
 | `GITHUB_REPOSITORY` | Repository in `owner/repo` format (set automatically by GitHub Actions). |
-| `CARLIN_BRANCH` | The branch being built (used to look up the open PR). |
+| `CARLIN_BRANCH`     | The branch being built (used to look up the open PR).                    |
 
 #### Usage in CI
 
