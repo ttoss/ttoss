@@ -14,8 +14,15 @@ test('package exports expected public symbols', () => {
   expect(typeof geovis.useGeoVisHover).toBe('function');
   expect(typeof geovis.useGeoVisClick).toBe('function');
   expect(typeof geovis.validateSpec).toBe('function');
-  // 5.1: useMapData is part of the public contract
   expect(typeof geovis.useMapData).toBe('function');
+  // Boundary group factory and helpers
+  expect(typeof geovis.createBoundaryGroup).toBe('function');
+  expect(typeof geovis.appendBoundaryGroup).toBe('function');
+  expect(typeof geovis.toggleBoundaryGroup).toBe('function');
+  expect(typeof geovis.customizeBoundaryGroup).toBe('function');
+  expect(typeof geovis.useBoundaryToggle).toBe('function');
+  // createRuntime
+  expect(typeof geovis.createRuntime).toBe('function');
 });
 
 test('spec types expose legend configuration through the public contract', () => {

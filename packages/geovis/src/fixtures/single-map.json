@@ -81,7 +81,6 @@
       "geometry": "polygon",
       "paint": {
         "fillColor": "#888888",
-        "fillOpacity": 0.4,
         "lineColor": "#525252",
         "lineWidth": 2
       }
