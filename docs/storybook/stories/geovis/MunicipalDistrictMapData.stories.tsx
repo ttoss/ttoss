@@ -307,10 +307,6 @@ export default {
       description:
         '`colorBy.thresholds` preset — IBGE urban classes or standard district bins',
     },
-    basemapVisible: {
-      control: { type: 'boolean' },
-      description: '`basemap.visible` — hide tile basemap while keeping layers',
-    },
     showOutline: {
       control: { type: 'boolean' },
       description: '`layers[].visible` for the `districts-outline` line layer',
@@ -370,7 +366,6 @@ export default {
     labelFormatType: 'count',
     noDataLabel: '',
     thresholdPreset: 'standard',
-    basemapVisible: true,
     showOutline: true,
     showClickAnchor: true,
     hoverLineColor: '#333333',
@@ -446,6 +441,7 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
   React.useEffect(() => {
     fetch(DATA_URL)
       .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
       .then((json: Record<string, Record<string, ApiDistrictEntry>>) => {
@@ -460,6 +456,7 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
   React.useEffect(() => {
     fetch(DISTRICTS_URL)
       .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
       .then((json: GeoJSONFeatureCollection) => {
@@ -500,7 +497,7 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
     if (!yearData) return [];
     return Object.entries(yearData).map(([districtId, entry]) => {
       return {
-        geometryId: parseInt(districtId, 10),
+        geometryId: districtId,
         value: getDistrictValue(entry as DistrictEntry, dataProperty),
       };
     });
@@ -581,7 +578,6 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
       id: 'municipal-district-mapdata',
       engine: 'maplibre',
       basemap: {
-        styleUrl: 'https://tiles.openfreemap.org/styles/bright',
         visible: basemapVisible,
       },
       sources: [
@@ -651,6 +647,7 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
       ],
     };
   }, [
+    districtGeoJson,
     mapDataEntries,
     labelFormatType,
     abbreviate,
