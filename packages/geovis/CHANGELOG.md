@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.2.0 (2026-06-17)
+
+### Features
+
+- **geovis:** basemap presets and administrative boundaries of Brazil layers ([#1049](https://github.com/ttoss/ttoss/issues/1049)) ([8d33e8a](https://github.com/ttoss/ttoss/commit/8d33e8a8bc2837e63050e0331707501af7582b16))
+- **http-server-mcp:** public MCP methods and RFC 9728 discovery in createMcpRouter ([#1068](https://github.com/ttoss/ttoss/issues/1068)) ([d78a476](https://github.com/ttoss/ttoss/commit/d78a4767400bed67cbe5a1dfef822b76f26366a3)), closes [#1065](https://github.com/ttoss/ttoss/issues/1065)
+
 ## [0.1.20](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.1.19...@ttoss/geovis@0.1.20) (2026-06-10)
 
 **Note:** Version bump only for package @ttoss/geovis
