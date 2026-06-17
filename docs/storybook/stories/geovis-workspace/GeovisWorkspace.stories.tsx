@@ -258,8 +258,8 @@ const WorkspaceStory = ({ config }: { config: GeovisWorkspaceConfig }) => {
     <GeovisWorkspace
       config={config}
       visualizationSpec={visualizationSpec}
-      selection={selection}
-      onSelectionChange={setSelection}
+      variables={selection}
+      onVariableChange={setSelection}
     />
   );
 };
