@@ -1,5 +1,6 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import type {
+  BoundaryGroup,
   GeoJSONFeatureCollection,
   LabelFormatSpec,
   LegendPosition,
@@ -7,21 +8,44 @@ import type {
   VisualizationSpec,
 } from '@ttoss/geovis';
 import {
+  createBoundaryGroup,
+  customizeBoundaryGroup,
   GeoVisCanvas,
   GeoVisHoverTooltip,
   GeoVisLegend,
   GeoVisProvider,
+  useBoundaryToggle,
 } from '@ttoss/geovis';
 import * as React from 'react';
 
-import districtGeoJson from '../../../../packages/geovis/src/fixtures/distrito-municipal-v2.json';
-import type { ColorStep } from './_choropleth-helpers';
-import { MapOverlayLegend } from './_choropleth-helpers';
-import { computeBbox, FitBoundsToBbox, MapLabel } from './_map-story-helpers';
+import type { ColorStep } from './helpers/choropleth-helpers';
+import { MapOverlayLegend } from './helpers/choropleth-helpers';
+import {
+  computeBbox,
+  FitBoundsToBbox,
+  MapLabel,
+} from './helpers/map-story-helpers';
 
-const DISTRICT_BBOX = computeBbox(
-  districtGeoJson as unknown as GeoJSON.FeatureCollection
-);
+const DISTRICTS_URL =
+  'https://api-forja.triangulos.tech/v1/files/13984ef1-a4b4-4476-869d-9b9cfd9c6788/download';
+const STATES_URL =
+  'https://api-forja.triangulos.tech/v1/multifiles/5e09f03c-bfe9-4cfb-b2dc-63676f95c19c/3bc26e1e-f2cb-4dd2-be21-ea4bd76ec40b/download';
+const SUBPREFECTURES_URL =
+  'https://api-forja.triangulos.tech/v1/files/265eb8bb-7a49-4164-86c3-24c207c1d228/download';
+
+const baseDistrictsGroup = createBoundaryGroup({
+  id: 'districts-outline-src',
+  data: DISTRICTS_URL,
+  layerId: 'districts-outline-toggle',
+});
+const baseStateGroup = createBoundaryGroup({
+  id: 'brazil-states',
+  data: STATES_URL,
+});
+const baseSubprefeituraGroup = createBoundaryGroup({
+  id: 'brazil-sp-subprefectures',
+  data: SUBPREFECTURES_URL,
+});
 
 type LabelFormatType = LabelFormatSpec['type'];
 
@@ -52,6 +76,16 @@ type MunicipalDistrictStoryArgs = {
   selectedLineWidth: number;
   clickAnchorColor: string;
   normalizationType: NormalizationType;
+  showBasemap: boolean;
+  showStateOutlines: boolean;
+  showSubprefeituraOutlines: boolean;
+  showDistrictOutlines: boolean;
+  districtLineColor: string;
+  districtLineWidth: number;
+  stateLineColor: string;
+  stateLineWidth: number;
+  subprefeituraLineColor: string;
+  subprefeituraLineWidth: number;
 };
 
 const DATA_URL =
@@ -312,6 +346,20 @@ export default {
       description:
         '`legends[].normalization.type` — forced to `percentage` when `labelFormatType` is `percentage`',
     },
+    showBasemap: { control: 'boolean' },
+    showStateOutlines: { control: 'boolean' },
+    showSubprefeituraOutlines: { control: 'boolean' },
+    showDistrictOutlines: { control: 'boolean' },
+    districtLineColor: { control: 'color' },
+    districtLineWidth: {
+      control: { type: 'range', min: 0, max: 5, step: 0.5 },
+    },
+    stateLineColor: { control: 'color' },
+    stateLineWidth: { control: { type: 'range', min: 0, max: 5, step: 0.5 } },
+    subprefeituraLineColor: { control: 'color' },
+    subprefeituraLineWidth: {
+      control: { type: 'range', min: 0, max: 5, step: 0.5 },
+    },
   },
   args: {
     year: 2020,
@@ -331,6 +379,16 @@ export default {
     selectedLineWidth: 3,
     clickAnchorColor: '#2171b5',
     normalizationType: 'raw',
+    showBasemap: true,
+    showStateOutlines: true,
+    showSubprefeituraOutlines: true,
+    showDistrictOutlines: true,
+    districtLineColor: '#d1d5db',
+    districtLineWidth: 0.5,
+    stateLineColor: '#374151',
+    stateLineWidth: 1.5,
+    subprefeituraLineColor: '#6b7280',
+    subprefeituraLineWidth: 1.0,
   },
 } satisfies Meta<MunicipalDistrictStoryArgs>;
 
@@ -345,32 +403,45 @@ export default {
  *
  * Source: SMUL/GEOINFO — Resident population evolution, São Paulo Municipality.
  */
-/* eslint-disable react/prop-types, max-lines-per-function, max-lines, @typescript-eslint/no-explicit-any -- Storybook fixture story: TypeScript generics validate props, component integrates data + spec + UI, file contains comprehensive fixture data */
-export const MunicipalDistrictMapData: StoryFn<MunicipalDistrictStoryArgs> = ({
-  year,
-  dataProperty,
-  abbreviate,
-  extended,
-  legendPosition,
-  labelFormatType,
-  noDataLabel,
-  thresholdPreset,
-  basemapVisible,
-  showOutline,
-  showClickAnchor,
-  hoverLineColor,
-  hoverLineWidth,
-  selectedLineColor,
-  selectedLineWidth,
-  clickAnchorColor,
-  normalizationType,
-}) => {
+/* eslint-disable max-lines-per-function, max-lines */
+const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
+  const {
+    year,
+    showStateOutlines,
+    showSubprefeituraOutlines,
+    showDistrictOutlines,
+    districtLineColor,
+    districtLineWidth,
+    stateLineColor,
+    stateLineWidth,
+    subprefeituraLineColor,
+    subprefeituraLineWidth,
+    dataProperty,
+    abbreviate,
+    extended,
+    legendPosition,
+    labelFormatType,
+    noDataLabel,
+    thresholdPreset,
+    basemapVisible,
+    showOutline,
+    showClickAnchor,
+    hoverLineColor,
+    hoverLineWidth,
+    selectedLineColor,
+    selectedLineWidth,
+    clickAnchorColor,
+    normalizationType,
+  } = props;
+
   const position = resolveLegendPosition(legendPosition);
   const trimmedNoDataLabel = noDataLabel.trim() || undefined;
   const [populationData, setPopulationData] = React.useState<Record<
     string,
     Record<string, DistrictEntry>
   > | null>(null);
+  const [districtGeoJson, setDistrictGeoJson] =
+    React.useState<GeoJSONFeatureCollection | null>(null);
 
   React.useEffect(() => {
     fetch(DATA_URL)
@@ -385,6 +456,43 @@ export const MunicipalDistrictMapData: StoryFn<MunicipalDistrictStoryArgs> = ({
         console.error('Failed to fetch population data', error);
       });
   }, []);
+
+  React.useEffect(() => {
+    fetch(DISTRICTS_URL)
+      .then((res) => {
+        return res.json();
+      })
+      .then((json: GeoJSONFeatureCollection) => {
+        const withIds: GeoJSONFeatureCollection = {
+          ...json,
+          features: json.features.map((f) => {
+            return {
+              ...f,
+              id: String(f.properties?.cd_distrit),
+            };
+          }),
+        };
+        setDistrictGeoJson(withIds);
+      })
+      .catch(() => {
+        setDistrictGeoJson(null);
+      });
+  }, []);
+
+  const districtBbox = React.useMemo(() => {
+    if (!districtGeoJson) return undefined;
+    return computeBbox(districtGeoJson as GeoJSON.FeatureCollection);
+  }, [districtGeoJson]);
+
+  // const nameToFeatureId = React.useMemo(() => {
+  //   if (!districtGeoJson) return new Map<string, string>();
+  //   const map = new Map<string, string>();
+  //   for (const f of districtGeoJson.features) {
+  //     const name = f.properties?.['nm_distrit'];
+  //     if (name && f.id != null) map.set(String(name), String(f.id));
+  //   }
+  //   return map;
+  // }, [districtGeoJson]);
 
   const mapDataEntries = React.useMemo(() => {
     if (!populationData) return [];
@@ -435,7 +543,32 @@ export const MunicipalDistrictMapData: StoryFn<MunicipalDistrictStoryArgs> = ({
     }
   };
 
-  const spec = React.useMemo<VisualizationSpec>(() => {
+  const districtsGroup = React.useMemo<BoundaryGroup>(() => {
+    return customizeBoundaryGroup(baseDistrictsGroup, {
+      lineColor: districtLineColor,
+      lineWidth: districtLineWidth,
+    });
+  }, [districtLineColor, districtLineWidth]);
+
+  const stateGroup = React.useMemo<BoundaryGroup>(() => {
+    return customizeBoundaryGroup(baseStateGroup, {
+      lineColor: stateLineColor,
+      lineWidth: stateLineWidth,
+    });
+  }, [stateLineColor, stateLineWidth]);
+
+  const subprefeituraGroup = React.useMemo<BoundaryGroup>(() => {
+    return customizeBoundaryGroup(baseSubprefeituraGroup, {
+      lineColor: subprefeituraLineColor,
+      lineWidth: subprefeituraLineWidth,
+    });
+  }, [subprefeituraLineColor, subprefeituraLineWidth]);
+
+  const boundaryGroups = React.useMemo(() => {
+    return [districtsGroup, stateGroup, subprefeituraGroup];
+  }, [districtsGroup, stateGroup, subprefeituraGroup]);
+
+  const specInput = React.useMemo<VisualizationSpec>(() => {
     const effectiveSteps = resolveThresholdSteps({
       labelFormatType,
       thresholdPreset,
@@ -536,6 +669,23 @@ export const MunicipalDistrictMapData: StoryFn<MunicipalDistrictStoryArgs> = ({
     normalizationType,
   ]);
 
+  const { spec, toggle, isVisible } = useBoundaryToggle(
+    specInput,
+    boundaryGroups
+  );
+
+  React.useEffect(() => {
+    if (showDistrictOutlines !== isVisible(districtsGroup))
+      toggle(districtsGroup);
+  }, [showDistrictOutlines, toggle, isVisible, districtsGroup]);
+  React.useEffect(() => {
+    if (showStateOutlines !== isVisible(stateGroup)) toggle(stateGroup);
+  }, [showStateOutlines, toggle, isVisible, stateGroup]);
+  React.useEffect(() => {
+    if (showSubprefeituraOutlines !== isVisible(subprefeituraGroup))
+      toggle(subprefeituraGroup);
+  }, [showSubprefeituraOutlines, toggle, isVisible, subprefeituraGroup]);
+
   // When the GeoVisLegend is overlaid at a corner (16rem wide, ~285px tall),
   // shift the fitBounds padding so São Paulo is centred in the VISIBLE area,
   // not behind the legend.  Values: 16rem ≈ 256px + 12px padding + 12px gap.
@@ -573,7 +723,7 @@ export const MunicipalDistrictMapData: StoryFn<MunicipalDistrictStoryArgs> = ({
             viewId="primary"
             style={{ width: '100%', height: '100%' }}
           />
-          <FitBoundsToBbox bbox={DISTRICT_BBOX} overlayInsets={fitInsets} />
+          <FitBoundsToBbox bbox={districtBbox} overlayInsets={fitInsets} />
           <GeoVisHoverTooltip
             render={(info) => {
               const district =
@@ -618,6 +768,13 @@ export const MunicipalDistrictMapData: StoryFn<MunicipalDistrictStoryArgs> = ({
       </GeoVisProvider>
     </div>
   );
+};
+
+/** Choropleth of São Paulo districts coloured by population with boundary toggles and labelFormat support. */
+export const MunicipalDistrictMapData: StoryFn<MunicipalDistrictStoryArgs> = (
+  props
+) => {
+  return <MunicipalDistrictMapDataRender {...props} />;
 };
 
 /** Variation with labelFormat type='range' (abbreviated and extended) */
