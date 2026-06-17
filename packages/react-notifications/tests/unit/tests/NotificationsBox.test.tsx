@@ -1,4 +1,4 @@
-import { render, screen, userEvent } from '@ttoss/test-utils/react';
+import { fireEvent, render, screen, userEvent } from '@ttoss/test-utils/react';
 import { NotificationsBox, useNotifications } from 'src/index';
 import { type Notification, NotificationsProvider } from 'src/Provider';
 
@@ -353,11 +353,18 @@ describe('Notifications Box Test', () => {
       { wrapper: NotificationsProvider }
     );
 
+    const windowOpenSpy = jest.spyOn(window, 'open').mockImplementation(() => {
+      return null;
+    });
+
     await user.click(screen.getByRole('button'));
 
-    const actionLink = screen.getByRole('link', { name: 'View details' });
-    expect(actionLink).toBeInTheDocument();
-    expect(actionLink).toHaveAttribute('href', 'https://example.com');
+    const actionButton = screen.getByRole('button', { name: 'View details' });
+    expect(actionButton).toBeInTheDocument();
+    fireEvent.click(actionButton);
+    expect(windowOpenSpy).toHaveBeenCalledWith('https://example.com', '_blank');
+
+    windowOpenSpy.mockRestore();
   });
 
   test('should handle multiple boxes with different ids correctly', async () => {
