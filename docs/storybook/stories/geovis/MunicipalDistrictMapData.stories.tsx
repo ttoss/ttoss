@@ -77,12 +77,12 @@ type MunicipalDistrictStoryArgs = {
   normalizationType: NormalizationType;
   basemapVisible: boolean;
   showStateOutlines: boolean;
-  showSubprefeituraOutlines: boolean;
   showDistrictOutlines: boolean;
-  districtLineColor: string;
-  districtLineWidth: number;
+  showSubprefeituraOutlines: boolean;
   stateLineColor: string;
   stateLineWidth: number;
+  districtLineColor: string;
+  districtLineWidth: number;
   subprefeituraLineColor: string;
   subprefeituraLineWidth: number;
 };
@@ -343,14 +343,14 @@ export default {
     },
     basemapVisible: { control: 'boolean' },
     showStateOutlines: { control: 'boolean' },
-    showSubprefeituraOutlines: { control: 'boolean' },
     showDistrictOutlines: { control: 'boolean' },
+    showSubprefeituraOutlines: { control: 'boolean' },
+    stateLineColor: { control: 'color' },
+    stateLineWidth: { control: { type: 'range', min: 0, max: 5, step: 0.5 } },
     districtLineColor: { control: 'color' },
     districtLineWidth: {
       control: { type: 'range', min: 0, max: 5, step: 0.5 },
     },
-    stateLineColor: { control: 'color' },
-    stateLineWidth: { control: { type: 'range', min: 0, max: 5, step: 0.5 } },
     subprefeituraLineColor: { control: 'color' },
     subprefeituraLineWidth: {
       control: { type: 'range', min: 0, max: 5, step: 0.5 },
@@ -375,12 +375,12 @@ export default {
     normalizationType: 'raw',
     basemapVisible: true,
     showStateOutlines: true,
-    showSubprefeituraOutlines: true,
     showDistrictOutlines: true,
-    districtLineColor: '#d1d5db',
-    districtLineWidth: 0.5,
+    showSubprefeituraOutlines: true,
     stateLineColor: '#374151',
     stateLineWidth: 1.5,
+    districtLineColor: '#d1d5db',
+    districtLineWidth: 0.5,
     subprefeituraLineColor: '#6b7280',
     subprefeituraLineWidth: 1.0,
   },
@@ -402,12 +402,12 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
   const {
     year,
     showStateOutlines,
-    showSubprefeituraOutlines,
     showDistrictOutlines,
-    districtLineColor,
-    districtLineWidth,
+    showSubprefeituraOutlines,
     stateLineColor,
     stateLineWidth,
+    districtLineColor,
+    districtLineWidth,
     subprefeituraLineColor,
     subprefeituraLineWidth,
     dataProperty,
