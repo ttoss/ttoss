@@ -1,6 +1,8 @@
 import { Icon } from '@ttoss/react-icons';
-import { Box, Button, Card, CloseButton, Tag, Text } from '@ttoss/ui';
+import { Box, Card, CloseButton, Tag, Text } from '@ttoss/ui';
 import type * as React from 'react';
+
+import { NotificationButton } from './NotificationButton';
 
 type NotificationType = 'success' | 'error' | 'warning' | 'info' | 'neutral';
 
@@ -132,8 +134,10 @@ const NotificationCardTitle = ({
 };
 
 const NotificationCardActions = ({
+  type,
   actions,
 }: {
+  type: NotificationType;
   actions: NotificationAction[];
 }) => {
   if (actions.length === 0) {
@@ -159,9 +163,9 @@ const NotificationCardActions = ({
             : action.onClick;
 
         return (
-          <Button key={index} variant="secondary" onClick={onClick}>
+          <NotificationButton key={index} type={type} onClick={onClick}>
             {action.label || 'Acessar'}
-          </Button>
+          </NotificationButton>
         );
       })}
     </Box>
@@ -214,7 +218,7 @@ const NotificationCardBody = ({
           <Text sx={{ fontSize: ['sm', 'md'] }}>{message}</Text>
         </Box>
       </Box>
-      {actions && <NotificationCardActions actions={actions} />}
+      {actions && <NotificationCardActions type={type} actions={actions} />}
       {caption && (
         <Box sx={{ whiteSpace: 'nowrap', mt: 6 }}>
           <Text sx={{ fontSize: 'xs', color: 'text.secondary' }}>

@@ -6,3 +6,7 @@ export {
   toast,
   useNotifications,
 } from './Provider';
+export {
+  NotificationButton,
+  type NotificationButtonProps,
+} from '@ttoss/components';

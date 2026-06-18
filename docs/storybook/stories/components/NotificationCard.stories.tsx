@@ -170,6 +170,78 @@ export const WithMixedActions: StoryObj = {
   },
 };
 
+export const WithFourActions: StoryObj = {
+  args: {
+    type: 'warning',
+    title: 'Multiple actions',
+    message: 'This card has four action buttons to test layout wrapping.',
+    actions: [
+      {
+        action: 'open_url',
+        url: 'https://example.com/a',
+        label: 'View report',
+      },
+      {
+        action: 'callback',
+        label: 'Sync now',
+        onClick: () => {
+          return alert('Sync');
+        },
+      },
+      { action: 'open_url', url: 'https://example.com/b', label: 'See docs' },
+      {
+        action: 'callback',
+        label: 'Dismiss all',
+        onClick: () => {
+          return alert('Dismiss');
+        },
+      },
+    ],
+  },
+};
+
+export const WithEightActions: StoryObj = {
+  args: {
+    type: 'info',
+    title: 'Stress test — 8 actions',
+    message: 'Verifying wrap behaviour with a large number of action buttons.',
+    actions: [
+      { action: 'open_url', url: 'https://example.com/1', label: 'Action 1' },
+      {
+        action: 'callback',
+        label: 'Action 2',
+        onClick: () => {
+          return alert('2');
+        },
+      },
+      { action: 'open_url', url: 'https://example.com/3', label: 'Action 3' },
+      {
+        action: 'callback',
+        label: 'Action 4',
+        onClick: () => {
+          return alert('4');
+        },
+      },
+      { action: 'open_url', url: 'https://example.com/5', label: 'Action 5' },
+      {
+        action: 'callback',
+        label: 'Action 6',
+        onClick: () => {
+          return alert('6');
+        },
+      },
+      { action: 'open_url', url: 'https://example.com/7', label: 'Action 7' },
+      {
+        action: 'callback',
+        label: 'Action 8',
+        onClick: () => {
+          return alert('8');
+        },
+      },
+    ],
+  },
+};
+
 export const WithOCANotification: StoryObj = {
   args: {
     title: `Sua campanha está ganhando performance!`,
