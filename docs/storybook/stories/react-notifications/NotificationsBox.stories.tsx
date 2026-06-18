@@ -323,6 +323,16 @@ export const WithActions: StoryFn = () => {
                   url: 'https://example.com/update',
                   label: 'Update now',
                 },
+                {
+                  action: 'open_url',
+                  url: 'https://example.com/changelog',
+                  label: 'See changelog',
+                },
+                {
+                  action: 'open_url',
+                  url: 'https://example.com/update',
+                  label: 'Update now',
+                },
               ],
             });
           }}

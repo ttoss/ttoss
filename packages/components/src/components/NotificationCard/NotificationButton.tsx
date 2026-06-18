@@ -46,6 +46,7 @@ export const NotificationButton = ({
       {...props}
       sx={{
         ...sxMap[type],
+        color: 'display.text.primary.default',
         borderRadius: 'lg',
         borderWidth: '1px',
         borderStyle: 'solid',
