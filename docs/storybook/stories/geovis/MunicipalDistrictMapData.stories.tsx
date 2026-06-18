@@ -67,7 +67,6 @@ type MunicipalDistrictStoryArgs = {
   labelFormatType: LabelFormatType;
   noDataLabel: string;
   thresholdPreset: ThresholdPreset;
-  basemapVisible: boolean;
   showOutline: boolean;
   showClickAnchor: boolean;
   hoverLineColor: string;
@@ -76,7 +75,7 @@ type MunicipalDistrictStoryArgs = {
   selectedLineWidth: number;
   clickAnchorColor: string;
   normalizationType: NormalizationType;
-  showBasemap: boolean;
+  basemapVisible: boolean;
   showStateOutlines: boolean;
   showSubprefeituraOutlines: boolean;
   showDistrictOutlines: boolean;
@@ -342,7 +341,7 @@ export default {
       description:
         '`legends[].normalization.type` — forced to `percentage` when `labelFormatType` is `percentage`',
     },
-    showBasemap: { control: 'boolean' },
+    basemapVisible: { control: 'boolean' },
     showStateOutlines: { control: 'boolean' },
     showSubprefeituraOutlines: { control: 'boolean' },
     showDistrictOutlines: { control: 'boolean' },
@@ -374,7 +373,7 @@ export default {
     selectedLineWidth: 3,
     clickAnchorColor: '#2171b5',
     normalizationType: 'raw',
-    showBasemap: true,
+    basemapVisible: true,
     showStateOutlines: true,
     showSubprefeituraOutlines: true,
     showDistrictOutlines: true,
