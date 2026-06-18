@@ -180,6 +180,58 @@ This option affects:
 - Lambda Layer compatible runtimes
 - CodeBuild runtime for Lambda Layer builder
 
+## Deploy Report
+
+```bash
+carlin deploy report --channel=github-pr
+```
+
+After all packages in a monorepo are deployed, `deploy report` collects every `.carlin/*.json` output file across the workspace and publishes a consolidated summary. Use `--channel` to control where the summary is sent.
+
+### `--channel=github-pr`
+
+Posts (or updates) a single PR comment containing a table of all deploy outputs from every package deployed during the CI run. Carlin identifies the PR from the current branch, finds any existing comment it previously posted, and patches it in place — so the comment never duplicates across pushes.
+
+```mermaid
+flowchart TD
+    A[collect all .carlin/*.json files] --> B[build markdown table]
+    B --> C{PR comment exists?}
+    C -->|yes| D[PATCH existing comment]
+    C -->|no| E[POST new comment]
+```
+
+The comment looks like this:
+
+| Package     | Stack            | Output Key   | Output Value |
+| ----------- | ---------------- | ------------ | ------------ |
+| `@acme/api` | `acme-api-pr-42` | `ApiUrl`     | https://...  |
+| `@acme/web` | `acme-web-pr-42` | `BucketName` | acme-web-... |
+
+#### Required environment variables
+
+| Variable            | Description                                                              |
+| ------------------- | ------------------------------------------------------------------------ |
+| `GH_TOKEN`          | GitHub token with `pull-requests: write` permission.                     |
+| `GITHUB_REPOSITORY` | Repository in `owner/repo` format (set automatically by GitHub Actions). |
+| `CARLIN_BRANCH`     | The branch being built (used to look up the open PR).                    |
+
+#### Usage in CI
+
+In the ttoss monorepo this command runs at the end of the PR pipeline, after all packages are deployed:
+
+```bash
+# Deploy all packages changed since main
+pnpm turbo run build test deploy --filter=[main]
+
+# Build carlin explicitly so the CLI is available even when no packages changed
+pnpm turbo run build --filter=carlin
+
+# Post or update a single PR comment with consolidated deploy outputs
+pnpm carlin deploy report --channel=github-pr
+```
+
+Because Carlin uses `GITHUB_PR_COMMENT_MARKER` as an HTML comment inside the body, it identifies its own comment reliably across multiple pushes to the same PR without creating duplicates.
+
 ## Destroy
 
 To destroy the stack, pass `--destroy` to the deploy command:
@@ -229,6 +281,7 @@ After deployment, outputs are saved to `.carlin/$STACK_NAME.json` and `.carlin/l
 | `--lambda-external`              | Modules excluded from the Lambda bundle.                     |
 | `--lambda-entry-points-base-dir` | Base directory for Lambda handler entry points.              |
 | `--skip-deploy`                  | Skip deployment after config resolution.                     |
+| `--channel`                      | Report deploy outputs to a channel. Supported: `github-pr`.  |
 
 `--parameters` accepts a simple object:
 
