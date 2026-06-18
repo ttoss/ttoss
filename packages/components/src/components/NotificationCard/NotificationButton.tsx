@@ -1,5 +1,4 @@
 import { Button, type ButtonProps } from '@ttoss/ui';
-import * as React from 'react';
 
 type NotificationType = 'success' | 'error' | 'warning' | 'info' | 'neutral';
 
@@ -28,7 +27,7 @@ const sxMap: Record<NotificationType, Record<string, any>> = {
 };
 
 /** Props for NotificationButton */
-export type NotificationButtonProps = Omit<ButtonProps, 'sx'> & {
+export type NotificationButtonProps = Omit<ButtonProps, 'type'> & {
   /** Notification type — controls background and border colors to match the card. */
   type: NotificationType;
 };
@@ -37,13 +36,13 @@ export type NotificationButtonProps = Omit<ButtonProps, 'sx'> & {
  * A button styled to match the NotificationCard of a given type.
  * Use this for action buttons rendered inside or alongside notification cards.
  */
-export const NotificationButton = React.forwardRef<
-  HTMLButtonElement,
-  NotificationButtonProps
->(({ type, ...props }, ref) => {
+export const NotificationButton = ({
+  type,
+  ...props
+}: NotificationButtonProps) => {
   return (
     <Button
-      ref={ref}
+      type="button"
       {...props}
       sx={{
         ...sxMap[type],
@@ -53,6 +52,4 @@ export const NotificationButton = React.forwardRef<
       }}
     />
   );
-});
-
-NotificationButton.displayName = 'NotificationButton';
+};
