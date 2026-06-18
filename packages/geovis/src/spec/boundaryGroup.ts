@@ -10,6 +10,16 @@ export interface BoundaryGroup {
   layers: VisualizationLayer[];
 }
 
+/**
+ * Returns a stable identifier for a BoundaryGroup derived from its first
+ * source ID. Used by `useBoundaryToggle` to track visibility by identity
+ * rather than object reference — groups can be recreated (e.g. paint
+ * override changes) while retaining the same logical ID.
+ */
+export const getBoundaryGroupId = (group: BoundaryGroup): string => {
+  return group.sources[0]?.id ?? '';
+};
+
 export interface BoundaryPaintOverrides {
   lineColor?: string;
   lineWidth?: number;

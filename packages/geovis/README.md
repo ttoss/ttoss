@@ -391,6 +391,67 @@ const MyMap = ({ spec }) => {
 > **Important:** pass a stable array reference for `groups` (module constant or
 > `useMemo`). Changing the array reference re-appends all groups to the spec.
 
+### Avoiding unnecessary re-renders and refetches
+
+When boundary groups are used with dynamic paint overrides (e.g. colour picked
+from a Storybook control), `customizeBoundaryGroup` returns a **new object** on
+every paint change. If the new object reference is passed directly to
+`useBoundaryToggle`, the hook recomputes `specWithAll` and `spec`, which
+triggers `runtime.update()` and a full source/layer reconciliation cycle — even
+though the GeoJSON data URLs have not changed.
+
+**The `groups` array must be memoised.** Wrap it with `useMemo` and list only
+the dependencies that actually change the group identity (the paint values):
+
+```tsx
+const districtsGroup = React.useMemo(
+  () => customizeBoundaryGroup(baseDistrictsGroup, { lineColor, lineWidth }),
+  [lineColor, lineWidth]
+);
+
+const stateGroup = React.useMemo(
+  () =>
+    customizeBoundaryGroup(baseStateGroup, {
+      lineColor: stateLineColor,
+      lineWidth: stateLineWidth,
+    }),
+  [stateLineColor, stateLineWidth]
+);
+
+const boundaryGroups = React.useMemo(
+  () => [districtsGroup, stateGroup],
+  [districtsGroup, stateGroup]
+);
+```
+
+**Toggle effects should depend on `isVisible`, not on group objects.**
+`isVisible` is a stable callback whose identity only changes when the hidden
+set changes — group object references are irrelevant:
+
+```tsx
+const { spec, toggle, isVisible } = useBoundaryToggle(
+  specInput,
+  boundaryGroups
+);
+
+// Store latest group references in refs so effects always read the current paint
+const districtsGroupRef = React.useRef(districtsGroup);
+React.useEffect(() => {
+  districtsGroupRef.current = districtsGroup;
+}, [districtsGroup]);
+
+React.useEffect(() => {
+  if (showDistricts !== isVisible(districtsGroupRef.current))
+    toggle(districtsGroupRef.current);
+  // isVisible is the only dep that signals a visibility change;
+  // group object changes (paint) are read via the ref.
+}, [showDistricts, toggle, isVisible]);
+```
+
+> **Note:** `useBoundaryToggle` tracks visibility by the group's source ID
+> (`getBoundaryGroupId`), not by object reference. Groups can be recreated
+> (e.g. when paint overrides change) while preserving their visibility state.
+
 ## Spec Validation
 
 Use `validateSpec` to validate a visualization spec against the JSON schema before passing it to `GeoVisProvider`:

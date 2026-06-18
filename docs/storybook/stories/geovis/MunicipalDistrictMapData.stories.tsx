@@ -670,17 +670,32 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
     boundaryGroups
   );
 
+  const districtsGroupRef = React.useRef(districtsGroup);
+  const stateGroupRef = React.useRef(stateGroup);
+  const subprefeituraGroupRef = React.useRef(subprefeituraGroup);
+
   React.useEffect(() => {
-    if (showDistrictOutlines !== isVisible(districtsGroup))
-      toggle(districtsGroup);
-  }, [showDistrictOutlines, toggle, isVisible, districtsGroup]);
+    districtsGroupRef.current = districtsGroup;
+  }, [districtsGroup]);
   React.useEffect(() => {
-    if (showStateOutlines !== isVisible(stateGroup)) toggle(stateGroup);
-  }, [showStateOutlines, toggle, isVisible, stateGroup]);
+    stateGroupRef.current = stateGroup;
+  }, [stateGroup]);
   React.useEffect(() => {
-    if (showSubprefeituraOutlines !== isVisible(subprefeituraGroup))
-      toggle(subprefeituraGroup);
-  }, [showSubprefeituraOutlines, toggle, isVisible, subprefeituraGroup]);
+    subprefeituraGroupRef.current = subprefeituraGroup;
+  }, [subprefeituraGroup]);
+
+  React.useEffect(() => {
+    if (showDistrictOutlines !== isVisible(districtsGroupRef.current))
+      toggle(districtsGroupRef.current);
+  }, [showDistrictOutlines, toggle, isVisible]);
+  React.useEffect(() => {
+    if (showStateOutlines !== isVisible(stateGroupRef.current))
+      toggle(stateGroupRef.current);
+  }, [showStateOutlines, toggle, isVisible]);
+  React.useEffect(() => {
+    if (showSubprefeituraOutlines !== isVisible(subprefeituraGroupRef.current))
+      toggle(subprefeituraGroupRef.current);
+  }, [showSubprefeituraOutlines, toggle, isVisible]);
 
   // When the GeoVisLegend is overlaid at a corner (16rem wide, ~285px tall),
   // shift the fitBounds padding so São Paulo is centred in the VISIBLE area,

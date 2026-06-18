@@ -127,4 +127,40 @@ describe('useBoundaryToggle', () => {
     expect(result.current.toggle).toBe(firstToggle);
     expect(result.current.isVisible).toBe(firstIsVisible);
   });
+
+  test('visibility state is preserved when groups are recreated with new object references', () => {
+    const groupV1 = createBoundaryGroup({
+      id: 'test-group',
+      data: 'https://example.com/test.geojson',
+      paint: { lineColor: '#000000', lineWidth: 1 },
+    });
+
+    const { result, rerender } = renderHook(
+      (props: {
+        spec: VisualizationSpec;
+        groups: ReadonlyArray<BoundaryGroup>;
+      }) => {
+        return useBoundaryToggle(props.spec, props.groups);
+      },
+      { initialProps: { spec: emptySpec, groups: [groupV1] } }
+    );
+
+    // Hide the group
+    act(() => {
+      result.current.toggle(groupV1);
+    });
+    expect(result.current.isVisible(groupV1)).toBe(false);
+
+    // Recreate the group with new paint (new object reference, same ID)
+    const groupV2 = createBoundaryGroup({
+      id: 'test-group',
+      data: 'https://example.com/test.geojson',
+      paint: { lineColor: '#ff0000', lineWidth: 2 },
+    });
+
+    rerender({ spec: emptySpec, groups: [groupV2] });
+
+    // Visibility should be preserved despite new object reference
+    expect(result.current.isVisible(groupV2)).toBe(false);
+  });
 });
