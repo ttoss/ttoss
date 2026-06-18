@@ -755,6 +755,77 @@ describe('GeoVisLegend — labelFormat: count', () => {
     expect(getByText('< 50k inhabitants')).toBeTruthy();
     expect(getByText('> 50k inhabitants')).toBeTruthy();
   });
+
+  test('renders count format without abbreviation using locale separators', async () => {
+    const spec: VisualizationSpec = {
+      ...baseSpec,
+      legends: [
+        {
+          id: 'pop',
+          labelFormat: { type: 'count', abbreviate: false },
+          colorBy: {
+            type: 'quantitative',
+            property: 'pop',
+            scale: 'threshold',
+            thresholds: [50000, 100000, 250000],
+            colors: ['#dbeafe', '#60a5fa', '#1d4ed8', '#1e3a8a'],
+          },
+        },
+      ],
+    };
+
+    const { getAllByRole, getByText } = render(
+      <GeoVisProvider spec={spec}>
+        <GeoVisLegend legendId="pop" />
+      </GeoVisProvider>
+    );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
+    expect(getAllByRole('listitem')).toHaveLength(4);
+    expect(getByText('< 50,000')).toBeTruthy();
+    expect(getByText('50,000 ≤ 100,000')).toBeTruthy();
+    expect(getByText('100,000 ≤ 250,000')).toBeTruthy();
+    expect(getByText('> 250,000')).toBeTruthy();
+  });
+});
+
+describe('GeoVisLegend — default range with locale separators', () => {
+  test('renders default range format with thousands separators when no formatValue is provided', async () => {
+    const spec: VisualizationSpec = {
+      ...baseSpec,
+      legends: [
+        {
+          id: 'population',
+          colorBy: {
+            type: 'quantitative',
+            property: 'population',
+            scale: 'threshold',
+            thresholds: [10000, 50000, 100000],
+            colors: ['#dbeafe', '#93c5fd', '#3b82f6', '#1d4ed8'],
+          },
+        },
+      ],
+    };
+
+    const { getAllByRole, getByText } = render(
+      <GeoVisProvider spec={spec}>
+        <GeoVisLegend legendId="population" />
+      </GeoVisProvider>
+    );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
+    expect(getAllByRole('listitem')).toHaveLength(4);
+    expect(getByText('< 10,000')).toBeTruthy();
+    expect(getByText('10,000 - 50,000')).toBeTruthy();
+    expect(getByText('50,000 - 100,000')).toBeTruthy();
+    expect(getByText('> 100,000')).toBeTruthy();
+  });
 });
 
 describe('GeoVisLegend — labelFormat: percentage', () => {

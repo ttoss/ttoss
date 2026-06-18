@@ -48,7 +48,7 @@ const resolveLegend = (
 };
 
 const defaultFormatValue = (value: number): string => {
-  return String(value);
+  return value.toLocaleString('en-US');
 };
 
 /**
