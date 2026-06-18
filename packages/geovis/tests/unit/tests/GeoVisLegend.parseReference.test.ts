@@ -298,12 +298,27 @@ describe('parseReference', () => {
       expect(result[0]).toBe(text);
     });
 
-    test('does not process nested braces in link pattern', () => {
+    test('handles URLs with braces', () => {
       const text = 'See {link:text|https://example.com/path{nested}} here.';
       const result = parseReference(text);
 
+      expect(result).toHaveLength(3);
+      const links = findLinkElements(result);
+      expect(links).toHaveLength(1);
+      expect(links[0].props.href).toBe('https://example.com/path{nested}');
+      expect(links[0].props.children).toBe('text');
+    });
+
+    test('handles URLs with multiple balanced braces', () => {
+      const text = '{link:API|https://example.com/api/{resource}/{id}}';
+      const result = parseReference(text);
+
       expect(result).toHaveLength(1);
-      expect(result[0]).toBe(text);
+      const links = findLinkElements(result);
+      expect(links).toHaveLength(1);
+      expect(links[0].props.href).toBe(
+        'https://example.com/api/{resource}/{id}'
+      );
     });
 
     test('handles URLs with query strings and fragments', () => {

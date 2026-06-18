@@ -73,7 +73,8 @@ const isSafeUrl = (url: string): boolean => {
  */
 export const parseReference = (text: string): React.ReactNode[] => {
   const nodes: React.ReactNode[] = [];
-  const pattern = /\{link:([^|{}\r\n]+)\|([^{}\r\n]+)\}/g;
+  const pattern =
+    /\{link:([^|{}\r\n]+)\|([^{}\r\n]*(?:\{[^{}\r\n]*\}[^{}\r\n]*)*)\}/g;
   let lastIndex = 0;
   let key = 0;
   let match: RegExpExecArray | null;
