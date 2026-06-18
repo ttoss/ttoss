@@ -23,7 +23,7 @@ export interface BoundaryToggleResult {
  * drives `layer.visible` via `toggleBoundaryGroup` — avoiding source
  * add/remove on each toggle (no map flicker).
  *
- * Uses object reference equality (Set<BoundaryGroup>) to track hidden groups,
+ * Uses object reference equality (`Set<BoundaryGroup>`) to track hidden groups,
  * which works correctly because preset constants are stable module-level references.
  *
  * @param baseSpec - Spec without any boundary groups.
