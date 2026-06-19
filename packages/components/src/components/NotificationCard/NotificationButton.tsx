@@ -5,24 +5,24 @@ type NotificationType = 'success' | 'error' | 'warning' | 'info' | 'neutral';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const sxMap: Record<NotificationType, Record<string, any>> = {
   success: {
-    backgroundColor: 'feedback.background.positive.default',
-    borderColor: 'feedback.border.positive.default',
+    backgroundColor: 'feedback.background.positive.active',
+    borderColor: 'feedback.border.positive.active',
   },
   error: {
-    backgroundColor: 'feedback.background.negative.default',
-    borderColor: 'feedback.border.negative.default',
+    backgroundColor: 'feedback.background.negative.active',
+    borderColor: 'feedback.border.negative.active',
   },
   warning: {
-    backgroundColor: 'feedback.background.caution.default',
-    borderColor: 'feedback.border.caution.default',
+    backgroundColor: 'feedback.background.caution.active',
+    borderColor: 'feedback.border.caution.active',
   },
   info: {
-    backgroundColor: 'feedback.background.primary.default',
-    borderColor: 'feedback.border.primary.default',
+    backgroundColor: 'feedback.background.primary.active',
+    borderColor: 'feedback.border.primary.active',
   },
   neutral: {
-    backgroundColor: 'feedback.background.primary.default',
-    borderColor: 'feedback.border.primary.default',
+    backgroundColor: 'feedback.background.primary.active',
+    borderColor: 'feedback.border.primary.active',
   },
 };
 
@@ -50,7 +50,6 @@ export const NotificationButton = ({
         borderRadius: 'lg',
         borderWidth: 'sm',
         borderStyle: 'solid',
-        borderColor: 'display.border.muted.default',
       }}
     />
   );
