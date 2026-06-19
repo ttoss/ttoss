@@ -68,4 +68,64 @@ describe('validateSpec — sizeBy', () => {
     // sizeBy on non-point is a warning, not an error — spec should still be valid
     expect(result.valid).toBe(true);
   });
+
+  test('rejects sizeBy.thresholds with non-finite values', () => {
+    const result = validateSpec({
+      ...pointSpec,
+      layers: [
+        {
+          ...pointSpec.layers[0],
+          sizeBy: {
+            range: [4, 20],
+            mode: 'stepped',
+            thresholds: [NaN, 500],
+          },
+        },
+      ],
+    });
+
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.join('\n')).toMatch(/non-finite/);
+    }
+  });
+
+  test('rejects sizeBy.thresholds not in ascending order', () => {
+    const result = validateSpec({
+      ...pointSpec,
+      layers: [
+        {
+          ...pointSpec.layers[0],
+          sizeBy: {
+            range: [4, 20],
+            mode: 'stepped',
+            thresholds: [500, 100],
+          },
+        },
+      ],
+    });
+
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.join('\n')).toMatch(/ascending/);
+    }
+  });
+
+  test('accepts valid sizeBy.thresholds in ascending order', () => {
+    const result = validateSpec({
+      ...pointSpec,
+      layers: [
+        {
+          ...pointSpec.layers[0],
+          sizeBy: {
+            range: [4, 20],
+            mode: 'stepped',
+            thresholds: [100, 200, 500],
+          },
+        },
+      ],
+    });
+
+    expect(result.valid).toBe(true);
+  });
 });

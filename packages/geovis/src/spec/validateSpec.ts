@@ -147,6 +147,28 @@ const hasActiveLegend = (
   );
 };
 
+/** Validates thresholds values for a sizeBy layer. */
+const validateSizeByThresholds = (
+  layer: VisualizationLayer,
+  thresholds: number[] | undefined
+): string[] => {
+  if (!thresholds || thresholds.length === 0) return [];
+  const finiteThresholds = thresholds.filter((value) => {
+    return Number.isFinite(value);
+  });
+  if (finiteThresholds.length !== thresholds.length) {
+    return [
+      `layer '${layer.id}' sizeBy.thresholds has non-finite values; use finite numeric values only`,
+    ];
+  }
+  if (thresholds.length > 1 && !isStrictlyAscending(thresholds)) {
+    return [
+      `layer '${layer.id}' sizeBy.thresholds must be in strictly ascending order`,
+    ];
+  }
+  return [];
+};
+
 /** Validates `sizeBy` constraints on layers that declare it. */
 const validateSizeBy = (spec: VisualizationSpec): string[] => {
   const errors: string[] = [];
@@ -170,6 +192,8 @@ const validateSizeBy = (spec: VisualizationSpec): string[] => {
         `layer '${layer.id}' sizeBy in stepped mode requires thresholds or an active legend with quantitative thresholds`
       );
     }
+
+    errors.push(...validateSizeByThresholds(layer, thresholds));
   }
 
   return errors;
