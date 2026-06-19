@@ -132,12 +132,17 @@ export const removeMapDataFromSource = (
 
   if (!map.getSource(mapData.mapId)) return;
 
+  const stateKey = mapData.stateKey ?? 'value';
+
   if (!mapData.joinKey) {
     for (const row of mapData.data) {
-      map.removeFeatureState({
-        source: mapData.mapId,
-        id: coerceGeometryId(row.geometryId),
-      });
+      map.removeFeatureState(
+        {
+          source: mapData.mapId,
+          id: coerceGeometryId(row.geometryId),
+        },
+        stateKey
+      );
     }
     return;
   }
@@ -148,7 +153,7 @@ export const removeMapDataFromSource = (
   for (const row of mapData.data) {
     const fid = idByJoinKey.get(String(row.geometryId));
     if (fid == null) continue;
-    map.removeFeatureState({ source: mapData.mapId, id: fid });
+    map.removeFeatureState({ source: mapData.mapId, id: fid }, stateKey);
   }
 };
 

@@ -925,10 +925,13 @@ describe('mapData — feature-state application', () => {
 
     adapter.applyPatch?.({ target: 'mapData', op: 'remove', value: 'pop' });
 
-    expect(map.removeFeatureState).toHaveBeenCalledWith({
-      source: 'states',
-      id: 1,
-    });
+    expect(map.removeFeatureState).toHaveBeenCalledWith(
+      {
+        source: 'states',
+        id: 1,
+      },
+      'value'
+    );
   });
 
   // 3.3
