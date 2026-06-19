@@ -2,11 +2,10 @@ import { jestUnitConfig } from '@ttoss/config';
 
 export default jestUnitConfig({
   testEnvironment: 'node',
-  setupFiles: ['<rootDir>/setup.ts'],
-  moduleDirectories: ['node_modules', '<rootDir>/../..'],
+  setupFiles: ['<rootDir>/tests/unit/setup.ts'],
   moduleNameMapper: {
-    '^src/(.*)$': '<rootDir>/../../src/$1',
-    '^maplibre-gl$': '<rootDir>/__mocks__/maplibre-gl.ts',
+    '^src/(.*)$': '<rootDir>/src/$1',
+    '^maplibre-gl$': '<rootDir>/tests/unit/__mocks__/maplibre-gl.ts',
   },
   coverageThreshold: {
     global: {

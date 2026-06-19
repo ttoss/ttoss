@@ -5,10 +5,10 @@ const config = jestUnitConfig({
   transformIgnorePatterns: ['node_modules/(?!rehype-raw)/'],
   coverageThreshold: {
     global: {
-      statements: 92.37,
-      branches: 62.06,
-      lines: 92.37,
-      functions: 86.95,
+      statements: 94,
+      branches: 82.7,
+      lines: 94,
+      functions: 82.3,
     },
   },
 });

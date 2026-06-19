@@ -2,12 +2,12 @@ import { jestUnitConfig } from '@ttoss/config';
 import { getTransformIgnorePatterns } from '@ttoss/test-utils';
 
 const config = jestUnitConfig({
-  setupFiles: ['./setupTests.ts'],
+  setupFiles: ['<rootDir>/tests/unit/setupTests.ts'],
   transformIgnorePatterns: getTransformIgnorePatterns({
     esmModules: ['@ttoss/postgresdb'],
   }),
   moduleNameMapper: {
-    '^dist/index$': '<rootDir>/../../dist/index.cjs',
+    '^dist/index$': '<rootDir>/dist/index.cjs',
   },
   // coverageThreshold: {
   //   global: {

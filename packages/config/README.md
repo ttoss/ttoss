@@ -216,6 +216,21 @@ You can use configs below to your packages folders.
 
 Follow our [tests guidelines](https://ttoss.dev/docs/engineering/guidelines/tests) to configure and run your tests.
 
+The Jest preset transforms TypeScript/JSX with [`@swc/jest`](https://github.com/swc-project/jest) instead of Babel — SWC compiles in a fraction of Babel's time, which dominated the wall-clock of transform-bound suites. The preset keeps the previous behaviour: automatic JSX runtime, legacy decorators with `emitDecoratorMetadata`, `import.meta` support, `.mjs`→CJS, and stable `defineMessages` ids via `@swc/plugin-formatjs` (applied to first-party source only, never to `node_modules`).
+
+Coverage is collected with the **V8** provider (SWC has no Babel-style instrumentation). Because V8 counts branches/functions differently from Babel, `coverageThreshold` numbers may need re-tuning when migrating, and V8 adds overhead on suites that compile large parts of `node_modules`.
+
+`jestUnitConfig` sets `rootDir` to the **package root** (the config lives in `tests/unit/`). The V8 provider only reports files inside `rootDir`, and `src/` sits above `tests/unit/`. As a result, any `<rootDir>`-relative path in a package config is resolved from the package root — point setup files and mocks at `<rootDir>/tests/unit/...` and sources at `<rootDir>/src/...`:
+
+```ts title="tests/unit/jest.config.ts"
+import { jestUnitConfig } from '@ttoss/config';
+
+export default jestUnitConfig({
+  testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/tests/unit/setupTests.tsx'],
+});
+```
+
 ### Tsup
 
 Use [tsup](https://tsup.egoist.sh/) to bundle your TypeScript packages.

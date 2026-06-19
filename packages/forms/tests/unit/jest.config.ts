@@ -10,9 +10,8 @@ const config = jestUnitConfig({
       lines: 94.75,
     },
   },
-  setupFilesAfterEnv: ['./setupTests.tsx'],
+  setupFilesAfterEnv: ['<rootDir>/tests/unit/setupTests.tsx'],
   testEnvironment: 'jsdom',
-  moduleDirectories: ['node_modules', '<rootDir>/../..'],
   transformIgnorePatterns: getTransformIgnorePatterns(),
 });
 

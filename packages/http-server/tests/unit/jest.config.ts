@@ -9,5 +9,5 @@ export default jestUnitConfig({
       lines: 100,
     },
   },
-  setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
+  setupFilesAfterEnv: ['<rootDir>/tests/unit/setupTests.ts'],
 });

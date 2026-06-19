@@ -1,7 +1,7 @@
 import { jestUnitConfig } from '@ttoss/config';
 
 export default jestUnitConfig({
-  setupFilesAfterEnv: ['./setupTests.tsx'],
+  setupFilesAfterEnv: ['<rootDir>/tests/unit/setupTests.tsx'],
   testEnvironment: 'jsdom',
   transformIgnorePatterns: ['node_modules/(?!rehype-raw)/'],
 });

@@ -3,6 +3,6 @@ import { getTransformIgnorePatterns } from '@ttoss/test-utils';
 
 export default jestUnitConfig({
   testEnvironment: 'jsdom',
-  setupFiles: ['<rootDir>/setup.ts'],
+  setupFiles: ['<rootDir>/tests/unit/setup.ts'],
   transformIgnorePatterns: getTransformIgnorePatterns(),
 });

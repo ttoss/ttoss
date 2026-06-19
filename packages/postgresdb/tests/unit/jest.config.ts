@@ -2,6 +2,6 @@ import { jestUnitConfig } from '@ttoss/config';
 
 export default jestUnitConfig({
   moduleNameMapper: {
-    '^../../models/dist$': '<rootDir>/../models/dist/index.cjs',
+    '^../../models/dist$': '<rootDir>/tests/models/dist/index.cjs',
   },
 });

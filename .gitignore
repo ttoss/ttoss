@@ -122,6 +122,7 @@ github-app/
 .carlin/
 .vscode
 .turbo
+.swc/
 **/i18n/compiled/
 **/i18n/missing/
 **/i18n/unused/

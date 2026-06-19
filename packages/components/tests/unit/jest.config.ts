@@ -1,15 +1,15 @@
 import { jestUnitConfig } from '@ttoss/config';
 
 export default jestUnitConfig({
-  setupFilesAfterEnv: ['./setupTests.tsx'],
+  setupFilesAfterEnv: ['<rootDir>/tests/unit/setupTests.tsx'],
   testEnvironment: 'jsdom',
   transformIgnorePatterns: ['node_modules/(?!rehype-raw)/'],
   coverageThreshold: {
     global: {
-      statements: 92.5,
-      branches: 87.4,
-      lines: 93.1,
-      functions: 93.1,
+      statements: 98.2,
+      branches: 88.4,
+      lines: 98.2,
+      functions: 90.7,
     },
   },
   coveragePathIgnorePatterns: ['/index.ts$'],
