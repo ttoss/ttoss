@@ -38,7 +38,11 @@ export interface McpAuthOptions {
    * JWTs, opaque tokens). Resolve with the verified payload, or throw to reject.
    */
   verifyToken?: (token: string) => Promise<unknown>;
-  /** Scopes that must all be present on the token's `scope` claim, else `403`. */
+  /**
+   * Scopes that must all be present on the token, else `403`.
+   * `verifyToken` may return either `scope: string` (space-separated) or
+   * `scopes: string[]`; both are normalised internally.
+   */
   requiredScopes?: string[];
   /**
    * JSON-RPC methods (read from `body.method`) that bypass verification.
@@ -243,7 +247,9 @@ export const getIdentity = (): unknown => {
  * Throws if any scope is missing — the MCP SDK catches this and returns a
  * tool error to the client. Use inside tool handlers for per-tool authorization.
  *
- * Cognito tokens carry scopes as a space-separated string in `payload.scope`.
+ * Accepts either `scope: string` (space-separated, standard JWT claim) or
+ * `scopes: string[]` from `verifyToken`. If neither is present and `required`
+ * is non-empty, throws with a descriptive message instead of a silent 403.
  *
  * @example
  * ```typescript
@@ -254,8 +260,27 @@ export const getIdentity = (): unknown => {
  * ```
  */
 export const checkScopes = (required: string[]): void => {
-  const identity = getIdentity() as { scope?: string } | undefined;
-  const tokenScopes = (identity?.scope ?? '').split(' ');
+  const identity = getIdentity() as
+    | { scope?: string; scopes?: string[] }
+    | undefined;
+  let scopeString: string | null = null;
+  if (typeof identity?.scope === 'string') {
+    scopeString = identity.scope;
+  } else if (
+    Array.isArray(identity?.scopes) &&
+    identity.scopes.every((s) => {
+      return typeof s === 'string';
+    })
+  ) {
+    scopeString = (identity.scopes as string[]).join(' ');
+  }
+  if (scopeString === null && required.length > 0) {
+    throw new Error(
+      `verifyToken returned no scope/scopes but requiredScopes is set (${required.join(', ')}). ` +
+        'Return either scope: string or scopes: string[] from verifyToken.'
+    );
+  }
+  const tokenScopes = scopeString ? scopeString.split(' ') : [];
   const missing = required.filter((s) => {
     return !tokenScopes.includes(s);
   });
