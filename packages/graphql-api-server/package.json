@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/graphql-api-server",
-  "version": "0.11.27",
+  "version": "0.11.28",
   "description": "GraphQL API Server",
   "keywords": [
     "api",
