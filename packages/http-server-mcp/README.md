@@ -641,21 +641,23 @@ This package implements the [Model Context Protocol](https://spec.modelcontextpr
 
 ## AWS Lambda Deployment
 
-The default **stateless** mode (see [Stateless vs stateful mode](#stateless-vs-stateful-mode)) is built for serverless: a fresh transport is created per request, nothing is kept in memory between invocations, and responses are plain JSON (no SSE) — exactly the request/response shape API Gateway and Lambda Function URLs expect. Because the router is a regular Koa app, you wrap it with any Koa-to-Lambda adapter (e.g. [`serverless-http`](https://github.com/dougmoscrop/serverless-http)) and front it with an HTTP API Gateway or a Function URL.
+The default **stateless** mode (see [Stateless vs stateful mode](#stateless-vs-stateful-mode)) is built for serverless: a fresh transport is created per request, nothing is kept in memory between invocations, and responses are plain JSON (no SSE) — exactly the request/response shape API Gateway and Lambda Function URLs expect.
+
+Use [`@ttoss/http-server-serverless`](https://github.com/ttoss/ttoss/tree/main/packages/http-server-serverless) as the Lambda adapter. It wraps `serverless-http` and additionally populates `req.rawHeaders` from the API Gateway event before the request reaches Koa. Without this step, `@hono/node-server` — used internally by the MCP transport — drops all headers (including `Accept`) and every `initialize` request returns HTTP 406.
 
 ```mermaid
 flowchart LR
     Client[MCP Client] -->|POST /mcp| GW[API Gateway / Function URL]
     GW --> L[Lambda]
     subgraph L[Lambda]
-        H[serverless-http handler] --> App[Koa App + createMcpRouter]
+        H[toLambdaHandler] -->|rawHeaders populated| App[Koa App + createMcpRouter]
     end
 ```
 
 ```typescript
-import serverless from 'serverless-http';
 import { App, bodyParser } from '@ttoss/http-server';
 import { createMcpRouter, McpServer, z } from '@ttoss/http-server-mcp';
+import { toLambdaHandler } from '@ttoss/http-server-serverless';
 
 const mcpServer = new McpServer({ name: 'my-mcp-server', version: '1.0.0' });
 
@@ -675,7 +677,7 @@ app.use(bodyParser());
 // Stateless by default — no sessionIdGenerator
 app.use(createMcpRouter(mcpServer).routes());
 
-export const handler = serverless(app.callback());
+export const handler = toLambdaHandler(app);
 ```
 
 Keep the following in mind:
@@ -689,6 +691,7 @@ Keep the following in mind:
 ## Related Packages
 
 - [@ttoss/http-server](https://ttoss.dev/docs/modules/packages/http-server) - HTTP server foundation
+- [@ttoss/http-server-serverless](https://github.com/ttoss/ttoss/tree/main/packages/http-server-serverless) - AWS Lambda adapter (required for MCP on Lambda)
 - [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/sdk) - MCP SDK
 
 ## Resources
