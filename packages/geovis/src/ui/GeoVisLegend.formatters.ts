@@ -114,8 +114,8 @@ export const formatStdDevLabel = (
     return `${formatValue(v)}${u}`;
   };
   const { lower, upper, isFirst, isLast, withSuffix } = ctx;
-  if (isFirst) return withSuffix(`< ${fmt(lower ?? upper!)}`);
-  if (isLast) return withSuffix(`> ${fmt(upper ?? lower!)}`);
+  if (isFirst) return withSuffix(`< ${fmt(upper!)}`);
+  if (isLast) return withSuffix(`> ${fmt(lower!)}`);
   return withSuffix(`${fmt(lower!)} \u2013 ${fmt(upper!)}`);
 };
 

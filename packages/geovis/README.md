@@ -8,10 +8,10 @@
 pnpm add @ttoss/geovis
 ```
 
-You will also need to install MapLibre GL JS as a peer dependency:
+You will also need to install the following peer dependencies:
 
 ```shell
-pnpm add maplibre-gl
+pnpm add maplibre-gl @ttoss/ui
 ```
 
 ## Getting Started

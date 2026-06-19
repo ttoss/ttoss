@@ -480,16 +480,6 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
     return computeBbox(districtGeoJson as GeoJSON.FeatureCollection);
   }, [districtGeoJson]);
 
-  // const nameToFeatureId = React.useMemo(() => {
-  //   if (!districtGeoJson) return new Map<string, string>();
-  //   const map = new Map<string, string>();
-  //   for (const f of districtGeoJson.features) {
-  //     const name = f.properties?.['nm_distrit'];
-  //     if (name && f.id != null) map.set(String(name), String(f.id));
-  //   }
-  //   return map;
-  // }, [districtGeoJson]);
-
   const mapDataEntries = React.useMemo(() => {
     if (!populationData) return [];
     const yearData = populationData[String(year)];
