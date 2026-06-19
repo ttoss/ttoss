@@ -1,8 +1,8 @@
-import { render } from '@ttoss/test-utils/react';
+import { render, screen } from '@ttoss/test-utils/react';
 import { Dashboard, type DashboardTemplate } from 'src/Dashboard';
+import { DashboardFilterType } from 'src/DashboardFilters';
 
 const mockDashboardGrid = jest.fn();
-const mockDashboardHeader = jest.fn();
 const mockDashboardProviderProps = jest.fn();
 const mockUseDashboard = jest.fn();
 
@@ -11,21 +11,6 @@ jest.mock('src/DashboardGrid', () => {
     DashboardGrid: (props: Record<string, unknown>) => {
       mockDashboardGrid(props);
       return <div data-testid="dashboard-grid" />;
-    },
-  };
-});
-
-jest.mock('src/DashboardHeader', () => {
-  return {
-    DashboardHeader: ({
-      children,
-      showFilters,
-    }: {
-      children?: React.ReactNode;
-      showFilters?: boolean;
-    }) => {
-      mockDashboardHeader({ hasChildren: !!children, showFilters });
-      return <div>{children}</div>;
     },
   };
 });
@@ -70,20 +55,36 @@ describe('Dashboard branches', () => {
     ],
   };
 
+  const defaultContextValue = {
+    isEditMode: false,
+    editingGrid: null,
+    filters: [],
+    editable: false,
+    updateFilter: jest.fn(),
+    templates: [],
+    selectedTemplate: undefined,
+    cardCatalog: [],
+    startEdit: jest.fn(),
+    cancelEdit: jest.fn(),
+    saveEdit: jest.fn(),
+    saveAsNew: jest.fn(),
+    saveAsNewModalOpen: false,
+    confirmSaveAsNew: jest.fn(),
+    cancelSaveAsNew: jest.fn(),
+    addCard: jest.fn(),
+    removeCard: jest.fn(),
+    updateCard: jest.fn(),
+    onLayoutChange: jest.fn(),
+  };
+
   beforeEach(() => {
     mockDashboardGrid.mockReset();
-    mockDashboardHeader.mockReset();
     mockDashboardProviderProps.mockReset();
     mockUseDashboard.mockReset();
   });
 
   test('should pass props through provider and use selected template by default', () => {
-    mockUseDashboard.mockReturnValue({
-      isEditMode: false,
-      editingGrid: null,
-      filters: [],
-      editable: false,
-    });
+    mockUseDashboard.mockReturnValue(defaultContextValue);
 
     render(
       <Dashboard
@@ -111,7 +112,7 @@ describe('Dashboard branches', () => {
     );
   });
 
-  test('should use editing grid while in edit mode and forward loading/header', () => {
+  test('should use editing grid while in edit mode and render header children', () => {
     const editingGrid = [
       {
         ...selectedTemplate.grid[0],
@@ -120,10 +121,9 @@ describe('Dashboard branches', () => {
     ];
 
     mockUseDashboard.mockReturnValue({
+      ...defaultContextValue,
       isEditMode: true,
       editingGrid,
-      filters: [],
-      editable: false,
     });
 
     render(
@@ -134,9 +134,7 @@ describe('Dashboard branches', () => {
       />
     );
 
-    expect(mockDashboardHeader).toHaveBeenCalledWith(
-      expect.objectContaining({ hasChildren: true })
-    );
+    expect(screen.getByText('Action')).toBeInTheDocument();
     expect(mockDashboardGrid).toHaveBeenCalledWith(
       expect.objectContaining({
         loading: true,
@@ -149,20 +147,23 @@ describe('Dashboard branches', () => {
     );
   });
 
-  test('should forward showFilters=false to DashboardHeader', () => {
+  test('should not render filters when showFilters is false', () => {
     mockUseDashboard.mockReturnValue({
-      isEditMode: false,
-      editingGrid: null,
-      filters: [],
-      editable: false,
+      ...defaultContextValue,
+      filters: [
+        {
+          key: 'search',
+          type: DashboardFilterType.TEXT,
+          label: 'Hidden Filter',
+          value: '',
+        },
+      ],
     });
 
     render(
       <Dashboard selectedTemplate={selectedTemplate} showFilters={false} />
     );
 
-    expect(mockDashboardHeader).toHaveBeenCalledWith(
-      expect.objectContaining({ showFilters: false })
-    );
+    expect(screen.queryByText('Hidden Filter')).not.toBeInTheDocument();
   });
 });
