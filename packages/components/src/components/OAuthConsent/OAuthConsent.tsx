@@ -1,4 +1,14 @@
-import { Box, Button, Checkbox, Flex, Heading, Label, Text } from '@ttoss/ui';
+import {
+  Box,
+  Button,
+  Card,
+  Checkbox,
+  Divider,
+  Flex,
+  Heading,
+  Label,
+  Text,
+} from '@ttoss/ui';
 import * as React from 'react';
 
 /**
@@ -130,38 +140,63 @@ const initSelected = (scopes: ConsentScope[]): Set<string> => {
 
 type ScopeRowProps = {
   scope: ConsentScope;
-  depth: number;
   ancestorSelected: boolean;
   selected: Set<string>;
   busy: boolean;
   onToggle: (scope: ConsentScope, ancestorSelected: boolean) => void;
 };
 
+const getScopeRowState = ({
+  scope,
+  ancestorSelected,
+  selected,
+  busy,
+}: Omit<ScopeRowProps, 'onToggle'>) => {
+  const isChecked = ancestorSelected || selected.has(scope.key);
+  const isLocked = !!scope.required || ancestorSelected;
+
+  return {
+    isChecked,
+    isDisabled: isLocked || busy,
+    isInteractive: !isLocked && !busy,
+  };
+};
+
 const ScopeRow = ({
   scope,
-  depth,
   ancestorSelected,
   selected,
   busy,
   onToggle,
 }: ScopeRowProps) => {
-  const isChecked = ancestorSelected || selected.has(scope.key);
-  const isDisabled = scope.required === true || ancestorSelected || busy;
+  const { isChecked, isDisabled, isInteractive } = getScopeRowState({
+    scope,
+    ancestorSelected,
+    selected,
+    busy,
+  });
   const checkboxId = `consent-scope-${scope.key}`;
   const descId = `consent-scope-desc-${scope.key}`;
 
   return (
-    <>
+    <Box as="li" sx={{ listStyle: 'none' }}>
       <Flex
         sx={{
-          pl: depth * 5,
-          py: 2,
-          alignItems: 'flex-start',
           gap: 3,
-          opacity: ancestorSelected ? 0.6 : 1,
+          alignItems: 'flex-start',
+          paddingX: 3,
+          paddingY: 3,
+          borderRadius: 'md',
+          opacity: ancestorSelected ? 0.55 : 1,
+          transition: 'background-color 0.15s ease',
+          ...(isInteractive && {
+            '&:hover': {
+              backgroundColor: 'display.background.muted.default',
+            },
+          }),
         }}
       >
-        <Box sx={{ pt: '2px', flexShrink: 0 }}>
+        <Box sx={{ paddingTop: '3px', flexShrink: 0 }}>
           <Checkbox
             id={checkboxId}
             checked={isChecked}
@@ -172,15 +207,16 @@ const ScopeRow = ({
             }}
           />
         </Box>
-        <Box sx={{ flex: 1 }}>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
           <Label
             htmlFor={checkboxId}
             sx={{
-              fontWeight: 'bold',
-              cursor: isDisabled ? 'default' : 'pointer',
+              fontWeight: 'semibold',
+              fontSize: 'md',
+              lineHeight: 'short',
+              cursor: isInteractive ? 'pointer' : 'default',
               color: 'display.text.primary.default',
-              fontSize: 'inherit',
-              display: 'block',
+              width: 'fit-content',
             }}
           >
             {scope.label}
@@ -188,29 +224,63 @@ const ScopeRow = ({
           <Text
             id={descId}
             sx={{
-              fontSize: 1,
+              fontSize: 'sm',
+              lineHeight: 'short',
               color: 'display.text.muted.default',
               display: 'block',
+              marginTop: '1',
             }}
           >
             {scope.description}
           </Text>
         </Box>
       </Flex>
-      {scope.children?.map((child) => {
-        return (
-          <ScopeRow
-            key={child.key}
-            scope={child}
-            depth={depth + 1}
-            ancestorSelected={isChecked}
-            selected={selected}
-            busy={busy}
-            onToggle={onToggle}
-          />
-        );
-      })}
-    </>
+      {scope.children?.length ? (
+        <Box
+          as="ul"
+          sx={{
+            listStyle: 'none',
+            margin: 0,
+            padding: 0,
+            marginLeft: 5,
+            paddingLeft: 2,
+            borderLeft: 'sm',
+            borderColor: 'display.border.muted.default',
+          }}
+        >
+          {scope.children?.map((child) => {
+            return (
+              <ScopeRow
+                key={child.key}
+                scope={child}
+                ancestorSelected={isChecked}
+                selected={selected}
+                busy={busy}
+                onToggle={onToggle}
+              />
+            );
+          })}
+        </Box>
+      ) : null}
+    </Box>
+  );
+};
+
+/** Shared centered card shell for the consent and invalid-request views. */
+const ConsentCard = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <Flex sx={{ justifyContent: 'center', paddingX: 4, paddingY: 6 }}>
+      <Card
+        sx={{
+          width: '100%',
+          maxWidth: 480,
+          alignItems: 'stretch',
+          padding: 6,
+        }}
+      >
+        {children}
+      </Card>
+    </Flex>
   );
 };
 
@@ -288,47 +358,78 @@ export const OAuthConsent = ({
 
   if (!isValidRequest) {
     return (
-      <Box sx={{ maxWidth: 480, mx: 'auto', mt: 6, p: 4 }}>
-        <Heading as="h1" sx={{ mb: 3, color: 'display.text.primary.default' }}>
+      <ConsentCard>
+        <Heading
+          as="h1"
+          sx={{
+            fontSize: '3xl',
+            color: 'display.text.primary.default',
+            marginBottom: 3,
+          }}
+        >
           {labels.invalidRequestTitle}
         </Heading>
-        <Text sx={{ color: 'display.text.secondary.default' }}>
+        <Text
+          sx={{
+            fontSize: 'md',
+            lineHeight: 'moderate',
+            color: 'display.text.secondary.default',
+          }}
+        >
           {labels.invalidRequestBody}
         </Text>
-      </Box>
+      </ConsentCard>
     );
   }
 
   return (
-    <Box sx={{ maxWidth: 480, mx: 'auto', mt: 6, p: 4 }}>
-      <Heading as="h1" sx={{ mb: 2, color: 'display.text.primary.default' }}>
+    <ConsentCard>
+      <Heading
+        as="h1"
+        sx={{
+          fontSize: '3xl',
+          lineHeight: 'shorter',
+          color: 'display.text.primary.default',
+          marginBottom: 2,
+        }}
+      >
         {labels.title}
       </Heading>
 
-      <Text sx={{ mb: 4, color: 'display.text.secondary.default' }}>
+      <Text
+        sx={{
+          fontSize: 'md',
+          lineHeight: 'moderate',
+          color: 'display.text.secondary.default',
+        }}
+      >
         {labels.requestedBy(clientName)}
       </Text>
 
-      <Heading as="h3" sx={{ mb: 3, color: 'display.text.primary.default' }}>
+      <Divider
+        sx={{ marginY: 5, borderColor: 'display.border.muted.default' }}
+      />
+
+      <Heading
+        as="h3"
+        sx={{
+          fontSize: 'xs',
+          fontWeight: 'semibold',
+          letterSpacing: 'wider',
+          textTransform: 'uppercase',
+          color: 'display.text.muted.default',
+          marginBottom: 2,
+        }}
+      >
         {labels.permissionsHeading}
       </Heading>
 
-      <Box
-        sx={{
-          mb: 4,
-          border: 'sm',
-          borderColor: 'display.border.muted.default',
-          borderRadius: 'md',
-          px: 3,
-          py: 1,
-        }}
-      >
+      <Box as="ul" sx={{ listStyle: 'none', margin: 0, padding: 0 }}>
         {scopes.map((scope) => {
           return (
             <ScopeRow
               key={scope.key}
               scope={scope}
-              depth={0}
               ancestorSelected={false}
               selected={selected}
               busy={busy}
@@ -338,12 +439,12 @@ export const OAuthConsent = ({
         })}
       </Box>
 
-      <Flex sx={{ gap: 3 }}>
+      <Flex sx={{ gap: 3, marginTop: 6 }}>
         <Button
           onClick={handleApprove}
           disabled={busy}
           loading={isLoading || isAuthorizing}
-          sx={{ flex: 1 }}
+          sx={{ flex: 1, justifyContent: 'center' }}
         >
           {labels.approve}
         </Button>
@@ -351,11 +452,11 @@ export const OAuthConsent = ({
           variant="secondary"
           onClick={onDeny}
           disabled={busy}
-          sx={{ flex: 1 }}
+          sx={{ flex: 1, justifyContent: 'center' }}
         >
           {labels.deny}
         </Button>
       </Flex>
-    </Box>
+    </ConsentCard>
   );
 };
