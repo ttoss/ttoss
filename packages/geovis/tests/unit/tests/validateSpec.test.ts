@@ -420,3 +420,113 @@ describe('validateSpec — layer interaction fields (hoverPaint, selectedPaint, 
     expect(result.valid).toBe(false);
   });
 });
+
+describe('validateSpec — MapData dimension', () => {
+  const baseSpec = {
+    id: 'dimension-test',
+    engine: 'maplibre' as const,
+    view: { center: [0, 0] as [number, number], zoom: 1 },
+    sources: [
+      {
+        id: 'cities',
+        type: 'geojson' as const,
+        data: { type: 'FeatureCollection' as const, features: [] },
+      },
+    ],
+    layers: [
+      { id: 'cities-points', sourceId: 'cities', geometry: 'point' as const },
+    ],
+  };
+
+  test('rejects duplicate dimension on same source', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      mapData: [
+        {
+          mapDataId: 'pop',
+          mapId: 'cities',
+          dimension: 'color',
+          data: [{ geometryId: 'city-1', value: 100000 }],
+        },
+        {
+          mapDataId: 'density',
+          mapId: 'cities',
+          dimension: 'color',
+          data: [{ geometryId: 'city-1', value: 5000 }],
+        },
+      ],
+    });
+
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.join('\n')).toMatch(/duplicate dimension/);
+    }
+  });
+
+  test('accepts valid spec with dimension declarations', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      mapData: [
+        {
+          mapDataId: 'pop',
+          mapId: 'cities',
+          dimension: 'size',
+          data: [{ geometryId: 'city-1', value: 100000 }],
+        },
+        {
+          mapDataId: 'gender',
+          mapId: 'cities',
+          dimension: 'color',
+          data: [{ geometryId: 'city-1', value: 'women' }],
+        },
+      ],
+    });
+
+    expect(result.valid).toBe(true);
+  });
+
+  test('accepts spec without dimension (backward compat)', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      mapData: [
+        {
+          mapDataId: 'legacy',
+          mapId: 'cities',
+          data: [{ geometryId: 'city-1', value: 100 }],
+        },
+      ],
+    });
+
+    expect(result.valid).toBe(true);
+  });
+
+  test('accepts dimensions on different sources', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      sources: [
+        ...baseSpec.sources,
+        {
+          id: 'other',
+          type: 'geojson' as const,
+          data: { type: 'FeatureCollection' as const, features: [] },
+        },
+      ],
+      mapData: [
+        {
+          mapDataId: 'a',
+          mapId: 'cities',
+          dimension: 'color',
+          data: [{ geometryId: 'city-1', value: 'women' }],
+        },
+        {
+          mapDataId: 'b',
+          mapId: 'other',
+          dimension: 'color',
+          data: [{ geometryId: 'city-1', value: 'men' }],
+        },
+      ],
+    });
+
+    expect(result.valid).toBe(true);
+  });
+});
