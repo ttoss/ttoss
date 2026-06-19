@@ -279,6 +279,8 @@ createMcpRouter(mcpServer, {
 });
 ```
 
+The `resource` field in the metadata document is automatically set to `resourceServerUrl + path` (e.g. `https://mcp.example.com/mcp` for the default path). This means MCP clients that follow `resource` to connect will land on the actual MCP endpoint rather than the bare origin.
+
 **With your own auth middleware** — use `createProtectedResourceMetadataMiddleware` as a standalone middleware, mounted _before_ your auth layer so discovery stays unauthenticated:
 
 ```typescript
@@ -340,6 +342,26 @@ createMcpRouter(mcpServer, {
 
 Both fields are optional. Omitting `resourceMetadataUrl` keeps the bare `Bearer` header, and the `publicMethods` default matches what MCP clients expect for discovery.
 
+### Supporting clients that connect to the bare origin
+
+Some MCP clients always POST to the bare origin (`/`) regardless of the `resource` value in the metadata. To serve both behaviors from the same router, use the `aliases` option:
+
+```typescript
+createMcpRouter(mcpServer, {
+  // The primary endpoint — also the value advertised as `resource` in metadata.
+  path: '/mcp',
+  // Additionally handle requests at the bare root for clients that ignore `resource`.
+  aliases: ['/'],
+  auth: {
+    verifyToken: async (token) => myVerify(token),
+    resourceServerUrl: 'https://mcp.example.com',
+    authorizationServerUrl: 'https://auth.example.com',
+  },
+});
+```
+
+The discovery endpoint (`/.well-known/oauth-protected-resource`) remains publicly accessible even when `aliases` includes `'/'`.
+
 ## Issuing tokens for MCP clients
 
 The `auth` option above covers the **resource-server** half of MCP authorization — it verifies tokens issued by an external authorization server (Cognito, Auth0, …). To make your own first-party server _issue_ the tokens an MCP client runs the full OAuth flow against, add the [`@ttoss/http-server-auth`](https://ttoss.dev/docs/modules/packages/http-server-auth) plugin's `oauthServer()` and pair it with `createMcpRouter({ auth: { verifyToken } })` so one deployment both issues and verifies tokens. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline.
@@ -355,6 +377,7 @@ Creates a Koa router configured to handle MCP protocol requests.
 - `server` (`McpServer`) — MCP server instance with registered tools and resources
 - `options` (`McpRouterOptions`) — Optional configuration
   - `path` (`string`) — HTTP path for MCP endpoint (default: `'/mcp'`)
+  - `aliases` (`string[]`) — Additional paths where the MCP handler is also mounted; use `['/']` to also handle requests at the bare root (default: `[]`)
   - `sessionIdGenerator` (`() => string`) — Session ID generator for stateful servers (default: `undefined` for stateless)
   - `apiBaseUrl` (`string`) — Base URL prepended to relative paths in `apiCall`
   - `getApiHeaders` (`(ctx: Context) => Record<string, string>`) — Return headers to inject into every `apiCall` for this request
@@ -362,7 +385,7 @@ Creates a Koa router configured to handle MCP protocol requests.
     - `auth.cognitoUserPool` — Cognito user pool config (`userPoolId`, `clientId`, `tokenUse`)
     - `auth.verifyToken` — Custom async token verifier `(token: string) => Promise<unknown>`
     - `auth.requiredScopes` — Router-level scope guard; returns 403 if any scope is missing
-    - `auth.resourceServerUrl` + `auth.authorizationServerUrl` — Enable `/.well-known/oauth-protected-resource`
+    - `auth.resourceServerUrl` + `auth.authorizationServerUrl` — Enable `/.well-known/oauth-protected-resource`; the metadata `resource` is set to `resourceServerUrl + path` so clients following `resource` land on the actual MCP endpoint
     - `auth.publicMethods` — JSON-RPC methods that bypass verification (default `['initialize', 'tools/list']`)
     - `auth.resourceMetadataUrl` — Emit RFC 9728 `WWW-Authenticate: Bearer resource_metadata="…"` on 401
 

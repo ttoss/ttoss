@@ -492,7 +492,7 @@ describe('auth — public methods and RFC 9728 discovery', () => {
 });
 
 describe('auth — OAuth Protected Resource metadata endpoint', () => {
-  test('serves /.well-known/oauth-protected-resource when configured', async () => {
+  test('resource includes the MCP mount path so clients following resource land on the working endpoint', async () => {
     const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
     const app = new App();
     app.use(bodyParser());
@@ -513,8 +513,66 @@ describe('auth — OAuth Protected Resource metadata endpoint', () => {
     );
 
     expect(res.status).toBe(200);
+    // resource is base + path ('/mcp' by default) so clients following resource
+    // connect to the actual MCP endpoint, not the bare origin.
+    expect(res.body).toEqual({
+      resource: 'https://mcp.example.com/mcp',
+      authorization_servers: ['https://auth.example.com'],
+    });
+  });
+
+  test('resource equals the base URL when path is /', async () => {
+    const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+    const app = new App();
+    app.use(bodyParser());
+    app.use(
+      createMcpRouter(mcpServer, {
+        path: '/',
+        auth: {
+          verifyToken: () => {
+            return Promise.resolve({ sub: 'u' });
+          },
+          resourceServerUrl: 'https://mcp.example.com',
+          authorizationServerUrl: 'https://auth.example.com',
+        },
+      }).routes()
+    );
+
+    const res = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource'
+    );
+
+    expect(res.status).toBe(200);
     expect(res.body).toEqual({
       resource: 'https://mcp.example.com',
+      authorization_servers: ['https://auth.example.com'],
+    });
+  });
+
+  test('resource uses custom path when path is overridden', async () => {
+    const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+    const app = new App();
+    app.use(bodyParser());
+    app.use(
+      createMcpRouter(mcpServer, {
+        path: '/api/mcp',
+        auth: {
+          verifyToken: () => {
+            return Promise.resolve({ sub: 'u' });
+          },
+          resourceServerUrl: 'https://mcp.example.com',
+          authorizationServerUrl: 'https://auth.example.com',
+        },
+      }).routes()
+    );
+
+    const res = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource'
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      resource: 'https://mcp.example.com/api/mcp',
       authorization_servers: ['https://auth.example.com'],
     });
   });
@@ -538,6 +596,32 @@ describe('auth — OAuth Protected Resource metadata endpoint', () => {
     );
 
     expect(res.status).toBe(404);
+  });
+
+  test('discovery endpoint is accessible without auth even when aliases include /', async () => {
+    const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+    const app = new App();
+    app.use(bodyParser());
+    app.use(
+      createMcpRouter(mcpServer, {
+        aliases: ['/'],
+        auth: {
+          verifyToken: () => {
+            return Promise.reject(new Error('always reject'));
+          },
+          resourceServerUrl: 'https://mcp.example.com',
+          authorizationServerUrl: 'https://auth.example.com',
+        },
+      }).routes()
+    );
+
+    const res = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource'
+    );
+
+    // Must be 200 — auth middleware must not intercept this GET endpoint.
+    expect(res.status).toBe(200);
+    expect(res.body.resource).toBe('https://mcp.example.com/mcp');
   });
 });
 
