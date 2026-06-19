@@ -173,33 +173,47 @@ const validateSizeByThresholds = (
   return [];
 };
 
+/** Validates a single layer's sizeBy constraints. */
+const validateSizeByLayer = (
+  layer: VisualizationLayer,
+  specLegends?: VisualizationSpec['legends']
+): string[] => {
+  const errors: string[] = [];
+  if (!layer.sizeBy) return errors;
+
+  const { range, mode, thresholds, transform } = layer.sizeBy;
+  const [min, max] = range;
+
+  if (min >= max || min <= 0) {
+    errors.push(
+      `layer '${layer.id}' sizeBy.range must have min < max and both > 0, got [${min}, ${max}]`
+    );
+  }
+
+  const needsLegend =
+    mode === 'stepped' && (!thresholds || thresholds.length === 0);
+  if (needsLegend && !hasActiveLegend(layer, specLegends)) {
+    errors.push(
+      `layer '${layer.id}' sizeBy in stepped mode requires thresholds or an active legend with quantitative thresholds`
+    );
+  }
+
+  if (mode === 'stepped' && transform === 'sqrt') {
+    errors.push(
+      `layer '${layer.id}' sizeBy does not support transform 'sqrt' in stepped mode`
+    );
+  }
+
+  errors.push(...validateSizeByThresholds(layer, thresholds));
+  return errors;
+};
+
 /** Validates `sizeBy` constraints on layers that declare it. */
 const validateSizeBy = (spec: VisualizationSpec): string[] => {
   const errors: string[] = [];
-
   for (const layer of spec.layers) {
-    if (!layer.sizeBy) continue;
-
-    const { range, mode, thresholds } = layer.sizeBy;
-    const [min, max] = range;
-
-    if (min >= max || min <= 0) {
-      errors.push(
-        `layer '${layer.id}' sizeBy.range must have min < max and both > 0, got [${min}, ${max}]`
-      );
-    }
-
-    const needsLegend =
-      mode === 'stepped' && (!thresholds || thresholds.length === 0);
-    if (needsLegend && !hasActiveLegend(layer, spec.legends)) {
-      errors.push(
-        `layer '${layer.id}' sizeBy in stepped mode requires thresholds or an active legend with quantitative thresholds`
-      );
-    }
-
-    errors.push(...validateSizeByThresholds(layer, thresholds));
+    errors.push(...validateSizeByLayer(layer, spec.legends));
   }
-
   return errors;
 };
 
