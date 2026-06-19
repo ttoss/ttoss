@@ -132,6 +132,82 @@ const validateLegendThresholdOrder = (spec: VisualizationSpec): string[] => {
   return errors;
 };
 
+const hasActiveLegend = (
+  layer: VisualizationLayer,
+  specLegends?: VisualizationSpec['legends']
+): boolean => {
+  if (!layer.activeLegendId) return false;
+  return !!(
+    layer.legends?.some((l) => {
+      return l.id === layer.activeLegendId;
+    }) ||
+    specLegends?.some((l) => {
+      return l.id === layer.activeLegendId;
+    })
+  );
+};
+
+/** Validates `sizeBy` constraints on layers that declare it. */
+const validateSizeBy = (spec: VisualizationSpec): string[] => {
+  const errors: string[] = [];
+
+  for (const layer of spec.layers) {
+    if (!layer.sizeBy) continue;
+
+    const { range, mode, thresholds } = layer.sizeBy;
+    const [min, max] = range;
+
+    if (min >= max || min <= 0) {
+      errors.push(
+        `layer '${layer.id}' sizeBy.range must have min < max and both > 0, got [${min}, ${max}]`
+      );
+    }
+
+    const needsLegend =
+      mode === 'stepped' && (!thresholds || thresholds.length === 0);
+    if (needsLegend && !hasActiveLegend(layer, spec.legends)) {
+      errors.push(
+        `layer '${layer.id}' sizeBy in stepped mode requires thresholds or an active legend with quantitative thresholds`
+      );
+    }
+  }
+
+  return errors;
+};
+
+/** Validates MapData dimension declarations: no duplicate dimensions per source. */
+const validateMapDataDimensions = (spec: VisualizationSpec): string[] => {
+  const errors: string[] = [];
+  const mapData = spec.mapData ?? [];
+
+  // Group by mapId, then check for duplicate dimensions
+  const bySource = new Map<
+    string,
+    Array<{ mapDataId: string; dimension?: string }>
+  >();
+  for (const md of mapData) {
+    if (!md.dimension) continue;
+    const group = bySource.get(md.mapId) ?? [];
+    group.push({ mapDataId: md.mapDataId, dimension: md.dimension });
+    bySource.set(md.mapId, group);
+  }
+
+  for (const [mapId, entries] of bySource) {
+    const seen = new Map<string, string>();
+    for (const entry of entries) {
+      const prev = seen.get(entry.dimension!);
+      if (prev) {
+        errors.push(
+          `source '${mapId}' has duplicate dimension '${entry.dimension}' on mapData '${prev}' and '${entry.mapDataId}'`
+        );
+      }
+      seen.set(entry.dimension!, entry.mapDataId);
+    }
+  }
+
+  return errors;
+};
+
 /**
  * Validates a raw value against the GeoVis JSON Schema and enforces cross-field
  * referential integrity rules not expressible in the schema.
@@ -151,12 +227,22 @@ export const validateSpec = (input: unknown): ValidationResult => {
   const spec = input as unknown as VisualizationSpec;
   const refErrors = validateReferences(spec);
   const thresholdErrors = validateLegendThresholdOrder(spec);
+  const sizeByErrors = validateSizeBy(spec);
+  const dimensionErrors = validateMapDataDimensions(spec);
   if (refErrors.length > 0) {
     return { valid: false, errors: refErrors };
   }
 
   if (thresholdErrors.length > 0) {
     return { valid: false, errors: thresholdErrors };
+  }
+
+  if (sizeByErrors.length > 0) {
+    return { valid: false, errors: sizeByErrors };
+  }
+
+  if (dimensionErrors.length > 0) {
+    return { valid: false, errors: dimensionErrors };
   }
 
   return { valid: true, spec };

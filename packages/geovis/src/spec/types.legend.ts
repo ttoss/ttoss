@@ -20,6 +20,8 @@ export interface CategoricalColorBy {
   colors?: string[];
   /** Explicit value-to-color overrides. */
   mapping?: Record<string, string>;
+  /** Display label overrides. Keys match `mapping` keys; values replace the legend text. */
+  labels?: Record<string, string>;
   /** Fallback color for values not covered by `mapping`. */
   defaultColor?: string;
 }

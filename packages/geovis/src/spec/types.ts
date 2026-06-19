@@ -216,6 +216,24 @@ export type LayerPaint =
   | HeatmapPaint
   | SymbolPaint;
 
+/**
+ * Proportional symbol configuration that maps the numeric `mapData` value
+ * to `circle-radius` via MapLibre expressions.
+ */
+export interface SizeBy {
+  /** Output radius range in pixels `[minRadius, maxRadius]`. Both must be > 0. */
+  range: [number, number];
+  /** Interpolation mode. Default: `'continuous'`. */
+  mode?: 'continuous' | 'stepped';
+  /** Explicit break points for stepped mode. When omitted, thresholds are inherited from the active legend. */
+  thresholds?: number[];
+  /**
+   * Radius transformation. Default: `'linear'`.
+   * Use `'sqrt'` so circle AREA is proportional to the value.
+   */
+  transform?: 'linear' | 'sqrt';
+}
+
 export interface VisualizationLayer {
   id: string;
   sourceId: string;
@@ -270,6 +288,12 @@ export interface VisualizationLayer {
     /** Pixel offset `[x, y]` applied to the DOM marker. */
     offset?: [number, number];
   };
+  /**
+   * Proportional symbol configuration. When present on a point layer,
+   * `circle-radius` is driven by a data expression instead of a static value.
+   * Ignored on non-point geometries.
+   */
+  sizeBy?: SizeBy;
 }
 
 /**
@@ -299,6 +323,18 @@ export interface MapData {
    * Defaults to using `feature.id` when omitted.
    */
   joinKey?: string;
+  /**
+   * Feature-state key name used when applying this dataset via `setFeatureState`.
+   * Defaults to `'value'` for backward compatibility.
+   */
+  stateKey?: string;
+  /**
+   * Visual dimension this dataset drives. When set, the adapter auto-discovers
+   * which dataset provides color vs. size for each layer, eliminating the need
+   * for layer-level `mapDataColor`/`mapDataSize` references.
+   * Two datasets on the same source must use different `dimension` values.
+   */
+  dimension?: 'color' | 'size';
   data: MapDataRow[];
 }
 
