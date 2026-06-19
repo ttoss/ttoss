@@ -405,20 +405,18 @@ describe('sizeBy with sqrt', () => {
     ]);
   });
 
-  test('stepped sizeBy with sqrt applies sqrt to the input value', () => {
+  test('stepped sizeBy does NOT apply sqrt to input (transform ignored)', () => {
     const sizeBy: SizeBy = {
       range: [4, 30],
       mode: 'stepped',
       thresholds: [100, 500],
-      transform: 'sqrt',
     };
     const expression = buildSizeExpression(sizeBy, 6, [], 'pop');
-    // sqrt is applied to the input, not wrapping the step expression
     expect(expression[0]).toBe('step');
     const input = (expression as unknown[])[1] as unknown[];
     expect(input).toEqual([
-      'sqrt',
-      ['to-number', ['coalesce', ['feature-state', 'pop'], 6]],
+      'to-number',
+      ['coalesce', ['feature-state', 'pop'], 6],
     ]);
   });
 });

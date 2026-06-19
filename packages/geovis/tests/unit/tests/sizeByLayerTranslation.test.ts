@@ -367,30 +367,6 @@ describe('toMaplibreLayer — sizeBy transform sqrt', () => {
     expect(interpolated[6]).toBe(20);
   });
 
-  test('stepped sizeBy with sqrt applies sqrt to input value', () => {
-    const layer: VisualizationLayer = {
-      ...baseLayer,
-      sizeBy: {
-        range: [4, 20],
-        mode: 'stepped',
-        thresholds: [100, 500],
-        transform: 'sqrt',
-      },
-    };
-
-    const mapLayer = toMaplibreLayer(layer);
-    const paint = (mapLayer as { paint?: Record<string, unknown> }).paint;
-    const radius = paint?.['circle-radius'];
-
-    // step expression with sqrt on input
-    expect((radius as unknown[])[0]).toBe('step');
-    const input = (radius as unknown[])[1] as unknown[];
-    expect(input).toEqual([
-      'sqrt',
-      ['to-number', ['coalesce', ['feature-state', 'value'], 6]],
-    ]);
-  });
-
   test('continuous sizeBy without transform does NOT apply sqrt', () => {
     const layer: VisualizationLayer = {
       ...baseLayer,

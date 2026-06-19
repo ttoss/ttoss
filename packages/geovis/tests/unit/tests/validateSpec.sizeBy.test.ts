@@ -128,4 +128,28 @@ describe('validateSpec — sizeBy', () => {
 
     expect(result.valid).toBe(true);
   });
+
+  test('rejects sizeBy with mode stepped and transform sqrt', () => {
+    const result = validateSpec({
+      ...pointSpec,
+      layers: [
+        {
+          ...pointSpec.layers[0],
+          sizeBy: {
+            range: [4, 20],
+            mode: 'stepped',
+            thresholds: [100, 500],
+            transform: 'sqrt',
+          },
+        },
+      ],
+    });
+
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.join('\n')).toMatch(
+        /sqrt.*stepped|stepped.*sqrt|must NOT be valid/
+      );
+    }
+  });
 });
