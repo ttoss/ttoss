@@ -138,8 +138,9 @@ const buildCategoricalItems = (legend: LegendSpec): LegendItem[] => {
     ];
   }
 
-  return mapping.map(([label, color], index) => {
-    return { binIndex: index, label, color };
+  const labelOverrides = colorBy.labels ?? {};
+  return mapping.map(([key, color], index) => {
+    return { binIndex: index, label: labelOverrides[key] ?? key, color };
   });
 };
 
