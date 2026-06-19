@@ -449,7 +449,7 @@ export const OAuthConsent = ({
           {labels.deny}
         </Button>
         <Button
-          variant="primary"
+          variant="accent"
           onClick={handleApprove}
           disabled={busy}
           loading={isLoading || isAuthorizing}
