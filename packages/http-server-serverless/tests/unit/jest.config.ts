@@ -1,13 +1,12 @@
 import { jestUnitConfig } from '@ttoss/config';
 
-export default {
-  ...jestUnitConfig(),
+export default jestUnitConfig({
   coverageThreshold: {
     global: {
-      statements: 99.28,
-      branches: 92.85,
+      statements: 100,
+      branches: 100,
       functions: 100,
-      lines: 99.28,
+      lines: 100,
     },
   },
-};
+});

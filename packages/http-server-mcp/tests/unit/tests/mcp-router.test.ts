@@ -277,6 +277,106 @@ describe('createMcpRouter', () => {
     connectSpy.mockRestore();
   });
 
+  describe('aliases', () => {
+    test('POST at alias path is handled', async () => {
+      const mcpServer = new McpServer({
+        name: 'test-server',
+        version: '1.0.0',
+      });
+
+      const app = new App();
+      app.use(bodyParser());
+
+      const router = createMcpRouter(mcpServer, { aliases: ['/'] });
+      app.use(router.routes());
+
+      const response = await request(app.callback())
+        .post('/')
+        .send({
+          jsonrpc: '2.0',
+          method: 'initialize',
+          params: {
+            protocolVersion: '2024-11-05',
+            capabilities: {},
+            clientInfo: { name: 'test-client', version: '1.0.0' },
+          },
+          id: 1,
+        })
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json, text/event-stream');
+
+      expect(response.status).not.toBe(404);
+    });
+
+    test('DELETE at alias path is handled', async () => {
+      const mcpServer = new McpServer({
+        name: 'test-server',
+        version: '1.0.0',
+      });
+
+      const app = new App();
+      const router = createMcpRouter(mcpServer, { aliases: ['/'] });
+      app.use(router.routes());
+
+      const response = await request(app.callback()).delete('/');
+
+      expect(response.status).not.toBe(404);
+    });
+
+    test('primary path still works when aliases are set', async () => {
+      const mcpServer = new McpServer({
+        name: 'test-server',
+        version: '1.0.0',
+      });
+
+      const app = new App();
+      app.use(bodyParser());
+
+      const router = createMcpRouter(mcpServer, { aliases: ['/'] });
+      app.use(router.routes());
+
+      const response = await request(app.callback())
+        .post('/mcp')
+        .send({})
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json, text/event-stream');
+
+      expect(response.status).not.toBe(404);
+    });
+
+    test('multiple aliases are all registered', async () => {
+      const mcpServer = new McpServer({
+        name: 'test-server',
+        version: '1.0.0',
+      });
+
+      const app = new App();
+      app.use(bodyParser());
+
+      const router = createMcpRouter(mcpServer, {
+        path: '/mcp',
+        aliases: ['/', '/v2/mcp'],
+      });
+      app.use(router.routes());
+
+      const callback = app.callback();
+
+      const res1 = await request(callback)
+        .post('/')
+        .send({})
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json');
+      expect(res1.status).not.toBe(404);
+
+      const res2 = await request(callback)
+        .post('/v2/mcp')
+        .send({})
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json');
+      expect(res2.status).not.toBe(404);
+    });
+  });
+
   test('should support multiple tools registration', () => {
     const mcpServer = new McpServer({
       name: 'test-server',
