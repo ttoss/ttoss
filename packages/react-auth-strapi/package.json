@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-auth-strapi",
-  "version": "0.4.40",
+  "version": "0.5.0",
   "description": "Authentication components and abstractions for React apps using Strapi.",
   "keywords": [
     "React",
