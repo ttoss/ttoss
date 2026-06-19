@@ -465,8 +465,7 @@ describe('oauth strategy', () => {
     expect(res.status).toBe(403);
   });
 
-  test('403 with warning when neither scope nor scopes is present', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  test('403 when neither scope nor scopes is present', async () => {
     const app = makeApp({
       strategies: ['oauth'],
       oauth: {
@@ -480,10 +479,6 @@ describe('oauth strategy', () => {
       .get('/')
       .set('Authorization', 'Bearer tok');
     expect(res.status).toBe(403);
-    expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining('no scope/scopes claim')
-    );
-    warnSpy.mockRestore();
   });
 
   test('honours a custom mapPayload (null → 401)', async () => {

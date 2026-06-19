@@ -69,8 +69,7 @@ export type OAuthOptions = {
   /**
    * Scopes that must all be present on the token, else `403`.
    * `verify` may return either `scope: string` (space-separated JWT claim) or
-   * `scopes: string[]`; both are normalised internally. If neither is present
-   * and `requiredScopes` is non-empty, a warning is logged and `403` is returned.
+   * `scopes: string[]`; both are normalised internally.
    */
   requiredScopes?: string[];
 };

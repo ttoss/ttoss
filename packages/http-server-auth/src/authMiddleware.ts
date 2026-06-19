@@ -76,12 +76,6 @@ const hasRequiredScopes = (
 ): boolean => {
   const scopeString = resolveScopeString(payload);
   if (scopeString === null) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      '[http-server-auth] verifyToken returned no scope/scopes claim but ' +
-        `requiredScopes is set (${requiredScopes.join(', ')}). ` +
-        'Return either scope: string or scopes: string[] from verifyToken.'
-    );
     return false;
   }
   const tokenScopes = scopeString ? scopeString.split(' ') : [];
