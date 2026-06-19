@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.17.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.16.5...@ttoss/http-server-mcp@0.17.0) (2026-06-19)
+
+### Features
+
+- **http-server-serverless:** add AWS Lambda adapter that populates rawHeaders ([#1089](https://github.com/ttoss/ttoss/issues/1089)) ([f3ee0e9](https://github.com/ttoss/ttoss/commit/f3ee0e9924fec4c58577c705869d85135c2199d7))
+
 ## [0.16.5](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.16.4...@ttoss/http-server-mcp@0.16.5) (2026-06-16)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp

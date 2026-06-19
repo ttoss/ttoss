@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/http-server-serverless",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "AWS Lambda adapter for @ttoss/http-server — populates rawHeaders so @hono/node-server routes work correctly behind API Gateway",
   "keywords": [
     "aws",
