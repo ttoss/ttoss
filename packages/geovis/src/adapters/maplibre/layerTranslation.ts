@@ -6,12 +6,16 @@ import type {
   GeoVisGeometryType,
   HeatmapPaint,
   LinePaint,
+  MapData,
   RasterPaint,
   SymbolPaint,
   VisualizationLayer,
 } from '../../spec/types';
 import type { LegendSpec } from '../../spec/types.legend';
-import { buildFillColorExpression } from './legendTranslation';
+import {
+  buildFillColorExpression,
+  buildSizeExpression,
+} from './legendTranslation';
 
 interface BaseFields {
   id: string;
@@ -45,8 +49,32 @@ type Builder = (
   base: BaseFields,
   layer: VisualizationLayer,
   paint: VisualizationLayer['paint'],
-  specLegends?: LegendSpec[]
+  specLegends?: LegendSpec[],
+  specMapData?: MapData[]
 ) => maplibregl.LayerSpecification;
+
+/** Resolves the stateKey for a given dimension from the spec's mapData array. */
+const resolveDimensionStateKey = (
+  dimension: 'color' | 'size',
+  layerMapDataId: string | undefined,
+  specMapData?: MapData[]
+): string => {
+  // Prefer dataset explicitly marked with this dimension
+  const byDimension = specMapData?.find((m) => {
+    return m.dimension === dimension && m.mapId;
+  });
+  if (byDimension) return byDimension.stateKey ?? 'value';
+
+  // Fallback: legacy layer.mapDataId (single-dimension, no dimension declared)
+  if (layerMapDataId) {
+    const byId = specMapData?.find((m) => {
+      return m.mapDataId === layerMapDataId;
+    });
+    if (byId) return byId.stateKey ?? 'value';
+  }
+
+  return 'value';
+};
 
 const resolveThresholdBreaks = (
   layer: VisualizationLayer,
@@ -78,10 +106,16 @@ const resolveThresholdBreaks = (
  * @remarks
  * Exported so runtime update flows can re-apply the same expression after
  * mapData mutations, keeping style and feature-state paths in sync.
+ *
+ * @param layer - The visualization layer.
+ * @param specLegends - Optional legend registry.
+ * @param specMapData - Optional mapData array for stateKey resolution.
+ * @returns A MapLibre expression array, or undefined when not applicable.
  */
 export const resolveLegendFillColorExpression = (
   layer: VisualizationLayer,
-  specLegends?: LegendSpec[]
+  specLegends?: LegendSpec[],
+  specMapData?: MapData[]
 ): unknown[] | undefined => {
   if (layer.geometry !== 'polygon') return undefined;
   if (!layer.activeLegendId) return undefined;
@@ -95,16 +129,34 @@ export const resolveLegendFillColorExpression = (
     });
   if (!activeLegend) return undefined;
 
+  // Resolve stateKey for color dimension
+  const colorStateKey = resolveDimensionStateKey(
+    'color',
+    layer.mapDataId,
+    specMapData
+  );
+
   return buildFillColorExpression({
     legend: activeLegend,
     breaks: resolveThresholdBreaks(layer, specLegends),
+    stateKey: colorStateKey,
   });
 };
 
 /** Builds a MapLibre `fill` layer spec from a GeoVis polygon layer. */
-const buildPolygon: Builder = (base, layer, paint, specLegends) => {
+const buildPolygon: Builder = (
+  base,
+  layer,
+  paint,
+  specLegends,
+  specMapData
+) => {
   const fp = (paint ?? {}) as FillPaint;
-  const legendFillColor = resolveLegendFillColorExpression(layer, specLegends);
+  const legendFillColor = resolveLegendFillColorExpression(
+    layer,
+    specLegends,
+    specMapData
+  );
   return {
     ...base,
     type: 'fill',
@@ -131,15 +183,67 @@ const buildLine: Builder = (base, _layer, paint) => {
   } as maplibregl.LayerSpecification;
 };
 
+/** Resolves circle-color from legend or static paint. */
+const resolveCircleColor = (
+  layer: VisualizationLayer,
+  cp: CirclePaint,
+  colorStateKey: string,
+  specLegends?: LegendSpec[]
+): string | unknown => {
+  if (!layer.activeLegendId) return cp.circleColor ?? '#3b82f6';
+
+  const activeLegend =
+    layer.legends?.find((l) => {
+      return l.id === layer.activeLegendId;
+    }) ??
+    specLegends?.find((l) => {
+      return l.id === layer.activeLegendId;
+    });
+  if (!activeLegend) return cp.circleColor ?? '#3b82f6';
+
+  return buildFillColorExpression({
+    legend: activeLegend,
+    breaks: resolveThresholdBreaks(layer, specLegends),
+    stateKey: colorStateKey,
+  });
+};
+
 /** Builds a MapLibre `circle` layer spec from a GeoVis point layer. */
-const buildPoint: Builder = (base, _layer, paint) => {
+const buildPoint: Builder = (base, layer, paint, specLegends, specMapData) => {
   const cp = (paint ?? {}) as CirclePaint;
+  const fallbackRadius = cp.circleRadius ?? 6;
+
+  const colorStateKey = resolveDimensionStateKey(
+    'color',
+    layer.mapDataId,
+    specMapData
+  );
+
+  const sizeStateKey = resolveDimensionStateKey(
+    'size',
+    layer.mapDataId,
+    specMapData
+  );
+
+  const circleColor = resolveCircleColor(layer, cp, colorStateKey, specLegends);
+
+  let radius: number | unknown = fallbackRadius;
+  if (layer.sizeBy) {
+    const legendThresholds = resolveThresholdBreaks(layer, specLegends);
+    radius = buildSizeExpression(
+      layer.sizeBy,
+      fallbackRadius,
+      legendThresholds,
+      sizeStateKey
+    );
+  }
+
   return {
     ...base,
     type: 'circle',
     paint: {
-      'circle-color': cp.circleColor ?? '#3b82f6',
-      'circle-radius': cp.circleRadius ?? 6,
+      'circle-color': circleColor,
+      'circle-radius': radius,
       'circle-opacity': cp.circleOpacity ?? 1,
       'circle-stroke-color': cp.circleStrokeColor ?? '#ffffff',
       'circle-stroke-width': cp.circleStrokeWidth ?? 1,
@@ -228,12 +332,25 @@ export const stripUndefinedPaint = (
  * Translates a `VisualizationLayer` into a MapLibre `LayerSpecification`.
  * Sole translation boundary between the GeoVis layer model and MapLibre.
  * Geometry type dispatches to a dedicated builder via the `builders` map.
+ *
+ * @param layer - The visualization layer to translate.
+ * @param sourceLayer - Optional vector tile source layer name.
+ * @param specLegends - Optional legend registry for choropleth coloring.
+ * @param specMapData - Optional mapData array for stateKey resolution.
+ * @returns A MapLibre LayerSpecification ready for `map.addLayer`.
  */
 export const toMaplibreLayer = (
   layer: VisualizationLayer,
   sourceLayer?: string,
-  specLegends?: LegendSpec[]
+  specLegends?: LegendSpec[],
+  specMapData?: MapData[]
 ): maplibregl.LayerSpecification => {
   const base = buildBase(layer, sourceLayer);
-  return builders[layer.geometry](base, layer, layer.paint, specLegends);
+  return builders[layer.geometry](
+    base,
+    layer,
+    layer.paint,
+    specLegends,
+    specMapData
+  );
 };

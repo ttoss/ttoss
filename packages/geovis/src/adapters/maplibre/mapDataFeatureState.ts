@@ -47,22 +47,29 @@ const buildJoinKeyIndex = (
  *
  * Caller is responsible for ensuring the source is loaded before calling.
  */
+/** Sanitizes non-finite numeric values to 0 for MapLibre expressions. */
+const sanitizeValue = (value: MapDataRow['value']): MapDataRow['value'] => {
+  return typeof value === 'number' && !Number.isFinite(value) ? 0 : value;
+};
+
 export const applyMapDataToSource = (
   map: maplibregl.Map,
   mapData: MapData
 ): void => {
   if (!map.getSource(mapData.mapId)) return;
 
+  const stateKey = mapData.stateKey ?? 'value';
+
+  const applyRow = (featureId: string | number, row: MapDataRow) => {
+    map.setFeatureState(
+      { source: mapData.mapId, id: featureId },
+      { [stateKey]: sanitizeValue(row.value) }
+    );
+  };
+
   if (!mapData.joinKey) {
     for (const row of mapData.data) {
-      const safeValue =
-        typeof row.value === 'number' && !Number.isFinite(row.value)
-          ? 0
-          : row.value;
-      map.setFeatureState(
-        { source: mapData.mapId, id: coerceGeometryId(row.geometryId) },
-        { value: safeValue }
-      );
+      applyRow(coerceGeometryId(row.geometryId), row);
     }
     return;
   }
@@ -72,14 +79,7 @@ export const applyMapDataToSource = (
   for (const row of mapData.data) {
     const fid = idByJoinKey.get(String(row.geometryId));
     if (fid == null) continue;
-    const safeValue =
-      typeof row.value === 'number' && !Number.isFinite(row.value)
-        ? 0
-        : row.value;
-    map.setFeatureState(
-      { source: mapData.mapId, id: fid },
-      { value: safeValue }
-    );
+    applyRow(fid, row);
   }
 };
 
@@ -176,6 +176,8 @@ const applyRowReplacement = (
   const safeValue =
     typeof value === 'number' && !Number.isFinite(value) ? 0 : value;
 
+  const stateKey = mapData.stateKey ?? 'value';
+
   if (!mapData.joinKey) {
     // Resolve the original geometryId type from the stored row so numeric
     // feature ids (e.g. 1) are not coerced to strings ('1'), which would
@@ -186,7 +188,7 @@ const applyRowReplacement = (
     const featureId = row?.geometryId ?? coerceGeometryId(geometryId);
     map.setFeatureState(
       { source: mapData.mapId, id: featureId },
-      { value: safeValue }
+      { [stateKey]: safeValue }
     );
     return;
   }
@@ -198,7 +200,7 @@ const applyRowReplacement = (
   if (f?.id != null) {
     map.setFeatureState(
       { source: mapData.mapId, id: f.id },
-      { value: safeValue }
+      { [stateKey]: safeValue }
     );
   }
 };

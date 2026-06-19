@@ -37,7 +37,12 @@ const applyLayerAdd = (
       : undefined);
   map.addLayer(
     stripUndefinedPaint(
-      toMaplibreLayer(newLayer, effectiveSourceLayer, viewState.spec.legends)
+      toMaplibreLayer(
+        newLayer,
+        effectiveSourceLayer,
+        viewState.spec.legends,
+        viewState.spec.mapData
+      )
     )
   );
   viewState.spec = {
