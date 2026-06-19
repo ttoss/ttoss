@@ -183,6 +183,31 @@ describe('auth — verifyToken', () => {
     expect(res.status).toBe(403);
   });
 
+  test('allows request when verifyToken returns scopes[] array satisfying requiredScopes', async () => {
+    const payload = { sub: 'u1', scopes: ['openid', 'mcp:access', 'profile'] };
+    const app = buildApp(() => {
+      return Promise.resolve(payload);
+    }, ['mcp:access']);
+
+    const callback = app.callback();
+
+    await request(callback)
+      .post('/mcp')
+      .send(makeMcpRequest('initialize', initializeParams, 1))
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT)
+      .set('Authorization', 'Bearer tok');
+
+    const res = await request(callback)
+      .post('/mcp')
+      .send(makeMcpRequest('tools/call', { name: 'whoami', arguments: {} }, 2))
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT)
+      .set('Authorization', 'Bearer tok');
+
+    expect(res.status).toBe(200);
+  });
+
   test('returns 403 when the token carries no scope claim at all', async () => {
     const app = buildApp(() => {
       return Promise.resolve({ sub: 'u1' }); // no `scope` property
@@ -256,6 +281,73 @@ describe('auth — verifyToken', () => {
     expect(toolRes.body?.result?.isError).toBe(true);
     expect(toolRes.body?.result?.content?.[0]?.text).toContain(
       'Insufficient scopes'
+    );
+  });
+
+  test('checkScopes() passes when identity has scopes[] array', async () => {
+    const payload = { sub: 'u1', scopes: ['openid', 'admin', 'write:users'] };
+    const app = buildApp(() => {
+      return Promise.resolve(payload);
+    });
+
+    const callback = app.callback();
+
+    await request(callback)
+      .post('/mcp')
+      .send(makeMcpRequest('initialize', initializeParams, 1))
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT)
+      .set('Authorization', 'Bearer tok');
+
+    const toolRes = await request(callback)
+      .post('/mcp')
+      .send(
+        makeMcpRequest(
+          'tools/call',
+          { name: 'admin-only', arguments: { x: 'y' } },
+          2
+        )
+      )
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT)
+      .set('Authorization', 'Bearer tok');
+
+    expect(toolRes.status).toBe(200);
+    expect(toolRes.body?.result?.isError).toBeFalsy();
+  });
+
+  test('checkScopes() throws descriptive error when neither scope nor scopes present', async () => {
+    const payload = { sub: 'u1' }; // no scope claim at all
+    const app = buildApp(() => {
+      return Promise.resolve(payload);
+    });
+
+    const callback = app.callback();
+
+    await request(callback)
+      .post('/mcp')
+      .send(makeMcpRequest('initialize', initializeParams, 1))
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT)
+      .set('Authorization', 'Bearer tok');
+
+    const toolRes = await request(callback)
+      .post('/mcp')
+      .send(
+        makeMcpRequest(
+          'tools/call',
+          { name: 'admin-only', arguments: { x: 'y' } },
+          2
+        )
+      )
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT)
+      .set('Authorization', 'Bearer tok');
+
+    expect(toolRes.status).toBe(200);
+    expect(toolRes.body?.result?.isError).toBe(true);
+    expect(toolRes.body?.result?.content?.[0]?.text).toContain(
+      'no scope/scopes'
     );
   });
 

@@ -50,12 +50,41 @@ const trySystem = (
 /** Sentinel: token verified but missing a required scope → 403, not 401. */
 const FORBIDDEN = Symbol('forbidden');
 
+/**
+ * Derives a space-separated scope string from the payload.
+ * Accepts either `scope: string` (standard JWT claim) or `scopes: string[]`
+ * (a common alternative shape). Returns `null` when neither is present.
+ */
+const resolveScopeString = (
+  payload: Record<string, unknown>
+): string | null => {
+  if (typeof payload.scope === 'string') return payload.scope;
+  if (
+    Array.isArray(payload.scopes) &&
+    payload.scopes.every((s) => {
+      return typeof s === 'string';
+    })
+  ) {
+    return (payload.scopes as string[]).join(' ');
+  }
+  return null;
+};
+
 const hasRequiredScopes = (
   requiredScopes: string[],
   payload: Record<string, unknown>
 ): boolean => {
-  const scope = typeof payload.scope === 'string' ? payload.scope : '';
-  const tokenScopes = scope.split(' ');
+  const scopeString = resolveScopeString(payload);
+  if (scopeString === null) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[http-server-auth] verifyToken returned no scope/scopes claim but ' +
+        `requiredScopes is set (${requiredScopes.join(', ')}). ` +
+        'Return either scope: string or scopes: string[] from verifyToken.'
+    );
+    return false;
+  }
+  const tokenScopes = scopeString ? scopeString.split(' ') : [];
   return requiredScopes.every((s) => {
     return tokenScopes.includes(s);
   });

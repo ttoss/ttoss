@@ -67,8 +67,10 @@ export type OAuthOptions = {
     ctx: Context
   ) => AuthenticatedUser | null;
   /**
-   * Scopes that must all be present on the token's space-separated `scope`
-   * claim. A verified token missing any of them yields a `403`.
+   * Scopes that must all be present on the token, else `403`.
+   * `verify` may return either `scope: string` (space-separated JWT claim) or
+   * `scopes: string[]`; both are normalised internally. If neither is present
+   * and `requiredScopes` is non-empty, a warning is logged and `403` is returned.
    */
   requiredScopes?: string[];
 };

@@ -433,6 +433,59 @@ describe('oauth strategy', () => {
     expect(res.status).toBe(200);
   });
 
+  test('allows when scopes[] array satisfies requiredScopes', async () => {
+    const app = makeApp({
+      strategies: ['oauth'],
+      oauth: {
+        verify: () => {
+          return { sub: 'u1', scopes: ['read', 'write'] };
+        },
+        requiredScopes: ['write'],
+      },
+    });
+    const res = await request(app.callback())
+      .get('/')
+      .set('Authorization', 'Bearer tok');
+    expect(res.status).toBe(200);
+  });
+
+  test('403 when scopes[] array is missing the required scope', async () => {
+    const app = makeApp({
+      strategies: ['oauth'],
+      oauth: {
+        verify: () => {
+          return { sub: 'u1', scopes: ['read'] };
+        },
+        requiredScopes: ['write'],
+      },
+    });
+    const res = await request(app.callback())
+      .get('/')
+      .set('Authorization', 'Bearer tok');
+    expect(res.status).toBe(403);
+  });
+
+  test('403 with warning when neither scope nor scopes is present', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const app = makeApp({
+      strategies: ['oauth'],
+      oauth: {
+        verify: () => {
+          return { sub: 'u1' };
+        },
+        requiredScopes: ['write'],
+      },
+    });
+    const res = await request(app.callback())
+      .get('/')
+      .set('Authorization', 'Bearer tok');
+    expect(res.status).toBe(403);
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('no scope/scopes claim')
+    );
+    warnSpy.mockRestore();
+  });
+
   test('honours a custom mapPayload (null → 401)', async () => {
     const app = makeApp({
       strategies: ['oauth'],
