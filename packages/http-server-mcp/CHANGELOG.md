@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.17.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.17.0...@ttoss/http-server-mcp@0.17.1) (2026-06-19)
+
+### Bug Fixes
+
+- **http-server-auth,http-server-mcp:** accept scopes[] and warn on missing scope claim ([#1090](https://github.com/ttoss/ttoss/issues/1090)) ([2c5427e](https://github.com/ttoss/ttoss/commit/2c5427e034606737b8aaa323b0e66b389148ac0d))
+
 # [0.17.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.16.5...@ttoss/http-server-mcp@0.17.0) (2026-06-19)
 
 ### Features

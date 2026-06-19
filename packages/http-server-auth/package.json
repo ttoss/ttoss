@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/http-server-auth",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Authentication middleware for @ttoss/http-server",
   "keywords": [
     "auth",
