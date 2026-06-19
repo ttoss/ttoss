@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.28.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.27.0...@docs/storybook@3.28.0) (2026-06-19)
+
+### Features
+
+- **geovis:** configurable legend — labelFormat, normalization, position, reference ([#1012](https://github.com/ttoss/ttoss/issues/1012)) ([d6ea06a](https://github.com/ttoss/ttoss/commit/d6ea06a02861bbfe79692de2032340b09065b913))
+
 # [3.27.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.26.0...@docs/storybook@3.27.0) (2026-06-18)
 
 ### Features
