@@ -1,0 +1,58 @@
+{
+  "name": "@ttoss/http-server-serverless",
+  "version": "0.1.0",
+  "description": "AWS Lambda adapter for @ttoss/http-server — populates rawHeaders so @hono/node-server routes work correctly behind API Gateway",
+  "keywords": [
+    "aws",
+    "koa",
+    "lambda",
+    "server",
+    "serverless"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/http-server-serverless"
+  },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  ],
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "jest --projects tests/unit"
+  },
+  "dependencies": {
+    "serverless-http": "^3.2.0"
+  },
+  "devDependencies": {
+    "@ttoss/config": "workspace:^",
+    "@ttoss/http-server": "workspace:^",
+    "@types/koa": "^3.0.3",
+    "jest": "^30.4.2",
+    "tsdown": "^0.22.2"
+  },
+  "peerDependencies": {
+    "@ttoss/http-server": "workspace:^"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.mts"
+      }
+    },
+    "provenance": true
+  }
+}
