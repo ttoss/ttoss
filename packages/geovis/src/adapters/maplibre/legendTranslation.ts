@@ -260,9 +260,12 @@ export const buildSizeExpression = (
   }
 
   if (sizeBy.mode === 'stepped') {
-    const breaks = sizeBy.thresholds?.length
-      ? sizeBy.thresholds
-      : (legendThresholds ?? []);
+    // Prefer the active legend's thresholds so that color bins and size bins
+    // stay aligned. Fall back to sizeBy.thresholds only when no legend is
+    // active.
+    const breaks = legendThresholds?.length
+      ? legendThresholds
+      : (sizeBy.thresholds ?? []);
 
     if (breaks.length === 0) {
       return buildContinuousSizeExpression(
@@ -274,20 +277,25 @@ export const buildSizeExpression = (
     }
 
     const sortedBreaks = uniqueAscending(breaks);
-    const radii = generateRadii(sortedBreaks.length + 1, minRadius, maxRadius);
+    // N breaks partition the data into N+1 bins: one below the first break,
+    // one between each consecutive pair, and one above the last break.
+    const binCount = sortedBreaks.length + 1;
+    const radii = generateRadii(binCount, minRadius, maxRadius);
 
-    const input = [
-      'to-number',
-      ['coalesce', ['feature-state', stateKey], fallbackRadius],
-    ];
+    const input = ['to-number', ['feature-state', stateKey]];
 
     const stepped: unknown = [
-      'step',
-      input,
-      radii[0],
-      ...sortedBreaks.flatMap((b, i) => {
-        return [b, radii[i + 1]];
-      }),
+      'case',
+      ['!=', ['feature-state', stateKey], 'undefined'],
+      [
+        'step',
+        input,
+        radii[0],
+        ...sortedBreaks.flatMap((b, i) => {
+          return [b, radii[i + 1]];
+        }),
+      ],
+      fallbackRadius,
     ];
 
     return stepped;

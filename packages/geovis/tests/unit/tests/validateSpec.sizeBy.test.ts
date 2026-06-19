@@ -1,3 +1,4 @@
+import type { SizeBy } from 'src/spec/types';
 import { validateSpec } from 'src/spec/validateSpec';
 
 describe('validateSpec — sizeBy', () => {
@@ -135,12 +136,14 @@ describe('validateSpec — sizeBy', () => {
       layers: [
         {
           ...pointSpec.layers[0],
+          // Type assertion needed: discriminated union forbids this at compile
+          // time, but JSON-based specs can still produce this invalid combo.
           sizeBy: {
             range: [4, 20],
             mode: 'stepped',
             thresholds: [100, 500],
             transform: 'sqrt',
-          },
+          } as SizeBy,
         },
       ],
     });

@@ -97,13 +97,10 @@ describe('buildSizeExpression', () => {
     const expression = buildSizeExpression(sizeBy, 6);
 
     expect(expression).toEqual([
-      'step',
-      ['to-number', ['coalesce', ['feature-state', 'value'], 6]],
-      4,
-      100,
-      12,
-      500,
-      20,
+      'case',
+      ['!=', ['feature-state', 'value'], 'undefined'],
+      ['step', ['to-number', ['feature-state', 'value']], 4, 100, 12, 500, 20],
+      6,
     ]);
   });
 
@@ -117,13 +114,10 @@ describe('buildSizeExpression', () => {
     const expression = buildSizeExpression(sizeBy, 6, [200, 800]);
 
     expect(expression).toEqual([
-      'step',
-      ['to-number', ['coalesce', ['feature-state', 'value'], 6]],
-      4,
-      200,
-      12,
-      800,
-      20,
+      'case',
+      ['!=', ['feature-state', 'value'], 'undefined'],
+      ['step', ['to-number', ['feature-state', 'value']], 4, 200, 12, 800, 20],
+      6,
     ]);
   });
 
@@ -291,13 +285,18 @@ describe('buildSizeExpression — stateKey support', () => {
     const expression = buildSizeExpression(sizeBy, 6, undefined, 'density');
 
     expect(expression).toEqual([
-      'step',
-      ['to-number', ['coalesce', ['feature-state', 'density'], 6]],
-      4,
-      100,
-      12,
-      500,
-      20,
+      'case',
+      ['!=', ['feature-state', 'density'], 'undefined'],
+      [
+        'step',
+        ['to-number', ['feature-state', 'density']],
+        4,
+        100,
+        12,
+        500,
+        20,
+      ],
+      6,
     ]);
   });
 
@@ -412,11 +411,9 @@ describe('sizeBy with sqrt', () => {
       thresholds: [100, 500],
     };
     const expression = buildSizeExpression(sizeBy, 6, [], 'pop');
-    expect(expression[0]).toBe('step');
-    const input = (expression as unknown[])[1] as unknown[];
-    expect(input).toEqual([
-      'to-number',
-      ['coalesce', ['feature-state', 'pop'], 6],
-    ]);
+    expect(expression[0]).toBe('case');
+    const stepExpr = (expression as unknown[])[2] as unknown[];
+    expect(stepExpr[0]).toBe('step');
+    expect(stepExpr[1]).toEqual(['to-number', ['feature-state', 'pop']]);
   });
 });

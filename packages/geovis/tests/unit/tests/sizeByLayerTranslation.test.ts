@@ -53,7 +53,10 @@ describe('toMaplibreLayer — point layer with sizeBy', () => {
     const paint = (mapLayer as { paint?: Record<string, unknown> }).paint;
     const radius = paint?.['circle-radius'];
     expect(Array.isArray(radius)).toBe(true);
-    expect((radius as unknown[])[0]).toBe('step');
+    // Stepped expression is wrapped in a case guard for missing data
+    expect((radius as unknown[])[0]).toBe('case');
+    const stepExpr = (radius as unknown[])[2] as unknown[];
+    expect(stepExpr[0]).toBe('step');
   });
 
   test('point layer without sizeBy keeps static circle-radius (existing behavior)', () => {

@@ -219,21 +219,39 @@ export type LayerPaint =
 /**
  * Proportional symbol configuration that maps the numeric `mapData` value
  * to `circle-radius` via MapLibre expressions.
+ *
+ * When `mode` is `'continuous'` (default), the radius is linearly interpolated
+ * across the data range. A `sqrt` transform can be applied so that circle
+ * **area** (not radius) is proportional to the value.
+ *
+ * When `mode` is `'stepped'`, the data range is split into discrete bins by
+ * `thresholds` and each bin receives a fixed radius. The `sqrt` transform is
+ * **not allowed** in stepped mode.
  */
-export interface SizeBy {
-  /** Output radius range in pixels `[minRadius, maxRadius]`. Both must be > 0. */
-  range: [number, number];
-  /** Interpolation mode. Default: `'continuous'`. */
-  mode?: 'continuous' | 'stepped';
-  /** Explicit break points for stepped mode. When omitted, thresholds are inherited from the active legend. */
-  thresholds?: number[];
-  /**
-   * Radius transformation. Default: `'linear'`.
-   * Use `'sqrt'` so circle AREA is proportional to the value.
-   * **Not allowed** when `mode` is `'stepped'`.
-   */
-  transform?: 'linear' | 'sqrt';
-}
+export type SizeBy =
+  | {
+      /** Output radius range in pixels `[minRadius, maxRadius]`. Both must be > 0. */
+      range: [number, number];
+      /** Interpolation mode. Default (or omitted) is `'continuous'`. */
+      mode?: 'continuous';
+      /** Explicit break points. When omitted, thresholds are inherited from the active legend. */
+      thresholds?: number[];
+      /**
+       * Radius transformation. Default: `'linear'`.
+       * Use `'sqrt'` so circle AREA is proportional to the value.
+       */
+      transform?: 'linear' | 'sqrt';
+    }
+  | {
+      /** Output radius range in pixels `[minRadius, maxRadius]`. Both must be > 0. */
+      range: [number, number];
+      /** Stepped mode: each bin receives a fixed radius. */
+      mode: 'stepped';
+      /** Explicit break points. When omitted, thresholds are inherited from the active legend. */
+      thresholds?: number[];
+      /** Only `'linear'` is allowed in stepped mode. */
+      transform?: 'linear';
+    };
 
 export interface VisualizationLayer {
   id: string;
