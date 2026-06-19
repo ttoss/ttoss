@@ -300,6 +300,18 @@ export interface McpRouterOptions {
   path?: string;
 
   /**
+   * Additional HTTP paths where the MCP server is also mounted.
+   *
+   * Useful when MCP clients differ in where they connect after OAuth: some
+   * follow the protected-resource `resource` metadata value as the endpoint,
+   * others always connect to the bare origin (`/`). Setting `aliases: ['/']`
+   * serves both without requiring app-level path rewrites.
+   *
+   * @example ['/'] // also handle MCP requests at the bare root
+   */
+  aliases?: string[];
+
+  /**
    * Optional session ID generator for stateful MCP servers.
    * When provided, a single shared transport is created and sessions are tracked.
    * When undefined (default), the server operates in stateless mode where each
@@ -420,9 +432,11 @@ export interface McpRouterOptions {
 export const createMcpRouter = (
   server: McpServer,
   options: McpRouterOptions = {}
+  // eslint-disable-next-line complexity
 ) => {
   const {
     path = '/mcp',
+    aliases = [],
     sessionIdGenerator,
     apiBaseUrl,
     getApiHeaders,
@@ -461,6 +475,13 @@ export const createMcpRouter = (
 
   const router = new Router();
 
+  // Auth middleware applied inline per route (not via router.use prefix match)
+  // so that unrelated paths like /.well-known/* are never intercepted — even
+  // when aliases contains '/', which would otherwise prefix-match everything.
+  let authCheck:
+    | ((ctx: Context, next: () => Promise<void>) => Promise<void>)
+    | undefined;
+
   if (auth) {
     const verifyToken = buildVerifyToken(auth);
     const publicMethods = new Set(auth.publicMethods ?? DEFAULT_PUBLIC_METHODS);
@@ -478,7 +499,7 @@ export const createMcpRouter = (
 
     // Public lifecycle/discovery methods bypass verification so clients can
     // discover the server before they have a token (MCP authorization spec).
-    router.use(path, async (ctx: Context, next) => {
+    authCheck = async (ctx: Context, next: () => Promise<void>) => {
       const method = (ctx.request.body as { method?: string } | undefined)
         ?.method;
       if (publicMethods.has(method ?? '')) {
@@ -486,12 +507,16 @@ export const createMcpRouter = (
         return;
       }
       await verify(ctx, next);
-    });
+    };
 
     if (auth.resourceServerUrl && auth.authorizationServerUrl) {
+      // Append `path` to the base URL so clients that follow the `resource`
+      // value land on the actual MCP endpoint, not the bare origin.
+      const base = auth.resourceServerUrl.replace(/\/$/, '');
+      const resourceUrl = path === '/' ? base : `${base}${path}`;
       router.get('/.well-known/oauth-protected-resource', (ctx: Context) => {
         ctx.body = {
-          resource: auth.resourceServerUrl,
+          resource: resourceUrl,
           authorization_servers: [auth.authorizationServerUrl],
         };
       });
@@ -558,7 +583,7 @@ export const createMcpRouter = (
     }
   };
 
-  router.post(path, async (ctx: Context) => {
+  const postHandler = async (ctx: Context): Promise<void> => {
     try {
       await handleWithContext(ctx, ctx.request.body);
     } catch (error) {
@@ -571,10 +596,9 @@ export const createMcpRouter = (
         };
       }
     }
-  });
+  };
 
-  // Support DELETE for session termination (per MCP spec)
-  router.delete(path, async (ctx: Context) => {
+  const deleteHandler = async (ctx: Context): Promise<void> => {
     try {
       await handleWithContext(ctx);
     } catch (error) {
@@ -586,7 +610,20 @@ export const createMcpRouter = (
         };
       }
     }
-  });
+  };
+
+  // Register POST and DELETE at the primary path and every alias.
+  // Support DELETE for session termination (per MCP spec).
+  const allPaths = [path, ...aliases];
+  for (const mcpPath of allPaths) {
+    if (authCheck) {
+      router.post(mcpPath, authCheck, postHandler);
+      router.delete(mcpPath, authCheck, deleteHandler);
+    } else {
+      router.post(mcpPath, postHandler);
+      router.delete(mcpPath, deleteHandler);
+    }
+  }
 
   return router;
 };
