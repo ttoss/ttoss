@@ -17,8 +17,14 @@ jest.mock('src/DashboardGrid', () => {
 
 jest.mock('src/DashboardHeader', () => {
   return {
-    DashboardHeader: ({ children }: { children?: React.ReactNode }) => {
-      mockDashboardHeader({ hasChildren: !!children });
+    DashboardHeader: ({
+      children,
+      showFilters,
+    }: {
+      children?: React.ReactNode;
+      showFilters?: boolean;
+    }) => {
+      mockDashboardHeader({ hasChildren: !!children, showFilters });
       return <div>{children}</div>;
     },
   };
@@ -75,6 +81,8 @@ describe('Dashboard branches', () => {
     mockUseDashboard.mockReturnValue({
       isEditMode: false,
       editingGrid: null,
+      filters: [],
+      editable: false,
     });
 
     render(
@@ -114,6 +122,8 @@ describe('Dashboard branches', () => {
     mockUseDashboard.mockReturnValue({
       isEditMode: true,
       editingGrid,
+      filters: [],
+      editable: false,
     });
 
     render(
@@ -136,6 +146,23 @@ describe('Dashboard branches', () => {
           grid: editingGrid,
         }),
       })
+    );
+  });
+
+  test('should forward showFilters=false to DashboardHeader', () => {
+    mockUseDashboard.mockReturnValue({
+      isEditMode: false,
+      editingGrid: null,
+      filters: [],
+      editable: false,
+    });
+
+    render(
+      <Dashboard selectedTemplate={selectedTemplate} showFilters={false} />
+    );
+
+    expect(mockDashboardHeader).toHaveBeenCalledWith(
+      expect.objectContaining({ showFilters: false })
     );
   });
 });
