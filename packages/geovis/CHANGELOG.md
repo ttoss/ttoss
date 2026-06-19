@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.2.1...@ttoss/geovis@0.3.0) (2026-06-19)
+
+### Features
+
+- **geovis:** configurable legend — labelFormat, normalization, position, reference ([#1012](https://github.com/ttoss/ttoss/issues/1012)) ([d6ea06a](https://github.com/ttoss/ttoss/commit/d6ea06a02861bbfe79692de2032340b09065b913))
+
 ## [0.2.1](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.2.0...@ttoss/geovis@0.2.1) (2026-06-18)
 
 **Note:** Version bump only for package @ttoss/geovis

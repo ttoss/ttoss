@@ -195,6 +195,10 @@ describe('useMapHover — window focus recheck', () => {
         <GeoVisHoverTooltip />
       </GeoVisProvider>
     );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
     await waitFor(() => {
       expect(onReady).toHaveBeenCalled();
     });
@@ -242,6 +246,10 @@ describe('useMapHover — window focus recheck', () => {
         <GeoVisHoverTooltip />
       </GeoVisProvider>
     );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
     await waitFor(() => {
       expect(onReady).toHaveBeenCalled();
     });
@@ -275,6 +283,10 @@ describe('useMapHover — window focus recheck', () => {
         <GeoVisHoverTooltip />
       </GeoVisProvider>
     );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
     await waitFor(() => {
       expect(onReady).toHaveBeenCalled();
     });
@@ -299,6 +311,10 @@ describe('useMapHover — window focus recheck', () => {
         <GeoVisHoverTooltip />
       </GeoVisProvider>
     );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
     await waitFor(() => {
       expect(onReady).toHaveBeenCalled();
     });
@@ -360,6 +376,10 @@ describe('useMapHover — visibilitychange (tab switching)', () => {
         <GeoVisHoverTooltip />
       </GeoVisProvider>
     );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
     await waitFor(() => {
       expect(onReady).toHaveBeenCalled();
     });
@@ -400,6 +420,10 @@ describe('useMapHover — visibilitychange (tab switching)', () => {
         <GeoVisHoverTooltip />
       </GeoVisProvider>
     );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
     await waitFor(() => {
       expect(onReady).toHaveBeenCalled();
     });
@@ -436,6 +460,10 @@ describe('useMapHover — visibilitychange (tab switching)', () => {
         <GeoVisHoverTooltip />
       </GeoVisProvider>
     );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
     await waitFor(() => {
       expect(onReady).toHaveBeenCalled();
     });

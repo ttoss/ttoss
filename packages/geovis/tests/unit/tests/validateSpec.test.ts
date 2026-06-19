@@ -271,6 +271,58 @@ describe('validateSpec — mapData', () => {
       expect(result.errors.join('\n')).toMatch(/non-finite/);
     }
   });
+
+  test('accepts legends with labelFormat and reference fields', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      legends: [
+        {
+          id: 'pop',
+          title: 'Population',
+          subtitle: 'Residents per district',
+          labelFormat: { type: 'count', abbreviate: true, extended: true },
+          normalization: { type: 'raw', numeratorLabel: 'inhabitants' },
+          reference: 'SMUL/GEOINFO — Resident population evolution',
+          noDataLabel: 'No data',
+          position: 'bottom-right',
+          colorBy: {
+            type: 'quantitative',
+            property: 'population',
+            scale: 'threshold',
+            thresholds: [50000, 100000, 150000, 200000],
+            colors: ['#f0f9ff', '#bfdbfe', '#60a5fa', '#3b82f6', '#1d4ed8'],
+          },
+        },
+      ],
+      layers: [
+        {
+          ...baseSpec.layers[0],
+          activeLegendId: 'pop',
+        },
+      ],
+    });
+
+    expect(result.valid).toBe(true);
+  });
+
+  test('rejects legend with additional unknown fields', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      legends: [
+        {
+          id: 'pop',
+          unknownField: 'should-fail',
+          colorBy: {
+            type: 'quantitative',
+            property: 'population',
+            scale: 'threshold',
+          },
+        },
+      ],
+    });
+
+    expect(result.valid).toBe(false);
+  });
 });
 
 describe('validateSpec — layer interaction fields (hoverPaint, selectedPaint, clickAnchor)', () => {
