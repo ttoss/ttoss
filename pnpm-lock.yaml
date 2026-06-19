@@ -1023,6 +1023,9 @@ importers:
       '@ttoss/test-utils':
         specifier: workspace:^
         version: link:../test-utils
+      '@ttoss/ui':
+        specifier: workspace:^
+        version: link:../ui
       '@types/jest':
         specifier: ^30.0.0
         version: 30.0.0

@@ -541,13 +541,235 @@
           "type": "string",
           "minLength": 1
         },
-        "label": {
-          "type": "string"
+        "title": {
+          "type": "string",
+          "description": "Short heading rendered above the legend swatches."
+        },
+        "subtitle": {
+          "type": "string",
+          "description": "Secondary description rendered below the title."
+        },
+        "labelFormat": {
+          "$ref": "#/$defs/LabelFormatSpec"
+        },
+        "normalization": {
+          "$ref": "#/$defs/NormalizationSpec"
+        },
+        "position": {
+          "type": "string",
+          "enum": ["top-left", "top-right", "bottom-left", "bottom-right"],
+          "description": "Corner position for an absolutely-positioned legend overlay."
+        },
+        "noDataLabel": {
+          "type": "string",
+          "description": "Label for the 'no data' swatch. When omitted no entry is shown."
+        },
+        "reference": {
+          "type": "string",
+          "description": "Bibliographic attribution. Supports plain text and {link:text|url} syntax for inline links."
         },
         "colorBy": {
           "$ref": "#/$defs/ColorBy"
         }
       }
+    },
+    "LabelFormatSpec": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "const": "range"
+            },
+            "separator": {
+              "type": "string"
+            },
+            "unit": {
+              "type": "string"
+            },
+            "extended": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "const": "count"
+            },
+            "abbreviate": {
+              "type": "boolean"
+            },
+            "extended": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "const": "percentage"
+            },
+            "decimals": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "denominator": {
+              "type": "number"
+            },
+            "extended": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "const": "stdDev"
+            },
+            "unit": {
+              "type": "string",
+              "enum": ["σ", "sd"]
+            },
+            "extended": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "formatter"],
+          "properties": {
+            "type": {
+              "const": "custom"
+            },
+            "formatter": {
+              "description": "Custom formatter function. Not serializable to JSON; use this variant only in TypeScript-driven specs passed directly to GeoVisLegend, not in JSON files."
+            },
+            "extended": {
+              "type": "boolean"
+            }
+          },
+          "description": "Custom formatter (TypeScript-only). The spec object must have a `formatter` property at runtime: (lower: number | null, upper: number | null, index: number) => string. Not serializable to JSON; use this variant only in TypeScript-driven specs passed directly to GeoVisLegend, not in JSON files."
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "labels"],
+          "properties": {
+            "type": {
+              "const": "labels"
+            },
+            "labels": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Ordered list of explicit labels, one entry per legend bin. Bins beyond the array length fall back to range-style formatting."
+            },
+            "extended": {
+              "type": "boolean"
+            }
+          },
+          "description": "Explicit label list. JSON-serialisable alternative to 'custom'. Bins without a matching entry fall back to range-style formatting."
+        }
+      ]
+    },
+    "NormalizationSpec": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "const": "raw"
+            },
+            "numeratorLabel": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "numeratorLabel"],
+          "anyOf": [
+            {
+              "required": ["denominatorLabel"]
+            }
+          ],
+          "properties": {
+            "type": {
+              "const": "ratio"
+            },
+            "numeratorLabel": {
+              "type": "string"
+            },
+            "denominatorLabel": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "numeratorLabel"],
+          "anyOf": [
+            {
+              "required": ["denominatorLabel"]
+            }
+          ],
+          "properties": {
+            "type": {
+              "const": "percentage"
+            },
+            "numeratorLabel": {
+              "type": "string"
+            },
+            "denominatorLabel": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "numeratorLabel", "rateBase"],
+          "anyOf": [
+            {
+              "required": ["denominatorLabel"]
+            }
+          ],
+          "properties": {
+            "type": {
+              "const": "rate"
+            },
+            "numeratorLabel": {
+              "type": "string"
+            },
+            "denominatorLabel": {
+              "type": "string"
+            },
+            "rateBase": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          }
+        }
+      ]
     },
     "Position": {
       "type": "array",

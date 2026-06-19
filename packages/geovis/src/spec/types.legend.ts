@@ -73,11 +73,150 @@ export type ColorByTemplate =
   | QuantitativeColorByTemplate;
 
 /**
+ * Controls how quantitative legend bin labels are formatted.
+ *
+ * - `'range'`      – raw break values joined by a configurable separator.
+ *   Example: `50k – 100k`.
+ * - `'count'`      – compact integer counts with optional SI abbreviation.
+ *   Example: `< 50k`, `50k ≤ 100k`, `> 250k`.
+ * - `'percentage'` – percentage display for values already in the [0, 1] range.
+ *   Example: `0% – 10%`.
+ * - `'stdDev'`     – standard deviation labels for diverging schemes.
+ *   Example: `< −2σ`, `−1σ – +1σ`, `> +2σ`.
+ * - `'custom'`     – escape hatch; caller supplies a `formatter` function.
+ *
+ * All variants support an optional `extended` flag. When `true`, a semantic
+ * suffix derived from the legend's `normalization` metadata is appended to
+ * each label (e.g. unit, ratio, rate description).
+ */
+export type LabelFormatSpec =
+  | { type: 'range'; separator?: string; unit?: string; extended?: boolean }
+  | { type: 'count'; abbreviate?: boolean; extended?: boolean }
+  | {
+      type: 'percentage';
+      decimals?: number;
+      denominator?: number;
+      extended?: boolean;
+    }
+  | { type: 'stdDev'; unit?: 'σ' | 'sd'; extended?: boolean }
+  | {
+      type: 'custom';
+      /**
+       * Custom formatter function. Receives the lower and upper bounds
+       * (null for open-ended bins) and the zero-based bin index.
+       * Not serialisable to JSON — use this only in TypeScript-driven specs.
+       */
+      formatter: (
+        lower: number | null,
+        upper: number | null,
+        index: number
+      ) => string;
+      extended?: boolean;
+    }
+  | {
+      /**
+       * Explicit label list. Each entry maps to the bin at the same position
+       * (zero-based). Bins without a corresponding entry fall back to the
+       * default range-style formatting (`< N`, `N - M`, `> N`).
+       *
+       * This variant is JSON-serialisable and is the recommended choice when
+       * the label text is known ahead of time (e.g. classification categories
+       * such as `'Low'`, `'Medium'`, `'High'`). Prefer `'custom'` only when
+       * runtime computation is needed.
+       */
+      type: 'labels';
+      /** Ordered list of explicit labels, one entry per legend bin. */
+      labels: string[];
+      extended?: boolean;
+    };
+
+/**
+ * Describes the statistical normalisation applied to the mapped data values.
+ * This metadata is used to enrich legend bin labels when `extended: true` is
+ * set on the `labelFormat` spec.
+ */
+export type NormalizationSpec =
+  | {
+      type: 'raw';
+      /** Optional unit label appended when `extended: true`. */
+      numeratorLabel?: string;
+    }
+  | {
+      type: 'ratio';
+      numeratorLabel: string;
+      denominatorLabel: string;
+    }
+  | {
+      type: 'percentage';
+      numeratorLabel: string;
+      denominatorLabel: string;
+    }
+  | {
+      type: 'rate';
+      numeratorLabel: string;
+      denominatorLabel: string;
+      /** The population base, e.g. `100000` for "cases per 100k inhabitants". */
+      rateBase: number;
+    };
+
+/**
+ * Named corner positions for an absolutely-positioned legend overlay.
+ * Consumed by `GeoVisLegend` to apply CSS absolute positioning independently
+ * of the map engine.
+ */
+export type LegendPosition =
+  | 'top-left'
+  | 'top-right'
+  | 'bottom-left'
+  | 'bottom-right';
+
+/**
  * Alternative color/legend configuration exposed by a layer. Consumers MAY
  * present these as toggles; the active one is selected via `activeLegendId`.
+ *
+ * Labels are always derived from the class breaks calculated by the
+ * application's classification pipeline — not from manually provided text.
+ * Use `labelFormat` to control how those breaks are formatted for display.
  */
 export interface LegendSpec {
+  /** Unique identifier used to resolve this legend from `GeoVisLegend`. */
   id: string;
-  label?: string;
+  /** Short heading rendered above the legend swatches. */
+  title?: string;
+  /** Secondary description rendered below the title. */
+  subtitle?: string;
+  /**
+   * Controls how quantitative bin labels are generated.
+   * When omitted the default `range` style is used.
+   */
+  labelFormat?: LabelFormatSpec;
+  /**
+   * Normalisation metadata for the mapped values.
+   * Used to append semantic suffixes when `labelFormat.extended` is `true`.
+   */
+  normalization?: NormalizationSpec;
+  /**
+   * Corner position for an absolutely-positioned legend overlay.
+   * When provided, `GeoVisLegend` applies CSS absolute positioning so the
+   * legend can be overlaid on the map without coupling to the map engine.
+   * When omitted the component renders in normal document flow and the caller
+   * is responsible for positioning.
+   */
+  position?: LegendPosition;
+  /**
+   * Label for the "no data" swatch rendered at the bottom of the legend.
+   * When omitted no "no data" entry is shown.
+   */
+  noDataLabel?: string;
+  /**
+   * Bibliographic or institutional attribution displayed below the swatches.
+   *
+   * Supports plain text and an inline link syntax:
+   * `{link:visible text|https://example.com}`
+   *
+   * @example
+   * reference: 'Source: {link:IBGE Censo 2022|https://ibge.gov.br}'
+   */
+  reference?: string;
   colorBy: ColorBy;
 }

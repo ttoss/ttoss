@@ -3,6 +3,7 @@ import * as React from 'react';
 import type { BoundaryGroup } from '../spec/boundaryGroup';
 import {
   appendBoundaryGroup,
+  getBoundaryGroupId,
   toggleBoundaryGroup,
 } from '../spec/boundaryGroup';
 import type { VisualizationSpec } from '../spec/types';
@@ -23,8 +24,9 @@ export interface BoundaryToggleResult {
  * drives `layer.visible` via `toggleBoundaryGroup` — avoiding source
  * add/remove on each toggle (no map flicker).
  *
- * Uses object reference equality (`Set<BoundaryGroup>`) to track hidden groups,
- * which works correctly because preset constants are stable module-level references.
+ * Tracks hidden groups by stable source ID (`getBoundaryGroupId`) rather than
+ * object reference. This allows groups to be recreated (e.g. when paint
+ * overrides change) while preserving visibility state across renders.
  *
  * @param baseSpec - Spec without any boundary groups.
  * @param groups - Ordered list of BoundaryGroups to manage. Must be stable
@@ -53,9 +55,7 @@ export const useBoundaryToggle = (
   baseSpec: VisualizationSpec,
   groups: ReadonlyArray<BoundaryGroup>
 ): BoundaryToggleResult => {
-  const [hiddenGroups, setHiddenGroups] = React.useState<
-    ReadonlySet<BoundaryGroup>
-  >(() => {
+  const [hiddenIds, setHiddenIds] = React.useState<ReadonlySet<string>>(() => {
     return new Set();
   });
 
@@ -67,17 +67,18 @@ export const useBoundaryToggle = (
 
   const spec = React.useMemo(() => {
     return groups.reduce((s, g) => {
-      return toggleBoundaryGroup(s, g, !hiddenGroups.has(g));
+      return toggleBoundaryGroup(s, g, !hiddenIds.has(getBoundaryGroupId(g)));
     }, specWithAll);
-  }, [specWithAll, groups, hiddenGroups]);
+  }, [specWithAll, groups, hiddenIds]);
 
   const toggle = React.useCallback((group: BoundaryGroup) => {
-    setHiddenGroups((prev) => {
+    const id = getBoundaryGroupId(group);
+    setHiddenIds((prev) => {
       const next = new Set(prev);
-      if (next.has(group)) {
-        next.delete(group);
+      if (next.has(id)) {
+        next.delete(id);
       } else {
-        next.add(group);
+        next.add(id);
       }
       return next;
     });
@@ -85,9 +86,9 @@ export const useBoundaryToggle = (
 
   const isVisible = React.useCallback(
     (group: BoundaryGroup) => {
-      return !hiddenGroups.has(group);
+      return !hiddenIds.has(getBoundaryGroupId(group));
     },
-    [hiddenGroups]
+    [hiddenIds]
   );
 
   return { spec, toggle, isVisible };

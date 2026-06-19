@@ -2,6 +2,7 @@ import {
   appendBoundaryGroup,
   createBoundaryGroup,
   customizeBoundaryGroup,
+  getBoundaryGroupId,
   toggleBoundaryGroup,
 } from 'src/spec/boundaryGroup';
 import type { VisualizationSpec } from 'src/spec/types';
@@ -309,5 +310,19 @@ describe('multiple groups', () => {
         return l.id === 'brazil-municipalities-line';
       })?.visible
     ).toBeUndefined();
+  });
+});
+
+// ===========================================================================
+// getBoundaryGroupId
+// ===========================================================================
+
+describe('getBoundaryGroupId', () => {
+  test('returns the first source ID', () => {
+    expect(getBoundaryGroupId(statesGroup)).toBe('brazil-states');
+  });
+
+  test('returns empty string for a group with no sources', () => {
+    expect(getBoundaryGroupId({ sources: [], layers: [] })).toBe('');
   });
 });

@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import { GeoVisProvider } from 'src/react/GeoVisProvider';
 import { useMapData } from 'src/react/hooks';
 import type { VisualizationSpec } from 'src/spec/types';
@@ -71,12 +71,16 @@ const Probe = ({ id }: { id: string }) => {
 };
 
 // 4.1
-test('useMapData returns indexed Map<geometryId, value> for the requested id', () => {
+test('useMapData returns indexed Map<geometryId, value> for the requested id', async () => {
   const { getByTestId } = render(
     <GeoVisProvider spec={spec}>
       <Probe id="pop" />
     </GeoVisProvider>
   );
+
+  await act(async () => {
+    // Await for any pending state updates from GeoVisProvider
+  });
   const out = JSON.parse(getByTestId('out').textContent ?? 'null');
   expect(out.mapDataId).toBe('pop');
   expect(out.mapId).toBe('states');
