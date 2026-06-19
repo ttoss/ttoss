@@ -48,8 +48,9 @@ export const NotificationButton = ({
         ...sxMap[type],
         color: 'display.text.primary.default',
         borderRadius: 'lg',
-        borderWidth: '1px',
+        borderWidth: 'sm',
         borderStyle: 'solid',
+        borderColor: 'display.border.muted.default',
       }}
     />
   );
