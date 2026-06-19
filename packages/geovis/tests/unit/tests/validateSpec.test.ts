@@ -470,12 +470,14 @@ describe('validateSpec — MapData dimension', () => {
         {
           mapDataId: 'pop',
           mapId: 'cities',
+          stateKey: 'pop',
           dimension: 'size',
           data: [{ geometryId: 'city-1', value: 100000 }],
         },
         {
           mapDataId: 'gender',
           mapId: 'cities',
+          stateKey: 'gender',
           dimension: 'color',
           data: [{ geometryId: 'city-1', value: 'women' }],
         },

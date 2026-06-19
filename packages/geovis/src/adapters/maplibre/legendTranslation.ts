@@ -181,10 +181,11 @@ const buildContinuousSizeExpression = (
     ? legendThresholds
     : (sizeBy.thresholds ?? []);
 
-  const input = [
-    'to-number',
-    ['coalesce', ['feature-state', stateKey], fallbackRadius],
-  ];
+  // When sqrt transform is requested, apply sqrt to the input value so that
+  // output radii stay within [minRadius, maxRadius] while area ∝ value.
+  const rawValue: unknown[] = ['to-number', ['feature-state', stateKey]];
+  const stateValue =
+    sizeBy.transform === 'sqrt' ? ['sqrt', rawValue] : rawValue;
 
   let interpolated: unknown;
   if (bounds.length >= 2) {
@@ -193,30 +194,40 @@ const buildContinuousSizeExpression = (
     const dataMax = sorted[sorted.length - 1]!;
 
     interpolated = [
-      'interpolate',
-      ['linear'],
-      input,
-      dataMin,
-      minRadius,
-      dataMax,
-      maxRadius,
+      'case',
+      ['!=', ['feature-state', stateKey], 'undefined'],
+      [
+        'interpolate',
+        ['linear'],
+        stateValue,
+        dataMin,
+        minRadius,
+        dataMax,
+        maxRadius,
+      ],
+      fallbackRadius,
     ];
   } else {
     // Without data bounds, interpolate between min and max of the range itself.
     // This produces a pass-through expression that can be dynamically updated
     // when data bounds become available (e.g. after mapData is applied).
     interpolated = [
-      'interpolate',
-      ['linear'],
-      input,
-      minRadius,
-      minRadius,
-      maxRadius,
-      maxRadius,
+      'case',
+      ['!=', ['feature-state', stateKey], 'undefined'],
+      [
+        'interpolate',
+        ['linear'],
+        stateValue,
+        minRadius,
+        minRadius,
+        maxRadius,
+        maxRadius,
+      ],
+      fallbackRadius,
     ];
   }
 
-  return sizeBy.transform === 'sqrt' ? ['sqrt', interpolated] : interpolated;
+  return interpolated;
 };
 
 /**
@@ -265,10 +276,13 @@ export const buildSizeExpression = (
     const sortedBreaks = uniqueAscending(breaks);
     const radii = generateRadii(sortedBreaks.length + 1, minRadius, maxRadius);
 
-    const input = [
+    const rawInput = [
       'to-number',
       ['coalesce', ['feature-state', stateKey], fallbackRadius],
     ];
+    // Apply sqrt to input value so output radii stay within [minRadius, maxRadius]
+    // while area ∝ value (radius² ∝ value).
+    const input = sizeBy.transform === 'sqrt' ? ['sqrt', rawInput] : rawInput;
 
     const stepped: unknown = [
       'step',
@@ -279,7 +293,7 @@ export const buildSizeExpression = (
       }),
     ];
 
-    return sizeBy.transform === 'sqrt' ? ['sqrt', stepped] : stepped;
+    return stepped;
   }
 
   return buildContinuousSizeExpression(

@@ -137,13 +137,17 @@ const hasActiveLegend = (
   specLegends?: VisualizationSpec['legends']
 ): boolean => {
   if (!layer.activeLegendId) return false;
-  return !!(
-    layer.legends?.some((l) => {
-      return l.id === layer.activeLegendId;
-    }) ||
-    specLegends?.some((l) => {
-      return l.id === layer.activeLegendId;
-    })
+  const resolveLegend = (l: { id: string }) => {
+    return l.id === layer.activeLegendId;
+  };
+  const legend =
+    layer.legends?.find(resolveLegend) ?? specLegends?.find(resolveLegend);
+  if (!legend) return false;
+  // Stepped sizeBy requires a quantitative threshold legend to derive breaks.
+  // Categorical or non-threshold legends cannot supply numeric thresholds.
+  return (
+    legend.colorBy.type === 'quantitative' &&
+    legend.colorBy.scale === 'threshold'
   );
 };
 
@@ -199,34 +203,57 @@ const validateSizeBy = (spec: VisualizationSpec): string[] => {
   return errors;
 };
 
+/** Validates a group of dimensioned entries on the same source. */
+const validateDimensionGroup = (
+  mapId: string,
+  entries: Array<{ mapDataId: string; dimension?: string; stateKey?: string }>
+): string[] => {
+  const errors: string[] = [];
+  const seenDimensions = new Map<string, string>();
+  const seenStateKeys = new Map<string, string>();
+  for (const entry of entries) {
+    const prevDim = seenDimensions.get(entry.dimension!);
+    if (prevDim) {
+      errors.push(
+        `source '${mapId}' has duplicate dimension '${entry.dimension}' on mapData '${prevDim}' and '${entry.mapDataId}'`
+      );
+    }
+    seenDimensions.set(entry.dimension!, entry.mapDataId);
+
+    const effectiveKey = entry.stateKey ?? 'value';
+    const prevKey = seenStateKeys.get(effectiveKey);
+    if (prevKey && entries.length > 1) {
+      errors.push(
+        `source '${mapId}' has multiple dimensioned datasets sharing stateKey '${effectiveKey}' (mapData '${prevKey}' and '${entry.mapDataId}'): each dimension must declare a unique stateKey`
+      );
+    }
+    seenStateKeys.set(effectiveKey, entry.mapDataId);
+  }
+  return errors;
+};
+
 /** Validates MapData dimension declarations: no duplicate dimensions per source. */
 const validateMapDataDimensions = (spec: VisualizationSpec): string[] => {
-  const errors: string[] = [];
   const mapData = spec.mapData ?? [];
 
-  // Group by mapId, then check for duplicate dimensions
   const bySource = new Map<
     string,
-    Array<{ mapDataId: string; dimension?: string }>
+    Array<{ mapDataId: string; dimension?: string; stateKey?: string }>
   >();
   for (const md of mapData) {
     if (!md.dimension) continue;
     const group = bySource.get(md.mapId) ?? [];
-    group.push({ mapDataId: md.mapDataId, dimension: md.dimension });
+    group.push({
+      mapDataId: md.mapDataId,
+      dimension: md.dimension,
+      stateKey: md.stateKey,
+    });
     bySource.set(md.mapId, group);
   }
 
+  const errors: string[] = [];
   for (const [mapId, entries] of bySource) {
-    const seen = new Map<string, string>();
-    for (const entry of entries) {
-      const prev = seen.get(entry.dimension!);
-      if (prev) {
-        errors.push(
-          `source '${mapId}' has duplicate dimension '${entry.dimension}' on mapData '${prev}' and '${entry.mapDataId}'`
-        );
-      }
-      seen.set(entry.dimension!, entry.mapDataId);
-    }
+    errors.push(...validateDimensionGroup(mapId, entries));
   }
 
   return errors;

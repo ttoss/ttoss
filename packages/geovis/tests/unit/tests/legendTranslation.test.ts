@@ -2,7 +2,7 @@ import {
   buildFillColorExpression,
   buildSizeExpression,
 } from 'src/adapters/maplibre/legendTranslation';
-import type { LegendSpec } from 'src/spec/types';
+import type { LegendSpec, SizeBy } from 'src/spec/types';
 
 describe('buildFillColorExpression', () => {
   test('builds match expression for categorical legends', () => {
@@ -71,13 +71,18 @@ describe('buildSizeExpression', () => {
     const expression = buildSizeExpression(sizeBy, 6, [100, 500, 1000]);
 
     expect(expression).toEqual([
-      'interpolate',
-      ['linear'],
-      ['to-number', ['coalesce', ['feature-state', 'value'], 6]],
-      100,
-      4,
-      1000,
-      20,
+      'case',
+      ['!=', ['feature-state', 'value'], 'undefined'],
+      [
+        'interpolate',
+        ['linear'],
+        ['to-number', ['feature-state', 'value']],
+        100,
+        4,
+        1000,
+        20,
+      ],
+      6,
     ]);
   });
 
@@ -131,16 +136,21 @@ describe('buildSizeExpression', () => {
 
     const expression = buildSizeExpression(sizeBy, 6);
 
-    // Without data bounds, continuous fallback produces an interpolate expression
-    // using range bounds as the domain (identity mapping).
+    // Without data bounds, continuous fallback produces a case expression
+    // that returns fallbackRadius when feature-state is missing.
     expect(expression).toEqual([
-      'interpolate',
-      ['linear'],
-      ['to-number', ['coalesce', ['feature-state', 'value'], 6]],
-      4,
-      4,
-      20,
-      20,
+      'case',
+      ['!=', ['feature-state', 'value'], 'undefined'],
+      [
+        'interpolate',
+        ['linear'],
+        ['to-number', ['feature-state', 'value']],
+        4,
+        4,
+        20,
+        20,
+      ],
+      6,
     ]);
   });
 
@@ -255,13 +265,18 @@ describe('buildSizeExpression — stateKey support', () => {
     );
 
     expect(expression).toEqual([
-      'interpolate',
-      ['linear'],
-      ['to-number', ['coalesce', ['feature-state', 'density'], 6]],
-      100,
-      4,
-      1000,
-      20,
+      'case',
+      ['!=', ['feature-state', 'density'], 'undefined'],
+      [
+        'interpolate',
+        ['linear'],
+        ['to-number', ['feature-state', 'density']],
+        100,
+        4,
+        1000,
+        20,
+      ],
+      6,
     ]);
   });
 
@@ -296,13 +311,18 @@ describe('buildSizeExpression — stateKey support', () => {
 
     // Should use 'value' as the default stateKey
     expect(expression).toEqual([
-      'interpolate',
-      ['linear'],
-      ['to-number', ['coalesce', ['feature-state', 'value'], 6]],
-      100,
-      4,
-      500,
-      20,
+      'case',
+      ['!=', ['feature-state', 'value'], 'undefined'],
+      [
+        'interpolate',
+        ['linear'],
+        ['to-number', ['feature-state', 'value']],
+        100,
+        4,
+        500,
+        20,
+      ],
+      6,
     ]);
   });
 
@@ -317,13 +337,18 @@ describe('buildSizeExpression — stateKey support', () => {
     const expression = buildSizeExpression(sizeBy, 6, []);
 
     expect(expression).toEqual([
-      'interpolate',
-      ['linear'],
-      ['to-number', ['coalesce', ['feature-state', 'value'], 6]],
-      50_000,
-      4,
-      250_000,
-      24,
+      'case',
+      ['!=', ['feature-state', 'value'], 'undefined'],
+      [
+        'interpolate',
+        ['linear'],
+        ['to-number', ['feature-state', 'value']],
+        50_000,
+        4,
+        250_000,
+        24,
+      ],
+      6,
     ]);
   });
 
@@ -339,41 +364,48 @@ describe('buildSizeExpression — stateKey support', () => {
 
     // legendThresholds [100, 1000] should take priority
     expect(expression).toEqual([
-      'interpolate',
-      ['linear'],
-      ['to-number', ['coalesce', ['feature-state', 'value'], 6]],
-      100,
-      4,
-      1000,
-      24,
+      'case',
+      ['!=', ['feature-state', 'value'], 'undefined'],
+      [
+        'interpolate',
+        ['linear'],
+        ['to-number', ['feature-state', 'value']],
+        100,
+        4,
+        1000,
+        24,
+      ],
+      6,
     ]);
   });
 });
 
 describe('sizeBy with sqrt', () => {
-  test('continuous sizeBy with sqrt transform wraps the interpolate expression in sqrt', () => {
+  test('continuous sizeBy with sqrt applies sqrt to the input value before interpolation', () => {
     const sizeBy: SizeBy = {
       range: [4, 30],
       mode: 'continuous',
       transform: 'sqrt',
     };
     const expression = buildSizeExpression(sizeBy, 6, [100, 1000], 'pop');
-    // sqrt wraps the entire interpolate expression, not the input
+    // sqrt is applied to the input value, not wrapping the output
     expect(expression).toEqual([
-      'sqrt',
+      'case',
+      ['!=', ['feature-state', 'pop'], 'undefined'],
       [
         'interpolate',
         ['linear'],
-        ['to-number', ['coalesce', ['feature-state', 'pop'], 6]],
+        ['sqrt', ['to-number', ['feature-state', 'pop']]],
         100,
         4,
         1000,
         30,
       ],
+      6,
     ]);
   });
 
-  test('stepped sizeBy with sqrt transform wraps the step expression in sqrt', () => {
+  test('stepped sizeBy with sqrt applies sqrt to the input value', () => {
     const sizeBy: SizeBy = {
       range: [4, 30],
       mode: 'stepped',
@@ -381,9 +413,12 @@ describe('sizeBy with sqrt', () => {
       transform: 'sqrt',
     };
     const expression = buildSizeExpression(sizeBy, 6, [], 'pop');
-    // sqrt wraps the entire step expression
-    expect(expression[0]).toBe('sqrt');
-    const stepped = expression[1] as unknown[];
-    expect(stepped[0]).toBe('step');
+    // sqrt is applied to the input, not wrapping the step expression
+    expect(expression[0]).toBe('step');
+    const input = (expression as unknown[])[1] as unknown[];
+    expect(input).toEqual([
+      'sqrt',
+      ['to-number', ['coalesce', ['feature-state', 'pop'], 6]],
+    ]);
   });
 });

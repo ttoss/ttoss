@@ -33,7 +33,8 @@ describe('toMaplibreLayer — point layer with sizeBy', () => {
     const paint = (mapLayer as { paint?: Record<string, unknown> }).paint;
     const radius = paint?.['circle-radius'];
     expect(Array.isArray(radius)).toBe(true);
-    expect((radius as unknown[])[0]).toBe('interpolate');
+    // With bounds, continuous produces a case expression wrapping interpolate
+    expect((radius as unknown[])[0]).toBe('case');
   });
 
   test('stepped sizeBy with explicit thresholds produces step expression for circle-radius', () => {
@@ -104,14 +105,14 @@ describe('toMaplibreLayer — MapData dimension support', () => {
     const radius = paint?.['circle-radius'];
 
     // Should use stateKey 'density' from dimension: 'size' dataset
-    expect(radius).toEqual([
-      'interpolate',
-      ['linear'],
-      ['to-number', ['coalesce', ['feature-state', 'density'], 6]],
-      expect.any(Number),
-      4,
-      expect.any(Number),
-      20,
+    // With no bounds, continuous produces a case expression
+    expect((radius as unknown[])[0]).toBe('case');
+    const interpolated = (radius as unknown[])[2] as unknown[];
+    expect(interpolated[0]).toBe('interpolate');
+    // No sqrt transform, so input is plain to-number
+    expect(interpolated[2]).toEqual([
+      'to-number',
+      ['feature-state', 'density'],
     ]);
   });
 
@@ -160,14 +161,12 @@ describe('toMaplibreLayer — MapData dimension support', () => {
 
     // circle-radius should use stateKey 'density' from dimension: 'size'
     const circleRadius = paint?.['circle-radius'];
-    expect(circleRadius).toEqual([
-      'interpolate',
-      ['linear'],
-      ['to-number', ['coalesce', ['feature-state', 'density'], 6]],
-      expect.any(Number),
-      4,
-      expect.any(Number),
-      20,
+    expect((circleRadius as unknown[])[0]).toBe('case');
+    const interpolated = (circleRadius as unknown[])[2] as unknown[];
+    expect(interpolated[0]).toBe('interpolate');
+    expect(interpolated[2]).toEqual([
+      'to-number',
+      ['feature-state', 'density'],
     ]);
   });
 
@@ -195,15 +194,10 @@ describe('toMaplibreLayer — MapData dimension support', () => {
     const radius = paint?.['circle-radius'];
 
     // Should use default stateKey 'value'
-    expect(radius).toEqual([
-      'interpolate',
-      ['linear'],
-      ['to-number', ['coalesce', ['feature-state', 'value'], 6]],
-      expect.any(Number),
-      4,
-      expect.any(Number),
-      20,
-    ]);
+    expect((radius as unknown[])[0]).toBe('case');
+    const interpolated = (radius as unknown[])[2] as unknown[];
+    expect(interpolated[0]).toBe('interpolate');
+    expect(interpolated[2]).toEqual(['to-number', ['feature-state', 'value']]);
   });
 
   test('dimension takes precedence over mapDataId fallback', () => {
@@ -225,14 +219,12 @@ describe('toMaplibreLayer — MapData dimension support', () => {
     const radius = paint?.['circle-radius'];
 
     // Should use stateKey 'density' from dimension: 'size', not 'value' from mapDataId
-    expect(radius).toEqual([
-      'interpolate',
-      ['linear'],
-      ['to-number', ['coalesce', ['feature-state', 'density'], 6]],
-      expect.any(Number),
-      4,
-      expect.any(Number),
-      20,
+    expect((radius as unknown[])[0]).toBe('case');
+    const interpolated = (radius as unknown[])[2] as unknown[];
+    expect(interpolated[0]).toBe('interpolate');
+    expect(interpolated[2]).toEqual([
+      'to-number',
+      ['feature-state', 'density'],
     ]);
   });
 
@@ -272,14 +264,12 @@ describe('toMaplibreLayer — MapData dimension support', () => {
     const radius = paint?.['circle-radius'];
 
     // Should use stateKey 'density' (from cities), NOT 'otherSizeKey' (from other-source)
-    expect(radius).toEqual([
-      'interpolate',
-      ['linear'],
-      ['to-number', ['coalesce', ['feature-state', 'density'], 6]],
-      expect.any(Number),
-      4,
-      expect.any(Number),
-      20,
+    expect((radius as unknown[])[0]).toBe('case');
+    const interpolated = (radius as unknown[])[2] as unknown[];
+    expect(interpolated[0]).toBe('interpolate');
+    expect(interpolated[2]).toEqual([
+      'to-number',
+      ['feature-state', 'density'],
     ]);
   });
 });
@@ -291,7 +281,7 @@ describe('toMaplibreLayer — sizeBy transform sqrt', () => {
     geometry: 'point',
   };
 
-  test('continuous sizeBy with sqrt wraps the interpolate expression in sqrt', () => {
+  test('continuous sizeBy with sqrt applies sqrt to input, not wrapping output', () => {
     const layer: VisualizationLayer = {
       ...baseLayer,
       sizeBy: { range: [4, 20], transform: 'sqrt' },
@@ -301,17 +291,15 @@ describe('toMaplibreLayer — sizeBy transform sqrt', () => {
     const paint = (mapLayer as { paint?: Record<string, unknown> }).paint;
     const radius = paint?.['circle-radius'];
 
-    expect(radius).toEqual([
+    // sqrt is applied to the input value, output stays within [4, 20]
+    const caseExpr = radius as unknown[];
+    expect(caseExpr[0]).toBe('case');
+    // The true branch contains the interpolation with sqrt on input
+    const interpolated = caseExpr[2] as unknown[];
+    expect(interpolated[0]).toBe('interpolate');
+    expect(interpolated[2]).toEqual([
       'sqrt',
-      [
-        'interpolate',
-        ['linear'],
-        ['to-number', ['coalesce', ['feature-state', 'value'], 6]],
-        4,
-        4,
-        20,
-        20,
-      ],
+      ['to-number', ['feature-state', 'value']],
     ]);
   });
 
@@ -336,11 +324,17 @@ describe('toMaplibreLayer — sizeBy transform sqrt', () => {
     const paint = (mapLayer as { paint?: Record<string, unknown> }).paint;
     const radius = paint?.['circle-radius'];
 
-    // sqrt wraps the entire interpolate expression
-    expect((radius as unknown[])[0]).toBe('sqrt');
-    const interpolated = (radius as unknown[])[1] as unknown[];
+    // case expression: check feature-state, interpolate with sqrt input
+    const caseExpr = radius as unknown[];
+    expect(caseExpr[0]).toBe('case');
+    const interpolated = caseExpr[2] as unknown[];
     expect(interpolated[0]).toBe('interpolate');
     expect(interpolated[1]).toEqual(['linear']);
+    // sqrt applied to input
+    expect(interpolated[2]).toEqual([
+      'sqrt',
+      ['to-number', ['feature-state', 'value']],
+    ]);
   });
 
   test('continuous sizeBy with sqrt and explicit thresholds', () => {
@@ -357,9 +351,15 @@ describe('toMaplibreLayer — sizeBy transform sqrt', () => {
     const paint = (mapLayer as { paint?: Record<string, unknown> }).paint;
     const radius = paint?.['circle-radius'];
 
-    expect((radius as unknown[])[0]).toBe('sqrt');
-    const interpolated = (radius as unknown[])[1] as unknown[];
+    const caseExpr = radius as unknown[];
+    expect(caseExpr[0]).toBe('case');
+    const interpolated = caseExpr[2] as unknown[];
     expect(interpolated[0]).toBe('interpolate');
+    // sqrt applied to input
+    expect(interpolated[2]).toEqual([
+      'sqrt',
+      ['to-number', ['feature-state', 'value']],
+    ]);
     // Data bounds: [50, 200]
     expect(interpolated[3]).toBe(50);
     expect(interpolated[4]).toBe(4);
@@ -367,7 +367,7 @@ describe('toMaplibreLayer — sizeBy transform sqrt', () => {
     expect(interpolated[6]).toBe(20);
   });
 
-  test('stepped sizeBy with sqrt wraps the step expression in sqrt', () => {
+  test('stepped sizeBy with sqrt applies sqrt to input value', () => {
     const layer: VisualizationLayer = {
       ...baseLayer,
       sizeBy: {
@@ -382,13 +382,16 @@ describe('toMaplibreLayer — sizeBy transform sqrt', () => {
     const paint = (mapLayer as { paint?: Record<string, unknown> }).paint;
     const radius = paint?.['circle-radius'];
 
-    // sqrt wraps the entire step expression
-    expect((radius as unknown[])[0]).toBe('sqrt');
-    const stepped = (radius as unknown[])[1] as unknown[];
-    expect(stepped[0]).toBe('step');
+    // step expression with sqrt on input
+    expect((radius as unknown[])[0]).toBe('step');
+    const input = (radius as unknown[])[1] as unknown[];
+    expect(input).toEqual([
+      'sqrt',
+      ['to-number', ['coalesce', ['feature-state', 'value'], 6]],
+    ]);
   });
 
-  test('continuous sizeBy without transform does NOT wrap in sqrt', () => {
+  test('continuous sizeBy without transform does NOT apply sqrt', () => {
     const layer: VisualizationLayer = {
       ...baseLayer,
       sizeBy: { range: [4, 20] },
@@ -398,7 +401,13 @@ describe('toMaplibreLayer — sizeBy transform sqrt', () => {
     const paint = (mapLayer as { paint?: Record<string, unknown> }).paint;
     const radius = paint?.['circle-radius'];
 
-    expect((radius as unknown[])[0]).toBe('interpolate');
+    // No transform: case expression with plain interpolation
+    const caseExpr = radius as unknown[];
+    expect(caseExpr[0]).toBe('case');
+    const interpolated = caseExpr[2] as unknown[];
+    expect(interpolated[0]).toBe('interpolate');
+    // Input is plain to-number, not wrapped in sqrt
+    expect(interpolated[2]).toEqual(['to-number', ['feature-state', 'value']]);
   });
 
   test('continuous sizeBy with sqrt uses custom stateKey from dimension', () => {
@@ -419,12 +428,13 @@ describe('toMaplibreLayer — sizeBy transform sqrt', () => {
     const paint = (mapLayer as { paint?: Record<string, unknown> }).paint;
     const radius = paint?.['circle-radius'];
 
-    // sqrt wraps interpolate, which reads from stateKey 'total'
-    expect((radius as unknown[])[0]).toBe('sqrt');
-    const interpolated = (radius as unknown[])[1] as unknown[];
+    // case expression with sqrt on input using stateKey 'total'
+    const caseExpr = radius as unknown[];
+    expect(caseExpr[0]).toBe('case');
+    const interpolated = caseExpr[2] as unknown[];
     expect(interpolated[2]).toEqual([
-      'to-number',
-      ['coalesce', ['feature-state', 'total'], 6],
+      'sqrt',
+      ['to-number', ['feature-state', 'total']],
     ]);
   });
 });

@@ -243,9 +243,9 @@ const buildSpec = (
  *
  * - **Size** — total population (proportional symbols via `sizeBy`).
  * - **Colour** — pink (`#ec4899`) when women outnumber men, blue (`#3b82f6`)
- *   when men outnumber women (categorical `mapDataColor`).
+ *   when men outnumber women (categorical colour via `dimension: 'color'`).
  *
- * Demonstrates `mapDataColor` + `mapDataSize` with two separate `mapData`
+ * Demonstrates `dimension` + `stateKey` with two separate `mapData`
  * entries using distinct `stateKey` values so each dimension resolves
  * independently from the same source.
  */
