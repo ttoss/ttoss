@@ -214,7 +214,6 @@ const buildSpec = (
           type: 'categorical',
           property: 'gender',
           mapping: { men: GENDER_COLOR_MEN, women: GENDER_COLOR_WOMEN },
-          labels: { men: 'Men dominant', women: 'Women dominant' },
           defaultColor: '#9ca3af',
         },
       },
