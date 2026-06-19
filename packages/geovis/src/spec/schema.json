@@ -379,33 +379,51 @@
             }
           },
           "sizeBy": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["range"],
-            "properties": {
-              "range": {
-                "type": "array",
-                "items": {
-                  "type": "number"
-                },
-                "minItems": 2,
-                "maxItems": 2
-              },
-              "mode": {
-                "type": "string",
-                "enum": ["continuous", "stepped"]
-              },
-              "thresholds": {
-                "type": "array",
-                "items": {
-                  "type": "number"
+            "allOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["range"],
+                "properties": {
+                  "range": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    },
+                    "minItems": 2,
+                    "maxItems": 2
+                  },
+                  "mode": {
+                    "type": "string",
+                    "enum": ["continuous", "stepped"]
+                  },
+                  "thresholds": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    }
+                  },
+                  "transform": {
+                    "type": "string",
+                    "enum": ["linear", "sqrt"]
+                  }
                 }
               },
-              "transform": {
-                "type": "string",
-                "enum": ["linear", "sqrt"]
+              {
+                "not": {
+                  "allOf": [
+                    {
+                      "required": ["mode"],
+                      "properties": { "mode": { "const": "stepped" } }
+                    },
+                    {
+                      "required": ["transform"],
+                      "properties": { "transform": { "const": "sqrt" } }
+                    }
+                  ]
+                }
               }
-            }
+            ]
           }
         }
       }

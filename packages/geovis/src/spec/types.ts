@@ -230,6 +230,7 @@ export interface SizeBy {
   /**
    * Radius transformation. Default: `'linear'`.
    * Use `'sqrt'` so circle AREA is proportional to the value.
+   * **Not allowed** when `mode` is `'stepped'`.
    */
   transform?: 'linear' | 'sqrt';
 }
