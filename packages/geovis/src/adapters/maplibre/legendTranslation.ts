@@ -276,13 +276,10 @@ export const buildSizeExpression = (
     const sortedBreaks = uniqueAscending(breaks);
     const radii = generateRadii(sortedBreaks.length + 1, minRadius, maxRadius);
 
-    const rawInput = [
+    const input = [
       'to-number',
       ['coalesce', ['feature-state', stateKey], fallbackRadius],
     ];
-    // Apply sqrt to input value so output radii stay within [minRadius, maxRadius]
-    // while area ∝ value (radius² ∝ value).
-    const input = sizeBy.transform === 'sqrt' ? ['sqrt', rawInput] : rawInput;
 
     const stepped: unknown = [
       'step',
