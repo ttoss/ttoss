@@ -209,7 +209,7 @@ const buildSpec = (
     legends: [
       {
         id: 'gender',
-        label: `Gender dominance \u2014 ${year}`,
+        title: `Gender dominance \u2014 ${year}`,
         colorBy: {
           type: 'categorical',
           property: 'gender',
