@@ -235,6 +235,53 @@ describe('toMaplibreLayer — MapData dimension support', () => {
       20,
     ]);
   });
+
+  test('dimension resolution scopes by sourceId — ignores dimensions from other sources', () => {
+    const otherSourceColor: MapData = {
+      mapDataId: 'other-color',
+      mapId: 'other-source',
+      stateKey: 'otherColorKey',
+      dimension: 'color',
+      data: [{ geometryId: 'x-1', value: 42 }],
+    };
+
+    const otherSourceSize: MapData = {
+      mapDataId: 'other-size',
+      mapId: 'other-source',
+      stateKey: 'otherSizeKey',
+      dimension: 'size',
+      data: [{ geometryId: 'x-1', value: 99 }],
+    };
+
+    const layer: VisualizationLayer = {
+      id: 'cities-points',
+      sourceId: 'cities',
+      geometry: 'point',
+      sizeBy: { range: [4, 20] },
+    };
+
+    // Pass mapData from both sources — layer should only pick up 'cities' dimensions
+    const mapLayer = toMaplibreLayer(layer, undefined, undefined, [
+      mapDataPop,
+      mapDataDensity,
+      otherSourceColor,
+      otherSourceSize,
+    ]);
+
+    const paint = (mapLayer as { paint?: Record<string, unknown> }).paint;
+    const radius = paint?.['circle-radius'];
+
+    // Should use stateKey 'density' (from cities), NOT 'otherSizeKey' (from other-source)
+    expect(radius).toEqual([
+      'interpolate',
+      ['linear'],
+      ['to-number', ['coalesce', ['feature-state', 'density'], 6]],
+      expect.any(Number),
+      4,
+      expect.any(Number),
+      20,
+    ]);
+  });
 });
 
 describe('toMaplibreLayer — sizeBy transform sqrt', () => {

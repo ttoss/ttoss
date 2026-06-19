@@ -56,12 +56,13 @@ type Builder = (
 /** Resolves the stateKey for a given dimension from the spec's mapData array. */
 const resolveDimensionStateKey = (
   dimension: 'color' | 'size',
+  sourceId: string,
   layerMapDataId: string | undefined,
   specMapData?: MapData[]
 ): string => {
-  // Prefer dataset explicitly marked with this dimension
+  // Prefer dataset explicitly marked with this dimension, scoped to the layer's source
   const byDimension = specMapData?.find((m) => {
-    return m.dimension === dimension && m.mapId;
+    return m.dimension === dimension && m.mapId === sourceId;
   });
   if (byDimension) return byDimension.stateKey ?? 'value';
 
@@ -132,6 +133,7 @@ export const resolveLegendFillColorExpression = (
   // Resolve stateKey for color dimension
   const colorStateKey = resolveDimensionStateKey(
     'color',
+    layer.sourceId,
     layer.mapDataId,
     specMapData
   );
@@ -215,12 +217,14 @@ const buildPoint: Builder = (base, layer, paint, specLegends, specMapData) => {
 
   const colorStateKey = resolveDimensionStateKey(
     'color',
+    layer.sourceId,
     layer.mapDataId,
     specMapData
   );
 
   const sizeStateKey = resolveDimensionStateKey(
     'size',
+    layer.sourceId,
     layer.mapDataId,
     specMapData
   );
