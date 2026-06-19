@@ -441,20 +441,21 @@ export const OAuthConsent = ({
 
       <Flex sx={{ gap: 3, marginTop: 6 }}>
         <Button
-          onClick={handleApprove}
-          disabled={busy}
-          loading={isLoading || isAuthorizing}
-          sx={{ flex: 1, justifyContent: 'center' }}
-        >
-          {labels.approve}
-        </Button>
-        <Button
           variant="secondary"
           onClick={onDeny}
           disabled={busy}
           sx={{ flex: 1, justifyContent: 'center' }}
         >
           {labels.deny}
+        </Button>
+        <Button
+          variant="primary"
+          onClick={handleApprove}
+          disabled={busy}
+          loading={isLoading || isAuthorizing}
+          sx={{ flex: 1, justifyContent: 'center' }}
+        >
+          {labels.approve}
         </Button>
       </Flex>
     </ConsentCard>
