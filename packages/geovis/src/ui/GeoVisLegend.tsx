@@ -138,9 +138,10 @@ const buildCategoricalItems = (legend: LegendSpec): LegendItem[] => {
     ];
   }
 
-  const labelOverrides = colorBy.labels ?? {};
+  const fmtLabels =
+    legend.labelFormat?.type === 'labels' ? legend.labelFormat.labels : [];
   return mapping.map(([key, color], index) => {
-    return { binIndex: index, label: labelOverrides[key] ?? key, color };
+    return { binIndex: index, label: fmtLabels[index] ?? key, color };
   });
 };
 
