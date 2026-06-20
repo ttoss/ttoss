@@ -53,6 +53,14 @@ type Builder = (
   specMapData?: MapData[]
 ) => maplibregl.LayerSpecification;
 
+/** Finds a mapData entry matching a predicate, returning its stateKey. */
+const findStateKey = (
+  specMapData: MapData[] | undefined,
+  predicate: (m: MapData) => boolean
+): string | undefined => {
+  return specMapData?.find(predicate)?.stateKey ?? undefined;
+};
+
 /** Resolves the stateKey for a given dimension from the spec's mapData array. */
 const resolveDimensionStateKey = (
   dimension: 'color' | 'size',
@@ -61,18 +69,24 @@ const resolveDimensionStateKey = (
   specMapData?: MapData[]
 ): string => {
   // Prefer dataset explicitly marked with this dimension, scoped to the layer's source
-  const byDimension = specMapData?.find((m) => {
+  const byDimension = findStateKey(specMapData, (m) => {
     return m.dimension === dimension && m.mapId === sourceId;
   });
-  if (byDimension) return byDimension.stateKey ?? 'value';
+  if (byDimension) return byDimension;
 
   // Fallback: legacy layer.mapDataId (single-dimension, no dimension declared)
   if (layerMapDataId) {
-    const byId = specMapData?.find((m) => {
+    const byId = findStateKey(specMapData, (m) => {
       return m.mapDataId === layerMapDataId;
     });
-    if (byId) return byId.stateKey ?? 'value';
+    if (byId) return byId;
   }
+
+  // Fallback: any mapData entry for this source (single-dataset scenario)
+  const anyForSource = findStateKey(specMapData, (m) => {
+    return m.mapId === sourceId;
+  });
+  if (anyForSource) return anyForSource;
 
   return 'value';
 };

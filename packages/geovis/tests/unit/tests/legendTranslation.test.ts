@@ -72,7 +72,7 @@ describe('buildSizeExpression', () => {
 
     expect(expression).toEqual([
       'case',
-      ['!=', ['feature-state', 'value'], 'undefined'],
+      ['!=', ['feature-state', 'value'], null],
       [
         'interpolate',
         ['linear'],
@@ -98,7 +98,7 @@ describe('buildSizeExpression', () => {
 
     expect(expression).toEqual([
       'case',
-      ['!=', ['feature-state', 'value'], 'undefined'],
+      ['!=', ['feature-state', 'value'], null],
       ['step', ['to-number', ['feature-state', 'value']], 4, 100, 12, 500, 20],
       6,
     ]);
@@ -115,7 +115,7 @@ describe('buildSizeExpression', () => {
 
     expect(expression).toEqual([
       'case',
-      ['!=', ['feature-state', 'value'], 'undefined'],
+      ['!=', ['feature-state', 'value'], null],
       ['step', ['to-number', ['feature-state', 'value']], 4, 200, 12, 800, 20],
       6,
     ]);
@@ -134,7 +134,7 @@ describe('buildSizeExpression', () => {
     // that returns fallbackRadius when feature-state is missing.
     expect(expression).toEqual([
       'case',
-      ['!=', ['feature-state', 'value'], 'undefined'],
+      ['!=', ['feature-state', 'value'], null],
       [
         'interpolate',
         ['linear'],
@@ -260,7 +260,7 @@ describe('buildSizeExpression — stateKey support', () => {
 
     expect(expression).toEqual([
       'case',
-      ['!=', ['feature-state', 'density'], 'undefined'],
+      ['!=', ['feature-state', 'density'], null],
       [
         'interpolate',
         ['linear'],
@@ -286,7 +286,7 @@ describe('buildSizeExpression — stateKey support', () => {
 
     expect(expression).toEqual([
       'case',
-      ['!=', ['feature-state', 'density'], 'undefined'],
+      ['!=', ['feature-state', 'density'], null],
       [
         'step',
         ['to-number', ['feature-state', 'density']],
@@ -311,7 +311,7 @@ describe('buildSizeExpression — stateKey support', () => {
     // Should use 'value' as the default stateKey
     expect(expression).toEqual([
       'case',
-      ['!=', ['feature-state', 'value'], 'undefined'],
+      ['!=', ['feature-state', 'value'], null],
       [
         'interpolate',
         ['linear'],
@@ -337,7 +337,7 @@ describe('buildSizeExpression — stateKey support', () => {
 
     expect(expression).toEqual([
       'case',
-      ['!=', ['feature-state', 'value'], 'undefined'],
+      ['!=', ['feature-state', 'value'], null],
       [
         'interpolate',
         ['linear'],
@@ -364,7 +364,7 @@ describe('buildSizeExpression — stateKey support', () => {
     // legendThresholds [100, 1000] should take priority
     expect(expression).toEqual([
       'case',
-      ['!=', ['feature-state', 'value'], 'undefined'],
+      ['!=', ['feature-state', 'value'], null],
       [
         'interpolate',
         ['linear'],
@@ -390,7 +390,7 @@ describe('sizeBy with sqrt', () => {
     // sqrt is applied to the input value, not wrapping the output
     expect(expression).toEqual([
       'case',
-      ['!=', ['feature-state', 'pop'], 'undefined'],
+      ['!=', ['feature-state', 'pop'], null],
       [
         'interpolate',
         ['linear'],

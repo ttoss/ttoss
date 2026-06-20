@@ -195,7 +195,7 @@ const buildContinuousSizeExpression = (
 
     interpolated = [
       'case',
-      ['!=', ['feature-state', stateKey], 'undefined'],
+      ['!=', ['feature-state', stateKey], null],
       [
         'interpolate',
         ['linear'],
@@ -213,7 +213,7 @@ const buildContinuousSizeExpression = (
     // when data bounds become available (e.g. after mapData is applied).
     interpolated = [
       'case',
-      ['!=', ['feature-state', stateKey], 'undefined'],
+      ['!=', ['feature-state', stateKey], null],
       [
         'interpolate',
         ['linear'],
@@ -286,7 +286,7 @@ export const buildSizeExpression = (
 
     const stepped: unknown = [
       'case',
-      ['!=', ['feature-state', stateKey], 'undefined'],
+      ['!=', ['feature-state', stateKey], null],
       [
         'step',
         input,
