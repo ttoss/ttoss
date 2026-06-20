@@ -12,63 +12,77 @@ const CITIES_GEOJSON: GeoJSON.FeatureCollection = {
   features: [
     {
       type: 'Feature',
-      id: 'tokyo',
       geometry: { type: 'Point', coordinates: [139.6917, 35.6895] },
-      properties: { name: 'Tokyo', population: 13_960_000 },
+      properties: { cityId: 'tokyo', name: 'Tokyo', population: 13_960_000 },
     },
     {
       type: 'Feature',
-      id: 'delhi',
       geometry: { type: 'Point', coordinates: [77.209, 28.6139] },
-      properties: { name: 'Delhi', population: 11_030_000 },
+      properties: { cityId: 'delhi', name: 'Delhi', population: 11_030_000 },
     },
     {
       type: 'Feature',
-      id: 'shanghai',
       geometry: { type: 'Point', coordinates: [121.4737, 31.2304] },
-      properties: { name: 'Shanghai', population: 24_870_000 },
+      properties: {
+        cityId: 'shanghai',
+        name: 'Shanghai',
+        population: 24_870_000,
+      },
     },
     {
       type: 'Feature',
-      id: 'sao-paulo',
       geometry: { type: 'Point', coordinates: [-46.6333, -23.5505] },
-      properties: { name: 'São Paulo', population: 12_330_000 },
+      properties: {
+        cityId: 'sao-paulo',
+        name: 'São Paulo',
+        population: 12_330_000,
+      },
     },
     {
       type: 'Feature',
-      id: 'mexico-city',
       geometry: { type: 'Point', coordinates: [-99.1332, 19.4326] },
-      properties: { name: 'Mexico City', population: 9_210_000 },
+      properties: {
+        cityId: 'mexico-city',
+        name: 'Mexico City',
+        population: 9_210_000,
+      },
     },
     {
       type: 'Feature',
-      id: 'cairo',
       geometry: { type: 'Point', coordinates: [31.2357, 30.0444] },
-      properties: { name: 'Cairo', population: 9_540_000 },
+      properties: { cityId: 'cairo', name: 'Cairo', population: 9_540_000 },
     },
     {
       type: 'Feature',
-      id: 'london',
       geometry: { type: 'Point', coordinates: [-0.1276, 51.5074] },
-      properties: { name: 'London', population: 8_982_000 },
+      properties: { cityId: 'london', name: 'London', population: 8_982_000 },
     },
     {
       type: 'Feature',
-      id: 'new-york',
       geometry: { type: 'Point', coordinates: [-74.006, 40.7128] },
-      properties: { name: 'New York', population: 8_336_000 },
+      properties: {
+        cityId: 'new-york',
+        name: 'New York',
+        population: 8_336_000,
+      },
     },
     {
       type: 'Feature',
-      id: 'bangkok',
       geometry: { type: 'Point', coordinates: [100.5018, 13.7563] },
-      properties: { name: 'Bangkok', population: 10_540_000 },
+      properties: {
+        cityId: 'bangkok',
+        name: 'Bangkok',
+        population: 10_540_000,
+      },
     },
     {
       type: 'Feature',
-      id: 'buenos-aires',
       geometry: { type: 'Point', coordinates: [-58.3816, -34.6037] },
-      properties: { name: 'Buenos Aires', population: 3_070_000 },
+      properties: {
+        cityId: 'buenos-aires',
+        name: 'Buenos Aires',
+        population: 3_070_000,
+      },
     },
   ],
 };
@@ -92,10 +106,11 @@ const spec: VisualizationSpec = {
       mapDataId: 'population',
       mapId: 'cities',
       stateKey: 'population',
+      joinKey: 'cityId',
       dimension: 'size',
       data: CITIES_GEOJSON.features.map((f) => {
         return {
-          geometryId: f.id as string,
+          geometryId: (f.properties?.cityId as string) ?? '',
           value: (f.properties?.population as number) ?? 0,
         };
       }),
