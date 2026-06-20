@@ -93,7 +93,6 @@ const spec: VisualizationSpec = {
   description:
     'Cities sized by population using stepped mode. Each bin gets a fixed radius — no interpolation between thresholds.',
   engine: 'maplibre',
-  basemap: { styleUrl: 'https://tiles.openfreemap.org/styles/bright' },
   sources: [
     {
       id: 'cities',
