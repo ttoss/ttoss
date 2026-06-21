@@ -387,7 +387,7 @@ describe('sizeBy with sqrt', () => {
       transform: 'sqrt',
     };
     const expression = buildSizeExpression(sizeBy, 6, [100, 1000], 'pop');
-    // sqrt is applied to the input value, not wrapping the output
+    // sqrt is applied to both the input value AND the data bounds (sqrt-space)
     expect(expression).toEqual([
       'case',
       ['!=', ['feature-state', 'pop'], null],
@@ -395,9 +395,9 @@ describe('sizeBy with sqrt', () => {
         'interpolate',
         ['linear'],
         ['sqrt', ['to-number', ['feature-state', 'pop']]],
-        100,
+        10,
         4,
-        1000,
+        Math.sqrt(1000),
         30,
       ],
       6,

@@ -738,19 +738,20 @@ The table below shows how different `range` values behave under `linear` and `sq
 | `range`   | Transform | `radius@0` | `radius@50k` | `radius@100k` | Behavior                                              |
 | --------- | --------- | ---------- | ------------ | ------------- | ----------------------------------------------------- |
 | `[4, 20]` | linear    | 4          | 12           | 20            | Balanced; mid-value gets 60 % of max radius           |
-| `[4, 20]` | sqrt      | 4          | 12           | 20            | Mid-value gets 75 % of max radius; **area ∝ value**   |
+| `[4, 20]` | sqrt      | 4          | 15.3         | 20            | Mid-value gets 75 % of max radius; **area ∝ value**   |
 | `[2, 12]` | linear    | 2          | 7            | 12            | Subtle; good when size is secondary to color          |
-| `[2, 12]` | sqrt      | 2          | 7.9          | 12            | Compact; sqrt prevents small values from disappearing |
+| `[2, 12]` | sqrt      | 2          | 9.1          | 12            | Compact; sqrt prevents small values from disappearing |
 | `[8, 32]` | linear    | 8          | 20           | 32            | Bold; large circles dominate the map                  |
-| `[8, 32]` | sqrt      | 8          | 24.9         | 32            | Large spread; small values still visible at floor     |
+| `[8, 32]` | sqrt      | 8          | 25.0         | 32            | Large spread; small values still visible at floor     |
 | `[1, 40]` | linear    | 1          | 20.5         | 40            | Extreme spread; small dots vs huge circles            |
-| `[1, 40]` | sqrt      | 1          | 28.7         | 40            | Max contrast; area-proportional across full range     |
+| `[1, 40]` | sqrt      | 1          | 28.6         | 40            | Max contrast; area-proportional across full range     |
 
 > **Key differences:**
 >
-> - **Linear** — `radius = lerp(value, min, max)`. Circle **area** grows faster than the value at the high end (area ∝ radius²), so large values appear disproportionately bigger.
-> - **Sqrt** — `radius = lerp(sqrt(value), sqrt(dataMin), sqrt(dataMax)) → [min, max]`. sqrt is applied to the **input value** before interpolation, so output radii always stay within `[minRadius, maxRadius]` while circle **area** is proportional to the value.
-> - At `value = 0`, both linear and sqrt produce `minRadius` (the minimum circle remains visible).
+> - **Linear** — `radius = lerp(value, dataMin, dataMax) → [min, max]`. Circle **area** grows faster than the value at the high end (area ∝ radius²), so large values appear disproportionately bigger.
+> - **Sqrt** — `radius = lerp(sqrt(value), sqrt(dataMin), sqrt(dataMax)) → [min, max]`. Both the input value and the data bounds are transformed to sqrt space, so output radii always stay within `[minRadius, maxRadius]` while circle **area** is proportional to the value.
+> - At `value = dataMin`, both linear and sqrt produce `minRadius` (the minimum circle remains visible).
+> - `sqrt` is only available in `mode: 'continuous'` — it is **not allowed** in stepped mode.
 
 ## Bivariate Maps
 

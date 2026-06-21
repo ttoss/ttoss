@@ -222,7 +222,9 @@ export type LayerPaint =
  *
  * When `mode` is `'continuous'` (default), the radius is linearly interpolated
  * across the data range. A `sqrt` transform can be applied so that circle
- * **area** (not radius) is proportional to the value.
+ * **area** (not radius) is proportional to the value — both the input value
+ * and the data bounds are transformed to sqrt space so output radii stay
+ * within `[minRadius, maxRadius]`.
  *
  * When `mode` is `'stepped'`, the data range is split into discrete bins by
  * `thresholds` and each bin receives a fixed radius. The `sqrt` transform is

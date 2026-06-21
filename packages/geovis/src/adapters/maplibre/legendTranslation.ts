@@ -181,17 +181,21 @@ const buildContinuousSizeExpression = (
     ? legendThresholds
     : (sizeBy.thresholds ?? []);
 
-  // When sqrt transform is requested, apply sqrt to the input value so that
-  // output radii stay within [minRadius, maxRadius] while area ∝ value.
   const rawValue: unknown[] = ['to-number', ['feature-state', stateKey]];
-  const stateValue =
-    sizeBy.transform === 'sqrt' ? ['sqrt', rawValue] : rawValue;
+  const useSqrt = sizeBy.transform === 'sqrt';
+  // When sqrt transform is requested, apply sqrt to both the input value AND
+  // the data bounds so interpolation stays in sqrt-space. This ensures output
+  // radii stay within [minRadius, maxRadius] while circle AREA is proportional
+  // to the value (area ∝ radius², and radius ∝ sqrt(value)).
+  const stateValue: unknown = useSqrt ? ['sqrt', rawValue] : rawValue;
 
   let interpolated: unknown;
   if (bounds.length >= 2) {
     const sorted = uniqueAscending(bounds);
-    const dataMin = sorted[0]!;
-    const dataMax = sorted[sorted.length - 1]!;
+    const dataMin = useSqrt ? Math.sqrt(sorted[0]!) : sorted[0]!;
+    const dataMax = useSqrt
+      ? Math.sqrt(sorted[sorted.length - 1]!)
+      : sorted[sorted.length - 1]!;
 
     interpolated = [
       'case',

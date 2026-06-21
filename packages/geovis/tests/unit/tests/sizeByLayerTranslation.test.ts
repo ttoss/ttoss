@@ -338,6 +338,11 @@ describe('toMaplibreLayer — sizeBy transform sqrt', () => {
       'sqrt',
       ['to-number', ['feature-state', 'value']],
     ]);
+    // Legend thresholds are in sqrt-space: sqrt(100)=10, sqrt(1000)≈31.62
+    expect(interpolated[3]).toBe(10);
+    expect(interpolated[4]).toBe(4);
+    expect(interpolated[5]).toBeCloseTo(Math.sqrt(1000), 10);
+    expect(interpolated[6]).toBe(20);
   });
 
   test('continuous sizeBy with sqrt and explicit thresholds', () => {
@@ -363,10 +368,10 @@ describe('toMaplibreLayer — sizeBy transform sqrt', () => {
       'sqrt',
       ['to-number', ['feature-state', 'value']],
     ]);
-    // Data bounds: [50, 200]
-    expect(interpolated[3]).toBe(50);
+    // Data bounds are in sqrt-space: sqrt(50)≈7.07, sqrt(200)≈14.14
+    expect(interpolated[3]).toBeCloseTo(Math.sqrt(50), 10);
     expect(interpolated[4]).toBe(4);
-    expect(interpolated[5]).toBe(200);
+    expect(interpolated[5]).toBeCloseTo(Math.sqrt(200), 10);
     expect(interpolated[6]).toBe(20);
   });
 
