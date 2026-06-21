@@ -213,15 +213,19 @@ The router emits `401 Unauthorized` whenever `verifyToken` throws, regardless of
 Inside any tool handler, call `getIdentity()` to retrieve the verified JWT payload:
 
 ```typescript
-import { getIdentity, createMcpRouter, McpServer } from '@ttoss/http-server-mcp';
+import {
+  getIdentity,
+  createMcpRouter,
+  McpServer,
+} from '@ttoss/http-server-mcp';
 
 mcpServer.registerTool(
   'get-profile',
-  { description: 'Return the caller's profile', inputSchema: {} },
+  { description: "Return the caller's profile", inputSchema: {} },
   async () => {
-    const identity = getIdentity() as { sub: string; email: string };
+    const identity = getIdentity<{ sub: string; email: string }>();
     return {
-      content: [{ type: 'text', text: `Hello, ${identity.email}` }],
+      content: [{ type: 'text', text: `Hello, ${identity?.email}` }],
     };
   }
 );
@@ -253,7 +257,7 @@ mcpServer.registerTool(
   async ({ userId }) => {
     checkScopes(['admin', 'write:users']); // throws if either scope is missing
 
-    const identity = getIdentity() as { sub: string };
+    const identity = getIdentity<{ sub: string }>();
     // proceed with deletion...
     return { content: [{ type: 'text', text: `Deleted ${userId}` }] };
   }
@@ -404,11 +408,14 @@ Generic HTTP helper for use inside MCP tool handlers.
 
 **Returns:** `Promise<unknown>` — Parsed JSON response body
 
-### `getIdentity()`
+### `getIdentity<T>()`
 
 Returns the verified JWT payload for the current MCP request. Only available inside a tool handler when `auth` is configured. Returns `undefined` when called outside an authenticated context.
 
-**Returns:** `unknown` — Verified token payload (cast to your expected shape)
+Accepts an optional type parameter so tool handlers can avoid manual casts:
+`getIdentity<{ sub: string; scope: string }>()` returns `T | undefined` instead of `unknown`.
+
+**Returns:** `T | undefined` — Verified token payload typed as `T` (defaults to `unknown`)
 
 ### `checkScopes(required)`
 
@@ -659,8 +666,64 @@ This package implements the [Model Context Protocol](https://spec.modelcontextpr
 
 ### Stateless vs stateful mode
 
-- **Stateless** (default, `sessionIdGenerator: undefined`) — a fresh transport is created per HTTP request. No session tracking. Suitable for serverless environments and simple integrations.
-- **Stateful** (`sessionIdGenerator` provided) — a single shared transport handles all requests and tracks sessions by ID.
+The router runs **stateless by default**: each request creates a fresh transport, and no `Mcp-Session-Id` is issued. This is the right mode for Bearer/API-token auth, serverless functions, and any multi-instance deployment, because every request carries its own identity through `auth.verifyToken` — there is no session to coordinate across instances.
+
+Pass `sessionIdGenerator` only when you have a genuine session requirement: server-initiated events over SSE, or streaming that must preserve context across multiple requests. Stateful mode keeps a single shared transport per session, so it needs session affinity (or shared state) when running behind more than one instance.
+
+If you authenticate with `auth.verifyToken`, you do not need `sessionIdGenerator`. The identity is resolved from the token on every request, so adding session tracking only adds coordination cost. Mixing the two — stateful transport plus per-request token auth — is the common source of "tools/call fails after initialize" bugs: the client binds to a session the auth layer never consults.
+
+| Mode                            | When                                          | Trade-off                             |
+| ------------------------------- | --------------------------------------------- | ------------------------------------- |
+| Stateless (default)             | Bearer/API tokens, serverless, multi-instance | DB/verify hit per request             |
+| Stateful (`sessionIdGenerator`) | SSE events, context-preserving streams        | Needs session affinity / shared state |
+
+## Testing an MCP server
+
+MCP requests are plain JSON-RPC POSTs to the router path. The `initialize` and `tools/list` methods are public by default, so they need no auth header; `tools/call` runs through `auth.verifyToken`. The client must send `Accept: application/json, text/event-stream` — the transport rejects requests that do not accept the event-stream media type.
+
+```typescript
+const res = await request(app.callback())
+  .post('/mcp')
+  .set('Content-Type', 'application/json')
+  .set('Accept', 'application/json, text/event-stream')
+  .send({
+    jsonrpc: '2.0',
+    id: 1,
+    method: 'initialize',
+    params: {
+      protocolVersion: '2025-06-18',
+      capabilities: {},
+      clientInfo: { name: 'test', version: '1.0.0' },
+    },
+  });
+expect(res.status).toBe(200);
+// Stateless mode (default): no session header is issued.
+// Stateful mode (sessionIdGenerator set): assert the header instead.
+expect(res.headers['mcp-session-id']).toBeUndefined();
+
+// A tool call carries identity through the Authorization header, not a session.
+const call = await request(app.callback())
+  .post('/mcp')
+  .set('Content-Type', 'application/json')
+  .set('Accept', 'application/json, text/event-stream')
+  .set('Authorization', `Bearer ${token}`)
+  .send({
+    jsonrpc: '2.0',
+    id: 2,
+    method: 'tools/call',
+    params: { name: 'my-tool', arguments: {} },
+  });
+expect(call.status).toBe(200);
+```
+
+### `publicMethods` and OAuth clients
+
+`auth.publicMethods` defaults to `['initialize', 'tools/list']`, which lets clients discover the server before they have a token. This default has an important effect on OAuth-aware clients (e.g. a Claude connector):
+
+- With the default, `initialize` returns `200` unauthenticated, so an OAuth client concludes the server is public and never starts the OAuth flow — while `notifications/initialized` still returns `401`, breaking the handshake. The visible symptom is "connected, no tools available, no sign-in prompt".
+- Setting `publicMethods: []` makes `initialize` return `401` + `WWW-Authenticate`, which triggers the client's OAuth discovery and PKCE flow.
+
+Use the default when token auth is handled outside the OAuth flow (Cognito, API keys, Bearer tokens). Set `publicMethods: []` only when you want OAuth clients to self-discover and authenticate before anything else.
 
 ## AWS Lambda Deployment
 
