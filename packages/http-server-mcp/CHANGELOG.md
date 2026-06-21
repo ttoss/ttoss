@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.19.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.18.1...@ttoss/http-server-mcp@0.19.0) (2026-06-21)
+
+### Features
+
+- **http-server-mcp:** generic getIdentity<T>, stateless docs, testing guide ([#1095](https://github.com/ttoss/ttoss/issues/1095)) ([18d39d6](https://github.com/ttoss/ttoss/commit/18d39d650b7be3ba80ee75fba8f10c55de20cb22))
+
 ## [0.18.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.18.0...@ttoss/http-server-mcp@0.18.1) (2026-06-19)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp

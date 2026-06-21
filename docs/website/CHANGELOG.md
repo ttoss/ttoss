@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.12.0](https://github.com/ttoss/ttoss/compare/@docs/website@2.11.2...@docs/website@2.12.0) (2026-06-21)
+
+### Features
+
+- **http-server-mcp:** generic getIdentity<T>, stateless docs, testing guide ([#1095](https://github.com/ttoss/ttoss/issues/1095)) ([18d39d6](https://github.com/ttoss/ttoss/commit/18d39d650b7be3ba80ee75fba8f10c55de20cb22))
+
 ## [2.11.2](https://github.com/ttoss/ttoss/compare/@docs/website@2.11.1...@docs/website@2.11.2) (2026-06-18)
 
 **Note:** Version bump only for package @docs/website
