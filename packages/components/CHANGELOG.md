@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.17.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.16.1...@ttoss/components@2.17.0) (2026-06-22)
+
+### Features
+
+- **components:** add clientLogoUrl prop to OAuthConsent ([#1097](https://github.com/ttoss/ttoss/issues/1097)) ([5291de7](https://github.com/ttoss/ttoss/commit/5291de715cf53476f6c3d4d3c409e8241659be76))
+
 ## [2.16.1](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.16.0...@ttoss/components@2.16.1) (2026-06-22)
 
 ### Bug Fixes
