@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.1](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.16.0...@ttoss/components@2.16.1) (2026-06-22)
+
+### Bug Fixes
+
+- **components:** make entire OAuthConsent scope row toggle the checkbox ([#1096](https://github.com/ttoss/ttoss/issues/1096)) ([5a7a82f](https://github.com/ttoss/ttoss/commit/5a7a82f9d1817d10f803419fb3a95575fedcdbf1))
+
 # [2.16.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.15.0...@ttoss/components@2.16.0) (2026-06-19)
 
 ### Features
