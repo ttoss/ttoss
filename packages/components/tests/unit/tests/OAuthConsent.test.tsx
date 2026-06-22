@@ -225,6 +225,25 @@ describe('OAuthConsent', () => {
     expect(writeCheckbox).toBeChecked();
   });
 
+  test('clicking the description text toggles the scope', async () => {
+    const user = userEvent.setup();
+    render(<OAuthConsent {...makeProps()} />);
+    const writeCheckbox = screen.getByRole('checkbox', { name: 'Write' });
+    expect(writeCheckbox).not.toBeChecked();
+    await user.click(screen.getByText('Write access'));
+    expect(writeCheckbox).toBeChecked();
+  });
+
+  test('clicking the label title toggles the scope exactly once', async () => {
+    const user = userEvent.setup();
+    render(<OAuthConsent {...makeProps()} />);
+    const writeCheckbox = screen.getByRole('checkbox', { name: 'Write' });
+    expect(writeCheckbox).not.toBeChecked();
+    await user.click(screen.getByText('Write'));
+    // A single click must result in a single toggle (no double-fire).
+    expect(writeCheckbox).toBeChecked();
+  });
+
   test('checked optional scope can be toggled off', async () => {
     const user = userEvent.setup();
     render(
