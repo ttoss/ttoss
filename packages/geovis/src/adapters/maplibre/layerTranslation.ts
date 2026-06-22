@@ -53,12 +53,16 @@ type Builder = (
   specMapData?: MapData[]
 ) => maplibregl.LayerSpecification;
 
-/** Finds a mapData entry matching a predicate, returning its stateKey. */
+/** Finds a mapData entry matching a predicate, returning its stateKey.
+ *  Returns `undefined` when no entry matches (caller falls through to next fallback).
+ *  Returns `'value'` when an entry matches but omits `stateKey` (default per spec). */
 const findStateKey = (
   specMapData: MapData[] | undefined,
   predicate: (m: MapData) => boolean
 ): string | undefined => {
-  return specMapData?.find(predicate)?.stateKey ?? undefined;
+  const match = specMapData?.find(predicate);
+  if (!match) return undefined;
+  return match.stateKey ?? 'value';
 };
 
 /** Resolves the stateKey for a given dimension from the spec's mapData array. */

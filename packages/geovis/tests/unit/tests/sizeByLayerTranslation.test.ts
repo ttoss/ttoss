@@ -275,6 +275,36 @@ describe('toMaplibreLayer — MapData dimension support', () => {
       ['feature-state', 'density'],
     ]);
   });
+
+  test('dataset without stateKey defaults to "value" for dimension resolution', () => {
+    const mapDataNoKey: MapData = {
+      mapDataId: 'pop-no-key',
+      mapId: 'cities',
+      dimension: 'size',
+      data: [{ geometryId: 'city-1', value: 100000 }],
+    };
+
+    const layer: VisualizationLayer = {
+      id: 'cities-points',
+      sourceId: 'cities',
+      geometry: 'point',
+      sizeBy: { range: [4, 20] },
+    };
+
+    const mapLayer = toMaplibreLayer(layer, undefined, undefined, [
+      mapDataNoKey,
+    ]);
+
+    expect(mapLayer.type).toBe('circle');
+    const paint = (mapLayer as { paint?: Record<string, unknown> }).paint;
+    const radius = paint?.['circle-radius'];
+
+    // Should use default stateKey 'value' even though dataset omits stateKey
+    expect((radius as unknown[])[0]).toBe('case');
+    const interpolated = (radius as unknown[])[2] as unknown[];
+    expect(interpolated[0]).toBe('interpolate');
+    expect(interpolated[2]).toEqual(['to-number', ['feature-state', 'value']]);
+  });
 });
 
 describe('toMaplibreLayer — sizeBy transform sqrt', () => {
