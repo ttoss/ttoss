@@ -6,7 +6,6 @@ import {
   Divider,
   Flex,
   Heading,
-  Label,
   Text,
 } from '@ttoss/ui';
 import * as React from 'react';
@@ -176,11 +175,13 @@ const ScopeRow = ({
     busy,
   });
   const checkboxId = `consent-scope-${scope.key}`;
+  const labelId = `consent-scope-label-${scope.key}`;
   const descId = `consent-scope-desc-${scope.key}`;
 
   return (
     <Box as="li" sx={{ listStyle: 'none' }}>
       <Flex
+        as="label"
         sx={{
           gap: 3,
           alignItems: 'flex-start',
@@ -189,6 +190,7 @@ const ScopeRow = ({
           borderRadius: 'md',
           opacity: ancestorSelected ? 0.55 : 1,
           transition: 'background-color 0.15s ease',
+          cursor: isInteractive ? 'pointer' : 'default',
           ...(isInteractive && {
             '&:hover': {
               backgroundColor: 'display.background.muted.default',
@@ -201,6 +203,7 @@ const ScopeRow = ({
             id={checkboxId}
             checked={isChecked}
             disabled={isDisabled}
+            aria-labelledby={labelId}
             aria-describedby={descId}
             onChange={() => {
               onToggle(scope, ancestorSelected);
@@ -208,19 +211,19 @@ const ScopeRow = ({
           />
         </Box>
         <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Label
-            htmlFor={checkboxId}
+          <Text
+            as="span"
+            id={labelId}
             sx={{
               fontWeight: 'semibold',
               fontSize: 'md',
               lineHeight: 'short',
-              cursor: isInteractive ? 'pointer' : 'default',
               color: 'display.text.primary.default',
-              width: 'fit-content',
+              display: 'block',
             }}
           >
             {scope.label}
-          </Label>
+          </Text>
           <Text
             id={descId}
             sx={{
