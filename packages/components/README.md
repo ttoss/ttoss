@@ -14,6 +14,52 @@ pnpm add @ttoss/components @ttoss/ui @emotion/react @ttoss/react-hooks
 
 All components are theme-aware and integrate seamlessly with `@ttoss/ui`.
 
+### OAuthConsent
+
+OAuth consent screen with flat and GitHub-style hierarchical scopes. Granting a parent scope automatically locks all descendants. All visible copy is injected via the `labels` prop — no hardcoded strings. [Docs](https://storybook.ttoss.dev/?path=/docs/components-oauthconsent--docs)
+
+```tsx
+import { OAuthConsent } from '@ttoss/components';
+
+<OAuthConsent
+  clientName="My App"
+  scopes={[
+    {
+      key: 'openid',
+      label: 'OpenID Connect',
+      description: 'Verify your identity',
+      required: true,
+    },
+    {
+      key: 'profile',
+      label: 'Profile',
+      description: 'Read your public profile information',
+    },
+  ]}
+  onAuthorize={async (grantedScopes) => {
+    const res = await authorize({ scopes: grantedScopes });
+    return { ok: res.ok };
+  }}
+  onAuthorized={() => {
+    window.location.href = resumeUrl;
+  }}
+  onDeny={() => navigate('/')}
+  labels={{
+    title: 'Authorize access',
+    requestedBy: (name) => (
+      <>
+        <strong>{name}</strong> is requesting access.
+      </>
+    ),
+    permissionsHeading: 'Requested permissions',
+    approve: 'Authorize',
+    deny: 'Deny',
+    invalidRequestTitle: 'Invalid request',
+    invalidRequestBody: 'Missing required OAuth parameters. Please try again.',
+  }}
+/>;
+```
+
 ### Accordion
 
 Accessible accordion component with collapsible content sections. [Docs](https://storybook.ttoss.dev/?path=/docs/components-accordion--docs)

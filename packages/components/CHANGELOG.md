@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.16.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.15.0...@ttoss/components@2.16.0) (2026-06-19)
+
+### Features
+
+- **components:** add OAuthConsent component with hierarchical scope support ([#1093](https://github.com/ttoss/ttoss/issues/1093)) ([da9b0e4](https://github.com/ttoss/ttoss/commit/da9b0e4b9bf839123cb6560402fda4f150fb8f08))
+
 # [2.15.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.14.31...@ttoss/components@2.15.0) (2026-06-19)
 
 ### Features

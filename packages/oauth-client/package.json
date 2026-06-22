@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/oauth-client",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Reusable third-party OAuth 2.0 client for ttoss — authorization, code exchange, lazy and scheduled token refresh",
   "keywords": [
     "auth",

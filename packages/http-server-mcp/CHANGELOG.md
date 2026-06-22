@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.19.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.18.1...@ttoss/http-server-mcp@0.19.0) (2026-06-21)
+
+### Features
+
+- **http-server-mcp:** generic getIdentity<T>, stateless docs, testing guide ([#1095](https://github.com/ttoss/ttoss/issues/1095)) ([18d39d6](https://github.com/ttoss/ttoss/commit/18d39d650b7be3ba80ee75fba8f10c55de20cb22))
+
+## [0.18.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.18.0...@ttoss/http-server-mcp@0.18.1) (2026-06-19)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp
+
+# [0.18.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.17.1...@ttoss/http-server-mcp@0.18.0) (2026-06-19)
+
+### Features
+
+- **http-server-mcp:** support root mounting and fix protected-resource metadata resource URL ([#1091](https://github.com/ttoss/ttoss/issues/1091)) ([4f15511](https://github.com/ttoss/ttoss/commit/4f15511302add005c39c2772de9ecdbd8631995f))
+
+## [0.17.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.17.0...@ttoss/http-server-mcp@0.17.1) (2026-06-19)
+
+### Bug Fixes
+
+- **http-server-auth,http-server-mcp:** accept scopes[] and warn on missing scope claim ([#1090](https://github.com/ttoss/ttoss/issues/1090)) ([2c5427e](https://github.com/ttoss/ttoss/commit/2c5427e034606737b8aaa323b0e66b389148ac0d))
+
+# [0.17.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.16.5...@ttoss/http-server-mcp@0.17.0) (2026-06-19)
+
+### Features
+
+- **http-server-serverless:** add AWS Lambda adapter that populates rawHeaders ([#1089](https://github.com/ttoss/ttoss/issues/1089)) ([f3ee0e9](https://github.com/ttoss/ttoss/commit/f3ee0e9924fec4c58577c705869d85135c2199d7))
+
 ## [0.16.5](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.16.4...@ttoss/http-server-mcp@0.16.5) (2026-06-16)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp

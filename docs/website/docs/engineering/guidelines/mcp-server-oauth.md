@@ -103,13 +103,16 @@ const mcpRouter = createMcpRouter(mcpServer, {
     // Emit RFC 9728 discovery on 401.
     resourceMetadataUrl:
       'https://mcp.example.com/.well-known/oauth-protected-resource',
-    // Defaults to ['initialize', 'tools/list'].
-    publicMethods: ['initialize', 'tools/list'],
+    // Set publicMethods: [] when you need OAuth clients to authenticate
+    // before anything else (see note below). Defaults to ['initialize', 'tools/list'].
+    publicMethods: [],
   },
 });
 ```
 
 Setting both `resourceServerUrl` and `authorizationServerUrl` also serves that metadata document at `/.well-known/oauth-protected-resource`, completing the discovery chain the `WWW-Authenticate` header points to.
+
+**`publicMethods` and the OAuth flow.** With the default `['initialize', 'tools/list']`, an OAuth-aware client (Claude connector, Cursor) receives `200` on `initialize` and concludes the server is public — it never starts the OAuth PKCE flow, while `notifications/initialized` still returns `401`, silently breaking the handshake. The visible symptom is "connected, no tools available, no sign-in prompt". Setting `publicMethods: []` makes `initialize` return `401 + WWW-Authenticate`, which is what triggers the client's OAuth discovery and login. Use the default only when auth is handled outside the client-initiated OAuth flow (e.g. API keys or tokens injected by a gateway); set `publicMethods: []` whenever you want the client to authenticate itself before any other interaction.
 
 ## Authorization server: issuing tokens
 

@@ -15,6 +15,7 @@ export * from './components/Modal';
 export * from './components/NavList';
 export * from './components/NotificationCard';
 export * from './components/NotificationsMenu';
+export * from './components/OAuthConsent';
 export * from './components/Search';
 export * from './components/SpotlightCard';
 export * from './components/Table';
