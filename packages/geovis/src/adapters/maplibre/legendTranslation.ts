@@ -192,6 +192,10 @@ const buildContinuousSizeExpression = (
   let interpolated: unknown;
   if (bounds.length >= 2) {
     const sorted = uniqueAscending(bounds);
+    // dataMin and dataMax are the first and last break, respectively.
+    // When a sqrt transform is requested, take the sqrt of the breaks so interpolation
+    // happens in sqrt-space. This keeps the visual size of the bins consistent with the legend,
+    // which also applies the sqrt transform to the break values.
     const dataMin = useSqrt ? Math.sqrt(sorted[0]!) : sorted[0]!;
     const dataMax = useSqrt
       ? Math.sqrt(sorted[sorted.length - 1]!)

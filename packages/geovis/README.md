@@ -200,6 +200,23 @@ its own key via `['feature-state', 'pop']` and `['feature-state', 'density']`.
 The adapter auto-discovers which dataset provides color vs. size based on
 `dimension`.
 
+### How `stateKey` resolution works
+
+The adapter resolves `stateKey` per dimension via a fallback chain:
+
+1. **Dimension match** — find a `mapData` entry where `dimension` matches the requested dimension (color/size) **and** `mapId` matches the layer's source.
+2. **Legacy `mapDataId`** — fall back to the entry referenced by the layer's `mapDataId` field.
+3. **Any entry for source** — fall back to any `mapData` entry whose `mapId` matches the layer's source.
+4. **Default** — return `'value'`.
+
+When a matching entry exists but omits `stateKey`, the adapter uses the
+documented default `'value'` (so `{ value: X }` is written to feature state).
+When no entry matches at all, the chain falls through to the next step.
+
+> **Important:** when two datasets on the same source both omit `stateKey`,
+> they share `feature-state.value` and overwrite each other. Use distinct
+> `stateKey` values for each dimension to keep them independent.
+
 ### Choropleth example
 
 Declare `mapData` in the spec, reference it on the layer with `mapDataId`, and
@@ -752,6 +769,21 @@ The table below shows how different `range` values behave under `linear` and `sq
 > - **Sqrt** — `radius = lerp(sqrt(value), sqrt(dataMin), sqrt(dataMax)) → [min, max]`. Both the input value and the data bounds are transformed to sqrt space, so output radii always stay within `[minRadius, maxRadius]` while circle **area** is proportional to the value.
 > - At `value = dataMin`, both linear and sqrt produce `minRadius` (the minimum circle remains visible).
 > - `sqrt` is only available in `mode: 'continuous'` — it is **not allowed** in stepped mode.
+
+### How `sqrt` guarantees output stays in `[minRadius, maxRadius]`
+
+The `sqrt` transform applies to **both** the input value and the interpolation
+stops (data bounds), keeping the entire expression in sqrt space:
+
+```
+interpolate(linear, sqrt(value), sqrt(dataMin) → minRadius, sqrt(dataMax) → maxRadius)
+```
+
+Because `sqrt` is monotonically increasing and `sqrt(dataMin) ≤ sqrt(value) ≤ sqrt(dataMax)` when `dataMin ≤ value ≤ dataMax`, the interpolated output is always
+in `[minRadius, maxRadius]`. The data bounds passed to `interpolate` are
+`Math.sqrt(dataMin)` and `Math.sqrt(dataMax)`, not the raw values — this is what
+prevents radii from collapsing to `minRadius` when the raw data range is large
+(e.g. `sqrt(50_000) ≈ 223` would fall far below a raw stop at `50_000`).
 
 ## Bivariate Maps
 
