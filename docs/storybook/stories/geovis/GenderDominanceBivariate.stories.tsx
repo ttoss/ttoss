@@ -199,7 +199,7 @@ const buildSpec = (
         activeLegendId: 'gender',
         paint: { circleStrokeColor: '#ffffff', circleStrokeWidth: 1.5 },
         sizeBy: {
-          range: [8, 36],
+          range: [4, 12],
           mode: 'continuous',
           thresholds: [50_000, 100_000, 150_000, 200_000, 250_000],
           transform: 'sqrt',
