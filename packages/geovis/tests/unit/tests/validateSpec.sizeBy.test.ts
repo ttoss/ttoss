@@ -39,6 +39,74 @@ describe('validateSpec — sizeBy', () => {
     }
   });
 
+  test('rejects sizeBy with NaN in range', () => {
+    const result = validateSpec({
+      ...pointSpec,
+      layers: [
+        {
+          ...pointSpec.layers[0],
+          sizeBy: { range: [NaN, 10] },
+        },
+      ],
+    });
+
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.join('\n')).toMatch(/finite/);
+    }
+  });
+
+  test('rejects sizeBy with Infinity in range', () => {
+    const result = validateSpec({
+      ...pointSpec,
+      layers: [
+        {
+          ...pointSpec.layers[0],
+          sizeBy: { range: [1, Infinity] },
+        },
+      ],
+    });
+
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.join('\n')).toMatch(/finite/);
+    }
+  });
+
+  test('rejects sizeBy with min <= 0', () => {
+    const result = validateSpec({
+      ...pointSpec,
+      layers: [
+        {
+          ...pointSpec.layers[0],
+          sizeBy: { range: [0, 20] },
+        },
+      ],
+    });
+
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.join('\n')).toMatch(/range/);
+    }
+  });
+
+  test('rejects sizeBy with min === max', () => {
+    const result = validateSpec({
+      ...pointSpec,
+      layers: [
+        {
+          ...pointSpec.layers[0],
+          sizeBy: { range: [20, 20] },
+        },
+      ],
+    });
+
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.join('\n')).toMatch(/range/);
+    }
+  });
+
   test('accepts valid sizeBy on point layer', () => {
     const result = validateSpec({
       ...pointSpec,

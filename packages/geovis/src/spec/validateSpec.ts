@@ -173,22 +173,34 @@ const validateSizeByThresholds = (
   return [];
 };
 
+/** Validates sizeBy.range values are finite and ordered correctly. */
+const validateSizeByRange = (
+  layer: VisualizationLayer,
+  range: [number, number]
+): string[] => {
+  const [min, max] = range;
+  if (!Number.isFinite(min) || !Number.isFinite(max)) {
+    return [
+      `layer '${layer.id}' sizeBy.range values must be finite numbers, got [${min}, ${max}]`,
+    ];
+  }
+  if (min >= max || min <= 0) {
+    return [
+      `layer '${layer.id}' sizeBy.range must have min < max and both > 0, got [${min}, ${max}]`,
+    ];
+  }
+  return [];
+};
+
 /** Validates a single layer's sizeBy constraints. */
 const validateSizeByLayer = (
   layer: VisualizationLayer,
   specLegends?: VisualizationSpec['legends']
 ): string[] => {
-  const errors: string[] = [];
-  if (!layer.sizeBy) return errors;
+  if (!layer.sizeBy) return [];
 
   const { range, mode, thresholds, transform } = layer.sizeBy;
-  const [min, max] = range;
-
-  if (min >= max || min <= 0) {
-    errors.push(
-      `layer '${layer.id}' sizeBy.range must have min < max and both > 0, got [${min}, ${max}]`
-    );
-  }
+  const errors = validateSizeByRange(layer, range);
 
   const needsLegend =
     mode === 'stepped' && (!thresholds || thresholds.length === 0);

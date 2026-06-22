@@ -463,6 +463,35 @@ describe('validateSpec — MapData dimension', () => {
     }
   });
 
+  test('rejects shared stateKey across different dimensions on same source', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      mapData: [
+        {
+          mapDataId: 'pop',
+          mapId: 'cities',
+          stateKey: 'shared',
+          dimension: 'size',
+          data: [{ geometryId: 'city-1', value: 100000 }],
+        },
+        {
+          mapDataId: 'density',
+          mapId: 'cities',
+          stateKey: 'shared',
+          dimension: 'color',
+          data: [{ geometryId: 'city-1', value: 50 }],
+        },
+      ],
+    });
+
+    expect(result.valid).toBe(false);
+    if (!result.valid) {
+      expect(result.errors.join('\n')).toMatch(/sharing stateKey/);
+      expect(result.errors.join('\n')).toContain('pop');
+      expect(result.errors.join('\n')).toContain('density');
+    }
+  });
+
   test('accepts valid spec with dimension declarations', () => {
     const result = validateSpec({
       ...baseSpec,
