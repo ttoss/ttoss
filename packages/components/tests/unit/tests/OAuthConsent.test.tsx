@@ -1,4 +1,4 @@
-import { render, screen, userEvent } from '@ttoss/test-utils/react';
+import { act, render, screen, userEvent } from '@ttoss/test-utils/react';
 
 import type {
   ConsentScope,
@@ -412,6 +412,40 @@ describe('OAuthConsent', () => {
       screen.getByRole('button', { name: 'Authorize' })
     ).toBeInTheDocument();
     expect(screen.queryByText('Invalid request')).not.toBeInTheDocument();
+  });
+
+  // ---------------------------------------------------------------------------
+  // clientLogoUrl
+  // ---------------------------------------------------------------------------
+
+  test('renders client logo image when clientLogoUrl is provided', () => {
+    render(
+      <OAuthConsent
+        {...makeProps({ clientLogoUrl: 'https://example.com/logo.png' })}
+      />
+    );
+    const img = screen.getByRole('img', { name: 'TestApp logo' });
+    expect(img).toBeInTheDocument();
+    expect(img).toHaveAttribute('src', 'https://example.com/logo.png');
+  });
+
+  test('does not render a logo image when clientLogoUrl is omitted', () => {
+    render(<OAuthConsent {...makeProps()} />);
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+  });
+
+  test('renders first-letter fallback when logo image fails to load', async () => {
+    render(
+      <OAuthConsent
+        {...makeProps({ clientLogoUrl: 'https://example.com/broken.png' })}
+      />
+    );
+    const img = screen.getByRole('img', { name: 'TestApp logo' });
+    await act(async () => {
+      img.dispatchEvent(new Event('error', { bubbles: true }));
+    });
+    expect(screen.getByText('T')).toBeInTheDocument();
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
   });
 
   // ---------------------------------------------------------------------------
