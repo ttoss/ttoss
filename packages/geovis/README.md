@@ -217,6 +217,73 @@ When no entry matches at all, the chain falls through to the next step.
 > they share `feature-state.value` and overwrite each other. Use distinct
 > `stateKey` values for each dimension to keep them independent.
 
+### `stateKey` examples — default vs explicit
+
+**Omitted `stateKey`** — adapter writes `{ value: X }` to feature state:
+
+```json
+{
+  "mapData": [
+    {
+      "mapDataId": "population",
+      "mapId": "cities",
+      "dimension": "size",
+      "data": [{ "geometryId": 1, "value": 100000 }]
+    }
+  ]
+}
+```
+
+`resolveDimensionStateKey('size', 'cities', ...)` finds the entry via
+`dimension: 'size'`, reads `stateKey: undefined`, and uses the default `'value'`.
+Feature state becomes `{ value: 100000 }`. The size expression reads
+`['feature-state', 'value']`.
+
+**Explicit `stateKey`** — adapter writes `{ pop: X }`:
+
+```json
+{
+  "mapData": [
+    {
+      "mapDataId": "population",
+      "mapId": "cities",
+      "stateKey": "pop",
+      "dimension": "size",
+      "data": [{ "geometryId": 1, "value": 100000 }]
+    }
+  ]
+}
+```
+
+Feature state becomes `{ pop: 100000 }`. The size expression reads
+`['feature-state', 'pop']`.
+
+**Two datasets, no `stateKey` — collision:**
+
+```json
+{
+  "mapData": [
+    {
+      "mapDataId": "population",
+      "mapId": "cities",
+      "dimension": "size",
+      "data": [{ "geometryId": 1, "value": 100000 }]
+    },
+    {
+      "mapDataId": "density",
+      "mapId": "cities",
+      "dimension": "color",
+      "data": [{ "geometryId": 1, "value": 50 }]
+    }
+  ]
+}
+```
+
+Both default to `stateKey: 'value'`. Feature state becomes `{ value: 50 }`
+(the color dataset overwrites the size dataset). Both color and size
+expressions read the same key — the size dimension is lost. Fix: declare
+distinct `stateKey` values on each entry.
+
 ### Choropleth example
 
 Declare `mapData` in the spec, reference it on the layer with `mapDataId`, and
