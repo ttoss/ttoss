@@ -1,7 +1,7 @@
 import { validateSpec } from 'src/spec/validateSpec';
 
-import geojsonUrlMap from '../../../src/fixtures/geojson-url-map.json';
-import singleMap from '../../../src/fixtures/single-map.json';
+import geojsonUrlMap from '../../../../src/fixtures/geojson-url-map.json';
+import singleMap from '../../../../src/fixtures/single-map.json';
 
 describe('validateSpec', () => {
   test.each([
