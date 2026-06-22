@@ -10,6 +10,8 @@ import {
 } from '@ttoss/ui';
 import * as React from 'react';
 
+import { ClientLogo } from './ClientLogo';
+
 /**
  * A single OAuth scope, optionally with implied child scopes.
  */
@@ -63,6 +65,12 @@ export type OAuthConsentLabels = {
 export type OAuthConsentProps = {
   /** Display name or identifier of the requesting OAuth client. */
   clientName: string;
+  /**
+   * URL of the client's logo or icon. When provided, renders the image above
+   * the consent heading. Falls back to the first letter of `clientName` if the
+   * image fails to load. When omitted, no logo is shown (backward-compatible).
+   */
+  clientLogoUrl?: string;
   /** Scope tree to render. */
   scopes: ConsentScope[];
   /**
@@ -315,6 +323,7 @@ const ConsentCard = ({ children }: { children: React.ReactNode }) => {
  */
 export const OAuthConsent = ({
   clientName,
+  clientLogoUrl,
   scopes,
   onAuthorize,
   onAuthorized,
@@ -387,6 +396,12 @@ export const OAuthConsent = ({
 
   return (
     <ConsentCard>
+      {clientLogoUrl && (
+        <Box sx={{ marginBottom: 4 }}>
+          <ClientLogo src={clientLogoUrl} clientName={clientName} />
+        </Box>
+      )}
+
       <Heading
         as="h1"
         sx={{
