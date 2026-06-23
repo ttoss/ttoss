@@ -1,6 +1,6 @@
 import { buildFillColorExpression } from 'src/adapters/maplibre/legendTranslation';
 import { resolveSpecFromMapType } from 'src/spec/mapTypeDefaults';
-import { resolveChoropleth } from 'src/spec/mapTypeDefaults/chropleth';
+import { resolveChoropleth } from 'src/spec/mapTypeDefaults/choropleth';
 import { SEQUENTIAL_PALETTES } from 'src/spec/mapTypeDefaults/palettes';
 import type { VisualizationSpec } from 'src/spec/types';
 
