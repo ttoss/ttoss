@@ -108,23 +108,24 @@ The `'labels'` type is the recommended choice when label text is known ahead of 
 
 Each entry in `spec.layers` describes one rendered layer.
 
-| Field            | Type                                                                                   | Required | Description                                                                                                                                                       |
-| ---------------- | -------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`             | `string`                                                                               | ✓        | Unique layer identifier.                                                                                                                                          |
-| `sourceId`       | `string`                                                                               | ✓        | References a `DataSource.id` from `spec.sources`.                                                                                                                 |
-| `geometry`       | `GeoVisGeometryType`                                                                   | ✓        | Render type: `'point'`, `'line'`, `'polygon'`, `'raster'`, `'symbol'`, `'heatmap'`.                                                                               |
-| `sourceLayer`    | `string`                                                                               |          | Vector tile source layer name. Required when `source.type` is `'vector-tiles'`.                                                                                   |
-| `title`          | `string`                                                                               |          | Human-readable layer name.                                                                                                                                        |
-| `visible`        | `boolean`                                                                              |          | Whether the layer is rendered. Defaults to `true`.                                                                                                                |
-| `minzoom`        | `number`                                                                               |          | Minimum zoom level (0–24) at which the layer is visible.                                                                                                          |
-| `maxzoom`        | `number`                                                                               |          | Maximum zoom level (0–24) at which the layer is visible.                                                                                                          |
-| `paint`          | `LayerPaint`                                                                           |          | Per-geometry paint properties. See examples below.                                                                                                                |
-| `legends`        | `LegendSpec[]`                                                                         |          | Alternative legend definitions exposed as runtime toggles.                                                                                                        |
-| `activeLegendId` | `string`                                                                               |          | Active entry from `legends[]`. Enables choropleth coloring and the hover tooltip.                                                                                 |
-| `mapDataId`      | `string`                                                                               |          | References a `MapData.mapDataId` for per-feature value joining (choropleth / tooltip).                                                                            |
-| `hoverPaint`     | `{ lineColor?: string; lineWidth?: number }`                                           |          | Outline rendered on the hovered feature via a companion MapLibre line layer driven by `feature-state.hover`.                                                      |
-| `selectedPaint`  | `{ lineColor?: string; lineWidth?: number }`                                           |          | Outline rendered on the selected feature via `feature-state.selected`.                                                                                            |
-| `clickAnchor`    | `{ iconImage?: string; iconSize?: number; color?: string; offset?: [number, number] }` |          | Spec-driven click marker. Use `iconImage` to render a sprite icon; use `color` for the built-in SVG pin. For a custom HTML element, use `<GeoVisMarker>` instead. |
+| Field            | Type                                                                                   | Required | Description                                                                                                                                                          |
+| ---------------- | -------------------------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`             | `string`                                                                               | ✓        | Unique layer identifier.                                                                                                                                             |
+| `sourceId`       | `string`                                                                               | ✓        | References a `DataSource.id` from `spec.sources`.                                                                                                                    |
+| `geometry`       | `GeoVisGeometryType`                                                                   | ✓        | Render type: `'point'`, `'line'`, `'polygon'`, `'raster'`, `'symbol'`, `'heatmap'`.                                                                                  |
+| `sourceLayer`    | `string`                                                                               |          | Vector tile source layer name. Required when `source.type` is `'vector-tiles'`.                                                                                      |
+| `title`          | `string`                                                                               |          | Human-readable layer name.                                                                                                                                           |
+| `visible`        | `boolean`                                                                              |          | Whether the layer is rendered. Defaults to `true`.                                                                                                                   |
+| `minzoom`        | `number`                                                                               |          | Minimum zoom level (0–24) at which the layer is visible.                                                                                                             |
+| `maxzoom`        | `number`                                                                               |          | Maximum zoom level (0–24) at which the layer is visible.                                                                                                             |
+| `paint`          | `LayerPaint`                                                                           |          | Per-geometry paint properties. See examples below.                                                                                                                   |
+| `legends`        | `LegendSpec[]`                                                                         |          | Alternative legend definitions exposed as runtime toggles.                                                                                                           |
+| `activeLegendId` | `string`                                                                               |          | Active entry from `legends[]`. Enables choropleth coloring and the hover tooltip.                                                                                    |
+| `mapDataId`      | `string`                                                                               |          | References a `MapData.mapDataId` for per-feature value joining (choropleth / tooltip). When a `MapData` declares `dimension`, the adapter auto-discovers color/size. |
+| `hoverPaint`     | `{ lineColor?: string; lineWidth?: number }`                                           |          | Outline rendered on the hovered feature via a companion MapLibre line layer driven by `feature-state.hover`.                                                         |
+| `selectedPaint`  | `{ lineColor?: string; lineWidth?: number }`                                           |          | Outline rendered on the selected feature via `feature-state.selected`.                                                                                               |
+| `clickAnchor`    | `{ iconImage?: string; iconSize?: number; color?: string; offset?: [number, number] }` |          | Spec-driven click marker. Use `iconImage` to render a sprite icon; use `color` for the built-in SVG pin. For a custom HTML element, use `<GeoVisMarker>` instead.    |
+| `sizeBy`         | `SizeBy`                                                                               |          | Proportional symbol configuration. Maps a numeric `mapData` property to `circle-radius`. See [Proportional Symbols](#proportional-symbols-sizeby).                   |
 
 ### Paint properties
 
@@ -165,6 +166,123 @@ paint: {
 shapes while `mapData` holds per-feature values. The adapter joins them at
 runtime via `setFeatureState`, enabling choropleth coloring and hover tooltips
 without modifying source features.
+
+### `stateKey` and `dimension` — multiple dimensions on the same source
+
+By default, `mapData` writes values as `{ value: X }` in the feature state.
+When you need multiple independent dimensions (e.g. one for color, another for
+size) on the same source, use `stateKey` to give each dataset its own key, and
+`dimension` to declare which visual dimension it drives:
+
+```json
+{
+  "mapData": [
+    {
+      "mapDataId": "population",
+      "mapId": "cities",
+      "stateKey": "pop",
+      "dimension": "size",
+      "data": [{ "geometryId": 1, "value": 100000 }]
+    },
+    {
+      "mapDataId": "density",
+      "mapId": "cities",
+      "stateKey": "density",
+      "dimension": "color",
+      "data": [{ "geometryId": 1, "value": 50 }]
+    }
+  ]
+}
+```
+
+Feature state becomes `{ pop: 100000, density: 50 }`, and each dimension reads
+its own key via `['feature-state', 'pop']` and `['feature-state', 'density']`.
+The adapter auto-discovers which dataset provides color vs. size based on
+`dimension`.
+
+### How `stateKey` resolution works
+
+The adapter resolves `stateKey` per dimension via a fallback chain:
+
+1. **Dimension match** — find a `mapData` entry where `dimension` matches the requested dimension (color/size) **and** `mapId` matches the layer's source.
+2. **Legacy `mapDataId`** — fall back to the entry referenced by the layer's `mapDataId` field.
+3. **Any entry for source** — fall back to any `mapData` entry whose `mapId` matches the layer's source.
+4. **Default** — return `'value'`.
+
+When a matching entry exists but omits `stateKey`, the adapter uses the
+documented default `'value'` (so `{ value: X }` is written to feature state).
+When no entry matches at all, the chain falls through to the next step.
+
+> **Important:** when two datasets on the same source both omit `stateKey`,
+> they share `feature-state.value` and overwrite each other. Use distinct
+> `stateKey` values for each dimension to keep them independent.
+
+### `stateKey` examples — default vs explicit
+
+**Omitted `stateKey`** — adapter writes `{ value: X }` to feature state:
+
+```json
+{
+  "mapData": [
+    {
+      "mapDataId": "population",
+      "mapId": "cities",
+      "dimension": "size",
+      "data": [{ "geometryId": 1, "value": 100000 }]
+    }
+  ]
+}
+```
+
+`resolveDimensionStateKey('size', 'cities', ...)` finds the entry via
+`dimension: 'size'`, reads `stateKey: undefined`, and uses the default `'value'`.
+Feature state becomes `{ value: 100000 }`. The size expression reads
+`['feature-state', 'value']`.
+
+**Explicit `stateKey`** — adapter writes `{ pop: X }`:
+
+```json
+{
+  "mapData": [
+    {
+      "mapDataId": "population",
+      "mapId": "cities",
+      "stateKey": "pop",
+      "dimension": "size",
+      "data": [{ "geometryId": 1, "value": 100000 }]
+    }
+  ]
+}
+```
+
+Feature state becomes `{ pop: 100000 }`. The size expression reads
+`['feature-state', 'pop']`.
+
+**Two datasets, no `stateKey` — collision:**
+
+```json
+{
+  "mapData": [
+    {
+      "mapDataId": "population",
+      "mapId": "cities",
+      "dimension": "size",
+      "data": [{ "geometryId": 1, "value": 100000 }]
+    },
+    {
+      "mapDataId": "density",
+      "mapId": "cities",
+      "dimension": "color",
+      "data": [{ "geometryId": 1, "value": 50 }]
+    }
+  ]
+}
+```
+
+Both default to `stateKey: 'value'`. Feature state becomes `{ value: 50 }`
+(the color dataset overwrites the size dataset). Both color and size
+expressions read the same key — the size dimension is lost. Fix: declare
+distinct `stateKey` values on each entry.
 
 ### Choropleth example
 
@@ -632,6 +750,145 @@ const LayerControls = () => {
   );
 };
 ```
+
+## Proportional Symbols (sizeBy)
+
+`sizeBy` maps a numeric `mapData` property to `circle-radius` via MapLibre expressions, enabling bivariate visualization (color + size). Configure it on point layers to represent data magnitude through symbol size.
+
+### Basic usage
+
+```tsx
+const spec = {
+  id: 'cities-map',
+  engine: 'maplibre',
+  sources: [{ id: 'cities', type: 'geojson', data: citiesGeoJSON }],
+  mapData: [
+    {
+      mapDataId: 'population',
+      mapId: 'cities',
+      data: [
+        { geometryId: 1, value: 87_000 },
+        { geometryId: 2, value: 143_000 },
+        { geometryId: 3, value: 210_000 },
+      ],
+    },
+  ],
+  legends: [
+    {
+      id: 'pop-legend',
+      colorBy: {
+        type: 'quantitative',
+        property: 'value',
+        scale: 'threshold',
+        thresholds: [100_000, 200_000],
+        colors: ['#fee5d9', '#fcae91', '#fb6a4a', '#cb181d'],
+      },
+    },
+  ],
+  layers: [
+    {
+      id: 'cities-points',
+      sourceId: 'cities',
+      geometry: 'point',
+      mapDataId: 'population',
+      activeLegendId: 'pop-legend',
+      sizeBy: {
+        range: [3, 20], // [minRadius, maxRadius] in pixels
+      },
+    },
+  ],
+};
+```
+
+### `SizeBy` configuration
+
+| Field        | Type                        | Required | Description                                                                 |
+| ------------ | --------------------------- | -------- | --------------------------------------------------------------------------- |
+| `range`      | `[number, number]`          | ✓        | Output radius range `[minRadius, maxRadius]` in pixels. Both must be > 0.   |
+| `mode`       | `'continuous' \| 'stepped'` |          | Interpolation mode. Default: `'continuous'`.                                |
+| `thresholds` | `number[]`                  |          | Explicit break points for stepped mode. When omitted, inherits from legend. |
+| `transform`  | `'linear' \| 'sqrt'`        |          | Radius transform. `'sqrt'` makes circle **area** proportional to the value. |
+
+### Modes
+
+**Continuous** (`mode: 'continuous'` or omitted): Each value produces a different radius via linear interpolation between the data bounds and the pixel range.
+
+**Stepped** (`mode: 'stepped'`): Values are grouped into bins; each bin receives a fixed radius. Thresholds can be explicit or inherited from the active legend's `colorBy.thresholds`.
+
+### Range × Transform reference
+
+The table below shows how different `range` values behave under `linear` and `sqrt` transforms, assuming a data range of `0–100 000`.
+
+| `range`   | Transform | `radius@0` | `radius@50k` | `radius@100k` | Behavior                                              |
+| --------- | --------- | ---------- | ------------ | ------------- | ----------------------------------------------------- |
+| `[4, 20]` | linear    | 4          | 12           | 20            | Balanced; mid-value gets 60 % of max radius           |
+| `[4, 20]` | sqrt      | 4          | 15.3         | 20            | Mid-value gets 75 % of max radius; **area ∝ value**   |
+| `[2, 12]` | linear    | 2          | 7            | 12            | Subtle; good when size is secondary to color          |
+| `[2, 12]` | sqrt      | 2          | 9.1          | 12            | Compact; sqrt prevents small values from disappearing |
+| `[8, 32]` | linear    | 8          | 20           | 32            | Bold; large circles dominate the map                  |
+| `[8, 32]` | sqrt      | 8          | 25.0         | 32            | Large spread; small values still visible at floor     |
+| `[1, 40]` | linear    | 1          | 20.5         | 40            | Extreme spread; small dots vs huge circles            |
+| `[1, 40]` | sqrt      | 1          | 28.6         | 40            | Max contrast; area-proportional across full range     |
+
+> **Key differences:**
+>
+> - **Linear** — `radius = lerp(value, dataMin, dataMax) → [min, max]`. Circle **area** grows faster than the value at the high end (area ∝ radius²), so large values appear disproportionately bigger.
+> - **Sqrt** — `radius = lerp(sqrt(value), sqrt(dataMin), sqrt(dataMax)) → [min, max]`. Both the input value and the data bounds are transformed to sqrt space, so output radii always stay within `[minRadius, maxRadius]` while circle **area** is proportional to the value.
+> - At `value = dataMin`, both linear and sqrt produce `minRadius` (the minimum circle remains visible).
+> - `sqrt` is only available in `mode: 'continuous'` — it is **not allowed** in stepped mode.
+
+### How `sqrt` guarantees output stays in `[minRadius, maxRadius]`
+
+The `sqrt` transform applies to **both** the input value and the interpolation
+stops (data bounds), keeping the entire expression in sqrt space:
+
+```
+interpolate(linear, sqrt(value), sqrt(dataMin) → minRadius, sqrt(dataMax) → maxRadius)
+```
+
+Because `sqrt` is monotonically increasing and `sqrt(dataMin) ≤ sqrt(value) ≤ sqrt(dataMax)` when `dataMin ≤ value ≤ dataMax`, the interpolated output is always
+in `[minRadius, maxRadius]`. The data bounds passed to `interpolate` are
+`Math.sqrt(dataMin)` and `Math.sqrt(dataMax)`, not the raw values — this is what
+prevents radii from collapsing to `minRadius` when the raw data range is large
+(e.g. `sqrt(50_000) ≈ 223` would fall far below a raw stop at `50_000`).
+
+## Bivariate Maps
+
+Set `dimension` on each `MapData` entry to declare which visual dimension it drives. The adapter auto-discovers which dataset provides color vs. size — no layer-level references needed.
+
+### Example
+
+```json
+{
+  "mapData": [
+    {
+      "mapDataId": "population",
+      "mapId": "cities",
+      "stateKey": "pop",
+      "dimension": "size",
+      "data": [{ "geometryId": 1, "value": 100000 }]
+    },
+    {
+      "mapDataId": "density",
+      "mapId": "cities",
+      "stateKey": "density",
+      "dimension": "color",
+      "data": [{ "geometryId": 1, "value": 50 }]
+    }
+  ],
+  "layers": [
+    {
+      "id": "cities",
+      "geometry": "point",
+      "sourceId": "cities",
+      "activeLegendId": "pop-legend",
+      "sizeBy": { "range": [3, 20] }
+    }
+  ]
+}
+```
+
+The color expression reads `['feature-state', 'density']` while the size expression reads `['feature-state', 'pop']`, giving each dimension independent data. Two datasets on the same source must use different `dimension` values.
 
 ## API
 

@@ -97,7 +97,11 @@ export const reapplyLegendDrivenFillPaint = (
 ): void => {
   for (const layer of spec.layers) {
     if (layer.geometry !== 'polygon') continue;
-    const expression = resolveLegendFillColorExpression(layer, spec.legends);
+    const expression = resolveLegendFillColorExpression(
+      layer,
+      spec.legends,
+      spec.mapData
+    );
     if (!expression) continue;
     setPaintWhenReady(map, layer.id, 'fill-color', expression);
   }
