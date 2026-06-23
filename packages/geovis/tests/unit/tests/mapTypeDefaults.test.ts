@@ -2,6 +2,7 @@ import { resolveSpecFromMapType } from 'src/spec/mapTypeDefaults';
 import { resolveChoropleth } from 'src/spec/mapTypeDefaults/chropleth';
 import {
   computeJenksBreaks,
+  computeNumClasses,
   inspectDataValues,
   pickPaletteColors,
 } from 'src/spec/mapTypeDefaults/utils';
@@ -457,5 +458,37 @@ describe('resolveSpecFromMapType', () => {
       expect(colorBy.thresholds!.length).toBeGreaterThan(0);
       expect(colorBy.colors!.length).toBeGreaterThan(1);
     }
+  });
+});
+
+describe('computeNumClasses', () => {
+  test('returns 3 for small datasets (sqrt(n) < 3)', () => {
+    expect(computeNumClasses(3)).toBe(3);
+    expect(computeNumClasses(5)).toBe(3);
+    expect(computeNumClasses(8)).toBe(3);
+  });
+
+  test('returns 4 for ~10 values', () => {
+    expect(computeNumClasses(9)).toBe(3);
+    expect(computeNumClasses(10)).toBe(4);
+    expect(computeNumClasses(15)).toBe(4);
+  });
+
+  test('returns 5 for ~20 values', () => {
+    expect(computeNumClasses(16)).toBe(4);
+    expect(computeNumClasses(20)).toBe(5);
+    expect(computeNumClasses(24)).toBe(5);
+  });
+
+  test('caps at 6 (palette size - 1)', () => {
+    expect(computeNumClasses(36)).toBe(6);
+    expect(computeNumClasses(100)).toBe(6);
+    expect(computeNumClasses(1000)).toBe(6);
+  });
+
+  test('returns at least 3 for edge cases', () => {
+    expect(computeNumClasses(0)).toBe(3);
+    expect(computeNumClasses(1)).toBe(3);
+    expect(computeNumClasses(2)).toBe(3);
   });
 });

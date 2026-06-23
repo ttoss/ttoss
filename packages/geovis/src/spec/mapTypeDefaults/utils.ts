@@ -1,5 +1,18 @@
 import type { MapDataRow } from '../types';
 import { jenksBuckets } from './jenks';
+import { DEFAULT_SEQUENTIAL_PALETTE } from './palettes';
+
+const MAX_CLASSES = DEFAULT_SEQUENTIAL_PALETTE.length - 1;
+
+/**
+ * Derives the optimal number of Jenks classes from the number of unique
+ * data values. Uses `sqrt(n)` (Sturries-like heuristic) clamped between
+ * 3 (minimum for visual distinction) and the palette size minus one
+ * (maximum usable colours).
+ */
+export const computeNumClasses = (uniqueCount: number): number => {
+  return Math.min(MAX_CLASSES, Math.max(3, Math.ceil(Math.sqrt(uniqueCount))));
+};
 
 export const inspectDataValues = (
   data: MapDataRow[]

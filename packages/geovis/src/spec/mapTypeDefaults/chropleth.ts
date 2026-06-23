@@ -9,11 +9,10 @@ import type {
 import { CATEGORICAL_PALETTE, DEFAULT_SEQUENTIAL_PALETTE } from './palettes';
 import {
   computeJenksBreaks,
+  computeNumClasses,
   inspectDataValues,
   pickPaletteColors,
 } from './utils';
-
-const NUM_CLASSES = 6;
 
 /**
  * Resolves a choropleth mapType spec by auto-generating:
@@ -41,7 +40,9 @@ export const resolveChoropleth = (
   const legendId = `${mapDataId}-legend`;
 
   if (isNumeric) {
-    const breaks = computeJenksBreaks(numericValues, NUM_CLASSES);
+    const uniqueCount = new Set(numericValues).size;
+    const numClasses = computeNumClasses(uniqueCount);
+    const breaks = computeJenksBreaks(numericValues, numClasses);
 
     colorBy = {
       type: 'quantitative',

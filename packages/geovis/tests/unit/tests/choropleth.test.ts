@@ -181,10 +181,10 @@ describe('choropleth happy path — auto-Jenks thresholds', () => {
     const colorBy = result.legends[0].colorBy;
     expect(colorBy.type).toBe('quantitative');
     if (colorBy.type === 'quantitative') {
-      // 6 values, NUM_CLASSES=6 → 6 breaks (internal: 5)
-      expect(colorBy.thresholds!.length).toBe(5);
-      // colors = breaks.length + 1 = 6
-      expect(colorBy.colors!.length).toBe(6);
+      // 6 unique values → computeNumClasses(6) = 3 → 2 internal breaks
+      expect(colorBy.thresholds!.length).toBe(2);
+      // colors = breaks.length + 1 = 3
+      expect(colorBy.colors!.length).toBe(3);
     }
   });
 
@@ -370,8 +370,8 @@ describe('choropleth happy path — palette override via colors', () => {
     const colorBy = resolved.legends![0].colorBy;
     if (colorBy.type === 'quantitative') {
       expect(colorBy.colors).toEqual(customColors);
-      // Thresholds should still be auto-generated
-      expect(colorBy.thresholds!.length).toBe(5);
+      // 6 unique values → computeNumClasses(6) = 3 → 2 internal breaks
+      expect(colorBy.thresholds!.length).toBe(2);
     }
   });
 
