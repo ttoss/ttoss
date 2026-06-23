@@ -105,6 +105,7 @@ const buildChoroplethSpec = ({
       ? C
       : never
     : never;
+  legendReference?: string;
 }): VisualizationSpec => {
   return {
     id: `invalid-raw-count-${mapDataId}`,

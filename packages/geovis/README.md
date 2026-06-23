@@ -57,19 +57,20 @@ const MyMap = () => (
 
 Top-level spec object passed to `GeoVisProvider`.
 
-| Field         | Type                      | Required | Description                                                                                                                                              |
-| ------------- | ------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`          | `string`                  | ✓        | Unique spec identifier.                                                                                                                                  |
-| `engine`      | `'maplibre'`              | ✓        | Engine adapter to use. Currently only `'maplibre'` is supported.                                                                                         |
-| `sources`     | `DataSource[]`            | ✓        | Data sources referenced by layers. Supported types: `'geojson'`, `'vector-tiles'`, `'raster-tiles'`, `'raster-dem'`, `'image'`, `'video'`.               |
-| `layers`      | `VisualizationLayer[]`    | ✓        | Ordered list of layers to render (bottom-to-top).                                                                                                        |
-| `title`       | `string`                  |          | Human-readable title.                                                                                                                                    |
-| `description` | `string`                  |          | Human-readable description.                                                                                                                              |
-| `view`        | `ViewState`               |          | Initial camera state: `center`, `zoom`, `pitch`, `bearing`, `projection`.                                                                                |
-| `basemap`     | `BaseMapSpec`             |          | Basemap tile style. Pass `visible: false` to hide tiles and show only GeoJSON layers. When hidden, the canvas container receives a `#fcfcfc` background. |
-| `legends`     | `LegendSpec[]`            |          | Shared legend registry. Layers reference entries via `activeLegendId`.                                                                                   |
-| `mapData`     | `MapData[]`               |          | Attribute datasets joined to GeoJSON sources for choropleth coloring and tooltips.                                                                       |
-| `metadata`    | `Record<string, unknown>` |          | Arbitrary consumer metadata; not read by the runtime.                                                                                                    |
+| Field         | Type                      | Required | Description                                                                                                                                                               |
+| ------------- | ------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`          | `string`                  | ✓        | Unique spec identifier.                                                                                                                                                   |
+| `engine`      | `'maplibre'`              | ✓        | Engine adapter to use. Currently only `'maplibre'` is supported.                                                                                                          |
+| `sources`     | `DataSource[]`            | ✓        | Data sources referenced by layers. Supported types: `'geojson'`, `'vector-tiles'`, `'raster-tiles'`, `'raster-dem'`, `'image'`, `'video'`.                                |
+| `layers`      | `VisualizationLayer[]`    | ✓        | Ordered list of layers to render (bottom-to-top).                                                                                                                         |
+| `title`       | `string`                  |          | Human-readable title.                                                                                                                                                     |
+| `description` | `string`                  |          | Human-readable description.                                                                                                                                               |
+| `mapType`     | `MapType`                 |          | Auto-configuration hint (`'choropleth'`). When set, layers and legends are auto-generated from `mapData` — see [mapType auto-configuration](#maptype-auto-configuration). |
+| `view`        | `ViewState`               |          | Initial camera state: `center`, `zoom`, `pitch`, `bearing`, `projection`.                                                                                                 |
+| `basemap`     | `BaseMapSpec`             |          | Basemap tile style. Pass `visible: false` to hide tiles and show only GeoJSON layers. When hidden, the canvas container receives a `#fcfcfc` background.                  |
+| `legends`     | `LegendSpec[]`            |          | Shared legend registry. Layers reference entries via `activeLegendId`.                                                                                                    |
+| `mapData`     | `MapData[]`               |          | Attribute datasets joined to GeoJSON sources for choropleth coloring and tooltips.                                                                                        |
+| `metadata`    | `Record<string, unknown>` |          | Arbitrary consumer metadata; not read by the runtime.                                                                                                                     |
 
 ### `LegendSpec`
 
@@ -303,6 +304,46 @@ applyPatch({
   value: 210_000,
 });
 ```
+
+## mapType auto-configuration
+
+Setting `mapType: 'choropleth'` on the spec enables zero-config choropleth maps.
+The runtime auto-generates polygon + outline layers, a legend with Jenks natural
+breaks (for numeric data) or categorical mapping (for text data), and picks
+default colors from built-in palettes.
+
+```tsx
+const spec = {
+  id: 'auto-map',
+  engine: 'maplibre',
+  mapType: 'choropleth',
+  sources: [{ id: 'regions', type: 'geojson', data: regionsGeoJSON }],
+  mapData: [
+    {
+      mapDataId: 'population',
+      mapId: 'regions',
+      data: [
+        { geometryId: 'A', value: 120_000 },
+        { geometryId: 'B', value: 340_000 },
+      ],
+    },
+  ],
+};
+```
+
+No `layers` or `legends` configuration required — they are derived from the data.
+User-provided `layers` and `legends` are preserved and never overridden. Legend
+formatting (`labelFormat`, `subtitle`, `reference`) and custom colors
+(`colorBy.colors`) continue to work as usual.
+
+### Architecture note
+
+`resolveSpecFromMapType` is called in two places: `GeoVisProvider` (for React
+context consumers) and `createRuntime.update()` (for the adapter). This means
+the resolution runs twice per spec update. Since `resolveSpecFromMapType` is
+idempotent, this is functionally correct. The duplication exists because
+`createRuntime` is a public API exported from the package and must remain
+self-sufficient — it cannot assume the caller already resolved the spec.
 
 ## Boundary Groups
 
