@@ -377,6 +377,10 @@
                 "maxItems": 2
               }
             }
+          },
+          "hoverTooltip": {
+            "type": "object",
+            "additionalProperties": true
           }
         }
       }

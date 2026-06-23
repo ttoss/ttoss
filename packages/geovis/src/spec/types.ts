@@ -1,3 +1,4 @@
+import type { HoverTooltipConfig } from '../react/tooltip';
 import type { LegendSpec } from './types.legend';
 
 export * from './types.legend';
@@ -270,6 +271,16 @@ export interface VisualizationLayer {
     /** Pixel offset `[x, y]` applied to the DOM marker. */
     offset?: [number, number];
   };
+  /**
+   * Spec-driven hover tooltip. When present, `<GeoVisProvider>` automatically
+   * renders a `<GeoVisHoverTooltip>` for features hovered on this layer —
+   * without requiring the component to be placed in the tree. Mirrors
+   * `GeoVisHoverTooltipProps` (`render`, `formatValue`, `style`, `offset`,
+   * `emptyValueLabel`, `className`). An empty object (`{}`) opts in to the
+   * default tooltip layout. Typed via a type-only import so the data-only
+   * spec layer keeps no runtime dependency on React.
+   */
+  hoverTooltip?: HoverTooltipConfig;
 }
 
 /**
