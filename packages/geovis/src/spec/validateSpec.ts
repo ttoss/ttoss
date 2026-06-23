@@ -93,7 +93,7 @@ const validateLegendThresholdOrder = (spec: VisualizationSpec): string[] => {
       | NonNullable<VisualizationSpec['layers'][number]['legends']>[number],
     scope: string
   ) => {
-    if (legend.colorBy.type !== 'quantitative') return;
+    if (!legend.colorBy || legend.colorBy.type !== 'quantitative') return;
     if (legend.colorBy.scale !== 'threshold') return;
 
     const thresholds = legend.colorBy.thresholds ?? [];

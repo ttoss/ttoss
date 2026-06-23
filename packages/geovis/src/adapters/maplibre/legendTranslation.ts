@@ -111,7 +111,7 @@ const buildQuantitativeExpression = (
   const fallbackColor = resolveQuantitativeFallbackColor(colorBy, sortedBreaks);
 
   if (sortedBreaks.length === 0) {
-    return ['to-string', fallbackColor];
+    return ['literal', fallbackColor];
   }
 
   const palette = resolvePalette(colorBy, sortedBreaks.length + 1);

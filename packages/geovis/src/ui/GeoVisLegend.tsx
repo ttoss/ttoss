@@ -301,7 +301,7 @@ export const GeoVisLegend = ({
   }, [breaks, legend]);
 
   const items = React.useMemo(() => {
-    if (!legend) return [];
+    if (!legend || !legend.colorBy) return [];
     if (legend.colorBy.type === 'categorical') {
       return buildCategoricalItems(legend);
     }
