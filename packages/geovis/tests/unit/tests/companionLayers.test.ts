@@ -42,7 +42,6 @@ type LayerExtra = Partial<VisualizationSpec['layers'][number]>;
 /** Builds a minimal spec with one polygon layer, optionally extended by `extra`. */
 const buildSpec = (extra: LayerExtra = {}): VisualizationSpec => {
   return {
-    id: 'companion-spec',
     engine: 'maplibre',
     view: { center: [0, 0], zoom: 1 },
     sources: [

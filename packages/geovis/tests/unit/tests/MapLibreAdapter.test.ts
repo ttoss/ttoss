@@ -75,9 +75,8 @@ const makeMapMock = () => {
   };
 };
 
-const makeSpec = (id: string) => {
+const makeSpec = () => {
   return {
-    id,
     engine: 'maplibre' as const,
     view: { center: [-46.6, -23.5] as [number, number], zoom: 10 },
     sources: [],
@@ -121,8 +120,8 @@ describe('createMapLibreAdapter', () => {
     const adapterA = createMapLibreAdapter();
     const adapterB = createMapLibreAdapter();
 
-    adapterA.mount(makeContainer(), makeSpec('a'), 'view-a');
-    adapterB.mount(makeContainer(), makeSpec('b'), 'view-b');
+    adapterA.mount(makeContainer(), makeSpec(), 'view-a');
+    adapterB.mount(makeContainer(), makeSpec(), 'view-b');
 
     expect(adapterA.getNativeInstance()).toBe(mapA);
     expect(adapterB.getNativeInstance()).toBe(mapB);
@@ -144,8 +143,8 @@ describe('createMapLibreAdapter', () => {
     const adapterA = createMapLibreAdapter();
     const adapterB = createMapLibreAdapter();
 
-    adapterA.mount(makeContainer(), makeSpec('a'), 'view-a');
-    adapterB.mount(makeContainer(), makeSpec('b'), 'view-b');
+    adapterA.mount(makeContainer(), makeSpec(), 'view-a');
+    adapterB.mount(makeContainer(), makeSpec(), 'view-b');
 
     adapterA.destroy();
 
@@ -168,8 +167,8 @@ describe('createMapLibreAdapter', () => {
     const adapterA = createMapLibreAdapter();
     const adapterB = createMapLibreAdapter();
 
-    adapterA.mount(makeContainer(), makeSpec('a'), 'view-a');
-    adapterB.mount(makeContainer(), makeSpec('b'), 'view-b');
+    adapterA.mount(makeContainer(), makeSpec(), 'view-a');
+    adapterB.mount(makeContainer(), makeSpec(), 'view-b');
 
     adapterB.destroy();
 
@@ -192,8 +191,8 @@ describe('createMapLibreAdapter', () => {
     const adapterA = createMapLibreAdapter();
     const adapterB = createMapLibreAdapter();
 
-    const mountedA = adapterA.mount(makeContainer(), makeSpec('a'), 'view-a');
-    adapterB.mount(makeContainer(), makeSpec('b'), 'view-b');
+    const mountedA = adapterA.mount(makeContainer(), makeSpec(), 'view-a');
+    adapterB.mount(makeContainer(), makeSpec(), 'view-b');
 
     mountedA.destroy();
 
@@ -216,7 +215,7 @@ describe('createMapLibreAdapter', () => {
   test('update does nothing when no map is mounted', () => {
     const adapter = createMapLibreAdapter();
     expect(() => {
-      return adapter.update(makeSpec('x'));
+      return adapter.update(makeSpec());
     }).not.toThrow();
   });
 
@@ -351,7 +350,7 @@ describe('applyPatch — camelCase to MapLibre key translation', () => {
     });
     const adapter = createMapLibreAdapter();
     const spec = {
-      ...makeSpec('p'),
+      ...makeSpec(),
       sources: [
         { id: 'src', type: 'geojson' as const, data: 'https://x.com/d.json' },
       ],
@@ -466,7 +465,7 @@ describe('update() — view state sync', () => {
       return map as never;
     });
     const adapter = createMapLibreAdapter();
-    const spec = makeSpec('vs');
+    const spec = makeSpec();
     adapter.mount(makeContainer(), spec, 'v');
     return { adapter, map, spec };
   };
@@ -692,7 +691,7 @@ describe('applyPatch — add / remove operations', () => {
       return map as never;
     });
     const adapter = createMapLibreAdapter();
-    const spec = makeSpec('vs');
+    const spec = makeSpec();
     adapter.mount(makeContainer(), spec, 'v');
     return { adapter, map, spec };
   };
@@ -730,7 +729,7 @@ describe('syncSourcesAndLayers — GeoJSON setData', () => {
     });
     const adapter = createMapLibreAdapter();
     const initialSpec = {
-      ...makeSpec('gj'),
+      ...makeSpec(),
       sources: [
         {
           id: 'geo-src',
@@ -818,7 +817,7 @@ describe('mapData — feature-state application', () => {
 
   const baseSpec = (mapData?: unknown) => {
     return {
-      ...makeSpec('md'),
+      ...makeSpec(),
       sources: [
         {
           id: 'states',
