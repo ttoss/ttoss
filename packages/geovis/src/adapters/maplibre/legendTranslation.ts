@@ -108,8 +108,13 @@ const buildQuantitativeExpression = (
   breaks: ReadonlyArray<number>
 ): unknown[] => {
   const sortedBreaks = uniqueAscending(breaks);
-  const palette = resolvePalette(colorBy, sortedBreaks.length + 1);
   const fallbackColor = resolveQuantitativeFallbackColor(colorBy, sortedBreaks);
+
+  if (sortedBreaks.length === 0) {
+    return ['to-string', fallbackColor];
+  }
+
+  const palette = resolvePalette(colorBy, sortedBreaks.length + 1);
 
   const stepExpression: unknown[] = [
     'step',

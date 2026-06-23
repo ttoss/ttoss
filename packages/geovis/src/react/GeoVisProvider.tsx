@@ -7,6 +7,7 @@ import type {
 } from '../runtime/adapter';
 import type { GeoVisRuntime } from '../runtime/createRuntime';
 import { createRuntime } from '../runtime/createRuntime';
+import { resolveSpecFromMapType } from '../spec/mapTypeDefaults';
 import type { PolicyViolation, VisualizationSpec } from '../spec/types';
 import {
   GeoVisClickContext,
@@ -157,6 +158,12 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
   const effectiveSpec =
     patchState.forSpec === spec ? (patchState.patchedSpec ?? spec) : spec;
 
+  // Resolve mapType shorthand (e.g. choropleth → layers + legends + colorBy)
+  // synchronously so context consumers always see the fully-resolved spec.
+  const resolvedSpec = React.useMemo(() => {
+    return resolveSpecFromMapType(effectiveSpec);
+  }, [effectiveSpec]);
+
   const policyViolations = React.useMemo(() => {
     return checkPolicies(effectiveSpec);
   }, [effectiveSpec]);
@@ -225,17 +232,17 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
   const ctxValue = React.useMemo(() => {
     return {
       runtime,
-      spec: effectiveSpec,
+      spec: resolvedSpec,
       applyPatch,
       setView,
       policyViolations,
     };
-  }, [runtime, effectiveSpec, applyPatch, setView, policyViolations]);
+  }, [runtime, resolvedSpec, applyPatch, setView, policyViolations]);
 
   return (
     <GeoVisContext.Provider value={ctxValue}>
-      <ClickProvider runtime={runtime} spec={effectiveSpec}>
-        <HoverProvider runtime={runtime} spec={effectiveSpec}>
+      <ClickProvider runtime={runtime} spec={resolvedSpec}>
+        <HoverProvider runtime={runtime} spec={resolvedSpec}>
           {children}
         </HoverProvider>
       </ClickProvider>
