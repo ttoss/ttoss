@@ -58,7 +58,6 @@ jest.mock('src/adapters/maplibre/MapLibreAdapter', () => {
 });
 
 const baseSpec: VisualizationSpec = {
-  id: 'test',
   engine: 'maplibre',
   view: { center: [-46.6, -23.5], zoom: 10 },
   sources: [],
@@ -198,7 +197,6 @@ describe('GeoVisProvider policyViolations', () => {
   test('uses policy-invalid as fallback reason when invalidReason is absent', async () => {
     const specNoReason: VisualizationSpec = {
       ...baseSpec,
-      id: 'no-reason',
       metadata: { isPolicyInvalid: true },
     };
     const capturedRef = { current: undefined as PolicyViolation[] | undefined };
@@ -322,27 +320,25 @@ describe('GeoVisProvider effectiveSpec synchronization', () => {
     await act(async () => {
       render(<Wrapper ref={ref} />);
     });
-    expect(specCaptureRef.current.id).toBe(baseSpec.id);
+    expect(specCaptureRef.current.view?.zoom).toBe(10);
 
     const spec2: VisualizationSpec = {
       ...baseSpec,
-      id: 'spec-v2',
       view: { ...baseSpec.view, zoom: 14 },
     };
     await act(async () => {
       ref.current?.setSpec(spec2);
     });
-    expect(specCaptureRef.current.id).toBe('spec-v2');
+    expect(specCaptureRef.current.view?.zoom).toBe(14);
 
     const spec3: VisualizationSpec = {
       ...baseSpec,
-      id: 'spec-v3',
       view: { ...baseSpec.view, zoom: 8 },
     };
     await act(async () => {
       ref.current?.setSpec(spec3);
     });
-    expect(specCaptureRef.current.id).toBe('spec-v3');
+    expect(specCaptureRef.current.view?.zoom).toBe(8);
   });
 });
 

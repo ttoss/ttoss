@@ -39,7 +39,6 @@ const makeMap = () => {
 // All tests start from this state unless they pass a custom spec to makeViewState().
 const makeSpec = (): VisualizationSpec => {
   return {
-    id: 'test-spec',
     engine: 'maplibre',
     sources: [
       {
