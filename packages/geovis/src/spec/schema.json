@@ -539,7 +539,7 @@
     "LegendSpec": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "colorBy"],
+      "required": ["id"],
       "properties": {
         "id": {
           "type": "string",
