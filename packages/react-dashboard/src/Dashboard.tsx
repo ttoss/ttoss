@@ -1,3 +1,4 @@
+import type { SxProp } from '@ttoss/ui';
 import { Divider, Flex } from '@ttoss/ui';
 import type * as React from 'react';
 import type ReactGridLayout from 'react-grid-layout';
@@ -22,32 +23,57 @@ export interface DashboardTemplate {
   editable?: boolean;
 }
 
+const resolveTemplate = (
+  selectedTemplate: DashboardTemplate | undefined,
+  isEditMode: boolean,
+  editingGrid: DashboardGridItem[] | null
+): DashboardTemplate | undefined => {
+  const grid = isEditMode && editingGrid ? editingGrid : selectedTemplate?.grid;
+  return grid != null && selectedTemplate
+    ? { ...selectedTemplate, grid }
+    : selectedTemplate;
+};
+
 const DashboardContent = ({
   loading = false,
   headerChildren,
   selectedTemplate,
   currency,
+  showFilters = true,
+  sx,
 }: {
   loading: boolean;
   headerChildren?: React.ReactNode;
   selectedTemplate?: DashboardTemplate;
   /** ISO 4217 currency code applied to all cards with `numberType="currency"`. Card-level `currency` takes precedence. */
   currency?: string;
+  showFilters?: boolean;
+  sx?: SxProp['sx'];
 }) => {
-  const { isEditMode, editingGrid } = useDashboard();
-  const grid = isEditMode && editingGrid ? editingGrid : selectedTemplate?.grid;
-  const effectiveTemplate =
-    grid != null && selectedTemplate
-      ? { ...selectedTemplate, grid }
-      : selectedTemplate;
+  const { isEditMode, editingGrid, filters, editable } = useDashboard();
+  const effectiveTemplate = resolveTemplate(
+    selectedTemplate,
+    isEditMode,
+    editingGrid
+  );
+  const hasHeaderContent =
+    (showFilters && filters.length > 0) || Boolean(headerChildren) || editable;
 
   return (
     <Flex
-      sx={{ flexDirection: 'column', gap: '5', padding: '2', width: '100%' }}
+      sx={{
+        flexDirection: 'column',
+        gap: '5',
+        padding: '2',
+        width: '100%',
+        ...sx,
+      }}
     >
-      <DashboardHeader>{headerChildren}</DashboardHeader>
+      <DashboardHeader showFilters={showFilters}>
+        {headerChildren}
+      </DashboardHeader>
 
-      <Divider color="display.border.muted.default" />
+      {hasHeaderContent && <Divider color="display.border.muted.default" />}
 
       <DashboardGrid
         loading={loading}
@@ -74,6 +100,8 @@ export const Dashboard = ({
   onCancelEdit,
   onEditingGridChange,
   currency,
+  showFilters = true,
+  sx,
 }: {
   selectedTemplate?: DashboardTemplate;
   loading?: boolean;
@@ -91,6 +119,10 @@ export const Dashboard = ({
   onEditingGridChange?: (grid: DashboardGridItem[] | null) => void;
   /** ISO 4217 currency code (e.g. `"BRL"`, `"USD"`, `"EUR"`). Applied to all cards with `numberType="currency"`. Card-level `currency` takes precedence. Defaults to `"BRL"`. */
   currency?: string;
+  /** When false, the internal filter bar is not rendered. Useful when filters are managed in an external UI. Defaults to true. */
+  showFilters?: boolean;
+  /** Style overrides applied to the outer container. Use to adjust padding or spacing to fit a surrounding layout. */
+  sx?: SxProp['sx'];
 }) => {
   return (
     <DashboardProvider
@@ -110,6 +142,8 @@ export const Dashboard = ({
         headerChildren={headerChildren}
         selectedTemplate={selectedTemplate}
         currency={currency}
+        showFilters={showFilters}
+        sx={sx}
       />
     </DashboardProvider>
   );

@@ -213,15 +213,19 @@ The router emits `401 Unauthorized` whenever `verifyToken` throws, regardless of
 Inside any tool handler, call `getIdentity()` to retrieve the verified JWT payload:
 
 ```typescript
-import { getIdentity, createMcpRouter, McpServer } from '@ttoss/http-server-mcp';
+import {
+  getIdentity,
+  createMcpRouter,
+  McpServer,
+} from '@ttoss/http-server-mcp';
 
 mcpServer.registerTool(
   'get-profile',
-  { description: 'Return the caller's profile', inputSchema: {} },
+  { description: "Return the caller's profile", inputSchema: {} },
   async () => {
-    const identity = getIdentity() as { sub: string; email: string };
+    const identity = getIdentity<{ sub: string; email: string }>();
     return {
-      content: [{ type: 'text', text: `Hello, ${identity.email}` }],
+      content: [{ type: 'text', text: `Hello, ${identity?.email}` }],
     };
   }
 );
@@ -253,7 +257,7 @@ mcpServer.registerTool(
   async ({ userId }) => {
     checkScopes(['admin', 'write:users']); // throws if either scope is missing
 
-    const identity = getIdentity() as { sub: string };
+    const identity = getIdentity<{ sub: string }>();
     // proceed with deletion...
     return { content: [{ type: 'text', text: `Deleted ${userId}` }] };
   }
@@ -278,6 +282,8 @@ createMcpRouter(mcpServer, {
   },
 });
 ```
+
+The `resource` field in the metadata document is automatically set to `resourceServerUrl + path` (e.g. `https://mcp.example.com/mcp` for the default path). This means MCP clients that follow `resource` to connect will land on the actual MCP endpoint rather than the bare origin.
 
 **With your own auth middleware** — use `createProtectedResourceMetadataMiddleware` as a standalone middleware, mounted _before_ your auth layer so discovery stays unauthenticated:
 
@@ -340,6 +346,26 @@ createMcpRouter(mcpServer, {
 
 Both fields are optional. Omitting `resourceMetadataUrl` keeps the bare `Bearer` header, and the `publicMethods` default matches what MCP clients expect for discovery.
 
+### Supporting clients that connect to the bare origin
+
+Some MCP clients always POST to the bare origin (`/`) regardless of the `resource` value in the metadata. To serve both behaviors from the same router, use the `aliases` option:
+
+```typescript
+createMcpRouter(mcpServer, {
+  // The primary endpoint — also the value advertised as `resource` in metadata.
+  path: '/mcp',
+  // Additionally handle requests at the bare root for clients that ignore `resource`.
+  aliases: ['/'],
+  auth: {
+    verifyToken: async (token) => myVerify(token),
+    resourceServerUrl: 'https://mcp.example.com',
+    authorizationServerUrl: 'https://auth.example.com',
+  },
+});
+```
+
+The discovery endpoint (`/.well-known/oauth-protected-resource`) remains publicly accessible even when `aliases` includes `'/'`.
+
 ## Issuing tokens for MCP clients
 
 The `auth` option above covers the **resource-server** half of MCP authorization — it verifies tokens issued by an external authorization server (Cognito, Auth0, …). To make your own first-party server _issue_ the tokens an MCP client runs the full OAuth flow against, add the [`@ttoss/http-server-auth`](https://ttoss.dev/docs/modules/packages/http-server-auth) plugin's `oauthServer()` and pair it with `createMcpRouter({ auth: { verifyToken } })` so one deployment both issues and verifies tokens. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline.
@@ -355,6 +381,7 @@ Creates a Koa router configured to handle MCP protocol requests.
 - `server` (`McpServer`) — MCP server instance with registered tools and resources
 - `options` (`McpRouterOptions`) — Optional configuration
   - `path` (`string`) — HTTP path for MCP endpoint (default: `'/mcp'`)
+  - `aliases` (`string[]`) — Additional paths where the MCP handler is also mounted; use `['/']` to also handle requests at the bare root (default: `[]`)
   - `sessionIdGenerator` (`() => string`) — Session ID generator for stateful servers (default: `undefined` for stateless)
   - `apiBaseUrl` (`string`) — Base URL prepended to relative paths in `apiCall`
   - `getApiHeaders` (`(ctx: Context) => Record<string, string>`) — Return headers to inject into every `apiCall` for this request
@@ -362,7 +389,7 @@ Creates a Koa router configured to handle MCP protocol requests.
     - `auth.cognitoUserPool` — Cognito user pool config (`userPoolId`, `clientId`, `tokenUse`)
     - `auth.verifyToken` — Custom async token verifier `(token: string) => Promise<unknown>`
     - `auth.requiredScopes` — Router-level scope guard; returns 403 if any scope is missing
-    - `auth.resourceServerUrl` + `auth.authorizationServerUrl` — Enable `/.well-known/oauth-protected-resource`
+    - `auth.resourceServerUrl` + `auth.authorizationServerUrl` — Enable `/.well-known/oauth-protected-resource`; the metadata `resource` is set to `resourceServerUrl + path` so clients following `resource` land on the actual MCP endpoint
     - `auth.publicMethods` — JSON-RPC methods that bypass verification (default `['initialize', 'tools/list']`)
     - `auth.resourceMetadataUrl` — Emit RFC 9728 `WWW-Authenticate: Bearer resource_metadata="…"` on 401
 
@@ -381,11 +408,14 @@ Generic HTTP helper for use inside MCP tool handlers.
 
 **Returns:** `Promise<unknown>` — Parsed JSON response body
 
-### `getIdentity()`
+### `getIdentity<T>()`
 
 Returns the verified JWT payload for the current MCP request. Only available inside a tool handler when `auth` is configured. Returns `undefined` when called outside an authenticated context.
 
-**Returns:** `unknown` — Verified token payload (cast to your expected shape)
+Accepts an optional type parameter so tool handlers can avoid manual casts:
+`getIdentity<{ sub: string; scope: string }>()` returns `T | undefined` instead of `unknown`.
+
+**Returns:** `T | undefined` — Verified token payload typed as `T` (defaults to `unknown`)
 
 ### `checkScopes(required)`
 
@@ -636,26 +666,84 @@ This package implements the [Model Context Protocol](https://spec.modelcontextpr
 
 ### Stateless vs stateful mode
 
-- **Stateless** (default, `sessionIdGenerator: undefined`) — a fresh transport is created per HTTP request. No session tracking. Suitable for serverless environments and simple integrations.
-- **Stateful** (`sessionIdGenerator` provided) — a single shared transport handles all requests and tracks sessions by ID.
+The router runs **stateless by default**: each request creates a fresh transport, and no `Mcp-Session-Id` is issued. This is the right mode for Bearer/API-token auth, serverless functions, and any multi-instance deployment, because every request carries its own identity through `auth.verifyToken` — there is no session to coordinate across instances.
+
+Pass `sessionIdGenerator` only when you have a genuine session requirement: server-initiated events over SSE, or streaming that must preserve context across multiple requests. Stateful mode keeps a single shared transport per session, so it needs session affinity (or shared state) when running behind more than one instance.
+
+If you authenticate with `auth.verifyToken`, you do not need `sessionIdGenerator`. The identity is resolved from the token on every request, so adding session tracking only adds coordination cost. Mixing the two — stateful transport plus per-request token auth — is the common source of "tools/call fails after initialize" bugs: the client binds to a session the auth layer never consults.
+
+| Mode                            | When                                          | Trade-off                             |
+| ------------------------------- | --------------------------------------------- | ------------------------------------- |
+| Stateless (default)             | Bearer/API tokens, serverless, multi-instance | DB/verify hit per request             |
+| Stateful (`sessionIdGenerator`) | SSE events, context-preserving streams        | Needs session affinity / shared state |
+
+## Testing an MCP server
+
+MCP requests are plain JSON-RPC POSTs to the router path. The `initialize` and `tools/list` methods are public by default, so they need no auth header; `tools/call` runs through `auth.verifyToken`. The client must send `Accept: application/json, text/event-stream` — the transport rejects requests that do not accept the event-stream media type.
+
+```typescript
+const res = await request(app.callback())
+  .post('/mcp')
+  .set('Content-Type', 'application/json')
+  .set('Accept', 'application/json, text/event-stream')
+  .send({
+    jsonrpc: '2.0',
+    id: 1,
+    method: 'initialize',
+    params: {
+      protocolVersion: '2025-06-18',
+      capabilities: {},
+      clientInfo: { name: 'test', version: '1.0.0' },
+    },
+  });
+expect(res.status).toBe(200);
+// Stateless mode (default): no session header is issued.
+// Stateful mode (sessionIdGenerator set): assert the header instead.
+expect(res.headers['mcp-session-id']).toBeUndefined();
+
+// A tool call carries identity through the Authorization header, not a session.
+const call = await request(app.callback())
+  .post('/mcp')
+  .set('Content-Type', 'application/json')
+  .set('Accept', 'application/json, text/event-stream')
+  .set('Authorization', `Bearer ${token}`)
+  .send({
+    jsonrpc: '2.0',
+    id: 2,
+    method: 'tools/call',
+    params: { name: 'my-tool', arguments: {} },
+  });
+expect(call.status).toBe(200);
+```
+
+### `publicMethods` and OAuth clients
+
+`auth.publicMethods` defaults to `['initialize', 'tools/list']`, which lets clients discover the server before they have a token. This default has an important effect on OAuth-aware clients (e.g. a Claude connector):
+
+- With the default, `initialize` returns `200` unauthenticated, so an OAuth client concludes the server is public and never starts the OAuth flow — while `notifications/initialized` still returns `401`, breaking the handshake. The visible symptom is "connected, no tools available, no sign-in prompt".
+- Setting `publicMethods: []` makes `initialize` return `401` + `WWW-Authenticate`, which triggers the client's OAuth discovery and PKCE flow.
+
+Use the default when token auth is handled outside the OAuth flow (Cognito, API keys, Bearer tokens). Set `publicMethods: []` only when you want OAuth clients to self-discover and authenticate before anything else.
 
 ## AWS Lambda Deployment
 
-The default **stateless** mode (see [Stateless vs stateful mode](#stateless-vs-stateful-mode)) is built for serverless: a fresh transport is created per request, nothing is kept in memory between invocations, and responses are plain JSON (no SSE) — exactly the request/response shape API Gateway and Lambda Function URLs expect. Because the router is a regular Koa app, you wrap it with any Koa-to-Lambda adapter (e.g. [`serverless-http`](https://github.com/dougmoscrop/serverless-http)) and front it with an HTTP API Gateway or a Function URL.
+The default **stateless** mode (see [Stateless vs stateful mode](#stateless-vs-stateful-mode)) is built for serverless: a fresh transport is created per request, nothing is kept in memory between invocations, and responses are plain JSON (no SSE) — exactly the request/response shape API Gateway and Lambda Function URLs expect.
+
+Use [`@ttoss/http-server-serverless`](https://github.com/ttoss/ttoss/tree/main/packages/http-server-serverless) as the Lambda adapter. It wraps `serverless-http` and additionally populates `req.rawHeaders` from the API Gateway event before the request reaches Koa. Without this step, `@hono/node-server` — used internally by the MCP transport — drops all headers (including `Accept`) and every `initialize` request returns HTTP 406.
 
 ```mermaid
 flowchart LR
     Client[MCP Client] -->|POST /mcp| GW[API Gateway / Function URL]
     GW --> L[Lambda]
     subgraph L[Lambda]
-        H[serverless-http handler] --> App[Koa App + createMcpRouter]
+        H[toLambdaHandler] -->|rawHeaders populated| App[Koa App + createMcpRouter]
     end
 ```
 
 ```typescript
-import serverless from 'serverless-http';
 import { App, bodyParser } from '@ttoss/http-server';
 import { createMcpRouter, McpServer, z } from '@ttoss/http-server-mcp';
+import { toLambdaHandler } from '@ttoss/http-server-serverless';
 
 const mcpServer = new McpServer({ name: 'my-mcp-server', version: '1.0.0' });
 
@@ -675,7 +763,7 @@ app.use(bodyParser());
 // Stateless by default — no sessionIdGenerator
 app.use(createMcpRouter(mcpServer).routes());
 
-export const handler = serverless(app.callback());
+export const handler = toLambdaHandler(app);
 ```
 
 Keep the following in mind:
@@ -689,6 +777,7 @@ Keep the following in mind:
 ## Related Packages
 
 - [@ttoss/http-server](https://ttoss.dev/docs/modules/packages/http-server) - HTTP server foundation
+- [@ttoss/http-server-serverless](https://github.com/ttoss/ttoss/tree/main/packages/http-server-serverless) - AWS Lambda adapter (required for MCP on Lambda)
 - [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/sdk) - MCP SDK
 
 ## Resources

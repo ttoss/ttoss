@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.8.2...@ttoss/react-dashboard@0.8.3) (2026-06-22)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.8.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.8.1...@ttoss/react-dashboard@0.8.2) (2026-06-22)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.8.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.8.0...@ttoss/react-dashboard@0.8.1) (2026-06-19)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+# [0.8.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.21...@ttoss/react-dashboard@0.8.0) (2026-06-19)
+
+### Features
+
+- **react-dashboard:** composable filters, sx passthrough, type fix, conditional divider ([#1087](https://github.com/ttoss/ttoss/issues/1087)) ([c93f5d4](https://github.com/ttoss/ttoss/commit/c93f5d46db448f1e164cdd1fcd8243e063e9cea5))
+
+## [0.7.21](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.20...@ttoss/react-dashboard@0.7.21) (2026-06-19)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
 ## 0.7.20 (2026-06-15)
 
 ### Bug Fixes

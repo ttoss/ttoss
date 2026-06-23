@@ -181,7 +181,7 @@ describe('GeoVisClickContext', () => {
   });
 
   // 1. useGeoVisClick throws outside provider
-  test('useGeoVisClick throws when used outside GeoVisProvider', () => {
+  test('useGeoVisClick throws when used outside GeoVisProvider', async () => {
     expect(() => {
       renderHook(() => {
         return useGeoVisClick();
@@ -190,7 +190,7 @@ describe('GeoVisClickContext', () => {
   });
 
   // 2. useGeoVisClick returns null initially inside provider
-  test('useGeoVisClick returns null when no feature has been clicked', () => {
+  test('useGeoVisClick returns null when no feature has been clicked', async () => {
     const { result } = renderHook(
       () => {
         return useGeoVisClick();
@@ -201,6 +201,10 @@ describe('GeoVisClickContext', () => {
         },
       }
     );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
 
     expect(result.current).toBeNull();
   });
@@ -214,6 +218,10 @@ describe('GeoVisClickContext', () => {
         <ExposeRuntime onReady={onReady} />
       </GeoVisProvider>
     );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
 
     await waitFor(() => {
       expect(onReady).toHaveBeenCalled();
@@ -247,6 +255,10 @@ describe('GeoVisClickContext', () => {
         },
       }
     );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
 
     await waitFor(() => {
       expect(onReady).toHaveBeenCalled();
@@ -288,6 +300,10 @@ describe('GeoVisClickContext', () => {
         },
       }
     );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
 
     await waitFor(() => {
       expect(onReady).toHaveBeenCalled();
@@ -333,6 +349,10 @@ describe('GeoVisClickContext', () => {
         },
       }
     );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
 
     await waitFor(() => {
       expect(onReady).toHaveBeenCalled();

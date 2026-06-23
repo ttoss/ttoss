@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.8.0 (2026-06-19)
+
+### Features
+
+- **auth-core:** add createRedirectConsentOnAuthorize and Postgres consent store ([#1094](https://github.com/ttoss/ttoss/issues/1094)) ([93d4855](https://github.com/ttoss/ttoss/commit/93d4855961a2a6a4ab23f7ce88fb8d95867bd901))
+
 # [0.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.6.2...@ttoss/auth-core@0.7.0) (2026-06-14)
 
 ### Features

@@ -38,7 +38,11 @@ export interface McpAuthOptions {
    * JWTs, opaque tokens). Resolve with the verified payload, or throw to reject.
    */
   verifyToken?: (token: string) => Promise<unknown>;
-  /** Scopes that must all be present on the token's `scope` claim, else `403`. */
+  /**
+   * Scopes that must all be present on the token, else `403`.
+   * `verifyToken` may return either `scope: string` (space-separated) or
+   * `scopes: string[]`; both are normalised internally.
+   */
   requiredScopes?: string[];
   /**
    * JSON-RPC methods (read from `body.method`) that bypass verification.
@@ -233,9 +237,13 @@ export const apiCall = async (
 /**
  * Returns the verified JWT payload for the current MCP request.
  * Only available inside a tool handler when `auth` is configured on the router.
+ *
+ * Accepts an optional type parameter to avoid casting at call sites:
+ * `getIdentity<{ sub: string; email: string }>()` returns `T | undefined`.
+ * Omitting the type parameter keeps the return type as `unknown | undefined`.
  */
-export const getIdentity = (): unknown => {
-  return requestContextStore.getStore()?.identity;
+export const getIdentity = <T = unknown>(): T | undefined => {
+  return requestContextStore.getStore()?.identity as T | undefined;
 };
 
 /**
@@ -243,7 +251,9 @@ export const getIdentity = (): unknown => {
  * Throws if any scope is missing — the MCP SDK catches this and returns a
  * tool error to the client. Use inside tool handlers for per-tool authorization.
  *
- * Cognito tokens carry scopes as a space-separated string in `payload.scope`.
+ * Accepts either `scope: string` (space-separated, standard JWT claim) or
+ * `scopes: string[]` from `verifyToken`. If neither is present and `required`
+ * is non-empty, throws with a descriptive message instead of a silent 403.
  *
  * @example
  * ```typescript
@@ -254,8 +264,27 @@ export const getIdentity = (): unknown => {
  * ```
  */
 export const checkScopes = (required: string[]): void => {
-  const identity = getIdentity() as { scope?: string } | undefined;
-  const tokenScopes = (identity?.scope ?? '').split(' ');
+  const identity = getIdentity() as
+    | { scope?: string; scopes?: string[] }
+    | undefined;
+  let scopeString: string | null = null;
+  if (typeof identity?.scope === 'string') {
+    scopeString = identity.scope;
+  } else if (
+    Array.isArray(identity?.scopes) &&
+    identity.scopes.every((s) => {
+      return typeof s === 'string';
+    })
+  ) {
+    scopeString = (identity.scopes as string[]).join(' ');
+  }
+  if (scopeString === null && required.length > 0) {
+    throw new Error(
+      `verifyToken returned no scope/scopes but requiredScopes is set (${required.join(', ')}). ` +
+        'Return either scope: string or scopes: string[] from verifyToken.'
+    );
+  }
+  const tokenScopes = scopeString ? scopeString.split(' ') : [];
   const missing = required.filter((s) => {
     return !tokenScopes.includes(s);
   });
@@ -273,6 +302,18 @@ export interface McpRouterOptions {
    * @default '/mcp'
    */
   path?: string;
+
+  /**
+   * Additional HTTP paths where the MCP server is also mounted.
+   *
+   * Useful when MCP clients differ in where they connect after OAuth: some
+   * follow the protected-resource `resource` metadata value as the endpoint,
+   * others always connect to the bare origin (`/`). Setting `aliases: ['/']`
+   * serves both without requiring app-level path rewrites.
+   *
+   * @example ['/'] // also handle MCP requests at the bare root
+   */
+  aliases?: string[];
 
   /**
    * Optional session ID generator for stateful MCP servers.
@@ -395,9 +436,11 @@ export interface McpRouterOptions {
 export const createMcpRouter = (
   server: McpServer,
   options: McpRouterOptions = {}
+  // eslint-disable-next-line complexity
 ) => {
   const {
     path = '/mcp',
+    aliases = [],
     sessionIdGenerator,
     apiBaseUrl,
     getApiHeaders,
@@ -436,6 +479,13 @@ export const createMcpRouter = (
 
   const router = new Router();
 
+  // Auth middleware applied inline per route (not via router.use prefix match)
+  // so that unrelated paths like /.well-known/* are never intercepted — even
+  // when aliases contains '/', which would otherwise prefix-match everything.
+  let authCheck:
+    | ((ctx: Context, next: () => Promise<void>) => Promise<void>)
+    | undefined;
+
   if (auth) {
     const verifyToken = buildVerifyToken(auth);
     const publicMethods = new Set(auth.publicMethods ?? DEFAULT_PUBLIC_METHODS);
@@ -453,7 +503,7 @@ export const createMcpRouter = (
 
     // Public lifecycle/discovery methods bypass verification so clients can
     // discover the server before they have a token (MCP authorization spec).
-    router.use(path, async (ctx: Context, next) => {
+    authCheck = async (ctx: Context, next: () => Promise<void>) => {
       const method = (ctx.request.body as { method?: string } | undefined)
         ?.method;
       if (publicMethods.has(method ?? '')) {
@@ -461,12 +511,16 @@ export const createMcpRouter = (
         return;
       }
       await verify(ctx, next);
-    });
+    };
 
     if (auth.resourceServerUrl && auth.authorizationServerUrl) {
+      // Append `path` to the base URL so clients that follow the `resource`
+      // value land on the actual MCP endpoint, not the bare origin.
+      const base = auth.resourceServerUrl.replace(/\/$/, '');
+      const resourceUrl = path === '/' ? base : `${base}${path}`;
       router.get('/.well-known/oauth-protected-resource', (ctx: Context) => {
         ctx.body = {
-          resource: auth.resourceServerUrl,
+          resource: resourceUrl,
           authorization_servers: [auth.authorizationServerUrl],
         };
       });
@@ -533,7 +587,7 @@ export const createMcpRouter = (
     }
   };
 
-  router.post(path, async (ctx: Context) => {
+  const postHandler = async (ctx: Context): Promise<void> => {
     try {
       await handleWithContext(ctx, ctx.request.body);
     } catch (error) {
@@ -546,10 +600,9 @@ export const createMcpRouter = (
         };
       }
     }
-  });
+  };
 
-  // Support DELETE for session termination (per MCP spec)
-  router.delete(path, async (ctx: Context) => {
+  const deleteHandler = async (ctx: Context): Promise<void> => {
     try {
       await handleWithContext(ctx);
     } catch (error) {
@@ -561,7 +614,20 @@ export const createMcpRouter = (
         };
       }
     }
-  });
+  };
+
+  // Register POST and DELETE at the primary path and every alias.
+  // Support DELETE for session termination (per MCP spec).
+  const allPaths = [path, ...aliases];
+  for (const mcpPath of allPaths) {
+    if (authCheck) {
+      router.post(mcpPath, authCheck, postHandler);
+      router.delete(mcpPath, authCheck, deleteHandler);
+    } else {
+      router.post(mcpPath, postHandler);
+      router.delete(mcpPath, deleteHandler);
+    }
+  }
 
   return router;
 };

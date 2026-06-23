@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.44.3](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.44.2...@ttoss/forms@0.44.3) (2026-06-22)
+
+**Note:** Version bump only for package @ttoss/forms
+
+## [0.44.2](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.44.1...@ttoss/forms@0.44.2) (2026-06-22)
+
+**Note:** Version bump only for package @ttoss/forms
+
+## [0.44.1](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.44.0...@ttoss/forms@0.44.1) (2026-06-19)
+
+**Note:** Version bump only for package @ttoss/forms
+
+# [0.44.0](https://github.com/ttoss/ttoss/compare/@ttoss/forms@0.43.35...@ttoss/forms@0.44.0) (2026-06-19)
+
+### Features
+
+- **react-notifications:** add actions support and render as buttons ([#1080](https://github.com/ttoss/ttoss/issues/1080)) ([0c8c32a](https://github.com/ttoss/ttoss/commit/0c8c32a2c6e35f740955580b72b4d0131c5ad983)), closes [#1079](https://github.com/ttoss/ttoss/issues/1079)
+
 ## 0.43.35 (2026-06-15)
 
 ### Bug Fixes

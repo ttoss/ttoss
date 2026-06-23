@@ -1,4 +1,4 @@
-import { Meta, StoryFn } from '@storybook/react-webpack5';
+import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import {
   NotificationsBox,
   NotificationsProvider,
@@ -271,6 +271,85 @@ export const DirectNotifications: StoryFn = () => {
         }}
       >
         <NotificationsBox notifications={directNotifications} />
+      </Box>
+    </Stack>
+  );
+};
+
+export const WithActions: StoryFn = () => {
+  const { addNotification } = useNotifications();
+
+  return (
+    <Stack sx={{ gap: '4' }}>
+      <Heading>Notifications with Actions</Heading>
+      <Text>
+        Notifications can include action buttons that link to external URLs.
+        Actions are rendered as buttons at the bottom of the card.
+      </Text>
+
+      <Stack sx={{ gap: '2', flexDirection: 'row' }}>
+        <Button
+          onClick={() => {
+            addNotification({
+              title: 'Action required',
+              message: 'Your account needs attention.',
+              type: 'warning',
+              actions: [
+                {
+                  action: 'open_url',
+                  url: 'https://example.com/details',
+                  label: 'View details',
+                },
+              ],
+            });
+          }}
+        >
+          Single Action
+        </Button>
+        <Button
+          onClick={() => {
+            addNotification({
+              title: 'Update available',
+              message: 'A new version is ready. Review the changelog.',
+              type: 'info',
+              actions: [
+                {
+                  action: 'open_url',
+                  url: 'https://example.com/changelog',
+                  label: 'See changelog',
+                },
+                {
+                  action: 'open_url',
+                  url: 'https://example.com/update',
+                  label: 'Update now',
+                },
+                {
+                  action: 'open_url',
+                  url: 'https://example.com/changelog',
+                  label: 'See changelog',
+                },
+                {
+                  action: 'open_url',
+                  url: 'https://example.com/update',
+                  label: 'Update now',
+                },
+              ],
+            });
+          }}
+        >
+          Multiple Actions
+        </Button>
+      </Stack>
+
+      <Box
+        sx={{
+          padding: '4',
+          borderWidth: '1',
+          borderColor: 'gray.300',
+          borderRadius: 'md',
+        }}
+      >
+        <NotificationsBox />
       </Box>
     </Stack>
   );

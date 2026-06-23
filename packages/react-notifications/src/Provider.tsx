@@ -1,4 +1,5 @@
 import {
+  type NotificationAction,
   toast,
   ToastContainer,
   type ToastContainerProps,
@@ -21,6 +22,7 @@ export type Notification = {
   toast?: ToastOptions;
   boxId?: string | number;
   persist?: boolean;
+  actions?: NotificationAction[];
 };
 
 const NotificationsContext = React.createContext<{

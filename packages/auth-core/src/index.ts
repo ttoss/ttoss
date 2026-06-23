@@ -60,6 +60,17 @@ export {
   verifyOneTimeToken,
 } from './oneTimeToken';
 export {
+  type ConsentStoreQuery,
+  createPostgresConsentStore,
+  type CreatePostgresConsentStoreOptions,
+} from './postgresConsentStore';
+export {
+  type ConsentGrant,
+  type ConsentGrantStore,
+  createRedirectConsentOnAuthorize,
+  type CreateRedirectConsentOnAuthorizeOptions,
+} from './redirectConsentOnAuthorize';
+export {
   createRefreshRotation,
   type IssueRefreshTokenArgs,
   type RefreshRotation,

@@ -37,7 +37,11 @@ describe('NotificationCard', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  test('renders actions with open_url', () => {
+  test('renders actions with open_url as buttons that open the url', () => {
+    const windowOpenSpy = jest.spyOn(window, 'open').mockImplementation(() => {
+      return null;
+    });
+
     render(
       <NotificationCard
         type="info"
@@ -51,9 +55,13 @@ describe('NotificationCard', () => {
         ]}
       />
     );
-    const link = screen.getByText('Click here');
-    expect(link).toBeInTheDocument();
-    expect(link.closest('a')).toHaveAttribute('href', 'https://example.com');
+
+    const actionButton = screen.getByRole('button', { name: 'Click here' });
+    expect(actionButton).toBeInTheDocument();
+    fireEvent.click(actionButton);
+    expect(windowOpenSpy).toHaveBeenCalledWith('https://example.com', '_blank');
+
+    windowOpenSpy.mockRestore();
   });
 
   test('renders action without label uses default label', () => {
@@ -64,7 +72,67 @@ describe('NotificationCard', () => {
         actions={[{ action: 'open_url', url: 'https://example.com' }]}
       />
     );
-    expect(screen.getByText('Acessar')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Acessar' })).toBeInTheDocument();
+  });
+
+  test('renders nothing for actions when array is empty', () => {
+    render(<NotificationCard type="info" message="msg" actions={[]} />);
+    expect(screen.queryByRole('button')).toBeNull();
+  });
+
+  test('renders callback action button and calls onClick', () => {
+    const onClick = jest.fn();
+    render(
+      <NotificationCard
+        type="info"
+        message="msg"
+        actions={[{ action: 'callback', onClick, label: 'Retry' }]}
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Retry' }));
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  test('renders nothing when empty tags array is passed', () => {
+    render(
+      <NotificationCard type="info" title="Title" message="msg" tags={[]} />
+    );
+    expect(document.querySelectorAll('[class*="tag"]').length).toBe(0);
+  });
+
+  test('renders multiple actions as separate buttons', () => {
+    const windowOpenSpy = jest.spyOn(window, 'open').mockImplementation(() => {
+      return null;
+    });
+
+    render(
+      <NotificationCard
+        type="warning"
+        message="Action required"
+        actions={[
+          { action: 'open_url', url: 'https://example.com/a', label: 'View' },
+          {
+            action: 'open_url',
+            url: 'https://example.com/b',
+            label: 'Dismiss',
+          },
+        ]}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'View' }));
+    expect(windowOpenSpy).toHaveBeenCalledWith(
+      'https://example.com/a',
+      '_blank'
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Dismiss' }));
+    expect(windowOpenSpy).toHaveBeenCalledWith(
+      'https://example.com/b',
+      '_blank'
+    );
+
+    windowOpenSpy.mockRestore();
   });
 
   test('renders caption when provided', () => {

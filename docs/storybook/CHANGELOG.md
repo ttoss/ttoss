@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.31.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.30.1...@docs/storybook@3.31.0) (2026-06-22)
+
+### Features
+
+- **components:** add clientLogoUrl prop to OAuthConsent ([#1097](https://github.com/ttoss/ttoss/issues/1097)) ([5291de7](https://github.com/ttoss/ttoss/commit/5291de715cf53476f6c3d4d3c409e8241659be76))
+
+## [3.30.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.30.0...@docs/storybook@3.30.1) (2026-06-22)
+
+**Note:** Version bump only for package @docs/storybook
+
+# [3.30.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.29.1...@docs/storybook@3.30.0) (2026-06-19)
+
+### Features
+
+- **components:** add OAuthConsent component with hierarchical scope support ([#1093](https://github.com/ttoss/ttoss/issues/1093)) ([da9b0e4](https://github.com/ttoss/ttoss/commit/da9b0e4b9bf839123cb6560402fda4f150fb8f08))
+
+## [3.29.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.29.0...@docs/storybook@3.29.1) (2026-06-19)
+
+**Note:** Version bump only for package @docs/storybook
+
+# [3.29.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.28.0...@docs/storybook@3.29.0) (2026-06-19)
+
+### Features
+
+- **react-notifications:** add actions support and render as buttons ([#1080](https://github.com/ttoss/ttoss/issues/1080)) ([0c8c32a](https://github.com/ttoss/ttoss/commit/0c8c32a2c6e35f740955580b72b4d0131c5ad983)), closes [#1079](https://github.com/ttoss/ttoss/issues/1079)
+
+# [3.28.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.27.0...@docs/storybook@3.28.0) (2026-06-19)
+
+### Features
+
+- **geovis:** configurable legend — labelFormat, normalization, position, reference ([#1012](https://github.com/ttoss/ttoss/issues/1012)) ([d6ea06a](https://github.com/ttoss/ttoss/commit/d6ea06a02861bbfe79692de2032340b09065b913))
+
+# [3.27.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.26.0...@docs/storybook@3.27.0) (2026-06-18)
+
+### Features
+
+- **geovis-workspace:** add sidebar-driven workspace package ([#1075](https://github.com/ttoss/ttoss/issues/1075)) ([1deb9ee](https://github.com/ttoss/ttoss/commit/1deb9eeec2c15ad50ae1950a40a34df4029f274d))
+
 # [3.26.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.25.6...@docs/storybook@3.26.0) (2026-06-17)
 
 ### Features

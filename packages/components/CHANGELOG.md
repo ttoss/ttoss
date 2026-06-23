@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.17.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.16.1...@ttoss/components@2.17.0) (2026-06-22)
+
+### Features
+
+- **components:** add clientLogoUrl prop to OAuthConsent ([#1097](https://github.com/ttoss/ttoss/issues/1097)) ([5291de7](https://github.com/ttoss/ttoss/commit/5291de715cf53476f6c3d4d3c409e8241659be76))
+
+## [2.16.1](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.16.0...@ttoss/components@2.16.1) (2026-06-22)
+
+### Bug Fixes
+
+- **components:** make entire OAuthConsent scope row toggle the checkbox ([#1096](https://github.com/ttoss/ttoss/issues/1096)) ([5a7a82f](https://github.com/ttoss/ttoss/commit/5a7a82f9d1817d10f803419fb3a95575fedcdbf1))
+
+# [2.16.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.15.0...@ttoss/components@2.16.0) (2026-06-19)
+
+### Features
+
+- **components:** add OAuthConsent component with hierarchical scope support ([#1093](https://github.com/ttoss/ttoss/issues/1093)) ([da9b0e4](https://github.com/ttoss/ttoss/commit/da9b0e4b9bf839123cb6560402fda4f150fb8f08))
+
+# [2.15.0](https://github.com/ttoss/ttoss/compare/@ttoss/components@2.14.31...@ttoss/components@2.15.0) (2026-06-19)
+
+### Features
+
+- **react-notifications:** add actions support and render as buttons ([#1080](https://github.com/ttoss/ttoss/issues/1080)) ([0c8c32a](https://github.com/ttoss/ttoss/commit/0c8c32a2c6e35f740955580b72b4d0131c5ad983)), closes [#1079](https://github.com/ttoss/ttoss/issues/1079)
+
 ## 2.14.31 (2026-06-15)
 
 ### Bug Fixes

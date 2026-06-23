@@ -5,6 +5,7 @@ import { Flex } from '@ttoss/ui';
 export default {
   title: 'Components/NotificationCard',
   component: NotificationCard,
+  tags: ['autodocs'],
 } as Meta;
 
 export const Success: StoryObj = {
@@ -92,6 +93,152 @@ export const WithTag: StoryObj = {
     message: 'Your action has been completed and new features are now working.',
     caption: '2d ago',
     tags: ['New', 'Feature', 'Available'],
+  },
+};
+
+export const WithActions: StoryObj = {
+  args: {
+    type: 'info',
+    title: 'Action required',
+    message: 'Your account needs attention. Please review the details below.',
+    actions: [
+      {
+        action: 'open_url',
+        url: 'https://example.com/details',
+        label: 'View details',
+      },
+      {
+        action: 'open_url',
+        url: 'https://example.com/docs',
+        label: 'Read docs',
+      },
+    ],
+  },
+};
+
+export const WithSingleAction: StoryObj = {
+  args: {
+    type: 'warning',
+    title: 'Payment overdue',
+    message: 'Your subscription payment is overdue. Update your billing info.',
+    actions: [
+      {
+        action: 'open_url',
+        url: 'https://example.com/billing',
+        label: 'Update billing',
+      },
+    ],
+  },
+};
+
+export const WithCallbackAction: StoryObj = {
+  args: {
+    type: 'warning',
+    title: 'Sync required',
+    message: 'Your data is out of sync. Run a manual sync to update.',
+    actions: [
+      {
+        action: 'callback',
+        label: 'Sync now',
+        onClick: () => {
+          alert('Sync triggered!');
+        },
+      },
+    ],
+  },
+};
+
+export const WithMixedActions: StoryObj = {
+  args: {
+    type: 'info',
+    title: 'Update available',
+    message: 'A new version is ready. Review the changelog or update now.',
+    actions: [
+      {
+        action: 'open_url',
+        url: 'https://example.com/changelog',
+        label: 'See changelog',
+      },
+      {
+        action: 'callback',
+        label: 'Update now',
+        onClick: () => {
+          alert('Update started!');
+        },
+      },
+    ],
+  },
+};
+
+export const WithFourActions: StoryObj = {
+  args: {
+    type: 'warning',
+    title: 'Multiple actions',
+    message: 'This card has four action buttons to test layout wrapping.',
+    actions: [
+      {
+        action: 'open_url',
+        url: 'https://example.com/a',
+        label: 'View report',
+      },
+      {
+        action: 'callback',
+        label: 'Sync now',
+        onClick: () => {
+          return alert('Sync');
+        },
+      },
+      { action: 'open_url', url: 'https://example.com/b', label: 'See docs' },
+      {
+        action: 'callback',
+        label: 'Dismiss all',
+        onClick: () => {
+          return alert('Dismiss');
+        },
+      },
+    ],
+  },
+};
+
+export const WithEightActions: StoryObj = {
+  args: {
+    type: 'info',
+    title: 'Stress test — 8 actions',
+    message: 'Verifying wrap behaviour with a large number of action buttons.',
+    actions: [
+      { action: 'open_url', url: 'https://example.com/1', label: 'Action 1' },
+      {
+        action: 'callback',
+        label: 'Action 2',
+        onClick: () => {
+          return alert('2');
+        },
+      },
+      { action: 'open_url', url: 'https://example.com/3', label: 'Action 3' },
+      {
+        action: 'callback',
+        label: 'Action 4',
+        onClick: () => {
+          return alert('4');
+        },
+      },
+      { action: 'open_url', url: 'https://example.com/5', label: 'Action 5' },
+      {
+        action: 'callback',
+        label: 'Action 6',
+        onClick: () => {
+          return alert('6');
+        },
+      },
+      { action: 'open_url', url: 'https://example.com/7', label: 'Action 7' },
+      {
+        action: 'callback',
+        label: 'Action 8',
+        onClick: () => {
+          return alert('8');
+        },
+      },
+    ],
   },
 };
 

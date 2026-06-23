@@ -296,7 +296,7 @@ export const ColorSwatchLegend = ({
   const fmt =
     formatValue ??
     ((v: number) => {
-      return v.toLocaleString('en-US');
+      return v.toLocaleString();
     });
   const entries: { color: string; label: string }[] = [
     { color: defaultColor, label: `< ${fmt(steps[0].threshold)}` },

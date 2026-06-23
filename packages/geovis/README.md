@@ -8,10 +8,10 @@
 pnpm add @ttoss/geovis
 ```
 
-You will also need to install MapLibre GL JS as a peer dependency:
+You will also need to install the following peer dependencies:
 
 ```shell
-pnpm add maplibre-gl
+pnpm add maplibre-gl @ttoss/ui
 ```
 
 ## Getting Started
@@ -70,6 +70,39 @@ Top-level spec object passed to `GeoVisProvider`.
 | `legends`     | `LegendSpec[]`            |          | Shared legend registry. Layers reference entries via `activeLegendId`.                                                                                   |
 | `mapData`     | `MapData[]`               |          | Attribute datasets joined to GeoJSON sources for choropleth coloring and tooltips.                                                                       |
 | `metadata`    | `Record<string, unknown>` |          | Arbitrary consumer metadata; not read by the runtime.                                                                                                    |
+
+### `LegendSpec`
+
+Each entry in `spec.legends` (or `layer.legends`) defines one choropleth legend.
+
+| Field           | Type                | Required | Description                                                                                                                                         |
+| --------------- | ------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`            | `string`            | ✓        | Unique legend identifier. Referenced by `activeLegendId` and `GeoVisLegend`.                                                                        |
+| `colorBy`       | `ColorBy`           | ✓        | Color-by configuration (`categorical` or `quantitative`).                                                                                           |
+| `title`         | `string`            |          | Short heading rendered above the swatches.                                                                                                          |
+| `subtitle`      | `string`            |          | Secondary description rendered below the title.                                                                                                     |
+| `labelFormat`   | `LabelFormatSpec`   |          | Controls how quantitative bin labels are generated. Defaults to `'range'` style when omitted. See [LabelFormatSpec](#labelformatspec) table below.  |
+| `normalization` | `NormalizationSpec` |          | Statistical normalisation metadata for the mapped values. Used to append semantic suffixes when `labelFormat.extended` is `true`.                   |
+| `position`      | `LegendPosition`    |          | Corner overlay position: `'top-left'`, `'top-right'`, `'bottom-left'`, `'bottom-right'`. When set, `GeoVisLegend` applies absolute CSS positioning. |
+| `noDataLabel`   | `string`            |          | Label for the "no data" swatch at the bottom of the legend. When omitted, no "no data" entry is shown.                                              |
+| `reference`     | `string`            |          | Bibliographic attribution below the swatches. Supports `{link:visible text\|https://example.com}` inline link syntax.                               |
+
+### `LabelFormatSpec`
+
+Controls how quantitative legend bin labels are generated. Set on `LegendSpec.labelFormat`.
+
+| `type`         | Extra fields                                              | Description                                                                                                                                |
+| -------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `'range'`      | `separator?`, `unit?`, `extended?`                        | Raw break values joined by a separator. Example: `50k – 100k`.                                                                             |
+| `'count'`      | `abbreviate?`, `extended?`                                | Compact integer counts with optional SI abbreviation. Example: `< 50k`.                                                                    |
+| `'percentage'` | `decimals?`, `denominator?`, `extended?`                  | Percentage values for data already in the [0, 1] range. Example: `0% – 10%`.                                                               |
+| `'stdDev'`     | `unit?: 'σ' \| 'sd'`, `extended?`                         | Standard deviation labels for diverging schemes. Example: `< −2σ`, `+1σ – +2σ`.                                                            |
+| `'labels'`     | `labels: string[]`, `extended?`                           | **Explicit label list.** One string per bin, in ascending order. JSON-serialisable. Bins beyond the array length fall back to range style. |
+| `'custom'`     | `formatter: (lower, upper, index) => string`, `extended?` | Runtime formatter function. Not JSON-serialisable; TypeScript-only.                                                                        |
+
+All variants support `extended?: boolean`. When `true`, a semantic suffix from the legend's `normalization` field is appended to every label (e.g. `< 50k inhabitants`).
+
+The `'labels'` type is the recommended choice when label text is known ahead of time — for example, qualitative classification categories (`'Low'`, `'Medium'`, `'High'`) or custom range descriptions. It is the only variant besides `'range'` and `'count'` that is fully JSON-serialisable.
 
 ### `VisualizationLayer`
 
@@ -358,6 +391,67 @@ const MyMap = ({ spec }) => {
 
 > **Important:** pass a stable array reference for `groups` (module constant or
 > `useMemo`). Changing the array reference re-appends all groups to the spec.
+
+### Avoiding unnecessary re-renders and refetches
+
+When boundary groups are used with dynamic paint overrides (e.g. colour picked
+from a Storybook control), `customizeBoundaryGroup` returns a **new object** on
+every paint change. If the new object reference is passed directly to
+`useBoundaryToggle`, the hook recomputes `specWithAll` and `spec`, which
+triggers `runtime.update()` and a full source/layer reconciliation cycle — even
+though the GeoJSON data URLs have not changed.
+
+**The `groups` array must be memoised.** Wrap it with `useMemo` and list only
+the dependencies that actually change the group identity (the paint values):
+
+```tsx
+const districtsGroup = React.useMemo(
+  () => customizeBoundaryGroup(baseDistrictsGroup, { lineColor, lineWidth }),
+  [lineColor, lineWidth]
+);
+
+const stateGroup = React.useMemo(
+  () =>
+    customizeBoundaryGroup(baseStateGroup, {
+      lineColor: stateLineColor,
+      lineWidth: stateLineWidth,
+    }),
+  [stateLineColor, stateLineWidth]
+);
+
+const boundaryGroups = React.useMemo(
+  () => [districtsGroup, stateGroup],
+  [districtsGroup, stateGroup]
+);
+```
+
+**Toggle effects should depend on `isVisible`, not on group objects.**
+`isVisible` is a stable callback whose identity only changes when the hidden
+set changes — group object references are irrelevant:
+
+```tsx
+const { spec, toggle, isVisible } = useBoundaryToggle(
+  specInput,
+  boundaryGroups
+);
+
+// Store latest group references in refs so effects always read the current paint
+const districtsGroupRef = React.useRef(districtsGroup);
+React.useEffect(() => {
+  districtsGroupRef.current = districtsGroup;
+}, [districtsGroup]);
+
+React.useEffect(() => {
+  if (showDistricts !== isVisible(districtsGroupRef.current))
+    toggle(districtsGroupRef.current);
+  // isVisible is the only dep that signals a visibility change;
+  // group object changes (paint) are read via the ref.
+}, [showDistricts, toggle, isVisible]);
+```
+
+> **Note:** `useBoundaryToggle` tracks visibility by the group's source ID
+> (`getBoundaryGroupId`), not by object reference. Groups can be recreated
+> (e.g. when paint overrides change) while preserving their visibility state.
 
 ## Spec Validation
 
