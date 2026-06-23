@@ -4,12 +4,8 @@
   "title": "VisualizationSpec",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "engine", "sources", "layers"],
+  "required": ["engine", "sources", "layers"],
   "properties": {
-    "id": {
-      "type": "string",
-      "minLength": 1
-    },
     "title": {
       "type": "string"
     },
