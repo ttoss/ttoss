@@ -1,5 +1,4 @@
 {
-  "id": "linked-map-chart",
   "title": "Linked Map Chart",
   "description": "Hovering a region on the map highlights it in the bar chart and vice-versa. Uses queryRenderedFeatures to sync map hover state with an external chart — based on the MapLibre 'Get features under the mouse pointer' example.",
   "engine": "maplibre",
