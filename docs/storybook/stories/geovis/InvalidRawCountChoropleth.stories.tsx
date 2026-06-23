@@ -41,20 +41,39 @@ const fmtDensity = (v: number) => {
 };
 
 const populationData: MapDataRow[] = [
-  { geometryId: 'Kigali City', value: 1_132_686 },
+  { geometryId: 'Kigali City', value: 854_000 },
   { geometryId: 'East Province', value: 2_595_703 },
   { geometryId: 'Western Province', value: 2_471_239 },
   { geometryId: 'Southern Province', value: 2_589_975 },
   { geometryId: 'Northern Province', value: 1_726_370 },
+  { geometryId: 'Gasabo District', value: 1_200_000 },
+  { geometryId: 'Huye District', value: 980_000 },
+  { geometryId: 'Musanze District', value: 1_450_000 },
+  { geometryId: 'Rubavu District', value: 720_000 },
+  { geometryId: 'Nyagatare District', value: 3_100_000 },
 ];
 
 const densityData: MapDataRow[] = [
-  { geometryId: 'Kigali City', value: 1551 },
+  { geometryId: 'Kigali City', value: 1_551 },
   { geometryId: 'East Province', value: 274 },
   { geometryId: 'Western Province', value: 420 },
   { geometryId: 'Southern Province', value: 434 },
   { geometryId: 'Northern Province', value: 527 },
-  { geometryId: 'North-West Province', value: 680 },
+  { geometryId: 'Gasabo District', value: 1_200 },
+  { geometryId: 'Huye District', value: 310 },
+  { geometryId: 'Musanze District', value: 890 },
+  { geometryId: 'Rubavu District', value: 650 },
+  { geometryId: 'Nyagatare District', value: 180 },
+  { geometryId: 'Gakenke District', value: 380 },
+  { geometryId: 'Gicumbi District', value: 290 },
+  { geometryId: 'Kayonza District', value: 340 },
+  { geometryId: 'Kirehe District', value: 220 },
+  { geometryId: 'Ngoma District', value: 470 },
+  { geometryId: 'Bugesera District', value: 760 },
+  { geometryId: 'Rulindo District', value: 580 },
+  { geometryId: 'Rutsiro District', value: 350 },
+  { geometryId: 'Nyaruguru District', value: 410 },
+  { geometryId: 'Nyamagabe District', value: 540 },
 ];
 
 const PolicyDetector = ({
