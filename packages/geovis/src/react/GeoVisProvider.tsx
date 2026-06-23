@@ -8,6 +8,7 @@ import type {
 import type { GeoVisRuntime } from '../runtime/createRuntime';
 import { createRuntime } from '../runtime/createRuntime';
 import type { PolicyViolation, VisualizationSpec } from '../spec/types';
+import { GeoVisHoverTooltip } from '../ui/GeoVisHoverTooltip';
 import {
   GeoVisClickContext,
   GeoVisContext,
@@ -130,9 +131,19 @@ const HoverProvider = ({
   children: React.ReactNode;
 }) => {
   const hoveredMapFeature = useMapHover({ runtime, spec });
+  // Spec-driven tooltip: render a <GeoVisHoverTooltip> automatically for the
+  // layer under the cursor when it declares `hoverTooltip`, so consumers do
+  // not have to place the component manually. The component reads the live
+  // snapshot from `useGeoVisHover()` itself; mounting it is enough.
+  const hoverTooltip = hoveredMapFeature
+    ? spec.layers.find((layer) => {
+        return layer.id === hoveredMapFeature.layerId;
+      })?.hoverTooltip
+    : undefined;
   return (
     <GeoVisHoverContext.Provider value={hoveredMapFeature}>
       {children}
+      {hoverTooltip && <GeoVisHoverTooltip {...hoverTooltip} />}
     </GeoVisHoverContext.Provider>
   );
 };

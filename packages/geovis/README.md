@@ -108,24 +108,25 @@ The `'labels'` type is the recommended choice when label text is known ahead of 
 
 Each entry in `spec.layers` describes one rendered layer.
 
-| Field            | Type                                                                                   | Required | Description                                                                                                                                                          |
-| ---------------- | -------------------------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`             | `string`                                                                               | ✓        | Unique layer identifier.                                                                                                                                             |
-| `sourceId`       | `string`                                                                               | ✓        | References a `DataSource.id` from `spec.sources`.                                                                                                                    |
-| `geometry`       | `GeoVisGeometryType`                                                                   | ✓        | Render type: `'point'`, `'line'`, `'polygon'`, `'raster'`, `'symbol'`, `'heatmap'`.                                                                                  |
-| `sourceLayer`    | `string`                                                                               |          | Vector tile source layer name. Required when `source.type` is `'vector-tiles'`.                                                                                      |
-| `title`          | `string`                                                                               |          | Human-readable layer name.                                                                                                                                           |
-| `visible`        | `boolean`                                                                              |          | Whether the layer is rendered. Defaults to `true`.                                                                                                                   |
-| `minzoom`        | `number`                                                                               |          | Minimum zoom level (0–24) at which the layer is visible.                                                                                                             |
-| `maxzoom`        | `number`                                                                               |          | Maximum zoom level (0–24) at which the layer is visible.                                                                                                             |
-| `paint`          | `LayerPaint`                                                                           |          | Per-geometry paint properties. See examples below.                                                                                                                   |
-| `legends`        | `LegendSpec[]`                                                                         |          | Alternative legend definitions exposed as runtime toggles.                                                                                                           |
-| `activeLegendId` | `string`                                                                               |          | Active entry from `legends[]`. Enables choropleth coloring and the hover tooltip.                                                                                    |
-| `mapDataId`      | `string`                                                                               |          | References a `MapData.mapDataId` for per-feature value joining (choropleth / tooltip). When a `MapData` declares `dimension`, the adapter auto-discovers color/size. |
-| `hoverPaint`     | `{ lineColor?: string; lineWidth?: number }`                                           |          | Outline rendered on the hovered feature via a companion MapLibre line layer driven by `feature-state.hover`.                                                         |
-| `selectedPaint`  | `{ lineColor?: string; lineWidth?: number }`                                           |          | Outline rendered on the selected feature via `feature-state.selected`.                                                                                               |
-| `clickAnchor`    | `{ iconImage?: string; iconSize?: number; color?: string; offset?: [number, number] }` |          | Spec-driven click marker. Use `iconImage` to render a sprite icon; use `color` for the built-in SVG pin. For a custom HTML element, use `<GeoVisMarker>` instead.    |
-| `sizeBy`         | `SizeBy`                                                                               |          | Proportional symbol configuration. Maps a numeric `mapData` property to `circle-radius`. See [Proportional Symbols](#proportional-symbols-sizeby).                   |
+| Field            | Type                                                                                   | Required | Description                                                                                                                                                                                                                                                              |
+| ---------------- | -------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `id`             | `string`                                                                               | ✓        | Unique layer identifier.                                                                                                                                                                                                                                                 |
+| `sourceId`       | `string`                                                                               | ✓        | References a `DataSource.id` from `spec.sources`.                                                                                                                                                                                                                        |
+| `geometry`       | `GeoVisGeometryType`                                                                   | ✓        | Render type: `'point'`, `'line'`, `'polygon'`, `'raster'`, `'symbol'`, `'heatmap'`.                                                                                                                                                                                      |
+| `sourceLayer`    | `string`                                                                               |          | Vector tile source layer name. Required when `source.type` is `'vector-tiles'`.                                                                                                                                                                                          |
+| `title`          | `string`                                                                               |          | Human-readable layer name.                                                                                                                                                                                                                                               |
+| `visible`        | `boolean`                                                                              |          | Whether the layer is rendered. Defaults to `true`.                                                                                                                                                                                                                       |
+| `minzoom`        | `number`                                                                               |          | Minimum zoom level (0–24) at which the layer is visible.                                                                                                                                                                                                                 |
+| `maxzoom`        | `number`                                                                               |          | Maximum zoom level (0–24) at which the layer is visible.                                                                                                                                                                                                                 |
+| `paint`          | `LayerPaint`                                                                           |          | Per-geometry paint properties. See examples below.                                                                                                                                                                                                                       |
+| `legends`        | `LegendSpec[]`                                                                         |          | Alternative legend definitions exposed as runtime toggles.                                                                                                                                                                                                               |
+| `activeLegendId` | `string`                                                                               |          | Active entry from `legends[]`. Enables choropleth coloring and the hover tooltip.                                                                                                                                                                                        |
+| `mapDataId`      | `string`                                                                               |          | References a `MapData.mapDataId` for per-feature value joining (choropleth / tooltip). When a `MapData` declares `dimension`, the adapter auto-discovers color/size.                                                                                                     |
+| `hoverPaint`     | `{ lineColor?: string; lineWidth?: number }`                                           |          | Outline rendered on the hovered feature via a companion MapLibre line layer driven by `feature-state.hover`.                                                                                                                                                             |
+| `selectedPaint`  | `{ lineColor?: string; lineWidth?: number }`                                           |          | Outline rendered on the selected feature via `feature-state.selected`.                                                                                                                                                                                                   |
+| `clickAnchor`    | `{ iconImage?: string; iconSize?: number; color?: string; offset?: [number, number] }` |          | Spec-driven click marker. Use `iconImage` to render a sprite icon; use `color` for the built-in SVG pin. For a custom HTML element, use `<GeoVisMarker>` instead.                                                                                                        |
+| `sizeBy`         | `SizeBy`                                                                               |          | Proportional symbol configuration. Maps a numeric `mapData` property to `circle-radius`. See [Proportional Symbols](#proportional-symbols-sizeby).                                                                                                                       |
+| `hoverTooltip`   | `HoverTooltipConfig`                                                                   |          | Spec-driven hover tooltip. When present, `<GeoVisProvider>` renders a `<GeoVisHoverTooltip>` automatically for features on this layer — no component needed in the tree. Mirrors `GeoVisHoverTooltipProps`. See [Spec-driven hover tooltip](#spec-driven-hover-tooltip). |
 
 ### Paint properties
 
@@ -1020,6 +1021,54 @@ Renders a floating tooltip over the map whenever the user hovers a polygon featu
 | `style`           | `React.CSSProperties`                     | Optional inline style overrides merged on top of the default tooltip style.                      |
 | `offset`          | `{ x: number; y: number }`                | Pixel offset from the cursor. Defaults to `{ x: 12, y: 12 }`.                                    |
 | `emptyValueLabel` | `string`                                  | Label shown when `info.value` is `null` (no `mapData` for the feature). Defaults to `'No data'`. |
+
+#### Spec-driven hover tooltip
+
+Instead of placing `<GeoVisHoverTooltip>` in the tree, declare the tooltip
+inline on the layer via `hoverTooltip`. `<GeoVisProvider>` then renders the
+tooltip automatically for features hovered on that layer — picking the config
+of whichever layer is under the cursor, so different layers can have different
+tooltips. An empty object opts in to the default layout (`Feature #<id>` +
+value). The config (`HoverTooltipConfig`) mirrors the component props above
+(minus `children`).
+
+```tsx
+import type { HoverTooltipConfig } from '@ttoss/geovis';
+
+const spec = {
+  // ...sources, mapData, legends as in the choropleth example
+  layers: [
+    {
+      id: 'districts-layer',
+      sourceId: 'districts',
+      geometry: 'polygon',
+      mapDataId: 'population',
+      activeLegendId: 'population-legend',
+      hoverTooltip: {
+        formatValue: (v) => new Intl.NumberFormat('pt-BR').format(Number(v)),
+        render: (info) => <strong>Feature #{String(info.featureId)}</strong>,
+      },
+    },
+  ],
+};
+
+// No <GeoVisHoverTooltip> needed — the provider renders it from the spec.
+const Map = () => (
+  <GeoVisProvider spec={spec}>
+    <GeoVisCanvas viewId="main" />
+  </GeoVisProvider>
+);
+```
+
+> Because `render` holds a function, a spec carrying `hoverTooltip` is no longer
+> JSON-serializable. This is intended for specs built in the frontend; if your
+> specs come from a serialized source, keep using the `<GeoVisHoverTooltip>`
+> component instead.
+
+> **Do not use both at once for the same layer.** If you declare
+> `layer.hoverTooltip` _and_ also mount `<GeoVisHoverTooltip>` manually, two
+> tooltips render on top of each other. Pick one approach per layer: the
+> spec-driven `hoverTooltip` (provider renders it) or the manual component.
 
 ### `GeoVisMarker`
 

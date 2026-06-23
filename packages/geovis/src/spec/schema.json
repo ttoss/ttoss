@@ -378,6 +378,10 @@
               }
             }
           },
+          "hoverTooltip": {
+            "type": "object",
+            "additionalProperties": true
+          },
           "sizeBy": {
             "allOf": [
               {
