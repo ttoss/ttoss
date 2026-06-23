@@ -1,4 +1,4 @@
-import { resolveChoropleth } from './mapTypeDefaults/chropleth';
+import { resolveChoropleth } from './mapTypeDefaults/choropleth';
 import type { LegendSpec, VisualizationSpec } from './types';
 
 /** Finds the best matching resolved legend for a user legend. */
@@ -55,18 +55,14 @@ const findFirstGeoJsonSource = (sources: VisualizationSpec['sources']) => {
 };
 
 /**
- * Resolves a spec with mapType into a full VisualizationSpec
- * by auto-generating layers, legends, and mapData defaults.
+ * Resolves a spec with `mapType` into a full `VisualizationSpec`
+ * by auto-generating layers, legends, and `mapData` defaults.
  *
- * Returns the resolved spec unchanged if no mapType is set.
+ * Returns the spec unchanged if no `mapType` is set.
  *
- * This is a pure function — no React hooks, no side effects.
- * Call it before passing the spec to <GeoVis>:
- *
- * ```tsx
- * const resolved = resolveSpecFromMapType(mySpec);
- * return <GeoVis spec={resolved} />;
- * ```
+ * This is a pure function (no React hooks, no side effects).
+ * It is called automatically by the runtime and `GeoVisProvider`
+ * — consumers do **not** need to call it manually.
  */
 export const resolveSpecFromMapType = (
   spec: VisualizationSpec

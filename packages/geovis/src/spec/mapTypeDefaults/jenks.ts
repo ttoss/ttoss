@@ -29,7 +29,7 @@ const validateNumberClasses = (
 
 const validateDataArray = (arrayLength: number): void => {
   if (arrayLength <= 0) {
-    throw new DataArrayError('Array length must be bigger than one');
+    throw new DataArrayError('Data array must not be empty');
   }
 };
 

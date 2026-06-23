@@ -6,7 +6,7 @@ const MAX_CLASSES = DEFAULT_SEQUENTIAL_PALETTE.length - 1;
 
 /**
  * Derives the optimal number of Jenks classes from the number of unique
- * data values. Uses `sqrt(n)` (Sturries-like heuristic) clamped between
+ * data values. Uses `sqrt(n)` (Sturges-like heuristic) clamped between
  * 3 (minimum for visual distinction) and the palette size minus one
  * (maximum usable colours).
  */
