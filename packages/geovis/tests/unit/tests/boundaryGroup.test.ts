@@ -26,7 +26,6 @@ const municipalitiesGroup = createBoundaryGroup({
 });
 
 const emptySpec: VisualizationSpec = {
-  id: 'test',
   engine: 'maplibre',
   sources: [],
   layers: [],

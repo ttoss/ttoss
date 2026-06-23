@@ -26,7 +26,6 @@ describe('validateSpec', () => {
 
 describe('validateSpec — mapData', () => {
   const baseSpec = {
-    id: 'with-map-data',
     engine: 'maplibre' as const,
     view: { center: [0, 0] as [number, number], zoom: 1 },
     sources: [
@@ -327,7 +326,6 @@ describe('validateSpec — mapData', () => {
 
 describe('validateSpec — layer interaction fields (hoverPaint, selectedPaint, clickAnchor)', () => {
   const baseSpec = {
-    id: 'interaction-test',
     engine: 'maplibre' as const,
     view: { center: [0, 0] as [number, number], zoom: 1 },
     sources: [
