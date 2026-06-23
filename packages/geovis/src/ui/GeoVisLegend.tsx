@@ -138,8 +138,10 @@ const buildCategoricalItems = (legend: LegendSpec): LegendItem[] => {
     ];
   }
 
-  return mapping.map(([label, color], index) => {
-    return { binIndex: index, label, color };
+  const fmtLabels =
+    legend.labelFormat?.type === 'labels' ? legend.labelFormat.labels : [];
+  return mapping.map(([key, color], index) => {
+    return { binIndex: index, label: fmtLabels[index] ?? key, color };
   });
 };
 

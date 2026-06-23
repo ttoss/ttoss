@@ -381,6 +381,53 @@
           "hoverTooltip": {
             "type": "object",
             "additionalProperties": true
+          },
+          "sizeBy": {
+            "allOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["range"],
+                "properties": {
+                  "range": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    },
+                    "minItems": 2,
+                    "maxItems": 2
+                  },
+                  "mode": {
+                    "type": "string",
+                    "enum": ["continuous", "stepped"]
+                  },
+                  "thresholds": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    }
+                  },
+                  "transform": {
+                    "type": "string",
+                    "enum": ["linear", "sqrt"]
+                  }
+                }
+              },
+              {
+                "not": {
+                  "allOf": [
+                    {
+                      "required": ["mode"],
+                      "properties": { "mode": { "const": "stepped" } }
+                    },
+                    {
+                      "required": ["transform"],
+                      "properties": { "transform": { "const": "sqrt" } }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         }
       }
@@ -420,6 +467,16 @@
           "joinKey": {
             "type": "string",
             "minLength": 1
+          },
+          "stateKey": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Feature-state key name. Defaults to 'value'."
+          },
+          "dimension": {
+            "type": "string",
+            "enum": ["color", "size"],
+            "description": "Visual dimension this dataset drives. Enables auto-discovery of color/size without layer-level references."
           },
           "data": {
             "type": "array",
