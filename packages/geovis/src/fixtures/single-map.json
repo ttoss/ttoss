@@ -1,5 +1,4 @@
 {
-  "id": "single-map",
   "title": "Single Map",
   "description": "Single map using the official MapLibre example with one polygon and point features.",
   "engine": "maplibre",
