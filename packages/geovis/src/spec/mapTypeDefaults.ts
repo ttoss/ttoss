@@ -1,4 +1,5 @@
 import { resolveChoropleth } from './mapTypeDefaults/choropleth';
+import { resolveDotDensity } from './mapTypeDefaults/dotDensity';
 import type { LegendSpec, VisualizationSpec } from './types';
 
 /** Finds the best matching resolved legend for a user legend. */
@@ -54,6 +55,27 @@ const findFirstGeoJsonSource = (sources: VisualizationSpec['sources']) => {
   });
 };
 
+type ResolvedResult = {
+  layers: VisualizationSpec['layers'];
+  legends: LegendSpec[];
+};
+
+const applyResolved = (
+  spec: VisualizationSpec,
+  resolved: ResolvedResult
+): VisualizationSpec => {
+  const userLayers = spec.layers ?? [];
+  const userLegends = spec.legends ?? [];
+  return {
+    ...spec,
+    layers: userLayers.length > 0 ? userLayers : resolved.layers,
+    legends:
+      userLegends.length > 0
+        ? mergeLegends(userLegends, resolved.legends)
+        : resolved.legends,
+  };
+};
+
 /**
  * Resolves a spec with `mapType` into a full `VisualizationSpec`
  * by auto-generating layers, legends, and `mapData` defaults.
@@ -73,23 +95,23 @@ export const resolveSpecFromMapType = (
   if (!source) return spec;
 
   const firstMapData = spec.mapData?.[0];
-  const userLayers = spec.layers ?? [];
-  const userLegends = spec.legends ?? [];
+  if (!firstMapData) return spec;
 
-  if (spec.mapType !== 'choropleth' || !firstMapData) return spec;
+  if (spec.mapType === 'dotDensity') {
+    const resolved = resolveDotDensity(
+      spec as Extract<VisualizationSpec, { mapType: 'dotDensity' }>,
+      source.id,
+      firstMapData
+    );
+    return applyResolved(spec, resolved);
+  }
+
+  if (spec.mapType !== 'choropleth') return spec;
 
   const resolved = resolveChoropleth(
     spec as Extract<VisualizationSpec, { mapType: 'choropleth' }>,
     source.id,
     firstMapData
   );
-
-  return {
-    ...spec,
-    layers: userLayers.length > 0 ? userLayers : resolved.layers,
-    legends:
-      userLegends.length > 0
-        ? mergeLegends(userLegends, resolved.legends)
-        : resolved.legends,
-  };
+  return applyResolved(spec, resolved);
 };
