@@ -6,10 +6,11 @@ import {
   Divider,
   Flex,
   Heading,
-  Label,
   Text,
 } from '@ttoss/ui';
 import * as React from 'react';
+
+import { ClientLogo } from './ClientLogo';
 
 /**
  * A single OAuth scope, optionally with implied child scopes.
@@ -64,6 +65,12 @@ export type OAuthConsentLabels = {
 export type OAuthConsentProps = {
   /** Display name or identifier of the requesting OAuth client. */
   clientName: string;
+  /**
+   * URL of the client's logo or icon. When provided, renders the image above
+   * the consent heading. Falls back to the first letter of `clientName` if the
+   * image fails to load. When omitted, no logo is shown (backward-compatible).
+   */
+  clientLogoUrl?: string;
   /** Scope tree to render. */
   scopes: ConsentScope[];
   /**
@@ -176,11 +183,13 @@ const ScopeRow = ({
     busy,
   });
   const checkboxId = `consent-scope-${scope.key}`;
+  const labelId = `consent-scope-label-${scope.key}`;
   const descId = `consent-scope-desc-${scope.key}`;
 
   return (
     <Box as="li" sx={{ listStyle: 'none' }}>
       <Flex
+        as="label"
         sx={{
           gap: 3,
           alignItems: 'flex-start',
@@ -189,6 +198,7 @@ const ScopeRow = ({
           borderRadius: 'md',
           opacity: ancestorSelected ? 0.55 : 1,
           transition: 'background-color 0.15s ease',
+          cursor: isInteractive ? 'pointer' : 'default',
           ...(isInteractive && {
             '&:hover': {
               backgroundColor: 'display.background.muted.default',
@@ -201,6 +211,7 @@ const ScopeRow = ({
             id={checkboxId}
             checked={isChecked}
             disabled={isDisabled}
+            aria-labelledby={labelId}
             aria-describedby={descId}
             onChange={() => {
               onToggle(scope, ancestorSelected);
@@ -208,19 +219,19 @@ const ScopeRow = ({
           />
         </Box>
         <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Label
-            htmlFor={checkboxId}
+          <Text
+            as="span"
+            id={labelId}
             sx={{
               fontWeight: 'semibold',
               fontSize: 'md',
               lineHeight: 'short',
-              cursor: isInteractive ? 'pointer' : 'default',
               color: 'display.text.primary.default',
-              width: 'fit-content',
+              display: 'block',
             }}
           >
             {scope.label}
-          </Label>
+          </Text>
           <Text
             id={descId}
             sx={{
@@ -312,6 +323,7 @@ const ConsentCard = ({ children }: { children: React.ReactNode }) => {
  */
 export const OAuthConsent = ({
   clientName,
+  clientLogoUrl,
   scopes,
   onAuthorize,
   onAuthorized,
@@ -384,6 +396,12 @@ export const OAuthConsent = ({
 
   return (
     <ConsentCard>
+      {clientLogoUrl && (
+        <Box sx={{ marginBottom: 4 }}>
+          <ClientLogo src={clientLogoUrl} clientName={clientName} />
+        </Box>
+      )}
+
       <Heading
         as="h1"
         sx={{

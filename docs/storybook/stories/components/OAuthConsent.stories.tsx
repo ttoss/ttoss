@@ -42,6 +42,48 @@ export default {
 } as Meta<OAuthConsentProps>;
 
 // ---------------------------------------------------------------------------
+// With client logo
+// ---------------------------------------------------------------------------
+
+const PLACEHOLDER_LOGO =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='10' fill='%234a90e2'/%3E%3Ctext x='50%25' y='55%25' font-family='sans-serif' font-size='26' fill='white' text-anchor='middle' dominant-baseline='middle'%3EC%3C/text%3E%3C/svg%3E";
+
+export const WithClientLogo: StoryFn<OAuthConsentProps> = () => {
+  return (
+    <OAuthConsent
+      clientName="Claude"
+      clientLogoUrl={PLACEHOLDER_LOGO}
+      scopes={[
+        {
+          key: 'read',
+          label: 'Read',
+          description: 'List ad accounts and campaigns',
+          required: true,
+        },
+        {
+          key: 'write',
+          label: 'Write',
+          description: 'Pause and activate campaigns',
+        },
+      ]}
+      onAuthorize={noop}
+      onAuthorized={action('onAuthorized')}
+      onDeny={action('onDeny')}
+      labels={defaultLabels}
+    />
+  );
+};
+WithClientLogo.parameters = {
+  docs: {
+    description: {
+      story:
+        'When `clientLogoUrl` is provided, the client logo is rendered above the heading. ' +
+        'If the image fails to load, the first letter of `clientName` is shown as a fallback.',
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
 // Flat scopes (OCA read/write case)
 // ---------------------------------------------------------------------------
 
