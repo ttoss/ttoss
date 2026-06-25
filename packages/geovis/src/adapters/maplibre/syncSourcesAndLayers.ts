@@ -101,7 +101,8 @@ const writePaintProperty = (
       layer.paint as { fillColor?: string } | undefined
     )?.fillColor;
     const hasLegendFillColor =
-      resolveLegendFillColorExpression(layer, spec.legends) !== undefined;
+      resolveLegendFillColorExpression(layer, spec.legends, spec.mapData) !==
+      undefined;
     if (!hasExplicitFillColor && !hasLegendFillColor) return;
   }
   map.setPaintProperty(
@@ -241,7 +242,12 @@ const upsertLayers = (map: maplibregl.Map, spec: VisualizationSpec): void => {
       source && 'sourceLayer' in source
         ? (source as { sourceLayer?: string }).sourceLayer
         : undefined;
-    const desiredLayer = toMaplibreLayer(layer, sourceLayer, spec.legends);
+    const desiredLayer = toMaplibreLayer(
+      layer,
+      sourceLayer,
+      spec.legends,
+      spec.mapData
+    );
     stripUndefinedPaint(desiredLayer);
 
     if (!map.getLayer(layer.id)) {
