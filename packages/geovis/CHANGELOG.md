@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.5.0...@ttoss/geovis@0.6.0) (2026-06-25)
+
+### Features
+
+- **geovis:** Add choropleth map type auto-configuration ([#1099](https://github.com/ttoss/ttoss/issues/1099)) ([cf43365](https://github.com/ttoss/ttoss/commit/cf4336560da549d4edd62322bf7fada8e7f1de44))
+
 # [0.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.4.0...@ttoss/geovis@0.5.0) (2026-06-23)
 
 ### Features
