@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.33.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.32.0...@docs/storybook@3.33.0) (2026-06-23)
+
+### Features
+
+- **geovis:** spec-driven hover tooltip via layer.hoverTooltip ([#1102](https://github.com/ttoss/ttoss/issues/1102)) ([36f435f](https://github.com/ttoss/ttoss/commit/36f435f2511a9b7f8a4e8e2e728dc5b83e9bed1c))
+
+# [3.32.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.31.0...@docs/storybook@3.32.0) (2026-06-23)
+
+### Features
+
+- Support proportional circles creation with size and color related to distinct variables ([#1088](https://github.com/ttoss/ttoss/issues/1088)) ([19abcc9](https://github.com/ttoss/ttoss/commit/19abcc920e5051006f3fcef7c0d96fecd002d4fc))
+
 # [3.31.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.30.1...@docs/storybook@3.31.0) (2026-06-22)
 
 ### Features

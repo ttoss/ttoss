@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.4.0...@ttoss/geovis@0.5.0) (2026-06-23)
+
+### Features
+
+- **geovis:** spec-driven hover tooltip via layer.hoverTooltip ([#1102](https://github.com/ttoss/ttoss/issues/1102)) ([36f435f](https://github.com/ttoss/ttoss/commit/36f435f2511a9b7f8a4e8e2e728dc5b83e9bed1c))
+
+# [0.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.3.1...@ttoss/geovis@0.4.0) (2026-06-23)
+
+### Features
+
+- Support proportional circles creation with size and color related to distinct variables ([#1088](https://github.com/ttoss/ttoss/issues/1088)) ([19abcc9](https://github.com/ttoss/ttoss/commit/19abcc920e5051006f3fcef7c0d96fecd002d4fc))
+
 ## [0.3.1](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.3.0...@ttoss/geovis@0.3.1) (2026-06-19)
 
 **Note:** Version bump only for package @ttoss/geovis

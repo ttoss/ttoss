@@ -1,3 +1,4 @@
+import type { SizeBy } from '../../spec/types';
 import type {
   CategoricalColorBy,
   ColorBy,
@@ -82,9 +83,14 @@ export const resolveQuantitativeFallbackColor = (
 export interface BuildFillColorExpressionParams {
   legend: LegendSpec;
   breaks?: ReadonlyArray<number>;
+  /** Feature-state key name. Defaults to 'value'. */
+  stateKey?: string;
 }
 
-const buildCategoricalExpression = (colorBy: CategoricalColorBy): unknown[] => {
+const buildCategoricalExpression = (
+  colorBy: CategoricalColorBy,
+  stateKey: string = 'value'
+): unknown[] => {
   const mappingEntries = Object.entries(colorBy.mapping ?? {});
   const fallbackColor = resolveCategoricalFallbackColor(colorBy);
   // MapLibre's `match` expression requires at least one label/output pair.
@@ -95,7 +101,7 @@ const buildCategoricalExpression = (colorBy: CategoricalColorBy): unknown[] => {
   }
   return [
     'match',
-    ['to-string', ['coalesce', ['feature-state', 'value'], '__missing__']],
+    ['to-string', ['coalesce', ['feature-state', stateKey], '__missing__']],
     ...mappingEntries.flatMap(([key, color]) => {
       return [key, color];
     }),
@@ -105,7 +111,8 @@ const buildCategoricalExpression = (colorBy: CategoricalColorBy): unknown[] => {
 
 const buildQuantitativeExpression = (
   colorBy: QuantitativeColorBy,
-  breaks: ReadonlyArray<number>
+  breaks: ReadonlyArray<number>,
+  stateKey: string = 'value'
 ): unknown[] => {
   const sortedBreaks = uniqueAscending(breaks);
   const fallbackColor = resolveQuantitativeFallbackColor(colorBy, sortedBreaks);
@@ -118,7 +125,7 @@ const buildQuantitativeExpression = (
 
   const stepExpression: unknown[] = [
     'step',
-    ['to-number', ['coalesce', ['feature-state', 'value'], 0], 0],
+    ['to-number', ['coalesce', ['feature-state', stateKey], 0], 0],
     fallbackColor,
   ];
 
@@ -136,21 +143,181 @@ const buildQuantitativeExpression = (
  * Builds a MapLibre `fill-color` expression from a legend definition.
  *
  * @remarks
- * The expression always reads from `feature-state.value` so it remains
- * compatible with the current `mapData` write-path (`setFeatureState`).
+ * The expression reads from `feature-state[stateKey]` to support multiple
+ * independent dimensions (e.g. one for color, another for size).
  * Quantitative legends are translated to `step` and categorical legends to
  * `match` to keep parity with MapLibre's native branching semantics.
  *
- * @param params - Legend configuration and optional precomputed breaks.
+ * @param params - Legend configuration, optional precomputed breaks, and stateKey.
  * @returns A MapLibre expression array suitable for `setPaintProperty`.
  */
 export const buildFillColorExpression = ({
   legend,
   breaks = [],
+  stateKey = 'value',
 }: BuildFillColorExpressionParams): unknown[] => {
   const colorBy = legend.colorBy;
   if (colorBy.type === 'categorical') {
-    return buildCategoricalExpression(colorBy);
+    return buildCategoricalExpression(colorBy, stateKey);
   }
-  return buildQuantitativeExpression(colorBy, breaks);
+  return buildQuantitativeExpression(colorBy, breaks, stateKey);
+};
+
+/**
+ * Generates an array of `count` evenly spaced radii between `min` and `max`.
+ */
+const generateRadii = (count: number, min: number, max: number): number[] => {
+  if (count <= 1) return [min];
+  const radii: number[] = [];
+  for (let i = 0; i < count; i += 1) {
+    radii.push(min + ((max - min) * i) / (count - 1));
+  }
+  return radii;
+};
+
+const buildContinuousSizeExpression = (
+  sizeBy: SizeBy,
+  fallbackRadius: number,
+  legendThresholds?: number[],
+  stateKey: string = 'value'
+): unknown => {
+  const [minRadius, maxRadius] = sizeBy.range;
+  const bounds = legendThresholds?.length
+    ? legendThresholds
+    : (sizeBy.thresholds ?? []);
+
+  const rawValue: unknown[] = ['to-number', ['feature-state', stateKey]];
+  const useSqrt = sizeBy.transform === 'sqrt';
+  // When sqrt transform is requested, apply sqrt to both the input value AND
+  // the data bounds so interpolation stays in sqrt-space. This ensures output
+  // radii stay within [minRadius, maxRadius] while circle AREA is proportional
+  // to the value (area ∝ radius², and radius ∝ sqrt(value)).
+  const stateValue: unknown = useSqrt ? ['sqrt', rawValue] : rawValue;
+
+  let interpolated: unknown;
+  if (bounds.length >= 2) {
+    const sorted = uniqueAscending(bounds);
+    // dataMin and dataMax are the first and last break, respectively.
+    // When a sqrt transform is requested, take the sqrt of the breaks so interpolation
+    // happens in sqrt-space. This keeps the visual size of the bins consistent with the legend,
+    // which also applies the sqrt transform to the break values.
+    const dataMin = useSqrt ? Math.sqrt(sorted[0]!) : sorted[0]!;
+    const dataMax = useSqrt
+      ? Math.sqrt(sorted[sorted.length - 1]!)
+      : sorted[sorted.length - 1]!;
+
+    interpolated = [
+      'case',
+      ['!=', ['feature-state', stateKey], null],
+      [
+        'interpolate',
+        ['linear'],
+        stateValue,
+        dataMin,
+        minRadius,
+        dataMax,
+        maxRadius,
+      ],
+      fallbackRadius,
+    ];
+  } else {
+    // Without data bounds, interpolate between min and max of the range itself.
+    // This produces a pass-through expression that can be dynamically updated
+    // when data bounds become available (e.g. after mapData is applied).
+    interpolated = [
+      'case',
+      ['!=', ['feature-state', stateKey], null],
+      [
+        'interpolate',
+        ['linear'],
+        stateValue,
+        minRadius,
+        minRadius,
+        maxRadius,
+        maxRadius,
+      ],
+      fallbackRadius,
+    ];
+  }
+
+  return interpolated;
+};
+
+/**
+ * Builds a MapLibre `circle-radius` expression from a `sizeBy` configuration.
+ *
+ * @remarks
+ * Continuous mode produces an `interpolate` linear expression; stepped mode
+ * produces a `step` expression with radii linearly spaced across the range.
+ * When stepped mode has no explicit thresholds and no legend thresholds are
+ * provided, the function falls back to continuous mode.
+ *
+ * @param sizeBy - Proportional symbol configuration.
+ * @param fallbackRadius - Static radius used when data is missing.
+ * @param legendThresholds - Break points inherited from the active legend.
+ * @param stateKey - Feature-state key name. Defaults to 'value'.
+ * @returns A MapLibre expression, or a constant number when data bounds are unavailable.
+ */
+export const buildSizeExpression = (
+  sizeBy: SizeBy,
+  fallbackRadius: number,
+  legendThresholds?: number[],
+  stateKey: string = 'value'
+): unknown => {
+  const [minRadius, maxRadius] = sizeBy.range;
+
+  if (minRadius >= maxRadius || minRadius <= 0) {
+    throw new Error(
+      `sizeBy.range must have min < max and both > 0, got [${minRadius}, ${maxRadius}]`
+    );
+  }
+
+  if (sizeBy.mode === 'stepped') {
+    // Prefer the active legend's thresholds so that color bins and size bins
+    // stay aligned. Fall back to sizeBy.thresholds only when no legend is
+    // active.
+    const breaks = legendThresholds?.length
+      ? legendThresholds
+      : (sizeBy.thresholds ?? []);
+
+    if (breaks.length === 0) {
+      return buildContinuousSizeExpression(
+        sizeBy,
+        fallbackRadius,
+        undefined,
+        stateKey
+      );
+    }
+
+    const sortedBreaks = uniqueAscending(breaks);
+    // N breaks partition the data into N+1 bins: one below the first break,
+    // one between each consecutive pair, and one above the last break.
+    const binCount = sortedBreaks.length + 1;
+    const radii = generateRadii(binCount, minRadius, maxRadius);
+
+    const input = ['to-number', ['feature-state', stateKey]];
+
+    const stepped: unknown = [
+      'case',
+      ['!=', ['feature-state', stateKey], null],
+      [
+        'step',
+        input,
+        radii[0],
+        ...sortedBreaks.flatMap((b, i) => {
+          return [b, radii[i + 1]];
+        }),
+      ],
+      fallbackRadius,
+    ];
+
+    return stepped;
+  }
+
+  return buildContinuousSizeExpression(
+    sizeBy,
+    fallbackRadius,
+    legendThresholds,
+    stateKey
+  );
 };
