@@ -89,6 +89,8 @@ export type GeoVisGeometryType =
   | 'symbol'
   | 'heatmap';
 
+export type MapType = 'choropleth';
+
 export interface ViewState {
   center?: LngLat;
   zoom?: number;
@@ -409,6 +411,7 @@ export interface VisualizationSpec {
   title?: string;
   description?: string;
   engine: 'maplibre';
+  mapType?: MapType;
   view?: ViewState;
   basemap?: BaseMapSpec;
   sources: DataSource[];

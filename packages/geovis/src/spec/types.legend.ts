@@ -218,5 +218,9 @@ export interface LegendSpec {
    * reference: 'Source: {link:IBGE Censo 2022|https://ibge.gov.br}'
    */
   reference?: string;
-  colorBy: ColorBy;
+  /**
+   * Declarative color-by configuration for a layer.
+   * When omitted, `mergeLegends` fills it from the auto-generated legend.
+   */
+  colorBy?: ColorBy;
 }
