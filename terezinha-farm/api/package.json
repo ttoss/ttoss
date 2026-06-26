@@ -1,10 +1,12 @@
 {
   "name": "@terezinha-farm/api",
-  "version": "0.19.74",
+  "version": "0.19.66",
   "private": true,
   "type": "module",
   "scripts": {
+    "prebuild-schema": "pnpm --filter=@ttoss/graphql-api-cli build-config",
     "build-schema": "ttoss-graphql-api build-schema",
+    "predeploy": "pnpm --filter=carlin build",
     "deploy": "carlin deploy",
     "dev": "tsx watch ./server/server.ts"
   },

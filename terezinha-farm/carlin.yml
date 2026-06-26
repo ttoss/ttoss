@@ -3,3 +3,6 @@ skipDeploy: true
 environments:
   Production:
     skipDeploy: false
+  Staging:
+    skipDeploy: false
+    awsAccountId: 228368756364

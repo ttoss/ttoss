@@ -17,10 +17,53 @@ export const AppSyncGraphQLSchemaLogicalId = 'AppSyncGraphQLSchema';
 
 export const AppSyncLambdaFunctionLogicalId = 'AppSyncLambdaFunction';
 
+export const AppSyncNoneDataSourceLogicalId = 'AppSyncNoneDataSource';
+
 const AppSyncLambdaFunctionAppSyncDataSourceLogicalId =
   'AppSyncLambdaFunctionAppSyncDataSource';
 
 export const AppSyncGraphQLApiKeyLogicalId = 'AppSyncGraphQLApiKey';
+
+/**
+ * Adds a NONE data source and pass-through resolvers to the template for the
+ * given list of `{typeName, fieldName}` pairs. These resolvers are used to
+ * trigger AppSync subscriptions from the backend without any Lambda invocation.
+ */
+const addNoneDataSourceResolvers = (
+  template: CloudFormationTemplate,
+  resolvers: Array<{ typeName: string; fieldName: string }>
+) => {
+  if (!resolvers || resolvers.length === 0) {
+    return;
+  }
+
+  template.Resources[AppSyncNoneDataSourceLogicalId] = {
+    Type: 'AWS::AppSync::DataSource',
+    Properties: {
+      ApiId: { 'Fn::GetAtt': [AppSyncGraphQLApiLogicalId, 'ApiId'] },
+      Name: AppSyncNoneDataSourceLogicalId,
+      Type: 'NONE',
+    },
+  };
+
+  for (const { typeName, fieldName } of resolvers) {
+    template.Resources[`${fieldName}${typeName}AppSyncResolver`] = {
+      Type: 'AWS::AppSync::Resolver',
+      DependsOn: AppSyncGraphQLSchemaLogicalId,
+      Properties: {
+        ApiId: { 'Fn::GetAtt': [AppSyncGraphQLApiLogicalId, 'ApiId'] },
+        FieldName: fieldName,
+        TypeName: typeName,
+        DataSourceName: {
+          'Fn::GetAtt': [AppSyncNoneDataSourceLogicalId, 'Name'],
+        },
+        RequestMappingTemplate:
+          '{"version":"2017-02-28","payload":$utils.toJson($ctx.args)}',
+        ResponseMappingTemplate: '$util.toJson($ctx.result)',
+      },
+    };
+  }
+};
 
 /**
  * https://docs.aws.amazon.com/appsync/latest/devguide/security-authz.html
@@ -32,12 +75,14 @@ type AuthenticationType =
   | 'OPENID_CONNECT'
   | 'AMAZON_COGNITO_USER_POOLS';
 
+// eslint-disable-next-line max-lines-per-function
 export const createApiTemplate = ({
   additionalAuthenticationProviders,
   authenticationType = 'AMAZON_COGNITO_USER_POOLS',
   schemaComposer,
   dataSource,
   lambdaFunction,
+  noneDataSourceResolvers,
   userPoolConfig,
   customDomain,
 }: {
@@ -59,6 +104,13 @@ export const createApiTemplate = ({
     layers?: any;
     roleArn: CloudFormationValue<string>;
   };
+  /**
+   * Resolvers that use the NONE data source. These are typically mutations
+   * used to trigger AppSync subscriptions from the backend without any
+   * business logic — AppSync passes the arguments directly through to
+   * subscribers via `@aws_subscribe`.
+   */
+  noneDataSourceResolvers?: Array<{ typeName: string; fieldName: string }>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   schemaComposer: SchemaComposer<any>;
   userPoolConfig?: {
@@ -67,6 +119,7 @@ export const createApiTemplate = ({
     defaultAction: 'ALLOW' | 'DENY';
     userPoolId: CloudFormationValue<string>;
   };
+  // eslint-disable-next-line complexity
 }): CloudFormationTemplate => {
   /**
    * It should be on top of the file, otherwise it will have empty Mutation
@@ -224,6 +277,10 @@ export const createApiTemplate = ({
         },
       },
     };
+  }
+
+  if (noneDataSourceResolvers && noneDataSourceResolvers.length > 0) {
+    addNoneDataSourceResolvers(template, noneDataSourceResolvers);
   }
 
   const apiKey =

@@ -1,6 +1,12 @@
 import { createAuthTemplate } from '@ttoss/cloud-auth';
 
 export default () => {
+  const isStaging = process.env.CARLIN_ENVIRONMENT === 'Staging';
+
+  const iamStackName = isStaging
+    ? 'TerezinhaFarmIam-Staging'
+    : 'TerezinhaFarmIam-Production';
+
   const template = createAuthTemplate({
     lambdaTriggers: {
       postConfirmation: {
@@ -27,7 +33,9 @@ export default () => {
           S3Key: { Ref: 'LambdaS3Key' },
           S3ObjectVersion: { Ref: 'LambdaS3ObjectVersion' },
         },
-        Role: 'arn:aws:iam::483684946879:role/custom-iam/TerezinhaFarmIam-Producti-CognitoTriggersLambdaFunc-xXhqccloisep',
+        Role: {
+          'Fn::ImportValue': `${iamStackName}:CognitoTriggersLambdaFunctionIAMRoleArn`,
+        },
         Runtime: 'nodejs22.x',
       },
     },
