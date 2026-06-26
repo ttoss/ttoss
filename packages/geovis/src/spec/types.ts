@@ -381,6 +381,20 @@ export interface BaseMapSpec {
    * Defaults to `true`.
    */
   visible?: boolean;
+  /**
+   * Controls the visibility of the basemap's text/icon labels (its `symbol`
+   * layers). When `false`, every `symbol` layer is hidden, leaving a clean
+   * geography with no place names, road names, or POI markers.
+   *
+   * @remarks
+   * Like the historical `HideBasemapLabels` pattern, hiding affects **all**
+   * `symbol` layers — including any `symbol` layers you declare in
+   * `spec.layers`. Toggling back to `true` restores the basemap's own label
+   * layers without overriding the visibility you manage on your own layers.
+   *
+   * Defaults to `true`.
+   */
+  labels?: boolean;
 }
 
 /**
