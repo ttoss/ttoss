@@ -153,29 +153,38 @@ describe('choropleth happy path — zero-config', () => {
   });
 });
 
+const makeChoroplethSpec = (
+  data: Array<{ geometryId: string; value: number | string }>,
+  overrides?: Partial<VisualizationSpec>
+): VisualizationSpec => {
+  return {
+    id: 'test',
+    engine: 'maplibre',
+    mapType: 'choropleth',
+    sources: [
+      {
+        id: 'regions',
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      },
+    ],
+    layers: [],
+    mapData: [{ mapDataId: 'pop', mapId: 'regions', data }],
+    ...overrides,
+  };
+};
+
 describe('choropleth happy path — auto-Jenks thresholds', () => {
   test('produces correct number of bins for 6 data points', () => {
     const result = resolveChoropleth(
-      {
-        id: 'test',
-        engine: 'maplibre',
-        mapType: 'choropleth',
-        sources: [],
-        layers: [],
-      },
-      'regions',
-      {
-        mapDataId: 'pop',
-        mapId: 'regions',
-        data: [
-          { geometryId: 'a', value: 100 },
-          { geometryId: 'b', value: 200 },
-          { geometryId: 'c', value: 300 },
-          { geometryId: 'd', value: 400 },
-          { geometryId: 'e', value: 500 },
-          { geometryId: 'f', value: 600 },
-        ],
-      }
+      makeChoroplethSpec([
+        { geometryId: 'a', value: 100 },
+        { geometryId: 'b', value: 200 },
+        { geometryId: 'c', value: 300 },
+        { geometryId: 'd', value: 400 },
+        { geometryId: 'e', value: 500 },
+        { geometryId: 'f', value: 600 },
+      ])
     );
 
     const colorBy = result.legends[0].colorBy;
@@ -190,26 +199,14 @@ describe('choropleth happy path — auto-Jenks thresholds', () => {
 
   test('thresholds are monotonically increasing', () => {
     const result = resolveChoropleth(
-      {
-        id: 'test',
-        engine: 'maplibre',
-        mapType: 'choropleth',
-        sources: [],
-        layers: [],
-      },
-      'regions',
-      {
-        mapDataId: 'pop',
-        mapId: 'regions',
-        data: [
-          { geometryId: 'a', value: 50 },
-          { geometryId: 'b', value: 150 },
-          { geometryId: 'c', value: 250 },
-          { geometryId: 'd', value: 350 },
-          { geometryId: 'e', value: 450 },
-          { geometryId: 'f', value: 550 },
-        ],
-      }
+      makeChoroplethSpec([
+        { geometryId: 'a', value: 50 },
+        { geometryId: 'b', value: 150 },
+        { geometryId: 'c', value: 250 },
+        { geometryId: 'd', value: 350 },
+        { geometryId: 'e', value: 450 },
+        { geometryId: 'f', value: 550 },
+      ])
     );
 
     const thresholds =
@@ -224,26 +221,14 @@ describe('choropleth happy path — auto-Jenks thresholds', () => {
 
   test('colors count equals thresholds count + 1', () => {
     const result = resolveChoropleth(
-      {
-        id: 'test',
-        engine: 'maplibre',
-        mapType: 'choropleth',
-        sources: [],
-        layers: [],
-      },
-      'regions',
-      {
-        mapDataId: 'pop',
-        mapId: 'regions',
-        data: [
-          { geometryId: 'a', value: 10 },
-          { geometryId: 'b', value: 20 },
-          { geometryId: 'c', value: 30 },
-          { geometryId: 'd', value: 40 },
-          { geometryId: 'e', value: 50 },
-          { geometryId: 'f', value: 60 },
-        ],
-      }
+      makeChoroplethSpec([
+        { geometryId: 'a', value: 10 },
+        { geometryId: 'b', value: 20 },
+        { geometryId: 'c', value: 30 },
+        { geometryId: 'd', value: 40 },
+        { geometryId: 'e', value: 50 },
+        { geometryId: 'f', value: 60 },
+      ])
     );
 
     const colorBy = result.legends[0].colorBy;
@@ -254,26 +239,14 @@ describe('choropleth happy path — auto-Jenks thresholds', () => {
 
   test('uses default blue palette when no colors provided', () => {
     const result = resolveChoropleth(
-      {
-        id: 'test',
-        engine: 'maplibre',
-        mapType: 'choropleth',
-        sources: [],
-        layers: [],
-      },
-      'regions',
-      {
-        mapDataId: 'pop',
-        mapId: 'regions',
-        data: [
-          { geometryId: 'a', value: 100 },
-          { geometryId: 'b', value: 200 },
-          { geometryId: 'c', value: 300 },
-          { geometryId: 'd', value: 400 },
-          { geometryId: 'e', value: 500 },
-          { geometryId: 'f', value: 600 },
-        ],
-      }
+      makeChoroplethSpec([
+        { geometryId: 'a', value: 100 },
+        { geometryId: 'b', value: 200 },
+        { geometryId: 'c', value: 300 },
+        { geometryId: 'd', value: 400 },
+        { geometryId: 'e', value: 500 },
+        { geometryId: 'f', value: 600 },
+      ])
     );
 
     const colorBy = result.legends[0].colorBy;
@@ -659,6 +632,50 @@ describe('choropleth happy path — legend metadata preservation', () => {
       })
     );
 
-    expect(resolved.layers).toEqual(userLayers);
+    expect(resolved.layers[0].id).toBe('custom-fill');
+    expect(resolved.layers[0].sourceId).toBe('regions');
+    expect(resolved.layers[0].geometry).toBe('polygon');
+    expect(resolved.layers[0].mapDataId).toBe('pop');
+    expect(resolved.layers[0].activeLegendId).toBe('pop-legend');
+  });
+
+  test('merges user-provided paint with choropleth defaults', () => {
+    const resolved = resolveSpecFromMapType(
+      makeSpec({
+        layers: [
+          {
+            id: 'custom-fill',
+            sourceId: 'regions',
+            geometry: 'polygon',
+            paint: { fillColor: '#FF0000' },
+          },
+        ],
+        mapData: [
+          {
+            mapDataId: 'pop',
+            mapId: 'regions',
+            data: [
+              { geometryId: 'a', value: 100 },
+              { geometryId: 'b', value: 200 },
+            ],
+          },
+        ],
+      })
+    );
+
+    const fillLayer = resolved.layers.find((l) => {
+      return l.geometry === 'polygon';
+    });
+    const outlineLayer = resolved.layers.find((l) => {
+      return l.geometry === 'line';
+    });
+
+    expect(fillLayer!.paint).toEqual({ fillColor: '#FF0000' });
+    expect(fillLayer!.mapDataId).toBe('pop');
+    expect(fillLayer!.activeLegendId).toBe('pop-legend');
+    expect(outlineLayer!.paint).toEqual({
+      lineColor: '#94a3b8',
+      lineWidth: 0.5,
+    });
   });
 });

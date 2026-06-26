@@ -6,6 +6,7 @@ import {
   inspectDataValues,
   pickPaletteColors,
 } from 'src/spec/mapTypeDefaults/utils';
+import type { VisualizationSpec } from 'src/spec/types';
 
 describe('inspectDataValues', () => {
   test('detects numeric dataset', () => {
@@ -79,18 +80,31 @@ describe('pickPaletteColors', () => {
   });
 });
 
+const makeChoroplethSpec = (mapDataEntry: {
+  mapDataId: string;
+  mapId: string;
+  data: Array<{ geometryId: string; value: number | string }>;
+}): VisualizationSpec => {
+  return {
+    id: 'test',
+    engine: 'maplibre',
+    mapType: 'choropleth',
+    sources: [
+      {
+        id: mapDataEntry.mapId,
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      },
+    ],
+    layers: [],
+    mapData: [mapDataEntry],
+  };
+};
+
 describe('resolveChoropleth', () => {
   test('generates quantitative legend for numeric data', () => {
     const result = resolveChoropleth(
-      {
-        id: 'test',
-        engine: 'maplibre',
-        mapType: 'choropleth',
-        sources: [],
-        layers: [],
-      },
-      'regions',
-      {
+      makeChoroplethSpec({
         mapDataId: 'pop',
         mapId: 'regions',
         data: [
@@ -98,7 +112,7 @@ describe('resolveChoropleth', () => {
           { geometryId: 'b', value: 50000 },
           { geometryId: 'c', value: 100000 },
         ],
-      }
+      })
     );
     expect(result.legends[0].colorBy.type).toBe('quantitative');
     expect(result.layers[0].geometry).toBe('polygon');
@@ -106,41 +120,25 @@ describe('resolveChoropleth', () => {
 
   test('generates categorical legend for text data', () => {
     const result = resolveChoropleth(
-      {
-        id: 'test',
-        engine: 'maplibre',
-        mapType: 'choropleth',
-        sources: [],
-        layers: [],
-      },
-      'regions',
-      {
+      makeChoroplethSpec({
         mapDataId: 'type',
         mapId: 'regions',
         data: [
           { geometryId: 'a', value: 'urban' },
           { geometryId: 'b', value: 'rural' },
         ],
-      }
+      })
     );
     expect(result.legends[0].colorBy.type).toBe('categorical');
   });
 
   test('generates fill and outline layers', () => {
     const result = resolveChoropleth(
-      {
-        id: 'test',
-        engine: 'maplibre',
-        mapType: 'choropleth',
-        sources: [],
-        layers: [],
-      },
-      'regions',
-      {
+      makeChoroplethSpec({
         mapDataId: 'pop',
         mapId: 'regions',
         data: [{ geometryId: 'a', value: 100 }],
-      }
+      })
     );
     expect(result.layers).toHaveLength(2);
     expect(result.layers[0].geometry).toBe('polygon');
@@ -149,19 +147,11 @@ describe('resolveChoropleth', () => {
 
   test('does not add normalization to legend', () => {
     const result = resolveChoropleth(
-      {
-        id: 'test',
-        engine: 'maplibre',
-        mapType: 'choropleth',
-        sources: [],
-        layers: [],
-      },
-      'regions',
-      {
+      makeChoroplethSpec({
         mapDataId: 'pop',
         mapId: 'regions',
         data: [{ geometryId: 'a', value: 100 }],
-      }
+      })
     );
     expect(result.legends[0].normalization).toBeUndefined();
   });
@@ -229,7 +219,11 @@ describe('resolveSpecFromMapType', () => {
       ],
     };
     const resolved = resolveSpecFromMapType(spec);
-    expect(resolved.layers).toEqual(userLayers);
+    expect(resolved.layers[0].id).toBe('custom');
+    expect(resolved.layers[0].sourceId).toBe('r');
+    expect(resolved.layers[0].geometry).toBe('polygon');
+    expect(resolved.layers[0].mapDataId).toBe('pop');
+    expect(resolved.layers[0].activeLegendId).toBe('pop-legend');
   });
 
   test('does not override user-provided legends', () => {
@@ -432,15 +426,7 @@ describe('resolveSpecFromMapType', () => {
 
   test('produces non-empty Jenks breaks for ≤5 data points', () => {
     const result = resolveChoropleth(
-      {
-        id: 'test',
-        engine: 'maplibre',
-        mapType: 'choropleth',
-        sources: [],
-        layers: [],
-      },
-      'regions',
-      {
+      makeChoroplethSpec({
         mapDataId: 'pop',
         mapId: 'regions',
         data: [
@@ -450,7 +436,7 @@ describe('resolveSpecFromMapType', () => {
           { geometryId: 'd', value: 400 },
           { geometryId: 'e', value: 500 },
         ],
-      }
+      })
     );
     const colorBy = result.legends[0].colorBy;
     expect(colorBy.type).toBe('quantitative');

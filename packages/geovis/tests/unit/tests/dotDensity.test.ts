@@ -145,27 +145,77 @@ describe('dotDensity happy path — zero-config', () => {
       })
     );
 
-    expect(resolved.layers).toEqual(userLayers);
+    expect(resolved.layers[0].id).toBe('custom-point');
+    expect(resolved.layers[0].sourceId).toBe('points');
+    expect(resolved.layers[0].geometry).toBe('point');
+    expect(resolved.layers[0].mapDataId).toBe('events');
+    expect(resolved.layers[0].paint).toEqual({
+      circleColor: '#E4572E',
+      circleRadius: 2.4,
+      circleStrokeColor: '#FAF9F7',
+      circleStrokeWidth: 0.5,
+    });
+  });
+
+  test('merges user-provided paint with dotDensity defaults', () => {
+    const resolved = resolveSpecFromMapType(
+      makeSpec({
+        layers: [
+          {
+            id: 'custom-point',
+            sourceId: 'points',
+            geometry: 'point',
+            paint: { circleColor: '#FF0000' },
+          },
+        ],
+        mapData: [
+          {
+            mapDataId: 'events',
+            mapId: 'points',
+            data: [{ geometryId: 'a', value: 1 }],
+          },
+        ],
+      })
+    );
+
+    expect(resolved.layers[0].paint).toEqual({
+      circleColor: '#FF0000',
+      circleRadius: 2.4,
+      circleStrokeColor: '#FAF9F7',
+      circleStrokeWidth: 0.5,
+    });
   });
 });
 
 describe('resolveDotDensity', () => {
+  const makeDotDensitySpec = (
+    overrides?: Partial<VisualizationSpec>
+  ): VisualizationSpec => {
+    return {
+      id: 'test',
+      engine: 'maplibre',
+      mapType: 'dotDensity',
+      sources: [
+        {
+          id: 'points',
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: [] },
+        },
+      ],
+      layers: [],
+      mapData: [
+        {
+          mapDataId: 'events',
+          mapId: 'points',
+          data: [{ geometryId: 'a', value: 1 }],
+        },
+      ],
+      ...overrides,
+    };
+  };
+
   test('generates point layer with correct geometry', () => {
-    const result = resolveDotDensity(
-      {
-        id: 'test',
-        engine: 'maplibre',
-        mapType: 'dotDensity',
-        sources: [],
-        layers: [],
-      },
-      'points',
-      {
-        mapDataId: 'events',
-        mapId: 'points',
-        data: [{ geometryId: 'a', value: 1 }],
-      }
-    );
+    const result = resolveDotDensity(makeDotDensitySpec());
 
     expect(result.layers).toHaveLength(1);
     expect(result.layers[0].geometry).toBe('point');
@@ -174,21 +224,7 @@ describe('resolveDotDensity', () => {
   });
 
   test('applies dotDensity paint defaults', () => {
-    const result = resolveDotDensity(
-      {
-        id: 'test',
-        engine: 'maplibre',
-        mapType: 'dotDensity',
-        sources: [],
-        layers: [],
-      },
-      'points',
-      {
-        mapDataId: 'events',
-        mapId: 'points',
-        data: [{ geometryId: 'a', value: 1 }],
-      }
-    );
+    const result = resolveDotDensity(makeDotDensitySpec());
 
     expect(result.layers[0].paint).toEqual({
       circleColor: '#E4572E',
@@ -199,21 +235,7 @@ describe('resolveDotDensity', () => {
   });
 
   test('returns empty legends', () => {
-    const result = resolveDotDensity(
-      {
-        id: 'test',
-        engine: 'maplibre',
-        mapType: 'dotDensity',
-        sources: [],
-        layers: [],
-      },
-      'points',
-      {
-        mapDataId: 'events',
-        mapId: 'points',
-        data: [{ geometryId: 'a', value: 1 }],
-      }
-    );
+    const result = resolveDotDensity(makeDotDensitySpec());
 
     expect(result.legends).toHaveLength(0);
   });
