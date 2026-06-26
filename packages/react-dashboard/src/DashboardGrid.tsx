@@ -1,13 +1,10 @@
 import 'react-grid-layout/css/styles.css';
 
-import { Box, Flex, Global, IconButton, Spinner } from '@ttoss/ui';
+import { Box, Global, IconButton } from '@ttoss/ui';
 import { type Layout, Responsive, WidthProvider } from 'react-grid-layout';
 
 import type { DashboardTemplate } from './Dashboard';
-import {
-  DashboardCard,
-  type DashboardCard as DashboardCardProps,
-} from './DashboardCard';
+import { DashboardCard, type DashboardCardProps } from './DashboardCard';
 import { useDashboard } from './DashboardProvider';
 import { DashboardSectionDivider } from './DashboardSectionDivider';
 
@@ -67,6 +64,113 @@ const DragHandle = () => {
   );
 };
 
+type GridItemWrapperProps = {
+  className?: string;
+  style?: Record<string, unknown>;
+};
+
+type DashboardGridCardItemProps = {
+  item: DashboardTemplate['grid'][number];
+  isEditMode: boolean;
+  loading: boolean;
+  currency?: string;
+  onRemoveCard: () => void;
+} & GridItemWrapperProps;
+
+const DashboardMetricItem = ({
+  item,
+  isEditMode,
+  loading,
+  currency,
+  onRemoveCard,
+  ...wrapperProps
+}: DashboardGridCardItemProps) => {
+  const card = (
+    <DashboardCard
+      {...{ currency }}
+      {...(item.card as DashboardCardProps)}
+      loading={loading}
+    />
+  );
+
+  if (!isEditMode) {
+    return <div {...wrapperProps}>{card}</div>;
+  }
+
+  return (
+    <div {...wrapperProps}>
+      <DragHandle />
+      <Box
+        sx={{
+          position: 'relative',
+          width: '100%',
+          height: '100%',
+        }}
+      >
+        {card}
+        <RemoveCardButton onClick={onRemoveCard} />
+      </Box>
+    </div>
+  );
+};
+
+type DashboardGridSectionDividerItemProps = {
+  item: DashboardTemplate['grid'][number];
+  isEditMode: boolean;
+  onRemoveCard: () => void;
+  onTitleChange: (title: string) => void;
+} & GridItemWrapperProps;
+
+const DashboardSectionDividerItem = ({
+  item,
+  isEditMode,
+  onRemoveCard,
+  onTitleChange,
+  ...wrapperProps
+}: DashboardGridSectionDividerItemProps) => {
+  if (item.card.type !== 'sectionDivider') {
+    return null;
+  }
+
+  if (!isEditMode) {
+    return (
+      <div {...wrapperProps}>{<DashboardSectionDivider {...item.card} />}</div>
+    );
+  }
+
+  return (
+    <div {...wrapperProps}>
+      <DragHandle />
+      <Box
+        sx={{
+          position: 'relative',
+          overflow: 'visible',
+          width: '100%',
+          height: '100%',
+          border: 'sm',
+          borderStyle: 'dashed',
+          borderColor: 'display.border.muted.default',
+          borderRadius: 'md',
+          cursor: 'grab',
+          '&:active': { cursor: 'grabbing' },
+        }}
+      >
+        <Box sx={{ paddingLeft: '6' }}>
+          <DashboardSectionDivider
+            {...item.card}
+            editable
+            onTitleChange={onTitleChange}
+          />
+        </Box>
+        <RemoveCardButton onClick={onRemoveCard} />
+      </Box>
+    </div>
+  );
+};
+
+/**
+ * Renders the dashboard grid and preserves the selected template layout while cards load their data.
+ */
 export const DashboardGrid = ({
   loading,
   selectedTemplate,
@@ -148,6 +252,7 @@ export const DashboardGrid = ({
   return (
     <Box
       sx={{ width: '100%', height: 'full' }}
+      aria-busy={loading}
       {...(rest['data-export-target'] && { 'data-export-target': '' })}
     >
       <Global
@@ -157,108 +262,49 @@ export const DashboardGrid = ({
           },
         }}
       />
-      {loading ? (
-        <Flex
-          sx={{
-            width: '100%',
-            height: 'full',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <Spinner />
-        </Flex>
-      ) : (
-        <ResponsiveGridLayout
-          className="layout"
-          layouts={layouts}
-          breakpoints={breakpoints}
-          cols={cols}
-          rowHeight={32}
-          margin={[10, 10]}
-          containerPadding={[0, 0]}
-          onLayoutChange={handleLayoutChange}
-          onDrag={handleDrag}
-          onDragStop={handleDrag}
-          draggableHandle=".dashboard-card-drag-handle"
-        >
-          {selectedTemplate.grid.map((item) => {
-            if (item.card.type === 'sectionDivider') {
-              return (
-                <div key={item.i}>
-                  {isEditMode ? (
-                    <>
-                      <DragHandle />
-                      <Box
-                        sx={{
-                          position: 'relative',
-                          overflow: 'visible',
-                          width: '100%',
-                          height: '100%',
-                          border: 'sm',
-                          borderStyle: 'dashed',
-                          borderColor: 'display.border.muted.default',
-                          borderRadius: 'md',
-                          cursor: 'grab',
-                          '&:active': { cursor: 'grabbing' },
-                        }}
-                      >
-                        <Box sx={{ paddingLeft: '6' }}>
-                          <DashboardSectionDivider
-                            {...item.card}
-                            editable
-                            onTitleChange={(title) => {
-                              updateCard(item.i, { title });
-                            }}
-                          />
-                        </Box>
-                        <RemoveCardButton
-                          onClick={() => {
-                            return removeCard(item.i);
-                          }}
-                        />
-                      </Box>
-                    </>
-                  ) : (
-                    <DashboardSectionDivider {...item.card} />
-                  )}
-                </div>
-              );
-            }
+      <ResponsiveGridLayout
+        className="layout"
+        layouts={layouts}
+        breakpoints={breakpoints}
+        cols={cols}
+        rowHeight={32}
+        margin={[10, 10]}
+        containerPadding={[0, 0]}
+        onLayoutChange={handleLayoutChange}
+        onDrag={handleDrag}
+        onDragStop={handleDrag}
+        draggableHandle=".dashboard-card-drag-handle"
+      >
+        {selectedTemplate.grid.map((item) => {
+          if (item.card.type === 'sectionDivider') {
             return (
-              <div key={item.i}>
-                {isEditMode ? (
-                  <>
-                    <DragHandle />
-                    <Box
-                      sx={{
-                        position: 'relative',
-                        width: '100%',
-                        height: '100%',
-                      }}
-                    >
-                      <DashboardCard
-                        {...{ currency }}
-                        {...(item.card as DashboardCardProps)}
-                      />
-                      <RemoveCardButton
-                        onClick={() => {
-                          return removeCard(item.i);
-                        }}
-                      />
-                    </Box>
-                  </>
-                ) : (
-                  <DashboardCard
-                    {...{ currency }}
-                    {...(item.card as DashboardCardProps)}
-                  />
-                )}
-              </div>
+              <DashboardSectionDividerItem
+                key={item.i}
+                item={item}
+                isEditMode={isEditMode}
+                onRemoveCard={() => {
+                  return removeCard(item.i);
+                }}
+                onTitleChange={(title) => {
+                  updateCard(item.i, { title });
+                }}
+              />
             );
-          })}
-        </ResponsiveGridLayout>
-      )}
+          }
+          return (
+            <DashboardMetricItem
+              key={item.i}
+              item={item}
+              isEditMode={isEditMode}
+              loading={loading}
+              currency={currency}
+              onRemoveCard={() => {
+                return removeCard(item.i);
+              }}
+            />
+          );
+        })}
+      </ResponsiveGridLayout>
     </Box>
   );
 };

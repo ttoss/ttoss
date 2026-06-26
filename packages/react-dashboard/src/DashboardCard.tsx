@@ -62,7 +62,14 @@ export interface DashboardCard {
   metrics?: MetricsRecord[];
 }
 
-export const DashboardCard = (props: DashboardCard) => {
+export type DashboardCardProps = DashboardCard & {
+  loading?: boolean;
+};
+
+/**
+ * Renders a dashboard card using the renderer that matches the configured card type.
+ */
+export const DashboardCard = (props: DashboardCardProps) => {
   switch (props.type) {
     case 'bigNumber':
       return <BigNumber {...props} />;

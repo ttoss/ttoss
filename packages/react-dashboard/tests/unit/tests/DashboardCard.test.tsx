@@ -22,6 +22,14 @@ describe('DashboardCard', () => {
     expect(screen.getByText(/R\$\s*1\.000,00/)).toBeInTheDocument();
   });
 
+  test('should render skeleton when loading is true', () => {
+    render(<DashboardCard {...mockBigNumberCard} loading={true} />);
+
+    expect(screen.getByText('Total Revenue')).toBeInTheDocument();
+    expect(screen.getByTestId('dashboard-card-skeleton')).toBeInTheDocument();
+    expect(screen.queryByText(/R\$\s*1\.000,00/)).not.toBeInTheDocument();
+  });
+
   test('should return null for unsupported card types', () => {
     const { container } = render(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
