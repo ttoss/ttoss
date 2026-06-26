@@ -18,6 +18,10 @@
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/read-config-file"
   },
+  "bugs": {
+    "url": "https://github.com/ttoss/ttoss/issues"
+  },
+  "homepage": "https://github.com/ttoss/ttoss/tree/main/packages/read-config-file#readme",
   "license": "MIT",
   "author": "ttoss",
   "contributors": [
