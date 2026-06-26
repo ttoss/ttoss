@@ -150,6 +150,17 @@ export const createApiTemplate = ({
           return undefined;
         }
 
+        /**
+         * Subscription fields using @aws_subscribe are delivered natively by
+         * AppSync — the mutation result is forwarded directly to subscribers
+         * without invoking a Lambda. Attaching a Lambda resolver to a
+         * Subscription field causes AppSync to call the Lambda during
+         * subscription setup with a null source, breaking the connection.
+         */
+        if (typeName === 'Subscription') {
+          return undefined;
+        }
+
         return {
           fieldName,
           typeName,
