@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.34.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.33.0...@docs/storybook@3.34.0) (2026-06-25)
+
+### Features
+
+- **geovis:** Add choropleth map type auto-configuration ([#1099](https://github.com/ttoss/ttoss/issues/1099)) ([cf43365](https://github.com/ttoss/ttoss/commit/cf4336560da549d4edd62322bf7fada8e7f1de44))
+
 # [3.33.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.32.0...@docs/storybook@3.33.0) (2026-06-23)
 
 ### Features

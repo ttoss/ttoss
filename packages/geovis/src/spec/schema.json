@@ -20,6 +20,10 @@
       "type": "string",
       "enum": ["maplibre"]
     },
+    "mapType": {
+      "type": "string",
+      "enum": ["choropleth"]
+    },
     "view": {
       "type": "object",
       "additionalProperties": false,
@@ -596,7 +600,7 @@
     "LegendSpec": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "colorBy"],
+      "required": ["id"],
       "properties": {
         "id": {
           "type": "string",

@@ -4,15 +4,21 @@ import type {
   PolicyViolation,
   VisualizationSpec,
 } from '@ttoss/geovis';
-import { GeoVisCanvas, GeoVisProvider, useGeoVis } from '@ttoss/geovis';
+import {
+  GeoVisCanvas,
+  GeoVisLegend,
+  GeoVisProvider,
+  SEQUENTIAL_PALETTES,
+  useGeoVis,
+} from '@ttoss/geovis';
 import * as React from 'react';
 
 import fixture from '../../../../packages/geovis/src/fixtures/invalid-raw-count-choropleth.json';
+import { MapOverlayLegend } from './helpers/choropleth-helpers';
 import {
-  ColorSwatchLegend,
-  FeatureStatePainter,
-  MapOverlayLegend,
-} from './helpers/choropleth-helpers';
+  PolicyWarningBanner,
+  StoryHeader,
+} from './helpers/invalid-raw-count-helpers';
 import type { LockRef, MapRef } from './helpers/map-story-helpers';
 import {
   FitBoundsToUrlSource,
@@ -25,10 +31,7 @@ export default {
   tags: ['autodocs'],
 } as Meta;
 
-// Rwanda provinces are fetched from a remote URL — bbox is computed after load.
 const RWANDA_SOURCE_URL = fixture.sources[0].data as string;
-
-const spec = fixture as unknown as VisualizationSpec;
 
 const fmtPop = (v: number) => {
   return `${(v / 1_000_000).toFixed(1)}M inhabitants`;
@@ -37,53 +40,42 @@ const fmtDensity = (v: number) => {
   return `${v} hab/km²`;
 };
 
-// Blue scale for absolute count (invalid).
-// Rwanda: Kigali=1.1M (smallest, densest), East/South/West=2.5-2.6M (largest).
-const rawSteps = [
-  { threshold: 1_300_000, color: '#bfdbfe' },
-  { threshold: 1_700_000, color: '#60a5fa' },
-  { threshold: 2_000_000, color: '#3b82f6' },
-  { threshold: 2_300_000, color: '#1d4ed8' },
-];
-
-// Green scale for normalised density (correct).
-// Rwanda: East=274, West=420, South=434, North=527, Kigali=1551 hab/km².
-const densitySteps = [
-  { threshold: 350, color: '#86efac' },
-  { threshold: 430, color: '#4ade80' },
-  { threshold: 520, color: '#16a34a' },
-  { threshold: 900, color: '#15803d' },
-  { threshold: 1300, color: '#14532d' },
-];
-
-// Hardcoded Rwanda population per province (joined to rwanda-provinces.geojson
-// via feature.properties['name:en'] — the source has `name` in kinyarwanda,
-// `name:en` in English). Public statistics, snapshot circa 2022.
 const populationData: MapDataRow[] = [
-  { geometryId: 'Kigali City', value: 1_132_686 },
+  { geometryId: 'Kigali City', value: 854_000 },
   { geometryId: 'East Province', value: 2_595_703 },
   { geometryId: 'Western Province', value: 2_471_239 },
   { geometryId: 'Southern Province', value: 2_589_975 },
   { geometryId: 'Northern Province', value: 1_726_370 },
+  { geometryId: 'Gasabo District', value: 1_200_000 },
+  { geometryId: 'Huye District', value: 980_000 },
+  { geometryId: 'Musanze District', value: 1_450_000 },
+  { geometryId: 'Rubavu District', value: 720_000 },
+  { geometryId: 'Nyagatare District', value: 3_100_000 },
 ];
 
-// Pre-computed density (population / sq-km) per province. Encoded as a separate
-// dataset because feature-state stores a single `value` per source/feature; the
-// runtime expression `pop / area` is replaced by a precomputed value here.
 const densityData: MapDataRow[] = [
-  { geometryId: 'Kigali City', value: 1551 },
+  { geometryId: 'Kigali City', value: 1_551 },
   { geometryId: 'East Province', value: 274 },
   { geometryId: 'Western Province', value: 420 },
   { geometryId: 'Southern Province', value: 434 },
   { geometryId: 'Northern Province', value: 527 },
+  { geometryId: 'Gasabo District', value: 1_200 },
+  { geometryId: 'Huye District', value: 310 },
+  { geometryId: 'Musanze District', value: 890 },
+  { geometryId: 'Rubavu District', value: 650 },
+  { geometryId: 'Nyagatare District', value: 180 },
+  { geometryId: 'Gakenke District', value: 380 },
+  { geometryId: 'Gicumbi District', value: 290 },
+  { geometryId: 'Kayonza District', value: 340 },
+  { geometryId: 'Kirehe District', value: 220 },
+  { geometryId: 'Ngoma District', value: 470 },
+  { geometryId: 'Bugesera District', value: 760 },
+  { geometryId: 'Rulindo District', value: 580 },
+  { geometryId: 'Rutsiro District', value: 350 },
+  { geometryId: 'Nyaruguru District', value: 410 },
+  { geometryId: 'Nyamagabe District', value: 540 },
 ];
 
-/**
- * Null component that reads policyViolations from GeoVisContext (via useGeoVis)
- * and lifts them to the parent story via callback.
- * Must be a child of a GeoVisProvider mounted with the same spec.
- * Replaces direct reading of metadata.isPolicyInvalid from the imported JSON.
- */
 const PolicyDetector = ({
   onViolations,
 }: {
@@ -96,101 +88,111 @@ const PolicyDetector = ({
   return null;
 };
 
-const PolicyWarningBanner = ({
-  violations,
+const buildChoroplethSpec = ({
+  mapDataId,
+  data,
+  legendId,
+  title,
+  legendColorBy,
+  legendReference,
 }: {
-  violations: PolicyViolation[];
-}) => {
-  if (violations.length === 0) return null;
-  return (
-    <div
-      role="alert"
-      style={{
-        background: '#fffbeb',
-        border: '1px solid #f59e0b',
-        borderLeft: '4px solid #d97706',
-        borderRadius: 6,
-        padding: '12px 16px',
-        display: 'flex',
-        gap: 12,
-        alignItems: 'flex-start',
-      }}
-    >
-      <span style={{ fontSize: 20, lineHeight: 1, flexShrink: 0 }}>⚠️</span>
-      <div style={{ fontSize: 13, color: '#78350f', lineHeight: 1.5 }}>
-        <strong style={{ display: 'block', marginBottom: 4 }}>
-          Cartographic guardrail: absolute count in choropleth
-        </strong>
-        Rwanda provinces encoded by <strong>absolute population count</strong>{' '}
-        (left) vs <strong>density</strong> (hab/km², right). Kigali has only
-        1.1M inhabitants — the smallest count — yet is the densest province
-        (1,551 hab/km²). On the left map Kigali appears almost white; on the
-        right it is the darkest.
-        <br />
-        <strong>Correct:</strong> divide by area before encoding in colour.
-        {violations.map((v) => {
-          return (
-            <span
-              key={v.reason}
-              style={{
-                display: 'block',
-                marginTop: 4,
-                fontFamily: 'monospace',
-                fontSize: 11,
-              }}
-            >
-              [{v.reason}]
-            </span>
-          );
-        })}
-      </div>
-    </div>
-  );
+  mapDataId: string;
+  data: MapDataRow[];
+  legendId: string;
+  title: string;
+  legendColorBy?: VisualizationSpec['legends'] extends (infer U)[]
+    ? U extends { colorBy: infer C }
+      ? C
+      : never
+    : never;
+  legendReference?: string;
+}): VisualizationSpec => {
+  return {
+    id: `invalid-raw-count-${mapDataId}`,
+    engine: 'maplibre',
+    mapType: 'choropleth',
+    basemap: fixture.basemap,
+    sources: [
+      {
+        id: 'rwanda-provinces',
+        type: 'geojson',
+        data: RWANDA_SOURCE_URL,
+      },
+    ],
+    layers: [],
+    legends: [
+      {
+        id: legendId,
+        title,
+        ...(legendColorBy ? { colorBy: legendColorBy } : {}),
+        ...(legendReference ? { reference: legendReference } : {}),
+      },
+    ],
+    mapData: [
+      {
+        mapDataId,
+        mapId: 'rwanda-provinces',
+        joinKey: 'name:en',
+        data,
+      },
+    ],
+  };
 };
 
-const StoryHeader = ({ onRecenter }: { onRecenter: () => void }) => {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'space-between',
-      }}
-    >
-      <div>
-        <strong>{fixture.title}</strong>
-        <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: 14 }}>
-          {fixture.description}
-        </p>
-      </div>
-      <button
-        onClick={onRecenter}
-        style={{
-          padding: '6px 14px',
-          borderRadius: 6,
-          border: '1px solid #d4d4d8',
-          background: 'white',
-          cursor: 'pointer',
-          fontSize: 13,
-          color: '#374151',
-          whiteSpace: 'nowrap',
-          flexShrink: 0,
-        }}
-      >
-        Recenter
-      </button>
-    </div>
-  );
+const leftSpec = buildChoroplethSpec({
+  mapDataId: 'pop',
+  data: populationData,
+  legendId: 'pop-legend',
+  title: 'Population (raw count) — invalid',
+});
+
+const rightSpec = buildChoroplethSpec({
+  mapDataId: 'density',
+  data: densityData,
+  legendId: 'density-legend',
+  title: 'Density (hab/km²) — correct',
+  legendColorBy: {
+    type: 'quantitative',
+    colors: [...SEQUENTIAL_PALETTES.green],
+  },
+  legendReference:
+    '{link:MapLibre — Visualize population density (normalized)|https://maplibre.org/maplibre-gl-js/docs/examples/visualize-population-density/}',
+});
+
+/** Extracts color steps from the resolved spec's legend for the gradient overlay. */
+const useOverlaySteps = (
+  legendId: string
+): { defaultColor: string; steps: { threshold: number; color: string }[] } => {
+  const { spec } = useGeoVis();
+  const legend = spec.legends?.find((l) => {
+    return l.id === legendId;
+  });
+  const colorBy = legend?.colorBy;
+  if (
+    colorBy?.type === 'quantitative' &&
+    colorBy.thresholds &&
+    colorBy.colors
+  ) {
+    return {
+      defaultColor: colorBy.defaultColor ?? '#f0f0f0',
+      steps: colorBy.thresholds.map((t, i) => {
+        return {
+          threshold: t,
+          color: colorBy.colors![i + 1] ?? colorBy.colors![i] ?? '#999',
+        };
+      }),
+    };
+  }
+  return { defaultColor: '#f0f0f0', steps: [] };
 };
 
-const MapPanel = ({
+/** Inner panel that reads resolved spec from context for the overlay legend. */
+const MapOverlayPanel = ({
   borderColor,
   label,
-  legendLabel,
-  defaultColor,
-  steps,
-  formatValue,
-  providerSpec,
+  overlayLabel,
+  overlayLegendId,
+  overlayFormatValue,
   viewId,
   selfRef,
   peerRef,
@@ -200,11 +202,9 @@ const MapPanel = ({
 }: {
   borderColor: string;
   label: string;
-  legendLabel: string;
-  defaultColor: string;
-  steps: { threshold: number; color: string }[];
-  formatValue: (v: number) => string;
-  providerSpec: VisualizationSpec;
+  overlayLabel: string;
+  overlayLegendId: string;
+  overlayFormatValue: (v: number) => string;
   viewId: string;
   selfRef: MapRef;
   peerRef: MapRef;
@@ -212,6 +212,7 @@ const MapPanel = ({
   showPolicyDetector?: boolean;
   onViolations?: (v: PolicyViolation[]) => void;
 }) => {
+  const overlaySteps = useOverlaySteps(overlayLegendId);
   const canvasStyle: React.CSSProperties = { width: '100%', height: '100%' };
 
   return (
@@ -225,158 +226,81 @@ const MapPanel = ({
       }}
     >
       <MapLabel>{label}</MapLabel>
-      <MapOverlayLegend
-        label={legendLabel}
-        defaultColor={defaultColor}
-        steps={steps}
-        formatValue={formatValue}
+      {overlaySteps.steps.length > 0 ? (
+        <MapOverlayLegend
+          label={overlayLabel}
+          defaultColor={overlaySteps.defaultColor}
+          steps={overlaySteps.steps}
+          formatValue={overlayFormatValue}
+        />
+      ) : null}
+      <GeoVisCanvas viewId={viewId} style={canvasStyle} />
+      <FitBoundsToUrlSource url={RWANDA_SOURCE_URL} />
+      <MapSync selfRef={selfRef} peerRef={peerRef} lockRef={lockRef} />
+      {showPolicyDetector && onViolations ? (
+        <PolicyDetector onViolations={onViolations} />
+      ) : null}
+    </div>
+  );
+};
+
+const MapPanel = ({
+  borderColor,
+  label,
+  overlayLabel,
+  overlayLegendId,
+  overlayFormatValue,
+  providerSpec,
+  viewId,
+  selfRef,
+  peerRef,
+  lockRef,
+  showPolicyDetector,
+  onViolations,
+}: {
+  borderColor: string;
+  label: string;
+  overlayLabel: string;
+  overlayLegendId: string;
+  overlayFormatValue: (v: number) => string;
+  providerSpec: VisualizationSpec;
+  viewId: string;
+  selfRef: MapRef;
+  peerRef: MapRef;
+  lockRef: LockRef;
+  showPolicyDetector?: boolean;
+  onViolations?: (v: PolicyViolation[]) => void;
+}) => {
+  return (
+    <GeoVisProvider spec={providerSpec}>
+      <MapOverlayPanel
+        borderColor={borderColor}
+        label={label}
+        overlayLabel={overlayLabel}
+        overlayLegendId={overlayLegendId}
+        overlayFormatValue={overlayFormatValue}
+        viewId={viewId}
+        selfRef={selfRef}
+        peerRef={peerRef}
+        lockRef={lockRef}
+        showPolicyDetector={showPolicyDetector}
+        onViolations={onViolations}
       />
-      <GeoVisProvider spec={providerSpec}>
-        <GeoVisCanvas viewId={viewId} style={canvasStyle} />
-        <FitBoundsToUrlSource url={RWANDA_SOURCE_URL} />
-        <MapSync selfRef={selfRef} peerRef={peerRef} lockRef={lockRef} />
-        <FeatureStatePainter
-          layerId="rwanda-choropleth"
-          defaultColor={defaultColor}
-          steps={steps}
-        />
-        {showPolicyDetector && onViolations ? (
-          <PolicyDetector onViolations={onViolations} />
-        ) : null}
-      </GeoVisProvider>
-    </div>
+    </GeoVisProvider>
   );
 };
 
-const SwatchLegends = () => {
-  return (
-    <div style={{ display: 'flex', gap: 4 }}>
-      <div style={{ flex: 1 }}>
-        <ColorSwatchLegend
-          title="Blue — absolute count (invalid)"
-          defaultColor="#eff6ff"
-          steps={rawSteps}
-          formatValue={fmtPop}
-        />
-      </div>
-      <div style={{ flex: 1 }}>
-        <ColorSwatchLegend
-          title="Green — density hab/km² (correct)"
-          defaultColor="#f0fdf4"
-          steps={densitySteps}
-          formatValue={fmtDensity}
-        />
-      </div>
-    </div>
-  );
-};
-
-const PolicySection = () => {
-  return (
-    <div>
-      <strong>Policy</strong>
-      <ul style={{ fontSize: 13, color: '#374151', marginTop: 6 }}>
-        <li>
-          <code>cartography.warnOnRawCountChoropleth: true</code> — this fixture
-          should raise a runtime warning when the policy is enabled.
-        </li>
-        <li>
-          Invalid field: <code>{fixture.metadata.metricField as string}</code>.
-          Correct expression:{' '}
-          <code>{fixture.metadata.normalizedExpression as string}</code> (
-          {fixture.metadata.normalizedLabel as string}).
-        </li>
-      </ul>
-    </div>
-  );
-};
-
-const ReferencesSection = () => {
-  return (
-    <div>
-      <strong>Official references</strong>
-      <ul style={{ fontSize: 13 }}>
-        <li>
-          <a
-            href="https://maplibre.org/maplibre-gl-js/docs/examples/visualize-population-density/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            MapLibre — Visualize population density (normalized)
-          </a>
-        </li>
-      </ul>
-    </div>
-  );
-};
-
-// Story
-
-/**
- * Intentionally **invalid** fixture — contract artefact for the
- * `cartography.warnOnRawCountChoropleth` policy.
- *
- * Uses official MapLibre Rwanda provinces geometry and a split-compare to
- * expose the issue: Kigali City has the smallest absolute population (1.1M)
- * but the highest density (1,551 hab/km²). On the left map it appears almost
- * white; on the right it is the darkest. Both metrics are supplied via
- * hardcoded `mapData` joined to the source by `feature.properties.name`.
- */
 export const InvalidRawCountChoropleth: StoryFn = () => {
   const leftMapRef = React.useRef<MapRef['current']>(null);
   const rightMapRef = React.useRef<MapRef['current']>(null);
   const syncLock = React.useRef(false) as LockRef;
   const [violations, setViolations] = React.useState<PolicyViolation[]>([]);
 
-  // Each side renders the same source through a distinct mapData entry.
-  // Cloning the spec keeps the providers independent: feature-state is set
-  // per map instance, so the left map carries `population` values and the
-  // right map carries `density` values without interfering with each other.
-  const leftSpec = React.useMemo<VisualizationSpec>(() => {
-    return {
-      ...spec,
-      layers: spec.layers.map((layer) => {
-        return layer.id === 'rwanda-choropleth'
-          ? { ...layer, mapDataId: 'pop' }
-          : layer;
-      }),
-      mapData: [
-        {
-          mapDataId: 'pop',
-          mapId: 'rwanda-provinces',
-          joinKey: 'name:en',
-          data: populationData,
-        },
-      ],
-    };
-  }, []);
-
-  const rightSpec = React.useMemo<VisualizationSpec>(() => {
-    return {
-      ...spec,
-      layers: spec.layers.map((layer) => {
-        return layer.id === 'rwanda-choropleth'
-          ? { ...layer, mapDataId: 'density' }
-          : layer;
-      }),
-      mapData: [
-        {
-          mapDataId: 'density',
-          mapId: 'rwanda-provinces',
-          joinKey: 'name:en',
-          data: densityData,
-        },
-      ],
-    };
-  }, []);
-
-  // Stabilise the callback reference to avoid unnecessary re-renders.
   const handleViolations = React.useCallback((v: PolicyViolation[]) => {
     return setViolations(v);
   }, []);
 
   const recenter = React.useCallback(() => {
-    // Rwanda approximate bbox — used when no center/zoom is present in the fixture.
     const rwandaBbox: [[number, number], [number, number]] = [
       [28.85, -2.84],
       [30.9, -1.05],
@@ -390,19 +314,20 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
 
   return (
     <div style={{ display: 'grid', gap: 12 }}>
-      <StoryHeader onRecenter={recenter} />
-
-      {/* Banner triggered via policyViolations from GeoVisContext — does not read metadata directly from JSON */}
+      <StoryHeader
+        title={fixture.title}
+        description={fixture.description}
+        onRecenter={recenter}
+      />
       <PolicyWarningBanner violations={violations} />
 
       <div style={{ display: 'flex', gap: 4, height: 460 }}>
         <MapPanel
           borderColor="#f59e0b"
           label="Absolute population count (population) - invalid"
-          legendLabel="absolute population"
-          defaultColor="#eff6ff"
-          steps={rawSteps}
-          formatValue={fmtPop}
+          overlayLabel="absolute population"
+          overlayLegendId="pop-legend"
+          overlayFormatValue={fmtPop}
           providerSpec={leftSpec}
           viewId="left"
           selfRef={leftMapRef}
@@ -415,10 +340,9 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
         <MapPanel
           borderColor="#16a34a"
           label="Density (population / sq-km) - correct"
-          legendLabel="density (people/km²)"
-          defaultColor="#f0fdf4"
-          steps={densitySteps}
-          formatValue={fmtDensity}
+          overlayLabel="density (people/km²)"
+          overlayLegendId="density-legend"
+          overlayFormatValue={fmtDensity}
           providerSpec={rightSpec}
           viewId="right"
           selfRef={rightMapRef}
@@ -427,10 +351,33 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
         />
       </div>
 
-      {/* gap: 4 mirrors the map row layout — each swatch aligns with its corresponding panel */}
-      <SwatchLegends />
-      <PolicySection />
-      <ReferencesSection />
+      <div style={{ display: 'flex', gap: 4 }}>
+        <div style={{ flex: 1 }}>
+          <GeoVisProvider spec={leftSpec}>
+            <GeoVisLegend legendId="pop-legend" formatValue={fmtPop} />
+          </GeoVisProvider>
+        </div>
+        <div style={{ flex: 1 }}>
+          <GeoVisProvider spec={rightSpec}>
+            <GeoVisLegend legendId="density-legend" formatValue={fmtDensity} />
+          </GeoVisProvider>
+        </div>
+      </div>
+      <div>
+        <strong>Policy</strong>
+        <ul style={{ fontSize: 13, color: '#374151', marginTop: 6 }}>
+          <li>
+            <code>cartography.warnOnRawCountChoropleth: true</code> — this
+            fixture should raise a runtime warning when the policy is enabled.
+          </li>
+          <li>
+            Invalid field: <code>{fixture.metadata.metricField as string}</code>
+            . Correct expression:{' '}
+            <code>{fixture.metadata.normalizedExpression as string}</code> (
+            {fixture.metadata.normalizedLabel as string}).
+          </li>
+        </ul>
+      </div>
     </div>
   );
 };
