@@ -89,7 +89,7 @@ export type GeoVisGeometryType =
   | 'symbol'
   | 'heatmap';
 
-export type MapType = 'choropleth';
+export type MapType = 'choropleth' | 'dotDensity' | 'proportionalCircles';
 
 export interface ViewState {
   center?: LngLat;
@@ -268,6 +268,7 @@ export interface VisualizationLayer {
   minzoom?: number;
   maxzoom?: number;
   paint?: LayerPaint;
+  sizeBy?: SizeBy;
   /** Optional alternative legend definitions presented as runtime toggles. */
   legends?: LegendSpec[];
   /** Id of the currently active legend from `legends[]`. */
