@@ -20,6 +20,9 @@ export const resolveDotDensity = (
   legends: [];
 } => {
   const sourceId = findMatchSourceId(spec);
+  if (sourceId === 'unknown') {
+    return { layers: [], legends: [] };
+  }
   const mapDataId = spec.mapData?.[0]?.mapDataId ?? 'unknown';
 
   const pointLayer: VisualizationLayer = {

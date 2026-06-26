@@ -22,27 +22,39 @@ const findMatchingResolvedLegend = (
 
 const matchLayer = (
   ul: VisualizationLayer,
-  rl: VisualizationLayer,
-  isOnlyResolved: boolean
+  rl: VisualizationLayer
 ): boolean => {
-  if (isOnlyResolved && rl.geometry === 'point' && ul.geometry === 'point') {
-    return true;
-  }
   return ul.sourceId === rl.sourceId && ul.geometry === rl.geometry;
 };
 
+// Keys that should not be overwritten when injecting resolved fields
+const STRUCTURAL_KEYS = new Set<string>([
+  'id',
+  'sourceId',
+  'geometry',
+  'paint',
+]);
+
+/**
+ * Injects missing fields from a resolved layer into a user layer.
+ * - If the user layer lacks `sizeBy`, `mapDataId`, or `activeLegendId`,
+ *   they are filled from the resolved layer.
+ * - If the user layer has a `paint` object, it is merged with the resolved
+ *   layer's paint, with user-provided values taking precedence.
+ *
+ * OBS: This avoids overwriting user-provided values while ensuring that essential
+ * fields from the resolved layer are present.
+ */
 const injectResolvedFields = (
   match: VisualizationLayer,
   rl: VisualizationLayer
 ): void => {
-  if (rl.sizeBy && !match.sizeBy) {
-    (match as Record<string, unknown>).sizeBy = rl.sizeBy;
-  }
-  if (rl.mapDataId && !match.mapDataId) {
-    (match as Record<string, unknown>).mapDataId = rl.mapDataId;
-  }
-  if (rl.activeLegendId && !match.activeLegendId) {
-    (match as Record<string, unknown>).activeLegendId = rl.activeLegendId;
+  for (const key of Object.keys(rl)) {
+    if (STRUCTURAL_KEYS.has(key)) continue;
+    const k = key as keyof VisualizationLayer;
+    if (rl[k] && !match[k]) {
+      (match as Record<string, unknown>)[k] = rl[k];
+    }
   }
   if (rl.paint) {
     match.paint = { ...rl.paint, ...match.paint };
@@ -61,15 +73,9 @@ const mergeResolvedLayers = (
   resolvedLayers: VisualizationLayer[]
 ): VisualizationLayer[] => {
   const merged = [...userLayers];
-  const resolvedPoints = resolvedLayers.filter((rl) => {
-    return rl.geometry === 'point';
-  });
-  const isOnlyResolved =
-    resolvedPoints.length === 1 && resolvedLayers.length === 1;
-
   for (const rl of resolvedLayers) {
     const match = merged.find((ul) => {
-      return matchLayer(ul, rl, isOnlyResolved);
+      return matchLayer(ul, rl);
     });
     if (match) {
       injectResolvedFields(match, rl);

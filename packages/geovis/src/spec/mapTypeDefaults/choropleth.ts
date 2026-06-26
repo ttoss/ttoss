@@ -22,13 +22,13 @@ import {
  *
  * Uses raw data values for Jenks thresholds (Path A).
  */
-export const resolveChoropleth = (
-  spec: VisualizationSpec
+const buildChoropleth = (
+  spec: VisualizationSpec,
+  sourceId: string
 ): {
   layers: VisualizationLayer[];
   legends: LegendSpec[];
 } => {
-  const sourceId = findMatchSourceId(spec);
   const mapDataEntry = spec.mapData?.[0];
   const mapDataId = mapDataEntry?.mapDataId ?? 'unknown';
 
@@ -92,4 +92,17 @@ export const resolveChoropleth = (
     layers: [fillLayer, outlineLayer],
     legends: [legend],
   };
+};
+
+export const resolveChoropleth = (
+  spec: VisualizationSpec
+): {
+  layers: VisualizationLayer[];
+  legends: LegendSpec[];
+} => {
+  const sourceId = findMatchSourceId(spec);
+  if (sourceId === 'unknown') {
+    return { layers: [], legends: [] };
+  }
+  return buildChoropleth(spec, sourceId);
 };
