@@ -1,5 +1,5 @@
-import { Meta, StoryFn } from '@storybook/react-webpack5';
-import { toast, ToastContainer } from '@ttoss/components/Toast';
+import type { Meta, StoryFn } from '@storybook/react-webpack5';
+import { toast, ToastContainer } from '@ttoss/components';
 import { Button } from '@ttoss/ui';
 
 export default {

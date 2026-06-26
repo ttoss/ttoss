@@ -3,6 +3,59 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.9.2...@ttoss/react-auth-cognito@2.9.3) (2026-06-22)
+
+**Note:** Version bump only for package @ttoss/react-auth-cognito
+
+## [2.9.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.9.1...@ttoss/react-auth-cognito@2.9.2) (2026-06-22)
+
+**Note:** Version bump only for package @ttoss/react-auth-cognito
+
+## [2.9.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.9.0...@ttoss/react-auth-cognito@2.9.1) (2026-06-19)
+
+**Note:** Version bump only for package @ttoss/react-auth-cognito
+
+# [2.9.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.8.45...@ttoss/react-auth-cognito@2.9.0) (2026-06-19)
+
+### Features
+
+- **react-notifications:** add actions support and render as buttons ([#1080](https://github.com/ttoss/ttoss/issues/1080)) ([0c8c32a](https://github.com/ttoss/ttoss/commit/0c8c32a2c6e35f740955580b72b4d0131c5ad983)), closes [#1079](https://github.com/ttoss/ttoss/issues/1079)
+
+## 2.8.45 (2026-06-15)
+
+### Bug Fixes
+
+- **website:** generate markdown files for llms.txt references ([#1060](https://github.com/ttoss/ttoss/issues/1060)) ([8785a31](https://github.com/ttoss/ttoss/commit/8785a31af53fcd5d3899c08b06de4b9f157c9d8d))
+
+## [2.8.44](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.8.43...@ttoss/react-auth-cognito@2.8.44) (2026-06-12)
+
+**Note:** Version bump only for package @ttoss/react-auth-cognito
+
+## [2.8.43](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.8.42...@ttoss/react-auth-cognito@2.8.43) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/react-auth-cognito
+
+## [2.8.42](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.8.41...@ttoss/react-auth-cognito@2.8.42) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/react-auth-cognito
+
+## [2.8.41](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.8.40...@ttoss/react-auth-cognito@2.8.41) (2026-06-09)
+
+**Note:** Version bump only for package @ttoss/react-auth-cognito
+
+## [2.8.40](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.8.39...@ttoss/react-auth-cognito@2.8.40) (2026-06-09)
+
+### Bug Fixes
+
+- add rolldown/vite 8 export conditions and move @ttoss/components to peerDep ([c85efe3](https://github.com/ttoss/ttoss/commit/c85efe3b91f4af2405515bd6fa20227579869583))
+
+## [2.8.39](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.8.38...@ttoss/react-auth-cognito@2.8.39) (2026-06-09)
+
+### Bug Fixes
+
+- **@ttoss/react-notifications:** move @ttoss/components to dependencies ([#1029](https://github.com/ttoss/ttoss/issues/1029)) ([51c5d30](https://github.com/ttoss/ttoss/commit/51c5d30602c44d3620fab2072969c7b12d6243d0)), closes [#1028](https://github.com/ttoss/ttoss/issues/1028)
+- **react-auth-cognito:** handle Cognito exceptions gracefully ([#1032](https://github.com/ttoss/ttoss/issues/1032)) ([c1ecb35](https://github.com/ttoss/ttoss/commit/c1ecb354753a7e1aa14557d5f7b8a3e6611e1bf6)), closes [#1031](https://github.com/ttoss/ttoss/issues/1031)
+
 ## [2.8.38](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.8.37...@ttoss/react-auth-cognito@2.8.38) (2026-06-05)
 
 ### Bug Fixes

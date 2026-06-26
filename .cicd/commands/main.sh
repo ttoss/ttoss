@@ -1,15 +1,20 @@
 export ENVIRONMENT=Production
 
+# Cache all remote tags once to avoid repeated git ls-remote calls.
+REMOTE_TAGS_FULL=$(git ls-remote --tags origin)
+
 # Check if the current HEAD is already tagged on the remote.
-# Uses git ls-remote to avoid the cost of fetching all tags locally.
 HEAD_SHA=$(git rev-parse HEAD)
-if git ls-remote --tags origin | awk '{print $1}' | grep -q "^$HEAD_SHA$"; then
+if echo "$REMOTE_TAGS_FULL" | awk '{print $1}' | grep -q "^$HEAD_SHA$"; then
   echo "There are tags in the current commit, exiting main workflow"
   exit 0
 fi
 
-# Find the latest tag name without fetching all tags locally.
-export LATEST_TAG=$(git ls-remote --tags origin | grep -v '\^{}' | awk '{print $2}' | sed 's|refs/tags/||' | sort -V | tail -1)
+# Extract tag names (excluding peeled annotated-tag objects ^{}).
+REMOTE_TAGS=$(echo "$REMOTE_TAGS_FULL" | grep -v '\^{}' | awk '{print $2}' | sed 's|refs/tags/||')
+
+# Find the latest tag name.
+export LATEST_TAG=$(echo "$REMOTE_TAGS" | sort -V | tail -1)
 
 # Fetch only that one tag so its commit object exists in the local repo.
 # This avoids downloading all tags while still letting turbo resolve the SHA.
@@ -36,11 +41,13 @@ pnpm turbo run build-config
 # Check dependencies versions.
 pnpm run syncpack:lint
 
-# Publish packages only if `pnpm lerna changed` is success. This happens when
-# exists an update on root and no packages changes. This way, `version` won't
-# create tags and `git diff HEAD^1 origin/main --quiet` will fail because
-# HEAD^1 will diff from origin/main.
-if pnpm lerna changed; then
+# Publish packages only if there are versioned changes since the last tag.
+# Pass --since=$LATEST_TAG explicitly so lerna uses the same baseline the
+# rest of this script uses, rather than auto-detecting from the shallow clone
+# (fetch-depth: 20). Without --since, lerna cannot find the baseline tag in
+# the shallow history and logs "Assuming all packages changed" — a false
+# positive that wastes the entire build/test/version pipeline.
+if pnpm lerna changed --since=$LATEST_TAG; then
   echo "Changes detected on packages, publishing them..."
 
   # Run i18n, build, and test BEFORE lerna version so turbo cache is warm.
@@ -63,6 +70,12 @@ if pnpm lerna changed; then
   pnpm run lint -- --no-stash --allow-empty
   [ -z "$(git status --porcelain)" ] || { echo "Error: There are changes after build. Please, commit them locally and push again"; git status; exit 1; }
 
+  # Before versioning, verify origin/main hasn't moved since checkout.
+  # If it has, a concurrent push is in flight; the next run will handle
+  # publishing. Exit 0 (not a failure — this is expected graceful behaviour).
+  git fetch origin main
+  git diff HEAD origin/main --quiet || { echo "New commits on origin/main detected. Skipping this run — the next workflow run will publish." && exit 0; }
+
   # Capture existing tags before versioning so we can delete only them afterward,
   # preserving the new tags created by lerna version. Tags are re-pushed via
   # git push --follow-tags below.
@@ -75,26 +88,6 @@ if pnpm lerna changed; then
   # Tests are skipped here because they already passed above and version bumps
   # do not affect test outcomes.
   pnpm turbo run build --filter=[$LATEST_TAG_SHA]
-
-  # Use Git to check for changes in the origin repository. If there are any
-  # changes, "git push --follow-tags" will fail. The error message will be:
-  #
-  # error: failed to push some refs to 'github.com:ttoss/ttoss.git'
-  # hint: Updates were rejected because the remote contains work that you do
-  # hint: not have locally. This is usually caused by another repository pushing
-  # hint: to the same ref. You may want to first integrate the remote changes
-  # hint: (e.g., 'git pull ...') before pushing again.
-  #
-  # To avoid this, we need to:
-  #
-  # 1. Fetch the latest changes from the origin/main repository.
-  # 2. Compare the local and remote main branches using `git diff`.
-  # 3. Check if there are any changes and stop the workflow if there are any.
-  # 4. Exit and wait to the next main workflow starts because of the changes.
-  git fetch origin main
-
-  # HEAD^1 because lerna version created a commit.
-  git diff HEAD^1 origin/main --quiet || { echo "Changes found before publishing. Workflow stopped." && exit 1; }
 
   # Push changes.
   git push --follow-tags

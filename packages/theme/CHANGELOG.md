@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 2.12.0 (2026-06-19)
+
+### Features
+
+- **react-notifications:** add actions support and render as buttons ([#1080](https://github.com/ttoss/ttoss/issues/1080)) ([0c8c32a](https://github.com/ttoss/ttoss/commit/0c8c32a2c6e35f740955580b72b4d0131c5ad983)), closes [#1079](https://github.com/ttoss/ttoss/issues/1079)
+
+## [2.11.27](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.11.26...@ttoss/theme@2.11.27) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/theme
+
+## [2.11.26](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.11.25...@ttoss/theme@2.11.26) (2026-06-09)
+
+### Bug Fixes
+
+- add rolldown/vite 8 export conditions and move @ttoss/components to peerDep ([c85efe3](https://github.com/ttoss/ttoss/commit/c85efe3b91f4af2405515bd6fa20227579869583))
+
+## [2.11.25](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.11.24...@ttoss/theme@2.11.25) (2026-06-09)
+
+**Note:** Version bump only for package @ttoss/theme
+
 ## [2.11.24](https://github.com/ttoss/ttoss/compare/@ttoss/theme@2.11.23...@ttoss/theme@2.11.24) (2026-06-05)
 
 ### Bug Fixes

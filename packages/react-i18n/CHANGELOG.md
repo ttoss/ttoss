@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 2.3.0 (2026-06-19)
+
+### Features
+
+- **react-notifications:** add actions support and render as buttons ([#1080](https://github.com/ttoss/ttoss/issues/1080)) ([0c8c32a](https://github.com/ttoss/ttoss/commit/0c8c32a2c6e35f740955580b72b4d0131c5ad983)), closes [#1079](https://github.com/ttoss/ttoss/issues/1079)
+
+## [2.2.21](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@2.2.20...@ttoss/react-i18n@2.2.21) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/react-i18n
+
+## [2.2.20](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@2.2.19...@ttoss/react-i18n@2.2.20) (2026-06-09)
+
+### Bug Fixes
+
+- add rolldown/vite 8 export conditions and move @ttoss/components to peerDep ([c85efe3](https://github.com/ttoss/ttoss/commit/c85efe3b91f4af2405515bd6fa20227579869583))
+
+## [2.2.19](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@2.2.18...@ttoss/react-i18n@2.2.19) (2026-06-09)
+
+**Note:** Version bump only for package @ttoss/react-i18n
+
 ## [2.2.18](https://github.com/ttoss/ttoss/compare/@ttoss/react-i18n@2.2.17...@ttoss/react-i18n@2.2.18) (2026-06-05)
 
 ### Bug Fixes

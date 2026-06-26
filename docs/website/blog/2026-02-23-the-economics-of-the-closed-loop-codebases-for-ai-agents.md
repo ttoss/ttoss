@@ -5,7 +5,7 @@ authors: arantespp
 tags: [ai, engineering-management, agentic-development, testing]
 ---
 
-In the rush to adopt AI coding tools, engineering teams are rediscovering a fundamental principle of Control Engineering, now codified as [The Principle of Automated Closed Loops](/docs/ai/agentic-development-principles#the-principle-of-automated-closed-loops): **Open-loop systems are unstable, and human feedback is the most expensive way to close the loop.**
+In the rush to adopt AI coding tools, engineering teams are rediscovering a fundamental principle of Control Engineering, now codified as [The Principle of Automated Closed Loops](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-automated-closed-loops): **Open-loop systems are unstable, and human feedback is the most expensive way to close the loop.**
 
 The key insight is that **codebases need to be structured with tests and verification mechanisms** to provide the feedback signals that make those agent loops effective.
 
@@ -15,13 +15,13 @@ When we talk about "AI Agents," we are really talking about control systems. The
 
 ## The Human as the Feedback Loop (The Bottleneck)
 
-Most developers treat LLMs as open-loop systems. You write a prompt ("Make this button blue"), the LLM generates code, and the system assumes it's correct. But LLMs operate under [The Principle of Probabilistic AI Output](/docs/ai/agentic-development-principles#the-principle-of-probabilistic-ai-output)—they hallucinate APIs, forget imports, and make subtle logic errors. Without a feedback mechanism to catch these errors _before_ the human sees them, the system creates a costly verification bottleneck.
+Most developers treat LLMs as open-loop systems. You write a prompt ("Make this button blue"), the LLM generates code, and the system assumes it's correct. But LLMs operate under [The Principle of Probabilistic AI Output](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-probabilistic-ai-output)—they hallucinate APIs, forget imports, and make subtle logic errors. Without a feedback mechanism to catch these errors _before_ the human sees them, the system creates a costly verification bottleneck.
 
-In this open-loop workflow, **you** act as the sensor. You read the code, run the app, spot the missing import, and tell the LLM to fix it. This is a **Human-in-the-Loop** system. From an engineering perspective, humans are ineffective feedback sensors. We have high latency, taking minutes to context-switch and verify code where a machine would take milliseconds ([The Corollary of Verification Latency](/docs/ai/agentic-development-principles#the-corollary-of-verification-latency)). Our feedback is often low-precision ("it feels laggy" vs. "expected 200 ms"), and most critically, we are very expensive. This inefficiency creates a "Verification Tax" that bankrupts the value of using AI in the first place.
+In this open-loop workflow, **you** act as the sensor. You read the code, run the app, spot the missing import, and tell the LLM to fix it. This is a **Human-in-the-Loop** system. From an engineering perspective, humans are ineffective feedback sensors. We have high latency, taking minutes to context-switch and verify code where a machine would take milliseconds ([The Corollary of Verification Latency](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-corollary-of-verification-latency)). Our feedback is often low-precision ("it feels laggy" vs. "expected 200 ms"), and most critically, we are very expensive. This inefficiency creates a "Verification Tax" that bankrupts the value of using AI in the first place.
 
 ### The Verification Tax
 
-Every line of code written by an AI imposes a [Verification Tax](/docs/ai/agentic-development-principles#the-corollary-of-the-verification-tax) on the human developer. When you write code yourself, the creation cost is high because you have to think through the logic, but the verification cost is low since you inherently trust your own reasoning.
+Every line of code written by an AI imposes a [Verification Tax](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-corollary-of-the-verification-tax) on the human developer. When you write code yourself, the creation cost is high because you have to think through the logic, but the verification cost is low since you inherently trust your own reasoning.
 
 With AI coding, the equation flips. The generation cost is near zero because tokens are cheap, but the verification cost is massive. You have to reverse-engineer the AI's logic to fundamentally trust it. If an AI generates 1,000 lines of code in 10 seconds, but it takes you 2 hours to manually verify it works, you shifted the cost from **Creation** to **Verification**.
 
@@ -33,13 +33,13 @@ Only _then_ does the human review the PR.
 
 ### Deterministic Verification
 
-Not all "closed loops" are created equal. As codified in [The Corollary of Deterministic Verification](/docs/ai/agentic-development-principles#the-corollary-of-deterministic-verification), verification must be structurally enforced, not semantically requested.
+Not all "closed loops" are created equal. As codified in [The Corollary of Deterministic Verification](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-corollary-of-deterministic-verification), verification must be structurally enforced, not semantically requested.
 
-**Instruction-driven verification** (weak closed loops) relies on prompts—you tell the agent to run tests and lint after changes, trusting it executed them. While valuable for reducing human verification work, this approach is structurally fragile under [The Principle of Distributed Unreliability](/docs/ai/agentic-development-principles#the-principle-of-distributed-unreliability). Agents can time out, crash, skip commands, or report execution that never occurred.
+**Instruction-driven verification** (weak closed loops) relies on prompts—you tell the agent to run tests and lint after changes, trusting it executed them. While valuable for reducing human verification work, this approach is structurally fragile under [The Principle of Distributed Unreliability](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-distributed-unreliability). Agents can time out, crash, skip commands, or report execution that never occurred.
 
 In ttoss, we make expected verification steps explicit in repo instructions (e.g., `pnpm run -w lint`, `pnpm run test`): https://github.com/ttoss/ttoss/blob/main/.github/instructions/general.instructions.md.
 
-**CI-enforced verification** (strong closed loops) embeds tests and checks into infrastructure so they execute automatically on every change, producing an objective pass/fail signal. This converts "did tests run?" from a probabilistic agent responsibility into a well-structured, deterministic gate, aligning with [The Principle of Problem Structure Allocation](/docs/ai/agentic-development-principles#the-principle-of-problem-structure-allocation) and [The Principle of Structural Determinism](/docs/ai/agentic-development-principles#the-principle-of-structural-determinism).
+**CI-enforced verification** (strong closed loops) embeds tests and checks into infrastructure so they execute automatically on every change, producing an objective pass/fail signal. This converts "did tests run?" from a probabilistic agent responsibility into a well-structured, deterministic gate, aligning with [The Principle of Problem Structure Allocation](/docs/ai/agentic-development-principles/foundations-of-hybrid-allocation#the-principle-of-problem-structure-allocation) and [The Principle of Structural Determinism](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-structural-determinism).
 
 In practice, this looks like GitHub Actions workflows that run on pull requests: https://github.com/ttoss/ttoss/tree/main/.github/workflows.
 

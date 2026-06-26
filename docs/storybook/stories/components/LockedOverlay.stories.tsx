@@ -1,5 +1,6 @@
+/* eslint-disable max-lines */
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import { LockedOverlay } from '@ttoss/components/LockedOverlay';
+import { LockedOverlay } from '@ttoss/components';
 import { Layout, SidebarCollapseLayout } from '@ttoss/layouts';
 import { Icon } from '@ttoss/react-icons';
 import { Box, Button, Card, Flex, Stack, Text } from '@ttoss/ui';

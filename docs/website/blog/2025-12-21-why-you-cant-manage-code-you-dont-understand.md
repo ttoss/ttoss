@@ -12,7 +12,7 @@ tags:
 
 A common question in the age of AI is: _"If AI writes the code, do developers just become Product Managers?"_
 
-The answer is **No**, and the reason lies in [The Principle of Contextual Authority](/docs/ai/agentic-development-principles#the-principle-of-contextual-authority).
+The answer is **No**, and the reason lies in [The Principle of Contextual Authority](/docs/ai/agentic-development-principles/governance-of-agency#the-principle-of-contextual-authority).
 
 <!-- truncate -->
 

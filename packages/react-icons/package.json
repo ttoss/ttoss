@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-icons",
-  "version": "0.7.18",
+  "version": "0.7.21",
   "description": "React icons library for @ttoss ecosystem",
   "keywords": [
     "Icons",
@@ -48,6 +48,9 @@
     "exports": {
       ".": {
         "types": "./dist/index.d.mts",
+        "module": "./dist/index.mjs",
+        "browser": "./dist/index.mjs",
+        "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
       }
     },

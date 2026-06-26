@@ -67,7 +67,12 @@ const baseSpec: VisualizationSpec = {
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockRuntimeSpec = {};
+  mockRuntimeSpec = baseSpec;
+  // Keep mockRuntimeSpec in sync with runtime.update() calls so that
+  // runtime?.spec reflects the latest spec passed to the provider.
+  mockRuntimeUpdate.mockImplementation((spec: VisualizationSpec) => {
+    mockRuntimeSpec = spec;
+  });
 });
 
 describe('GeoVisProvider spec memoization', () => {

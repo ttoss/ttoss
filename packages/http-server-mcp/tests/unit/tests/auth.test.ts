@@ -96,7 +96,7 @@ describe('auth — verifyToken', () => {
 
     const res = await request(app.callback())
       .post('/mcp')
-      .send(makeMcpRequest('initialize', initializeParams, 1))
+      .send(makeMcpRequest('tools/call', { name: 'whoami', arguments: {} }, 1))
       .set('Content-Type', 'application/json')
       .set('Accept', MCP_ACCEPT);
 
@@ -111,7 +111,7 @@ describe('auth — verifyToken', () => {
 
     const res = await request(app.callback())
       .post('/mcp')
-      .send(makeMcpRequest('initialize', initializeParams, 1))
+      .send(makeMcpRequest('tools/call', { name: 'whoami', arguments: {} }, 1))
       .set('Content-Type', 'application/json')
       .set('Accept', MCP_ACCEPT)
       .set('Authorization', 'Bearer bad-token');
@@ -138,6 +138,9 @@ describe('auth — verifyToken', () => {
 
   test('getIdentity() returns verified payload inside tool handler', async () => {
     const payload = { sub: 'user-abc', email: 'user@example.com' };
+    // The verifier's payload is exposed as the authenticated user, with an
+    // `id` aliased from `sub` (the http-server-auth convention).
+    const expectedIdentity = { ...payload, id: 'user-abc' };
     const app = buildApp(() => {
       return Promise.resolve(payload);
     });
@@ -161,7 +164,7 @@ describe('auth — verifyToken', () => {
     expect(toolRes.status).toBe(200);
     const body = toolRes.body;
     const text = body?.result?.content?.[0]?.text;
-    expect(JSON.parse(text)).toEqual(payload);
+    expect(JSON.parse(text)).toEqual(expectedIdentity);
   });
 
   test('returns 403 when requiredScopes are not satisfied', async () => {
@@ -172,7 +175,47 @@ describe('auth — verifyToken', () => {
 
     const res = await request(app.callback())
       .post('/mcp')
+      .send(makeMcpRequest('tools/call', { name: 'whoami', arguments: {} }, 1))
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT)
+      .set('Authorization', 'Bearer tok');
+
+    expect(res.status).toBe(403);
+  });
+
+  test('allows request when verifyToken returns scopes[] array satisfying requiredScopes', async () => {
+    const payload = { sub: 'u1', scopes: ['openid', 'mcp:access', 'profile'] };
+    const app = buildApp(() => {
+      return Promise.resolve(payload);
+    }, ['mcp:access']);
+
+    const callback = app.callback();
+
+    await request(callback)
+      .post('/mcp')
       .send(makeMcpRequest('initialize', initializeParams, 1))
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT)
+      .set('Authorization', 'Bearer tok');
+
+    const res = await request(callback)
+      .post('/mcp')
+      .send(makeMcpRequest('tools/call', { name: 'whoami', arguments: {} }, 2))
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT)
+      .set('Authorization', 'Bearer tok');
+
+    expect(res.status).toBe(200);
+  });
+
+  test('returns 403 when the token carries no scope claim at all', async () => {
+    const app = buildApp(() => {
+      return Promise.resolve({ sub: 'u1' }); // no `scope` property
+    }, ['mcp:access']);
+
+    const res = await request(app.callback())
+      .post('/mcp')
+      .send(makeMcpRequest('tools/call', { name: 'whoami', arguments: {} }, 1))
       .set('Content-Type', 'application/json')
       .set('Accept', MCP_ACCEPT)
       .set('Authorization', 'Bearer tok');
@@ -186,9 +229,18 @@ describe('auth — verifyToken', () => {
       return Promise.resolve(payload);
     }, ['mcp:access']);
 
-    const res = await request(app.callback())
+    const callback = app.callback();
+
+    await request(callback)
       .post('/mcp')
       .send(makeMcpRequest('initialize', initializeParams, 1))
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT)
+      .set('Authorization', 'Bearer tok');
+
+    const res = await request(callback)
+      .post('/mcp')
+      .send(makeMcpRequest('tools/call', { name: 'whoami', arguments: {} }, 2))
       .set('Content-Type', 'application/json')
       .set('Accept', MCP_ACCEPT)
       .set('Authorization', 'Bearer tok');
@@ -232,6 +284,73 @@ describe('auth — verifyToken', () => {
     );
   });
 
+  test('checkScopes() passes when identity has scopes[] array', async () => {
+    const payload = { sub: 'u1', scopes: ['openid', 'admin', 'write:users'] };
+    const app = buildApp(() => {
+      return Promise.resolve(payload);
+    });
+
+    const callback = app.callback();
+
+    await request(callback)
+      .post('/mcp')
+      .send(makeMcpRequest('initialize', initializeParams, 1))
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT)
+      .set('Authorization', 'Bearer tok');
+
+    const toolRes = await request(callback)
+      .post('/mcp')
+      .send(
+        makeMcpRequest(
+          'tools/call',
+          { name: 'admin-only', arguments: { x: 'y' } },
+          2
+        )
+      )
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT)
+      .set('Authorization', 'Bearer tok');
+
+    expect(toolRes.status).toBe(200);
+    expect(toolRes.body?.result?.isError).toBeFalsy();
+  });
+
+  test('checkScopes() throws descriptive error when neither scope nor scopes present', async () => {
+    const payload = { sub: 'u1' }; // no scope claim at all
+    const app = buildApp(() => {
+      return Promise.resolve(payload);
+    });
+
+    const callback = app.callback();
+
+    await request(callback)
+      .post('/mcp')
+      .send(makeMcpRequest('initialize', initializeParams, 1))
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT)
+      .set('Authorization', 'Bearer tok');
+
+    const toolRes = await request(callback)
+      .post('/mcp')
+      .send(
+        makeMcpRequest(
+          'tools/call',
+          { name: 'admin-only', arguments: { x: 'y' } },
+          2
+        )
+      )
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT)
+      .set('Authorization', 'Bearer tok');
+
+    expect(toolRes.status).toBe(200);
+    expect(toolRes.body?.result?.isError).toBe(true);
+    expect(toolRes.body?.result?.content?.[0]?.text).toContain(
+      'no scope/scopes'
+    );
+  });
+
   test('checkScopes() passes when all scopes are present', async () => {
     const payload = { sub: 'u1', scope: 'openid admin write:users' };
     const app = buildApp(() => {
@@ -272,8 +391,108 @@ describe('auth — verifyToken', () => {
   });
 });
 
+describe('auth — public methods and RFC 9728 discovery', () => {
+  const buildApp = (authOverrides: {
+    publicMethods?: string[];
+    resourceMetadataUrl?: string;
+  }) => {
+    const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+    mcpServer.registerTool(
+      'whoami',
+      { description: 'Returns identity', inputSchema: {} },
+      async () => {
+        return { content: [{ type: 'text', text: 'ok' }] };
+      }
+    );
+
+    const app = new App();
+    app.use(bodyParser());
+    app.use(
+      createMcpRouter(mcpServer, {
+        auth: {
+          // Always rejects so any verified path returns 401.
+          verifyToken: () => {
+            return Promise.reject(new Error('invalid'));
+          },
+          ...authOverrides,
+        },
+      }).routes()
+    );
+    return app;
+  };
+
+  const post = (app: ReturnType<typeof buildApp>, method: string) => {
+    return request(app.callback())
+      .post('/mcp')
+      .send(makeMcpRequest(method, initializeParams, 1))
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT);
+  };
+
+  test('initialize is public by default (no token required)', async () => {
+    const res = await post(buildApp({}), 'initialize');
+    expect(res.status).not.toBe(401);
+  });
+
+  test('tools/list is public by default (no token required)', async () => {
+    const res = await post(buildApp({}), 'tools/list');
+    expect(res.status).not.toBe(401);
+  });
+
+  test('protected methods still require a token by default', async () => {
+    const res = await post(buildApp({}), 'tools/call');
+    expect(res.status).toBe(401);
+  });
+
+  test('publicMethods overrides the default set', async () => {
+    const app = buildApp({ publicMethods: ['ping'] });
+
+    // 'ping' now bypasses verification...
+    const pingRes = await post(app, 'ping');
+    expect(pingRes.status).not.toBe(401);
+
+    // ...while 'initialize' is no longer public.
+    const initRes = await post(app, 'initialize');
+    expect(initRes.status).toBe(401);
+  });
+
+  test('empty publicMethods requires a token for every method', async () => {
+    const res = await post(buildApp({ publicMethods: [] }), 'initialize');
+    expect(res.status).toBe(401);
+  });
+
+  test('a request without a method is treated as protected', async () => {
+    const res = await request(buildApp({}).callback())
+      .post('/mcp')
+      .send({ jsonrpc: '2.0', id: 1 })
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT);
+
+    expect(res.status).toBe(401);
+  });
+
+  test('401 emits RFC 9728 header when resourceMetadataUrl is set', async () => {
+    const app = buildApp({
+      resourceMetadataUrl:
+        'https://mcp.example.com/.well-known/oauth-protected-resource',
+    });
+    const res = await post(app, 'tools/call');
+
+    expect(res.status).toBe(401);
+    expect(res.headers['www-authenticate']).toBe(
+      'Bearer resource_metadata="https://mcp.example.com/.well-known/oauth-protected-resource"'
+    );
+  });
+
+  test('401 falls back to bare Bearer when resourceMetadataUrl is omitted', async () => {
+    const res = await post(buildApp({}), 'tools/call');
+    expect(res.status).toBe(401);
+    expect(res.headers['www-authenticate']).toBe('Bearer');
+  });
+});
+
 describe('auth — OAuth Protected Resource metadata endpoint', () => {
-  test('serves /.well-known/oauth-protected-resource when configured', async () => {
+  test('resource includes the MCP mount path so clients following resource land on the working endpoint', async () => {
     const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
     const app = new App();
     app.use(bodyParser());
@@ -294,8 +513,66 @@ describe('auth — OAuth Protected Resource metadata endpoint', () => {
     );
 
     expect(res.status).toBe(200);
+    // resource is base + path ('/mcp' by default) so clients following resource
+    // connect to the actual MCP endpoint, not the bare origin.
+    expect(res.body).toEqual({
+      resource: 'https://mcp.example.com/mcp',
+      authorization_servers: ['https://auth.example.com'],
+    });
+  });
+
+  test('resource equals the base URL when path is /', async () => {
+    const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+    const app = new App();
+    app.use(bodyParser());
+    app.use(
+      createMcpRouter(mcpServer, {
+        path: '/',
+        auth: {
+          verifyToken: () => {
+            return Promise.resolve({ sub: 'u' });
+          },
+          resourceServerUrl: 'https://mcp.example.com',
+          authorizationServerUrl: 'https://auth.example.com',
+        },
+      }).routes()
+    );
+
+    const res = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource'
+    );
+
+    expect(res.status).toBe(200);
     expect(res.body).toEqual({
       resource: 'https://mcp.example.com',
+      authorization_servers: ['https://auth.example.com'],
+    });
+  });
+
+  test('resource uses custom path when path is overridden', async () => {
+    const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+    const app = new App();
+    app.use(bodyParser());
+    app.use(
+      createMcpRouter(mcpServer, {
+        path: '/api/mcp',
+        auth: {
+          verifyToken: () => {
+            return Promise.resolve({ sub: 'u' });
+          },
+          resourceServerUrl: 'https://mcp.example.com',
+          authorizationServerUrl: 'https://auth.example.com',
+        },
+      }).routes()
+    );
+
+    const res = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource'
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      resource: 'https://mcp.example.com/api/mcp',
       authorization_servers: ['https://auth.example.com'],
     });
   });
@@ -319,6 +596,32 @@ describe('auth — OAuth Protected Resource metadata endpoint', () => {
     );
 
     expect(res.status).toBe(404);
+  });
+
+  test('discovery endpoint is accessible without auth even when aliases include /', async () => {
+    const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+    const app = new App();
+    app.use(bodyParser());
+    app.use(
+      createMcpRouter(mcpServer, {
+        aliases: ['/'],
+        auth: {
+          verifyToken: () => {
+            return Promise.reject(new Error('always reject'));
+          },
+          resourceServerUrl: 'https://mcp.example.com',
+          authorizationServerUrl: 'https://auth.example.com',
+        },
+      }).routes()
+    );
+
+    const res = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource'
+    );
+
+    // Must be 200 — auth middleware must not intercept this GET endpoint.
+    expect(res.status).toBe(200);
+    expect(res.body.resource).toBe('https://mcp.example.com/mcp');
   });
 });
 
@@ -349,7 +652,7 @@ describe('auth — cognitoUserPool', () => {
 
     const res = await request(app.callback())
       .post('/mcp')
-      .send(makeMcpRequest('initialize', initializeParams, 1))
+      .send(makeMcpRequest('tools/call', { name: 'whoami', arguments: {} }, 1))
       .set('Content-Type', 'application/json')
       .set('Accept', MCP_ACCEPT)
       .set('Authorization', 'Bearer bad-token');
@@ -380,9 +683,19 @@ describe('auth — cognitoUserPool', () => {
       }).routes()
     );
 
-    const res = await request(app.callback())
+    const callback = app.callback();
+
+    await request(callback)
       .post('/mcp')
       .send(makeMcpRequest('initialize', initializeParams, 1))
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT)
+      .set('Authorization', 'Bearer valid-token');
+
+    // A protected method exercises the Cognito verifier.
+    const res = await request(callback)
+      .post('/mcp')
+      .send(makeMcpRequest('tools/call', { name: 'whoami', arguments: {} }, 2))
       .set('Content-Type', 'application/json')
       .set('Accept', MCP_ACCEPT)
       .set('Authorization', 'Bearer valid-token');
@@ -414,3 +727,6 @@ describe('auth — cognitoUserPool', () => {
     });
   });
 });
+
+// `getWwwAuthenticateHeader` and `createProtectedResourceMetadataMiddleware`
+// live in @ttoss/auth-core / @ttoss/http-server-auth and are tested there.

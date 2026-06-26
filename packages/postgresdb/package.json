@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/postgresdb",
-  "version": "0.9.7",
+  "version": "0.9.9",
   "description": "A library to handle PostgreSQL database connections and queries",
   "keywords": [
     "database",
@@ -47,6 +47,9 @@
     "exports": {
       ".": {
         "types": "./dist/index.d.mts",
+        "module": "./dist/index.mjs",
+        "browser": "./dist/index.mjs",
+        "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
       }
     },

@@ -11,7 +11,7 @@ export type DashboardFilterValue =
   | string
   | number
   | boolean
-  | { from: Date; to: Date };
+  | { from: Date | undefined; to: Date | undefined };
 
 export enum DashboardFilterType {
   TEXT = 'text',

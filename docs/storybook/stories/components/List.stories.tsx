@@ -1,5 +1,5 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
-import { List, ListItem } from '@ttoss/components/List';
+import { List, ListItem } from '@ttoss/components';
 import { Icon } from '@ttoss/react-icons';
 import { Badge, Flex, Text } from '@ttoss/ui';
 

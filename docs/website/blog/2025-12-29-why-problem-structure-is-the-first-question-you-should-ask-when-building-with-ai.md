@@ -53,7 +53,7 @@ These are precisely the domains where modern large language models and probabili
 
 ## The Allocation Principle: Match Paradigm to Structure
 
-From the [Foundations of Hybrid Allocation](/docs/ai/agentic-development-principles#the-foundations-of-hybrid-allocation) and specifically [The Principle of Problem Structure Allocation](/docs/ai/agentic-development-principles#the-principle-of-problem-structure-allocation):
+From the [Foundations of Hybrid Allocation](/docs/ai/agentic-development-principles/foundations-of-hybrid-allocation) and specifically [The Principle of Problem Structure Allocation](/docs/ai/agentic-development-principles/foundations-of-hybrid-allocation#the-principle-of-problem-structure-allocation):
 
 **Well-structured problems**: Solve with deterministic systems (code, schemas, validators, APIs, state machines).
 
@@ -81,7 +81,7 @@ Result: poor user experience, constant maintenance overhead, and eventual abando
 
 ## The Winning Strategy: Surgical Hybridization
 
-Following [The Principle of Mandatory Hybridization](/docs/ai/agentic-development-principles#the-principle-of-mandatory-hybridization), the most effective modern agentic systems are never purely agentic nor purely traditional. They are deliberately hybrid:
+Following [The Principle of Mandatory Hybridization](/docs/ai/agentic-development-principles/foundations-of-hybrid-allocation#the-principle-of-mandatory-hybridization), the most effective modern agentic systems are never purely agentic nor purely traditional. They are deliberately hybrid:
 
 - Probabilistic AI handles perception, understanding, exploration, and generation in ill-structured domains.
 
@@ -94,9 +94,9 @@ They allocate compute surgically: expensive LLM calls only where ambiguity genui
 Next time you're scoping a feature, designing an agent workflow, or debating whether to add another tool call:
 
 1. Break the problem into sub-problems.
-2. Classify each as well-structured or ill-structured (see [The Corollary of Structural Diagnosis](/docs/ai/agentic-development-principles#the-corollary-of-structural-diagnosis)).
+2. Classify each as well-structured or ill-structured (see [The Corollary of Structural Diagnosis](/docs/ai/agentic-development-principles/foundations-of-hybrid-allocation#the-corollary-of-structural-diagnosis)).
 3. Allocate accordingly.
-4. Enforce deterministic guardrails around any probabilistic output (see [The Corollary of Deterministic Enforcement Supremacy](/docs/ai/agentic-development-principles#the-corollary-of-deterministic-enforcement-supremacy)).
+4. Enforce deterministic guardrails around any probabilistic output (see [The Corollary of Deterministic Enforcement Supremacy](/docs/ai/agentic-development-principles/foundations-of-hybrid-allocation#the-corollary-of-deterministic-enforcement-supremacy)).
 
 Do this consistently, and you'll build systems that are faster, cheaper, more reliable, and far more likely to survive contact with production reality.
 

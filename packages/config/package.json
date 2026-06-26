@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/config",
-  "version": "1.37.16",
+  "version": "1.37.17",
   "description": "Default configuration for packages.",
   "keywords": [],
   "repository": {
@@ -28,7 +28,7 @@
     "tsconfig.test.json"
   ],
   "scripts": {
-    "build-config": "tsdown --config-loader tsx",
+    "build-config": "tsdown --config-loader tsx && mkdir -p dist/__mocks__ && cp src/__mocks__/emptyModule.cjs dist/__mocks__/emptyModule.cjs",
     "test": "jest --projects tests/unit"
   },
   "dependencies": {

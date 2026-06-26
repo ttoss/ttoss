@@ -7,7 +7,9 @@ import type {
 } from '../runtime/adapter';
 import type { GeoVisRuntime } from '../runtime/createRuntime';
 import { createRuntime } from '../runtime/createRuntime';
+import { resolveSpecFromMapType } from '../spec/mapTypeDefaults';
 import type { PolicyViolation, VisualizationSpec } from '../spec/types';
+import { GeoVisHoverTooltip } from '../ui/GeoVisHoverTooltip';
 import {
   GeoVisClickContext,
   GeoVisContext,
@@ -130,9 +132,19 @@ const HoverProvider = ({
   children: React.ReactNode;
 }) => {
   const hoveredMapFeature = useMapHover({ runtime, spec });
+  // Spec-driven tooltip: render a <GeoVisHoverTooltip> automatically for the
+  // layer under the cursor when it declares `hoverTooltip`, so consumers do
+  // not have to place the component manually. The component reads the live
+  // snapshot from `useGeoVisHover()` itself; mounting it is enough.
+  const hoverTooltip = hoveredMapFeature
+    ? spec.layers.find((layer) => {
+        return layer.id === hoveredMapFeature.layerId;
+      })?.hoverTooltip
+    : undefined;
   return (
     <GeoVisHoverContext.Provider value={hoveredMapFeature}>
       {children}
+      {hoverTooltip && <GeoVisHoverTooltip {...hoverTooltip} />}
     </GeoVisHoverContext.Provider>
   );
 };
@@ -156,6 +168,12 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
   // fall through to the fresh prop; stale patches are automatically ignored.
   const effectiveSpec =
     patchState.forSpec === spec ? (patchState.patchedSpec ?? spec) : spec;
+
+  // Resolve mapType shorthand (e.g. choropleth → layers + legends + colorBy)
+  // synchronously so context consumers always see the fully-resolved spec.
+  const resolvedSpec = React.useMemo(() => {
+    return resolveSpecFromMapType(effectiveSpec);
+  }, [effectiveSpec]);
 
   const policyViolations = React.useMemo(() => {
     return checkPolicies(effectiveSpec);
@@ -187,7 +205,7 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
       activeRuntime?.destroy();
       setRuntime(null);
     };
-    // Re-create runtime only when the engine changes, not on every spec update.
+    // Re-create runtime when the engine changes, not on every spec update.
     // Spec updates reach the runtime via runtime.update() instead.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spec.engine]);
@@ -225,17 +243,17 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
   const ctxValue = React.useMemo(() => {
     return {
       runtime,
-      spec: effectiveSpec,
+      spec: resolvedSpec,
       applyPatch,
       setView,
       policyViolations,
     };
-  }, [runtime, effectiveSpec, applyPatch, setView, policyViolations]);
+  }, [runtime, resolvedSpec, applyPatch, setView, policyViolations]);
 
   return (
     <GeoVisContext.Provider value={ctxValue}>
-      <ClickProvider runtime={runtime} spec={effectiveSpec}>
-        <HoverProvider runtime={runtime} spec={effectiveSpec}>
+      <ClickProvider runtime={runtime} spec={resolvedSpec}>
+        <HoverProvider runtime={runtime} spec={resolvedSpec}>
           {children}
         </HoverProvider>
       </ClickProvider>

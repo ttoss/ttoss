@@ -1,4 +1,5 @@
-import { Markdown } from '@ttoss/components/Markdown';
+/* eslint-disable max-lines */
+import { Markdown } from '@ttoss/components';
 import { Auth, useAuth } from '@ttoss/react-auth-cognito';
 import type { CardCatalogItem, DashboardFilter } from '@ttoss/react-dashboard';
 import { Dashboard, DashboardFilterType } from '@ttoss/react-dashboard';

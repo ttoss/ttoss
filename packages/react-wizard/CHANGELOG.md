@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.5.2...@ttoss/react-wizard@0.5.3) (2026-06-22)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.5.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.5.1...@ttoss/react-wizard@0.5.2) (2026-06-22)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.5.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.5.0...@ttoss/react-wizard@0.5.1) (2026-06-19)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+# [0.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.19...@ttoss/react-wizard@0.5.0) (2026-06-19)
+
+### Features
+
+- **react-notifications:** add actions support and render as buttons ([#1080](https://github.com/ttoss/ttoss/issues/1080)) ([0c8c32a](https://github.com/ttoss/ttoss/commit/0c8c32a2c6e35f740955580b72b4d0131c5ad983)), closes [#1079](https://github.com/ttoss/ttoss/issues/1079)
+
+## 0.4.19 (2026-06-15)
+
+### Bug Fixes
+
+- **website:** generate markdown files for llms.txt references ([#1060](https://github.com/ttoss/ttoss/issues/1060)) ([8785a31](https://github.com/ttoss/ttoss/commit/8785a31af53fcd5d3899c08b06de4b9f157c9d8d))
+
+## [0.4.18](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.17...@ttoss/react-wizard@0.4.18) (2026-06-12)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.4.17](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.16...@ttoss/react-wizard@0.4.17) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.4.16](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.15...@ttoss/react-wizard@0.4.16) (2026-06-09)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.4.15](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.14...@ttoss/react-wizard@0.4.15) (2026-06-09)
+
+### Bug Fixes
+
+- add rolldown/vite 8 export conditions and move @ttoss/components to peerDep ([c85efe3](https://github.com/ttoss/ttoss/commit/c85efe3b91f4af2405515bd6fa20227579869583))
+
+## [0.4.14](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.13...@ttoss/react-wizard@0.4.14) (2026-06-09)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
 ## [0.4.13](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.12...@ttoss/react-wizard@0.4.13) (2026-06-05)
 
 ### Bug Fixes

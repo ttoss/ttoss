@@ -12,6 +12,7 @@ import type {
 } from '../../runtime/adapter';
 import { applyMapDataPatchToSpec } from '../../spec/mapDataPatch';
 import type { VisualizationSpec } from '../../spec/types';
+import { applyBasemapLabelsVisibility } from './basemapLabels';
 import { toMaplibreLayer } from './layerTranslation';
 import { reapplyLegendDrivenFillPaint } from './legendFillPaint';
 import {
@@ -26,7 +27,7 @@ import { syncSourcesAndLayers } from './syncSourcesAndLayers';
 // Re-exports preserved for public API and historical test imports.
 export { toMaplibreLayer, toMaplibreSource };
 
-const DEFAULT_STYLE = 'https://demotiles.maplibre.org/style.json';
+const DEFAULT_STYLE = 'https://tiles.openfreemap.org/styles/positron';
 
 /**
  * A valid MapLibre style with no sources and no layers, producing a blank canvas.
@@ -137,6 +138,7 @@ const mountView = (
     if (!viewState) return;
     syncSourcesAndLayers(map, viewState.spec, null);
     reapplyAllMapData(map, viewState.spec);
+    applyBasemapLabelsVisibility(map, viewState.spec);
   });
   let _removed = false;
   return {
@@ -173,6 +175,7 @@ const updateView = (
     syncSourcesAndLayers(map, updated.spec, null);
     reapplyAllMapData(map, updated.spec);
     reapplyLegendDrivenFillPaint(map, updated.spec);
+    applyBasemapLabelsVisibility(map, updated.spec);
   };
 
   if (nextStyle !== viewState.style) {
@@ -193,6 +196,7 @@ const updateView = (
       reapplyAllMapData(map, spec);
       reapplyLegendDrivenFillPaint(map, spec);
     }
+    applyBasemapLabelsVisibility(map, spec);
   } else {
     map.once('style.load', onStyleReady);
   }

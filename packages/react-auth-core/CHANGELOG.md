@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.5.2...@ttoss/react-auth-core@0.5.3) (2026-06-22)
+
+**Note:** Version bump only for package @ttoss/react-auth-core
+
+## [0.5.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.5.1...@ttoss/react-auth-core@0.5.2) (2026-06-22)
+
+**Note:** Version bump only for package @ttoss/react-auth-core
+
+## [0.5.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.5.0...@ttoss/react-auth-core@0.5.1) (2026-06-19)
+
+**Note:** Version bump only for package @ttoss/react-auth-core
+
+# [0.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.4.40...@ttoss/react-auth-core@0.5.0) (2026-06-19)
+
+### Features
+
+- **react-notifications:** add actions support and render as buttons ([#1080](https://github.com/ttoss/ttoss/issues/1080)) ([0c8c32a](https://github.com/ttoss/ttoss/commit/0c8c32a2c6e35f740955580b72b4d0131c5ad983)), closes [#1079](https://github.com/ttoss/ttoss/issues/1079)
+
+## 0.4.40 (2026-06-15)
+
+### Bug Fixes
+
+- **website:** generate markdown files for llms.txt references ([#1060](https://github.com/ttoss/ttoss/issues/1060)) ([8785a31](https://github.com/ttoss/ttoss/commit/8785a31af53fcd5d3899c08b06de4b9f157c9d8d))
+
+## [0.4.39](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.4.38...@ttoss/react-auth-core@0.4.39) (2026-06-12)
+
+**Note:** Version bump only for package @ttoss/react-auth-core
+
+## [0.4.38](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.4.37...@ttoss/react-auth-core@0.4.38) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/react-auth-core
+
+## [0.4.37](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.4.36...@ttoss/react-auth-core@0.4.37) (2026-06-09)
+
+**Note:** Version bump only for package @ttoss/react-auth-core
+
+## [0.4.36](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.4.35...@ttoss/react-auth-core@0.4.36) (2026-06-09)
+
+### Bug Fixes
+
+- add rolldown/vite 8 export conditions and move @ttoss/components to peerDep ([c85efe3](https://github.com/ttoss/ttoss/commit/c85efe3b91f4af2405515bd6fa20227579869583))
+
+## [0.4.35](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.4.34...@ttoss/react-auth-core@0.4.35) (2026-06-09)
+
+### Bug Fixes
+
+- **@ttoss/react-notifications:** move @ttoss/components to dependencies ([#1029](https://github.com/ttoss/ttoss/issues/1029)) ([51c5d30](https://github.com/ttoss/ttoss/commit/51c5d30602c44d3620fab2072969c7b12d6243d0)), closes [#1028](https://github.com/ttoss/ttoss/issues/1028)
+
 ## [0.4.34](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.4.33...@ttoss/react-auth-core@0.4.34) (2026-06-05)
 
 ### Bug Fixes

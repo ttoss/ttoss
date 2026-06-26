@@ -1,5 +1,5 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
-import { Markdown } from '@ttoss/components/Markdown';
+import { Markdown } from '@ttoss/components';
 import { Box, Heading, Link } from '@ttoss/ui';
 
 export default {

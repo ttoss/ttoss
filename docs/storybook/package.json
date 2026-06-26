@@ -1,6 +1,6 @@
 {
   "name": "@docs/storybook",
-  "version": "3.24.20",
+  "version": "3.35.0",
   "private": true,
   "author": "ttoss",
   "scripts": {
@@ -20,6 +20,7 @@
     "@ttoss/components": "workspace:^",
     "@ttoss/forms": "workspace:^",
     "@ttoss/geovis": "workspace:^",
+    "@ttoss/geovis-workspace": "workspace:^",
     "@ttoss/landing-pages": "workspace:^",
     "@ttoss/layouts": "workspace:^",
     "@ttoss/react-auth-core": "workspace:^",

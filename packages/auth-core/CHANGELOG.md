@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.8.0 (2026-06-19)
+
+### Features
+
+- **auth-core:** add createRedirectConsentOnAuthorize and Postgres consent store ([#1094](https://github.com/ttoss/ttoss/issues/1094)) ([93d4855](https://github.com/ttoss/ttoss/commit/93d4855961a2a6a4ab23f7ce88fb8d95867bd901))
+
+# [0.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.6.2...@ttoss/auth-core@0.7.0) (2026-06-14)
+
+### Features
+
+- **auth-core:** refresh-token rotation + in-memory OAuth stores ([#1072](https://github.com/ttoss/ttoss/issues/1072)) ([c1a51b1](https://github.com/ttoss/ttoss/commit/c1a51b1fd7e83412e5824708f7106567787613b1)), closes [ttoss/ttoss#1062](https://github.com/ttoss/ttoss/issues/1062)
+
+## [0.6.2](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.6.1...@ttoss/auth-core@0.6.2) (2026-06-14)
+
+**Note:** Version bump only for package @ttoss/auth-core
+
+## [0.6.1](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.6.0...@ttoss/auth-core@0.6.1) (2026-06-14)
+
+**Note:** Version bump only for package @ttoss/auth-core
+
+# [0.6.0](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.5.1...@ttoss/auth-core@0.6.0) (2026-06-11)
+
+### Features
+
+- **auth-core:** add OAuth 2.1 authorization-server primitives ([#1045](https://github.com/ttoss/ttoss/issues/1045)) ([7b8e90d](https://github.com/ttoss/ttoss/commit/7b8e90d5d47d9d993279f650c22156be6e4eef43))
+
+## [0.5.1](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.5.0...@ttoss/auth-core@0.5.1) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/auth-core
+
+# [0.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.4.17...@ttoss/auth-core@0.5.0) (2026-06-10)
+
+### Features
+
+- **@ttoss/auth-core:** add JWT, one-time token, and API token primitives; harden password hashing ([#1035](https://github.com/ttoss/ttoss/issues/1035)) ([ae6b5a5](https://github.com/ttoss/ttoss/commit/ae6b5a56ec40b0dae855299703f82df393d36e4f))
+
 ## [0.4.17](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.4.16...@ttoss/auth-core@0.4.17) (2026-06-05)
 
 ### Bug Fixes

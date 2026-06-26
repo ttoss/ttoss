@@ -1,4 +1,4 @@
-import { Modal } from '@ttoss/components/Modal';
+import { Modal } from '@ttoss/components';
 import { CloseButton } from '@ttoss/ui';
 
 import { NotificationsBox } from './NotificationsBox';

@@ -1,4 +1,4 @@
-import { MetricCard } from '@ttoss/components/MetricCard';
+import { MetricCard } from '@ttoss/components';
 import { fireEvent, render, screen } from '@ttoss/test-utils/react';
 
 describe('MetricCard', () => {

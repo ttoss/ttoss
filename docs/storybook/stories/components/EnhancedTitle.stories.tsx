@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import { EnhancedTitle } from '@ttoss/components/EnhancedTitle';
+import { EnhancedTitle } from '@ttoss/components';
 
 const meta: Meta<typeof EnhancedTitle> = {
   title: 'Components/EnhancedTitle',

@@ -3,7 +3,7 @@ import type { SetViewOptions, VisualizationSpec } from '@ttoss/geovis';
 import { GeoVisCanvas, GeoVisProvider, useGeoVis } from '@ttoss/geovis';
 
 import geojsonUrlMapSpec from '../../../../packages/geovis/src/fixtures/geojson-url-map.json';
-import { FitBoundsToUrlSource } from './_map-story-helpers';
+import { FitBoundsToUrlSource } from './helpers/map-story-helpers';
 
 export default {
   title: 'GeoVis/Fixtures/GeoJsonUrlMap',

@@ -1,5 +1,0 @@
----
-title: Minimalism
----
-
-> under construction

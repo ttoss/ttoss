@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.10](https://github.com/ttoss/ttoss/compare/@ttoss/react-billing@0.6.9...@ttoss/react-billing@0.6.10) (2026-06-22)
+
+**Note:** Version bump only for package @ttoss/react-billing
+
+## [0.6.9](https://github.com/ttoss/ttoss/compare/@ttoss/react-billing@0.6.8...@ttoss/react-billing@0.6.9) (2026-06-22)
+
+**Note:** Version bump only for package @ttoss/react-billing
+
+## [0.6.8](https://github.com/ttoss/ttoss/compare/@ttoss/react-billing@0.6.7...@ttoss/react-billing@0.6.8) (2026-06-19)
+
+**Note:** Version bump only for package @ttoss/react-billing
+
+## [0.6.7](https://github.com/ttoss/ttoss/compare/@ttoss/react-billing@0.6.6...@ttoss/react-billing@0.6.7) (2026-06-19)
+
+**Note:** Version bump only for package @ttoss/react-billing
+
+## 0.6.6 (2026-06-15)
+
+### Bug Fixes
+
+- **website:** generate markdown files for llms.txt references ([#1060](https://github.com/ttoss/ttoss/issues/1060)) ([8785a31](https://github.com/ttoss/ttoss/commit/8785a31af53fcd5d3899c08b06de4b9f157c9d8d))
+
+## [0.6.5](https://github.com/ttoss/ttoss/compare/@ttoss/react-billing@0.6.4...@ttoss/react-billing@0.6.5) (2026-06-12)
+
+**Note:** Version bump only for package @ttoss/react-billing
+
+## [0.6.4](https://github.com/ttoss/ttoss/compare/@ttoss/react-billing@0.6.3...@ttoss/react-billing@0.6.4) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/react-billing
+
+## [0.6.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-billing@0.6.2...@ttoss/react-billing@0.6.3) (2026-06-09)
+
+**Note:** Version bump only for package @ttoss/react-billing
+
+## [0.6.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-billing@0.6.1...@ttoss/react-billing@0.6.2) (2026-06-09)
+
+### Bug Fixes
+
+- add rolldown/vite 8 export conditions and move @ttoss/components to peerDep ([c85efe3](https://github.com/ttoss/ttoss/commit/c85efe3b91f4af2405515bd6fa20227579869583))
+
+## [0.6.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-billing@0.6.0...@ttoss/react-billing@0.6.1) (2026-06-09)
+
+### Bug Fixes
+
+- **@ttoss/react-notifications:** move @ttoss/components to dependencies ([#1029](https://github.com/ttoss/ttoss/issues/1029)) ([51c5d30](https://github.com/ttoss/ttoss/commit/51c5d30602c44d3620fab2072969c7b12d6243d0)), closes [#1028](https://github.com/ttoss/ttoss/issues/1028)
+
+# [0.6.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-billing@0.5.17...@ttoss/react-billing@0.6.0) (2026-06-08)
+
+### Features
+
+- **react-billing:** add flexWrap to SubscriptionPanel actions ([#1026](https://github.com/ttoss/ttoss/issues/1026)) ([7362f97](https://github.com/ttoss/ttoss/commit/7362f97a2f5ed89e36054e4efe0ab7cbbbe834fa))
+
 ## [0.5.17](https://github.com/ttoss/ttoss/compare/@ttoss/react-billing@0.5.16...@ttoss/react-billing@0.5.17) (2026-06-05)
 
 ### Bug Fixes

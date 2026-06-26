@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/landing-pages",
-  "version": "0.15.24",
+  "version": "0.15.28",
   "description": "Package for creating landing pages.",
   "keywords": [
     "React",
@@ -53,6 +53,9 @@
     "exports": {
       ".": {
         "types": "./dist/index.d.mts",
+        "module": "./dist/index.mjs",
+        "browser": "./dist/index.mjs",
+        "import": "./dist/index.mjs",
         "default": "./dist/index.mjs"
       }
     },

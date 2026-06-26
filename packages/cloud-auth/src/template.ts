@@ -1,24 +1,24 @@
 import type {
   CloudFormationGetAtt,
   CloudFormationTemplate,
-  Policy,
 } from '@ttoss/cloudformation';
 
-export { CloudFormationTemplate };
-
 import { PASSWORD_MINIMUM_LENGTH } from './config';
+import type { IdentityPoolConfig } from './template-identity-pool';
+import {
+  applyIdentityPool,
+  IdentityPoolAuthenticatedIAMRoleLogicalId,
+  IdentityPoolUnauthenticatedIAMRoleLogicalId,
+} from './template-identity-pool';
+
+export type { CloudFormationTemplate };
+
+export type { IdentityPoolConfig };
+export { defaultPrincipalTags } from './template-identity-pool';
 
 const CognitoUserPoolLogicalId = 'CognitoUserPool';
-
 const CognitoUserPoolClientLogicalId = 'CognitoUserPoolClient';
-
 const CognitoIdentityPoolLogicalId = 'CognitoIdentityPool';
-
-const IdentityPoolAuthenticatedIAMRoleLogicalId =
-  'IdentityPoolAuthenticatedIAMRole';
-
-const IdentityPoolUnauthenticatedIAMRoleLogicalId =
-  'IdentityPoolUnauthenticatedIAMRole';
 
 export const DenyStatement = {
   Effect: 'Deny' as const,
@@ -26,36 +26,14 @@ export const DenyStatement = {
   Resource: ['*'],
 };
 
-export const defaultPrincipalTags = {
-  appClientId: 'aud',
-  userId: 'sub',
-};
-
 type SchemaAttribute = {
   attributeDataType?: 'Boolean' | 'DateTime' | 'Number' | 'String';
   developerOnlyAttribute?: boolean;
   mutable?: boolean;
   name?: string;
-  numberAttributeConstraints?: {
-    maxValue?: string;
-    minValue?: string;
-  };
+  numberAttributeConstraints?: { maxValue?: string; minValue?: string };
   required?: boolean;
-  stringAttributeConstraints?: {
-    maxLength: string;
-    minLength: string;
-  };
-};
-
-type IdentityPoolConfig = {
-  enabled?: boolean;
-  name?: string;
-  allowUnauthenticatedIdentities?: boolean;
-  authenticatedRoleArn?: string;
-  authenticatedPolicies?: Policy[];
-  unauthenticatedRoleArn?: string;
-  unauthenticatedPolicies?: Policy[];
-  principalTags?: Record<string, string> | boolean;
+  stringAttributeConstraints?: { maxLength: string; minLength: string };
 };
 
 type LambdaTriggers = {
@@ -73,6 +51,34 @@ type LambdaTriggers = {
   customSMSSender?: string | CloudFormationGetAtt;
 };
 
+export type DomainConfig = {
+  domainName: string;
+  certificateArn?: string;
+};
+
+export type ResourceServerScope = {
+  scopeName: string;
+  scopeDescription: string;
+};
+
+export type ResourceServerConfig = {
+  identifier: string;
+  name: string;
+  scopes: ResourceServerScope[];
+};
+
+export type OAuthConfig = {
+  flows: Array<'code' | 'implicit' | 'client_credentials'>;
+  scopes: string[];
+  callbackUrls: string[];
+};
+
+export type AdditionalAppClientConfig = {
+  name: string;
+  generateSecret?: boolean;
+  oauth?: OAuthConfig;
+};
+
 type CreateAuthTemplateParams = {
   autoVerifiedAttributes?: Array<'email' | 'phone_number'> | null | false;
   identityPool?: IdentityPoolConfig;
@@ -80,28 +86,37 @@ type CreateAuthTemplateParams = {
   usernameAttributes?: Array<'email' | 'phone_number'> | null;
   lambdaTriggers?: LambdaTriggers;
   deletionProtection?: 'ACTIVE' | 'INACTIVE';
+  domain?: DomainConfig;
+  resourceServers?: ResourceServerConfig[];
+  additionalAppClients?: AdditionalAppClientConfig[];
 };
 
-export const createAuthTemplate = ({
-  autoVerifiedAttributes = ['email'],
-  identityPool,
-  schema,
-  usernameAttributes = ['email'],
-  lambdaTriggers,
+export const toPascalCase = (name: string) => {
+  return name
+    .split(/[-_\s]+/)
+    .map((part) => {
+      return part.charAt(0).toUpperCase() + part.slice(1);
+    })
+    .join('');
+};
+
+const buildBaseTemplate = ({
+  autoVerifiedAttributes,
+  usernameAttributes,
   deletionProtection,
-}: CreateAuthTemplateParams = {}): CloudFormationTemplate => {
+}: Pick<
+  CreateAuthTemplateParams,
+  'autoVerifiedAttributes' | 'usernameAttributes' | 'deletionProtection'
+>): CloudFormationTemplate => {
   const AutoVerifiedAttributes =
     Array.isArray(autoVerifiedAttributes) && autoVerifiedAttributes.length > 0
       ? autoVerifiedAttributes
       : [];
 
-  const template: CloudFormationTemplate = {
+  return {
     AWSTemplateFormatVersion: '2010-09-09',
     Resources: {
       [CognitoUserPoolLogicalId]: {
-        /**
-         * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpool.html
-         */
         Type: 'AWS::Cognito::UserPool',
         Properties: {
           AutoVerifiedAttributes,
@@ -116,45 +131,30 @@ export const createAuthTemplate = ({
             },
           },
           UsernameAttributes: usernameAttributes,
-          UsernameConfiguration: {
-            CaseSensitive: false,
-          },
-          UserPoolName: {
-            Ref: 'AWS::StackName',
-          },
+          UsernameConfiguration: { CaseSensitive: false },
+          UserPoolName: { Ref: 'AWS::StackName' },
           ...(deletionProtection && { DeletionProtection: deletionProtection }),
         },
       },
       [CognitoUserPoolClientLogicalId]: {
-        /**
-         * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolclient.html
-         */
         Type: 'AWS::Cognito::UserPoolClient',
         Properties: {
           SupportedIdentityProviders: ['COGNITO'],
-          UserPoolId: {
-            Ref: 'CognitoUserPool',
-          },
+          UserPoolId: { Ref: 'CognitoUserPool' },
         },
       },
     },
     Outputs: {
       Region: {
         Description: 'You use this value on Amplify Auth `region`.',
-        Value: {
-          Ref: 'AWS::Region',
-        },
+        Value: { Ref: 'AWS::Region' },
         Export: {
-          Name: {
-            'Fn::Join': [':', [{ Ref: 'AWS::StackName' }, 'Region']],
-          },
+          Name: { 'Fn::Join': [':', [{ Ref: 'AWS::StackName' }, 'Region']] },
         },
       },
       UserPoolId: {
         Description: 'You use this value on Amplify Auth `userPoolId`.',
-        Value: {
-          Ref: CognitoUserPoolLogicalId,
-        },
+        Value: { Ref: CognitoUserPoolLogicalId },
         Export: {
           Name: {
             'Fn::Join': [':', [{ Ref: 'AWS::StackName' }, 'UserPoolId']],
@@ -164,9 +164,7 @@ export const createAuthTemplate = ({
       AppClientId: {
         Description:
           'You use this value on Amplify Auth `userPoolWebClientId`.',
-        Value: {
-          Ref: CognitoUserPoolClientLogicalId,
-        },
+        Value: { Ref: CognitoUserPoolClientLogicalId },
         Export: {
           Name: {
             'Fn::Join': [':', [{ Ref: 'AWS::StackName' }, 'AppClientId']],
@@ -175,328 +173,232 @@ export const createAuthTemplate = ({
       },
     },
   };
+};
 
-  if (schema) {
-    const Schema = schema.map((attribute) => {
-      let NumberAttributeConstraints = undefined;
-
-      if (attribute.numberAttributeConstraints) {
-        NumberAttributeConstraints = {
-          MaxValue: attribute.numberAttributeConstraints?.maxValue,
-          MinValue: attribute.numberAttributeConstraints?.minValue,
-        };
-      }
-
-      let StringAttributeConstraints = undefined;
-
-      if (attribute.stringAttributeConstraints) {
-        StringAttributeConstraints = {
-          MaxLength: attribute.stringAttributeConstraints?.maxLength,
-          MinLength: attribute.stringAttributeConstraints?.minLength,
-        };
-      }
-
-      return {
-        AttributeDataType: attribute.attributeDataType,
-        DeveloperOnlyAttribute: attribute.developerOnlyAttribute,
-        Mutable: attribute.mutable,
-        Name: attribute.name,
-        NumberAttributeConstraints,
-        Required: attribute.required,
-        StringAttributeConstraints,
-      };
-    });
-
-    template.Resources[CognitoUserPoolLogicalId].Properties = {
-      ...template.Resources[CognitoUserPoolLogicalId].Properties,
-      Schema,
+const applySchema = (
+  template: CloudFormationTemplate,
+  schema: SchemaAttribute[]
+) => {
+  const Schema = schema.map((attribute) => {
+    return {
+      AttributeDataType: attribute.attributeDataType,
+      DeveloperOnlyAttribute: attribute.developerOnlyAttribute,
+      Mutable: attribute.mutable,
+      Name: attribute.name,
+      Required: attribute.required,
+      NumberAttributeConstraints: attribute.numberAttributeConstraints
+        ? {
+            MaxValue: attribute.numberAttributeConstraints.maxValue,
+            MinValue: attribute.numberAttributeConstraints.minValue,
+          }
+        : undefined,
+      StringAttributeConstraints: attribute.stringAttributeConstraints
+        ? {
+            MaxLength: attribute.stringAttributeConstraints.maxLength,
+            MinLength: attribute.stringAttributeConstraints.minLength,
+          }
+        : undefined,
     };
+  });
+
+  template.Resources[CognitoUserPoolLogicalId].Properties = {
+    ...template.Resources[CognitoUserPoolLogicalId].Properties,
+    Schema,
+  };
+};
+
+const applyLambdaTriggers = (
+  template: CloudFormationTemplate,
+  lambdaTriggers: LambdaTriggers
+) => {
+  const triggerMap: Array<[keyof LambdaTriggers, string]> = [
+    ['preSignUp', 'PreSignUp'],
+    ['postConfirmation', 'PostConfirmation'],
+    ['preAuthentication', 'PreAuthentication'],
+    ['postAuthentication', 'PostAuthentication'],
+    ['defineAuthChallenge', 'DefineAuthChallenge'],
+    ['createAuthChallenge', 'CreateAuthChallenge'],
+    ['verifyAuthChallengeResponse', 'VerifyAuthChallengeResponse'],
+    ['preTokenGeneration', 'PreTokenGeneration'],
+    ['userMigration', 'UserMigration'],
+    ['customMessage', 'CustomMessage'],
+    ['customEmailSender', 'CustomEmailSender'],
+    ['customSMSSender', 'CustomSMSSender'],
+  ];
+
+  const LambdaConfig: Record<string, string | CloudFormationGetAtt> = {};
+
+  for (const [key, cfKey] of triggerMap) {
+    const value = lambdaTriggers[key];
+    if (value) LambdaConfig[cfKey] = value;
   }
 
-  if (identityPool?.enabled) {
-    template.Resources[CognitoIdentityPoolLogicalId] = {
-      /**
-       * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-identitypool.html
-       */
-      Type: 'AWS::Cognito::IdentityPool',
+  if (Object.keys(LambdaConfig).length === 0) return;
+
+  template.Resources[CognitoUserPoolLogicalId].Properties = {
+    ...template.Resources[CognitoUserPoolLogicalId].Properties,
+    LambdaConfig,
+  };
+
+  for (const [key, lambdaTrigger] of Object.entries(LambdaConfig)) {
+    const permissionLogicalId =
+      `${key}PermissionFor${CognitoUserPoolLogicalId}`.slice(0, 255);
+
+    template.Resources[permissionLogicalId] = {
+      Type: 'AWS::Lambda::Permission',
       Properties: {
-        AllowUnauthenticatedIdentities:
-          identityPool.allowUnauthenticatedIdentities || false,
-        CognitoIdentityProviders: [
-          {
-            ClientId: {
-              Ref: CognitoUserPoolClientLogicalId,
-            },
-            ProviderName: {
-              'Fn::GetAtt': [CognitoUserPoolLogicalId, 'ProviderName'],
-            },
-          },
-        ],
+        Action: 'lambda:InvokeFunction',
+        FunctionName: lambdaTrigger,
+        Principal: 'cognito-idp.amazonaws.com',
+        SourceArn: { 'Fn::GetAtt': [CognitoUserPoolLogicalId, 'Arn'] },
       },
     };
+  }
+};
 
-    if (identityPool.name) {
-      template.Resources[CognitoIdentityPoolLogicalId].Properties = {
-        ...template.Resources[CognitoIdentityPoolLogicalId].Properties,
-        IdentityPoolName: identityPool.name,
+const applyDomain = (
+  template: CloudFormationTemplate,
+  domain: DomainConfig
+) => {
+  template.Resources.CognitoUserPoolDomain = {
+    Type: 'AWS::Cognito::UserPoolDomain',
+    Properties: {
+      Domain: domain.domainName,
+      UserPoolId: { Ref: CognitoUserPoolLogicalId },
+      ...(domain.certificateArn && {
+        CustomDomainConfig: { CertificateArn: domain.certificateArn },
+      }),
+    },
+  };
+
+  const domainUrl = domain.certificateArn
+    ? `https://${domain.domainName}`
+    : {
+        'Fn::Sub': `https://${domain.domainName}.auth.\${AWS::Region}.amazoncognito.com`,
       };
-    }
 
-    template.Resources.CognitoIdentityPoolRoleAttachment = {
-      /**
-       * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-identitypoolroleattachment.html
-       */
-      Type: 'AWS::Cognito::IdentityPoolRoleAttachment',
-      Properties: {
-        IdentityPoolId: {
-          Ref: CognitoIdentityPoolLogicalId,
+  template.Outputs = {
+    ...template.Outputs,
+    CognitoUserPoolDomainUrl: {
+      Description: 'The Cognito hosted UI domain URL.',
+      Value: domainUrl,
+      Export: {
+        Name: {
+          'Fn::Join': [
+            ':',
+            [{ Ref: 'AWS::StackName' }, 'CognitoUserPoolDomainUrl'],
+          ],
         },
-        Roles: {},
+      },
+    },
+  };
+};
+
+const applyResourceServers = (
+  template: CloudFormationTemplate,
+  resourceServers: ResourceServerConfig[]
+) => {
+  for (const server of resourceServers) {
+    const logicalId = `CognitoUserPoolResourceServer${toPascalCase(server.identifier)}`;
+
+    template.Resources[logicalId] = {
+      Type: 'AWS::Cognito::UserPoolResourceServer',
+      Properties: {
+        Identifier: server.identifier,
+        Name: server.name,
+        Scopes: server.scopes.map((scope) => {
+          return {
+            ScopeName: scope.scopeName,
+            ScopeDescription: scope.scopeDescription,
+          };
+        }),
+        UserPoolId: { Ref: CognitoUserPoolLogicalId },
       },
     };
+  }
+};
 
-    if (!identityPool.authenticatedRoleArn) {
-      template.Resources[IdentityPoolAuthenticatedIAMRoleLogicalId] = {
-        Type: 'AWS::IAM::Role',
-        Properties: {
-          AssumeRolePolicyDocument: {
-            Version: '2012-10-17' as const,
-            Statement: [
-              {
-                Effect: 'Allow' as const,
-                Principal: {
-                  Federated: 'cognito-identity.amazonaws.com',
-                },
-                Action: ['sts:AssumeRoleWithWebIdentity', 'sts:TagSession'],
-                Condition: {
-                  StringEquals: {
-                    'cognito-identity.amazonaws.com:aud': {
-                      Ref: CognitoIdentityPoolLogicalId,
-                    },
-                  },
-                  'ForAnyValue:StringLike': {
-                    'cognito-identity.amazonaws.com:amr': 'authenticated',
-                  },
-                },
-              },
-            ],
-          },
-          Policies: identityPool.authenticatedPolicies || [
-            {
-              PolicyName: 'IdentityPoolAuthenticatedIAMRolePolicyName',
-              PolicyDocument: {
-                Version: '2012-10-17' as const,
-                Statement: [DenyStatement],
-              },
-            },
-          ],
-        },
-      };
+const applyAdditionalAppClients = (
+  template: CloudFormationTemplate,
+  additionalAppClients: AdditionalAppClientConfig[]
+) => {
+  for (const client of additionalAppClients) {
+    const pascalName = toPascalCase(client.name);
+    const logicalId = `AppClient${pascalName}`;
+    const outputKey = `AppClientId${pascalName}`;
 
-      Object.assign(
-        template.Resources.CognitoIdentityPoolRoleAttachment.Properties?.Roles,
-        {
-          authenticated: {
-            'Fn::GetAtt': [IdentityPoolAuthenticatedIAMRoleLogicalId, 'Arn'],
-          },
-        }
-      );
-    } else {
-      Object.assign(
-        template.Resources.CognitoIdentityPoolRoleAttachment.Properties?.Roles,
-        {
-          authenticated: identityPool.authenticatedRoleArn,
-        }
-      );
-    }
-
-    if (!identityPool.unauthenticatedRoleArn) {
-      template.Resources[IdentityPoolUnauthenticatedIAMRoleLogicalId] = {
-        Type: 'AWS::IAM::Role',
-        Properties: {
-          AssumeRolePolicyDocument: {
-            Version: '2012-10-17' as const,
-            Statement: [
-              {
-                Effect: 'Allow' as const,
-                Principal: {
-                  Federated: 'cognito-identity.amazonaws.com',
-                },
-                Action: 'sts:AssumeRoleWithWebIdentity',
-                Condition: {
-                  StringEquals: {
-                    'cognito-identity.amazonaws.com:aud': {
-                      Ref: CognitoIdentityPoolLogicalId,
-                    },
-                  },
-                  'ForAnyValue:StringLike': {
-                    'cognito-identity.amazonaws.com:amr': 'unauthenticated',
-                  },
-                },
-              },
-            ],
-          },
-          Policies: identityPool.unauthenticatedPolicies || [
-            {
-              PolicyName: 'IdentityPoolUnauthenticatedIAMRolePolicyName',
-              PolicyDocument: {
-                Version: '2012-10-17' as const,
-                Statement: [DenyStatement],
-              },
-            },
-          ],
-        },
-      };
-
-      Object.assign(
-        template.Resources.CognitoIdentityPoolRoleAttachment.Properties?.Roles,
-        {
-          unauthenticated: {
-            'Fn::GetAtt': [IdentityPoolUnauthenticatedIAMRoleLogicalId, 'Arn'],
-          },
-        }
-      );
-    } else {
-      Object.assign(
-        template.Resources.CognitoIdentityPoolRoleAttachment.Properties?.Roles,
-        {
-          unauthenticated: identityPool.unauthenticatedRoleArn,
-        }
-      );
-    }
-
-    /**
-     * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-identitypoolprincipaltag.html
-     */
-    if (
-      identityPool.principalTags ||
-      identityPool.principalTags === undefined
-    ) {
-      const PrincipalTags = (() => {
-        if (typeof identityPool.principalTags === 'boolean') {
-          return defaultPrincipalTags;
-        }
-
-        if (identityPool.principalTags === undefined) {
-          return defaultPrincipalTags;
-        }
-
-        return identityPool.principalTags;
-      })();
-
-      template.Resources.CognitoIdentityPoolPrincipalTag = {
-        Type: 'AWS::Cognito::IdentityPoolPrincipalTag',
-        Properties: {
-          IdentityPoolId: {
-            Ref: CognitoIdentityPoolLogicalId,
-          },
-          IdentityProviderName: {
-            'Fn::GetAtt': [CognitoUserPoolLogicalId, 'ProviderName'],
-          },
-          PrincipalTags,
-          UseDefaults: false,
-        },
-      };
-    }
+    template.Resources[logicalId] = {
+      Type: 'AWS::Cognito::UserPoolClient',
+      Properties: {
+        ClientName: client.name,
+        UserPoolId: { Ref: CognitoUserPoolLogicalId },
+        SupportedIdentityProviders: ['COGNITO'],
+        GenerateSecret: client.generateSecret ?? false,
+        ...(client.oauth && {
+          AllowedOAuthFlows: client.oauth.flows,
+          AllowedOAuthFlowsUserPoolClient: true,
+          AllowedOAuthScopes: client.oauth.scopes,
+          CallbackURLs: client.oauth.callbackUrls,
+        }),
+      },
+    };
 
     template.Outputs = {
       ...template.Outputs,
-      IdentityPoolId: {
-        Description: 'You use this value on Amplify Auth `identityPoolId`.',
-        Value: {
-          Ref: CognitoIdentityPoolLogicalId,
-        },
+      [outputKey]: {
+        Description: `App client ID for ${client.name}.`,
+        Value: { Ref: logicalId },
         Export: {
           Name: {
-            'Fn::Join': [
-              ':',
-              [{ Ref: 'AWS::StackName' }, 'CognitoIdentityPoolId'],
-            ],
+            'Fn::Join': [':', [{ Ref: 'AWS::StackName' }, outputKey]],
           },
         },
       },
     };
   }
+};
 
-  // Apply Lambda triggers if provided
-  if (lambdaTriggers) {
-    const LambdaConfig: Record<string, string | CloudFormationGetAtt> = {};
+const applyAll = (
+  template: CloudFormationTemplate,
+  params: CreateAuthTemplateParams
+) => {
+  if (params.schema) applySchema(template, params.schema);
+  if (params.identityPool?.enabled)
+    applyIdentityPool(template, params.identityPool);
+  if (params.lambdaTriggers)
+    applyLambdaTriggers(template, params.lambdaTriggers);
+  if (params.domain) applyDomain(template, params.domain);
+  if (params.resourceServers)
+    applyResourceServers(template, params.resourceServers);
+  if (params.additionalAppClients)
+    applyAdditionalAppClients(template, params.additionalAppClients);
+};
 
-    if (lambdaTriggers.preSignUp) {
-      LambdaConfig.PreSignUp = lambdaTriggers.preSignUp;
-    }
-    if (lambdaTriggers.postConfirmation) {
-      LambdaConfig.PostConfirmation = lambdaTriggers.postConfirmation;
-    }
-    if (lambdaTriggers.preAuthentication) {
-      LambdaConfig.PreAuthentication = lambdaTriggers.preAuthentication;
-    }
-    if (lambdaTriggers.postAuthentication) {
-      LambdaConfig.PostAuthentication = lambdaTriggers.postAuthentication;
-    }
-    if (lambdaTriggers.defineAuthChallenge) {
-      LambdaConfig.DefineAuthChallenge = lambdaTriggers.defineAuthChallenge;
-    }
-    if (lambdaTriggers.createAuthChallenge) {
-      LambdaConfig.CreateAuthChallenge = lambdaTriggers.createAuthChallenge;
-    }
-    if (lambdaTriggers.verifyAuthChallengeResponse) {
-      LambdaConfig.VerifyAuthChallengeResponse =
-        lambdaTriggers.verifyAuthChallengeResponse;
-    }
-    if (lambdaTriggers.preTokenGeneration) {
-      LambdaConfig.PreTokenGeneration = lambdaTriggers.preTokenGeneration;
-    }
-    if (lambdaTriggers.userMigration) {
-      LambdaConfig.UserMigration = lambdaTriggers.userMigration;
-    }
-    if (lambdaTriggers.customMessage) {
-      LambdaConfig.CustomMessage = lambdaTriggers.customMessage;
-    }
-    if (lambdaTriggers.customEmailSender) {
-      LambdaConfig.CustomEmailSender = lambdaTriggers.customEmailSender;
-    }
-    if (lambdaTriggers.customSMSSender) {
-      LambdaConfig.CustomSMSSender = lambdaTriggers.customSMSSender;
-    }
+export const createAuthTemplate = (
+  params: CreateAuthTemplateParams = {}
+): CloudFormationTemplate => {
+  const {
+    autoVerifiedAttributes = ['email'],
+    usernameAttributes = ['email'],
+    deletionProtection,
+  } = params;
 
-    if (Object.keys(LambdaConfig).length > 0) {
-      template.Resources[CognitoUserPoolLogicalId].Properties = {
-        ...template.Resources[CognitoUserPoolLogicalId].Properties,
-        LambdaConfig,
-      };
-    }
+  const template = buildBaseTemplate({
+    autoVerifiedAttributes,
+    usernameAttributes,
+    deletionProtection,
+  });
 
-    for (const [key, lambdaTrigger] of Object.entries(LambdaConfig)) {
-      const permissionLogicalId =
-        `${key}PermissionFor${CognitoUserPoolLogicalId}`.slice(0, 255);
-
-      template.Resources[permissionLogicalId] = {
-        Type: 'AWS::Lambda::Permission',
-        Properties: {
-          Action: 'lambda:InvokeFunction',
-          FunctionName: lambdaTrigger,
-          Principal: 'cognito-idp.amazonaws.com',
-          SourceArn: {
-            'Fn::GetAtt': [CognitoUserPoolLogicalId, 'Arn'],
-          },
-        },
-      };
-    }
-  }
+  applyAll(template, params);
 
   return template;
 };
 
 createAuthTemplate.CognitoUserPoolLogicalId = CognitoUserPoolLogicalId;
-
 createAuthTemplate.CognitoUserPoolClientLogicalId =
   CognitoUserPoolClientLogicalId;
-
 createAuthTemplate.CognitoIdentityPoolLogicalId = CognitoIdentityPoolLogicalId;
-
 createAuthTemplate.IdentityPoolAuthenticatedIAMRoleLogicalId =
   IdentityPoolAuthenticatedIAMRoleLogicalId;
-
 createAuthTemplate.IdentityPoolUnauthenticatedIAMRoleLogicalId =
   IdentityPoolUnauthenticatedIAMRoleLogicalId;

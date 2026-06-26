@@ -151,6 +151,10 @@ app.use(async (ctx, next) => {
 });
 ```
 
+## OAuth
+
+Authentication lives in [`@ttoss/http-server-auth`](https://ttoss.dev/docs/modules/packages/http-server-auth) — `authMiddleware` (verify Bearer tokens, including an `oauth` strategy) and `oauthServer()` (issue tokens), a thin Koa layer over the runner-agnostic engine in [`@ttoss/auth-core`](https://ttoss.dev/docs/modules/packages/auth-core). This base runner stays auth-free. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline.
+
 ## API Reference
 
 All exports are re-exported from established Koa ecosystem packages:

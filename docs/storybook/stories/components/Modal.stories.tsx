@@ -1,5 +1,5 @@
-import { Meta, StoryFn } from '@storybook/react-webpack5';
-import { Modal } from '@ttoss/components/Modal';
+import type { Meta, StoryFn } from '@storybook/react-webpack5';
+import { Modal } from '@ttoss/components';
 import { Box, Button, Flex, Text } from '@ttoss/ui';
 import * as React from 'react';
 import { action } from 'storybook/actions';

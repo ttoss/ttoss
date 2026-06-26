@@ -1,6 +1,7 @@
 import { log } from '@ttoss/logger';
 
 import { applyMapDataPatchToSpec } from '../spec/mapDataPatch';
+import { resolveSpecFromMapType } from '../spec/mapTypeDefaults';
 import type {
   DataSource,
   VisualizationLayer,
@@ -100,7 +101,7 @@ export const createRuntime = (
   adapter: EngineAdapter,
   initialSpec: VisualizationSpec
 ): GeoVisRuntime => {
-  let currentSpec = initialSpec;
+  let currentSpec = resolveSpecFromMapType(initialSpec);
 
   return {
     get spec() {
@@ -110,8 +111,8 @@ export const createRuntime = (
       return adapter.mount(container, currentSpec, viewId);
     },
     update: (spec) => {
-      currentSpec = spec;
-      adapter.update(spec);
+      currentSpec = resolveSpecFromMapType(spec);
+      adapter.update(currentSpec);
     },
     applyPatch: (patch) => {
       // replace with undefined value is a no-op.

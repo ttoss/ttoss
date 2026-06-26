@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.14.0](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.39...@ttoss/cloud-auth@0.14.0) (2026-06-10)
+
+### Features
+
+- **cloud-auth:** support OAuth authorization server resources ([#1041](https://github.com/ttoss/ttoss/issues/1041)) ([dd2c3fb](https://github.com/ttoss/ttoss/commit/dd2c3fbed78d99229c754b5a776204dbd0e18617)), closes [#1040](https://github.com/ttoss/ttoss/issues/1040)
+
+## [0.13.39](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.38...@ttoss/cloud-auth@0.13.39) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
+## [0.13.38](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.37...@ttoss/cloud-auth@0.13.38) (2026-06-09)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
 ## [0.13.37](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.36...@ttoss/cloud-auth@0.13.37) (2026-06-05)
 
 ### Bug Fixes

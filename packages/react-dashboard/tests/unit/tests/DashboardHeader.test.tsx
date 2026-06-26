@@ -52,6 +52,26 @@ describe('DashboardHeader', () => {
     expect(screen.getByText('Action Button')).toBeInTheDocument();
   });
 
+  test('should not render filters when showFilters is false', () => {
+    render(
+      <DashboardProvider filters={mockFilters} templates={[]}>
+        <DashboardHeader showFilters={false} />
+      </DashboardProvider>
+    );
+
+    expect(screen.queryByText('Search')).not.toBeInTheDocument();
+  });
+
+  test('should render filters when showFilters is true (default)', () => {
+    render(
+      <DashboardProvider filters={mockFilters} templates={[]}>
+        <DashboardHeader />
+      </DashboardProvider>
+    );
+
+    expect(screen.getByText('Search')).toBeInTheDocument();
+  });
+
   test('should render edit toolbar when dashboard is editable', () => {
     const selectedTemplate = {
       id: 'template-1',

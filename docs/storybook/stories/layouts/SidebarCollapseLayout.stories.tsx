@@ -1,7 +1,7 @@
 /* eslint-disable formatjs/no-literal-string-in-jsx */
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import type { Notification } from '@ttoss/components/NotificationsMenu';
-import { NotificationsMenu } from '@ttoss/components/NotificationsMenu';
+import type { NavListItem, Notification } from '@ttoss/components';
+import { NavList, NotificationsMenu } from '@ttoss/components';
 import { Layout, SidebarCollapseLayout } from '@ttoss/layouts';
 import {
   NotificationsProvider,
@@ -9,6 +9,15 @@ import {
 } from '@ttoss/react-notifications';
 import { Box, Flex, Image, Stack } from '@ttoss/ui';
 import * as React from 'react';
+
+const sidebarNavItems: NavListItem[] = [
+  { href: '#item1', label: 'Sidebar item 1', icon: 'mdi:home-outline' },
+  { href: '#item2', label: 'Sidebar item 2', icon: 'mdi:account-outline' },
+  { href: '#item3', label: 'Sidebar item 3', icon: 'mdi:cog-outline' },
+  { href: '#item4', label: 'Sidebar item 4', icon: 'mdi:bell-outline' },
+  { href: '#item5', label: 'Sidebar item 5', icon: 'mdi:chart-bar' },
+  { href: '#item6', label: 'Sidebar item 6', icon: 'mdi:help-circle-outline' },
+];
 
 export default {
   title: 'Layouts/SidebarCollapseLayout',
@@ -37,22 +46,7 @@ const SidebarCollapseLayoutTemplate = ({
         Header starts here
       </Layout.Header>
       <Layout.Sidebar showSidebarButtonInDrawer={true} drawerSlot={sidebarSlot}>
-        <Flex
-          sx={{
-            flexDirection: 'column',
-            gap: '6',
-          }}
-        >
-          <Flex>Sidebar item 1 </Flex>
-          <Flex>Sidebar item 2 </Flex>
-          <Flex>Sidebar item 3 </Flex>
-          <Flex>Sidebar item 4 </Flex>
-          <Flex>Sidebar item 5 </Flex>
-          <Flex>Sidebar item 6 </Flex>
-          <Flex>Sidebar item 7 </Flex>
-          <Flex>Sidebar item 8 </Flex>
-          <Flex>Sidebar item 9 </Flex>
-        </Flex>
+        <NavList variant="sidebar" items={sidebarNavItems} />
       </Layout.Sidebar>
 
       <Layout.Main>
@@ -230,14 +224,7 @@ export const WithNotificationsMenu: Story = {
           showSidebarButtonInDrawer={true}
           drawerSlot={args.sidebarSlot}
         >
-          <Flex sx={{ flexDirection: 'column', gap: '6' }}>
-            <Flex>Sidebar item 1 </Flex>
-            <Flex>Sidebar item 2 </Flex>
-            <Flex>Sidebar item 3 </Flex>
-            <Flex>Sidebar item 4 </Flex>
-            <Flex>Sidebar item 5 </Flex>
-            <Flex>Sidebar item 6 </Flex>
-          </Flex>
+          <NavList variant="sidebar" items={sidebarNavItems} />
         </Layout.Sidebar>
         <Layout.Main>
           <Layout.Main.Body>
@@ -269,14 +256,7 @@ export const WithHeaderNotifications: Story = {
             showSidebarButtonInDrawer={true}
             drawerSlot={args.sidebarSlot}
           >
-            <Flex sx={{ flexDirection: 'column', gap: '6' }}>
-              <Flex>Sidebar item 1 </Flex>
-              <Flex>Sidebar item 2 </Flex>
-              <Flex>Sidebar item 3 </Flex>
-              <Flex>Sidebar item 4 </Flex>
-              <Flex>Sidebar item 5 </Flex>
-              <Flex>Sidebar item 6 </Flex>
-            </Flex>
+            <NavList variant="sidebar" items={sidebarNavItems} />
           </Layout.Sidebar>
           <Layout.Main>
             <Layout.Main.Body>

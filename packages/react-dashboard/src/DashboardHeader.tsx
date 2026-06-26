@@ -7,8 +7,11 @@ import { useDashboard } from './DashboardProvider';
 
 export const DashboardHeader = ({
   children,
+  showFilters = true,
 }: {
   children?: React.ReactNode;
+  /** When false, the internal DashboardFilters bar is not rendered. Defaults to true. */
+  showFilters?: boolean;
 }) => {
   const { editable } = useDashboard();
   return (
@@ -21,7 +24,7 @@ export const DashboardHeader = ({
           alignItems: 'flex-end',
         }}
       >
-        <DashboardFilters />
+        {showFilters && <DashboardFilters />}
         {children && (
           <Flex
             sx={{

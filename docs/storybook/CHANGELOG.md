@@ -3,6 +3,109 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.35.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.34.0...@docs/storybook@3.35.0) (2026-06-26)
+
+### Features
+
+- **geovis:** spec-driven basemap label visibility via basemap.labels ([#1106](https://github.com/ttoss/ttoss/issues/1106)) ([c5edb01](https://github.com/ttoss/ttoss/commit/c5edb01a069bdcbe4e0bb0ab2614f8555a20761f))
+
+# [3.34.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.33.0...@docs/storybook@3.34.0) (2026-06-25)
+
+### Features
+
+- **geovis:** Add choropleth map type auto-configuration ([#1099](https://github.com/ttoss/ttoss/issues/1099)) ([cf43365](https://github.com/ttoss/ttoss/commit/cf4336560da549d4edd62322bf7fada8e7f1de44))
+
+# [3.33.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.32.0...@docs/storybook@3.33.0) (2026-06-23)
+
+### Features
+
+- **geovis:** spec-driven hover tooltip via layer.hoverTooltip ([#1102](https://github.com/ttoss/ttoss/issues/1102)) ([36f435f](https://github.com/ttoss/ttoss/commit/36f435f2511a9b7f8a4e8e2e728dc5b83e9bed1c))
+
+# [3.32.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.31.0...@docs/storybook@3.32.0) (2026-06-23)
+
+### Features
+
+- Support proportional circles creation with size and color related to distinct variables ([#1088](https://github.com/ttoss/ttoss/issues/1088)) ([19abcc9](https://github.com/ttoss/ttoss/commit/19abcc920e5051006f3fcef7c0d96fecd002d4fc))
+
+# [3.31.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.30.1...@docs/storybook@3.31.0) (2026-06-22)
+
+### Features
+
+- **components:** add clientLogoUrl prop to OAuthConsent ([#1097](https://github.com/ttoss/ttoss/issues/1097)) ([5291de7](https://github.com/ttoss/ttoss/commit/5291de715cf53476f6c3d4d3c409e8241659be76))
+
+## [3.30.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.30.0...@docs/storybook@3.30.1) (2026-06-22)
+
+**Note:** Version bump only for package @docs/storybook
+
+# [3.30.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.29.1...@docs/storybook@3.30.0) (2026-06-19)
+
+### Features
+
+- **components:** add OAuthConsent component with hierarchical scope support ([#1093](https://github.com/ttoss/ttoss/issues/1093)) ([da9b0e4](https://github.com/ttoss/ttoss/commit/da9b0e4b9bf839123cb6560402fda4f150fb8f08))
+
+## [3.29.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.29.0...@docs/storybook@3.29.1) (2026-06-19)
+
+**Note:** Version bump only for package @docs/storybook
+
+# [3.29.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.28.0...@docs/storybook@3.29.0) (2026-06-19)
+
+### Features
+
+- **react-notifications:** add actions support and render as buttons ([#1080](https://github.com/ttoss/ttoss/issues/1080)) ([0c8c32a](https://github.com/ttoss/ttoss/commit/0c8c32a2c6e35f740955580b72b4d0131c5ad983)), closes [#1079](https://github.com/ttoss/ttoss/issues/1079)
+
+# [3.28.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.27.0...@docs/storybook@3.28.0) (2026-06-19)
+
+### Features
+
+- **geovis:** configurable legend — labelFormat, normalization, position, reference ([#1012](https://github.com/ttoss/ttoss/issues/1012)) ([d6ea06a](https://github.com/ttoss/ttoss/commit/d6ea06a02861bbfe79692de2032340b09065b913))
+
+# [3.27.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.26.0...@docs/storybook@3.27.0) (2026-06-18)
+
+### Features
+
+- **geovis-workspace:** add sidebar-driven workspace package ([#1075](https://github.com/ttoss/ttoss/issues/1075)) ([1deb9ee](https://github.com/ttoss/ttoss/commit/1deb9eeec2c15ad50ae1950a40a34df4029f274d))
+
+# [3.26.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.25.6...@docs/storybook@3.26.0) (2026-06-17)
+
+### Features
+
+- **geovis:** basemap presets and administrative boundaries of Brazil layers ([#1049](https://github.com/ttoss/ttoss/issues/1049)) ([8d33e8a](https://github.com/ttoss/ttoss/commit/8d33e8a8bc2837e63050e0331707501af7582b16))
+
+## 3.25.6 (2026-06-15)
+
+### Bug Fixes
+
+- **components:** remove redundant nav element from Menu ([#1076](https://github.com/ttoss/ttoss/issues/1076)) ([52f11c8](https://github.com/ttoss/ttoss/commit/52f11c8468eb6ada306a8930271ac299a43ca9ff))
+- **website:** generate markdown files for llms.txt references ([#1060](https://github.com/ttoss/ttoss/issues/1060)) ([8785a31](https://github.com/ttoss/ttoss/commit/8785a31af53fcd5d3899c08b06de4b9f157c9d8d))
+
+## [3.25.5](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.25.4...@docs/storybook@3.25.5) (2026-06-12)
+
+**Note:** Version bump only for package @docs/storybook
+
+## [3.25.4](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.25.3...@docs/storybook@3.25.4) (2026-06-10)
+
+**Note:** Version bump only for package @docs/storybook
+
+## [3.25.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.25.2...@docs/storybook@3.25.3) (2026-06-09)
+
+**Note:** Version bump only for package @docs/storybook
+
+## [3.25.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.25.1...@docs/storybook@3.25.2) (2026-06-09)
+
+**Note:** Version bump only for package @docs/storybook
+
+## [3.25.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.25.0...@docs/storybook@3.25.1) (2026-06-09)
+
+### Bug Fixes
+
+- **@ttoss/react-notifications:** move @ttoss/components to dependencies ([#1029](https://github.com/ttoss/ttoss/issues/1029)) ([51c5d30](https://github.com/ttoss/ttoss/commit/51c5d30602c44d3620fab2072969c7b12d6243d0)), closes [#1028](https://github.com/ttoss/ttoss/issues/1028)
+
+# [3.25.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.24.20...@docs/storybook@3.25.0) (2026-06-08)
+
+### Features
+
+- **react-billing:** add flexWrap to SubscriptionPanel actions ([#1026](https://github.com/ttoss/ttoss/issues/1026)) ([7362f97](https://github.com/ttoss/ttoss/commit/7362f97a2f5ed89e36054e4efe0ab7cbbbe834fa))
+
 ## [3.24.20](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.24.19...@docs/storybook@3.24.20) (2026-06-05)
 
 **Note:** Version bump only for package @docs/storybook

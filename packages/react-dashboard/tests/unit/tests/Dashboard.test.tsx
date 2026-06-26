@@ -432,6 +432,66 @@ describe('Dashboard', () => {
     expect(screen.queryByText(/R\$/)).not.toBeInTheDocument();
   });
 
+  test('should not render filters when showFilters is false', () => {
+    render(
+      <Dashboard
+        templates={[mockTemplate]}
+        filters={mockFilters}
+        showFilters={false}
+      />
+    );
+
+    expect(screen.queryByText('Search')).not.toBeInTheDocument();
+    expect(screen.queryByText('Template')).not.toBeInTheDocument();
+  });
+
+  test('should render filters by default when showFilters is not specified', () => {
+    render(<Dashboard templates={[mockTemplate]} filters={mockFilters} />);
+
+    expect(screen.getByText('Search')).toBeInTheDocument();
+  });
+
+  test('should not render divider when there are no filters, no headerChildren, and not editable', () => {
+    const { container } = render(
+      <Dashboard templates={[mockTemplate]} filters={[]} />
+    );
+
+    expect(container.querySelector('hr')).not.toBeInTheDocument();
+  });
+
+  test('should render divider when there are filters', () => {
+    const { container } = render(
+      <Dashboard templates={[mockTemplate]} filters={mockFilters} />
+    );
+
+    expect(container.querySelector('hr')).toBeInTheDocument();
+  });
+
+  test('should render divider when headerChildren are provided', () => {
+    const { container } = render(
+      <Dashboard
+        templates={[mockTemplate]}
+        filters={[]}
+        headerChildren={<button>Action</button>}
+      />
+    );
+
+    expect(container.querySelector('hr')).toBeInTheDocument();
+  });
+
+  test('should apply sx prop to outer container', () => {
+    const { container } = render(
+      <Dashboard
+        templates={[mockTemplate]}
+        filters={[]}
+        sx={{ padding: '0' }}
+      />
+    );
+
+    const outerFlex = container.firstChild as HTMLElement;
+    expect(outerFlex).toBeTruthy();
+  });
+
   test('should allow card-level currency to override dashboard-level currency', () => {
     const mixedTemplate: DashboardTemplate = {
       id: 'mixed-template',
