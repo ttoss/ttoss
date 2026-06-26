@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.6.0...@ttoss/geovis@0.7.0) (2026-06-26)
+
+### Features
+
+- **geovis:** spec-driven basemap label visibility via basemap.labels ([#1106](https://github.com/ttoss/ttoss/issues/1106)) ([c5edb01](https://github.com/ttoss/ttoss/commit/c5edb01a069bdcbe4e0bb0ab2614f8555a20761f))
+
 # [0.6.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.5.0...@ttoss/geovis@0.6.0) (2026-06-25)
 
 ### Features
