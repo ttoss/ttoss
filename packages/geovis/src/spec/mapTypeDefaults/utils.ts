@@ -1,7 +1,25 @@
-import type { MapDataRow } from '../types';
+import type { MapDataRow, VisualizationSpec } from '../types';
 import { jenksBuckets } from './jenks';
 import { DEFAULT_SEQUENTIAL_PALETTE } from './palettes';
 
+/**
+ * Finds the source id that matches the first mapData entry, falling back
+ * to the first geojson source if no direct match is found.
+ */
+export const findMatchSourceId = (spec: VisualizationSpec): string => {
+  const firstMapData = spec.mapData?.[0];
+  if (!firstMapData) return 'unknown';
+
+  return (
+    spec.sources.find((s) => {
+      return s.id === firstMapData.mapId && s.type === 'geojson';
+    })?.id ??
+    spec.sources.find((s) => {
+      return s.type === 'geojson';
+    })?.id ??
+    'unknown'
+  );
+};
 const MAX_CLASSES = DEFAULT_SEQUENTIAL_PALETTE.length - 1;
 
 /**
