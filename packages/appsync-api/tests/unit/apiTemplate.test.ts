@@ -201,10 +201,9 @@ test('should add resolvers to template', () => {
     ['Mutation', 'id1'],
     ['Mutation', 'id2'],
     ['Mutation', 'idMutation'],
-    ['Subscription', 'id1'],
-    ['Subscription', 'id2'],
-    ['Subscription', 'idSubscription'],
   ];
+
+  const subscriptionFieldNames = ['id1', 'id2', 'idSubscription'];
 
   const template = createApiTemplate({
     ...createApiTemplateInput,
@@ -222,6 +221,18 @@ test('should add resolvers to template', () => {
     });
 
     expect(resource).toBeDefined();
+  }
+
+  // Subscription fields must NOT get Lambda resolvers — @aws_subscribe handles delivery natively
+  for (const fieldName of subscriptionFieldNames) {
+    const resource = resources.find((r) => {
+      return (
+        r.Properties?.TypeName === 'Subscription' &&
+        r.Properties?.FieldName === fieldName
+      );
+    });
+
+    expect(resource).toBeUndefined();
   }
 });
 
@@ -432,5 +443,41 @@ describe('noneDataSourceResolvers', () => {
     expect(
       template.Resources['deleteMessageMutationAppSyncResolver']
     ).toBeDefined();
+  });
+});
+
+describe('Subscription resolvers', () => {
+  test('should not create Lambda resolver for Subscription fields', () => {
+    const localSchemaComposer = schemaComposer.clone();
+
+    localSchemaComposer.addTypeDefs(/* GraphQL */ `
+      type Notification {
+        id: ID!
+        message: String!
+      }
+
+      extend type Subscription {
+        onNotification: Notification
+          @aws_subscribe(mutations: ["createNotification"])
+      }
+    `);
+
+    localSchemaComposer.Subscription.extendField('onNotification', {
+      resolve: (
+        payload: { onNotification: { id: string; message: string } } | null
+      ) => {
+        if (!payload) return null;
+        return payload.onNotification;
+      },
+    });
+
+    const template = createApiTemplate({
+      ...createApiTemplateInput,
+      schemaComposer: localSchemaComposer,
+    });
+
+    expect(
+      template.Resources['onNotificationSubscriptionAppSyncResolver']
+    ).toBeUndefined();
   });
 });
