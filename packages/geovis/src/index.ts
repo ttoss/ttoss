@@ -8,6 +8,7 @@ export * from './runtime/adapter';
 export * from './runtime/createRuntime';
 export * from './spec/boundaryGroup';
 export { SEQUENTIAL_PALETTES } from './spec/mapTypeDefaults/palettes';
+export type { MapType } from './spec/types';
 export * from './spec/types';
 export * from './spec/validateSpec';
 export * from './ui/GeoVisHoverTooltip';
