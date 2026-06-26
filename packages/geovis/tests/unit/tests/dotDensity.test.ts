@@ -94,6 +94,40 @@ describe('dotDensity happy path — zero-config', () => {
     expect(resolved.legends).toHaveLength(0);
   });
 
+  test('aligns sourceId with first mapData mapId when sources out of order', () => {
+    const resolved = resolveSpecFromMapType({
+      id: 'test',
+      engine: 'maplibre',
+      mapType: 'dotDensity',
+      basemap: {
+        style: 'https://demotiles.maplibre.org/style.json',
+      },
+      sources: [
+        {
+          id: 'ufs',
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: [] },
+        },
+        {
+          id: 'pontos',
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: [] },
+        },
+      ],
+      layers: [],
+      mapData: [
+        {
+          mapDataId: 'events',
+          mapId: 'pontos',
+          data: [{ geometryId: 'a', value: 1 }],
+        },
+      ],
+    });
+
+    expect(resolved.layers[0].sourceId).toBe('pontos');
+    expect(resolved.layers[0].mapDataId).toBe('events');
+  });
+
   test('preserves user-provided layers', () => {
     const userLayers = [
       { id: 'custom-point', sourceId: 'points', geometry: 'point' as const },

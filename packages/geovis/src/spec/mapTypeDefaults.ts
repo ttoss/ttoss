@@ -91,11 +91,14 @@ export const resolveSpecFromMapType = (
 ): VisualizationSpec => {
   if (!spec.mapType) return spec;
 
-  const source = findFirstGeoJsonSource(spec.sources);
-  if (!source) return spec;
-
   const firstMapData = spec.mapData?.[0];
   if (!firstMapData) return spec;
+
+  const source =
+    spec.sources.find((s) => {
+      return s.id === firstMapData.mapId && s.type === 'geojson';
+    }) ?? findFirstGeoJsonSource(spec.sources);
+  if (!source) return spec;
 
   if (spec.mapType === 'dotDensity') {
     const resolved = resolveDotDensity(
