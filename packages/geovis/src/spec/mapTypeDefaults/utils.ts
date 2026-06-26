@@ -20,7 +20,6 @@ export const findMatchSourceId = (spec: VisualizationSpec): string => {
     'unknown'
   );
 };
-
 const MAX_CLASSES = DEFAULT_SEQUENTIAL_PALETTE.length - 1;
 
 /**

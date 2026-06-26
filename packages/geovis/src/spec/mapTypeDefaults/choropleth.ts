@@ -35,7 +35,6 @@ export const resolveChoropleth = (
   const { isNumeric, numericValues, categoricalValues } = inspectDataValues(
     mapDataEntry?.data ?? []
   );
-
   let colorBy: QuantitativeColorBy | CategoricalColorBy;
   const legendId = `${mapDataId}-legend`;
 

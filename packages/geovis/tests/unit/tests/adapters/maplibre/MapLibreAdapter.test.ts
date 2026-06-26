@@ -925,10 +925,13 @@ describe('mapData — feature-state application', () => {
 
     adapter.applyPatch?.({ target: 'mapData', op: 'remove', value: 'pop' });
 
-    expect(map.removeFeatureState).toHaveBeenCalledWith({
-      source: 'states',
-      id: 1,
-    });
+    expect(map.removeFeatureState).toHaveBeenCalledWith(
+      {
+        source: 'states',
+        id: 1,
+      },
+      'value'
+    );
   });
 
   // 3.3
@@ -1531,5 +1534,187 @@ describe('mapData — feature-state application', () => {
       '#16a34a',
       '#6b7280',
     ]);
+  });
+});
+
+describe('basemap.labels — symbol layer visibility', () => {
+  const makeMapWithStyle = (
+    styleLayers: Array<{ id: string; type: string }>
+  ) => {
+    const handlers: Record<string, Array<(...a: unknown[]) => void>> = {};
+    const register = (evt: string, cb: (...a: unknown[]) => void) => {
+      handlers[evt] = handlers[evt] ?? [];
+      handlers[evt].push(cb);
+    };
+    const map = {
+      ...makeMapMock(),
+      on: jest.fn(register),
+      once: jest.fn(register),
+      off: jest.fn(),
+      getStyle: jest.fn(() => {
+        return { layers: styleLayers };
+      }),
+      isStyleLoaded: jest.fn(() => {
+        return true;
+      }),
+    };
+    const fire = (evt: string, ...args: unknown[]) => {
+      for (const cb of handlers[evt] ?? []) cb(...args);
+    };
+    return { map, fire };
+  };
+
+  const basemapSpec = (
+    basemap: { labels?: boolean } | undefined,
+    layers: VisualizationLayer[] = []
+  ) => {
+    return {
+      ...makeSpec('bm'),
+      ...(basemap ? { basemap } : {}),
+      sources: layers.length
+        ? [{ id: 'src', type: 'geojson' as const, data: 'https://x/d.json' }]
+        : [],
+      layers,
+    };
+  };
+
+  test('labels:false hides every symbol layer on load (basemap + user)', () => {
+    const { map, fire } = makeMapWithStyle([
+      { id: 'bg', type: 'background' },
+      { id: 'roads', type: 'line' },
+      { id: 'place-labels', type: 'symbol' },
+      { id: 'poi-icons', type: 'symbol' },
+      { id: 'my-symbols', type: 'symbol' },
+    ]);
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(
+      makeContainer(),
+      basemapSpec({ labels: false }, [
+        { id: 'my-symbols', sourceId: 'src', geometry: 'symbol' },
+      ]),
+      'v'
+    );
+
+    fire('load');
+
+    expect(map.setLayoutProperty).toHaveBeenCalledWith(
+      'place-labels',
+      'visibility',
+      'none'
+    );
+    expect(map.setLayoutProperty).toHaveBeenCalledWith(
+      'poi-icons',
+      'visibility',
+      'none'
+    );
+    expect(map.setLayoutProperty).toHaveBeenCalledWith(
+      'my-symbols',
+      'visibility',
+      'none'
+    );
+    expect(map.setLayoutProperty).not.toHaveBeenCalledWith(
+      'roads',
+      'visibility',
+      expect.anything()
+    );
+  });
+
+  test('labels:true restores basemap symbol layers but skips user symbol layers', () => {
+    const { map, fire } = makeMapWithStyle([
+      { id: 'place-labels', type: 'symbol' },
+      { id: 'my-symbols', type: 'symbol' },
+    ]);
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(
+      makeContainer(),
+      basemapSpec({ labels: true }, [
+        {
+          id: 'my-symbols',
+          sourceId: 'src',
+          geometry: 'symbol',
+          visible: false,
+        },
+      ]),
+      'v'
+    );
+
+    fire('load');
+
+    expect(map.setLayoutProperty).toHaveBeenCalledWith(
+      'place-labels',
+      'visibility',
+      'visible'
+    );
+    expect(map.setLayoutProperty).not.toHaveBeenCalledWith(
+      'my-symbols',
+      'visibility',
+      'visible'
+    );
+  });
+
+  test('undefined labels leaves symbol layer visibility untouched', () => {
+    const { map, fire } = makeMapWithStyle([
+      { id: 'place-labels', type: 'symbol' },
+    ]);
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(makeContainer(), basemapSpec(undefined), 'v');
+
+    fire('load');
+
+    expect(map.setLayoutProperty).not.toHaveBeenCalled();
+    expect(map.getStyle).not.toHaveBeenCalled();
+  });
+
+  test('updating labels false→true restores basemap symbol visibility', () => {
+    const { map, fire } = makeMapWithStyle([
+      { id: 'place-labels', type: 'symbol' },
+    ]);
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    const spec = basemapSpec({ labels: false });
+    adapter.mount(makeContainer(), spec, 'v');
+    fire('load');
+    jest.mocked(map.setLayoutProperty).mockClear();
+
+    adapter.update({ ...spec, basemap: { labels: true } });
+
+    expect(map.setLayoutProperty).toHaveBeenCalledWith(
+      'place-labels',
+      'visibility',
+      'visible'
+    );
+  });
+
+  test('re-hides basemap symbol layers on update when labels stays false', () => {
+    const { map, fire } = makeMapWithStyle([
+      { id: 'place-labels', type: 'symbol' },
+    ]);
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    const spec = basemapSpec({ labels: false });
+    adapter.mount(makeContainer(), spec, 'v');
+    fire('load');
+    jest.mocked(map.setLayoutProperty).mockClear();
+
+    adapter.update({ ...spec, view: { ...spec.view, zoom: 12 } });
+
+    expect(map.setLayoutProperty).toHaveBeenCalledWith(
+      'place-labels',
+      'visibility',
+      'none'
+    );
   });
 });
