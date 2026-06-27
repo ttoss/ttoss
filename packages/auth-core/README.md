@@ -182,6 +182,30 @@ createOAuthHandlers({
 });
 ```
 
+### Opaque access tokens
+
+`createAccessTokenVerifier` verifies opaque, server-stored access tokens (and long-lived personal API keys) against any `AccessTokenStore`. Tokens are stored **hash-at-rest** — only the SHA-256 hash crosses the store boundary, so a store compromise leaks nothing usable. Verification is **default-deny** (an unknown or expired token returns `null` without revealing whether it ever existed) and **revocation is immediate** (a token removed via `delete`/`deleteBySubject` fails the next call). Mint the opaque value with `generateApiToken`; its default hashing matches the verifier, so no extra wiring is needed.
+
+```ts
+import { createAccessTokenVerifier, generateApiToken } from '@ttoss/auth-core';
+
+// Issue: persist only the hash; show the plain token to the user once.
+const { token, tokenHash } = generateApiToken({ prefix: 'myapp' });
+await store.save({
+  tokenHash,
+  subject: 'user_123',
+  scopes: ['read'],
+  clientId,
+  expiresAt: Date.now() + 3600_000, // null = never expires (personal API keys)
+});
+
+// Verify (e.g. inside an MCP/HTTP auth layer).
+const verify = createAccessTokenVerifier({ store, touchLastUsed: true });
+const identity = await verify(bearerToken); // VerifiedAccessToken | null
+```
+
+Prefer short-lived signed JWT access tokens (`signJwt`/`verifyJwt`) with refresh rotation when statelessness matters; reach for the opaque store when you need revocable access tokens or API keys.
+
 ### In-memory reference stores
 
-`createMemoryClientStore`, `createMemoryAuthCodeStore`, and `createMemoryRefreshTokenStore` are `Map`-backed implementations of the three store contracts — for tests, local development, and examples. Production swaps in a durable backend behind the same interfaces.
+`createMemoryClientStore`, `createMemoryAuthCodeStore`, `createMemoryRefreshTokenStore`, and `createMemoryAccessTokenStore` are `Map`-backed implementations of the store contracts — for tests, local development, and examples. Production swaps in a durable backend behind the same interfaces.

@@ -1,12 +1,14 @@
 import { createHash } from 'node:crypto';
 
 import {
+  createMemoryAccessTokenStore,
   createMemoryAuthCodeStore,
   createMemoryClientStore,
   createMemoryRefreshTokenStore,
   createOAuthHandlers,
   createRefreshRotation,
   type OAuthClient,
+  type StoredAccessToken,
 } from '../../../src/index';
 
 const base64Url = (buffer: Buffer): string => {
@@ -87,6 +89,51 @@ describe('createMemoryRefreshTokenStore', () => {
     expect(await store.get('h2')).toBeUndefined();
     // A different owner is untouched.
     expect(await store.get('h3')).toBeTruthy();
+  });
+});
+
+describe('createMemoryAccessTokenStore', () => {
+  const make = (tokenHash: string, subject: string): StoredAccessToken => {
+    return {
+      tokenHash,
+      clientId: 'public-client',
+      subject,
+      scopes: ['read'],
+      expiresAt: Date.now() + 1000,
+    };
+  };
+
+  test('saves, reads, and deletes a single token by hash', async () => {
+    const store = createMemoryAccessTokenStore();
+    await store.save(make('h1', 'user-1'));
+    expect(await store.get('h1')).toBeTruthy();
+    await store.delete('h1');
+    expect(await store.get('h1')).toBeUndefined();
+  });
+
+  test('deleteBySubject revokes every token for a user, leaving others intact', async () => {
+    const store = createMemoryAccessTokenStore();
+    await store.save(make('h1', 'user-1'));
+    await store.save(make('h2', 'user-1'));
+    await store.save(make('h3', 'user-2'));
+
+    await store.deleteBySubject('user-1');
+
+    expect(await store.get('h1')).toBeUndefined();
+    expect(await store.get('h2')).toBeUndefined();
+    expect(await store.get('h3')).toBeTruthy();
+  });
+
+  test('touchLastUsed records usage and no-ops on an unknown token', async () => {
+    const store = createMemoryAccessTokenStore();
+    await store.save(make('h1', 'user-1'));
+
+    await store.touchLastUsed!({ tokenHash: 'h1', lastUsedAt: 12345 });
+    expect((await store.get('h1'))?.lastUsedAt).toBe(12345);
+
+    // Unknown token: silently ignored, never throws or creates a record.
+    await store.touchLastUsed!({ tokenHash: 'missing', lastUsedAt: 1 });
+    expect(await store.get('missing')).toBeUndefined();
   });
 });
 

@@ -1,8 +1,10 @@
 import type {
+  AccessTokenStore,
   AuthCodeStore,
   ClientStore,
   OAuthClient,
   RefreshTokenStore,
+  StoredAccessToken,
   StoredAuthorizationCode,
   StoredRefreshToken,
 } from './oauthServerTypes';
@@ -72,6 +74,39 @@ export const createMemoryRefreshTokenStore = (): RefreshTokenStore => {
         if (token.clientId === clientId && token.subject === subject) {
           tokens.delete(tokenHash);
         }
+      }
+    },
+  };
+};
+
+/**
+ * In-memory reference {@link AccessTokenStore}. Backed by a `Map` keyed by the
+ * token hash, with subject-scoped revocation. For tests and local development
+ * only — production should persist tokens durably behind the same interface.
+ */
+export const createMemoryAccessTokenStore = (): AccessTokenStore => {
+  const tokens = new Map<string, StoredAccessToken>();
+  return {
+    save: (token) => {
+      tokens.set(token.tokenHash, token);
+    },
+    get: (tokenHash) => {
+      return tokens.get(tokenHash);
+    },
+    delete: (tokenHash) => {
+      tokens.delete(tokenHash);
+    },
+    deleteBySubject: (subject) => {
+      for (const [tokenHash, token] of tokens) {
+        if (token.subject === subject) {
+          tokens.delete(tokenHash);
+        }
+      }
+    },
+    touchLastUsed: ({ tokenHash, lastUsedAt }) => {
+      const token = tokens.get(tokenHash);
+      if (token) {
+        tokens.set(tokenHash, { ...token, lastUsedAt });
       }
     },
   };
