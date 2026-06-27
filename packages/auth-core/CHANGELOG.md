@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.9.0](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.8.0...@ttoss/auth-core@0.9.0) (2026-06-27)
+
+### Features
+
+- **auth-core:** add opaque access-token store and hash-at-rest verifier ([#1107](https://github.com/ttoss/ttoss/issues/1107)) ([df5a37b](https://github.com/ttoss/ttoss/commit/df5a37b0a516268e952d14bf8c27efa5d43e6e99))
+
 # 0.8.0 (2026-06-19)
 
 ### Features
