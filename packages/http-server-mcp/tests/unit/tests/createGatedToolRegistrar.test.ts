@@ -1,8 +1,4 @@
-import {
-  createGatedToolRegistrar,
-  McpServer,
-  type ToolIdentity,
-} from 'src/index';
+import { createGatedToolRegistrar, type ToolIdentity } from 'src/index';
 
 type ToolCallResult = {
   isError?: true;
@@ -20,7 +16,7 @@ const patchServer = () => {
         capturedCallback = callback;
       }
     ),
-  } as unknown as McpServer;
+  } as Parameters<typeof createGatedToolRegistrar>[0]['server'];
 
   const call = (
     args: Record<string, unknown> = {}

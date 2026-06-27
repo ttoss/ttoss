@@ -1,4 +1,7 @@
-import { getIdentity, type McpServer } from './index';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports -- value import required so declaration bundler emits `export { McpServer }` not `export type { McpServer }`
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+
+import { getIdentity } from './context';
 
 /** Resolved identity for a gated tool call. */
 export type ToolIdentity = { userId: string; scopes?: string[] };
