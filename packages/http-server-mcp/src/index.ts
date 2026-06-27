@@ -820,4 +820,10 @@ export { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 /**
  * Re-export Zod for request/response schema definitions
  */
+export {
+  createGatedToolRegistrar,
+  type CreateGatedToolRegistrarOptions,
+  type GatedToolDef,
+  type ToolIdentity,
+} from './createGatedToolRegistrar';
 export { z } from 'zod';

@@ -188,6 +188,17 @@ export interface StoredAccessToken {
   expiresAt: number | null;
   /** Unix timestamp (milliseconds) the token was last presented, for auditing. */
   lastUsedAt?: number;
+  /**
+   * Masked prefix safe to display in listing UIs (e.g. `"oca_3f2a…"`). Set at
+   * issuance from `generateApiToken`'s return value; never recomputable from
+   * the hash alone. Omit for tokens minted without a display prefix.
+   */
+  displayPrefix?: string;
+  /**
+   * Unix timestamp (milliseconds) when the token was created. Set at issuance;
+   * used by listing UIs to show "created on" dates.
+   */
+  createdAt?: number;
 }
 
 /**
@@ -222,6 +233,14 @@ export interface AccessTokenStore {
     tokenHash: string;
     lastUsedAt: number;
   }) => Promise<void> | void;
+  /**
+   * Return every token belonging to a subject, for "your authorized
+   * apps / personal API keys" listing UIs. Optional; `createMemoryAccessTokenStore`
+   * implements this.
+   */
+  listBySubject?: (
+    subject: string
+  ) => Promise<StoredAccessToken[]> | StoredAccessToken[];
 }
 
 // ---------------------------------------------------------------------------
