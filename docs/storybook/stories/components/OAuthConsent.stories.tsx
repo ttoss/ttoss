@@ -84,6 +84,45 @@ WithClientLogo.parameters = {
 };
 
 // ---------------------------------------------------------------------------
+// With logoUri (OAuth spec field name, takes precedence over clientLogoUrl)
+// ---------------------------------------------------------------------------
+
+export const WithLogoUri: StoryFn<OAuthConsentProps> = () => {
+  return (
+    <OAuthConsent
+      clientName="Claude"
+      logoUri={PLACEHOLDER_LOGO}
+      scopes={[
+        {
+          key: 'read',
+          label: 'Read',
+          description: 'List ad accounts and campaigns',
+          required: true,
+        },
+        {
+          key: 'write',
+          label: 'Write',
+          description: 'Pause and activate campaigns',
+        },
+      ]}
+      onAuthorize={noop}
+      onAuthorized={action('onAuthorized')}
+      onDeny={action('onDeny')}
+      labels={defaultLabels}
+    />
+  );
+};
+WithLogoUri.parameters = {
+  docs: {
+    description: {
+      story:
+        'The `logoUri` prop carries the OAuth `logo_uri` value appended by the consent-redirect enrichment flow. ' +
+        'It takes precedence over `clientLogoUrl` when both are provided; otherwise the two are interchangeable.',
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
 // Flat scopes (OCA read/write case)
 // ---------------------------------------------------------------------------
 

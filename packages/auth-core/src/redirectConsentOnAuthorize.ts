@@ -1,4 +1,9 @@
-import type { OnAuthorizeArgs, OnAuthorizeResult } from './oauthServerTypes';
+import type {
+  ClientStore,
+  OAuthClient,
+  OnAuthorizeArgs,
+  OnAuthorizeResult,
+} from './oauthServerTypes';
 
 /**
  * A consent grant stored by `codeChallenge` (PKCE), representing a
@@ -28,6 +33,17 @@ export type ConsentGrantStore = {
 };
 
 /**
+ * Human-readable display fields for an OAuth client, safe to show on a consent
+ * screen. Used by the fallback resolver when the client record omits them.
+ */
+export type ClientDisplay = {
+  /** Human-readable client name to show on the consent screen. */
+  clientName?: string;
+  /** URL of the client's logo image. */
+  logoUri?: string;
+};
+
+/**
  * Options for {@link createRedirectConsentOnAuthorize}.
  */
 export type CreateRedirectConsentOnAuthorizeOptions = {
@@ -37,7 +53,43 @@ export type CreateRedirectConsentOnAuthorizeOptions = {
    * `code_challenge_method`, `scope`, and `state` (when present).
    */
   consentUrl: string;
+  /**
+   * Optional client store used to look up the registered client by id so its
+   * `client_name` and `logo_uri` can be appended to the consent redirect URL.
+   * When omitted, only `getClientDisplayFallback` (if provided) contributes.
+   */
+  clientStore?: ClientStore;
+  /**
+   * Optional fallback resolver for display fields when the registered client
+   * record omits `client_name` or `logo_uri`. Receives the `clientId` and the
+   * resolved client record (if any); return a partial {@link ClientDisplay} to
+   * fill the gaps. Consumer-owned — ttoss never hard-codes client display data.
+   */
+  getClientDisplayFallback?: (params: {
+    clientId: string;
+    client?: OAuthClient;
+  }) => ClientDisplay | undefined;
 } & ConsentGrantStore;
+
+const resolveClientDisplay = async (
+  clientId: string,
+  clientStore: ClientStore | undefined,
+  getClientDisplayFallback:
+    | ((params: {
+        clientId: string;
+        client?: OAuthClient;
+      }) => ClientDisplay | undefined)
+    | undefined
+): Promise<ClientDisplay> => {
+  const client = clientStore ? await clientStore.get(clientId) : undefined;
+  const fallback = getClientDisplayFallback?.({ clientId, client });
+  const clientName = client?.client_name ?? fallback?.clientName;
+  const logoUri =
+    typeof client?.logo_uri === 'string' && client.logo_uri
+      ? client.logo_uri
+      : fallback?.logoUri;
+  return { clientName, logoUri };
+};
 
 /**
  * Factory that produces the `onAuthorize` hook for an OAuth server with a
@@ -54,6 +106,8 @@ export const createRedirectConsentOnAuthorize = ({
   consentUrl,
   getConsentGrant,
   deleteConsentGrant,
+  clientStore,
+  getClientDisplayFallback,
 }: CreateRedirectConsentOnAuthorizeOptions) => {
   return async (args: OnAuthorizeArgs): Promise<OnAuthorizeResult> => {
     const { request } = args;
@@ -81,6 +135,20 @@ export const createRedirectConsentOnAuthorize = ({
     url.searchParams.set('scope', scopes.join(' '));
     if (state !== undefined) {
       url.searchParams.set('state', state);
+    }
+
+    if (clientStore !== undefined || getClientDisplayFallback !== undefined) {
+      const { clientName, logoUri } = await resolveClientDisplay(
+        clientId,
+        clientStore,
+        getClientDisplayFallback
+      );
+      if (clientName !== undefined) {
+        url.searchParams.set('client_name', clientName);
+      }
+      if (logoUri !== undefined) {
+        url.searchParams.set('logo_uri', logoUri);
+      }
     }
 
     return { approved: false, redirect: url.toString() };

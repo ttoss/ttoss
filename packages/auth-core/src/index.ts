@@ -73,6 +73,7 @@ export {
   type CreatePostgresConsentStoreOptions,
 } from './postgresConsentStore';
 export {
+  type ClientDisplay,
   type ConsentGrant,
   type ConsentGrantStore,
   createRedirectConsentOnAuthorize,

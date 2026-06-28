@@ -109,5 +109,10 @@ export const createMemoryAccessTokenStore = (): AccessTokenStore => {
         tokens.set(tokenHash, { ...token, lastUsedAt });
       }
     },
+    listBySubject: (subject) => {
+      return [...tokens.values()].filter((token) => {
+        return token.subject === subject;
+      });
+    },
   };
 };
