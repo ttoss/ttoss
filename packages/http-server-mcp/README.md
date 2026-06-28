@@ -371,6 +371,7 @@ The discovery endpoint (`/.well-known/oauth-protected-resource`) remains publicl
 `createGatedToolRegistrar` wraps `server.registerTool` with a consistent authentication and authorization pipeline so you don't repeat the same boilerplate in every handler.
 
 Every registered tool automatically:
+
 1. Resolves the caller's identity (defaults to `getIdentity()` from the request context).
 2. Checks that the caller holds a required OAuth scope — returns an `isError` result (not a throw) when the scope is absent.
 3. Runs any extra `gates` in order; a throwing gate rejects the call.
@@ -379,7 +380,11 @@ Every registered tool automatically:
 6. Calls `onError` on throw before rethrowing, for telemetry.
 
 ```typescript
-import { createGatedToolRegistrar, getIdentity, McpServer } from '@ttoss/http-server-mcp';
+import {
+  createGatedToolRegistrar,
+  getIdentity,
+  McpServer,
+} from '@ttoss/http-server-mcp';
 import { z } from 'zod';
 
 const { register } = createGatedToolRegistrar({
@@ -400,7 +405,8 @@ register({
   description: 'List all ad campaigns for the caller.',
   requiredScope: 'campaigns:read',
   inputSchema: { limit: z.number().optional() },
-  method: async ({ userId, tenantId, limit }) => fetchCampaigns(tenantId, limit),
+  method: async ({ userId, tenantId, limit }) =>
+    fetchCampaigns(tenantId, limit),
 });
 ```
 
@@ -505,6 +511,7 @@ Factory that returns a `register` helper for tools that require authentication a
 **Returns:** `{ register: (def: GatedToolDef) => void }`
 
 The `GatedToolDef` passed to `register` has:
+
 - `name` — Tool name.
 - `description` — Human-readable description.
 - `requiredScope` — Single scope that must appear in `identity.scopes`.
