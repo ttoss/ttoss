@@ -359,8 +359,42 @@ describe('createGatedToolRegistrar', () => {
         method: jest.fn(),
       });
 
-      // getIdentity() returns undefined outside an MCP request context → TypeError
-      await expect(call({})).rejects.toThrow();
+      // getIdentity() returns undefined outside an MCP request context →
+      // clean Unauthorized isError result (not a raw TypeError)
+      const result = await call({});
+      expect(result.isError).toBe(true);
+      expect(JSON.parse(result.content[0].text).error).toContain(
+        'Unauthorized'
+      );
+    });
+  });
+
+  describe('undefined identity guard', () => {
+    test('resolveIdentity returning undefined yields isError Unauthorized; handler not called', async () => {
+      const { server, call } = patchServer();
+      const handler = jest.fn().mockResolvedValue({ ok: true });
+
+      const { register } = createGatedToolRegistrar({
+        server,
+        resolveIdentity: () => {
+          return undefined as unknown as ReturnType<typeof makeIdentity>;
+        },
+      });
+
+      register({
+        name: 'unauthed-tool',
+        description: 'unauthed',
+        requiredScope: 'admin',
+        inputSchema: {},
+        method: handler,
+      });
+
+      const result = await call({});
+      expect(result.isError).toBe(true);
+      expect(JSON.parse(result.content[0].text).error).toContain(
+        'Unauthorized'
+      );
+      expect(handler).not.toHaveBeenCalled();
     });
   });
 });

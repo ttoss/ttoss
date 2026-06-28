@@ -32,11 +32,13 @@ export type CreateGatedToolRegistrarOptions = {
   /**
    * Additional authorization gates run after the scope check, in order.
    * Throw to reject the call; return (or resolve) to continue.
+   * Gates own their own error handling — `onError` covers the tool handler only.
    */
   gates?: Array<(identity: ToolIdentity) => void | Promise<void>>;
   /**
-   * Called when a tool handler throws. Use for error reporting/telemetry.
+   * Called when the tool **handler** throws. Use for error reporting/telemetry.
    * The error is always rethrown after this hook completes.
+   * Note: scope-check failures and gate rejections do not trigger `onError`.
    */
   onError?: (
     error: unknown,
@@ -64,13 +66,18 @@ const toolError = (message: string) => {
  * authentication and a specific OAuth scope.
  *
  * Every registered tool automatically:
- * 1. Resolves the caller identity (default: `getIdentity()`).
+ * 1. Resolves the caller identity (default: `getIdentity()`). Returns an
+ *    `isError` result when the identity is absent (unauthenticated request).
  * 2. Checks `requiredScope` — returns an `isError` result (not a throw) when
  *    the scope is absent, consistent with how MCP surfaces authorization errors.
+ *    Scope semantics are intentionally simple (`Array.includes`). The package's
+ *    `checkScopes` helper is not reused here because it throws rather than
+ *    returning an `isError` result, and it reads identity from context itself.
  * 3. Runs any extra `gates` in order; a throwing gate rejects the call.
+ *    Gates own their own error handling; `onError` covers the tool handler only.
  * 4. Merges `buildContext` output into the handler args.
  * 5. Wraps `null`/`undefined` results in a "Not found" error result.
- * 6. Calls `onError` on throw before rethrowing.
+ * 6. Calls `onError` on handler throw before rethrowing.
  *
  * @example
  * ```typescript
@@ -108,7 +115,8 @@ export const createGatedToolRegistrar = ({
         >[1]['inputSchema'],
       },
       async (args: Record<string, unknown>) => {
-        const identity = resolveIdentity();
+        const identity = resolveIdentity() as ToolIdentity | undefined;
+        if (!identity) return toolError('Unauthorized');
         const scopes = Array.isArray(identity.scopes) ? identity.scopes : [];
 
         if (!scopes.includes(def.requiredScope)) {
