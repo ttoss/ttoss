@@ -806,6 +806,7 @@ export {
   createGatedToolRegistrar,
   type CreateGatedToolRegistrarOptions,
   type GatedToolDef,
+  type ToolCallContext,
   type ToolIdentity,
 } from './createGatedToolRegistrar';
 export { z } from 'zod';

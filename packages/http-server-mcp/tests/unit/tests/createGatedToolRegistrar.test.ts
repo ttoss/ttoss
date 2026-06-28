@@ -1,4 +1,8 @@
-import { createGatedToolRegistrar, type ToolIdentity } from 'src/index';
+import {
+  createGatedToolRegistrar,
+  type ToolCallContext,
+  type ToolIdentity,
+} from 'src/index';
 
 type ToolCallResult = {
   isError?: true;
@@ -106,10 +110,35 @@ describe('createGatedToolRegistrar', () => {
       expect(result.isError).toBe(true);
       expect(handler).not.toHaveBeenCalled();
     });
+
+    test('enforceScope: false skips the scope check', async () => {
+      const { server, call } = patchServer();
+      const handler = jest.fn().mockResolvedValue({ ok: true });
+
+      const { register } = createGatedToolRegistrar({
+        server,
+        resolveIdentity: () => {
+          return makeIdentity({ scopes: [] });
+        },
+        enforceScope: false,
+      });
+
+      register({
+        name: 'unscoped-tool',
+        description: 'unscoped',
+        requiredScope: 'admin',
+        inputSchema: {},
+        method: handler,
+      });
+
+      const result = await call({});
+      expect(result.isError).toBeUndefined();
+      expect(handler).toHaveBeenCalled();
+    });
   });
 
   describe('gates', () => {
-    test('runs gates in order; a throwing gate rejects the call', async () => {
+    test('runs global gates in order; a throwing gate rejects the call', async () => {
       const order: string[] = [];
       const gateA = jest.fn(async () => {
         order.push('A');
@@ -145,9 +174,10 @@ describe('createGatedToolRegistrar', () => {
       expect(handler).not.toHaveBeenCalled();
     });
 
-    test('identity is passed to gates', async () => {
-      const receivedIdentities: ToolIdentity[] = [];
+    test('gate receives full ToolCallContext (identity + args + handler name)', async () => {
+      const receivedContexts: ToolCallContext[] = [];
       const identity = makeIdentity({ userId: 'alice', scopes: ['x'] });
+      const callArgs = { campaignId: 99 };
 
       const { server, call } = patchServer();
 
@@ -157,8 +187,8 @@ describe('createGatedToolRegistrar', () => {
           return identity;
         },
         gates: [
-          (id) => {
-            receivedIdentities.push(id);
+          (ctx) => {
+            receivedContexts.push(ctx);
           },
         ],
       });
@@ -171,9 +201,113 @@ describe('createGatedToolRegistrar', () => {
         method: jest.fn().mockResolvedValue({}),
       });
 
-      await call({});
-      expect(receivedIdentities).toHaveLength(1);
-      expect(receivedIdentities[0]).toEqual(identity);
+      await call(callArgs);
+      expect(receivedContexts).toHaveLength(1);
+      expect(receivedContexts[0].identity).toEqual(identity);
+      expect(receivedContexts[0].args).toEqual(callArgs);
+      expect(receivedContexts[0].handler).toBe('id-tool');
+    });
+
+    test('per-def gates run after global gates and also receive ToolCallContext', async () => {
+      const order: string[] = [];
+      const identity = makeIdentity({ scopes: ['write'] });
+      const callArgs = { isActive: true };
+
+      const { server, call } = patchServer();
+
+      const { register } = createGatedToolRegistrar({
+        server,
+        resolveIdentity: () => {
+          return identity;
+        },
+        gates: [
+          (ctx) => {
+            order.push(`global:${ctx.handler}`);
+          },
+        ],
+      });
+
+      register({
+        name: 'per-def-tool',
+        description: 'per def gates',
+        requiredScope: 'write',
+        inputSchema: {},
+        gates: [
+          (ctx) => {
+            order.push(`def:isActive=${String(ctx.args.isActive)}`);
+          },
+        ],
+        method: jest.fn().mockResolvedValue({ ok: true }),
+      });
+
+      await call(callArgs);
+      expect(order).toEqual(['global:per-def-tool', 'def:isActive=true']);
+    });
+
+    test('throwing per-def gate rejects the call; global gate already ran', async () => {
+      const order: string[] = [];
+
+      const { server, call } = patchServer();
+
+      const { register } = createGatedToolRegistrar({
+        server,
+        resolveIdentity: () => {
+          return makeIdentity({ scopes: ['write'] });
+        },
+        gates: [
+          () => {
+            order.push('global');
+          },
+        ],
+      });
+
+      register({
+        name: 'blocked-tool',
+        description: 'blocked',
+        requiredScope: 'write',
+        inputSchema: {},
+        gates: [
+          () => {
+            throw new Error('per-def gate rejected');
+          },
+        ],
+        method: jest.fn().mockResolvedValue({ ok: true }),
+      });
+
+      await expect(call({})).rejects.toThrow('per-def gate rejected');
+      expect(order).toEqual(['global']);
+    });
+
+    test('arg-conditional per-def gate picks different predicate based on args', async () => {
+      const activated: boolean[] = [];
+
+      const { server, call } = patchServer();
+      const identity = makeIdentity({ scopes: ['write'] });
+
+      const { register } = createGatedToolRegistrar({
+        server,
+        resolveIdentity: () => {
+          return identity;
+        },
+      });
+
+      register({
+        name: 'toggle',
+        description: 'toggle',
+        requiredScope: 'write',
+        inputSchema: {},
+        gates: [
+          ({ args }) => {
+            // simulate conditional logic — only flag which branch ran
+            activated.push(args.isActive === true);
+          },
+        ],
+        method: jest.fn().mockResolvedValue({ done: true }),
+      });
+
+      await call({ isActive: true });
+      await call({ isActive: false });
+      expect(activated).toEqual([true, false]);
     });
   });
 
@@ -188,7 +322,7 @@ describe('createGatedToolRegistrar', () => {
         resolveIdentity: () => {
           return identity;
         },
-        buildContext: (id) => {
+        buildContext: ({ identity: id }) => {
           return { tenantId: `tenant-${id.userId}` };
         },
       });
@@ -206,6 +340,32 @@ describe('createGatedToolRegistrar', () => {
         key: 'val',
         tenantId: 'tenant-bob',
       });
+    });
+
+    test('buildContext receives args so context can vary per call', async () => {
+      const handler = jest.fn().mockResolvedValue({ done: true });
+      const { server, call } = patchServer();
+
+      const { register } = createGatedToolRegistrar({
+        server,
+        resolveIdentity: () => {
+          return makeIdentity({ scopes: ['r'] });
+        },
+        buildContext: ({ args }) => {
+          return { doubled: (args.n as number) * 2 };
+        },
+      });
+
+      register({
+        name: 'args-ctx-tool',
+        description: 'args ctx',
+        requiredScope: 'r',
+        inputSchema: {},
+        method: handler,
+      });
+
+      await call({ n: 5 });
+      expect(handler).toHaveBeenCalledWith({ n: 5, doubled: 10 });
     });
   });
 
@@ -287,14 +447,41 @@ describe('createGatedToolRegistrar', () => {
         name: 'widget',
       });
     });
+
+    test('notFoundMessage overrides the default "Not found" text', async () => {
+      const { server, call } = patchServer();
+
+      const { register } = createGatedToolRegistrar({
+        server,
+        resolveIdentity: () => {
+          return makeIdentity({ scopes: ['r'] });
+        },
+        notFoundMessage: 'Campaign not found',
+      });
+
+      register({
+        name: 'custom-msg-tool',
+        description: 'custom msg',
+        requiredScope: 'r',
+        inputSchema: {},
+        method: async () => {
+          return null;
+        },
+      });
+
+      const result = await call({});
+      expect(result.isError).toBe(true);
+      expect(result.content[0].text).toContain('Campaign not found');
+    });
   });
 
   describe('onError', () => {
-    test('handler throw triggers onError with handler name and identity, then rethrows', async () => {
+    test('handler throw triggers onError with full ToolCallContext, then rethrows', async () => {
       const onError = jest.fn();
       const error = new Error('handler-boom');
       const { server, call } = patchServer();
       const identity = makeIdentity({ userId: 'eve', scopes: ['admin'] });
+      const callArgs = { payload: 'data' };
 
       const { register } = createGatedToolRegistrar({
         server,
@@ -314,10 +501,11 @@ describe('createGatedToolRegistrar', () => {
         },
       });
 
-      await expect(call({})).rejects.toThrow('handler-boom');
+      await expect(call(callArgs)).rejects.toThrow('handler-boom');
       expect(onError).toHaveBeenCalledWith(error, {
-        handler: 'failing-tool',
         identity,
+        args: callArgs,
+        handler: 'failing-tool',
       });
     });
 
@@ -342,6 +530,35 @@ describe('createGatedToolRegistrar', () => {
       });
 
       await expect(call({})).rejects.toThrow('direct-rethrow');
+    });
+
+    test('gate throw does NOT trigger onError', async () => {
+      const onError = jest.fn();
+      const { server, call } = patchServer();
+
+      const { register } = createGatedToolRegistrar({
+        server,
+        resolveIdentity: () => {
+          return makeIdentity({ scopes: ['x'] });
+        },
+        gates: [
+          () => {
+            throw new Error('gate-rejection');
+          },
+        ],
+        onError,
+      });
+
+      register({
+        name: 'gate-error-tool',
+        description: 'gate error',
+        requiredScope: 'x',
+        inputSchema: {},
+        method: jest.fn().mockResolvedValue({ ok: true }),
+      });
+
+      await expect(call({})).rejects.toThrow('gate-rejection');
+      expect(onError).not.toHaveBeenCalled();
     });
   });
 
