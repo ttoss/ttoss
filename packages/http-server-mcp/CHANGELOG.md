@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.21.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.20.0...@ttoss/http-server-mcp@0.21.0) (2026-06-28)
+
+### Features
+
+- **http-server-mcp:** args-aware gate seam in createGatedToolRegistrar ([#1109](https://github.com/ttoss/ttoss/issues/1109)) ([e05edab](https://github.com/ttoss/ttoss/commit/e05edabf451ce12516e04f3d096cf58d6fde1644))
+
 # [0.20.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.19.1...@ttoss/http-server-mcp@0.20.0) (2026-06-28)
 
 ### Features
