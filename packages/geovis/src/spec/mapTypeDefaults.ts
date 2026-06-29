@@ -1,5 +1,6 @@
 import { resolveChoropleth } from './mapTypeDefaults/choropleth';
 import { resolveDotDensity } from './mapTypeDefaults/dotDensity';
+import { resolveProportionalCircles } from './mapTypeDefaults/proportionalCircles';
 import type {
   LegendSpec,
   VisualizationLayer,
@@ -96,13 +97,15 @@ const mergeLegends = (
   userLegends: LegendSpec[],
   resolvedLegends: LegendSpec[]
 ): LegendSpec[] => {
-  return userLegends.map((userLegend, index) => {
+  const usedIds = new Set<string>();
+  const merged = userLegends.map((userLegend, index) => {
     const match = findMatchingResolvedLegend(
       userLegend,
       resolvedLegends,
       index
     );
-    if (!match) return userLegend;
+    if (!match || !match.colorBy) return userLegend;
+    usedIds.add(match.id);
     if (!userLegend.colorBy) {
       return { ...userLegend, colorBy: match.colorBy };
     }
@@ -117,11 +120,19 @@ const mergeLegends = (
     }
     return userLegend;
   });
+  for (const rl of resolvedLegends) {
+    if (!usedIds.has(rl.id)) {
+      merged.push(rl);
+    }
+  }
+  return merged;
 };
 
 type ResolvedResult = {
   layers: VisualizationSpec['layers'];
   legends: LegendSpec[];
+  /** Optional resolved visual scale ceiling (proportional circles only). */
+  scaleMaxValue?: number;
 };
 
 const applyResolved = (
@@ -143,6 +154,8 @@ const applyResolved = (
       userLegends.length > 0
         ? mergeLegends(userLegends, resolved.legends)
         : resolved.legends,
+    // A user-provided scaleMaxValue always wins; otherwise adopt the resolved one.
+    scaleMaxValue: spec.scaleMaxValue ?? resolved.scaleMaxValue,
   };
 };
 
@@ -160,6 +173,11 @@ export const resolveSpecFromMapType = (
   spec: VisualizationSpec
 ): VisualizationSpec => {
   if (!spec.mapType) return spec;
+
+  if (spec.mapType === 'proportionalCircles') {
+    const resolved = resolveProportionalCircles(spec);
+    return applyResolved(spec, resolved);
+  }
 
   if (spec.mapType === 'dotDensity') {
     const resolved = resolveDotDensity(spec);

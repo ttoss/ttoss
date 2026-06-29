@@ -432,6 +432,10 @@
                 }
               }
             ]
+          },
+          "propertyName": {
+            "type": "string",
+            "description": "GeoJSON feature property name for direct data access. When set (and mapDataId is absent), the expression reads from feature.properties[propertyName] via ['get', ...]."
           }
         }
       }
@@ -441,6 +445,10 @@
       "additionalProperties": true
     },
     "adapterHints": {},
+    "scaleMaxValue": {
+      "type": "number",
+      "description": "Visual scale ceiling for proportional symbol rendering. Values above scaleMaxValue render at the maximum symbol size. When omitted, the adapter computes it from the dataset."
+    },
     "legends": {
       "type": "array",
       "items": {
