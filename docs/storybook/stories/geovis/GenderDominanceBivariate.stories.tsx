@@ -5,6 +5,7 @@ import type {
   VisualizationSpec,
 } from '@ttoss/geovis';
 import {
+  formatCompactNumber,
   GeoVisCanvas,
   GeoVisHoverTooltip,
   GeoVisLegend,
@@ -158,16 +159,26 @@ const renderTooltip = (
   );
 };
 
-const buildSpec = (
-  sizeData: Array<{ geometryId: number; value: number }>,
-  colorData: Array<{ geometryId: number; value: string }>,
-  year: Year,
-  districtGeoJson: GeoJSONFeatureCollection,
-  centroidGeoJson: GeoJSONFeatureCollection
-): VisualizationSpec => {
+const buildSpec = ({
+  sizeData,
+  colorData,
+  year,
+  districtGeoJson,
+  centroidGeoJson,
+  scaleMaxValue,
+}: {
+  sizeData: Array<{ geometryId: number; value: number }>;
+  colorData: Array<{ geometryId: number; value: string }>;
+  year: Year;
+  districtGeoJson: GeoJSONFeatureCollection;
+  centroidGeoJson: GeoJSONFeatureCollection;
+  scaleMaxValue?: number;
+}): VisualizationSpec => {
   return {
     id: 'gender-dominance-bivariate',
+    mapType: 'proportionalCircles',
     engine: 'maplibre',
+    scaleMaxValue,
     sources: [
       {
         id: 'district-polygons',
@@ -198,12 +209,6 @@ const buildSpec = (
         geometry: 'point',
         activeLegendId: 'gender',
         paint: { circleStrokeColor: '#ffffff', circleStrokeWidth: 1.5 },
-        sizeBy: {
-          range: [4, 12],
-          mode: 'continuous',
-          thresholds: [50_000, 100_000, 150_000, 200_000, 250_000],
-          transform: 'sqrt',
-        },
       },
     ],
     legends: [
@@ -222,6 +227,7 @@ const buildSpec = (
       {
         mapDataId: 'population',
         mapId: 'district-centroids',
+        title: 'total population',
         stateKey: 'total',
         dimension: 'size',
         data: sizeData,
@@ -229,6 +235,7 @@ const buildSpec = (
       {
         mapDataId: 'gender',
         mapId: 'district-centroids',
+        title: 'gender dominance',
         stateKey: 'gender',
         dimension: 'color',
         data: colorData,
@@ -241,7 +248,7 @@ const buildSpec = (
  * Bivariate map of São Paulo district centroids with **independent** size and
  * colour dimensions.
  *
- * - **Size** — total population (proportional symbols via `sizeBy`).
+ * - **Size** — total population (proportional symbols via `mapType: 'proportionalCircles'`).
  * - **Colour** — pink (`#ec4899`) when women outnumber men, blue (`#3b82f6`)
  *   when men outnumber women (categorical colour via `dimension: 'color'`).
  *
@@ -330,13 +337,17 @@ export const GenderDominanceBivariate: StoryFn<{ year: Year }> = ({ year }) => {
 
   const spec = React.useMemo(() => {
     if (!districtGeoJson || !centroidGeoJson) return null;
-    return buildSpec(
+    // `scaleMaxValue` is intentionally omitted: the resolver derives a
+    // nice-rounded ceiling (e.g. 487 321 → 500 000) from the size dataset, so
+    // the reference-circle labels read as clean round numbers (125k / 250k /
+    // 500k) instead of the raw-max decimals a manual Math.max would produce.
+    return buildSpec({
       sizeData,
       colorData,
       year,
       districtGeoJson,
-      centroidGeoJson
-    );
+      centroidGeoJson,
+    });
   }, [sizeData, colorData, year, districtGeoJson, centroidGeoJson]);
 
   if (!districtGeoJson || !centroidGeoJson || !districtBbox || !spec) {
@@ -369,7 +380,11 @@ export const GenderDominanceBivariate: StoryFn<{ year: Year }> = ({ year }) => {
             }}
           />
         </div>
-        <GeoVisLegend legendId="gender" />
+        <GeoVisLegend legendId="gender" formatValue={formatCompactNumber} />
+        <GeoVisLegend
+          legendId="population-legend"
+          formatValue={formatCompactNumber}
+        />
       </GeoVisProvider>
     </div>
   );
