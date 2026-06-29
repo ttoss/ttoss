@@ -309,34 +309,39 @@ describe('Stage 3 — applyMapDataToSource writes correct state and IDs via join
     expect(map.setFeatureState).toHaveBeenCalledTimes(10);
   });
 
-  test('each call uses { source: "cities", id: numericId } and { population: value }', () => {
+  test('each call uses { source: "cities", id } and { population: value }', () => {
     const map = createMockMap();
     applyMapDataToSource(map, storyMapData[0]!);
 
     const calls = jest.mocked(map.setFeatureState).mock.calls;
 
     for (const call of calls) {
-      const feature = call[0] as { source: string; id: number };
+      const feature = call[0] as { source: string; id: string | number };
       const state = call[1] as Record<string, number>;
       expect(feature.source).toBe('cities');
-      expect(typeof feature.id).toBe('number');
       expect(state).toHaveProperty('population');
       expect(typeof state.population).toBe('number');
       expect(Number.isFinite(state.population)).toBe(true);
     }
   });
 
-  test('IDs are resolved via joinKey (numeric IDs from querySourceFeatures)', () => {
+  test('IDs are the join values applied directly (no querySourceFeatures)', () => {
     const map = createMockMap();
     applyMapDataToSource(map, storyMapData[0]!);
 
+    // `joinKey` is promoted to `feature.id`, so the join value is the id —
+    // state is applied directly, never resolved through the viewport-bound query.
+    expect(map.querySourceFeatures).not.toHaveBeenCalled();
+
     const calls = jest.mocked(map.setFeatureState).mock.calls;
     const ids = calls.map((c) => {
-      return (c[0] as { id: number }).id;
+      return (c[0] as { id: string | number }).id;
+    });
+    const expectedIds = CITIES_GEOJSON.features.map((f) => {
+      return f.properties?.cityId;
     });
 
-    // joinKey resolves cityId → feature.id via querySourceFeatures
-    expect(ids).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    expect(ids).toEqual(expectedIds);
   });
 
   test('population values match the GeoJSON properties', () => {
