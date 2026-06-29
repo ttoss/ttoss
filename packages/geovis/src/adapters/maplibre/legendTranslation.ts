@@ -175,18 +175,45 @@ const generateRadii = (count: number, min: number, max: number): number[] => {
   return radii;
 };
 
+/**
+ * Builds the value expression and null-check for size expressions.
+ *
+ * When `useGetExpression` is true the expression reads from
+ * `['get', stateKey]` (direct GeoJSON property access). Otherwise it reads
+ * from `['feature-state', stateKey]` (the standard feature-state path).
+ */
+const buildSizeValueAndNullCheck = (
+  stateKey: string,
+  useGetExpression: boolean
+): { value: unknown[]; nullCheck: unknown[] } => {
+  if (useGetExpression) {
+    return {
+      value: ['to-number', ['get', stateKey], 0],
+      nullCheck: ['!=', ['get', stateKey], null],
+    };
+  }
+  return {
+    value: ['to-number', ['feature-state', stateKey]],
+    nullCheck: ['!=', ['feature-state', stateKey], null],
+  };
+};
+
 const buildContinuousSizeExpression = (
   sizeBy: SizeBy,
   fallbackRadius: number,
   legendThresholds?: number[],
-  stateKey: string = 'value'
+  stateKey: string = 'value',
+  useGetExpression: boolean = false
 ): unknown => {
   const [minRadius, maxRadius] = sizeBy.range;
   const bounds = legendThresholds?.length
     ? legendThresholds
     : (sizeBy.thresholds ?? []);
 
-  const rawValue: unknown[] = ['to-number', ['feature-state', stateKey]];
+  const { value: rawValue, nullCheck } = buildSizeValueAndNullCheck(
+    stateKey,
+    useGetExpression
+  );
   const useSqrt = sizeBy.transform === 'sqrt';
   // When sqrt transform is requested, apply sqrt to both the input value AND
   // the data bounds so interpolation stays in sqrt-space. This ensures output
@@ -208,7 +235,7 @@ const buildContinuousSizeExpression = (
 
     interpolated = [
       'case',
-      ['!=', ['feature-state', stateKey], null],
+      nullCheck,
       [
         'interpolate',
         ['linear'],
@@ -226,7 +253,7 @@ const buildContinuousSizeExpression = (
     // when data bounds become available (e.g. after mapData is applied).
     interpolated = [
       'case',
-      ['!=', ['feature-state', stateKey], null],
+      nullCheck,
       [
         'interpolate',
         ['linear'],
@@ -256,13 +283,17 @@ const buildContinuousSizeExpression = (
  * @param fallbackRadius - Static radius used when data is missing.
  * @param legendThresholds - Break points inherited from the active legend.
  * @param stateKey - Feature-state key name. Defaults to 'value'.
+ * @param useGetExpression - When true, reads from `['get', stateKey]` (GeoJSON
+ *   property access) instead of `['feature-state', stateKey]`. Used when the
+ *   layer drives circle size via `propertyName` without a `mapData` join.
  * @returns A MapLibre expression, or a constant number when data bounds are unavailable.
  */
 export const buildSizeExpression = (
   sizeBy: SizeBy,
   fallbackRadius: number,
   legendThresholds?: number[],
-  stateKey: string = 'value'
+  stateKey: string = 'value',
+  useGetExpression: boolean = false
 ): unknown => {
   const [minRadius, maxRadius] = sizeBy.range;
 
@@ -285,7 +316,8 @@ export const buildSizeExpression = (
         sizeBy,
         fallbackRadius,
         undefined,
-        stateKey
+        stateKey,
+        useGetExpression
       );
     }
 
@@ -295,11 +327,14 @@ export const buildSizeExpression = (
     const binCount = sortedBreaks.length + 1;
     const radii = generateRadii(binCount, minRadius, maxRadius);
 
-    const input = ['to-number', ['feature-state', stateKey]];
+    const { value: input, nullCheck } = buildSizeValueAndNullCheck(
+      stateKey,
+      useGetExpression
+    );
 
     const stepped: unknown = [
       'case',
-      ['!=', ['feature-state', stateKey], null],
+      nullCheck,
       [
         'step',
         input,
@@ -318,6 +353,58 @@ export const buildSizeExpression = (
     sizeBy,
     fallbackRadius,
     legendThresholds,
-    stateKey
+    stateKey,
+    useGetExpression
   );
+};
+
+export interface BuildProportionalCircleRadiusParams {
+  sizeBy: { range: [number, number] };
+  scaleMaxValue: number;
+  zeroRadiusPx: number;
+  stateKey: string;
+  useGetExpression: boolean;
+}
+
+/**
+ * Builds a MapLibre `circle-radius` expression tailored for proportional
+ * circles with a visual scale ceiling (`scaleMaxValue`).
+ *
+ * Values ≤ 0 render at `zeroRadiusPx`. Values above `scaleMaxValue` are
+ * clamped and render at `maxRadiusPx`. The expression uses a sqrt transform
+ * so circle area is proportional to the value.
+ *
+ * When `useGetExpression` is true the expression reads from
+ * `['get', stateKey]` (direct GeoJSON property access). Otherwise it reads
+ * from `['feature-state', stateKey]` (the standard feature-state path used
+ * when data comes via `mapData`).
+ */
+export const buildProportionalCircleRadiusExpression = ({
+  sizeBy,
+  scaleMaxValue,
+  zeroRadiusPx,
+  stateKey,
+  useGetExpression,
+}: BuildProportionalCircleRadiusParams): unknown[] => {
+  const [minRadius, maxRadius] = sizeBy.range;
+  const sqrtScaleMax = Math.sqrt(scaleMaxValue);
+
+  const value: unknown[] = useGetExpression
+    ? ['to-number', ['get', stateKey], 0]
+    : ['to-number', ['feature-state', stateKey], 0];
+
+  return [
+    'case',
+    ['<=', value, 0],
+    zeroRadiusPx,
+    [
+      'interpolate',
+      ['linear'],
+      ['sqrt', ['min', value, scaleMaxValue]],
+      0,
+      minRadius,
+      sqrtScaleMax,
+      maxRadius,
+    ],
+  ];
 };

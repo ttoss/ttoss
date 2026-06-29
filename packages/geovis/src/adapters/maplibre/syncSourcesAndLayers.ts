@@ -246,7 +246,8 @@ const upsertLayers = (map: maplibregl.Map, spec: VisualizationSpec): void => {
       layer,
       sourceLayer,
       spec.legends,
-      spec.mapData
+      spec.mapData,
+      spec.scaleMaxValue
     );
     stripUndefinedPaint(desiredLayer);
 
