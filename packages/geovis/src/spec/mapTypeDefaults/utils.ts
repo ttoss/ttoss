@@ -78,6 +78,37 @@ export const computeJenksBreaks = (
   return breaks.slice(1, -1);
 };
 
+/**
+ * Rounds a positive value up to a "nice" cartographic ceiling — the smallest
+ * value of the form `{1, 2, 2.5, 5, 10} × 10ⁿ` that is `>= value`. Used as the
+ * default `scaleMaxValue` for proportional circles so the legend's reference
+ * circles land on readable round numbers (e.g. 487 321 → 500 000) instead of
+ * the raw data maximum.
+ *
+ * Returns `0` for non-positive or non-finite inputs (the caller treats this as
+ * "no usable ceiling" and leaves `scaleMaxValue` unset).
+ *
+ * @param value - The raw data maximum to round up.
+ * @returns A nice ceiling `>= value`, or `0` when `value` is not a positive finite number.
+ * @example
+ * niceCeil(487321); // 500000
+ * niceCeil(1300);   // 2000
+ * niceCeil(95);     // 100
+ */
+const NICE_FRACTIONS = [1, 2, 2.5, 5, 10] as const;
+
+export const niceCeil = (value: number): number => {
+  if (!Number.isFinite(value) || value <= 0) return 0;
+  const exponent = Math.floor(Math.log10(value));
+  const magnitude = 10 ** exponent;
+  const fraction = value / magnitude;
+  const niceFraction =
+    NICE_FRACTIONS.find((candidate) => {
+      return fraction <= candidate;
+    }) ?? 10;
+  return niceFraction * magnitude;
+};
+
 export const pickPaletteColors = (
   palette: readonly string[],
   count: number

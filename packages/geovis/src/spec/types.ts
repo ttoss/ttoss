@@ -89,7 +89,7 @@ export type GeoVisGeometryType =
   | 'symbol'
   | 'heatmap';
 
-export type MapType = 'choropleth' | 'dotDensity';
+export type MapType = 'choropleth' | 'dotDensity' | 'proportionalCircles';
 
 export interface ViewState {
   center?: LngLat;
@@ -328,6 +328,17 @@ export interface VisualizationLayer {
    * Ignored on non-point geometries.
    */
   sizeBy?: SizeBy;
+  /**
+   * GeoJSON feature property name for direct data access without `mapData`.
+   *
+   * When set (and `mapDataId` is absent), the proportional circles expression
+   * reads values directly from `feature.properties[propertyName]` via MapLibre's
+   * `['get', propertyName]` syntax — no feature-state join needed.
+   *
+   * When `mapDataId` is also set, this field is ignored in favour of the
+   * standard feature-state resolution.
+   */
+  propertyName?: string;
 }
 
 /**
@@ -445,6 +456,17 @@ export interface VisualizationSpec {
    * future breaking-change release.
    */
   adapterHints?: unknown;
+  variable: string;
+
+  /**
+   * Visual scale ceiling for proportional symbol rendering.
+   *
+   * Values above `scaleMaxValue` render at the maximum symbol size
+   * (e.g. max circle radius). The tooltip always shows the real feature value.
+   *
+   * When omitted, the adapter computes it from the dataset.
+   */
+  scaleMaxValue?: number;
 }
 
 export type GeovisSpec = VisualizationSpec;
