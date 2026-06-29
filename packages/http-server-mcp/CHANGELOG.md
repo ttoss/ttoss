@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.21.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.20.0...@ttoss/http-server-mcp@0.21.0) (2026-06-28)
+
+### Features
+
+- **http-server-mcp:** args-aware gate seam in createGatedToolRegistrar ([#1109](https://github.com/ttoss/ttoss/issues/1109)) ([e05edab](https://github.com/ttoss/ttoss/commit/e05edabf451ce12516e04f3d096cf58d6fde1644))
+
+# [0.20.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.19.1...@ttoss/http-server-mcp@0.20.0) (2026-06-28)
+
+### Features
+
+- gated MCP tool registrar, consent enrichment, logoUri prop, token primitives ([#1108](https://github.com/ttoss/ttoss/issues/1108)) ([710fdf8](https://github.com/ttoss/ttoss/commit/710fdf86effd3b2a4c6b22bb07187d3cbaf74bd9))
+
+## [0.19.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.19.0...@ttoss/http-server-mcp@0.19.1) (2026-06-27)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp
+
 # [0.19.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.18.1...@ttoss/http-server-mcp@0.19.0) (2026-06-21)
 
 ### Features

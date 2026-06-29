@@ -165,6 +165,84 @@ export interface RefreshTokenStore {
   }) => Promise<void> | void;
 }
 
+/**
+ * A persisted opaque access token, stored by its hash (never the plaintext
+ * value) so a store compromise does not leak usable tokens. The same shape
+ * backs both OAuth access tokens and long-lived personal API keys; mint the
+ * opaque value with `generateApiToken` and persist only its `tokenHash`.
+ */
+export interface StoredAccessToken {
+  /** SHA-256 hash (hex) of the opaque token. Plaintext is never stored. */
+  tokenHash: string;
+  /** The `client_id` the token was issued to. */
+  clientId: string;
+  /** The authenticated end-user subject identifier. */
+  subject: string;
+  /** The scopes granted to the token. */
+  scopes: string[];
+  /**
+   * Unix timestamp (milliseconds) after which the token is invalid, or `null`
+   * for a token that never expires. `null` is an explicit opt-in for personal
+   * API keys; OAuth access tokens should always set a short lifetime.
+   */
+  expiresAt: number | null;
+  /** Unix timestamp (milliseconds) the token was last presented, for auditing. */
+  lastUsedAt?: number;
+  /**
+   * Masked prefix safe to display in listing UIs (e.g. `"oca_3f2a…"`). Set at
+   * issuance from `generateApiToken`'s return value; never recomputable from
+   * the hash alone. Omit for tokens minted without a display prefix.
+   */
+  displayPrefix?: string;
+  /**
+   * Unix timestamp (milliseconds) when the token was created. Set at issuance;
+   * used by listing UIs to show "created on" dates.
+   */
+  createdAt?: number;
+}
+
+/**
+ * App-provided store for opaque access tokens, looked up by hash. The store is
+ * pure persistence — the verification mechanics (expiry, default-deny) live in
+ * `createAccessTokenVerifier`. Back it with DynamoDB, Postgres, in-memory, …
+ *
+ * Storing the hash, not the token, is a contract: a store compromise yields no
+ * usable credentials. Revocation is first-class — `delete` kills one token;
+ * `deleteBySubject` kills every token for a user (offboarding, compromise).
+ */
+export interface AccessTokenStore {
+  /** Persist an access token, upserting by `tokenHash`. */
+  save: (token: StoredAccessToken) => Promise<void> | void;
+  /** Look up an access token by its hash. Return `undefined` if unknown. */
+  get: (
+    tokenHash: string
+  ) => Promise<StoredAccessToken | undefined> | StoredAccessToken | undefined;
+  /** Remove a single access token by its hash (revoke one session/key). */
+  delete: (tokenHash: string) => Promise<void> | void;
+  /**
+   * Remove every access token for a subject. Called to revoke all of a user's
+   * access at once on offboarding or suspected compromise.
+   */
+  deleteBySubject: (subject: string) => Promise<void> | void;
+  /**
+   * Record the time a token was last presented. Optional and fire-and-forget:
+   * implementations MUST NOT block or fail verification on this write, and
+   * SHOULD use a writable client (never a read-only replica).
+   */
+  touchLastUsed?: (args: {
+    tokenHash: string;
+    lastUsedAt: number;
+  }) => Promise<void> | void;
+  /**
+   * Return every token belonging to a subject, for "your authorized
+   * apps / personal API keys" listing UIs. Optional; `createMemoryAccessTokenStore`
+   * implements this.
+   */
+  listBySubject?: (
+    subject: string
+  ) => Promise<StoredAccessToken[]> | StoredAccessToken[];
+}
+
 // ---------------------------------------------------------------------------
 // Hook contracts (app-owned token minting, login/consent, refresh validation)
 // ---------------------------------------------------------------------------

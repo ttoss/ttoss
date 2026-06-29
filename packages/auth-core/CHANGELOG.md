@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.9.0...@ttoss/auth-core@0.10.0) (2026-06-28)
+
+### Features
+
+- gated MCP tool registrar, consent enrichment, logoUri prop, token primitives ([#1108](https://github.com/ttoss/ttoss/issues/1108)) ([710fdf8](https://github.com/ttoss/ttoss/commit/710fdf86effd3b2a4c6b22bb07187d3cbaf74bd9))
+
+# [0.9.0](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.8.0...@ttoss/auth-core@0.9.0) (2026-06-27)
+
+### Features
+
+- **auth-core:** add opaque access-token store and hash-at-rest verifier ([#1107](https://github.com/ttoss/ttoss/issues/1107)) ([df5a37b](https://github.com/ttoss/ttoss/commit/df5a37b0a516268e952d14bf8c27efa5d43e6e99))
+
 # 0.8.0 (2026-06-19)
 
 ### Features

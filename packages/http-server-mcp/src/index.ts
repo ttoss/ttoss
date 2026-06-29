@@ -1,5 +1,3 @@
-import { AsyncLocalStorage } from 'node:async_hooks';
-
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports -- value import required so declaration bundler emits `export { McpServer }` not `export type { McpServer }`
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
@@ -9,6 +7,8 @@ import { Router } from '@ttoss/http-server';
 import { authMiddleware } from '@ttoss/http-server-auth';
 import type Koa from 'koa';
 import { z } from 'zod';
+
+import { getIdentity, requestContextStore } from './context';
 
 type Context = Koa.Context;
 
@@ -87,14 +87,6 @@ const buildVerifyToken = (
     'McpAuthOptions requires either cognitoUserPool or verifyToken'
   );
 };
-
-interface RequestContext {
-  apiBaseUrl?: string;
-  apiHeaders: Record<string, string>;
-  identity?: unknown;
-}
-
-const requestContextStore = new AsyncLocalStorage<RequestContext>();
 
 /**
  * Options for a single `apiCall` request.
@@ -234,17 +226,7 @@ export const apiCall = async (
   return response.text();
 };
 
-/**
- * Returns the verified JWT payload for the current MCP request.
- * Only available inside a tool handler when `auth` is configured on the router.
- *
- * Accepts an optional type parameter to avoid casting at call sites:
- * `getIdentity<{ sub: string; email: string }>()` returns `T | undefined`.
- * Omitting the type parameter keeps the return type as `unknown | undefined`.
- */
-export const getIdentity = <T = unknown>(): T | undefined => {
-  return requestContextStore.getStore()?.identity as T | undefined;
-};
+export { getIdentity } from './context';
 
 /**
  * Asserts that the current request's token contains all required scopes.
@@ -820,4 +802,11 @@ export { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 /**
  * Re-export Zod for request/response schema definitions
  */
+export {
+  createGatedToolRegistrar,
+  type CreateGatedToolRegistrarOptions,
+  type GatedToolDef,
+  type ToolCallContext,
+  type ToolIdentity,
+} from './createGatedToolRegistrar';
 export { z } from 'zod';
