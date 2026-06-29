@@ -123,6 +123,7 @@ Each entry in `spec.layers` describes one rendered layer.
 | `legends`        | `LegendSpec[]`                                                                         |          | Alternative legend definitions exposed as runtime toggles.                                                                                                                                                                                                               |
 | `activeLegendId` | `string`                                                                               |          | Active entry from `legends[]`. Enables choropleth coloring and the hover tooltip.                                                                                                                                                                                        |
 | `mapDataId`      | `string`                                                                               |          | References a `MapData.mapDataId` for per-feature value joining (choropleth / tooltip). When a `MapData` declares `dimension`, the adapter auto-discovers color/size.                                                                                                     |
+| `propertyName`   | `string`                                                                               |          | Reads circle size directly from `feature.properties[propertyName]` via `['get', propertyName]`. Alternative to `mapData` — when both are set, `mapDataId` takes precedence. See [Alternative data source](#alternative-data-source-propertyname).                        |
 | `hoverPaint`     | `{ lineColor?: string; lineWidth?: number }`                                           |          | Outline rendered on the hovered feature via a companion MapLibre line layer driven by `feature-state.hover`.                                                                                                                                                             |
 | `selectedPaint`  | `{ lineColor?: string; lineWidth?: number }`                                           |          | Outline rendered on the selected feature via `feature-state.selected`.                                                                                                                                                                                                   |
 | `clickAnchor`    | `{ iconImage?: string; iconSize?: number; color?: string; offset?: [number, number] }` |          | Spec-driven click marker. Use `iconImage` to render a sprite icon; use `color` for the built-in SVG pin. For a custom HTML element, use `<GeoVisMarker>` instead.                                                                                                        |
@@ -454,6 +455,124 @@ No `layers` or `legends` configuration required — they are derived from the da
 User-provided `layers` and `legends` are preserved and never overridden. Legend
 formatting (`labelFormat`, `subtitle`, `reference`) and custom colors
 (`colorBy.colors`) continue to work as usual.
+
+### `proportionalCircles`
+
+Setting `mapType: 'proportionalCircles'` auto-generates a point layer whose
+`circle-radius` encodes the data magnitude (circle **area** ∝ value, via a
+`sqrt` transform) and a quantitative color legend. Minimal spec:
+
+```tsx
+const spec = {
+  id: 'cities',
+  engine: 'maplibre',
+  mapType: 'proportionalCircles',
+  variable: 'population',
+  sources: [{ id: 'cities', type: 'geojson', data: citiesGeoJSON }],
+  mapData: [
+    {
+      mapDataId: 'population',
+      mapId: 'cities',
+      title: 'Total population',
+      data: [
+        { geometryId: 1, value: 87_000 },
+        { geometryId: 2, value: 143_000 },
+        { geometryId: 3, value: 487_321 },
+      ],
+    },
+  ],
+};
+```
+
+The resolver fills in, with no extra configuration:
+
+- A `point` layer with `sizeBy: { range: [4, 10], transform: 'sqrt' }`.
+- `scaleMaxValue` — the visual size ceiling. When you omit it, the resolver
+  takes the size dataset's maximum and rounds it **up to a nice round number**
+  (`487 321 → 500 000`) so the legend's reference circles use readable values.
+  A value you provide explicitly is always kept.
+- A color legend with a `subtitle` that names the size dimension
+  (e.g. `Circle size = Total population`).
+- Compact reference labels in the size key (`500k` instead of `500,000`).
+  `GeoVisLegend` applies the compact formatter automatically for circle
+  legends; pass `formatValue` to override it.
+
+#### Alternative data source: `propertyName`
+
+Instead of declaring `mapData` entries, you can set `propertyName` on a layer
+to read values directly from GeoJSON feature properties. The resolver
+auto-generates `circle-radius` via `['get', propertyName]` and computes
+`scaleMaxValue` from the inline GeoJSON data:
+
+```tsx
+const spec = {
+  id: 'cities',
+  engine: 'maplibre',
+  mapType: 'proportionalCircles',
+  sources: [
+    {
+      id: 'cities',
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [-46.6, -23.5] },
+            properties: { total: 87_000 },
+          },
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [-43.2, -22.9] },
+            properties: { total: 487_321 },
+          },
+        ],
+      },
+    },
+  ],
+  layers: [
+    {
+      id: 'cities-layer',
+      sourceId: 'cities',
+      geometry: 'point',
+      propertyName: 'total',
+    },
+  ],
+};
+```
+
+When both `propertyName` and `mapDataId` are set on a layer, `mapDataId`
+takes precedence. The `propertyName` path requires inline GeoJSON data (not a
+URL) for `scaleMaxValue` computation — when the source is a URL, the resolver
+skips the default ceiling and the adapter falls back to legend-driven sizing.
+
+#### Color and size are independent
+
+Color and size are resolved from **separate** feature-state keys, so styling
+the color legend never changes circle sizes. For a true bivariate map, declare
+two datasets on the same source with distinct `dimension` and `stateKey` —
+see [Bivariate Maps](#bivariate-maps). The `dimension: 'size'` dataset drives
+the radius; the `dimension: 'color'` dataset drives the fill.
+
+#### Inputs that are invalid or not handled
+
+Proportional circles encode magnitude as area, which only has meaning for
+non-negative quantities. The following inputs are out of scope and will not
+render as intended:
+
+- **Negative values** — clamp to `zeroRadiusPx` (invisible). A circle cannot
+  represent a negative area. Use a diverging choropleth instead.
+- **Mixed negative/positive values** — only the positives are sized; negatives
+  vanish. The result misrepresents the data — split the measure or switch map
+  type.
+- **Non-numeric / `null` values** — coalesced to `0` and rendered invisible
+  (never `NaN`). A dataset that is mostly non-numeric produces an empty size
+  legend.
+- **`sizeBy.range` with `min >= max` or `min <= 0`** — throws at translation
+  time (`sizeBy.range must have min < max and both > 0`). Both radii must be
+  positive and ordered.
+- **`scaleMaxValue <= 0`** — has no usable ceiling; leave it unset and let the
+  resolver compute it from the data.
 
 ### Architecture note
 
