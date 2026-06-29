@@ -1,15 +1,42 @@
 import type { LabelFormatSpec, NormalizationSpec } from '../spec/types';
 
-/** Abbreviates large numbers: 1500 → "1.5k", 2000000 → "2M". */
+/** Compact units, checked from largest to smallest. */
+const COMPACT_UNITS = [
+  { threshold: 1_000_000, divisor: 1_000_000, suffix: 'M' },
+  { threshold: 1_000, divisor: 1_000, suffix: 'k' },
+] as const;
+
+/**
+ * Abbreviates large numbers, attaching a decimal place **only when it carries
+ * information**. The scaled value is rounded to a single decimal; when that
+ * result is a whole number the decimal is dropped, so clean multiples read as
+ * `2M` / `500k` while genuinely fractional values keep precision (`1.5k`,
+ * `62.5k`, `2.5M`). Values below 1000 are returned unchanged.
+ *
+ * @example abbreviateNumber(2_000_000) // "2M"
+ * @example abbreviateNumber(62_500)    // "62.5k"
+ * @example abbreviateNumber(250_000)   // "250k"
+ */
 export const abbreviateNumber = (v: number): string => {
-  const abs = Math.abs(v);
-  if (abs >= 1_000_000) {
-    return `${(v / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
-  }
-  if (abs >= 1_000) {
-    return `${(v / 1_000).toFixed(1).replace(/\.0$/, '')}k`;
+  for (const { threshold, divisor, suffix } of COMPACT_UNITS) {
+    if (Math.abs(v) < threshold) continue;
+    const scaled = Math.round((v / divisor) * 10) / 10;
+    const text = Number.isInteger(scaled) ? String(scaled) : scaled.toFixed(1);
+    return `${text}${suffix}`;
   }
   return String(v);
+};
+
+/**
+ * Public, reusable compact-number formatter (e.g. `1500 → "1.5k"`,
+ * `2_000_000 → "2M"`). It is the exported, stable name for the same
+ * abbreviation behaviour as {@link abbreviateNumber}; consumers should prefer
+ * this alias. Exposed so application code (and stories) can format compact
+ * values without re-implementing the rule. Does NOT change the legend's
+ * default `formatValue` — opt in by passing it explicitly.
+ */
+export const formatCompactNumber = (value: number): string => {
+  return abbreviateNumber(value);
 };
 
 /**
