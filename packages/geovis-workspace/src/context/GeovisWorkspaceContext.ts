@@ -21,6 +21,8 @@ export interface GeovisWorkspaceMenu {
 export interface GeovisWorkspaceLeftSidebar {
   /** Menu groups rendered in the left sidebar. */
   menus: GeovisWorkspaceMenu[];
+  /** Whether the sidebar starts open or closed. Defaults to `'closed'`. */
+  initialState?: 'open' | 'closed';
 }
 
 export interface GeovisWorkspaceLegendItem {
@@ -65,6 +67,8 @@ export interface GeovisWorkspaceRightSidebar {
   title?: string;
   /** Color legend panel: description, class swatches and data sources. */
   legendWithColor?: GeovisWorkspaceLegendWithColor;
+  /** Whether the sidebar starts open or closed. Defaults to `'closed'`. */
+  initialState?: 'open' | 'closed';
 }
 
 export interface GeovisWorkspaceConfig {
