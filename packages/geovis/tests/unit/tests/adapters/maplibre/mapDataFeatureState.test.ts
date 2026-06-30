@@ -83,7 +83,7 @@ describe('applyMapDataToSource — stateKey support', () => {
     ]);
   });
 
-  test('uses stateKey with joinKey when defined', () => {
+  test('with joinKey, sets state directly by geometryId without querySourceFeatures', () => {
     const map = createMockMap();
     const mapData: MapData = {
       mapDataId: 'density-data',
@@ -96,34 +96,33 @@ describe('applyMapDataToSource — stateKey support', () => {
       ],
     };
 
-    // Mock querySourceFeatures to return features with joinKey
-    jest.mocked(map.querySourceFeatures).mockReturnValue([
-      {
-        id: 'feature-1',
-        properties: { cityName: 'São Paulo' },
-      } as maplibregl.MapboxGeoJSONFeature,
-      {
-        id: 'feature-2',
-        properties: { cityName: 'Rio' },
-      } as maplibregl.MapboxGeoJSONFeature,
+    applyMapDataToSource(map, mapData);
+
+    // The adapter promotes `joinKey` to `feature.id`, so the join value is the
+    // id — state is set directly, never resolved via the viewport-bound query.
+    expect(map.querySourceFeatures).not.toHaveBeenCalled();
+
+    const setFeatureStateCalls = jest.mocked(map.setFeatureState).mock.calls;
+    expect(setFeatureStateCalls).toEqual([
+      [{ source: 'cities', id: 'São Paulo' }, { popDensity: 7500 }],
+      [{ source: 'cities', id: 'Rio' }, { popDensity: 6500 }],
     ]);
+  });
+
+  test('coerces numeric-string geometryId to a number id', () => {
+    const map = createMockMap();
+    const mapData: MapData = {
+      mapDataId: 'cozinhas',
+      mapId: 'municipios',
+      joinKey: 'codarea',
+      // 7-digit IBGE codes arrive as strings but should be applied as numbers.
+      data: [{ geometryId: '3550308', value: 12 }],
+    };
 
     applyMapDataToSource(map, mapData);
 
-    const setFeatureStateCalls = jest.mocked(map.setFeatureState).mock.calls;
-
-    expect(setFeatureStateCalls).toHaveLength(2);
-
-    // First call should use stateKey 'popDensity'
-    expect(setFeatureStateCalls[0]).toEqual([
-      { source: 'cities', id: 'feature-1' },
-      { popDensity: 7500 },
-    ]);
-
-    // Second call should also use stateKey 'popDensity'
-    expect(setFeatureStateCalls[1]).toEqual([
-      { source: 'cities', id: 'feature-2' },
-      { popDensity: 6500 },
+    expect(jest.mocked(map.setFeatureState).mock.calls).toEqual([
+      [{ source: 'municipios', id: 3550308 }, { value: 12 }],
     ]);
   });
 });
@@ -189,7 +188,7 @@ describe('removeMapDataFromSource — stateKey support', () => {
     expect(calls[0]).toEqual([{ source: 'cities', id: 'city-1' }, 'value']);
   });
 
-  test('passes stateKey with joinKey path', () => {
+  test('with joinKey, removes state directly by geometryId without querySourceFeatures', () => {
     const map = createMockMap();
     const mapData: MapData = {
       mapDataId: 'density-data',
@@ -199,20 +198,13 @@ describe('removeMapDataFromSource — stateKey support', () => {
       data: [{ geometryId: 'São Paulo', value: 7500 }],
     };
 
-    jest.mocked(map.querySourceFeatures).mockReturnValue([
-      {
-        id: 'feature-1',
-        properties: { cityName: 'São Paulo' },
-      } as maplibregl.MapboxGeoJSONFeature,
-    ]);
-
     removeMapDataFromSource(map, mapData);
 
+    expect(map.querySourceFeatures).not.toHaveBeenCalled();
+
     const calls = jest.mocked(map.removeFeatureState).mock.calls;
-    expect(calls).toHaveLength(1);
-    expect(calls[0]).toEqual([
-      { source: 'cities', id: 'feature-1' },
-      'popDensity',
+    expect(calls).toEqual([
+      [{ source: 'cities', id: 'São Paulo' }, 'popDensity'],
     ]);
   });
 
