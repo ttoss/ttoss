@@ -15,7 +15,7 @@ import {
 
 export const PROPORTIONAL_CIRCLES_DEFAULTS = {
   minRadiusPx: 4,
-  maxRadiusPx: 10,
+  maxRadiusPx: 16,
   zeroRadiusPx: 0,
   circleOpacity: 0.72,
   strokeWidth: 1,
