@@ -17,7 +17,6 @@ const makeSpec = (
     id: 'test',
     engine: 'maplibre',
     mapType: 'proportionalCircles',
-    variable: 'value',
     basemap: {
       style: 'https://demotiles.maplibre.org/style.json',
     },

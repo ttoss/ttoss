@@ -1040,7 +1040,6 @@ describe('GeoVisLegend — proportional circles default formatter', () => {
   const circlesSpec: VisualizationSpec = {
     id: 'circles-spec',
     engine: 'maplibre',
-    variable: 'value',
     view: { center: [0, 0], zoom: 1 },
     scaleMaxValue: 500000,
     sources: [

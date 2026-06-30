@@ -154,6 +154,10 @@ const applyResolved = (
       userLegends.length > 0
         ? mergeLegends(userLegends, resolved.legends)
         : resolved.legends,
+    // Clear mapType so resolveSpecFromMapType is idempotent on already-resolved
+    // specs — the GeoVisProvider + runtime both call it, and this avoids a
+    // duplicate resolveSpecFromMapType on every control change.
+    mapType: undefined,
     // A user-provided scaleMaxValue always wins; otherwise adopt the resolved one.
     scaleMaxValue: spec.scaleMaxValue ?? resolved.scaleMaxValue,
   };

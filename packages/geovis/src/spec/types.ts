@@ -456,7 +456,6 @@ export interface VisualizationSpec {
    * future breaking-change release.
    */
   adapterHints?: unknown;
-  variable: string;
 
   /**
    * Visual scale ceiling for proportional symbol rendering.
