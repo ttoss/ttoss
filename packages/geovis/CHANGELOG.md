@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.1](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.7.0...@ttoss/geovis@0.7.1) (2026-06-30)
+
+**Note:** Version bump only for package @ttoss/geovis
+
 # [0.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.6.0...@ttoss/geovis@0.7.0) (2026-06-26)
 
 ### Features
