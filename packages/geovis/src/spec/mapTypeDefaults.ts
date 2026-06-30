@@ -1,5 +1,10 @@
 import { resolveChoropleth } from './mapTypeDefaults/choropleth';
-import type { LegendSpec, VisualizationSpec } from './types';
+import { resolveDotDensity } from './mapTypeDefaults/dotDensity';
+import type {
+  LegendSpec,
+  VisualizationLayer,
+  VisualizationSpec,
+} from './types';
 
 /** Finds the best matching resolved legend for a user legend. */
 const findMatchingResolvedLegend = (
@@ -13,6 +18,72 @@ const findMatchingResolvedLegend = (
   if (byId) return byId;
   if (resolvedLegends.length === 1) return resolvedLegends[0];
   return resolvedLegends[index];
+};
+
+const matchLayer = (
+  ul: VisualizationLayer,
+  rl: VisualizationLayer
+): boolean => {
+  return ul.sourceId === rl.sourceId && ul.geometry === rl.geometry;
+};
+
+// Keys that should not be overwritten when injecting resolved fields
+const STRUCTURAL_KEYS = new Set<string>([
+  'id',
+  'sourceId',
+  'geometry',
+  'paint',
+]);
+
+/**
+ * Injects missing fields from a resolved layer into a user layer.
+ * - If the user layer lacks `sizeBy`, `mapDataId`, or `activeLegendId`,
+ *   they are filled from the resolved layer.
+ * - If the user layer has a `paint` object, it is merged with the resolved
+ *   layer's paint, with user-provided values taking precedence.
+ *
+ * OBS: This avoids overwriting user-provided values while ensuring that essential
+ * fields from the resolved layer are present.
+ */
+const injectResolvedFields = (
+  match: VisualizationLayer,
+  rl: VisualizationLayer
+): void => {
+  for (const key of Object.keys(rl)) {
+    if (STRUCTURAL_KEYS.has(key)) continue;
+    const k = key as keyof VisualizationLayer;
+    if (rl[k] && !match[k]) {
+      (match as Record<string, unknown>)[k] = rl[k];
+    }
+  }
+  if (rl.paint) {
+    match.paint = { ...rl.paint, ...match.paint };
+  }
+};
+
+/**
+ * Merges auto-generated resolved layers into user-provided layers.
+ * For each resolved layer:
+ * - If a user layer with the same sourceId and geometry exists, inject
+ *   sizeBy/mapDataId/activeLegendId and merge paint.
+ * - Otherwise, append the resolved layer.
+ */
+const mergeResolvedLayers = (
+  userLayers: VisualizationLayer[],
+  resolvedLayers: VisualizationLayer[]
+): VisualizationLayer[] => {
+  const merged = [...userLayers];
+  for (const rl of resolvedLayers) {
+    const match = merged.find((ul) => {
+      return matchLayer(ul, rl);
+    });
+    if (match) {
+      injectResolvedFields(match, rl);
+    } else {
+      merged.push(rl);
+    }
+  }
+  return merged;
 };
 
 /**
@@ -48,10 +119,31 @@ const mergeLegends = (
   });
 };
 
-const findFirstGeoJsonSource = (sources: VisualizationSpec['sources']) => {
-  return sources.find((s) => {
-    return s.type === 'geojson';
-  });
+type ResolvedResult = {
+  layers: VisualizationSpec['layers'];
+  legends: LegendSpec[];
+};
+
+const applyResolved = (
+  spec: VisualizationSpec,
+  resolved: ResolvedResult
+): VisualizationSpec => {
+  const userLayers = spec.layers ?? [];
+  const userLegends = spec.legends ?? [];
+
+  const layers =
+    userLayers.length > 0
+      ? mergeResolvedLayers(userLayers, resolved.layers)
+      : resolved.layers;
+
+  return {
+    ...spec,
+    layers,
+    legends:
+      userLegends.length > 0
+        ? mergeLegends(userLegends, resolved.legends)
+        : resolved.legends,
+  };
 };
 
 /**
@@ -69,27 +161,13 @@ export const resolveSpecFromMapType = (
 ): VisualizationSpec => {
   if (!spec.mapType) return spec;
 
-  const source = findFirstGeoJsonSource(spec.sources);
-  if (!source) return spec;
+  if (spec.mapType === 'dotDensity') {
+    const resolved = resolveDotDensity(spec);
+    return applyResolved(spec, resolved);
+  }
 
-  const firstMapData = spec.mapData?.[0];
-  const userLayers = spec.layers ?? [];
-  const userLegends = spec.legends ?? [];
+  if (spec.mapType !== 'choropleth') return spec;
 
-  if (spec.mapType !== 'choropleth' || !firstMapData) return spec;
-
-  const resolved = resolveChoropleth(
-    spec as Extract<VisualizationSpec, { mapType: 'choropleth' }>,
-    source.id,
-    firstMapData
-  );
-
-  return {
-    ...spec,
-    layers: userLayers.length > 0 ? userLayers : resolved.layers,
-    legends:
-      userLegends.length > 0
-        ? mergeLegends(userLegends, resolved.legends)
-        : resolved.legends,
-  };
+  const resolved = resolveChoropleth(spec);
+  return applyResolved(spec, resolved);
 };

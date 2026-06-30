@@ -1,7 +1,6 @@
 import type {
   CategoricalColorBy,
   LegendSpec,
-  MapData,
   QuantitativeColorBy,
   VisualizationLayer,
   VisualizationSpec,
@@ -10,6 +9,7 @@ import { CATEGORICAL_PALETTE, DEFAULT_SEQUENTIAL_PALETTE } from './palettes';
 import {
   computeJenksBreaks,
   computeNumClasses,
+  findMatchSourceId,
   inspectDataValues,
   pickPaletteColors,
 } from './utils';
@@ -22,20 +22,19 @@ import {
  *
  * Uses raw data values for Jenks thresholds (Path A).
  */
-export const resolveChoropleth = (
-  spec: Extract<VisualizationSpec, { mapType: 'choropleth' }>,
-  sourceId: string,
-  mapDataEntry: MapData
+const buildChoropleth = (
+  spec: VisualizationSpec,
+  sourceId: string
 ): {
   layers: VisualizationLayer[];
   legends: LegendSpec[];
 } => {
+  const mapDataEntry = spec.mapData?.[0];
+  const mapDataId = mapDataEntry?.mapDataId ?? 'unknown';
+
   const { isNumeric, numericValues, categoricalValues } = inspectDataValues(
-    mapDataEntry.data
+    mapDataEntry?.data ?? []
   );
-
-  const mapDataId = mapDataEntry.mapDataId;
-
   let colorBy: QuantitativeColorBy | CategoricalColorBy;
   const legendId = `${mapDataId}-legend`;
 
@@ -68,7 +67,7 @@ export const resolveChoropleth = (
 
   const legend: LegendSpec = {
     id: legendId,
-    title: mapDataEntry.title ?? 'value',
+    title: mapDataEntry?.title ?? 'value',
     colorBy,
   };
 
@@ -93,4 +92,17 @@ export const resolveChoropleth = (
     layers: [fillLayer, outlineLayer],
     legends: [legend],
   };
+};
+
+export const resolveChoropleth = (
+  spec: VisualizationSpec
+): {
+  layers: VisualizationLayer[];
+  legends: LegendSpec[];
+} => {
+  const sourceId = findMatchSourceId(spec);
+  if (sourceId === 'unknown') {
+    return { layers: [], legends: [] };
+  }
+  return buildChoropleth(spec, sourceId);
 };

@@ -455,6 +455,29 @@ User-provided `layers` and `legends` are preserved and never overridden. Legend
 formatting (`labelFormat`, `subtitle`, `reference`) and custom colors
 (`colorBy.colors`) continue to work as usual.
 
+### Customizing paint on `dotDensity` auto-generated layers
+
+When `mapType: 'dotDensity'` is set, the runtime auto-generates a point layer.
+Any paint property (e.g. `circleRadius`) can be overridden by providing a layer
+that matches the auto-generated one by `sourceId` and `geometry`. The remaining
+fields (`mapDataId`, `sizeBy`, etc.) are injected from the resolved layer, so
+only three fields plus your custom `paint` are needed:
+
+```tsx
+layers: [
+  {
+    id: 'points-dots',
+    sourceId: 'points',  // must match the source id used in spec.sources
+    geometry: 'point',
+    paint: { circleRadius: 8 },
+  },
+],
+```
+
+This merges your paint over the defaults (`circleColor`, `circleRadius`,
+`circleStrokeColor`, `circleStrokeWidth`), leaving unmentioned properties at
+their dotDensity defaults.
+
 ### Architecture note
 
 `resolveSpecFromMapType` is called in two places: `GeoVisProvider` (for React
