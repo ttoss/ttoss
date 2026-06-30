@@ -89,7 +89,7 @@ export type GeoVisGeometryType =
   | 'symbol'
   | 'heatmap';
 
-export type MapType = 'choropleth' | 'dotDensity';
+export type MapType = 'choropleth' | 'dotDensity' | 'proportionalCircles';
 
 export interface ViewState {
   center?: LngLat;
