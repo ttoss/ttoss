@@ -106,7 +106,8 @@ const resolveThresholdBreaks = (
     specLegends?.find((item) => {
       return item.id === layer.activeLegendId;
     });
-  if (!legend || legend.colorBy.type !== 'quantitative') return [];
+  if (!legend || !legend.colorBy || legend.colorBy.type !== 'quantitative')
+    return [];
   if (legend.colorBy.scale !== 'threshold') return [];
   return Array.from(
     new Set(
