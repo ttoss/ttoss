@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.7.1...@ttoss/geovis@0.8.0) (2026-06-30)
+
+### Features
+
+- **geovis:** Add dot map type auto-configuration ([#1104](https://github.com/ttoss/ttoss/issues/1104)) ([f1f12d8](https://github.com/ttoss/ttoss/commit/f1f12d8f2d0cac041630f7acca7c5b21e07575de))
+
 ## [0.7.1](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.7.0...@ttoss/geovis@0.7.1) (2026-06-30)
 
 **Note:** Version bump only for package @ttoss/geovis
