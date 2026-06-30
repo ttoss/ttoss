@@ -103,7 +103,16 @@ const DEFAULT_SPEC: VisualizationSpec = {
       data: GEOJSON_DATA,
     },
   ],
-  layers: [],
+  layers: [
+    {
+      id: 'points-dots',
+      sourceId: 'points',
+      geometry: 'point',
+      paint: {
+        circleRadius: 8,
+      },
+    },
+  ],
   mapData: [
     {
       mapDataId: 'events',
