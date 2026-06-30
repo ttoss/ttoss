@@ -366,6 +366,74 @@ createMcpRouter(mcpServer, {
 
 The discovery endpoint (`/.well-known/oauth-protected-resource`) remains publicly accessible even when `aliases` includes `'/'`.
 
+## Gated Tool Registrar
+
+`createGatedToolRegistrar` wraps `server.registerTool` with a consistent authentication and authorization pipeline so you don't repeat the same boilerplate in every handler.
+
+Every registered tool automatically:
+
+1. Resolves the caller's identity (defaults to `getIdentity()` from the request context).
+2. Checks that the caller holds a required OAuth scope — returns an `isError` result (not a throw) when the scope is absent.
+3. Runs global `gates` then per-tool `def.gates` in order; a throwing gate rejects the call. Both receive `ToolCallContext` (identity **and** the validated call args).
+4. Merges `buildContext` output into the handler args.
+5. Wraps `null`/`undefined` results in a configurable "Not found" error result.
+6. Calls `onError` on handler throw before rethrowing, for telemetry. Gate/scope failures do **not** trigger `onError`.
+
+```typescript
+import {
+  createGatedToolRegistrar,
+  getIdentity,
+  McpServer,
+} from '@ttoss/http-server-mcp';
+import { z } from 'zod';
+
+const { register } = createGatedToolRegistrar({
+  server,
+  resolveIdentity: () => {
+    const jwt = getIdentity<{ sub: string; scope: string }>();
+    const scopes = jwt?.scope?.split(' ') ?? [];
+    return { userId: jwt!.sub, scopes };
+  },
+  buildContext: ({ identity }) => ({ tenantId: lookupTenant(identity.userId) }),
+  onError: (err, { handler, identity }) => {
+    logger.error({ err, handler, userId: identity.userId });
+  },
+});
+
+register({
+  name: 'list-campaigns',
+  description: 'List all ad campaigns for the caller.',
+  requiredScope: 'campaigns:read',
+  inputSchema: { limit: z.number().optional() },
+  method: async ({ userId, tenantId, limit }) =>
+    fetchCampaigns(tenantId, limit),
+});
+```
+
+**`resolveIdentity`** is called once per invocation. Omit it to use the default `getIdentity()` from the MCP request context.
+
+**`gates`** (global and per-tool) are async functions that receive a `ToolCallContext` — both the resolved identity and the validated call args — and throw to reject. The full context lets gates vary their predicate based on what the caller is asking for, not just who they are.
+
+```typescript
+register({
+  name: 'activate-ad-account',
+  description: 'Activate or deactivate an ad account.',
+  requiredScope: 'accounts:write',
+  inputSchema: { accountId: z.number(), isActive: z.boolean() },
+  // arg-conditional gate: activating requires more checks than deactivating
+  gates: [
+    ({ args }) =>
+      args.isActive
+        ? checkSubscriptionGates(['mustNotExceedMaxActive', 'mustHaveBudget'])
+        : checkSubscriptionGates(['mustIncludeService']),
+  ],
+  method: async ({ userId, accountId, isActive }) =>
+    toggleAdAccount(userId, accountId, isActive),
+});
+```
+
+**`buildContext`** injects request-scoped values (DB clients, tenant IDs) into every handler call without threading them through each individual tool. It receives the full `ToolCallContext` so context can vary by identity or by call args.
+
 ## Issuing tokens for MCP clients
 
 The `auth` option above covers the **resource-server** half of MCP authorization — it verifies tokens issued by an external authorization server (Cognito, Auth0, …). To make your own first-party server _issue_ the tokens an MCP client runs the full OAuth flow against, add the [`@ttoss/http-server-auth`](https://ttoss.dev/docs/modules/packages/http-server-auth) plugin's `oauthServer()` and pair it with `createMcpRouter({ auth: { verifyToken } })` so one deployment both issues and verifies tokens. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline.
@@ -445,6 +513,37 @@ Returns the `WWW-Authenticate` header value for a 401 response, formatted per th
 - `args.resource` (`string`) — The protected resource URL (trailing slash is stripped automatically)
 
 **Returns:** `string` — The full `WWW-Authenticate` header value
+
+### `createGatedToolRegistrar(options)`
+
+Factory that returns a `register` helper for tools that require authentication and a specific OAuth scope.
+
+**Parameters (`options`):**
+
+- `server` (`McpServer`) — The MCP server to register tools on.
+- `resolveIdentity` (`() => ToolIdentity`, optional) — Called once per invocation to resolve `{ userId, scopes? }`. Defaults to `getIdentity()` from the request context.
+- `gates` (`Array<(ctx: ToolCallContext) => void | Promise<void>>`, optional) — Global guards run after the scope check, in order, before any per-tool gates. Each receives `{ identity, args, handler }`. Throw to reject the call.
+- `enforceScope` (`boolean`, optional, default `true`) — When `true`, checks `def.requiredScope` against `identity.scopes` and returns an `isError` result on mismatch. Set to `false` when all authorization is handled by `gates`.
+- `buildContext` (`(ctx: ToolCallContext) => Record<string, unknown>`, optional) — Produces extra key-value pairs merged into every handler's args. Receives the full `ToolCallContext` so context can vary by identity or by call args.
+- `onError` (`(error, ctx: ToolCallContext) => void | Promise<void>`, optional) — Called when the handler throws, before the error is rethrown. Gate/scope failures do **not** trigger this hook.
+- `notFoundMessage` (`string`, optional, default `"Not found"`) — `isError` message returned when the handler resolves to `null`/`undefined`.
+
+**Returns:** `{ register: (def: GatedToolDef) => void }`
+
+The `GatedToolDef` passed to `register` has:
+
+- `name` — Tool name.
+- `description` — Human-readable description.
+- `requiredScope` — Single scope that must appear in `identity.scopes`.
+- `inputSchema` — Zod field map or `ZodObject`, forwarded to `server.registerTool`.
+- `gates` (`Array<(ctx: ToolCallContext) => void | Promise<void>>`, optional) — Per-tool guards appended after the global `gates`. Receive the full `ToolCallContext` enabling arg-conditional authorization.
+- `method` — Async handler. Receives merged call args + `buildContext` output.
+
+**`ToolCallContext`** is the object passed to gates, `buildContext`, and `onError`:
+
+- `identity` (`ToolIdentity`) — The resolved caller identity (`{ userId, scopes? }`).
+- `args` (`Record<string, unknown>`) — The validated tool input (post SDK parse).
+- `handler` (`string`) — The tool name, for error attribution.
 
 ### `registerToolFromSchema(server, params)`
 

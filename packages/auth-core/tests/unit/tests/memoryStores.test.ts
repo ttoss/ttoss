@@ -1,12 +1,14 @@
 import { createHash } from 'node:crypto';
 
 import {
+  createMemoryAccessTokenStore,
   createMemoryAuthCodeStore,
   createMemoryClientStore,
   createMemoryRefreshTokenStore,
   createOAuthHandlers,
   createRefreshRotation,
   type OAuthClient,
+  type StoredAccessToken,
 } from '../../../src/index';
 
 const base64Url = (buffer: Buffer): string => {
@@ -87,6 +89,110 @@ describe('createMemoryRefreshTokenStore', () => {
     expect(await store.get('h2')).toBeUndefined();
     // A different owner is untouched.
     expect(await store.get('h3')).toBeTruthy();
+  });
+});
+
+describe('createMemoryAccessTokenStore', () => {
+  const make = (tokenHash: string, subject: string): StoredAccessToken => {
+    return {
+      tokenHash,
+      clientId: 'public-client',
+      subject,
+      scopes: ['read'],
+      expiresAt: Date.now() + 1000,
+    };
+  };
+
+  test('saves, reads, and deletes a single token by hash', async () => {
+    const store = createMemoryAccessTokenStore();
+    await store.save(make('h1', 'user-1'));
+    expect(await store.get('h1')).toBeTruthy();
+    await store.delete('h1');
+    expect(await store.get('h1')).toBeUndefined();
+  });
+
+  test('deleteBySubject revokes every token for a user, leaving others intact', async () => {
+    const store = createMemoryAccessTokenStore();
+    await store.save(make('h1', 'user-1'));
+    await store.save(make('h2', 'user-1'));
+    await store.save(make('h3', 'user-2'));
+
+    await store.deleteBySubject('user-1');
+
+    expect(await store.get('h1')).toBeUndefined();
+    expect(await store.get('h2')).toBeUndefined();
+    expect(await store.get('h3')).toBeTruthy();
+  });
+
+  test('touchLastUsed records usage and no-ops on an unknown token', async () => {
+    const store = createMemoryAccessTokenStore();
+    await store.save(make('h1', 'user-1'));
+
+    await store.touchLastUsed!({ tokenHash: 'h1', lastUsedAt: 12345 });
+    expect((await store.get('h1'))?.lastUsedAt).toBe(12345);
+
+    // Unknown token: silently ignored, never throws or creates a record.
+    await store.touchLastUsed!({ tokenHash: 'missing', lastUsedAt: 1 });
+    expect(await store.get('missing')).toBeUndefined();
+  });
+
+  test('save round-trips displayPrefix and createdAt; both optional', async () => {
+    const store = createMemoryAccessTokenStore();
+    const withExtras: StoredAccessToken = {
+      ...make('h1', 'user-1'),
+      displayPrefix: 'oca_3f2a',
+      createdAt: 1_700_000_000_000,
+    };
+    await store.save(withExtras);
+    const loaded = await store.get('h1');
+    expect(loaded?.displayPrefix).toBe('oca_3f2a');
+    expect(loaded?.createdAt).toBe(1_700_000_000_000);
+
+    // Token without optional fields still saves cleanly.
+    await store.save(make('h2', 'user-1'));
+    const plain = await store.get('h2');
+    expect(plain?.displayPrefix).toBeUndefined();
+    expect(plain?.createdAt).toBeUndefined();
+  });
+
+  test("listBySubject returns only that subject's tokens", async () => {
+    const store = createMemoryAccessTokenStore();
+    await store.save(make('h1', 'user-1'));
+    await store.save(make('h2', 'user-1'));
+    await store.save(make('h3', 'user-2'));
+
+    const user1Tokens = await store.listBySubject!('user-1');
+    expect(user1Tokens).toHaveLength(2);
+    expect(
+      user1Tokens
+        .map((t) => {
+          return t.tokenHash;
+        })
+        .sort()
+    ).toEqual(['h1', 'h2']);
+
+    const user2Tokens = await store.listBySubject!('user-2');
+    expect(user2Tokens).toHaveLength(1);
+    expect(user2Tokens[0].tokenHash).toBe('h3');
+  });
+
+  test('listBySubject returns empty array for unknown subject', async () => {
+    const store = createMemoryAccessTokenStore();
+    await store.save(make('h1', 'user-1'));
+
+    const result = await store.listBySubject!('nobody');
+    expect(result).toEqual([]);
+  });
+
+  test('listBySubject isolates subjects — deleting one subject does not affect another', async () => {
+    const store = createMemoryAccessTokenStore();
+    await store.save(make('h1', 'user-1'));
+    await store.save(make('h2', 'user-2'));
+
+    await store.deleteBySubject('user-1');
+
+    expect(await store.listBySubject!('user-1')).toHaveLength(0);
+    expect(await store.listBySubject!('user-2')).toHaveLength(1);
   });
 });
 

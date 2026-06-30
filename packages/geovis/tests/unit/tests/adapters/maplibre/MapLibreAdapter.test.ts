@@ -981,23 +981,9 @@ describe('mapData — feature-state application', () => {
     expect(map.setFeatureState).not.toHaveBeenCalled();
   });
 
-  // 3.7 — joinKey: applies setFeatureState using feature.id resolved via querySourceFeatures
-  test('joinKey: applies setFeatureState using resolved feature.id', () => {
+  // 3.7 — joinKey: applies setFeatureState directly by geometryId (promoted to feature.id)
+  test('joinKey: applies setFeatureState directly by geometryId', () => {
     const { map, fire } = makeMapWithEvents();
-    jest.mocked(map.querySourceFeatures).mockReturnValue([
-      {
-        id: 42,
-        type: 'Feature',
-        geometry: { type: 'Point', coordinates: [0, 0] },
-        properties: { name: 'BR' },
-      },
-      {
-        id: 99,
-        type: 'Feature',
-        geometry: { type: 'Point', coordinates: [1, 1] },
-        properties: { name: 'AR' },
-      },
-    ] as ReturnType<typeof maplibregl.Map.prototype.querySourceFeatures>);
     jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
       return map as never;
     });
@@ -1020,33 +1006,22 @@ describe('mapData — feature-state application', () => {
 
     fire('load');
 
+    // `joinKey` is promoted to `feature.id`, so the join value is the id —
+    // no viewport-bound resolution.
+    expect(map.querySourceFeatures).not.toHaveBeenCalled();
     expect(map.setFeatureState).toHaveBeenCalledWith(
-      { source: 'states', id: 42 },
+      { source: 'states', id: 'BR' },
       { value: 211 }
     );
     expect(map.setFeatureState).toHaveBeenCalledWith(
-      { source: 'states', id: 99 },
+      { source: 'states', id: 'AR' },
       { value: 45 }
     );
   });
 
-  // 3.7b — joinKey: matches mixed property value types (number/string)
-  test('joinKey: resolves feature.id when feature property and geometryId use mixed primitive types', () => {
+  // 3.7b — joinKey: numeric-string geometryId is coerced to a number id
+  test('joinKey: coerces numeric-string geometryId to a number id', () => {
     const { map, fire } = makeMapWithEvents();
-    jest.mocked(map.querySourceFeatures).mockReturnValue([
-      {
-        id: 67,
-        type: 'Feature',
-        geometry: { type: 'Point', coordinates: [0, 0] },
-        properties: { district_code: 67 },
-      },
-      {
-        id: 88,
-        type: 'Feature',
-        geometry: { type: 'Point', coordinates: [1, 1] },
-        properties: { district_code: '88' },
-      },
-    ] as ReturnType<typeof maplibregl.Map.prototype.querySourceFeatures>);
     jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
       return map as never;
     });
@@ -1148,17 +1123,9 @@ describe('mapData — feature-state application', () => {
     );
   });
 
-  // 3.8 — joinKey: granular replace resolves feature.id via querySourceFeatures
-  test('joinKey: granular replace patch resolves feature.id and calls setFeatureState', () => {
+  // 3.8 — joinKey: granular replace applies directly by geometryId
+  test('joinKey: granular replace patch applies directly by geometryId', () => {
     const { map, fire } = makeMapWithEvents();
-    jest.mocked(map.querySourceFeatures).mockReturnValue([
-      {
-        id: 42,
-        type: 'Feature',
-        geometry: { type: 'Point', coordinates: [0, 0] },
-        properties: { name: 'BR' },
-      },
-    ] as ReturnType<typeof maplibregl.Map.prototype.querySourceFeatures>);
     jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
       return map as never;
     });
@@ -1185,14 +1152,15 @@ describe('mapData — feature-state application', () => {
       value: 999,
     });
 
+    expect(map.querySourceFeatures).not.toHaveBeenCalled();
     expect(map.setFeatureState).toHaveBeenCalledWith(
-      { source: 'states', id: 42 },
+      { source: 'states', id: 'BR' },
       { value: 999 }
     );
   });
 
-  // 3.9 — joinKey: granular replace is a no-op when source is not loaded
-  test('joinKey: granular replace is a no-op when source is not loaded', () => {
+  // 3.9 — joinKey: granular replace no longer depends on the source being loaded
+  test('joinKey: granular replace applies even when source is not loaded', () => {
     const { map, fire } = makeMapWithEvents();
     jest.mocked(map.isSourceLoaded).mockReturnValue(false);
     jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
@@ -1221,7 +1189,12 @@ describe('mapData — feature-state application', () => {
       value: 999,
     });
 
-    expect(map.setFeatureState).not.toHaveBeenCalled();
+    // Feature state is keyed by id (no querySourceFeatures), so it applies
+    // lazily regardless of load state — MapLibre paints it when the tile loads.
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'states', id: 'BR' },
+      { value: 999 }
+    );
   });
 
   // 3.10 — pending listener is cancelled on op:remove before source loads

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.37.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.36.1...@docs/storybook@3.37.0) (2026-06-30)
+
+### Features
+
+- **geovis:** Add dot map type auto-configuration ([#1104](https://github.com/ttoss/ttoss/issues/1104)) ([f1f12d8](https://github.com/ttoss/ttoss/commit/f1f12d8f2d0cac041630f7acca7c5b21e07575de))
+
+## [3.36.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.36.0...@docs/storybook@3.36.1) (2026-06-30)
+
+**Note:** Version bump only for package @docs/storybook
+
+# [3.36.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.35.0...@docs/storybook@3.36.0) (2026-06-28)
+
+### Features
+
+- gated MCP tool registrar, consent enrichment, logoUri prop, token primitives ([#1108](https://github.com/ttoss/ttoss/issues/1108)) ([710fdf8](https://github.com/ttoss/ttoss/commit/710fdf86effd3b2a4c6b22bb07187d3cbaf74bd9))
+
 # [3.35.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.34.0...@docs/storybook@3.35.0) (2026-06-26)
 
 ### Features

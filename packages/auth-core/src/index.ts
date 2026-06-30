@@ -4,6 +4,11 @@ export {
   hashApiToken,
   verifyApiToken,
 } from './apiToken';
+export {
+  type AccessTokenVerifierOptions,
+  createAccessTokenVerifier,
+  type VerifiedAccessToken,
+} from './createAccessTokenVerifier';
 export { decode, encode } from './encodeDecode';
 export {
   decryptValue,
@@ -13,6 +18,7 @@ export {
 export { comparePassword, hashPassword, needsRehash } from './hash';
 export { type JwtPayload, signJwt, verifyJwt } from './jwt';
 export {
+  createMemoryAccessTokenStore,
   createMemoryAuthCodeStore,
   createMemoryClientStore,
   createMemoryRefreshTokenStore,
@@ -32,6 +38,7 @@ export {
   verifyPkceChallenge,
 } from './oauth';
 export {
+  type AccessTokenStore,
   type AuthCodeStore,
   type AuthorizeRequest,
   type ClientStore,
@@ -50,6 +57,7 @@ export {
   type OnRefreshTokenArgs,
   type OnRefreshTokenResult,
   type RefreshTokenStore,
+  type StoredAccessToken,
   type StoredAuthorizationCode,
   type StoredRefreshToken,
 } from './oauthServer';
@@ -65,6 +73,7 @@ export {
   type CreatePostgresConsentStoreOptions,
 } from './postgresConsentStore';
 export {
+  type ClientDisplay,
   type ConsentGrant,
   type ConsentGrantStore,
   createRedirectConsentOnAuthorize,

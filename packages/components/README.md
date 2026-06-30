@@ -23,6 +23,7 @@ import { OAuthConsent } from '@ttoss/components';
 
 <OAuthConsent
   clientName="My App"
+  logoUri={searchParams.get('logo_uri') ?? undefined}
   scopes={[
     {
       key: 'openid',

@@ -18,7 +18,7 @@
     },
     "mapType": {
       "type": "string",
-      "enum": ["choropleth"]
+      "enum": ["choropleth", "dotDensity"]
     },
     "view": {
       "type": "object",

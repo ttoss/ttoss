@@ -71,6 +71,12 @@ export type OAuthConsentProps = {
    * image fails to load. When omitted, no logo is shown (backward-compatible).
    */
   clientLogoUrl?: string;
+  /**
+   * Logo URL sourced directly from the OAuth `logo_uri` parameter appended by
+   * the consent-redirect flow. Takes precedence over `clientLogoUrl` when both
+   * are provided; otherwise the two are interchangeable.
+   */
+  logoUri?: string;
   /** Scope tree to render. */
   scopes: ConsentScope[];
   /**
@@ -324,6 +330,7 @@ const ConsentCard = ({ children }: { children: React.ReactNode }) => {
 export const OAuthConsent = ({
   clientName,
   clientLogoUrl,
+  logoUri,
   scopes,
   onAuthorize,
   onAuthorized,
@@ -332,6 +339,7 @@ export const OAuthConsent = ({
   isValidRequest = true,
   labels,
 }: OAuthConsentProps) => {
+  const resolvedLogoUrl = logoUri ?? clientLogoUrl;
   const [selected, setSelected] = React.useState<Set<string>>(() => {
     return initSelected(scopes);
   });
@@ -396,9 +404,9 @@ export const OAuthConsent = ({
 
   return (
     <ConsentCard>
-      {clientLogoUrl && (
+      {resolvedLogoUrl && (
         <Box sx={{ marginBottom: 4 }}>
-          <ClientLogo src={clientLogoUrl} clientName={clientName} />
+          <ClientLogo src={resolvedLogoUrl} clientName={clientName} />
         </Box>
       )}
 

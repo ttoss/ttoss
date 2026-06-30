@@ -60,17 +60,32 @@ const resolveSymbolVisibility = (
  * - `labels === undefined` leaves the style untouched, preserving the basemap's
  *   native label visibility.
  *
- * Safe to call repeatedly and on every sync; it is a no-op until the style is
- * loaded. Re-running it after layer syncs and basemap/style changes keeps the
- * declared `labels` state in effect (e.g. after `upsertLayers` rewrites a user
- * symbol layer's visibility, or after a `setStyle` reload).
+ * Safe to call repeatedly and on every sync. When the style is still loading
+ * (e.g. right after large GeoJSON sources are added on initial mount), setting
+ * symbol visibility would be a no-op, so this re-schedules itself on the map's
+ * next `idle` event — which fires once sources/tiles finish loading and the
+ * render settles — guaranteeing the declared `labels` state always lands even
+ * though the one-shot `load` handler never retries. Re-running it after layer
+ * syncs and basemap/style changes keeps the declared `labels` state in effect
+ * (e.g. after `upsertLayers` rewrites a user symbol layer's visibility, or
+ * after a `setStyle` reload).
  */
 export const applyBasemapLabelsVisibility = (
   map: maplibregl.Map,
   spec: VisualizationSpec
 ): void => {
   const labels = spec.basemap?.labels;
-  if (labels === undefined || !map.isStyleLoaded()) {
+  if (labels === undefined) {
+    return;
+  }
+
+  if (!map.isStyleLoaded()) {
+    // `once` auto-removes after firing, and `idle` only fires once the style is
+    // loaded, so the re-entrant call below takes the normal path — no listener
+    // pile-up and no loop.
+    map.once('idle', () => {
+      applyBasemapLabelsVisibility(map, spec);
+    });
     return;
   }
 

@@ -136,6 +136,11 @@ const mountView = (
   map.on('load', () => {
     const viewState = views.get(viewId);
     if (!viewState) return;
+    // Hide basemap labels while the style is loaded and before adding the user's
+    // sources (which flip the style back to "loading"). This applies on the very
+    // first frame, with no flash of labels. The trailing call re-applies once the
+    // sources settle (via `idle`) to also cover any user symbol layers.
+    applyBasemapLabelsVisibility(map, viewState.spec);
     syncSourcesAndLayers(map, viewState.spec, null);
     reapplyAllMapData(map, viewState.spec);
     applyBasemapLabelsVisibility(map, viewState.spec);
