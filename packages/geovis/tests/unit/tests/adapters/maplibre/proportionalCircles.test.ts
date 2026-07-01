@@ -372,6 +372,36 @@ describe('toMaplibreLayer — mapData without propertyName', () => {
     expect(colorJson).toContain('gdpClass');
     expect(colorJson).not.toContain('population');
   });
+
+  test('a user-provided paint.circleColor overrides the legend-driven color-by-value expression', () => {
+    const layers = resolveAndTranslate(
+      makeSpec({
+        scaleMaxValue: 500000,
+        mapData: [
+          {
+            mapDataId: 'popData',
+            mapId: 'points',
+            dimension: 'size',
+            data: [
+              { geometryId: 'a', value: 100 },
+              { geometryId: 'b', value: 500000 },
+            ],
+          },
+        ],
+        layers: [
+          {
+            id: 'my-custom-circles',
+            sourceId: 'points',
+            geometry: 'point',
+            paint: { circleColor: '#ff0000' },
+          },
+        ],
+      })
+    );
+
+    const circle = findCircleLayer(layers);
+    expect(circle.paint['circle-color']).toBe('#ff0000');
+  });
 });
 
 // ═══════════════════════════════════════════════════════════════════════════

@@ -3,7 +3,7 @@ import {
   PROPORTIONAL_CIRCLES_DEFAULTS,
   resolveProportionalCircles,
 } from 'src/spec/mapTypeDefaults/proportionalCircles';
-import type { VisualizationSpec } from 'src/spec/types';
+import type { MapData, VisualizationSpec } from 'src/spec/types';
 
 const makeSpec = (
   overrides: Partial<VisualizationSpec> & {
@@ -674,5 +674,294 @@ describe('resolveProportionalCircles — two datasets, separate dimensions', () 
     });
     expect(circleLayers).toHaveLength(1);
     expect(resolved.mapData).toHaveLength(2);
+  });
+});
+
+describe('resolveProportionalCircles — legendEnabled', () => {
+  const spec = makeSpec({
+    mapData: [
+      {
+        mapDataId: 'popData',
+        mapId: 'points',
+        dimension: 'size',
+        data: [
+          { geometryId: 'a', value: 100 },
+          { geometryId: 'b', value: 200 },
+        ],
+      },
+    ],
+  });
+
+  test('legendEnabled: false suppresses the auto-generated legend', () => {
+    const resolved = resolveProportionalCircles({
+      ...spec,
+      legendEnabled: false,
+    });
+    expect(resolved.legends).toEqual([]);
+  });
+
+  test('legendEnabled omitted still generates the legend (no regression)', () => {
+    const resolved = resolveProportionalCircles(spec);
+    expect(resolved.legends.length).toBeGreaterThan(0);
+  });
+
+  test('legendEnabled: true still generates the legend', () => {
+    const resolved = resolveProportionalCircles({
+      ...spec,
+      legendEnabled: true,
+    });
+    expect(resolved.legends.length).toBeGreaterThan(0);
+  });
+
+  test('legendEnabled: false via resolveSpecFromMapType returns no legends', () => {
+    const resolved = resolveSpecFromMapType({ ...spec, legendEnabled: false });
+    expect(resolved.legends).toEqual([]);
+  });
+
+  test('legendEnabled: false preserves custom legends untouched', () => {
+    const resolved = resolveSpecFromMapType({
+      ...spec,
+      legendEnabled: false,
+      legends: [{ id: 'custom-legend', title: 'My custom legend' }],
+    });
+    expect(resolved.legends).toEqual([
+      { id: 'custom-legend', title: 'My custom legend' },
+    ]);
+  });
+
+  test('legendEnabled: true appends the auto-generated legend alongside an unrelated custom legend, without merging into it', () => {
+    const resolved = resolveSpecFromMapType({
+      ...spec,
+      legendEnabled: true,
+      legends: [{ id: 'custom-legend', title: 'My custom legend' }],
+    });
+    expect(resolved.legends).toEqual([
+      { id: 'custom-legend', title: 'My custom legend' },
+      expect.objectContaining({
+        id: 'popData-legend',
+        title: 'Circle size = value',
+      }),
+    ]);
+  });
+
+  test('legendEnabled: true merges a user legend that shares the resolved legend id, keeping the user title', () => {
+    const resolved = resolveSpecFromMapType({
+      ...spec,
+      legendEnabled: true,
+      legends: [{ id: 'popData-legend', title: 'My own size legend' }],
+    });
+    expect(resolved.legends).toEqual([
+      expect.objectContaining({
+        id: 'popData-legend',
+        title: 'My own size legend',
+        colorBy: expect.objectContaining({ type: 'quantitative' }),
+      }),
+    ]);
+  });
+
+  test('legendEnabled: true merges quantitative colorBy overrides when the user legend shares the resolved id', () => {
+    const resolved = resolveSpecFromMapType({
+      ...spec,
+      legendEnabled: true,
+      legends: [
+        {
+          id: 'popData-legend',
+          title: 'My own size legend',
+          colorBy: {
+            type: 'quantitative',
+            property: 'value',
+            scale: 'threshold',
+            thresholds: [],
+            colors: ['#000000'],
+            defaultColor: '#000000',
+          },
+        },
+      ],
+    });
+    const legend = resolved.legends![0];
+    expect(legend.colorBy).toMatchObject({ colors: ['#000000'] });
+  });
+
+  test('legendEnabled: false still attaches the colorBy legend to the point layer so color-by-value rendering keeps working', () => {
+    const resolved = resolveSpecFromMapType({ ...spec, legendEnabled: false });
+    const pointLayer = resolved.layers.find((l) => {
+      return l.geometry === 'point';
+    });
+    expect(pointLayer!.activeLegendId).toBeDefined();
+    const attachedLegend = pointLayer!.legends?.find((l) => {
+      return l.id === pointLayer!.activeLegendId;
+    });
+    expect(attachedLegend?.colorBy).toBeDefined();
+  });
+
+  test('legendEnabled: false does not mutate the user-provided layer object, so a later legendEnabled: true resolution starts clean', () => {
+    const userLayer = {
+      id: 'points-layer',
+      sourceId: 'points',
+      geometry: 'point' as const,
+      activeLegendId: 'custom',
+    };
+    const specWithLayer = {
+      ...spec,
+      legends: [{ id: 'custom', title: 'Custom' }],
+      layers: [userLayer],
+    };
+
+    resolveSpecFromMapType({ ...specWithLayer, legendEnabled: false });
+    expect(userLayer).toEqual({
+      id: 'points-layer',
+      sourceId: 'points',
+      geometry: 'point',
+      activeLegendId: 'custom',
+    });
+
+    const resolvedAgain = resolveSpecFromMapType({
+      ...specWithLayer,
+      legendEnabled: true,
+    });
+    const pointLayer = resolvedAgain.layers.find((l) => {
+      return l.geometry === 'point';
+    });
+    expect(pointLayer!.legends).toBeUndefined();
+  });
+});
+
+describe('resolveProportionalCircles — user-provided paint override', () => {
+  test('a spec.layers entry matching sourceId + geometry overrides circle paint', () => {
+    const resolved = resolveSpecFromMapType(
+      makeSpec({
+        scaleMaxValue: 500000,
+        mapData: [
+          {
+            mapDataId: 'popData',
+            mapId: 'points',
+            dimension: 'size',
+            data: [{ geometryId: 'a', value: 100 }],
+          },
+        ],
+        layers: [
+          {
+            id: 'my-custom-circles',
+            sourceId: 'points',
+            geometry: 'point',
+            paint: { circleColor: '#2563eb', circleOpacity: 0.5 },
+          },
+        ],
+      })
+    );
+
+    const pointLayer = resolved.layers.find((l) => {
+      return l.geometry === 'point';
+    });
+    expect(pointLayer!.paint!.circleColor).toBe('#2563eb');
+    expect(pointLayer!.paint!.circleOpacity).toBe(0.5);
+    // Non-overridden defaults are preserved by the merge
+    expect(pointLayer!.paint!.circleStrokeWidth).toBe(
+      PROPORTIONAL_CIRCLES_DEFAULTS.strokeWidth
+    );
+  });
+});
+
+describe('resolveProportionalCircles — scale ceiling edge cases', () => {
+  test('scaleMaxValue is left undefined when the size dataset is all zero', () => {
+    const resolved = resolveSpecFromMapType(
+      makeSpec({
+        mapData: [
+          {
+            mapDataId: 'popData',
+            mapId: 'points',
+            dimension: 'size',
+            data: [
+              { geometryId: 'a', value: 0 },
+              { geometryId: 'b', value: 0 },
+            ],
+          },
+        ],
+      })
+    );
+    expect(resolved.scaleMaxValue).toBeUndefined();
+  });
+
+  test('scaleMaxValue is left undefined when the size dataset is entirely negative', () => {
+    const resolved = resolveSpecFromMapType(
+      makeSpec({
+        mapData: [
+          {
+            mapDataId: 'popData',
+            mapId: 'points',
+            dimension: 'size',
+            data: [
+              { geometryId: 'a', value: -10 },
+              { geometryId: 'b', value: -5 },
+            ],
+          },
+        ],
+      })
+    );
+    expect(resolved.scaleMaxValue).toBeUndefined();
+  });
+
+  test('mapData entry with no `data` array (e.g. malformed external JSON) is treated as having no size values', () => {
+    const malformedMapData = [
+      { mapDataId: 'popData', mapId: 'points', dimension: 'size' },
+    ] as unknown as MapData[];
+    const resolved = resolveSpecFromMapType(
+      makeSpec({ mapData: malformedMapData })
+    );
+    expect(resolved.scaleMaxValue).toBeUndefined();
+  });
+
+  test('a dimension-less mapData entry with no `data` array is not mistaken for a numeric size dataset', () => {
+    const malformedMapData = [
+      { mapDataId: 'popData', mapId: 'points' },
+    ] as unknown as MapData[];
+    const resolved = resolveSpecFromMapType(
+      makeSpec({ mapData: malformedMapData })
+    );
+    expect(resolved.scaleMaxValue).toBeUndefined();
+  });
+});
+
+describe('resolveProportionalCircles — propertyName with a missing feature property', () => {
+  test('falls back to 0 for features missing the propertyName key, still computing scaleMaxValue', () => {
+    const centroidFeatures = {
+      type: 'FeatureCollection' as const,
+      features: [
+        {
+          type: 'Feature' as const,
+          geometry: { type: 'Point' as const, coordinates: [0, 0] },
+          properties: {},
+          id: 'a',
+        },
+        {
+          type: 'Feature' as const,
+          geometry: { type: 'Point' as const, coordinates: [1, 1] },
+          properties: { total: 250000 },
+          id: 'b',
+        },
+      ],
+    };
+
+    const resolved = resolveSpecFromMapType(
+      makeSpec({
+        sources: [
+          {
+            id: 'points',
+            type: 'geojson',
+            data: centroidFeatures,
+          },
+        ],
+        layers: [
+          {
+            id: 'points-layer',
+            sourceId: 'points',
+            geometry: 'point',
+            propertyName: 'total',
+          },
+        ],
+      })
+    );
+
+    expect(resolved.scaleMaxValue).toBe(250000);
   });
 });

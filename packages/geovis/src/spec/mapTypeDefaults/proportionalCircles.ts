@@ -15,6 +15,12 @@ import {
   pickPaletteColors,
 } from './utils';
 
+/**
+ * Default paint values for proportionalCircles. To override, add a layer to
+ * `spec.layers` with the same `sourceId` and `geometry: 'point'` — its `paint`
+ * is merged over these defaults by `injectResolvedFields`/`mergeResolvedLayers`
+ * in `mapTypeDefaults.ts`.
+ */
 export const PROPORTIONAL_CIRCLES_DEFAULTS = {
   minRadiusPx: 4,
   maxRadiusPx: 16,
@@ -23,6 +29,19 @@ export const PROPORTIONAL_CIRCLES_DEFAULTS = {
   strokeWidth: 1,
   strokeOpacity: 0.9,
 } as const;
+
+/**
+ * Deterministic id of the auto-generated proportionalCircles legend
+ * (`<mapData[0].mapDataId>-legend`). Exported so the legend UI can recognise
+ * the resolver's own legend without a marker field on `LegendSpec` — e.g. to
+ * suppress it when `legendEnabled: false` while leaving user-authored legends
+ * untouched.
+ */
+export const getProportionalCirclesAutoLegendId = (
+  spec: VisualizationSpec
+): string => {
+  return `${spec.mapData?.[0]?.mapDataId ?? 'unknown'}-legend`;
+};
 
 /**
  * Builds a quantitative color-by using Jenks natural breaks from the
@@ -156,7 +175,12 @@ const computeDefaultScaleMaxValue = (
  * title is available.
  */
 const buildSizeLegendTitle = (spec: VisualizationSpec): string => {
-  const sizeLabel = findSizeDataEntry(spec)?.title ?? spec.mapData?.[0]?.title;
+  const sizeLabel =
+    findSizeDataEntry(spec)?.title ??
+    spec.mapData?.[0]?.title ??
+    spec.layers?.find((l) => {
+      return l.propertyName;
+    })?.propertyName;
   return sizeLabel ? `Circle size = ${sizeLabel}` : 'Circle size = value';
 };
 
@@ -174,10 +198,9 @@ const buildProportionalCircles = (
   legends: LegendSpec[];
 } => {
   const mapDataEntry = spec.mapData?.[0];
-  const mapDataId = mapDataEntry?.mapDataId ?? 'unknown';
 
   // --- Color legend (quantitative) ---
-  const legendId = `${mapDataId}-legend`;
+  const legendId = getProportionalCirclesAutoLegendId(spec);
   const skipColorBy = spec.legends?.some((l) => {
     return l.colorBy && l.id !== legendId;
   });
@@ -203,12 +226,20 @@ const buildProportionalCircles = (
   // circles to a single radius.
   const sizeMapDataId = findSizeDataEntry(spec)?.mapDataId;
 
+  const legendEnabled = spec.legendEnabled !== false;
+
   const pointLayer: VisualizationLayer = {
     id: `${sourceId}-proportional-circles`,
     sourceId,
     geometry: 'point',
     mapDataId: sizeMapDataId,
     activeLegendId: legendId,
+    // When legendEnabled is false, the auto-generated legend is kept off
+    // `spec.legends` (so it never surfaces in a rendered legend UI) but is
+    // still attached here so `activeLegendId` keeps resolving colorBy/
+    // threshold data for the adapter — disabling the legend must not also
+    // silently disable color-by-value circle rendering.
+    ...(legendEnabled ? {} : { legends: [colorLegend] }),
     sizeBy: {
       range: [
         PROPORTIONAL_CIRCLES_DEFAULTS.minRadiusPx,
@@ -227,7 +258,7 @@ const buildProportionalCircles = (
 
   return {
     layers: [pointLayer],
-    legends: [colorLegend],
+    legends: legendEnabled ? [colorLegend] : [],
   };
 };
 

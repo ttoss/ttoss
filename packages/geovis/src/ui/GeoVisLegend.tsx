@@ -170,9 +170,9 @@ export const GeoVisLegend = ({
   }, [legend, normalizedBreaks, resolvedFormatValue]);
 
   const circleItems = React.useMemo(() => {
-    if (!shouldShowCircleItems(circleConfig, legend, spec.legends)) return [];
+    if (!shouldShowCircleItems(circleConfig, legend, spec)) return [];
     return buildCircledItems(circleConfig!, resolvedFormatValue);
-  }, [circleConfig, resolvedFormatValue, legend, spec.legends]);
+  }, [circleConfig, resolvedFormatValue, legend, spec]);
 
   if (!legend) return null;
   if (!hasLegendContent(legend, items, circleItems)) return null;

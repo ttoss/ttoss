@@ -463,6 +463,10 @@
         "$ref": "#/$defs/LegendSpec"
       }
     },
+    "legendEnabled": {
+      "type": "boolean",
+      "description": "Controls whether auto-generated legends are produced for the resolved mapType. Defaults to true."
+    },
     "mapData": {
       "type": "array",
       "items": {

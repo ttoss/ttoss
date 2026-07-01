@@ -6,6 +6,7 @@ import {
   resolvePalette,
   resolveQuantitativeFallbackColor,
 } from '../adapters/maplibre/legendTranslation';
+import { getProportionalCirclesAutoLegendId } from '../spec/mapTypeDefaults/proportionalCircles';
 import type {
   LegendPosition,
   LegendSpec,
@@ -41,6 +42,18 @@ export const resolveLegend = (
     return legend.id === legendId;
   });
   if (topLevelLegend) return topLevelLegend;
+  // With `legendEnabled: false`, the proportionalCircles resolver keeps its
+  // auto-generated legend off `spec.legends` but still attaches it to the
+  // layer so the adapter can resolve colorBy. That layer copy is adapter-only
+  // data — resolving it here would render a legend the spec explicitly
+  // disabled. The auto legend is recognised by its deterministic id, so
+  // user-authored layer legends still resolve normally.
+  if (
+    spec.legendEnabled === false &&
+    legendId === getProportionalCirclesAutoLegendId(spec)
+  ) {
+    return undefined;
+  }
   for (const layer of spec.layers) {
     const layerLegend = findLegendInLayer(layer, legendId);
     if (layerLegend) return layerLegend;
@@ -202,9 +215,13 @@ export const computeNormalizedBreaks = (
 export const shouldShowCircleItems = (
   circleConfig: ProportionalCirclesConfig | null,
   legend: LegendSpec | undefined,
-  legends: VisualizationSpec['legends']
+  spec: VisualizationSpec
 ): boolean => {
   if (!circleConfig) return false;
+  // The size key is part of the auto-generated legend; when the spec disables
+  // it, the circles must not leak into user legends either.
+  if (spec.legendEnabled === false) return false;
+  const legends = spec.legends;
   if (legends && legends.length > 1 && legend?.colorBy) return false;
   return true;
 };

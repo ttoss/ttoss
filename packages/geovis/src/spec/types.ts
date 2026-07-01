@@ -467,6 +467,13 @@ export interface VisualizationSpec {
    * When omitted, the adapter computes it from the dataset.
    */
   scaleMaxValue?: number;
+
+  /**
+   * Controls whether auto-generated legends are produced for the resolved
+   * mapType. Defaults to true. Has no effect on legends the user supplies
+   * directly via `spec.legends`.
+   */
+  legendEnabled?: boolean;
 }
 
 export type GeovisSpec = VisualizationSpec;
