@@ -65,9 +65,7 @@ const buildColorBy = (mapDataEntry: MapData | undefined) => {
  * only when it contains numeric data (non-numeric entries like categorical
  * color data are skipped).
  */
-const findSizeFromMapData = (
-  spec: VisualizationSpec
-): MapData | undefined => {
+const findSizeFromMapData = (spec: VisualizationSpec): MapData | undefined => {
   const data = spec.mapData;
   if (!data?.length) return undefined;
 
