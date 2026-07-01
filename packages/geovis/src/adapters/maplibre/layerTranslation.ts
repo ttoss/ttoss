@@ -212,7 +212,12 @@ const resolveCircleColor = (
   colorStateKey: string,
   specLegends?: LegendSpec[]
 ): string | unknown => {
-  if (!layer.activeLegendId) return cp.circleColor ?? '#3b82f6';
+  // An explicit user-provided circleColor always wins over the legend-driven
+  // color-by-value expression — otherwise a custom paint override would be
+  // silently discarded whenever the layer carries an activeLegendId (which
+  // auto-generated mapTypes like proportionalCircles always set).
+  if (cp.circleColor) return cp.circleColor;
+  if (!layer.activeLegendId) return '#3b82f6';
 
   const activeLegend =
     layer.legends?.find((l) => {
@@ -221,7 +226,7 @@ const resolveCircleColor = (
     specLegends?.find((l) => {
       return l.id === layer.activeLegendId;
     });
-  if (!activeLegend) return cp.circleColor ?? '#3b82f6';
+  if (!activeLegend) return '#3b82f6';
 
   return buildFillColorExpression({
     legend: activeLegend,
