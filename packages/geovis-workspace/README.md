@@ -96,10 +96,17 @@ its own group. Read the current selection anywhere inside the workspace with
 
 ### `GeovisWorkspaceConfig`
 
-| Property       | Type                               | Description                            |
-| -------------- | ---------------------------------- | -------------------------------------- |
-| `leftSidebar`  | `{ menus: GeovisWorkspaceMenu[] }` | Left sidebar config. Omit to hide it.  |
-| `rightSidebar` | `GeovisWorkspaceRightSidebar`      | Right sidebar config. Omit to hide it. |
+| Property       | Type                          | Description                            |
+| -------------- | ----------------------------- | -------------------------------------- |
+| `leftSidebar`  | `GeovisWorkspaceLeftSidebar`  | Left sidebar config. Omit to hide it.  |
+| `rightSidebar` | `GeovisWorkspaceRightSidebar` | Right sidebar config. Omit to hide it. |
+
+### `GeovisWorkspaceLeftSidebar`
+
+| Property       | Type                    | Description                                              |
+| -------------- | ----------------------- | -------------------------------------------------------- |
+| `menus`        | `GeovisWorkspaceMenu[]` | Menu groups rendered in the sidebar.                     |
+| `initialState` | `'open' \| 'closed'`    | Whether the sidebar starts open. Defaults to `'closed'`. |
 
 ### `GeovisWorkspaceMenu`
 
@@ -112,10 +119,11 @@ its own group. Read the current selection anywhere inside the workspace with
 
 ### `GeovisWorkspaceRightSidebar`
 
-| Property          | Type                             | Description                            |
-| ----------------- | -------------------------------- | -------------------------------------- |
-| `title`           | `string`                         | Title shown at the top of the sidebar. |
-| `legendWithColor` | `GeovisWorkspaceLegendWithColor` | Color-legend panel. Omit to hide it.   |
+| Property          | Type                             | Description                                              |
+| ----------------- | -------------------------------- | -------------------------------------------------------- |
+| `title`           | `string`                         | Title shown at the top of the sidebar.                   |
+| `legendWithColor` | `GeovisWorkspaceLegendWithColor` | Color-legend panel. Omit to hide it.                     |
+| `initialState`    | `'open' \| 'closed'`             | Whether the sidebar starts open. Defaults to `'closed'`. |
 
 ### `GeovisWorkspaceLegendWithColor`
 

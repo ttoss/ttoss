@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.1](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.8.0...@ttoss/geovis@0.8.1) (2026-07-01)
+
+### Bug Fixes
+
+- changing geovisLegend structure ([#1111](https://github.com/ttoss/ttoss/issues/1111)) ([fd90668](https://github.com/ttoss/ttoss/commit/fd90668837740c1e0fcd66f72275266564c4ab84))
+
 # [0.8.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.7.1...@ttoss/geovis@0.8.0) (2026-06-30)
 
 ### Features
