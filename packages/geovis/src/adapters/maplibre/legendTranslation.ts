@@ -157,6 +157,7 @@ export const buildFillColorExpression = ({
   stateKey = 'value',
 }: BuildFillColorExpressionParams): unknown[] => {
   const colorBy = legend.colorBy;
+  if (!colorBy) return [];
   if (colorBy.type === 'categorical') {
     return buildCategoricalExpression(colorBy, stateKey);
   }

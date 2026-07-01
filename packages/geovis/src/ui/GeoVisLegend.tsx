@@ -13,7 +13,10 @@ import type {
   VisualizationSpec,
 } from '../spec/types';
 import { useGeoVis } from './contexts';
-import type { ProportionalCirclesConfig } from './GeoVisLegend.circles';
+import type {
+  CircledLegendItem,
+  ProportionalCirclesConfig,
+} from './GeoVisLegend.circles';
 import {
   buildCircledItems,
   CirclesLegendItems,
@@ -107,7 +110,7 @@ const resolvePositionStyle = (
 
 const buildCategoricalItems = (legend: LegendSpec): LegendItem[] => {
   const colorBy = legend.colorBy;
-  if (colorBy.type !== 'categorical') return [];
+  if (!colorBy || colorBy.type !== 'categorical') return [];
   const mapping = Object.entries(colorBy.mapping ?? {});
   if (!mapping.length)
     return [
@@ -120,7 +123,11 @@ const buildCategoricalItems = (legend: LegendSpec): LegendItem[] => {
   const fmtLabels =
     legend.labelFormat?.type === 'labels' ? legend.labelFormat.labels : [];
   return mapping.map(([key, color], index) => {
-    return { binIndex: index, label: fmtLabels[index] ?? key, color };
+    return {
+      binIndex: index,
+      label: fmtLabels[index] ?? key,
+      color: color as string,
+    };
   });
 };
 
@@ -134,7 +141,7 @@ const buildQuantitativeItems = ({
   formatValue: (value: number) => string;
 }): LegendItem[] => {
   const colorBy = legend.colorBy;
-  if (colorBy.type !== 'quantitative') return [];
+  if (!colorBy || colorBy.type !== 'quantitative') return [];
   const fallbackColor = resolveQuantitativeFallbackColor(colorBy, breaks);
   if (!breaks.length)
     return [{ binIndex: 0, label: 'All values', color: fallbackColor }];
@@ -191,16 +198,20 @@ export interface GeoVisLegendProps {
   sourceNode?: React.ReactNode;
 }
 
+const getBreaksSource = (
+  breaks: number[] | undefined,
+  legend: LegendSpec | undefined
+): number[] => {
+  if (breaks !== undefined) return breaks;
+  if (legend?.colorBy?.type !== 'quantitative') return [];
+  return legend.colorBy.thresholds ?? [];
+};
+
 const computeNormalizedBreaks = (
   breaks: number[] | undefined,
   legend: LegendSpec | undefined
 ): number[] => {
-  const source =
-    breaks !== undefined
-      ? breaks
-      : legend?.colorBy?.type === 'quantitative'
-        ? (legend.colorBy.thresholds ?? [])
-        : [];
+  const source = getBreaksSource(breaks, legend);
   const deduped = new Set<number>();
   for (const value of source) {
     if (!Number.isFinite(value)) continue;
@@ -278,10 +289,10 @@ const buildContainerStyle = (
 
 const buildReferenceContent = (
   sourceNode: React.ReactNode,
-  legend: LegendSpec
+  legend: LegendSpec | undefined
 ): React.ReactNode => {
   if (sourceNode != null) return sourceNode;
-  if (legend.reference != null) return parseReference(legend.reference);
+  if (legend?.reference != null) return parseReference(legend.reference);
   return null;
 };
 
@@ -300,58 +311,42 @@ const rowStyle: React.CSSProperties = {
   alignItems: 'center',
 };
 
-export const GeoVisLegend = ({
-  legendId,
-  breaks,
-  formatValue,
-  className,
-  sourceNode,
-}: GeoVisLegendProps) => {
-  const { spec } = useGeoVis();
-
-  const legend = React.useMemo(() => {
+const useGeoVisLegend = (spec: VisualizationSpec, legendId: string) => {
+  return React.useMemo(() => {
     return resolveLegend(spec, legendId);
   }, [spec, legendId]);
-  const normalizedBreaks = React.useMemo(() => {
-    return computeNormalizedBreaks(breaks, legend);
-  }, [breaks, legend]);
-  const circleConfig = React.useMemo(() => {
-    return findProportionalCirclesConfig(spec);
-  }, [spec]);
-  const resolvedFormatValue = React.useMemo(() => {
-    return resolveFormatter(formatValue, circleConfig);
-  }, [formatValue, circleConfig]);
+};
 
-  const items = React.useMemo(() => {
-    return buildColorItems(legend, normalizedBreaks, resolvedFormatValue);
-  }, [legend, normalizedBreaks, resolvedFormatValue]);
-
-  const circleItems = React.useMemo(() => {
-    if (!shouldShowCircleItems(circleConfig, legend, spec.legends)) return [];
-    return buildCircledItems(circleConfig, resolvedFormatValue);
-  }, [circleConfig, resolvedFormatValue, legend, spec.legends]);
-
-  if (!hasLegendContent(legend, items, circleItems)) return null;
-
-  const referenceContent = buildReferenceContent(sourceNode, legend);
-  const containerStyle = buildContainerStyle(legend.position);
-
-  const showTopDivider = shouldShowTopDivider(items, circleItems, spec.legends);
-
+const GeoVisLegendBody = ({
+  className,
+  legend,
+  items,
+  circleItems,
+  referenceContent,
+  legends,
+}: {
+  className: string | undefined;
+  legend: LegendSpec;
+  items: LegendItem[];
+  circleItems: CircledLegendItem[];
+  referenceContent: React.ReactNode;
+  legends: VisualizationSpec['legends'];
+}) => {
+  const showTopDivider = shouldShowTopDivider(items, circleItems, legends);
   return (
-    <div className={className} style={containerStyle}>
+    <div className={className} style={buildContainerStyle(legend.position)}>
       {showTopDivider && (
         <div
           aria-hidden="true"
           style={{ borderTop: `1px solid ${BORDER_COLOR}`, margin: '4px 0' }}
         />
       )}
-      {legend.title && (
+      {!!legend.title && (
         <p style={{ fontWeight: 600, margin: '0 0 2px', marginTop: 16 }}>
           {legend.title}
         </p>
       )}
-      {legend.subtitle && (
+      {!!legend.subtitle && (
         <p style={{ color: MUTED_COLOR, fontSize: 12, margin: '0 0 4px' }}>
           {legend.subtitle}
         </p>
@@ -383,7 +378,7 @@ export const GeoVisLegend = ({
             </li>
           );
         })}
-        {legend.noDataLabel && (
+        {!!legend.noDataLabel && (
           <li style={rowStyle}>
             <span
               aria-hidden="true"
@@ -414,5 +409,51 @@ export const GeoVisLegend = ({
         </p>
       )}
     </div>
+  );
+};
+
+export const GeoVisLegend = ({
+  legendId,
+  breaks,
+  formatValue,
+  className,
+  sourceNode,
+}: GeoVisLegendProps) => {
+  const { spec } = useGeoVis();
+
+  const legend = useGeoVisLegend(spec, legendId);
+  const normalizedBreaks = React.useMemo(() => {
+    return computeNormalizedBreaks(breaks, legend);
+  }, [breaks, legend]);
+  const circleConfig = React.useMemo(() => {
+    return findProportionalCirclesConfig(spec);
+  }, [spec]);
+  const resolvedFormatValue = React.useMemo(() => {
+    return resolveFormatter(formatValue, circleConfig);
+  }, [formatValue, circleConfig]);
+
+  const items = React.useMemo(() => {
+    return buildColorItems(legend, normalizedBreaks, resolvedFormatValue);
+  }, [legend, normalizedBreaks, resolvedFormatValue]);
+
+  const circleItems = React.useMemo(() => {
+    if (!shouldShowCircleItems(circleConfig, legend, spec.legends)) return [];
+    return buildCircledItems(circleConfig!, resolvedFormatValue);
+  }, [circleConfig, resolvedFormatValue, legend, spec.legends]);
+
+  if (!legend) return null;
+  if (!hasLegendContent(legend, items, circleItems)) return null;
+
+  const referenceContent = buildReferenceContent(sourceNode, legend);
+
+  return (
+    <GeoVisLegendBody
+      className={className}
+      legend={legend}
+      items={items}
+      circleItems={circleItems}
+      referenceContent={referenceContent}
+      legends={spec.legends}
+    />
   );
 };

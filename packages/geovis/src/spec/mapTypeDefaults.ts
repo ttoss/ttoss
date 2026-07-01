@@ -54,7 +54,7 @@ const injectResolvedFields = (
     if (STRUCTURAL_KEYS.has(key)) continue;
     const k = key as keyof VisualizationLayer;
     if (rl[k] && !match[k]) {
-      (match as Record<string, unknown>)[k] = rl[k];
+      (match as unknown as Record<string, unknown>)[k] = rl[k];
     }
   }
   if (rl.paint) {

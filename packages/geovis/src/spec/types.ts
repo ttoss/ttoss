@@ -179,6 +179,7 @@ export interface CirclePaint {
   circleRadius?: number;
   circleOpacity?: number;
   circleStrokeColor?: string;
+  circleStrokeOpacity?: number;
   circleStrokeWidth?: number;
 }
 

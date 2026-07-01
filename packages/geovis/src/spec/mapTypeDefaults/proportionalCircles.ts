@@ -1,5 +1,7 @@
 import type {
   LegendSpec,
+  MapData,
+  MapDataRow,
   VisualizationLayer,
   VisualizationSpec,
 } from '../types';
@@ -27,11 +29,7 @@ export const PROPORTIONAL_CIRCLES_DEFAULTS = {
  * first mapData entry's numeric values. Falls back to a single-bin
  * palette when data is insufficient for meaningful breaks.
  */
-const buildColorBy = (
-  mapDataEntry: VisualizationSpec['mapData'] extends (infer U)[]
-    ? U
-    : never | undefined
-) => {
+const buildColorBy = (mapDataEntry: MapData | undefined) => {
   const { isNumeric, numericValues } = inspectDataValues(
     mapDataEntry?.data ?? []
   );
@@ -69,19 +67,18 @@ const buildColorBy = (
  */
 const findSizeFromMapData = (
   spec: VisualizationSpec
-): VisualizationSpec['mapData'] extends (infer U)[] ? U : never | undefined => {
+): MapData | undefined => {
   const data = spec.mapData;
-  if (!data?.length) return undefined as never;
+  if (!data?.length) return undefined;
 
   const explicitSize = data.find((m) => {
     return m.dimension === 'size';
   });
-  if (explicitSize) return explicitSize as never;
+  if (explicitSize) return explicitSize;
 
-  // Fallback to first entry only when it contains numeric data.
   const first = data[0];
   const { isNumeric } = inspectDataValues(first?.data ?? []);
-  return (isNumeric ? first : undefined) as never;
+  return isNumeric ? first : undefined;
 };
 
 /**
@@ -91,11 +88,11 @@ const findSizeFromMapData = (
  */
 const findSizeFromPropertyName = (
   spec: VisualizationSpec
-): VisualizationSpec['mapData'] extends (infer U)[] ? U : never | undefined => {
+): MapData | undefined => {
   const propLayer = spec.layers?.find((l) => {
     return l.propertyName;
   });
-  if (!propLayer) return undefined as never;
+  if (!propLayer) return undefined;
 
   const source = spec.sources.find((s) => {
     return s.id === propLayer.sourceId && s.type === 'geojson';
@@ -105,7 +102,7 @@ const findSizeFromPropertyName = (
         data: { features?: Array<{ properties?: Record<string, unknown> }> };
       }
     | undefined;
-  if (!source?.data?.features) return undefined as never;
+  if (!source?.data?.features) return undefined;
 
   const values: MapDataRow[] = source.data.features.map((f) => {
     return {
@@ -114,7 +111,7 @@ const findSizeFromPropertyName = (
     };
   });
 
-  return { data: values } as never;
+  return { data: values } as unknown as MapData;
 };
 
 /**
@@ -127,11 +124,7 @@ const findSizeFromPropertyName = (
  * Returns `undefined` when neither a numeric `mapData` entry nor a usable
  * `propertyName` source is available.
  */
-const findSizeDataEntry = (
-  spec: VisualizationSpec
-): VisualizationSpec['mapData'] extends (infer U)[]
-  ? U | undefined
-  : undefined => {
+const findSizeDataEntry = (spec: VisualizationSpec): MapData | undefined => {
   return findSizeFromMapData(spec) ?? findSizeFromPropertyName(spec);
 };
 
