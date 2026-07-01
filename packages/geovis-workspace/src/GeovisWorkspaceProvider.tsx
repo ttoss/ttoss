@@ -65,9 +65,13 @@ export const GeovisWorkspaceProvider = ({
 
   const currentSelection = isControlled ? selection : internalSelection;
 
-  const [isLeftSidebarOpen, setIsLeftSidebarOpen] = React.useState(false);
+  const [isLeftSidebarOpen, setIsLeftSidebarOpen] = React.useState(() => {
+    return config.leftSidebar?.initialState === 'open';
+  });
 
-  const [isRightSidebarOpen, setIsRightSidebarOpen] = React.useState(false);
+  const [isRightSidebarOpen, setIsRightSidebarOpen] = React.useState(() => {
+    return config.rightSidebar?.initialState === 'open';
+  });
 
   const setSelection = React.useCallback(
     ({ menuId, value }: { menuId: string; value: string }) => {

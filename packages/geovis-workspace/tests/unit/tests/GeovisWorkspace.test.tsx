@@ -109,6 +109,39 @@ test('closing the left sidebar brings the open button back', async () => {
   expect(screen.getByRole('button', { name: 'Open menu' })).toBeInTheDocument();
 });
 
+test('left sidebar starts open when initialState is "open"', () => {
+  render(
+    <GeovisWorkspace
+      config={{
+        ...config,
+        leftSidebar: { ...config.leftSidebar!, initialState: 'open' },
+      }}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  expect(screen.getByText('População')).toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Open menu' })
+  ).not.toBeInTheDocument();
+});
+
+test('left sidebar stays closed when initialState is "closed"', () => {
+  render(
+    <GeovisWorkspace
+      config={{
+        ...config,
+        leftSidebar: { ...config.leftSidebar!, initialState: 'closed' },
+      }}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  expect(screen.getByRole('button', { name: 'Open menu' })).toBeInTheDocument();
+});
+
 test('selecting an item marks it active without affecting other groups', async () => {
   render(
     <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
@@ -331,6 +364,24 @@ test('closing the right sidebar brings its open button back', async () => {
   expect(
     screen.getByRole('button', { name: 'Open details' })
   ).toBeInTheDocument();
+});
+
+test('right sidebar starts open when initialState is "open"', () => {
+  render(
+    <GeovisWorkspace
+      config={{
+        ...config,
+        rightSidebar: { title: 'Camadas', initialState: 'open' },
+      }}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  expect(screen.getByText('Camadas')).toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Open details' })
+  ).not.toBeInTheDocument();
 });
 
 test('getInitialSelection seeds the selection from menu defaultValues', () => {
