@@ -1,4 +1,5 @@
-import { Config, appSyncClient } from '../../src';
+import type { Config } from '../../src';
+import { appSyncClient } from '../../src';
 
 test.each<Config>([
   {
@@ -54,6 +55,51 @@ test('query with API key', async () => {
   expect(response).toEqual({
     data: {
       hello: 'world',
+    },
+  });
+});
+
+test('mutate with API key triggers subscription', async () => {
+  const config: Config = {
+    endpoint: 'https://api.example.com/graphql',
+    apiKey: 'da2-1234567890abcdef1234567890abcdef',
+  };
+
+  appSyncClient.setConfig(config);
+
+  const mutation =
+    'mutation sendMessage($content: String!) { sendMessage(content: $content) { content } }';
+  const variables = { content: 'Hello' };
+
+  global.fetch = jest.fn().mockImplementation(async (req: Request) => {
+    const body = await req.text();
+    const url = req.url;
+    const xApiKey = req.headers.get('x-api-key');
+
+    if (
+      body === JSON.stringify({ query: mutation, variables }) &&
+      url === config.endpoint &&
+      xApiKey === config.apiKey
+    ) {
+      return {
+        json: () => {
+          return Promise.resolve({
+            data: {
+              sendMessage: { content: 'Hello' },
+            },
+          });
+        },
+      };
+    }
+
+    throw new Error('Wrong request');
+  });
+
+  const response = await appSyncClient.mutate(mutation, variables);
+
+  expect(response).toEqual({
+    data: {
+      sendMessage: { content: 'Hello' },
     },
   });
 });

@@ -2322,6 +2322,9 @@ importers:
       aws-amplify:
         specifier: ^6.11.0
         version: 6.17.0
+      graphql-sse:
+        specifier: ^2.6.0
+        version: 2.6.0(graphql@16.14.0)
       react:
         specifier: ^19.2.6
         version: 19.2.6
@@ -10745,6 +10748,12 @@ packages:
     peerDependencies:
       graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
       graphql-middleware: ^2.0.0 || ^3.0.0 || ^4.0.0 || ^6.0.0
+
+  graphql-sse@2.6.0:
+    resolution: {integrity: sha512-BXT5Rjv9UFunjQsmN9WWEIq+TFNhgYibgwo1xkXLxzguQVyOd6paJ4v5DlL9K5QplS0w74bhF+aUiqaGXZBaug==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      graphql: '>=0.11 <=16'
 
   graphql-tag@2.12.6:
     resolution: {integrity: sha512-FdSNcu2QQcWnM2VNvSCCDCVS5PpPqpzgFT8+GXzqJuoDd0CBncxCY278u4mhRO7tMgo2JjgJA5aZ+nWSQ/Z+xg==}
@@ -26752,6 +26761,10 @@ snapshots:
       object-hash: 3.0.0
       tslib: 2.8.1
       yup: 0.32.11
+
+  graphql-sse@2.6.0(graphql@16.14.0):
+    dependencies:
+      graphql: 16.14.0
 
   graphql-tag@2.12.6(graphql@16.14.0):
     dependencies:
