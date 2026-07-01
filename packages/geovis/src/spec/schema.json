@@ -22,7 +22,7 @@
     },
     "mapType": {
       "type": "string",
-      "enum": ["choropleth", "dotDensity"]
+      "enum": ["choropleth", "dotDensity", "proportionalCircles"]
     },
     "view": {
       "type": "object",
@@ -422,11 +422,19 @@
                   "allOf": [
                     {
                       "required": ["mode"],
-                      "properties": { "mode": { "const": "stepped" } }
+                      "properties": {
+                        "mode": {
+                          "const": "stepped"
+                        }
+                      }
                     },
                     {
                       "required": ["transform"],
-                      "properties": { "transform": { "const": "sqrt" } }
+                      "properties": {
+                        "transform": {
+                          "const": "sqrt"
+                        }
+                      }
                     }
                   ]
                 }
