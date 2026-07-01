@@ -3,6 +3,7 @@ import type { Layout } from 'react-grid-layout';
 
 import type { DashboardGridItem, DashboardTemplate } from './Dashboard';
 import type { CardCatalogItem } from './dashboardCardCatalog';
+import type { DashboardCard } from './DashboardCard';
 import {
   createGridItemWithPlacement,
   DEFAULT_CARD_CATALOG,
@@ -30,6 +31,7 @@ export const DashboardContext = React.createContext<{
   removeCard: (id: string) => void;
   updateCard: (id: string, cardPatch: Record<string, unknown>) => void;
   onLayoutChange: (currentLayout: Layout[]) => void;
+  onCardClick?: (card: DashboardCard, gridItem: DashboardGridItem) => void;
 }>({
   filters: [],
   updateFilter: () => {},
@@ -50,6 +52,7 @@ export const DashboardContext = React.createContext<{
   removeCard: () => {},
   updateCard: () => {},
   onLayoutChange: () => {},
+  onCardClick: undefined,
 });
 
 export const DashboardProvider = (props: {
@@ -64,6 +67,7 @@ export const DashboardProvider = (props: {
   onSaveAsNewTemplate?: (template: DashboardTemplate) => void;
   onCancelEdit?: () => void;
   onEditingGridChange?: (grid: DashboardGridItem[] | null) => void;
+  onCardClick?: (card: DashboardCard, gridItem: DashboardGridItem) => void;
 }) => {
   const {
     filters: externalFilters,
@@ -76,6 +80,7 @@ export const DashboardProvider = (props: {
     onSaveAsNewTemplate,
     onCancelEdit,
     onEditingGridChange,
+    onCardClick,
   } = props;
 
   const [isEditMode, setIsEditMode] = React.useState(false);
@@ -89,6 +94,7 @@ export const DashboardProvider = (props: {
   const onSaveLayoutRef = React.useRef(onSaveLayout);
   const onSaveAsNewTemplateRef = React.useRef(onSaveAsNewTemplate);
   const onCancelEditRef = React.useRef(onCancelEdit);
+  const onCardClickRef = React.useRef(onCardClick);
 
   React.useEffect(() => {
     onFiltersChangeRef.current = onFiltersChange;
@@ -105,6 +111,9 @@ export const DashboardProvider = (props: {
   React.useEffect(() => {
     onCancelEditRef.current = onCancelEdit;
   }, [onCancelEdit]);
+  React.useEffect(() => {
+    onCardClickRef.current = onCardClick;
+  }, [onCardClick]);
 
   const onEditingGridChangeRef = React.useRef(onEditingGridChange);
   React.useEffect(() => {
@@ -224,6 +233,13 @@ export const DashboardProvider = (props: {
     []
   );
 
+  const handleCardClick = React.useCallback(
+    (card: DashboardCard, gridItem: DashboardGridItem) => {
+      onCardClickRef.current?.(card, gridItem);
+    },
+    []
+  );
+
   const onLayoutChange = React.useCallback((currentLayout: Layout[]) => {
     setEditingGrid((prev) => {
       if (!prev) return prev;
@@ -273,6 +289,7 @@ export const DashboardProvider = (props: {
         removeCard,
         updateCard,
         onLayoutChange,
+        onCardClick: handleCardClick,
       }}
     >
       {props.children}
