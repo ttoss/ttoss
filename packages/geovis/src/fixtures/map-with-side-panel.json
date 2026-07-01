@@ -1,5 +1,4 @@
 {
-  "id": "map-with-side-panel",
   "title": "Map With Side Panel",
   "description": "Demonstrates collapsible left and right side panels that adjust the map's padding so the focal point stays centered in the visible area — based on the MapLibre 'Offset the vanishing point using padding' example.",
   "engine": "maplibre",

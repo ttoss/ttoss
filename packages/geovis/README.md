@@ -22,7 +22,6 @@ Wrap your application (or a section of it) with `GeoVisProvider`, passing a `Vis
 import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
 
 const spec = {
-  id: 'my-map',
   engine: 'maplibre',
   view: { center: [-46.6, -23.5], zoom: 10 },
   sources: [
@@ -59,7 +58,6 @@ Top-level spec object passed to `GeoVisProvider`.
 
 | Field         | Type                      | Required | Description                                                                                                                                                               |
 | ------------- | ------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`          | `string`                  | ✓        | Unique spec identifier.                                                                                                                                                   |
 | `engine`      | `'maplibre'`              | ✓        | Engine adapter to use. Currently only `'maplibre'` is supported.                                                                                                          |
 | `sources`     | `DataSource[]`            | ✓        | Data sources referenced by layers. Supported types: `'geojson'`, `'vector-tiles'`, `'raster-tiles'`, `'raster-dem'`, `'image'`, `'video'`.                                |
 | `layers`      | `VisualizationLayer[]`    | ✓        | Ordered list of layers to render (bottom-to-top).                                                                                                                         |
@@ -301,7 +299,6 @@ import {
 import districtsGeoJSON from './districts.geojson';
 
 const spec = {
-  id: 'population-map',
   engine: 'maplibre',
   view: { center: [-46.6, -23.5], zoom: 10 },
   sources: [{ id: 'districts', type: 'geojson', data: districtsGeoJSON }],

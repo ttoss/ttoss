@@ -50,7 +50,7 @@ const checkPolicies = (spec: VisualizationSpec): PolicyViolation[] => {
       (m.normalizedExpression as string | undefined);
     const label = m.normalizedLabel as string | undefined;
 
-    let message = `Spec '${spec.id}' violates cartographic policy: ${reason}.`;
+    let message = `Spec violates cartographic policy: ${reason}.`;
     if (metricField) message += ` Invalid field: '${metricField}'.`;
     if (normalizedField)
       message += ` Correct alternative: '${normalizedField}'`;

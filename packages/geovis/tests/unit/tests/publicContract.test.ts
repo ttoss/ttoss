@@ -66,7 +66,6 @@ test('spec types expose legend configuration through the public contract', () =>
   };
 
   const spec: VisualizationSpec = {
-    id: 'legend-spec',
     engine: 'maplibre',
     view: { center: [0, 0], zoom: 1 },
     sources: [],
