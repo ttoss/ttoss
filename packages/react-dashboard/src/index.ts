@@ -8,6 +8,7 @@ export {
   type DashboardCardType,
   DEFAULT_CARD_CATALOG,
 } from './dashboardCardCatalog';
+export { DashboardCardDetailDrawer } from './DashboardCardDetailDrawer';
 export { DashboardFilters } from './DashboardFilters';
 export { type DashboardFilter } from './DashboardFilters';
 export { DashboardFilterType } from './DashboardFilters';
