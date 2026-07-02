@@ -32,8 +32,11 @@ export const abbreviateNumber = (v: number): string => {
  * `2_000_000 → "2M"`). It is the exported, stable name for the same
  * abbreviation behaviour as {@link abbreviateNumber}; consumers should prefer
  * this alias. Exposed so application code (and stories) can format compact
- * values without re-implementing the rule. Does NOT change the legend's
- * default `formatValue` — opt in by passing it explicitly.
+ * values without re-implementing the rule.
+ *
+ * NOTE: `GeoVisLegend` uses this formatter by default for proportional-circle
+ * legends (see `resolveFormatter` in `GeoVisLegend.utils.tsx`) unless an
+ * explicit `formatValue` prop is provided, which always takes precedence.
  */
 export const formatCompactNumber = (value: number): string => {
   return abbreviateNumber(value);

@@ -72,6 +72,22 @@ const rowStyle: React.CSSProperties = {
   alignItems: 'center',
 };
 
+const LARGE_RADIUS_THRESHOLD_PX = 10;
+const EXTRA_SPACING_RATIO = 0.5;
+
+/**
+ * Extra bottom margin for a circle-legend row, scaled to how much its radius
+ * exceeds `LARGE_RADIUS_THRESHOLD_PX`. Small circles (the common case) get no
+ * extra spacing; bigger circles push the next row down so their outline
+ * doesn't crowd the following label.
+ */
+export const computeCircleRowSpacing = (radiusPx: number): number => {
+  if (radiusPx <= LARGE_RADIUS_THRESHOLD_PX) return 0;
+  return Math.round(
+    (radiusPx - LARGE_RADIUS_THRESHOLD_PX) * EXTRA_SPACING_RATIO
+  );
+};
+
 /**
  * Renders the proportional-circle size key as a vertically stacked list.
  */
@@ -85,8 +101,17 @@ export const CirclesLegendItems = ({
     <>
       {items.map((c, i) => {
         const d = c.radiusPx * 2;
+        const isLast = i === items.length - 1;
         return (
-          <li key={`circle-${i}`} style={{ ...rowStyle, gap: 8 }}>
+          <li
+            key={`circle-${i}`}
+            style={{
+              ...rowStyle,
+              gap: 8,
+              marginTop: i === 0 ? computeCircleRowSpacing(c.radiusPx) : 0,
+              marginBottom: isLast ? 0 : computeCircleRowSpacing(c.radiusPx),
+            }}
+          >
             <span
               aria-hidden="true"
               style={{ ...CIRCLE_SWATCH_BASE, height: d, width: d }}
