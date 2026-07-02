@@ -1,4 +1,9 @@
-import { resolveSpecFromMapType } from 'src/spec/mapTypeDefaults';
+import {
+  findMatchingResolvedLegend,
+  mergeLegends,
+  mergeLegendsByIdOnly,
+  resolveSpecFromMapType,
+} from 'src/spec/mapTypeDefaults';
 import { resolveChoropleth } from 'src/spec/mapTypeDefaults/choropleth';
 import {
   computeJenksBreaks,
@@ -476,5 +481,184 @@ describe('computeNumClasses', () => {
     expect(computeNumClasses(0)).toBe(3);
     expect(computeNumClasses(1)).toBe(3);
     expect(computeNumClasses(2)).toBe(3);
+  });
+});
+
+describe('resolveSpecFromMapType — dotDensity with a user-supplied legend', () => {
+  test('keeps the user legend untouched: dotDensity never auto-generates one to merge into', () => {
+    const userLegend = {
+      id: 'events-legend',
+      title: 'Events',
+      colorBy: {
+        type: 'categorical' as const,
+        property: 'kind',
+        mapping: { fire: '#ef4444' },
+        defaultColor: '#9ca3af',
+      },
+    };
+    const spec: VisualizationSpec = {
+      id: 'test',
+      engine: 'maplibre',
+      mapType: 'dotDensity',
+      sources: [
+        {
+          id: 'points',
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: [] },
+        },
+      ],
+      layers: [],
+      legends: [userLegend],
+      mapData: [
+        {
+          mapDataId: 'events',
+          mapId: 'points',
+          data: [{ geometryId: 'a', value: 1 }],
+        },
+      ],
+    };
+    const resolved = resolveSpecFromMapType(spec);
+    expect(resolved.legends).toEqual([userLegend]);
+  });
+});
+
+describe('findMatchingResolvedLegend', () => {
+  test('returns undefined when there are no resolved legends to match', () => {
+    expect(findMatchingResolvedLegend({ id: 'custom' }, [], 0)).toBeUndefined();
+  });
+
+  test('positionally pairs a user legend with the resolved legend at the same index', () => {
+    const resolvedLegends = [
+      {
+        id: 'a-legend',
+        colorBy: {
+          type: 'categorical' as const,
+          property: 'a',
+          mapping: {},
+          defaultColor: '#000',
+        },
+      },
+      {
+        id: 'b-legend',
+        colorBy: {
+          type: 'quantitative' as const,
+          property: 'b',
+          scale: 'threshold' as const,
+          thresholds: [10],
+          colors: ['#111', '#222'],
+          defaultColor: '#000',
+        },
+      },
+    ];
+    expect(
+      findMatchingResolvedLegend({ id: 'custom-b' }, resolvedLegends, 1)
+    ).toBe(resolvedLegends[1]);
+  });
+
+  test('skips the positional pairing when the candidate at that index has no colorBy', () => {
+    const resolvedLegends = [
+      { id: 'a-legend', title: 'A' },
+      { id: 'b-legend', title: 'B' },
+    ];
+    expect(
+      findMatchingResolvedLegend({ id: 'custom' }, resolvedLegends, 0)
+    ).toBeUndefined();
+  });
+});
+
+describe('mergeLegends', () => {
+  test('appends the sole resolved legend unchanged when it has no colorBy to offer any user legend', () => {
+    const resolvedLegends = [{ id: 'auto-legend', title: 'Auto' }];
+    const userLegends = [{ id: 'unrelated', title: 'User legend' }];
+    const merged = mergeLegends(userLegends, resolvedLegends);
+    expect(merged).toEqual([
+      { id: 'unrelated', title: 'User legend' },
+      { id: 'auto-legend', title: 'Auto' },
+    ]);
+  });
+
+  test('keeps the user legend unchanged when the id-matched resolved legend has no colorBy', () => {
+    const resolvedLegends = [{ id: 'shared-id', title: 'Auto' }];
+    const userLegends = [{ id: 'shared-id', title: 'User legend' }];
+    const merged = mergeLegends(userLegends, resolvedLegends);
+    expect(merged).toEqual([{ id: 'shared-id', title: 'User legend' }]);
+  });
+});
+
+describe('resolveSpecFromMapType — edge cases', () => {
+  test('returns the spec unchanged for an unrecognized mapType value', () => {
+    const spec = {
+      id: 'test',
+      engine: 'maplibre' as const,
+      mapType: 'unknownMapType' as unknown as VisualizationSpec['mapType'],
+      sources: [],
+      layers: [],
+    };
+    expect(resolveSpecFromMapType(spec)).toBe(spec);
+  });
+
+  test('tolerates a spec missing `layers` entirely (e.g. loosely-typed external JSON)', () => {
+    const spec = {
+      id: 'test',
+      engine: 'maplibre',
+      mapType: 'choropleth',
+      sources: [
+        {
+          id: 'r',
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: [] },
+        },
+      ],
+      mapData: [
+        {
+          mapDataId: 'pop',
+          mapId: 'r',
+          data: [{ geometryId: 'a', value: 100 }],
+        },
+      ],
+    } as unknown as VisualizationSpec;
+    const resolved = resolveSpecFromMapType(spec);
+    expect(resolved.layers.length).toBeGreaterThan(0);
+  });
+});
+
+describe('mergeLegendsByIdOnly', () => {
+  test('keeps the user legend unchanged when its colorBy type does not match the resolved one', () => {
+    const resolvedLegends = [
+      {
+        id: 'size-legend',
+        title: 'Circle size = value',
+        colorBy: {
+          type: 'quantitative' as const,
+          property: 'value',
+          scale: 'threshold' as const,
+          thresholds: [10],
+          colors: ['#dbeafe', '#60a5fa'],
+          defaultColor: '#f0f0f0',
+        },
+      },
+    ];
+    const userLegend = {
+      id: 'size-legend',
+      title: 'My own legend',
+      colorBy: {
+        type: 'categorical' as const,
+        property: 'kind',
+        mapping: { a: '#000' },
+        defaultColor: '#fff',
+      },
+    };
+    const merged = mergeLegendsByIdOnly([userLegend], resolvedLegends);
+    expect(merged).toEqual([userLegend]);
+  });
+
+  test('does not append a resolved legend whose id is already present in the merged result', () => {
+    const resolvedLegends = [
+      { id: 'shared-id', title: 'Auto A' },
+      { id: 'shared-id', title: 'Auto B' },
+    ];
+    const userLegends = [{ id: 'shared-id', title: 'User legend' }];
+    const merged = mergeLegendsByIdOnly(userLegends, resolvedLegends);
+    expect(merged).toEqual([{ id: 'shared-id', title: 'User legend' }]);
   });
 });

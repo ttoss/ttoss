@@ -56,19 +56,20 @@ const MyMap = () => (
 
 Top-level spec object passed to `GeoVisProvider`.
 
-| Field         | Type                      | Required | Description                                                                                                                                                               |
-| ------------- | ------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `engine`      | `'maplibre'`              | ✓        | Engine adapter to use. Currently only `'maplibre'` is supported.                                                                                                          |
-| `sources`     | `DataSource[]`            | ✓        | Data sources referenced by layers. Supported types: `'geojson'`, `'vector-tiles'`, `'raster-tiles'`, `'raster-dem'`, `'image'`, `'video'`.                                |
-| `layers`      | `VisualizationLayer[]`    | ✓        | Ordered list of layers to render (bottom-to-top).                                                                                                                         |
-| `title`       | `string`                  |          | Human-readable title.                                                                                                                                                     |
-| `description` | `string`                  |          | Human-readable description.                                                                                                                                               |
-| `mapType`     | `MapType`                 |          | Auto-configuration hint (`'choropleth'`). When set, layers and legends are auto-generated from `mapData` — see [mapType auto-configuration](#maptype-auto-configuration). |
-| `view`        | `ViewState`               |          | Initial camera state: `center`, `zoom`, `pitch`, `bearing`, `projection`.                                                                                                 |
-| `basemap`     | `BaseMapSpec`             |          | Basemap tile style. Pass `visible: false` to hide tiles and show only GeoJSON layers. When hidden, the canvas container receives a `#fcfcfc` background.                  |
-| `legends`     | `LegendSpec[]`            |          | Shared legend registry. Layers reference entries via `activeLegendId`.                                                                                                    |
-| `mapData`     | `MapData[]`               |          | Attribute datasets joined to GeoJSON sources for choropleth coloring and tooltips.                                                                                        |
-| `metadata`    | `Record<string, unknown>` |          | Arbitrary consumer metadata; not read by the runtime.                                                                                                                     |
+| Field           | Type                      | Required | Description                                                                                                                                                               |
+| --------------- | ------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `engine`        | `'maplibre'`              | ✓        | Engine adapter to use. Currently only `'maplibre'` is supported.                                                                                                          |
+| `sources`       | `DataSource[]`            | ✓        | Data sources referenced by layers. Supported types: `'geojson'`, `'vector-tiles'`, `'raster-tiles'`, `'raster-dem'`, `'image'`, `'video'`.                                |
+| `layers`        | `VisualizationLayer[]`    | ✓        | Ordered list of layers to render (bottom-to-top).                                                                                                                         |
+| `title`         | `string`                  |          | Human-readable title.                                                                                                                                                     |
+| `description`   | `string`                  |          | Human-readable description.                                                                                                                                               |
+| `mapType`       | `MapType`                 |          | Auto-configuration hint (`'choropleth'`). When set, layers and legends are auto-generated from `mapData` — see [mapType auto-configuration](#maptype-auto-configuration). |
+| `view`          | `ViewState`               |          | Initial camera state: `center`, `zoom`, `pitch`, `bearing`, `projection`.                                                                                                 |
+| `basemap`       | `BaseMapSpec`             |          | Basemap tile style. Pass `visible: false` to hide tiles and show only GeoJSON layers. When hidden, the canvas container receives a `#fcfcfc` background.                  |
+| `legends`       | `LegendSpec[]`            |          | Shared legend registry. Layers reference entries via `activeLegendId`.                                                                                                    |
+| `legendEnabled` | `boolean`                 |          | Controls whether the resolved `mapType` auto-generates legends. Defaults to `true`. Has no effect on legends supplied directly via `legends`.                             |
+| `mapData`       | `MapData[]`               |          | Attribute datasets joined to GeoJSON sources for choropleth coloring and tooltips.                                                                                        |
+| `metadata`      | `Record<string, unknown>` |          | Arbitrary consumer metadata; not read by the runtime.                                                                                                                     |
 
 ### `LegendSpec`
 
@@ -121,6 +122,7 @@ Each entry in `spec.layers` describes one rendered layer.
 | `legends`        | `LegendSpec[]`                                                                         |          | Alternative legend definitions exposed as runtime toggles.                                                                                                                                                                                                               |
 | `activeLegendId` | `string`                                                                               |          | Active entry from `legends[]`. Enables choropleth coloring and the hover tooltip.                                                                                                                                                                                        |
 | `mapDataId`      | `string`                                                                               |          | References a `MapData.mapDataId` for per-feature value joining (choropleth / tooltip). When a `MapData` declares `dimension`, the adapter auto-discovers color/size.                                                                                                     |
+| `propertyName`   | `string`                                                                               |          | Reads circle size directly from `feature.properties[propertyName]` via `['get', propertyName]`. Alternative to `mapData` — when both are set, `mapDataId` takes precedence. See [Alternative data source](#alternative-data-source-propertyname).                        |
 | `hoverPaint`     | `{ lineColor?: string; lineWidth?: number }`                                           |          | Outline rendered on the hovered feature via a companion MapLibre line layer driven by `feature-state.hover`.                                                                                                                                                             |
 | `selectedPaint`  | `{ lineColor?: string; lineWidth?: number }`                                           |          | Outline rendered on the selected feature via `feature-state.selected`.                                                                                                                                                                                                   |
 | `clickAnchor`    | `{ iconImage?: string; iconSize?: number; color?: string; offset?: [number, number] }` |          | Spec-driven click marker. Use `iconImage` to render a sprite icon; use `color` for the built-in SVG pin. For a custom HTML element, use `<GeoVisMarker>` instead.                                                                                                        |
@@ -475,6 +477,227 @@ This merges your paint over the defaults (`circleColor`, `circleRadius`,
 `circleStrokeColor`, `circleStrokeWidth`), leaving unmentioned properties at
 their dotDensity defaults.
 
+### `proportionalCircles`
+
+Setting `mapType: 'proportionalCircles'` auto-generates a point layer whose
+`circle-radius` encodes the data magnitude (circle **area** ∝ value, via a
+`sqrt` transform) and a quantitative color legend. Minimal spec:
+
+```tsx
+const spec = {
+  id: 'cities',
+  engine: 'maplibre',
+  mapType: 'proportionalCircles',
+  sources: [{ id: 'cities', type: 'geojson', data: citiesGeoJSON }],
+  mapData: [
+    {
+      mapDataId: 'population',
+      mapId: 'cities',
+      title: 'Total population',
+      data: [
+        { geometryId: 1, value: 87_000 },
+        { geometryId: 2, value: 143_000 },
+        { geometryId: 3, value: 487_321 },
+      ],
+    },
+  ],
+};
+```
+
+The resolver fills in, with no extra configuration:
+
+- A `point` layer with `sizeBy: { range: [4, 16], transform: 'sqrt' }`.
+- `scaleMaxValue` — the visual size ceiling. When you omit it, the resolver
+  takes the size dataset's maximum and rounds it **up to a nice round number**
+  (`487 321 → 500 000`) so the legend's reference circles use readable values.
+  A value you provide explicitly is always kept.
+- A color legend with a `title` that names the size dimension
+  (e.g. `Circle size = Total population`).
+- Compact reference labels in the size key (`500k` instead of `500,000`).
+  `GeoVisLegend` applies the compact formatter automatically for circle
+  legends; pass `formatValue` to override it.
+
+#### Alternative data source: `propertyName`
+
+Instead of declaring `mapData` entries, you can set `propertyName` on a layer
+to read values directly from GeoJSON feature properties. The resolver
+auto-generates `circle-radius` via `['get', propertyName]` and computes
+`scaleMaxValue` from the inline GeoJSON data:
+
+```tsx
+const spec = {
+  id: 'cities',
+  engine: 'maplibre',
+  mapType: 'proportionalCircles',
+  sources: [
+    {
+      id: 'cities',
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [-46.6, -23.5] },
+            properties: { total: 87_000 },
+          },
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [-43.2, -22.9] },
+            properties: { total: 487_321 },
+          },
+        ],
+      },
+    },
+  ],
+  layers: [
+    {
+      id: 'cities-layer',
+      sourceId: 'cities',
+      geometry: 'point',
+      propertyName: 'total',
+    },
+  ],
+};
+```
+
+When both `propertyName` and `mapDataId` are set on a layer, `mapDataId`
+takes precedence. The `propertyName` path requires inline GeoJSON data (not a
+URL) for `scaleMaxValue` computation — when the source is a URL, the resolver
+skips the default ceiling and the adapter falls back to legend-driven sizing.
+
+#### Disabling the auto-generated legend
+
+`legendEnabled` (default `true`) controls whether `proportionalCircles`
+auto-generates its size legend. When `true`, the auto-generated legend is
+added alongside any legends you already supply via `spec.legends` — it never
+replaces or merges into an unrelated existing legend, only into one that
+shares its `id`. Set it to `false` to suppress the auto-generated legend
+entirely, e.g. when you render your own legend UI outside of geovis; existing
+legends in `spec.legends` are kept untouched either way:
+
+```tsx
+const spec = {
+  // ...
+  mapType: 'proportionalCircles',
+  legendEnabled: false,
+};
+```
+
+Circle-size legend rows get extra vertical spacing as their radius grows
+past 10px, so large reference circles don't crowd the row below them.
+
+#### Overriding circle paint
+
+`PROPORTIONAL_CIRCLES_DEFAULTS` sets the default `circleOpacity`,
+`circleStrokeWidth`, and `circleStrokeOpacity`. To override any of them (or
+set `circleColor`), add a layer to `spec.layers` with the same `sourceId` and
+`geometry: 'point'` — its `paint` is merged over the resolved defaults:
+
+```tsx
+const spec = {
+  // ...
+  layers: [
+    {
+      id: 'my-custom-circles',
+      sourceId: 'cities',
+      geometry: 'point',
+      paint: { circleColor: '#2563eb', circleOpacity: 0.5 },
+    },
+  ],
+};
+```
+
+#### Color and size are independent
+
+Color and size are resolved from **separate** feature-state keys, so styling
+the color legend never changes circle sizes. For a true bivariate map, declare
+two datasets on the same source with distinct `dimension` and `stateKey` —
+see [Bivariate Maps](#bivariate-maps). The `dimension: 'size'` dataset drives
+the radius; the `dimension: 'color'` dataset drives the fill.
+
+#### Inputs that are invalid or not handled
+
+Proportional circles encode magnitude as area, which only has meaning for
+non-negative quantities. The following inputs are out of scope and will not
+render as intended:
+
+- **Negative values** — clamp to `zeroRadiusPx` (invisible). A circle cannot
+  represent a negative area. Use a diverging choropleth instead.
+- **Mixed negative/positive values** — only the positives are sized; negatives
+  vanish. The result misrepresents the data — split the measure or switch map
+  type.
+- **Non-numeric / `null` values** — coalesced to `0` and rendered invisible
+  (never `NaN`). A dataset that is mostly non-numeric produces an empty size
+  legend.
+- **`sizeBy.range` with `min >= max` or `min <= 0`** — throws at translation
+  time (`sizeBy.range must have min < max and both > 0`). Both radii must be
+  positive and ordered.
+- **`scaleMaxValue <= 0`** — has no usable ceiling; leave it unset and let the
+  resolver compute it from the data.
+
+### Legend merging differs per `mapType`
+
+Each `mapType` has different needs for how its auto-generated legend internals interacts
+with a user-supplied `spec.legends`, so the resolver uses a different merge
+strategy per type:
+
+| `mapType`             | Auto-generates a legend?                       | Merge strategy         | Why                                                                                                                                                                                                                                                                                 |
+| --------------------- | ---------------------------------------------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `choropleth`          | Always (1 legend)                              | `mergeLegends`         | The generated legend **is** the map's only visual encoding. A user legend with a different `id` almost certainly means "use my title/format for that same encoding" — so an id mismatch still grafts the resolved `colorBy` positionally onto the sole user legend.                 |
+| `dotDensity`          | Never                                          | n/a                    | Dots have no color-by-value encoding, so there is nothing to merge. Any legend you supply in `spec.legends` passes through untouched.                                                                                                                                               |
+| `proportionalCircles` | Configurable (`legendEnabled`, default `true`) | `mergeLegendsByIdOnly` | The size legend is **additional, separate** information (the reference-circle key) layered next to whatever legend(s) you already use for color. Grafting it positionally onto an unrelated user legend would silently overwrite that legend's own `colorBy` and lose the size key. |
+
+Concretely:
+
+- **`mergeLegends`** (choropleth, dotDensity) first tries an exact `id` match.
+  If none of the user's legends share the resolved legend's `id`, it still
+  fills in the missing `colorBy` on the user's legend positionally — there is
+  only ever one resolved legend, so there is no ambiguity about which one it
+  refers to.
+
+```typescript
+const userLegends = [
+  { id: 'custom-legend', title: 'My Legend' } // no colorBy
+];
+
+const resolvedLegends = [
+  { id: 'pop-legend', title: 'Population', colorBy: { type: 'quantitative', property: 'pop', scale: 'threshold', thresholds: [100, 500], colors: ['#fee5d9', '#fb6a4a', '#a50f15'] } }
+];
+
+// --- mergeLegends (positional fallback) ---
+// findMatchingResolvedLegend: id doesn't match, but resolvedLegends.length === 1
+// → returns resolvedLegends[0] because it has colorBy
+// Result: userLegends[0] inherits colorBy from resolved[0]
+[
+  { id: 'custom-legend', title: 'My Legend', colorBy: { type: 'quantitative', ... } }
+  // ❌ "Population" is gone — absorbed into "custom-legend"
+]
+```
+
+- **`mergeLegendsByIdOnly`** (proportionalCircles) only fills in `colorBy` when
+  a user legend shares the resolved legend's exact `id`. Otherwise, the
+  resolved size legend is **appended** as its own separate entry — never
+  merged into an unrelated legend just because it happens to be positioned
+  first. See [Disabling the auto-generated legend](#disabling-the-auto-generated-legend)
+  for how `legendEnabled` controls whether that entry is generated at all.
+
+```typescript
+// --- mergeLegendsByIdOnly (id match only) ---
+// resolvedLegends.find(r => r.id === 'custom-legend') → undefined
+// → userLegend kept as-is, resolved is appended at the end
+[
+  { id: 'custom-legend', title: 'My Legend' },
+  { id: 'pop-legend', title: 'Population', colorBy: { type: 'quantitative', ... } }
+  // ✅ Both preserved
+]
+```
+
+Both strategies share one invariant: a resolved legend is only ever appended
+once. Its `id` is checked against every already-merged legend before being
+added, so a legend the user already matched (by `id` or positional fallback)
+is never duplicated as an extra unmatched entry.
+
 ### Architecture note
 
 `resolveSpecFromMapType` is called in two places: `GeoVisProvider` (for React
@@ -483,6 +706,14 @@ the resolution runs twice per spec update. Since `resolveSpecFromMapType` is
 idempotent, this is functionally correct. The duplication exists because
 `createRuntime` is a public API exported from the package and must remain
 self-sufficient — it cannot assume the caller already resolved the spec.
+
+`mergeResolvedLayers` (which injects `sizeBy`/`mapDataId`/`activeLegendId`/
+`legends` defaults into a matching user layer) always returns a **new** layer
+object rather than mutating the one in `spec.layers` — important because the
+same `spec.layers` array/objects are often reused across updates (e.g.
+`setSpec((prev) => ({ ...prev, legendEnabled: false }))`), and mutating them
+in place would leak a stale resolved field (like an embedded `legends` entry)
+into a later resolution of the same objects.
 
 ## Boundary Groups
 

@@ -1,10 +1,7 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
-import type {
-  GeoJSONFeatureCollection,
-  MapData,
-  VisualizationSpec,
-} from '@ttoss/geovis';
+import type { GeoJSONFeatureCollection } from '@ttoss/geovis';
 import {
+  formatCompactNumber,
   GeoVisCanvas,
   GeoVisHoverTooltip,
   GeoVisLegend,
@@ -12,6 +9,18 @@ import {
 } from '@ttoss/geovis';
 import * as React from 'react';
 
+import type {
+  ApiDistrictEntry,
+  DistrictEntry,
+  Year,
+} from './helpers/gender-dominance-helpers';
+import {
+  buildCentroidGeoJson,
+  buildSpec,
+  normalizePopulationData,
+  renderTooltip,
+  sumValues,
+} from './helpers/gender-dominance-helpers';
 import {
   computeBbox,
   FitBoundsToBbox,
@@ -33,224 +42,24 @@ const AVAILABLE_YEARS = [
   2000, 2005, 2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050,
 ] as const;
 
-type Year = (typeof AVAILABLE_YEARS)[number];
-
-interface ApiDistrictEntry {
-  total: number;
-  nome_distr: string;
-  Homens: Record<string, number>;
-  Mulheres: Record<string, number>;
-}
-
-interface DistrictEntry {
-  total: number;
-  districtName: string;
-  men: Record<string, number>;
-  women: Record<string, number>;
-}
-
-const normalizeEntry = (e: ApiDistrictEntry): DistrictEntry => {
-  return {
-    total: e.total,
-    districtName: e.nome_distr,
-    men: e.Homens,
-    women: e.Mulheres,
-  };
-};
-
-const normalizePopulationData = (
-  raw: Record<string, Record<string, ApiDistrictEntry>>
-): Record<string, Record<string, DistrictEntry>> => {
-  return Object.fromEntries(
-    Object.entries(raw).map(([yr, districts]) => {
-      return [
-        yr,
-        Object.fromEntries(
-          Object.entries(districts).map(([id, e]) => {
-            return [id, normalizeEntry(e)];
-          })
-        ),
-      ];
-    })
-  );
-};
-
-const GENDER_COLOR_MEN = '#3b82f6';
-const GENDER_COLOR_WOMEN = '#ec4899';
-
-const sumValues = (obj: Record<string, number>): number => {
-  return Object.values(obj).reduce((a, b) => {
-    return a + b;
-  }, 0);
-};
-
-const computeCentroid = (coords: number[][][]): [number, number] => {
-  const ring = coords[0];
-  const lng =
-    ring.reduce((s, c) => {
-      return s + c[0];
-    }, 0) / ring.length;
-  const lat =
-    ring.reduce((s, c) => {
-      return s + c[1];
-    }, 0) / ring.length;
-  return [lng, lat];
-};
-
-const buildCentroidGeoJson = (
-  geoJson: GeoJSONFeatureCollection
-): GeoJSONFeatureCollection => {
-  return {
-    type: 'FeatureCollection',
-    features: geoJson.features.map((f) => {
-      const [lng, lat] = computeCentroid(
-        (f.geometry as GeoJSON.Polygon).coordinates as number[][][]
-      );
-      return {
-        type: 'Feature' as const,
-        id: f.id,
-        geometry: { type: 'Point' as const, coordinates: [lng, lat] },
-        properties: null,
-      };
-    }),
-  };
-};
-
-const fmtPop = (v: number) => {
-  return `${(v / 1_000).toFixed(0)}k inhabitants`;
-};
-
-const renderTooltip = (
-  info: { featureId: string | number },
-  populationData: Record<string, Record<string, DistrictEntry>> | null,
-  year: Year
-) => {
-  const district = populationData?.[String(year)]?.[String(info.featureId)];
-  if (!district) {
-    return (
-      <div
-        style={{ fontWeight: 600 }}
-      >{`District #${String(info.featureId)}`}</div>
-    );
-  }
-  const totalMen = sumValues(district.men);
-  const totalWomen = sumValues(district.women);
-  const dominant = totalWomen > totalMen ? 'Women' : 'Men';
-  const color = totalWomen > totalMen ? GENDER_COLOR_WOMEN : GENDER_COLOR_MEN;
-  return (
-    <>
-      <div style={{ fontWeight: 600 }}>{district.districtName}</div>
-      <div>{fmtPop(district.total)}</div>
-      <div>
-        <span
-          style={{
-            display: 'inline-block',
-            width: 10,
-            height: 10,
-            borderRadius: '50%',
-            backgroundColor: color,
-            marginRight: 4,
-          }}
-        />
-        {dominant} dominant
-      </div>
-    </>
-  );
-};
-
-const buildSpec = (
-  sizeData: Array<{ geometryId: number; value: number }>,
-  colorData: Array<{ geometryId: number; value: string }>,
-  year: Year,
-  districtGeoJson: GeoJSONFeatureCollection,
-  centroidGeoJson: GeoJSONFeatureCollection
-): VisualizationSpec => {
-  return {
-    id: 'gender-dominance-bivariate',
-    engine: 'maplibre',
-    sources: [
-      {
-        id: 'district-polygons',
-        type: 'geojson',
-        data: districtGeoJson,
-      },
-      { id: 'district-centroids', type: 'geojson', data: centroidGeoJson },
-    ],
-    layers: [
-      {
-        id: 'districts-fill',
-        sourceId: 'district-polygons',
-        geometry: 'polygon',
-        paint: { fillColor: '#e2e8f0' },
-        hoverPaint: { lineColor: '#333333', lineWidth: 2 },
-        selectedPaint: { lineColor: '#1a1a1a', lineWidth: 3 },
-        clickAnchor: { color: '#2171b5' },
-      },
-      {
-        id: 'districts-outline',
-        sourceId: 'district-polygons',
-        geometry: 'line',
-        paint: { lineColor: '#94a3b8', lineWidth: 1 },
-      },
-      {
-        id: 'district-centroids',
-        sourceId: 'district-centroids',
-        geometry: 'point',
-        activeLegendId: 'gender',
-        paint: { circleStrokeColor: '#ffffff', circleStrokeWidth: 1.5 },
-        sizeBy: {
-          range: [4, 12],
-          mode: 'continuous',
-          thresholds: [50_000, 100_000, 150_000, 200_000, 250_000],
-          transform: 'sqrt',
-        },
-      },
-    ],
-    legends: [
-      {
-        id: 'gender',
-        title: `Gender dominance \u2014 ${year}`,
-        colorBy: {
-          type: 'categorical',
-          property: 'gender',
-          mapping: { men: GENDER_COLOR_MEN, women: GENDER_COLOR_WOMEN },
-          defaultColor: '#9ca3af',
-        },
-      },
-    ],
-    mapData: [
-      {
-        mapDataId: 'population',
-        mapId: 'district-centroids',
-        stateKey: 'total',
-        dimension: 'size',
-        data: sizeData,
-      },
-      {
-        mapDataId: 'gender',
-        mapId: 'district-centroids',
-        stateKey: 'gender',
-        dimension: 'color',
-        data: colorData,
-      },
-    ] as MapData[],
-  };
-};
-
-/**
- * Bivariate map of São Paulo district centroids with **independent** size and
- * colour dimensions.
- *
- * - **Size** — total population (proportional symbols via `sizeBy`).
- * - **Colour** — pink (`#ec4899`) when women outnumber men, blue (`#3b82f6`)
- *   when men outnumber women (categorical colour via `dimension: 'color'`).
- *
- * Demonstrates `dimension` + `stateKey` with two separate `mapData`
- * entries using distinct `stateKey` values so each dimension resolves
- * independently from the same source.
- */
-// eslint-disable-next-line react/prop-types
-export const GenderDominanceBivariate: StoryFn<{ year: Year }> = ({ year }) => {
+/* eslint-disable react/prop-types */
+export const GenderDominanceBivariate: StoryFn<{
+  year: Year;
+  legendEnabled: boolean;
+  minRadiusPx: number;
+  maxRadiusPx: number;
+  circleOpacity: number;
+  strokeWidth: number;
+  strokeOpacity: number;
+}> = ({
+  year,
+  legendEnabled,
+  minRadiusPx,
+  maxRadiusPx,
+  circleOpacity,
+  strokeWidth,
+  strokeOpacity,
+}) => {
   const [populationData, setPopulationData] = React.useState<Record<
     string,
     Record<string, DistrictEntry>
@@ -330,14 +139,36 @@ export const GenderDominanceBivariate: StoryFn<{ year: Year }> = ({ year }) => {
 
   const spec = React.useMemo(() => {
     if (!districtGeoJson || !centroidGeoJson) return null;
-    return buildSpec(
+    // `scaleMaxValue` is intentionally omitted: the resolver derives a
+    // nice-rounded ceiling (e.g. 487 321 → 500 000) from the size dataset, so
+    // the reference-circle labels read as clean round numbers (125k / 250k /
+    // 500k) instead of the raw-max decimals a manual Math.max would produce.
+    return buildSpec({
       sizeData,
       colorData,
       year,
       districtGeoJson,
-      centroidGeoJson
-    );
-  }, [sizeData, colorData, year, districtGeoJson, centroidGeoJson]);
+      centroidGeoJson,
+      legendEnabled,
+      minRadiusPx,
+      maxRadiusPx,
+      circleOpacity,
+      strokeWidth,
+      strokeOpacity,
+    });
+  }, [
+    sizeData,
+    colorData,
+    year,
+    districtGeoJson,
+    centroidGeoJson,
+    legendEnabled,
+    minRadiusPx,
+    maxRadiusPx,
+    circleOpacity,
+    strokeWidth,
+    strokeOpacity,
+  ]);
 
   if (!districtGeoJson || !centroidGeoJson || !districtBbox || !spec) {
     return <div>Loading...</div>;
@@ -369,11 +200,16 @@ export const GenderDominanceBivariate: StoryFn<{ year: Year }> = ({ year }) => {
             }}
           />
         </div>
-        <GeoVisLegend legendId="gender" />
+        <GeoVisLegend legendId="gender" formatValue={formatCompactNumber} />
+        <GeoVisLegend
+          legendId="population-legend"
+          formatValue={formatCompactNumber}
+        />
       </GeoVisProvider>
     </div>
   );
 };
+/* eslint-enable react/prop-types */
 
 GenderDominanceBivariate.argTypes = {
   year: {
@@ -381,8 +217,14 @@ GenderDominanceBivariate.argTypes = {
     options: AVAILABLE_YEARS,
     description: 'Census / projection year',
   },
+  legendEnabled: {
+    control: { type: 'boolean' },
+    description:
+      'Controls whether auto-generated legends are produced by the resolved mapType',
+  },
 };
 
 GenderDominanceBivariate.args = {
-  year: 2020,
+  year: 2025,
+  legendEnabled: true,
 };
