@@ -2,16 +2,6 @@ import { createApiTemplate } from '@ttoss/appsync-api';
 
 import { schemaComposer } from './schemaComposer';
 
-const isStaging = process.env.CARLIN_ENVIRONMENT === 'Staging';
-
-const iamStackName = isStaging
-  ? 'TerezinhaFarmIam-Staging'
-  : 'TerezinhaFarmIam-Production';
-
-const authStackName = isStaging
-  ? 'TerezinhaFarmAuth-Staging'
-  : 'TerezinhaFarmAuth-Production';
-
 const template = createApiTemplate({
   schemaComposer,
   /**
@@ -29,21 +19,19 @@ const template = createApiTemplate({
   },
   dataSource: {
     roleArn: {
-      'Fn::ImportValue': `${iamStackName}:AppSyncLambdaDataSourceIAMRoleArn`,
+      'Fn::ImportValue':
+        'TerezinhaFarmIam-Production:AppSyncLambdaDataSourceIAMRoleArn',
     },
   },
   lambdaFunction: {
-    ...(isStaging
-      ? {}
-      : {
-          layers: [
-            {
-              'Fn::ImportValue': 'LambdaLayer-Graphql-16-8-1',
-            },
-          ],
-        }),
+    layers: [
+      {
+        'Fn::ImportValue': 'LambdaLayer-Graphql-16-8-1',
+      },
+    ],
     roleArn: {
-      'Fn::ImportValue': `${iamStackName}:AppSyncLambdaFunctionIAMRoleArn`,
+      'Fn::ImportValue':
+        'TerezinhaFarmIam-Production:AppSyncLambdaFunctionIAMRoleArn',
     },
   },
   /**
@@ -56,14 +44,14 @@ const template = createApiTemplate({
   ],
   userPoolConfig: {
     appIdClientRegex: {
-      'Fn::ImportValue': `${authStackName}:AppClientId`,
+      'Fn::ImportValue': 'TerezinhaFarmAuth-Production:AppClientId',
     },
     awsRegion: {
-      'Fn::ImportValue': `${authStackName}:Region`,
+      'Fn::ImportValue': 'TerezinhaFarmAuth-Production:Region',
     },
     defaultAction: 'ALLOW',
     userPoolId: {
-      'Fn::ImportValue': `${authStackName}:UserPoolId`,
+      'Fn::ImportValue': 'TerezinhaFarmAuth-Production:UserPoolId',
     },
   },
 });
