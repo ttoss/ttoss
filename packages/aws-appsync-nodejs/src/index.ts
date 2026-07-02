@@ -113,7 +113,6 @@ const query: Query = async (query, variables) => {
 
 export const appSyncClient = {
   query,
-  mutate: query,
   setConfig,
   get config() {
     return _config;
