@@ -112,7 +112,18 @@ const query: Query = async (query, variables) => {
 };
 
 export const appSyncClient = {
+  /**
+   * Execute a GraphQL query against the configured AppSync endpoint.
+   */
   query,
+  /**
+   * Execute a GraphQL mutation against the configured AppSync endpoint.
+   *
+   * Behaves identically to {@link query} — AppSync determines the operation
+   * type from the document itself, so this alias exists only to make the
+   * caller's intent explicit (e.g. triggering a subscription).
+   */
+  mutate: query,
   setConfig,
   get config() {
     return _config;
