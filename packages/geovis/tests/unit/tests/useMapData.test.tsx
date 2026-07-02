@@ -31,7 +31,6 @@ jest.mock('src/adapters/maplibre/MapLibreAdapter', () => {
 });
 
 const spec: VisualizationSpec = {
-  id: 's',
   engine: 'maplibre',
   view: { center: [0, 0], zoom: 1 },
   sources: [

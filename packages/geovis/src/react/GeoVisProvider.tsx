@@ -10,6 +10,7 @@ import { createRuntime } from '../runtime/createRuntime';
 import { resolveSpecFromMapType } from '../spec/mapTypeDefaults';
 import type { PolicyViolation, VisualizationSpec } from '../spec/types';
 import { GeoVisHoverTooltip } from '../ui/GeoVisHoverTooltip';
+import { GeoVisLegend } from '../ui/GeoVisLegend';
 import {
   GeoVisClickContext,
   GeoVisContext,
@@ -49,7 +50,7 @@ const checkPolicies = (spec: VisualizationSpec): PolicyViolation[] => {
       (m.normalizedExpression as string | undefined);
     const label = m.normalizedLabel as string | undefined;
 
-    let message = `Spec '${spec.id}' violates cartographic policy: ${reason}.`;
+    let message = `Spec violates cartographic policy: ${reason}.`;
     if (metricField) message += ` Invalid field: '${metricField}'.`;
     if (normalizedField)
       message += ` Correct alternative: '${normalizedField}'`;
@@ -60,6 +61,26 @@ const checkPolicies = (spec: VisualizationSpec): PolicyViolation[] => {
   }
 
   return violations;
+};
+
+/**
+ * Collects the ids of every legend that declares a `position`. A positioned
+ * legend is meant to overlay the map, so the provider mounts a
+ * `<GeoVisLegend>` for it automatically — mirroring the auto-mounted
+ * `hoverTooltip` — and consumers do not place it by hand. Scans both the
+ * top-level `spec.legends` registry and per-layer `legends`.
+ */
+const collectPositionedLegendIds = (spec: VisualizationSpec): string[] => {
+  const ids = new Set<string>();
+  for (const legend of spec.legends ?? []) {
+    if (legend.position) ids.add(legend.id);
+  }
+  for (const layer of spec.layers) {
+    for (const legend of layer.legends ?? []) {
+      if (legend.position) ids.add(legend.id);
+    }
+  }
+  return Array.from(ids);
 };
 
 const resolveAdapter = async (
@@ -179,6 +200,10 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
     return checkPolicies(effectiveSpec);
   }, [effectiveSpec]);
 
+  const positionedLegendIds = React.useMemo(() => {
+    return collectPositionedLegendIds(resolvedSpec);
+  }, [resolvedSpec]);
+
   React.useEffect(() => {
     let cancelled = false;
     let activeRuntime: GeoVisRuntime | null = null;
@@ -257,6 +282,12 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
           {children}
         </HoverProvider>
       </ClickProvider>
+      {/* Spec-driven legend overlays: mount one <GeoVisLegend> per positioned
+          legend so consumers get the overlay just by declaring `position` on
+          a legend, exactly like the auto-mounted hoverTooltip. */}
+      {positionedLegendIds.map((id) => {
+        return <GeoVisLegend key={id} legendId={id} />;
+      })}
     </GeoVisContext.Provider>
   );
 };

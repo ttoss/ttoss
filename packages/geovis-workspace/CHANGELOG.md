@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.8](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.2.7...@ttoss/geovis-workspace@0.2.8) (2026-07-01)
+
+**Note:** Version bump only for package @ttoss/geovis-workspace
+
+## [0.2.7](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.2.6...@ttoss/geovis-workspace@0.2.7) (2026-07-01)
+
+### Bug Fixes
+
+- changing geovisLegend structure ([#1111](https://github.com/ttoss/ttoss/issues/1111)) ([fd90668](https://github.com/ttoss/ttoss/commit/fd90668837740c1e0fcd66f72275266564c4ab84))
+
 ## [0.2.6](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.2.5...@ttoss/geovis-workspace@0.2.6) (2026-06-30)
 
 **Note:** Version bump only for package @ttoss/geovis-workspace

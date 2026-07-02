@@ -433,7 +433,6 @@ export interface VisualizationView {
 }
 
 export interface VisualizationSpec {
-  id: string;
   title?: string;
   description?: string;
   engine: 'maplibre';
