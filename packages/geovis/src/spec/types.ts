@@ -473,6 +473,12 @@ export interface VisualizationSpec {
    * directly via `spec.legends`.
    */
   legendEnabled?: boolean;
+
+  /**
+   * Internal marker set by `resolveSpecFromMapType` to prevent double-resolution.
+   * Consumers should not set this field directly.
+   */
+  __resolved?: boolean;
 }
 
 export type GeovisSpec = VisualizationSpec;
