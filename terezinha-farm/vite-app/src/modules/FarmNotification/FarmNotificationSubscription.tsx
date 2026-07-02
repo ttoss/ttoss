@@ -74,9 +74,10 @@ const uiText = {
   publishMutationCode: 'publishFarmNotification',
   publishButton: 'Send test notification',
   publishMutateCode: 'appSyncClient.mutate()',
-  publishHelpPrefix: 'Trigger uses the same ',
-  publishHelpSuffix: ' mutation that a backend Lambda would call with ',
-  publishHelpSuffixAfterCode: '.',
+  publishHelpPrefix: 'This demo publishes the ',
+  publishHelpSuffix:
+    ' mutation from the browser. A backend Lambda would trigger the same mutation with ',
+  publishHelpSuffixAfterCode: ' using IAM credentials.',
   publishingButton: 'Publishing…',
   stopButton: 'Stop',
   subscribeButton: 'Subscribe',
@@ -137,8 +138,8 @@ const FarmNotificationListener = ({ farmId }: { farmId: string }) => {
             // eslint-disable-next-line no-console
             console.error('FarmNotification subscription error:', error);
           },
-          complete: (): void => {
-            throw new Error('Function not implemented.');
+          complete: () => {
+            // The stream closed normally; nothing to do.
           },
         }
       );

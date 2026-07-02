@@ -4,7 +4,7 @@ import { sessionStorage } from 'aws-amplify/utils';
 
 const graphQLRegion =
   import.meta.env.VITE_APPSYNC_REGION ||
-  import.meta.env.VITE_USER_POOL_ID.split('_')[0];
+  import.meta.env.VITE_USER_POOL_ID?.split('_')?.[0];
 
 const config: ResourcesConfig = {
   API: {
