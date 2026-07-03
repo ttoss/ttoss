@@ -2,13 +2,184 @@ import * as React from 'react';
 import type { Layout } from 'react-grid-layout';
 
 import type { DashboardGridItem, DashboardTemplate } from './Dashboard';
-import type { CardCatalogItem } from './dashboardCardCatalog';
 import type { DashboardCard } from './DashboardCard';
+import type { CardCatalogItem } from './dashboardCardCatalog';
 import {
   createGridItemWithPlacement,
   DEFAULT_CARD_CATALOG,
 } from './dashboardCardCatalog';
 import type { DashboardFilter, DashboardFilterValue } from './DashboardFilters';
+
+const useStableCallback = <
+  T extends ((...args: never[]) => unknown) | undefined,
+>(
+  fn: T
+): React.MutableRefObject<T> => {
+  const ref = React.useRef(fn);
+  React.useEffect(() => {
+    ref.current = fn;
+  }, [fn]);
+  return ref;
+};
+
+const useEditState = ({
+  cardCatalog,
+  onCancelEditRef,
+  onSaveAsNewTemplateRef,
+  onSaveLayoutRef,
+  selectedTemplate,
+}: {
+  cardCatalog: CardCatalogItem[];
+  onCancelEditRef: React.MutableRefObject<(() => void) | undefined>;
+  onSaveAsNewTemplateRef: React.MutableRefObject<
+    ((t: DashboardTemplate) => void) | undefined
+  >;
+  onSaveLayoutRef: React.MutableRefObject<
+    ((t: DashboardTemplate) => void) | undefined
+  >;
+  selectedTemplate: DashboardTemplate | undefined;
+}) => {
+  const [isEditMode, setIsEditMode] = React.useState(false);
+  const [editingGrid, setEditingGrid] = React.useState<
+    DashboardGridItem[] | null
+  >(null);
+  const [saveAsNewModalOpen, setSaveAsNewModalOpen] = React.useState(false);
+
+  const startEdit = React.useCallback(() => {
+    if (!selectedTemplate) return;
+    setEditingGrid(
+      selectedTemplate.grid.map((item) => {
+        return { ...item };
+      })
+    );
+    setIsEditMode(true);
+  }, [selectedTemplate]);
+
+  const cancelEdit = React.useCallback(() => {
+    setEditingGrid(null);
+    setIsEditMode(false);
+    onCancelEditRef.current?.();
+  }, [onCancelEditRef]);
+
+  const saveEdit = React.useCallback(() => {
+    if (!editingGrid || !selectedTemplate) return;
+    onSaveLayoutRef.current?.({ ...selectedTemplate, grid: editingGrid });
+    setEditingGrid(null);
+    setIsEditMode(false);
+  }, [editingGrid, onSaveLayoutRef, selectedTemplate]);
+
+  const saveAsNew = React.useCallback(() => {
+    if (!editingGrid || !selectedTemplate) return;
+    setSaveAsNewModalOpen(true);
+  }, [editingGrid, selectedTemplate]);
+
+  const confirmSaveAsNew = React.useCallback(
+    (title: string) => {
+      if (!editingGrid || !selectedTemplate) return;
+      onSaveAsNewTemplateRef.current?.({
+        ...selectedTemplate,
+        id: `copy-${Date.now()}`,
+        name: title.trim() || `Copy of ${selectedTemplate.name}`,
+        grid: editingGrid,
+      });
+      setSaveAsNewModalOpen(false);
+      setEditingGrid(null);
+      setIsEditMode(false);
+    },
+    [editingGrid, onSaveAsNewTemplateRef, selectedTemplate]
+  );
+
+  const cancelSaveAsNew = React.useCallback(() => {
+    return setSaveAsNewModalOpen(false);
+  }, []);
+
+  const addCard = React.useCallback(
+    (item: CardCatalogItem) => {
+      setEditingGrid((prev) => {
+        if (!prev) return prev;
+        const catalogItem = cardCatalog.find((c) => {
+          return c.card.title === item.card.title;
+        });
+        if (!catalogItem) return prev;
+        const maxY = prev.length
+          ? Math.max(
+              ...prev.map((i) => {
+                return i.y + i.h;
+              })
+            )
+          : 0;
+        return [...prev, createGridItemWithPlacement(catalogItem, 0, maxY)];
+      });
+    },
+    [cardCatalog]
+  );
+
+  const removeCard = React.useCallback((id: string) => {
+    return setEditingGrid((prev) => {
+      return prev
+        ? prev.filter((item) => {
+            return item.i !== id;
+          })
+        : prev;
+    });
+  }, []);
+
+  const updateCard = React.useCallback(
+    (id: string, cardPatch: Record<string, unknown>) => {
+      setEditingGrid((prev) => {
+        if (!prev) return prev;
+        return prev.map((item) => {
+          return item.i === id
+            ? { ...item, card: { ...item.card, ...cardPatch } }
+            : item;
+        });
+      });
+    },
+    []
+  );
+
+  const onLayoutChange = React.useCallback((currentLayout: Layout[]) => {
+    setEditingGrid((prev) => {
+      if (!prev) return prev;
+      const byId = new Map(
+        currentLayout.map((l) => {
+          return [l.i, l];
+        })
+      );
+      let changed = false;
+      const next = prev.map((item) => {
+        const layout = byId.get(item.i);
+        if (!layout) return item;
+        if (
+          item.x === layout.x &&
+          item.y === layout.y &&
+          item.w === layout.w &&
+          item.h === layout.h
+        )
+          return item;
+        changed = true;
+        return { ...item, x: layout.x, y: layout.y, w: layout.w, h: layout.h };
+      });
+      return changed ? next : prev;
+    });
+  }, []);
+
+  return {
+    addCard,
+    cancelEdit,
+    cancelSaveAsNew,
+    confirmSaveAsNew,
+    editingGrid,
+    isEditMode,
+    onLayoutChange,
+    removeCard,
+    saveAsNew,
+    saveAsNewModalOpen,
+    saveEdit,
+    startEdit,
+    updateCard,
+  };
+};
 
 export const DashboardContext = React.createContext<{
   filters: DashboardFilter[];
@@ -83,46 +254,29 @@ export const DashboardProvider = (props: {
     onCardClick,
   } = props;
 
-  const [isEditMode, setIsEditMode] = React.useState(false);
-  const [editingGrid, setEditingGrid] = React.useState<
-    DashboardGridItem[] | null
-  >(null);
-  const [saveAsNewModalOpen, setSaveAsNewModalOpen] = React.useState(false);
-
-  const onFiltersChangeRef = React.useRef(onFiltersChange);
+  const onFiltersChangeRef = useStableCallback(onFiltersChange);
   const filtersRef = React.useRef(externalFilters);
-  const onSaveLayoutRef = React.useRef(onSaveLayout);
-  const onSaveAsNewTemplateRef = React.useRef(onSaveAsNewTemplate);
-  const onCancelEditRef = React.useRef(onCancelEdit);
-  const onCardClickRef = React.useRef(onCardClick);
+  const onSaveLayoutRef = useStableCallback(onSaveLayout);
+  const onSaveAsNewTemplateRef = useStableCallback(onSaveAsNewTemplate);
+  const onCancelEditRef = useStableCallback(onCancelEdit);
+  const onCardClickRef = useStableCallback(onCardClick);
+  const onEditingGridChangeRef = useStableCallback(onEditingGridChange);
 
-  React.useEffect(() => {
-    onFiltersChangeRef.current = onFiltersChange;
-  }, [onFiltersChange]);
   React.useEffect(() => {
     filtersRef.current = externalFilters;
   }, [externalFilters]);
-  React.useEffect(() => {
-    onSaveLayoutRef.current = onSaveLayout;
-  }, [onSaveLayout]);
-  React.useEffect(() => {
-    onSaveAsNewTemplateRef.current = onSaveAsNewTemplate;
-  }, [onSaveAsNewTemplate]);
-  React.useEffect(() => {
-    onCancelEditRef.current = onCancelEdit;
-  }, [onCancelEdit]);
-  React.useEffect(() => {
-    onCardClickRef.current = onCardClick;
-  }, [onCardClick]);
 
-  const onEditingGridChangeRef = React.useRef(onEditingGridChange);
-  React.useEffect(() => {
-    onEditingGridChangeRef.current = onEditingGridChange;
-  }, [onEditingGridChange]);
+  const editState = useEditState({
+    cardCatalog,
+    onCancelEditRef,
+    onSaveAsNewTemplateRef,
+    onSaveLayoutRef,
+    selectedTemplate,
+  });
 
   React.useEffect(() => {
-    onEditingGridChangeRef.current?.(editingGrid);
-  }, [editingGrid]);
+    onEditingGridChangeRef.current?.(editState.editingGrid);
+  }, [editState.editingGrid, onEditingGridChangeRef]);
 
   const updateFilter = React.useCallback(
     (key: string, value: DashboardFilterValue) => {
@@ -131,141 +285,15 @@ export const DashboardProvider = (props: {
       });
       onFiltersChangeRef.current?.(updatedFilters);
     },
-    []
-  );
-
-  const startEdit = React.useCallback(() => {
-    if (!selectedTemplate) return;
-    setEditingGrid(
-      selectedTemplate.grid.map((item) => {
-        return { ...item };
-      })
-    );
-    setIsEditMode(true);
-  }, [selectedTemplate]);
-
-  const cancelEdit = React.useCallback(() => {
-    setEditingGrid(null);
-    setIsEditMode(false);
-    onCancelEditRef.current?.();
-  }, []);
-
-  const saveEdit = React.useCallback(() => {
-    if (!editingGrid || !selectedTemplate) return;
-    const template: DashboardTemplate = {
-      ...selectedTemplate,
-      grid: editingGrid,
-    };
-    onSaveLayoutRef.current?.(template);
-    setEditingGrid(null);
-    setIsEditMode(false);
-  }, [editingGrid, selectedTemplate]);
-
-  const saveAsNew = React.useCallback(() => {
-    if (!editingGrid || !selectedTemplate) return;
-    setSaveAsNewModalOpen(true);
-  }, [editingGrid, selectedTemplate]);
-
-  const confirmSaveAsNew = React.useCallback(
-    (title: string) => {
-      if (!editingGrid || !selectedTemplate) return;
-      const template: DashboardTemplate = {
-        ...selectedTemplate,
-        id: `copy-${Date.now()}`,
-        name: title.trim() || `Copy of ${selectedTemplate.name}`,
-        grid: editingGrid,
-      };
-      onSaveAsNewTemplateRef.current?.(template);
-      setSaveAsNewModalOpen(false);
-      setEditingGrid(null);
-      setIsEditMode(false);
-    },
-    [editingGrid, selectedTemplate]
-  );
-
-  const cancelSaveAsNew = React.useCallback(() => {
-    setSaveAsNewModalOpen(false);
-  }, []);
-
-  const addCard = React.useCallback(
-    (item: CardCatalogItem) => {
-      setEditingGrid((prev) => {
-        if (!prev) return prev;
-        const catalogItem = cardCatalog.find((c) => {
-          return c.card.title === item.card.title;
-        });
-        if (!catalogItem) return prev;
-        const maxY = prev.length
-          ? Math.max(
-              ...prev.map((item) => {
-                return item.y + item.h;
-              })
-            )
-          : 0;
-        const newItem = createGridItemWithPlacement(catalogItem, 0, maxY);
-        return [...prev, newItem];
-      });
-    },
-    [cardCatalog]
-  );
-
-  const removeCard = React.useCallback((id: string) => {
-    setEditingGrid((prev) => {
-      return prev
-        ? prev.filter((item) => {
-            return item.i !== id;
-          })
-        : prev;
-    });
-  }, []);
-
-  const updateCard = React.useCallback(
-    (id: string, cardPatch: Record<string, unknown>) => {
-      setEditingGrid((prev) => {
-        if (!prev) return prev;
-        return prev.map((item) => {
-          return item.i === id
-            ? { ...item, card: { ...item.card, ...cardPatch } }
-            : item;
-        });
-      });
-    },
-    []
+    [onFiltersChangeRef]
   );
 
   const handleCardClick = React.useCallback(
     (card: DashboardCard, gridItem: DashboardGridItem) => {
       onCardClickRef.current?.(card, gridItem);
     },
-    []
+    [onCardClickRef]
   );
-
-  const onLayoutChange = React.useCallback((currentLayout: Layout[]) => {
-    setEditingGrid((prev) => {
-      if (!prev) return prev;
-      const byId = new Map(
-        currentLayout.map((l) => {
-          return [l.i, l];
-        })
-      );
-      let changed = false;
-      const next = prev.map((item) => {
-        const layout = byId.get(item.i);
-        if (!layout) return item;
-        if (
-          item.x === layout.x &&
-          item.y === layout.y &&
-          item.w === layout.w &&
-          item.h === layout.h
-        ) {
-          return item;
-        }
-        changed = true;
-        return { ...item, x: layout.x, y: layout.y, w: layout.w, h: layout.h };
-      });
-      return changed ? next : prev;
-    });
-  }, []);
 
   return (
     <DashboardContext.Provider
@@ -275,20 +303,20 @@ export const DashboardProvider = (props: {
         templates: externalTemplates,
         selectedTemplate,
         editable,
-        isEditMode,
-        editingGrid,
-        startEdit,
-        cancelEdit,
-        saveEdit,
-        saveAsNew,
-        saveAsNewModalOpen,
-        confirmSaveAsNew,
-        cancelSaveAsNew,
+        isEditMode: editState.isEditMode,
+        editingGrid: editState.editingGrid,
+        startEdit: editState.startEdit,
+        cancelEdit: editState.cancelEdit,
+        saveEdit: editState.saveEdit,
+        saveAsNew: editState.saveAsNew,
+        saveAsNewModalOpen: editState.saveAsNewModalOpen,
+        confirmSaveAsNew: editState.confirmSaveAsNew,
+        cancelSaveAsNew: editState.cancelSaveAsNew,
         cardCatalog,
-        addCard,
-        removeCard,
-        updateCard,
-        onLayoutChange,
+        addCard: editState.addCard,
+        removeCard: editState.removeCard,
+        updateCard: editState.updateCard,
+        onLayoutChange: editState.onLayoutChange,
         onCardClick: handleCardClick,
       }}
     >
