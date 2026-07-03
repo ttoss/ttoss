@@ -3,7 +3,6 @@ import { validateSpec } from 'src/spec/validateSpec';
 
 describe('validateSpec — sizeBy', () => {
   const pointSpec = {
-    id: 'sizeby-test',
     engine: 'maplibre' as const,
     view: { center: [0, 0] as [number, number], zoom: 1 },
     sources: [

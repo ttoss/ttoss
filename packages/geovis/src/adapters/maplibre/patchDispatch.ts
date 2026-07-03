@@ -41,7 +41,8 @@ const applyLayerAdd = (
         newLayer,
         effectiveSourceLayer,
         viewState.spec.legends,
-        viewState.spec.mapData
+        viewState.spec.mapData,
+        viewState.spec.scaleMaxValue
       )
     )
   );

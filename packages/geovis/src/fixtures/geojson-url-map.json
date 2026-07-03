@@ -1,5 +1,4 @@
 {
-  "id": "geojson-url-map",
   "title": "GeoJSON URL Map",
   "description": "Map using a remote GeoJSON URL as source.",
   "engine": "maplibre",

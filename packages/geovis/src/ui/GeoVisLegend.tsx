@@ -1,342 +1,86 @@
-import { Link } from '@ttoss/ui';
 import * as React from 'react';
 
-import {
-  resolveCategoricalFallbackColor,
-  resolvePalette,
-  resolveQuantitativeFallbackColor,
-} from '../adapters/maplibre/legendTranslation';
-import type {
-  LegendPosition,
-  LegendSpec,
-  VisualizationLayer,
-  VisualizationSpec,
-} from '../spec/types';
+import type { LegendSpec, VisualizationSpec } from '../spec/types';
 import { useGeoVis } from './contexts';
-import { formatLabel } from './GeoVisLegend.formatters';
+import type { CircledLegendItem } from './GeoVisLegend.circles';
+import {
+  buildCircledItems,
+  CirclesLegendItems,
+  findProportionalCirclesConfig,
+} from './GeoVisLegend.circles';
+import type { LegendItem } from './GeoVisLegend.utils';
+import {
+  BORDER_COLOR,
+  buildColorItems,
+  buildContainerStyle,
+  buildReferenceContent,
+  computeNormalizedBreaks,
+  hasLegendContent,
+  MUTED_COLOR,
+  resolveFormatter,
+  resolveLegend,
+  rowStyle,
+  shouldShowCircleItems,
+  shouldShowTopDivider,
+  swatchBase,
+} from './GeoVisLegend.utils';
 
-interface LegendItem {
-  binIndex: number;
-  label: string;
-  color: string;
-}
-
-const findLegendInLayer = (
-  layer: VisualizationLayer,
-  legendId: string
-): LegendSpec | undefined => {
-  return layer.legends?.find((legend) => {
-    return legend.id === legendId;
-  });
-};
-
-const resolveLegend = (
-  spec: VisualizationSpec,
-  legendId: string
-): LegendSpec | undefined => {
-  const topLevelLegend = spec.legends?.find((legend) => {
-    return legend.id === legendId;
-  });
-  if (topLevelLegend) return topLevelLegend;
-
-  for (const layer of spec.layers) {
-    const layerLegend = findLegendInLayer(layer, legendId);
-    if (layerLegend) return layerLegend;
-  }
-
-  return undefined;
-};
-
-const defaultFormatValue = (value: number): string => {
-  return value.toLocaleString('en-US');
-};
-
-/**
- * Returns `true` when the URL is safe to use as an `href` (i.e. its scheme
- * is limited to `http:` or `https:`). Rejects `javascript:`, `data:`, and
- * other potentially dangerous schemes.
- */
-const isSafeUrl = (url: string): boolean => {
-  try {
-    const parsed = new URL(url);
-    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
-  } catch {
-    return false;
-  }
-};
-
-/**
- * Parses a `reference` string and returns an array of React nodes.
- * Inline link syntax: `{link:visible text|https://example.com}` is
- * rendered as a `@ttoss/ui` Link component. URLs with non-http(s) schemes
- * are rendered as plain text to prevent unsafe navigation.
- */
-export const parseReference = (text: string): React.ReactNode[] => {
-  const nodes: React.ReactNode[] = [];
-  const pattern =
-    /\{link:([^|{}\r\n]+)\|([^{}\r\n]*(?:\{[^{}\r\n]*\}[^{}\r\n]*)*)\}/g;
-  let lastIndex = 0;
-  let key = 0;
-  let match: RegExpExecArray | null;
-
-  while ((match = pattern.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      nodes.push(text.slice(lastIndex, match.index));
-    }
-    const url = match[2];
-    if (isSafeUrl(url)) {
-      nodes.push(
-        <Link key={key++} href={url} target="_blank" rel="noopener noreferrer">
-          {match[1]}
-        </Link>
-      );
-    } else {
-      nodes.push(match[1]);
-    }
-    lastIndex = pattern.lastIndex;
-  }
-
-  if (lastIndex < text.length) {
-    nodes.push(text.slice(lastIndex));
-  }
-
-  return nodes;
-};
-
-/**
- * Maps a `LegendPosition` value to CSS absolute-positioning properties.
- * The parent element must have `position: relative` (or equivalent) for
- * the overlay to be placed correctly. Returns `undefined` when no position
- * is specified.
- */
-const resolvePositionStyle = (
-  position: LegendPosition | undefined
-): React.CSSProperties | undefined => {
-  if (!position) return undefined;
-  const base: React.CSSProperties = { position: 'absolute', zIndex: 10 };
-  if (position === 'top-left') return { ...base, top: 10, left: 10 };
-  if (position === 'top-right') return { ...base, top: 10, right: 10 };
-  if (position === 'bottom-left') return { ...base, bottom: 10, left: 10 };
-  return { ...base, bottom: 10, right: 10 };
-};
-
-const buildCategoricalItems = (legend: LegendSpec): LegendItem[] => {
-  const colorBy = legend.colorBy;
-  if (colorBy.type !== 'categorical') return [];
-
-  const mapping = Object.entries(colorBy.mapping ?? {});
-  // Empty mapping ⇒ adapter paints `['literal', fallbackColor]` (one solid
-  // colour for every feature). Render a single "All" swatch so the legend
-  // never disagrees with the painted layer.
-  if (!mapping.length) {
-    return [
-      {
-        binIndex: 0,
-        label: 'All',
-        color: resolveCategoricalFallbackColor(colorBy),
-      },
-    ];
-  }
-
-  const fmtLabels =
-    legend.labelFormat?.type === 'labels' ? legend.labelFormat.labels : [];
-  return mapping.map(([key, color], index) => {
-    return { binIndex: index, label: fmtLabels[index] ?? key, color };
-  });
-};
-
-const buildQuantitativeItems = ({
-  legend,
-  breaks,
-  formatValue,
-}: {
-  legend: LegendSpec;
-  breaks: number[];
-  formatValue: (value: number) => string;
-}): LegendItem[] => {
-  const colorBy = legend.colorBy;
-  if (colorBy.type !== 'quantitative') return [];
-
-  const fallbackColor = resolveQuantitativeFallbackColor(colorBy, breaks);
-
-  if (!breaks.length) {
-    return [
-      {
-        binIndex: 0,
-        label: 'All values',
-        color: fallbackColor,
-      },
-    ];
-  }
-
-  const total = breaks.length + 1;
-  const palette = resolvePalette(colorBy, total);
-  const { labelFormat, normalization } = legend;
-
-  const mkLabel = (
-    lower: number | null,
-    upper: number | null,
-    index: number
-  ) => {
-    return formatLabel({
-      lower,
-      upper,
-      index,
-      total,
-      spec: labelFormat,
-      normalization,
-      formatValue,
-    });
-  };
-
-  const items: LegendItem[] = [
-    { binIndex: 0, label: mkLabel(null, breaks[0], 0), color: fallbackColor },
-  ];
-
-  for (let i = 1; i < breaks.length; i += 1) {
-    items.push({
-      binIndex: i,
-      label: mkLabel(breaks[i - 1], breaks[i], i),
-      color: palette[i] ?? fallbackColor,
-    });
-  }
-
-  items.push({
-    binIndex: breaks.length,
-    label: mkLabel(breaks[breaks.length - 1], null, breaks.length),
-    color: palette[breaks.length] ?? fallbackColor,
-  });
-
-  return items;
-};
+export { parseReference } from './GeoVisLegend.utils';
 
 export interface GeoVisLegendProps {
-  /** Id of the legend entry to render (resolved from `spec.legends` or `layer.legends`). */
+  /** Id of the legend to resolve from the spec's legend registry. */
   legendId: string;
-  /**
-   * Quantitative legend breaks provided by the caller (already computed externally).
-   * When omitted, the component falls back to `colorBy.thresholds` from the spec so
-   * the legend stays in sync with the painted map without duplicating the threshold
-   * list at the call site.
-   * Pass an explicit empty array (`[]`) to force the single-bin "All values" rendering
-   * regardless of any thresholds declared in the spec.
-   */
+  /** Explicit break points; overrides the legend's own `thresholds`. */
   breaks?: number[];
-  /** Optional formatter for quantitative break labels. */
-  formatValue?: (value: number) => string;
-  /** Optional CSS class for the legend container. */
-  className?: string;
   /**
-   * React node displayed as the source attribution below legend items.
-   * Use this when you need rich HTML content (e.g. a custom anchor element)
-   * that cannot be expressed through the `reference` string syntax.
-   * Takes precedence over `LegendSpec.reference` when both are provided.
+   * Formats numeric bin/circle values for display. When omitted, the default
+   * is the locale formatter for choropleth/categorical legends and the compact
+   * formatter (e.g. `500k`) for proportional-circle legends.
    */
+  formatValue?: (value: number) => string;
+  /** Optional class applied to the legend container. */
+  className?: string;
+  /** Optional node rendered as the legend's reference/attribution footer. */
   sourceNode?: React.ReactNode;
 }
 
-/**
- * Deduplicates, filters and sorts a raw breaks array.
- * When `breaks` is undefined falls back to `colorBy.thresholds` from the spec;
- * when `breaks` is an explicit empty array returns `[]` regardless of the spec.
- */
-const computeNormalizedBreaks = (
-  breaks: number[] | undefined,
-  legend: LegendSpec | undefined
-): number[] => {
-  const source =
-    breaks !== undefined
-      ? breaks
-      : legend?.colorBy.type === 'quantitative'
-        ? (legend.colorBy.thresholds ?? [])
-        : [];
-  const deduped = new Set<number>();
-  for (const value of source) {
-    if (!Number.isFinite(value)) continue;
-    deduped.add(value);
-  }
-  return Array.from(deduped).sort((a, b) => {
-    return a - b;
-  });
-};
-
-const buildReferenceContent = (
-  sourceNode: React.ReactNode,
-  legend: LegendSpec
-): React.ReactNode => {
-  if (sourceNode != null) return sourceNode;
-  if (legend.reference != null) return parseReference(legend.reference);
-  return null;
-};
-
-/**
- * Renders a static, non-interactive legend from the current GeoVis spec.
- *
- * Resolves the active `LegendSpec` by `legendId` (top-level `spec.legends`
- * first, then per-layer `layer.legends`) and emits one swatch per
- * categorical mapping entry or quantitative threshold bin.
- *
- * When `LegendSpec.position` is set the component applies CSS absolute
- * positioning so the legend can be overlaid on the map container without
- * coupling to the map engine. The parent element must have
- * `position: relative` (or equivalent).
- *
- * Designed for read-only display alongside `GeoVisCanvas`; it does not
- * subscribe to pointer or hover events and therefore never re-renders on
- * cursor activity.
- */
-export const GeoVisLegend = ({
-  legendId,
-  breaks,
-  formatValue = defaultFormatValue,
-  className,
-  sourceNode,
-}: GeoVisLegendProps) => {
-  const { spec } = useGeoVis();
-
-  const legend = React.useMemo(() => {
+const useGeoVisLegend = (spec: VisualizationSpec, legendId: string) => {
+  return React.useMemo(() => {
     return resolveLegend(spec, legendId);
   }, [spec, legendId]);
+};
 
-  const normalizedBreaks = React.useMemo(() => {
-    return computeNormalizedBreaks(breaks, legend);
-  }, [breaks, legend]);
-
-  const items = React.useMemo(() => {
-    if (!legend || !legend.colorBy) return [];
-    if (legend.colorBy.type === 'categorical') {
-      return buildCategoricalItems(legend);
-    }
-    return buildQuantitativeItems({
-      legend,
-      breaks: normalizedBreaks,
-      formatValue,
-    });
-  }, [legend, normalizedBreaks, formatValue]);
-
-  if (!legend || !items.length) return null;
-
-  const positionStyle = resolvePositionStyle(legend.position);
-  const referenceContent = buildReferenceContent(sourceNode, legend);
-
-  const containerStyle: React.CSSProperties = positionStyle
-    ? {
-        ...positionStyle,
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        borderRadius: 6,
-        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-        padding: '8px 12px',
-        width: '16rem',
-      }
-    : {};
-
+const GeoVisLegendBody = ({
+  className,
+  legend,
+  items,
+  circleItems,
+  referenceContent,
+  legends,
+}: {
+  className: string | undefined;
+  legend: LegendSpec;
+  items: LegendItem[];
+  circleItems: CircledLegendItem[];
+  referenceContent: React.ReactNode;
+  legends: VisualizationSpec['legends'];
+}) => {
+  const showTopDivider = shouldShowTopDivider(items, circleItems, legends);
   return (
-    <div className={className} style={containerStyle}>
-      {legend.title && (
-        <p style={{ fontWeight: 600, margin: '0 0 2px' }}>{legend.title}</p>
+    <div className={className} style={buildContainerStyle(legend.position)}>
+      {showTopDivider && (
+        <div
+          aria-hidden="true"
+          style={{ borderTop: `1px solid ${BORDER_COLOR}`, margin: '4px 0' }}
+        />
       )}
-      {legend.subtitle && (
-        <p style={{ color: '#6b7280', fontSize: 12, margin: '0 0 4px' }}>
+      {!!legend.title && (
+        <p style={{ fontWeight: 600, margin: '0 0 2px', marginTop: 16 }}>
+          {legend.title}
+        </p>
+      )}
+      {!!legend.subtitle && (
+        <p style={{ color: MUTED_COLOR, fontSize: 12, margin: '0 0 4px' }}>
           {legend.subtitle}
         </p>
       )}
@@ -354,53 +98,95 @@ export const GeoVisLegend = ({
       >
         {items.map((item) => {
           return (
-            <li
-              key={`${legend.id}-${item.binIndex}`}
-              style={{ display: 'flex', alignItems: 'center' }}
-            >
+            <li key={`${legend.id}-${item.binIndex}`} style={rowStyle}>
               <span
                 aria-hidden="true"
                 style={{
+                  ...swatchBase,
                   backgroundColor: item.color,
-                  border: '1px solid #d1d5db',
-                  display: 'inline-block',
-                  height: 12,
-                  marginRight: 8,
-                  width: 12,
+                  border: `1px solid ${BORDER_COLOR}`,
                 }}
               />
               <span>{item.label}</span>
             </li>
           );
         })}
-        {legend.noDataLabel && (
-          <li style={{ display: 'flex', alignItems: 'center' }}>
+        {!!legend.noDataLabel && (
+          <li style={rowStyle}>
             <span
               aria-hidden="true"
               style={{
+                ...swatchBase,
                 backgroundColor: 'transparent',
                 border: '1px solid #9ca3af',
-                display: 'inline-block',
-                height: 12,
-                marginRight: 8,
-                width: 12,
               }}
             />
             <span>{legend.noDataLabel}</span>
           </li>
         )}
+        {items.length > 0 && circleItems.length > 0 && (
+          <li
+            aria-hidden="true"
+            style={{
+              borderTop: `1px solid ${BORDER_COLOR}`,
+              margin: '4px 0',
+              width: '100%',
+            }}
+          />
+        )}
+        <CirclesLegendItems circleItems={circleItems} />
       </ul>
       {referenceContent != null && (
-        <p
-          style={{
-            color: '#6b7280',
-            fontSize: 11,
-            margin: '6px 0 0',
-          }}
-        >
+        <p style={{ color: MUTED_COLOR, fontSize: 11, margin: '6px 0 0' }}>
           {referenceContent}
         </p>
       )}
     </div>
+  );
+};
+
+export const GeoVisLegend = ({
+  legendId,
+  breaks,
+  formatValue,
+  className,
+  sourceNode,
+}: GeoVisLegendProps) => {
+  const { spec } = useGeoVis();
+
+  const legend = useGeoVisLegend(spec, legendId);
+  const normalizedBreaks = React.useMemo(() => {
+    return computeNormalizedBreaks(breaks, legend);
+  }, [breaks, legend]);
+  const circleConfig = React.useMemo(() => {
+    return findProportionalCirclesConfig(spec);
+  }, [spec]);
+  const resolvedFormatValue = React.useMemo(() => {
+    return resolveFormatter(formatValue, circleConfig);
+  }, [formatValue, circleConfig]);
+
+  const items = React.useMemo(() => {
+    return buildColorItems(legend, normalizedBreaks, resolvedFormatValue);
+  }, [legend, normalizedBreaks, resolvedFormatValue]);
+
+  const circleItems = React.useMemo(() => {
+    if (!shouldShowCircleItems(circleConfig, legend, spec)) return [];
+    return buildCircledItems(circleConfig!, resolvedFormatValue);
+  }, [circleConfig, resolvedFormatValue, legend, spec]);
+
+  if (!legend) return null;
+  if (!hasLegendContent(legend, items, circleItems)) return null;
+
+  const referenceContent = buildReferenceContent(sourceNode, legend);
+
+  return (
+    <GeoVisLegendBody
+      className={className}
+      legend={legend}
+      items={items}
+      circleItems={circleItems}
+      referenceContent={referenceContent}
+      legends={spec.legends}
+    />
   );
 };

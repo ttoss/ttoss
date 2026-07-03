@@ -417,3 +417,73 @@ describe('sizeBy with sqrt', () => {
     expect(stepExpr[1]).toEqual(['to-number', ['feature-state', 'pop']]);
   });
 });
+
+describe('buildSizeExpression — useGetExpression', () => {
+  test('continuous mode reads from ["get", stateKey] when useGetExpression is true', () => {
+    const sizeBy: SizeBy = { range: [4, 30], mode: 'continuous' };
+    const expression = buildSizeExpression(
+      sizeBy,
+      6,
+      [100, 1000],
+      'total',
+      true
+    );
+    const json = JSON.stringify(expression);
+    expect(json).toContain('"get"');
+    expect(json).toContain('"total"');
+    expect(json).not.toContain('"feature-state"');
+  });
+
+  test('continuous mode with sqrt reads from ["get", stateKey] when useGetExpression is true', () => {
+    const sizeBy: SizeBy = {
+      range: [4, 30],
+      mode: 'continuous',
+      transform: 'sqrt',
+    };
+    const expression = buildSizeExpression(
+      sizeBy,
+      6,
+      [100, 1000],
+      'total',
+      true
+    );
+    const json = JSON.stringify(expression);
+    expect(json).toContain('"get"');
+    expect(json).not.toContain('"feature-state"');
+  });
+
+  test('stepped mode reads from ["get", stateKey] when useGetExpression is true', () => {
+    const sizeBy: SizeBy = {
+      range: [4, 30],
+      mode: 'stepped',
+      thresholds: [100, 500],
+    };
+    const expression = buildSizeExpression(sizeBy, 6, [], 'total', true);
+    const json = JSON.stringify(expression);
+    expect(json).toContain('"get"');
+    expect(json).toContain('"total"');
+    expect(json).not.toContain('"feature-state"');
+  });
+
+  test('stepped mode with empty breaks reads from ["get", stateKey] when useGetExpression is true', () => {
+    const sizeBy: SizeBy = { range: [4, 30], mode: 'stepped' };
+    const expression = buildSizeExpression(sizeBy, 6, undefined, 'total', true);
+    const json = JSON.stringify(expression);
+    expect(json).toContain('"get"');
+    expect(json).not.toContain('"feature-state"');
+  });
+
+  test('continuous mode defaults to feature-state when useGetExpression is false', () => {
+    const sizeBy: SizeBy = { range: [4, 30], mode: 'continuous' };
+    const expression = buildSizeExpression(
+      sizeBy,
+      6,
+      [100, 1000],
+      'total',
+      false
+    );
+    const json = JSON.stringify(expression);
+    expect(json).toContain('"feature-state"');
+    expect(json).not.toContain('"get"');
+  });
+});
