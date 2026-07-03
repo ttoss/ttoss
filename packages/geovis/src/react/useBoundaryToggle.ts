@@ -60,13 +60,13 @@ export const useBoundaryToggle = (
   });
 
   const specWithAll = React.useMemo(() => {
-    return groups.reduce((s, g) => {
+    return groups.reduce<VisualizationSpec>((s, g) => {
       return appendBoundaryGroup(s, g);
     }, baseSpec);
   }, [baseSpec, groups]);
 
   const spec = React.useMemo(() => {
-    return groups.reduce((s, g) => {
+    return groups.reduce<VisualizationSpec>((s, g) => {
       return toggleBoundaryGroup(s, g, !hiddenIds.has(getBoundaryGroupId(g)));
     }, specWithAll);
   }, [specWithAll, groups, hiddenIds]);

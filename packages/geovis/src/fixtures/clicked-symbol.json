@@ -1,5 +1,4 @@
 {
-  "id": "clicked-symbol",
   "title": "Center on Clicked Symbol",
   "description": "Click any marker to fly the map to that location. Uses useGeoVisClick + setView.",
   "engine": "maplibre",
