@@ -1,7 +1,7 @@
 import Ajv2020 from 'ajv/dist/2020';
 
 import schema from './schema.json';
-import type { VisualizationSpec } from './types';
+import type { VisualizationLayer, VisualizationSpec } from './types';
 
 export type ValidationResult =
   | { valid: true; spec: VisualizationSpec }
@@ -142,7 +142,7 @@ const hasActiveLegend = (
   };
   const legend =
     layer.legends?.find(resolveLegend) ?? specLegends?.find(resolveLegend);
-  if (!legend) return false;
+  if (!legend || !legend.colorBy) return false;
   // Stepped sizeBy requires a quantitative threshold legend to derive breaks.
   // Categorical or non-threshold legends cannot supply numeric thresholds.
   return (
@@ -210,7 +210,7 @@ const validateSizeByLayer = (
     );
   }
 
-  if (mode === 'stepped' && transform === 'sqrt') {
+  if (mode === 'stepped' && (transform as string) === 'sqrt') {
     errors.push(
       `layer '${layer.id}' sizeBy does not support transform 'sqrt' in stepped mode`
     );
