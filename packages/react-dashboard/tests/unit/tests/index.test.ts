@@ -4,6 +4,7 @@ describe('index exports', () => {
   test('should export public dashboard API', () => {
     expect(dashboard.Dashboard).toBeDefined();
     expect(dashboard.DashboardCard).toBeDefined();
+    expect(dashboard.DashboardCardDetailDrawer).toBeDefined();
     expect(dashboard.DashboardFilters).toBeDefined();
     expect(dashboard.DashboardGrid).toBeDefined();
     expect(dashboard.DashboardHeader).toBeDefined();
