@@ -81,7 +81,7 @@ export const DashboardGrid = ({
   currency?: string;
   'data-export-target'?: boolean;
 }) => {
-  const { onLayoutChange, removeCard, updateCard } = useDashboard();
+  const { onLayoutChange, removeCard, updateCard, onCardClick } = useDashboard();
 
   if (!selectedTemplate) {
     return null;
@@ -248,6 +248,17 @@ export const DashboardGrid = ({
                       />
                     </Box>
                   </>
+                ) : onCardClick ? (
+                  <div
+                    onClick={() => {
+                      onCardClick(item.card as DashboardCardProps, item);
+                    }}
+                  >
+                    <DashboardCard
+                      {...{ currency }}
+                      {...(item.card as DashboardCardProps)}
+                    />
+                  </div>
                 ) : (
                   <DashboardCard
                     {...{ currency }}

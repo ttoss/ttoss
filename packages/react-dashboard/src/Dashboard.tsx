@@ -99,6 +99,7 @@ export const Dashboard = ({
   onSaveAsNewTemplate,
   onCancelEdit,
   onEditingGridChange,
+  onCardClick,
   currency,
   showFilters = true,
   sx,
@@ -117,6 +118,7 @@ export const Dashboard = ({
   onCancelEdit?: () => void;
   /** Called whenever the internal editing grid changes. Receives `null` when edit mode exits. */
   onEditingGridChange?: (grid: DashboardGridItem[] | null) => void;
+  onCardClick?: (card: DashboardCard, gridItem: DashboardGridItem) => void;
   /** ISO 4217 currency code (e.g. `"BRL"`, `"USD"`, `"EUR"`). Applied to all cards with `numberType="currency"`. Card-level `currency` takes precedence. Defaults to `"BRL"`. */
   currency?: string;
   /** When false, the internal filter bar is not rendered. Useful when filters are managed in an external UI. Defaults to true. */
@@ -136,6 +138,7 @@ export const Dashboard = ({
       onSaveAsNewTemplate={onSaveAsNewTemplate}
       onCancelEdit={onCancelEdit}
       onEditingGridChange={onEditingGridChange}
+      onCardClick={onCardClick}
     >
       <DashboardContent
         loading={loading}
