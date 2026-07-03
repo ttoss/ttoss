@@ -1,5 +1,4 @@
 {
-  "id": "split-compare",
   "title": "Split Compare — Territorial Coverage vs Perimeter",
   "description": "Two maps derived from the same data source (Sao Paulo districts). The left map shows territorial coverage (fill). The right map shows zone perimeters (line). Both share the same source, view and basemap — only the layers differ.",
   "engine": "maplibre",

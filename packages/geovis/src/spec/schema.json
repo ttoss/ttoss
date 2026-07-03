@@ -4,12 +4,8 @@
   "title": "VisualizationSpec",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "engine", "sources", "layers"],
+  "required": ["engine", "sources", "layers"],
   "properties": {
-    "id": {
-      "type": "string",
-      "minLength": 1
-    },
     "title": {
       "type": "string"
     },
@@ -22,7 +18,7 @@
     },
     "mapType": {
       "type": "string",
-      "enum": ["choropleth", "dotDensity"]
+      "enum": ["choropleth", "dotDensity", "proportionalCircles"]
     },
     "view": {
       "type": "object",
@@ -422,16 +418,28 @@
                   "allOf": [
                     {
                       "required": ["mode"],
-                      "properties": { "mode": { "const": "stepped" } }
+                      "properties": {
+                        "mode": {
+                          "const": "stepped"
+                        }
+                      }
                     },
                     {
                       "required": ["transform"],
-                      "properties": { "transform": { "const": "sqrt" } }
+                      "properties": {
+                        "transform": {
+                          "const": "sqrt"
+                        }
+                      }
                     }
                   ]
                 }
               }
             ]
+          },
+          "propertyName": {
+            "type": "string",
+            "description": "GeoJSON feature property name for direct data access. When set (and mapDataId is absent), the expression reads from feature.properties[propertyName] via ['get', ...]."
           }
         }
       }
@@ -441,11 +449,19 @@
       "additionalProperties": true
     },
     "adapterHints": {},
+    "scaleMaxValue": {
+      "type": "number",
+      "description": "Visual scale ceiling for proportional symbol rendering. Values above scaleMaxValue render at the maximum symbol size. When omitted, the adapter computes it from the dataset."
+    },
     "legends": {
       "type": "array",
       "items": {
         "$ref": "#/$defs/LegendSpec"
       }
+    },
+    "legendEnabled": {
+      "type": "boolean",
+      "description": "Controls whether auto-generated legends are produced for the resolved mapType. Defaults to true."
     },
     "mapData": {
       "type": "array",

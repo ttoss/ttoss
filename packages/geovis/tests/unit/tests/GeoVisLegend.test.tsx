@@ -29,7 +29,6 @@ jest.mock('src/adapters/maplibre/MapLibreAdapter', () => {
 });
 
 const baseSpec: VisualizationSpec = {
-  id: 'legend-spec',
   engine: 'maplibre',
   view: { center: [0, 0], zoom: 1 },
   sources: [
@@ -1033,5 +1032,73 @@ describe('GeoVisLegend — normalization extended suffix', () => {
         return t.includes('cases') && t.includes('inhabitants');
       })
     ).toBe(true);
+  });
+});
+
+describe('GeoVisLegend — proportional circles default formatter', () => {
+  const circlesSpec: VisualizationSpec = {
+    id: 'circles-spec',
+    engine: 'maplibre',
+    view: { center: [0, 0], zoom: 1 },
+    scaleMaxValue: 500000,
+    sources: [
+      {
+        id: 'points',
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      },
+    ],
+    legends: [
+      {
+        id: 'pop',
+        title: 'Population',
+        colorBy: {
+          type: 'quantitative',
+          property: 'value',
+          scale: 'threshold',
+          thresholds: [100, 200],
+          colors: ['#dbeafe', '#60a5fa', '#1d4ed8'],
+        },
+      },
+    ],
+    layers: [
+      {
+        id: 'points-layer',
+        sourceId: 'points',
+        geometry: 'point',
+        activeLegendId: 'pop',
+        sizeBy: { range: [4, 36], transform: 'sqrt' },
+      },
+    ],
+  };
+
+  test('uses the compact formatter by default for circle reference labels', async () => {
+    const { getByText } = render(
+      <GeoVisProvider spec={circlesSpec}>
+        <GeoVisLegend legendId="pop" />
+      </GeoVisProvider>
+    );
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+    // 500000 -> "500k", not "500,000"
+    expect(getByText('≥ 500k')).toBeTruthy();
+  });
+
+  test('an explicit formatValue prop overrides the compact default', async () => {
+    const { getByText } = render(
+      <GeoVisProvider spec={circlesSpec}>
+        <GeoVisLegend
+          legendId="pop"
+          formatValue={(v) => {
+            return `${v} ppl`;
+          }}
+        />
+      </GeoVisProvider>
+    );
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+    expect(getByText('≥ 500000 ppl')).toBeTruthy();
   });
 });

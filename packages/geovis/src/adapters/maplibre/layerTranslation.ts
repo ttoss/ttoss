@@ -1,5 +1,6 @@
 import type maplibregl from 'maplibre-gl';
 
+import { PROPORTIONAL_CIRCLES_DEFAULTS } from '../../spec/mapTypeDefaults/proportionalCircles';
 import type {
   CirclePaint,
   FillPaint,
@@ -14,8 +15,15 @@ import type {
 import type { LegendSpec } from '../../spec/types.legend';
 import {
   buildFillColorExpression,
+  buildProportionalCircleRadiusExpression,
   buildSizeExpression,
 } from './legendTranslation';
+
+interface BuilderContext {
+  legends?: LegendSpec[];
+  mapData?: MapData[];
+  scaleMaxValue?: number;
+}
 
 interface BaseFields {
   id: string;
@@ -49,8 +57,7 @@ type Builder = (
   base: BaseFields,
   layer: VisualizationLayer,
   paint: VisualizationLayer['paint'],
-  specLegends?: LegendSpec[],
-  specMapData?: MapData[]
+  ctx?: BuilderContext
 ) => maplibregl.LayerSpecification;
 
 /** Finds a mapData entry matching a predicate, returning its stateKey.
@@ -165,18 +172,12 @@ export const resolveLegendFillColorExpression = (
 };
 
 /** Builds a MapLibre `fill` layer spec from a GeoVis polygon layer. */
-const buildPolygon: Builder = (
-  base,
-  layer,
-  paint,
-  specLegends,
-  specMapData
-) => {
+const buildPolygon: Builder = (base, layer, paint, ctx) => {
   const fp = (paint ?? {}) as FillPaint;
   const legendFillColor = resolveLegendFillColorExpression(
     layer,
-    specLegends,
-    specMapData
+    ctx?.legends,
+    ctx?.mapData
   );
   return {
     ...base,
@@ -190,7 +191,7 @@ const buildPolygon: Builder = (
 };
 
 /** Builds a MapLibre `line` layer spec from a GeoVis line layer. */
-const buildLine: Builder = (base, _layer, paint) => {
+const buildLine: Builder = (base, _layer, paint, _ctx) => {
   const lp = (paint ?? {}) as LinePaint;
   return {
     ...base,
@@ -211,7 +212,12 @@ const resolveCircleColor = (
   colorStateKey: string,
   specLegends?: LegendSpec[]
 ): string | unknown => {
-  if (!layer.activeLegendId) return cp.circleColor ?? '#3b82f6';
+  // An explicit user-provided circleColor always wins over the legend-driven
+  // color-by-value expression — otherwise a custom paint override would be
+  // silently discarded whenever the layer carries an activeLegendId (which
+  // auto-generated mapTypes like proportionalCircles always set).
+  if (cp.circleColor) return cp.circleColor;
+  if (!layer.activeLegendId) return '#3b82f6';
 
   const activeLegend =
     layer.legends?.find((l) => {
@@ -220,7 +226,7 @@ const resolveCircleColor = (
     specLegends?.find((l) => {
       return l.id === layer.activeLegendId;
     });
-  if (!activeLegend) return cp.circleColor ?? '#3b82f6';
+  if (!activeLegend) return '#3b82f6';
 
   return buildFillColorExpression({
     legend: activeLegend,
@@ -229,8 +235,38 @@ const resolveCircleColor = (
   });
 };
 
+const buildCircleRadius = (
+  layer: VisualizationLayer,
+  sizeStateKey: string,
+  fallbackRadius: number,
+  ctx?: BuilderContext
+): number | unknown => {
+  if (!layer.sizeBy) return fallbackRadius;
+  const smv = ctx?.scaleMaxValue;
+  if (smv != null) {
+    const useGetExpression = !!layer.propertyName && !layer.mapDataId;
+    const stateKey = useGetExpression ? layer.propertyName! : sizeStateKey;
+    return buildProportionalCircleRadiusExpression({
+      sizeBy: layer.sizeBy,
+      scaleMaxValue: smv,
+      zeroRadiusPx: PROPORTIONAL_CIRCLES_DEFAULTS.zeroRadiusPx,
+      stateKey,
+      useGetExpression,
+    });
+  }
+  const legendThresholds = resolveThresholdBreaks(layer, ctx?.legends);
+  const useGet = !!layer.propertyName && !layer.mapDataId;
+  return buildSizeExpression(
+    layer.sizeBy,
+    fallbackRadius,
+    legendThresholds,
+    useGet ? layer.propertyName! : sizeStateKey,
+    useGet
+  );
+};
+
 /** Builds a MapLibre `circle` layer spec from a GeoVis point layer. */
-const buildPoint: Builder = (base, layer, paint, specLegends, specMapData) => {
+const buildPoint: Builder = (base, layer, paint, ctx) => {
   const cp = (paint ?? {}) as CirclePaint;
   const fallbackRadius = cp.circleRadius ?? 6;
 
@@ -238,35 +274,34 @@ const buildPoint: Builder = (base, layer, paint, specLegends, specMapData) => {
     'color',
     layer.sourceId,
     layer.mapDataId,
-    specMapData
+    ctx?.mapData
   );
 
   const sizeStateKey = resolveDimensionStateKey(
     'size',
     layer.sourceId,
     layer.mapDataId,
-    specMapData
+    ctx?.mapData
   );
 
-  const circleColor = resolveCircleColor(layer, cp, colorStateKey, specLegends);
-
-  let radius: number | unknown = fallbackRadius;
-  if (layer.sizeBy) {
-    const legendThresholds = resolveThresholdBreaks(layer, specLegends);
-    radius = buildSizeExpression(
-      layer.sizeBy,
-      fallbackRadius,
-      legendThresholds,
-      sizeStateKey
-    );
-  }
+  const circleColor = resolveCircleColor(
+    layer,
+    cp,
+    colorStateKey,
+    ctx?.legends
+  );
 
   return {
     ...base,
     type: 'circle',
     paint: {
       'circle-color': circleColor,
-      'circle-radius': radius,
+      'circle-radius': buildCircleRadius(
+        layer,
+        sizeStateKey,
+        fallbackRadius,
+        ctx
+      ),
       'circle-opacity': cp.circleOpacity ?? 1,
       'circle-stroke-color': cp.circleStrokeColor ?? '#ffffff',
       'circle-stroke-width': cp.circleStrokeWidth ?? 1,
@@ -275,7 +310,7 @@ const buildPoint: Builder = (base, layer, paint, specLegends, specMapData) => {
 };
 
 /** Builds a MapLibre `heatmap` layer spec from a GeoVis heatmap layer. */
-const buildHeatmap: Builder = (base, _layer, paint) => {
+const buildHeatmap: Builder = (base, _layer, paint, _ctx) => {
   const hp = (paint ?? {}) as HeatmapPaint;
   return {
     ...base,
@@ -290,7 +325,7 @@ const buildHeatmap: Builder = (base, _layer, paint) => {
 };
 
 /** Builds a MapLibre `symbol` layer spec from a GeoVis symbol layer. */
-const buildSymbol: Builder = (base, _layer, paint) => {
+const buildSymbol: Builder = (base, _layer, paint, _ctx) => {
   const sp = (paint ?? {}) as SymbolPaint;
   return {
     ...base,
@@ -313,7 +348,7 @@ const buildSymbol: Builder = (base, _layer, paint) => {
 };
 
 /** Builds a MapLibre `raster` layer spec from a GeoVis raster layer. */
-const buildRaster: Builder = (base, _layer, paint) => {
+const buildRaster: Builder = (base, _layer, paint, _ctx) => {
   const rp = (paint ?? {}) as RasterPaint;
   return {
     ...base,
@@ -360,20 +395,21 @@ export const stripUndefinedPaint = (
  * @param sourceLayer - Optional vector tile source layer name.
  * @param specLegends - Optional legend registry for choropleth coloring.
  * @param specMapData - Optional mapData array for stateKey resolution.
+ * @param scaleMaxValue - Optional visual scale ceiling for proportional circles.
  * @returns A MapLibre LayerSpecification ready for `map.addLayer`.
  */
 export const toMaplibreLayer = (
   layer: VisualizationLayer,
   sourceLayer?: string,
   specLegends?: LegendSpec[],
-  specMapData?: MapData[]
+  specMapData?: MapData[],
+  scaleMaxValue?: number
 ): maplibregl.LayerSpecification => {
   const base = buildBase(layer, sourceLayer);
-  return builders[layer.geometry](
-    base,
-    layer,
-    layer.paint,
-    specLegends,
-    specMapData
-  );
+  const ctx: BuilderContext = {
+    legends: specLegends,
+    mapData: specMapData,
+    scaleMaxValue,
+  };
+  return builders[layer.geometry](base, layer, layer.paint, ctx);
 };

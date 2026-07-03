@@ -17,6 +17,7 @@ import { toMaplibreLayer } from './layerTranslation';
 import { reapplyLegendDrivenFillPaint } from './legendFillPaint';
 import {
   applyMapDataPatchToMap,
+  mapDataEntriesEqual,
   reapplyAllMapData,
   removeMapDataFromSource,
 } from './mapDataFeatureState';
@@ -162,6 +163,34 @@ const mountView = (
   };
 };
 
+const hasMapDataChanged = (
+  previousMapData: MapData[] | undefined,
+  nextMapData: MapData[] | undefined
+): boolean => {
+  if (previousMapData === nextMapData) return false;
+  if (previousMapData?.length !== nextMapData?.length) return true;
+  return (previousMapData ?? []).some((prevMd) => {
+    const nextMd = (nextMapData ?? []).find((md) => {
+      return md.mapDataId === prevMd.mapDataId;
+    });
+    return !nextMd || !mapDataEntriesEqual(nextMd, prevMd);
+  });
+};
+
+const removeStaleMapData = (
+  map: maplibregl.Map,
+  previousMapData: MapData[] | undefined,
+  nextMapData: MapData[] | undefined
+): void => {
+  for (const prevMd of previousMapData ?? []) {
+    const nextMd = (nextMapData ?? []).find((md) => {
+      return md.mapDataId === prevMd.mapDataId;
+    });
+    if (!nextMd || !mapDataEntriesEqual(nextMd, prevMd))
+      removeMapDataFromSource(map, prevMd);
+  }
+};
+
 const updateView = (
   views: ViewMap,
   viewId: string,
@@ -191,13 +220,8 @@ const updateView = (
   }
   if (map.isStyleLoaded()) {
     syncSourcesAndLayers(map, spec, previousSpec);
-    if (previousSpec.mapData !== spec.mapData) {
-      for (const prevMd of previousSpec.mapData ?? []) {
-        const nextMd = (spec.mapData ?? []).find((md) => {
-          return md.mapDataId === prevMd.mapDataId;
-        });
-        if (!nextMd || nextMd !== prevMd) removeMapDataFromSource(map, prevMd);
-      }
+    if (hasMapDataChanged(previousSpec.mapData, spec.mapData)) {
+      removeStaleMapData(map, previousSpec.mapData, spec.mapData);
       reapplyAllMapData(map, spec);
       reapplyLegendDrivenFillPaint(map, spec);
     }
