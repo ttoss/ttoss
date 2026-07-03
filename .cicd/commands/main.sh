@@ -55,7 +55,10 @@ if pnpm lerna changed --since=$LATEST_TAG; then
   # would bust the turbo input hash, causing all affected packages to rebuild
   # from scratch even when their source code hasn't changed.
   # https://turbo.build/repo/docs/core-concepts/caching#missing-the-cache
-  pnpm turbo run i18n build test --filter=[$LATEST_TAG_SHA]
+  #
+  # The `...` prefix includes dependents of the changed packages so consumers
+  # like `@docs/storybook` are built/tested when a package they consume changes.
+  pnpm turbo run i18n build test --filter=...[$LATEST_TAG_SHA]
 
   # Undo all files that were changed by the build command—this happens because
   # the build can change files with different linting rules and `pnpm run lint`
@@ -87,7 +90,7 @@ if pnpm lerna changed --since=$LATEST_TAG; then
   # files reflect the new package versions if any package embeds its own version.
   # Tests are skipped here because they already passed above and version bumps
   # do not affect test outcomes.
-  pnpm turbo run build --filter=[$LATEST_TAG_SHA]
+  pnpm turbo run build --filter=...[$LATEST_TAG_SHA]
 
   # Push changes.
   git push --follow-tags
@@ -112,4 +115,8 @@ fi
 # Deploy after publish because there are cases in which a package is versioned
 # and it should be on NPM registry to Lambda Layer create the new version when
 # carlin deploy starts.
-pnpm turbo run build test deploy --filter=[$LATEST_TAG_SHA] --filter=@docs/website
+#
+# The `...` prefix includes dependents of the changed packages so deployable
+# workspaces like `@docs/storybook` are redeployed when a package they consume
+# changes — not only when their own files change.
+pnpm turbo run build test deploy --filter=...[$LATEST_TAG_SHA] --filter=@docs/website
