@@ -237,8 +237,8 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
 
   React.useEffect(() => {
     if (!runtime) return;
-    runtime.update(spec);
-  }, [runtime, spec]);
+    runtime.update(resolvedSpec);
+  }, [runtime, resolvedSpec]);
 
   const applyPatch = React.useCallback(
     (patch: SpecPatch) => {

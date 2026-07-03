@@ -127,6 +127,28 @@ export const removeMapDataFromSource = (
 };
 
 /**
+ * Compares two `MapData` entries by the fields that affect feature-state
+ * behaviour. Reference changes to `title`, `description`, or `dimension` that
+ * leave feature-state data unchanged will correctly return `true` here,
+ * avoiding unnecessary `setFeatureState`/`removeFeatureState` calls when only
+ * paint properties changed on the spec.
+ *
+ * Compares:
+ * - `mapId` — different source → different feature-state target
+ * - `stateKey` — different key → different feature-state property name
+ * - `data` content — different values → need to reapply
+ */
+export const mapDataEntriesEqual = (a: MapData, b: MapData): boolean => {
+  if (a.mapId !== b.mapId) return false;
+  if ((a.stateKey ?? 'value') !== (b.stateKey ?? 'value')) return false;
+  if (a.data.length !== b.data.length) return false;
+  return a.data.every((row, i) => {
+    const other = b.data[i];
+    return row.geometryId === other.geometryId && row.value === other.value;
+  });
+};
+
+/**
  * Re-applies every entry in `spec.mapData` to its source.
  * Used after style/source rebuilds where feature state is lost.
  */
