@@ -14,9 +14,11 @@ pnpm run lint -- --no-stash --allow-empty
 pnpm run syncpack:lint
 
 # Test and build all packages since main
-# and all the workspaces that depends on them.
+# and all the workspaces that depends on them. The `...` prefix includes
+# dependents of the matched workspaces, so e.g. changing a component package
+# also builds/tests `@docs/storybook`, which consumes it.
 # https://turbo.build/repo/docs/core-concepts/monorepos/filtering#include-dependents-of-matched-workspaces
-pnpm turbo run i18n build test --filter=[main]
+pnpm turbo run i18n build test --filter=...[main]
 
 # Undo all files that were changed by the build command—this happens because
 # the build can change files with different linting rules and `pnpm run lint`
@@ -35,7 +37,11 @@ pnpm run lint -- --no-stash --allow-empty
 # packages with bug. As `test` isn't a dependsOn of `deploy` on turbo.json,
 # we need to run them separately. If we run them together and deploy is faster,
 # `deploy` will run even if `test` fails.
-pnpm turbo run build test deploy --filter=[main]
+#
+# The `...` prefix includes dependents of the changed packages, so deployable
+# workspaces like `@docs/storybook` are redeployed when a package they consume
+# (e.g. a component package) changes — not only when their own files change.
+pnpm turbo run build test deploy --filter=...[main]
 
 # Build carlin CLI explicitly so it is available even when no packages changed
 # since main (e.g. PRs that only touch workflow/config files), because the
