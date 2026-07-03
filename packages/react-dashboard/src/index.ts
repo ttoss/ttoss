@@ -1,6 +1,7 @@
 export { Dashboard } from './Dashboard';
 export { type DashboardTemplate } from './Dashboard';
 export { type DashboardGridItem } from './Dashboard';
+export type { DashboardCard as DashboardCardItem } from './DashboardCard';
 export { DashboardCard } from './DashboardCard';
 export {
   type CardCatalogItem,

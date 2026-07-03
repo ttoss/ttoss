@@ -1,6 +1,8 @@
+/* eslint-disable max-lines, max-lines-per-function, max-nested-callbacks */
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import {
   Dashboard,
+  type DashboardCardItem,
   type DashboardFilter,
   DashboardFilterType,
   type DashboardGridItem,
@@ -1187,6 +1189,205 @@ export const WithCustomHeaderChildren: StoryObj = {
       description: {
         story:
           'Dashboard with custom header buttons. The `headerChildren` wrapper automatically centers all children vertically, so no per-child `alignSelf` or `height` overrides are needed.',
+      },
+    },
+  },
+};
+
+type SelectedCard = { card: DashboardCardItem; gridItem: DashboardGridItem };
+
+const formatCardValue = (card: DashboardCardItem): string => {
+  const total = card.data?.api?.total;
+  if (typeof total !== 'number') return '—';
+  const formatted = total.toLocaleString('pt-BR', { maximumFractionDigits: 2 });
+  if (card.numberType === 'currency') return `R$ ${formatted}`;
+  if (card.numberType === 'percentage') return `${formatted}%`;
+  return formatted;
+};
+
+const CardDetailDrawer = ({
+  selected,
+  onClose,
+}: {
+  selected: SelectedCard;
+  onClose: () => void;
+}) => {
+  const { card, gridItem } = selected;
+  return (
+    <>
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+      <div
+        onClick={onClose}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.3)',
+          zIndex: 100,
+        }}
+      />
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          width: ['100%', '420px'],
+          bg: 'background',
+          boxShadow: '-4px 0 24px rgba(0,0,0,0.15)',
+          zIndex: 101,
+          display: 'flex',
+          flexDirection: 'column',
+          padding: '6',
+          gap: '4',
+        }}
+      >
+        <Stack
+          sx={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          {}
+          <Heading as="h3" sx={{ fontSize: 'lg', fontWeight: 'semibold' }}>
+            {card.title}
+          </Heading>
+          <Button variant="secondary" onClick={onClose}>
+            {}✕
+          </Button>
+        </Stack>
+
+        <Box
+          sx={{
+            padding: '4',
+            bg: 'display.surface.secondary.default',
+            borderRadius: 'md',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '2',
+          }}
+        >
+          <Text
+            sx={{
+              fontSize: 'xs',
+              color: 'display.text.secondary.default',
+              textTransform: 'uppercase',
+              letterSpacing: 'wide',
+            }}
+          >
+            {}
+            Value
+          </Text>
+          {}
+          <Text sx={{ fontSize: '2xl', fontWeight: 'bold' }}>
+            {formatCardValue(card)}
+          </Text>
+          {card.trend && (
+            <Text
+              sx={{
+                fontSize: 'sm',
+                color: card.trend.status === 'positive' ? 'green' : 'red',
+              }}
+            >
+              {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+              {card.trend.status === 'positive' ? '▲' : '▼'} {card.trend.value}%
+            </Text>
+          )}
+        </Box>
+
+        {card.description && (
+          <Text
+            sx={{ fontSize: 'sm', color: 'display.text.secondary.default' }}
+          >
+            {card.description}
+          </Text>
+        )}
+
+        <Box
+          sx={{
+            padding: '4',
+            bg: 'display.surface.secondary.default',
+            borderRadius: 'md',
+          }}
+        >
+          <Text
+            sx={{
+              fontSize: 'xs',
+              color: 'display.text.secondary.default',
+              marginBottom: '3',
+              textTransform: 'uppercase',
+              letterSpacing: 'wide',
+            }}
+          >
+            {}
+            Grid position
+          </Text>
+          <Text sx={{ fontSize: 'sm', fontFamily: 'monospace' }}>
+            {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+            {`x:${gridItem.x} y:${gridItem.y} w:${gridItem.w} h:${gridItem.h}`}
+          </Text>
+        </Box>
+      </Box>
+    </>
+  );
+};
+
+const WithCardClickDrawerStory = () => {
+  const [filters, setFilters] =
+    React.useState<DashboardFilter[]>(defaultFilters);
+  const [selectedCard, setSelectedCard] = React.useState<SelectedCard | null>(
+    null
+  );
+
+  const selectedTemplateId =
+    (filters.find((f) => {
+      return f.key === 'template';
+    })?.value as string) || 'default';
+  const selectedTemplate =
+    defaultTemplates.find((t) => {
+      return t.id === selectedTemplateId;
+    }) || defaultTemplates[0];
+
+  return (
+    <Box
+      sx={{
+        width: '100%',
+        height: '100vh',
+        padding: '4',
+        position: 'relative',
+      }}
+    >
+      <Dashboard
+        templates={defaultTemplates}
+        filters={filters}
+        selectedTemplate={selectedTemplate}
+        loading={false}
+        onFiltersChange={setFilters}
+        onCardClick={(card, gridItem) => {
+          setSelectedCard({ card, gridItem });
+        }}
+      />
+      {selectedCard && (
+        <CardDetailDrawer
+          selected={selectedCard}
+          onClose={() => {
+            setSelectedCard(null);
+          }}
+        />
+      )}
+    </Box>
+  );
+};
+
+export const WithCardClickDrawer: StoryObj = {
+  render: () => {
+    return <WithCardClickDrawerStory />;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Dashboard with `onCardClick` prop. Clicking any metric card opens a detail drawer from the right showing the card title, value, trend, and grid position. Click the backdrop or the ✕ button to close. This demonstrates how to integrate the `onCardClick` callback to build custom drill-down experiences.',
       },
     },
   },
