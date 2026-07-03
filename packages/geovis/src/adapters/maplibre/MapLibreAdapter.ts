@@ -11,7 +11,7 @@ import type {
   SpecPatch,
 } from '../../runtime/adapter';
 import { applyMapDataPatchToSpec } from '../../spec/mapDataPatch';
-import type { VisualizationSpec } from '../../spec/types';
+import type { MapData, VisualizationSpec } from '../../spec/types';
 import { applyBasemapLabelsVisibility } from './basemapLabels';
 import { toMaplibreLayer } from './layerTranslation';
 import { reapplyLegendDrivenFillPaint } from './legendFillPaint';

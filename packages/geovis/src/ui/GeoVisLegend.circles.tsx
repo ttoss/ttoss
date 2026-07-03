@@ -1,5 +1,6 @@
 import type * as React from 'react';
 
+import { niceFloor } from '../spec/mapTypeDefaults/utils';
 import type { SizeBy, VisualizationSpec } from '../spec/types';
 
 export interface CircledLegendItem {
@@ -48,14 +49,48 @@ export const buildCircledItems = (
 ): CircledLegendItem[] => {
   const { scaleMaxValue, sizeBy } = config;
   const [minRadius, maxRadius] = sizeBy.range;
-  return CIRCLE_LEGEND_PERCENTS.map((pct) => {
-    const value = scaleMaxValue * pct;
-    return {
-      label:
-        pct === 1 ? `\u2265 ${formatValue(scaleMaxValue)}` : formatValue(value),
+  const items: CircledLegendItem[] = [];
+  for (const pct of CIRCLE_LEGEND_PERCENTS) {
+    // RULE: reference values on proportional-circle legends are ALWAYS
+    // rounded DOWN to a nice cartographic number (`niceFloor`: 1/2/2.5/5/10
+    // x 10^n - e.g. 130.75 -> 100, 261.5 -> 250, 523 -> 500), never left as
+    // raw percentile fractions. The size datasets these legends describe are
+    // counts - when every value in the dataset is an integer there is no
+    // reason to show a non-integer reference.
+    //
+    // Flooring (instead of ceiling) keeps every reference AT OR BELOW the
+    // value it derives from, so no row can ever advertise a value no datum
+    // reaches (`niceCeil(scaleMax)` would, e.g. 523 -> 1000) and the values
+    // stay lower and evenly stepped. It is monotonic, so the rows stay
+    // ascending (equal rows are deduped below), and always <= scaleMaxValue,
+    // so the radius never clamps. The radius is computed from the SAME nice
+    // value shown in the label, so the drawn circle always matches what the
+    // label says. When `niceFloor` lands on a fractional step (2.5 x 10^n)
+    // for an integer-valued reference, it falls back to the plain integer
+    // floor - integer data never shows a fractional reference.
+    const rawValue = scaleMaxValue * pct;
+    let value = niceFloor(rawValue);
+    if (!Number.isInteger(value) && rawValue >= 1) {
+      value = Math.floor(rawValue);
+    }
+    const label =
+      pct === 1 ? `\u2265 ${formatValue(value)}` : formatValue(value);
+    // Rounding can collapse neighbouring percentiles of a small
+    // scaleMaxValue to the same value - keep only the first occurrence.
+    if (
+      value <= 0 ||
+      items.some((item) => {
+        return item.label === label;
+      })
+    ) {
+      continue;
+    }
+    items.push({
+      label,
       radiusPx: computeCircleRadius(value, scaleMaxValue, minRadius, maxRadius),
-    };
-  });
+    });
+  }
+  return items;
 };
 
 const MUTED_COLOR = '#6b7280';

@@ -221,6 +221,10 @@ export const shouldShowCircleItems = (
   // The size key is part of the auto-generated legend; when the spec disables
   // it, the circles must not leak into user legends either.
   if (spec.legendEnabled === false) return false;
+  // The auto-generated size legend always owns the circle reference items,
+  // regardless of its own `colorBy` — that field is independent of other
+  // legends' and must not be used to decide ownership.
+  if (legend?.id === getProportionalCirclesAutoLegendId(spec)) return true;
   const legends = spec.legends;
   if (legends && legends.length > 1 && legend?.colorBy) return false;
   return true;
@@ -258,11 +262,11 @@ export const hasLegendContent = (
 export const shouldShowTopDivider = (
   items: LegendItem[],
   circleItems: CircledLegendItem[],
-  legends: VisualizationSpec['legends']
+  positionedLegendCount: number
 ): boolean => {
   if (circleItems.length === 0) return false;
   if (items.length > 0) return false;
-  if (!legends || legends.length <= 1) return false;
+  if (positionedLegendCount <= 1) return false;
   return true;
 };
 

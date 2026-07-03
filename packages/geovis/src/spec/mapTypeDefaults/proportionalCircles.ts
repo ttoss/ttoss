@@ -5,6 +5,7 @@ import type {
   VisualizationLayer,
   VisualizationSpec,
 } from '../types';
+import { DEFAULT_DOT_DENSITY_PAINT } from './dotDensity';
 import { DEFAULT_SEQUENTIAL_PALETTE } from './palettes';
 import {
   computeJenksBreaks,
@@ -26,7 +27,7 @@ export const PROPORTIONAL_CIRCLES_DEFAULTS = {
   maxRadiusPx: 16,
   zeroRadiusPx: 0,
   circleOpacity: 0.72,
-  strokeWidth: 1,
+  strokeWidth: 0.5,
   strokeOpacity: 0.9,
 } as const;
 
@@ -47,23 +48,57 @@ export const getProportionalCirclesAutoLegendId = (
  * Builds a quantitative color-by using Jenks natural breaks from the
  * first mapData entry's numeric values. Falls back to a single-bin
  * palette when data is insufficient for meaningful breaks.
+ *
+ * Circle-based mapTypes (`dotDensity`/`proportionalCircles`) paint EVERY
+ * circle — any size, any bin — with `DEFAULT_DOT_DENSITY_PAINT.circleColor`,
+ * regardless of the classification method: the thresholds still describe the
+ * bins, but every bin (and the below-first-threshold default) maps to the
+ * same flat color. Other mapTypes keep the sequential palette.
  */
-const buildColorBy = (mapDataEntry: MapData | undefined) => {
+const buildColorBy = (
+  mapDataEntry: MapData | undefined,
+  spec: VisualizationSpec
+) => {
   const { isNumeric, numericValues } = inspectDataValues(
     mapDataEntry?.data ?? []
   );
 
+  const isCircleMapType =
+    spec.mapType === 'dotDensity' || spec.mapType === 'proportionalCircles';
+
+  const colorsFor = (binCount: number): string[] => {
+    if (isCircleMapType) {
+      return Array.from({ length: binCount }, () => {
+        return DEFAULT_DOT_DENSITY_PAINT.circleColor;
+      });
+    }
+    return pickPaletteColors(DEFAULT_SEQUENTIAL_PALETTE, binCount);
+  };
+  const defaultColor = isCircleMapType
+    ? DEFAULT_DOT_DENSITY_PAINT.circleColor
+    : (DEFAULT_SEQUENTIAL_PALETTE[0] ?? '#dbeafe');
+
   if (isNumeric && numericValues.length > 1) {
     const uniqueCount = new Set(numericValues).size;
     const numClasses = computeNumClasses(uniqueCount);
-    const breaks = computeJenksBreaks(numericValues, numClasses);
+    // Jenks breaks land on raw data values (e.g. 7, 23, 61); round each one
+    // up to a nice cartographic number so the bins read as 10/25/100-style
+    // thresholds. `niceCeil` is monotonic, so the mapped list stays ascending;
+    // rounding can collapse neighbouring breaks, so dedupe (and drop the `0`
+    // that `niceCeil` returns for non-positive breaks) to keep the threshold
+    // list strictly ascending.
+    const breaks = [
+      ...new Set(computeJenksBreaks(numericValues, numClasses).map(niceCeil)),
+    ].filter((breakValue) => {
+      return breakValue > 0;
+    });
     return {
       type: 'quantitative' as const,
       property: 'value',
       scale: 'threshold' as const,
       thresholds: breaks,
-      colors: pickPaletteColors(DEFAULT_SEQUENTIAL_PALETTE, breaks.length + 1),
-      defaultColor: '#f0f0f0',
+      colors: colorsFor(breaks.length + 1),
+      defaultColor,
     };
   }
 
@@ -72,8 +107,8 @@ const buildColorBy = (mapDataEntry: MapData | undefined) => {
     property: 'value',
     scale: 'threshold' as const,
     thresholds: [],
-    colors: [DEFAULT_SEQUENTIAL_PALETTE[0] ?? '#dbeafe'],
-    defaultColor: '#f0f0f0',
+    colors: colorsFor(1),
+    defaultColor,
   };
 };
 
@@ -201,18 +236,15 @@ const buildProportionalCircles = (
 
   // --- Color legend (quantitative) ---
   const legendId = getProportionalCirclesAutoLegendId(spec);
-  const skipColorBy = spec.legends?.some((l) => {
-    return l.colorBy && l.id !== legendId;
-  });
 
+  // This legend always gets its own colorBy with a default color, regardless
+  // of whether another legend in the spec also declares one — each legend's
+  // colorBy is independent, so an unrelated color legend must never strip
+  // this one of its own coloring.
   const colorLegend: LegendSpec = {
     id: legendId,
     title: buildSizeLegendTitle(spec),
-    // When the user already supplies a colour legend, omit `colorBy` so this
-    // legend renders only the size reference circles (the runtime gates the
-    // circles to the legend that has no `colorBy`). The size title keeps full
-    // visual weight in both paths.
-    ...(skipColorBy ? {} : { colorBy: buildColorBy(mapDataEntry) }),
+    colorBy: buildColorBy(mapDataEntry, spec),
   };
 
   // --- Point layer ---
@@ -247,6 +279,13 @@ const buildProportionalCircles = (
       ],
       transform: 'sqrt',
     },
+    // No `circleColor` here on purpose: a static color in the resolved paint
+    // would win over the legend-driven color-by-value expression in the
+    // adapter's `resolveCircleColor` (explicit paint always takes precedence,
+    // and `injectResolvedFields` merges resolved paint into user paint, making
+    // the two indistinguishable). The adapter itself falls back to a static
+    // default when the legend resolves no expression, so the layer always
+    // gets a paintable `circle-color`.
     paint: {
       circleOpacity: PROPORTIONAL_CIRCLES_DEFAULTS.circleOpacity,
       circleStrokeWidth: PROPORTIONAL_CIRCLES_DEFAULTS.strokeWidth,

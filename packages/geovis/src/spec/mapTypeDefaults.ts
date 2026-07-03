@@ -56,6 +56,9 @@ const STRUCTURAL_KEYS = new Set<string>([
  *   `legends`, they are filled from the resolved layer.
  * - If the user layer has a `paint` object, it is merged with the resolved
  *   layer's paint, with user-provided values taking precedence.
+ * - `sizeBy` is merged the same way: a user layer that declares only `range`
+ *   still inherits the resolved `transform` (proportionalCircles' `'sqrt'`),
+ *   which the size legend and the radius expression both depend on.
  *
  * Returns a new object — `match` (a reference into the caller's `spec.layers`)
  * is never mutated, so re-resolving the same spec object (e.g. `legendEnabled`
@@ -77,6 +80,15 @@ const injectResolvedFields = (
   }
   if (rl.paint) {
     next.paint = { ...rl.paint, ...match.paint };
+  }
+  if (rl.sizeBy && match.sizeBy) {
+    // Spreading two `SizeBy` union members loses the discriminant for the
+    // compiler, but merging user fields over resolved defaults keeps a valid
+    // shape at runtime (user values win; missing ones are filled).
+    next.sizeBy = {
+      ...rl.sizeBy,
+      ...match.sizeBy,
+    } as VisualizationLayer['sizeBy'];
   }
   return next;
 };

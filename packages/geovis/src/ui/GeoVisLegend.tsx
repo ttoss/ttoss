@@ -56,16 +56,20 @@ const GeoVisLegendBody = ({
   items,
   circleItems,
   referenceContent,
-  legends,
+  positionedLegendCount,
 }: {
   className: string | undefined;
   legend: LegendSpec;
   items: LegendItem[];
   circleItems: CircledLegendItem[];
   referenceContent: React.ReactNode;
-  legends: VisualizationSpec['legends'];
+  positionedLegendCount: number;
 }) => {
-  const showTopDivider = shouldShowTopDivider(items, circleItems, legends);
+  const showTopDivider = shouldShowTopDivider(
+    items,
+    circleItems,
+    positionedLegendCount
+  );
   return (
     <div className={className} style={buildContainerStyle(legend.position)}>
       {showTopDivider && (
@@ -174,6 +178,12 @@ export const GeoVisLegend = ({
     return buildCircledItems(circleConfig!, resolvedFormatValue);
   }, [circleConfig, resolvedFormatValue, legend, spec]);
 
+  const positionedLegendCount = React.useMemo(() => {
+    return (spec.legends ?? []).filter((l) => {
+      return l.position;
+    }).length;
+  }, [spec.legends]);
+
   if (!legend) return null;
   if (!hasLegendContent(legend, items, circleItems)) return null;
 
@@ -186,7 +196,7 @@ export const GeoVisLegend = ({
       items={items}
       circleItems={circleItems}
       referenceContent={referenceContent}
-      legends={spec.legends}
+      positionedLegendCount={positionedLegendCount}
     />
   );
 };
