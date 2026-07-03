@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.9.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.8.2...@ttoss/geovis@0.9.0) (2026-07-03)
+
+### Features
+
+- **geovis:** Add proportional circles map type auto-configuration ([#1105](https://github.com/ttoss/ttoss/issues/1105)) ([df2850d](https://github.com/ttoss/ttoss/commit/df2850d1094f660c71bc8000f2165e819483535d))
+
 ## [0.8.2](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.8.1...@ttoss/geovis@0.8.2) (2026-07-01)
 
 ### Bug Fixes

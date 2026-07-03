@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.38.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.37.2...@docs/storybook@3.38.0) (2026-07-03)
+
+### Features
+
+- **geovis:** Add proportional circles map type auto-configuration ([#1105](https://github.com/ttoss/ttoss/issues/1105)) ([df2850d](https://github.com/ttoss/ttoss/commit/df2850d1094f660c71bc8000f2165e819483535d))
+
 ## [3.37.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.37.1...@docs/storybook@3.37.2) (2026-07-01)
 
 **Note:** Version bump only for package @docs/storybook
