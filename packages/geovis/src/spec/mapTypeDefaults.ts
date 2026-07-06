@@ -124,6 +124,13 @@ const mergeResolvedLayers = (
  * resolved legend. When the user provides a partial `colorBy` (e.g.
  * only `colors`), the missing fields are filled from the auto-generated one.
  */
+/**
+ * Merges user-provided legends with auto-generated ones.
+ * When a user legend lacks `colorBy`, it inherits from the matching
+ * resolved legend, while the resolved legend's non-colorBy fields
+ * (title, subtitle, position, etc.) are preserved through
+ * `{ ...match, ...userLegend }`.
+ */
 export const mergeLegends = (
   userLegends: LegendSpec[],
   resolvedLegends: LegendSpec[]
@@ -139,7 +146,7 @@ export const mergeLegends = (
     usedIds.add(match.id);
     if (!match.colorBy) return userLegend;
     if (!userLegend.colorBy) {
-      return { ...userLegend, colorBy: match.colorBy };
+      return { ...match, ...userLegend, colorBy: match.colorBy };
     }
     if (
       match.colorBy.type === 'quantitative' &&
@@ -176,6 +183,12 @@ export const mergeLegends = (
  * gets its `colorBy` clobbered by the size legend's `colorBy` whenever there
  * is exactly one resolved legend — silently merging two unrelated legends
  * into one and losing the "Circle size = ..." entry entirely.
+ *
+ * When a user legend matches by id but has no `colorBy`, the resolved
+ * legend's non-colorBy fields (title, subtitle, position, etc.) are
+ * preserved through `{ ...match, ...userLegend }` — a user who provides
+ * only `{ id: 'pop-legend' }` still gets the auto-generated title and a
+ * default position (for auto-mount by GeoVisProvider).
  */
 export const mergeLegendsByIdOnly = (
   userLegends: LegendSpec[],
@@ -190,18 +203,17 @@ export const mergeLegendsByIdOnly = (
     usedIds.add(match.id);
     if (!match.colorBy) return userLegend;
     if (!userLegend.colorBy) {
-      return { ...userLegend, colorBy: match.colorBy };
+      return { ...match, ...userLegend, colorBy: match.colorBy };
     }
-    if (
-      match.colorBy.type === 'quantitative' &&
-      userLegend.colorBy.type === 'quantitative'
-    ) {
-      return {
-        ...userLegend,
-        colorBy: { ...match.colorBy, ...userLegend.colorBy },
-      };
-    }
-    return userLegend;
+    // `type`/`thresholds`/`colors` (and non-colorBy fields like `position`)
+    // come from the resolved legend; the user legend only needs to carry the
+    // fields it wants to override (e.g. `defaultColor`) — no need to repeat
+    // `type`, and no need to repeat `position` just to keep auto-mounting.
+    return {
+      ...match,
+      ...userLegend,
+      colorBy: { ...match.colorBy, ...userLegend.colorBy },
+    };
   });
   // `usedIds` already covers every resolved id a user legend could share,
   // because the match above is an exact id lookup across all of

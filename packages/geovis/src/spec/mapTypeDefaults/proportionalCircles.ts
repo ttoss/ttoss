@@ -241,10 +241,13 @@ const buildProportionalCircles = (
   // of whether another legend in the spec also declares one — each legend's
   // colorBy is independent, so an unrelated color legend must never strip
   // this one of its own coloring.
+  // Default position ensures auto-mount by GeoVisProvider when no user legend
+  // declares a matching id with an explicit position.
   const colorLegend: LegendSpec = {
     id: legendId,
     title: buildSizeLegendTitle(spec),
     colorBy: buildColorBy(mapDataEntry, spec),
+    position: 'bottom-right',
   };
 
   // --- Point layer ---
@@ -287,9 +290,6 @@ const buildProportionalCircles = (
     // default when the legend resolves no expression, so the layer always
     // gets a paintable `circle-color`.
     paint: {
-      circleColor:
-        DEFAULT_DOT_DENSITY_PAINT.circleColor ??
-        colorLegend.colorBy.defaultColor,
       circleOpacity: PROPORTIONAL_CIRCLES_DEFAULTS.circleOpacity,
       circleStrokeWidth: PROPORTIONAL_CIRCLES_DEFAULTS.strokeWidth,
       circleStrokeOpacity: PROPORTIONAL_CIRCLES_DEFAULTS.strokeOpacity,

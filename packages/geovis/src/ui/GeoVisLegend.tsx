@@ -14,6 +14,7 @@ import {
   buildColorItems,
   buildContainerStyle,
   buildReferenceContent,
+  collectLegendIdsForPosition,
   computeNormalizedBreaks,
   hasLegendContent,
   MUTED_COLOR,
@@ -42,6 +43,12 @@ export interface GeoVisLegendProps {
   className?: string;
   /** Optional node rendered as the legend's reference/attribution footer. */
   sourceNode?: React.ReactNode;
+  /**
+   * When true, renders without the absolute-positioning wrapper even if the
+   * legend declares a `position`. Used by `GeoVisProvider` to stack every
+   * legend sharing a position inside one grouped overlay container.
+   */
+  noPositionWrap?: boolean;
 }
 
 const useGeoVisLegend = (spec: VisualizationSpec, legendId: string) => {
@@ -150,22 +157,18 @@ const GeoVisLegendBody = ({
   items,
   circleItems,
   referenceContent,
-  positionedLegendCount,
+  isFirstInPositionGroup,
 }: {
   className: string | undefined;
   legend: LegendSpec;
   items: LegendItem[];
   circleItems: CircledLegendItem[];
   referenceContent: React.ReactNode;
-  positionedLegendCount: number;
+  isFirstInPositionGroup: boolean;
 }) => {
   const swatchColor =
     items[0]?.color ?? legend.colorBy?.defaultColor ?? MUTED_COLOR;
-  const showTopDivider = shouldShowTopDivider(
-    items,
-    circleItems,
-    positionedLegendCount
-  );
+  const showTopDivider = shouldShowTopDivider(isFirstInPositionGroup);
   return (
     <div className={className} style={buildContainerStyle(legend.position)}>
       <GeoVisLegendHeader
@@ -214,6 +217,7 @@ export const GeoVisLegend = ({
   formatValue,
   className,
   sourceNode,
+  noPositionWrap = false,
 }: GeoVisLegendProps) => {
   const { spec } = useGeoVis();
 
@@ -237,25 +241,34 @@ export const GeoVisLegend = ({
     return buildCircledItems(circleConfig!, resolvedFormatValue);
   }, [circleConfig, resolvedFormatValue, legend, spec]);
 
-  const positionedLegendCount = React.useMemo(() => {
-    return (spec.legends ?? []).filter((l) => {
-      return l.position;
-    }).length;
-  }, [spec.legends]);
+  const isFirstInPositionGroup = React.useMemo(() => {
+    if (!noPositionWrap || !legend?.position) return true;
+    return collectLegendIdsForPosition(spec, legend.position)[0] === legendId;
+  }, [spec, legend, legendId, noPositionWrap]);
 
-  if (!legend) return null;
-  if (!hasLegendContent(legend, items, circleItems)) return null;
+  /**
+   * Effective legend object passed to render functions. When `noPositionWrap`
+   * is true, position is cleared so `GeoVisLegendBody` renders in normal flow
+   * (the group container handles positioning).
+   */
+  const effectiveLegend: LegendSpec | undefined = React.useMemo(() => {
+    if (!legend || !noPositionWrap) return legend;
+    return { ...legend, position: undefined };
+  }, [legend, noPositionWrap]);
 
-  const referenceContent = buildReferenceContent(sourceNode, legend);
+  if (!effectiveLegend) return null;
+  if (!hasLegendContent(effectiveLegend, items, circleItems)) return null;
+
+  const referenceContent = buildReferenceContent(sourceNode, effectiveLegend);
 
   return (
     <GeoVisLegendBody
       className={className}
-      legend={legend}
+      legend={effectiveLegend}
       items={items}
       circleItems={circleItems}
       referenceContent={referenceContent}
-      positionedLegendCount={positionedLegendCount}
+      isFirstInPositionGroup={isFirstInPositionGroup}
     />
   );
 };

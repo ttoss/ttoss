@@ -285,15 +285,63 @@ export const hasLegendContent = (
   return !!legend.subtitle;
 };
 
+/**
+ * Any legend past the first slot in its position group gets a top divider —
+ * `GeoVisLegendBody` only reaches this check once `hasLegendContent` already
+ * confirmed it has something to render, so no separate content check needed.
+ */
 export const shouldShowTopDivider = (
-  items: LegendItem[],
-  circleItems: CircledLegendItem[],
-  positionedLegendCount: number
+  isFirstInPositionGroup: boolean
 ): boolean => {
-  if (circleItems.length === 0) return false;
-  if (items.length > 0) return false;
-  if (positionedLegendCount <= 1) return false;
-  return true;
+  return !isFirstInPositionGroup;
+};
+
+/**
+ * Ids of every legend (top-level or per-layer) declaring the given
+ * `position`, in declaration order. Used to stack same-position legends in
+ * one overlay and to know which member is first (no leading divider).
+ */
+export const collectLegendIdsForPosition = (
+  spec: VisualizationSpec,
+  position: LegendPosition
+): string[] => {
+  const ids: string[] = [];
+  const seen = new Set<string>();
+  const add = (legend?: LegendSpec) => {
+    if (!legend || legend.position !== position || seen.has(legend.id)) return;
+    seen.add(legend.id);
+    ids.push(legend.id);
+  };
+  for (const legend of spec.legends ?? []) add(legend);
+  for (const layer of spec.layers) {
+    for (const legend of layer.legends ?? []) add(legend);
+  }
+  return ids;
+};
+
+/**
+ * Groups every positioned legend id by its `position`, preserving
+ * declaration order within each group. Powers `GeoVisProvider`'s auto-mounted
+ * overlays: a group with 2+ ids renders as one stacked container instead of
+ * separately absolutely-positioned boxes.
+ */
+export const groupLegendIdsByPosition = (
+  spec: VisualizationSpec
+): Map<LegendPosition, string[]> => {
+  const groups = new Map<LegendPosition, string[]>();
+  const addAll = (legends: LegendSpec[] | undefined) => {
+    for (const legend of legends ?? []) {
+      if (!legend.position) continue;
+      if (groups.has(legend.position)) continue;
+      groups.set(
+        legend.position,
+        collectLegendIdsForPosition(spec, legend.position)
+      );
+    }
+  };
+  addAll(spec.legends);
+  for (const layer of spec.layers) addAll(layer.legends);
+  return groups;
 };
 
 export const buildContainerStyle = (

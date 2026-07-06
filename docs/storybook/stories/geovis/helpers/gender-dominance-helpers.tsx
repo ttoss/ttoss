@@ -3,6 +3,7 @@
  * Not public package artefacts — story utilities only.
  */
 import type {
+  ColorBy,
   GeoJSONFeatureCollection,
   MapData,
   VisualizationSpec,
@@ -225,6 +226,15 @@ export const buildSpec = ({
           mapping: { men: GENDER_COLOR_MEN, women: GENDER_COLOR_WOMEN },
           defaultColor: '#9ca3af',
         },
+      },
+      // Matches the proportionalCircles auto-generated legend id
+      // (`${mapData[0].mapDataId}-legend`, i.e. `population-legend`).
+      // `mergeLegendsByIdOnly` grafts this onto the resolved legend, so only
+      // the overridden field needs to be listed \u2014 no need to repeat `type`,
+      // `thresholds`, or `colors`.
+      {
+        id: 'population-legend',
+        colorBy: { defaultColor: '#9ca3af' } as unknown as ColorBy,
       },
     ],
     mapData: [
