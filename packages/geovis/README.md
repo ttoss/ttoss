@@ -698,6 +698,15 @@ once. Its `id` is checked against every already-merged legend before being
 added, so a legend the user already matched (by `id` or positional fallback)
 is never duplicated as an extra unmatched entry.
 
+The `proportionalCircles` auto legend's `colorBy` is display-only for the
+adapter, never for the legend UI: it exists so `resolveCircleColor` always has
+a legend to build a `circle-color` expression from, but every bin it defines
+resolves to the same flat color, so `<GeoVisLegend>` never renders it as a
+value-band list — that legend's UI content is the circle reference key only
+(`shouldShowColorItems` in `GeoVisLegend.utils.tsx` suppresses it by the
+legend's deterministic id). A separate, user-authored color legend (e.g. a
+choropleth-style `colorBy` on its own `id`) still renders its bands normally.
+
 ### Architecture note
 
 `resolveSpecFromMapType` is called in two places: `GeoVisProvider` (for React

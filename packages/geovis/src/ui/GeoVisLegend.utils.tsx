@@ -230,6 +230,23 @@ export const shouldShowCircleItems = (
   return true;
 };
 
+/**
+ * The proportionalCircles auto-generated legend always carries a `colorBy`
+ * (`buildColorBy` in `mapTypeDefaults/proportionalCircles.ts`) purely so the
+ * adapter has a legend to build a `circle-color` expression from — every bin
+ * it defines resolves to the same flat color, so it carries no real visual
+ * distinction. Rendering it as a value-band list would just duplicate the
+ * circle size key with meaningless identical-color rows; this legend's UI
+ * job is the circle reference key only (see `shouldShowCircleItems`).
+ */
+export const shouldShowColorItems = (
+  legend: LegendSpec | undefined,
+  spec: VisualizationSpec
+): boolean => {
+  if (legend?.id === getProportionalCirclesAutoLegendId(spec)) return false;
+  return true;
+};
+
 export const resolveFormatter = (
   explicit: ((value: number) => string) | undefined,
   circleConfig: ProportionalCirclesConfig | null

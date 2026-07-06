@@ -21,6 +21,7 @@ import {
   resolveLegend,
   rowStyle,
   shouldShowCircleItems,
+  shouldShowColorItems,
   shouldShowTopDivider,
   swatchBase,
 } from './GeoVisLegend.utils';
@@ -170,8 +171,9 @@ export const GeoVisLegend = ({
   }, [formatValue, circleConfig]);
 
   const items = React.useMemo(() => {
+    if (!shouldShowColorItems(legend, spec)) return [];
     return buildColorItems(legend, normalizedBreaks, resolvedFormatValue);
-  }, [legend, normalizedBreaks, resolvedFormatValue]);
+  }, [legend, normalizedBreaks, resolvedFormatValue, spec]);
 
   const circleItems = React.useMemo(() => {
     if (!shouldShowCircleItems(circleConfig, legend, spec)) return [];
