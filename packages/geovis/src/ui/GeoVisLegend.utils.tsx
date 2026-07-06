@@ -255,8 +255,11 @@ export const hasLegendContent = (
   circleItems: CircledLegendItem[]
 ): boolean => {
   if (!legend) return false;
-  if (items.length === 0 && circleItems.length === 0) return false;
-  return true;
+  if (items.length > 0 || circleItems.length > 0) return true;
+  // Text-only legend (e.g. a dot-density key like `1 point = 1 kitchen`): it
+  // carries no swatches or reference circles, so its meaning lives entirely in
+  // the subtitle. Render it whenever that explanatory text is present.
+  return !!legend.subtitle;
 };
 
 export const shouldShowTopDivider = (
