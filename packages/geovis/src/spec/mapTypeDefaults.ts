@@ -123,13 +123,8 @@ const mergeResolvedLayers = (
  * When a user legend lacks `colorBy`, it inherits from the matching
  * resolved legend. When the user provides a partial `colorBy` (e.g.
  * only `colors`), the missing fields are filled from the auto-generated one.
- */
-/**
- * Merges user-provided legends with auto-generated ones.
- * When a user legend lacks `colorBy`, it inherits from the matching
- * resolved legend, while the resolved legend's non-colorBy fields
- * (title, subtitle, position, etc.) are preserved through
- * `{ ...match, ...userLegend }`.
+ * The resolved legend's non-colorBy fields (title, subtitle, position, etc.)
+ * are preserved through `{ ...match, ...userLegend }`.
  */
 export const mergeLegends = (
   userLegends: LegendSpec[],

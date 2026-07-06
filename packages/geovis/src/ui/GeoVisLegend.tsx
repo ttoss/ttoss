@@ -176,32 +176,34 @@ const GeoVisLegendBody = ({
         title={legend.title}
         subtitle={legend.subtitle}
       />
-      <ul
-        aria-label={legend.title ?? legend.id}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          gap: 4,
-          margin: 0,
-          padding: 0,
-          listStyle: 'none',
-        }}
-      >
-        <GeoVisLegendItems
-          items={items}
-          legendId={legend.id}
-          noDataLabel={legend.noDataLabel}
-        />
-        <GeoVisLegendItemsDivider
-          itemsCount={items.length}
-          circleItemsCount={circleItems.length}
-        />
-        <CirclesLegendItems
-          circleItems={circleItems}
-          swatchColor={swatchColor}
-        />
-      </ul>
+      {(items.length > 0 || circleItems.length > 0) && (
+        <ul
+          aria-label={legend.title ?? legend.id}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            gap: 4,
+            margin: 0,
+            padding: 0,
+            listStyle: 'none',
+          }}
+        >
+          <GeoVisLegendItems
+            items={items}
+            legendId={legend.id}
+            noDataLabel={legend.noDataLabel}
+          />
+          <GeoVisLegendItemsDivider
+            itemsCount={items.length}
+            circleItemsCount={circleItems.length}
+          />
+          <CirclesLegendItems
+            circleItems={circleItems}
+            swatchColor={swatchColor}
+          />
+        </ul>
+      )}
       {referenceContent != null && (
         <p style={{ color: MUTED_COLOR, fontSize: 11, margin: '6px 0 0' }}>
           {referenceContent}

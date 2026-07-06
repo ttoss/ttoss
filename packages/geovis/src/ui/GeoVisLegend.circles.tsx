@@ -77,10 +77,15 @@ export const buildCircledItems = (
       pct === 1 ? `\u2265 ${formatValue(value)}` : formatValue(value);
     // Rounding can collapse neighbouring percentiles of a small
     // scaleMaxValue to the same value - keep only the first occurrence.
+    // Deduplicate by numeric value (not formatted label) to avoid false
+    // dedup when formatValue rounds/abbreviates differently.
     if (
       value <= 0 ||
       items.some((item) => {
-        return item.label === label;
+        return (
+          item.radiusPx ===
+          computeCircleRadius(value, scaleMaxValue, minRadius, maxRadius)
+        );
       })
     ) {
       continue;

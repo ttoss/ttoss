@@ -21,7 +21,7 @@ pnpm turbo run test --filter=...@ttoss/geovis
 pnpm turbo run build --filter=...@ttoss/geovis
 ```
 
-Coverage thresholds live in `tests/unit/jest.config.ts` (`coverageThreshold.global`) — don't update after any change that shifts coverage, unless requested.
+Coverage thresholds live in `tests/unit/jest.config.ts` (`coverageThreshold.global`) — **always update** after every code change session end that shifts coverage, setting values slightly below (0.01–0.1%) current coverage. Coverage must never decrease.
 
 ## Architecture
 
