@@ -128,8 +128,10 @@ export const computeCircleRowSpacing = (radiusPx: number): number => {
  */
 export const CirclesLegendItems = ({
   circleItems: items,
+  swatchColor = MUTED_COLOR,
 }: {
   circleItems: CircledLegendItem[];
+  swatchColor?: string;
 }) => {
   if (items.length === 0) return null;
   return (
@@ -149,7 +151,12 @@ export const CirclesLegendItems = ({
           >
             <span
               aria-hidden="true"
-              style={{ ...CIRCLE_SWATCH_BASE, height: d, width: d }}
+              style={{
+                ...CIRCLE_SWATCH_BASE,
+                backgroundColor: swatchColor,
+                height: d,
+                width: d,
+              }}
             />
             <span>{c.label}</span>
           </li>

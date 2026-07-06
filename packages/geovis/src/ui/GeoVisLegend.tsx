@@ -50,6 +50,100 @@ const useGeoVisLegend = (spec: VisualizationSpec, legendId: string) => {
   }, [spec, legendId]);
 };
 
+const GeoVisLegendHeader = ({
+  showTopDivider,
+  title,
+  subtitle,
+}: {
+  showTopDivider: boolean;
+  title: string | undefined;
+  subtitle: string | undefined;
+}) => {
+  return (
+    <>
+      {showTopDivider && (
+        <div
+          aria-hidden="true"
+          style={{ borderTop: `1px solid ${BORDER_COLOR}`, margin: '4px 0' }}
+        />
+      )}
+      {!!title && (
+        <p style={{ fontWeight: 600, margin: '0 0 2px', marginTop: 16 }}>
+          {title}
+        </p>
+      )}
+      {!!subtitle && (
+        <p style={{ color: MUTED_COLOR, fontSize: 12, margin: '0 0 4px' }}>
+          {subtitle}
+        </p>
+      )}
+    </>
+  );
+};
+
+const GeoVisLegendItems = ({
+  items,
+  legendId,
+  noDataLabel,
+}: {
+  items: LegendItem[];
+  legendId: string;
+  noDataLabel: string | undefined;
+}) => {
+  return (
+    <>
+      {items.map((item) => {
+        return (
+          <li key={`${legendId}-${item.binIndex}`} style={rowStyle}>
+            <span
+              aria-hidden="true"
+              style={{
+                ...swatchBase,
+                backgroundColor: item.color,
+                border: `1px solid ${BORDER_COLOR}`,
+              }}
+            />
+            <span>{item.label}</span>
+          </li>
+        );
+      })}
+      {!!noDataLabel && (
+        <li style={rowStyle}>
+          <span
+            aria-hidden="true"
+            style={{
+              ...swatchBase,
+              backgroundColor: 'transparent',
+              border: '1px solid #9ca3af',
+            }}
+          />
+          <span>{noDataLabel}</span>
+        </li>
+      )}
+    </>
+  );
+};
+
+const GeoVisLegendItemsDivider = ({
+  itemsCount,
+  circleItemsCount,
+}: {
+  itemsCount: number;
+  circleItemsCount: number;
+}) => {
+  if (itemsCount === 0 || circleItemsCount === 0) return null;
+  return (
+    <li
+      aria-hidden="true"
+      style={{
+        borderTop: `1px solid ${BORDER_COLOR}`,
+        margin: '4px 0',
+        width: '100%',
+      }}
+    />
+  );
+};
+
 const GeoVisLegendBody = ({
   className,
   legend,
@@ -65,6 +159,8 @@ const GeoVisLegendBody = ({
   referenceContent: React.ReactNode;
   positionedLegendCount: number;
 }) => {
+  const swatchColor =
+    items[0]?.color ?? legend.colorBy?.defaultColor ?? MUTED_COLOR;
   const showTopDivider = shouldShowTopDivider(
     items,
     circleItems,
@@ -72,22 +168,11 @@ const GeoVisLegendBody = ({
   );
   return (
     <div className={className} style={buildContainerStyle(legend.position)}>
-      {showTopDivider && (
-        <div
-          aria-hidden="true"
-          style={{ borderTop: `1px solid ${BORDER_COLOR}`, margin: '4px 0' }}
-        />
-      )}
-      {!!legend.title && (
-        <p style={{ fontWeight: 600, margin: '0 0 2px', marginTop: 16 }}>
-          {legend.title}
-        </p>
-      )}
-      {!!legend.subtitle && (
-        <p style={{ color: MUTED_COLOR, fontSize: 12, margin: '0 0 4px' }}>
-          {legend.subtitle}
-        </p>
-      )}
+      <GeoVisLegendHeader
+        showTopDivider={showTopDivider}
+        title={legend.title}
+        subtitle={legend.subtitle}
+      />
       <ul
         aria-label={legend.title ?? legend.id}
         style={{
@@ -100,45 +185,19 @@ const GeoVisLegendBody = ({
           listStyle: 'none',
         }}
       >
-        {items.map((item) => {
-          return (
-            <li key={`${legend.id}-${item.binIndex}`} style={rowStyle}>
-              <span
-                aria-hidden="true"
-                style={{
-                  ...swatchBase,
-                  backgroundColor: item.color,
-                  border: `1px solid ${BORDER_COLOR}`,
-                }}
-              />
-              <span>{item.label}</span>
-            </li>
-          );
-        })}
-        {!!legend.noDataLabel && (
-          <li style={rowStyle}>
-            <span
-              aria-hidden="true"
-              style={{
-                ...swatchBase,
-                backgroundColor: 'transparent',
-                border: '1px solid #9ca3af',
-              }}
-            />
-            <span>{legend.noDataLabel}</span>
-          </li>
-        )}
-        {items.length > 0 && circleItems.length > 0 && (
-          <li
-            aria-hidden="true"
-            style={{
-              borderTop: `1px solid ${BORDER_COLOR}`,
-              margin: '4px 0',
-              width: '100%',
-            }}
-          />
-        )}
-        <CirclesLegendItems circleItems={circleItems} />
+        <GeoVisLegendItems
+          items={items}
+          legendId={legend.id}
+          noDataLabel={legend.noDataLabel}
+        />
+        <GeoVisLegendItemsDivider
+          itemsCount={items.length}
+          circleItemsCount={circleItems.length}
+        />
+        <CirclesLegendItems
+          circleItems={circleItems}
+          swatchColor={swatchColor}
+        />
       </ul>
       {referenceContent != null && (
         <p style={{ color: MUTED_COLOR, fontSize: 11, margin: '6px 0 0' }}>
@@ -170,8 +229,8 @@ export const GeoVisLegend = ({
   }, [formatValue, circleConfig]);
 
   const items = React.useMemo(() => {
-    return buildColorItems(legend, normalizedBreaks, resolvedFormatValue);
-  }, [legend, normalizedBreaks, resolvedFormatValue]);
+    return buildColorItems(legend, normalizedBreaks, resolvedFormatValue, spec);
+  }, [legend, normalizedBreaks, resolvedFormatValue, spec]);
 
   const circleItems = React.useMemo(() => {
     if (!shouldShowCircleItems(circleConfig, legend, spec)) return [];

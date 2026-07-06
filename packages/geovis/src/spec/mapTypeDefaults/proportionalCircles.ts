@@ -287,6 +287,9 @@ const buildProportionalCircles = (
     // default when the legend resolves no expression, so the layer always
     // gets a paintable `circle-color`.
     paint: {
+      circleColor:
+        DEFAULT_DOT_DENSITY_PAINT.circleColor ??
+        colorLegend.colorBy.defaultColor,
       circleOpacity: PROPORTIONAL_CIRCLES_DEFAULTS.circleOpacity,
       circleStrokeWidth: PROPORTIONAL_CIRCLES_DEFAULTS.strokeWidth,
       circleStrokeOpacity: PROPORTIONAL_CIRCLES_DEFAULTS.strokeOpacity,
