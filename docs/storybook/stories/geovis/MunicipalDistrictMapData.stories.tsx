@@ -11,8 +11,6 @@ import {
   createBoundaryGroup,
   customizeBoundaryGroup,
   GeoVisCanvas,
-  GeoVisHoverTooltip,
-  GeoVisLegend,
   GeoVisProvider,
   useBoundaryToggle,
 } from '@ttoss/geovis';
@@ -589,6 +587,29 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
             lineWidth: selectedLineWidth,
           },
           ...(showClickAnchor && { clickAnchor: { color: clickAnchorColor } }),
+          hoverTooltip: {
+            render: (info) => {
+              const district =
+                populationData?.[String(year)]?.[String(info.featureId)];
+              const value =
+                district !== undefined
+                  ? getDistrictValue(district, dataProperty)
+                  : info.value;
+              return (
+                <>
+                  <div style={{ fontWeight: 600 }}>
+                    {district?.districtName ??
+                      `District #${String(info.featureId)}`}
+                  </div>
+                  <div>
+                    {typeof value === 'number'
+                      ? `${fmtPop(value)} inhabitants`
+                      : 'No data'}
+                  </div>
+                </>
+              );
+            },
+          },
         },
         {
           id: 'districts-outline',
@@ -725,29 +746,6 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
             style={{ width: '100%', height: '100%' }}
           />
           <FitBoundsToBbox bbox={districtBbox} overlayInsets={fitInsets} />
-          <GeoVisHoverTooltip
-            render={(info) => {
-              const district =
-                populationData?.[String(year)]?.[String(info.featureId)];
-              const value =
-                district !== undefined
-                  ? getDistrictValue(district, dataProperty)
-                  : info.value;
-              return (
-                <>
-                  <div style={{ fontWeight: 600 }}>
-                    {district?.districtName ??
-                      `District #${String(info.featureId)}`}
-                  </div>
-                  <div>
-                    {typeof value === 'number'
-                      ? `${fmtPop(value)} inhabitants`
-                      : 'No data'}
-                  </div>
-                </>
-              );
-            }}
-          />
           {!position && (
             <MapOverlayLegend
               label={`${dataProperty} population`}
@@ -759,13 +757,7 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
               formatValue={fmtPop}
             />
           )}
-          {position && (
-            <GeoVisLegend legendId="population" formatValue={fmtPop} />
-          )}
         </div>
-        {!position && (
-          <GeoVisLegend legendId="population" formatValue={fmtPop} />
-        )}
       </GeoVisProvider>
     </div>
   );
@@ -784,7 +776,7 @@ WithRangeLabel.args = {
   year: 2020,
   abbreviate: true,
   extended: true,
-  legendPosition: 'none',
+  legendPosition: 'bottom-left',
   labelFormatType: 'range',
 };
 
@@ -794,7 +786,7 @@ WithPercentageLabel.args = {
   year: 2020,
   abbreviate: false,
   extended: true,
-  legendPosition: 'none',
+  legendPosition: 'bottom-left',
   labelFormatType: 'percentage',
 };
 
@@ -804,7 +796,7 @@ WithStdDevLabel.args = {
   year: 2020,
   abbreviate: true,
   extended: true,
-  legendPosition: 'none',
+  legendPosition: 'top-left',
   labelFormatType: 'stdDev',
 };
 
@@ -814,7 +806,7 @@ WithPositionedLegend.args = {
   year: 2020,
   abbreviate: true,
   extended: true,
-  legendPosition: 'bottom-left',
+  legendPosition: 'top-right',
   labelFormatType: 'range',
   noDataLabel: 'No data',
 };
@@ -829,7 +821,7 @@ WithCustomLabel.args = {
   year: 2020,
   abbreviate: false,
   extended: false,
-  legendPosition: 'none',
+  legendPosition: 'bottom-left',
   labelFormatType: 'custom',
 };
 
@@ -843,7 +835,7 @@ WithLabelsFormat.args = {
   year: 2020,
   abbreviate: false,
   extended: false,
-  legendPosition: 'none',
+  legendPosition: 'bottom-right',
   labelFormatType: 'labels',
   thresholdPreset: 'ibge',
   noDataLabel: 'No data',
