@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import * as React from 'react';
 import { GeoVisProvider, useGeoVis } from 'src/react/GeoVisProvider';
 import type {
@@ -93,6 +93,7 @@ describe('spec-driven legend overlay (legend.position)', () => {
         <ExposeRuntime onReady={onReady} />
       </GeoVisProvider>
     );
+    await act(async () => {});
     await waitFor(() => {
       expect(onReady).toHaveBeenCalled();
     });
@@ -118,6 +119,7 @@ describe('spec-driven legend overlay (legend.position)', () => {
         <div />
       </GeoVisProvider>
     );
+    await act(async () => {});
 
     await waitFor(() => {
       expect(
@@ -163,6 +165,7 @@ describe('spec-driven legend overlay (legend.position)', () => {
         <div />
       </GeoVisProvider>
     );
+    await act(async () => {});
 
     await waitFor(() => {
       expect(
@@ -194,6 +197,7 @@ describe('spec-driven legend overlay (legend.position)', () => {
         <div />
       </GeoVisProvider>
     );
+    await act(async () => {});
 
     await waitFor(() => {
       expect(
@@ -222,6 +226,7 @@ describe('stacked legend overlays (shared position)', () => {
         <div />
       </GeoVisProvider>
     );
+    await act(async () => {});
 
     await waitFor(() => {
       expect(
@@ -265,6 +270,7 @@ describe('stacked legend overlays (shared position)', () => {
         <div />
       </GeoVisProvider>
     );
+    await act(async () => {});
 
     await waitFor(() => {
       expect(
@@ -307,6 +313,7 @@ describe('stacked legend overlays (shared position)', () => {
         <div />
       </GeoVisProvider>
     );
+    await act(async () => {});
 
     await waitFor(() => {
       expect(
