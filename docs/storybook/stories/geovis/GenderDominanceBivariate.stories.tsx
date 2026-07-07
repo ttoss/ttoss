@@ -11,8 +11,8 @@ import type {
 import {
   buildCentroidGeoJson,
   buildSpec,
+  buildTooltipData,
   normalizePopulationData,
-  renderTooltip,
   sumValues,
 } from './helpers/gender-dominance-helpers';
 import {
@@ -131,11 +131,16 @@ export const GenderDominanceBivariate: StoryFn<{
     });
   }, [populationData, year]);
 
+  const tooltipData = React.useMemo(() => {
+    return buildTooltipData(populationData, year);
+  }, [populationData, year]);
+
   const spec = React.useMemo(() => {
     if (!districtGeoJson || !centroidGeoJson) return null;
     const s = buildSpec({
       sizeData,
       colorData,
+      tooltipData,
       year,
       districtGeoJson,
       centroidGeoJson,
@@ -146,20 +151,6 @@ export const GenderDominanceBivariate: StoryFn<{
       strokeWidth,
       strokeOpacity,
     });
-    // Add a hover tooltip to the district polygons layer that shows the
-    // district name, total population and dominant gender. Hover tracking only
-    // fires on polygon layers, so the tooltip must live on `districts-fill`
-    // (not the point centroids layer).
-    const districtsFillLayer = s.layers.find((l) => {
-      return l.id === 'districts-fill';
-    });
-    if (districtsFillLayer) {
-      districtsFillLayer.hoverTooltip = {
-        render: (info) => {
-          return renderTooltip(info, populationData, year);
-        },
-      };
-    }
     // Set the gender legend's position from the story control. The
     // auto-generated circles legend always defaults to 'bottom-right'; when
     // the gender legend shares that same corner, GeoVisProvider stacks both
@@ -175,6 +166,7 @@ export const GenderDominanceBivariate: StoryFn<{
   }, [
     sizeData,
     colorData,
+    tooltipData,
     year,
     districtGeoJson,
     centroidGeoJson,
@@ -185,7 +177,6 @@ export const GenderDominanceBivariate: StoryFn<{
     strokeWidth,
     strokeOpacity,
     legendPosition,
-    populationData,
   ]);
 
   if (!districtGeoJson || !centroidGeoJson || !districtBbox || !spec) {

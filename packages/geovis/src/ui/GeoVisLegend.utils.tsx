@@ -106,12 +106,12 @@ export const resolvePositionStyle = (
   const base = { position: 'absolute' as const, zIndex: 10 };
   const coords =
     position === 'top-left'
-      ? { top: 10, left: 10 }
+      ? { top: 24, left: 24 }
       : position === 'top-right'
-        ? { top: 10, right: 10 }
+        ? { top: 24, right: 24 }
         : position === 'bottom-left'
-          ? { bottom: 10, left: 10 }
-          : { bottom: 10, right: 10 };
+          ? { bottom: 24, left: 24 }
+          : { bottom: 24, right: 24 };
   return { ...base, ...coords };
 };
 
