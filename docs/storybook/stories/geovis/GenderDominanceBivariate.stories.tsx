@@ -146,12 +146,15 @@ export const GenderDominanceBivariate: StoryFn<{
       strokeWidth,
       strokeOpacity,
     });
-    // Add a hover tooltip to the centroids layer that shows the district name, total population
-    const centroidsLayer = s.layers.find((l) => {
-      return l.id === 'district-centroids';
+    // Add a hover tooltip to the district polygons layer that shows the
+    // district name, total population and dominant gender. Hover tracking only
+    // fires on polygon layers, so the tooltip must live on `districts-fill`
+    // (not the point centroids layer).
+    const districtsFillLayer = s.layers.find((l) => {
+      return l.id === 'districts-fill';
     });
-    if (centroidsLayer) {
-      centroidsLayer.hoverTooltip = {
+    if (districtsFillLayer) {
+      districtsFillLayer.hoverTooltip = {
         render: (info) => {
           return renderTooltip(info, populationData, year);
         },
