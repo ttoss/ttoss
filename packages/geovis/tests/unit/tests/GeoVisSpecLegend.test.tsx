@@ -134,8 +134,8 @@ describe('spec-driven legend overlay (legend.position)', () => {
     // The overlay container is absolutely positioned in the bottom-right.
     const container = list.closest('div') as HTMLElement;
     expect(container.style.position).toBe('absolute');
-    expect(container.style.right).toBe('10px');
-    expect(container.style.bottom).toBe('10px');
+    expect(container.style.right).toBe('24px');
+    expect(container.style.bottom).toBe('24px');
   });
 
   test('mounts an overlay for a layer-level legend that declares position', async () => {
@@ -243,8 +243,8 @@ describe('stacked legend overlays (shared position)', () => {
       .parentElement;
     expect(popGroup).toBe(densityGroup);
     expect(popGroup!.style.position).toBe('absolute');
-    expect(popGroup!.style.right).toBe('10px');
-    expect(popGroup!.style.bottom).toBe('10px');
+    expect(popGroup!.style.right).toBe('24px');
+    expect(popGroup!.style.bottom).toBe('24px');
 
     // Only the second legend in declaration order gets a leading divider.
     const dividers = popGroup!.querySelectorAll('div[aria-hidden="true"]');
@@ -326,11 +326,11 @@ describe('stacked legend overlays (shared position)', () => {
 
     expect(popBox).not.toBe(densityBox);
     expect(popBox.style.position).toBe('absolute');
-    expect(popBox.style.right).toBe('10px');
-    expect(popBox.style.bottom).toBe('10px');
+    expect(popBox.style.right).toBe('24px');
+    expect(popBox.style.bottom).toBe('24px');
     expect(densityBox.style.position).toBe('absolute');
-    expect(densityBox.style.top).toBe('10px');
-    expect(densityBox.style.left).toBe('10px');
+    expect(densityBox.style.top).toBe('24px');
+    expect(densityBox.style.left).toBe('24px');
     expect(popBox.querySelectorAll('div[aria-hidden="true"]')).toHaveLength(0);
   });
 });
