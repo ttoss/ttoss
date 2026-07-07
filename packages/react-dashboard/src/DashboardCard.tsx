@@ -1,4 +1,5 @@
 import { BigNumber } from './Cards/BigNumber';
+import { BigNumberSparkline } from './Cards/BigNumberSparkline';
 
 export type CardNumberType = 'number' | 'percentage' | 'currency';
 export type CardSourceType = {
@@ -16,10 +17,12 @@ export type DashboardCardData = {
   meta?: {
     total?: number;
     daily?: number[];
+    dailyPrevious?: number[];
   };
   api?: {
     total?: number;
     daily?: number[];
+    dailyPrevious?: number[];
   };
 };
 export type CardVariant = 'default' | 'dark' | 'light-green';
@@ -66,6 +69,8 @@ export const DashboardCard = (props: DashboardCard) => {
   switch (props.type) {
     case 'bigNumber':
       return <BigNumber {...props} />;
+    case 'lineChart':
+      return <BigNumberSparkline {...props} />;
     default:
       return null;
   }
