@@ -1,5 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports -- value import required so declaration bundler emits `export { McpServer }` not `export type { McpServer }`
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import {
+  McpServer,
+  type ToolCallback,
+} from '@modelcontextprotocol/sdk/server/mcp.js';
 
 import { getIdentity } from './context';
 
@@ -181,7 +184,7 @@ export const createGatedToolRegistrar = ({
           McpServer['registerTool']
         >[1]['inputSchema'],
       },
-      async (args: Record<string, unknown>) => {
+      (async (args: Record<string, unknown>) => {
         const identity = resolveIdentity() as ToolIdentity | undefined;
         if (!identity) return toolError('Unauthorized');
 
@@ -205,7 +208,7 @@ export const createGatedToolRegistrar = ({
           if (onError) await onError(error, ctx);
           throw error;
         }
-      }
+      }) as ToolCallback
     );
   };
   return { register };
