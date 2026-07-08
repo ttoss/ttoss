@@ -199,16 +199,14 @@ export const createGatedToolRegistrar = ({
       }
     };
 
+    type RegisterToolArgs = Parameters<McpServer['registerTool']>;
     server.registerTool(
       def.name,
       {
         description: def.description,
-        inputSchema: def.inputSchema as Parameters<
-          McpServer['registerTool']
-        >[1]['inputSchema'],
+        inputSchema: def.inputSchema as RegisterToolArgs[1]['inputSchema'],
       },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      handler as any
+      handler as unknown as RegisterToolArgs[2]
     );
   };
   return { register };
