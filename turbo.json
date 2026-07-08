@@ -26,6 +26,7 @@
       "outputs": []
     },
     "deploy": {
+      "cache": false,
       "dependsOn": ["i18n", "build", "carlin#build", "^deploy"],
       "env": ["AWS_*", "CARLIN_*", "ENVIRONMENT"],
       "outputs": [".carlin/**"]

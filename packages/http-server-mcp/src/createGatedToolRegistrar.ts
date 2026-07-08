@@ -1,8 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports -- value import required so declaration bundler emits `export { McpServer }` not `export type { McpServer }`
-import {
-  McpServer,
-  type ToolCallback,
-} from '@modelcontextprotocol/sdk/server/mcp.js';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 import { getIdentity } from './context';
 
@@ -176,6 +173,32 @@ export const createGatedToolRegistrar = ({
   notFoundMessage = 'Not found',
 }: CreateGatedToolRegistrarOptions) => {
   const register = (def: GatedToolDef): void => {
+    const handler = async (args: Record<string, unknown>) => {
+      const identity = resolveIdentity() as ToolIdentity | undefined;
+      if (!identity) return toolError('Unauthorized');
+
+      const ctx: ToolCallContext = { identity, args, handler: def.name };
+
+      if (enforceScope) {
+        const scopeError = checkScope(identity, def.requiredScope);
+        if (scopeError) return scopeError;
+      }
+
+      await runGates([...gates, ...(def.gates ?? [])], ctx);
+
+      const extra = buildContext ? buildContext(ctx) : {};
+      try {
+        const result = await def.method({ ...args, ...extra });
+        if (result == null) return toolError(notFoundMessage);
+        return {
+          content: [{ type: 'text' as const, text: JSON.stringify(result) }],
+        };
+      } catch (error) {
+        if (onError) await onError(error, ctx);
+        throw error;
+      }
+    };
+
     server.registerTool(
       def.name,
       {
@@ -184,31 +207,8 @@ export const createGatedToolRegistrar = ({
           McpServer['registerTool']
         >[1]['inputSchema'],
       },
-      (async (args: Record<string, unknown>) => {
-        const identity = resolveIdentity() as ToolIdentity | undefined;
-        if (!identity) return toolError('Unauthorized');
-
-        const ctx: ToolCallContext = { identity, args, handler: def.name };
-
-        if (enforceScope) {
-          const scopeError = checkScope(identity, def.requiredScope);
-          if (scopeError) return scopeError;
-        }
-
-        await runGates([...gates, ...(def.gates ?? [])], ctx);
-
-        const extra = buildContext ? buildContext(ctx) : {};
-        try {
-          const result = await def.method({ ...args, ...extra });
-          if (result == null) return toolError(notFoundMessage);
-          return {
-            content: [{ type: 'text' as const, text: JSON.stringify(result) }],
-          };
-        } catch (error) {
-          if (onError) await onError(error, ctx);
-          throw error;
-        }
-      }) as ToolCallback
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      handler as any
     );
   };
   return { register };
