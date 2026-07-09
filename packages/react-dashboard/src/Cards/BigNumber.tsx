@@ -1,13 +1,71 @@
 import { Icon } from '@ttoss/react-icons';
-import { Box, Flex, Text } from '@ttoss/ui';
+import { Box, Flex, keyframes, Text } from '@ttoss/ui';
 
 import type {
   CardVariant,
   DashboardCard,
+  DashboardCardProps,
   StatusIndicator,
   TrendIndicator,
 } from '../DashboardCard';
 import { CardWrapper } from './Wrapper';
+
+const skeletonShimmer = keyframes({
+  '0%': { opacity: 0.55 },
+  '50%': { opacity: 1 },
+  '100%': { opacity: 0.55 },
+});
+
+const getSkeletonColor = (variant: CardVariant) => {
+  switch (variant) {
+    case 'dark':
+      return 'rgba(255, 255, 255, 0.24)';
+    case 'light-green':
+      return 'rgba(22, 101, 52, 0.22)';
+    case 'default':
+    default:
+      return 'rgba(148, 163, 184, 0.36)';
+  }
+};
+
+const SkeletonBlock = ({
+  width,
+  height,
+  variant,
+}: {
+  width: string;
+  height: string;
+  variant: CardVariant;
+}) => {
+  return (
+    <Box
+      aria-hidden="true"
+      sx={{
+        width,
+        height,
+        borderRadius: 'md',
+        backgroundColor: getSkeletonColor(variant),
+        animation: `${skeletonShimmer} 1.4s ease-in-out infinite`,
+      }}
+    />
+  );
+};
+
+const BigNumberLoadingState = ({ variant }: { variant: CardVariant }) => {
+  return (
+    <Flex
+      data-testid="dashboard-card-skeleton"
+      sx={{ flexDirection: 'column', gap: '2' }}
+    >
+      <SkeletonBlock width="68%" height="28px" variant={variant} />
+      <Flex sx={{ alignItems: 'center', gap: '2' }}>
+        <SkeletonBlock width="72px" height="18px" variant={variant} />
+        <SkeletonBlock width="96px" height="14px" variant={variant} />
+      </Flex>
+      <SkeletonBlock width="56%" height="14px" variant={variant} />
+    </Flex>
+  );
+};
 
 const formatByType = ({
   value,
@@ -210,7 +268,7 @@ const getBigNumberTotal = (data: DashboardCard['data']): number | undefined => {
  * Displays a single key metric as a large formatted number with optional trend indicator,
  * additional info text, and status badge.
  */
-export const BigNumber = (props: DashboardCard) => {
+export const BigNumber = (props: DashboardCardProps) => {
   const total = getBigNumberTotal(props.data);
   const formattedValue = formatNumber({
     value: total,
@@ -225,6 +283,18 @@ export const BigNumber = (props: DashboardCard) => {
   const description = props.description || '';
   const hasTrendValue = typeof props.trend?.value === 'number';
   const hasPrevSection = hasTrendValue || Boolean(props.additionalInfo);
+
+  if (props.loading) {
+    return (
+      <CardWrapper
+        title={props.title}
+        description={description}
+        variant={variant}
+      >
+        <BigNumberLoadingState variant={variant} />
+      </CardWrapper>
+    );
+  }
 
   return (
     <CardWrapper
