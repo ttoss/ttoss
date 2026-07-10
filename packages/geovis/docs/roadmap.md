@@ -30,6 +30,8 @@ Failures become structured and capabilities become honest. This is the foundatio
 | `CapabilitySet` enforced by validation, declared = tested | `@ttoss/geovis` | ADR-0002             |
 | Spec schema versioning                                    | `@ttoss/geovis` | ADR-0001 consequence |
 
+ADR-0001 and ADR-0002 are **unconditionally essential**: [PRD-001](./prds/prd-001-repairable-errors.md) names their acceptance as its entry gate, they fix defects that exist regardless of AI (string errors block the repair loop; `CapabilitySet` is dead code while unsupported specs render partially), and every later phase depends on them — actions (R2), workspace error surfacing (R3), and the resolver (R4) all report through the result taxonomy and validate against the capability tree, and evals (R5) count its failure categories.
+
 Exit criteria: no code path fails silently; a spec requesting an unsupported capability is rejected before mount with repair options.
 
 ## R2 — AI Operation
@@ -41,6 +43,8 @@ An existing map becomes steerable and explainable by AI at bounded cost.
 | Semantic action vocabulary with `dispatch()`         | `@ttoss/geovis` | ADR-0003 |
 | Context packet (`getContextPacket()`), metadata-only | `@ttoss/geovis` | ADR-0004 |
 | React hooks migrated to dispatch the same actions    | `@ttoss/geovis` | ADR-0003 |
+
+ADR-0003 and ADR-0004 are additive rather than corrective — `dispatch()` compiles to the existing `SpecPatch`/`update` mechanisms and the packet is a derived artifact, so the library operates without them. They are **essential conditional on the AI-native path**: [PRD-002](./prds/prd-002-ai-operation-surface.md) makes them mandatory from R2 onward, since this phase's and R3's exit criteria depend on them and R5 measures what they produce (logged actions, packet token cost).
 
 Exit criteria: an LLM can change metric, filter, layer, selection, and view through validated actions and explain the map from the packet — without reading the full spec.
 
