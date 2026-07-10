@@ -1,5 +1,4 @@
 ---
-sidebar_position: 6
 title: PRD-006 · Deterministic Resolution
 ---
 

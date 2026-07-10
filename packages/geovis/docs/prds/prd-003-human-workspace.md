@@ -1,5 +1,4 @@
 ---
-sidebar_position: 3
 title: PRD-003 · Human Workspace Foundation
 ---
 

@@ -1,5 +1,4 @@
 ---
-sidebar_position: 1
 title: PRD-001 · Repairable Errors
 ---
 

@@ -1,5 +1,4 @@
 ---
-sidebar_position: 2
 title: PRD-002 · AI Operation Surface
 ---
 

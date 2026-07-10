@@ -1,5 +1,4 @@
 ---
-sidebar_position: 8
 title: PRD-008 · Workspace–AI Convergence
 ---
 
