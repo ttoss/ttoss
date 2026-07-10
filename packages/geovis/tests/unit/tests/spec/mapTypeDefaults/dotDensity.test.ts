@@ -239,4 +239,22 @@ describe('resolveDotDensity', () => {
 
     expect(result.legends).toHaveLength(0);
   });
+
+  test('returns empty layers and legends when sourceId cannot be matched', () => {
+    const result = resolveDotDensity({
+      id: 'test',
+      engine: 'maplibre',
+      sources: [],
+      layers: [],
+      mapData: [
+        {
+          mapDataId: 'events',
+          mapId: 'nonexistent',
+          data: [{ geometryId: 'a', value: 1 }],
+        },
+      ],
+    });
+    expect(result.layers).toHaveLength(0);
+    expect(result.legends).toHaveLength(0);
+  });
 });
