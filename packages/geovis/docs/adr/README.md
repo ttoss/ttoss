@@ -1,6 +1,6 @@
 # GeoVis Architecture Decision Records
 
-Decision records for evolving `@ttoss/geovis` from a schema-driven rendering library into the AI-native analytical mapping layer described in the GeoVis strategy. Each record captures one architecturally significant decision using a [MADR](https://adr.github.io/madr/)-inspired format: context, decision drivers, considered options, outcome, and consequences.
+Decision records for evolving `@ttoss/geovis` from a schema-driven rendering library into the AI-native analytical mapping layer described in the [GeoVis strategy](../../../../docs/website/docs/product/geovis/strategy.md). Product-level artifacts (strategy, roadmap, PRDs, research) live in the [GeoVis product hub](https://ttoss.dev/docs/product/geovis); ADRs stay here, next to the code they govern. Each record captures one architecturally significant decision using a [MADR](https://adr.github.io/madr/)-inspired format: context, decision drivers, considered options, outcome, and consequences.
 
 ADRs live next to the code they govern and are immutable once accepted — a changed decision produces a new ADR that supersedes the old one (`Status: superseded-by ADR-NNNN`). Micro trade-offs that only need one line of justification belong in JSDoc, following the same entry gate as `packages/fsl-theme/CONTRIBUTING.md`: write an ADR only when a reasonable alternative was rejected, the chosen path has a visible cost, and a reviewer without context would propose the alternative.
 
