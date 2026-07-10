@@ -3,6 +3,7 @@
  * Not public package artefacts — story utilities only.
  */
 import type {
+  ColorBy,
   GeoJSONFeatureCollection,
   MapData,
   VisualizationSpec,
@@ -93,27 +94,58 @@ export const fmtPop = (v: number): string => {
   return `${(v / 1_000).toFixed(0)}k inhabitants`;
 };
 
-export const renderTooltip = (
-  info: { featureId: string | number },
+// Delimiter joining the fields packed into the tooltip's feature-state
+// `value` (see `buildTooltipData`). Not expected to appear in a district
+// name.
+const TOOLTIP_FIELD_SEP = '::';
+
+/**
+ * Precomputes one composite tooltip string per district (name, population,
+ * dominant gender) so the hover tooltip can be bound to the `districts-fill`
+ * layer via `mapData`/feature-state instead of a `render` closure over the
+ * externally-fetched `populationData`. Mirrors `sizeData`/`colorData`.
+ */
+export const buildTooltipData = (
   populationData: Record<string, Record<string, DistrictEntry>> | null,
   year: number
-) => {
-  const district = populationData?.[String(year)]?.[String(info.featureId)];
-  if (!district) {
+): Array<{ geometryId: number; value: string }> => {
+  const yearData = populationData?.[String(year)];
+  if (!yearData) return [];
+  return Object.entries(yearData).map(([districtId, entry]) => {
+    const totalMen = sumValues(entry.men);
+    const totalWomen = sumValues(entry.women);
+    const dominant = totalWomen > totalMen ? 'women' : 'men';
+    const value = [entry.districtName, entry.total, dominant].join(
+      TOOLTIP_FIELD_SEP
+    );
+    return { geometryId: parseInt(districtId, 10), value };
+  });
+};
+
+/**
+ * Renders the hover tooltip body purely from `info.value` — the composite
+ * string bound via `mapData`/feature-state by `buildTooltipData` — with no
+ * dependency on external state.
+ */
+export const renderTooltip = (info: {
+  featureId: string | number;
+  value: number | string | null;
+}) => {
+  const parts =
+    typeof info.value === 'string' ? info.value.split(TOOLTIP_FIELD_SEP) : [];
+  const [districtName, totalStr, dominant] = parts;
+  if (!districtName || !totalStr || !dominant) {
     return (
       <div
         style={{ fontWeight: 600 }}
       >{`District #${String(info.featureId)}`}</div>
     );
   }
-  const totalMen = sumValues(district.men);
-  const totalWomen = sumValues(district.women);
-  const dominant = totalWomen > totalMen ? 'Women' : 'Men';
-  const color = totalWomen > totalMen ? GENDER_COLOR_WOMEN : GENDER_COLOR_MEN;
+  const color = dominant === 'women' ? GENDER_COLOR_WOMEN : GENDER_COLOR_MEN;
   return (
     <>
-      <div style={{ fontWeight: 600 }}>{district.districtName}</div>
-      <div>{fmtPop(district.total)}</div>
+      <div style={{ fontWeight: 600 }}>{districtName}</div>
+      <div>{fmtPop(Number(totalStr))}</div>
       <div>
         <span
           style={{
@@ -125,7 +157,7 @@ export const renderTooltip = (
             marginRight: 4,
           }}
         />
-        {dominant} dominant
+        {dominant === 'women' ? 'Women' : 'Men'} dominant
       </div>
     </>
   );
@@ -147,6 +179,7 @@ export type Year =
 export const buildSpec = ({
   sizeData,
   colorData,
+  tooltipData,
   year,
   districtGeoJson,
   centroidGeoJson,
@@ -160,6 +193,7 @@ export const buildSpec = ({
 }: {
   sizeData: Array<{ geometryId: number; value: number }>;
   colorData: Array<{ geometryId: number; value: string }>;
+  tooltipData: Array<{ geometryId: number; value: string }>;
   year: Year;
   districtGeoJson: GeoJSONFeatureCollection;
   centroidGeoJson: GeoJSONFeatureCollection;
@@ -194,6 +228,9 @@ export const buildSpec = ({
         hoverPaint: { lineColor: '#333333', lineWidth: 2 },
         selectedPaint: { lineColor: '#1a1a1a', lineWidth: 3 },
         clickAnchor: { color: '#2171b5' },
+        // Rendered purely from `info.value`, bound below via the
+        // `district-tooltip` mapData entry — no closure over story state.
+        hoverTooltip: { render: renderTooltip },
       },
       {
         id: 'districts-outline',
@@ -226,6 +263,15 @@ export const buildSpec = ({
           defaultColor: '#9ca3af',
         },
       },
+      // Matches the proportionalCircles auto-generated legend id
+      // (`${mapData[0].mapDataId}-legend`, i.e. `population-legend`).
+      // `mergeLegendsByIdOnly` grafts this onto the resolved legend, so only
+      // the overridden field needs to be listed \u2014 no need to repeat `type`,
+      // `thresholds`, or `colors`.
+      {
+        id: 'population-legend',
+        colorBy: { defaultColor: '#9ca3af' } as unknown as ColorBy,
+      },
     ],
     mapData: [
       {
@@ -243,6 +289,15 @@ export const buildSpec = ({
         stateKey: 'gender',
         dimension: 'color',
         data: colorData,
+      },
+      // No custom `stateKey`, so it lands on the default `value` key that
+      // `useMapHover` reads — this is what lets `districts-fill`'s
+      // `hoverTooltip.render` (above) work from `info.value` alone.
+      {
+        mapDataId: 'district-tooltip',
+        mapId: 'district-polygons',
+        title: 'district tooltip data',
+        data: tooltipData,
       },
     ] as MapData[],
   };

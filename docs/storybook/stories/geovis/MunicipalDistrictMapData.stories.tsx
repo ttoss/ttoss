@@ -11,8 +11,6 @@ import {
   createBoundaryGroup,
   customizeBoundaryGroup,
   GeoVisCanvas,
-  GeoVisHoverTooltip,
-  GeoVisLegend,
   GeoVisProvider,
   useBoundaryToggle,
 } from '@ttoss/geovis';
@@ -589,6 +587,29 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
             lineWidth: selectedLineWidth,
           },
           ...(showClickAnchor && { clickAnchor: { color: clickAnchorColor } }),
+          hoverTooltip: {
+            render: (info) => {
+              const district =
+                populationData?.[String(year)]?.[String(info.featureId)];
+              const value =
+                district !== undefined
+                  ? getDistrictValue(district, dataProperty)
+                  : info.value;
+              return (
+                <>
+                  <div style={{ fontWeight: 600 }}>
+                    {district?.districtName ??
+                      `District #${String(info.featureId)}`}
+                  </div>
+                  <div>
+                    {typeof value === 'number'
+                      ? `${fmtPop(value)} inhabitants`
+                      : 'No data'}
+                  </div>
+                </>
+              );
+            },
+          },
         },
         {
           id: 'districts-outline',
@@ -687,23 +708,12 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
       toggle(subprefeituraGroupRef.current);
   }, [showSubprefeituraOutlines, toggle, isVisible]);
 
-  // When the GeoVisLegend is overlaid at a corner (16rem wide, ~285px tall),
-  // shift the fitBounds padding so São Paulo is centred in the VISIBLE area,
-  // not behind the legend.  Values: 16rem ≈ 256px + 12px padding + 12px gap.
+  // Small uniform padding on every edge — the map fills the container and the
+  // legend overlays it at its corner without shifting the fitBounds centre.
   const fitInsets = React.useMemo(() => {
-    if (!position) return undefined;
-    const w = 280; // legend width inset (px)
-    const h = 285; // legend height inset (px)
-    const pad = 40; // standard padding on the uncovered sides
-    const isLeft = position.includes('left');
-    const isTop = position.includes('top');
-    return {
-      top: isTop ? h : pad,
-      bottom: isTop ? pad : h,
-      left: isLeft ? w : pad,
-      right: isLeft ? pad : w,
-    };
-  }, [position]);
+    const pad = 24;
+    return { top: pad, bottom: pad, left: pad, right: pad };
+  }, []);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -711,7 +721,7 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
         <div
           style={{
             position: 'relative',
-            height: 520,
+            height: 640,
             borderRadius: 6,
             overflow: 'hidden',
             border: '1px solid #d4d4d8',
@@ -725,29 +735,6 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
             style={{ width: '100%', height: '100%' }}
           />
           <FitBoundsToBbox bbox={districtBbox} overlayInsets={fitInsets} />
-          <GeoVisHoverTooltip
-            render={(info) => {
-              const district =
-                populationData?.[String(year)]?.[String(info.featureId)];
-              const value =
-                district !== undefined
-                  ? getDistrictValue(district, dataProperty)
-                  : info.value;
-              return (
-                <>
-                  <div style={{ fontWeight: 600 }}>
-                    {district?.districtName ??
-                      `District #${String(info.featureId)}`}
-                  </div>
-                  <div>
-                    {typeof value === 'number'
-                      ? `${fmtPop(value)} inhabitants`
-                      : 'No data'}
-                  </div>
-                </>
-              );
-            }}
-          />
           {!position && (
             <MapOverlayLegend
               label={`${dataProperty} population`}
@@ -759,13 +746,7 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
               formatValue={fmtPop}
             />
           )}
-          {position && (
-            <GeoVisLegend legendId="population" formatValue={fmtPop} />
-          )}
         </div>
-        {!position && (
-          <GeoVisLegend legendId="population" formatValue={fmtPop} />
-        )}
       </GeoVisProvider>
     </div>
   );
@@ -784,7 +765,7 @@ WithRangeLabel.args = {
   year: 2020,
   abbreviate: true,
   extended: true,
-  legendPosition: 'none',
+  legendPosition: 'bottom-left',
   labelFormatType: 'range',
 };
 
@@ -794,7 +775,7 @@ WithPercentageLabel.args = {
   year: 2020,
   abbreviate: false,
   extended: true,
-  legendPosition: 'none',
+  legendPosition: 'bottom-left',
   labelFormatType: 'percentage',
 };
 
@@ -804,7 +785,7 @@ WithStdDevLabel.args = {
   year: 2020,
   abbreviate: true,
   extended: true,
-  legendPosition: 'none',
+  legendPosition: 'top-left',
   labelFormatType: 'stdDev',
 };
 
@@ -814,7 +795,7 @@ WithPositionedLegend.args = {
   year: 2020,
   abbreviate: true,
   extended: true,
-  legendPosition: 'bottom-left',
+  legendPosition: 'top-right',
   labelFormatType: 'range',
   noDataLabel: 'No data',
 };
@@ -829,7 +810,7 @@ WithCustomLabel.args = {
   year: 2020,
   abbreviate: false,
   extended: false,
-  legendPosition: 'none',
+  legendPosition: 'bottom-left',
   labelFormatType: 'custom',
 };
 
@@ -843,7 +824,7 @@ WithLabelsFormat.args = {
   year: 2020,
   abbreviate: false,
   extended: false,
-  legendPosition: 'none',
+  legendPosition: 'bottom-right',
   labelFormatType: 'labels',
   thresholdPreset: 'ibge',
   noDataLabel: 'No data',
