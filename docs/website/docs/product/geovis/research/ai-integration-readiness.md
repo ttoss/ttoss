@@ -1,4 +1,13 @@
+---
+sidebar_position: 2
+title: AI Integration Readiness
+---
+
 # GeoVis AI Integration Readiness Guide
+
+:::caution Exploratory research — not a contract
+The APIs, type shapes, and code samples below explore what an AI-facing surface could look like. Nothing here is decided: only what exists in the [package ADRs](https://github.com/ttoss/ttoss/tree/main/packages/geovis/docs/adr), schemas, and fixtures is a commitment. Use this document as input for PRDs, not as a specification.
+:::
 
 How to enable any LLM to understand, operate, and generate GeoVis specs with the same metadata-only, contract-based safety that kepler.gl's AI Assistant uses for function tools.
 

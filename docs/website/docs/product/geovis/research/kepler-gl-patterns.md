@@ -1,3 +1,8 @@
+---
+sidebar_position: 1
+title: kepler.gl Patterns
+---
+
 # Kepler.gl Patterns in GeoVis ADRs
 
 How the kepler.gl architecture influenced the four ADRs: which patterns to replicate (good), which problems to avoid (antipatterns), and how each feeds into the GeoVis AI-native operating model.
