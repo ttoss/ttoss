@@ -5,7 +5,7 @@ title: PRD-004 · Trusted Catalog
 
 # PRD-004: Trusted Catalog
 
-Status: draft · Priority: **P4** (roadmap R4) · Capability: strategy §5.2 · Package: new layer (location decided here)
+Status: draft · Priority: **P5** (roadmap R4) · Capability: strategy §5.2 · Package: new layer (location decided here)
 
 ## Problem
 

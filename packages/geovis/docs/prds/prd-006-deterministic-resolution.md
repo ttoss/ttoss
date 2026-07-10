@@ -5,7 +5,7 @@ title: PRD-006 · Deterministic Resolution
 
 # PRD-006: Deterministic Resolution
 
-Status: draft · Priority: **P6** (roadmap R4) · Capability: strategy §5.3 · Package: same layer as PRD-004
+Status: draft · Priority: **P7** (roadmap R4) · Capability: strategy §5.3 · Package: same layer as PRD-004
 
 ## Problem
 

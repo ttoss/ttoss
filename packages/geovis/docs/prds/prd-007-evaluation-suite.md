@@ -5,11 +5,11 @@ title: PRD-007 · Evaluation Suite
 
 # PRD-007: Evaluation Suite
 
-Status: draft · Priority: **P7** (roadmap R5) · Capability: strategy §13 · Package: repo-level (location decided here)
+Status: draft · Priority: **P8** (roadmap R5) · Capability: strategy §13 · Package: repo-level (location decided here)
 
 ## Problem
 
-The strategy is explicit: GeoVis is not ready when maps render — it is ready when generation, steering, explanation, and repair pass representative evals against real catalogs. Without evals, every reliability claim in PRDs 001–006 is asserted, not proven, and regressions are invisible.
+The strategy is explicit: GeoVis is not ready when maps render — it is ready when generation, steering, explanation, and repair pass representative evals against real catalogs. Without evals, every reliability claim in the other PRDs is asserted, not proven, and regressions are invisible.
 
 ## Outcome and success metrics
 

@@ -5,7 +5,7 @@ title: PRD-005 · Constrained Intent
 
 # PRD-005: Constrained Map Intent
 
-Status: draft · Priority: **P5** (roadmap R4) · Capability: strategy §5.1 · Package: same layer as PRD-004
+Status: draft · Priority: **P6** (roadmap R4) · Capability: strategy §5.1 · Package: same layer as PRD-004
 
 ## Problem
 
