@@ -32,7 +32,7 @@ import type { ModeOverride, ThemeTokens } from './Types';
  * Intended feel: practical, calm, modern, trustworthy, easy to extend.
  * Avoided feel: flashy, ornamental, cramped, fragile, overly branded.
  *
- * @see /docs/website/docs/design/01-design-system/02-design-tokens/theme-authoring.md#recommended-base-theme-brief
+ * @see /docs/website/docs/design/design-system/design-tokens/theme-authoring.md#recommended-base-theme-brief
  */
 export const baseTheme: ThemeTokens = {
   // ==========================================================================

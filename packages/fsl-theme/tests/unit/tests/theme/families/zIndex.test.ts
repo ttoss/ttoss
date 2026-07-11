@@ -1,7 +1,7 @@
 /**
  * Z-Index family validation tests.
  *
- * @see /docs/website/docs/design/01-design-system/02-design-tokens/02-families/z-index.md#validation
+ * @see /docs/website/docs/design/design-system/design-tokens/families/z-index.md#validation
  */
 
 import { themeFlatToTest } from '../../../fixtures/theme';

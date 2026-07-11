@@ -728,4 +728,4 @@ Cross-token semantic correctness (the rules above) is **not** statically validat
 - README — full grammar tables, usage examples per import path
 - `dist/Types-*.d.ts` — every token has co-located JSDoc with semantics + anti-pattern notes
 - `src/themes/{bruttal,corporate,oca,ventures}.ts` — worked customization patterns
-- Family specs (full grammar, decision matrices, ADRs): `docs/design/01-design-system/02-design-tokens/02-families/{family}.md` in the ttoss monorepo
+- Family specs (full grammar, decision matrices, ADRs): `docs/design/design-system/design-tokens/families/{family}.md` in the ttoss monorepo

@@ -693,7 +693,7 @@ With the constitution, validation can begin to check intent.
 
 ## The FSL constitution layer
 
-This is why we created the [FSL Theme Authoring](/docs/design/design-system/02-design-tokens/theme-authoring) guidance.
+This is why we created the [FSL Theme Authoring](/docs/design/design-system/design-tokens/theme-authoring) guidance.
 
 It gives every theme a brief before values are selected:
 
@@ -885,7 +885,7 @@ And in an era where humans and AI agents both implement UI, that distinction mat
 
 ## References
 
-- [FSL Theme Authoring](/docs/design/design-system/02-design-tokens/theme-authoring)
+- [FSL Theme Authoring](/docs/design/design-system/design-tokens/theme-authoring)
 - [The Missing Layer in Design Systems: Semantic Contract](/blog/2026/03/09/the-missing-layer-in-design-systems-semantic-contract)
 - [Tazuna UX](/blog/2026/03/09/tazuna-ux)
 - [Design Tokens Format Module 2025.10](https://www.designtokens.org/TR/2025.10/format/)

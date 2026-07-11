@@ -1,7 +1,7 @@
 /**
  * Borders family validation tests.
  *
- * @see /docs/website/docs/design/01-design-system/02-design-tokens/02-families/borders.md#validation
+ * @see /docs/website/docs/design/design-system/design-tokens/families/borders.md#validation
  */
 
 import { baseTheme } from '../../../../../src/baseTheme';

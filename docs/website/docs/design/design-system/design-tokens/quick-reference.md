@@ -45,7 +45,7 @@ Grammar reminder:
 | Focus ring color (system default — use when no `{ux}` applies)                            | `semantic.focus.ring.color`                                         |
 | Focus ring color (per-context — `{ux}` is `Action` / `Input` / `Navigation` / `Feedback`) | `semantic.colors.{ux}.{role}.border.focused`                        |
 
-Full grammar + role decision table: [Colors](./02-families/colors.md).
+Full grammar + role decision table: [Colors](./families/colors.md).
 
 ---
 
@@ -61,7 +61,7 @@ Full grammar + role decision table: [Colors](./02-families/colors.md).
 | Section vertical gutter (responsive)    | `semantic.spacing.gutter.section`              |
 | Minimum distance between hit targets    | `semantic.spacing.separation.interactive.min`  |
 
-See [Spacing](./02-families/spacing.md).
+See [Spacing](./families/spacing.md).
 
 ---
 
@@ -77,7 +77,7 @@ See [Spacing](./02-families/spacing.md).
 | Paragraph max reading width           | `semantic.sizing.measure.reading`        |
 | Surface (card/dialog) max width       | `semantic.sizing.surface.maxWidth`       |
 
-See [Sizing](./02-families/sizing.md).
+See [Sizing](./families/sizing.md).
 
 ---
 
@@ -94,29 +94,29 @@ Token prefix: `semantic.text`.
 | UI label, button label, form label | `semantic.text.label.{lg,md,sm}`    |
 | Inline / block code                | `semantic.text.code.{md,sm}`        |
 
-See [Typography](./02-families/typography.md).
+See [Typography](./families/typography.md).
 
 ---
 
 ## Borders, radii, elevation — by intent
 
-| I want…                                 | Token                                                                           |
-| :-------------------------------------- | :------------------------------------------------------------------------------ |
-| 1px divider (width + style)             | `semantic.border.divider.{width,style}`                                         |
-| Control outline (button, input)         | `semantic.border.outline.control.{width,style}`                                 |
-| Surface outline (card)                  | `semantic.border.outline.surface.{width,style}`                                 |
-| Selected-state line                     | `semantic.border.outline.selected.{width,style}`                                |
-| Focus ring (width + style)              | `semantic.focus.ring.{width,style}`                                             |
-| Focus ring color                        | see [Borders § Which focus colour](./02-families/borders.md#which-focus-colour) |
-| Control corner radius (buttons, inputs) | `semantic.radii.control`                                                        |
-| Surface corner radius (cards, dialogs)  | `semantic.radii.surface`                                                        |
-| Pill / fully round                      | `semantic.radii.round`                                                          |
-| Resting surface (no shadow)             | `semantic.elevation.surface.flat`                                               |
-| Card shadow                             | `semantic.elevation.surface.raised`                                             |
-| Dropdown / popover shadow               | `semantic.elevation.surface.overlay`                                            |
-| Modal / drawer shadow                   | `semantic.elevation.surface.blocking`                                           |
+| I want…                                 | Token                                                                        |
+| :-------------------------------------- | :--------------------------------------------------------------------------- |
+| 1px divider (width + style)             | `semantic.border.divider.{width,style}`                                      |
+| Control outline (button, input)         | `semantic.border.outline.control.{width,style}`                              |
+| Surface outline (card)                  | `semantic.border.outline.surface.{width,style}`                              |
+| Selected-state line                     | `semantic.border.outline.selected.{width,style}`                             |
+| Focus ring (width + style)              | `semantic.focus.ring.{width,style}`                                          |
+| Focus ring color                        | see [Borders § Which focus colour](./families/borders.md#which-focus-colour) |
+| Control corner radius (buttons, inputs) | `semantic.radii.control`                                                     |
+| Surface corner radius (cards, dialogs)  | `semantic.radii.surface`                                                     |
+| Pill / fully round                      | `semantic.radii.round`                                                       |
+| Resting surface (no shadow)             | `semantic.elevation.surface.flat`                                            |
+| Card shadow                             | `semantic.elevation.surface.raised`                                          |
+| Dropdown / popover shadow               | `semantic.elevation.surface.overlay`                                         |
+| Modal / drawer shadow                   | `semantic.elevation.surface.blocking`                                        |
 
-See [Borders](./02-families/borders.md), [Radii](./02-families/radii.md), [Elevation](./02-families/elevation.md).
+See [Borders](./families/borders.md), [Radii](./families/radii.md), [Elevation](./families/elevation.md).
 
 ---
 
@@ -138,7 +138,7 @@ See [Borders](./02-families/borders.md), [Radii](./02-families/radii.md), [Eleva
 | Modal / drawer (blocks interaction)        | `semantic.zIndex.layer.blocking`                     |
 | Toast / snackbar (transient, non-blocking) | `semantic.zIndex.layer.transient`                    |
 
-See [Motion](./02-families/motion.md), [Opacity](./02-families/opacity.md), [Z-Index](./02-families/z-index.md).
+See [Motion](./families/motion.md), [Opacity](./families/opacity.md), [Z-Index](./families/z-index.md).
 
 ---
 
@@ -157,7 +157,7 @@ See [Motion](./02-families/motion.md), [Opacity](./02-families/opacity.md), [Z-I
 | Non-color differentiator — pattern | `semantic.dataviz.encoding.pattern.{1..6}`                          |
 | Line style (solid/dashed/dotted)   | `semantic.dataviz.encoding.stroke.{solid,dashed,dotted}`            |
 
-See [Data Visualization](./03-data-visualization/index.md).
+See [Data Visualization](./data-visualization/index.md).
 
 ---
 
@@ -166,4 +166,4 @@ See [Data Visualization](./03-data-visualization/index.md).
 - **Token missing** → read the family doc; if still absent, open a governance request.
 - **Want a raw value** → you need a new **semantic** token, not a core reference. Core is never consumed by components.
 - **Repeating the same combo in many places** → extract a **component** or **pattern**, not a new token.
-- **Building a chart** → start in [Data Visualization](./03-data-visualization/index.md), not in foundation colors.
+- **Building a chart** → start in [Data Visualization](./data-visualization/index.md), not in foundation colors.

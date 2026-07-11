@@ -1094,7 +1094,7 @@ A theme is excellent when it disappears as decoration and remains as orientation
 
 ## References
 
-- [FSL Theme Authoring](/docs/design/design-system/02-design-tokens/theme-authoring)
+- [FSL Theme Authoring](/docs/design/design-system/design-tokens/theme-authoring)
 - [The Missing Layer in Design Systems: Semantic Contract](/blog/2026/03/09/the-missing-layer-in-design-systems-semantic-contract)
 - [Tazuna UX](/blog/2026/03/09/tazuna-ux)
 - [Design Tokens Community Group — Format Module](https://www.designtokens.org/TR/2025.10/format/)

@@ -7,7 +7,7 @@
  *   - dimension: background | border | text  (per component; not all are required)
  *   - state:     default | hover | active | focused | disabled | selected | …
  *
- * @see /docs/website/docs/design/01-design-system/02-design-tokens/02-families/colors.md
+ * @see /docs/website/docs/design/design-system/design-tokens/families/colors.md
  * ========================================================================== */
 
 import type { CoreColorRef, RawValue } from './primitives';

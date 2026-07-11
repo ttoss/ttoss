@@ -1,7 +1,7 @@
 /**
  * Sizing family validation tests.
  *
- * @see /docs/website/docs/design/01-design-system/02-design-tokens/02-families/sizing.md#validation
+ * @see /docs/website/docs/design/design-system/design-tokens/families/sizing.md#validation
  */
 
 import { themeAltFlatToTest, themeFlatToTest } from '../../../fixtures/theme';

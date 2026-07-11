@@ -1,7 +1,7 @@
 /**
  * Typography family validation tests.
  *
- * @see /docs/website/docs/design/01-design-system/02-design-tokens/02-families/typography.md#validation
+ * @see /docs/website/docs/design/design-system/design-tokens/families/typography.md#validation
  */
 
 import { themeAltFlatToTest, themeFlatToTest } from '../../../fixtures/theme';

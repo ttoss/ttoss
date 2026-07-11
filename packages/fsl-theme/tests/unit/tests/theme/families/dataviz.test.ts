@@ -1,9 +1,9 @@
 /**
  * Dataviz Validation Tests
  *
- * @see /docs/website/docs/design/01-design-system/02-design-tokens/03-data-visualization/dataviz-colors.md#validation
- * @see /docs/website/docs/design/01-design-system/02-design-tokens/03-data-visualization/dataviz-encodings.md#validation
- * @see /docs/website/docs/design/01-design-system/02-design-tokens/03-data-visualization/index.md#validation
+ * @see /docs/website/docs/design/design-system/design-tokens/data-visualization/dataviz-colors.md#validation
+ * @see /docs/website/docs/design/design-system/design-tokens/data-visualization/dataviz-encodings.md#validation
+ * @see /docs/website/docs/design/design-system/design-tokens/data-visualization/index.md#validation
  */
 
 import { themeFlatToTest, themeToTest } from '../../../fixtures/theme';
