@@ -173,13 +173,13 @@ export const createGatedToolRegistrar = ({
   notFoundMessage = 'Not found',
 }: CreateGatedToolRegistrarOptions) => {
   const register = (def: GatedToolDef): void => {
-    server.registerTool(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- inputSchema is an opaque per-tool Zod shape (see GatedToolDef); explicit `any` generics bypass inference the SDK's single generic overload can no longer perform for an erased/unknown schema.
+    server.registerTool<any, any>(
       def.name,
       {
         description: def.description,
-        inputSchema: def.inputSchema as Parameters<
-          McpServer['registerTool']
-        >[1]['inputSchema'],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see above
+        inputSchema: def.inputSchema as any,
       },
       async (args: Record<string, unknown>) => {
         const identity = resolveIdentity() as ToolIdentity | undefined;
