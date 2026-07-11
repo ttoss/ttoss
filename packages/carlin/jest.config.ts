@@ -6,10 +6,10 @@ const config = jestConfig({
   coveragePathIgnorePatterns: ['<rootDir>/tests/'],
   coverageThreshold: {
     global: {
-      statements: 69.16,
-      branches: 59.09,
-      lines: 69.13,
-      functions: 70.87,
+      statements: 70.1,
+      branches: 60.12,
+      lines: 70.01,
+      functions: 72.72,
     },
   },
   moduleNameMapper: {
@@ -18,7 +18,9 @@ const config = jestConfig({
   },
   setupFiles: ['<rootDir>/tests/setupTests.ts'],
   silent: true,
-  transformIgnorePatterns: getTransformIgnorePatterns(),
+  transformIgnorePatterns: getTransformIgnorePatterns({
+    esmModules: ['@octokit/webhooks-methods', '@octokit/webhooks'],
+  }),
 });
 
 export default config;

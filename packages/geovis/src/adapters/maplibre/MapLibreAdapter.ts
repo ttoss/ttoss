@@ -1,6 +1,6 @@
-/* eslint-disable max-lines */
 import 'maplibre-gl/dist/maplibre-gl.css';
 
+import { log } from '@ttoss/logger';
 import maplibregl from 'maplibre-gl';
 
 import type {
@@ -11,11 +11,13 @@ import type {
   SpecPatch,
 } from '../../runtime/adapter';
 import { applyMapDataPatchToSpec } from '../../spec/mapDataPatch';
-import type { VisualizationSpec } from '../../spec/types';
+import type { MapData, VisualizationSpec } from '../../spec/types';
+import { applyBasemapLabelsVisibility } from './basemapLabels';
 import { toMaplibreLayer } from './layerTranslation';
 import { reapplyLegendDrivenFillPaint } from './legendFillPaint';
 import {
   applyMapDataPatchToMap,
+  mapDataEntriesEqual,
   reapplyAllMapData,
   removeMapDataFromSource,
 } from './mapDataFeatureState';
@@ -26,7 +28,7 @@ import { syncSourcesAndLayers } from './syncSourcesAndLayers';
 // Re-exports preserved for public API and historical test imports.
 export { toMaplibreLayer, toMaplibreSource };
 
-const DEFAULT_STYLE = 'https://demotiles.maplibre.org/style.json';
+const DEFAULT_STYLE = 'https://tiles.openfreemap.org/styles/positron';
 
 /**
  * A valid MapLibre style with no sources and no layers, producing a blank canvas.
@@ -135,8 +137,14 @@ const mountView = (
   map.on('load', () => {
     const viewState = views.get(viewId);
     if (!viewState) return;
+    // Hide basemap labels while the style is loaded and before adding the user's
+    // sources (which flip the style back to "loading"). This applies on the very
+    // first frame, with no flash of labels. The trailing call re-applies once the
+    // sources settle (via `idle`) to also cover any user symbol layers.
+    applyBasemapLabelsVisibility(map, viewState.spec);
     syncSourcesAndLayers(map, viewState.spec, null);
     reapplyAllMapData(map, viewState.spec);
+    applyBasemapLabelsVisibility(map, viewState.spec);
   });
   let _removed = false;
   return {
@@ -153,6 +161,34 @@ const mountView = (
       views.delete(viewId);
     },
   };
+};
+
+const hasMapDataChanged = (
+  previousMapData: MapData[] | undefined,
+  nextMapData: MapData[] | undefined
+): boolean => {
+  if (previousMapData === nextMapData) return false;
+  if (previousMapData?.length !== nextMapData?.length) return true;
+  return (previousMapData ?? []).some((prevMd) => {
+    const nextMd = (nextMapData ?? []).find((md) => {
+      return md.mapDataId === prevMd.mapDataId;
+    });
+    return !nextMd || !mapDataEntriesEqual(nextMd, prevMd);
+  });
+};
+
+const removeStaleMapData = (
+  map: maplibregl.Map,
+  previousMapData: MapData[] | undefined,
+  nextMapData: MapData[] | undefined
+): void => {
+  for (const prevMd of previousMapData ?? []) {
+    const nextMd = (nextMapData ?? []).find((md) => {
+      return md.mapDataId === prevMd.mapDataId;
+    });
+    if (!nextMd || !mapDataEntriesEqual(nextMd, prevMd))
+      removeMapDataFromSource(map, prevMd);
+  }
 };
 
 const updateView = (
@@ -173,6 +209,7 @@ const updateView = (
     syncSourcesAndLayers(map, updated.spec, null);
     reapplyAllMapData(map, updated.spec);
     reapplyLegendDrivenFillPaint(map, updated.spec);
+    applyBasemapLabelsVisibility(map, updated.spec);
   };
 
   if (nextStyle !== viewState.style) {
@@ -183,16 +220,12 @@ const updateView = (
   }
   if (map.isStyleLoaded()) {
     syncSourcesAndLayers(map, spec, previousSpec);
-    if (previousSpec.mapData !== spec.mapData) {
-      for (const prevMd of previousSpec.mapData ?? []) {
-        const nextMd = (spec.mapData ?? []).find((md) => {
-          return md.mapDataId === prevMd.mapDataId;
-        });
-        if (!nextMd || nextMd !== prevMd) removeMapDataFromSource(map, prevMd);
-      }
+    if (hasMapDataChanged(previousSpec.mapData, spec.mapData)) {
+      removeStaleMapData(map, previousSpec.mapData, spec.mapData);
       reapplyAllMapData(map, spec);
       reapplyLegendDrivenFillPaint(map, spec);
     }
+    applyBasemapLabelsVisibility(map, spec);
   } else {
     map.once('style.load', onStyleReady);
   }
@@ -209,9 +242,10 @@ const dispatchPatch = (viewState: ViewState, patch: SpecPatch): void => {
     viewState.spec = applyMapDataPatchToSpec(viewState.spec, patch);
     reapplyLegendDrivenFillPaint(map, viewState.spec);
   } else {
-    // eslint-disable-next-line no-console
-    console.warn(
-      `[GeoVis] dispatchPatch: unknown target "${patch.target as string}" — patch ignored.`
+    log.warn(
+      `[geovis] MapLibreAdapter: unknown patch target "${
+        (patch as { target: unknown }).target
+      }" — patch was ignored.`
     );
   }
 };

@@ -1,5 +1,4 @@
 {
-  "id": "single-map",
   "title": "Single Map",
   "description": "Single map using the official MapLibre example with one polygon and point features.",
   "engine": "maplibre",
@@ -81,7 +80,6 @@
       "geometry": "polygon",
       "paint": {
         "fillColor": "#888888",
-        "fillOpacity": 0.4,
         "lineColor": "#525252",
         "lineWidth": 2
       }

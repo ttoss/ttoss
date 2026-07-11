@@ -3,6 +3,80 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.30](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.11.29...@ttoss/graphql-api-server@0.11.30) (2026-06-28)
+
+**Note:** Version bump only for package @ttoss/graphql-api-server
+
+## [0.11.29](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.11.28...@ttoss/graphql-api-server@0.11.29) (2026-06-27)
+
+**Note:** Version bump only for package @ttoss/graphql-api-server
+
+## 0.11.28 (2026-06-19)
+
+**Note:** Version bump only for package @ttoss/graphql-api-server
+
+## [0.11.27](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.11.26...@ttoss/graphql-api-server@0.11.27) (2026-06-14)
+
+**Note:** Version bump only for package @ttoss/graphql-api-server
+
+## [0.11.26](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.11.25...@ttoss/graphql-api-server@0.11.26) (2026-06-14)
+
+**Note:** Version bump only for package @ttoss/graphql-api-server
+
+## [0.11.25](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.11.24...@ttoss/graphql-api-server@0.11.25) (2026-06-14)
+
+**Note:** Version bump only for package @ttoss/graphql-api-server
+
+## [0.11.24](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.11.23...@ttoss/graphql-api-server@0.11.24) (2026-06-11)
+
+**Note:** Version bump only for package @ttoss/graphql-api-server
+
+## [0.11.23](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.11.22...@ttoss/graphql-api-server@0.11.23) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/graphql-api-server
+
+## [0.11.22](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.11.21...@ttoss/graphql-api-server@0.11.22) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/graphql-api-server
+
+## [0.11.21](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.11.20...@ttoss/graphql-api-server@0.11.21) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/graphql-api-server
+
+## [0.11.20](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.11.19...@ttoss/graphql-api-server@0.11.20) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** improve test coverage and fix peerDependencies ([#1022](https://github.com/ttoss/ttoss/issues/1022)) ([253bd98](https://github.com/ttoss/ttoss/commit/253bd98eaa29f690d4e198ad994b5d1aed4e89c5))
+
+## [0.11.19](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.11.18...@ttoss/graphql-api-server@0.11.19) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/graphql-api-server
+
+## [0.11.18](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.11.17...@ttoss/graphql-api-server@0.11.18) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/graphql-api-server
+
+## [0.11.17](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.11.16...@ttoss/graphql-api-server@0.11.17) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [0.11.16](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.11.15...@ttoss/graphql-api-server@0.11.16) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/graphql-api-server
+
+## [0.11.15](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.11.14...@ttoss/graphql-api-server@0.11.15) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/graphql-api-server
+
+## 0.11.14 (2026-05-13)
+
+### Bug Fixes
+
+- **forms:** map field.value to checked prop in FormFieldSwitch ([#981](https://github.com/ttoss/ttoss/issues/981)) ([9581d66](https://github.com/ttoss/ttoss/commit/9581d66470293699f775009698e5cc1d0eaeeee1))
+
 ## [0.11.13](https://github.com/ttoss/ttoss/compare/@ttoss/graphql-api-server@0.11.12...@ttoss/graphql-api-server@0.11.13) (2026-04-28)
 
 **Note:** Version bump only for package @ttoss/graphql-api-server

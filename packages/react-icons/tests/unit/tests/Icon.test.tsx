@@ -12,4 +12,11 @@ test('should render iconify-icon', () => {
 
   expect(icon).toBeInTheDocument();
   expect(icon).toHaveAttribute('icon', 'ant-design:down-square-filled');
+  expect(icon).toHaveAttribute('noobserver');
+});
+
+test('should allow overriding noobserver', () => {
+  render(<Icon icon="ant-design:down-square-filled" noobserver={false} />);
+
+  expect(screen.getByTestId('iconify-icon')).not.toHaveAttribute('noobserver');
 });

@@ -1,12 +1,14 @@
-import { Pipeline, getClosedPrCommands, getPrCommands } from '../pipelines';
-import { ProxyHandler } from 'aws-lambda';
 import { Webhooks } from '@octokit/webhooks';
+import AdmZip from 'adm-zip';
+import type { ProxyHandler } from 'aws-lambda';
+import AWS from 'aws-sdk';
+
+import { getTriggerPipelinesObjectKey } from '../getTriggerPipelineObjectKey';
+import type { Pipeline } from '../pipelines';
+import { getClosedPrCommands, getPrCommands } from '../pipelines';
 import { executeTasks } from './executeTasks';
 import { getProcessEnvVariable } from './getProcessEnvVariable';
-import { getTriggerPipelinesObjectKey } from '../getTriggerPipelineObjectKey';
 import { shConditionalCommands } from './shConditionalCommands';
-import AWS from 'aws-sdk';
-import AdmZip from 'adm-zip';
 
 const s3 = new AWS.S3();
 
@@ -45,7 +47,6 @@ export const webhooks = new Webhooks({ secret: '123' });
 
 const getPipelines = () => {
   const pipelines: Pipeline[] = JSON.parse(
-    // eslint-disable-next-line turbo/no-undeclared-env-vars
     process.env.PIPELINES_JSON || JSON.stringify([])
   );
 

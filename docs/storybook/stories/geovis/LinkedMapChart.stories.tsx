@@ -5,7 +5,7 @@ import type { Map as MapLibreMap, MapMouseEvent } from 'maplibre-gl';
 import * as React from 'react';
 
 import linkedMapChartSpec from '../../../../packages/geovis/src/fixtures/linked-map-chart.json';
-import { computeBbox, FitBoundsToBbox } from './_map-story-helpers';
+import { computeBbox, FitBoundsToBbox } from './helpers/map-story-helpers';
 
 export default {
   title: 'GeoVis/Fixtures/LinkedMapChart',

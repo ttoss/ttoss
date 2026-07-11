@@ -25,61 +25,43 @@ const cancelPendingListener = (
   byId.delete(mapDataId);
 };
 
-/** Builds a lookup index from join-key property value to MapLibre feature.id. */
-const buildJoinKeyIndex = (
-  features: ReturnType<maplibregl.Map['querySourceFeatures']>,
-  joinKey: string
-): Map<string, string | number> => {
-  const index = new Map<string, string | number>();
-  for (const f of features) {
-    const k = f.properties?.[joinKey];
-    if (k == null || f.id == null) continue;
-    index.set(String(k), f.id as string | number);
-  }
-  return index;
-};
-
 /**
  * Applies one MapData entry to a MapLibre source via setFeatureState.
- * - When `joinKey` is omitted, `geometryId` is matched against `feature.id`.
- * - When `joinKey` is set, features are queried and indexed by
- *   `feature.properties[joinKey]` to recover the underlying `feature.id`.
  *
- * Caller is responsible for ensuring the source is loaded before calling.
+ * Feature state is set directly by `geometryId`, which is the feature id in
+ * both supported configurations:
+ * - When `joinKey` is omitted, `geometryId` matches the source's native
+ *   `feature.id`.
+ * - When `joinKey` is set, the adapter promotes that property to `feature.id`
+ *   (see `resolvePromoteIdForSource`), so the join value *is* the feature id.
+ *
+ * Because state is keyed by id (not resolved via `querySourceFeatures`),
+ * MapLibre applies it lazily per tile — features outside the current viewport
+ * are colored as soon as their tile loads, instead of only the ones loaded when
+ * this runs. The source need not even be loaded yet.
  */
+/** Sanitizes non-finite numeric values to 0 for MapLibre expressions. */
+const sanitizeValue = (value: MapDataRow['value']): MapDataRow['value'] => {
+  return typeof value === 'number' && !Number.isFinite(value) ? 0 : value;
+};
+
 export const applyMapDataToSource = (
   map: maplibregl.Map,
   mapData: MapData
 ): void => {
   if (!map.getSource(mapData.mapId)) return;
 
-  if (!mapData.joinKey) {
-    for (const row of mapData.data) {
-      const safeValue =
-        typeof row.value === 'number' && !Number.isFinite(row.value)
-          ? 0
-          : row.value;
-      map.setFeatureState(
-        { source: mapData.mapId, id: coerceGeometryId(row.geometryId) },
-        { value: safeValue }
-      );
-    }
-    return;
-  }
+  const stateKey = mapData.stateKey ?? 'value';
 
-  const features = map.querySourceFeatures(mapData.mapId);
-  const idByJoinKey = buildJoinKeyIndex(features, mapData.joinKey);
-  for (const row of mapData.data) {
-    const fid = idByJoinKey.get(String(row.geometryId));
-    if (fid == null) continue;
-    const safeValue =
-      typeof row.value === 'number' && !Number.isFinite(row.value)
-        ? 0
-        : row.value;
+  const applyRow = (featureId: string | number, row: MapDataRow) => {
     map.setFeatureState(
-      { source: mapData.mapId, id: fid },
-      { value: safeValue }
+      { source: mapData.mapId, id: featureId },
+      { [stateKey]: sanitizeValue(row.value) }
     );
+  };
+
+  for (const row of mapData.data) {
+    applyRow(coerceGeometryId(row.geometryId), row);
   }
 };
 
@@ -117,9 +99,11 @@ export const scheduleMapDataApply = (
  * `scheduleMapDataApply` for the same `mapDataId` so a late source-load
  * cannot reapply data that no longer belongs to the current spec.
  *
- * When `joinKey` is absent, removes directly by `row.geometryId`.
- * When `joinKey` is set, resolves `feature.id` via `querySourceFeatures` before removing.
- * Silently returns when the source does not exist or is not yet loaded (joinKey path).
+ * Removes directly by `row.geometryId` — the feature id in both configurations
+ * (native id, or the `joinKey` property promoted to `feature.id`). Like
+ * `applyMapDataToSource`, this is keyed by id rather than resolved via
+ * `querySourceFeatures`, so it works regardless of which features are currently
+ * loaded in the viewport. Silently returns when the source does not exist.
  */
 export const removeMapDataFromSource = (
   map: maplibregl.Map,
@@ -132,24 +116,36 @@ export const removeMapDataFromSource = (
 
   if (!map.getSource(mapData.mapId)) return;
 
-  if (!mapData.joinKey) {
-    for (const row of mapData.data) {
-      map.removeFeatureState({
-        source: mapData.mapId,
-        id: coerceGeometryId(row.geometryId),
-      });
-    }
-    return;
-  }
+  const stateKey = mapData.stateKey ?? 'value';
 
-  if (!map.isSourceLoaded(mapData.mapId)) return;
-  const features = map.querySourceFeatures(mapData.mapId);
-  const idByJoinKey = buildJoinKeyIndex(features, mapData.joinKey);
   for (const row of mapData.data) {
-    const fid = idByJoinKey.get(String(row.geometryId));
-    if (fid == null) continue;
-    map.removeFeatureState({ source: mapData.mapId, id: fid });
+    map.removeFeatureState(
+      { source: mapData.mapId, id: coerceGeometryId(row.geometryId) },
+      stateKey
+    );
   }
+};
+
+/**
+ * Compares two `MapData` entries by the fields that affect feature-state
+ * behaviour. Reference changes to `title`, `description`, or `dimension` that
+ * leave feature-state data unchanged will correctly return `true` here,
+ * avoiding unnecessary `setFeatureState`/`removeFeatureState` calls when only
+ * paint properties changed on the spec.
+ *
+ * Compares:
+ * - `mapId` — different source → different feature-state target
+ * - `stateKey` — different key → different feature-state property name
+ * - `data` content — different values → need to reapply
+ */
+export const mapDataEntriesEqual = (a: MapData, b: MapData): boolean => {
+  if (a.mapId !== b.mapId) return false;
+  if ((a.stateKey ?? 'value') !== (b.stateKey ?? 'value')) return false;
+  if (a.data.length !== b.data.length) return false;
+  return a.data.every((row, i) => {
+    const other = b.data[i];
+    return row.geometryId === other.geometryId && row.value === other.value;
+  });
 };
 
 /**
@@ -163,44 +159,28 @@ export const reapplyAllMapData = (
   for (const md of spec.mapData ?? []) scheduleMapDataApply(map, md);
 };
 
-/** Applies a single-row value update to the map via `setFeatureState`. Resolves feature id via joinKey when set. */
+/** Applies a single-row value update to the map via `setFeatureState`. */
 const applyRowReplacement = (
   map: maplibregl.Map,
   mapData: MapData,
   geometryId: string,
   value: MapDataRow['value']
 ): void => {
-  // Mirror the non-finite sanitization used in applyMapDataToSource so
-  // granular op:replace patches do not leak NaN/Infinity into MapLibre
-  // expressions (which would break `step`/comparisons silently).
-  const safeValue =
-    typeof value === 'number' && !Number.isFinite(value) ? 0 : value;
+  const stateKey = mapData.stateKey ?? 'value';
 
-  if (!mapData.joinKey) {
-    // Resolve the original geometryId type from the stored row so numeric
-    // feature ids (e.g. 1) are not coerced to strings ('1'), which would
-    // cause setFeatureState to miss the intended feature.
-    const row = mapData.data.find((r) => {
-      return String(r.geometryId) === geometryId;
-    });
-    const featureId = row?.geometryId ?? coerceGeometryId(geometryId);
-    map.setFeatureState(
-      { source: mapData.mapId, id: featureId },
-      { value: safeValue }
-    );
-    return;
-  }
-  if (!map.isSourceLoaded(mapData.mapId)) return;
-  const f = map.querySourceFeatures(mapData.mapId).find((feat) => {
-    const k = feat.properties?.[mapData.joinKey as string];
-    return k != null && String(k) === geometryId;
+  // `geometryId` is the feature id in both configurations (native id, or the
+  // `joinKey` property promoted to `feature.id`). Resolve the original
+  // geometryId type from the stored row so numeric feature ids (e.g. 1) are not
+  // coerced to strings ('1'), which would cause setFeatureState to miss the
+  // intended feature.
+  const row = mapData.data.find((r) => {
+    return String(r.geometryId) === geometryId;
   });
-  if (f?.id != null) {
-    map.setFeatureState(
-      { source: mapData.mapId, id: f.id },
-      { value: safeValue }
-    );
-  }
+  const featureId = row?.geometryId ?? coerceGeometryId(geometryId);
+  map.setFeatureState(
+    { source: mapData.mapId, id: featureId },
+    { [stateKey]: sanitizeValue(value) }
+  );
 };
 
 /** Handles a replace patch on the live map: full-entry or single-row granularity based on path depth. */

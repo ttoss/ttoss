@@ -37,7 +37,13 @@ const applyLayerAdd = (
       : undefined);
   map.addLayer(
     stripUndefinedPaint(
-      toMaplibreLayer(newLayer, effectiveSourceLayer, viewState.spec.legends)
+      toMaplibreLayer(
+        newLayer,
+        effectiveSourceLayer,
+        viewState.spec.legends,
+        viewState.spec.mapData,
+        viewState.spec.scaleMaxValue
+      )
     )
   );
   viewState.spec = {
@@ -71,13 +77,21 @@ const applyLayerPaintReplace = (
   if (parts.length < 4 || parts[2] !== 'paint') return;
   const layerId = parts[1];
   const specKey = parts[3];
-  const layer = viewState.spec.layers.find((l) => {
+  const layerIndex = viewState.spec.layers.findIndex((l) => {
     return l.id === layerId;
   });
-  if (!layer) return;
+  if (layerIndex === -1) return;
+  const layer = viewState.spec.layers[layerIndex];
   const maplibreKey = specPaintKeyToMaplibre(specKey, layer.geometry);
   if (!maplibreKey) return;
   setPaintWhenReady(map, layerId, maplibreKey, value);
+  viewState.spec = {
+    ...viewState.spec,
+    layers: viewState.spec.layers.map((l, i) => {
+      if (i !== layerIndex) return l;
+      return { ...l, paint: { ...l.paint, [specKey]: value } };
+    }),
+  };
 };
 
 /** Dispatches a layer-targeted patch to add, remove, or paint-replace. */

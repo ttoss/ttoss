@@ -24,6 +24,7 @@ interface MockMap {
   off: jest.Mock;
   queryRenderedFeatures: jest.Mock;
   getFeatureState: jest.Mock;
+  setFeatureState: jest.Mock;
   getCanvas: jest.Mock;
   getLayer: jest.Mock;
   isStyleLoaded: jest.Mock;
@@ -56,6 +57,7 @@ const buildMockMap = (): MockMap => {
     }),
     queryRenderedFeatures: jest.fn(),
     getFeatureState: jest.fn(),
+    setFeatureState: jest.fn(),
     getCanvas: jest.fn(() => {
       return canvas;
     }),
@@ -160,8 +162,7 @@ const triggerClick = (
   }
 ) => {
   const handler = map.__handlers.get(`click:${layerId}`) as
-    | MapClickHandler
-    | undefined;
+    MapClickHandler | undefined;
   if (!handler)
     throw new Error(`click handler missing for key click:${layerId}`);
   act(() => {
@@ -179,7 +180,7 @@ describe('GeoVisClickContext', () => {
   });
 
   // 1. useGeoVisClick throws outside provider
-  test('useGeoVisClick throws when used outside GeoVisProvider', () => {
+  test('useGeoVisClick throws when used outside GeoVisProvider', async () => {
     expect(() => {
       renderHook(() => {
         return useGeoVisClick();
@@ -188,7 +189,7 @@ describe('GeoVisClickContext', () => {
   });
 
   // 2. useGeoVisClick returns null initially inside provider
-  test('useGeoVisClick returns null when no feature has been clicked', () => {
+  test('useGeoVisClick returns null when no feature has been clicked', async () => {
     const { result } = renderHook(
       () => {
         return useGeoVisClick();
@@ -199,6 +200,10 @@ describe('GeoVisClickContext', () => {
         },
       }
     );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
 
     expect(result.current).toBeNull();
   });
@@ -212,6 +217,10 @@ describe('GeoVisClickContext', () => {
         <ExposeRuntime onReady={onReady} />
       </GeoVisProvider>
     );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
 
     await waitFor(() => {
       expect(onReady).toHaveBeenCalled();
@@ -245,6 +254,10 @@ describe('GeoVisClickContext', () => {
         },
       }
     );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
 
     await waitFor(() => {
       expect(onReady).toHaveBeenCalled();
@@ -286,6 +299,10 @@ describe('GeoVisClickContext', () => {
         },
       }
     );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
 
     await waitFor(() => {
       expect(onReady).toHaveBeenCalled();
@@ -332,6 +349,10 @@ describe('GeoVisClickContext', () => {
       }
     );
 
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
     await waitFor(() => {
       expect(onReady).toHaveBeenCalled();
     });
@@ -349,8 +370,7 @@ describe('GeoVisClickContext', () => {
     });
 
     const genericHandler = mockCurrentMap.__handlers.get('click:*') as
-      | MapClickHandler
-      | undefined;
+      MapClickHandler | undefined;
 
     if (!genericHandler) {
       throw new Error('Generic click:* handler not registered on map');

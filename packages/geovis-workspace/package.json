@@ -1,0 +1,65 @@
+{
+  "name": "@ttoss/geovis-workspace",
+  "version": "0.2.9",
+  "description": "React component that combines a menu and canvas map interactions.",
+  "keywords": [
+    "react",
+    "canvas",
+    "menu",
+    "map"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/geovis-workspace"
+  },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Rener Cardoso <rener_cardoso@hotmail.com>"
+  ],
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "i18n": "ttoss-i18n",
+    "test": "jest --projects tests/unit"
+  },
+  "devDependencies": {
+    "@ttoss/config": "workspace:^",
+    "@ttoss/geovis": "workspace:^",
+    "@ttoss/i18n-cli": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/test-utils": "workspace:^",
+    "@ttoss/ui": "workspace:^",
+    "@types/react": "^19.2.14",
+    "jest": "^30.4.2",
+    "react": "^19.2.6",
+    "tsdown": "^0.22.2"
+  },
+  "peerDependencies": {
+    "@ttoss/geovis": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/ui": "workspace:^",
+    "react": ">=16.8.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.mts",
+        "module": "./dist/index.mjs",
+        "browser": "./dist/index.mjs",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
+      }
+    },
+    "provenance": true
+  }
+}

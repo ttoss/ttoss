@@ -707,3 +707,62 @@ describe('spacing responsive engine — CSS output (Error #17 / Error #18)', () 
     expect(fallbackIdx).toBeLessThan(supportsIdx);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Spacing responsive engine — CSS output validation
+//
+// @see spacing.md — Validation > Error #17, Error #18
+// Error #17: generated output does not emit a viewport-safe fallback before
+//            container-based overrides.
+// Error #18: generated output does not gate container-based overrides behind
+//            @supports (width: 1cqi).
+//
+// These tests inspect the CSS string produced by getThemeStylesContent() to
+// verify both structural contracts for core.space.unit, which is the single
+// responsive engine for the entire spacing system.
+// ---------------------------------------------------------------------------
+
+describe('spacing responsive engine — CSS output (Error #17 / Error #18)', () => {
+  const SPACE_UNIT_VAR = '--tt-core-spacing-engine-unit';
+
+  test('Error #17: --tt-core-spacing-unit emits viewport-safe fallback in the base block', () => {
+    // Error #17: generated output does not emit a viewport-safe fallback
+    // before container-based overrides.
+    const css = getThemeStylesContent(baseBundle);
+
+    // The base :root block ends just before the first @supports
+    const baseBlock = css.split('@supports')[0];
+
+    // Must contain the vw-based fallback (cqi → vw via toViewportFallback)
+    expect(baseBlock).toContain(`${SPACE_UNIT_VAR}:`);
+    expect(baseBlock).toMatch(new RegExp(`${SPACE_UNIT_VAR}:[^;]*vw`));
+    // Must NOT contain cqi in the base block — CQ override lives in @supports only
+    expect(baseBlock).not.toMatch(/\bcqi\b/);
+  });
+
+  test('Error #18: --tt-core-spacing-unit CQ override is gated behind @supports (width: 1cqi)', () => {
+    // Error #18: generated output does not gate container-based overrides
+    // behind @supports (width: 1cqi).
+    const css = getThemeStylesContent(baseBundle);
+
+    // Locate the @supports block
+    const supportsIdx = css.indexOf('@supports (width: 1cqi)');
+    expect(supportsIdx).toBeGreaterThan(-1);
+
+    // The @supports block must contain --tt-space-unit with a cqi value
+    const supportsBlock = css.slice(supportsIdx);
+    expect(supportsBlock).toMatch(new RegExp(`${SPACE_UNIT_VAR}:[^;]*cqi`));
+  });
+
+  test('viewport fallback appears before the @supports block in source order', () => {
+    // Asserts Error #17 and #18 together: fallback must precede the CQ override.
+    const css = getThemeStylesContent(baseBundle);
+
+    const fallbackIdx = css.indexOf(`${SPACE_UNIT_VAR}:`);
+    const supportsIdx = css.indexOf('@supports (width: 1cqi)');
+
+    expect(fallbackIdx).toBeGreaterThan(-1);
+    expect(supportsIdx).toBeGreaterThan(-1);
+    expect(fallbackIdx).toBeLessThan(supportsIdx);
+  });
+});

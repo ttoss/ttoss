@@ -10,8 +10,10 @@ jest.mock('src/DashboardProvider', () => {
   };
 });
 
-jest.mock('@ttoss/components/Drawer', () => {
+jest.mock('@ttoss/components', () => {
+  const actual = jest.requireActual('@ttoss/components');
   return {
+    ...actual,
     Drawer: ({
       open,
       children,
@@ -29,11 +31,6 @@ jest.mock('@ttoss/components/Drawer', () => {
         </div>
       );
     },
-  };
-});
-
-jest.mock('@ttoss/components/Search', () => {
-  return {
     Search: ({
       onChange,
       placeholder,

@@ -79,6 +79,8 @@ const { lintstagedConfig } = require('@ttoss/config');
 module.exports = lintstagedConfig();
 ```
 
+The default config runs ESLint on JS/TS files, Prettier on Markdown/JSON/YAML, and automatically sorts `package.json` keys using [sort-package-json](https://github.com/nicolo-ribaudo/sort-package-json). No additional packages needed.
+
 Finally, configure Husky:
 
 ```shell
@@ -285,27 +287,27 @@ module.exports = prettierConfig({
 });
 ```
 
-You can also pass a second argument to every configuration to handle array's append or overwrite items.
+You can also pass a second argument to every configuration to control array merge behavior (append or overwrite).
 
 ```js title="babel.config.js"
 const { babelConfig } = require('@ttoss/config');
 
-// Append plugins (default)
-const appendConfig = babelConfig(
-  {
-    plugins: ['@babel/plugin-proposal-class-properties'],
-  },
-  {
-    arrayMerge: 'append',
-  }
-);
-
+// Overwrite plugins (default)
 const overwriteConfig = babelConfig(
   {
     plugins: ['@babel/plugin-proposal-class-properties'],
   },
   {
     arrayMerge: 'overwrite',
+  }
+);
+
+const appendConfig = babelConfig(
+  {
+    plugins: ['@babel/plugin-proposal-class-properties'],
+  },
+  {
+    arrayMerge: 'append',
   }
 );
 ```

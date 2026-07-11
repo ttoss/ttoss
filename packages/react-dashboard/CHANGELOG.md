@@ -3,6 +3,98 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.4](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.8.3...@ttoss/react-dashboard@0.8.4) (2026-06-28)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.8.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.8.2...@ttoss/react-dashboard@0.8.3) (2026-06-22)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.8.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.8.1...@ttoss/react-dashboard@0.8.2) (2026-06-22)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.8.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.8.0...@ttoss/react-dashboard@0.8.1) (2026-06-19)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+# [0.8.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.21...@ttoss/react-dashboard@0.8.0) (2026-06-19)
+
+### Features
+
+- **react-dashboard:** composable filters, sx passthrough, type fix, conditional divider ([#1087](https://github.com/ttoss/ttoss/issues/1087)) ([c93f5d4](https://github.com/ttoss/ttoss/commit/c93f5d46db448f1e164cdd1fcd8243e063e9cea5))
+
+## [0.7.21](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.20...@ttoss/react-dashboard@0.7.21) (2026-06-19)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## 0.7.20 (2026-06-15)
+
+### Bug Fixes
+
+- **website:** generate markdown files for llms.txt references ([#1060](https://github.com/ttoss/ttoss/issues/1060)) ([8785a31](https://github.com/ttoss/ttoss/commit/8785a31af53fcd5d3899c08b06de4b9f157c9d8d))
+
+## [0.7.19](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.18...@ttoss/react-dashboard@0.7.19) (2026-06-12)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.7.18](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.17...@ttoss/react-dashboard@0.7.18) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.7.17](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.16...@ttoss/react-dashboard@0.7.17) (2026-06-09)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.7.16](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.15...@ttoss/react-dashboard@0.7.16) (2026-06-09)
+
+### Bug Fixes
+
+- add rolldown/vite 8 export conditions and move @ttoss/components to peerDep ([c85efe3](https://github.com/ttoss/ttoss/commit/c85efe3b91f4af2405515bd6fa20227579869583))
+
+## [0.7.15](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.14...@ttoss/react-dashboard@0.7.15) (2026-06-09)
+
+### Bug Fixes
+
+- **@ttoss/react-notifications:** move @ttoss/components to dependencies ([#1029](https://github.com/ttoss/ttoss/issues/1029)) ([51c5d30](https://github.com/ttoss/ttoss/commit/51c5d30602c44d3620fab2072969c7b12d6243d0)), closes [#1028](https://github.com/ttoss/ttoss/issues/1028)
+
+## [0.7.14](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.13...@ttoss/react-dashboard@0.7.14) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** improve test coverage and fix peerDependencies ([#1022](https://github.com/ttoss/ttoss/issues/1022)) ([253bd98](https://github.com/ttoss/ttoss/commit/253bd98eaa29f690d4e198ad994b5d1aed4e89c5))
+
+## [0.7.13](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.12...@ttoss/react-dashboard@0.7.13) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.7.12](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.11...@ttoss/react-dashboard@0.7.12) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.7.11](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.10...@ttoss/react-dashboard@0.7.11) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [0.7.10](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.9...@ttoss/react-dashboard@0.7.10) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.7.9](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.8...@ttoss/react-dashboard@0.7.9) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.7.8](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.7...@ttoss/react-dashboard@0.7.8) (2026-05-13)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
+## [0.7.7](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.6...@ttoss/react-dashboard@0.7.7) (2026-05-13)
+
+**Note:** Version bump only for package @ttoss/react-dashboard
+
 ## [0.7.6](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.7.5...@ttoss/react-dashboard@0.7.6) (2026-05-11)
 
 **Note:** Version bump only for package @ttoss/react-dashboard

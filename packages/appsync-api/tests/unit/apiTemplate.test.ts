@@ -6,6 +6,7 @@ import {
   AppSyncGraphQLApiLogicalId,
   AppSyncGraphQLSchemaLogicalId,
   AppSyncLambdaFunctionLogicalId,
+  AppSyncNoneDataSourceLogicalId,
 } from '../../src/createApiTemplate';
 
 const createApiTemplateInput = {
@@ -200,9 +201,6 @@ test('should add resolvers to template', () => {
     ['Mutation', 'id1'],
     ['Mutation', 'id2'],
     ['Mutation', 'idMutation'],
-    ['Subscription', 'id1'],
-    ['Subscription', 'id2'],
-    ['Subscription', 'idSubscription'],
   ];
 
   const template = createApiTemplate({
@@ -222,6 +220,51 @@ test('should add resolvers to template', () => {
 
     expect(resource).toBeDefined();
   }
+
+  // Subscription fields must NOT get Lambda resolvers — @aws_subscribe handles delivery natively
+  for (const fieldName of ['id1', 'id2', 'idSubscription']) {
+    const resource = resources.find((r) => {
+      return (
+        r.Properties?.TypeName === 'Subscription' &&
+        r.Properties?.FieldName === fieldName
+      );
+    });
+
+    expect(resource).toBeUndefined();
+  }
+});
+
+describe('Subscription resolvers', () => {
+  test('should not create Lambda resolver for Subscription fields', () => {
+    const localSchemaComposer = schemaComposer.clone();
+
+    localSchemaComposer.addTypeDefs(/* GraphQL */ `
+      type Notification {
+        id: ID!
+        message: String!
+      }
+      extend type Subscription {
+        onNotification: Notification
+          @aws_subscribe(mutations: ["createNotification"])
+      }
+    `);
+
+    localSchemaComposer.Subscription.extendField('onNotification', {
+      resolve: (payload) => {
+        if (!payload) return null;
+        return payload.onNotification;
+      },
+    });
+
+    const template = createApiTemplate({
+      ...createApiTemplateInput,
+      schemaComposer: localSchemaComposer,
+    });
+
+    expect(
+      template.Resources['onNotificationSubscriptionAppSyncResolver']
+    ).toBeUndefined();
+  });
 });
 
 describe('custom domain name', () => {
@@ -362,5 +405,74 @@ describe('custom domain name', () => {
         ],
       },
     });
+  });
+});
+
+describe('noneDataSourceResolvers', () => {
+  test('should not create NONE data source when option is not provided', () => {
+    const template = createApiTemplate(createApiTemplateInput);
+
+    expect(template.Resources[AppSyncNoneDataSourceLogicalId]).toBeUndefined();
+  });
+
+  test('should not create NONE data source when array is empty', () => {
+    const template = createApiTemplate({
+      ...createApiTemplateInput,
+      noneDataSourceResolvers: [],
+    });
+
+    expect(template.Resources[AppSyncNoneDataSourceLogicalId]).toBeUndefined();
+  });
+
+  test('should create NONE data source and resolvers', () => {
+    const template = createApiTemplate({
+      ...createApiTemplateInput,
+      noneDataSourceResolvers: [
+        { typeName: 'Mutation', fieldName: 'sendMessage' },
+      ],
+    });
+
+    expect(template.Resources[AppSyncNoneDataSourceLogicalId]).toEqual({
+      Type: 'AWS::AppSync::DataSource',
+      Properties: {
+        ApiId: { 'Fn::GetAtt': [AppSyncGraphQLApiLogicalId, 'ApiId'] },
+        Name: AppSyncNoneDataSourceLogicalId,
+        Type: 'NONE',
+      },
+    });
+
+    expect(
+      template.Resources['sendMessageMutationAppSyncResolver']
+    ).toMatchObject({
+      Type: 'AWS::AppSync::Resolver',
+      Properties: {
+        TypeName: 'Mutation',
+        FieldName: 'sendMessage',
+        DataSourceName: {
+          'Fn::GetAtt': [AppSyncNoneDataSourceLogicalId, 'Name'],
+        },
+        RequestMappingTemplate: expect.stringContaining(
+          '$utils.toJson($ctx.args)'
+        ),
+        ResponseMappingTemplate: '$util.toJson($ctx.result)',
+      },
+    });
+  });
+
+  test('should support multiple NONE data source resolvers', () => {
+    const template = createApiTemplate({
+      ...createApiTemplateInput,
+      noneDataSourceResolvers: [
+        { typeName: 'Mutation', fieldName: 'sendMessage' },
+        { typeName: 'Mutation', fieldName: 'deleteMessage' },
+      ],
+    });
+
+    expect(
+      template.Resources['sendMessageMutationAppSyncResolver']
+    ).toBeDefined();
+    expect(
+      template.Resources['deleteMessageMutationAppSyncResolver']
+    ).toBeDefined();
   });
 });

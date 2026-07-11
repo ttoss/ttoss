@@ -2,16 +2,26 @@
   "name": "@ttoss/fsl-theme",
   "version": "1.1.10",
   "description": "ttoss theme provider for UI.",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Ennio Politi Lopes <enniolopes@gmail.com>"
+  "keywords": [
+    "css-variables",
+    "dark-mode",
+    "design-tokens",
+    "dtcg",
+    "react",
+    "ssr",
+    "theming",
+    "ttoss"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/fsl-theme"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Ennio Politi Lopes <enniolopes@gmail.com>"
+  ],
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -31,7 +41,16 @@
     "build:verify": "pnpm run build && tsx scripts/probe-jsdoc-propagation.ts",
     "test": "jest --projects tests/unit"
   },
-  "sideEffects": false,
+  "devDependencies": {
+    "@testing-library/react": "^16.3.2",
+    "@ttoss/config": "workspace:^",
+    "@ttoss/test-utils": "workspace:^",
+    "jest": "^30.4.2",
+    "react": "^19.2.6",
+    "ts-morph": "^28.0.0",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0"
+  },
   "peerDependencies": {
     "react": ">=18"
   },
@@ -40,56 +59,39 @@
       "optional": true
     }
   },
-  "devDependencies": {
-    "@testing-library/react": "^16.3.2",
-    "@ttoss/config": "workspace:^",
-    "@ttoss/test-utils": "workspace:^",
-    "jest": "^30.3.0",
-    "react": "^19.2.4",
-    "ts-morph": "^28.0.0",
-    "tsup": "^8.5.1",
-    "tsx": "^4.21.0"
-  },
-  "keywords": [
-    "css-variables",
-    "dark-mode",
-    "design-tokens",
-    "dtcg",
-    "react",
-    "ssr",
-    "theming",
-    "ttoss"
-  ],
   "publishConfig": {
     "access": "public",
     "exports": {
       ".": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/esm/index.js"
+        "types": "./dist/index.d.mts",
+        "module": "./dist/index.mjs",
+        "browser": "./dist/index.mjs",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
       },
       "./css": {
-        "types": "./dist/css.d.ts",
-        "default": "./dist/esm/css.js"
+        "types": "./dist/css.d.mts",
+        "default": "./dist/css.mjs"
       },
       "./runtime": {
-        "types": "./dist/runtime-entry.d.ts",
-        "default": "./dist/esm/runtime-entry.js"
+        "types": "./dist/runtime-entry.d.mts",
+        "default": "./dist/runtime-entry.mjs"
       },
       "./react": {
-        "types": "./dist/react.d.ts",
-        "default": "./dist/esm/react.js"
+        "types": "./dist/react.d.mts",
+        "default": "./dist/react.mjs"
       },
       "./vars": {
-        "types": "./dist/vars.d.ts",
-        "default": "./dist/esm/vars.js"
+        "types": "./dist/vars.d.mts",
+        "default": "./dist/vars.mjs"
       },
       "./dtcg": {
-        "types": "./dist/dtcg.d.ts",
-        "default": "./dist/esm/dtcg.js"
+        "types": "./dist/dtcg.d.mts",
+        "default": "./dist/dtcg.mjs"
       },
       "./dataviz": {
-        "types": "./dist/dataviz/index.d.ts",
-        "default": "./dist/esm/dataviz/index.js"
+        "types": "./dist/dataviz/index.d.mts",
+        "default": "./dist/dataviz/index.mjs"
       }
     },
     "provenance": true

@@ -1,0 +1,172 @@
+import type * as React from 'react';
+
+import { niceFloor } from '../spec/mapTypeDefaults/utils';
+import type { SizeBy, VisualizationSpec } from '../spec/types';
+
+export interface CircledLegendItem {
+  label: string;
+  radiusPx: number;
+}
+
+const CIRCLE_LEGEND_PERCENTS = [0.25, 0.5, 1] as const;
+
+const computeCircleRadius = (
+  value: number,
+  scaleMaxValue: number,
+  minRadius: number,
+  maxRadius: number
+): number => {
+  if (value <= 0 || scaleMaxValue <= 0) return value <= 0 ? 0 : minRadius;
+  const t =
+    Math.sqrt(Math.min(value, scaleMaxValue)) / Math.sqrt(scaleMaxValue);
+  return minRadius + (maxRadius - minRadius) * t;
+};
+
+export type ProportionalCirclesConfig = {
+  scaleMaxValue: number;
+  sizeBy: SizeBy;
+};
+
+export const findProportionalCirclesConfig = (
+  spec: VisualizationSpec
+): ProportionalCirclesConfig | null => {
+  if (spec.scaleMaxValue == null) return null;
+  for (const layer of spec.layers) {
+    if (
+      layer.sizeBy &&
+      'transform' in layer.sizeBy &&
+      layer.sizeBy.transform === 'sqrt'
+    ) {
+      return { scaleMaxValue: spec.scaleMaxValue, sizeBy: layer.sizeBy };
+    }
+  }
+  return null;
+};
+
+export const buildCircledItems = (
+  config: ProportionalCirclesConfig,
+  formatValue: (value: number) => string
+): CircledLegendItem[] => {
+  const { scaleMaxValue, sizeBy } = config;
+  const [minRadius, maxRadius] = sizeBy.range;
+  const items: CircledLegendItem[] = [];
+  for (const pct of CIRCLE_LEGEND_PERCENTS) {
+    // RULE: reference values on proportional-circle legends are ALWAYS
+    // rounded DOWN to a nice cartographic number (`niceFloor`: 1/2/2.5/5/10
+    // x 10^n - e.g. 130.75 -> 100, 261.5 -> 250, 523 -> 500), never left as
+    // raw percentile fractions. The size datasets these legends describe are
+    // counts - when every value in the dataset is an integer there is no
+    // reason to show a non-integer reference.
+    //
+    // Flooring (instead of ceiling) keeps every reference AT OR BELOW the
+    // value it derives from, so no row can ever advertise a value no datum
+    // reaches (`niceCeil(scaleMax)` would, e.g. 523 -> 1000) and the values
+    // stay lower and evenly stepped. It is monotonic, so the rows stay
+    // ascending (equal rows are deduped below), and always <= scaleMaxValue,
+    // so the radius never clamps. The radius is computed from the SAME nice
+    // value shown in the label, so the drawn circle always matches what the
+    // label says. When `niceFloor` lands on a fractional step (2.5 x 10^n)
+    // for an integer-valued reference, it falls back to the plain integer
+    // floor - integer data never shows a fractional reference.
+    const rawValue = scaleMaxValue * pct;
+    let value = niceFloor(rawValue);
+    if (!Number.isInteger(value) && rawValue >= 1) {
+      value = Math.floor(rawValue);
+    }
+    const label =
+      pct === 1 ? `\u2265 ${formatValue(value)}` : formatValue(value);
+    // Rounding can collapse neighbouring percentiles of a small
+    // scaleMaxValue to the same value - keep only the first occurrence.
+    // Deduplicate by numeric value (not formatted label) to avoid false
+    // dedup when formatValue rounds/abbreviates differently.
+    if (
+      value <= 0 ||
+      items.some((item) => {
+        return (
+          item.radiusPx ===
+          computeCircleRadius(value, scaleMaxValue, minRadius, maxRadius)
+        );
+      })
+    ) {
+      continue;
+    }
+    items.push({
+      label,
+      radiusPx: computeCircleRadius(value, scaleMaxValue, minRadius, maxRadius),
+    });
+  }
+  return items;
+};
+
+const MUTED_COLOR = '#6b7280';
+
+const CIRCLE_SWATCH_BASE: React.CSSProperties = {
+  backgroundColor: MUTED_COLOR,
+  borderRadius: '50%',
+  display: 'inline-block',
+  flexShrink: 0,
+};
+
+const rowStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+};
+
+const LARGE_RADIUS_THRESHOLD_PX = 10;
+const EXTRA_SPACING_RATIO = 0.5;
+
+/**
+ * Extra bottom margin for a circle-legend row, scaled to how much its radius
+ * exceeds `LARGE_RADIUS_THRESHOLD_PX`. Small circles (the common case) get no
+ * extra spacing; bigger circles push the next row down so their outline
+ * doesn't crowd the following label.
+ */
+export const computeCircleRowSpacing = (radiusPx: number): number => {
+  if (radiusPx <= LARGE_RADIUS_THRESHOLD_PX) return 0;
+  return Math.round(
+    (radiusPx - LARGE_RADIUS_THRESHOLD_PX) * EXTRA_SPACING_RATIO
+  );
+};
+
+/**
+ * Renders the proportional-circle size key as a vertically stacked list.
+ */
+export const CirclesLegendItems = ({
+  circleItems: items,
+  swatchColor = MUTED_COLOR,
+}: {
+  circleItems: CircledLegendItem[];
+  swatchColor?: string;
+}) => {
+  if (items.length === 0) return null;
+  return (
+    <>
+      {items.map((c, i) => {
+        const d = c.radiusPx * 2;
+        const isLast = i === items.length - 1;
+        return (
+          <li
+            key={`circle-${i}`}
+            style={{
+              ...rowStyle,
+              gap: 8,
+              marginTop: i === 0 ? computeCircleRowSpacing(c.radiusPx) : 0,
+              marginBottom: isLast ? 0 : computeCircleRowSpacing(c.radiusPx),
+            }}
+          >
+            <span
+              aria-hidden="true"
+              style={{
+                ...CIRCLE_SWATCH_BASE,
+                backgroundColor: swatchColor,
+                height: d,
+                width: d,
+              }}
+            />
+            <span>{c.label}</span>
+          </li>
+        );
+      })}
+    </>
+  );
+};

@@ -1,9 +1,10 @@
 import {
+  type NotificationAction,
   toast,
   ToastContainer,
   type ToastContainerProps,
   type ToastOptions,
-} from '@ttoss/components/Toast';
+} from '@ttoss/components';
 import { Flex, InfiniteLinearProgress } from '@ttoss/ui';
 import * as React from 'react';
 
@@ -21,6 +22,7 @@ export type Notification = {
   toast?: ToastOptions;
   boxId?: string | number;
   persist?: boolean;
+  actions?: NotificationAction[];
 };
 
 const NotificationsContext = React.createContext<{

@@ -1,4 +1,7 @@
+import { log } from '@ttoss/logger';
+
 import { applyMapDataPatchToSpec } from '../spec/mapDataPatch';
+import { resolveSpecFromMapType } from '../spec/mapTypeDefaults';
 import type {
   DataSource,
   VisualizationLayer,
@@ -98,7 +101,7 @@ export const createRuntime = (
   adapter: EngineAdapter,
   initialSpec: VisualizationSpec
 ): GeoVisRuntime => {
-  let currentSpec = initialSpec;
+  let currentSpec = resolveSpecFromMapType(initialSpec);
 
   return {
     get spec() {
@@ -108,8 +111,8 @@ export const createRuntime = (
       return adapter.mount(container, currentSpec, viewId);
     },
     update: (spec) => {
-      currentSpec = spec;
-      adapter.update(spec);
+      currentSpec = resolveSpecFromMapType(spec);
+      adapter.update(currentSpec);
     },
     applyPatch: (patch) => {
       // replace with undefined value is a no-op.
@@ -128,9 +131,10 @@ export const createRuntime = (
       } else if (patch.target === 'mapData') {
         currentSpec = applyMapDataPatchToSpec(currentSpec, patch);
       } else {
-        // eslint-disable-next-line no-console
-        console.warn(
-          `[GeoVis] applyPatch: unknown target "${patch.target as string}" - patch ignored.`
+        log.warn(
+          `[geovis] Runtime: unknown patch target "${
+            (patch as { target: unknown }).target
+          }" — patch was ignored.`
         );
       }
     },

@@ -1,19 +1,25 @@
 {
   "name": "carlin",
-  "version": "1.49.8",
+  "version": "1.49.21",
   "description": "",
-  "license": "MIT",
-  "author": "Pedro Arantes <arantespp@gmail.com> (https://twitter.com/arantespp)",
+  "keywords": [],
   "homepage": "https://ttoss.dev/docs/carlin/",
+  "bugs": {
+    "url": "https://github.com/ttoss/ttoss/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/carlin"
   },
-  "bugs": {
-    "url": "https://github.com/ttoss/ttoss/issues"
-  },
+  "license": "MIT",
+  "author": "Pedro Arantes <arantespp@gmail.com> (https://twitter.com/arantespp)",
   "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./config": "./src/defineConfig.ts",
+    "./src/*": "./src/*.ts"
+  },
   "bin": {
     "carlin": "./bin/carlin.js"
   },
@@ -22,14 +28,14 @@
     "dist/"
   ],
   "scripts": {
-    "build": "tsc && tsup",
+    "build": "tsc && tsdown",
     "test": "jest"
   },
   "dependencies": {
     "@aws-sdk/client-cloudformation": "^3.699.0",
     "@aws-sdk/client-s3": "^3.975.0",
     "@aws-sdk/lib-storage": "^3.975.0",
-    "@octokit/webhooks": "^12.0.0",
+    "@octokit/webhooks": "^14.2.0",
     "@slack/webhook": "^7.0.3",
     "@ttoss/cloudformation": "workspace:^",
     "@ttoss/config": "workspace:^",
@@ -52,7 +58,6 @@
     "simple-git": "^3.27.0",
     "ts-node": "^10.9.2",
     "uglify-js": "^3.19.3",
-    "vercel": "^39.1.1",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
@@ -71,13 +76,22 @@
     "@types/uglify-js": "^3.17.5",
     "@types/yargs": "^17.0.33",
     "aws-sdk-client-mock": "^4.1.0",
-    "jest": "^30.3.0",
-    "tsup": "^8.5.1",
+    "jest": "^30.4.2",
+    "tsdown": "^0.22.2",
     "typescript": "~6.0.3"
   },
-  "keywords": [],
   "publishConfig": {
     "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/index.mjs",
+        "types": "./dist/index.d.mts"
+      },
+      "./config": {
+        "import": "./dist/defineConfig.mjs",
+        "types": "./dist/defineConfig.d.mts"
+      }
+    },
     "provenance": true
   }
 }

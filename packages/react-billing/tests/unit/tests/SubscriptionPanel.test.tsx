@@ -4,12 +4,14 @@ import { SubscriptionPanel } from '../../../src';
 import { getSubscriptionPanelAccentBarSx } from '../../../src/components/subscriptionPanel/SubscriptionPanel.styles';
 import { SubscriptionPanelActionsSlot } from '../../../src/components/subscriptionPanel/SubscriptionPanelActionsSlot';
 
-jest.mock('@ttoss/components/MetricCard', () => {
-  const MetricCard = ({ metric }: { metric: { label?: string } }) => {
-    return <div data-testid="metric-card">{metric?.label}</div>;
+jest.mock('@ttoss/components', () => {
+  const actual = jest.requireActual('@ttoss/components');
+  return {
+    ...actual,
+    MetricCard: ({ metric }: { metric: { label?: string } }) => {
+      return <div data-testid="metric-card">{metric?.label}</div>;
+    },
   };
-
-  return { MetricCard };
 });
 
 test('renders basic subscription card with required props', () => {

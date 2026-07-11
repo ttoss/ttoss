@@ -1,17 +1,18 @@
 {
   "name": "@ttoss/aws-appsync-nodejs",
-  "version": "1.9.10",
+  "version": "1.9.19",
   "description": "",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <arantespp@gmail.com> (https://arantespp.com)"
-  ],
+  "keywords": [],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/aws-appsync-nodejs"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <arantespp@gmail.com> (https://arantespp.com)"
+  ],
   "exports": {
     ".": "./src/index.ts"
   },
@@ -19,7 +20,7 @@
     "dist/"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "jest"
   },
   "dependencies": {
@@ -32,17 +33,16 @@
     "@aws-sdk/types": "^3.502.0",
     "@ttoss/config": "workspace:^",
     "@types/jest": "^30.0.0",
-    "jest": "^30.3.0",
-    "tsup": "^8.5.1"
+    "jest": "^30.4.2",
+    "tsdown": "^0.22.2"
   },
-  "keywords": [],
   "publishConfig": {
     "access": "public",
     "exports": {
       ".": {
-        "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.mts"
       }
     },
     "provenance": true

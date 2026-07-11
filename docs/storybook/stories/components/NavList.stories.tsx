@@ -1,5 +1,5 @@
-import { Meta, StoryObj } from '@storybook/react-webpack5';
-import { type LinkComponentProps, NavList } from '@ttoss/components/NavList';
+import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import { type LinkComponentProps, Menu, NavList } from '@ttoss/components';
 
 const meta: Meta<typeof NavList> = {
   title: 'Components/NavList',
@@ -295,6 +295,28 @@ export const WithoutIcons: Story = {
     docs: {
       description: {
         story: 'Navigation list without icons. Clean and simple.',
+      },
+    },
+  },
+};
+
+/**
+ * NavList inside a Menu dropdown — the recommended composition for floating navigation panels.
+ * Use `variant="menu"` when placing NavList inside Menu.
+ */
+export const InsideMenu: Story = {
+  render: () => {
+    return (
+      <Menu>
+        <NavList variant="menu" items={itensWithIcons} />
+      </Menu>
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'NavList composed inside a Menu dropdown. This is the recommended pattern for floating navigation — Menu handles positioning and open/close, NavList handles item rendering.',
       },
     },
   },

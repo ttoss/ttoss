@@ -33,9 +33,25 @@ const config: Config = {
     locales: ['en'],
   },
 
+  // Enable Docusaurus Faster with Rspack bundler.
+  future: {
+    faster: {
+      rspackBundler: true,
+    },
+  },
+
   plugins: [
-    isDevelopment ? null : 'docusaurus-plugin-llms',
-    './plugins/carlin/index.mjs',
+    isDevelopment
+      ? null
+      : [
+          'docusaurus-plugin-llms',
+          {
+            generateMarkdownFiles: true,
+            excludeImports: true,
+            removeDuplicateHeadings: true,
+            includeBlog: true,
+          },
+        ],
     './plugins/principles-graph/index.mjs',
     /**
      * Only include these plugins in production. We remove them in development

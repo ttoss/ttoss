@@ -1,5 +1,7 @@
-import { BaseStyles, FlexProps } from '@ttoss/ui';
-import ReactMarkdown, { Options } from 'react-markdown';
+import type { FlexProps } from '@ttoss/ui';
+import { BaseStyles } from '@ttoss/ui';
+import type { Options } from 'react-markdown';
+import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 

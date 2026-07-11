@@ -1,5 +1,4 @@
-import { Drawer } from '@ttoss/components/Drawer';
-import { Search } from '@ttoss/components/Search';
+import { Drawer, Search } from '@ttoss/components';
 import { Box, Button, Flex, Input, Label, Text, useTheme } from '@ttoss/ui';
 import * as React from 'react';
 
@@ -10,11 +9,7 @@ import { useDashboard } from './DashboardProvider';
 import { DashboardSectionDivider } from './DashboardSectionDivider';
 
 export type CardCatalogGroup =
-  | 'sectionDivider'
-  | 'meta'
-  | 'oneclickads'
-  | 'api'
-  | 'oneclickads';
+  'sectionDivider' | 'meta' | 'oneclickads' | 'api' | 'oneclickads';
 
 const getCatalogGroup = (item: CardCatalogItem): CardCatalogGroup => {
   if (item.card.type === 'sectionDivider') return 'sectionDivider';
@@ -44,6 +39,7 @@ const GROUP_LABELS: Record<CardCatalogGroup, string> = {
   oneclickads: 'OneClickAds',
 };
 
+// eslint-disable-next-line max-lines-per-function, complexity
 export const DashboardEditToolbar = () => {
   const { theme } = useTheme();
   const {
@@ -72,6 +68,7 @@ export const DashboardEditToolbar = () => {
 
   React.useEffect(() => {
     if (saveAsNewModalOpen && selectedTemplate) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSaveAsNewTitle(`Clone de ${selectedTemplate.name}`);
     }
   }, [saveAsNewModalOpen, selectedTemplate]);

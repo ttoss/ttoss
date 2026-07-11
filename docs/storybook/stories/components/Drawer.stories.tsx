@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import type { DrawerProps } from '@ttoss/components/Drawer';
-import { Drawer } from '@ttoss/components/Drawer';
+import type { DrawerProps } from '@ttoss/components';
+import { Drawer } from '@ttoss/components';
 import { Button, Flex } from '@ttoss/ui';
 import * as React from 'react';
 

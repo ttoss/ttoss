@@ -3,6 +3,98 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.19.77](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.76...@terezinha-farm/api@0.19.77) (2026-07-03)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.76](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.75...@terezinha-farm/api@0.19.76) (2026-06-28)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.75](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.74...@terezinha-farm/api@0.19.75) (2026-06-27)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## 0.19.74 (2026-06-19)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.73](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.72...@terezinha-farm/api@0.19.73) (2026-06-14)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.72](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.71...@terezinha-farm/api@0.19.72) (2026-06-14)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.71](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.70...@terezinha-farm/api@0.19.71) (2026-06-14)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.70](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.69...@terezinha-farm/api@0.19.70) (2026-06-11)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.69](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.68...@terezinha-farm/api@0.19.69) (2026-06-10)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.68](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.67...@terezinha-farm/api@0.19.68) (2026-06-10)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.67](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.66...@terezinha-farm/api@0.19.67) (2026-06-09)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.66](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.65...@terezinha-farm/api@0.19.66) (2026-06-05)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.65](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.64...@terezinha-farm/api@0.19.65) (2026-06-05)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.64](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.63...@terezinha-farm/api@0.19.64) (2026-06-05)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.63](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.62...@terezinha-farm/api@0.19.63) (2026-06-05)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.62](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.61...@terezinha-farm/api@0.19.62) (2026-06-05)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.61](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.60...@terezinha-farm/api@0.19.61) (2026-06-03)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.60](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.59...@terezinha-farm/api@0.19.60) (2026-06-02)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.59](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.58...@terezinha-farm/api@0.19.59) (2026-05-18)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.58](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.57...@terezinha-farm/api@0.19.58) (2026-05-14)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.57](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.56...@terezinha-farm/api@0.19.57) (2026-05-14)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.56](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.55...@terezinha-farm/api@0.19.56) (2026-05-13)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
+## [0.19.55](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.54...@terezinha-farm/api@0.19.55) (2026-05-13)
+
+**Note:** Version bump only for package @terezinha-farm/api
+
 ## [0.19.54](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.53...@terezinha-farm/api@0.19.54) (2026-05-11)
 
 **Note:** Version bump only for package @terezinha-farm/api

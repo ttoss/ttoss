@@ -1,17 +1,19 @@
 {
   "name": "@ttoss/theme",
-  "version": "2.11.16",
+  "version": "2.12.0",
   "description": "Theme for packages.",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Rayza Oliveira <rayza.ocr@gmail.com>"
-  ],
+  "keywords": [],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/theme"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Rayza Oliveira <rayza.ocr@gmail.com>"
+  ],
+  "sideEffects": true,
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -22,15 +24,11 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "jest --projects tests/unit"
   },
-  "sideEffects": true,
   "dependencies": {
     "deepmerge": "^4.3.1"
-  },
-  "peerDependencies": {
-    "@ttoss/react-icons": "workspace:^"
   },
   "devDependencies": {
     "@iconify/icons-carbon": "^1.2.20",
@@ -39,25 +37,30 @@
     "@ttoss/config": "workspace:^",
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
-    "jest": "^30.3.0",
+    "jest": "^30.4.2",
     "theme-ui": "^0.17.2",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.22.2"
   },
-  "keywords": [],
+  "peerDependencies": {
+    "@ttoss/react-icons": "workspace:^"
+  },
   "publishConfig": {
     "access": "public",
     "exports": {
       ".": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/esm/index.js"
+        "types": "./dist/index.d.mts",
+        "module": "./dist/index.mjs",
+        "browser": "./dist/index.mjs",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
       },
       "./Bruttal": {
-        "types": "./dist/themes/Bruttal/Bruttal.d.ts",
-        "default": "./dist/esm/themes/Bruttal/Bruttal.js"
+        "types": "./dist/themes/Bruttal/Bruttal.d.mts",
+        "default": "./dist/themes/Bruttal/Bruttal.mjs"
       },
       "./Oca": {
-        "types": "./dist/themes/Oca/Oca.d.ts",
-        "default": "./dist/esm/themes/Oca/Oca.js"
+        "types": "./dist/themes/Oca/Oca.d.mts",
+        "default": "./dist/themes/Oca/Oca.mjs"
       }
     },
     "provenance": true

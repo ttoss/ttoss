@@ -1,12 +1,13 @@
 {
   "name": "@ttoss/cloud-auth",
-  "version": "0.13.26",
-  "license": "MIT",
+  "version": "0.14.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/cloud-auth"
   },
+  "license": "MIT",
+  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts"
   },
@@ -14,27 +15,26 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "jest"
   },
-  "sideEffects": false,
   "dependencies": {
     "@ttoss/cloudformation": "workspace:^"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@types/jest": "^30.0.0",
-    "jest": "^30.3.0",
-    "tsup": "^8.5.1",
+    "jest": "^30.4.2",
+    "tsdown": "^0.22.2",
     "typescript": "~6.0.3"
   },
   "publishConfig": {
     "access": "public",
     "exports": {
       ".": {
-        "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.mts"
       }
     },
     "provenance": true

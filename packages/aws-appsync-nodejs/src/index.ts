@@ -2,11 +2,11 @@
  * Implementation of the AppSync client for NodeJS, based on the AWS Amplify
  * documentation: https://docs.amplify.aws/lib/graphqlapi/graphql-from-nodejs/q/platform/js/
  */
-import { AwsCredentialIdentity } from '@aws-sdk/types';
-import { HttpRequest } from '@smithy/protocol-http';
 import { Sha256 } from '@aws-crypto/sha256-js';
-import { SignatureV4 } from '@smithy/signature-v4';
 import { defaultProvider } from '@aws-sdk/credential-provider-node';
+import type { AwsCredentialIdentity } from '@aws-sdk/types';
+import { HttpRequest } from '@smithy/protocol-http';
+import { SignatureV4 } from '@smithy/signature-v4';
 
 export type Config = {
   endpoint: string;
@@ -112,7 +112,18 @@ const query: Query = async (query, variables) => {
 };
 
 export const appSyncClient = {
+  /**
+   * Execute a GraphQL query against the configured AppSync endpoint.
+   */
   query,
+  /**
+   * Execute a GraphQL mutation against the configured AppSync endpoint.
+   *
+   * Behaves identically to {@link query} — AppSync determines the operation
+   * type from the document itself, so this alias exists only to make the
+   * caller's intent explicit (e.g. triggering a subscription).
+   */
+  mutate: query,
   setConfig,
   get config() {
     return _config;

@@ -1,12 +1,15 @@
-import { Markdown } from '@ttoss/components/Markdown';
+/* eslint-disable max-lines */
+import { Markdown } from '@ttoss/components';
 import { Auth, useAuth } from '@ttoss/react-auth-cognito';
 import type { CardCatalogItem, DashboardFilter } from '@ttoss/react-dashboard';
 import { Dashboard, DashboardFilterType } from '@ttoss/react-dashboard';
 import { useFeatureFlag } from '@ttoss/react-feature-flags';
 import { Box, Button, Flex, Stack } from '@ttoss/ui';
 import * as React from 'react';
+import { Link, Route, Routes } from 'react-router-dom';
 
 import type { DashboardTemplate } from '../../../packages/react-dashboard/src/Dashboard';
+import { FarmNotificationPage } from './modules/FarmNotification/FarmNotificationSubscription';
 
 // import { FarmCorrectPagination } from './modules/Farm/FarmCorrectPagination';
 // import { FarmWrongPagination } from './modules/Farm/FarmWrongPagination';
@@ -402,6 +405,7 @@ const templates: DashboardTemplate[] = [
             },
           ],
           labels: [],
+          // eslint-disable-next-line max-lines
           data: {
             meta: {
               total: 2.15,
@@ -1379,6 +1383,7 @@ const filters: DashboardFilter[] = [
   },
 ];
 
+// eslint-disable-next-line max-lines-per-function
 export const App = () => {
   const { isAuthenticated, user, signOut } = useAuth();
 
@@ -1441,6 +1446,7 @@ export const App = () => {
           return t.id === value;
         })
       : undefined;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedTemplate(newSelectedTemplate ?? undefined);
   }, [dashboardFilters, templatesState]);
 
@@ -1494,43 +1500,66 @@ export const App = () => {
 
   return (
     <Stack>
-      <h1>{hi}</h1>
-      <p>{JSON.stringify(user, null, 2)}</p>
-      <Button
-        onClick={() => {
-          signOut();
-        }}
-      >
-        Logout
-      </Button>
-      <Markdown>{markdown}</Markdown>
       <Flex
         sx={{
-          width: '100%',
-          height: '100%',
-          justifyContent: 'center',
-          alignItems: 'center',
+          gap: 'md',
+          paddingX: 'xl',
+          paddingY: 'sm',
+          borderBottom: '1px solid',
+          borderColor: 'border',
         }}
       >
-        <Flex sx={{ width: '60%', height: '100%' }}>
-          <Dashboard
-            selectedTemplate={selectedTemplate}
-            filters={filtersWithTemplateOptions}
-            templates={templatesState}
-            onFiltersChange={setDashboardFilters}
-            loading={loading}
-            editable
-            onSaveLayout={handleSaveLayout}
-            onSaveAsNewTemplate={handleSaveAsNewTemplate}
-            cardCatalog={cardCatalog}
-          />
-        </Flex>
+        <Link to="/">Dashboard</Link>
+        <Link to="/subscriptions">Farm Notifications</Link>
       </Flex>
 
-      <Flex sx={{ paddingX: 'xl' }}>
-        <Box sx={{ flex: 1 }}>{/* <FarmWrongPagination /> */}</Box>
-        <Box sx={{ flex: 1 }}>{/* <FarmCorrectPagination /> */}</Box>
-      </Flex>
+      <Routes>
+        <Route path="/subscriptions" element={<FarmNotificationPage />} />
+        <Route
+          path="/*"
+          element={
+            <Stack>
+              <h1>{hi}</h1>
+              <p>{JSON.stringify(user, null, 2)}</p>
+              <Button
+                onClick={() => {
+                  signOut();
+                }}
+              >
+                Logout
+              </Button>
+              <Markdown>{markdown}</Markdown>
+              <Flex
+                sx={{
+                  width: '100%',
+                  height: '100%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <Flex sx={{ width: '60%', height: '100%' }}>
+                  <Dashboard
+                    selectedTemplate={selectedTemplate}
+                    filters={filtersWithTemplateOptions}
+                    templates={templatesState}
+                    onFiltersChange={setDashboardFilters}
+                    loading={loading}
+                    editable
+                    onSaveLayout={handleSaveLayout}
+                    onSaveAsNewTemplate={handleSaveAsNewTemplate}
+                    cardCatalog={cardCatalog}
+                  />
+                </Flex>
+              </Flex>
+
+              <Flex sx={{ paddingX: 'xl' }}>
+                <Box sx={{ flex: 1 }}>{/* <FarmWrongPagination /> */}</Box>
+                <Box sx={{ flex: 1 }}>{/* <FarmCorrectPagination /> */}</Box>
+              </Flex>
+            </Stack>
+          }
+        />
+      </Routes>
     </Stack>
   );
 };

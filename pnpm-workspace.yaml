@@ -5,3 +5,28 @@ packages:
   - 'fixtures/*'
   - 'packages/*'
   - 'terezinha-farm/*'
+minimumReleaseAge: 1440
+blockExoticSubdeps: true
+allowBuilds:
+  '@swc/core': false
+  aws-sdk: false
+  core-js: false
+  cpu-features: false
+  esbuild: false
+  protobufjs: false
+  ssh2: false
+  unrs-resolver: false
+
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  # https://github.com/storybookjs/storybook/issues/34957
+  # https://github.com/TypeStrong/fork-ts-checker-webpack-plugin/issues/895
+  - chokidar
+  # Docusaurus dependencies
+  - detect-port
+  # Relay/fbjs
+  - ua-parser-js
+  # tsdown, lint-staged, @commitlint/cli, @lerna-lite/core, Docusaurus mermaid path
+  - tinyexec
+  # semver@6.3.1 comes from Babel stack, especially @babel/core
+  - semver

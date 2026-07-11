@@ -4,9 +4,9 @@
 
 import { act, render, waitFor } from '@testing-library/react';
 import * as React from 'react';
-import { GeoVisHoverTooltip } from 'src/react/GeoVisHoverTooltip';
 import { GeoVisProvider, useGeoVis } from 'src/react/GeoVisProvider';
 import type { VisualizationSpec } from 'src/spec/types';
+import { GeoVisHoverTooltip } from 'src/ui/GeoVisHoverTooltip';
 
 type MapMouseHandler = (event: {
   point: { x: number; y: number };
@@ -132,8 +132,7 @@ const triggerMove = (
   features?: ReadonlyArray<{ id?: string | number; layer?: { id: string } }>
 ) => {
   const handler = map.__handlers.get(`mousemove:${layerId}`) as
-    | MapMouseHandler
-    | undefined;
+    MapMouseHandler | undefined;
   if (!handler) throw new Error(`mousemove handler missing for ${layerId}`);
   act(() => {
     handler({ point, features });
@@ -142,8 +141,7 @@ const triggerMove = (
 
 const triggerLeave = (map: MockMap, layerId: string) => {
   const handler = map.__handlers.get(`mouseleave:${layerId}`) as
-    | MapLeaveHandler
-    | undefined;
+    MapLeaveHandler | undefined;
   if (!handler) throw new Error(`mouseleave handler missing for ${layerId}`);
   act(() => {
     handler();
@@ -163,12 +161,15 @@ describe('GeoVisHoverTooltip', () => {
     mockCurrentMap = buildMockMap();
   });
 
-  test('renders nothing when no feature is hovered', () => {
-    render(
-      <GeoVisProvider spec={buildSpec()}>
-        <GeoVisHoverTooltip />
-      </GeoVisProvider>
-    );
+  test('renders nothing when no feature is hovered', async () => {
+    await act(async () => {
+      render(
+        <GeoVisProvider spec={buildSpec()}>
+          <GeoVisHoverTooltip />
+        </GeoVisProvider>
+      );
+    });
+
     expect(document.querySelector('[role="tooltip"]')).toBeNull();
   });
 

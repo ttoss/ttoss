@@ -5,9 +5,7 @@ import type { GeoVisRuntime } from '../runtime/createRuntime';
 import type { PolicyViolation, VisualizationSpec } from '../spec/types';
 
 /**
- * Snapshot of a feature currently hovered on the map. Coordinates are pixel
- * offsets relative to the map canvas, so consumers can render overlays inside
- * the same `position: relative` container that hosts `<GeoVisCanvas>`.
+ * Snapshot of a feature currently hovered on the map.
  */
 export interface MapHoverInfo {
   /** Layer id under the cursor. */
@@ -22,7 +20,11 @@ export interface MapHoverInfo {
    * has no value bound or when the bound value is a non-finite number.
    */
   value: number | string | null;
-  /** Pixel coordinates relative to the map canvas. */
+  /**
+   * Viewport-absolute pixel coordinates of the cursor (`clientX / clientY`
+   * equivalent). Use these directly with `position: fixed` elements such as
+   * `<GeoVisHoverTooltip>`, which renders via a portal into `document.body`.
+   */
   point: { x: number; y: number };
 }
 

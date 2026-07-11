@@ -1,16 +1,17 @@
 {
   "name": "@ttoss/forms",
-  "version": "0.43.21",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
-  ],
+  "version": "0.44.4",
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/forms"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  ],
+  "sideEffects": true,
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
@@ -21,24 +22,17 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "i18n": "ttoss-i18n",
     "test": "jest --projects tests/unit"
   },
-  "sideEffects": true,
   "dependencies": {
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "^5.2.2",
     "react-hook-form": "^7.71.1",
     "react-number-format": "^5.4.4",
     "yup": "^1.7.1",
-    "zod": "^4.3.6"
-  },
-  "peerDependencies": {
-    "@ttoss/components": "workspace:^",
-    "@ttoss/react-i18n": "workspace:^",
-    "@ttoss/ui": "workspace:^",
-    "react": ">=16.8.0"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@ttoss/components": "workspace:^",
@@ -50,26 +44,35 @@
     "@ttoss/ui": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.2.14",
-    "jest": "^30.3.0",
-    "react": "^19.2.4",
+    "jest": "^30.4.2",
+    "react": "^19.2.6",
     "react-error-boundary": "^6.1.0",
-    "tsup": "^8.5.1",
+    "tsdown": "^0.22.2",
     "yup": "^1.7.1"
+  },
+  "peerDependencies": {
+    "@ttoss/components": "workspace:^",
+    "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/ui": "workspace:^",
+    "react": ">=16.8.0"
   },
   "publishConfig": {
     "access": "public",
     "exports": {
       ".": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/esm/index.js"
+        "types": "./dist/index.d.mts",
+        "module": "./dist/index.mjs",
+        "browser": "./dist/index.mjs",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
       },
       "./multistep-form": {
-        "types": "./dist/MultistepForm/index.d.ts",
-        "default": "./dist/esm/MultistepForm/index.js"
+        "types": "./dist/MultistepForm/index.d.mts",
+        "default": "./dist/MultistepForm/index.mjs"
       },
       "./brazil": {
-        "types": "./dist/Brazil/index.d.ts",
-        "default": "./dist/esm/Brazil/index.js"
+        "types": "./dist/Brazil/index.d.mts",
+        "default": "./dist/Brazil/index.mjs"
       }
     },
     "provenance": true

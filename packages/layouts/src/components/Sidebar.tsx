@@ -1,6 +1,7 @@
-import { Drawer } from '@ttoss/components/Drawer';
+import { Drawer } from '@ttoss/components';
 import { Icon } from '@ttoss/react-icons';
-import { Box, BoxProps, Flex, IconButton } from '@ttoss/ui';
+import type { BoxProps } from '@ttoss/ui';
+import { Box, Flex, IconButton } from '@ttoss/ui';
 import * as React from 'react';
 
 import { useIsDesktop } from '../useIsDesktop';
@@ -16,6 +17,7 @@ export const Sidebar = ({
 }: BoxProps & {
   showSidebarButtonInDrawer?: boolean;
   drawerSlot?: React.ReactNode;
+  // eslint-disable-next-line complexity
 }) => {
   const { isSidebarOpen, toggleSidebar } = useLayout();
   const { isDesktop } = useIsDesktop();

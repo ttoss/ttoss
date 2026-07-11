@@ -1,16 +1,16 @@
 {
   "name": "@ttoss/i18n-cli",
-  "version": "0.8.10",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <arantespp@gmail.com> (https://arantespp.com)"
-  ],
+  "version": "0.8.17",
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/i18n-cli"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <arantespp@gmail.com> (https://arantespp.com)"
+  ],
   "bin": {
     "ttoss-i18n": "./bin/cli.js"
   },
@@ -19,7 +19,7 @@
     "dist"
   ],
   "scripts": {
-    "build-config": "tsup-node",
+    "build-config": "tsdown",
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
@@ -31,9 +31,9 @@
     "@ttoss/config": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/minimist": "^1.2.5",
-    "jest": "^30.3.0",
+    "jest": "^30.4.2",
     "ts-node": "^10.9.2",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.22.2"
   },
   "publishConfig": {
     "access": "public",

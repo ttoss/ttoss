@@ -3,6 +3,72 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.12](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@1.1.11...@ttoss/lambda-postgres-query@1.1.12) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/lambda-postgres-query
+
+## [1.1.11](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@1.1.10...@ttoss/lambda-postgres-query@1.1.11) (2026-06-09)
+
+**Note:** Version bump only for package @ttoss/lambda-postgres-query
+
+## [1.1.10](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@1.1.9...@ttoss/lambda-postgres-query@1.1.10) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** improve test coverage and fix peerDependencies ([#1022](https://github.com/ttoss/ttoss/issues/1022)) ([253bd98](https://github.com/ttoss/ttoss/commit/253bd98eaa29f690d4e198ad994b5d1aed4e89c5))
+
+## [1.1.9](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@1.1.8...@ttoss/lambda-postgres-query@1.1.9) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/lambda-postgres-query
+
+## [1.1.8](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@1.1.7...@ttoss/lambda-postgres-query@1.1.8) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/lambda-postgres-query
+
+## [1.1.7](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@1.1.6...@ttoss/lambda-postgres-query@1.1.7) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [1.1.6](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@1.1.5...@ttoss/lambda-postgres-query@1.1.6) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/lambda-postgres-query
+
+## [1.1.5](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@1.1.4...@ttoss/lambda-postgres-query@1.1.5) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/lambda-postgres-query
+
+## [1.1.4](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@1.1.3...@ttoss/lambda-postgres-query@1.1.4) (2026-05-18)
+
+**Note:** Version bump only for package @ttoss/lambda-postgres-query
+
+## [1.1.3](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@1.1.2...@ttoss/lambda-postgres-query@1.1.3) (2026-05-14)
+
+**Note:** Version bump only for package @ttoss/lambda-postgres-query
+
+## [1.1.2](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@1.1.1...@ttoss/lambda-postgres-query@1.1.2) (2026-05-14)
+
+### Bug Fixes
+
+- lambda function name ([cd2fd63](https://github.com/ttoss/ttoss/commit/cd2fd631c40572d2953e4baada349dc24170c607))
+
+## [1.1.1](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@1.1.0...@ttoss/lambda-postgres-query@1.1.1) (2026-05-14)
+
+**Note:** Version bump only for package @ttoss/lambda-postgres-query
+
+# [1.1.0](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@1.0.1...@ttoss/lambda-postgres-query@1.1.0) (2026-05-13)
+
+### Features
+
+- lambda postgres query security ([#996](https://github.com/ttoss/ttoss/issues/996)) ([dff9948](https://github.com/ttoss/ttoss/commit/dff9948e3b9f6d83192b1c26df227dfc7341638d))
+
+## 1.0.1 (2026-05-13)
+
+### Bug Fixes
+
+- **forms:** map field.value to checked prop in FormFieldSwitch ([#981](https://github.com/ttoss/ttoss/issues/981)) ([9581d66](https://github.com/ttoss/ttoss/commit/9581d66470293699f775009698e5cc1d0eaeeee1))
+
 ## [0.6.2](https://github.com/ttoss/ttoss/compare/@ttoss/lambda-postgres-query@0.6.1...@ttoss/lambda-postgres-query@0.6.2) (2026-04-23)
 
 **Note:** Version bump only for package @ttoss/lambda-postgres-query

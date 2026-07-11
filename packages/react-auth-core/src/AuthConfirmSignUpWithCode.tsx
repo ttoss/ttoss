@@ -1,4 +1,4 @@
-import { NotificationCard } from '@ttoss/components/NotificationCard';
+import { NotificationCard } from '@ttoss/components';
 import { Form, FormFieldInput, useForm, yup, yupResolver } from '@ttoss/forms';
 import { useI18n } from '@ttoss/react-i18n';
 

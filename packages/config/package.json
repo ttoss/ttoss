@@ -1,53 +1,58 @@
 {
   "name": "@ttoss/config",
-  "version": "1.37.10",
+  "version": "1.37.17",
   "description": "Default configuration for packages.",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
-  ],
+  "keywords": [],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/config"
   },
-  "main": "dist/index.js",
-  "module": "dist/esm/index.js",
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  ],
+  "sideEffects": false,
+  "type": "module",
+  "main": "dist/index.mjs",
+  "module": "dist/index.mjs",
+  "typings": "dist/index.d.mts",
+  "bin": {
+    "ttoss-sort-package-json": "./bin/sort-package-json"
+  },
   "files": [
+    "bin",
     "dist",
     "tsconfig.json",
     "tsconfig.test.json"
   ],
   "scripts": {
-    "build-config": "tsup-node",
+    "build-config": "tsdown --config-loader tsx && mkdir -p dist/__mocks__ && cp src/__mocks__/emptyModule.cjs dist/__mocks__/emptyModule.cjs",
     "test": "jest --projects tests/unit"
   },
-  "sideEffects": false,
-  "typings": "dist/index.d.ts",
   "dependencies": {
-    "@babel/core": "^7.29.0",
+    "@babel/core": "^7.29.7",
     "@babel/plugin-proposal-decorators": "^7.29.0",
     "@babel/preset-env": "^7.29.2",
     "@babel/preset-react": "^7.28.5",
     "@babel/preset-typescript": "^7.28.5",
     "@commitlint/config-conventional": "^20.5.0",
-    "@formatjs/ts-transformer": "^4.4.3",
+    "@formatjs/ts-transformer": "^4.4.8",
     "babel-plugin-formatjs": "^11.3.2",
     "babel-plugin-transform-import-meta": "^2.3.3",
     "deepmerge": "^4.3.1",
     "identity-obj-proxy": "^3.0.0",
-    "prettier-package-json": "^2.8.0"
+    "sort-package-json": "^3.6.1"
   },
   "devDependencies": {
     "@jest/types": "^30.3.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.12.0",
-    "esbuild": "^0.28.0",
-    "jest": "^30.3.0",
+    "jest": "^30.4.2",
+    "tsdown": "^0.22.2",
     "tsup": "^8.5.1"
   },
-  "keywords": [],
   "publishConfig": {
     "access": "public",
     "provenance": true

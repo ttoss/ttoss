@@ -1,17 +1,22 @@
 {
   "name": "@ttoss/graphql-api-cli",
-  "version": "0.10.10",
+  "version": "0.10.17",
   "description": "A library for building GraphQL APIs types and schema.",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  "keywords": [
+    "api",
+    "graphql"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/graphql-api-cli"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  ],
+  "sideEffects": false,
   "type": "module",
   "bin": {
     "ttoss-graphql-api": "./bin/cli.js"
@@ -20,9 +25,8 @@
     "dist"
   ],
   "scripts": {
-    "build-config": "tsup-node"
+    "build-config": "tsdown"
   },
-  "sideEffects": false,
   "dependencies": {
     "@graphql-codegen/core": "^4.0.2",
     "@graphql-codegen/typescript": "^4.1.6",
@@ -31,17 +35,13 @@
     "graphql": "^16.11.0",
     "npmlog": "^7.0.1"
   },
+  "devDependencies": {
+    "@ttoss/config": "workspace:^",
+    "tsdown": "^0.22.2"
+  },
   "peerDependencies": {
     "graphql": "^16.6.0"
   },
-  "devDependencies": {
-    "@ttoss/config": "workspace:^",
-    "tsup": "^8.5.1"
-  },
-  "keywords": [
-    "api",
-    "graphql"
-  ],
   "publishConfig": {
     "access": "public",
     "provenance": true

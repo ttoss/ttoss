@@ -22,8 +22,8 @@
      */
     "types": ["node"],
     /**
-     * `target` to `es2024` because Node.js 24 supports ES2024 features.
-     * https://node.green/#ES2024
+     * `target` to `es2024` because Node.js 24 supports ES2024 features and
+     * esbuild does not yet support `es2025` as a target.
      */
     "target": "es2024",
     "declaration": true,
@@ -56,9 +56,8 @@
      */
     "strictPropertyInitialization": true,
     /**
-     * Set `ignoreDeprecations` to suppress errors for deprecated options that
-     * are injected by build tools (e.g., tsup injects `baseUrl`).
-     * These deprecations will stop functioning in TypeScript 7.0.
+     * Suppress TypeScript 6.0 deprecation warning for `baseUrl`.
+     * This option will be removed in TypeScript 7.0.
      */
     "ignoreDeprecations": "6.0"
   },

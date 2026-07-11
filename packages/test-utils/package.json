@@ -1,18 +1,23 @@
 {
   "name": "@ttoss/test-utils",
-  "version": "4.2.10",
+  "version": "4.2.18",
   "description": "This package provides a number of utilities and re-exports for testing using Jest, React Testing Library, and Relay.",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  "keywords": [
+    "Jest",
+    "React",
+    "React Testing Library",
+    "Storybook"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/test-utils"
   },
-  "type": "commonjs",
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  ],
   "exports": {
     ".": "./src/index.ts",
     "./faker": "./src/faker.ts",
@@ -23,7 +28,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "jest"
   },
   "dependencies": {
@@ -38,50 +43,44 @@
     "relay-test-utils": "^20.1.1",
     "resize-observer-polyfill": "^1.5.1"
   },
-  "peerDependencies": {
-    "jest": "^30.0.0",
-    "react": ">=16.8.0",
-    "react-dom": ">=16.8.0"
-  },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.12.0",
     "@types/react": "^19.2.14",
-    "jest": "^30.3.0",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
+    "jest": "^30.4.2",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
     "ts-node": "^10.9.2",
-    "tsup": "^8.5.1"
+    "tsdown": "^0.22.2"
   },
-  "keywords": [
-    "Jest",
-    "React",
-    "React Testing Library",
-    "Storybook"
-  ],
+  "peerDependencies": {
+    "jest": "^30.0.0",
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
   "publishConfig": {
     "access": "public",
     "exports": {
       ".": {
-        "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.mts"
       },
       "./faker": {
-        "import": "./dist/esm/faker.js",
-        "require": "./dist/faker.js",
-        "types": "./dist/faker.d.ts"
+        "import": "./dist/faker.mjs",
+        "require": "./dist/faker.cjs",
+        "types": "./dist/faker.d.mts"
       },
       "./react": {
-        "import": "./dist/esm/react.js",
-        "require": "./dist/react.js",
-        "types": "./dist/react.d.ts"
+        "import": "./dist/react.mjs",
+        "require": "./dist/react.cjs",
+        "types": "./dist/react.d.mts"
       },
       "./relay": {
-        "import": "./dist/esm/relay.js",
-        "require": "./dist/relay.js",
-        "types": "./dist/relay.d.ts"
+        "import": "./dist/relay.mjs",
+        "require": "./dist/relay.cjs",
+        "types": "./dist/relay.d.mts"
       }
     },
     "provenance": true

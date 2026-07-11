@@ -3,6 +3,94 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.4](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.8.3...@ttoss/react-notifications@2.8.4) (2026-06-28)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.8.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.8.2...@ttoss/react-notifications@2.8.3) (2026-06-22)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.8.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.8.1...@ttoss/react-notifications@2.8.2) (2026-06-22)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.8.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.8.0...@ttoss/react-notifications@2.8.1) (2026-06-19)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+# [2.8.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.31...@ttoss/react-notifications@2.8.0) (2026-06-19)
+
+### Features
+
+- **react-notifications:** add actions support and render as buttons ([#1080](https://github.com/ttoss/ttoss/issues/1080)) ([0c8c32a](https://github.com/ttoss/ttoss/commit/0c8c32a2c6e35f740955580b72b4d0131c5ad983)), closes [#1079](https://github.com/ttoss/ttoss/issues/1079)
+
+## 2.7.31 (2026-06-15)
+
+### Bug Fixes
+
+- **website:** generate markdown files for llms.txt references ([#1060](https://github.com/ttoss/ttoss/issues/1060)) ([8785a31](https://github.com/ttoss/ttoss/commit/8785a31af53fcd5d3899c08b06de4b9f157c9d8d))
+
+## [2.7.30](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.29...@ttoss/react-notifications@2.7.30) (2026-06-12)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.7.29](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.28...@ttoss/react-notifications@2.7.29) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.7.28](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.27...@ttoss/react-notifications@2.7.28) (2026-06-09)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.7.27](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.26...@ttoss/react-notifications@2.7.27) (2026-06-09)
+
+### Bug Fixes
+
+- add rolldown/vite 8 export conditions and move @ttoss/components to peerDep ([c85efe3](https://github.com/ttoss/ttoss/commit/c85efe3b91f4af2405515bd6fa20227579869583))
+
+## [2.7.26](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.25...@ttoss/react-notifications@2.7.26) (2026-06-09)
+
+### Bug Fixes
+
+- **@ttoss/react-notifications:** move @ttoss/components to dependencies ([#1029](https://github.com/ttoss/ttoss/issues/1029)) ([51c5d30](https://github.com/ttoss/ttoss/commit/51c5d30602c44d3620fab2072969c7b12d6243d0)), closes [#1028](https://github.com/ttoss/ttoss/issues/1028)
+
+## [2.7.25](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.24...@ttoss/react-notifications@2.7.25) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** improve test coverage and fix peerDependencies ([#1022](https://github.com/ttoss/ttoss/issues/1022)) ([253bd98](https://github.com/ttoss/ttoss/commit/253bd98eaa29f690d4e198ad994b5d1aed4e89c5))
+
+## [2.7.24](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.23...@ttoss/react-notifications@2.7.24) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.7.23](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.22...@ttoss/react-notifications@2.7.23) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.7.22](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.21...@ttoss/react-notifications@2.7.22) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [2.7.21](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.20...@ttoss/react-notifications@2.7.21) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.7.20](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.19...@ttoss/react-notifications@2.7.20) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.7.19](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.18...@ttoss/react-notifications@2.7.19) (2026-05-13)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
+## [2.7.18](https://github.com/ttoss/ttoss/compare/@ttoss/react-notifications@2.7.17...@ttoss/react-notifications@2.7.18) (2026-05-13)
+
+**Note:** Version bump only for package @ttoss/react-notifications
+
 ## 2.7.17 (2026-05-11)
 
 **Note:** Version bump only for package @ttoss/react-notifications

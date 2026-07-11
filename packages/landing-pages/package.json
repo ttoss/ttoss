@@ -1,17 +1,21 @@
 {
   "name": "@ttoss/landing-pages",
-  "version": "0.15.16",
+  "version": "0.15.28",
   "description": "Package for creating landing pages.",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  "keywords": [
+    "React",
+    "landing-pages"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/landing-pages"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  ],
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
@@ -20,18 +24,13 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "dev": "pnpm --filter @docs/storybook run dev",
     "test": "echo jest"
   },
   "dependencies": {
     "@iconify/react": "^4.1.1",
     "react-collapse": "^5.1.1"
-  },
-  "peerDependencies": {
-    "@ttoss/react-icons": "workspace:^",
-    "@ttoss/ui": "workspace:^",
-    "react": ">=16.8.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
@@ -41,19 +40,23 @@
     "@types/jest": "^30.0.0",
     "@types/react": "^19.2.14",
     "@types/react-collapse": "^5.0.4",
-    "jest": "^30.3.0",
-    "tsup": "^8.5.1"
+    "jest": "^30.4.2",
+    "tsdown": "^0.22.2"
   },
-  "keywords": [
-    "React",
-    "landing-pages"
-  ],
+  "peerDependencies": {
+    "@ttoss/react-icons": "workspace:^",
+    "@ttoss/ui": "workspace:^",
+    "react": ">=16.8.0"
+  },
   "publishConfig": {
     "access": "public",
     "exports": {
       ".": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/esm/index.js"
+        "types": "./dist/index.d.mts",
+        "module": "./dist/index.mjs",
+        "browser": "./dist/index.mjs",
+        "import": "./dist/index.mjs",
+        "default": "./dist/index.mjs"
       }
     },
     "provenance": true

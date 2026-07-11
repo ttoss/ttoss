@@ -3,6 +3,64 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.55](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.54...@ttoss/cloud-vpc@0.1.55) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/cloud-vpc
+
+## [0.1.54](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.53...@ttoss/cloud-vpc@0.1.54) (2026-06-09)
+
+**Note:** Version bump only for package @ttoss/cloud-vpc
+
+## [0.1.53](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.52...@ttoss/cloud-vpc@0.1.53) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** improve test coverage and fix peerDependencies ([#1022](https://github.com/ttoss/ttoss/issues/1022)) ([253bd98](https://github.com/ttoss/ttoss/commit/253bd98eaa29f690d4e198ad994b5d1aed4e89c5))
+
+## [0.1.52](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.51...@ttoss/cloud-vpc@0.1.52) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/cloud-vpc
+
+## [0.1.51](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.50...@ttoss/cloud-vpc@0.1.51) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/cloud-vpc
+
+## [0.1.50](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.49...@ttoss/cloud-vpc@0.1.50) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [0.1.49](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.48...@ttoss/cloud-vpc@0.1.49) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/cloud-vpc
+
+## [0.1.48](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.47...@ttoss/cloud-vpc@0.1.48) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/cloud-vpc
+
+## [0.1.47](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.46...@ttoss/cloud-vpc@0.1.47) (2026-05-18)
+
+**Note:** Version bump only for package @ttoss/cloud-vpc
+
+## [0.1.46](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.45...@ttoss/cloud-vpc@0.1.46) (2026-05-14)
+
+**Note:** Version bump only for package @ttoss/cloud-vpc
+
+## [0.1.45](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.44...@ttoss/cloud-vpc@0.1.45) (2026-05-14)
+
+**Note:** Version bump only for package @ttoss/cloud-vpc
+
+## [0.1.44](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.43...@ttoss/cloud-vpc@0.1.44) (2026-05-13)
+
+**Note:** Version bump only for package @ttoss/cloud-vpc
+
+## 0.1.43 (2026-05-13)
+
+### Bug Fixes
+
+- **forms:** map field.value to checked prop in FormFieldSwitch ([#981](https://github.com/ttoss/ttoss/issues/981)) ([9581d66](https://github.com/ttoss/ttoss/commit/9581d66470293699f775009698e5cc1d0eaeeee1))
+
 ## [0.1.42](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-vpc@0.1.41...@ttoss/cloud-vpc@0.1.42) (2026-04-23)
 
 **Note:** Version bump only for package @ttoss/cloud-vpc

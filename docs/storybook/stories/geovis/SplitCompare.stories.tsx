@@ -4,13 +4,13 @@ import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
 import * as React from 'react';
 
 import fixture from '../../../../packages/geovis/src/fixtures/split-compare.json';
-import type { LockRef, MapRef } from './_map-story-helpers';
+import type { LockRef, MapRef } from './helpers/map-story-helpers';
 import {
   computeBbox,
   FitBoundsToBbox,
   MapLabel,
   MapSync,
-} from './_map-story-helpers';
+} from './helpers/map-story-helpers';
 
 export default {
   title: 'GeoVis/Fixtures/SplitCompare',

@@ -3,6 +3,97 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.37](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.11.36...@ttoss/layouts@0.11.37) (2026-06-28)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.11.36](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.11.35...@ttoss/layouts@0.11.36) (2026-06-22)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.11.35](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.11.34...@ttoss/layouts@0.11.35) (2026-06-22)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.11.34](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.11.33...@ttoss/layouts@0.11.34) (2026-06-19)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.11.33](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.11.32...@ttoss/layouts@0.11.33) (2026-06-19)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## 0.11.32 (2026-06-15)
+
+### Bug Fixes
+
+- **components:** remove redundant nav element from Menu ([#1076](https://github.com/ttoss/ttoss/issues/1076)) ([52f11c8](https://github.com/ttoss/ttoss/commit/52f11c8468eb6ada306a8930271ac299a43ca9ff))
+- **website:** generate markdown files for llms.txt references ([#1060](https://github.com/ttoss/ttoss/issues/1060)) ([8785a31](https://github.com/ttoss/ttoss/commit/8785a31af53fcd5d3899c08b06de4b9f157c9d8d))
+
+## [0.11.31](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.11.30...@ttoss/layouts@0.11.31) (2026-06-12)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.11.30](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.11.29...@ttoss/layouts@0.11.30) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.11.29](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.11.28...@ttoss/layouts@0.11.29) (2026-06-09)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.11.28](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.11.27...@ttoss/layouts@0.11.28) (2026-06-09)
+
+### Bug Fixes
+
+- add rolldown/vite 8 export conditions and move @ttoss/components to peerDep ([c85efe3](https://github.com/ttoss/ttoss/commit/c85efe3b91f4af2405515bd6fa20227579869583))
+
+## [0.11.27](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.11.26...@ttoss/layouts@0.11.27) (2026-06-09)
+
+### Bug Fixes
+
+- **@ttoss/react-notifications:** move @ttoss/components to dependencies ([#1029](https://github.com/ttoss/ttoss/issues/1029)) ([51c5d30](https://github.com/ttoss/ttoss/commit/51c5d30602c44d3620fab2072969c7b12d6243d0)), closes [#1028](https://github.com/ttoss/ttoss/issues/1028)
+
+## [0.11.26](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.11.25...@ttoss/layouts@0.11.26) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** improve test coverage and fix peerDependencies ([#1022](https://github.com/ttoss/ttoss/issues/1022)) ([253bd98](https://github.com/ttoss/ttoss/commit/253bd98eaa29f690d4e198ad994b5d1aed4e89c5))
+
+## [0.11.25](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.11.24...@ttoss/layouts@0.11.25) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.11.24](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.11.23...@ttoss/layouts@0.11.24) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.11.23](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.11.22...@ttoss/layouts@0.11.23) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [0.11.22](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.11.21...@ttoss/layouts@0.11.22) (2026-06-04)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.11.21](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.11.20...@ttoss/layouts@0.11.21) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.11.20](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.11.19...@ttoss/layouts@0.11.20) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.11.19](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.11.18...@ttoss/layouts@0.11.19) (2026-05-13)
+
+**Note:** Version bump only for package @ttoss/layouts
+
+## [0.11.18](https://github.com/ttoss/ttoss/compare/@ttoss/layouts@0.11.17...@ttoss/layouts@0.11.18) (2026-05-13)
+
+**Note:** Version bump only for package @ttoss/layouts
+
 ## 0.11.17 (2026-05-11)
 
 **Note:** Version bump only for package @ttoss/layouts

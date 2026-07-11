@@ -3,6 +3,64 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.66](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.65...@ttoss/cloud-roles@0.8.66) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/cloud-roles
+
+## [0.8.65](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.64...@ttoss/cloud-roles@0.8.65) (2026-06-09)
+
+**Note:** Version bump only for package @ttoss/cloud-roles
+
+## [0.8.64](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.63...@ttoss/cloud-roles@0.8.64) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** improve test coverage and fix peerDependencies ([#1022](https://github.com/ttoss/ttoss/issues/1022)) ([253bd98](https://github.com/ttoss/ttoss/commit/253bd98eaa29f690d4e198ad994b5d1aed4e89c5))
+
+## [0.8.63](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.62...@ttoss/cloud-roles@0.8.63) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/cloud-roles
+
+## [0.8.62](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.61...@ttoss/cloud-roles@0.8.62) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/cloud-roles
+
+## [0.8.61](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.60...@ttoss/cloud-roles@0.8.61) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [0.8.60](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.59...@ttoss/cloud-roles@0.8.60) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/cloud-roles
+
+## [0.8.59](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.58...@ttoss/cloud-roles@0.8.59) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/cloud-roles
+
+## [0.8.58](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.57...@ttoss/cloud-roles@0.8.58) (2026-05-18)
+
+**Note:** Version bump only for package @ttoss/cloud-roles
+
+## [0.8.57](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.56...@ttoss/cloud-roles@0.8.57) (2026-05-14)
+
+**Note:** Version bump only for package @ttoss/cloud-roles
+
+## [0.8.56](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.55...@ttoss/cloud-roles@0.8.56) (2026-05-14)
+
+**Note:** Version bump only for package @ttoss/cloud-roles
+
+## [0.8.55](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.54...@ttoss/cloud-roles@0.8.55) (2026-05-13)
+
+**Note:** Version bump only for package @ttoss/cloud-roles
+
+## 0.8.54 (2026-05-13)
+
+### Bug Fixes
+
+- **forms:** map field.value to checked prop in FormFieldSwitch ([#981](https://github.com/ttoss/ttoss/issues/981)) ([9581d66](https://github.com/ttoss/ttoss/commit/9581d66470293699f775009698e5cc1d0eaeeee1))
+
 ## [0.8.53](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-roles@0.8.52...@ttoss/cloud-roles@0.8.53) (2026-04-23)
 
 **Note:** Version bump only for package @ttoss/cloud-roles

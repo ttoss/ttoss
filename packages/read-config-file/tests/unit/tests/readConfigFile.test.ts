@@ -1,9 +1,36 @@
+import { randomUUID } from 'node:crypto';
+import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 
 import { readConfigFile, readConfigFileSync } from 'src/index';
 
 const getConfigFilePath = (configName: string) => {
   return path.resolve(__dirname, `../../fixtures/${configName}`);
+};
+
+const createTempTsConfigFile = () => {
+  const tempDir = fs.mkdtempSync(
+    path.join(os.tmpdir(), 'read-config-file-tests-')
+  );
+  return {
+    configFilePath: path.join(tempDir, `config-${randomUUID()}.ts`),
+    tempDir,
+  };
+};
+
+const writeConfigVersion = ({
+  configFilePath,
+  value,
+}: {
+  configFilePath: string;
+  value: string;
+}) => {
+  fs.writeFileSync(
+    configFilePath,
+    `export default { parameters: { foo: '${value}', baz: 'qux' } };`,
+    'utf8'
+  );
 };
 
 test.each([
@@ -63,4 +90,76 @@ test('add options to config function', async () => {
       baz: 'qux2',
     },
   });
+});
+
+test('should reload updated ts config between async reads', async () => {
+  const { configFilePath, tempDir } = createTempTsConfigFile();
+
+  try {
+    writeConfigVersion({ configFilePath, value: 'v1' });
+    const firstConfig = await readConfigFile<{
+      parameters: { foo: string; baz: string };
+    }>({ configFilePath });
+
+    writeConfigVersion({ configFilePath, value: 'v2' });
+    const secondConfig = await readConfigFile<{
+      parameters: { foo: string; baz: string };
+    }>({ configFilePath });
+
+    expect(firstConfig.parameters.foo).toBe('v1');
+    expect(secondConfig.parameters.foo).toBe('v2');
+  } finally {
+    if (fs.existsSync(tempDir)) {
+      fs.rmSync(tempDir, { force: true, recursive: true });
+    }
+  }
+});
+
+test('should reload updated ts config between sync reads', () => {
+  const { configFilePath, tempDir } = createTempTsConfigFile();
+
+  try {
+    writeConfigVersion({ configFilePath, value: 'v1' });
+    const firstConfig = readConfigFileSync<{
+      parameters: { foo: string; baz: string };
+    }>({ configFilePath });
+
+    writeConfigVersion({ configFilePath, value: 'v2' });
+    const secondConfig = readConfigFileSync<{
+      parameters: { foo: string; baz: string };
+    }>({ configFilePath });
+
+    expect(firstConfig.parameters.foo).toBe('v1');
+    expect(secondConfig.parameters.foo).toBe('v2');
+  } finally {
+    if (fs.existsSync(tempDir)) {
+      fs.rmSync(tempDir, { force: true, recursive: true });
+    }
+  }
+});
+
+test('should load ts config when cwd package is type module', () => {
+  const originalCwd = process.cwd();
+  const { configFilePath, tempDir } = createTempTsConfigFile();
+
+  try {
+    fs.writeFileSync(
+      path.join(tempDir, 'package.json'),
+      JSON.stringify({ type: 'module' }),
+      'utf8'
+    );
+    writeConfigVersion({ configFilePath, value: 'v1' });
+
+    process.chdir(tempDir);
+    const config = readConfigFileSync<{
+      parameters: { foo: string; baz: string };
+    }>({ configFilePath });
+
+    expect(config.parameters.foo).toBe('v1');
+  } finally {
+    process.chdir(originalCwd);
+    if (fs.existsSync(tempDir)) {
+      fs.rmSync(tempDir, { force: true, recursive: true });
+    }
+  }
 });

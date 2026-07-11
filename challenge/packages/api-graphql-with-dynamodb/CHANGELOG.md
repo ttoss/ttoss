@@ -3,6 +3,76 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.30](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.2.29...@ttoss-challenge/api-graphql-with-dynamodb@0.2.30) (2026-06-28)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## [0.2.29](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.2.28...@ttoss-challenge/api-graphql-with-dynamodb@0.2.29) (2026-06-27)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## 0.2.28 (2026-06-19)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## [0.2.27](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.2.26...@ttoss-challenge/api-graphql-with-dynamodb@0.2.27) (2026-06-14)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## [0.2.26](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.2.25...@ttoss-challenge/api-graphql-with-dynamodb@0.2.26) (2026-06-14)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## [0.2.25](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.2.24...@ttoss-challenge/api-graphql-with-dynamodb@0.2.25) (2026-06-14)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## [0.2.24](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.2.23...@ttoss-challenge/api-graphql-with-dynamodb@0.2.24) (2026-06-11)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## [0.2.23](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.2.22...@ttoss-challenge/api-graphql-with-dynamodb@0.2.23) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## [0.2.22](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.2.21...@ttoss-challenge/api-graphql-with-dynamodb@0.2.22) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## [0.2.21](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.2.20...@ttoss-challenge/api-graphql-with-dynamodb@0.2.21) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## [0.2.20](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.2.19...@ttoss-challenge/api-graphql-with-dynamodb@0.2.20) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## [0.2.19](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.2.18...@ttoss-challenge/api-graphql-with-dynamodb@0.2.19) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## [0.2.18](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.2.17...@ttoss-challenge/api-graphql-with-dynamodb@0.2.18) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## [0.2.17](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.2.16...@ttoss-challenge/api-graphql-with-dynamodb@0.2.17) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## [0.2.16](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.2.15...@ttoss-challenge/api-graphql-with-dynamodb@0.2.16) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## [0.2.15](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.2.14...@ttoss-challenge/api-graphql-with-dynamodb@0.2.15) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb
+
+## 0.2.14 (2026-05-13)
+
+### Bug Fixes
+
+- **forms:** map field.value to checked prop in FormFieldSwitch ([#981](https://github.com/ttoss/ttoss/issues/981)) ([9581d66](https://github.com/ttoss/ttoss/commit/9581d66470293699f775009698e5cc1d0eaeeee1))
+
 ## [0.2.13](https://github.com/ttoss/ttoss/compare/@ttoss-challenge/api-graphql-with-dynamodb@0.2.12...@ttoss-challenge/api-graphql-with-dynamodb@0.2.13) (2026-04-28)
 
 **Note:** Version bump only for package @ttoss-challenge/api-graphql-with-dynamodb

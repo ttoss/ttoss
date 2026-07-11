@@ -55,6 +55,76 @@ describe('apiCall', () => {
     }
   });
 
+  test('throws with statusText when error response body is not valid JSON', async () => {
+    const { baseUrl, close } = await startRestServer((router) => {
+      router.get('/v1/bad', (ctx) => {
+        ctx.status = 503;
+        ctx.type = 'text/plain';
+        ctx.body = 'Service Unavailable';
+      });
+    });
+
+    let capturedError: Error | undefined;
+
+    try {
+      const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+
+      mcpServer.registerTool(
+        'bad-endpoint',
+        {
+          description: 'Calls an endpoint that returns non-JSON error',
+          inputSchema: {},
+        },
+        async () => {
+          try {
+            await apiCall('GET', '/bad');
+          } catch (error) {
+            capturedError = error as Error;
+          }
+          return { content: [{ type: 'text', text: 'done' }] };
+        }
+      );
+
+      const mcpApp = new App();
+      mcpApp.use(bodyParser());
+      const mcpRouter = createMcpRouter(mcpServer, {
+        apiBaseUrl: `${baseUrl}/v1`,
+      });
+      mcpApp.use(mcpRouter.routes());
+
+      await request(mcpApp.callback())
+        .post('/mcp')
+        .send({
+          jsonrpc: '2.0',
+          method: 'initialize',
+          params: {
+            protocolVersion: '2024-11-05',
+            capabilities: {},
+            clientInfo: { name: 'test-client', version: '1.0.0' },
+          },
+          id: 1,
+        })
+        .set('Content-Type', 'application/json')
+        .set('Accept', MCP_ACCEPT);
+
+      await request(mcpApp.callback())
+        .post('/mcp')
+        .send({
+          jsonrpc: '2.0',
+          method: 'tools/call',
+          params: { name: 'bad-endpoint', arguments: {} },
+          id: 2,
+        })
+        .set('Content-Type', 'application/json')
+        .set('Accept', MCP_ACCEPT);
+
+      expect(capturedError).toBeDefined();
+      expect(capturedError?.message).toMatch(/Service Unavailable|HTTP 503/);
+    } finally {
+      await close();
+    }
+  });
+
   test('normalizes double slash when apiBaseUrl ends with a slash', async () => {
     const { baseUrl, close } = await startRestServer((router) => {
       router.get('/v1/data', (ctx) => {

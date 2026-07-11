@@ -8,10 +8,7 @@ import { SelectFilter } from './Filters/SelectFilter';
 import { TextFilter } from './Filters/TextFilter';
 
 export type DashboardFilterValue =
-  | string
-  | number
-  | boolean
-  | { from: Date; to: Date };
+  string | number | boolean | { from: Date | undefined; to: Date | undefined };
 
 export enum DashboardFilterType {
   TEXT = 'text',

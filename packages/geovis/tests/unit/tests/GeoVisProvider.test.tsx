@@ -58,7 +58,6 @@ jest.mock('src/adapters/maplibre/MapLibreAdapter', () => {
 });
 
 const baseSpec: VisualizationSpec = {
-  id: 'test',
   engine: 'maplibre',
   view: { center: [-46.6, -23.5], zoom: 10 },
   sources: [],
@@ -67,7 +66,12 @@ const baseSpec: VisualizationSpec = {
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockRuntimeSpec = {};
+  mockRuntimeSpec = baseSpec;
+  // Keep mockRuntimeSpec in sync with runtime.update() calls so that
+  // runtime?.spec reflects the latest spec passed to the provider.
+  mockRuntimeUpdate.mockImplementation((spec: VisualizationSpec) => {
+    mockRuntimeSpec = spec;
+  });
 });
 
 describe('GeoVisProvider spec memoization', () => {
@@ -154,7 +158,6 @@ describe('GeoVisProvider policyViolations', () => {
   test('is empty when spec has no metadata', async () => {
     const capturedRef = { current: undefined as PolicyViolation[] | undefined };
     const Consumer = () => {
-      // eslint-disable-next-line react-hooks/immutability
       capturedRef.current = useGeoVis().policyViolations;
       return null;
     };
@@ -181,7 +184,6 @@ describe('GeoVisProvider policyViolations', () => {
     };
     const capturedRef = { current: undefined as PolicyViolation[] | undefined };
     const Consumer = () => {
-      // eslint-disable-next-line react-hooks/immutability
       capturedRef.current = useGeoVis().policyViolations;
       return null;
     };
@@ -200,12 +202,10 @@ describe('GeoVisProvider policyViolations', () => {
   test('uses policy-invalid as fallback reason when invalidReason is absent', async () => {
     const specNoReason: VisualizationSpec = {
       ...baseSpec,
-      id: 'no-reason',
       metadata: { isPolicyInvalid: true },
     };
     const capturedRef = { current: undefined as PolicyViolation[] | undefined };
     const Consumer = () => {
-      // eslint-disable-next-line react-hooks/immutability
       capturedRef.current = useGeoVis().policyViolations;
       return null;
     };
@@ -240,9 +240,9 @@ describe('GeoVisProvider applyPatch updates context spec', () => {
 
     const Consumer = () => {
       const { spec, applyPatch } = useGeoVis();
-      // eslint-disable-next-line react-hooks/immutability
+
       latestSpecRef.current = spec as VisualizationSpec;
-      // eslint-disable-next-line react-hooks/immutability
+
       triggerPatchRef.current = () => {
         applyPatch({
           target: 'layer',
@@ -304,7 +304,6 @@ describe('GeoVisProvider effectiveSpec synchronization', () => {
     const specCaptureRef = { current: baseSpec as VisualizationSpec };
 
     const Consumer = () => {
-      // eslint-disable-next-line react-hooks/immutability
       specCaptureRef.current = useGeoVis().spec as VisualizationSpec;
       return null;
     };
@@ -326,27 +325,25 @@ describe('GeoVisProvider effectiveSpec synchronization', () => {
     await act(async () => {
       render(<Wrapper ref={ref} />);
     });
-    expect(specCaptureRef.current.id).toBe(baseSpec.id);
+    expect(specCaptureRef.current.view?.zoom).toBe(10);
 
     const spec2: VisualizationSpec = {
       ...baseSpec,
-      id: 'spec-v2',
       view: { ...baseSpec.view, zoom: 14 },
     };
     await act(async () => {
       ref.current?.setSpec(spec2);
     });
-    expect(specCaptureRef.current.id).toBe('spec-v2');
+    expect(specCaptureRef.current.view?.zoom).toBe(14);
 
     const spec3: VisualizationSpec = {
       ...baseSpec,
-      id: 'spec-v3',
       view: { ...baseSpec.view, zoom: 8 },
     };
     await act(async () => {
       ref.current?.setSpec(spec3);
     });
-    expect(specCaptureRef.current.id).toBe('spec-v3');
+    expect(specCaptureRef.current.view?.zoom).toBe(8);
   });
 });
 

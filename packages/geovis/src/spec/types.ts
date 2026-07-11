@@ -1,3 +1,4 @@
+import type { HoverTooltipConfig } from '../react/tooltip';
 import type { LegendSpec } from './types.legend';
 
 export * from './types.legend';
@@ -76,17 +77,12 @@ export interface GeoJSONFeatureCollection {
 }
 
 export type GeoJSONObject =
-  | GeoJSONGeometry
-  | GeoJSONFeature
-  | GeoJSONFeatureCollection;
+  GeoJSONGeometry | GeoJSONFeature | GeoJSONFeatureCollection;
 
 export type GeoVisGeometryType =
-  | 'point'
-  | 'line'
-  | 'polygon'
-  | 'raster'
-  | 'symbol'
-  | 'heatmap';
+  'point' | 'line' | 'polygon' | 'raster' | 'symbol' | 'heatmap';
+
+export type MapType = 'choropleth' | 'dotDensity' | 'proportionalCircles';
 
 export interface ViewState {
   center?: LngLat;
@@ -176,6 +172,7 @@ export interface CirclePaint {
   circleRadius?: number;
   circleOpacity?: number;
   circleStrokeColor?: string;
+  circleStrokeOpacity?: number;
   circleStrokeWidth?: number;
 }
 
@@ -216,6 +213,45 @@ export type LayerPaint =
   | HeatmapPaint
   | SymbolPaint;
 
+/**
+ * Proportional symbol configuration that maps the numeric `mapData` value
+ * to `circle-radius` via MapLibre expressions.
+ *
+ * When `mode` is `'continuous'` (default), the radius is linearly interpolated
+ * across the data range. A `sqrt` transform can be applied so that circle
+ * **area** (not radius) is proportional to the value — both the input value
+ * and the data bounds are transformed to sqrt space so output radii stay
+ * within `[minRadius, maxRadius]`.
+ *
+ * When `mode` is `'stepped'`, the data range is split into discrete bins by
+ * `thresholds` and each bin receives a fixed radius. The `sqrt` transform is
+ * **not allowed** in stepped mode.
+ */
+export type SizeBy =
+  | {
+      /** Output radius range in pixels `[minRadius, maxRadius]`. Both must be > 0. */
+      range: [number, number];
+      /** Interpolation mode. Default (or omitted) is `'continuous'`. */
+      mode?: 'continuous';
+      /** Explicit break points. When omitted, thresholds are inherited from the active legend. */
+      thresholds?: number[];
+      /**
+       * Radius transformation. Default: `'linear'`.
+       * Use `'sqrt'` so circle AREA is proportional to the value.
+       */
+      transform?: 'linear' | 'sqrt';
+    }
+  | {
+      /** Output radius range in pixels `[minRadius, maxRadius]`. Both must be > 0. */
+      range: [number, number];
+      /** Stepped mode: each bin receives a fixed radius. */
+      mode: 'stepped';
+      /** Explicit break points. When omitted, thresholds are inherited from the active legend. */
+      thresholds?: number[];
+      /** Only `'linear'` is allowed in stepped mode. */
+      transform?: 'linear';
+    };
+
 export interface VisualizationLayer {
   id: string;
   sourceId: string;
@@ -236,6 +272,67 @@ export interface VisualizationLayer {
    * coming from the dataset (joined via `feature.id` or `mapData.joinKey`).
    */
   mapDataId?: string;
+  /**
+   * Paint applied via MapLibre `setFeatureState({ hover: true })` when the
+   * pointer enters a feature. When present, the adapter adds a companion
+   * line layer (`<id>-hover-outline`) driven by feature-state expressions.
+   */
+  hoverPaint?: { lineColor?: string; lineWidth?: number };
+  /**
+   * Paint applied via MapLibre `setFeatureState({ selected: true })` when a
+   * feature is clicked. When present, the adapter adds a companion line layer
+   * (`<id>-selected-outline`) driven by feature-state expressions.
+   */
+  selectedPaint?: { lineColor?: string; lineWidth?: number };
+  /**
+   * Spec-driven click marker. When present, geovis automatically places a
+   * visual indicator on the clicked feature without requiring a `<GeoVisMarker>`
+   * component. Three rendering modes — see field descriptions.
+   */
+  clickAnchor?: {
+    /**
+     * MapLibre sprite icon name. Renders a feature-state-driven companion
+     * `symbol` layer at the polygon label point.
+     */
+    iconImage?: string;
+    /** Scale factor for the sprite icon. Default: `1`. */
+    iconSize?: number;
+    /**
+     * Accent colour for the built-in SVG pin. Applied when `iconImage` is not
+     * set. Default: `'#3FB1CE'`. For a custom HTML/React element, use
+     * `<GeoVisMarker>` instead.
+     */
+    color?: string;
+    /** Pixel offset `[x, y]` applied to the DOM marker. */
+    offset?: [number, number];
+  };
+  /**
+   * Spec-driven hover tooltip. When present, `<GeoVisProvider>` automatically
+   * renders a `<GeoVisHoverTooltip>` for features hovered on this layer —
+   * without requiring the component to be placed in the tree. Mirrors
+   * `GeoVisHoverTooltipProps` (`render`, `formatValue`, `style`, `offset`,
+   * `emptyValueLabel`, `className`). An empty object (`{}`) opts in to the
+   * default tooltip layout. Typed via a type-only import so the data-only
+   * spec layer keeps no runtime dependency on React.
+   */
+  hoverTooltip?: HoverTooltipConfig;
+  /**
+   * Proportional symbol configuration. When present on a point layer,
+   * `circle-radius` is driven by a data expression instead of a static value.
+   * Ignored on non-point geometries.
+   */
+  sizeBy?: SizeBy;
+  /**
+   * GeoJSON feature property name for direct data access without `mapData`.
+   *
+   * When set (and `mapDataId` is absent), the proportional circles expression
+   * reads values directly from `feature.properties[propertyName]` via MapLibre's
+   * `['get', propertyName]` syntax — no feature-state join needed.
+   *
+   * When `mapDataId` is also set, this field is ignored in favour of the
+   * standard feature-state resolution.
+   */
+  propertyName?: string;
 }
 
 /**
@@ -265,6 +362,18 @@ export interface MapData {
    * Defaults to using `feature.id` when omitted.
    */
   joinKey?: string;
+  /**
+   * Feature-state key name used when applying this dataset via `setFeatureState`.
+   * Defaults to `'value'` for backward compatibility.
+   */
+  stateKey?: string;
+  /**
+   * Visual dimension this dataset drives. When set, the adapter auto-discovers
+   * which dataset provides color vs. size for each layer, eliminating the need
+   * for layer-level `mapDataColor`/`mapDataSize` references.
+   * Two datasets on the same source must use different `dimension` values.
+   */
+  dimension?: 'color' | 'size';
   data: MapDataRow[];
 }
 
@@ -277,13 +386,50 @@ export interface BaseMapSpec {
    * Defaults to `true`.
    */
   visible?: boolean;
+  /**
+   * Controls the visibility of the basemap's text/icon labels (its `symbol`
+   * layers). When `false`, every `symbol` layer is hidden, leaving a clean
+   * geography with no place names, road names, or POI markers.
+   *
+   * @remarks
+   * Like the historical `HideBasemapLabels` pattern, hiding affects **all**
+   * `symbol` layers — including any `symbol` layers you declare in
+   * `spec.layers`. Toggling back to `true` restores the basemap's own label
+   * layers without overriding the visibility you manage on your own layers.
+   *
+   * Defaults to `true`.
+   */
+  labels?: boolean;
+}
+
+/**
+ * Declares one visual perspective of a spec in a multi-view layout.
+ * Each view references a subset of `spec.layers` by id and is intended to be
+ * consumed by layout components that derive per-panel specs and manage view
+ * synchronisation automatically.
+ */
+export interface VisualizationView {
+  /** Unique view identifier. Must match the `viewId` prop of `GeoVisCanvas`. */
+  id: string;
+  /** Human-readable label rendered above the canvas by layout components. */
+  label?: string;
+  /**
+   * Layer ids from `spec.layers` that this view displays.
+   *
+   * @remarks
+   * No runtime validation is performed — IDs that do not match any entry in
+   * `spec.layers` are silently ignored, resulting in an empty render for that
+   * view. Ensure every id listed here corresponds to a layer defined in the
+   * top-level `spec.layers` array.
+   */
+  layers: string[];
 }
 
 export interface VisualizationSpec {
-  id: string;
   title?: string;
   description?: string;
   engine: 'maplibre';
+  mapType?: MapType;
   view?: ViewState;
   basemap?: BaseMapSpec;
   sources: DataSource[];
@@ -303,6 +449,29 @@ export interface VisualizationSpec {
    * future breaking-change release.
    */
   adapterHints?: unknown;
+
+  /**
+   * Visual scale ceiling for proportional symbol rendering.
+   *
+   * Values above `scaleMaxValue` render at the maximum symbol size
+   * (e.g. max circle radius). The tooltip always shows the real feature value.
+   *
+   * When omitted, the adapter computes it from the dataset.
+   */
+  scaleMaxValue?: number;
+
+  /**
+   * Controls whether auto-generated legends are produced for the resolved
+   * mapType. Defaults to true. Has no effect on legends the user supplies
+   * directly via `spec.legends`.
+   */
+  legendEnabled?: boolean;
+
+  /**
+   * Internal marker set by `resolveSpecFromMapType` to prevent double-resolution.
+   * Consumers should not set this field directly.
+   */
+  __resolved?: boolean;
 }
 
 export type GeovisSpec = VisualizationSpec;

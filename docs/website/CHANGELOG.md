@@ -3,6 +3,132 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.12.0](https://github.com/ttoss/ttoss/compare/@docs/website@2.11.2...@docs/website@2.12.0) (2026-06-21)
+
+### Features
+
+- **http-server-mcp:** generic getIdentity<T>, stateless docs, testing guide ([#1095](https://github.com/ttoss/ttoss/issues/1095)) ([18d39d6](https://github.com/ttoss/ttoss/commit/18d39d650b7be3ba80ee75fba8f10c55de20cb22))
+
+## [2.11.2](https://github.com/ttoss/ttoss/compare/@docs/website@2.11.1...@docs/website@2.11.2) (2026-06-18)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.11.1](https://github.com/ttoss/ttoss/compare/@docs/website@2.11.0...@docs/website@2.11.1) (2026-06-16)
+
+**Note:** Version bump only for package @docs/website
+
+# [2.11.0](https://github.com/ttoss/ttoss/compare/@docs/website@2.10.1...@docs/website@2.11.0) (2026-06-15)
+
+### Features
+
+- **oauth-client:** add reusable third-party OAuth client package ([#1074](https://github.com/ttoss/ttoss/issues/1074)) ([11a4ab7](https://github.com/ttoss/ttoss/commit/11a4ab7879571419b31a6f188aafadf4bdc75588))
+
+## [2.10.1](https://github.com/ttoss/ttoss/compare/@docs/website@2.10.0...@docs/website@2.10.1) (2026-06-14)
+
+**Note:** Version bump only for package @docs/website
+
+# [2.10.0](https://github.com/ttoss/ttoss/compare/@docs/website@2.9.2...@docs/website@2.10.0) (2026-06-14)
+
+### Features
+
+- **auth-core:** refresh-token rotation + in-memory OAuth stores ([#1072](https://github.com/ttoss/ttoss/issues/1072)) ([c1a51b1](https://github.com/ttoss/ttoss/commit/c1a51b1fd7e83412e5824708f7106567787613b1)), closes [ttoss/ttoss#1062](https://github.com/ttoss/ttoss/issues/1062)
+
+## [2.9.2](https://github.com/ttoss/ttoss/compare/@docs/website@2.9.1...@docs/website@2.9.2) (2026-06-14)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.9.1](https://github.com/ttoss/ttoss/compare/@docs/website@2.9.0...@docs/website@2.9.1) (2026-06-14)
+
+**Note:** Version bump only for package @docs/website
+
+# [2.9.0](https://github.com/ttoss/ttoss/compare/@docs/website@2.8.1...@docs/website@2.9.0) (2026-06-14)
+
+### Features
+
+- **http-server-mcp:** public MCP methods and RFC 9728 discovery in createMcpRouter ([#1068](https://github.com/ttoss/ttoss/issues/1068)) ([d78a476](https://github.com/ttoss/ttoss/commit/d78a4767400bed67cbe5a1dfef822b76f26366a3)), closes [#1065](https://github.com/ttoss/ttoss/issues/1065)
+
+## [2.8.1](https://github.com/ttoss/ttoss/compare/@docs/website@2.8.0...@docs/website@2.8.1) (2026-06-14)
+
+**Note:** Version bump only for package @docs/website
+
+# [2.8.0](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.27...@docs/website@2.8.0) (2026-06-14)
+
+### Features
+
+- **http-server-auth:** pass ctx to auth callbacks + MCP OAuth guideline ([#1061](https://github.com/ttoss/ttoss/issues/1061)) ([c627241](https://github.com/ttoss/ttoss/commit/c627241748d27d93849cb81569d08e0773a466f3)), closes [#1058](https://github.com/ttoss/ttoss/issues/1058)
+
+## [2.7.27](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.26...@docs/website@2.7.27) (2026-06-14)
+
+### Bug Fixes
+
+- **website:** generate markdown files for llms.txt references ([#1060](https://github.com/ttoss/ttoss/issues/1060)) ([8785a31](https://github.com/ttoss/ttoss/commit/8785a31af53fcd5d3899c08b06de4b9f157c9d8d))
+
+## [2.7.26](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.25...@docs/website@2.7.26) (2026-06-12)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.7.25](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.24...@docs/website@2.7.25) (2026-06-11)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.7.24](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.23...@docs/website@2.7.24) (2026-06-10)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.7.23](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.22...@docs/website@2.7.23) (2026-06-09)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.7.22](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.21...@docs/website@2.7.22) (2026-06-05)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.7.21](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.20...@docs/website@2.7.21) (2026-06-05)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.7.20](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.19...@docs/website@2.7.20) (2026-06-05)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.7.19](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.18...@docs/website@2.7.19) (2026-06-05)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.7.18](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.17...@docs/website@2.7.18) (2026-06-03)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.7.17](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.16...@docs/website@2.7.17) (2026-06-02)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.7.16](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.15...@docs/website@2.7.16) (2026-05-18)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.7.15](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.14...@docs/website@2.7.15) (2026-05-14)
+
+### Bug Fixes
+
+- 999 ([#1000](https://github.com/ttoss/ttoss/issues/1000)) ([800e0ea](https://github.com/ttoss/ttoss/commit/800e0ea903bd831279967853c504d8200d172bd1))
+
+## [2.7.14](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.13...@docs/website@2.7.14) (2026-05-14)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.7.13](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.12...@docs/website@2.7.13) (2026-05-13)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.7.12](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.11...@docs/website@2.7.12) (2026-05-13)
+
+**Note:** Version bump only for package @docs/website
+
+## [2.7.11](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.10...@docs/website@2.7.11) (2026-05-12)
+
+**Note:** Version bump only for package @docs/website
+
 ## [2.7.10](https://github.com/ttoss/ttoss/compare/@docs/website@2.7.9...@docs/website@2.7.10) (2026-05-11)
 
 **Note:** Version bump only for package @docs/website

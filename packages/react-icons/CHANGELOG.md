@@ -3,6 +3,56 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.21](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.7.20...@ttoss/react-icons@0.7.21) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/react-icons
+
+## [0.7.20](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.7.19...@ttoss/react-icons@0.7.20) (2026-06-09)
+
+### Bug Fixes
+
+- add rolldown/vite 8 export conditions and move @ttoss/components to peerDep ([c85efe3](https://github.com/ttoss/ttoss/commit/c85efe3b91f4af2405515bd6fa20227579869583))
+
+## [0.7.19](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.7.18...@ttoss/react-icons@0.7.19) (2026-06-09)
+
+**Note:** Version bump only for package @ttoss/react-icons
+
+## [0.7.18](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.7.17...@ttoss/react-icons@0.7.18) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** improve test coverage and fix peerDependencies ([#1022](https://github.com/ttoss/ttoss/issues/1022)) ([253bd98](https://github.com/ttoss/ttoss/commit/253bd98eaa29f690d4e198ad994b5d1aed4e89c5))
+
+## [0.7.17](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.7.16...@ttoss/react-icons@0.7.17) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/react-icons
+
+## [0.7.16](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.7.15...@ttoss/react-icons@0.7.16) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/react-icons
+
+## [0.7.15](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.7.14...@ttoss/react-icons@0.7.15) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [0.7.14](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.7.13...@ttoss/react-icons@0.7.14) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/react-icons
+
+## [0.7.13](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.7.12...@ttoss/react-icons@0.7.13) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/react-icons
+
+## [0.7.12](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.7.11...@ttoss/react-icons@0.7.12) (2026-05-13)
+
+**Note:** Version bump only for package @ttoss/react-icons
+
+## 0.7.11 (2026-05-13)
+
+**Note:** Version bump only for package @ttoss/react-icons
+
 ## [0.7.10](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.7.9...@ttoss/react-icons@0.7.10) (2026-04-23)
 
 **Note:** Version bump only for package @ttoss/react-icons

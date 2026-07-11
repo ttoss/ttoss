@@ -1,17 +1,18 @@
 {
-  "private": true,
   "name": "@terezinha-farm/postgresdb",
-  "version": "1.3.14",
+  "version": "1.3.24",
+  "private": true,
   "description": "",
+  "keywords": [],
   "type": "module",
   "exports": "./src/index.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "sync": "ttoss-postgresdb sync",
     "pretest": "pnpm run build",
     "test": "jest --projects tests/unit"
   },
-  "types": "dist/index.d.ts",
   "dependencies": {
     "@ttoss/postgresdb": "workspace:^"
   },
@@ -22,8 +23,7 @@
     "@ttoss/test-utils": "workspace:^",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.12.0",
-    "jest": "^30.3.0",
-    "tsup": "^8.5.1"
-  },
-  "keywords": []
+    "jest": "^30.4.2",
+    "tsdown": "^0.22.2"
+  }
 }

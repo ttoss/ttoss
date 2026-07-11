@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import deepmerge from 'deepmerge';
 
 const overwriteMerge = (_: any, sourceArray: any) => {

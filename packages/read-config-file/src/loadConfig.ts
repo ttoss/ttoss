@@ -1,14 +1,23 @@
+import fs from 'node:fs';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 
 import * as esbuild from 'esbuild';
-import importSync from 'import-sync';
+
+const nodeRequire = createRequire(import.meta.url);
 
 export const loadConfig = <T>(entryPoint: string): T | undefined => {
   const lastEntryPointName = entryPoint.split('/').pop();
 
   const filename = lastEntryPointName?.split('.')[0] as string;
 
-  const outfile = path.resolve(process.cwd(), 'out', filename + '.js');
+  const entryFileStats = fs.statSync(entryPoint, { bigint: true });
+  const entryFileVersion = `${entryFileStats.mtimeNs}-${entryFileStats.size}`;
+  const outfile = path.resolve(
+    process.cwd(),
+    'out',
+    `${filename}-${entryFileVersion}.cjs`
+  );
 
   const result = esbuild.buildSync({
     bundle: true,
@@ -33,7 +42,10 @@ export const loadConfig = <T>(entryPoint: string): T | undefined => {
   }
 
   try {
-    const config = importSync(outfile);
+    // Ensure the generated config file is reloaded on subsequent calls.
+    const resolvedOutfile = nodeRequire.resolve(outfile);
+    delete nodeRequire.cache[resolvedOutfile];
+    const config = nodeRequire(resolvedOutfile);
     return (config.default || config.config) as T;
   } catch (error) {
     // eslint-disable-next-line no-console

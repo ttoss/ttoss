@@ -1,5 +1,4 @@
 {
-  "id": "invalid-raw-count-choropleth",
   "title": "Invalid Raw Count Choropleth",
   "description": "Intentionally invalid by cartography policy: choropleth encoded with raw population counts instead of a normalized density. Kigali City has the smallest population (1.1M) but the highest density (1551 hab/km²) — it looks least intense on the left map but most intense on the right.",
   "engine": "maplibre",
@@ -20,7 +19,6 @@
       "geometry": "polygon",
       "visible": true,
       "paint": {
-        "fillOpacity": 0.85,
         "lineColor": "#94a3b8",
         "lineWidth": 0.5
       }

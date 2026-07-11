@@ -3,6 +3,64 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.40](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.4.39...@terezinha-farm/auth@0.4.40) (2026-06-10)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## [0.4.39](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.4.38...@terezinha-farm/auth@0.4.39) (2026-06-10)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## [0.4.38](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.4.37...@terezinha-farm/auth@0.4.38) (2026-06-09)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## [0.4.37](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.4.36...@terezinha-farm/auth@0.4.37) (2026-06-05)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## [0.4.36](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.4.35...@terezinha-farm/auth@0.4.36) (2026-06-05)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## [0.4.35](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.4.34...@terezinha-farm/auth@0.4.35) (2026-06-05)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## [0.4.34](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.4.33...@terezinha-farm/auth@0.4.34) (2026-06-05)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## [0.4.33](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.4.32...@terezinha-farm/auth@0.4.33) (2026-06-03)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## [0.4.32](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.4.31...@terezinha-farm/auth@0.4.32) (2026-06-02)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## [0.4.31](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.4.30...@terezinha-farm/auth@0.4.31) (2026-05-18)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## [0.4.30](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.4.29...@terezinha-farm/auth@0.4.30) (2026-05-14)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## [0.4.29](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.4.28...@terezinha-farm/auth@0.4.29) (2026-05-14)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## [0.4.28](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.4.27...@terezinha-farm/auth@0.4.28) (2026-05-13)
+
+**Note:** Version bump only for package @terezinha-farm/auth
+
+## 0.4.27 (2026-05-13)
+
+### Bug Fixes
+
+- **forms:** map field.value to checked prop in FormFieldSwitch ([#981](https://github.com/ttoss/ttoss/issues/981)) ([9581d66](https://github.com/ttoss/ttoss/commit/9581d66470293699f775009698e5cc1d0eaeeee1))
+
 ## [0.4.26](https://github.com/ttoss/ttoss/compare/@terezinha-farm/auth@0.4.25...@terezinha-farm/auth@0.4.26) (2026-04-23)
 
 **Note:** Version bump only for package @terezinha-farm/auth

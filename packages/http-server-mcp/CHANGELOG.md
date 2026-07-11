@@ -3,6 +3,147 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.21.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.20.0...@ttoss/http-server-mcp@0.21.0) (2026-06-28)
+
+### Features
+
+- **http-server-mcp:** args-aware gate seam in createGatedToolRegistrar ([#1109](https://github.com/ttoss/ttoss/issues/1109)) ([e05edab](https://github.com/ttoss/ttoss/commit/e05edabf451ce12516e04f3d096cf58d6fde1644))
+
+# [0.20.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.19.1...@ttoss/http-server-mcp@0.20.0) (2026-06-28)
+
+### Features
+
+- gated MCP tool registrar, consent enrichment, logoUri prop, token primitives ([#1108](https://github.com/ttoss/ttoss/issues/1108)) ([710fdf8](https://github.com/ttoss/ttoss/commit/710fdf86effd3b2a4c6b22bb07187d3cbaf74bd9))
+
+## [0.19.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.19.0...@ttoss/http-server-mcp@0.19.1) (2026-06-27)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp
+
+# [0.19.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.18.1...@ttoss/http-server-mcp@0.19.0) (2026-06-21)
+
+### Features
+
+- **http-server-mcp:** generic getIdentity<T>, stateless docs, testing guide ([#1095](https://github.com/ttoss/ttoss/issues/1095)) ([18d39d6](https://github.com/ttoss/ttoss/commit/18d39d650b7be3ba80ee75fba8f10c55de20cb22))
+
+## [0.18.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.18.0...@ttoss/http-server-mcp@0.18.1) (2026-06-19)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp
+
+# [0.18.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.17.1...@ttoss/http-server-mcp@0.18.0) (2026-06-19)
+
+### Features
+
+- **http-server-mcp:** support root mounting and fix protected-resource metadata resource URL ([#1091](https://github.com/ttoss/ttoss/issues/1091)) ([4f15511](https://github.com/ttoss/ttoss/commit/4f15511302add005c39c2772de9ecdbd8631995f))
+
+## [0.17.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.17.0...@ttoss/http-server-mcp@0.17.1) (2026-06-19)
+
+### Bug Fixes
+
+- **http-server-auth,http-server-mcp:** accept scopes[] and warn on missing scope claim ([#1090](https://github.com/ttoss/ttoss/issues/1090)) ([2c5427e](https://github.com/ttoss/ttoss/commit/2c5427e034606737b8aaa323b0e66b389148ac0d))
+
+# [0.17.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.16.5...@ttoss/http-server-mcp@0.17.0) (2026-06-19)
+
+### Features
+
+- **http-server-serverless:** add AWS Lambda adapter that populates rawHeaders ([#1089](https://github.com/ttoss/ttoss/issues/1089)) ([f3ee0e9](https://github.com/ttoss/ttoss/commit/f3ee0e9924fec4c58577c705869d85135c2199d7))
+
+## [0.16.5](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.16.4...@ttoss/http-server-mcp@0.16.5) (2026-06-16)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp
+
+## [0.16.4](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.16.3...@ttoss/http-server-mcp@0.16.4) (2026-06-16)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp
+
+## [0.16.3](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.16.2...@ttoss/http-server-mcp@0.16.3) (2026-06-14)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp
+
+## [0.16.2](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.16.1...@ttoss/http-server-mcp@0.16.2) (2026-06-14)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp
+
+## [0.16.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.16.0...@ttoss/http-server-mcp@0.16.1) (2026-06-14)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp
+
+# [0.16.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.15.0...@ttoss/http-server-mcp@0.16.0) (2026-06-14)
+
+### Features
+
+- **http-server-mcp:** public MCP methods and RFC 9728 discovery in createMcpRouter ([#1068](https://github.com/ttoss/ttoss/issues/1068)) ([d78a476](https://github.com/ttoss/ttoss/commit/d78a4767400bed67cbe5a1dfef822b76f26366a3)), closes [#1065](https://github.com/ttoss/ttoss/issues/1065)
+
+# [0.15.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.14.0...@ttoss/http-server-mcp@0.15.0) (2026-06-14)
+
+### Features
+
+- **http-server-mcp:** add OAuth 2.1 Authorization Server primitives for MCP ([#1059](https://github.com/ttoss/ttoss/issues/1059)) ([b350bd1](https://github.com/ttoss/ttoss/commit/b350bd181668dd1b19ad18c2c27831ee0f28dfb9))
+
+# [0.14.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.13.8...@ttoss/http-server-mcp@0.14.0) (2026-06-11)
+
+### Features
+
+- **auth-core, http-server-mcp:** OAuth 2.1 primitives + standalone RFC 9728 discovery middleware ([#1047](https://github.com/ttoss/ttoss/issues/1047)) ([fde1141](https://github.com/ttoss/ttoss/commit/fde114185cbbb83270cdd9f439db63c65111dba5)), closes [#1046](https://github.com/ttoss/ttoss/issues/1046)
+
+## [0.13.8](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.13.7...@ttoss/http-server-mcp@0.13.8) (2026-06-11)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp
+
+## [0.13.7](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.13.6...@ttoss/http-server-mcp@0.13.7) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp
+
+## [0.13.6](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.13.5...@ttoss/http-server-mcp@0.13.6) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp
+
+## [0.13.5](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.13.4...@ttoss/http-server-mcp@0.13.5) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp
+
+## [0.13.4](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.13.3...@ttoss/http-server-mcp@0.13.4) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** improve test coverage and fix peerDependencies ([#1022](https://github.com/ttoss/ttoss/issues/1022)) ([253bd98](https://github.com/ttoss/ttoss/commit/253bd98eaa29f690d4e198ad994b5d1aed4e89c5))
+
+## [0.13.3](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.13.2...@ttoss/http-server-mcp@0.13.3) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp
+
+## [0.13.2](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.13.1...@ttoss/http-server-mcp@0.13.2) (2026-06-05)
+
+### Bug Fixes
+
+- **http-server-mcp:** export McpServer as value to fix TS1362 ([#1018](https://github.com/ttoss/ttoss/issues/1018)) ([#1019](https://github.com/ttoss/ttoss/issues/1019)) ([cd86b89](https://github.com/ttoss/ttoss/commit/cd86b89c47eb2ce828ac24b5dac551d21530090a))
+
+## [0.13.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.13.0...@ttoss/http-server-mcp@0.13.1) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** replace InstanceType<typeof Router> with Router type alias ([2deda45](https://github.com/ttoss/ttoss/commit/2deda45bfb5fd84643f0a23e230e15c263041d8a))
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+# [0.13.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.12.5...@ttoss/http-server-mcp@0.13.0) (2026-06-04)
+
+### Features
+
+- **@ttoss/http-server-mcp:** add OAuth/JWT authentication support ([#1016](https://github.com/ttoss/ttoss/issues/1016)) ([fe29eef](https://github.com/ttoss/ttoss/commit/fe29eef22336df2a577df3a007ddd2d8237b0013))
+
+## [0.12.5](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.12.4...@ttoss/http-server-mcp@0.12.5) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp
+
+## [0.12.4](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.12.3...@ttoss/http-server-mcp@0.12.4) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp
+
+## 0.12.3 (2026-05-13)
+
+### Bug Fixes
+
+- **forms:** map field.value to checked prop in FormFieldSwitch ([#981](https://github.com/ttoss/ttoss/issues/981)) ([9581d66](https://github.com/ttoss/ttoss/commit/9581d66470293699f775009698e5cc1d0eaeeee1))
+
 ## [0.12.2](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.12.1...@ttoss/http-server-mcp@0.12.2) (2026-04-23)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp

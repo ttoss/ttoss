@@ -1,17 +1,29 @@
 import type maplibregl from 'maplibre-gl';
 
+import { PROPORTIONAL_CIRCLES_DEFAULTS } from '../../spec/mapTypeDefaults/proportionalCircles';
 import type {
   CirclePaint,
   FillPaint,
   GeoVisGeometryType,
   HeatmapPaint,
   LinePaint,
+  MapData,
   RasterPaint,
   SymbolPaint,
   VisualizationLayer,
 } from '../../spec/types';
 import type { LegendSpec } from '../../spec/types.legend';
-import { buildFillColorExpression } from './legendTranslation';
+import {
+  buildFillColorExpression,
+  buildProportionalCircleRadiusExpression,
+  buildSizeExpression,
+} from './legendTranslation';
+
+interface BuilderContext {
+  legends?: LegendSpec[];
+  mapData?: MapData[];
+  scaleMaxValue?: number;
+}
 
 interface BaseFields {
   id: string;
@@ -45,8 +57,50 @@ type Builder = (
   base: BaseFields,
   layer: VisualizationLayer,
   paint: VisualizationLayer['paint'],
-  specLegends?: LegendSpec[]
+  ctx?: BuilderContext
 ) => maplibregl.LayerSpecification;
+
+/** Finds a mapData entry matching a predicate, returning its stateKey.
+ *  Returns `undefined` when no entry matches (caller falls through to next fallback).
+ *  Returns `'value'` when an entry matches but omits `stateKey` (default per spec). */
+const findStateKey = (
+  specMapData: MapData[] | undefined,
+  predicate: (m: MapData) => boolean
+): string | undefined => {
+  const match = specMapData?.find(predicate);
+  if (!match) return undefined;
+  return match.stateKey ?? 'value';
+};
+
+/** Resolves the stateKey for a given dimension from the spec's mapData array. */
+const resolveDimensionStateKey = (
+  dimension: 'color' | 'size',
+  sourceId: string,
+  layerMapDataId: string | undefined,
+  specMapData?: MapData[]
+): string => {
+  // Prefer dataset explicitly marked with this dimension, scoped to the layer's source
+  const byDimension = findStateKey(specMapData, (m) => {
+    return m.dimension === dimension && m.mapId === sourceId;
+  });
+  if (byDimension) return byDimension;
+
+  // Fallback: legacy layer.mapDataId (single-dimension, no dimension declared)
+  if (layerMapDataId) {
+    const byId = findStateKey(specMapData, (m) => {
+      return m.mapDataId === layerMapDataId;
+    });
+    if (byId) return byId;
+  }
+
+  // Fallback: any mapData entry for this source (single-dataset scenario)
+  const anyForSource = findStateKey(specMapData, (m) => {
+    return m.mapId === sourceId;
+  });
+  if (anyForSource) return anyForSource;
+
+  return 'value';
+};
 
 const resolveThresholdBreaks = (
   layer: VisualizationLayer,
@@ -59,7 +113,8 @@ const resolveThresholdBreaks = (
     specLegends?.find((item) => {
       return item.id === layer.activeLegendId;
     });
-  if (!legend || legend.colorBy.type !== 'quantitative') return [];
+  if (!legend || !legend.colorBy || legend.colorBy.type !== 'quantitative')
+    return [];
   if (legend.colorBy.scale !== 'threshold') return [];
   return Array.from(
     new Set(
@@ -78,10 +133,16 @@ const resolveThresholdBreaks = (
  * @remarks
  * Exported so runtime update flows can re-apply the same expression after
  * mapData mutations, keeping style and feature-state paths in sync.
+ *
+ * @param layer - The visualization layer.
+ * @param specLegends - Optional legend registry.
+ * @param specMapData - Optional mapData array for stateKey resolution.
+ * @returns A MapLibre expression array, or undefined when not applicable.
  */
 export const resolveLegendFillColorExpression = (
   layer: VisualizationLayer,
-  specLegends?: LegendSpec[]
+  specLegends?: LegendSpec[],
+  specMapData?: MapData[]
 ): unknown[] | undefined => {
   if (layer.geometry !== 'polygon') return undefined;
   if (!layer.activeLegendId) return undefined;
@@ -95,29 +156,42 @@ export const resolveLegendFillColorExpression = (
     });
   if (!activeLegend) return undefined;
 
+  // Resolve stateKey for color dimension
+  const colorStateKey = resolveDimensionStateKey(
+    'color',
+    layer.sourceId,
+    layer.mapDataId,
+    specMapData
+  );
+
   return buildFillColorExpression({
     legend: activeLegend,
     breaks: resolveThresholdBreaks(layer, specLegends),
+    stateKey: colorStateKey,
   });
 };
 
 /** Builds a MapLibre `fill` layer spec from a GeoVis polygon layer. */
-const buildPolygon: Builder = (base, layer, paint, specLegends) => {
+const buildPolygon: Builder = (base, layer, paint, ctx) => {
   const fp = (paint ?? {}) as FillPaint;
-  const legendFillColor = resolveLegendFillColorExpression(layer, specLegends);
+  const legendFillColor = resolveLegendFillColorExpression(
+    layer,
+    ctx?.legends,
+    ctx?.mapData
+  );
   return {
     ...base,
     type: 'fill',
     paint: {
       'fill-color': legendFillColor ?? fp.fillColor ?? '#3b82f6',
-      'fill-opacity': fp.fillOpacity ?? 0.6,
+      'fill-opacity': fp.fillOpacity ?? 1,
       'fill-outline-color': fp.lineColor ?? '#1d4ed8',
     },
   } as maplibregl.LayerSpecification;
 };
 
 /** Builds a MapLibre `line` layer spec from a GeoVis line layer. */
-const buildLine: Builder = (base, _layer, paint) => {
+const buildLine: Builder = (base, _layer, paint, _ctx) => {
   const lp = (paint ?? {}) as LinePaint;
   return {
     ...base,
@@ -131,15 +205,108 @@ const buildLine: Builder = (base, _layer, paint) => {
   } as maplibregl.LayerSpecification;
 };
 
+/** Resolves circle-color from legend or static paint. */
+const resolveCircleColor = (
+  layer: VisualizationLayer,
+  cp: CirclePaint,
+  colorStateKey: string,
+  specLegends?: LegendSpec[]
+): string | unknown => {
+  // An explicit user-provided circleColor always wins over the legend-driven
+  // color-by-value expression — otherwise a custom paint override would be
+  // silently discarded whenever the layer carries an activeLegendId (which
+  // auto-generated mapTypes like proportionalCircles always set).
+  if (cp.circleColor) return cp.circleColor;
+  if (!layer.activeLegendId) return '#3b82f6';
+
+  const activeLegend =
+    layer.legends?.find((l) => {
+      return l.id === layer.activeLegendId;
+    }) ??
+    specLegends?.find((l) => {
+      return l.id === layer.activeLegendId;
+    });
+  if (!activeLegend) return '#3b82f6';
+
+  // A colorless legend (no `colorBy`) resolves no expression; fall back to a
+  // static default so MapLibre still receives a valid `circle-color` and the
+  // layer is never silently dropped.
+  return (
+    buildFillColorExpression({
+      legend: activeLegend,
+      breaks: resolveThresholdBreaks(layer, specLegends),
+      stateKey: colorStateKey,
+    }) ?? '#3b82f6'
+  );
+};
+
+const buildCircleRadius = (
+  layer: VisualizationLayer,
+  sizeStateKey: string,
+  fallbackRadius: number,
+  ctx?: BuilderContext
+): number | unknown => {
+  if (!layer.sizeBy) return fallbackRadius;
+  const smv = ctx?.scaleMaxValue;
+  if (smv != null) {
+    const useGetExpression = !!layer.propertyName && !layer.mapDataId;
+    const stateKey = useGetExpression ? layer.propertyName! : sizeStateKey;
+    return buildProportionalCircleRadiusExpression({
+      sizeBy: layer.sizeBy,
+      scaleMaxValue: smv,
+      zeroRadiusPx: PROPORTIONAL_CIRCLES_DEFAULTS.zeroRadiusPx,
+      stateKey,
+      useGetExpression,
+    });
+  }
+  const legendThresholds = resolveThresholdBreaks(layer, ctx?.legends);
+  const useGet = !!layer.propertyName && !layer.mapDataId;
+  return buildSizeExpression(
+    layer.sizeBy,
+    fallbackRadius,
+    legendThresholds,
+    useGet ? layer.propertyName! : sizeStateKey,
+    useGet
+  );
+};
+
 /** Builds a MapLibre `circle` layer spec from a GeoVis point layer. */
-const buildPoint: Builder = (base, _layer, paint) => {
+const buildPoint: Builder = (base, layer, paint, ctx) => {
   const cp = (paint ?? {}) as CirclePaint;
+  const fallbackRadius = cp.circleRadius ?? 6;
+
+  const colorStateKey = resolveDimensionStateKey(
+    'color',
+    layer.sourceId,
+    layer.mapDataId,
+    ctx?.mapData
+  );
+
+  const sizeStateKey = resolveDimensionStateKey(
+    'size',
+    layer.sourceId,
+    layer.mapDataId,
+    ctx?.mapData
+  );
+
+  const circleColor = resolveCircleColor(
+    layer,
+    cp,
+    colorStateKey,
+    ctx?.legends
+  );
+
   return {
     ...base,
     type: 'circle',
     paint: {
-      'circle-color': cp.circleColor ?? '#3b82f6',
-      'circle-radius': cp.circleRadius ?? 6,
+      'circle-color': circleColor,
+      'circle-radius': buildCircleRadius(
+        layer,
+        sizeStateKey,
+        fallbackRadius,
+        ctx
+      ),
       'circle-opacity': cp.circleOpacity ?? 1,
       'circle-stroke-color': cp.circleStrokeColor ?? '#ffffff',
       'circle-stroke-width': cp.circleStrokeWidth ?? 1,
@@ -148,7 +315,7 @@ const buildPoint: Builder = (base, _layer, paint) => {
 };
 
 /** Builds a MapLibre `heatmap` layer spec from a GeoVis heatmap layer. */
-const buildHeatmap: Builder = (base, _layer, paint) => {
+const buildHeatmap: Builder = (base, _layer, paint, _ctx) => {
   const hp = (paint ?? {}) as HeatmapPaint;
   return {
     ...base,
@@ -163,7 +330,7 @@ const buildHeatmap: Builder = (base, _layer, paint) => {
 };
 
 /** Builds a MapLibre `symbol` layer spec from a GeoVis symbol layer. */
-const buildSymbol: Builder = (base, _layer, paint) => {
+const buildSymbol: Builder = (base, _layer, paint, _ctx) => {
   const sp = (paint ?? {}) as SymbolPaint;
   return {
     ...base,
@@ -186,7 +353,7 @@ const buildSymbol: Builder = (base, _layer, paint) => {
 };
 
 /** Builds a MapLibre `raster` layer spec from a GeoVis raster layer. */
-const buildRaster: Builder = (base, _layer, paint) => {
+const buildRaster: Builder = (base, _layer, paint, _ctx) => {
   const rp = (paint ?? {}) as RasterPaint;
   return {
     ...base,
@@ -228,12 +395,26 @@ export const stripUndefinedPaint = (
  * Translates a `VisualizationLayer` into a MapLibre `LayerSpecification`.
  * Sole translation boundary between the GeoVis layer model and MapLibre.
  * Geometry type dispatches to a dedicated builder via the `builders` map.
+ *
+ * @param layer - The visualization layer to translate.
+ * @param sourceLayer - Optional vector tile source layer name.
+ * @param specLegends - Optional legend registry for choropleth coloring.
+ * @param specMapData - Optional mapData array for stateKey resolution.
+ * @param scaleMaxValue - Optional visual scale ceiling for proportional circles.
+ * @returns A MapLibre LayerSpecification ready for `map.addLayer`.
  */
 export const toMaplibreLayer = (
   layer: VisualizationLayer,
   sourceLayer?: string,
-  specLegends?: LegendSpec[]
+  specLegends?: LegendSpec[],
+  specMapData?: MapData[],
+  scaleMaxValue?: number
 ): maplibregl.LayerSpecification => {
   const base = buildBase(layer, sourceLayer);
-  return builders[layer.geometry](base, layer, layer.paint, specLegends);
+  const ctx: BuilderContext = {
+    legends: specLegends,
+    mapData: specMapData,
+    scaleMaxValue,
+  };
+  return builders[layer.geometry](base, layer, layer.paint, ctx);
 };

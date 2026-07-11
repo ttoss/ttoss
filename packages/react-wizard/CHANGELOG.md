@@ -3,6 +3,92 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.4](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.5.3...@ttoss/react-wizard@0.5.4) (2026-06-28)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.5.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.5.2...@ttoss/react-wizard@0.5.3) (2026-06-22)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.5.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.5.1...@ttoss/react-wizard@0.5.2) (2026-06-22)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.5.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.5.0...@ttoss/react-wizard@0.5.1) (2026-06-19)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+# [0.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.19...@ttoss/react-wizard@0.5.0) (2026-06-19)
+
+### Features
+
+- **react-notifications:** add actions support and render as buttons ([#1080](https://github.com/ttoss/ttoss/issues/1080)) ([0c8c32a](https://github.com/ttoss/ttoss/commit/0c8c32a2c6e35f740955580b72b4d0131c5ad983)), closes [#1079](https://github.com/ttoss/ttoss/issues/1079)
+
+## 0.4.19 (2026-06-15)
+
+### Bug Fixes
+
+- **website:** generate markdown files for llms.txt references ([#1060](https://github.com/ttoss/ttoss/issues/1060)) ([8785a31](https://github.com/ttoss/ttoss/commit/8785a31af53fcd5d3899c08b06de4b9f157c9d8d))
+
+## [0.4.18](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.17...@ttoss/react-wizard@0.4.18) (2026-06-12)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.4.17](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.16...@ttoss/react-wizard@0.4.17) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.4.16](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.15...@ttoss/react-wizard@0.4.16) (2026-06-09)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.4.15](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.14...@ttoss/react-wizard@0.4.15) (2026-06-09)
+
+### Bug Fixes
+
+- add rolldown/vite 8 export conditions and move @ttoss/components to peerDep ([c85efe3](https://github.com/ttoss/ttoss/commit/c85efe3b91f4af2405515bd6fa20227579869583))
+
+## [0.4.14](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.13...@ttoss/react-wizard@0.4.14) (2026-06-09)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.4.13](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.12...@ttoss/react-wizard@0.4.13) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** improve test coverage and fix peerDependencies ([#1022](https://github.com/ttoss/ttoss/issues/1022)) ([253bd98](https://github.com/ttoss/ttoss/commit/253bd98eaa29f690d4e198ad994b5d1aed4e89c5))
+
+## [0.4.12](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.11...@ttoss/react-wizard@0.4.12) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.4.11](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.10...@ttoss/react-wizard@0.4.11) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.4.10](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.9...@ttoss/react-wizard@0.4.10) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [0.4.9](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.8...@ttoss/react-wizard@0.4.9) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.4.8](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.7...@ttoss/react-wizard@0.4.8) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.4.7](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.6...@ttoss/react-wizard@0.4.7) (2026-05-13)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
+## [0.4.6](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.5...@ttoss/react-wizard@0.4.6) (2026-05-13)
+
+**Note:** Version bump only for package @ttoss/react-wizard
+
 ## [0.4.5](https://github.com/ttoss/ttoss/compare/@ttoss/react-wizard@0.4.4...@ttoss/react-wizard@0.4.5) (2026-05-11)
 
 **Note:** Version bump only for package @ttoss/react-wizard

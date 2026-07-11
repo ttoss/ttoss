@@ -3,6 +3,88 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.9.0...@ttoss/auth-core@0.10.0) (2026-06-28)
+
+### Features
+
+- gated MCP tool registrar, consent enrichment, logoUri prop, token primitives ([#1108](https://github.com/ttoss/ttoss/issues/1108)) ([710fdf8](https://github.com/ttoss/ttoss/commit/710fdf86effd3b2a4c6b22bb07187d3cbaf74bd9))
+
+# [0.9.0](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.8.0...@ttoss/auth-core@0.9.0) (2026-06-27)
+
+### Features
+
+- **auth-core:** add opaque access-token store and hash-at-rest verifier ([#1107](https://github.com/ttoss/ttoss/issues/1107)) ([df5a37b](https://github.com/ttoss/ttoss/commit/df5a37b0a516268e952d14bf8c27efa5d43e6e99))
+
+# 0.8.0 (2026-06-19)
+
+### Features
+
+- **auth-core:** add createRedirectConsentOnAuthorize and Postgres consent store ([#1094](https://github.com/ttoss/ttoss/issues/1094)) ([93d4855](https://github.com/ttoss/ttoss/commit/93d4855961a2a6a4ab23f7ce88fb8d95867bd901))
+
+# [0.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.6.2...@ttoss/auth-core@0.7.0) (2026-06-14)
+
+### Features
+
+- **auth-core:** refresh-token rotation + in-memory OAuth stores ([#1072](https://github.com/ttoss/ttoss/issues/1072)) ([c1a51b1](https://github.com/ttoss/ttoss/commit/c1a51b1fd7e83412e5824708f7106567787613b1)), closes [ttoss/ttoss#1062](https://github.com/ttoss/ttoss/issues/1062)
+
+## [0.6.2](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.6.1...@ttoss/auth-core@0.6.2) (2026-06-14)
+
+**Note:** Version bump only for package @ttoss/auth-core
+
+## [0.6.1](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.6.0...@ttoss/auth-core@0.6.1) (2026-06-14)
+
+**Note:** Version bump only for package @ttoss/auth-core
+
+# [0.6.0](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.5.1...@ttoss/auth-core@0.6.0) (2026-06-11)
+
+### Features
+
+- **auth-core:** add OAuth 2.1 authorization-server primitives ([#1045](https://github.com/ttoss/ttoss/issues/1045)) ([7b8e90d](https://github.com/ttoss/ttoss/commit/7b8e90d5d47d9d993279f650c22156be6e4eef43))
+
+## [0.5.1](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.5.0...@ttoss/auth-core@0.5.1) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/auth-core
+
+# [0.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.4.17...@ttoss/auth-core@0.5.0) (2026-06-10)
+
+### Features
+
+- **@ttoss/auth-core:** add JWT, one-time token, and API token primitives; harden password hashing ([#1035](https://github.com/ttoss/ttoss/issues/1035)) ([ae6b5a5](https://github.com/ttoss/ttoss/commit/ae6b5a56ec40b0dae855299703f82df393d36e4f))
+
+## [0.4.17](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.4.16...@ttoss/auth-core@0.4.17) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** improve test coverage and fix peerDependencies ([#1022](https://github.com/ttoss/ttoss/issues/1022)) ([253bd98](https://github.com/ttoss/ttoss/commit/253bd98eaa29f690d4e198ad994b5d1aed4e89c5))
+
+## [0.4.16](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.4.15...@ttoss/auth-core@0.4.16) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/auth-core
+
+## [0.4.15](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.4.14...@ttoss/auth-core@0.4.15) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/auth-core
+
+## [0.4.14](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.4.13...@ttoss/auth-core@0.4.14) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [0.4.13](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.4.12...@ttoss/auth-core@0.4.13) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/auth-core
+
+## [0.4.12](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.4.11...@ttoss/auth-core@0.4.12) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/auth-core
+
+## 0.4.11 (2026-05-13)
+
+### Bug Fixes
+
+- **forms:** map field.value to checked prop in FormFieldSwitch ([#981](https://github.com/ttoss/ttoss/issues/981)) ([9581d66](https://github.com/ttoss/ttoss/commit/9581d66470293699f775009698e5cc1d0eaeeee1))
+
 ## [0.4.10](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.4.9...@ttoss/auth-core@0.4.10) (2026-04-23)
 
 **Note:** Version bump only for package @ttoss/auth-core

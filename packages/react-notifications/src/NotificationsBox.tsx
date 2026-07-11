@@ -1,4 +1,4 @@
-import { NotificationCard } from '@ttoss/components/NotificationCard';
+import { NotificationCard } from '@ttoss/components';
 import { Stack } from '@ttoss/ui';
 
 import { type Notification, useNotifications } from './Provider';
@@ -48,6 +48,7 @@ export const NotificationsBox = (props: {
             type={notification.type}
             title={notification.title}
             message={notification.message}
+            actions={notification.actions}
             onClose={() => {
               if (notification.id) {
                 removeNotification(notification.id);

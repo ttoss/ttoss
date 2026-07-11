@@ -11,6 +11,7 @@ import { ThemeProvider } from '@ttoss/ui';
 import * as React from 'react';
 import ReactDOM from 'react-dom/client';
 import { RelayEnvironmentProvider } from 'react-relay';
+import { BrowserRouter } from 'react-router-dom';
 
 import { App } from './App.tsx';
 import { environment } from './RelayEnvironment.ts';
@@ -31,18 +32,20 @@ configureLogger({
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <FeatureFlagsProvider>
-      <RelayEnvironmentProvider environment={environment}>
-        <ThemeProvider theme={OcaTheme}>
-          <I18nProvider locale="pt-BR" loadLocaleData={loadLocaleData}>
-            <NotificationsProvider>
-              <AuthProvider>
-                <App />
-              </AuthProvider>
-            </NotificationsProvider>
-          </I18nProvider>
-        </ThemeProvider>
-      </RelayEnvironmentProvider>
-    </FeatureFlagsProvider>
+    <BrowserRouter>
+      <FeatureFlagsProvider>
+        <RelayEnvironmentProvider environment={environment}>
+          <ThemeProvider theme={OcaTheme}>
+            <I18nProvider locale="pt-BR" loadLocaleData={loadLocaleData}>
+              <NotificationsProvider>
+                <AuthProvider>
+                  <App />
+                </AuthProvider>
+              </NotificationsProvider>
+            </I18nProvider>
+          </ThemeProvider>
+        </RelayEnvironmentProvider>
+      </FeatureFlagsProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );

@@ -12,7 +12,6 @@ import { readDockerfile } from './readDockerfile';
 import { reportToGitHubPR } from './reportToGitHubPR';
 import { getStackName, setPreDefinedStackName } from './stackName';
 import { deployStaticAppCommand } from './staticApp/command';
-import { deployVercelCommand } from './vercel/command';
 import { deployVMCommand } from './vm/command';
 
 const logPrefix = 'deploy';
@@ -302,7 +301,6 @@ export const deployCommand: CommandModule<
       deployBaseStackCommand,
       deployStaticAppCommand,
       deployCicdCommand,
-      deployVercelCommand,
       deployVMCommand,
     ];
 

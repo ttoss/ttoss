@@ -1,27 +1,32 @@
 {
   "name": "@ttoss/lambda-postgres-query",
-  "version": "0.6.2",
+  "version": "1.1.12",
   "description": "Create a Lambda function that queries a PostgreSQL database.",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  "keywords": [
+    "aws",
+    "cloudformation",
+    "lambda"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/lambda-postgres-query"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  ],
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./cloudformation": "./src/cloudformation.ts"
+    "./cloudformation": "./src/cloudformation/index.ts"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
@@ -36,26 +41,21 @@
     "@types/jest": "^30.0.0",
     "@types/pg": "^8.20.0",
     "aws-sdk-client-mock": "^4.1.0",
-    "jest": "^30.3.0",
-    "tsup": "^8.5.1"
+    "jest": "^30.4.2",
+    "tsdown": "^0.22.2"
   },
-  "keywords": [
-    "aws",
-    "cloudformation",
-    "lambda"
-  ],
   "publishConfig": {
     "access": "public",
     "exports": {
       ".": {
-        "import": "./dist/esm/index.js",
-        "require": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.mts"
       },
       "./cloudformation": {
-        "import": "./dist/esm/cloudformation/index.js",
-        "require": "./dist/cloudformation/index.js",
-        "types": "./dist/cloudformation/index.d.ts"
+        "import": "./dist/cloudformation/index.mjs",
+        "require": "./dist/cloudformation/index.cjs",
+        "types": "./dist/cloudformation/index.d.mts"
       }
     },
     "provenance": true

@@ -25,6 +25,12 @@ export const defaultConfig: Config = {
   moduleDirectories: ['node_modules', '<rootDir>/../..'],
   moduleNameMapper: {
     /**
+     * Redirect .d.mts type declaration files to an empty module so Jest
+     * doesn't try to execute ESM import statements in type-only files
+     * accidentally bundled into dist output.
+     */
+    '\\.d\\.mts$': require.resolve('./__mocks__/emptyModule.cjs'),
+    /**
      * Remove CSS import errors:
      *
      * Jest failed to parse a file. This happens e.g. when your code or its
@@ -32,6 +38,15 @@ export const defaultConfig: Config = {
      * configured to support such syntax.
      */
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+  },
+  /**
+   * Also transform .mjs files with babel-jest so that ESM-only dist outputs
+   * (e.g. @ttoss/config's chunk-*.mjs) are compiled to CJS for Jest's
+   * CommonJS test environment.
+   */
+  transform: {
+    '^.+\\.[jt]sx?$': 'babel-jest',
+    '^.+\\.mjs$': 'babel-jest',
   },
 };
 
@@ -57,7 +72,7 @@ export const jestUnitConfig = configCreator<any>({
   collectCoverage: true,
   collectCoverageFrom: [
     '<rootDir>/../../src/**/*.{ts,tsx,js,jsx}',
-    '!<rootDir>/../../src/**/*.d.ts',
+    '!<rootDir>/../../src/**/*.d',
   ],
   roots: ['<rootDir>'],
 });

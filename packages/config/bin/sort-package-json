@@ -1,0 +1,42 @@
+#!/usr/bin/env node
+
+import fs from 'node:fs';
+import path from 'node:path';
+
+import { sortPackageJson } from 'sort-package-json';
+
+const files = process.argv
+  .slice(2)
+  .filter((filePath) => path.basename(filePath) === 'package.json');
+
+if (files.length === 0) {
+  process.exit(0);
+}
+
+const failedFiles = [];
+
+for (const filePath of files) {
+  try {
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    const packageJson = JSON.parse(fileContent);
+    const sortedPackageJson = sortPackageJson(packageJson);
+    const nextContent = `${JSON.stringify(sortedPackageJson, null, 2)}\n`;
+
+    if (fileContent !== nextContent) {
+      fs.writeFileSync(filePath, nextContent);
+    }
+  } catch (error) {
+    failedFiles.push({
+      error,
+      filePath,
+    });
+  }
+}
+
+if (failedFiles.length > 0) {
+  console.error('Failed to sort package.json files:');
+  for (const { filePath, error } of failedFiles) {
+    console.error(`  - ${filePath}: ${error.message}`);
+  }
+  process.exit(1);
+}

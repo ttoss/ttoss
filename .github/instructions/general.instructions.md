@@ -24,6 +24,10 @@ After completing any code changes, always run the following command to apply lin
 pnpm run -w lint
 ```
 
+Before running this command, stage your intended changes first (`git add ...`).
+This repository runs lint with `lint-staged --diff main`, so unstaged edits are
+not part of the lint input.
+
 This command:
 
 - Applies consistent code formatting across the monorepo

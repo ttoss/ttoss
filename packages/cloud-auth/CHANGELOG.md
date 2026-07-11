@@ -3,6 +3,70 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.14.0](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.39...@ttoss/cloud-auth@0.14.0) (2026-06-10)
+
+### Features
+
+- **cloud-auth:** support OAuth authorization server resources ([#1041](https://github.com/ttoss/ttoss/issues/1041)) ([dd2c3fb](https://github.com/ttoss/ttoss/commit/dd2c3fbed78d99229c754b5a776204dbd0e18617)), closes [#1040](https://github.com/ttoss/ttoss/issues/1040)
+
+## [0.13.39](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.38...@ttoss/cloud-auth@0.13.39) (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
+## [0.13.38](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.37...@ttoss/cloud-auth@0.13.38) (2026-06-09)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
+## [0.13.37](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.36...@ttoss/cloud-auth@0.13.37) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** improve test coverage and fix peerDependencies ([#1022](https://github.com/ttoss/ttoss/issues/1022)) ([253bd98](https://github.com/ttoss/ttoss/commit/253bd98eaa29f690d4e198ad994b5d1aed4e89c5))
+
+## [0.13.36](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.35...@ttoss/cloud-auth@0.13.36) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
+## [0.13.35](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.34...@ttoss/cloud-auth@0.13.35) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
+## [0.13.34](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.33...@ttoss/cloud-auth@0.13.34) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [0.13.33](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.32...@ttoss/cloud-auth@0.13.33) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
+## [0.13.32](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.31...@ttoss/cloud-auth@0.13.32) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
+## [0.13.31](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.30...@ttoss/cloud-auth@0.13.31) (2026-05-18)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
+## [0.13.30](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.29...@ttoss/cloud-auth@0.13.30) (2026-05-14)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
+## [0.13.29](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.28...@ttoss/cloud-auth@0.13.29) (2026-05-14)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
+## [0.13.28](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.27...@ttoss/cloud-auth@0.13.28) (2026-05-13)
+
+**Note:** Version bump only for package @ttoss/cloud-auth
+
+## 0.13.27 (2026-05-13)
+
+### Bug Fixes
+
+- **forms:** map field.value to checked prop in FormFieldSwitch ([#981](https://github.com/ttoss/ttoss/issues/981)) ([9581d66](https://github.com/ttoss/ttoss/commit/9581d66470293699f775009698e5cc1d0eaeeee1))
+
 ## [0.13.26](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.13.25...@ttoss/cloud-auth@0.13.26) (2026-04-23)
 
 **Note:** Version bump only for package @ttoss/cloud-auth

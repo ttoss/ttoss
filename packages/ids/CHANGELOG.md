@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.4.18 (2026-06-10)
+
+**Note:** Version bump only for package @ttoss/ids
+
+## [0.4.17](https://github.com/ttoss/ttoss/compare/@ttoss/ids@0.4.16...@ttoss/ids@0.4.17) (2026-06-05)
+
+### Bug Fixes
+
+- **@ttoss/http-server-mcp:** improve test coverage and fix peerDependencies ([#1022](https://github.com/ttoss/ttoss/issues/1022)) ([253bd98](https://github.com/ttoss/ttoss/commit/253bd98eaa29f690d4e198ad994b5d1aed4e89c5))
+
+## [0.4.16](https://github.com/ttoss/ttoss/compare/@ttoss/ids@0.4.15...@ttoss/ids@0.4.16) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/ids
+
+## [0.4.15](https://github.com/ttoss/ttoss/compare/@ttoss/ids@0.4.14...@ttoss/ids@0.4.15) (2026-06-05)
+
+**Note:** Version bump only for package @ttoss/ids
+
+## [0.4.14](https://github.com/ttoss/ttoss/compare/@ttoss/ids@0.4.13...@ttoss/ids@0.4.14) (2026-06-05)
+
+### Bug Fixes
+
+- update publishConfig.exports for tsdown output format ([#1017](https://github.com/ttoss/ttoss/issues/1017)) ([982c7fc](https://github.com/ttoss/ttoss/commit/982c7fc5d5a40adf3b61a3ebbbef6d649a04d65d))
+
+## [0.4.13](https://github.com/ttoss/ttoss/compare/@ttoss/ids@0.4.12...@ttoss/ids@0.4.13) (2026-06-03)
+
+**Note:** Version bump only for package @ttoss/ids
+
+## [0.4.12](https://github.com/ttoss/ttoss/compare/@ttoss/ids@0.4.11...@ttoss/ids@0.4.12) (2026-06-02)
+
+**Note:** Version bump only for package @ttoss/ids
+
+## 0.4.11 (2026-05-13)
+
+### Bug Fixes
+
+- **forms:** map field.value to checked prop in FormFieldSwitch ([#981](https://github.com/ttoss/ttoss/issues/981)) ([9581d66](https://github.com/ttoss/ttoss/commit/9581d66470293699f775009698e5cc1d0eaeeee1))
+
 ## [0.4.10](https://github.com/ttoss/ttoss/compare/@ttoss/ids@0.4.9...@ttoss/ids@0.4.10) (2026-04-23)
 
 **Note:** Version bump only for package @ttoss/ids

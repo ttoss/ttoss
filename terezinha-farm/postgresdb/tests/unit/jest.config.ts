@@ -6,6 +6,9 @@ const config = jestUnitConfig({
   transformIgnorePatterns: getTransformIgnorePatterns({
     esmModules: ['@ttoss/postgresdb'],
   }),
+  moduleNameMapper: {
+    '^dist/index$': '<rootDir>/../../dist/index.cjs',
+  },
   // coverageThreshold: {
   //   global: {
   //     statements: 96,
