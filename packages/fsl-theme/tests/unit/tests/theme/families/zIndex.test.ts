@@ -1,10 +1,10 @@
 /**
  * Z-Index family validation tests.
  *
- * @see /docs/website/docs/design/01-design-system/02-design-tokens/02-families/z-index.md#validation
+ * @see /docs/website/docs/design/design-system/design-tokens/families/z-index.md#validation
  */
 
-import { themeAltFlatToTest, themeFlatToTest } from '../../../helpers/theme';
+import { themeFlatToTest } from '../../../fixtures/theme';
 
 // ---------------------------------------------------------------------------
 // Test bundles — extend when new theme bundles are added
@@ -13,8 +13,7 @@ import { themeAltFlatToTest, themeFlatToTest } from '../../../helpers/theme';
 const bundleEntries: ReadonlyArray<{
   label: string;
   base: Record<string, string | number>;
-  alt?: Record<string, string | number>;
-}> = [{ label: 'default', base: themeFlatToTest, alt: themeAltFlatToTest }];
+}> = [{ label: 'default', base: themeFlatToTest }];
 
 // ---------------------------------------------------------------------------
 // Helpers — resolve numeric z-index values from flat token maps
@@ -40,36 +39,13 @@ const extractSemanticLayers = (tokens: Record<string, string | number>) => {
 // Error tests — layer order contracts that must never be violated
 // ---------------------------------------------------------------------------
 
-describe.each(bundleEntries)('Z-Index errors — $label', ({ base, alt }) => {
-  const modes = [
-    { mode: 'base', tokens: base },
-    ...(alt !== undefined ? [{ mode: 'alt', tokens: alt }] : []),
-  ];
-
-  // Core errors tested against base only — alternate mode does not override core tokens.
-
-  // Error #1: core z-index order breaks — level.0 >= level.1, level.1 >= level.2, level.2 >= level.3, level.3 >= level.4
-  test('core: level.0 < level.1', () => {
+describe.each(bundleEntries)('Z-Index errors — $label', ({ base }) => {
+  // Error #1: core level order — any level.N >= level.N+1 is a violation
+  test('core: levels are strictly increasing', () => {
     const levels = extractCoreLevels(base);
-    expect(levels[0]).toBeLessThan(levels[1]);
-  });
-
-  // Error #1
-  test('core: level.1 < level.2', () => {
-    const levels = extractCoreLevels(base);
-    expect(levels[1]).toBeLessThan(levels[2]);
-  });
-
-  // Error #1
-  test('core: level.2 < level.3', () => {
-    const levels = extractCoreLevels(base);
-    expect(levels[2]).toBeLessThan(levels[3]);
-  });
-
-  // Error #1
-  test('core: level.3 < level.4', () => {
-    const levels = extractCoreLevels(base);
-    expect(levels[3]).toBeLessThan(levels[4]);
+    for (let i = 0; i < levels.length - 1; i++) {
+      expect(levels[i]).toBeLessThan(levels[i + 1]);
+    }
   });
 
   // Error #2: core.zIndex.level.0 resolves below 0
@@ -78,30 +54,13 @@ describe.each(bundleEntries)('Z-Index errors — $label', ({ base, alt }) => {
     expect(levels[0]).toBeGreaterThanOrEqual(0);
   });
 
-  describe.each(modes)('$mode mode', ({ tokens }) => {
-    // Error #3: semantic layer order breaks — z.layer.base >= z.layer.sticky, sticky >= overlay, overlay >= blocking, blocking >= transient
-    test('semantic: base < sticky', () => {
-      const layers = extractSemanticLayers(tokens);
-      expect(layers.base).toBeLessThan(layers.sticky);
-    });
-
-    // Error #3
-    test('semantic: sticky < overlay', () => {
-      const layers = extractSemanticLayers(tokens);
-      expect(layers.sticky).toBeLessThan(layers.overlay);
-    });
-
-    // Error #3
-    test('semantic: overlay < blocking', () => {
-      const layers = extractSemanticLayers(tokens);
-      expect(layers.overlay).toBeLessThan(layers.blocking);
-    });
-
-    // Error #3
-    test('semantic: blocking < transient', () => {
-      const layers = extractSemanticLayers(tokens);
-      expect(layers.blocking).toBeLessThan(layers.transient);
-    });
+  // Error #3: semantic layer order — darkAlternate does not override semantic.zIndex
+  test('semantic: layers are strictly increasing', () => {
+    const layers = extractSemanticLayers(base);
+    expect(layers.base).toBeLessThan(layers.sticky);
+    expect(layers.sticky).toBeLessThan(layers.overlay);
+    expect(layers.overlay).toBeLessThan(layers.blocking);
+    expect(layers.blocking).toBeLessThan(layers.transient);
   });
 });
 

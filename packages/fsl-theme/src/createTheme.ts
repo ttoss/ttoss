@@ -1,5 +1,6 @@
 import { baseTheme, darkAlternate } from './baseTheme';
-import { deepMerge, validateRefs } from './roots/helpers';
+import { deepMerge } from './roots/helpers';
+import { validateRefs } from './roots/validateRefs';
 import type {
   DeepPartial,
   ModeOverride,

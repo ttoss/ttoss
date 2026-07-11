@@ -1,10 +1,10 @@
 /**
  * Breakpoints family validation tests.
  *
- * @see /docs/website/docs/design/01-design-system/02-design-tokens/02-families/breakpoints.md#validation
+ * @see /docs/website/docs/design/design-system/design-tokens/families/breakpoints.md#validation
  */
 
-import { themeAltFlatToTest, themeFlatToTest } from '../../../helpers/theme';
+import { themeFlatToTest } from '../../../fixtures/theme';
 
 // ---------------------------------------------------------------------------
 // Validation logic — implements the rules from the doc's Validation section
@@ -226,19 +226,7 @@ describe('validateBreakpoints — production bundles', () => {
       expect(result.warnings).toEqual([]);
     });
 
-    if (themeAltFlatToTest) {
-      test('alternate mode: no errors', () => {
-        // Error #1, Error #2
-        const result = validateBreakpoints(breakpoints);
-        expect(result.errors).toEqual([]);
-        expect(result.valid).toBe(true);
-      });
-
-      test('alternate mode: no warnings', () => {
-        // Warning #1, Warning #2, Warning #3, Warning #4
-        const result = validateBreakpoints(breakpoints);
-        expect(result.warnings).toEqual([]);
-      });
-    }
+    // Note: alternate mode tests are omitted — breakpoints are core tokens,
+    // invariant across modes. The base and alternate inputs are identical.
   });
 });

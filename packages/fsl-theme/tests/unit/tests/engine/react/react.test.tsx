@@ -18,7 +18,7 @@ import {
   useTokens,
 } from '../../../../../src/react';
 import { DATA_MODE_ATTR, DATA_THEME_ATTR } from '../../../../../src/runtime';
-import { clearDom, matchMediaMockImpl } from '../../../helpers/dom';
+import { clearDom, matchMediaMockImpl } from '../../../fixtures/dom';
 
 // jsdom does not implement matchMedia reliably — provide a stable light-mode mock
 // so all tests that create a ThemeProvider (which internally creates a runtime) are

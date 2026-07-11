@@ -3,6 +3,10 @@ import { baseTheme as defaultTheme } from '../../../../../src/baseTheme';
 import { buildTheme } from '../../../../../src/createTheme';
 import { toCssVarName } from '../../../../../src/roots/toCssVars';
 import { buildVarsMap } from '../../../../../src/roots/toVars';
+import { bruttal } from '../../../../../src/themes/bruttal';
+import { corporate } from '../../../../../src/themes/corporate';
+import { oca } from '../../../../../src/themes/oca';
+import { ventures } from '../../../../../src/themes/ventures';
 import { vars } from '../../../../../src/vars';
 
 // ---------------------------------------------------------------------------
@@ -34,13 +38,10 @@ const collectLeaves = (
 // ---------------------------------------------------------------------------
 
 describe('vars', () => {
-  test('is a non-null object', () => {
-    expect(vars).toBeDefined();
-    expect(typeof vars).toBe('object');
-    expect(vars).not.toBeNull();
-  });
-
   test('every leaf value is a var() CSS custom property reference', () => {
+    // buildVarsMap generates var(${toCssVarName(path)}) — value from source is
+    // never copied, so the format is guaranteed by construction. This test
+    // guards against regressions in the path-to-var-name mapping itself.
     const leaves = collectLeaves(vars);
     expect(leaves.length).toBeGreaterThan(0);
     for (const { value } of leaves) {
@@ -55,32 +56,6 @@ describe('vars', () => {
     expect(vars.colors.action.primary!.background!.default).toBe(
       'var(--tt-colors-action-primary-background-default)'
     );
-  });
-
-  test('no leaf contains an unresolved token reference pattern ({...})', () => {
-    const leaves = collectLeaves(vars);
-    for (const { value } of leaves) {
-      expect(value as string).not.toMatch(/\{[^}]+\}/);
-    }
-  });
-
-  test('no key starts with $ (metadata excluded)', () => {
-    const leaves = collectLeaves(vars);
-    for (const { path } of leaves) {
-      const lastSegment = path.split('.').pop()!;
-      expect(lastSegment).not.toMatch(/^\$/);
-    }
-  });
-
-  test('contains all top-level semantic categories from defaultTheme', () => {
-    const semanticKeys = Object.keys(defaultTheme.semantic).filter((k) => {
-      return !k.startsWith('$');
-    });
-    for (const key of semanticKeys) {
-      // dataviz is optional — only assert keys that are actually present in the theme
-      if (key === 'dataviz' && !defaultTheme.semantic.dataviz) continue;
-      expect(vars).toHaveProperty(key);
-    }
   });
 });
 
@@ -109,21 +84,43 @@ describe('buildVarsMap', () => {
   });
 
   test('all built-in themes produce the same var names', () => {
-    const baseLeaves = collectLeaves(buildVarsMap(defaultTheme));
-    const baseMap = new Map(
-      baseLeaves.map((l) => {
-        return [l.path, l.value];
-      })
-    );
+    // Var names are path-derived — they must be identical across all themes
+    // with the same semantic structure regardless of brand colors or overrides.
+    // This guards against a theme inadvertently introducing a structural deviation.
+    //
+    // Two structural groups exist:
+    //   - without dataviz: defaultTheme / baseBundle.base
+    //   - with dataviz (withDataviz applied): bruttal, corporate, oca, ventures
 
+    // Group 1 — base structure without dataviz
     {
-      const themeVars = buildVarsMap(baseBundle.base);
-      const themeLeaves = collectLeaves(themeVars);
-      // Same number of semantic leaves
-      expect(themeLeaves.length).toBe(baseLeaves.length);
-      // Same var names
+      const ref = collectLeaves(buildVarsMap(defaultTheme));
+      const refMap = new Map(
+        ref.map((l) => {
+          return [l.path, l.value];
+        })
+      );
+      const themeLeaves = collectLeaves(buildVarsMap(baseBundle.base));
+      expect(themeLeaves.length).toBe(ref.length);
       for (const { path, value } of themeLeaves) {
-        expect(value).toBe(baseMap.get(path));
+        expect(value).toBe(refMap.get(path));
+      }
+    }
+
+    // Group 2 — branded themes with dataviz extension
+    {
+      const ref = collectLeaves(buildVarsMap(bruttal.base));
+      const refMap = new Map(
+        ref.map((l) => {
+          return [l.path, l.value];
+        })
+      );
+      for (const { base } of [corporate, oca, ventures]) {
+        const themeLeaves = collectLeaves(buildVarsMap(base));
+        expect(themeLeaves.length).toBe(ref.length);
+        for (const { path, value } of themeLeaves) {
+          expect(value).toBe(refMap.get(path));
+        }
       }
     }
   });

@@ -14,7 +14,7 @@ ThemeTokens
 action.primary.background.default: '{core.colors.brand.500}'
 ```
 
-A `semantic` value holding a raw value (not a `{ref}`) is an audited exception — see [Token Model §8 — RawValue inventory](../../docs/website/docs/design/01-design-system/02-design-tokens/model.md#8-rawvalue-exceptions-are-rare-intentional-and-registered).
+A `semantic` value holding a raw value (not a `{ref}`) is an audited exception — see [Token Model §8 — RawValue inventory](../../docs/website/docs/design/design-system/design-tokens/model.md#8-rawvalue-exceptions-are-rare-intentional-and-registered).
 
 ---
 
@@ -143,7 +143,7 @@ User-facing integration: see [README — Next.js (SSR)](./README.md#nextjs-ssr).
 
 ## Naming rules
 
-Each family owns its semantic grammar — see `Types.ts` for the contract and the family doc (e.g. [`colors.md`](../../docs/website/docs/design/01-design-system/02-design-tokens/02-families/colors.md)) for the full path syntax.
+Each family owns its semantic grammar — see `Types.ts` for the contract and the family doc (e.g. [`colors.md`](../../docs/website/docs/design/design-system/design-tokens/families/colors.md)) for the full path syntax.
 
 Forbidden in `semantic` names across all families:
 
@@ -172,7 +172,7 @@ Every selectable `semantic` leaf carries JSDoc that closes a _selection_ decisio
 - **Role, not rendering.** What the token _is for_ (`raised surface depth`), never what it _looks like_ (`soft grey shadow`). Renderings change per mode; the role is the invariant.
 - **Discriminator, not symptom.** Cite the question the reader is asking _before_ deciding (`element accepts dropped items`), not what they would observe _after_ (`highlighted drag state`).
 - **Nearest sibling only.** Disambiguate against the _one_ token most likely to be confused, not a list. No competing sibling → omit the line.
-- **Vocabulary borrowed, not invented.** Use the terms the family spec ([`02-families/<family>.md`](../../docs/website/docs/design/01-design-system/02-design-tokens/02-families/)) already defines for that family's axes — `{ux}` and `{role}` for colors, `control`/`surface` for borders/radii/spacing, level numbers for elevation, and so on. Cross-family concepts use FSL Lexicon names (Entity Kind, Structural Role, Evaluation). Forbidden filler: `typically`, `recommended`, `general-purpose`, `flexible`, `in most cases`.
+- **Vocabulary borrowed, not invented.** Use the terms the family spec ([`families/<family>.md`](../../docs/website/docs/design/design-system/design-tokens/families/)) already defines for that family's axes — `{ux}` and `{role}` for colors, `control`/`surface` for borders/radii/spacing, level numbers for elevation, and so on. Cross-family concepts use FSL Lexicon names (Entity Kind, Structural Role, Evaluation). Forbidden filler: `typically`, `recommended`, `general-purpose`, `flexible`, `in most cases`.
 - **One decision per line.** Comma-clause exceptions ("…, except when…") are separate leaves — promote, don't bury.
 
 **Audit before commit.** Could a sibling's JSDoc be swapped onto this leaf without losing accuracy? If yes, re-pick words until only this leaf could carry them.
@@ -206,14 +206,14 @@ Every change touches some subset of these axes. Pick the subset by change kind; 
 | **Default values** (`baseTheme.ts`)                     | Add the value. Mode-sensitive entries also go into `darkAlternate.semantic` (core never).                                                                                               |
 | **CSS naming** (`tokenRegistry.ts`)                     | Add only if a new prefix is needed. More-specific prefixes ordered before less-specific siblings.                                                                                       |
 | **Tests** (`tests/unit/tests/theme/families/*.test.ts`) | Family assertions. Add a Warning test for new ramps/groups with ordering or depth invariants.                                                                                           |
-| **Family doc** (`docs/.../02-families/*.md`)            | Table + example. Use `elevation.md` as a structural template for new families.                                                                                                          |
+| **Family doc** (`docs/.../families/*.md`)               | Table + example. Use `elevation.md` as a structural template for new families.                                                                                                          |
 | **CHANGELOG**                                           | Only on breaking changes. BREAKING entry with before/after token paths.                                                                                                                 |
 
 **Change kinds** (the span over the axes above):
 
 - **Additive within an existing path** (new color step, new spacing step) — Type + Values + Tests + Doc.
 - **New sub-tree or new family** (`core.elevation.emphatic?`, dataviz) — add a CSS-naming entry; mark the sub-tree `optional?` so existing themes still satisfy `ThemeTokens`.
-- **Breaking** (rename, restructure, remove) — all axes + CHANGELOG. Run `grep -r 'old.path'` first to assess blast radius (consumers may reference CSS vars directly). Semantic renames follow the deprecation window in [Governance — Deprecation](../../docs/website/docs/design/01-design-system/02-design-tokens/governance.md#deprecation): keep the old name `optional?` with `/** @deprecated Use newPath instead */`, add the new name as required in the same release, remove the old name only in the next major. Core-path renames change the emitted CSS var name — public breaking, no soft path.
+- **Breaking** (rename, restructure, remove) — all axes + CHANGELOG. Run `grep -r 'old.path'` first to assess blast radius (consumers may reference CSS vars directly). Semantic renames follow the deprecation window in [Governance — Deprecation](../../docs/website/docs/design/design-system/design-tokens/governance.md#deprecation): keep the old name `optional?` with `/** @deprecated Use newPath instead */`, add the new name as required in the same release, remove the old name only in the next major. Core-path renames change the emitted CSS var name — public breaking, no soft path.
 
 ---
 
@@ -260,7 +260,7 @@ Tags: colors, semantic-grammar, fsl-projection, ux-axis
 Decision: `semantic.colors.{ux}.{role}.{dimension}.{state}` is a normative FSL §17.1 projection: `ux` maps to 5 names (`action | input | navigation | feedback | informational`), `informational` collapsing `Collection | Overlay | Structure`; `Selection` → `input`; `Disclosure` → `navigation`; contract in `colors.md`.
 Rejected: 1:1 mirror of all 9 Entity Kinds — triples surface today for hypothetical future divergence (violates model.md §6 "no parallel vocabulary"); rename `informational` to `surface` — `surface` is already a Structural Role in the FSL Lexicon, creates cross-dimension name collision.
 Cost: token names ≠ FSL term names by construction; readers crossing from FSL docs to token docs need the projection table once.
-Anchors: `src/Types.ts` → `SemanticColors`, `docs/website/docs/design/01-design-system/02-design-tokens/model.md#semantic-color-grammar--fsl-projection`, `docs/website/docs/design/01-design-system/02-design-tokens/02-families/colors.md#fsl-entity-kind-mapping`.
+Anchors: `src/Types.ts` → `SemanticColors`, `docs/website/docs/design/design-system/design-tokens/model.md#semantic-color-grammar--fsl-projection`, `docs/website/docs/design/design-system/design-tokens/families/colors.md#fsl-entity-kind-mapping`.
 
 Re-litigation answers:
 
@@ -412,7 +412,7 @@ Tags: borders, outline, selected, focus, shape-grouping
 Decision: the selected-state line is `border.outline.selected` (sibling of `outline.surface` and `outline.control`); `focus.ring` remains a top-level `semantic.focus.*` family with a `color` field and an accessibility contract distinct from `border.*`.
 Rejected: keep `border.selected` flat alongside `border.outline.*` — same `SemanticBorderOutline` shape and same CSS mechanism (`outline`) as the rest of `outline.*`, so the flat sibling hides the grouping; collapse `focus.ring` into `outline.focus` — drops the cross-cutting `color: TokenRef<'semantic.${string}'>` field, and `focus.ring` is implemented via CSS `outline` as an accessibility contract that must not layout-shift, not as an "outline-at-rest" variant (borders.md §Focus Implementation).
 Cost: one extra path level for selected-state lines (`border.outline.selected` vs `border.selected`); the canonical set is now four `border.*` entries plus `focus.ring`, breaking strict symmetry with the previous five-entry list.
-Anchors: `src/Types.ts` → `SemanticBorder`, `src/baseTheme.ts` › `semantic.border`, `docs/website/docs/design/01-design-system/02-design-tokens/02-families/borders.md#canonical-semantic-set`.
+Anchors: `src/Types.ts` → `SemanticBorder`, `src/baseTheme.ts` › `semantic.border`, `docs/website/docs/design/design-system/design-tokens/families/borders.md#canonical-semantic-set`.
 
 Re-litigation answers:
 

@@ -9,8 +9,8 @@ import {
   isPlainObject,
   isTokenRef,
   toFlatTokens,
-  validateRefs,
 } from '../../../src/roots/helpers';
+import { validateRefs } from '../../../src/roots/validateRefs';
 import type { ThemeTokens } from '../../../src/Types';
 
 // ---------------------------------------------------------------------------
