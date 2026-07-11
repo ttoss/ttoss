@@ -19,9 +19,7 @@ const bundle = createTheme({
         },
       },
     },
-    semantic: {
-      /* to do */
-    },
+    semantic: {/* to do */},
   },
   alternate: undefined,
 });

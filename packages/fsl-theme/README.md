@@ -275,9 +275,7 @@ type MySemanticTokens = SemanticTokens & {
   };
 };
 
-const myTheme = createTheme({
-  /* … */
-});
+const myTheme = createTheme({/* … */});
 
 export const myVars: CssVarsMap<MySemanticTokens> = buildVarsMap(
   myTheme.base
