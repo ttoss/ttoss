@@ -8,7 +8,7 @@ import {
   bruttalFixtures,
   themeAltFlatToTest,
   themeFlatToTest,
-} from '../../../helpers/theme';
+} from '../../../fixtures/theme';
 
 // ---------------------------------------------------------------------------
 // WCAG 2.1 contrast utilities (inlined — no external dependency)

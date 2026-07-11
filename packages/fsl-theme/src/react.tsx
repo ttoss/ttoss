@@ -171,6 +171,21 @@ export interface ThemeProviderProps {
    * `resolvedMode` (actual: `'light' | 'dark'`), covering all integration
    * needs in one callback.
    *
+   * **System mode:** when `mode` is `'system'`, this callback fires whenever
+   * the OS `prefers-color-scheme` changes (e.g. automatic dark mode at sunset)
+   * — without any user interaction. Avoid side-effects that should only happen
+   * on explicit user action (e.g. API calls, toast notifications):
+   *
+   * ```tsx
+   * onModeChange={(mode, resolvedMode) => {
+   *   // ✓ safe for system-triggered changes
+   *   analytics.track('modeChanged', { mode, resolvedMode });
+   *
+   *   // ✗ guard explicit user actions
+   *   if (mode !== 'system') showToast('Theme updated');
+   * }}
+   * ```
+   *
    * @example
    * ```tsx
    * <ThemeProvider
@@ -692,6 +707,12 @@ export interface ThemeHeadProps extends ThemeStylesProps {
  * Use in SSR frameworks (Next.js, Remix) where you need explicit `<head>`
  * injection. In CSR apps, `<ThemeProvider theme={...}>` handles everything.
  *
+ * **`storageKey` invariant:** `ThemeHead` forwards `storageKey` to `ThemeScript`,
+ * which reads localStorage before the first paint. `ThemeProvider` reads the
+ * same key at runtime. If you pass a custom `storageKey`, pass the **same value**
+ * to both `<ThemeHead>` and `<ThemeProvider>` — a mismatch causes a theme flash
+ * exactly in the scenario this component was designed to prevent.
+ *
  * @example
  * ```tsx
  * // Next.js app/layout.tsx
@@ -712,6 +733,14 @@ export interface ThemeHeadProps extends ThemeStylesProps {
  *     </html>
  *   );
  * }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Custom storageKey — must be identical on both sides
+ * <ThemeHead theme={myTheme} storageKey="my-app-theme" />
+ * // ...
+ * <ThemeProvider theme={myTheme} storageKey="my-app-theme">{children}</ThemeProvider>
  * ```
  */
 export const ThemeHead = ({

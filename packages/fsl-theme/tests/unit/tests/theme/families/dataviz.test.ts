@@ -6,7 +6,7 @@
  * @see /docs/website/docs/design/01-design-system/02-design-tokens/03-data-visualization/index.md#validation
  */
 
-import { themeFlatToTest, themeToTest } from '../../../helpers/theme';
+import { themeFlatToTest, themeToTest } from '../../../fixtures/theme';
 
 // themeToTest.base — unresolved refs; used for structural and reference-pattern checks.
 // themeFlatToTest  — all {refs} resolved to final hex/number; used for value-equality checks.

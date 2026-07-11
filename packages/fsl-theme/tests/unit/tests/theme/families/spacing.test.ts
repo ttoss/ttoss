@@ -4,7 +4,7 @@
  * @see /docs/website/docs/design/01-design-system/02-design-tokens/02-families/spacing.md#validation
  */
 
-import { themeAltFlatToTest, themeFlatToTest } from '../../../helpers/theme';
+import { themeAltFlatToTest, themeFlatToTest } from '../../../fixtures/theme';
 
 // ---------------------------------------------------------------------------
 // Test bundles — extend when new theme bundles are added
@@ -126,29 +126,8 @@ for (const { label, tokens } of bundleEntries) {
       }
     );
 
-    test('adjacent inset.control steps have distinct values', () => {
-      // Warning #1: adjacent inset.control.* steps resolve to the same effective value
-      const steps = ['sm', 'md', 'lg'] as const;
-      const values = steps.map((s) => {
-        return parseSpaceValue(tokens[`semantic.spacing.inset.control.${s}`]!);
-      });
-
-      for (let i = 0; i < values.length - 1; i++) {
-        expect(values[i]).not.toBe(values[i + 1]);
-      }
-    });
-
-    test('adjacent inset.surface steps have distinct values', () => {
-      // Warning #2: adjacent inset.surface.* steps resolve to the same effective value
-      const steps = ['sm', 'md', 'lg'] as const;
-      const values = steps.map((s) => {
-        return parseSpaceValue(tokens[`semantic.spacing.inset.surface.${s}`]!);
-      });
-
-      for (let i = 0; i < values.length - 1; i++) {
-        expect(values[i]).not.toBe(values[i + 1]);
-      }
-    });
+    // Note: Warnings #1–#2 (adjacent inset steps must be distinct) are omitted —
+    // the strict ordering tests above (sm < md < lg) already imply A ≠ B.
   });
 }
 
@@ -197,29 +176,8 @@ for (const { label, tokens } of bundleEntries) {
       }
     });
 
-    test('adjacent gap.stack steps have distinct values', () => {
-      // Warning #3: adjacent gap.stack.* steps resolve to the same effective value
-      const steps = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
-      const values = steps.map((s) => {
-        return parseSpaceValue(tokens[`semantic.spacing.gap.stack.${s}`]!);
-      });
-
-      for (let i = 0; i < values.length - 1; i++) {
-        expect(values[i]).not.toBe(values[i + 1]);
-      }
-    });
-
-    test('adjacent gap.inline steps have distinct values', () => {
-      // Warning #4: adjacent gap.inline.* steps resolve to the same effective value
-      const steps = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
-      const values = steps.map((s) => {
-        return parseSpaceValue(tokens[`semantic.spacing.gap.inline.${s}`]!);
-      });
-
-      for (let i = 0; i < values.length - 1; i++) {
-        expect(values[i]).not.toBe(values[i + 1]);
-      }
-    });
+    // Note: Warnings #3–#4 (adjacent gap steps must be distinct) are omitted —
+    // the strict ordering tests above (xs < sm < md < lg < xl) already imply A ≠ B.
   });
 }
 

@@ -5,7 +5,7 @@
  */
 
 import { baseTheme } from '../../../../../src/baseTheme';
-import { themeAltFlatToTest, themeFlatToTest } from '../../../helpers/theme';
+import { themeFlatToTest } from '../../../fixtures/theme';
 
 // ---------------------------------------------------------------------------
 // Shared helpers
@@ -38,190 +38,91 @@ const parseWidthPair = (
 // Semantic borders — ERRORS
 // ---------------------------------------------------------------------------
 
+// Note: semantic.border and semantic.focus are not overridden by darkAlternate
+// (which only modifies semantic.colors). Tests run against base tokens only.
 describe('Semantic borders — errors', () => {
-  describe('default', () => {
-    const base = themeFlatToTest;
-    const alt = themeAltFlatToTest;
+  const base = themeFlatToTest;
 
-    // Error #1: border.outline.selected must not be weaker than border.outline.*
-    test('base: selected.width >= outline.surface.width', () => {
-      const [selected, outline] = parseWidthPair(
-        base,
-        'semantic.border.outline.selected.width',
-        'semantic.border.outline.surface.width'
-      );
+  // Error #1: border.outline.selected must not be weaker than border.outline.*
+  test('selected.width >= outline.surface.width', () => {
+    const [selected, outline] = parseWidthPair(
+      base,
+      'semantic.border.outline.selected.width',
+      'semantic.border.outline.surface.width'
+    );
 
-      expect(selected).toBeGreaterThanOrEqual(outline);
-    });
+    expect(selected).toBeGreaterThanOrEqual(outline);
+  });
 
-    // Error #1
-    test('base: selected.width >= outline.control.width', () => {
-      const [selected, outline] = parseWidthPair(
-        base,
-        'semantic.border.outline.selected.width',
-        'semantic.border.outline.control.width'
-      );
+  // Error #1
+  test('selected.width >= outline.control.width', () => {
+    const [selected, outline] = parseWidthPair(
+      base,
+      'semantic.border.outline.selected.width',
+      'semantic.border.outline.control.width'
+    );
 
-      expect(selected).toBeGreaterThanOrEqual(outline);
-    });
+    expect(selected).toBeGreaterThanOrEqual(outline);
+  });
 
-    // Error #2: focus.ring must not be weaker than border.outline.*
-    test('base: focus.ring.width >= outline.surface.width', () => {
-      const [focus, outline] = parseWidthPair(
-        base,
-        'semantic.focus.ring.width',
-        'semantic.border.outline.surface.width'
-      );
+  // Error #2: focus.ring must not be weaker than border.outline.*
+  test('focus.ring.width >= outline.surface.width', () => {
+    const [focus, outline] = parseWidthPair(
+      base,
+      'semantic.focus.ring.width',
+      'semantic.border.outline.surface.width'
+    );
 
-      expect(focus).toBeGreaterThanOrEqual(outline);
-    });
+    expect(focus).toBeGreaterThanOrEqual(outline);
+  });
 
-    // Error #2
-    test('base: focus.ring.width >= outline.control.width', () => {
-      const [focus, outline] = parseWidthPair(
-        base,
-        'semantic.focus.ring.width',
-        'semantic.border.outline.control.width'
-      );
+  // Error #2
+  test('focus.ring.width >= outline.control.width', () => {
+    const [focus, outline] = parseWidthPair(
+      base,
+      'semantic.focus.ring.width',
+      'semantic.border.outline.control.width'
+    );
 
-      expect(focus).toBeGreaterThanOrEqual(outline);
-    });
+    expect(focus).toBeGreaterThanOrEqual(outline);
+  });
 
-    // Error #3: border.outline.selected must resolve to a visible (non-zero) line
-    test('base: selected.width is not none/0', () => {
-      const selected = parseCssLength(
-        base['semantic.border.outline.selected.width']!
-      );
+  // Error #3: border.outline.selected must resolve to a visible (non-zero) line
+  test('selected.width is not none/0', () => {
+    const selected = parseCssLength(
+      base['semantic.border.outline.selected.width']!
+    );
 
-      expect(selected).toBeGreaterThan(0);
-    });
+    expect(selected).toBeGreaterThan(0);
+  });
 
-    // Error #4: focus.ring must resolve to a visible (non-zero) line
-    test('base: focus.ring.width is not none/0', () => {
-      const focus = parseCssLength(base['semantic.focus.ring.width']!);
+  // Error #4: focus.ring must resolve to a visible (non-zero) line
+  test('focus.ring.width is not none/0', () => {
+    const focus = parseCssLength(base['semantic.focus.ring.width']!);
 
-      expect(focus).toBeGreaterThan(0);
-    });
+    expect(focus).toBeGreaterThan(0);
+  });
 
-    // Error #5: focus.ring must not collapse into the same effective line contract as border.outline.*
-    test('base: focus.ring.width > outline.surface.width (not collapsed)', () => {
-      const [focus, outline] = parseWidthPair(
-        base,
-        'semantic.focus.ring.width',
-        'semantic.border.outline.surface.width'
-      );
+  // Error #5: focus.ring must not collapse into the same effective line contract as border.outline.*
+  test('focus.ring.width > outline.surface.width (not collapsed)', () => {
+    const [focus, outline] = parseWidthPair(
+      base,
+      'semantic.focus.ring.width',
+      'semantic.border.outline.surface.width'
+    );
 
-      expect(focus).toBeGreaterThan(outline);
-    });
+    expect(focus).toBeGreaterThan(outline);
+  });
 
-    // Error #5
-    test('base: focus.ring.width > outline.control.width (not collapsed)', () => {
-      const [focus, outline] = parseWidthPair(
-        base,
-        'semantic.focus.ring.width',
-        'semantic.border.outline.control.width'
-      );
+  // Error #5
+  test('focus.ring.width > outline.control.width (not collapsed)', () => {
+    const [focus, outline] = parseWidthPair(
+      base,
+      'semantic.focus.ring.width',
+      'semantic.border.outline.control.width'
+    );
 
-      expect(focus).toBeGreaterThan(outline);
-    });
-
-    // Error #1
-    test('alternate: selected.width >= outline.surface.width', () => {
-      if (!alt) return;
-
-      const [selected, outline] = parseWidthPair(
-        alt,
-        'semantic.border.outline.selected.width',
-        'semantic.border.outline.surface.width'
-      );
-
-      expect(selected).toBeGreaterThanOrEqual(outline);
-    });
-
-    // Error #1
-    test('alternate: selected.width >= outline.control.width', () => {
-      if (!alt) return;
-
-      const [selected, outline] = parseWidthPair(
-        alt,
-        'semantic.border.outline.selected.width',
-        'semantic.border.outline.control.width'
-      );
-
-      expect(selected).toBeGreaterThanOrEqual(outline);
-    });
-
-    // Error #2
-    test('alternate: focus.ring.width >= outline.surface.width', () => {
-      if (!alt) return;
-
-      const [focus, outline] = parseWidthPair(
-        alt,
-        'semantic.focus.ring.width',
-        'semantic.border.outline.surface.width'
-      );
-
-      expect(focus).toBeGreaterThanOrEqual(outline);
-    });
-
-    // Error #2
-    test('alternate: focus.ring.width >= outline.control.width', () => {
-      if (!alt) return;
-
-      const [focus, outline] = parseWidthPair(
-        alt,
-        'semantic.focus.ring.width',
-        'semantic.border.outline.control.width'
-      );
-
-      expect(focus).toBeGreaterThanOrEqual(outline);
-    });
-
-    // Error #3
-    test('alternate: selected.width is not none/0', () => {
-      if (!alt) return;
-
-      const selected = parseCssLength(
-        alt['semantic.border.outline.selected.width']!
-      );
-
-      expect(selected).toBeGreaterThan(0);
-    });
-
-    // Error #4
-    test('alternate: focus.ring.width is not none/0', () => {
-      if (!alt) return;
-
-      const focus = parseCssLength(alt['semantic.focus.ring.width']!);
-
-      expect(focus).toBeGreaterThan(0);
-    });
-
-    // Error #5
-    test('alternate: focus.ring.width > outline.surface.width (not collapsed)', () => {
-      if (!alt) return;
-
-      const [focus, outline] = parseWidthPair(
-        alt,
-        'semantic.focus.ring.width',
-        'semantic.border.outline.surface.width'
-      );
-
-      expect(focus).toBeGreaterThan(outline);
-    });
-
-    // Error #5
-    test('alternate: focus.ring.width > outline.control.width (not collapsed)', () => {
-      if (!alt) return;
-
-      const [focus, outline] = parseWidthPair(
-        alt,
-        'semantic.focus.ring.width',
-        'semantic.border.outline.control.width'
-      );
-
-      expect(focus).toBeGreaterThan(outline);
-    });
+    expect(focus).toBeGreaterThan(outline);
   });
 });
 
@@ -234,24 +135,11 @@ describe('Semantic borders — errors', () => {
 // ---------------------------------------------------------------------------
 
 describe('Semantic focus — color contract', () => {
-  describe('default', () => {
-    const base = themeFlatToTest;
-    const alt = themeAltFlatToTest;
-
-    test('base: focus.ring.color is defined and resolves to a non-empty value', () => {
-      const color = base['semantic.focus.ring.color'];
-      expect(color).toBeDefined();
-      expect(typeof color).toBe('string');
-      expect(String(color).length).toBeGreaterThan(0);
-    });
-
-    test('alternate: focus.ring.color is defined and resolves to a non-empty value', () => {
-      if (!alt) return;
-      const color = alt['semantic.focus.ring.color'];
-      expect(color).toBeDefined();
-      expect(typeof color).toBe('string');
-      expect(String(color).length).toBeGreaterThan(0);
-    });
+  test('focus.ring.color is defined and resolves to a non-empty value', () => {
+    const color = themeFlatToTest['semantic.focus.ring.color'];
+    expect(color).toBeDefined();
+    expect(typeof color).toBe('string');
+    expect(String(color).length).toBeGreaterThan(0);
   });
 });
 
@@ -267,105 +155,50 @@ describe('Semantic focus — color contract', () => {
 // ---------------------------------------------------------------------------
 
 describe('Semantic borders — warnings', () => {
-  describe('default', () => {
-    const base = themeFlatToTest;
-    const alt = themeAltFlatToTest;
+  const base = themeFlatToTest;
 
-    // Warning #1: border.outline.selected must be visually distinguishable from the resting outline
-    test('base: selected.width > outline.surface.width (distinguishable)', () => {
-      const [selected, outline] = parseWidthPair(
-        base,
-        'semantic.border.outline.selected.width',
-        'semantic.border.outline.surface.width'
-      );
+  // Warning #1: border.outline.selected must be visually distinguishable from the resting outline
+  test('selected.width > outline.surface.width (distinguishable)', () => {
+    const [selected, outline] = parseWidthPair(
+      base,
+      'semantic.border.outline.selected.width',
+      'semantic.border.outline.surface.width'
+    );
 
-      expect(selected).toBeGreaterThan(outline);
-    });
+    expect(selected).toBeGreaterThan(outline);
+  });
 
-    // Warning #1
-    test('base: selected.width > outline.control.width (distinguishable)', () => {
-      const [selected, outline] = parseWidthPair(
-        base,
-        'semantic.border.outline.selected.width',
-        'semantic.border.outline.control.width'
-      );
+  // Warning #1
+  test('selected.width > outline.control.width (distinguishable)', () => {
+    const [selected, outline] = parseWidthPair(
+      base,
+      'semantic.border.outline.selected.width',
+      'semantic.border.outline.control.width'
+    );
 
-      expect(selected).toBeGreaterThan(outline);
-    });
+    expect(selected).toBeGreaterThan(outline);
+  });
 
-    // Warning #2: focus.ring must be visually distinguishable from the resting outline
-    test('base: focus.ring.width > outline.surface.width (distinguishable)', () => {
-      const [focus, outline] = parseWidthPair(
-        base,
-        'semantic.focus.ring.width',
-        'semantic.border.outline.surface.width'
-      );
+  // Warning #2: focus.ring must be visually distinguishable from the resting outline
+  test('focus.ring.width > outline.surface.width (distinguishable)', () => {
+    const [focus, outline] = parseWidthPair(
+      base,
+      'semantic.focus.ring.width',
+      'semantic.border.outline.surface.width'
+    );
 
-      expect(focus).toBeGreaterThan(outline);
-    });
+    expect(focus).toBeGreaterThan(outline);
+  });
 
-    // Warning #2
-    test('base: focus.ring.width > outline.control.width (distinguishable)', () => {
-      const [focus, outline] = parseWidthPair(
-        base,
-        'semantic.focus.ring.width',
-        'semantic.border.outline.control.width'
-      );
+  // Warning #2
+  test('focus.ring.width > outline.control.width (distinguishable)', () => {
+    const [focus, outline] = parseWidthPair(
+      base,
+      'semantic.focus.ring.width',
+      'semantic.border.outline.control.width'
+    );
 
-      expect(focus).toBeGreaterThan(outline);
-    });
-
-    // Warning #1
-    test('alternate: selected.width > outline.surface.width (distinguishable)', () => {
-      if (!alt) return;
-
-      const [selected, outline] = parseWidthPair(
-        alt,
-        'semantic.border.outline.selected.width',
-        'semantic.border.outline.surface.width'
-      );
-
-      expect(selected).toBeGreaterThan(outline);
-    });
-
-    // Warning #1
-    test('alternate: selected.width > outline.control.width (distinguishable)', () => {
-      if (!alt) return;
-
-      const [selected, outline] = parseWidthPair(
-        alt,
-        'semantic.border.outline.selected.width',
-        'semantic.border.outline.control.width'
-      );
-
-      expect(selected).toBeGreaterThan(outline);
-    });
-
-    // Warning #2
-    test('alternate: focus.ring.width > outline.surface.width (distinguishable)', () => {
-      if (!alt) return;
-
-      const [focus, outline] = parseWidthPair(
-        alt,
-        'semantic.focus.ring.width',
-        'semantic.border.outline.surface.width'
-      );
-
-      expect(focus).toBeGreaterThan(outline);
-    });
-
-    // Warning #2
-    test('alternate: focus.ring.width > outline.control.width (distinguishable)', () => {
-      if (!alt) return;
-
-      const [focus, outline] = parseWidthPair(
-        alt,
-        'semantic.focus.ring.width',
-        'semantic.border.outline.control.width'
-      );
-
-      expect(focus).toBeGreaterThan(outline);
-    });
+    expect(focus).toBeGreaterThan(outline);
   });
 });
 

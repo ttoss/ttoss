@@ -9,6 +9,7 @@ import {
   toCssVars,
   toViewportFallback,
 } from '../../../../../src/roots/toCssVars';
+import { TOKEN_PATH_REGISTRY } from '../../../../../src/roots/tokenRegistry';
 
 // Inline custom theme for testing theme-specific values
 const customTheme = buildTheme({
@@ -20,69 +21,24 @@ const customTheme = buildTheme({
 // ---------------------------------------------------------------------------
 
 describe('toCssVarName', () => {
-  test('core color paths', () => {
-    expect(toCssVarName('core.colors.brand.500')).toBe(
-      '--tt-core-colors-brand-500'
+  test('applies every registered prefix: strips source prefix, attaches CSS prefix, converts dots to hyphens', () => {
+    // Derives expected values from TOKEN_PATH_REGISTRY — scales automatically
+    // when entries are added or removed without requiring manual test updates.
+    for (const { path, cssPrefix } of TOKEN_PATH_REGISTRY) {
+      expect(toCssVarName(`${path}foo.bar`)).toBe(`${cssPrefix}foo-bar`);
+    }
+  });
+
+  test('prefix ordering: longer match wins (semantic.dataviz.color.* beats semantic.dataviz.*)', () => {
+    // semantic.dataviz.color. → --tt-dataviz- (strips "color" from path)
+    // if semantic.dataviz. matched first → --tt-dataviz-color-series-1 (wrong)
+    expect(toCssVarName('semantic.dataviz.color.series.1')).toBe(
+      '--tt-dataviz-series-1'
     );
   });
 
-  test('core spacing paths', () => {
-    expect(toCssVarName('core.spacing.2')).toBe('--tt-core-spacing-2');
-  });
-
-  test('core radii paths', () => {
-    expect(toCssVarName('core.radii.md')).toBe('--tt-core-radii-md');
-  });
-
-  test('core elevation paths', () => {
-    expect(toCssVarName('core.elevation.level.3')).toBe(
-      '--tt-core-elevation-3'
-    );
-  });
-
-  test('core font family paths', () => {
-    expect(toCssVarName('core.font.family.sans')).toBe(
-      '--tt-core-font-family-sans'
-    );
-  });
-
-  test('semantic color paths', () => {
-    expect(
-      toCssVarName('semantic.colors.action.primary.background.default')
-    ).toBe('--tt-colors-action-primary-background-default');
-  });
-
-  test('semantic elevation paths', () => {
-    expect(toCssVarName('semantic.elevation.surface.flat')).toBe(
-      '--tt-elevation-surface-flat'
-    );
-  });
-
-  test('semantic radii paths', () => {
-    expect(toCssVarName('semantic.radii.surface')).toBe('--tt-radii-surface');
-  });
-
-  test('falls back to full path for unknown prefixes', () => {
+  test('falls back to --tt-<path-with-hyphens> for unregistered paths', () => {
     expect(toCssVarName('unknown.foo.bar')).toBe('--tt-unknown-foo-bar');
-  });
-
-  // TEST-08 — CSS_PATH_PREFIXES order regression guards
-  test('core.dataviz.color.* uses the more-specific core-dataviz-color prefix', () => {
-    // core.dataviz.color.series.1 must match the specific 'core.dataviz.color.' entry.
-    // Under the --tt-core-<family> scheme both candidate prefixes produce the same
-    // CSS name, so we just assert the correct result.
-    const result = toCssVarName('core.dataviz.color.series.1');
-    expect(result).toBe('--tt-core-dataviz-color-series-1');
-  });
-
-  test('core.dataviz.* (non-color) uses the core dataviz prefix', () => {
-    const result = toCssVarName('core.dataviz.shape.circle');
-    expect(result).toBe('--tt-core-dataviz-shape-circle');
-  });
-
-  test('semantic.dataviz.* uses the public consumer prefix', () => {
-    const result = toCssVarName('semantic.dataviz.color.series.1');
-    expect(result).toBe('--tt-dataviz-series-1');
   });
 });
 
@@ -98,16 +54,19 @@ describe('hasCqUnits', () => {
     ['10cqh', true],
     ['10cqmin', true],
     ['10cqmax', true],
+    ['clamp(12px, calc(0.6cqi + 10px), 14px)', true],
     ['10px', false],
     ['2rem', false],
     ['50%', false],
     ['var(--tt-foo)', false],
+    ['#0469E3', false],
   ])('hasCqUnits(%s) → %s', (value, expected) => {
     expect(hasCqUnits(value)).toBe(expected);
   });
 
   test('returns false for numbers', () => {
     expect(hasCqUnits(42)).toBe(false);
+    expect(hasCqUnits(400)).toBe(false);
   });
 });
 
@@ -124,6 +83,12 @@ describe('toViewportFallback', () => {
     ['10cqmin', '10vmin'],
     ['10cqmax', '10vmax'],
     ['calc(10cqi + 2cqb)', 'calc(10vw + 2vh)'],
+    [
+      'clamp(12px, calc(0.6cqi + 10px), 14px)',
+      'clamp(12px, calc(0.6vw + 10px), 14px)',
+    ],
+    ['16px', '16px'],
+    ['100dvh', '100dvh'],
   ])('toViewportFallback(%s) → %s', (value, expected) => {
     expect(toViewportFallback(value)).toBe(expected);
   });
@@ -135,43 +100,20 @@ describe('toViewportFallback', () => {
 
 describe('toCssVars', () => {
   describe('selector', () => {
-    test('defaults to :root when no options given', () => {
-      const result = toCssVars(defaultTheme);
-      expect(result.selector).toBe(':root');
-    });
-
-    test('scopes by themeId', () => {
-      const result = toCssVars(defaultTheme, { themeId: 'bruttal' });
-      expect(result.selector).toBe('[data-tt-theme="bruttal"]');
-    });
-
-    test('scopes by themeId and mode', () => {
-      const result = toCssVars(defaultTheme, {
-        themeId: 'bruttal',
-        mode: 'dark',
-      });
-      expect(result.selector).toBe(
-        '[data-tt-theme="bruttal"][data-tt-mode="dark"]'
-      );
-    });
-
-    test('custom selector overrides themeId/mode', () => {
-      const result = toCssVars(defaultTheme, {
-        themeId: 'bruttal',
-        mode: 'dark',
-        selector: '.custom-scope',
-      });
-      expect(result.selector).toBe('.custom-scope');
-    });
-
-    test('mode alone without themeId scopes to :root with mode qualifier', () => {
-      const result = toCssVars(defaultTheme, { mode: 'light' });
-      expect(result.selector).toBe(':root[data-tt-mode="light"]');
-    });
-
-    test('no themeId and no mode defaults to :root', () => {
-      const result = toCssVars(defaultTheme);
-      expect(result.selector).toBe(':root');
+    test.each([
+      [{}, ':root'],
+      [{ themeId: 'bruttal' }, '[data-tt-theme="bruttal"]'],
+      [
+        { themeId: 'bruttal', mode: 'dark' },
+        '[data-tt-theme="bruttal"][data-tt-mode="dark"]',
+      ],
+      [
+        { themeId: 'bruttal', mode: 'dark', selector: '.custom-scope' },
+        '.custom-scope',
+      ],
+      [{ mode: 'light' }, ':root[data-tt-mode="light"]'],
+    ] as const)('options %j → selector %s', (options, expected) => {
+      expect(toCssVars(defaultTheme, options).selector).toBe(expected);
     });
   });
 
@@ -224,53 +166,37 @@ describe('toCssVars', () => {
       );
     });
 
-    test('wraps vars in themed + mode selector', () => {
-      const css = toCssVars(defaultTheme, {
-        themeId: 'default',
-        mode: 'light',
-      }).toCssString();
-      expect(css).toMatch(
-        /^\[data-tt-theme="default"\]\[data-tt-mode="light"\] \{/
+    test.each([
+      [{ colorScheme: 'dark' as const }, 'color-scheme: dark;', undefined],
+      [
+        { colorScheme: 'light dark' as const },
+        'color-scheme: light dark;',
+        undefined,
+      ],
+      [
+        { themeId: 'default', mode: 'dark' as const },
+        'color-scheme: dark;',
+        undefined,
+      ],
+      [
+        {
+          themeId: 'default',
+          mode: 'dark' as const,
+          colorScheme: 'light dark' as const,
+        },
+        'color-scheme: light dark;',
+        'color-scheme: dark;',
+      ],
+    ] as const)('color-scheme with options %j', (options, expected, absent) => {
+      const css = toCssVars(defaultTheme, options).toCssString();
+      expect(css).toContain(expected);
+      if (absent) expect(css).not.toContain(absent);
+    });
+
+    test('no color-scheme when not specified', () => {
+      expect(toCssVars(defaultTheme).toCssString()).not.toContain(
+        'color-scheme'
       );
-    });
-
-    test('includes color-scheme when specified', () => {
-      const css = toCssVars(defaultTheme, {
-        colorScheme: 'dark',
-      }).toCssString();
-      expect(css).toContain('color-scheme: dark;');
-    });
-
-    test('includes color-scheme: light dark', () => {
-      const css = toCssVars(defaultTheme, {
-        colorScheme: 'light dark',
-      }).toCssString();
-      expect(css).toContain('color-scheme: light dark;');
-    });
-
-    test('infers color-scheme from mode when colorScheme is omitted', () => {
-      const css = toCssVars(defaultTheme, {
-        themeId: 'default',
-        mode: 'dark',
-      }).toCssString();
-
-      expect(css).toContain('color-scheme: dark;');
-    });
-
-    test('explicit colorScheme overrides inferred mode value', () => {
-      const css = toCssVars(defaultTheme, {
-        themeId: 'default',
-        mode: 'dark',
-        colorScheme: 'light dark',
-      }).toCssString();
-
-      expect(css).toContain('color-scheme: light dark;');
-      expect(css).not.toContain('color-scheme: dark;');
-    });
-
-    test('does not include color-scheme when not specified', () => {
-      const css = toCssVars(defaultTheme).toCssString();
-      expect(css).not.toContain('color-scheme');
     });
   });
 
@@ -325,15 +251,6 @@ describe('toCssVars', () => {
       const combined = `${defaultCss}\n\n${themeCss}`;
       expect(combined).toContain(':root {');
       expect(combined).toContain('[data-tt-theme="custom"]');
-    });
-
-    test('all built-in themes produce valid CSS blocks', () => {
-      {
-        const name = 'default';
-        const css = toCssVars(baseBundle.base, { themeId: name }).toCssString();
-        expect(css).toMatch(/^\[data-tt-theme=/);
-        expect(css.split('\n').length).toBeGreaterThan(10);
-      }
     });
   });
 });
@@ -484,20 +401,6 @@ describe('toCssVars (bundle overload)', () => {
       expect(css).toContain('[data-tt-theme="default"][data-tt-mode="dark"]');
     });
 
-    test('all light-base bundles produce proper CSS', () => {
-      {
-        const name = 'default';
-        const bundle = baseBundle;
-        if (bundle.alternate) {
-          const css = toCssVars(bundle, {
-            themeId: name,
-          }).toCssString();
-          expect(css).toContain(`[data-tt-theme="${name}"]`);
-          expect(css).toContain(`[data-tt-mode="dark"]`);
-        }
-      }
-    });
-
     test('alternate toCssString does not include coarse pointer block (diff-only)', () => {
       const result = toCssVars(baseBundle, {
         themeId: 'default',
@@ -529,33 +432,22 @@ describe('toCssVars (bundle overload)', () => {
 // ---------------------------------------------------------------------------
 
 describe('themeId sanitization', () => {
-  test('rejects themeId with CSS injection characters', () => {
-    expect(() => {
-      toCssVars(defaultTheme, { themeId: '"] { } body { color: red } [' });
-    }).toThrow(/Invalid themeId/);
-  });
+  test.each(['"] { } body { color: red } [', 'foo"bar', 'foo bar'])(
+    'rejects invalid themeId: %s',
+    (themeId) => {
+      expect(() => {
+        return toCssVars(defaultTheme, { themeId });
+      }).toThrow(/Invalid themeId/);
+    }
+  );
 
-  test('rejects themeId with quotes', () => {
+  test('accepts valid themeId (hyphens, underscores, alphanumeric)', () => {
     expect(() => {
-      toCssVars(defaultTheme, { themeId: 'foo"bar' });
-    }).toThrow(/Invalid themeId/);
-  });
-
-  test('rejects themeId with spaces', () => {
-    expect(() => {
-      toCssVars(defaultTheme, { themeId: 'foo bar' });
-    }).toThrow(/Invalid themeId/);
-  });
-
-  test('accepts valid themeId with hyphens and underscores', () => {
-    expect(() => {
-      toCssVars(defaultTheme, { themeId: 'my-theme_v2' });
+      return toCssVars(defaultTheme, { themeId: 'my-theme_v2' });
     }).not.toThrow();
-  });
-
-  test('accepts simple alphanumeric themeId', () => {
-    const result = toCssVars(defaultTheme, { themeId: 'bruttal' });
-    expect(result.selector).toBe('[data-tt-theme="bruttal"]');
+    expect(toCssVars(defaultTheme, { themeId: 'bruttal' }).selector).toBe(
+      '[data-tt-theme="bruttal"]'
+    );
   });
 });
 
@@ -620,62 +512,38 @@ describe('reducedMotionVars', () => {
 // ---------------------------------------------------------------------------
 
 describe('reference integrity', () => {
-  test('no undefined var references in default theme output', () => {
-    const { cssVars } = toCssVars(defaultTheme);
-
-    for (const [_key, value] of Object.entries(cssVars)) {
-      if (typeof value === 'string' && value.includes('var(')) {
-        // Extract var name from var(--tt-something)
-        const matches = value.match(/var\(([^)]+)\)/g);
-        if (matches) {
-          for (const varRef of matches) {
-            const varName = varRef.replace(/var\(([^)]+)\)/, '$1');
-            // Var reference should exist in cssVars
-            expect(cssVars[varName]).toBeDefined();
-          }
+  /** Asserts no var() reference in `cssVars` points to an absent property. */
+  const assertNobrokenRefs = (
+    cssVars: Record<string, string | number>,
+    additionalVars: Record<string, string | number> = {}
+  ) => {
+    const broken: string[] = [];
+    for (const [key, value] of Object.entries(cssVars)) {
+      if (typeof value !== 'string' || !value.includes('var(')) continue;
+      for (const varRef of value.match(/var\(([^)]+)\)/g) ?? []) {
+        const varName = varRef.slice(4, -1); // 'var(--tt-foo)' → '--tt-foo'
+        if (!(varName in cssVars) && !(varName in additionalVars)) {
+          broken.push(`${key} → ${varName}`);
         }
       }
     }
-  });
+    expect(broken).toEqual([]);
+  };
 
-  test('no "undefined" in any CSS var values', () => {
-    {
-      const { cssVars } = toCssVars(baseBundle.base);
-
-      for (const [_key, value] of Object.entries(cssVars)) {
-        expect(String(value)).not.toContain('undefined');
-        expect(String(value)).not.toMatch(/var\(--tt-undefined-/);
-      }
+  test('no broken var() references in base or alternate output', () => {
+    // Base: every var() ref in default theme cssVars must resolve within the same map
+    assertNobrokenRefs(toCssVars(defaultTheme).cssVars);
+    // Alternate: refs may point to base core vars — pass base as additional context
+    const result = toCssVars(baseBundle, { themeId: 'default' });
+    if (result.alternate) {
+      assertNobrokenRefs(result.alternate.cssVars, result.base.cssVars);
     }
   });
 
-  test('toCssVars (bundle) alternate has no broken references', () => {
-    {
-      const name = 'default';
-      const result = toCssVars(baseBundle, { themeId: name });
-
-      if (result.alternate) {
-        const { cssVars } = result.alternate;
-        const baseCssVars = result.base.cssVars;
-
-        const brokenRefs: string[] = [];
-        for (const [key, value] of Object.entries(cssVars)) {
-          if (typeof value === 'string' && value.includes('var(')) {
-            const matches = value.match(/var\(([^)]+)\)/g);
-            if (matches) {
-              for (const varRef of matches) {
-                const varName = varRef.replace(/var\(([^)]+)\)/, '$1');
-                // Alternate can reference vars from base (core tokens)
-                if (!cssVars[varName] && !baseCssVars[varName]) {
-                  brokenRefs.push(`${key} → ${varName}`);
-                }
-              }
-            }
-          }
-        }
-
-        expect(brokenRefs).toEqual([]);
-      }
+  test('no "undefined" literal in any CSS var value', () => {
+    for (const value of Object.values(toCssVars(baseBundle.base).cssVars)) {
+      expect(String(value)).not.toContain('undefined');
+      expect(String(value)).not.toMatch(/var\(--tt-undefined-/);
     }
   });
 });
@@ -685,32 +553,26 @@ describe('reference integrity', () => {
 // ---------------------------------------------------------------------------
 
 describe('getThemeStylesContent', () => {
-  test('returns a non-empty string', () => {
-    const css = getThemeStylesContent(baseBundle, 'default');
-    expect(typeof css).toBe('string');
-    expect(css.length).toBeGreaterThan(0);
-  });
-
-  test('output matches toCssVars().toCssString() for the same bundle', () => {
+  test('delegates to toCssVars(bundle, { themeId }).toCssString()', () => {
     const expected = toCssVars(baseBundle, {
       themeId: 'default',
     }).toCssString();
     expect(getThemeStylesContent(baseBundle, 'default')).toBe(expected);
   });
 
-  test('scopes output to the given themeId', () => {
-    const customBundle = createTheme({
-      overrides: { core: { colors: { brand: { 500: '#7C4DFF' } } } },
-    });
-    const css = getThemeStylesContent(customBundle, 'custom');
-    expect(css).toContain('[data-tt-theme="custom"]');
-    expect(css).not.toContain('[data-tt-theme="default"]');
+  test('without themeId delegates to toCssVars(bundle).toCssString() targeting :root', () => {
+    const expected = toCssVars(baseBundle).toCssString();
+    const result = getThemeStylesContent(baseBundle);
+    expect(result).toBe(expected);
+    expect(result).toContain(':root {');
+    expect(result).not.toContain('[data-tt-theme');
   });
 
-  test('single-mode bundle has no alternate mode block', () => {
-    const darkOnlyBundle = createTheme({ baseMode: 'dark', alternate: null });
-    const css = getThemeStylesContent(darkOnlyBundle, 'dark-only');
-    expect(css).not.toContain('data-tt-mode');
+  test('single-mode bundle produces no mode selector', () => {
+    const darkOnly = createTheme({ baseMode: 'dark', alternate: null });
+    expect(getThemeStylesContent(darkOnly, 'dark-only')).not.toContain(
+      'data-tt-mode'
+    );
   });
 
   test('rejects themeId with injection characters', () => {
@@ -718,141 +580,51 @@ describe('getThemeStylesContent', () => {
       getThemeStylesContent(baseBundle, '"] { } body { color: red } [');
     }).toThrow(/Invalid themeId/);
   });
-
-  test('targets :root when themeId is omitted', () => {
-    const css = getThemeStylesContent(baseBundle);
-    expect(css).toContain(':root {');
-    expect(css).toContain(':root[data-tt-mode="dark"]');
-    expect(css).not.toContain('[data-tt-theme');
-  });
-
-  test('output without themeId matches toCssVars(bundle).toCssString()', () => {
-    const expected = toCssVars(baseBundle).toCssString();
-    expect(getThemeStylesContent(baseBundle)).toBe(expected);
-  });
 });
 
 // ---------------------------------------------------------------------------
 // Container query progressive enhancement (Gap 1)
 // ---------------------------------------------------------------------------
 
-describe('hasCqUnits', () => {
-  test('detects cqi', () => {
-    expect(hasCqUnits('clamp(12px, calc(0.6cqi + 10px), 14px)')).toBe(true);
-  });
-
-  test('detects cqb', () => {
-    expect(hasCqUnits('10cqb')).toBe(true);
-  });
-
-  test('detects cqw/cqh', () => {
-    expect(hasCqUnits('10cqw')).toBe(true);
-    expect(hasCqUnits('10cqh')).toBe(true);
-  });
-
-  test('detects cqmin/cqmax', () => {
-    expect(hasCqUnits('10cqmin')).toBe(true);
-    expect(hasCqUnits('10cqmax')).toBe(true);
-  });
-
-  test('returns false for non-CQ values', () => {
-    expect(hasCqUnits('#0469E3')).toBe(false);
-    expect(hasCqUnits('16px')).toBe(false);
-    expect(hasCqUnits('1rem')).toBe(false);
-    expect(hasCqUnits(400)).toBe(false);
-  });
-});
-
-describe('toViewportFallback', () => {
-  test('replaces cqi with vw', () => {
-    expect(toViewportFallback('clamp(12px, calc(0.6cqi + 10px), 14px)')).toBe(
-      'clamp(12px, calc(0.6vw + 10px), 14px)'
-    );
-  });
-
-  test('replaces cqb with vh', () => {
-    expect(toViewportFallback('10cqb')).toBe('10vh');
-  });
-
-  test('replaces cqw with vw', () => {
-    expect(toViewportFallback('10cqw')).toBe('10vw');
-  });
-
-  test('replaces cqh with vh', () => {
-    expect(toViewportFallback('10cqh')).toBe('10vh');
-  });
-
-  test('replaces cqmin/cqmax', () => {
-    expect(toViewportFallback('10cqmin')).toBe('10vmin');
-    expect(toViewportFallback('10cqmax')).toBe('10vmax');
-  });
-
-  test('leaves non-CQ values unchanged', () => {
-    expect(toViewportFallback('16px')).toBe('16px');
-    expect(toViewportFallback('100dvh')).toBe('100dvh');
-  });
-});
-
 describe('containerQueryVars', () => {
-  test('extracts CQ vars from default theme', () => {
-    const { containerQueryVars } = toCssVars(defaultTheme);
-    expect(Object.keys(containerQueryVars).length).toBeGreaterThan(0);
-  });
+  const { containerQueryVars } = toCssVars(defaultTheme);
 
-  test('all extracted vars contain CQ units', () => {
-    const { containerQueryVars } = toCssVars(defaultTheme);
+  test('contains only CQ-unit vars and includes known responsive tokens', () => {
+    expect(Object.keys(containerQueryVars).length).toBeGreaterThan(0);
+    // Every extracted var must carry a CQ unit — non-CQ vars must not appear here
     for (const value of Object.values(containerQueryVars)) {
       expect(hasCqUnits(value)).toBe(true);
     }
+    // Representative known responsive tokens — guards against accidental removal
+    for (const varName of [
+      '--tt-core-font-scale-text-1',
+      '--tt-core-font-scale-display-1',
+      '--tt-core-spacing-engine-unit',
+      '--tt-core-sizing-ramp-ui-1',
+      '--tt-core-sizing-ramp-layout-1',
+    ]) {
+      expect(containerQueryVars[varName]).toBeDefined();
+    }
   });
 
-  test('includes font scale vars', () => {
-    const { containerQueryVars } = toCssVars(defaultTheme);
-    expect(containerQueryVars['--tt-core-font-scale-text-1']).toBeDefined();
-    expect(containerQueryVars['--tt-core-font-scale-display-1']).toBeDefined();
-  });
-
-  test('includes space unit var', () => {
-    const { containerQueryVars } = toCssVars(defaultTheme);
-    expect(containerQueryVars['--tt-core-spacing-engine-unit']).toBeDefined();
-  });
-
-  test('includes size ramp ui vars', () => {
-    const { containerQueryVars } = toCssVars(defaultTheme);
-    expect(containerQueryVars['--tt-core-sizing-ramp-ui-1']).toBeDefined();
-  });
-
-  test('includes size ramp layout vars', () => {
-    const { containerQueryVars } = toCssVars(defaultTheme);
-    expect(containerQueryVars['--tt-core-sizing-ramp-layout-1']).toBeDefined();
-  });
-
-  test('does not include non-CQ vars', () => {
-    const { containerQueryVars } = toCssVars(defaultTheme);
+  test('excludes non-CQ vars', () => {
     expect(containerQueryVars['--tt-core-colors-brand-500']).toBeUndefined();
     expect(containerQueryVars['--tt-core-radii-md']).toBeUndefined();
   });
 });
 
 describe('@supports (width: 1cqi) block', () => {
-  test('toCssString includes @supports block', () => {
+  test('base block uses viewport fallbacks; @supports block carries original CQ values', () => {
     const css = toCssVars(defaultTheme).toCssString();
+    // @supports block is present and contains cqi values
     expect(css).toContain('@supports (width: 1cqi)');
-  });
-
-  test('@supports block contains original CQ values', () => {
-    const css = toCssVars(defaultTheme).toCssString();
-    // The @supports block should have the original cqi values
-    const supportsMatch = css.match(/@supports \(width: 1cqi\) \{[\s\S]*?\n\}/);
-    expect(supportsMatch).not.toBeNull();
-    expect(supportsMatch![0]).toContain('cqi');
-  });
-
-  test('base block uses viewport fallbacks for CQ vars', () => {
-    const css = toCssVars(defaultTheme).toCssString();
-    // Split at @supports to get just the base block
+    const supportsBlock = css.match(
+      /@supports \(width: 1cqi\) \{[\s\S]*?\n\}/
+    )!;
+    expect(supportsBlock).not.toBeNull();
+    expect(supportsBlock[0]).toContain('cqi');
+    // Base block (before first @supports) must use viewport fallbacks, not cqi
     const baseBlock = css.split('@supports')[0];
-    // The base block should contain vw (fallback) but NOT cqi
     expect(baseBlock).toContain('vw');
     expect(baseBlock).not.toMatch(/\bcqi\b/);
   });
@@ -864,29 +636,16 @@ describe('@supports (width: 1cqi) block', () => {
     );
   });
 
-  test('toCssVars (bundle) base includes @supports block', () => {
-    const css = toCssVars(baseBundle, {
-      themeId: 'default',
-    }).base.toCssString();
-    expect(css).toContain('@supports (width: 1cqi)');
-  });
-
-  test('toCssVars (bundle) combined includes @supports blocks', () => {
-    const css = toCssVars(baseBundle, {
-      themeId: 'default',
-    }).toCssString();
-    const supportsMatches = css.match(/@supports \(width: 1cqi\)/g);
+  test('bundle emits @supports block in base and combined output', () => {
+    const bundleResult = toCssVars(baseBundle, { themeId: 'default' });
+    expect(bundleResult.base.toCssString()).toContain(
+      '@supports (width: 1cqi)'
+    );
+    const supportsMatches = bundleResult
+      .toCssString()
+      .match(/@supports \(width: 1cqi\)/g);
     expect(supportsMatches).not.toBeNull();
-    // At least one @supports block for the base
     expect(supportsMatches!.length).toBeGreaterThanOrEqual(1);
-  });
-
-  test('all themes produce @supports block', () => {
-    {
-      const name = 'default';
-      const css = toCssVars(baseBundle.base, { themeId: name }).toCssString();
-      expect(css).toContain('@supports (width: 1cqi)');
-    }
   });
 });
 

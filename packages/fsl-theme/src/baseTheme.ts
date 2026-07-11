@@ -6,6 +6,33 @@ import type { ModeOverride, ThemeTokens } from './Types';
  *
  * System fonts, gray palette, and balanced proportions. Serves as the
  * canonical base that all other themes extend via `createTheme`.
+ *
+ * ## Theme brief
+ *
+ * Every value in this file is chosen so that the resolved bundle satisfies
+ * this brief. Changes that contradict the brief belong in a different theme,
+ * not in `baseTheme`.
+ *
+ * ```yaml
+ * name: base
+ * purpose: default built-in foundation for modern product UI
+ * primaryPosture: productive
+ * secondaryPosture: calm
+ * densityProfile: balanced
+ * readingMode: mixed
+ * pointerProfile: hybrid
+ * interactionRisk: medium
+ * surfaceModel: lightly-layered
+ * brandEnergy: quiet
+ * accessibilityTarget: AA+
+ * colorModeStrategy: dark-supported
+ * platformBias: web
+ * ```
+ *
+ * Intended feel: practical, calm, modern, trustworthy, easy to extend.
+ * Avoided feel: flashy, ornamental, cramped, fragile, overly branded.
+ *
+ * @see /docs/website/docs/design/01-design-system/02-design-tokens/theme-authoring.md#recommended-base-theme-brief
  */
 export const baseTheme: ThemeTokens = {
   // ==========================================================================
@@ -1207,34 +1234,41 @@ export const baseTheme: ThemeTokens = {
 
     // -- Spacing ------------------------------------------------------------
     // Grammar: {pattern}.{context}.{step?}
+    //
+    // Values are tuned so that the spec's spacing order holds at the
+    // default ("md" / preferred) step:
+    //
+    //   icon-label (inline.xs) < inline (inline.md) < inset.control
+    //     < gap.stack < gutter.section < gutter.page
+    //
+    // The hit floor (`core.sizing.hit.fine.base` ≈ 32–40px) keeps controls
+    // touch-safe regardless of inset.control. The base brief is `balanced`
+    // density + `hybrid` pointer, so inset.control sits one step above
+    // inline gaps rather than colliding with them.
     spacing: {
       inset: {
-        // Mapped to the documented defaults from spacing.md. Medium-high
-        // density is delivered by `core.sizing.hit.fine.*` (40px base)
-        // combined with the spacing engine clamp — not by tightening
-        // inset.control, which previously caused cramped vertical padding
-        // (~4px) when content grew beyond `min-height: hit.base`.
         control: {
-          sm: '{core.spacing.2}',
-          md: '{core.spacing.3}',
-          lg: '{core.spacing.4}',
-        },
-        // Surfaces breathe more than controls; the invariant
-        // inset.surface.X ≥ inset.control.X is preserved.
-        surface: {
           sm: '{core.spacing.3}',
           md: '{core.spacing.4}',
           lg: '{core.spacing.6}',
+        },
+        // inset.surface ≥ inset.control (validation invariant) and sits
+        // above gap.stack at the default step so containers visibly enclose
+        // their sequential children.
+        surface: {
+          sm: '{core.spacing.4}',
+          md: '{core.spacing.6}',
+          lg: '{core.spacing.8}',
         },
       },
 
       gap: {
         stack: {
           xs: '{core.spacing.2}',
-          sm: '{core.spacing.3}',
-          md: '{core.spacing.4}',
-          lg: '{core.spacing.6}',
-          xl: '{core.spacing.8}',
+          sm: '{core.spacing.4}',
+          md: '{core.spacing.6}',
+          lg: '{core.spacing.8}',
+          xl: '{core.spacing.12}',
         },
         inline: {
           xs: '{core.spacing.1}',
@@ -1246,13 +1280,13 @@ export const baseTheme: ThemeTokens = {
       },
 
       gutter: {
-        page: 'clamp({core.spacing.4}, {core.spacing.6}, {core.spacing.12})',
-        section: 'clamp({core.spacing.3}, {core.spacing.4}, {core.spacing.12})',
+        page: 'clamp({core.spacing.6}, {core.spacing.12}, {core.spacing.16})',
+        section: 'clamp({core.spacing.4}, {core.spacing.8}, {core.spacing.16})',
       },
 
       separation: {
         interactive: {
-          min: 'clamp(8px, {core.spacing.2}, 12px)',
+          min: 'clamp(8px, {core.spacing.3}, 16px)',
         },
       },
     },

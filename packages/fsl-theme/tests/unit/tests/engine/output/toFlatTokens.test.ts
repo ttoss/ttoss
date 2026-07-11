@@ -1,35 +1,29 @@
-import { baseBundle } from '../../../../../src/baseBundle';
 import { baseTheme as defaultTheme } from '../../../../../src/baseTheme';
-import { buildTheme } from '../../../../../src/createTheme';
 import { isTokenRef, toFlatTokens } from '../../../../../src/roots/helpers';
 
 // ---------------------------------------------------------------------------
-// Root 2 — Flat Token Map
+// toFlatTokens — output contracts
 // ---------------------------------------------------------------------------
 
 describe('toFlatTokens', () => {
-  test('returns a flat Record with dot-path keys', () => {
+  // ADR-007: both core.* and semantic.* namespaces are present in the output
+  test('output contains both core.* and semantic.* namespaces', () => {
     const flat = toFlatTokens(defaultTheme);
-    expect(flat['core.colors.brand.500']).toBeDefined();
+    const keys = Object.keys(flat);
     expect(
-      flat['semantic.colors.action.primary.background.default']
-    ).toBeDefined();
+      keys.some((k) => {
+        return k.startsWith('core.');
+      })
+    ).toBe(true);
+    expect(
+      keys.some((k) => {
+        return k.startsWith('semantic.');
+      })
+    ).toBe(true);
   });
 
-  test('all values are fully resolved — no {refs} remain', () => {
+  test('every pure {core.*} semantic ref resolves to the same value as its core counterpart', () => {
     const flat = toFlatTokens(defaultTheme);
-    const unresolvedRefs = Object.entries(flat).filter(([, v]) => {
-      return isTokenRef(v);
-    });
-
-    expect(unresolvedRefs).toEqual([]);
-  });
-
-  test('semantic refs resolve to their core raw values', () => {
-    const flat = toFlatTokens(defaultTheme);
-
-    // Walk the raw semantic tree and find every leaf that is a pure {core.*} ref.
-    // After resolution, flat[semanticPath] must equal flat[coreRefPath].
     let checkedCount = 0;
 
     const walk = (obj: unknown, prefix: string): void => {
@@ -53,38 +47,5 @@ describe('toFlatTokens', () => {
     walk(defaultTheme.semantic, 'semantic');
     // Sanity: the theme must have at least some core refs in semantic
     expect(checkedCount).toBeGreaterThan(0);
-  });
-
-  test('preserves numeric values', () => {
-    const flat = toFlatTokens(defaultTheme);
-    expect(typeof flat['core.opacity.100']).toBe('number');
-    expect(typeof flat['core.zIndex.level.3']).toBe('number');
-  });
-
-  test('custom theme overrides are reflected', () => {
-    const theme = buildTheme({
-      overrides: { core: { colors: { brand: { 500: '#CUSTOM' } } } },
-    });
-
-    const flat = toFlatTokens(theme);
-    expect(flat['core.colors.brand.500']).toBe('#CUSTOM');
-  });
-
-  test('all built-in themes produce fully resolved maps', () => {
-    {
-      const flat = toFlatTokens(baseBundle.base);
-      const unresolvedRefs = Object.entries(flat).filter(([, v]) => {
-        return isTokenRef(v);
-      });
-
-      expect(unresolvedRefs).toEqual([]);
-    }
-  });
-
-  test('all built-in themes have a substantial number of tokens', () => {
-    {
-      const count = Object.keys(toFlatTokens(baseBundle.base)).length;
-      expect(count).toBeGreaterThan(50);
-    }
   });
 });

@@ -11,7 +11,7 @@ pnpm add @ttoss/fsl-theme
 ## Entry points
 
 | Import                     | Exports                                                                                                                                                                                         |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| :------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `@ttoss/fsl-theme`         | `createTheme`, `darkAlternate`, built-in themes (`bruttal`, `corporate`, `oca`, `ventures`), types (`ThemeTokens`, `ThemeBundle`, `SemanticTokens`, `ModeOverride`, `DeepPartial`, `ThemeMode`) |
 | `@ttoss/fsl-theme/react`   | `ThemeProvider`, `ThemeHead`, `ThemeScript`, `ThemeStyles`, `useColorMode`, `useTokens`, `useResolvedTokens`                                                                                    |
 | `@ttoss/fsl-theme/dataviz` | `withDataviz`, `useDatavizTokens`                                                                                                                                                               |

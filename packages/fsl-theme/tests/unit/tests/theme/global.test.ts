@@ -13,7 +13,7 @@ import {
   themeAltFlatToTest,
   themeFlatToTest,
   themeToTest,
-} from '../../helpers/theme';
+} from '../../fixtures/theme';
 // ---------------------------------------------------------------------------
 // Bundle fixtures — add entries here when new bundles are introduced
 // ---------------------------------------------------------------------------

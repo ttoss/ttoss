@@ -1,285 +1,170 @@
-import { baseBundle } from '../../../../../src/baseBundle';
 import { baseTheme as defaultTheme } from '../../../../../src/baseTheme';
 import type { DTCGToken, DTCGTokenTree } from '../../../../../src/roots/toDTCG';
 import { toDTCG } from '../../../../../src/roots/toDTCG';
+import { bruttal } from '../../../../../src/themes/bruttal';
+import { corporate } from '../../../../../src/themes/corporate';
+import { oca } from '../../../../../src/themes/oca';
+import { ventures } from '../../../../../src/themes/ventures';
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/** Collect every leaf node ($value + $type) from a DTCG tree. */
+/** Collect every leaf (path → token) from a DTCG tree. */
 const collectLeaves = (
   tree: DTCGTokenTree,
   path = ''
 ): { path: string; token: DTCGToken }[] => {
-  if ('$value' in tree && '$type' in tree) {
-    return [{ path, token: tree as DTCGToken }];
-  }
-
-  const entries = Object.entries(tree as Record<string, DTCGTokenTree>);
-  return entries.flatMap(([key, child]) => {
-    return collectLeaves(child, path ? `${path}.${key}` : key);
-  });
+  return '$value' in tree && '$type' in tree
+    ? [{ path, token: tree as DTCGToken }]
+    : Object.entries(tree as Record<string, DTCGTokenTree>).flatMap(
+        ([key, child]) => {
+          return collectLeaves(child, path ? `${path}.${key}` : key);
+        }
+      );
 };
 
-// ---------------------------------------------------------------------------
-// Root 3 — W3C Design Tokens (DTCG)
-// ---------------------------------------------------------------------------
-
 describe('toDTCG', () => {
-  const tree = toDTCG(defaultTheme);
-  const leaves = collectLeaves(tree);
-
-  test('every leaf has $value and $type', () => {
-    for (const { path, token } of leaves) {
-      expect(token).toHaveProperty('$value');
-      expect(token).toHaveProperty('$type');
-      expect(typeof token.$type).toBe('string');
-      // $value must be string or number
-      expect(['string', 'number']).toContain(typeof token.$value);
-      // Ensure path is not empty (sanity)
-      expect(path.length).toBeGreaterThan(0);
-    }
-  });
-
-  test('infers correct $type for core color tokens', () => {
-    const token = collectLeaves(toDTCG(defaultTheme)).find((l) => {
-      return l.path === 'core.colors.brand.500';
+  const leaves = collectLeaves(toDTCG(defaultTheme));
+  const leafAt = (path: string) => {
+    return leaves.find((l) => {
+      return l.path === path;
     })?.token;
-    expect(token?.$type).toBe('color');
-  });
+  };
 
-  test('infers correct $type for dimension tokens', () => {
-    const token = collectLeaves(toDTCG(defaultTheme)).find((l) => {
-      return l.path === 'core.spacing.2';
-    })?.token;
-    expect(token?.$type).toBe('dimension');
-  });
+  // ---------------------------------------------------------------------------
+  // Structural invariant — every leaf has resolved $value (no {ref}) and $type
+  // ---------------------------------------------------------------------------
 
-  test('infers correct $type for shadow tokens', () => {
-    const token = collectLeaves(toDTCG(defaultTheme)).find((l) => {
-      return l.path === 'core.elevation.level.0';
-    })?.token;
-    expect(token?.$type).toBe('shadow');
-  });
-
-  test('infers correct $type for number tokens', () => {
-    const token = collectLeaves(toDTCG(defaultTheme)).find((l) => {
-      return l.path === 'core.opacity.100';
-    })?.token;
-    expect(token?.$type).toBe('number');
-    expect(typeof token?.$value).toBe('number');
-  });
-
-  test('infers correct $type for motion easing (string, not cubicBezier)', () => {
-    const token = collectLeaves(toDTCG(defaultTheme)).find((l) => {
-      return l.path === 'core.motion.easing.standard';
-    })?.token;
-    expect(token?.$type).toBe('string');
-  });
-
-  test('infers correct $type for core motion duration (duration, not string)', () => {
-    const token = collectLeaves(toDTCG(defaultTheme)).find((l) => {
-      return l.path === 'core.motion.duration.md';
-    })?.token;
-    expect(token?.$type).toBe('duration');
-  });
-
-  test('infers correct $type for semantic motion duration (duration, not string)', () => {
-    const SEMANTIC_DURATION_PATHS = [
-      'semantic.motion.feedback.duration',
-      'semantic.motion.transition.enter.duration',
-      'semantic.motion.transition.exit.duration',
-      'semantic.motion.emphasis.duration',
-      'semantic.motion.decorative.duration',
-    ];
-    const allLeaves = collectLeaves(toDTCG(defaultTheme));
-    for (const expectedPath of SEMANTIC_DURATION_PATHS) {
-      const token = allLeaves.find((l) => {
-        return l.path === expectedPath;
-      })?.token;
-      expect(token?.$type).toBe('duration');
-    }
-  });
-
-  test('semantic motion easing retains $type string', () => {
-    const token = collectLeaves(toDTCG(defaultTheme)).find((l) => {
-      return l.path === 'semantic.motion.feedback.easing';
-    })?.token;
-    expect(token?.$type).toBe('string');
-  });
-
-  test('values are fully resolved — no {ref} strings in $value', () => {
+  test('every leaf has concrete $value (no {ref}) and string $type', () => {
+    expect(leaves.length).toBeGreaterThan(0);
     for (const { token } of leaves) {
+      expect(['string', 'number']).toContain(typeof token.$value);
+      expect(typeof token.$type).toBe('string');
       if (typeof token.$value === 'string') {
         expect(token.$value).not.toMatch(/^\{.+\}$/);
       }
     }
   });
 
-  test('tree structure matches token path segments', () => {
-    // core.colors.brand.500 → tree has a leaf at that path with $value and $type
-    const node = collectLeaves(tree).find((l) => {
-      return l.path === 'core.colors.brand.500';
-    });
-    expect(node).toBeDefined();
-    expect(node?.token.$value).toBeDefined();
-    expect(node?.token.$type).toBe('color');
-  });
+  // ---------------------------------------------------------------------------
+  // $type prefix-family coverage — every leaf in a path family has the registry type
+  // Tests the class (all members), not a single case from each family.
+  // ---------------------------------------------------------------------------
 
-  test('infers correct $type for semantic text fontFamily (fontFamily, not string)', () => {
-    const allLeaves = collectLeaves(toDTCG(defaultTheme));
-    const token = allLeaves.find((l) => {
-      return l.path === 'semantic.text.body.md.fontFamily';
-    })?.token;
-    expect(token?.$type).toBe('fontFamily');
-  });
-
-  test('infers correct $type for semantic text fontSize (dimension, not string)', () => {
-    const allLeaves = collectLeaves(toDTCG(defaultTheme));
-    for (const family of [
-      'display',
-      'headline',
-      'title',
-      'body',
-      'label',
-      'code',
-    ]) {
-      const step = family === 'code' ? 'md' : 'lg';
-      const token = allLeaves.find((l) => {
-        return l.path === `semantic.text.${family}.${step}.fontSize`;
-      })?.token;
-      expect(token?.$type).toBe('dimension');
-    }
-  });
-
-  test('infers correct $type for semantic text fontWeight (fontWeight, not string)', () => {
-    const allLeaves = collectLeaves(toDTCG(defaultTheme));
-    const token = allLeaves.find((l) => {
-      return l.path === 'semantic.text.body.md.fontWeight';
-    })?.token;
-    expect(token?.$type).toBe('fontWeight');
-  });
-
-  test('infers correct $type for semantic text lineHeight (number, not string)', () => {
-    const allLeaves = collectLeaves(toDTCG(defaultTheme));
-    const token = allLeaves.find((l) => {
-      return l.path === 'semantic.text.body.md.lineHeight';
-    })?.token;
-    expect(token?.$type).toBe('number');
-  });
-
-  test('infers correct $type for semantic text letterSpacing (dimension, not string)', () => {
-    const allLeaves = collectLeaves(toDTCG(defaultTheme));
-    const token = allLeaves.find((l) => {
-      return l.path === 'semantic.text.label.sm.letterSpacing';
-    })?.token;
-    expect(token?.$type).toBe('dimension');
-  });
-
-  // focus.ring.color is a color token inside the 'semantic.focus.' subtree which
-  // defaults to dtcgType 'string'. The suffix override '.ring.color' → 'color'
-  // must take precedence over the prefix-level fallback.
-  test('infers correct $type for semantic focus.ring.color (color, not string)', () => {
-    const allLeaves = collectLeaves(toDTCG(defaultTheme));
-    const token = allLeaves.find((l) => {
-      return l.path === 'semantic.focus.ring.color';
-    })?.token;
-    expect(token?.$type).toBe('color');
-    // Also assert the value is a resolved hex color (not a {ref} string).
-    expect(typeof token?.$value).toBe('string');
-    expect(String(token?.$value)).toMatch(/^#[0-9A-Fa-f]{3,8}$/);
-  });
-
-  test('suffix overrides do not affect core font primitive tokens', () => {
-    // Core font weight primitives must retain 'fontWeight' (from registry prefix, not suffix)
-    const allLeaves = collectLeaves(toDTCG(defaultTheme));
-    const weightToken = allLeaves.find((l) => {
-      return l.path === 'core.font.weight.bold';
-    })?.token;
-    expect(weightToken?.$type).toBe('fontWeight');
-
-    // Core font leading primitives must retain 'number'
-    const leadingToken = allLeaves.find((l) => {
-      return l.path === 'core.font.leading.normal';
-    })?.token;
-    expect(leadingToken?.$type).toBe('number');
-
-    // Core font tracking primitives must retain 'dimension'
-    const trackingToken = allLeaves.find((l) => {
-      return l.path === 'core.font.tracking.tight';
-    })?.token;
-    expect(trackingToken?.$type).toBe('dimension');
-  });
-
-  test('all built-in themes produce valid DTCG trees', () => {
-    {
-      const dtcgTree = toDTCG(baseBundle.base);
-      const dtcgLeaves = collectLeaves(dtcgTree);
-
-      expect(dtcgLeaves.length).toBeGreaterThan(50);
-
-      for (const { token } of dtcgLeaves) {
-        expect(token).toHaveProperty('$value');
-        expect(token).toHaveProperty('$type');
+  test.each([
+    ['core.colors.', 'color'],
+    ['core.spacing.', 'dimension'],
+    ['core.elevation.level.', 'shadow'],
+    ['core.opacity.', 'number'],
+    ['core.motion.duration.', 'duration'],
+    ['core.motion.easing.', 'string'],
+    ['core.font.weight.', 'fontWeight'],
+    ['core.font.leading.', 'number'],
+    ['core.font.tracking.', 'dimension'],
+  ] as const)(
+    'every leaf under prefix %s has $type %s',
+    (prefix, expectedType) => {
+      const family = leaves.filter((l) => {
+        return l.path.startsWith(prefix);
+      });
+      expect(family.length).toBeGreaterThan(0);
+      for (const { token } of family) {
+        expect(token.$type).toBe(expectedType);
       }
     }
+  );
+
+  // ---------------------------------------------------------------------------
+  // $type suffix overrides — suffix beats the 'string' prefix fallback
+  // ---------------------------------------------------------------------------
+
+  // .duration overrides semantic.motion. → string for every motion subtree leaf
+  test('all semantic.motion leaves ending in .duration have $type duration', () => {
+    const durationLeaves = leaves.filter((l) => {
+      return (
+        l.path.startsWith('semantic.motion.') && l.path.endsWith('.duration')
+      );
+    });
+    expect(durationLeaves.length).toBeGreaterThan(0);
+    for (const { token } of durationLeaves) {
+      expect(token.$type).toBe('duration');
+    }
   });
+
+  // typography suffix overrides beat semantic.text. → string for every family/step
+  test.each([
+    ['.fontFamily', 'fontFamily'],
+    ['.fontWeight', 'fontWeight'],
+    ['.lineHeight', 'number'],
+    ['.letterSpacing', 'dimension'],
+    ['.fontSize', 'dimension'],
+  ] as const)(
+    'all semantic.text leaves ending in %s have $type %s',
+    (suffix, expectedType) => {
+      const textLeaves = leaves.filter((l) => {
+        return l.path.startsWith('semantic.text.') && l.path.endsWith(suffix);
+      });
+      expect(textLeaves.length).toBeGreaterThan(0);
+      for (const { token } of textLeaves) {
+        expect(token.$type).toBe(expectedType);
+      }
+    }
+  );
+
+  // .ring.color suffix overrides semantic.focus. → string (only one such leaf)
+  test('semantic.focus.ring.color has $type color (.ring.color suffix overrides semantic.focus. → string)', () => {
+    expect(leafAt('semantic.focus.ring.color')?.$type).toBe('color');
+  });
+
+  // ---------------------------------------------------------------------------
+  // Multi-theme coverage — all built-in themes produce valid DTCG trees
+  // ---------------------------------------------------------------------------
+
+  test.each([
+    ['baseTheme', defaultTheme],
+    ['bruttal', bruttal.base],
+    ['corporate', corporate.base],
+    ['oca', oca.base],
+    ['ventures', ventures.base],
+  ] as const)(
+    'toDTCG(%s) produces a valid DTCG tree: all leaves have $value and $type, no refs',
+    (_label, theme) => {
+      const themeLeaves = collectLeaves(toDTCG(theme));
+      expect(themeLeaves.length).toBeGreaterThan(50);
+      for (const { token } of themeLeaves) {
+        expect(['string', 'number']).toContain(typeof token.$value);
+        expect(typeof token.$type).toBe('string');
+        if (typeof token.$value === 'string') {
+          expect(token.$value).not.toMatch(/^\{.+\}$/);
+        }
+      }
+    }
+  );
 
   // ---------------------------------------------------------------------------
   // $extensions — coarse-pointer hit target metadata
   // ---------------------------------------------------------------------------
 
-  describe('coarse-pointer $extensions on semantic.sizing.hit tokens', () => {
-    test('semantic.sizing.hit.base has $extensions with coarse override', () => {
-      const token = collectLeaves(toDTCG(defaultTheme)).find((l) => {
-        return l.path === 'semantic.sizing.hit.base';
-      })?.token;
-
-      expect(token?.$extensions).toBeDefined();
-      expect(token?.$extensions?.['com.ttoss.pointer-override']).toEqual({
-        condition: 'any-pointer: coarse',
-        value: defaultTheme.core.sizing.hit.coarse.base,
-      });
-    });
-
-    test('all semantic.sizing.hit steps have coarse-pointer $extensions', () => {
-      const allLeaves = collectLeaves(toDTCG(defaultTheme));
-
+  describe('coarse-pointer $extensions', () => {
+    test('every semantic.sizing.hit step has com.ttoss.pointer-override with the correct coarse value', () => {
       for (const step of ['min', 'base', 'prominent'] as const) {
-        const token = allLeaves.find((l) => {
-          return l.path === `semantic.sizing.hit.${step}`;
-        })?.token;
-
-        expect(token?.$extensions).toBeDefined();
-        expect(token?.$extensions?.['com.ttoss.pointer-override']).toEqual({
+        expect(
+          leafAt(`semantic.sizing.hit.${step}`)?.$extensions?.[
+            'com.ttoss.pointer-override'
+          ]
+        ).toEqual({
           condition: 'any-pointer: coarse',
           value: defaultTheme.core.sizing.hit.coarse[step],
         });
       }
     });
 
-    test('non-hit semantic tokens do not have $extensions', () => {
-      const allLeaves = collectLeaves(toDTCG(defaultTheme));
-      const nonHitSemanticLeaves = allLeaves.filter((l) => {
+    test('non-hit semantic and core tokens have no $extensions', () => {
+      const nonHit = leaves.filter((l) => {
         return (
-          l.path.startsWith('semantic.') &&
-          !l.path.startsWith('semantic.sizing.hit.')
+          (l.path.startsWith('semantic.') &&
+            !l.path.startsWith('semantic.sizing.hit.')) ||
+          l.path.startsWith('core.')
         );
       });
-
-      for (const { token } of nonHitSemanticLeaves) {
-        expect(token.$extensions).toBeUndefined();
-      }
-    });
-
-    test('core tokens do not have $extensions', () => {
-      const allLeaves = collectLeaves(toDTCG(defaultTheme));
-      const coreLeaves = allLeaves.filter((l) => {
-        return l.path.startsWith('core.');
-      });
-
-      for (const { token } of coreLeaves) {
+      for (const { token } of nonHit) {
         expect(token.$extensions).toBeUndefined();
       }
     });
