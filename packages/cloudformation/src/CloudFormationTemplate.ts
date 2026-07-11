@@ -85,7 +85,8 @@ export type PolicyStatement = {
   >;
   NotAction?: string | string[];
   NotResource?:
-    CloudFormationValue<string> | Array<CloudFormationValue<string>>;
+    | CloudFormationValue<string>
+    | Array<CloudFormationValue<string>>;
   NotPrincipal?: CloudFormationValue<
     string | Record<string, string | string[]>
   >;

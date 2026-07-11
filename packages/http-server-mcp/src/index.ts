@@ -247,7 +247,8 @@ export { getIdentity } from './context';
  */
 export const checkScopes = (required: string[]): void => {
   const identity = getIdentity() as
-    { scope?: string; scopes?: string[] } | undefined;
+    | { scope?: string; scopes?: string[] }
+    | undefined;
   let scopeString: string | null = null;
   if (typeof identity?.scope === 'string') {
     scopeString = identity.scope;
@@ -464,7 +465,8 @@ export const createMcpRouter = (
   // so that unrelated paths like /.well-known/* are never intercepted — even
   // when aliases contains '/', which would otherwise prefix-match everything.
   let authCheck:
-    ((ctx: Context, next: () => Promise<void>) => Promise<void>) | undefined;
+    | ((ctx: Context, next: () => Promise<void>) => Promise<void>)
+    | undefined;
 
   if (auth) {
     const verifyToken = buildVerifyToken(auth);

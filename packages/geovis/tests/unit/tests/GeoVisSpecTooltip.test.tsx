@@ -126,7 +126,8 @@ const triggerMove = (
   features?: ReadonlyArray<{ id?: string | number; layer?: { id: string } }>
 ) => {
   const handler = map.__handlers.get(`mousemove:${layerId}`) as
-    MapMouseHandler | undefined;
+    | MapMouseHandler
+    | undefined;
   if (!handler) throw new Error(`mousemove handler missing for ${layerId}`);
   act(() => {
     handler({ point, features });

@@ -323,7 +323,8 @@ export interface OnRefreshTokenArgs {
 
 /** Result of validating a refresh token. Return `undefined` to reject. */
 export type OnRefreshTokenResult =
-  { subject: string; scopes: string[] } | undefined;
+  | { subject: string; scopes: string[] }
+  | undefined;
 
 /** Configuration for {@link createOAuthHandlers}. */
 export interface OAuthServerOptions {

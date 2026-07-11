@@ -69,7 +69,8 @@ export type QuantitativeColorByTemplate = Omit<QuantitativeColorBy, 'property'>;
 
 /** Color-by template for a layer template. */
 export type ColorByTemplate =
-  CategoricalColorByTemplate | QuantitativeColorByTemplate;
+  | CategoricalColorByTemplate
+  | QuantitativeColorByTemplate;
 
 /**
  * Controls how quantitative legend bin labels are formatted.
@@ -164,7 +165,10 @@ export type NormalizationSpec =
  * of the map engine.
  */
 export type LegendPosition =
-  'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+  | 'top-left'
+  | 'top-right'
+  | 'bottom-left'
+  | 'bottom-right';
 
 /**
  * Alternative color/legend configuration exposed by a layer. Consumers MAY

@@ -8,7 +8,8 @@ export type CarlinParameter = {
 };
 
 export type CarlinParameters =
-  CarlinParameter[] | Record<string, CarlinParameterValue>;
+  | CarlinParameter[]
+  | Record<string, CarlinParameterValue>;
 
 export type CarlinConfigContext = {
   branch?: string;

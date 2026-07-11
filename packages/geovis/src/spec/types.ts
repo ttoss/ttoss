@@ -77,10 +77,17 @@ export interface GeoJSONFeatureCollection {
 }
 
 export type GeoJSONObject =
-  GeoJSONGeometry | GeoJSONFeature | GeoJSONFeatureCollection;
+  | GeoJSONGeometry
+  | GeoJSONFeature
+  | GeoJSONFeatureCollection;
 
 export type GeoVisGeometryType =
-  'point' | 'line' | 'polygon' | 'raster' | 'symbol' | 'heatmap';
+  | 'point'
+  | 'line'
+  | 'polygon'
+  | 'raster'
+  | 'symbol'
+  | 'heatmap';
 
 export type MapType = 'choropleth' | 'dotDensity' | 'proportionalCircles';
 

@@ -3,7 +3,7 @@
   "version": "2.12.0",
   "private": true,
   "scripts": {
-    "build": "NODE_OPTIONS=--max-old-space-size=4096 docusaurus build",
+    "build": "NODE_OPTIONS=--max-old-space-size=6144 docusaurus build",
     "build-dev": "NODE_ENV=development docusaurus build",
     "clear": "docusaurus clear",
     "deploy": "carlin deploy static-app",

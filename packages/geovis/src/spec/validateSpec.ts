@@ -4,7 +4,8 @@ import schema from './schema.json';
 import type { VisualizationLayer, VisualizationSpec } from './types';
 
 export type ValidationResult =
-  { valid: true; spec: VisualizationSpec } | { valid: false; errors: string[] };
+  | { valid: true; spec: VisualizationSpec }
+  | { valid: false; errors: string[] };
 
 const ajv = new Ajv2020({ strict: false });
 const _validate = ajv.compile(schema);

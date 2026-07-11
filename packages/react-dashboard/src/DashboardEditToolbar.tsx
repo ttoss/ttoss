@@ -9,7 +9,11 @@ import { useDashboard } from './DashboardProvider';
 import { DashboardSectionDivider } from './DashboardSectionDivider';
 
 export type CardCatalogGroup =
-  'sectionDivider' | 'meta' | 'oneclickads' | 'api' | 'oneclickads';
+  | 'sectionDivider'
+  | 'meta'
+  | 'oneclickads'
+  | 'api'
+  | 'oneclickads';
 
 const getCatalogGroup = (item: CardCatalogItem): CardCatalogGroup => {
   if (item.card.type === 'sectionDivider') return 'sectionDivider';

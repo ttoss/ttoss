@@ -359,14 +359,22 @@ export const template = {
 ```typescript
 // infrastructure/buckets.ts
 export const buckets = {
-  AssetsBucket: {/* ... */},
-  BackupsBucket: {/* ... */},
+  AssetsBucket: {
+    /* ... */
+  },
+  BackupsBucket: {
+    /* ... */
+  },
 };
 
 // infrastructure/databases.ts
 export const databases = {
-  MainTable: {/* ... */},
-  CacheTable: {/* ... */},
+  MainTable: {
+    /* ... */
+  },
+  CacheTable: {
+    /* ... */
+  },
 };
 
 // cloudformation.ts
@@ -394,7 +402,9 @@ export const template = {
       DependsOn: 'Bucket', // Wait for bucket creation
       Properties: {
         Bucket: { Ref: 'Bucket' },
-        PolicyDocument: {/* ... */},
+        PolicyDocument: {
+          /* ... */
+        },
       },
     },
   },
