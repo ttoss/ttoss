@@ -4,13 +4,29 @@ import type { DeepPartial, ThemeTokens } from '../Types';
 // Token reference utilities
 // ---------------------------------------------------------------------------
 
-/** Check if a value is a token reference like `{core.colors.brand.500}` */
+/**
+ * Check if a value is a **pure** token reference like `{core.colors.brand.500}`.
+ *
+ * A pure ref is a single `{path}` with no interior braces. Compound expressions
+ * (`clamp({a}, {b})`) and multi-ref strings (`{a} {b}`) are NOT pure refs — they
+ * start `{`/end `}` but carry interior braces, and must go through the compound
+ * resolution path instead. Without the interior-brace check `{a} {b}` would be
+ * mis-parsed as the single path `a} {b`.
+ */
+const hasInteriorBraces = (value: string): boolean => {
+  // A pure ref has `{` only at index 0 and `}` only at the final index.
+  return (
+    value.indexOf('{', 1) !== -1 || value.indexOf('}') !== value.length - 1
+  );
+};
+
 export const isTokenRef = (value: unknown): value is `{${string}}` => {
   return (
     typeof value === 'string' &&
     value.length > 2 &&
     value.startsWith('{') &&
-    value.endsWith('}')
+    value.endsWith('}') &&
+    !hasInteriorBraces(value)
   );
 };
 
@@ -52,6 +68,15 @@ export const isPlainObject = (
 // ---------------------------------------------------------------------------
 
 /**
+ * Prototype-chain keys that must never be written from override data —
+ * `result['__proto__']` reaches the prototype setter, not an own property.
+ * Guards `createTheme`'s public `overrides` against prototype pollution.
+ */
+const isUnsafeMergeKey = (key: string): boolean => {
+  return key === '__proto__' || key === 'constructor' || key === 'prototype';
+};
+
+/**
  * Recursively merges `overrides` into `base`.
  * - Plain objects are merged recursively.
  * - All other values (primitives, arrays) are replaced.
@@ -64,6 +89,10 @@ export const deepMerge = <T>(base: T, overrides: DeepPartial<T>): T => {
   const result = { ...base } as Record<string, unknown>;
 
   for (const key of Object.keys(overrides)) {
+    if (isUnsafeMergeKey(key)) {
+      continue;
+    }
+
     const baseVal = result[key];
     const overVal = (overrides as Record<string, unknown>)[key];
 
@@ -215,6 +244,13 @@ export const toFlatTokens = (
       }
       const childSeen = new Set(seen).add(path);
       const resolved = resolveRef(target, childSeen, ownerKey);
+      // If the target is itself a compound expression with embedded refs,
+      // `resolveRef` returns it verbatim (it only recurses on pure refs) —
+      // re-resolve so chained compound refs expand fully. The `childSeen`
+      // guard bounds this against cycles.
+      if (typeof resolved === 'string' && resolved.includes('{')) {
+        return resolveInline(resolved, childSeen, ownerKey);
+      }
       return String(resolved);
     });
   };

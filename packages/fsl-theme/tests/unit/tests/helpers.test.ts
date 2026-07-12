@@ -32,6 +32,15 @@ describe('isTokenRef', () => {
     expect(isTokenRef('')).toBe(false);
     expect(isTokenRef('{}')).toBe(false);
   });
+
+  test('rejects compound and multi-ref strings (interior braces)', () => {
+    // Only a single `{path}` is a pure ref. A multi-ref or compound expression
+    // must take the compound resolution path, not be mis-parsed as one path.
+    expect(isTokenRef('{a} {b}')).toBe(false);
+    expect(isTokenRef('{a}{b}')).toBe(false);
+    expect(isTokenRef('clamp({a}, {b})')).toBe(false);
+    expect(isTokenRef('{core.spacing.2} {core.spacing.4}')).toBe(false);
+  });
 });
 
 describe('extractRefPath', () => {
@@ -115,6 +124,25 @@ describe('deepMerge', () => {
     const base = { a: 1, b: 2 };
     expect(deepMerge(base, { a: undefined })).toEqual(base);
   });
+
+  test('does not pollute the prototype via a __proto__ override key', () => {
+    // Simulates untrusted (e.g. JSON-parsed) overrides carrying a __proto__ key.
+    const malicious = JSON.parse('{"__proto__": {"polluted": true}}');
+    const out = deepMerge({ a: 1 }, malicious);
+    expect(out).toEqual({ a: 1 });
+    expect(Object.getPrototypeOf(out)).toBe(Object.prototype);
+    expect(({} as Record<string, unknown>).polluted).toBeUndefined();
+    expect(Object.prototype).not.toHaveProperty('polluted');
+  });
+
+  test('skips constructor / prototype override keys', () => {
+    const out = deepMerge({ a: 1 }, {
+      constructor: 'x',
+      prototype: 'y',
+      a: 2,
+    } as never);
+    expect(out).toEqual({ a: 2 });
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -187,6 +215,52 @@ describe('flattenAndResolve', () => {
     expect(flat['semantic.elevation.surface.flat']).toBe(
       'inset 0 0 2px #0469e3'
     );
+  });
+
+  test('resolves a multi-ref string (interior braces) via the compound path', () => {
+    // Before the isTokenRef fix this was mis-classified as one pure ref and
+    // left unresolved; now it goes through compound resolution like toCssVars.
+    const theme = buildTheme({
+      overrides: {
+        semantic: {
+          elevation: {
+            surface: {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              flat: '{core.border.width.selected} {core.border.width.default}' as any,
+            },
+          },
+        },
+      },
+    });
+
+    const flat = toFlatTokens(theme);
+    expect(flat['semantic.elevation.surface.flat']).toBe('2px 1px');
+    expect(flat['semantic.elevation.surface.flat']).not.toContain('{');
+  });
+
+  test('fully resolves nested compound refs (compound → compound → raw)', () => {
+    const theme = buildTheme({
+      overrides: {
+        semantic: {
+          elevation: {
+            surface: {
+              // raised is itself a compound expression with an embedded ref…
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              raised: 'calc({core.border.width.selected} + 1px)' as any,
+              // …and flat references raised — the inner ref must still expand.
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              flat: 'outer({semantic.elevation.surface.raised})' as any,
+            },
+          },
+        },
+      },
+    });
+
+    const flat = toFlatTokens(theme);
+    expect(flat['semantic.elevation.surface.flat']).toBe(
+      'outer(calc(2px + 1px))'
+    );
+    expect(flat['semantic.elevation.surface.flat']).not.toContain('{');
   });
 
   test('breaks circular references — returns ref as-is without throwing', () => {
