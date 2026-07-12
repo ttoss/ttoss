@@ -26,27 +26,34 @@
 | 5. Built-in themes                     | **Survives — decision made: remove** | `oca` is provably inaccessible; `corporate` is a base-clone; none is authored.                    |
 
 **Net:** 2 survive as-is, 2 reframe into smaller items, 1 demotes, 1 drops — and **2 new items emerge**
-(a governance decision and the theme brief). "Fewer tokens, stronger meaning" (`governance.md`) applies to
-the plan itself.
+(a governance decision, now **decided** — see Decision 0; and the theme brief). "Fewer tokens, stronger
+meaning" (`governance.md`) applies to the plan itself.
 
 ---
 
-## Decision 0 (blocking, cross-cutting) — governance stance for the zero-consumer window
+## Decision 0 (DECIDED) — pre-adoption window: hard-rename now, bump MAJOR
 
 Every rename below is, per `governance.md`, a **MAJOR** change that formally wants a deprecation window
 (mark `@deprecated` → provide replacement → migrate → remove next major). But that window exists to
 protect consumers, and there are **zero** in the monorepo. The package is published at `1.1.22` but
 was a single "Init" commit; the risk of unknown external npm consumers is low.
 
-**Decide first, because it governs _how_ every other item is executed:**
+**Decision (owner: Ennio, 2026-07-12): (A) declare a pre-adoption window.** Hard-rename now, bump
+**MAJOR** (→ `2.0.0`) with a single changeset listing every renamed path. No `@deprecated` aliases, no
+soft-path cruft. This is the entire point of "do it while it's free." The rejected alternative — (B)
+follow the deprecation window even now — would carry dead aliases into a system with no consumers.
 
-- **Recommended — (A) declare a pre-adoption window.** Hard-rename now, bump **MAJOR** (→ `2.0.0`) with a
-  single changeset listing every renamed path. No `@deprecated` aliases, no soft-path cruft. This is the
-  entire point of "do it while it's free."
-- (B) Follow the deprecation window even now — carries dead aliases into a system with no consumers.
+This governs _how_ every other item is executed: renames in T0-1, T0-2, and the theme removal in T0-5
+land as **direct breaking changes** (no deprecation aliases), collected under one `2.0.0` changeset.
 
-This decision belongs in an **ADR** (the CONTRIBUTING "Token change operations" table currently says
-semantic renames follow the deprecation window — an ADR is required to override it for the window).
+**Required artifacts for this decision:**
+
+- An **ADR** in `CONTRIBUTING.md` recording the pre-adoption window — it overrides the "Token change
+  operations" table, which currently mandates the deprecation window for semantic renames. State the
+  window's expiry condition explicitly: it closes the moment the first consumer adopts the package (after
+  that, `governance.md`'s deprecation window is back in force).
+- A single **changeset** (`major`) enumerating every renamed/removed path (dataviz var prefixes,
+  `status.na → notApplicable`, the three removed themes) so the `2.0.0` CHANGELOG is a complete migration list.
 
 ---
 
@@ -180,7 +187,8 @@ enforceable, and is the precondition for ever finishing a built-in theme properl
 
 ## Suggested execution order
 
-1. **Decision 0** (ADR: zero-consumer window → hard-rename + MAJOR). Unblocks everything else.
+1. **Decision 0 — DECIDED (A).** Write the ADR + open the `major` changeset. Everything else lands under
+   this `2.0.0` bump as direct breaking changes, no deprecation aliases.
 2. **T0-1** (dataviz vars + duplicate-var assertion) and **T0-2** (drift batch) — the two mechanical,
    high-certainty fixes; land them together under the MAJOR bump.
 3. **T0-5** (remove the three themes) + **T0-6** (`meta` brief) + the contrast-suite-membership rule —
