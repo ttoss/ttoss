@@ -111,7 +111,7 @@ Semantic spacing is anchored in **layout physics**, not UX categories.
 
 > Default mappings below reflect the base theme (`baseTheme.ts`). They are a
 > theme choice, not a contract — a theme may remap any step. What the contract
-> guarantees is the ordering (see [Spacing order rule](#spacing-order-rule)),
+> guarantees is the ordering (see [validation rules](#errors-validation-must-fail-when)),
 > not the specific core step.
 
 | token                        | use when you are building…                    | contract (must be true)                  | default mapping (base theme)                              |
