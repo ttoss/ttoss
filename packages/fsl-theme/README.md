@@ -290,7 +290,9 @@ For one-off custom keys, use `toCssVarName` from `@ttoss/fsl-theme/css` directly
 
 ### React 19 App Router (recommended)
 
-`ThemeProvider` with a `theme` prop uses React 19 style hoisting to inject CSS into `<head>` automatically. Only add `ThemeScript` for flash-prevention:
+`ThemeProvider` with a `theme` prop uses React 19 style hoisting to inject CSS into `<head>` automatically. The injected `<style>` carries a stable `href` (`tt-theme-<themeId|root>`), so multiple providers or a re-render collapse to a single tag instead of duplicating. Only add `ThemeScript` for flash-prevention:
+
+> **React 18:** auto-injection into `<head>` requires React 19 style hoisting. On React 18 the `<ThemeProvider>` `<style>` renders inline where the provider sits — use the `ThemeHead` / `ThemeStyles` path below to place CSS in `<head>` explicitly.
 
 ```tsx
 // app/layout.tsx
@@ -348,7 +350,7 @@ export default function RootLayout({
 }
 ```
 
-> **Warning:** Do not combine `<ThemeHead theme={...}>` with `<ThemeProvider theme={...}>`. Both inject CSS — `ThemeHead` via a plain `<style>` tag and `ThemeProvider` via React 19 style hoisting — resulting in duplicate CSS in the document. Use one or the other.
+> **Warning:** Do not pass `theme` to **both** `<ThemeHead>` and `<ThemeProvider>`. `ThemeHead` injects a plain `<style>`; `ThemeProvider` injects a React-19-hoisted `<style>` — different mechanisms that do **not** dedup against each other, so you get duplicate CSS. Pass `theme` to the head component only; the body `<ThemeProvider>` (no `theme`) manages mode. (Multiple `<ThemeProvider theme={...}>` on React 19 _do_ dedup, via the shared `href`.)
 
 ## Dataviz extension
 

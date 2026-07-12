@@ -13,8 +13,13 @@ export interface TokenPathEntry {
   path: string;
   /** CSS custom property prefix (e.g. `'--tt-core-colors-'`). */
   cssPrefix: string;
-  /** W3C DTCG `$type` value (e.g. `'color'`). */
-  dtcgType: string;
+  /**
+   * W3C DTCG `$type` value (e.g. `'color'`). Omitted for opaque/keyword tokens
+   * that have no valid DTCG scalar type (font-variant keywords, easing curves,
+   * border styles, SVG dash strings) — `toDTCG` emits no `$type` for these
+   * rather than an invalid one. There is no `'string'` DTCG type.
+   */
+  dtcgType?: string;
 }
 
 /**
@@ -42,7 +47,6 @@ export const TOKEN_PATH_REGISTRY: readonly TokenPathEntry[] = [
   {
     path: 'core.dataviz.',
     cssPrefix: '--tt-core-dataviz-',
-    dtcgType: 'string',
   },
 
   // -- Semantic dataviz (longer/more-specific entries first) ----------------
@@ -69,9 +73,8 @@ export const TOKEN_PATH_REGISTRY: readonly TokenPathEntry[] = [
   {
     path: 'semantic.dataviz.encoding.',
     cssPrefix: '--tt-dataviz-encoding-',
-    dtcgType: 'string',
   },
-  { path: 'semantic.dataviz.', cssPrefix: '--tt-dataviz-', dtcgType: 'string' },
+  { path: 'semantic.dataviz.', cssPrefix: '--tt-dataviz-' },
 
   // -- Core paths -----------------------------------------------------------
   { path: 'core.colors.', cssPrefix: '--tt-core-colors-', dtcgType: 'color' },
@@ -108,12 +111,10 @@ export const TOKEN_PATH_REGISTRY: readonly TokenPathEntry[] = [
   {
     path: 'core.font.optical.',
     cssPrefix: '--tt-core-font-optical-',
-    dtcgType: 'string',
   },
   {
     path: 'core.font.numeric.',
     cssPrefix: '--tt-core-font-numeric-',
-    dtcgType: 'string',
   },
   {
     path: 'core.font.scale.',
@@ -129,7 +130,6 @@ export const TOKEN_PATH_REGISTRY: readonly TokenPathEntry[] = [
   {
     path: 'core.sizing.behavior.',
     cssPrefix: '--tt-core-sizing-behavior-',
-    dtcgType: 'string',
   },
   {
     path: 'core.sizing.',
@@ -149,7 +149,6 @@ export const TOKEN_PATH_REGISTRY: readonly TokenPathEntry[] = [
   {
     path: 'core.border.style.',
     cssPrefix: '--tt-core-border-style-',
-    dtcgType: 'string',
   },
   {
     path: 'core.opacity.',
@@ -164,7 +163,6 @@ export const TOKEN_PATH_REGISTRY: readonly TokenPathEntry[] = [
   {
     path: 'core.motion.easing.',
     cssPrefix: '--tt-core-motion-easing-',
-    dtcgType: 'string',
   },
   {
     path: 'core.zIndex.level.',
@@ -188,7 +186,7 @@ export const TOKEN_PATH_REGISTRY: readonly TokenPathEntry[] = [
     cssPrefix: '--tt-elevation-',
     dtcgType: 'shadow',
   },
-  { path: 'semantic.text.', cssPrefix: '--tt-text-', dtcgType: 'string' },
+  { path: 'semantic.text.', cssPrefix: '--tt-text-' },
   {
     path: 'semantic.spacing.',
     cssPrefix: '--tt-spacing-',
@@ -204,15 +202,15 @@ export const TOKEN_PATH_REGISTRY: readonly TokenPathEntry[] = [
     cssPrefix: '--tt-radii-',
     dtcgType: 'dimension',
   },
-  { path: 'semantic.focus.', cssPrefix: '--tt-focus-', dtcgType: 'string' },
+  { path: 'semantic.focus.', cssPrefix: '--tt-focus-' },
   { path: 'semantic.overlay.', cssPrefix: '--tt-overlay-', dtcgType: 'color' },
-  { path: 'semantic.border.', cssPrefix: '--tt-border-', dtcgType: 'string' },
+  { path: 'semantic.border.', cssPrefix: '--tt-border-' },
   {
     path: 'semantic.opacity.',
     cssPrefix: '--tt-opacity-',
     dtcgType: 'number',
   },
-  { path: 'semantic.motion.', cssPrefix: '--tt-motion-', dtcgType: 'string' },
+  { path: 'semantic.motion.', cssPrefix: '--tt-motion-' },
   {
     path: 'semantic.zIndex.layer.',
     cssPrefix: '--tt-z-index-',
@@ -227,9 +225,11 @@ export const CSS_PATH_PREFIXES: [string, string][] = TOKEN_PATH_REGISTRY.map(
   }
 );
 
-/** Derived lookup table: `[path, dtcgType]` pairs. */
-export const DTCG_TYPE_PREFIXES: [string, string][] = TOKEN_PATH_REGISTRY.map(
-  (e) => {
+/**
+ * Derived lookup table: `[path, dtcgType]` pairs. `dtcgType` is `undefined` for
+ * opaque tokens — `toDTCG` omits `$type` when the matched entry has none.
+ */
+export const DTCG_TYPE_PREFIXES: [string, string | undefined][] =
+  TOKEN_PATH_REGISTRY.map((e) => {
     return [e.path, e.dtcgType];
-  }
-);
+  });

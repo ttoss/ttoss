@@ -13,6 +13,22 @@ import { getThemeScriptContent, type ThemeScriptConfig } from './ssrScript';
 import type { SemanticTokens, ThemeBundle, ThemeTokens } from './Types';
 
 // ---------------------------------------------------------------------------
+// Hoisted-style dedup key
+// ---------------------------------------------------------------------------
+
+/**
+ * Stable `href` for the theme's hoistable `<style>` tag. React 19 keys style
+ * hoisting **and dedup** on `href` + `precedence`; without an `href` the same
+ * `:root { … }` block is emitted once per `<ThemeProvider>` / `<ThemeStyles>`
+ * with no de-duplication. Scoped by `themeId` so distinct themes coexist
+ * (micro-frontends) while identical ones (re-render, or `ThemeHead` + a themed
+ * `ThemeProvider`) collapse to a single tag.
+ */
+const themeStyleHref = (themeId?: string): string => {
+  return `tt-theme-${themeId ?? 'root'}`;
+};
+
+// ---------------------------------------------------------------------------
 // Coarse-pointer detection — bridges the hit.fine/hit.coarse coupling for
 // non-CSS consumers (useResolvedTokens). CSS consumers are handled
 // automatically by the @media (any-pointer: coarse) block in toCssVars.
@@ -148,7 +164,13 @@ export interface ThemeProviderProps {
    *
    * Passing `theme` enables `useTokens()` and `useResolvedTokens()` for all
    * descendants, and automatically injects the CSS Custom Properties `<style>`
-   * tag into the document head (React 19 hoisting).
+   * tag into the document head (React 19 hoisting, deduped by `href`).
+   *
+   * **React version:** auto-injection into `<head>` requires **React 19** style
+   * hoisting. On React 18 the `<style>` renders inline where the provider sits
+   * (not hoisted); use `<ThemeHead>` / `<ThemeStyles>` in your `<head>` for
+   * explicit injection there. The `<style>` carries a stable `href` so multiple
+   * providers (or a `ThemeHead` + themed provider) collapse to one tag on 19.
    *
    * @example
    * ```tsx
@@ -383,7 +405,9 @@ export const ThemeProvider = ({
   if (theme) {
     return (
       <>
-        <style precedence="default">{cssContent}</style>
+        <style href={themeStyleHref(themeId)} precedence="default">
+          {cssContent}
+        </style>
         <ResolvedTokensCtx.Provider value={resolvedTokens}>
           <SemanticTokensCtx.Provider value={semanticTokens}>
             {coreNode}
@@ -644,6 +668,10 @@ export interface ThemeStylesProps {
  *
  * `dangerouslySetInnerHTML` is safe: content comes exclusively from
  * `toCssVars()` (a pure internal function) — no user input is interpolated.
+ *
+ * Renders a plain inline `<style>` where you place it (put it in `<head>`).
+ * Do **not** also pass `theme` to `<ThemeProvider>` — that injects a second
+ * copy; pass `theme` to the head component only (see README SSR section).
  *
  * @example
  * ```tsx

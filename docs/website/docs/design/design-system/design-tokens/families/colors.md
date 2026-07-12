@@ -128,7 +128,7 @@ See [Usage Examples](#usage-examples) below for concrete tokens.
 
 ## FSL Entity Kind Mapping
 
-The `ux` axis is a projection-scoped subset of FSL Entity Kinds (FSL Structural Language §17.1). The resolver uses this normative table to translate `ComponentExpression.responsibility` → token UX context:
+The `ux` axis is a projection-scoped subset of FSL Entity Kinds (FSL Structural Language §17.1). This normative table maps each FSL Entity Kind → token UX context; the planned resolver (see [component-model.md](/docs/design/design-system/components/component-model) — not yet implemented) will consume it to translate a component's Entity into its token context:
 
 | FSL Entity Kind | Token `ux`      | Notes                                                                                                                |
 | :-------------- | :-------------- | :------------------------------------------------------------------------------------------------------------------- |
