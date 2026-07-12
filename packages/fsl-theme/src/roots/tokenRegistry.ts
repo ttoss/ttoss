@@ -46,24 +46,29 @@ export const TOKEN_PATH_REGISTRY: readonly TokenPathEntry[] = [
   },
 
   // -- Semantic dataviz (longer/more-specific entries first) ----------------
+  // Each channel keeps its segment in the CSS var (`--tt-dataviz-color-…`,
+  // `--tt-dataviz-geo-…`) — consistent with every other family (which keeps its
+  // post-family segment, e.g. `--tt-colors-action-…`) and structurally
+  // collision-proof: `color.state.*` and `geo.state.*` can never collapse to
+  // the same var name.
   {
     path: 'semantic.dataviz.color.',
-    cssPrefix: '--tt-dataviz-',
+    cssPrefix: '--tt-dataviz-color-',
     dtcgType: 'color',
   },
   {
     path: 'semantic.dataviz.encoding.opacity.',
-    cssPrefix: '--tt-dataviz-',
+    cssPrefix: '--tt-dataviz-encoding-opacity-',
     dtcgType: 'number',
   },
   {
     path: 'semantic.dataviz.geo.',
-    cssPrefix: '--tt-dataviz-',
+    cssPrefix: '--tt-dataviz-geo-',
     dtcgType: 'color',
   },
   {
     path: 'semantic.dataviz.encoding.',
-    cssPrefix: '--tt-dataviz-',
+    cssPrefix: '--tt-dataviz-encoding-',
     dtcgType: 'string',
   },
   { path: 'semantic.dataviz.', cssPrefix: '--tt-dataviz-', dtcgType: 'string' },

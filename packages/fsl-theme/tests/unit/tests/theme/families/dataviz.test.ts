@@ -45,7 +45,7 @@ const statusValues = (): (string | number)[] => {
   return [
     flat['semantic.dataviz.color.status.missing'],
     flat['semantic.dataviz.color.status.suppressed'],
-    flat['semantic.dataviz.color.status.na'],
+    flat['semantic.dataviz.color.status.notApplicable'],
   ];
 };
 

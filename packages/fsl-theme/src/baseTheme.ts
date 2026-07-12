@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import type { ModeOverride, ThemeTokens } from './Types';
+import type { ModeOverride, ThemeBrief, ThemeTokens } from './Types';
 
 /**
  * **Foundation** — Neutral baseline theme.
@@ -1888,4 +1888,25 @@ export const darkAlternate: ModeOverride = {
       },
     },
   },
+};
+
+/**
+ * Design brief for the base theme — the recommended default from
+ * theme-authoring.md §"Recommended base theme brief". Attached to the base
+ * bundle via `createTheme({ brief })`; carries the `FSL-DESIGN-001..003` gate.
+ */
+export const baseBrief: ThemeBrief = {
+  name: 'base',
+  purpose: 'default built-in foundation for modern product UI',
+  primaryPosture: 'productive',
+  secondaryPosture: 'calm',
+  densityProfile: 'balanced',
+  readingMode: 'mixed',
+  pointerProfile: 'hybrid',
+  interactionRisk: 'medium',
+  surfaceModel: 'lightly-layered',
+  brandEnergy: 'quiet',
+  accessibilityTarget: 'AA+',
+  colorModeStrategy: 'dark-supported',
+  platformBias: 'web',
 };

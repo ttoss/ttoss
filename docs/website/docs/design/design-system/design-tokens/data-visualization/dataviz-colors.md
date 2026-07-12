@@ -130,7 +130,7 @@ dataviz.color.state.selected
 
 dataviz.color.status.missing
 dataviz.color.status.suppressed
-dataviz.color.status.not-applicable
+dataviz.color.status.notApplicable
 ```
 
 These tokens form the semantic contract for analytical color.
@@ -211,7 +211,7 @@ They modify reading context, not analytical class.
 
 - `status.missing` means data is absent
 - `status.suppressed` means data exists but is intentionally withheld
-- `status.not-applicable` means the value does not apply to the case
+- `status.notApplicable` means the value does not apply to the case
 
 Status tokens are essential to avoid collapsing distinct data conditions into a single visual treatment.
 
@@ -283,7 +283,7 @@ Do not expand the semantic series range casually.
 
 ### 5. Keep status distinct from value
 
-Missing, suppressed, and not-applicable are not value states.
+Missing, suppressed, and not-applicable (`notApplicable`) are not value states.
 
 They must remain visually distinguishable from:
 
@@ -329,7 +329,7 @@ These systems must remain separate.
 - any two of these status tokens resolve to the same effective value:
   - `dataviz.color.status.missing`
   - `dataviz.color.status.suppressed`
-  - `dataviz.color.status.not-applicable`
+  - `dataviz.color.status.notApplicable`
 
 - any status token resolves to the same effective value as:
   - a sequential scale step

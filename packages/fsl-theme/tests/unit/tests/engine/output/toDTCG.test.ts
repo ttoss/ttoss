@@ -2,9 +2,6 @@ import { baseTheme as defaultTheme } from '../../../../../src/baseTheme';
 import type { DTCGToken, DTCGTokenTree } from '../../../../../src/roots/toDTCG';
 import { toDTCG } from '../../../../../src/roots/toDTCG';
 import { bruttal } from '../../../../../src/themes/bruttal';
-import { corporate } from '../../../../../src/themes/corporate';
-import { oca } from '../../../../../src/themes/oca';
-import { ventures } from '../../../../../src/themes/ventures';
 
 /** Collect every leaf (path → token) from a DTCG tree. */
 const collectLeaves = (
@@ -120,9 +117,6 @@ describe('toDTCG', () => {
   test.each([
     ['baseTheme', defaultTheme],
     ['bruttal', bruttal.base],
-    ['corporate', corporate.base],
-    ['oca', oca.base],
-    ['ventures', ventures.base],
   ] as const)(
     'toDTCG(%s) produces a valid DTCG tree: all leaves have $value and $type, no refs',
     (_label, theme) => {

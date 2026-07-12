@@ -9,7 +9,7 @@ This file is the LLM-facing guide for using the package in an external applicati
 ## Entry points
 
 ```ts
-import { createTheme, baseTheme, bruttal, corporate, oca, ventures } from '@ttoss/fsl-theme';
+import { createTheme, baseTheme, bruttal } from '@ttoss/fsl-theme';
 import { ThemeProvider, useColorMode, useResolvedTokens } from '@ttoss/fsl-theme/react';
 import { vars } from '@ttoss/fsl-theme/vars';           // typed CSS var(--tt-*) refs — CSS environments
 import { toCssVarName } from '@ttoss/fsl-theme/css';    // raw --tt-* names — tooling / PostCSS
@@ -46,7 +46,7 @@ export function App() {
 **Built-in themes** — extend instead of building from scratch:
 
 ```ts
-import { bruttal, corporate, oca, ventures } from '@ttoss/fsl-theme';
+import { bruttal } from '@ttoss/fsl-theme';
 // Use directly as-is:
 <ThemeProvider theme={bruttal}>...</ThemeProvider>
 // Or extend with brand overrides:
@@ -614,7 +614,7 @@ const theme = createTheme({
 ```
 
 - Default: `createTheme()` returns the built-in `baseTheme` + built-in `darkAlternate`.
-- `extends`: inherit from a built-in (`bruttal`, `corporate`, `oca`, `ventures`).
+- `extends`: inherit from a built-in (`bruttal`).
 - `alternate: null`: opt out of dark mode entirely (single-mode theme).
 
 ## Intent → override map
@@ -636,7 +636,7 @@ createTheme({
 - All semantic tokens that reference `{core.colors.brand.*}` automatically pick up the new values. No semantic remap needed unless contrast breaks.
 - For dark mode, the built-in `darkAlternate` already remaps semantic references to lighter brand steps — usually no extra work.
 
-**Reference patterns:** `corporate.ts`, `oca.ts`, `ventures.ts` are minimal brand-only overrides.
+**Reference pattern:** `bruttal.ts` shows a full brand customization (palette + geometry + surface model + dark alternate). A brand-hue-only override is insufficient on its own — see the `brand.500` contrast invariant above.
 
 ### Adjust density
 
@@ -727,5 +727,5 @@ Cross-token semantic correctness (the rules above) is **not** statically validat
 
 - README — full grammar tables, usage examples per import path
 - `dist/Types-*.d.ts` — every token has co-located JSDoc with semantics + anti-pattern notes
-- `src/themes/{bruttal,corporate,oca,ventures}.ts` — worked customization patterns
+- `src/themes/bruttal.ts` — worked customization pattern
 - Family specs (full grammar, decision matrices, ADRs): `docs/design/design-system/design-tokens/families/{family}.md` in the ttoss monorepo

@@ -3,6 +3,7 @@ import { baseTheme as defaultTheme } from '../../../../../src/baseTheme';
 import { buildTheme, createTheme } from '../../../../../src/createTheme';
 import { getThemeStylesContent } from '../../../../../src/css';
 import {
+  assertDistinctCssVars,
   hasCqUnits,
   isThemeBundle,
   toCssVarName,
@@ -29,16 +30,52 @@ describe('toCssVarName', () => {
     }
   });
 
-  test('prefix ordering: longer match wins (semantic.dataviz.color.* beats semantic.dataviz.*)', () => {
-    // semantic.dataviz.color. → --tt-dataviz- (strips "color" from path)
-    // if semantic.dataviz. matched first → --tt-dataviz-color-series-1 (wrong)
+  test('dataviz channel segment is kept in the CSS var (color/geo/encoding)', () => {
+    // Each dataviz channel keeps its segment so var names are self-describing
+    // and collision-proof — consistent with every other family keeping its
+    // post-family segment (e.g. --tt-colors-action-…).
     expect(toCssVarName('semantic.dataviz.color.series.1')).toBe(
-      '--tt-dataviz-series-1'
+      '--tt-dataviz-color-series-1'
+    );
+    expect(toCssVarName('semantic.dataviz.geo.state.selection')).toBe(
+      '--tt-dataviz-geo-state-selection'
+    );
+    expect(toCssVarName('semantic.dataviz.encoding.shape.series.1')).toBe(
+      '--tt-dataviz-encoding-shape-series-1'
+    );
+  });
+
+  test('prefix ordering: longer match wins (encoding.opacity beats encoding)', () => {
+    // if semantic.dataviz.encoding. matched first → --tt-dataviz-encoding-context (wrong)
+    expect(toCssVarName('semantic.dataviz.encoding.opacity.context')).toBe(
+      '--tt-dataviz-encoding-opacity-context'
     );
   });
 
   test('falls back to --tt-<path-with-hyphens> for unregistered paths', () => {
     expect(toCssVarName('unknown.foo.bar')).toBe('--tt-unknown-foo-bar');
+  });
+});
+
+describe('assertDistinctCssVars', () => {
+  test('passes when every token path maps to a distinct CSS var name', () => {
+    expect(() => {
+      return assertDistinctCssVars({
+        'semantic.dataviz.color.state.selected': '{core.colors.brand.500}',
+        'semantic.dataviz.geo.state.selection': '{core.colors.neutral.500}',
+      });
+    }).not.toThrow();
+  });
+
+  test('throws when two token paths collapse to the same CSS var name', () => {
+    // Both unregistered paths fall back to `--tt-<path-with-hyphens>`, so
+    // `unknown.foo.bar` and `unknown.foo-bar` both produce `--tt-unknown-foo-bar`.
+    expect(() => {
+      return assertDistinctCssVars({
+        'unknown.foo.bar': 1,
+        'unknown.foo-bar': 2,
+      });
+    }).toThrow(/CSS variable name collision: '--tt-unknown-foo-bar'/);
   });
 });
 

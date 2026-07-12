@@ -195,8 +195,8 @@ export const toFlatTokens = (
   /**
    * Resolve all embedded `{path}` refs in a raw string expression.
    *
-   * Handles both pure refs (`{core.space.4}`) and compound expressions
-   * (`clamp({core.space.4}, {core.space.6}, {core.space.12})`).
+   * Handles both pure refs (`{core.spacing.4}`) and compound expressions
+   * (`clamp({core.spacing.4}, {core.spacing.6}, {core.spacing.12})`).
    */
   const resolveInline = (
     value: string,
@@ -226,7 +226,7 @@ export const toFlatTokens = (
         // pure token ref e.g. {core.colors.brand.500}
         resolved[key] = resolveRef(value, new Set(), key);
       } else if (value.includes('{')) {
-        // compound expression with embedded refs (e.g. clamp({core.space.4}, ...))
+        // compound expression with embedded refs (e.g. clamp({core.spacing.4}, ...))
         resolved[key] = resolveInline(value, new Set(), key);
       } else {
         resolved[key] = value;
