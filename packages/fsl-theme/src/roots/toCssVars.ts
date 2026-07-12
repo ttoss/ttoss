@@ -46,6 +46,36 @@ const inlineRefsToVars = (value: string): string => {
 // ---------------------------------------------------------------------------
 
 /**
+ * Assert that no two token paths collapse to the same CSS custom property name.
+ *
+ * `toCssVarName` is first-match-wins with no duplicate detection, so two
+ * distinct token paths sharing a `cssPrefix` (e.g. a future
+ * `semantic.dataviz.color.state.*` vs `semantic.dataviz.geo.state.*`) could
+ * silently overwrite each other in the flat record. This guards the whole
+ * registry, not just dataviz.
+ *
+ * **DEV-only** — callers gate this behind `process.env.NODE_ENV !== 'production'`
+ * so bundlers tree-shake the entire call in production builds.
+ */
+export const assertDistinctCssVars = (
+  flat: Record<string, string | number>
+): void => {
+  const byVarName = new Map<string, string>();
+  for (const path of Object.keys(flat)) {
+    const varName = toCssVarName(path);
+    const existing = byVarName.get(varName);
+    if (existing !== undefined && existing !== path) {
+      throw new Error(
+        `[fsl-theme] CSS variable name collision: '${varName}' is produced by ` +
+          `both '${existing}' and '${path}'. Give one of them a distinct token ` +
+          `path or CSS prefix (see roots/tokenRegistry.ts).`
+      );
+    }
+    byVarName.set(varName, path);
+  }
+};
+
+/**
  * Build a flat CSS custom properties record from a ThemeTokens.
  *
  * Core tokens get raw values. Semantic tokens get `var()` references
@@ -62,12 +92,16 @@ const buildCssVars = (theme: ThemeTokens): Record<string, string | number> => {
   for (const [path, value] of Object.entries(semanticFlat)) {
     const varName = toCssVarName(path);
     if (typeof value === 'string' && value.includes('{')) {
-      // Handles both pure refs ({core.space.4}) and mixed expressions
-      // (clamp({core.space.4}, {core.space.6}, {core.space.12}))
+      // Handles both pure refs ({core.spacing.4}) and mixed expressions
+      // (clamp({core.spacing.4}, {core.spacing.6}, {core.spacing.12}))
       vars[varName] = inlineRefsToVars(value);
     } else {
       vars[varName] = value;
     }
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    assertDistinctCssVars({ ...coreFlat, ...semanticFlat });
   }
 
   return vars;

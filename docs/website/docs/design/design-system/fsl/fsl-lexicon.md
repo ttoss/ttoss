@@ -282,9 +282,11 @@ Consequence exists because some meanings materially shape user experience and ri
 
 A component-semantics profile may codify a narrower subset of this vocabulary
 when the broader terms collapse into one of the narrower ones or into another
-dimension. The `@ttoss/ui2` profile codifies three values — **neutral**,
-**committing**, **destructive** — and rejects the others with explicit
-rationale:
+dimension. The planned `@ttoss/ui2` profile (see
+[`component-model.md`](/docs/design/design-system/components/component-model) —
+specified, not yet implemented) is intended to codify three values —
+**neutral**, **committing**, **destructive** — rejecting the others with
+explicit rationale:
 
 - **reversible** is the logical complement of `committing`; carrying both
   doubles the vocabulary without adding an expressible distinction.

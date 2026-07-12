@@ -86,7 +86,7 @@ export interface CoreDataviz {
  *   dataviz.color.scale.diverging.neg3..pos3
  *   dataviz.color.reference.baseline / target
  *   dataviz.color.state.highlight / muted / selected
- *   dataviz.color.status.missing / suppressed / not-applicable
+ *   dataviz.color.status.missing / suppressed / notApplicable
  */
 export interface SemanticDatavizColor {
   /**
@@ -139,7 +139,7 @@ export interface SemanticDatavizColor {
     /** Value is withheld for confidentiality or publication rules. */
     suppressed: TokenRef;
     /** Value is structurally absent (not measured or not applicable). */
-    na: TokenRef;
+    notApplicable: TokenRef;
   };
 }
 

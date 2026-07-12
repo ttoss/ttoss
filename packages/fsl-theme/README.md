@@ -10,15 +10,15 @@ pnpm add @ttoss/fsl-theme
 
 ## Entry points
 
-| Import                     | Exports                                                                                                                                                                                         |
-| :------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@ttoss/fsl-theme`         | `createTheme`, `darkAlternate`, built-in themes (`bruttal`, `corporate`, `oca`, `ventures`), types (`ThemeTokens`, `ThemeBundle`, `SemanticTokens`, `ModeOverride`, `DeepPartial`, `ThemeMode`) |
-| `@ttoss/fsl-theme/react`   | `ThemeProvider`, `ThemeHead`, `ThemeScript`, `ThemeStyles`, `useColorMode`, `useTokens`, `useResolvedTokens`                                                                                    |
-| `@ttoss/fsl-theme/dataviz` | `withDataviz`, `useDatavizTokens`                                                                                                                                                               |
-| `@ttoss/fsl-theme/css`     | `getThemeStylesContent`, `toCssVars`, `toCssVarName`, `toFlatTokens`                                                                                                                            |
-| `@ttoss/fsl-theme/vars`    | `vars`, `buildVarsMap`, type `CssVarsMap`                                                                                                                                                       |
-| `@ttoss/fsl-theme/dtcg`    | `toDTCG` (W3C Design Tokens format)                                                                                                                                                             |
-| `@ttoss/fsl-theme/runtime` | `createThemeRuntime`, `getThemeScriptContent`                                                                                                                                                   |
+| Import                     | Exports                                                                                                                                                                     |
+| :------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@ttoss/fsl-theme`         | `createTheme`, `baseTheme`, `darkAlternate`, built-in theme (`bruttal`), types (`ThemeTokens`, `ThemeBundle`, `SemanticTokens`, `ModeOverride`, `DeepPartial`, `ThemeMode`) |
+| `@ttoss/fsl-theme/react`   | `ThemeProvider`, `ThemeHead`, `ThemeScript`, `ThemeStyles`, `useColorMode`, `useTokens`, `useResolvedTokens`                                                                |
+| `@ttoss/fsl-theme/dataviz` | `withDataviz`, `useDatavizTokens`                                                                                                                                           |
+| `@ttoss/fsl-theme/css`     | `getThemeStylesContent`, `toCssVars`, `toCssVarName`, `toFlatTokens`                                                                                                        |
+| `@ttoss/fsl-theme/vars`    | `vars`, `buildVarsMap`, type `CssVarsMap`                                                                                                                                   |
+| `@ttoss/fsl-theme/dtcg`    | `toDTCG` (W3C Design Tokens format)                                                                                                                                         |
+| `@ttoss/fsl-theme/runtime` | `createThemeRuntime`, `getThemeScriptContent`                                                                                                                               |
 
 ## Token architecture
 
@@ -53,7 +53,7 @@ One entry per semantic family. Use `vars.*` for typed CSS variable references; u
 |           | `semantic.border.outline.{surface,control,selected}`                | `{width, style}`        |
 | focus     | `semantic.focus.ring`                                               | `{width, style, color}` |
 | elevation | `semantic.elevation.surface.{flat,raised,overlay,blocking}`         | CSS box-shadow          |
-|           | `semantic.elevation.tonal.{flat,raised,overlay,blocking}`           | CSS color (optional)    |
+|           | `semantic.elevation.tonal.{raised,overlay,blocking}`                | CSS color (optional)    |
 | opacity   | `semantic.opacity.{scrim,loading,disabled}`                         | number in (0, 1)        |
 | overlay   | `semantic.overlay.scrim`                                            | CSS color with alpha    |
 | motion    | `semantic.motion.{feedback,emphasis,decorative}`                    | `{duration, easing}`    |
@@ -290,7 +290,9 @@ For one-off custom keys, use `toCssVarName` from `@ttoss/fsl-theme/css` directly
 
 ### React 19 App Router (recommended)
 
-`ThemeProvider` with a `theme` prop uses React 19 style hoisting to inject CSS into `<head>` automatically. Only add `ThemeScript` for flash-prevention:
+`ThemeProvider` with a `theme` prop uses React 19 style hoisting to inject CSS into `<head>` automatically. The injected `<style>` carries a stable `href` (`tt-theme-<themeId|root>`), so multiple providers or a re-render collapse to a single tag instead of duplicating. Only add `ThemeScript` for flash-prevention:
+
+> **React 18:** auto-injection into `<head>` requires React 19 style hoisting. On React 18 the `<ThemeProvider>` `<style>` renders inline where the provider sits — use the `ThemeHead` / `ThemeStyles` path below to place CSS in `<head>` explicitly.
 
 ```tsx
 // app/layout.tsx
@@ -348,7 +350,7 @@ export default function RootLayout({
 }
 ```
 
-> **Warning:** Do not combine `<ThemeHead theme={...}>` with `<ThemeProvider theme={...}>`. Both inject CSS — `ThemeHead` via a plain `<style>` tag and `ThemeProvider` via React 19 style hoisting — resulting in duplicate CSS in the document. Use one or the other.
+> **Warning:** Do not pass `theme` to **both** `<ThemeHead>` and `<ThemeProvider>`. `ThemeHead` injects a plain `<style>`; `ThemeProvider` injects a React-19-hoisted `<style>` — different mechanisms that do **not** dedup against each other, so you get duplicate CSS. Pass `theme` to the head component only; the body `<ThemeProvider>` (no `theme`) manages mode. (Multiple `<ThemeProvider theme={...}>` on React 19 _do_ dedup, via the shared `href`.)
 
 ## Dataviz extension
 

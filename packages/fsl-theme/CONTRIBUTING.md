@@ -33,7 +33,7 @@ src/
   runtime.ts            — framework-agnostic mode manager (data attributes + localStorage)
   themeBootstrap.ts     — read-only mode resolution (no DOM writes — see ADR-002)
   ssrScript.ts          — inline JS string for SSR flash prevention (see ADR-003)
-  runtime-entry.ts      — sub-path entry for '@ttoss/theme2/runtime'
+  runtime-entry.ts      — sub-path entry for '@ttoss/fsl-theme/runtime'
 
   roots/
     helpers.ts          — isTokenRef, extractRefPath, deepMerge, flattenObject, toFlatTokens
@@ -95,7 +95,7 @@ Helpers in `roots/helpers.ts`: `isTokenRef`, `extractRefPath`, `toFlatTokens` (r
 | `core.<family>.<sub>`     | `--tt-core-<family>-<sub>` |
 | `semantic.<family>.<sub>` | `--tt-<family>-<sub>`      |
 
-Examples: `core.colors.brand.500` → `--tt-core-colors-brand-500`; `semantic.colors.action.primary.background.default` → `--tt-colors-action-primary-background-default`; `core.elevation.emphatic.2` → `--tt-core-elevation-emphatic-2`; `semantic.dataviz.color.sequential.0` → `--tt-dataviz-sequential-0`.
+Examples: `core.colors.brand.500` → `--tt-core-colors-brand-500`; `semantic.colors.action.primary.background.default` → `--tt-colors-action-primary-background-default`; `core.elevation.emphatic.2` → `--tt-core-elevation-emphatic-2`; `semantic.dataviz.color.scale.sequential.1` → `--tt-dataviz-color-scale-sequential-1`.
 
 `toCssVars` behavior: `core` → raw value; `semantic` → `{ref}` replaced by `var(--tt-…)`, compound expressions handled inline.
 
@@ -106,7 +106,7 @@ Examples: `core.colors.brand.500` → `--tt-core-colors-brand-500`; `semantic.co
 `vars` is a typed mirror of `SemanticTokens` where every leaf is a `var(--tt-*)` string. Generated once at build-time from `baseBundle`; never changes at runtime. Var names are stable across themes — only the CSS custom property values change on theme/mode switch.
 
 ```ts
-import { vars } from '@ttoss/theme2/vars';
+import { vars } from '@ttoss/fsl-theme/vars';
 vars.colors.action.primary.background.default;
 // → 'var(--tt-colors-action-primary-background-default)'
 ```
@@ -419,3 +419,41 @@ Re-litigation answers:
 - "Why not flatten `outline.{surface,control}` to siblings of `selected` instead?" → `outline.*` is a grouping by CSS mechanism and shape; flattening loses the namespace that lets a component iterate `outline.{surface|control|selected}` uniformly.
 - "Unify `focus.ring` under `outline.focus` for one shape" → `focus.ring.color` is part of the contract; `outline.{surface,control,selected}` intentionally have no `color` (color belongs to the color system per borders.md). Unifying either drops `color` from focus or adds it everywhere — both regressions.
 - "Add `outline.selected.color`" → contradicts borders.md "Color expresses what the line means" / "Width and style express how strong the line is"; selected color is supplied by `semantic.colors.{ux}.{role}.border.selected`.
+
+### ADR-012: Pre-adoption window — hard-rename now, no deprecation aliases
+
+Status: accepted (2026-07-12)
+Tags: governance, versioning, breaking-change, pre-adoption
+
+Decision: while the package has zero consumers, contract renames/removals are applied as **direct breaking changes** — no `@deprecated` aliases, no soft path — landed under a single MAJOR bump via a `BREAKING CHANGE:` commit footer (lerna-lite computes the version). This overrides the deprecation window that `governance.md#deprecation` and the "Token change operations" table below otherwise require for semantic renames.
+Rejected: follow the deprecation window even now — carries dead alias tokens and JSDoc into a system with no consumers, the exact cruft the window exists to avoid; hand-author a changeset file — the repo uses lerna-lite + Conventional Commits, not changesets.
+Cost: the window is time-boxed and self-expiring — the moment the first consumer adopts `@ttoss/fsl-theme`, this ADR no longer applies and `governance.md`'s deprecation window is back in force for every subsequent rename. Residual risk: an unknown external npm consumer of `1.1.x` gets a hard break at `2.0.0` (low — single "Init" release, no repo consumers).
+Anchors: `governance.md#deprecation`, `../../docs/website/docs/design/design-system/design-tokens/governance.md`, this file's "Token change operations" table.
+
+Re-litigation answers:
+
+- "Governance says renames need a deprecation window" → correct, and this ADR overrides it **only** for the pre-adoption window. Expiry is explicit: first consumer adoption.
+- "Why MAJOR if there are no consumers?" → the published `1.1.x` line exists on npm; SemVer honesty for any external consumer requires MAJOR even when the in-repo blast radius is zero.
+- "Where is the changeset?" → there is none; versioning is Conventional Commits + lerna-lite. Breaking changes ride a `BREAKING CHANGE:` footer that enumerates every renamed/removed path.
+
+### ADR-013: `toDTCG` emits a resolved-scalar profile; `$type` omitted for opaque tokens
+
+Status: accepted (2026-07-12)
+Tags: dtcg, interchange, conformance, toDTCG
+
+Decision: `toDTCG` emits a **conformant resolved-scalar** DTCG (2025.10) profile — `$value`s are fully resolved (no `{alias}`), composite shapes are emitted as their individual scalar leaves, and `$type` is **omitted** for opaque tokens (keywords, easing curves, border styles, SVG dash strings) rather than emitting an invalid type. There is no `'string'` DTCG type; the registry's `dtcgType` is now optional and absent for those entries.
+Rejected: emit `$type: 'string'` (the prior behaviour) — `'string'` is not a DTCG type, so conformant importers (Style Dictionary, Tokens Studio) reject/ignore the token; deferred (not rejected) are three enhancements below.
+Cost: the export is a flattened snapshot, not a themeable alias graph, and composites lose their grouped semantics — acceptable for a first conformant profile; see deferred items.
+Anchors: `src/roots/toDTCG.ts` › `inferDtcgType`, `src/roots/tokenRegistry.ts` › `dtcgType?`, `tests/unit/tests/engine/output/toDTCG.test.ts`.
+
+Deferred enhancements (tracked, not yet built — all are additive richness, not conformance fixes):
+
+- **Composite objects** — emit `$type: "typography" | "shadow" | "border" | "transition"` with structured object `$value`s instead of scalar leaves. Requires grouping composite leaves in the tree builder.
+- **Alias preservation** — emit `$value: "{core.colors.brand.500}"` (DTCG dot-path aliases) instead of resolved values, behind a `resolve: false` option, so the export round-trips as a graph.
+- **`$description`** — populate from the semantic-leaf JSDoc (the package's richest asset). Requires a build-time JSDoc-extraction pipeline (ts-morph, as in `scripts/probe-jsdoc-propagation.ts`); `toDTCG` is a pure runtime function over `ThemeTokens` and has no access to the type-source comments.
+
+Re-litigation answers:
+
+- "A resolved snapshot isn't real DTCG" → resolved scalar tokens are fully conformant; aliases and composites are optional spec features, not requirements.
+- "Why omit `$type` instead of picking one?" → opaque values (`tabular-nums`, `cubic-bezier(…)`, `solid`, dash-arrays) have no valid DTCG scalar type; `$type` is optional in the spec, so omission is correct and an invalid type is not.
+- "Easing should be `cubicBezier`" → DTCG `cubicBezier` is a 4-number array; our easings are CSS strings (incl. named `ease`). Converting is part of the deferred composite/typed work, not this profile.

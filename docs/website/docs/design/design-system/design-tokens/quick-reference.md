@@ -152,10 +152,10 @@ See [Motion](./families/motion.md), [Opacity](./families/opacity.md), [Z-Index](
 | Reference line (target/baseline)   | `semantic.dataviz.color.reference.{baseline,target}`                |
 | Highlighted / selected series      | `semantic.dataviz.color.state.{highlight,selected}`                 |
 | De-emphasized (context) series     | `semantic.dataviz.color.state.muted`                                |
-| Missing / not-applicable data      | `semantic.dataviz.color.status.{missing,suppressed,not-applicable}` |
-| Non-color differentiator — shape   | `semantic.dataviz.encoding.shape.{1..8}`                            |
-| Non-color differentiator — pattern | `semantic.dataviz.encoding.pattern.{1..6}`                          |
-| Line style (solid/dashed/dotted)   | `semantic.dataviz.encoding.stroke.{solid,dashed,dotted}`            |
+| Missing / not-applicable data      | `semantic.dataviz.color.status.{missing,suppressed,notApplicable}`  |
+| Non-color differentiator — shape   | `semantic.dataviz.encoding.shape.series.{1..8}`                     |
+| Non-color differentiator — pattern | `semantic.dataviz.encoding.pattern.series.{1..6}`                   |
+| Analytical stroke role             | `semantic.dataviz.encoding.stroke.{reference,forecast,uncertainty}` |
 
 See [Data Visualization](./data-visualization/index.md).
 

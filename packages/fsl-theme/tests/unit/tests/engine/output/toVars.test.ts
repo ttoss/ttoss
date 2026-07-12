@@ -4,9 +4,6 @@ import { buildTheme } from '../../../../../src/createTheme';
 import { toCssVarName } from '../../../../../src/roots/toCssVars';
 import { buildVarsMap } from '../../../../../src/roots/toVars';
 import { bruttal } from '../../../../../src/themes/bruttal';
-import { corporate } from '../../../../../src/themes/corporate';
-import { oca } from '../../../../../src/themes/oca';
-import { ventures } from '../../../../../src/themes/ventures';
 import { vars } from '../../../../../src/vars';
 
 // ---------------------------------------------------------------------------
@@ -90,7 +87,7 @@ describe('buildVarsMap', () => {
     //
     // Two structural groups exist:
     //   - without dataviz: defaultTheme / baseBundle.base
-    //   - with dataviz (withDataviz applied): bruttal, corporate, oca, ventures
+    //   - with dataviz (withDataviz applied): bruttal
 
     // Group 1 — base structure without dataviz
     {
@@ -107,21 +104,20 @@ describe('buildVarsMap', () => {
       }
     }
 
-    // Group 2 — branded themes with dataviz extension
+    // Group 2 — a dataviz-extended theme (bruttal) is a structural superset of
+    // the base: every base var name is present with an identical `var()` value
+    // (var names are brand-independent), and the extension adds dataviz vars.
     {
-      const ref = collectLeaves(buildVarsMap(bruttal.base));
-      const refMap = new Map(
-        ref.map((l) => {
+      const baseLeaves = collectLeaves(buildVarsMap(defaultTheme));
+      const bruttalMap = new Map(
+        collectLeaves(buildVarsMap(bruttal.base)).map((l) => {
           return [l.path, l.value];
         })
       );
-      for (const { base } of [corporate, oca, ventures]) {
-        const themeLeaves = collectLeaves(buildVarsMap(base));
-        expect(themeLeaves.length).toBe(ref.length);
-        for (const { path, value } of themeLeaves) {
-          expect(value).toBe(refMap.get(path));
-        }
+      for (const { path, value } of baseLeaves) {
+        expect(bruttalMap.get(path)).toBe(value);
       }
+      expect(bruttalMap.size).toBeGreaterThan(baseLeaves.length);
     }
   });
 });

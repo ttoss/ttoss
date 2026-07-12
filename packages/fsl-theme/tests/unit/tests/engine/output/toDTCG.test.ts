@@ -2,16 +2,15 @@ import { baseTheme as defaultTheme } from '../../../../../src/baseTheme';
 import type { DTCGToken, DTCGTokenTree } from '../../../../../src/roots/toDTCG';
 import { toDTCG } from '../../../../../src/roots/toDTCG';
 import { bruttal } from '../../../../../src/themes/bruttal';
-import { corporate } from '../../../../../src/themes/corporate';
-import { oca } from '../../../../../src/themes/oca';
-import { ventures } from '../../../../../src/themes/ventures';
 
 /** Collect every leaf (path → token) from a DTCG tree. */
 const collectLeaves = (
   tree: DTCGTokenTree,
   path = ''
 ): { path: string; token: DTCGToken }[] => {
-  return '$value' in tree && '$type' in tree
+  // A DTCG leaf is identified by `$value`. `$type` is optional (omitted for
+  // opaque tokens), so it must not be part of the leaf test.
+  return '$value' in tree
     ? [{ path, token: tree as DTCGToken }]
     : Object.entries(tree as Record<string, DTCGTokenTree>).flatMap(
         ([key, child]) => {
@@ -19,6 +18,23 @@ const collectLeaves = (
         }
       );
 };
+
+/** The complete set of valid W3C DTCG (2025.10) `$type` names. */
+const VALID_DTCG_TYPES = new Set([
+  'color',
+  'dimension',
+  'fontFamily',
+  'fontWeight',
+  'duration',
+  'cubicBezier',
+  'number',
+  'strokeStyle',
+  'border',
+  'transition',
+  'shadow',
+  'gradient',
+  'typography',
+]);
 
 describe('toDTCG', () => {
   const leaves = collectLeaves(toDTCG(defaultTheme));
@@ -32,14 +48,63 @@ describe('toDTCG', () => {
   // Structural invariant — every leaf has resolved $value (no {ref}) and $type
   // ---------------------------------------------------------------------------
 
-  test('every leaf has concrete $value (no {ref}) and string $type', () => {
+  test('every leaf has concrete $value (no {ref}); $type is a valid DTCG type when present', () => {
     expect(leaves.length).toBeGreaterThan(0);
     for (const { token } of leaves) {
       expect(['string', 'number']).toContain(typeof token.$value);
-      expect(typeof token.$type).toBe('string');
+      // $type is optional; when present it MUST be a valid DTCG type — never
+      // an invalid one like 'string'.
+      if (token.$type !== undefined) {
+        expect(VALID_DTCG_TYPES).toContain(token.$type);
+      }
       if (typeof token.$value === 'string') {
         expect(token.$value).not.toMatch(/^\{.+\}$/);
       }
+    }
+  });
+
+  test('no leaf emits an invalid $type (e.g. the non-DTCG "string")', () => {
+    const invalid = leaves.filter((l) => {
+      return (
+        l.token.$type !== undefined && !VALID_DTCG_TYPES.has(l.token.$type)
+      );
+    });
+    expect(
+      invalid.map((l) => {
+        return `${l.path}: ${l.token.$type}`;
+      })
+    ).toEqual([]);
+  });
+
+  test('opaque tokens (easing, font keywords, border style) omit $type', () => {
+    const opaquePrefixes = [
+      'core.motion.easing.',
+      'core.font.optical.',
+      'core.font.numeric.',
+      'core.border.style.',
+    ];
+    const opaque = leaves.filter((l) => {
+      return opaquePrefixes.some((p) => {
+        return l.path.startsWith(p);
+      });
+    });
+    expect(opaque.length).toBeGreaterThan(0);
+    for (const { token } of opaque) {
+      expect(token.$type).toBeUndefined();
+    }
+  });
+
+  test('border and focus line widths are typed dimension (.width suffix override)', () => {
+    const widthLeaves = leaves.filter((l) => {
+      return (
+        (l.path.startsWith('semantic.border.') ||
+          l.path.startsWith('semantic.focus.')) &&
+        l.path.endsWith('.width')
+      );
+    });
+    expect(widthLeaves.length).toBeGreaterThan(0);
+    for (const { token } of widthLeaves) {
+      expect(token.$type).toBe('dimension');
     }
   });
 
@@ -54,7 +119,6 @@ describe('toDTCG', () => {
     ['core.elevation.level.', 'shadow'],
     ['core.opacity.', 'number'],
     ['core.motion.duration.', 'duration'],
-    ['core.motion.easing.', 'string'],
     ['core.font.weight.', 'fontWeight'],
     ['core.font.leading.', 'number'],
     ['core.font.tracking.', 'dimension'],
@@ -120,17 +184,16 @@ describe('toDTCG', () => {
   test.each([
     ['baseTheme', defaultTheme],
     ['bruttal', bruttal.base],
-    ['corporate', corporate.base],
-    ['oca', oca.base],
-    ['ventures', ventures.base],
   ] as const)(
-    'toDTCG(%s) produces a valid DTCG tree: all leaves have $value and $type, no refs',
+    'toDTCG(%s) produces a valid DTCG tree: $value present, $type valid-or-absent, no refs',
     (_label, theme) => {
       const themeLeaves = collectLeaves(toDTCG(theme));
       expect(themeLeaves.length).toBeGreaterThan(50);
       for (const { token } of themeLeaves) {
         expect(['string', 'number']).toContain(typeof token.$value);
-        expect(typeof token.$type).toBe('string');
+        if (token.$type !== undefined) {
+          expect(VALID_DTCG_TYPES).toContain(token.$type);
+        }
         if (typeof token.$value === 'string') {
           expect(token.$value).not.toMatch(/^\{.+\}$/);
         }
