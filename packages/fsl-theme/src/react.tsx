@@ -18,11 +18,11 @@ import type { SemanticTokens, ThemeBundle, ThemeTokens } from './Types';
 
 /**
  * Stable `href` for the theme's hoistable `<style>` tag. React 19 keys style
- * hoisting **and dedup** on `href` + `precedence`; without an `href` the same
- * `:root { … }` block is emitted once per `<ThemeProvider>` / `<ThemeStyles>`
- * with no de-duplication. Scoped by `themeId` so distinct themes coexist
- * (micro-frontends) while identical ones (re-render, or `ThemeHead` + a themed
- * `ThemeProvider`) collapse to a single tag.
+ * hoisting **and dedup** on `href` + `precedence`, so re-renders and multiple
+ * `<ThemeProvider>`s sharing a `themeId` collapse to a single tag, while
+ * distinct `themeId`s coexist (micro-frontends). Note: `ThemeStyles` /
+ * `ThemeHead` render an href-less inline `<style>`, so they do **not** dedup
+ * against this hoisted tag — don't combine them with a themed `ThemeProvider`.
  */
 const themeStyleHref = (themeId?: string): string => {
   return `tt-theme-${themeId ?? 'root'}`;
@@ -169,8 +169,10 @@ export interface ThemeProviderProps {
    * **React version:** auto-injection into `<head>` requires **React 19** style
    * hoisting. On React 18 the `<style>` renders inline where the provider sits
    * (not hoisted); use `<ThemeHead>` / `<ThemeStyles>` in your `<head>` for
-   * explicit injection there. The `<style>` carries a stable `href` so multiple
-   * providers (or a `ThemeHead` + themed provider) collapse to one tag on 19.
+   * explicit injection there — but do not also pass `theme` here, since the
+   * href-less `<ThemeHead>`/`<ThemeStyles>` tag does not dedup against this
+   * provider's href-keyed one. The stable `href` only collapses multiple themed
+   * `<ThemeProvider>`s sharing a `themeId` into one tag on 19.
    *
    * @example
    * ```tsx
