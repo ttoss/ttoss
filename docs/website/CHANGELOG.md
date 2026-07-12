@@ -3,6 +3,89 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0](https://github.com/ttoss/ttoss/compare/@docs/website@2.12.1...@docs/website@3.0.0) (2026-07-12)
+
+- fsl-theme: close spec↔reality gap, remove incomplete themes (#1128) ([06fc033](https://github.com/ttoss/ttoss/commit/06fc033151019174df769f4bd2dfe7e11c3bfb06)), closes [#1128](https://github.com/ttoss/ttoss/issues/1128) [#spacing-order-rule](https://github.com/ttoss/ttoss/issues/spacing-order-rule) [#errors-validation-must-fail-when](https://github.com/ttoss/ttoss/issues/errors-validation-must-fail-when)
+
+### BREAKING CHANGES
+
+- dataviz CSS custom properties are renamed to keep their
+  channel segment: `--tt-dataviz-series-N` → `--tt-dataviz-color-series-N`,
+  `--tt-dataviz-scale-*` → `--tt-dataviz-color-scale-*`, `--tt-dataviz-state-*` →
+  `--tt-dataviz-color-state-*`/`--tt-dataviz-geo-state-*`, `--tt-dataviz-shape-*`
+  → `--tt-dataviz-encoding-shape-*`, etc. The token `semantic.dataviz.color.status.na`
+  is renamed to `semantic.dataviz.color.status.notApplicable`. The built-in themes
+  `corporate`, `oca`, and `ventures` are removed from the public export; use
+  `createTheme({ extends: bruttal, overrides })` to build a branded theme.
+
+- fix(fsl-theme): tier 1 integrity — DTCG conformance, SSR href, phantom-layer docs
+
+* DTCG: stop emitting the invalid `$type: "string"`; `dtcgType` is now optional
+  in the registry and `toDTCG` omits `$type` for opaque tokens (keywords,
+  easing curves, border styles, dash strings). Border/focus line widths gain a
+  `.width` → dimension override. Documents the resolved-scalar profile and
+  defers composites/aliases/$description as enhancements (adr-013). Adds a
+  conformance test asserting no invalid `$type` and valid-or-absent types.
+* SSR: `<ThemeProvider>` hoisted `<style>` gains a stable `href`
+  (`tt-theme-<themeId|root>`) so React 19 dedups multiple providers / re-renders
+  instead of duplicating the `:root` block. Documents the React 18 limitation
+  (auto-inject needs React 19; use ThemeHead/ThemeStyles on 18) and clarifies
+  the theme-to-both warning. Adds SSR (renderToStaticMarkup) tests; clearDom now
+  removes hoisted theme styles between tests.
+* Docs integrity: mark the unbuilt Component Semantics Projection and
+  Deterministic Resolver (layers 3 & 5) as planned rather than present-tense
+  fact (component-model status banner, fsl/index, fsl-structural-language,
+  fsl-lexicon, colors.md); drop the dead projection.ts GitHub link; fix stale
+  `@ttoss/theme2` → `@ttoss/fsl-theme` in theme-provider.md and CONTRIBUTING.md.
+
+- chore: add guardian skill to skills-lock
+
+Records the guardian skill (ttoss/skills) in the reproducible skills manifest.
+The skill contents live under .claude/skills (gitignored); only the lock is tracked.
+
+- fix(fsl-theme): harden ref-resolution + deepMerge; enforce theme brief
+
+U3 engine hardening (three latent bugs in roots/helpers.ts, each with a test):
+
+- isTokenRef now rejects interior braces, so a multi-ref string like `{a} {b}`
+  is no longer mis-parsed as one path — it takes the compound path and resolves
+  consistently with toCssVars (the two paths previously diverged).
+- resolveInline re-resolves a resolved embedded ref that still contains `{`, so
+  chained compound refs (compound → compound → raw) expand fully.
+- deepMerge skips `__proto__` / `constructor` / `prototype` override keys,
+  guarding createTheme's public `overrides` against prototype pollution.
+
+Also adds an FSL-DESIGN-001..003 test asserting the package's exported themes
+(baseBundle, bruttal) declare a `meta` brief with name/posture/density/
+accessibility target. Branch coverage threshold raised 94 → 94.2.
+
+All three engine bugs are latent (no shipped theme value triggers them today).
+
+- test(fsl-theme): add llms.txt drift guard
+
+llms.txt is the hand-authored LLM-facing usage contract and can silently
+drift from the code. Assert every concrete claim still resolves against the
+real token contract: each vars.<path> mention is a live leaf or namespace,
+each documented vars.x -> var(--tt-...) mapping agrees with toCssVarName, and
+each name imported from '@ttoss/fsl-theme' is a real export. Checks only the
+docs -> code direction (catches stale docs) without requiring the guide to
+enumerate every token.
+
+- chore: update guardian skill lock hash after reinstall
+
+- docs(fsl-theme): correct ThemeProvider dedup jsdoc; drop process artifacts
+
+G-025: the ThemeProvider/themeStyleHref jsdoc claimed a ThemeHead + themed
+ThemeProvider "collapse to one tag" on React 19. They don't: ThemeStyles /
+ThemeHead render an href-less inline <style> that does not dedup against the
+provider's href-keyed hoisted tag. Reword to state only href-keyed providers
+sharing a themeId collapse, and warn against combining the two.
+
+G-026: remove REVIEW.md and TIER0-PLAN.md — session process artifacts that do
+not belong in the repository (already excluded from the published package).
+
+- docs(fsl-theme): fix broken spacing anchor breaking docusaurus build
+
 ## 2.12.1 (2026-07-11)
 
 **Note:** Version bump only for package @docs/website
