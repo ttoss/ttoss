@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "guardian": {
+      "source": "ttoss/skills",
+      "sourceType": "github",
+      "skillPath": "skills/guardian/SKILL.md",
+      "computedHash": "bc62f5b7a93ddc6f33360b3ab87b72c531caec3412b39b224180785cfeeae4c4"
+    }
+  }
+}

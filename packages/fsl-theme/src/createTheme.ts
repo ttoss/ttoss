@@ -1,8 +1,10 @@
 import { baseTheme, darkAlternate } from './baseTheme';
-import { deepMerge, validateRefs } from './roots/helpers';
+import { deepMerge } from './roots/helpers';
+import { validateRefs } from './roots/validateRefs';
 import type {
   DeepPartial,
   ModeOverride,
+  ThemeBrief,
   ThemeBundle,
   ThemeTokens,
 } from './Types';
@@ -99,6 +101,7 @@ export const createTheme = ({
   base,
   overrides,
   alternate,
+  brief,
 }: {
   /**
    * Parent bundle to inherit from. `base`, `baseMode`, and `alternate` all
@@ -120,13 +123,20 @@ export const createTheme = ({
    * Pass `null` to opt out of any alternate (single-mode theme).
    */
   alternate?: ModeOverride | null;
+  /**
+   * Machine-readable design brief. Inherited from `extends.meta` when omitted.
+   * Orthogonal to tokens — never affects DTCG/CSS output.
+   */
+  brief?: ThemeBrief;
 } = {}): ThemeBundle => {
   const resolvedBase = base ?? parentBundle?.base;
   const resolvedBaseMode = baseMode ?? parentBundle?.baseMode ?? 'light';
   const resolvedAlternate = resolveAlternate(alternate, parentBundle);
+  const resolvedMeta = brief ?? parentBundle?.meta;
   return {
     baseMode: resolvedBaseMode,
     base: buildTheme({ base: resolvedBase, overrides }),
     alternate: resolvedAlternate,
+    ...(resolvedMeta ? { meta: resolvedMeta } : {}),
   };
 };

@@ -1,10 +1,10 @@
 /**
  * Typography family validation tests.
  *
- * @see /docs/website/docs/design/01-design-system/02-design-tokens/02-families/typography.md#validation
+ * @see /docs/website/docs/design/design-system/design-tokens/families/typography.md#validation
  */
 
-import { themeAltFlatToTest, themeFlatToTest } from '../../../helpers/theme';
+import { themeAltFlatToTest, themeFlatToTest } from '../../../fixtures/theme';
 
 // Error #4 — generated output does not emit a viewport-safe fallback before
 // container-based overrides.

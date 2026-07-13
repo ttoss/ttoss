@@ -64,6 +64,21 @@ const bundle = createTheme({
       },
     },
   }),
+  brief: {
+    name: 'bruttal',
+    purpose: 'warm-brown brutalist brand identity',
+    primaryPosture: 'expressive',
+    secondaryPosture: 'technical',
+    densityProfile: 'balanced',
+    readingMode: 'mixed',
+    pointerProfile: 'hybrid',
+    interactionRisk: 'medium',
+    surfaceModel: 'flat',
+    brandEnergy: 'expressive',
+    accessibilityTarget: 'AA+',
+    colorModeStrategy: 'dark-supported',
+    platformBias: 'web',
+  },
 });
 
 export const bruttal = withDataviz(bundle);

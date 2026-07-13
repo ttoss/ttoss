@@ -18,7 +18,7 @@ import {
   useTokens,
 } from '../../../../../src/react';
 import { DATA_MODE_ATTR, DATA_THEME_ATTR } from '../../../../../src/runtime';
-import { clearDom, matchMediaMockImpl } from '../../../helpers/dom';
+import { clearDom, matchMediaMockImpl } from '../../../fixtures/dom';
 
 // jsdom does not implement matchMedia reliably — provide a stable light-mode mock
 // so all tests that create a ThemeProvider (which internally creates a runtime) are
@@ -252,6 +252,37 @@ describe('ThemeProvider prop reactivity', () => {
 
     expect(styles).toMatch(/:root\s*\{/);
     expect(styles).not.toContain('[data-tt-theme=');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// SSR style injection — hoistable <style> carries a stable href (React 19
+// dedup key). Without href the same :root block duplicates per provider.
+// ---------------------------------------------------------------------------
+
+describe('SSR style injection (href dedup key)', () => {
+  test('ThemeProvider server-renders a hoistable <style> keyed on a stable href + the CSS', async () => {
+    const { renderToStaticMarkup } = await import('react-dom/server');
+    const html = renderToStaticMarkup(
+      <ThemeProvider theme={defaultBundle}>
+        <div />
+      </ThemeProvider>
+    );
+    expect(html).toContain(':root');
+    // React reflects the hoist key as `href` or `data-href` depending on
+    // renderer; assert on the stable key value, not the attribute spelling.
+    expect(html).toMatch(/href="tt-theme-root"/);
+  });
+
+  test('themeId scopes the href so distinct themes coexist (no dedup collision)', async () => {
+    const { renderToStaticMarkup } = await import('react-dom/server');
+    const html = renderToStaticMarkup(
+      <ThemeProvider theme={defaultBundle} themeId="brand-a">
+        <div />
+      </ThemeProvider>
+    );
+    expect(html).toMatch(/href="tt-theme-brand-a"/);
+    expect(html).toContain('[data-tt-theme="brand-a"]');
   });
 });
 

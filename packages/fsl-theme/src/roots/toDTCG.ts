@@ -14,7 +14,12 @@ import { DTCG_TYPE_PREFIXES } from './tokenRegistry';
  */
 export interface DTCGToken {
   $value: string | number;
-  $type: string;
+  /**
+   * W3C DTCG type. **Optional** — omitted for opaque/keyword tokens that have
+   * no valid DTCG scalar type (`$type` is optional in the DTCG spec). There is
+   * no `'string'` DTCG type; emitting one would break conformant importers.
+   */
+  $type?: string;
   $extensions?: Record<string, unknown>;
 }
 
@@ -52,6 +57,10 @@ interface MutableTree {
  *
  * Motion leaves (SemanticMotionEntry) overridden separately:
  * - `.duration`     → 'duration'
+ *
+ * Border / focus line widths resolve to a `dimension` (`1px`, `2px`) but sit
+ * under the untyped `semantic.border.` / `semantic.focus.` prefixes:
+ * - `.width`        → 'dimension'
  */
 const SUFFIX_TYPE_OVERRIDES: ReadonlyArray<[suffix: string, dtcgType: string]> =
   [
@@ -61,12 +70,18 @@ const SUFFIX_TYPE_OVERRIDES: ReadonlyArray<[suffix: string, dtcgType: string]> =
     ['.fontWeight', 'fontWeight'],
     ['.lineHeight', 'number'],
     ['.letterSpacing', 'dimension'],
-    // focus.ring.color is a color token — must not fall through to the 'string'
-    // default from the semantic.focus. prefix entry.
+    ['.width', 'dimension'],
+    // focus.ring.color is a color token — must not fall through to the untyped
+    // semantic.focus. prefix entry.
     ['.ring.color', 'color'],
   ];
 
-const inferType = (path: string): string => {
+/**
+ * Infer the DTCG `$type` for a token path, or `undefined` when the token is
+ * opaque (keyword/curve/dash-string) and has no valid DTCG scalar type — in
+ * which case `toDTCG` omits `$type` rather than emitting an invalid one.
+ */
+const inferDtcgType = (path: string): string | undefined => {
   for (const [suffix, type] of SUFFIX_TYPE_OVERRIDES) {
     if (path.endsWith(suffix)) {
       return type;
@@ -74,10 +89,10 @@ const inferType = (path: string): string => {
   }
   for (const [prefix, type] of DTCG_TYPE_PREFIXES) {
     if (path.startsWith(prefix)) {
-      return type;
+      return type; // may be undefined — an opaque entry stops the search
     }
   }
-  return 'string';
+  return undefined;
 };
 
 // ---------------------------------------------------------------------------
@@ -147,8 +162,16 @@ const buildHitExtension = (
  * Root 3 — W3C Design Tokens (DTCG JSON).
  *
  * Convert a `ThemeTokens` into a structured token tree following the
- * W3C Design Tokens Community Group format. Every leaf node has `$value`
- * (fully resolved) and `$type` (inferred from the token path).
+ * W3C Design Tokens Community Group format (2025.10). Every leaf has a
+ * `$value`; `$type` is inferred from the token path and **omitted** for opaque
+ * tokens with no valid DTCG scalar type (`$type` is optional per spec).
+ *
+ * **Profile:** this emits **fully-resolved scalar tokens** — `$value`s are
+ * concrete (no `{alias}` refs) and composite shapes (typography, shadow,
+ * border, transition) are emitted as their individual scalar leaves, not as
+ * DTCG composite objects. This is a conformant DTCG profile; richer
+ * alias-preserving / composite output is a deferred enhancement (see
+ * CONTRIBUTING.md ADR-013).
  *
  * Semantic hit tokens (`semantic.sizing.hit.*`) include a `$extensions`
  * field declaring their coarse-pointer override value, so non-CSS consumers
@@ -175,10 +198,11 @@ export const toDTCG = (theme: ThemeTokens): DTCGTokenTree => {
   const tree: MutableTree = {};
 
   for (const [path, value] of Object.entries(flat)) {
-    const token: DTCGToken = {
-      $value: value,
-      $type: inferType(path),
-    };
+    const dtcgType = inferDtcgType(path);
+    const token: DTCGToken = { $value: value };
+    if (dtcgType !== undefined) {
+      token.$type = dtcgType;
+    }
 
     if (path.startsWith(SEMANTIC_HIT_PREFIX)) {
       const step = path.slice(SEMANTIC_HIT_PREFIX.length);

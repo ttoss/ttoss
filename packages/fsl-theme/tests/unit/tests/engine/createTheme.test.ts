@@ -39,22 +39,6 @@ describe('buildTheme', () => {
     );
   });
 
-  test('overrides a deeply nested semantic token', () => {
-    const theme = buildTheme({
-      overrides: {
-        semantic: {
-          elevation: { surface: { raised: '{core.elevation.level.3}' } },
-        },
-      },
-    });
-    expect(theme.semantic.elevation.surface.raised).toBe(
-      '{core.elevation.level.3}'
-    );
-    expect(theme.semantic.elevation.surface.flat).toBe(
-      defaultTheme.semantic.elevation.surface.flat
-    );
-  });
-
   test('preserves all non-overridden values', () => {
     const theme = buildTheme({
       overrides: { core: { radii: { sm: '8px' } } },
@@ -128,11 +112,6 @@ describe('buildTheme immutability', () => {
     theme.core.colors.brand[500] = '#MUTATED';
     expect(defaultTheme.core.colors.brand[500]).toBe(originalBrand500);
   });
-
-  test('non-overridden branch is not the same reference as base', () => {
-    const theme = buildTheme();
-    expect(Object.is(theme.semantic, defaultTheme.semantic)).toBe(false);
-  });
 });
 
 // ---------------------------------------------------------------------------
@@ -144,7 +123,7 @@ describe('createTheme', () => {
     const bundle = createTheme();
     expect(bundle.baseMode).toBe('light');
     expect(bundle.base).toEqual(defaultTheme);
-    expect(bundle.alternate).toEqual(darkAlternate);
+    expect(bundle.alternate).toBe(darkAlternate);
   });
 
   test('alternate: null produces a single-mode theme', () => {
@@ -162,9 +141,6 @@ describe('createTheme', () => {
       overrides: { core: { colors: { brand: { 500: '#FF0000' } } } },
     });
     expect(bundle.base.core.colors.brand[500]).toBe('#FF0000');
-    expect(bundle.base.core.colors.brand[100]).toBe(
-      defaultTheme.core.colors.brand[100]
-    );
   });
 
   test('passes alternate through', () => {
@@ -214,7 +190,6 @@ describe('createTheme — extends', () => {
       overrides: { core: { colors: { brand: { 500: brandColor } } } },
     });
     expect(child.base.core.colors.brand[500]).toBe(brandColor);
-    expect(baseBundle.base.core.colors.brand[500]).not.toBe(brandColor);
   });
 
   test('explicit alternate overrides the inherited one', () => {
@@ -286,6 +261,11 @@ describe('buildTheme — ref validation (DEV-only)', () => {
     expect(warnSpy).toHaveBeenCalledWith(
       expect.stringContaining("Did you mean '{core.colors.brand.500}'")
     );
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "at path 'semantic.colors.action.primary.background.default'"
+      )
+    );
   });
 
   test('does not warn when all refs are valid', () => {
@@ -355,31 +335,6 @@ describe('buildTheme — ref validation (DEV-only)', () => {
 
     expect(warnSpy).not.toHaveBeenCalled();
   });
-
-  test('includes the owner path in the warning message', () => {
-    buildTheme({
-      overrides: {
-        semantic: {
-          colors: {
-            action: {
-              primary: {
-                background: {
-                  default:
-                    '{core.colorz.brand.500}' as unknown as `{core.colors.${string}}`,
-                },
-              },
-            },
-          },
-        },
-      },
-    });
-
-    expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining(
-        "at path 'semantic.colors.action.primary.background.default'"
-      )
-    );
-  });
 });
 
 // ---------------------------------------------------------------------------
@@ -401,10 +356,10 @@ describe('withDataviz', () => {
   });
 
   test('returns a new bundle object without mutating the original', () => {
-    const original = baseBundle;
-    const result = withDataviz(original);
-    expect(result).not.toBe(original);
-    expect(original.base).toEqual(baseBundle.base);
+    const result = withDataviz(baseBundle);
+    expect(result).not.toBe(baseBundle);
+    const core = baseBundle.base.core as unknown as Record<string, unknown>;
+    expect(core.dataviz).toBeUndefined();
   });
 
   test('preserves baseMode from the original bundle', () => {

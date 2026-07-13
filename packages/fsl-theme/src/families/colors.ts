@@ -7,7 +7,7 @@
  *   - dimension: background | border | text  (per component; not all are required)
  *   - state:     default | hover | active | focused | disabled | selected | …
  *
- * @see /docs/website/docs/design/01-design-system/02-design-tokens/02-families/colors.md
+ * @see /docs/website/docs/design/design-system/design-tokens/families/colors.md
  * ========================================================================== */
 
 import type { CoreColorRef, RawValue } from './primitives';
@@ -180,7 +180,7 @@ interface FeedbackColorStates {
 interface ColorDimensionOf<S extends BaseColorStates> {
   /** Fills and surface backgrounds. Use for any colored area larger than a line. */
   background?: S;
-  /** Outlines, separators, rings, and other line-color pairings. For line *geometry* (width, style) consume `semantic.borders.*` instead — this dimension is colour only. */
+  /** Outlines, separators, rings, and other line-color pairings. For line *geometry* (width, style) consume `semantic.border.*` instead — this dimension is colour only. */
   border?: S;
   /** Readable foreground — labels, paragraphs, and text-like icons that inherit `currentColor`. */
   text?: S;

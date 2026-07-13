@@ -225,6 +225,21 @@ Each text family represents a distinct typographic role in the interface.
 
 > Keep this set stable. Add new families only if they represent a genuinely new typographic function.
 
+### Numeric variants are a component-layer modifier, not a semantic style
+
+`font-variant-numeric` (e.g. `tabular-nums` for dashboards and tables, `slashed-zero` for financial/code contexts) is **not** exposed as a semantic text token, by design. It is orthogonal to the type role — any family (`body`, `label`, a stat number) may need tabular figures — so baking it into the role styles would multiply the set combinatorially. And its values are **fixed CSS keywords**, not theme-variable, so a semantic token would add indirection without adding a themeable decision.
+
+Apply it at the component/pattern layer, directly, on top of a semantic text style:
+
+```css
+.stat-value {
+  font: var(--tt-text-label-md); /* semantic role */
+  font-variant-numeric: tabular-nums; /* component-layer modifier */
+}
+```
+
+This mirrors how edge-selection works for [borders](./borders.md#scope-tokens-vs-components-vs-edge-selection): the token carries the role; the component chooses the per-usage rendering refinement. `core.font.numeric.*` exists to register the keyword set (and to compose into a `TextStyle` if a future role genuinely requires a fixed numeric variant) — it is not a gap in the semantic surface.
+
 ### Semantic Tokens Summary Table
 
 | token              | use when you are building…    | contract (must be true)            | default mapping                                                                     |

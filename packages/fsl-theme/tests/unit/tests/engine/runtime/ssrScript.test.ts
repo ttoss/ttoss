@@ -3,7 +3,7 @@
  */
 
 import { getThemeScriptContent } from '../../../../../src/ssrScript';
-import { clearDom } from '../../../helpers/dom';
+import { clearDom } from '../../../fixtures/dom';
 
 // ---------------------------------------------------------------------------
 // getThemeScriptContent
@@ -56,25 +56,12 @@ describe('getThemeScriptContent', () => {
     expect(script).toContain('"bruttal"');
   });
 
-  test('sets data-tt-mode attribute', () => {
-    const script = getThemeScriptContent();
-    expect(script).toContain('data-tt-mode');
-  });
-
-  test('checks prefers-color-scheme for system mode', () => {
-    const script = getThemeScriptContent();
-    expect(script).toContain('prefers-color-scheme');
-  });
-
-  test('reads from localStorage', () => {
-    const script = getThemeScriptContent();
-    expect(script).toContain('localStorage.getItem');
-  });
-
-  test('sets colorScheme style', () => {
-    const script = getThemeScriptContent();
-    expect(script).toContain('colorScheme');
-  });
+  // Note: implementation-detail string-containment tests for 'data-tt-mode',
+  // 'prefers-color-scheme', 'localStorage.getItem', and 'colorScheme' are
+  // omitted — the behavioral tests below ('bootstraps default state into DOM',
+  // 'restores persisted mode from localStorage', 'falls back to light mode
+  // when window.matchMedia is unavailable') verify the same contracts through
+  // actual execution.
 
   test('is valid JavaScript (can be evaluated)', () => {
     // In a real browser, this would run. We just verify it parses.
