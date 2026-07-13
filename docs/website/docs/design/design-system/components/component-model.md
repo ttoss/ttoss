@@ -6,6 +6,10 @@ title: Component Model
 
 The Component Model is the **Component Semantics Projection** — [layer 3 of the FSL architecture](/docs/design/design-system/fsl/). It derives from the [FSL Lexicon](/docs/design/design-system/fsl/fsl-lexicon) and [FSL Structural Language](/docs/design/design-system/fsl/fsl-structural-language) and must not define vocabulary that contradicts them.
 
+:::caution Status: specification — not yet implemented
+This document is the **design specification** for the Component Semantics Projection. The code artifacts it references — `taxonomy.ts`, `ComponentMeta`, `ENTITY_COMPOSITION` / `ENTITY_STRUCTURE` / `ENTITY_TOKEN_MAPPING`, the `@ttoss/ui2` package, and the Deterministic Resolver — **do not exist yet**. Only the [Semantic Token Projection](/docs/design/design-system/design-tokens/model) (layer 4, `@ttoss/fsl-theme`) is implemented. References below describe the intended shape of that future code, not shipped behaviour. Treat "is / consumes / enforced by" as "will".
+:::
+
 The central rule:
 
 > **A component has an immutable identity. An instance carries that identity into a composition.**
@@ -26,11 +30,11 @@ The model adopts FSL dimension names directly (no projection renames; FSL §17.1
 
 ## Entity → Token UX context mapping
 
-The normative Entity → `ux` context mapping lives in `ENTITY_TOKEN_MAPPING`
-in [`packages/ui2/src/tokens/projection.ts`](https://github.com/ttoss/ttoss/blob/main/packages/ui2/src/tokens/projection.ts)
-— that constant is the single source of truth consumed by the resolver and
-enforced by contract tests. The table below is a read-only mirror for
-authoring reference; when the two disagree, `projection.ts` wins.
+The normative Entity → `ux` context mapping is **planned** to live in
+`ENTITY_TOKEN_MAPPING` in `packages/ui2/src/tokens/projection.ts` — intended to
+be the single source of truth consumed by the resolver and enforced by contract
+tests. That artifact does not exist yet (see status note above); until it does,
+the table below is the authoring reference.
 
 | Entity         | Token `ux` context | Notes                                                                             |
 | :------------- | :----------------- | :-------------------------------------------------------------------------------- |
@@ -61,7 +65,7 @@ type ComponentExpression = {
 
 All dimensions are defined in `taxonomy.ts` and derived from FSL core vocabulary.
 
-> **Code type:** The implementation exposes `ComponentMeta<E>` from `semantics/` — the identity type every component declares (`entity`, `structure`, `composition?`, `consequence?`). `ComponentExpression` above is the projection's conceptual shape; `ComponentMeta` is its current runtime surface.
+> **Code type (planned):** the implementation will expose `ComponentMeta<E>` — the identity type every component declares (`entity`, `structure`, `composition?`, `consequence?`). `ComponentExpression` above is the projection's conceptual shape; `ComponentMeta` is its intended runtime surface. Neither ships yet.
 
 ---
 

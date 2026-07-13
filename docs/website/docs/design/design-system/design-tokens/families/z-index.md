@@ -113,35 +113,35 @@ They are intentionally anchored in **interface strata**, not component names.
 ### Token structure
 
 ```text
-z.layer.{stratum}
+zIndex.layer.{stratum}
 ```
 
 ### Canonical semantic set
 
-- `z.layer.base`
-- `z.layer.sticky`
-- `z.layer.overlay`
-- `z.layer.blocking`
-- `z.layer.transient`
+- `zIndex.layer.base`
+- `zIndex.layer.sticky`
+- `zIndex.layer.overlay`
+- `zIndex.layer.blocking`
+- `zIndex.layer.transient`
 
 > Keep this set stable.
-> Do not create component-specific z-index tokens by default (`z.dropdown`, `z.tooltip`, `z.toast`, etc.).
+> Do not create component-specific z-index tokens by default (`zIndex.dropdown`, `zIndex.tooltip`, `zIndex.toast`, etc.).
 
 ### Semantic Tokens Summary Table
 
-| token               | use when you are building…                                                                      | contract (must be true)                                           | default mapping       |
-| :------------------ | :---------------------------------------------------------------------------------------------- | :---------------------------------------------------------------- | :-------------------- |
-| `z.layer.base`      | page content and normal document flow                                                           | default application layer                                         | `core.zIndex.level.0` |
-| `z.layer.sticky`    | sticky headers, sticky navigation, anchored persistent bars                                     | must remain above normal content while still inside the app stack | `core.zIndex.level.1` |
-| `z.layer.overlay`   | non-blocking overlays such as dropdowns, menus, popovers, floating panels                       | floats above sticky/base content but does not block the whole app | `core.zIndex.level.2` |
-| `z.layer.blocking`  | blocking overlays such as dialogs, sheets, blocking drawers                                     | sits above other overlays and blocks interaction behind it        | `core.zIndex.level.3` |
-| `z.layer.transient` | transient topmost UI inside the normal stack, such as toasts or tooltip-like transient overlays | highest application-controlled layer before browser top layer     | `core.zIndex.level.4` |
+| token                    | use when you are building…                                                                      | contract (must be true)                                           | default mapping       |
+| :----------------------- | :---------------------------------------------------------------------------------------------- | :---------------------------------------------------------------- | :-------------------- |
+| `zIndex.layer.base`      | page content and normal document flow                                                           | default application layer                                         | `core.zIndex.level.0` |
+| `zIndex.layer.sticky`    | sticky headers, sticky navigation, anchored persistent bars                                     | must remain above normal content while still inside the app stack | `core.zIndex.level.1` |
+| `zIndex.layer.overlay`   | non-blocking overlays such as dropdowns, menus, popovers, floating panels                       | floats above sticky/base content but does not block the whole app | `core.zIndex.level.2` |
+| `zIndex.layer.blocking`  | blocking overlays such as dialogs, sheets, blocking drawers                                     | sits above other overlays and blocks interaction behind it        | `core.zIndex.level.3` |
+| `zIndex.layer.transient` | transient topmost UI inside the normal stack, such as toasts or tooltip-like transient overlays | highest application-controlled layer before browser top layer     | `core.zIndex.level.4` |
 
 ### Example
 
 ```js
 const semanticZIndex = {
-  z: {
+  zIndex: {
     layer: {
       base: '{core.zIndex.level.0}',
       sticky: '{core.zIndex.level.1}',
@@ -239,19 +239,19 @@ These are **not governed** by ttoss z-index tokens.
 ## Decision Matrix (pick fast)
 
 1. **Is this normal page content?**
-   → `z.layer.base`
+   → `zIndex.layer.base`
 
 2. **Is this a persistent sticky interface region?**
-   → `z.layer.sticky`
+   → `zIndex.layer.sticky`
 
 3. **Is this a floating non-blocking overlay?**
-   → `z.layer.overlay`
+   → `zIndex.layer.overlay`
 
 4. **Is this a blocking overlay that owns interaction?**
-   → `z.layer.blocking`
+   → `zIndex.layer.blocking`
 
 5. **Is this a transient topmost UI element inside the normal application stack?**
-   → `z.layer.transient`
+   → `zIndex.layer.transient`
 
 6. **Is this actually a browser top-layer element?**
    → z-index token does not govern it
@@ -260,13 +260,13 @@ These are **not governed** by ttoss z-index tokens.
 
 ## Usage Examples
 
-| Usage                             | Token               |
-| :-------------------------------- | :------------------ |
-| Main page content                 | `z.layer.base`      |
-| Sticky top navigation             | `z.layer.sticky`    |
-| Dropdown / menu / floating panel  | `z.layer.overlay`   |
-| Dialog / blocking drawer          | `z.layer.blocking`  |
-| Toast / transient tooltip-like UI | `z.layer.transient` |
+| Usage                             | Token                    |
+| :-------------------------------- | :----------------------- |
+| Main page content                 | `zIndex.layer.base`      |
+| Sticky top navigation             | `zIndex.layer.sticky`    |
+| Dropdown / menu / floating panel  | `zIndex.layer.overlay`   |
+| Dialog / blocking drawer          | `zIndex.layer.blocking`  |
+| Toast / transient tooltip-like UI | `zIndex.layer.transient` |
 
 > Build output may expose semantic z-index tokens as CSS variables or framework-specific bindings. The semantic names remain the API.
 
@@ -295,10 +295,10 @@ If an application truly needs a different layer hierarchy, adjust the scale **as
 - `core.zIndex.level.0` resolves below `0`
 
 - semantic layer order breaks:
-  - `z.layer.base >= z.layer.sticky`
-  - `z.layer.sticky >= z.layer.overlay`
-  - `z.layer.overlay >= z.layer.blocking`
-  - `z.layer.blocking >= z.layer.transient`
+  - `zIndex.layer.base >= zIndex.layer.sticky`
+  - `zIndex.layer.sticky >= zIndex.layer.overlay`
+  - `zIndex.layer.overlay >= zIndex.layer.blocking`
+  - `zIndex.layer.blocking >= zIndex.layer.transient`
 
 ### Warning (validation should warn when)
 

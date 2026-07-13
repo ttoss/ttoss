@@ -4,7 +4,7 @@
  * Validates structural integrity and semantic contract invariants that must
  * hold across all token families and bundles.
  *
- * @see /docs/website/docs/design/01-design-system/02-design-tokens/validation.md#global-validation
+ * @see /docs/website/docs/design/design-system/design-tokens/validation.md#global-validation
  */
 
 import { flattenObject, isTokenRef } from '../../../../src/roots/helpers';
@@ -13,7 +13,7 @@ import {
   themeAltFlatToTest,
   themeFlatToTest,
   themeToTest,
-} from '../../helpers/theme';
+} from '../../fixtures/theme';
 // ---------------------------------------------------------------------------
 // Bundle fixtures — add entries here when new bundles are introduced
 // ---------------------------------------------------------------------------

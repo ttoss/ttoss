@@ -51,13 +51,13 @@ interface GapStackSteps {
 interface GapInlineSteps {
   /** Visual-only tight grouping (icon + label inside a single target). Never between focusable targets — use `separation.interactive.min`. */
   xs: CoreSpacingRef;
-  /** Inline grouping — same magnitude as `gap.stack.xs`. */
+  /** Tight inline grouping between related inline siblings. */
   sm: CoreSpacingRef;
-  /** Looser inline grouping — same magnitude as `gap.stack.sm`. */
+  /** Default inline grouping — pick this when no other step applies. */
   md: CoreSpacingRef;
-  /** Spacious inline grouping — same magnitude as `gap.stack.md`. */
+  /** Spacious inline grouping. */
   lg: CoreSpacingRef;
-  /** Wide inline grouping — same magnitude as `gap.stack.lg`. */
+  /** Wide inline grouping — the loosest step before a group break. */
   xl: CoreSpacingRef;
 }
 
@@ -109,7 +109,7 @@ export interface SemanticSpacing {
   /**
    * Structural outer padding for page-level and section-level layout regions.
    * `page` and `section` may use a `clamp()` expression with embedded `{token.path}` refs
-   * (e.g. `clamp({core.space.4}, {core.space.6}, {core.space.12})`).
+   * (e.g. `clamp({core.spacing.4}, {core.spacing.6}, {core.spacing.12})`).
    * Typed as `RawValue` to allow both simple refs and responsive clamp expressions.
    */
   gutter: {
@@ -130,7 +130,7 @@ export interface SemanticSpacing {
   /**
    * Ergonomic separation between independently actionable targets in dense clusters.
    * May use a `clamp()` expression with an embedded `{token.path}` ref
-   * (e.g. `clamp(8px, {core.space.2}, 12px)`).
+   * (e.g. `clamp(8px, {core.spacing.2}, 12px)`).
    */
   separation: {
     interactive: {

@@ -1,10 +1,10 @@
 /**
  * Elevation family validation tests.
  *
- * @see /docs/website/docs/design/01-design-system/02-design-tokens/02-families/elevation.md#validation
+ * @see /docs/website/docs/design/design-system/design-tokens/families/elevation.md#validation
  */
 
-import { themeAltFlatToTest, themeFlatToTest } from '../../../helpers/theme';
+import { themeFlatToTest } from '../../../fixtures/theme';
 
 // ---------------------------------------------------------------------------
 // Test bundles — extend when new theme bundles are added
@@ -13,8 +13,7 @@ import { themeAltFlatToTest, themeFlatToTest } from '../../../helpers/theme';
 const bundleEntries: ReadonlyArray<{
   label: string;
   base: Record<string, string | number>;
-  alt?: Record<string, string | number>;
-}> = [{ label: 'default', base: themeFlatToTest, alt: themeAltFlatToTest }];
+}> = [{ label: 'default', base: themeFlatToTest }];
 
 // ---------------------------------------------------------------------------
 // Helpers — shadow depth comparison for elevation assertions
@@ -52,67 +51,58 @@ const isVisibleShadow = (shadow: string | number): boolean => {
 // Error tests — surface stratum contracts that must never be violated
 // ---------------------------------------------------------------------------
 
-describe.each(bundleEntries)('Elevation errors — $label', ({ base, alt }) => {
-  const modes = [
-    { mode: 'base', tokens: base },
-    ...(alt !== undefined ? [{ mode: 'alt', tokens: alt }] : []),
-  ];
+describe.each(bundleEntries)('Elevation errors — $label', ({ base }) => {
+  // darkAlternate does not override semantic.elevation; tested against base tokens only.
 
-  describe.each(modes)('$mode mode', ({ tokens }) => {
-    // Error #1: elevation.surface.flat resolves to a visible shadow recipe instead of no elevation
-    test('flat must not be a visible shadow', () => {
-      expect(String(tokens['semantic.elevation.surface.flat']).trim()).toBe(
-        'none'
-      );
-    });
+  // Error #1: elevation.surface.flat resolves to a visible shadow recipe instead of no elevation
+  test('flat must not be a visible shadow', () => {
+    expect(String(base['semantic.elevation.surface.flat']).trim()).toBe('none');
+  });
 
-    // Error #2: raised, overlay, and blocking resolve to none, 0, or equivalent non-visible value
-    test('raised must be a visible shadow', () => {
-      expect(isVisibleShadow(tokens['semantic.elevation.surface.raised'])).toBe(
-        true
-      );
-    });
+  // Error #2: raised, overlay, and blocking resolve to none, 0, or equivalent non-visible value
+  test('raised must be a visible shadow', () => {
+    expect(isVisibleShadow(base['semantic.elevation.surface.raised'])).toBe(
+      true
+    );
+  });
 
-    // Error #2
-    test('overlay must be a visible shadow', () => {
-      expect(
-        isVisibleShadow(tokens['semantic.elevation.surface.overlay'])
-      ).toBe(true);
-    });
+  // Error #2
+  test('overlay must be a visible shadow', () => {
+    expect(isVisibleShadow(base['semantic.elevation.surface.overlay'])).toBe(
+      true
+    );
+  });
 
-    // Error #2
-    test('blocking must be a visible shadow', () => {
-      expect(
-        isVisibleShadow(tokens['semantic.elevation.surface.blocking'])
-      ).toBe(true);
-    });
+  // Error #2
+  test('blocking must be a visible shadow', () => {
+    expect(isVisibleShadow(base['semantic.elevation.surface.blocking'])).toBe(
+      true
+    );
+  });
 
-    // Error #3: semantic depth order breaks — flat < raised < overlay < blocking required
-    test('flat depth must be less than raised', () => {
-      expect(
-        parseShadowDepth(tokens['semantic.elevation.surface.flat'])
-      ).toBeLessThan(
-        parseShadowDepth(tokens['semantic.elevation.surface.raised'])
-      );
-    });
+  // Error #3: semantic depth order breaks — flat < raised < overlay < blocking required
+  test('flat depth must be less than raised', () => {
+    expect(
+      parseShadowDepth(base['semantic.elevation.surface.flat'])
+    ).toBeLessThan(parseShadowDepth(base['semantic.elevation.surface.raised']));
+  });
 
-    // Error #3
-    test('raised depth must be less than overlay', () => {
-      expect(
-        parseShadowDepth(tokens['semantic.elevation.surface.raised'])
-      ).toBeLessThan(
-        parseShadowDepth(tokens['semantic.elevation.surface.overlay'])
-      );
-    });
+  // Error #3
+  test('raised depth must be less than overlay', () => {
+    expect(
+      parseShadowDepth(base['semantic.elevation.surface.raised'])
+    ).toBeLessThan(
+      parseShadowDepth(base['semantic.elevation.surface.overlay'])
+    );
+  });
 
-    // Error #3
-    test('overlay depth must be less than blocking', () => {
-      expect(
-        parseShadowDepth(tokens['semantic.elevation.surface.overlay'])
-      ).toBeLessThan(
-        parseShadowDepth(tokens['semantic.elevation.surface.blocking'])
-      );
-    });
+  // Error #3
+  test('overlay depth must be less than blocking', () => {
+    expect(
+      parseShadowDepth(base['semantic.elevation.surface.overlay'])
+    ).toBeLessThan(
+      parseShadowDepth(base['semantic.elevation.surface.blocking'])
+    );
   });
 });
 
@@ -120,37 +110,28 @@ describe.each(bundleEntries)('Elevation errors — $label', ({ base, alt }) => {
 // Warning tests — conditions that signal design quality degradation
 // ---------------------------------------------------------------------------
 
-describe.each(bundleEntries)('Elevation warnings — $label', ({ base, alt }) => {
-  const modes = [
-    { mode: 'base', tokens: base },
-    ...(alt !== undefined ? [{ mode: 'alt', tokens: alt }] : []),
-  ];
+describe.each(bundleEntries)('Elevation warnings — $label', ({ base }) => {
+  // darkAlternate does not override semantic.elevation; tested against base tokens only.
 
-  describe.each(modes)('$mode mode', ({ tokens }) => {
-    // Warning #1: adjacent semantic strata resolve to the same effective elevation contract
-    test('Warning #1 — flat and raised must not share equal depth', () => {
-      expect(
-        parseShadowDepth(tokens['semantic.elevation.surface.flat'])
-      ).not.toBe(parseShadowDepth(tokens['semantic.elevation.surface.raised']));
-    });
+  // Warning #1: adjacent semantic strata resolve to the same effective elevation contract
+  test('Warning #1 — flat and raised must not share equal depth', () => {
+    expect(parseShadowDepth(base['semantic.elevation.surface.flat'])).not.toBe(
+      parseShadowDepth(base['semantic.elevation.surface.raised'])
+    );
+  });
 
-    // Warning #1
-    test('Warning #1 — raised and overlay must not share equal depth', () => {
-      expect(
-        parseShadowDepth(tokens['semantic.elevation.surface.raised'])
-      ).not.toBe(
-        parseShadowDepth(tokens['semantic.elevation.surface.overlay'])
-      );
-    });
+  // Warning #1
+  test('Warning #1 — raised and overlay must not share equal depth', () => {
+    expect(
+      parseShadowDepth(base['semantic.elevation.surface.raised'])
+    ).not.toBe(parseShadowDepth(base['semantic.elevation.surface.overlay']));
+  });
 
-    // Warning #1
-    test('Warning #1 — overlay and blocking must not share equal depth', () => {
-      expect(
-        parseShadowDepth(tokens['semantic.elevation.surface.overlay'])
-      ).not.toBe(
-        parseShadowDepth(tokens['semantic.elevation.surface.blocking'])
-      );
-    });
+  // Warning #1
+  test('Warning #1 — overlay and blocking must not share equal depth', () => {
+    expect(
+      parseShadowDepth(base['semantic.elevation.surface.overlay'])
+    ).not.toBe(parseShadowDepth(base['semantic.elevation.surface.blocking']));
   });
 
   // Warning #2: adjacent core elevation levels resolve to the same effective shadow recipe.

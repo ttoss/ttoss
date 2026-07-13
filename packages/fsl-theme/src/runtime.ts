@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 // ---------------------------------------------------------------------------
 // Framework-agnostic Theme Runtime
 //
@@ -165,6 +166,7 @@ export const createThemeRuntime = (
   const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
   const onSystemChange = (): void => {
+    if (destroyed) return;
     resolvedMode = mediaQuery.matches ? 'dark' : 'light';
     applyState({ persist: false });
   };

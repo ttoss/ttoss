@@ -679,3 +679,84 @@ describe('choropleth happy path — legend metadata preservation', () => {
     });
   });
 });
+
+describe('choropleth — unknown source', () => {
+  test('returns empty layers and legends when sourceId cannot be matched', () => {
+    const result = resolveChoropleth({
+      id: 'test',
+      engine: 'maplibre',
+      sources: [],
+      layers: [],
+      mapData: [{ mapDataId: 'pop', mapId: 'nonexistent', data: [] }],
+    });
+    expect(result.layers).toHaveLength(0);
+    expect(result.legends).toHaveLength(0);
+  });
+});
+
+describe('choropleth — mergeLegends uncovered coverage', () => {
+  test('fills missing colorBy via positional fallback when user legend id differs from auto-generated', () => {
+    const resolved = resolveSpecFromMapType({
+      id: 'test',
+      engine: 'maplibre',
+      mapType: 'choropleth',
+      sources: [
+        {
+          id: 'r',
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: [] },
+        },
+      ],
+      layers: [],
+      legends: [{ id: 'user-legend', title: 'Population' }],
+      mapData: [
+        {
+          mapDataId: 'pop',
+          mapId: 'r',
+          data: [{ geometryId: 'a', value: 100 }],
+        },
+      ],
+    });
+    expect(resolved.legends).toHaveLength(1);
+    expect(resolved.legends![0].id).toBe('user-legend');
+    expect(resolved.legends![0].colorBy).toBeDefined();
+  });
+
+  test('keeps user categorical colorBy when auto-generated legend is quantitative (types differ)', () => {
+    const resolved = resolveSpecFromMapType({
+      id: 'test',
+      engine: 'maplibre',
+      mapType: 'choropleth',
+      sources: [
+        {
+          id: 'r',
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: [] },
+        },
+      ],
+      layers: [],
+      legends: [
+        {
+          id: 'user-cat',
+          title: 'My Categories',
+          colorBy: {
+            type: 'categorical',
+            property: 'x',
+            mapping: { a: '#f00' },
+            defaultColor: '#ccc',
+          },
+        },
+      ],
+      mapData: [
+        {
+          mapDataId: 'pop',
+          mapId: 'r',
+          data: [{ geometryId: 'a', value: 100 }],
+        },
+      ],
+    });
+    const legend = resolved.legends![0];
+    expect(legend.id).toBe('user-cat');
+    expect(legend.colorBy.type).toBe('categorical');
+  });
+});

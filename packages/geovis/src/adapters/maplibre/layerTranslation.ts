@@ -228,11 +228,16 @@ const resolveCircleColor = (
     });
   if (!activeLegend) return '#3b82f6';
 
-  return buildFillColorExpression({
-    legend: activeLegend,
-    breaks: resolveThresholdBreaks(layer, specLegends),
-    stateKey: colorStateKey,
-  });
+  // A colorless legend (no `colorBy`) resolves no expression; fall back to a
+  // static default so MapLibre still receives a valid `circle-color` and the
+  // layer is never silently dropped.
+  return (
+    buildFillColorExpression({
+      legend: activeLegend,
+      breaks: resolveThresholdBreaks(layer, specLegends),
+      stateKey: colorStateKey,
+    }) ?? '#3b82f6'
+  );
 };
 
 const buildCircleRadius = (

@@ -10,9 +10,6 @@ export default tsdownConfig({
     'src/dtcg.ts',
     'src/dataviz/index.ts',
     'src/themes/bruttal.ts',
-    'src/themes/corporate.ts',
-    'src/themes/ventures.ts',
-    'src/themes/oca.ts',
   ],
   format: ['esm'],
 });

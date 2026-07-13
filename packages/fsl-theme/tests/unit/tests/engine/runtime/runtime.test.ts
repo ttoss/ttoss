@@ -11,7 +11,7 @@ import {
   type ThemeRuntime,
   type ThemeState,
 } from '../../../../../src/runtime';
-import { clearDom, matchMediaMockImpl } from '../../../helpers/dom';
+import { clearDom, matchMediaMockImpl } from '../../../fixtures/dom';
 
 // ---------------------------------------------------------------------------// jsdom does not implement matchMedia — provide a mock.
 // ---------------------------------------------------------------------------

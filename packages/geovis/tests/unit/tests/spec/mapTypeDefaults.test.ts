@@ -623,11 +623,12 @@ describe('resolveSpecFromMapType — edge cases', () => {
 });
 
 describe('mergeLegendsByIdOnly', () => {
-  test('keeps the user legend unchanged when its colorBy type does not match the resolved one', () => {
+  test('merges the user colorBy over the resolved one even when `type` differs, keeping resolved non-colorBy fields', () => {
     const resolvedLegends = [
       {
         id: 'size-legend',
         title: 'Circle size = value',
+        position: 'bottom-right' as const,
         colorBy: {
           type: 'quantitative' as const,
           property: 'value',
@@ -649,7 +650,90 @@ describe('mergeLegendsByIdOnly', () => {
       },
     };
     const merged = mergeLegendsByIdOnly([userLegend], resolvedLegends);
+    expect(merged).toEqual([
+      {
+        id: 'size-legend',
+        title: 'My own legend',
+        position: 'bottom-right',
+        colorBy: {
+          ...resolvedLegends[0].colorBy,
+          ...userLegend.colorBy,
+        },
+      },
+    ]);
+  });
+
+  test('overriding only colorBy.defaultColor (no `type`, no `position`) does not drop the resolved legend `position` — regression for auto-mount stacking', () => {
+    const resolvedLegends = [
+      {
+        id: 'population-legend',
+        title: 'Circle size = total population',
+        position: 'bottom-right' as const,
+        colorBy: {
+          type: 'quantitative' as const,
+          property: 'value',
+          scale: 'threshold' as const,
+          thresholds: [],
+          colors: ['#E4572E'],
+          defaultColor: '#E4572E',
+        },
+      },
+    ];
+    // A user override that only wants to change `defaultColor` — the whole
+    // point of not requiring `type`/`position` to be repeated.
+    const userLegend = {
+      id: 'population-legend',
+      colorBy: {
+        defaultColor: '#9ca3af',
+      } as unknown as (typeof resolvedLegends)[0]['colorBy'],
+    };
+    const merged = mergeLegendsByIdOnly([userLegend], resolvedLegends);
+    expect(merged).toEqual([
+      {
+        id: 'population-legend',
+        title: 'Circle size = total population',
+        position: 'bottom-right',
+        colorBy: {
+          ...resolvedLegends[0].colorBy,
+          defaultColor: '#9ca3af',
+        },
+      },
+    ]);
+  });
+
+  test('keeps the user legend unchanged when the matched resolved legend has no colorBy', () => {
+    const resolvedLegends = [{ id: 'plain-legend', title: 'Auto title' }];
+    const userLegend = { id: 'plain-legend', title: 'User title' };
+    const merged = mergeLegendsByIdOnly([userLegend], resolvedLegends);
     expect(merged).toEqual([userLegend]);
+  });
+
+  test('preserves resolved legend position and colorBy when user legend has no colorBy', () => {
+    const resolvedLegends = [
+      {
+        id: 'pop-legend',
+        title: 'Circle size = population',
+        position: 'bottom-right' as const,
+        colorBy: {
+          type: 'quantitative' as const,
+          property: 'value',
+          scale: 'threshold' as const,
+          thresholds: [100, 1000],
+          colors: ['#E4572E', '#F58518'],
+          defaultColor: '#E4572E',
+        },
+      },
+    ];
+    const userLegend = { id: 'pop-legend', title: 'My legend' };
+    const merged = mergeLegendsByIdOnly([userLegend], resolvedLegends);
+    expect(merged).toEqual([
+      {
+        id: 'pop-legend',
+        title: 'My legend',
+        position: 'bottom-right',
+        colorBy: resolvedLegends[0].colorBy,
+      },
+    ]);
   });
 
   test('does not append a resolved legend whose id is already present in the merged result', () => {

@@ -65,14 +65,14 @@ The semantic architecture is composed of five layers:
 2. **FSL Structural Language**  
    The formal structure of valid semantic expressions.
 
-3. **Component Semantics Projection**  
-   The component model derived from FSL. Realized by `component-model.md` and `taxonomy.ts`.
+3. **Component Semantics Projection** _(planned)_  
+   The component model derived from FSL. Specified by `component-model.md`; its code (`taxonomy.ts`) does not exist yet.
 
-4. **Semantic Token Projection**  
-   The semantic token model derived from FSL. Realized by the design tokens documentation and `Types.ts`.
+4. **Semantic Token Projection** _(implemented)_  
+   The semantic token model derived from FSL. Realized by the design tokens documentation and `Types.ts` (`@ttoss/fsl-theme`).
 
-5. **Deterministic Resolver**  
-   The engine that parses, normalizes, validates, projects, and explains semantic outputs. Realized by build-time and runtime tooling, not by documentation.
+5. **Deterministic Resolver** _(planned)_  
+   The engine that parses, normalizes, validates, projects, and explains semantic outputs. This document (§14) specifies its interface; no such tooling exists yet.
 
 This document defines only layer 2.
 
