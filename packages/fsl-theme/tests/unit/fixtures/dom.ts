@@ -11,6 +11,17 @@ export const clearDom = (): void => {
   document.documentElement.removeAttribute(DATA_MODE_ATTR);
   document.documentElement.style.colorScheme = '';
   localStorage.clear();
+  // React 19 hoists `<style href precedence>` into the document and keeps it as
+  // a persistent resource (not removed on unmount). Clear theme styles between
+  // tests so global `document.querySelectorAll('style')` assertions stay isolated.
+  for (const el of Array.from(document.querySelectorAll('style'))) {
+    const hoisted =
+      el.getAttribute('data-precedence') !== null ||
+      el.getAttribute('data-href') !== null;
+    if (hoisted || (el.textContent ?? '').includes('--tt-')) {
+      el.remove();
+    }
+  }
 };
 
 // ---------------------------------------------------------------------------

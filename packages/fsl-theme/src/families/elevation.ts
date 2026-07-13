@@ -54,7 +54,7 @@ export interface SemanticElevation {
    * Tonal overlay tokens — optional surface color treatments paired with shadows
    * to preserve depth perception in dark or heavily-colored themes.
    *
-   * Each token typically resolves to a color overlay (e.g., `color-mix`, rgba surface).
+   * Each token resolves to a color overlay (e.g., `color-mix`, rgba surface).
    * Omit when the product does not use tonal elevation.
    * When present, must cover the same strata that carry visible shadows.
    * @see elevation.md — "Surface + Shadow"
@@ -62,8 +62,8 @@ export interface SemanticElevation {
   tonal?: {
     /**
      * Tonal surface treatment paired with `surface.raised`.
-     * Use when the raised stratum needs an additional color overlay (typical in
-     * dark themes where shadow alone is insufficient).
+     * Use when the raised stratum needs an additional color overlay — dark
+     * themes where shadow alone is insufficient.
      * Pair with `surface.raised`; do not use without the matching shadow contract.
      */
     raised: CoreColorRef;

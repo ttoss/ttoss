@@ -13,6 +13,22 @@ import { getThemeScriptContent, type ThemeScriptConfig } from './ssrScript';
 import type { SemanticTokens, ThemeBundle, ThemeTokens } from './Types';
 
 // ---------------------------------------------------------------------------
+// Hoisted-style dedup key
+// ---------------------------------------------------------------------------
+
+/**
+ * Stable `href` for the theme's hoistable `<style>` tag. React 19 keys style
+ * hoisting **and dedup** on `href` + `precedence`, so re-renders and multiple
+ * `<ThemeProvider>`s sharing a `themeId` collapse to a single tag, while
+ * distinct `themeId`s coexist (micro-frontends). Note: `ThemeStyles` /
+ * `ThemeHead` render an href-less inline `<style>`, so they do **not** dedup
+ * against this hoisted tag — don't combine them with a themed `ThemeProvider`.
+ */
+const themeStyleHref = (themeId?: string): string => {
+  return `tt-theme-${themeId ?? 'root'}`;
+};
+
+// ---------------------------------------------------------------------------
 // Coarse-pointer detection — bridges the hit.fine/hit.coarse coupling for
 // non-CSS consumers (useResolvedTokens). CSS consumers are handled
 // automatically by the @media (any-pointer: coarse) block in toCssVars.
@@ -148,7 +164,15 @@ export interface ThemeProviderProps {
    *
    * Passing `theme` enables `useTokens()` and `useResolvedTokens()` for all
    * descendants, and automatically injects the CSS Custom Properties `<style>`
-   * tag into the document head (React 19 hoisting).
+   * tag into the document head (React 19 hoisting, deduped by `href`).
+   *
+   * **React version:** auto-injection into `<head>` requires **React 19** style
+   * hoisting. On React 18 the `<style>` renders inline where the provider sits
+   * (not hoisted); use `<ThemeHead>` / `<ThemeStyles>` in your `<head>` for
+   * explicit injection there — but do not also pass `theme` here, since the
+   * href-less `<ThemeHead>`/`<ThemeStyles>` tag does not dedup against this
+   * provider's href-keyed one. The stable `href` only collapses multiple themed
+   * `<ThemeProvider>`s sharing a `themeId` into one tag on 19.
    *
    * @example
    * ```tsx
@@ -170,6 +194,21 @@ export interface ThemeProviderProps {
    * Receives both `mode` (user intent: `'light' | 'dark' | 'system'`) and
    * `resolvedMode` (actual: `'light' | 'dark'`), covering all integration
    * needs in one callback.
+   *
+   * **System mode:** when `mode` is `'system'`, this callback fires whenever
+   * the OS `prefers-color-scheme` changes (e.g. automatic dark mode at sunset)
+   * — without any user interaction. Avoid side-effects that should only happen
+   * on explicit user action (e.g. API calls, toast notifications):
+   *
+   * ```tsx
+   * onModeChange={(mode, resolvedMode) => {
+   *   // ✓ safe for system-triggered changes
+   *   analytics.track('modeChanged', { mode, resolvedMode });
+   *
+   *   // ✗ guard explicit user actions
+   *   if (mode !== 'system') showToast('Theme updated');
+   * }}
+   * ```
    *
    * @example
    * ```tsx
@@ -368,7 +407,9 @@ export const ThemeProvider = ({
   if (theme) {
     return (
       <>
-        <style precedence="default">{cssContent}</style>
+        <style href={themeStyleHref(themeId)} precedence="default">
+          {cssContent}
+        </style>
         <ResolvedTokensCtx.Provider value={resolvedTokens}>
           <SemanticTokensCtx.Provider value={semanticTokens}>
             {coreNode}
@@ -630,6 +671,10 @@ export interface ThemeStylesProps {
  * `dangerouslySetInnerHTML` is safe: content comes exclusively from
  * `toCssVars()` (a pure internal function) — no user input is interpolated.
  *
+ * Renders a plain inline `<style>` where you place it (put it in `<head>`).
+ * Do **not** also pass `theme` to `<ThemeProvider>` — that injects a second
+ * copy; pass `theme` to the head component only (see README SSR section).
+ *
  * @example
  * ```tsx
  * // SSR escape hatch — no themeId needed for canonical 1-theme model
@@ -692,6 +737,12 @@ export interface ThemeHeadProps extends ThemeStylesProps {
  * Use in SSR frameworks (Next.js, Remix) where you need explicit `<head>`
  * injection. In CSR apps, `<ThemeProvider theme={...}>` handles everything.
  *
+ * **`storageKey` invariant:** `ThemeHead` forwards `storageKey` to `ThemeScript`,
+ * which reads localStorage before the first paint. `ThemeProvider` reads the
+ * same key at runtime. If you pass a custom `storageKey`, pass the **same value**
+ * to both `<ThemeHead>` and `<ThemeProvider>` — a mismatch causes a theme flash
+ * exactly in the scenario this component was designed to prevent.
+ *
  * @example
  * ```tsx
  * // Next.js app/layout.tsx
@@ -712,6 +763,14 @@ export interface ThemeHeadProps extends ThemeStylesProps {
  *     </html>
  *   );
  * }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Custom storageKey — must be identical on both sides
+ * <ThemeHead theme={myTheme} storageKey="my-app-theme" />
+ * // ...
+ * <ThemeProvider theme={myTheme} storageKey="my-app-theme">{children}</ThemeProvider>
  * ```
  */
 export const ThemeHead = ({
