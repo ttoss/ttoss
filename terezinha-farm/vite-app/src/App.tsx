@@ -44,9 +44,7 @@ const templates: DashboardTemplate[] = [
             },
           ],
           data: {
-            meta: {
-              total: 10784.99,
-            },
+            value: 10784.99,
           },
           trend: {
             value: 46.82,
@@ -84,9 +82,7 @@ const templates: DashboardTemplate[] = [
           ],
           labels: [],
           data: {
-            meta: {
-              total: 3883.83,
-            },
+            value: 3883.83,
           },
           trend: {
             value: 32.36,
@@ -124,9 +120,7 @@ const templates: DashboardTemplate[] = [
           ],
           labels: [],
           data: {
-            meta: {
-              total: 0.36,
-            },
+            value: 0.36,
           },
           trend: {
             value: 53.85,
@@ -164,9 +158,7 @@ const templates: DashboardTemplate[] = [
             },
           ],
           data: {
-            meta: {
-              total: 10,
-            },
+            value: 10,
           },
           trend: {
             value: 9.09,
@@ -204,9 +196,7 @@ const templates: DashboardTemplate[] = [
           ],
           labels: [],
           data: {
-            meta: {
-              total: 181135,
-            },
+            value: 181135,
           },
           trend: {
             value: 46.11,
@@ -245,9 +235,7 @@ const templates: DashboardTemplate[] = [
           ],
           labels: [],
           data: {
-            meta: {
-              total: 55543,
-            },
+            value: 55543,
           },
           trend: {
             value: 33.58,
@@ -284,9 +272,7 @@ const templates: DashboardTemplate[] = [
           ],
           labels: [],
           data: {
-            meta: {
-              total: 3.26,
-            },
+            value: 3.26,
           },
           trend: {
             value: 9.4,
@@ -325,9 +311,7 @@ const templates: DashboardTemplate[] = [
           ],
           labels: [],
           data: {
-            meta: {
-              total: 59.54,
-            },
+            value: 59.54,
           },
           trend: {
             value: 0,
@@ -365,9 +349,7 @@ const templates: DashboardTemplate[] = [
           ],
           labels: [],
           data: {
-            meta: {
-              total: 3902,
-            },
+            value: 3902,
           },
           trend: {
             value: 70.32,
@@ -407,9 +389,7 @@ const templates: DashboardTemplate[] = [
           labels: [],
           // eslint-disable-next-line max-lines
           data: {
-            meta: {
-              total: 2.15,
-            },
+            value: 2.15,
           },
           trend: {
             value: 16.22,
@@ -447,9 +427,7 @@ const templates: DashboardTemplate[] = [
           ],
           labels: [],
           data: {
-            meta: {
-              total: 2.76,
-            },
+            value: 2.76,
           },
           trend: {
             value: 14.02,
@@ -488,9 +466,7 @@ const templates: DashboardTemplate[] = [
           ],
           labels: [],
           data: {
-            meta: {
-              total: 19.3,
-            },
+            value: 19.3,
           },
           trend: {
             value: 8.1,
@@ -528,9 +504,7 @@ const templates: DashboardTemplate[] = [
           ],
           labels: [],
           data: {
-            meta: {
-              total: 31,
-            },
+            value: 31,
           },
           trend: {
             value: 55,
@@ -568,9 +542,7 @@ const templates: DashboardTemplate[] = [
           ],
           labels: [],
           data: {
-            meta: {
-              total: 32.3,
-            },
+            value: 32.3,
           },
           trend: {
             value: 41.27,
@@ -608,9 +580,7 @@ const templates: DashboardTemplate[] = [
           ],
           labels: [],
           data: {
-            meta: {
-              total: 85,
-            },
+            value: 85,
           },
           trend: {
             value: 7.61,
@@ -647,9 +617,7 @@ const templates: DashboardTemplate[] = [
           ],
           labels: [],
           data: {
-            meta: {
-              total: 56,
-            },
+            value: 56,
           },
           trend: {
             value: 24.44,
@@ -687,9 +655,7 @@ const templates: DashboardTemplate[] = [
           ],
           labels: [],
           data: {
-            meta: {
-              total: 3.5,
-            },
+            value: 3.5,
           },
           trend: {
             value: 20.45,
@@ -727,9 +693,7 @@ const templates: DashboardTemplate[] = [
           ],
           labels: [],
           data: {
-            meta: {
-              total: 192.59,
-            },
+            value: 192.59,
           },
           trend: {
             value: 17.98,
@@ -766,9 +730,7 @@ const templates: DashboardTemplate[] = [
           ],
           labels: [],
           data: {
-            meta: {
-              total: 347.9,
-            },
+            value: 347.9,
           },
           trend: {
             value: 5.28,
@@ -806,9 +768,7 @@ const templates: DashboardTemplate[] = [
           ],
           labels: [],
           data: {
-            meta: {
-              total: 1078.5,
-            },
+            value: 1078.5,
           },
           trend: {
             value: 61.5,
@@ -847,9 +807,7 @@ const templates: DashboardTemplate[] = [
           ],
           labels: [],
           data: {
-            meta: {
-              total: 0.6,
-            },
+            value: 0.6,
           },
           trend: {
             value: 45.45,
@@ -901,9 +859,7 @@ const templates: DashboardTemplate[] = [
           ],
           labels: [],
           data: {
-            meta: {
-              total: 0.6,
-            },
+            value: 0.6,
           },
           trend: {
             value: 45.45,
@@ -1232,9 +1188,7 @@ const cardCatalog: CardCatalogItem[] = [
         },
       ],
       data: {
-        meta: {
-          total: 0,
-        },
+        value: 0,
       },
     },
   },
@@ -1253,9 +1207,7 @@ const cardCatalog: CardCatalogItem[] = [
         },
       ],
       data: {
-        meta: {
-          total: 0,
-        },
+        value: 0,
       },
     },
   },
@@ -1274,9 +1226,7 @@ const cardCatalog: CardCatalogItem[] = [
         },
       ],
       data: {
-        meta: {
-          total: 0,
-        },
+        value: 0,
       },
     },
   },
@@ -1296,9 +1246,7 @@ const cardCatalog: CardCatalogItem[] = [
         },
       ],
       data: {
-        meta: {
-          total: 0,
-        },
+        value: 0,
       },
     },
   },

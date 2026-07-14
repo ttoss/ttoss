@@ -1,3 +1,6 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-lines-per-function */
+/* eslint-disable max-nested-callbacks */
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import {
   Dashboard,
@@ -44,9 +47,7 @@ const defaultTemplates: DashboardTemplate[] = [
           numberType: 'currency',
           type: 'bigNumber',
           sourceType: [{ source: 'api' }],
-          data: {
-            api: { total: 150000 },
-          },
+          data: { value: 150000 },
           trend: {
             value: 15.5,
             status: 'positive',
@@ -66,9 +67,7 @@ const defaultTemplates: DashboardTemplate[] = [
           numberType: 'number',
           type: 'bigNumber',
           sourceType: [{ source: 'api' }],
-          data: {
-            api: { total: 3.5 },
-          },
+          data: { value: 3.5 },
           variant: 'light-green',
         },
       },
@@ -84,9 +83,7 @@ const defaultTemplates: DashboardTemplate[] = [
           numberType: 'number',
           type: 'bigNumber',
           sourceType: [{ source: 'api' }],
-          data: {
-            api: { total: 1250000 },
-          },
+          data: { value: 1250000 },
         },
       },
       {
@@ -102,9 +99,7 @@ const defaultTemplates: DashboardTemplate[] = [
           numberType: 'percentage',
           type: 'bigNumber',
           sourceType: [{ source: 'api' }],
-          data: {
-            api: { total: 2.35 },
-          },
+          data: { value: 2.35 },
           trend: {
             value: 5.2,
             status: 'negative',
@@ -123,9 +118,7 @@ const defaultTemplates: DashboardTemplate[] = [
           numberType: 'number',
           type: 'bigNumber',
           sourceType: [{ source: 'api' }],
-          data: {
-            api: { total: 29375 },
-          },
+          data: { value: 29375 },
         },
       },
       {
@@ -141,9 +134,7 @@ const defaultTemplates: DashboardTemplate[] = [
           numberType: 'currency',
           type: 'bigNumber',
           sourceType: [{ source: 'api' }],
-          data: {
-            api: { total: 12.5 },
-          },
+          data: { value: 12.5 },
         },
       },
       {
@@ -159,9 +150,7 @@ const defaultTemplates: DashboardTemplate[] = [
           numberType: 'currency',
           type: 'bigNumber',
           sourceType: [{ source: 'api' }],
-          data: {
-            api: { total: 0.85 },
-          },
+          data: { value: 0.85 },
           variant: 'dark',
         },
       },
@@ -184,9 +173,7 @@ const defaultTemplates: DashboardTemplate[] = [
           numberType: 'number',
           type: 'bigNumber',
           sourceType: [{ source: 'api' }],
-          data: {
-            api: { total: 45230 },
-          },
+          data: { value: 45230 },
           trend: {
             value: 8.3,
             status: 'positive',
@@ -205,9 +192,7 @@ const defaultTemplates: DashboardTemplate[] = [
           numberType: 'number',
           type: 'bigNumber',
           sourceType: [{ source: 'api' }],
-          data: {
-            api: { total: 67890 },
-          },
+          data: { value: 67890 },
         },
       },
     ],
@@ -476,9 +461,7 @@ export const SingleCardDashboard: StoryObj = {
               numberType: 'currency',
               type: 'bigNumber',
               sourceType: [{ source: 'api' }],
-              data: {
-                api: { total: 250000 },
-              },
+              data: { value: 250000 },
               trend: {
                 value: 22.5,
                 status: 'positive',
@@ -604,9 +587,7 @@ export const WithSectionDividers: StoryObj = {
               numberType: 'currency',
               type: 'bigNumber',
               sourceType: [{ source: 'api' }],
-              data: {
-                api: { total: 150000 },
-              },
+              data: { value: 150000 },
               trend: {
                 value: 15.5,
                 status: 'positive',
@@ -625,9 +606,7 @@ export const WithSectionDividers: StoryObj = {
               numberType: 'number',
               type: 'bigNumber',
               sourceType: [{ source: 'api' }],
-              data: {
-                api: { total: 3.5 },
-              },
+              data: { value: 3.5 },
               variant: 'light-green',
             },
           },
@@ -642,9 +621,7 @@ export const WithSectionDividers: StoryObj = {
               numberType: 'number',
               type: 'bigNumber',
               sourceType: [{ source: 'api' }],
-              data: {
-                api: { total: 1250000 },
-              },
+              data: { value: 1250000 },
             },
           },
           {
@@ -670,9 +647,7 @@ export const WithSectionDividers: StoryObj = {
               numberType: 'percentage',
               type: 'bigNumber',
               sourceType: [{ source: 'api' }],
-              data: {
-                api: { total: 2.35 },
-              },
+              data: { value: 2.35 },
               trend: {
                 value: 5.2,
                 status: 'negative',
@@ -691,9 +666,7 @@ export const WithSectionDividers: StoryObj = {
               numberType: 'number',
               type: 'bigNumber',
               sourceType: [{ source: 'api' }],
-              data: {
-                api: { total: 29375 },
-              },
+              data: { value: 29375 },
             },
           },
           {
@@ -709,9 +682,7 @@ export const WithSectionDividers: StoryObj = {
               numberType: 'currency',
               type: 'bigNumber',
               sourceType: [{ source: 'api' }],
-              data: {
-                api: { total: 12.5 },
-              },
+              data: { value: 12.5 },
             },
           },
           {
@@ -727,9 +698,7 @@ export const WithSectionDividers: StoryObj = {
               numberType: 'currency',
               type: 'bigNumber',
               sourceType: [{ source: 'api' }],
-              data: {
-                api: { total: 0.85 },
-              },
+              data: { value: 0.85 },
               variant: 'dark',
             },
           },
@@ -756,9 +725,7 @@ export const WithSectionDividers: StoryObj = {
               numberType: 'number',
               type: 'bigNumber',
               sourceType: [{ source: 'api' }],
-              data: {
-                api: { total: 1250 },
-              },
+              data: { value: 1250 },
               trend: {
                 value: 8.3,
                 status: 'positive',
@@ -777,9 +744,7 @@ export const WithSectionDividers: StoryObj = {
               numberType: 'percentage',
               type: 'bigNumber',
               sourceType: [{ source: 'api' }],
-              data: {
-                api: { total: 4.25 },
-              },
+              data: { value: 4.25 },
             },
           },
         ],
@@ -840,9 +805,7 @@ const EditableCustomizeStory = () => {
           numberType: 'currency',
           type: 'bigNumber',
           sourceType: [{ source: 'api' }],
-          data: {
-            api: { total: 180000 },
-          },
+          data: { value: 180000 },
           trend: {
             value: 12.4,
             status: 'positive',
@@ -873,9 +836,7 @@ const EditableCustomizeStory = () => {
           numberDecimalPlaces: 2,
           type: 'bigNumber',
           sourceType: [{ source: 'api' }],
-          data: {
-            api: { total: 3.72 },
-          },
+          data: { value: 3.72 },
           variant: 'light-green',
         },
       },
@@ -1018,7 +979,7 @@ const WithEditingGridChangeStory = () => {
           numberType: 'currency',
           type: 'bigNumber',
           sourceType: [{ source: 'api' }],
-          data: { api: { total: 180000 } },
+          data: { value: 180000 },
           trend: { value: 12.4, status: 'positive' },
         },
       },
@@ -1035,7 +996,7 @@ const WithEditingGridChangeStory = () => {
           numberDecimalPlaces: 2,
           type: 'bigNumber',
           sourceType: [{ source: 'api' }],
-          data: { api: { total: 3.72 } },
+          data: { value: 3.72 },
           variant: 'light-green',
         },
       },

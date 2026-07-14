@@ -54,6 +54,7 @@ export interface DashboardCard {
   trend?: TrendIndicator;
   additionalInfo?: string;
   status?: StatusIndicator;
+  metrics?: Record<string, string[]>[];
 }
 
 export const DashboardCard = (props: DashboardCard) => {
