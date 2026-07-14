@@ -129,3 +129,76 @@ describe('getThemeScriptContent', () => {
     }).not.toThrow();
   });
 });
+
+// ---------------------------------------------------------------------------
+// HTML injection guard — storageKey escaping
+// ---------------------------------------------------------------------------
+
+describe('getThemeScriptContent — HTML injection guard', () => {
+  afterEach(clearDom);
+
+  test('a storageKey containing </script> cannot close the inline tag', () => {
+    const script = getThemeScriptContent({
+      storageKey: '</script><script>alert(1)//',
+    });
+    expect(script).not.toContain('</script>');
+    expect(script).toContain('\\u003C'); // `<` escaped as a JS string escape
+  });
+
+  test('an escaped storageKey still round-trips through localStorage', () => {
+    const storageKey = 'weird "<key>"';
+    localStorage.setItem(storageKey, JSON.stringify({ mode: 'dark' }));
+    new Function(getThemeScriptContent({ storageKey }))();
+    expect(document.documentElement.getAttribute('data-tt-mode')).toBe('dark');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Differential test — the IIFE must mirror runtime.ts apply() (ADR-003)
+// ---------------------------------------------------------------------------
+
+describe('getThemeScriptContent — parity with createThemeRuntime', () => {
+  afterEach(clearDom);
+
+  const snapshotDom = () => {
+    return {
+      theme: document.documentElement.getAttribute('data-tt-theme'),
+      mode: document.documentElement.getAttribute('data-tt-mode'),
+      colorScheme: document.documentElement.style.colorScheme,
+    };
+  };
+
+  test.each([
+    { config: { defaultMode: 'light' as const }, persisted: null },
+    { config: { defaultMode: 'dark' as const }, persisted: null },
+    {
+      config: { defaultTheme: 'bruttal', defaultMode: 'light' as const },
+      persisted: JSON.stringify({ mode: 'dark' }),
+    },
+    {
+      config: { defaultMode: 'dark' as const },
+      persisted: 'not-json',
+    },
+  ])(
+    'IIFE and runtime produce identical DOM state (%#)',
+    async ({ config, persisted }) => {
+      const { createThemeRuntime } = await import('../../../../../src/runtime');
+
+      const storageKey = config.defaultTheme
+        ? `parity-${config.defaultTheme}`
+        : 'parity-key';
+      if (persisted !== null) localStorage.setItem(storageKey, persisted);
+
+      new Function(getThemeScriptContent({ ...config, storageKey }))();
+      const scriptState = snapshotDom();
+      clearDom();
+
+      if (persisted !== null) localStorage.setItem(storageKey, persisted);
+      const runtime = createThemeRuntime({ ...config, storageKey });
+      const runtimeState = snapshotDom();
+      runtime.destroy();
+
+      expect(scriptState).toEqual(runtimeState);
+    }
+  );
+});

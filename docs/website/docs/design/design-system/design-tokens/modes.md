@@ -30,11 +30,11 @@ When the mode changes:
 - components continue consuming the same semantic tokens
 
 ```text
-light: action.primary.background.default → {core.colors.brand.500}
-dark:  action.primary.background.default → {core.colors.brand.300}
+light: action.primary.background.default → {core.colors.neutral.1000}
+dark:  action.primary.background.default → {core.colors.neutral.0}
 ```
 
-Core tokens like `core.colors.brand.500` and `core.colors.brand.300` retain their identity and value in both modes. What changes is which point in the palette the semantic token references.
+Core tokens like `core.colors.neutral.1000` and `core.colors.neutral.0` retain their identity and value in both modes. What changes is which point in the palette the semantic token references.
 
 > If a semantic contract fails in a mode, remap the semantic reference to a different core token — do not mutate the core value or rename the semantic token.
 
@@ -64,7 +64,7 @@ Core tokens — palette scales, font primitives, spacing, sizing, radii, motion 
 
 Core tokens define raw values: `core.colors.neutral.900` is always the darkest neutral, `core.colors.red.100` is always the lightest red. Modes never mutate these values.
 
-This means `core.colors.neutral.white` is always white. If dark mode needs a dark background, the semantic surface token remaps to `core.colors.neutral.900` — it does not redefine `white` as a dark color.
+This means `core.colors.neutral.0` is always the white end of the scale. If dark mode needs a dark background, the semantic surface token remaps to `core.colors.neutral.900` — it does not redefine the white end as a dark color.
 
 ### 2. Optimize semantic pairings, not isolated swatches
 

@@ -72,6 +72,9 @@ export const baseTheme: ThemeTokens = {
         100: '#fee2e2',
         300: '#fca5a5',
         500: '#ef4444',
+        // 600 exists so filled negative surfaces can pair with neutral.0 text
+        // at WCAG AA Normal (4.83:1) — red.500 on white is only 3.76:1.
+        600: '#dc2626',
         700: '#b91c1c',
         900: '#7f1d1d',
       },
@@ -486,9 +489,10 @@ export const baseTheme: ThemeTokens = {
           },
         },
         negative: {
-          // red.500 background, red.500 border, neutral.0 text
+          // red.600 background, red.600 border, neutral.0 text
+          // (red.600 — not 500 — so neutral.0 text meets AA Normal: 4.83:1)
           background: {
-            default: '{core.colors.red.500}',
+            default: '{core.colors.red.600}',
             hover: '{core.colors.red.700}',
             active: '{core.colors.red.900}',
             disabled: '{core.colors.neutral.200}',
@@ -497,7 +501,7 @@ export const baseTheme: ThemeTokens = {
             expanded: '{core.colors.red.700}',
           },
           border: {
-            default: '{core.colors.red.500}',
+            default: '{core.colors.red.600}',
             hover: '{core.colors.red.700}',
             active: '{core.colors.red.900}',
             focused: '{core.colors.red.700}',
@@ -1506,7 +1510,7 @@ export const darkAlternate: ModeOverride = {
             expanded: '{core.colors.neutral.0}',
           },
         },
-        // negative: red.500 bg/border + neutral.0 text remain valid on dark
+        // negative: red.600 bg/border + neutral.0 text remain valid on dark
         // pages (vivid destructive colour). Only state-specific overrides.
         negative: {
           background: {

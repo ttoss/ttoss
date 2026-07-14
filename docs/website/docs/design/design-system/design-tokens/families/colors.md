@@ -93,6 +93,7 @@ const coreColors = {
       100: '#FEE2E2',
       300: '#FCA5A5',
       500: '#EF4444',
+      600: '#DC2626', // filled negative surfaces: neutral.0 text at AA Normal
       700: '#B91C1C',
       900: '#7F1D1D',
     },
@@ -462,6 +463,10 @@ Validation must check at least these pairings:
    - `*.text.*` against the corresponding `*.background.*`
    - normal text: `≥ 4.5:1`
    - large text: `≥ 3:1`
+   - Only `*.muted.*` contexts (intentionally subdued) are held to the large-text
+     floor. All other contexts — including `action.*` button labels, which render
+     at `text.label` sizes and do **not** qualify as WCAG large text — must meet
+     `≥ 4.5:1`.
 
 2. **Border / non-text pairing**
    - `*.border.*` against the adjacent background it sits on

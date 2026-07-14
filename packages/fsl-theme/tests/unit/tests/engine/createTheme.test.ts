@@ -367,3 +367,94 @@ describe('withDataviz', () => {
     expect(result.baseMode).toBe(baseBundle.baseMode);
   });
 });
+
+// ---------------------------------------------------------------------------
+// createTheme — alternate ref validation (DEV-only)
+// ---------------------------------------------------------------------------
+
+describe('createTheme — alternate ref validation (DEV-only)', () => {
+  let warnSpy: jest.SpyInstance;
+  const originalEnv = process.env.NODE_ENV;
+
+  beforeEach(() => {
+    process.env.NODE_ENV = 'test';
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
+    process.env.NODE_ENV = originalEnv;
+  });
+
+  test('warns on a broken ref inside alternate.semantic', () => {
+    createTheme({
+      alternate: {
+        semantic: {
+          colors: {
+            action: {
+              primary: {
+                background: {
+                  default:
+                    '{core.colors.nonexistent.999}' as unknown as `{core.colors.${string}}`,
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "Invalid token reference '{core.colors.nonexistent.999}'"
+      )
+    );
+  });
+
+  test('does not warn for the built-in darkAlternate', () => {
+    createTheme();
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  test('does not warn for a valid custom alternate', () => {
+    createTheme({
+      alternate: {
+        semantic: {
+          colors: {
+            informational: {
+              primary: {
+                background: { default: '{core.colors.neutral.900}' },
+              },
+            },
+          },
+        },
+      },
+    });
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// buildTheme — structuredClone fallback
+// ---------------------------------------------------------------------------
+
+describe('buildTheme — structuredClone fallback', () => {
+  test('createTheme works when structuredClone is unavailable (jsdom, legacy runtimes)', () => {
+    const original = globalThis.structuredClone;
+    // @ts-expect-error — simulating an environment without structuredClone
+    globalThis.structuredClone = undefined;
+    try {
+      const bundle = createTheme({
+        overrides: { core: { colors: { brand: { 500: '#123456' } } } },
+      });
+      expect(bundle.base.core.colors.brand[500]).toBe('#123456');
+
+      // The fallback must still break shared references with the base theme.
+      (bundle.base.core.colors.brand as Record<string, string>)['500'] =
+        '#mutated';
+      expect(defaultTheme.core.colors.brand[500]).not.toBe('#mutated');
+    } finally {
+      globalThis.structuredClone = original;
+    }
+  });
+});

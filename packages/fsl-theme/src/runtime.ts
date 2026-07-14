@@ -82,6 +82,36 @@ const writeStorage = (key: string, data: { mode: ThemeMode }): void => {
   }
 };
 
+/**
+ * Minimal `MediaQueryList` surface the runtime depends on. Used to type the
+ * no-op fallback for environments without `window.matchMedia` (legacy
+ * embedded WebViews, some non-browser DOM shims) — mode `'system'` then
+ * degrades to `'light'` instead of crashing at runtime creation.
+ */
+interface MediaQueryLike {
+  matches: boolean;
+  addEventListener: (type: 'change', listener: () => void) => void;
+  removeEventListener: (type: 'change', listener: () => void) => void;
+}
+
+const createMediaQuery = (): MediaQueryLike => {
+  if (typeof window.matchMedia === 'function') {
+    return window.matchMedia('(prefers-color-scheme: dark)');
+  }
+  return {
+    matches: false,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+  };
+};
+
+/**
+ * DEV-only registry of live runtimes per root element. Two runtimes writing
+ * `data-tt-*` to the same root overwrite each other (last writer wins), so
+ * the second attach warns. Entries are decremented on `destroy()`.
+ */
+const activeRuntimesPerRoot = new WeakMap<HTMLElement, number>();
+
 // ---------------------------------------------------------------------------
 // createThemeRuntime
 // ---------------------------------------------------------------------------
@@ -115,6 +145,20 @@ export const createThemeRuntime = (
 
   const listeners = new Set<(state: ThemeState) => void>();
   let destroyed = false;
+
+  if (process.env.NODE_ENV !== 'production') {
+    const count = (activeRuntimesPerRoot.get(root) ?? 0) + 1;
+    activeRuntimesPerRoot.set(root, count);
+    if (count > 1) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        '[fsl-theme] Multiple theme runtimes are attached to the same root ' +
+          "element. They overwrite each other's data-tt-* attributes (last " +
+          'writer wins) and their mode states do not sync. Render a single ' +
+          '<ThemeProvider> per root, or pass a distinct `root` to each.'
+      );
+    }
+  }
 
   // --- Init: read persisted mode and resolve --------------------------------
 
@@ -163,7 +207,7 @@ export const createThemeRuntime = (
 
   // --- Lazy system mode listener -------------------------------------------
 
-  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  const mediaQuery = createMediaQuery();
 
   const onSystemChange = (): void => {
     if (destroyed) return;
@@ -179,6 +223,34 @@ export const createThemeRuntime = (
   };
 
   syncMediaListener(mode === 'system');
+
+  // --- Cross-tab sync -------------------------------------------------------
+  // `storage` fires in *other* tabs when this tab persists a mode change, so
+  // every tab converges on the latest persisted mode without a reload.
+  // Applied without re-persisting (the originating tab already wrote it).
+
+  const onStorage = (event: StorageEvent): void => {
+    if (destroyed || event.key !== storageKey || event.newValue === null) {
+      return;
+    }
+    let stored: { mode?: string } | null = null;
+    try {
+      stored = JSON.parse(event.newValue);
+    } catch {
+      return; // malformed external write — ignore
+    }
+    const nextMode = stored?.mode;
+    if (!nextMode || !VALID_MODES.includes(nextMode as ThemeMode)) {
+      return;
+    }
+    mode = nextMode as ThemeMode;
+    resolvedMode =
+      mode === 'system' ? (mediaQuery.matches ? 'dark' : 'light') : mode;
+    syncMediaListener(mode === 'system');
+    applyState({ persist: false });
+  };
+
+  window.addEventListener('storage', onStorage);
 
   // --- Public API ----------------------------------------------------------
 
@@ -206,7 +278,12 @@ export const createThemeRuntime = (
   const destroy = (): void => {
     destroyed = true;
     syncMediaListener(false);
+    window.removeEventListener('storage', onStorage);
     listeners.clear();
+    if (process.env.NODE_ENV !== 'production') {
+      const count = activeRuntimesPerRoot.get(root) ?? 0;
+      activeRuntimesPerRoot.set(root, Math.max(0, count - 1));
+    }
   };
 
   return { getState, setMode, subscribe, destroy };

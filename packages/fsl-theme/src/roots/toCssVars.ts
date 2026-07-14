@@ -25,7 +25,15 @@ export const toCssVarName = (tokenPath: string): string => {
       return `${cssPrefix}${rest}`;
     }
   }
-  return `--tt-${tokenPath.replace(/\./g, '-')}`;
+  // Unregistered path fallback. Semantic extensions drop the `semantic.`
+  // segment so custom families follow the same convention as registered ones
+  // (`semantic.chart.grid` → `--tt-chart-grid`, like `semantic.colors.*` →
+  // `--tt-colors-*`). Core extensions keep their `core-` segment.
+  // `assertDistinctCssVars` guards against collisions in dev.
+  const path = tokenPath.startsWith('semantic.')
+    ? tokenPath.slice('semantic.'.length)
+    : tokenPath;
+  return `--tt-${path.replace(/\./g, '-')}`;
 };
 
 /**
@@ -453,6 +461,49 @@ export interface BundleCssVarsResult {
 }
 
 /**
+ * Build the no-JS / pre-hydration system-mode fallback block.
+ *
+ * Canonical 1-theme model only (no `themeId`): before the runtime (or the SSR
+ * bootstrap script) stamps `data-tt-mode`, and for users with JavaScript
+ * disabled, the alternate mode would otherwise never apply. This block scopes
+ * the alternate diff vars to `@media (prefers-color-scheme: <mode>)` behind
+ * `:root:not([data-tt-mode])`, so it applies exactly while no explicit mode
+ * attribute exists and gets out of the way the moment the runtime writes one
+ * (persisted user choice always wins over the OS preference).
+ */
+const buildSystemModeFallbackBlock = ({
+  mode,
+  vars,
+}: {
+  mode: 'light' | 'dark';
+  vars: Record<string, string | number>;
+}): string => {
+  // Callers only invoke this with a non-empty diff (guarded at the call site).
+  const entries = Object.entries(vars);
+  const selector = ':root:not([data-tt-mode])';
+  const lines = entries.map(([name, value]) => {
+    const val = hasCqUnits(value) ? toViewportFallback(String(value)) : value;
+    return `    ${name}: ${val};`;
+  });
+
+  const cqEntries = entries.filter(([, value]) => {
+    return hasCqUnits(value);
+  });
+  const cqBlock =
+    cqEntries.length > 0
+      ? `\n\n  @supports (width: 1cqi) {\n  ${selector} {\n${cqEntries
+          .map(([name, value]) => {
+            return `      ${name}: ${value};`;
+          })
+          .join('\n')}\n  }\n  }`
+      : '';
+
+  return `@media (prefers-color-scheme: ${mode}) {\n  ${selector} {\n    color-scheme: ${mode};\n${lines.join(
+    '\n'
+  )}\n  }${cqBlock}\n}`;
+};
+
+/**
  * Compute a diff record: only entries in `full` whose values differ from `base`.
  */
 const diffCssVars = ({
@@ -569,6 +620,17 @@ const bundleToCssVars = (
       const parts = [baseResult.toCssString()];
       if (Object.keys(diffVars).length > 0) {
         parts.push(alternateResult.toCssString());
+        // Canonical 1-theme model: honor the OS preference before JS runs
+        // (and when JS never runs). Multi-theme (themeId) scoping is
+        // runtime-managed, so the fallback is emitted only for `:root`.
+        if (!themeId) {
+          parts.push(
+            buildSystemModeFallbackBlock({
+              mode: alternateMode,
+              vars: diffVars,
+            })
+          );
+        }
       }
       return parts.join('\n\n');
     },

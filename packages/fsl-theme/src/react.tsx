@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from 'react';
 
 import { getThemeStylesContent } from './css';
@@ -27,6 +29,22 @@ import type { SemanticTokens, ThemeBundle, ThemeTokens } from './Types';
 const themeStyleHref = (themeId?: string): string => {
   return `tt-theme-${themeId ?? 'root'}`;
 };
+
+/**
+ * DEV-only registry of injected theme CSS per hoisted-style `href`.
+ * React dedups hoisted `<style>` tags by `href`, so two providers with
+ * *different* themes but the same `href` silently drop the second theme's
+ * CSS. This registry detects that mismatch and warns.
+ */
+const injectedThemeCss = new Map<string, { css: string; count: number }>();
+
+/**
+ * Runs on the client before paint; falls back to `useEffect` on the server
+ * so SSR renders never warn. Used for the runtime-creation effect so
+ * `data-tt-*` attributes land before first paint in CSR apps (less mode flash).
+ */
+const useIsomorphicLayoutEffect =
+  typeof window !== 'undefined' ? React.useLayoutEffect : React.useEffect;
 
 // ---------------------------------------------------------------------------
 // Coarse-pointer detection — bridges the hit.fine/hit.coarse coupling for
@@ -226,6 +244,11 @@ export interface ThemeProviderProps {
    * Defaults to `document.documentElement`. Pass a container element for
    * Storybook isolation or micro-frontend use cases.
    *
+   * **Must be paired with `themeId`.** Without a `themeId`, the generated CSS
+   * targets `:root` / `:root[data-tt-mode="dark"]` (the `<html>` element),
+   * while the attributes are written to this element — the alternate mode CSS
+   * would never match. A dev-mode warning fires on this combination.
+   *
    * Because the element is often `null` on the first render when passed via
    * `ref.current`, `root` is reactive: the runtime is recreated once when
    * it transitions from `undefined` to the actual element.
@@ -235,7 +258,7 @@ export interface ThemeProviderProps {
    * // Storybook decorator — isolates each story from <html>
    * const rootRef = React.useRef<HTMLDivElement>(null);
    * <div ref={rootRef}>
-   *   <ThemeProvider theme={myTheme} root={rootRef.current ?? undefined}>
+   *   <ThemeProvider theme={myTheme} themeId="story" root={rootRef.current ?? undefined}>
    *     <Story />
    *   </ThemeProvider>
    * </div>
@@ -302,7 +325,18 @@ export const ThemeProvider = ({
   // MFE theme swap). `defaultMode` and `storageKey` remain init-only and are
   // captured in refs; mode state is preserved across recreations via
   // localStorage.
-  React.useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
+    if (process.env.NODE_ENV !== 'production' && root && !themeId) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        '[fsl-theme] `root` was passed without `themeId`. Without a themeId, ' +
+          'the generated CSS targets `:root`/`:root[data-tt-mode="dark"]` on <html>, ' +
+          'but mode attributes are written to the `root` element — the alternate ' +
+          'mode CSS will never match. Pass a `themeId` so CSS is scoped to ' +
+          '`[data-tt-theme="<id>"]` selectors that match the `root` element.'
+      );
+    }
+
     const runtime = createThemeRuntime({
       defaultTheme: themeId,
       defaultMode: initDefaultMode.current,
@@ -367,6 +401,34 @@ export const ThemeProvider = ({
   const cssContent = React.useMemo(() => {
     return theme ? getThemeStylesContent(theme, themeId) : null;
   }, [theme, themeId]);
+
+  // DEV-only: detect two providers with different themes sharing the same
+  // hoisted-style href — React dedups by href, so the second theme's CSS is
+  // silently dropped. Distinct `themeId`s give distinct hrefs and coexist.
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'production' || !cssContent) return;
+    const href = themeStyleHref(themeId);
+    const entry = injectedThemeCss.get(href);
+    if (entry && entry.css !== cssContent) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[fsl-theme] Two <ThemeProvider>s with different themes share the same ` +
+          `style key "${href}". React dedups hoisted <style> tags by href, so ` +
+          `only the first theme's CSS is injected. Give each theme a distinct ` +
+          `themeId: <ThemeProvider theme={...} themeId="my-theme">.`
+      );
+      return;
+    }
+    const next = entry ?? { css: cssContent, count: 0 };
+    next.count += 1;
+    injectedThemeCss.set(href, next);
+    return () => {
+      const current = injectedThemeCss.get(href);
+      if (!current) return;
+      current.count -= 1;
+      if (current.count <= 0) injectedThemeCss.delete(href);
+    };
+  }, [cssContent, themeId]);
 
   // onModeChange: fires on subsequent mode transitions only (not on mount).
   // Use a ref for the callback to avoid stale-closure issues with inline fns.
@@ -481,11 +543,11 @@ export const useColorMode = (): UseColorModeResult => {
  * inline styles produces silently broken rendering:
  *
  * ```tsx
- * // ✗ WRONG — tokens.colors.brand.main is '{core.colors.brand.main}', not '#FF0000'
- * <div style={{ color: tokens.colors.brand.main }} />
+ * // ✗ WRONG — the leaf is '{core.colors.neutral.1000}' (a ref string), not a CSS color
+ * <div style={{ color: tokens.colors.action.primary.text.default }} />
  *
  * // ✓ CSS consumers — use vars:
- * <div style={{ color: 'var(--tt-color-brand-main)' }} />
+ * <div style={{ color: 'var(--tt-colors-action-primary-text-default)' }} />
  *
  * // ✓ Non-CSS consumers (React Native, canvas) — use useResolvedTokens():
  * const resolved = useResolvedTokens();
@@ -500,8 +562,8 @@ export const useColorMode = (): UseColorModeResult => {
  *
  * const Button = () => {
  *   const tokens = useTokens(); // introspection only
- *   // tokens.colors.action.primary.background.default → '{core.colors.brand.500}'
- *   return <button style={{ background: 'var(--tt-action-primary-background-default)' }} />;
+ *   // tokens.colors.action.primary.background.default → '{core.colors.neutral.1000}'
+ *   return <button style={{ background: 'var(--tt-colors-action-primary-background-default)' }} />;
  * };
  * ```
  */
@@ -542,12 +604,20 @@ export const useTokens = (): SemanticTokens => {
  *
  * ```tsx
  * // ✓ CSS (browser)
- * <div style={{ color: 'var(--tt-color-informational-primary-default)' }} />
+ * <div style={{ color: 'var(--tt-colors-informational-primary-text-default)' }} />
  *
  * // ✓ Non-CSS (React Native, canvas)
  * const resolved = useResolvedTokens();
  * <View style={{ backgroundColor: resolved['semantic.colors.action.primary.background.default'] }} />
  * ```
+ *
+ * ### ⚠ CSS-coupled tokens stay unresolved
+ * A registered set of dimensional tokens (model.md §8 — spacing steps, fluid
+ * `text.*.fontSize`, `sizing.hit.*`, `sizing.viewport.*`, `sizing.measure.reading`,
+ * `spacing.gutter.*`) carry CSS-only constructs (`var()`, `calc()`, `clamp()`,
+ * `cqi`, `dvh`, `ch`). This hook returns those **as-is** — they are not usable
+ * outside a CSS engine. Colors, opacity, z-index, font weights/leading and
+ * other scalar tokens resolve to plain raw values and are safe everywhere.
  *
  * Requires `<ThemeProvider theme={...}>`.
  *

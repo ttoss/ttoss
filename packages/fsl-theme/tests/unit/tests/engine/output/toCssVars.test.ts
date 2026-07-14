@@ -803,3 +803,139 @@ describe('spacing responsive engine — CSS output (Error #17 / Error #18)', () 
     expect(fallbackIdx).toBeLessThan(supportsIdx);
   });
 });
+
+// ---------------------------------------------------------------------------
+// toCssVarName — unregistered-path fallback (semantic extensions)
+// ---------------------------------------------------------------------------
+
+describe('toCssVarName — unregistered-path fallback', () => {
+  test('semantic extensions drop the `semantic.` segment (family convention)', () => {
+    expect(toCssVarName('semantic.chart.grid.line')).toBe(
+      '--tt-chart-grid-line'
+    );
+  });
+
+  test('camelCase segments are preserved as-is', () => {
+    expect(toCssVarName('semantic.colors.brandX.primary.default')).toBe(
+      '--tt-colors-brandX-primary-default'
+    );
+  });
+
+  test('unregistered core extensions keep their core segment', () => {
+    expect(toCssVarName('core.chart.palette.1')).toBe(
+      '--tt-core-chart-palette-1'
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// System-mode fallback block — no-JS / pre-hydration dark mode
+// ---------------------------------------------------------------------------
+
+describe('system-mode fallback block (@media prefers-color-scheme)', () => {
+  test('canonical model (no themeId) emits the fallback with the alternate diff', () => {
+    const css = toCssVars(baseBundle).toCssString();
+
+    expect(css).toContain('@media (prefers-color-scheme: dark)');
+    expect(css).toContain(':root:not([data-tt-mode])');
+
+    const fallback = css.slice(
+      css.indexOf('@media (prefers-color-scheme: dark)')
+    );
+    // Applies the alternate mode's color-scheme and at least one dark remap
+    expect(fallback).toContain('color-scheme: dark;');
+    expect(fallback).toContain('--tt-colors-action-primary-background-default');
+  });
+
+  test('fallback vars match the attribute-scoped dark block exactly', () => {
+    const result = toCssVars(baseBundle);
+    const css = result.toCssString();
+    const fallback = css.slice(
+      css.indexOf('@media (prefers-color-scheme: dark)')
+    );
+
+    for (const [name, value] of Object.entries(
+      result.alternate?.cssVars ?? {}
+    )) {
+      if (hasCqUnits(value)) continue; // CQ vars appear with fallback units
+      expect(fallback).toContain(`${name}: ${value};`);
+    }
+  });
+
+  test('multi-theme (themeId) does NOT emit the fallback — scoping is runtime-managed', () => {
+    const css = toCssVars(baseBundle, { themeId: 'brand-a' }).toCssString();
+    expect(css).not.toContain('@media (prefers-color-scheme:');
+  });
+
+  test('single-mode bundles (alternate: null) emit no fallback', () => {
+    const css = toCssVars(createTheme({ alternate: null })).toCssString();
+    expect(css).not.toContain('@media (prefers-color-scheme:');
+  });
+
+  test('dark-base bundles emit a light fallback', () => {
+    const bundle = createTheme({
+      baseMode: 'dark',
+      alternate: {
+        semantic: {
+          colors: {
+            informational: {
+              primary: {
+                // differs from the base value so the diff is non-empty
+                background: { default: '{core.colors.neutral.900}' },
+              },
+            },
+          },
+        },
+      },
+    });
+    const css = toCssVars(bundle).toCssString();
+    expect(css).toContain('@media (prefers-color-scheme: light)');
+    expect(css).toContain('color-scheme: light;');
+  });
+});
+
+describe('system-mode fallback block — container query values', () => {
+  test('CQ values get viewport fallbacks plus an @supports enhancement', () => {
+    const bundle = createTheme({
+      alternate: {
+        semantic: {
+          spacing: {
+            gutter: {
+              page: 'clamp(16px, 3cqi, 48px)',
+            },
+          },
+        } as never,
+      },
+    });
+    const css = toCssVars(bundle).toCssString();
+    const fallback = css.slice(
+      css.indexOf('@media (prefers-color-scheme: dark)')
+    );
+
+    // Base fallback line uses viewport-safe units …
+    expect(fallback).toContain(
+      '--tt-spacing-gutter-page: clamp(16px, 3vw, 48px);'
+    );
+    // … and the original CQ value ships behind @supports.
+    expect(fallback).toContain('@supports (width: 1cqi)');
+    expect(fallback).toContain(
+      '--tt-spacing-gutter-page: clamp(16px, 3cqi, 48px);'
+    );
+  });
+});
+
+describe('production mode — assertDistinctCssVars gate is skipped', () => {
+  const originalEnv = process.env.NODE_ENV;
+
+  afterEach(() => {
+    process.env.NODE_ENV = originalEnv;
+  });
+
+  test('toCssVars runs without the DEV collision assertion in production', () => {
+    process.env.NODE_ENV = 'production';
+    const { cssVars } = toCssVars(defaultTheme);
+    expect(cssVars['--tt-core-colors-brand-500']).toBe(
+      defaultTheme.core.colors.brand[500]
+    );
+  });
+});

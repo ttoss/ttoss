@@ -6,6 +6,7 @@ import { act, render, renderHook } from '@ttoss/test-utils/react';
 import type * as React from 'react';
 
 import { baseBundle } from '../../../../../src/baseBundle';
+import { createTheme } from '../../../../../src/createTheme';
 import { useDatavizTokens } from '../../../../../src/dataviz/useDatavizTokens';
 import { withDataviz } from '../../../../../src/dataviz/withDataviz';
 import {
@@ -1146,5 +1147,119 @@ describe('ThemeHead', () => {
     );
     const script = container.querySelector('script');
     expect(script?.innerHTML).toContain('"dark"');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// DEV-only warnings — root/themeId pairing and hoisted-style dedup mismatch
+// ---------------------------------------------------------------------------
+
+describe('ThemeProvider DEV warnings', () => {
+  let warnSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
+    clearDom();
+  });
+
+  test('warns when root is passed without themeId', () => {
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+
+    render(
+      <ThemeProvider theme={defaultBundle} root={container}>
+        <div>child</div>
+      </ThemeProvider>
+    );
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('`root` was passed without `themeId`')
+    );
+    container.remove();
+  });
+
+  test('does not warn when root is paired with themeId', () => {
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+
+    render(
+      <ThemeProvider theme={defaultBundle} themeId="scoped" root={container}>
+        <div>child</div>
+      </ThemeProvider>
+    );
+
+    expect(warnSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining('`root` was passed without `themeId`')
+    );
+    container.remove();
+  });
+
+  test('warns when two providers with different themes share the same style href', () => {
+    const themeA = createTheme({
+      overrides: { core: { colors: { brand: { 500: '#AA0000' } } } },
+    });
+    const themeB = createTheme({
+      overrides: { core: { colors: { brand: { 500: '#00BB00' } } } },
+    });
+
+    render(
+      <>
+        <ThemeProvider theme={themeA}>
+          <div>a</div>
+        </ThemeProvider>
+        <ThemeProvider theme={themeB}>
+          <div>b</div>
+        </ThemeProvider>
+      </>
+    );
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('share the same style key')
+    );
+  });
+
+  test('does not warn for two providers with distinct themeIds', () => {
+    const themeA = createTheme({
+      overrides: { core: { colors: { brand: { 500: '#AA0000' } } } },
+    });
+    const themeB = createTheme({
+      overrides: { core: { colors: { brand: { 500: '#00BB00' } } } },
+    });
+
+    render(
+      <>
+        <ThemeProvider theme={themeA} themeId="brand-a">
+          <div>a</div>
+        </ThemeProvider>
+        <ThemeProvider theme={themeB} themeId="brand-b">
+          <div>b</div>
+        </ThemeProvider>
+      </>
+    );
+
+    expect(warnSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining('share the same style key')
+    );
+  });
+
+  test('does not warn when the same theme is re-rendered (dedup is intended)', () => {
+    const { rerender } = render(
+      <ThemeProvider theme={defaultBundle}>
+        <div>a</div>
+      </ThemeProvider>
+    );
+    rerender(
+      <ThemeProvider theme={defaultBundle}>
+        <div>b</div>
+      </ThemeProvider>
+    );
+
+    expect(warnSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining('share the same style key')
+    );
   });
 });

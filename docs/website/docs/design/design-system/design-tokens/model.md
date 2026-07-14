@@ -29,7 +29,7 @@ Separate **value** from **meaning**.
 ```text
    raw value          core token                   semantic token                   component
    ─────────          ──────────                   ──────────────                   ─────────
-   "#0F172A"   ──►    core.colors.neutral.1000 ──► semantic.colors.action           <Button />
+   "#020617"   ──►    core.colors.neutral.1000 ──► semantic.colors.action           <Button />
                                                      .primary.background.default
 
    only in theme      never consumed by            the contract surface             consumes semantic
