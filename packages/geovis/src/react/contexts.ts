@@ -2,7 +2,8 @@ import * as React from 'react';
 
 import type { SetViewOptions, SpecPatch } from '../runtime/adapter';
 import type { GeoVisRuntime } from '../runtime/createRuntime';
-import type { PolicyViolation, VisualizationSpec } from '../spec/types';
+import type { GeoVisResult } from '../spec/result';
+import type { VisualizationSpec } from '../spec/types';
 
 /**
  * Snapshot of a feature currently hovered on the map.
@@ -30,12 +31,19 @@ export interface MapHoverInfo {
 
 export interface GeoVisContextValue {
   runtime: GeoVisRuntime | null;
+  /** The last successfully accepted spec — unchanged while `result` is a failure (ADR-0001: nothing renders on failure). */
   spec: VisualizationSpec;
   applyPatch: (patch: SpecPatch) => void;
   /** Imperatively moves the camera and syncs `spec.view`. Animated by default. */
   setView: (options: SetViewOptions) => void;
-  /** Policy violations detected from spec.metadata on mount. Empty when spec is valid. */
-  policyViolations: PolicyViolation[];
+  /**
+   * The latest `GeoVisResult` from validating the spec (schema, referential
+   * integrity, and adapter capabilities) plus cartography policy warnings.
+   * `resolved.warnings` carries policy violations — they never block
+   * rendering. Any other status means `spec` still reflects the last good
+   * value and the map was not updated.
+   */
+  result: GeoVisResult;
 }
 
 /**

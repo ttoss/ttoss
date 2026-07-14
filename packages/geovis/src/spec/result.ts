@@ -18,6 +18,7 @@ export type GeoVisResultStatus =
  */
 export type GeoVisIssueCode =
   | 'invalid-schema'
+  | 'invalid-schema-version'
   | 'invalid-threshold-order'
   | 'invalid-threshold-value'
   | 'invalid-size-range'
@@ -46,6 +47,7 @@ export const ISSUE_CODE_STATUS: Record<
   GeoVisResultStatus
 > = {
   'invalid-schema': 'invalid',
+  'invalid-schema-version': 'invalid',
   'invalid-threshold-order': 'invalid',
   'invalid-threshold-value': 'invalid',
   'invalid-size-range': 'invalid',

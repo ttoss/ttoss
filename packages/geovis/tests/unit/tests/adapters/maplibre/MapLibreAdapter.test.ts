@@ -12,6 +12,7 @@ import createMapLibreAdapter, {
 import type {
   DataSource,
   HeatmapPaint,
+  RasterPaint,
   SymbolPaint,
   VisualizationLayer,
 } from 'src/spec/types';
@@ -202,13 +203,32 @@ describe('createMapLibreAdapter', () => {
     expect(mapB.remove).not.toHaveBeenCalled();
   });
 
-  test('getCapabilities returns correct capabilities', () => {
+  test('getCapabilities returns the structured capability tree (ADR-0002)', () => {
     const adapter = createMapLibreAdapter();
     expect(adapter.getCapabilities()).toEqual({
-      supports3D: false,
-      supportsRaster: true,
-      supportsVectorTiles: true,
-      supportsCustomLayers: true,
+      sourceTypes: [
+        'geojson',
+        'vector-tiles',
+        'raster-tiles',
+        'raster-dem',
+        'image',
+        'video',
+      ],
+      layerGeometries: [
+        'polygon',
+        'line',
+        'point',
+        'symbol',
+        'heatmap',
+        'raster',
+      ],
+      dataFeatures: {
+        featureState: ['geojson'],
+      },
+      viewFeatures: {
+        pitch: true,
+        bearing: true,
+      },
     });
   });
 
@@ -663,6 +683,27 @@ describe('toMaplibreLayer', () => {
       'heatmap-radius': 20,
       'heatmap-intensity': 1,
       'heatmap-weight': 1,
+    });
+  });
+
+  test('raster → raster layer with raster paint properties', () => {
+    const layer: VisualizationLayer = {
+      ...base,
+      geometry: 'raster',
+      paint: { rasterOpacity: 0.5 } as RasterPaint,
+    };
+    const result = toMaplibreLayer(layer);
+    expect(result).toMatchObject({ type: 'raster' });
+    expect((result as { paint: Record<string, unknown> }).paint).toMatchObject({
+      'raster-opacity': 0.5,
+    });
+  });
+
+  test('raster paint defaults raster-opacity to 1 when unset', () => {
+    const layer: VisualizationLayer = { ...base, geometry: 'raster' };
+    const result = toMaplibreLayer(layer);
+    expect((result as { paint: Record<string, unknown> }).paint).toMatchObject({
+      'raster-opacity': 1,
     });
   });
 

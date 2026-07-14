@@ -4,7 +4,7 @@ title: PRD-001 · Repairable Errors
 
 # PRD-001: Repairable Errors and Honest Capabilities
 
-Status: draft · Priority: **P1** (roadmap R1) · Capability: strategy §5.7 · Package: `@ttoss/geovis`
+Status: implemented ([plan](../plans/plan-prd-001-repairable-errors.md)) · Priority: **P1** (roadmap R1) · Capability: strategy §5.7 · Package: `@ttoss/geovis`
 
 ## Problem
 

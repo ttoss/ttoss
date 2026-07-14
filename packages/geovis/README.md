@@ -895,7 +895,7 @@ Use `useGeoVis` to access `applyPatch` for efficient updates without re-renderin
 | `'source'`  | Add, remove, or update a source            |
 | `'mapData'` | Update feature-state data bound to the map |
 
-> **Note:** `view` and `style` changes must be applied via `update(spec)` (full spec replacement), not via `applyPatch`.
+> **Note:** `view` and `style` changes must be applied via `update(spec)` (full spec replacement), not via `applyPatch`. Any other target, or a patch that would produce an invalid spec, is rejected before the adapter is ever called — `runtime.applyPatch`/`runtime.update` return a `GeoVisResult` (`unsupported-patch-target` for the former), and `useGeoVis().result` surfaces it; the map is left untouched (ADR-0001).
 
 A `SpecPatch` has the shape:
 
@@ -1222,13 +1222,13 @@ Renders the map inside a `div` container mounted by the active engine. Must be u
 
 Returns the current `GeoVisContextValue`. Must be called inside `GeoVisProvider`.
 
-| Return value       | Type                                | Description                                                                                                    |
-| ------------------ | ----------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `spec`             | `VisualizationSpec`                 | Current effective spec (updated after each `applyPatch`).                                                      |
-| `applyPatch`       | `(patch: SpecPatch) => void`        | Dispatch a patch without re-mounting the map.                                                                  |
-| `setView`          | `(options: SetViewOptions) => void` | Imperatively move the camera (center, zoom, pitch, bearing).                                                   |
-| `policyViolations` | `PolicyViolation[]`                 | Active policy violations derived from the current spec. Each entry has `reason: string` and `message: string`. |
-| `runtime`          | `GeoVisRuntime \| null`             | Low-level runtime instance. Avoid direct access in app code.                                                   |
+| Return value | Type                                | Description                                                                                                                             |
+| ------------ | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `spec`       | `VisualizationSpec`                 | Last spec the runtime accepted. Unchanged while `result` is a failure — nothing renders on failure (ADR-0001).                          |
+| `applyPatch` | `(patch: SpecPatch) => void`        | Dispatch a patch without re-mounting the map.                                                                                           |
+| `setView`    | `(options: SetViewOptions) => void` | Imperatively move the camera (center, zoom, pitch, bearing).                                                                            |
+| `result`     | `GeoVisResult`                      | Latest validation outcome (schema, references, capabilities) plus cartography policy warnings. See [Spec Validation](#spec-validation). |
+| `runtime`    | `GeoVisRuntime \| null`             | Low-level runtime instance. Avoid direct access in app code.                                                                            |
 
 `SetViewOptions` fields: `center?: LngLat`, `zoom?: number`, `pitch?: number`, `bearing?: number`, `animate?: boolean` (defaults `true` — smooth flyTo).
 
@@ -1464,26 +1464,64 @@ Returns `BoundaryToggleResult`:
 
 Validates a plain object against the `@ttoss/geovis` JSON schema and cross-field referential rules, aggregating every issue found in one pass.
 
+```ts
+function validateSpec(
+  input: unknown,
+  capabilities?: CapabilitySet
+): GeoVisResult;
+```
+
 Returns a `GeoVisResult`: `{ status: 'resolved', spec: VisualizationSpec, warnings: GeoVisIssue[] }` or `{ status: 'invalid' | 'mismatch' | 'unsupported' | 'insufficient-data' | 'needs-clarification', issues: GeoVisIssue[] }`. `insufficient-data` and `needs-clarification` are reserved for future checks (no v1 check produces them yet).
+
+`capabilities` is optional so `validateSpec` stays usable standalone (CI, authoring tools) without an adapter. `GeoVisProvider`/`createRuntime` always pass the active adapter's `getCapabilities()`; without it, only the hardcoded default (feature-state joining restricted to `geojson`) is enforced.
 
 Each `GeoVisIssue` is `{ code, subject: { path, id? }, message, repair? }`:
 
-| `code`                    | Failure status | Meaning                                                           |
-| ------------------------- | -------------- | ----------------------------------------------------------------- |
-| `invalid-schema`          | `invalid`      | value fails the JSON Schema                                       |
-| `invalid-threshold-order` | `invalid`      | legend/sizeBy thresholds not strictly ascending                   |
-| `invalid-threshold-value` | `invalid`      | non-finite threshold value                                        |
-| `invalid-size-range`      | `invalid`      | `sizeBy.range` not finite, or `min >= max`, or `min <= 0`         |
-| `invalid-size-mode`       | `invalid`      | stepped `sizeBy` without thresholds or an active threshold legend |
-| `duplicate-map-data-id`   | `mismatch`     | non-unique `mapData.mapDataId`                                    |
-| `unknown-map-data-id`     | `mismatch`     | layer references an undeclared `mapDataId`                        |
-| `unknown-source`          | `mismatch`     | `mapData` references an undeclared source `mapId`                 |
-| `source-scope-conflict`   | `mismatch`     | layer's `sourceId` doesn't match its `mapDataId`'s source         |
-| `duplicate-dimension`     | `mismatch`     | two `mapData` entries claim the same `dimension` on one source    |
-| `state-key-collision`     | `mismatch`     | dimensioned `mapData` entries share a `stateKey`                  |
-| `unsupported-source-type` | `unsupported`  | `mapData` points to a non-`geojson` source                        |
+| `code`                     | Failure status | Meaning                                                                                      |
+| -------------------------- | -------------- | -------------------------------------------------------------------------------------------- |
+| `invalid-schema`           | `invalid`      | value fails the JSON Schema                                                                  |
+| `invalid-schema-version`   | `invalid`      | `schemaVersion` is declared but doesn't match `SPEC_SCHEMA_VERSION`                          |
+| `invalid-threshold-order`  | `invalid`      | legend/sizeBy thresholds not strictly ascending                                              |
+| `invalid-threshold-value`  | `invalid`      | non-finite threshold value                                                                   |
+| `invalid-size-range`       | `invalid`      | `sizeBy.range` not finite, or `min >= max`, or `min <= 0`                                    |
+| `invalid-size-mode`        | `invalid`      | stepped `sizeBy` without thresholds or an active threshold legend                            |
+| `duplicate-map-data-id`    | `mismatch`     | non-unique `mapData.mapDataId`                                                               |
+| `unknown-map-data-id`      | `mismatch`     | layer references an undeclared `mapDataId`                                                   |
+| `unknown-source`           | `mismatch`     | layer or `mapData` references an undeclared source                                           |
+| `source-scope-conflict`    | `mismatch`     | layer's `sourceId` doesn't match its `mapDataId`'s source                                    |
+| `duplicate-dimension`      | `mismatch`     | two `mapData` entries claim the same `dimension` on one source                               |
+| `state-key-collision`      | `mismatch`     | dimensioned `mapData` entries share a `stateKey`                                             |
+| `unsupported-source-type`  | `unsupported`  | source type isn't feature-state-capable, or isn't declared by the active adapter             |
+| `unsupported-layer-type`   | `unsupported`  | layer geometry isn't declared by the active adapter                                          |
+| `unsupported-view-feature` | `unsupported`  | `view.pitch`/`view.bearing` set but not declared by the active adapter                       |
+| `unsupported-patch-target` | `unsupported`  | `applyPatch` called with a target other than `layer`/`source`/`mapData`                      |
+| `policy-violation`         | warning        | cartography policy violation (never blocks rendering — see `GeoVisResult.resolved.warnings`) |
 
-`repair` is present only when the check already has the correct alternative in hand (e.g. the declared `mapDataId`/source ids, or the other side of a scope mismatch) — never an invented or guessed value. Its entries are `{ kind: 'allowed-values', path, values }` or `{ kind: 'set-value', path, value, label? }`.
+`repair` is present only when the check already has the correct alternative in hand (e.g. the declared `mapDataId`/source ids, the adapter's declared capability list, or the other side of a scope mismatch) — never an invented or guessed value. Its entries are `{ kind: 'allowed-values', path, values }` or `{ kind: 'set-value', path, value, label? }`.
+
+#### Capabilities (`CapabilitySet`)
+
+`EngineAdapter.getCapabilities()` returns a structured, introspectable tree instead of the four dead booleans GeoVis started with:
+
+```ts
+interface CapabilitySet {
+  sourceTypes: DataSource['type'][];
+  layerGeometries: GeoVisGeometryType[];
+  dataFeatures: { featureState: DataSource['type'][] };
+  viewFeatures: { pitch: boolean; bearing: boolean };
+}
+```
+
+**Declared means tested**: an entry is only listed if the package's test suite (or an official fixture) actually exercises it — an untested capability is indistinguishable from a hallucinated one. The MapLibre adapter currently declares:
+
+| Category                        | Declared                                                                  |
+| ------------------------------- | ------------------------------------------------------------------------- |
+| `sourceTypes`                   | `geojson`, `vector-tiles`, `raster-tiles`, `raster-dem`, `image`, `video` |
+| `layerGeometries`               | `polygon`, `line`, `point`, `symbol`, `heatmap`, `raster`                 |
+| `dataFeatures.featureState`     | `geojson` only — `mapData`/`sizeBy` depend on stable per-feature ids      |
+| `viewFeatures.pitch`/`.bearing` | both `true` — genuinely applied to the camera (`applySetView`)            |
+
+`validateSpec`/`createRuntime` reject anything the spec requires but the active adapter doesn't declare, before mount — a spec requiring an unsupported capability never reaches the engine.
 
 ## Legend Type Surface
 

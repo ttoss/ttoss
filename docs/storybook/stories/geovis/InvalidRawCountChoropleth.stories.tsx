@@ -1,9 +1,5 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
-import type {
-  MapDataRow,
-  PolicyViolation,
-  VisualizationSpec,
-} from '@ttoss/geovis';
+import type { GeoVisIssue, MapDataRow, VisualizationSpec } from '@ttoss/geovis';
 import {
   GeoVisCanvas,
   GeoVisLegend,
@@ -76,15 +72,18 @@ const densityData: MapDataRow[] = [
   { geometryId: 'Nyamagabe District', value: 540 },
 ];
 
+/** Reads `useGeoVis().result` and reports policy warnings — the GeoVisResult taxonomy (ADR-0001) replaces the retired `policyViolations`/`PolicyViolation`. */
 const PolicyDetector = ({
-  onViolations,
+  onWarnings,
 }: {
-  onViolations: (v: PolicyViolation[]) => void;
+  onWarnings: (warnings: GeoVisIssue[]) => void;
 }) => {
-  const { policyViolations } = useGeoVis();
+  const { result } = useGeoVis();
   React.useEffect(() => {
-    if (policyViolations.length > 0) onViolations(policyViolations);
-  }, [policyViolations, onViolations]);
+    if (result.status === 'resolved' && result.warnings.length > 0) {
+      onWarnings(result.warnings);
+    }
+  }, [result, onWarnings]);
   return null;
 };
 
@@ -95,6 +94,7 @@ const buildChoroplethSpec = ({
   title,
   legendColorBy,
   legendReference,
+  metadata,
 }: {
   mapDataId: string;
   data: MapDataRow[];
@@ -106,12 +106,14 @@ const buildChoroplethSpec = ({
       : never
     : never;
   legendReference?: string;
+  metadata?: VisualizationSpec['metadata'];
 }): VisualizationSpec => {
   return {
     id: `invalid-raw-count-${mapDataId}`,
     engine: 'maplibre',
     mapType: 'choropleth',
     basemap: fixture.basemap,
+    ...(metadata ? { metadata } : {}),
     sources: [
       {
         id: 'rwanda-provinces',
@@ -144,6 +146,10 @@ const leftSpec = buildChoroplethSpec({
   data: populationData,
   legendId: 'pop-legend',
   title: 'Population (raw count) — invalid',
+  // Wires the fixture's cartography-policy metadata into the actual spec the
+  // provider validates — without this, `GeoVisProvider`'s policy check never
+  // sees `isPolicyInvalid` and the warning banner below never renders.
+  metadata: fixture.metadata,
 });
 
 const rightSpec = buildChoroplethSpec({
@@ -198,7 +204,7 @@ const MapOverlayPanel = ({
   peerRef,
   lockRef,
   showPolicyDetector,
-  onViolations,
+  onWarnings,
 }: {
   borderColor: string;
   label: string;
@@ -210,7 +216,7 @@ const MapOverlayPanel = ({
   peerRef: MapRef;
   lockRef: LockRef;
   showPolicyDetector?: boolean;
-  onViolations?: (v: PolicyViolation[]) => void;
+  onWarnings?: (warnings: GeoVisIssue[]) => void;
 }) => {
   const overlaySteps = useOverlaySteps(overlayLegendId);
   const canvasStyle: React.CSSProperties = { width: '100%', height: '100%' };
@@ -237,8 +243,8 @@ const MapOverlayPanel = ({
       <GeoVisCanvas viewId={viewId} style={canvasStyle} />
       <FitBoundsToUrlSource url={RWANDA_SOURCE_URL} />
       <MapSync selfRef={selfRef} peerRef={peerRef} lockRef={lockRef} />
-      {showPolicyDetector && onViolations ? (
-        <PolicyDetector onViolations={onViolations} />
+      {showPolicyDetector && onWarnings ? (
+        <PolicyDetector onWarnings={onWarnings} />
       ) : null}
     </div>
   );
@@ -256,7 +262,7 @@ const MapPanel = ({
   peerRef,
   lockRef,
   showPolicyDetector,
-  onViolations,
+  onWarnings,
 }: {
   borderColor: string;
   label: string;
@@ -269,7 +275,7 @@ const MapPanel = ({
   peerRef: MapRef;
   lockRef: LockRef;
   showPolicyDetector?: boolean;
-  onViolations?: (v: PolicyViolation[]) => void;
+  onWarnings?: (warnings: GeoVisIssue[]) => void;
 }) => {
   return (
     <GeoVisProvider spec={providerSpec}>
@@ -284,7 +290,7 @@ const MapPanel = ({
         peerRef={peerRef}
         lockRef={lockRef}
         showPolicyDetector={showPolicyDetector}
-        onViolations={onViolations}
+        onWarnings={onWarnings}
       />
     </GeoVisProvider>
   );
@@ -294,10 +300,10 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
   const leftMapRef = React.useRef<MapRef['current']>(null);
   const rightMapRef = React.useRef<MapRef['current']>(null);
   const syncLock = React.useRef(false) as LockRef;
-  const [violations, setViolations] = React.useState<PolicyViolation[]>([]);
+  const [warnings, setWarnings] = React.useState<GeoVisIssue[]>([]);
 
-  const handleViolations = React.useCallback((v: PolicyViolation[]) => {
-    return setViolations(v);
+  const handleWarnings = React.useCallback((w: GeoVisIssue[]) => {
+    return setWarnings(w);
   }, []);
 
   const recenter = React.useCallback(() => {
@@ -319,7 +325,7 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
         description={fixture.description}
         onRecenter={recenter}
       />
-      <PolicyWarningBanner violations={violations} />
+      <PolicyWarningBanner warnings={warnings} />
 
       <div style={{ display: 'flex', gap: 4, height: 460 }}>
         <MapPanel
@@ -334,7 +340,7 @@ export const InvalidRawCountChoropleth: StoryFn = () => {
           peerRef={rightMapRef}
           lockRef={syncLock}
           showPolicyDetector
-          onViolations={handleViolations}
+          onWarnings={handleWarnings}
         />
 
         <MapPanel

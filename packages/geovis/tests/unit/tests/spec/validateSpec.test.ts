@@ -128,7 +128,7 @@ describe('validateSpec — mapData', () => {
     });
     expect(result.status).toBe('unsupported');
     if (result.status !== 'resolved') {
-      expect(issueMessages(result)).toMatch(/geojson/);
+      expect(issueMessages(result)).toMatch(/feature-state/);
       const issue = result.issues.find((i) => {
         return i.code === 'unsupported-source-type';
       });

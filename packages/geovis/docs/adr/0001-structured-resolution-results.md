@@ -1,6 +1,6 @@
 # ADR-0001: Structured, repairable result taxonomy for spec resolution
 
-Status: proposed (2026-07-08)
+Status: accepted, implemented (2026-07-08)
 Tags: validation, errors, repair-loop, ai-readiness
 
 ## Context and Problem Statement

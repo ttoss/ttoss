@@ -50,23 +50,24 @@ Every code maps 1:1 to a check that exists today (ADR-0001: "a reshaping, not a 
 | Code                       | Category      | Existing check it reshapes                                                       |
 | -------------------------- | ------------- | -------------------------------------------------------------------------------- |
 | `invalid-schema`           | `invalid`     | AJV schema errors (one issue per error, `subject.path` = instancePath)           |
+| `invalid-schema-version`   | `invalid`     | `schemaVersion` declared but doesn't match `SPEC_SCHEMA_VERSION` (Phase 5)       |
 | `invalid-threshold-order`  | `invalid`     | legend / sizeBy thresholds not strictly ascending                                |
 | `invalid-threshold-value`  | `invalid`     | non-finite threshold values                                                      |
 | `invalid-size-range`       | `invalid`     | sizeBy range not finite / min ≥ max / min ≤ 0                                    |
-| `invalid-size-mode`        | `invalid`     | stepped without thresholds or legend; sqrt in stepped                            |
+| `invalid-size-mode`        | `invalid`     | stepped without thresholds or legend                                             |
 | `duplicate-map-data-id`    | `mismatch`    | non-unique `mapDataId`                                                           |
 | `unknown-map-data-id`      | `mismatch`    | layer references undeclared `mapDataId`                                          |
-| `unknown-source`           | `mismatch`    | mapData references undeclared `mapId`                                            |
+| `unknown-source`           | `mismatch`    | layer or mapData references an undeclared source (layer case added in Phase 3)   |
 | `source-scope-conflict`    | `mismatch`    | layer source ≠ mapData source (feature-state scoping)                            |
 | `duplicate-dimension`      | `mismatch`    | two mapData entries claim the same dimension                                     |
 | `state-key-collision`      | `mismatch`    | dimensioned datasets share a `stateKey`                                          |
-| `unsupported-source-type`  | `unsupported` | mapData on non-geojson source (hardcoded today; capability-driven after Phase 4) |
-| `unsupported-layer-type`   | `unsupported` | new — from capability tree (Phase 4)                                             |
-| `unsupported-data-feature` | `unsupported` | new — sizeBy / featureState / companion per source type (Phase 4)                |
-| `unsupported-view-feature` | `unsupported` | new — pitch / bearing / projection (Phase 4)                                     |
-| `unsupported-engine`       | `unsupported` | provider `resolveAdapter` throw                                                  |
-| `unsupported-patch-target` | `unsupported` | runtime / adapter unknown-target `log.warn`                                      |
-| `policy-violation`         | warning       | `PolicyViolation` from spec metadata                                             |
+| `unsupported-source-type`  | `unsupported` | source type not feature-state-capable, or not declared by the adapter (Phase 4)  |
+| `unsupported-layer-type`   | `unsupported` | layer geometry not declared by the adapter (Phase 4)                             |
+| `unsupported-view-feature` | `unsupported` | pitch/bearing requested but not declared by the adapter (Phase 4)                |
+| `unsupported-patch-target` | `unsupported` | runtime unknown patch target — was `log.warn`, now an issue (Phase 3)            |
+| `policy-violation`         | warning       | policy violation from spec metadata (was `PolicyViolation`, now a `GeoVisIssue`) |
+
+`unsupported-data-feature` and `unsupported-engine` stay in the closed `GeoVisIssueCode` list but, like `insufficient-data`/`needs-clarification`, have no producer yet: the former's only concrete case (`featureState`) is covered by `unsupported-source-type` instead, and the latter would require reworking `GeoVisProvider`'s adapter-resolution error boundary — see "Implementation notes" below.
 
 Adding a code is cheap; renaming or removing one is breaking. New codes require a line in this table via PR review — that process answers the PRD's open question about the final list.
 
@@ -158,3 +159,17 @@ One official fixture per declared capability entry; entries that cannot get a fi
 ## Sequencing notes
 
 Phase 1 is the entry gate for everything and requires accepting ADR-0001/0002. Phases 2, 3, and 4 are independent of each other after Phase 1 and can proceed in parallel or in any order; Phase 5 needs Phase 4. Each phase is one PR following the package workflow (tests → dependents → build → coverage threshold → README).
+
+## Implementation notes (Phases 2–5)
+
+All five phases are implemented. Corrections and scoping decisions made during implementation, beyond what the plan anticipated:
+
+- **`layers[].sourceId` referential check was missing entirely.** Phase 1 mirrored existing checks 1:1, but there was never a check that a layer's `sourceId` points to a declared source — a genuine "broken reference" gap the PRD exists to close. Added as `unknown-source` (same code as the `mapData`→source case, different subject), with an `allowed-values` repair.
+- **The `id` field landmine.** Wiring `validateSpec` into `runtime.update`/`applyPatch` (Phase 3) exposed that a top-level `id?: string` field is used pervasively across test fixtures and the storybook stories, but was never declared in `VisualizationSpec` or `schema.json` (`additionalProperties: false`). Nothing had run schema validation on runtime specs before, so this went unnoticed. Fixed by adding `id?: string` to both the type and schema (additive, matches the existing `title`/`description` convention) rather than stripping `id` from dozens of call sites.
+- **`unsupported-source-type`'s message and repair are now capability-driven**, not hardcoded to `'geojson'`: `validateReferences` accepts `capabilities?: CapabilitySet` and reads `capabilities.dataFeatures.featureState`, falling back to `['geojson']` only when `validateSpec` is called without an adapter.
+- **Phase 5's "one official fixture per capability" was narrowed to "covered by the package's test suite."** None of `src/fixtures/*.json` exercise `mapData`/`sizeBy`/`heatmap`/etc. — those features are demonstrated via inline-built specs in stories instead. Requiring a new named fixture per capability would have been a much larger, separate effort. The audit instead checked `tests/unit/tests/adapters/maplibre/MapLibreAdapter.test.ts` (and siblings) for real coverage per entry — this is still "declared means tested," just against the broader test suite rather than only the `src/fixtures/` directory.
+- **The audit found one genuinely untested entry:** the `raster` layer geometry (`buildRaster` in `layerTranslation.ts`) had zero test coverage anywhere, unlike every other declared geometry. Rather than shrink the capability (ADR-0002's "may shrink" escape hatch), two small tests were added since the implementation was already correct and complete — closing the gap was cheaper and more valuable than hiding it.
+- **`unsupported-engine` stays unwired.** `GeoVisProvider.resolveAdapter` still throws a plain `Error` for an unrecognised `engine`, caught and re-thrown as a React error boundary–catchable exception. Converting this to a `GeoVisResult` would change existing error-boundary semantics and wasn't required by any phase's acceptance criteria — left as a reserved, unproduced code alongside `insufficient-data`/`needs-clarification`.
+- **Schema versioning (Phase 5, PRD "should").** Added `SPEC_SCHEMA_VERSION = 1` (exported from `spec/types.ts`) and an optional `schemaVersion?: number` field. Omitting it is treated as current (non-breaking for every existing spec); declaring a mismatched value produces an `invalid-schema-version` issue with a `set-value` repair to the current version.
+- **File layout: `validateSpec.ts` and `createRuntime.ts` split under the monorepo's `max-lines`/`max-lines-per-function` lint rules.** Check functions moved out of `validateSpec.ts` into `validateSpec.checks.ts` (thresholds/sizeBy/dimensions/schemaVersion), `validateSpec.referenceChecks.ts` (mapData/source/layer referential integrity), and `validateSpec.capabilityChecks.ts` (Phase 4's source/layer/view capability checks) — `validateSpec.ts` itself is now pure orchestration. `createRuntime.ts`'s method bodies (`mount`/`update`/`applyPatch`/`setView`) became standalone functions taking an explicit `RuntimeState` object instead of closing over reassigned `let`s, for the same reason.
+- **`InvalidRawCountChoropleth` story: `buildChoroplethSpec` never set `spec.metadata`.** The fixture's `metadata.isPolicyInvalid` (meant to trigger the cartography-policy warning) never reached the actual spec the story builds and passes to `GeoVisProvider` — the warning banner could never have rendered. Fixed by threading a `metadata` param through `buildChoroplethSpec` and passing `fixture.metadata` into `leftSpec`. The story and its `PolicyWarningBanner`/`PolicyDetector` helpers now read `useGeoVis().result` (a `GeoVisResult`) instead of the retired `policyViolations`/`PolicyViolation`.

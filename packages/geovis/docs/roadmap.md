@@ -19,7 +19,7 @@ graph LR
 
 ## Where we are
 
-`@ttoss/geovis` renders validated specs (choropleth, dot density, proportional circles) with MapLibre, patches them incrementally, and enforces one cartography policy. `@ttoss/geovis-workspace` provides the layout shell (sidebars, provider, context). Everything AI-facing — structured errors, enforced capabilities, semantic actions, context packet, catalog, intent, resolution, evals — is designed ([GeoVis ADRs 0001–0004](https://github.com/ttoss/ttoss/tree/main/packages/geovis/docs/adr), [workspace ADRs 0001–0004](https://github.com/ttoss/ttoss/tree/main/packages/geovis-workspace/docs/adr), [research](./research/)) but not built.
+`@ttoss/geovis` renders validated specs (choropleth, dot density, proportional circles) with MapLibre, patches them incrementally, and enforces one cartography policy. **R1 is built**: `validateSpec`/`runtime.update`/`runtime.applyPatch` return the typed `GeoVisResult` taxonomy (ADR-0001), `CapabilitySet` is a structured, declared-means-tested tree consumed by validation (ADR-0002), and specs carry a `schemaVersion`. `@ttoss/geovis-workspace` provides the layout shell (sidebars, provider, context). Everything else AI-facing — semantic actions, context packet, catalog, intent, resolution, evals — is designed ([GeoVis ADRs 0001–0004](https://github.com/ttoss/ttoss/tree/main/packages/geovis/docs/adr), [workspace ADRs 0001–0004](https://github.com/ttoss/ttoss/tree/main/packages/geovis-workspace/docs/adr), [research](./research/)) but not built.
 
 ## R1 — Reliable Core
 

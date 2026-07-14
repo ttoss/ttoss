@@ -1,6 +1,6 @@
 # ADR-0002: `CapabilitySet` becomes an enforced, introspectable contract
 
-Status: proposed (2026-07-08)
+Status: accepted, implemented (2026-07-08)
 Tags: capabilities, adapters, validation, ai-readiness
 
 ## Context and Problem Statement
