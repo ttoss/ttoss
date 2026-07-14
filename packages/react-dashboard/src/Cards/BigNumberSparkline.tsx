@@ -2,7 +2,7 @@ import { useI18n } from '@ttoss/react-i18n';
 import { Box, Flex, Text } from '@ttoss/ui';
 import { defineMessages } from 'react-intl';
 
-import type { DashboardCard, TrendIndicator } from '../DashboardCard';
+import type { BigNumberSparklineCard, TrendIndicator } from '../DashboardCard';
 import { formatNumber, getTrendColors } from './cardUtils';
 import { CardWrapper } from './Wrapper';
 
@@ -150,7 +150,7 @@ const TrendBadge = ({ trend, vsPreviousLabel }: TrendBadgeProps) => {
  * Use `type: 'bigNumberSparkline'` to render this card via `DashboardCard`.
  */
 // eslint-disable-next-line complexity
-export const BigNumberSparkline = (props: DashboardCard) => {
+export const BigNumberSparkline = (props: BigNumberSparklineCard) => {
   const { intl } = useI18n();
   const total = props.data.value;
   const daily = props.data.series;

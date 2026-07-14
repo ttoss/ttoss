@@ -4,8 +4,8 @@ import { Box, Flex, Text } from '@ttoss/ui';
 import { defineMessages } from 'react-intl';
 
 import type {
+  BigNumberCard,
   CardVariant,
-  DashboardCard,
   StatusIndicator,
   TrendIndicator,
 } from '../DashboardCard';
@@ -132,7 +132,7 @@ const StatusDisplay = ({
  * Displays a single key metric as a large formatted number with optional trend indicator,
  * additional info text, and status badge.
  */
-export const BigNumber = (props: DashboardCard) => {
+export const BigNumber = (props: BigNumberCard) => {
   const { intl } = useI18n();
   const total = props.data.value;
   const locale = props.locale ?? intl.locale;
