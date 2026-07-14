@@ -8,6 +8,7 @@ describe('DashboardCard', () => {
     description: 'Total revenue generated',
     numberType: 'currency' as const,
     type: 'bigNumber' as const,
+    currency: 'BRL',
     locale: 'pt-BR',
     data: {
       value: 1000,
@@ -56,8 +57,8 @@ describe('DashboardCard', () => {
     expect(screen.getByText(/\$1,000\.00/)).toBeInTheDocument();
   });
 
-  test('should default to BRL when no currency prop is provided', () => {
-    render(<DashboardCard {...mockBigNumberCard} />);
+  test('should use explicit currency when provided', () => {
+    render(<DashboardCard {...mockBigNumberCard} currency="BRL" />);
 
     expect(screen.getByText(/R\$/)).toBeInTheDocument();
   });

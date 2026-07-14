@@ -5,7 +5,7 @@ export const formatByType = ({
   type,
   numberDecimalPlaces,
   currency,
-  locale = 'pt-BR',
+  locale,
 }: {
   value: number;
   type: 'number' | 'percentage' | 'currency';
@@ -35,8 +35,8 @@ export const formatNumber = ({
   type,
   numberDecimalPlaces,
   suffix,
-  currency = 'BRL',
-  locale = 'pt-BR',
+  currency,
+  locale,
 }: {
   value: number | undefined;
   type: 'number' | 'percentage' | 'currency';
@@ -52,7 +52,7 @@ export const formatNumber = ({
     value,
     type,
     numberDecimalPlaces,
-    currency,
+    currency: currency ?? 'USD',
     locale,
   });
   if (suffix) {

@@ -31,6 +31,7 @@ describe('BigNumber', () => {
       <BigNumber
         {...baseCard}
         numberType="currency"
+        currency="BRL"
         locale="pt-BR"
         data={{ value: 1234.56 }}
       />
@@ -53,17 +54,17 @@ describe('BigNumber', () => {
     expect(screen.getByText(/\$1,234\.56/)).toBeInTheDocument();
   });
 
-  test('should default to BRL when currency prop is absent', () => {
+  test('should fall back to USD when currency prop is absent', () => {
     render(
       <BigNumber
         {...baseCard}
         numberType="currency"
-        locale="pt-BR"
+        locale="en-US"
         data={{ value: 500 }}
       />
     );
 
-    expect(screen.getByText(/R\$/)).toBeInTheDocument();
+    expect(screen.getByText(/\$500\.00/)).toBeInTheDocument();
   });
 
   test('should not affect number type when currency prop is provided', () => {
@@ -202,6 +203,7 @@ describe('BigNumber', () => {
         <BigNumber
           {...baseCard}
           numberType="currency"
+          currency="BRL"
           locale="pt-BR"
           data={{ value: 500 }}
           suffix="un"
