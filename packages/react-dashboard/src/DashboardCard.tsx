@@ -3,27 +3,24 @@ import { BigNumberSparkline } from './Cards/BigNumberSparkline';
 
 export type CardNumberType = 'number' | 'percentage' | 'currency';
 export type CardSourceType = {
-  source: 'meta' | 'oneclickads' | 'api';
-  level?: 'adAccount' | 'campaign' | 'adSet' | 'ad';
+  source: string;
+  level?: string;
 };
 export type DashboardCardType =
   | 'bigNumber'
+  | 'bigNumberSparkline'
   | 'pieChart'
   | 'barChart'
   | 'lineChart'
   | 'table'
   | 'list';
 export type DashboardCardData = {
-  meta?: {
-    total?: number;
-    daily?: number[];
-    dailyPrevious?: number[];
-  };
-  api?: {
-    total?: number;
-    daily?: number[];
-    dailyPrevious?: number[];
-  };
+  /** Current period aggregate value. */
+  value?: number;
+  /** Time-series values for the current period (one entry per day/interval). */
+  series?: number[];
+  /** Time-series values for the comparison period, used to render the overlay line. */
+  previousSeries?: number[];
 };
 export type CardVariant = 'default' | 'dark' | 'light-green';
 export type TrendIndicator = {
@@ -36,13 +33,6 @@ export type StatusIndicator = {
   icon?: string;
 };
 
-type SourceType = CardSourceType['source'];
-
-type MetricsRecord = {
-  [K in SourceType]: { [P in K]: string[] } & Partial<
-    Record<Exclude<SourceType, K>, string[]>
-  >;
-}[SourceType];
 export interface DashboardCard {
   id: string;
   title: string;
@@ -54,21 +44,23 @@ export interface DashboardCard {
   numberDecimalPlaces?: number;
   /** ISO 4217 currency code (e.g. `"BRL"`, `"USD"`, `"EUR"`). Only used when `numberType` is `"currency"`. Defaults to `"BRL"`. */
   currency?: string;
+  /** BCP 47 locale tag used for number/currency formatting (e.g. `"pt-BR"`, `"en-US"`). Defaults to the i18n context locale. */
+  locale?: string;
   type: DashboardCardType;
-  sourceType: CardSourceType[];
+  sourceType?: CardSourceType[];
   labels?: Array<string | number>;
   data: DashboardCardData;
   suffix?: string;
   trend?: TrendIndicator;
   additionalInfo?: string;
   status?: StatusIndicator;
-  metrics?: MetricsRecord[];
 }
 
 export const DashboardCard = (props: DashboardCard) => {
   switch (props.type) {
     case 'bigNumber':
       return <BigNumber {...props} />;
+    case 'bigNumberSparkline':
     case 'lineChart':
       return <BigNumberSparkline {...props} />;
     default:

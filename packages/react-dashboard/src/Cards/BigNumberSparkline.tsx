@@ -1,79 +1,17 @@
+import { useI18n } from '@ttoss/react-i18n';
 import { Box, Flex, Text } from '@ttoss/ui';
+import { defineMessages } from 'react-intl';
 
 import type { DashboardCard, TrendIndicator } from '../DashboardCard';
+import { formatNumber, getTrendColors } from './cardUtils';
 import { CardWrapper } from './Wrapper';
 
-const formatByType = ({
-  value,
-  type,
-  numberDecimalPlaces,
-  currency,
-}: {
-  value: number;
-  type: 'number' | 'percentage' | 'currency';
-  numberDecimalPlaces?: number;
-  currency: string;
-}): string => {
-  switch (type) {
-    case 'currency':
-      return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency,
-      }).format(value);
-    case 'percentage':
-      return `${value.toFixed(numberDecimalPlaces ?? 2)}%`;
-    case 'number':
-    default:
-      return new Intl.NumberFormat('pt-BR', {
-        minimumFractionDigits: numberDecimalPlaces ?? 2,
-        maximumFractionDigits: numberDecimalPlaces ?? 2,
-      }).format(value);
-  }
-};
-
-const formatNumber = ({
-  value,
-  type,
-  numberDecimalPlaces,
-  suffix,
-  currency = 'BRL',
-}: {
-  value: number | undefined;
-  type: 'number' | 'percentage' | 'currency';
-  numberDecimalPlaces?: number;
-  suffix?: string;
-  currency?: string;
-}): string => {
-  if (value === undefined || value === null) {
-    return '-';
-  }
-  let formatted = formatByType({ value, type, numberDecimalPlaces, currency });
-  if (suffix) {
-    formatted += ` ${suffix}`;
-  }
-  return formatted;
-};
-
-const getTrendColors = (
-  trend?: TrendIndicator
-): { color: string; backgroundColor: string } => {
-  if (!trend || trend.status === 'neutral' || !trend.status) {
-    return {
-      color: 'input.text.muted.default',
-      backgroundColor: 'display.border.muted.default',
-    };
-  }
-  if (trend.status === 'positive') {
-    return {
-      color: 'feedback.text.positive.default',
-      backgroundColor: 'feedback.background.positive.default',
-    };
-  }
-  return {
-    color: 'feedback.text.negative.default',
-    backgroundColor: 'feedback.background.negative.default',
-  };
-};
+const messages = defineMessages({
+  vsPrevious: {
+    defaultMessage: 'vs. previous',
+    description: 'Trend badge label comparing current value to previous period',
+  },
+});
 
 /**
  * Builds a smooth SVG polyline path from a data array.
@@ -101,13 +39,29 @@ const buildSparklinePath = (
 const SPARKLINE_W = 200;
 const SPARKLINE_H = 40;
 
+const getTrendStrokeToken = (status?: TrendIndicator['status']): string => {
+  if (status === 'positive') return 'feedback.text.positive.default';
+  if (status === 'negative') return 'feedback.text.negative.default';
+  return 'input.text.muted.default';
+};
+
 type SparklineProps = {
   data: number[];
   previousData?: number[];
   trendStatus?: TrendIndicator['status'];
+  title: string;
 };
 
-const Sparkline = ({ data, previousData, trendStatus }: SparklineProps) => {
+/**
+ * Reusable SVG sparkline primitive. Exported so consumers can compose it
+ * independently of BigNumberSparkline.
+ */
+export const Sparkline = ({
+  data,
+  previousData,
+  trendStatus,
+  title,
+}: SparklineProps) => {
   if (data.length < 2) return null;
 
   const currentPath = buildSparklinePath(data, SPARKLINE_W, SPARKLINE_H);
@@ -115,11 +69,7 @@ const Sparkline = ({ data, previousData, trendStatus }: SparklineProps) => {
     ? buildSparklinePath(previousData, SPARKLINE_W, SPARKLINE_H)
     : null;
 
-  // Use theme-matching stroke colors via currentColor inheritance
-  const currentColor =
-    trendStatus === 'negative'
-      ? '#ef4444' // red-500 approximate
-      : '#22c55e'; // green-500 approximate
+  const strokeToken = getTrendStrokeToken(trendStatus);
 
   return (
     <Box sx={{ width: '100%', overflow: 'hidden' }}>
@@ -127,8 +77,9 @@ const Sparkline = ({ data, previousData, trendStatus }: SparklineProps) => {
         viewBox={`0 0 ${SPARKLINE_W} ${SPARKLINE_H}`}
         width="100%"
         height={SPARKLINE_H}
-        preserveAspectRatio="none"
-        aria-hidden="true"
+        preserveAspectRatio="xMidYMid meet"
+        aria-label={title}
+        role="img"
       >
         {previousPath && (
           <path
@@ -143,10 +94,13 @@ const Sparkline = ({ data, previousData, trendStatus }: SparklineProps) => {
         <path
           d={currentPath}
           fill="none"
-          stroke={currentColor}
+          stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
+          style={{
+            color: `var(--theme-color-${strokeToken.replace(/\./g, '-')}, currentColor)`,
+          }}
         />
       </svg>
     </Box>
@@ -155,9 +109,10 @@ const Sparkline = ({ data, previousData, trendStatus }: SparklineProps) => {
 
 type TrendBadgeProps = {
   trend: TrendIndicator;
+  vsPreviousLabel: string;
 };
 
-const TrendBadge = ({ trend }: TrendBadgeProps) => {
+const TrendBadge = ({ trend, vsPreviousLabel }: TrendBadgeProps) => {
   const trendColors = getTrendColors(trend);
   return (
     <Flex sx={{ alignItems: 'center', gap: '1' }}>
@@ -181,7 +136,7 @@ const TrendBadge = ({ trend }: TrendBadgeProps) => {
           fontWeight: 'medium',
         }}
       >
-        vs. anterior
+        {vsPreviousLabel}
       </Text>
     </Flex>
   );
@@ -189,16 +144,19 @@ const TrendBadge = ({ trend }: TrendBadgeProps) => {
 
 /**
  * Displays a key metric as a large number with a sparkline trend chart below.
- * Uses `data.meta.daily` (or `data.api.daily`) as the time-series data for the sparkline.
- * Use `type: 'lineChart'` to render this card.
+ *
+ * Pass `data.value` for the aggregated total, `data.series` for the current-period
+ * time-series, and `data.previousSeries` for the optional comparison overlay.
+ * Use `type: 'bigNumberSparkline'` to render this card via `DashboardCard`.
  */
 // eslint-disable-next-line complexity
 export const BigNumberSparkline = (props: DashboardCard) => {
-  const total = props.data.meta?.total ?? props.data.api?.total;
-  const daily = props.data.meta?.daily ?? props.data.api?.daily;
-  const dailyPrevious =
-    props.data.meta?.dailyPrevious ?? props.data.api?.dailyPrevious;
+  const { intl } = useI18n();
+  const total = props.data.value;
+  const daily = props.data.series;
+  const dailyPrevious = props.data.previousSeries;
   const variant = props.variant ?? 'default';
+  const locale = props.locale ?? intl.locale;
 
   const formattedValue = formatNumber({
     value: total,
@@ -206,7 +164,10 @@ export const BigNumberSparkline = (props: DashboardCard) => {
     numberDecimalPlaces: props.numberDecimalPlaces,
     suffix: props.suffix,
     currency: props.currency,
+    locale,
   });
+
+  const vsPreviousLabel = intl.formatMessage(messages.vsPrevious);
 
   return (
     <CardWrapper
@@ -230,7 +191,7 @@ export const BigNumberSparkline = (props: DashboardCard) => {
         </Text>
 
         {typeof props.trend?.value === 'number' && (
-          <TrendBadge trend={props.trend} />
+          <TrendBadge trend={props.trend} vsPreviousLabel={vsPreviousLabel} />
         )}
 
         {daily && daily.length >= 2 && (
@@ -238,6 +199,7 @@ export const BigNumberSparkline = (props: DashboardCard) => {
             data={daily}
             previousData={dailyPrevious ?? undefined}
             trendStatus={props.trend?.status}
+            title={props.title}
           />
         )}
 

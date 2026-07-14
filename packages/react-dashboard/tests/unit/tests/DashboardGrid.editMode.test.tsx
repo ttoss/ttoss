@@ -74,7 +74,7 @@ describe('DashboardGrid in edit mode', () => {
           numberType: 'number',
           type: 'bigNumber',
           sourceType: [{ source: 'api' }],
-          data: { api: { total: 100 } },
+          data: { value: 100 },
         },
       },
       {
