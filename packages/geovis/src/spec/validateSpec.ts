@@ -1,11 +1,9 @@
 import Ajv2020 from 'ajv/dist/2020';
 
+import type { GeoVisIssue, GeoVisResult } from './result';
+import { resolveOverallStatus } from './result';
 import schema from './schema.json';
 import type { VisualizationLayer, VisualizationSpec } from './types';
-
-export type ValidationResult =
-  | { valid: true; spec: VisualizationSpec }
-  | { valid: false; errors: string[] };
 
 const ajv = new Ajv2020({ strict: false });
 const _validate = ajv.compile(schema);
@@ -15,29 +13,50 @@ const validateLayerMapDataRefs = (
   layers: VisualizationSpec['layers'],
   seenMapDataIds: Set<string>,
   mapDataById: Map<string, NonNullable<VisualizationSpec['mapData']>[number]>
-): string[] => {
-  const errors: string[] = [];
+): GeoVisIssue[] => {
+  const issues: GeoVisIssue[] = [];
+  const allowedMapDataIds = [...seenMapDataIds];
+
   for (const layer of layers) {
     if (!layer.mapDataId) continue;
     if (!seenMapDataIds.has(layer.mapDataId)) {
-      errors.push(
-        `layer '${layer.id}' references unknown mapDataId '${layer.mapDataId}'`
-      );
+      issues.push({
+        code: 'unknown-map-data-id',
+        subject: { path: `layers[${layer.id}].mapDataId`, id: layer.id },
+        message: `layer '${layer.id}' references unknown mapDataId '${layer.mapDataId}'`,
+        repair: [
+          {
+            kind: 'allowed-values',
+            path: `layers[${layer.id}].mapDataId`,
+            values: allowedMapDataIds,
+          },
+        ],
+      });
       continue;
     }
     const md = mapDataById.get(layer.mapDataId);
     if (md && md.mapId !== layer.sourceId) {
-      errors.push(
-        `layer '${layer.id}' mapDataId '${layer.mapDataId}' points to source '${md.mapId}' but layer uses source '${layer.sourceId}'; feature-state is source-scoped so this dataset can never style this layer`
-      );
+      issues.push({
+        code: 'source-scope-conflict',
+        subject: { path: `layers[${layer.id}].sourceId`, id: layer.id },
+        message: `layer '${layer.id}' mapDataId '${layer.mapDataId}' points to source '${md.mapId}' but layer uses source '${layer.sourceId}'; feature-state is source-scoped so this dataset can never style this layer`,
+        repair: [
+          {
+            kind: 'set-value',
+            path: `layers[${layer.id}].sourceId`,
+            value: md.mapId,
+            label: `Point layer '${layer.id}' at source '${md.mapId}'`,
+          },
+        ],
+      });
     }
   }
-  return errors;
+  return issues;
 };
 
 /** Checks referential integrity constraints not expressible in JSON Schema (unique mapDataId, FK sources, FK layers). */
-const validateReferences = (spec: VisualizationSpec): string[] => {
-  const errors: string[] = [];
+const validateReferences = (spec: VisualizationSpec): GeoVisIssue[] => {
+  const issues: GeoVisIssue[] = [];
   const mapData = spec.mapData ?? [];
 
   const sourcesById = new Map(
@@ -54,27 +73,52 @@ const validateReferences = (spec: VisualizationSpec): string[] => {
   );
   for (const md of mapData) {
     if (seenMapDataIds.has(md.mapDataId)) {
-      errors.push(`mapData mapDataId '${md.mapDataId}' must be unique`);
+      issues.push({
+        code: 'duplicate-map-data-id',
+        subject: {
+          path: `mapData[${md.mapDataId}].mapDataId`,
+          id: md.mapDataId,
+        },
+        message: `mapData mapDataId '${md.mapDataId}' must be unique`,
+      });
     }
     seenMapDataIds.add(md.mapDataId);
 
     const source = sourcesById.get(md.mapId);
     if (!source) {
-      errors.push(
-        `mapData '${md.mapDataId}' references unknown source mapId '${md.mapId}'`
-      );
+      issues.push({
+        code: 'unknown-source',
+        subject: { path: `mapData[${md.mapDataId}].mapId`, id: md.mapDataId },
+        message: `mapData '${md.mapDataId}' references unknown source mapId '${md.mapId}'`,
+        repair: [
+          {
+            kind: 'allowed-values',
+            path: `mapData[${md.mapDataId}].mapId`,
+            values: [...sourcesById.keys()],
+          },
+        ],
+      });
     } else if (source.type !== 'geojson') {
-      errors.push(
-        `mapData '${md.mapDataId}' mapId '${md.mapId}' must point to a geojson source (got '${source.type}')`
-      );
+      issues.push({
+        code: 'unsupported-source-type',
+        subject: { path: `mapData[${md.mapDataId}].mapId`, id: md.mapDataId },
+        message: `mapData '${md.mapDataId}' mapId '${md.mapId}' must point to a geojson source (got '${source.type}')`,
+        repair: [
+          {
+            kind: 'allowed-values',
+            path: `sources[${source.id}].type`,
+            values: ['geojson'],
+          },
+        ],
+      });
     }
   }
 
-  errors.push(
+  issues.push(
     ...validateLayerMapDataRefs(spec.layers, seenMapDataIds, mapDataById)
   );
 
-  return errors;
+  return issues;
 };
 
 const isStrictlyAscending = (values: ReadonlyArray<number>): boolean => {
@@ -84,14 +128,17 @@ const isStrictlyAscending = (values: ReadonlyArray<number>): boolean => {
   return true;
 };
 
-const validateLegendThresholdOrder = (spec: VisualizationSpec): string[] => {
-  const errors: string[] = [];
+const validateLegendThresholdOrder = (
+  spec: VisualizationSpec
+): GeoVisIssue[] => {
+  const issues: GeoVisIssue[] = [];
 
   const validateThresholdLegend = (
     legend:
       | NonNullable<VisualizationSpec['legends']>[number]
       | NonNullable<VisualizationSpec['layers'][number]['legends']>[number],
-    scope: string
+    scope: string,
+    path: string
   ) => {
     if (!legend.colorBy || legend.colorBy.type !== 'quantitative') return;
     if (legend.colorBy.scale !== 'threshold') return;
@@ -103,33 +150,42 @@ const validateLegendThresholdOrder = (spec: VisualizationSpec): string[] => {
       return Number.isFinite(value);
     });
     if (finiteThresholds.length !== thresholds.length) {
-      errors.push(
-        `${scope} has non-finite threshold values; use finite numeric values only`
-      );
+      issues.push({
+        code: 'invalid-threshold-value',
+        subject: { path, id: legend.id },
+        message: `${scope} has non-finite threshold values; use finite numeric values only`,
+      });
       return;
     }
 
     if (thresholds.length > 1 && !isStrictlyAscending(thresholds)) {
-      errors.push(
-        `${scope} must declare thresholds in strictly ascending order`
-      );
+      issues.push({
+        code: 'invalid-threshold-order',
+        subject: { path, id: legend.id },
+        message: `${scope} must declare thresholds in strictly ascending order`,
+      });
     }
   };
 
   for (const legend of spec.legends ?? []) {
-    validateThresholdLegend(legend, `legend '${legend.id}'`);
+    validateThresholdLegend(
+      legend,
+      `legend '${legend.id}'`,
+      `legends[${legend.id}].colorBy.thresholds`
+    );
   }
 
   for (const layer of spec.layers) {
     for (const legend of layer.legends ?? []) {
       validateThresholdLegend(
         legend,
-        `layer '${layer.id}' legend '${legend.id}'`
+        `layer '${layer.id}' legend '${legend.id}'`,
+        `layers[${layer.id}].legends[${legend.id}].colorBy.thresholds`
       );
     }
   }
 
-  return errors;
+  return issues;
 };
 
 const hasActiveLegend = (
@@ -155,19 +211,28 @@ const hasActiveLegend = (
 const validateSizeByThresholds = (
   layer: VisualizationLayer,
   thresholds: number[] | undefined
-): string[] => {
+): GeoVisIssue[] => {
   if (!thresholds || thresholds.length === 0) return [];
+  const path = `layers[${layer.id}].sizeBy.thresholds`;
   const finiteThresholds = thresholds.filter((value) => {
     return Number.isFinite(value);
   });
   if (finiteThresholds.length !== thresholds.length) {
     return [
-      `layer '${layer.id}' sizeBy.thresholds has non-finite values; use finite numeric values only`,
+      {
+        code: 'invalid-threshold-value',
+        subject: { path, id: layer.id },
+        message: `layer '${layer.id}' sizeBy.thresholds has non-finite values; use finite numeric values only`,
+      },
     ];
   }
   if (thresholds.length > 1 && !isStrictlyAscending(thresholds)) {
     return [
-      `layer '${layer.id}' sizeBy.thresholds must be in strictly ascending order`,
+      {
+        code: 'invalid-threshold-order',
+        subject: { path, id: layer.id },
+        message: `layer '${layer.id}' sizeBy.thresholds must be in strictly ascending order`,
+      },
     ];
   }
   return [];
@@ -177,16 +242,25 @@ const validateSizeByThresholds = (
 const validateSizeByRange = (
   layer: VisualizationLayer,
   range: [number, number]
-): string[] => {
+): GeoVisIssue[] => {
   const [min, max] = range;
+  const path = `layers[${layer.id}].sizeBy.range`;
   if (!Number.isFinite(min) || !Number.isFinite(max)) {
     return [
-      `layer '${layer.id}' sizeBy.range values must be finite numbers, got [${min}, ${max}]`,
+      {
+        code: 'invalid-size-range',
+        subject: { path, id: layer.id },
+        message: `layer '${layer.id}' sizeBy.range values must be finite numbers, got [${min}, ${max}]`,
+      },
     ];
   }
   if (min >= max || min <= 0) {
     return [
-      `layer '${layer.id}' sizeBy.range must have min < max and both > 0, got [${min}, ${max}]`,
+      {
+        code: 'invalid-size-range',
+        subject: { path, id: layer.id },
+        message: `layer '${layer.id}' sizeBy.range must have min < max and both > 0, got [${min}, ${max}]`,
+      },
     ];
   }
   return [];
@@ -196,70 +270,76 @@ const validateSizeByRange = (
 const validateSizeByLayer = (
   layer: VisualizationLayer,
   specLegends?: VisualizationSpec['legends']
-): string[] => {
+): GeoVisIssue[] => {
   if (!layer.sizeBy) return [];
 
-  const { range, mode, thresholds, transform } = layer.sizeBy;
-  const errors = validateSizeByRange(layer, range);
+  const { range, mode, thresholds } = layer.sizeBy;
+  const issues = validateSizeByRange(layer, range);
 
   const needsLegend =
     mode === 'stepped' && (!thresholds || thresholds.length === 0);
   if (needsLegend && !hasActiveLegend(layer, specLegends)) {
-    errors.push(
-      `layer '${layer.id}' sizeBy in stepped mode requires thresholds or an active legend with quantitative thresholds`
-    );
+    issues.push({
+      code: 'invalid-size-mode',
+      subject: { path: `layers[${layer.id}].sizeBy.mode`, id: layer.id },
+      message: `layer '${layer.id}' sizeBy in stepped mode requires thresholds or an active legend with quantitative thresholds`,
+    });
   }
 
-  if (mode === 'stepped' && (transform as string) === 'sqrt') {
-    errors.push(
-      `layer '${layer.id}' sizeBy does not support transform 'sqrt' in stepped mode`
-    );
-  }
-
-  errors.push(...validateSizeByThresholds(layer, thresholds));
-  return errors;
+  issues.push(...validateSizeByThresholds(layer, thresholds));
+  return issues;
 };
 
 /** Validates `sizeBy` constraints on layers that declare it. */
-const validateSizeBy = (spec: VisualizationSpec): string[] => {
-  const errors: string[] = [];
+const validateSizeBy = (spec: VisualizationSpec): GeoVisIssue[] => {
+  const issues: GeoVisIssue[] = [];
   for (const layer of spec.layers) {
-    errors.push(...validateSizeByLayer(layer, spec.legends));
+    issues.push(...validateSizeByLayer(layer, spec.legends));
   }
-  return errors;
+  return issues;
 };
 
 /** Validates a group of dimensioned entries on the same source. */
 const validateDimensionGroup = (
   mapId: string,
   entries: Array<{ mapDataId: string; dimension?: string; stateKey?: string }>
-): string[] => {
-  const errors: string[] = [];
+): GeoVisIssue[] => {
+  const issues: GeoVisIssue[] = [];
   const seenDimensions = new Map<string, string>();
   const seenStateKeys = new Map<string, string>();
   for (const entry of entries) {
     const prevDim = seenDimensions.get(entry.dimension!);
     if (prevDim) {
-      errors.push(
-        `source '${mapId}' has duplicate dimension '${entry.dimension}' on mapData '${prevDim}' and '${entry.mapDataId}'`
-      );
+      issues.push({
+        code: 'duplicate-dimension',
+        subject: {
+          path: `mapData[${entry.mapDataId}].dimension`,
+          id: entry.mapDataId,
+        },
+        message: `source '${mapId}' has duplicate dimension '${entry.dimension}' on mapData '${prevDim}' and '${entry.mapDataId}'`,
+      });
     }
     seenDimensions.set(entry.dimension!, entry.mapDataId);
 
     const effectiveKey = entry.stateKey ?? 'value';
     const prevKey = seenStateKeys.get(effectiveKey);
     if (prevKey && entries.length > 1) {
-      errors.push(
-        `source '${mapId}' has multiple dimensioned datasets sharing stateKey '${effectiveKey}' (mapData '${prevKey}' and '${entry.mapDataId}'): each dimension must declare a unique stateKey`
-      );
+      issues.push({
+        code: 'state-key-collision',
+        subject: {
+          path: `mapData[${entry.mapDataId}].stateKey`,
+          id: entry.mapDataId,
+        },
+        message: `source '${mapId}' has multiple dimensioned datasets sharing stateKey '${effectiveKey}' (mapData '${prevKey}' and '${entry.mapDataId}'): each dimension must declare a unique stateKey`,
+      });
     }
     seenStateKeys.set(effectiveKey, entry.mapDataId);
   }
-  return errors;
+  return issues;
 };
 
 /** Validates MapData dimension declarations: no duplicate dimensions per source. */
-const validateMapDataDimensions = (spec: VisualizationSpec): string[] => {
+const validateMapDataDimensions = (spec: VisualizationSpec): GeoVisIssue[] => {
   const mapData = spec.mapData ?? [];
 
   const bySource = new Map<
@@ -277,50 +357,47 @@ const validateMapDataDimensions = (spec: VisualizationSpec): string[] => {
     bySource.set(md.mapId, group);
   }
 
-  const errors: string[] = [];
+  const issues: GeoVisIssue[] = [];
   for (const [mapId, entries] of bySource) {
-    errors.push(...validateDimensionGroup(mapId, entries));
+    issues.push(...validateDimensionGroup(mapId, entries));
   }
 
-  return errors;
+  return issues;
 };
 
 /**
  * Validates a raw value against the GeoVis JSON Schema and enforces cross-field
- * referential integrity rules not expressible in the schema.
- * Returns a discriminated union: `{ valid: true, spec }` on success or
- * `{ valid: false, errors }` with human-readable diagnostic strings on failure.
+ * referential integrity rules not expressible in the schema. Returns a
+ * `GeoVisResult`: `{ status: 'resolved', spec, warnings }` on success, or a
+ * failure status carrying every issue found in one pass — never only the
+ * first — so a repair loop can fix everything in one round trip.
  */
-export const validateSpec = (input: unknown): ValidationResult => {
-  const valid = _validate(input);
+export const validateSpec = (input: unknown): GeoVisResult => {
+  const schemaValid = _validate(input);
 
-  if (!valid) {
-    const errors = (_validate.errors ?? []).map((e) => {
-      return `${e.instancePath || '(root)'} ${e.message}`;
+  if (!schemaValid) {
+    const issues: GeoVisIssue[] = (_validate.errors ?? []).map((e) => {
+      const path = e.instancePath || '(root)';
+      return {
+        code: 'invalid-schema',
+        subject: { path },
+        message: `${path} ${e.message}`,
+      };
     });
-    return { valid: false, errors };
+    return { status: 'invalid', issues };
   }
 
   const spec = input as unknown as VisualizationSpec;
-  const refErrors = validateReferences(spec);
-  const thresholdErrors = validateLegendThresholdOrder(spec);
-  const sizeByErrors = validateSizeBy(spec);
-  const dimensionErrors = validateMapDataDimensions(spec);
-  if (refErrors.length > 0) {
-    return { valid: false, errors: refErrors };
+  const issues: GeoVisIssue[] = [
+    ...validateReferences(spec),
+    ...validateLegendThresholdOrder(spec),
+    ...validateSizeBy(spec),
+    ...validateMapDataDimensions(spec),
+  ];
+
+  if (issues.length > 0) {
+    return { status: resolveOverallStatus(issues), issues };
   }
 
-  if (thresholdErrors.length > 0) {
-    return { valid: false, errors: thresholdErrors };
-  }
-
-  if (sizeByErrors.length > 0) {
-    return { valid: false, errors: sizeByErrors };
-  }
-
-  if (dimensionErrors.length > 0) {
-    return { valid: false, errors: dimensionErrors };
-  }
-
-  return { valid: true, spec };
+  return { status: 'resolved', spec, warnings: [] };
 };

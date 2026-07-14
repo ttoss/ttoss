@@ -865,19 +865,23 @@ React.useEffect(() => {
 
 ## Spec Validation
 
-Use `validateSpec` to validate a visualization spec against the JSON schema before passing it to `GeoVisProvider`:
+Use `validateSpec` to validate a visualization spec against the JSON schema before passing it to `GeoVisProvider`. It returns a `GeoVisResult`: a `resolved` status carrying the typed spec, or one of a closed set of failure statuses carrying every issue found in one pass — never only the first — so a repair loop can fix everything in one round trip:
 
 ```tsx
 import { validateSpec } from '@ttoss/geovis';
 
 const result = validateSpec(rawSpec);
 
-if (!result.valid) {
-  console.error('Invalid spec:', result.errors);
+if (result.status !== 'resolved') {
+  for (const issue of result.issues) {
+    console.error(`[${issue.code}] ${issue.message}`, issue.repair);
+  }
 } else {
   // result.spec is fully typed as VisualizationSpec
 }
 ```
+
+Each `GeoVisIssue` carries a machine-readable `code`, a `subject` locating the offending field, a human `message`, and — only when an alternative is already known at the check site (never guessed) — a `repair` list of `allowed-values` or `set-value` options.
 
 ## Applying Patches
 
@@ -1458,9 +1462,28 @@ Returns `BoundaryToggleResult`:
 
 ### `validateSpec`
 
-Validates a plain object against the `@ttoss/geovis` JSON schema.
+Validates a plain object against the `@ttoss/geovis` JSON schema and cross-field referential rules, aggregating every issue found in one pass.
 
-Returns `{ valid: true, spec: VisualizationSpec }` or `{ valid: false, errors: string[] }`.
+Returns a `GeoVisResult`: `{ status: 'resolved', spec: VisualizationSpec, warnings: GeoVisIssue[] }` or `{ status: 'invalid' | 'mismatch' | 'unsupported' | 'insufficient-data' | 'needs-clarification', issues: GeoVisIssue[] }`. `insufficient-data` and `needs-clarification` are reserved for future checks (no v1 check produces them yet).
+
+Each `GeoVisIssue` is `{ code, subject: { path, id? }, message, repair? }`:
+
+| `code`                    | Failure status | Meaning                                                           |
+| ------------------------- | -------------- | ----------------------------------------------------------------- |
+| `invalid-schema`          | `invalid`      | value fails the JSON Schema                                       |
+| `invalid-threshold-order` | `invalid`      | legend/sizeBy thresholds not strictly ascending                   |
+| `invalid-threshold-value` | `invalid`      | non-finite threshold value                                        |
+| `invalid-size-range`      | `invalid`      | `sizeBy.range` not finite, or `min >= max`, or `min <= 0`         |
+| `invalid-size-mode`       | `invalid`      | stepped `sizeBy` without thresholds or an active threshold legend |
+| `duplicate-map-data-id`   | `mismatch`     | non-unique `mapData.mapDataId`                                    |
+| `unknown-map-data-id`     | `mismatch`     | layer references an undeclared `mapDataId`                        |
+| `unknown-source`          | `mismatch`     | `mapData` references an undeclared source `mapId`                 |
+| `source-scope-conflict`   | `mismatch`     | layer's `sourceId` doesn't match its `mapDataId`'s source         |
+| `duplicate-dimension`     | `mismatch`     | two `mapData` entries claim the same `dimension` on one source    |
+| `state-key-collision`     | `mismatch`     | dimensioned `mapData` entries share a `stateKey`                  |
+| `unsupported-source-type` | `unsupported`  | `mapData` points to a non-`geojson` source                        |
+
+`repair` is present only when the check already has the correct alternative in hand (e.g. the declared `mapDataId`/source ids, or the other side of a scope mismatch) — never an invented or guessed value. Its entries are `{ kind: 'allowed-values', path, values }` or `{ kind: 'set-value', path, value, label? }`.
 
 ## Legend Type Surface
 

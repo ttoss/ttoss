@@ -3,6 +3,16 @@ import { validateSpec } from 'src/spec/validateSpec';
 import geojsonUrlMap from '../../../../src/fixtures/geojson-url-map.json';
 import singleMap from '../../../../src/fixtures/single-map.json';
 
+const issueMessages = (result: ReturnType<typeof validateSpec>): string => {
+  return result.status === 'resolved'
+    ? ''
+    : result.issues
+        .map((issue) => {
+          return issue.message;
+        })
+        .join('\n');
+};
+
 describe('validateSpec', () => {
   test.each([
     ['single-map (geojson source)', singleMap],
@@ -10,16 +20,21 @@ describe('validateSpec', () => {
   ])('fixture "%s" is valid', (_name, fixture) => {
     const result = validateSpec(fixture);
 
-    expect(result.valid).toBe(true);
+    expect(result.status).toBe('resolved');
   });
 
-  test('returns errors for an invalid spec', () => {
+  test('returns issues for an invalid spec', () => {
     const result = validateSpec({ title: 'missing required fields' });
 
-    expect(result.valid).toBe(false);
+    expect(result.status).toBe('invalid');
 
-    if (!result.valid) {
-      expect(result.errors.length).toBeGreaterThan(0);
+    if (result.status !== 'resolved') {
+      expect(result.issues.length).toBeGreaterThan(0);
+      expect(
+        result.issues.every((issue) => {
+          return issue.code === 'invalid-schema';
+        })
+      ).toBe(true);
     }
   });
 });
@@ -53,13 +68,13 @@ describe('validateSpec — mapData', () => {
       ],
       layers: [{ ...baseSpec.layers[0], mapDataId: 'pop' }],
     });
-    expect(result.valid).toBe(true);
+    expect(result.status).toBe('resolved');
   });
 
   // 1.2
   test('accepts V1 spec without mapData (no regression)', () => {
     const result = validateSpec(baseSpec);
-    expect(result.valid).toBe(true);
+    expect(result.status).toBe('resolved');
   });
 
   // 1.3
@@ -74,9 +89,20 @@ describe('validateSpec — mapData', () => {
         },
       ],
     });
-    expect(result.valid).toBe(false);
-    if (!result.valid) {
-      expect(result.errors.join('\n')).toMatch(/does-not-exist/);
+    expect(result.status).toBe('mismatch');
+    if (result.status !== 'resolved') {
+      expect(issueMessages(result)).toMatch(/does-not-exist/);
+      const issue = result.issues.find((i) => {
+        return i.code === 'unknown-source';
+      });
+      expect(issue).toBeDefined();
+      expect(issue?.repair).toEqual([
+        {
+          kind: 'allowed-values',
+          path: 'mapData[pop].mapId',
+          values: ['states'],
+        },
+      ]);
     }
   });
 
@@ -100,9 +126,19 @@ describe('validateSpec — mapData', () => {
         },
       ],
     });
-    expect(result.valid).toBe(false);
-    if (!result.valid) {
-      expect(result.errors.join('\n')).toMatch(/geojson/);
+    expect(result.status).toBe('unsupported');
+    if (result.status !== 'resolved') {
+      expect(issueMessages(result)).toMatch(/geojson/);
+      const issue = result.issues.find((i) => {
+        return i.code === 'unsupported-source-type';
+      });
+      expect(issue?.repair).toEqual([
+        {
+          kind: 'allowed-values',
+          path: 'sources[tiles].type',
+          values: ['geojson'],
+        },
+      ]);
     }
   });
 
@@ -112,9 +148,19 @@ describe('validateSpec — mapData', () => {
       ...baseSpec,
       layers: [{ ...baseSpec.layers[0], mapDataId: 'ghost' }],
     });
-    expect(result.valid).toBe(false);
-    if (!result.valid) {
-      expect(result.errors.join('\n')).toMatch(/ghost/);
+    expect(result.status).toBe('mismatch');
+    if (result.status !== 'resolved') {
+      expect(issueMessages(result)).toMatch(/ghost/);
+      const issue = result.issues.find((i) => {
+        return i.code === 'unknown-map-data-id';
+      });
+      expect(issue?.repair).toEqual([
+        {
+          kind: 'allowed-values',
+          path: 'layers[states-fill].mapDataId',
+          values: [],
+        },
+      ]);
     }
   });
 
@@ -132,9 +178,13 @@ describe('validateSpec — mapData', () => {
         { ...dupEntry, data: [{ geometryId: 'AR', value: 5 }] },
       ],
     });
-    expect(result.valid).toBe(false);
-    if (!result.valid) {
-      expect(result.errors.join('\n')).toMatch(/pop/);
+    expect(result.status).toBe('mismatch');
+    if (result.status !== 'resolved') {
+      expect(issueMessages(result)).toMatch(/pop/);
+      const issue = result.issues.find((i) => {
+        return i.code === 'duplicate-map-data-id';
+      });
+      expect(issue?.repair).toBeUndefined();
     }
   });
 
@@ -160,9 +210,20 @@ describe('validateSpec — mapData', () => {
       layers: [{ ...baseSpec.layers[0], mapDataId: 'pop' }],
       // layer.sourceId = 'states', mapData.mapId = 'other' → mismatch
     });
-    expect(result.valid).toBe(false);
-    if (!result.valid) {
-      expect(result.errors.join('\n')).toMatch(/source-scoped/);
+    expect(result.status).toBe('mismatch');
+    if (result.status !== 'resolved') {
+      expect(issueMessages(result)).toMatch(/source-scoped/);
+      const issue = result.issues.find((i) => {
+        return i.code === 'source-scope-conflict';
+      });
+      expect(issue?.repair).toEqual([
+        {
+          kind: 'set-value',
+          path: 'layers[states-fill].sourceId',
+          value: 'other',
+          label: `Point layer 'states-fill' at source 'other'`,
+        },
+      ]);
     }
   });
 
@@ -181,7 +242,7 @@ describe('validateSpec — mapData', () => {
       layers: [{ ...baseSpec.layers[0], mapDataId: 'pop' }],
     });
 
-    expect(result.valid).toBe(true);
+    expect(result.status).toBe('resolved');
   });
 
   test('rejects threshold legends with out-of-order breakpoints', () => {
@@ -207,9 +268,13 @@ describe('validateSpec — mapData', () => {
       ],
     });
 
-    expect(result.valid).toBe(false);
-    if (!result.valid) {
-      expect(result.errors.join('\n')).toMatch(/ascending order/);
+    expect(result.status).toBe('invalid');
+    if (result.status !== 'resolved') {
+      expect(issueMessages(result)).toMatch(/ascending order/);
+      const issue = result.issues.find((i) => {
+        return i.code === 'invalid-threshold-order';
+      });
+      expect(issue?.repair).toBeUndefined();
     }
   });
 
@@ -236,9 +301,14 @@ describe('validateSpec — mapData', () => {
       ],
     });
 
-    expect(result.valid).toBe(false);
-    if (!result.valid) {
-      expect(result.errors.join('\n')).toMatch(/non-finite/);
+    expect(result.status).toBe('invalid');
+    if (result.status !== 'resolved') {
+      expect(issueMessages(result)).toMatch(/non-finite/);
+      expect(
+        result.issues.every((i) => {
+          return i.code === 'invalid-threshold-value';
+        })
+      ).toBe(true);
     }
   });
 
@@ -265,9 +335,9 @@ describe('validateSpec — mapData', () => {
       ],
     });
 
-    expect(result.valid).toBe(false);
-    if (!result.valid) {
-      expect(result.errors.join('\n')).toMatch(/non-finite/);
+    expect(result.status).toBe('invalid');
+    if (result.status !== 'resolved') {
+      expect(issueMessages(result)).toMatch(/non-finite/);
     }
   });
 
@@ -301,7 +371,7 @@ describe('validateSpec — mapData', () => {
       ],
     });
 
-    expect(result.valid).toBe(true);
+    expect(result.status).toBe('resolved');
   });
 
   test('rejects legend with additional unknown fields', () => {
@@ -320,7 +390,7 @@ describe('validateSpec — mapData', () => {
       ],
     });
 
-    expect(result.valid).toBe(false);
+    expect(result.status).toBe('invalid');
   });
 });
 
@@ -350,7 +420,7 @@ describe('validateSpec — layer interaction fields (hoverPaint, selectedPaint, 
         },
       ],
     });
-    expect(result.valid).toBe(true);
+    expect(result.status).toBe('resolved');
   });
 
   test('accepts layer with selectedPaint', () => {
@@ -363,7 +433,7 @@ describe('validateSpec — layer interaction fields (hoverPaint, selectedPaint, 
         },
       ],
     });
-    expect(result.valid).toBe(true);
+    expect(result.status).toBe('resolved');
   });
 
   test('accepts layer with clickAnchor using iconImage', () => {
@@ -376,7 +446,7 @@ describe('validateSpec — layer interaction fields (hoverPaint, selectedPaint, 
         },
       ],
     });
-    expect(result.valid).toBe(true);
+    expect(result.status).toBe('resolved');
   });
 
   test('accepts layer with clickAnchor using color and offset', () => {
@@ -389,7 +459,7 @@ describe('validateSpec — layer interaction fields (hoverPaint, selectedPaint, 
         },
       ],
     });
-    expect(result.valid).toBe(true);
+    expect(result.status).toBe('resolved');
   });
 
   test('rejects hoverPaint with unknown property', () => {
@@ -402,7 +472,7 @@ describe('validateSpec — layer interaction fields (hoverPaint, selectedPaint, 
         },
       ],
     });
-    expect(result.valid).toBe(false);
+    expect(result.status).toBe('invalid');
   });
 
   test('rejects clickAnchor with unknown property', () => {
@@ -415,7 +485,7 @@ describe('validateSpec — layer interaction fields (hoverPaint, selectedPaint, 
         },
       ],
     });
-    expect(result.valid).toBe(false);
+    expect(result.status).toBe('invalid');
   });
 });
 
@@ -454,9 +524,13 @@ describe('validateSpec — MapData dimension', () => {
       ],
     });
 
-    expect(result.valid).toBe(false);
-    if (!result.valid) {
-      expect(result.errors.join('\n')).toMatch(/duplicate dimension/);
+    expect(result.status).toBe('mismatch');
+    if (result.status !== 'resolved') {
+      expect(issueMessages(result)).toMatch(/duplicate dimension/);
+      const issue = result.issues.find((i) => {
+        return i.code === 'duplicate-dimension';
+      });
+      expect(issue?.repair).toBeUndefined();
     }
   });
 
@@ -481,11 +555,16 @@ describe('validateSpec — MapData dimension', () => {
       ],
     });
 
-    expect(result.valid).toBe(false);
-    if (!result.valid) {
-      expect(result.errors.join('\n')).toMatch(/sharing stateKey/);
-      expect(result.errors.join('\n')).toContain('pop');
-      expect(result.errors.join('\n')).toContain('density');
+    expect(result.status).toBe('mismatch');
+    if (result.status !== 'resolved') {
+      const messages = issueMessages(result);
+      expect(messages).toMatch(/sharing stateKey/);
+      expect(messages).toContain('pop');
+      expect(messages).toContain('density');
+      const issue = result.issues.find((i) => {
+        return i.code === 'state-key-collision';
+      });
+      expect(issue?.repair).toBeUndefined();
     }
   });
 
@@ -510,7 +589,7 @@ describe('validateSpec — MapData dimension', () => {
       ],
     });
 
-    expect(result.valid).toBe(true);
+    expect(result.status).toBe('resolved');
   });
 
   test('accepts spec without dimension (backward compat)', () => {
@@ -525,7 +604,7 @@ describe('validateSpec — MapData dimension', () => {
       ],
     });
 
-    expect(result.valid).toBe(true);
+    expect(result.status).toBe('resolved');
   });
 
   test('accepts dimensions on different sources', () => {
@@ -555,6 +634,51 @@ describe('validateSpec — MapData dimension', () => {
       ],
     });
 
-    expect(result.valid).toBe(true);
+    expect(result.status).toBe('resolved');
+  });
+});
+
+describe('validateSpec — aggregation and status precedence', () => {
+  test('reports issues from multiple categories in a single call', () => {
+    const result = validateSpec({
+      engine: 'maplibre' as const,
+      view: { center: [0, 0] as [number, number], zoom: 1 },
+      sources: [
+        {
+          id: 'states',
+          type: 'geojson' as const,
+          data: { type: 'FeatureCollection' as const, features: [] },
+        },
+      ],
+      layers: [
+        {
+          id: 'states-fill',
+          sourceId: 'states',
+          geometry: 'polygon' as const,
+          mapDataId: 'ghost',
+        },
+        {
+          id: 'points',
+          sourceId: 'states',
+          geometry: 'point' as const,
+          sizeBy: { range: [20, 4] },
+        },
+      ],
+    });
+
+    expect(result.status).not.toBe('resolved');
+    if (result.status !== 'resolved') {
+      const codes = result.issues
+        .map((i) => {
+          return i.code;
+        })
+        .sort();
+      expect(codes).toEqual(
+        ['invalid-size-range', 'unknown-map-data-id'].sort()
+      );
+      // 'unknown-map-data-id' is 'mismatch', 'invalid-size-range' is 'invalid' —
+      // 'invalid' takes precedence.
+      expect(result.status).toBe('invalid');
+    }
   });
 });

@@ -74,17 +74,19 @@ Adding a code is cheap; renaming or removing one is breaking. New codes require 
 
 The rule that keeps repair honest and cheap: **a `repair` is attached only when the correct alternatives already exist at the check site — no inference, no search, no guessed values.** That yields exactly these cases:
 
-| Code                                      | Repair payload                                           | Why it costs nothing                                 |
-| ----------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------- |
-| `unknown-map-data-id`                     | allowed values: the declared `mapDataId`s                | the check already builds that set                    |
-| `unknown-source`                          | allowed values: the declared source ids                  | same                                                 |
-| `source-scope-conflict`                   | set value: point the layer at the mapData's source       | the correct id is the other side of the comparison   |
-| `unsupported-*`                           | allowed values: the adapter's declared list              | the capability tree is the input to the check        |
-| `unsupported-patch-target`                | allowed values: `layer` / `source` / `mapData`           | static; message directs `view`/`style` to `update()` |
-| `invalid-size-mode` (sqrt+stepped)        | set value: `transform: 'linear'` or `mode: 'continuous'` | static enum alternatives                             |
-| `policy-violation` (raw-count choropleth) | set value: the normalized field                          | already computed into metadata today                 |
+| Code                                      | Repair payload                                                                       | Why it costs nothing                                       |
+| ----------------------------------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| `unknown-map-data-id`                     | allowed values: the declared `mapDataId`s                                            | the check already builds that set                          |
+| `unknown-source`                          | allowed values: the declared source ids                                              | same                                                       |
+| `source-scope-conflict`                   | set value: point the layer at the mapData's source                                   | the correct id is the other side of the comparison         |
+| `unsupported-source-type`                 | allowed values: `['geojson']` (hardcoded today; adapter-declared list after Phase 4) | the only supported source type is already known statically |
+| `unsupported-*` (Phase 4)                 | allowed values: the adapter's declared list                                          | the capability tree is the input to the check              |
+| `unsupported-patch-target`                | allowed values: `layer` / `source` / `mapData`                                       | static; message directs `view`/`style` to `update()`       |
+| `policy-violation` (raw-count choropleth) | set value: the normalized field                                                      | already computed into metadata today                       |
 
 Everything else ships **without** repair, deliberately: schema errors (a fix generator would re-implement the schema; path + message is enough for a caller), threshold ordering (auto-sorting can mask a data error — that's guessing intent), duplicates (which copy to rename is unknowable), numeric ranges (any suggested number is invented). An absent `repair` is the honest signal that alternatives are not computable.
+
+**Correction found during Phase 1 implementation:** the sqrt+stepped `sizeBy` combination is rejected by the JSON Schema's own `not` constraint (`schema.json`'s `sizeBy.allOf[1].not`) before any custom check runs — it surfaces as `invalid-schema`, not a custom `invalid-size-mode` issue, so it never had a computable repair to attach. The originally planned `invalid-size-mode` (sqrt+stepped) repair row is removed; `invalid-size-mode` now covers only the "stepped without thresholds or an active legend" case, which has no repair (thresholds depend on the data distribution and cannot be invented).
 
 The payload is a closed union of two kinds — enough for every case above:
 
