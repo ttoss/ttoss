@@ -55,7 +55,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
       {
@@ -80,7 +79,6 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: [],
           data: {
             value: 3883.83,
           },
@@ -93,7 +91,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
       {
@@ -118,7 +115,6 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: [],
           data: {
             value: 0.36,
           },
@@ -131,7 +127,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
       {
@@ -169,7 +164,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
       {
@@ -194,7 +188,6 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: [],
           data: {
             value: 181135,
           },
@@ -207,7 +200,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
       {
@@ -233,7 +225,6 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: [],
           data: {
             value: 55543,
           },
@@ -246,7 +237,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
       {
@@ -270,7 +260,6 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: [],
           data: {
             value: 3.26,
           },
@@ -283,7 +272,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
       {
@@ -309,7 +297,6 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: [],
           data: {
             value: 59.54,
           },
@@ -322,7 +309,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
       {
@@ -347,7 +333,6 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: [],
           data: {
             value: 3902,
           },
@@ -360,7 +345,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
       {
@@ -386,7 +370,6 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: [],
           // eslint-disable-next-line max-lines
           data: {
             value: 2.15,
@@ -400,7 +383,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
       {
@@ -425,7 +407,6 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: [],
           data: {
             value: 2.76,
           },
@@ -438,7 +419,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
       {
@@ -464,7 +444,6 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: [],
           data: {
             value: 19.3,
           },
@@ -477,7 +456,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
       {
@@ -502,7 +480,6 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: [],
           data: {
             value: 31,
           },
@@ -515,7 +492,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
       {
@@ -540,7 +516,6 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: [],
           data: {
             value: 32.3,
           },
@@ -553,7 +528,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
       {
@@ -578,7 +552,6 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: [],
           data: {
             value: 85,
           },
@@ -591,7 +564,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
       {
@@ -615,7 +587,6 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: [],
           data: {
             value: 56,
           },
@@ -628,7 +599,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
       {
@@ -653,7 +623,6 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: [],
           data: {
             value: 3.5,
           },
@@ -666,7 +635,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
       {
@@ -691,7 +659,6 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: [],
           data: {
             value: 192.59,
           },
@@ -704,7 +671,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
       {
@@ -728,7 +694,6 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: [],
           data: {
             value: 347.9,
           },
@@ -741,7 +706,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
       {
@@ -766,7 +730,6 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: [],
           data: {
             value: 1078.5,
           },
@@ -779,7 +742,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
       {
@@ -805,7 +767,6 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: [],
           data: {
             value: 0.6,
           },
@@ -818,7 +779,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
       {
@@ -857,7 +817,6 @@ const templates: DashboardTemplate[] = [
               level: 'adAccount',
             },
           ],
-          labels: [],
           data: {
             value: 0.6,
           },
@@ -870,7 +829,6 @@ const templates: DashboardTemplate[] = [
             text: '',
             icon: '',
           },
-          metrics: [],
         },
       },
     ],
@@ -917,7 +875,6 @@ const templates: DashboardTemplate[] = [
           title: 'Taxas',
           numberType: 'currency',
           type: 'bigNumber',
-          labels: [],
           data: {
             value: 1000,
           },
@@ -938,7 +895,6 @@ const templates: DashboardTemplate[] = [
           variant: 'light-green',
           numberType: 'number',
           type: 'bigNumber',
-          labels: [],
           data: {
             value: 4.46,
           },
@@ -963,7 +919,6 @@ const templates: DashboardTemplate[] = [
           description: 'Total de faturamento líquido',
           numberType: 'currency',
           type: 'bigNumber',
-          labels: [],
           data: {
             value: 2789.1,
           },
@@ -984,7 +939,6 @@ const templates: DashboardTemplate[] = [
           variant: 'default',
           numberType: 'currency',
           type: 'bigNumber',
-          labels: [],
           data: {
             value: 1932.76,
           },
@@ -1009,7 +963,6 @@ const templates: DashboardTemplate[] = [
           description: 'Total de ROI',
           numberType: 'number',
           type: 'bigNumber',
-          labels: [],
           data: {
             value: 3.26,
           },

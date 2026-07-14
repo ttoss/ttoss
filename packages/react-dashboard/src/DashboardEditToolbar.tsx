@@ -2,8 +2,7 @@ import { Drawer, Search } from '@ttoss/components';
 import { Box, Button, Flex, Input, Label, Text, useTheme } from '@ttoss/ui';
 import * as React from 'react';
 
-import { BigNumber } from './Cards/BigNumber';
-import type { DashboardCard } from './DashboardCard';
+import { DashboardCard } from './DashboardCard';
 import type { CardCatalogItem } from './dashboardCardCatalog';
 import { useDashboard } from './DashboardProvider';
 import { DashboardSectionDivider } from './DashboardSectionDivider';
@@ -237,14 +236,14 @@ export const DashboardEditToolbar = () => {
                               },
                             }}
                           >
-                            {item.card.type === 'bigNumber' ? (
-                              <BigNumber {...(item.card as DashboardCard)} />
-                            ) : item.card.type === 'sectionDivider' ? (
+                            {item.card.type === 'sectionDivider' ? (
                               <DashboardSectionDivider
-                                {...(item.card as DashboardCard)}
+                                {...(item.card as Parameters<
+                                  typeof DashboardSectionDivider
+                                >[0])}
                               />
                             ) : (
-                              <Text>{item.card.title}</Text>
+                              <DashboardCard {...item.card} />
                             )}
                           </Box>
                         );
