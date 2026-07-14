@@ -381,6 +381,12 @@ import { getThemeStylesContent } from '@ttoss/fsl-theme/css';
 const css = getThemeStylesContent(myTheme);
 // → :root { --tt-* } + :root[data-tt-mode="dark"] { --tt-* (overrides) }
 //   + @media (prefers-color-scheme: dark) fallback for no-JS / pre-hydration
+
+// Fixed light/dark default (dark only via explicit toggle)? Skip the OS fallback:
+const lightFirstCss = getThemeStylesContent(myTheme, undefined, {
+  systemModeFallback: false,
+});
+// <ThemeProvider> / <ThemeHead> derive this automatically from `defaultMode`.
 ```
 
 ## Storybook / micro-frontends
@@ -390,11 +396,7 @@ Anchor theme attributes to a specific element instead of `<html>`. Always pair `
 ```tsx
 const rootRef = React.useRef<HTMLDivElement>(null);
 <div ref={rootRef}>
-  <ThemeProvider
-    theme={myTheme}
-    themeId="story"
-    root={rootRef.current ?? undefined}
-  >
+  <ThemeProvider theme={myTheme} themeId="story" root={rootRef}>
     <Story />
   </ThemeProvider>
 </div>;

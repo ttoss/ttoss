@@ -1263,3 +1263,102 @@ describe('ThemeProvider DEV warnings', () => {
     );
   });
 });
+
+// ---------------------------------------------------------------------------
+// systemModeFallback derivation from defaultMode
+// ---------------------------------------------------------------------------
+
+describe('OS-preference fallback follows defaultMode', () => {
+  // renderToStaticMarkup sidesteps React 19's per-document hoisted-style
+  // cache, which would swallow repeat injections of the same href in jsdom.
+  const staticMarkup = (node: React.ReactElement): string => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { renderToStaticMarkup } = require('react-dom/server');
+    return renderToStaticMarkup(node);
+  };
+
+  test('ThemeProvider: system default emits the fallback; fixed light does not', () => {
+    const system = staticMarkup(
+      <ThemeProvider theme={defaultBundle}>
+        <div>x</div>
+      </ThemeProvider>
+    );
+    const light = staticMarkup(
+      <ThemeProvider theme={defaultBundle} defaultMode="light">
+        <div>x</div>
+      </ThemeProvider>
+    );
+
+    expect(system).toContain('@media (prefers-color-scheme: dark)');
+    expect(light).not.toContain('@media (prefers-color-scheme:');
+  });
+
+  test('ThemeHead derives the gate from its defaultMode', () => {
+    const fixedDark = staticMarkup(
+      <ThemeHead theme={defaultBundle} defaultMode="dark" />
+    );
+    const system = staticMarkup(<ThemeHead theme={defaultBundle} />);
+
+    expect(fixedDark).not.toContain('@media (prefers-color-scheme:');
+    expect(system).toContain('@media (prefers-color-scheme: dark)');
+  });
+
+  test('ThemeStyles exposes an explicit systemModeFallback prop', () => {
+    const suppressed = staticMarkup(
+      <ThemeStyles theme={defaultBundle} systemModeFallback={false} />
+    );
+    expect(suppressed).not.toContain('@media (prefers-color-scheme:');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// root as RefObject — no transient attach to <html>
+// ---------------------------------------------------------------------------
+
+describe('ThemeProvider root as RefObject', () => {
+  let warnSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
+    clearDom();
+  });
+
+  test('attaches directly to the ref element with no transient <html> attach', () => {
+    // Manual ref object + callback ref — the file imports React as type-only.
+    const rootRef: { current: HTMLDivElement | null } = { current: null };
+
+    render(
+      <ThemeProvider theme={defaultBundle} defaultMode="light">
+        <div
+          ref={(el) => {
+            rootRef.current = el;
+          }}
+          data-testid="scope"
+        >
+          <ThemeProvider
+            theme={defaultBundle}
+            themeId="scoped"
+            defaultMode="light"
+            root={rootRef}
+          >
+            <div>x</div>
+          </ThemeProvider>
+        </div>
+      </ThemeProvider>
+    );
+
+    const scope = document.querySelector('[data-testid="scope"]');
+    expect(scope?.getAttribute(DATA_MODE_ATTR)).toBe('light');
+    expect(scope?.getAttribute(DATA_THEME_ATTR)).toBe('scoped');
+    // The outer provider owns <html>; the scoped one never touched it.
+    expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBeNull();
+    // No spurious multi-runtime warning — the ref form never attaches to <html>.
+    expect(warnSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining('Multiple theme runtimes')
+    );
+  });
+});

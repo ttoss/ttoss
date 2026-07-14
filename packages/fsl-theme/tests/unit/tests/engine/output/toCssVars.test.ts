@@ -939,3 +939,24 @@ describe('production mode — assertDistinctCssVars gate is skipped', () => {
     );
   });
 });
+
+describe('system-mode fallback block — systemModeFallback gating', () => {
+  test('systemModeFallback: false suppresses the block', () => {
+    const css = toCssVars(baseBundle, {
+      systemModeFallback: false,
+    }).toCssString();
+    expect(css).not.toContain('@media (prefers-color-scheme:');
+    // the attribute-scoped dark block is unaffected
+    expect(css).toContain(':root[data-tt-mode="dark"]');
+  });
+
+  test('getThemeStylesContent forwards the option', () => {
+    const css = getThemeStylesContent(baseBundle, undefined, {
+      systemModeFallback: false,
+    });
+    expect(css).not.toContain('@media (prefers-color-scheme:');
+    expect(getThemeStylesContent(baseBundle)).toContain(
+      '@media (prefers-color-scheme: dark)'
+    );
+  });
+});

@@ -46,6 +46,71 @@ const injectedThemeCss = new Map<string, { css: string; count: number }>();
 const useIsomorphicLayoutEffect =
   typeof window !== 'undefined' ? React.useLayoutEffect : React.useEffect;
 
+/**
+ * Accepted shapes for the `root` prop: a concrete element, or a ref object.
+ * Prefer the ref form — refs are populated before layout effects run, so the
+ * runtime attaches directly to the target element with no transient attach
+ * to `<html>` on the first render (the element form is `null` during the
+ * first render when read from `ref.current`).
+ */
+type ThemeRootInput = HTMLElement | React.RefObject<HTMLElement | null>;
+
+const resolveRootElement = (
+  root: ThemeRootInput | undefined
+): HTMLElement | undefined => {
+  if (!root) return undefined;
+  if (root instanceof HTMLElement) return root;
+  return root.current ?? undefined;
+};
+
+/**
+ * The OS-preference CSS fallback only makes sense when the app follows the
+ * OS. A fixed `'light'`/`'dark'` default must not let `prefers-color-scheme`
+ * override it on first paint.
+ */
+const shouldEmitSystemFallback = (
+  defaultMode: ThemeMode | undefined
+): boolean => {
+  return (defaultMode ?? 'system') === 'system';
+};
+
+/**
+ * DEV-only: warn when two providers with different themes share the same
+ * hoisted-style `href` — React dedups by href, so the second theme's CSS is
+ * silently dropped. Distinct `themeId`s give distinct hrefs and coexist.
+ */
+const useDedupMismatchWarning = (
+  cssContent: string | null,
+  themeId: string | undefined
+): void => {
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'production' || !cssContent) return;
+    const href = themeStyleHref(themeId);
+    const entry = injectedThemeCss.get(href);
+    if (entry && entry.css !== cssContent) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[fsl-theme] Two <ThemeProvider>s with different themes share the same ` +
+          `style key "${href}". React dedups hoisted <style> tags by href, so ` +
+          `only the first theme's CSS is injected. Give each theme a distinct ` +
+          `themeId: <ThemeProvider theme={...} themeId="my-theme">.`
+      );
+      // Fall through and register anyway (entry.css stays first-wins, matching
+      // React's behavior) so the count survives the first provider unmounting
+      // and a later conflicting mount still warns.
+    }
+    const next = entry ?? { css: cssContent, count: 0 };
+    next.count += 1;
+    injectedThemeCss.set(href, next);
+    return () => {
+      const current = injectedThemeCss.get(href);
+      if (!current) return;
+      current.count -= 1;
+      if (current.count <= 0) injectedThemeCss.delete(href);
+    };
+  }, [cssContent, themeId]);
+};
+
 // ---------------------------------------------------------------------------
 // Coarse-pointer detection — bridges the hit.fine/hit.coarse coupling for
 // non-CSS consumers (useResolvedTokens). CSS consumers are handled
@@ -241,30 +306,32 @@ export interface ThemeProviderProps {
   onModeChange?: (mode: ThemeMode, resolvedMode: ResolvedMode) => void;
   /**
    * Root element to anchor `data-tt-theme` / `data-tt-mode` attributes.
-   * Defaults to `document.documentElement`. Pass a container element for
-   * Storybook isolation or micro-frontend use cases.
+   * Defaults to `document.documentElement`. Pass a container for Storybook
+   * isolation or micro-frontend use cases.
    *
    * **Must be paired with `themeId`.** Without a `themeId`, the generated CSS
    * targets `:root` / `:root[data-tt-mode="dark"]` (the `<html>` element),
    * while the attributes are written to this element — the alternate mode CSS
    * would never match. A dev-mode warning fires on this combination.
    *
-   * Because the element is often `null` on the first render when passed via
-   * `ref.current`, `root` is reactive: the runtime is recreated once when
-   * it transitions from `undefined` to the actual element.
+   * **Prefer passing the ref object itself** (`root={rootRef}`): refs are
+   * populated before layout effects, so the runtime attaches directly to the
+   * element. Passing `rootRef.current ?? undefined` also works, but the value
+   * is `null` on the first render, causing one transient attach to `<html>`
+   * before the runtime is recreated on the element.
    *
    * @example
    * ```tsx
    * // Storybook decorator — isolates each story from <html>
    * const rootRef = React.useRef<HTMLDivElement>(null);
    * <div ref={rootRef}>
-   *   <ThemeProvider theme={myTheme} themeId="story" root={rootRef.current ?? undefined}>
+   *   <ThemeProvider theme={myTheme} themeId="story" root={rootRef}>
    *     <Story />
    *   </ThemeProvider>
    * </div>
    * ```
    */
-  root?: HTMLElement;
+  root?: ThemeRootInput;
   children: React.ReactNode;
 }
 
@@ -302,11 +369,12 @@ export const ThemeProvider = ({
   const runtimeRef = React.useRef<ThemeRuntime | null>(null);
 
   // Capture initial prop values — these are only read on mount.
-  // Storing them in refs prevents the runtime from being recreated
-  // if a parent re-renders with new (but semantically identical) literal
-  // values, and aligns with the documented "only read on initial mount" contract.
-  const initDefaultMode = React.useRef(defaultMode);
-  const initStorageKey = React.useRef(storageKey);
+  // useState initializers never re-run, so a parent re-rendering with new
+  // (but semantically identical) literal values cannot recreate the runtime,
+  // matching the documented "only read on initial mount" contract. (State,
+  // not refs — these are also read during render, where refs are illegal.)
+  const [initialDefaultMode] = React.useState(defaultMode);
+  const [initialStorageKey] = React.useState(storageKey);
 
   const [state, setState] = React.useState<ThemeState>(() => {
     // SSR fallback — will be corrected on mount by the runtime
@@ -325,7 +393,25 @@ export const ThemeProvider = ({
   // MFE theme swap). `defaultMode` and `storageKey` remain init-only and are
   // captured in refs; mode state is preserved across recreations via
   // localStorage.
+  // An ancestor's ref is not yet populated while this (descendant) layout
+  // effect first runs — React attaches refs bottom-up, after descendant
+  // effects. Bumping state from a layout effect forces a synchronous
+  // re-render *before paint*; by that second pass the ancestor's ref is
+  // attached, so a ref-object `root` binds directly to its element with no
+  // transient attach to <html>. One retry only — a permanently-null ref
+  // then falls back to `document.documentElement` (same as the element form).
+  const [rootRetry, setRootRetry] = React.useState(0);
+
   useIsomorphicLayoutEffect(() => {
+    const rootPending =
+      root !== undefined &&
+      !(root instanceof HTMLElement) &&
+      root.current === null;
+    if (rootPending && rootRetry === 0) {
+      setRootRetry(1);
+      return;
+    }
+
     if (process.env.NODE_ENV !== 'production' && root && !themeId) {
       // eslint-disable-next-line no-console
       console.warn(
@@ -339,9 +425,9 @@ export const ThemeProvider = ({
 
     const runtime = createThemeRuntime({
       defaultTheme: themeId,
-      defaultMode: initDefaultMode.current,
-      storageKey: initStorageKey.current,
-      root,
+      defaultMode: initialDefaultMode,
+      storageKey: initialStorageKey,
+      root: resolveRootElement(root),
     });
     runtimeRef.current = runtime;
 
@@ -353,7 +439,7 @@ export const ThemeProvider = ({
       runtime.destroy();
       runtimeRef.current = null;
     };
-  }, [root, themeId]);
+  }, [root, themeId, rootRetry]);
 
   const setMode = React.useCallback((mode: ThemeMode) => {
     runtimeRef.current?.setMode(mode);
@@ -399,36 +485,14 @@ export const ThemeProvider = ({
   // <style> stays in sync with the `data-tt-theme` attribute the runtime
   // writes to the DOM (scoped selector matches the active theme).
   const cssContent = React.useMemo(() => {
-    return theme ? getThemeStylesContent(theme, themeId) : null;
+    return theme
+      ? getThemeStylesContent(theme, themeId, {
+          systemModeFallback: shouldEmitSystemFallback(initialDefaultMode),
+        })
+      : null;
   }, [theme, themeId]);
 
-  // DEV-only: detect two providers with different themes sharing the same
-  // hoisted-style href — React dedups by href, so the second theme's CSS is
-  // silently dropped. Distinct `themeId`s give distinct hrefs and coexist.
-  React.useEffect(() => {
-    if (process.env.NODE_ENV === 'production' || !cssContent) return;
-    const href = themeStyleHref(themeId);
-    const entry = injectedThemeCss.get(href);
-    if (entry && entry.css !== cssContent) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        `[fsl-theme] Two <ThemeProvider>s with different themes share the same ` +
-          `style key "${href}". React dedups hoisted <style> tags by href, so ` +
-          `only the first theme's CSS is injected. Give each theme a distinct ` +
-          `themeId: <ThemeProvider theme={...} themeId="my-theme">.`
-      );
-      return;
-    }
-    const next = entry ?? { css: cssContent, count: 0 };
-    next.count += 1;
-    injectedThemeCss.set(href, next);
-    return () => {
-      const current = injectedThemeCss.get(href);
-      if (!current) return;
-      current.count -= 1;
-      if (current.count <= 0) injectedThemeCss.delete(href);
-    };
-  }, [cssContent, themeId]);
+  useDedupMismatchWarning(cssContent, themeId);
 
   // onModeChange: fires on subsequent mode transitions only (not on mount).
   // Use a ref for the callback to avoid stale-closure issues with inline fns.
@@ -727,6 +791,13 @@ export interface ThemeStylesProps {
   themeId?: string;
   /** CSP nonce for the inline style tag. */
   nonce?: string;
+  /**
+   * Emit the `@media (prefers-color-scheme)` fallback block (themeId-less
+   * bundles only). Default `true`. Set `false` when the app's `defaultMode`
+   * is a fixed `'light'`/`'dark'` rather than `'system'` — `<ThemeHead>`
+   * derives this automatically from its `defaultMode`.
+   */
+  systemModeFallback?: boolean;
 }
 
 /**
@@ -775,12 +846,17 @@ export interface ThemeStylesProps {
  * <ThemeStyles theme={brandB} themeId="brand-b" />
  * ```
  */
-export const ThemeStyles = ({ theme, themeId, nonce }: ThemeStylesProps) => {
+export const ThemeStyles = ({
+  theme,
+  themeId,
+  nonce,
+  systemModeFallback,
+}: ThemeStylesProps) => {
   return (
     <style
       nonce={nonce}
       dangerouslySetInnerHTML={{
-        __html: getThemeStylesContent(theme, themeId),
+        __html: getThemeStylesContent(theme, themeId, { systemModeFallback }),
       }}
     />
   );
@@ -858,7 +934,12 @@ export const ThemeHead = ({
         storageKey={storageKey}
         nonce={nonce}
       />
-      <ThemeStyles theme={theme} themeId={themeId} nonce={nonce} />
+      <ThemeStyles
+        theme={theme}
+        themeId={themeId}
+        nonce={nonce}
+        systemModeFallback={shouldEmitSystemFallback(defaultMode)}
+      />
     </>
   );
 };

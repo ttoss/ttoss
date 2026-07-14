@@ -229,21 +229,35 @@ export const createThemeRuntime = (
   // every tab converges on the latest persisted mode without a reload.
   // Applied without re-persisting (the originating tab already wrote it).
 
+  /** Parse + validate a persisted `{ mode }` payload; null when unusable. */
+  const parseStoredMode = (raw: string): ThemeMode | null => {
+    let stored: { mode?: string } | null = null;
+    try {
+      stored = JSON.parse(raw);
+    } catch {
+      return null; // malformed external write — ignore
+    }
+    const nextMode = stored?.mode;
+    return nextMode && VALID_MODES.includes(nextMode as ThemeMode)
+      ? (nextMode as ThemeMode)
+      : null;
+  };
+
   const onStorage = (event: StorageEvent): void => {
     if (destroyed || event.key !== storageKey || event.newValue === null) {
       return;
     }
-    let stored: { mode?: string } | null = null;
-    try {
-      stored = JSON.parse(event.newValue);
-    } catch {
-      return; // malformed external write — ignore
-    }
-    const nextMode = stored?.mode;
-    if (!nextMode || !VALID_MODES.includes(nextMode as ThemeMode)) {
+    // A same-origin write to *sessionStorage* under the same key also fires a
+    // storage event — only localStorage writes are ours. `storageArea` may be
+    // null on synthetic events, which we accept (tests, some shims).
+    if (event.storageArea != null && event.storageArea !== localStorage) {
       return;
     }
-    mode = nextMode as ThemeMode;
+    const nextMode = parseStoredMode(event.newValue);
+    if (!nextMode) {
+      return;
+    }
+    mode = nextMode;
     resolvedMode =
       mode === 'system' ? (mediaQuery.matches ? 'dark' : 'light') : mode;
     syncMediaListener(mode === 'system');

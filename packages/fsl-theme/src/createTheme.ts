@@ -1,5 +1,5 @@
 import { baseTheme, darkAlternate } from './baseTheme';
-import { deepMerge } from './roots/helpers';
+import { deepMerge, flattenObject } from './roots/helpers';
 import { validateRefs } from './roots/validateRefs';
 import type {
   DeepPartial,
@@ -35,6 +35,9 @@ const cloneTokens = <T>(value: T): T => {
  * The alternate is authored by hand (semantic-only remaps), so a typo'd
  * dark-mode ref must warn at theme creation instead of silently emitting a
  * broken CSS var in production.
+ *
+ * Only the leaves the alternate itself provides are checked — base refs were
+ * already validated by `buildTheme`, so they would otherwise warn twice.
  */
 const validateAlternateRefs = ({
   base,
@@ -43,13 +46,21 @@ const validateAlternateRefs = ({
   base: ThemeTokens;
   alternate: ModeOverride;
 }): void => {
-  validateRefs({
-    core: base.core,
-    semantic: deepMerge(
-      base.semantic,
-      alternate.semantic
-    ) as ThemeTokens['semantic'],
-  });
+  const alternateKeys = new Set(
+    Object.keys(
+      flattenObject(alternate.semantic as Record<string, unknown>, 'semantic')
+    )
+  );
+  validateRefs(
+    {
+      core: base.core,
+      semantic: deepMerge(
+        base.semantic,
+        alternate.semantic
+      ) as ThemeTokens['semantic'],
+    },
+    { onlyOwnerKeys: alternateKeys }
+  );
 };
 
 /**

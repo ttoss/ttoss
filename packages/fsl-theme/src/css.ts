@@ -51,7 +51,18 @@ export {
  */
 export const getThemeStylesContent = (
   bundle: ThemeBundle,
-  themeId?: string
+  themeId?: string,
+  options?: {
+    /**
+     * Emit the `@media (prefers-color-scheme)` fallback block (themeId-less
+     * bundles only). Default `true`. Pass `false` for apps whose
+     * `defaultMode` is a fixed `'light'`/`'dark'` rather than `'system'`.
+     */
+    systemModeFallback?: boolean;
+  }
 ): string => {
-  return toCssVars(bundle, { themeId }).toCssString();
+  return toCssVars(bundle, {
+    themeId,
+    systemModeFallback: options?.systemModeFallback,
+  }).toCssString();
 };

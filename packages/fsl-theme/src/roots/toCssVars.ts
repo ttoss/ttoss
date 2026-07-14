@@ -446,6 +446,18 @@ export interface BundleCssVarsOptions {
    * multi-theme scenarios (Storybook, micro-frontends).
    */
   themeId?: string;
+  /**
+   * Emit the `@media (prefers-color-scheme)` fallback block so the OS
+   * preference applies before JS runs (and without JS). Only meaningful for
+   * themeId-less bundles. Default `true`.
+   *
+   * Set `false` when the app is deliberately single-default (`defaultMode`
+   * `'light'` or `'dark'` with the alternate reachable only via explicit
+   * toggle) — otherwise dark-OS users would get the alternate on first paint
+   * against the app's configured default. `<ThemeProvider>` / `<ThemeHead>`
+   * derive this automatically from their `defaultMode` prop.
+   */
+  systemModeFallback?: boolean;
 }
 
 /**
@@ -540,7 +552,7 @@ const bundleToCssVars = (
   bundle: ThemeBundle,
   options: BundleCssVarsOptions
 ): BundleCssVarsResult => {
-  const { themeId } = options;
+  const { themeId, systemModeFallback = true } = options;
   const { baseMode, base: baseTheme, alternate } = bundle;
   const alternateMode: 'light' | 'dark' =
     baseMode === 'light' ? 'dark' : 'light';
@@ -622,8 +634,9 @@ const bundleToCssVars = (
         parts.push(alternateResult.toCssString());
         // Canonical 1-theme model: honor the OS preference before JS runs
         // (and when JS never runs). Multi-theme (themeId) scoping is
-        // runtime-managed, so the fallback is emitted only for `:root`.
-        if (!themeId) {
+        // runtime-managed, so the fallback is emitted only for `:root` —
+        // and only when the app follows the OS (`systemModeFallback`).
+        if (!themeId && systemModeFallback) {
           parts.push(
             buildSystemModeFallbackBlock({
               mode: alternateMode,

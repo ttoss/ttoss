@@ -458,3 +458,46 @@ describe('buildTheme — structuredClone fallback', () => {
     }
   });
 });
+
+// ---------------------------------------------------------------------------
+// createTheme — no double-warning for base refs
+// ---------------------------------------------------------------------------
+
+describe('createTheme — alternate validation does not re-warn base refs', () => {
+  let warnSpy: jest.SpyInstance;
+  const originalEnv = process.env.NODE_ENV;
+
+  beforeEach(() => {
+    process.env.NODE_ENV = 'test';
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
+    process.env.NODE_ENV = originalEnv;
+  });
+
+  test('a broken base ref warns exactly once per createTheme call', () => {
+    createTheme({
+      overrides: {
+        semantic: {
+          colors: {
+            action: {
+              primary: {
+                background: {
+                  default:
+                    '{core.colorz.brand.500}' as unknown as `{core.colors.${string}}`,
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const broken = warnSpy.mock.calls.filter((c) => {
+      return String(c[0]).includes("'{core.colorz.brand.500}'");
+    });
+    expect(broken).toHaveLength(1);
+  });
+});

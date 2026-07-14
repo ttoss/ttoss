@@ -766,3 +766,40 @@ describe('destroy — registry entry created in production', () => {
     }).not.toThrow();
   });
 });
+
+describe('cross-tab sync — storageArea guard', () => {
+  let runtime: ThemeRuntime;
+
+  afterEach(() => {
+    runtime?.destroy();
+    clearDom();
+  });
+
+  test('ignores storage events from sessionStorage', () => {
+    runtime = createThemeRuntime({ defaultMode: 'light' });
+
+    window.dispatchEvent(
+      new StorageEvent('storage', {
+        key: DEFAULT_STORAGE_KEY,
+        newValue: JSON.stringify({ mode: 'dark' }),
+        storageArea: sessionStorage,
+      } as StorageEventInit)
+    );
+
+    expect(runtime.getState().mode).toBe('light');
+  });
+
+  test('accepts events whose storageArea is localStorage', () => {
+    runtime = createThemeRuntime({ defaultMode: 'light' });
+
+    window.dispatchEvent(
+      new StorageEvent('storage', {
+        key: DEFAULT_STORAGE_KEY,
+        newValue: JSON.stringify({ mode: 'dark' }),
+        storageArea: localStorage,
+      } as StorageEventInit)
+    );
+
+    expect(runtime.getState().mode).toBe('dark');
+  });
+});
