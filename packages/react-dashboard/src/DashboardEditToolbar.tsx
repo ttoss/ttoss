@@ -2,7 +2,10 @@ import { Drawer, Search } from '@ttoss/components';
 import { Box, Button, Flex, Input, Label, Text, useTheme } from '@ttoss/ui';
 import * as React from 'react';
 
-import { DashboardCard } from './DashboardCard';
+import {
+  DashboardCard,
+  type DashboardCard as DashboardCardProps,
+} from './DashboardCard';
 import type { CardCatalogItem } from './dashboardCardCatalog';
 import { useDashboard } from './DashboardProvider';
 import { DashboardSectionDivider } from './DashboardSectionDivider';
@@ -243,7 +246,9 @@ export const DashboardEditToolbar = () => {
                                 >[0])}
                               />
                             ) : (
-                              <DashboardCard {...item.card} />
+                              <DashboardCard
+                                {...(item.card as DashboardCardProps)}
+                              />
                             )}
                           </Box>
                         );
