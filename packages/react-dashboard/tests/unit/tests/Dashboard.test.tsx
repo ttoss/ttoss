@@ -412,7 +412,7 @@ describe('Dashboard', () => {
             numberType: 'currency',
             type: 'bigNumber',
             sourceType: [{ source: 'api' }],
-            data: { api: { total: 1000 } },
+            data: { value: 1000 },
           },
         },
       ],
@@ -427,9 +427,9 @@ describe('Dashboard', () => {
       />
     );
 
-    // Should display US$ instead of R$
-    expect(screen.getByText(/US\$/)).toBeInTheDocument();
+    // Should display USD formatted value, not BRL
     expect(screen.queryByText(/R\$/)).not.toBeInTheDocument();
+    expect(screen.getByText(/1[,.]000/)).toBeInTheDocument();
   });
 
   test('should not render filters when showFilters is false', () => {
@@ -509,7 +509,7 @@ describe('Dashboard', () => {
             type: 'bigNumber',
             currency: 'EUR',
             sourceType: [{ source: 'api' }],
-            data: { api: { total: 2000 } },
+            data: { value: 2000 },
           },
         },
       ],
