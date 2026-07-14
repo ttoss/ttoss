@@ -895,9 +895,7 @@ const templates: DashboardTemplate[] = [
           numberType: 'currency',
           type: 'bigNumber',
           data: {
-            api: {
-              total: 3820.68,
-            },
+            value: 3820.68,
           },
           trend: {
             value: 12.5,
@@ -921,9 +919,7 @@ const templates: DashboardTemplate[] = [
           type: 'bigNumber',
           labels: [],
           data: {
-            api: {
-              total: 1000,
-            },
+            value: 1000,
           },
         },
       },
@@ -944,9 +940,7 @@ const templates: DashboardTemplate[] = [
           type: 'bigNumber',
           labels: [],
           data: {
-            api: {
-              total: 4.46,
-            },
+            value: 4.46,
           },
           status: {
             text: 'Performance excelente',
@@ -971,9 +965,7 @@ const templates: DashboardTemplate[] = [
           type: 'bigNumber',
           labels: [],
           data: {
-            api: {
-              total: 2789.1,
-            },
+            value: 2789.1,
           },
         },
       },
@@ -994,9 +986,7 @@ const templates: DashboardTemplate[] = [
           type: 'bigNumber',
           labels: [],
           data: {
-            api: {
-              total: 1932.76,
-            },
+            value: 1932.76,
           },
           trend: {
             value: 8.3,
@@ -1021,9 +1011,7 @@ const templates: DashboardTemplate[] = [
           type: 'bigNumber',
           labels: [],
           data: {
-            api: {
-              total: 3.26,
-            },
+            value: 3.26,
           },
         },
       },
@@ -1100,9 +1088,7 @@ const cardCatalog: CardCatalogItem[] = [
         },
       ],
       data: {
-        api: {
-          total: 0,
-        },
+        value: 0,
       },
     },
   },
@@ -1122,9 +1108,7 @@ const cardCatalog: CardCatalogItem[] = [
         },
       ],
       data: {
-        api: {
-          total: 0,
-        },
+        value: 0,
       },
     },
   },
@@ -1145,9 +1129,7 @@ const cardCatalog: CardCatalogItem[] = [
         },
       ],
       data: {
-        api: {
-          total: 0,
-        },
+        value: 0,
       },
     },
   },
@@ -1166,9 +1148,7 @@ const cardCatalog: CardCatalogItem[] = [
         },
       ],
       data: {
-        api: {
-          total: 0,
-        },
+        value: 0,
       },
     },
   },
