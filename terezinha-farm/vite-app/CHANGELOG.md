@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.19.0](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.18.8...@terezinha-farm/vite-app@0.19.0) (2026-07-14)
+
+### Features
+
+- **react-dashboard:** add BigNumberSparkline card for lineChart type ([#1124](https://github.com/ttoss/ttoss/issues/1124)) ([3917371](https://github.com/ttoss/ttoss/commit/3917371afeb9e8bde26cabe13d7284119948786d))
+
 ## [0.18.8](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.18.7...@terezinha-farm/vite-app@0.18.8) (2026-07-03)
 
 **Note:** Version bump only for package @terezinha-farm/vite-app
