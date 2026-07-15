@@ -474,8 +474,6 @@ export interface VisualizationView {
 export const SPEC_SCHEMA_VERSION = 1;
 
 export interface VisualizationSpec {
-  /** Optional identifier for this spec. Not consumed by the runtime; useful for test fixtures, logging, and multi-map bookkeeping in host apps. */
-  id?: string;
   /** Schema version this spec was authored against. Omit for the current version — see `SPEC_SCHEMA_VERSION`. */
   schemaVersion?: number;
   title?: string;
