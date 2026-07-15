@@ -4,7 +4,7 @@ import { Box, Flex, Heading, IconButton, Link, Text } from '@ttoss/ui';
 import type * as React from 'react';
 
 import {
-  type GeovisWorkspaceLegendWithColor,
+  type GeovisWorkspaceSlotName,
   type GeovisWorkspaceSource,
 } from '../context/GeovisWorkspaceContext';
 import { useGeovisWorkspace } from '../hooks/useGeovisWorkspace';
@@ -48,15 +48,20 @@ const RuntimeLegends = () => {
   );
 };
 
+/** Empty default for right-sidebar slots without a default panel yet. */
+const EmptyPanel = () => {
+  return null;
+};
+
 /**
- * Color legend panel driven by `rightSidebar.legendWithColor`: an optional
- * description, the spec's runtime-resolved legends and a list of data sources.
- * Each block renders only when present.
+ * Default content of the `legend` slot: an optional description, the spec's
+ * runtime-resolved legends and a list of data sources. Each block renders
+ * only when present.
  */
-const LegendWithColorPanel = ({
-  description,
-  sources,
-}: GeovisWorkspaceLegendWithColor) => {
+const LegendPanel = () => {
+  const { config } = useGeovisWorkspace();
+  const { description, sources } = config.legend ?? {};
+
   return (
     <Flex sx={{ flexDirection: 'column', gap: '4' }}>
       {description && (
@@ -97,20 +102,35 @@ const LegendWithColorPanel = ({
   );
 };
 
+/** Right-sidebar slots, stacked in this fixed order (ADR-0002). */
+const RIGHT_SIDEBAR_SLOTS: GeovisWorkspaceSlotName[] = [
+  'legend',
+  'warnings',
+  'inspector',
+  'metadata',
+];
+
+/** Default panel per right-sidebar slot; warnings/inspector/metadata land in later PRD-003 phases. */
+const DEFAULT_PANELS: Record<GeovisWorkspaceSlotName, React.ComponentType> = {
+  map: EmptyPanel,
+  controls: EmptyPanel,
+  legend: LegendPanel,
+  warnings: EmptyPanel,
+  inspector: EmptyPanel,
+  metadata: EmptyPanel,
+};
+
 /**
- * Internal right sidebar. Shows the config-defined title and an optional color
- * legend panel. Rendered only when the config defines a rightSidebar.
+ * Internal right sidebar: the chrome hosting the legend/warnings/inspector/
+ * metadata slots, stacked in that order. Rendered only when `Layout`
+ * determines at least one of them has content.
  */
 export const RightSidebar = () => {
   const {
     intl: { formatMessage },
   } = useI18n();
 
-  const { config, setRightSidebarOpen, details } = useGeovisWorkspace();
-
-  const legendWithColor = config.rightSidebar?.legendWithColor;
-
-  const renderDetails = config.rightSidebar?.renderDetails;
+  const { config, setRightSidebarOpen } = useGeovisWorkspace();
 
   return (
     <Flex
@@ -118,7 +138,7 @@ export const RightSidebar = () => {
         position: 'relative',
         flexDirection: 'column',
         gap: '4',
-        width: '300px',
+        width: '256px',
         height: '100%',
         flexShrink: 0,
         paddingX: '4',
@@ -165,9 +185,12 @@ export const RightSidebar = () => {
         {config.rightSidebar?.title ?? formatMessage(messages.detailsTitle)}
       </Heading>
 
-      {renderDetails && details && renderDetails(details)}
-
-      {legendWithColor && <LegendWithColorPanel {...legendWithColor} />}
+      {RIGHT_SIDEBAR_SLOTS.map((slot) => {
+        if (config.slots?.[slot]?.hidden === true) return null;
+        const Override = config.slots?.[slot]?.component;
+        const DefaultPanel = DEFAULT_PANELS[slot];
+        return Override ? <Override key={slot} /> : <DefaultPanel key={slot} />;
+      })}
     </Flex>
   );
 };

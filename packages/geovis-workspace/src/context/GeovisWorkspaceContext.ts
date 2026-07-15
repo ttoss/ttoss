@@ -1,4 +1,3 @@
-import type { MapClickInfo } from '@ttoss/geovis';
 import * as React from 'react';
 
 export interface GeovisWorkspaceMenuItem {
@@ -19,13 +18,6 @@ export interface GeovisWorkspaceMenu {
   defaultValue?: string;
 }
 
-export interface GeovisWorkspaceLeftSidebar {
-  /** Menu groups rendered in the left sidebar. */
-  menus: GeovisWorkspaceMenu[];
-  /** Whether the sidebar starts open or closed. Defaults to `'closed'`. */
-  initialState?: 'open' | 'closed';
-}
-
 export interface GeovisWorkspaceSource {
   /** Source description text. */
   label: string;
@@ -40,66 +32,62 @@ export interface GeovisWorkspaceSources {
   items: GeovisWorkspaceSource[];
 }
 
-export interface GeovisWorkspaceLegendWithColor {
-  /** Descriptive paragraph rendered under the right sidebar title. */
+/**
+ * The closed, versioned vocabulary of panel regions a workspace composes.
+ * Adding a name is additive; renaming one is breaking (ADR-0002).
+ */
+export type GeovisWorkspaceSlotName =
+  | 'map'
+  | 'legend'
+  | 'warnings'
+  | 'inspector'
+  | 'metadata'
+  | 'controls';
+
+export interface GeovisWorkspaceSlotConfig {
+  /**
+   * Replaces the slot's default panel. Renders inside the same provider
+   * tree, so it gets runtime access through the public contexts exactly
+   * like the default it replaces.
+   */
+  component?: React.ComponentType;
+  /** Hides the slot's region entirely instead of rendering its default. */
+  hidden?: boolean;
+}
+
+export interface GeovisWorkspaceControls {
+  /** Menu groups rendered by the `controls` slot's default panel. */
+  menus: GeovisWorkspaceMenu[];
+}
+
+export interface GeovisWorkspaceLegendConfig {
+  /** Descriptive paragraph rendered above the legend. */
   description?: string;
   /** Data sources, each optionally rendered as an external link. */
   sources?: GeovisWorkspaceSources;
 }
 
-export interface GeovisWorkspaceDetailsState {
-  /** The clicked feature these details describe, or `null` when cleared. */
-  feature: MapClickInfo | null;
-  /**
-   * Value resolved by `onFeatureSelect`. `null` while the request is in
-   * flight, when it failed, or when the selection was cleared. Typed as
-   * `unknown` — narrow it inside `renderDetails`.
-   */
-  data: unknown;
-  /** `true` while `onFeatureSelect` is in flight. */
-  loading: boolean;
-  /** Error thrown/rejected by `onFeatureSelect`, or `null`. */
-  error: unknown;
-}
-
-export interface GeovisWorkspaceRightSidebar {
-  /** Title displayed at the top of the right sidebar. */
-  title?: string;
-  /** Color legend panel: description, class swatches and data sources. */
-  legendWithColor?: GeovisWorkspaceLegendWithColor;
+export interface GeovisWorkspaceSidebarState {
   /** Whether the sidebar starts open or closed. Defaults to `'closed'`. */
   initialState?: 'open' | 'closed';
-  /**
-   * Guards whether a map click should open the right sidebar. Called before
-   * `onFeatureSelect` — return `false` to silently ignore the click. When
-   * omitted every click-trackable layer click opens the sidebar.
-   *
-   * @example
-   * // Only open when the user clicks the kitchen-points layer
-   * shouldOpen: (info) => info.layerId === COZINHAS_POINTS_LAYER_ID
-   */
-  shouldOpen?: (info: MapClickInfo) => boolean;
-  /**
-   * Fetches details for a feature clicked on the map. The workspace calls it
-   * with the clicked feature, opens the right sidebar, and tracks the
-   * loading/error/data state — exposed to `renderDetails`. Requires the clicked
-   * layer to be click-trackable (it declares `activeLegendId` or `click` in the
-   * `visualizationSpec`).
-   */
-  onFeatureSelect?: (info: MapClickInfo) => Promise<unknown> | unknown;
-  /**
-   * Renders the details of the clicked feature inside the right sidebar. Called
-   * with the current fetch state so it can render loading, error and data. Only
-   * used alongside `onFeatureSelect`.
-   */
-  renderDetails?: (state: GeovisWorkspaceDetailsState) => React.ReactNode;
+}
+
+export interface GeovisWorkspaceRightSidebarState extends GeovisWorkspaceSidebarState {
+  /** Title displayed at the top of the right sidebar. */
+  title?: string;
 }
 
 export interface GeovisWorkspaceConfig {
-  /** Configuration for the left sidebar. Omit to hide it entirely. */
-  leftSidebar?: GeovisWorkspaceLeftSidebar;
-  /** Configuration for the right sidebar. Omit to hide it entirely. */
-  rightSidebar?: GeovisWorkspaceRightSidebar;
+  /** Per-slot overrides or hides. Omit an entry to use the slot's default. */
+  slots?: Partial<Record<GeovisWorkspaceSlotName, GeovisWorkspaceSlotConfig>>;
+  /** Content for the `controls` slot's default panel. */
+  controls?: GeovisWorkspaceControls;
+  /** Content for the `legend` slot's default panel. */
+  legend?: GeovisWorkspaceLegendConfig;
+  /** Left sidebar (hosts the `controls` slot) open/closed state. */
+  leftSidebar?: GeovisWorkspaceSidebarState;
+  /** Right sidebar (hosts legend/warnings/inspector/metadata) title and open/closed state. */
+  rightSidebar?: GeovisWorkspaceRightSidebarState;
 }
 
 /** Active item value per menu group, keyed by menu id. */
@@ -120,17 +108,6 @@ export interface GeovisWorkspaceContextValue {
   isRightSidebarOpen: boolean;
   /** Opens or closes the right sidebar. */
   setRightSidebarOpen: ({ open }: { open: boolean }) => void;
-  /**
-   * Fetch state for the feature currently clicked on the map, or `null` when
-   * no feature is selected (or `onFeatureSelect` is not configured).
-   */
-  details: GeovisWorkspaceDetailsState | null;
-  /**
-   * Runs `rightSidebar.onFeatureSelect` for the given feature (opening the
-   * sidebar and tracking loading/error/data), or clears the details when
-   * called with `null`. Wired to map clicks by the workspace.
-   */
-  selectFeature: (info: MapClickInfo | null) => void;
 }
 
 export const GeovisWorkspaceContext = React.createContext<

@@ -1,11 +1,37 @@
+import { GeoVisCanvas, useGeoVis } from '@ttoss/geovis';
 import { useI18n } from '@ttoss/react-i18n';
 import { Box, Flex, IconButton } from '@ttoss/ui';
 import type * as React from 'react';
 
+import type { GeovisWorkspaceSlotName } from '../context/GeovisWorkspaceContext';
 import { useGeovisWorkspace } from '../hooks/useGeovisWorkspace';
 import { messages } from '../messages';
+import { slotHasContent } from '../slots';
 import { LeftSidebar } from './LeftSidebar';
 import { RightSidebar } from './RightSidebar';
+
+/** Right-sidebar slots, stacked in this fixed order (ADR-0002). */
+const RIGHT_SIDEBAR_SLOTS: GeovisWorkspaceSlotName[] = [
+  'legend',
+  'warnings',
+  'inspector',
+  'metadata',
+];
+
+/** Default content of the `map` slot: the GeoVis canvas filling the main area. */
+const DefaultMapPanel = () => {
+  return <GeoVisCanvas style={{ width: '100%', height: '100%' }} />;
+};
+
+/** Resolves and renders the `map` slot's override-or-default content. */
+const MapSlot = () => {
+  const { config } = useGeovisWorkspace();
+
+  if (config.slots?.map?.hidden === true) return null;
+
+  const MapOverride = config.slots?.map?.component;
+  return MapOverride ? <MapOverride /> : <DefaultMapPanel />;
+};
 
 /**
  * Slide-in overlay that hosts a sidebar on the given side. The sidebar fills
@@ -139,22 +165,24 @@ const OpenRightSidebarButton = () => {
   );
 };
 
-interface LayoutProps {
-  children?: React.ReactNode;
-}
-
 /**
- * Internal layout shell. The children fill the whole area, and each sidebar
- * (and its floating reopen button) is rendered only when the corresponding
- * section is defined in the spec.
+ * Internal layout shell. Resolves all six slots through one override-or-
+ * default path (ADR-0002): `map` fills the main area; `controls` renders in
+ * the left sidebar; `legend`, `warnings`, `inspector`, and `metadata` stack
+ * in that order in the right sidebar. Each sidebar (and its floating reopen
+ * button) is rendered only when at least one of its slots has content to
+ * show — an explicit `hidden` always suppresses a slot regardless.
  */
-export const Layout = ({ children }: LayoutProps) => {
+export const Layout = () => {
   const { config, isLeftSidebarOpen, isRightSidebarOpen } =
     useGeovisWorkspace();
+  const { spec } = useGeoVis();
 
-  const hasLeftSidebar = config.leftSidebar !== undefined;
+  const hasLeftSidebar = slotHasContent({ config, spec, slot: 'controls' });
 
-  const hasRightSidebar = config.rightSidebar !== undefined;
+  const hasRightSidebar = RIGHT_SIDEBAR_SLOTS.some((slot) => {
+    return slotHasContent({ config, spec, slot });
+  });
 
   return (
     <Flex
@@ -168,7 +196,9 @@ export const Layout = ({ children }: LayoutProps) => {
         backgroundColor: 'display.background.primary.default',
       }}
     >
-      <Flex sx={{ flex: 1 }}>{children}</Flex>
+      <Flex sx={{ flex: 1 }}>
+        <MapSlot />
+      </Flex>
 
       {hasLeftSidebar && (
         <SidebarOverlay side="left" open={isLeftSidebarOpen}>
