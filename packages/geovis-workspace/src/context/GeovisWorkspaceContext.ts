@@ -18,13 +18,6 @@ export interface GeovisWorkspaceMenu {
   defaultValue?: string;
 }
 
-export interface GeovisWorkspaceLeftSidebar {
-  /** Menu groups rendered in the left sidebar. */
-  menus: GeovisWorkspaceMenu[];
-  /** Whether the sidebar starts open or closed. Defaults to `'closed'`. */
-  initialState?: 'open' | 'closed';
-}
-
 export interface GeovisWorkspaceSource {
   /** Source description text. */
   label: string;
@@ -39,27 +32,62 @@ export interface GeovisWorkspaceSources {
   items: GeovisWorkspaceSource[];
 }
 
-export interface GeovisWorkspaceLegendWithColor {
-  /** Descriptive paragraph rendered under the right sidebar title. */
+/**
+ * The closed, versioned vocabulary of panel regions a workspace composes.
+ * Adding a name is additive; renaming one is breaking (ADR-0002).
+ */
+export type GeovisWorkspaceSlotName =
+  | 'map'
+  | 'legend'
+  | 'warnings'
+  | 'inspector'
+  | 'metadata'
+  | 'controls';
+
+export interface GeovisWorkspaceSlotConfig {
+  /**
+   * Replaces the slot's default panel. Renders inside the same provider
+   * tree, so it gets runtime access through the public contexts exactly
+   * like the default it replaces.
+   */
+  component?: React.ComponentType;
+  /** Hides the slot's region entirely instead of rendering its default. */
+  hidden?: boolean;
+}
+
+export interface GeovisWorkspaceControls {
+  /** Menu groups rendered by the `controls` slot's default panel. */
+  menus: GeovisWorkspaceMenu[];
+}
+
+export interface GeovisWorkspaceLegendConfig {
+  /** Descriptive paragraph rendered above the legend. */
   description?: string;
   /** Data sources, each optionally rendered as an external link. */
   sources?: GeovisWorkspaceSources;
 }
 
-export interface GeovisWorkspaceRightSidebar {
-  /** Title displayed at the top of the right sidebar. */
-  title?: string;
-  /** Color legend panel: description, class swatches and data sources. */
-  legendWithColor?: GeovisWorkspaceLegendWithColor;
+export interface GeovisWorkspaceSidebarState {
   /** Whether the sidebar starts open or closed. Defaults to `'closed'`. */
   initialState?: 'open' | 'closed';
 }
 
+export interface GeovisWorkspaceRightSidebarState extends GeovisWorkspaceSidebarState {
+  /** Title displayed at the top of the right sidebar. */
+  title?: string;
+}
+
 export interface GeovisWorkspaceConfig {
-  /** Configuration for the left sidebar. Omit to hide it entirely. */
-  leftSidebar?: GeovisWorkspaceLeftSidebar;
-  /** Configuration for the right sidebar. Omit to hide it entirely. */
-  rightSidebar?: GeovisWorkspaceRightSidebar;
+  /** Per-slot overrides or hides. Omit an entry to use the slot's default. */
+  slots?: Partial<Record<GeovisWorkspaceSlotName, GeovisWorkspaceSlotConfig>>;
+  /** Content for the `controls` slot's default panel. */
+  controls?: GeovisWorkspaceControls;
+  /** Content for the `legend` slot's default panel. */
+  legend?: GeovisWorkspaceLegendConfig;
+  /** Left sidebar (hosts the `controls` slot) open/closed state. */
+  leftSidebar?: GeovisWorkspaceSidebarState;
+  /** Right sidebar (hosts legend/warnings/inspector/metadata) title and open/closed state. */
+  rightSidebar?: GeovisWorkspaceRightSidebarState;
 }
 
 /** Active item value per menu group, keyed by menu id. */

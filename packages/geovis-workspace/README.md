@@ -1,8 +1,10 @@
 # @ttoss/geovis-workspace
 
-A React component that composes a sidebar-driven workspace around a GeoVis map.
-The sidebars are configured through a `config` object and the map is rendered
-from a GeoVis `visualizationSpec`; each sidebar only renders when defined.
+A React component that composes a slot-based workspace around a GeoVis map.
+Six named slots (`map`, `legend`, `warnings`, `inspector`, `metadata`,
+`controls`) each render a runtime-bound default panel, are configurable
+through a `config` object, and can be hidden or replaced with a custom
+component per slot; the map is rendered from a GeoVis `visualizationSpec`.
 
 ## Installation
 
@@ -33,7 +35,7 @@ import {
 import * as React from 'react';
 
 const config: GeovisWorkspaceConfig = {
-  leftSidebar: {
+  controls: {
     menus: [
       {
         id: 'variable',
@@ -83,73 +85,117 @@ control it from the parent — required when the selection must drive the
 its own group. Read the current selection anywhere inside the workspace with
 `useGeovisWorkspace()`.
 
+## Slots
+
+The workspace is built from six named slots. `map` fills the main area;
+`controls` renders in the left sidebar; `legend`, `warnings`, `inspector`, and
+`metadata` stack in that order in the right sidebar. Placement is fixed —
+only a slot's _content_ is configurable:
+
+| Slot        | Region        | Default panel                                                     |
+| ----------- | ------------- | ----------------------------------------------------------------- |
+| `map`       | Main area     | The GeoVis canvas.                                                |
+| `controls`  | Left sidebar  | Menu groups from `config.controls`.                               |
+| `legend`    | Right sidebar | Description/sources from `config.legend` plus the spec's legends. |
+| `warnings`  | Right sidebar | None yet (PRD-003 Phase 3).                                       |
+| `inspector` | Right sidebar | None yet (PRD-003 Phase 4).                                       |
+| `metadata`  | Right sidebar | None yet (PRD-003 Phase 5).                                       |
+
+A sidebar renders only when at least one of its slots has content — an
+override component, or (for `controls`/`legend`) non-empty config or a
+spec-resolved legend. Use `config.slots` to hide a slot or replace its default
+panel with a custom component, which gets the same runtime access
+(`useGeoVis()`, `useGeoVisClick()`, `useGeoVisHover()`) as the default it
+replaces:
+
+```tsx
+const config: GeovisWorkspaceConfig = {
+  slots: {
+    legend: { hidden: true },
+    controls: { component: MyCustomControls },
+  },
+};
+```
+
 ## API
 
 ### `GeovisWorkspace` props
 
 | Prop                | Type                                  | Description                                                 |
 | ------------------- | ------------------------------------- | ----------------------------------------------------------- |
-| `config`            | `GeovisWorkspaceConfig`               | Describes the sidebars. Required.                           |
+| `config`            | `GeovisWorkspaceConfig`               | Describes the slots. Required.                              |
 | `visualizationSpec` | `VisualizationSpec`                   | GeoVis spec rendered in the main map area. Required.        |
 | `variables`         | `Record<string, string \| undefined>` | Controlled selection per menu group. Omit for uncontrolled. |
 | `onVariableChange`  | `(variables) => void`                 | Called with the full next selection when an item is picked. |
 
 ### `GeovisWorkspaceConfig`
 
-| Property       | Type                          | Description                            |
-| -------------- | ----------------------------- | -------------------------------------- |
-| `leftSidebar`  | `GeovisWorkspaceLeftSidebar`  | Left sidebar config. Omit to hide it.  |
-| `rightSidebar` | `GeovisWorkspaceRightSidebar` | Right sidebar config. Omit to hide it. |
+| Property       | Type                                                                  | Description                                            |
+| -------------- | --------------------------------------------------------------------- | ------------------------------------------------------ |
+| `slots`        | `Partial<Record<GeovisWorkspaceSlotName, GeovisWorkspaceSlotConfig>>` | Per-slot override/hide. Omit an entry for the default. |
+| `controls`     | `GeovisWorkspaceControls`                                             | Content for the `controls` slot's default panel.       |
+| `legend`       | `GeovisWorkspaceLegendConfig`                                         | Content for the `legend` slot's default panel.         |
+| `leftSidebar`  | `GeovisWorkspaceSidebarState`                                         | Left sidebar open/closed state.                        |
+| `rightSidebar` | `GeovisWorkspaceRightSidebarState`                                    | Right sidebar title and open/closed state.             |
 
-### `GeovisWorkspaceLeftSidebar`
+### `GeovisWorkspaceSlotName`
 
-| Property       | Type                    | Description                                              |
-| -------------- | ----------------------- | -------------------------------------------------------- |
-| `menus`        | `GeovisWorkspaceMenu[]` | Menu groups rendered in the sidebar.                     |
-| `initialState` | `'open' \| 'closed'`    | Whether the sidebar starts open. Defaults to `'closed'`. |
+`'map' | 'legend' | 'warnings' | 'inspector' | 'metadata' | 'controls'` — the
+closed, versioned slot vocabulary. Adding a name is additive; renaming one is
+breaking.
+
+### `GeovisWorkspaceSlotConfig`
+
+| Property    | Type                  | Description                                                        |
+| ----------- | --------------------- | ------------------------------------------------------------------ |
+| `component` | `React.ComponentType` | Replaces the slot's default panel. Gets the same runtime access.   |
+| `hidden`    | `boolean`             | Hides the slot's region entirely instead of rendering its default. |
+
+### `GeovisWorkspaceControls`
+
+| Property | Type                    | Description                                |
+| -------- | ----------------------- | ------------------------------------------ |
+| `menus`  | `GeovisWorkspaceMenu[]` | Menu groups rendered by the default panel. |
 
 ### `GeovisWorkspaceMenu`
 
 | Property       | Type                                 | Description                            |
 | -------------- | ------------------------------------ | -------------------------------------- |
 | `id`           | `string`                             | Unique group identifier.               |
-| `title`        | `string`                             | Title shown above the group.           |
+| `title`        | `string`                             | Title shown above the group's items.   |
 | `items`        | `{ value: string; label: string }[]` | Selectable items.                      |
 | `defaultValue` | `string`                             | Item selected by default in the group. |
 
-### `GeovisWorkspaceRightSidebar`
+### `GeovisWorkspaceSidebarState` / `GeovisWorkspaceRightSidebarState`
 
-| Property          | Type                             | Description                                              |
-| ----------------- | -------------------------------- | -------------------------------------------------------- |
-| `title`           | `string`                         | Title shown at the top of the sidebar.                   |
-| `legendWithColor` | `GeovisWorkspaceLegendWithColor` | Color-legend panel. Omit to hide it.                     |
-| `initialState`    | `'open' \| 'closed'`             | Whether the sidebar starts open. Defaults to `'closed'`. |
+| Property       | Type                 | Description                                              |
+| -------------- | -------------------- | -------------------------------------------------------- |
+| `initialState` | `'open' \| 'closed'` | Whether the sidebar starts open. Defaults to `'closed'`. |
+| `title`        | `string`             | Right sidebar only: title shown at the top.              |
 
-### `GeovisWorkspaceLegendWithColor`
+### `GeovisWorkspaceLegendConfig`
 
-A declarative color-legend panel: a description and a list of (optionally
-linked) data sources, plus the class swatches the map's own
+A declarative description and a list of (optionally linked) data sources for
+the `legend` slot's default panel, plus the class swatches the map's own
 `visualizationSpec.legends` already resolves — there is no hand-authored
 swatch list to keep in sync with the map. Each block renders only when present.
 
-| Property      | Type                                            | Description                       |
-| ------------- | ----------------------------------------------- | --------------------------------- |
-| `description` | `string`                                        | Paragraph under the title.        |
-| `sources`     | `{ title?: string; items: { label; href? }[] }` | Data sources; `href` adds a link. |
+| Property      | Type                                            | Description                          |
+| ------------- | ----------------------------------------------- | ------------------------------------ |
+| `description` | `string`                                        | Paragraph above the legend swatches. |
+| `sources`     | `{ title?: string; items: { label; href? }[] }` | Data sources; `href` adds a link.    |
 
 ```tsx
 const config: GeovisWorkspaceConfig = {
-  rightSidebar: {
-    title: 'POPULAÇÃO 65+ COMO % DA POPULAÇÃO TOTAL',
-    legendWithColor: {
-      description: 'Proporção da população total com 65 anos ou mais.',
-      sources: {
-        title: 'Fonte dos dados:',
-        items: [
-          { label: 'SEADE (2025)', href: 'https://repositorio.seade.gov.br' },
-          { label: 'Geometria: Distritos Municipais de São Paulo.' },
-        ],
-      },
+  rightSidebar: { title: 'POPULAÇÃO 65+ COMO % DA POPULAÇÃO TOTAL' },
+  legend: {
+    description: 'Proporção da população total com 65 anos ou mais.',
+    sources: {
+      title: 'Fonte dos dados:',
+      items: [
+        { label: 'SEADE (2025)', href: 'https://repositorio.seade.gov.br' },
+        { label: 'Geometria: Distritos Municipais de São Paulo.' },
+      ],
     },
   },
 };

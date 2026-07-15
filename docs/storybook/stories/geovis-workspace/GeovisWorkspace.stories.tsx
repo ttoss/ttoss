@@ -1,10 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import { type VisualizationSpec } from '@ttoss/geovis';
+import { useGeoVis, type VisualizationSpec } from '@ttoss/geovis';
 import {
   GeovisWorkspace,
   type GeovisWorkspaceConfig,
   getInitialSelection,
 } from '@ttoss/geovis-workspace';
+import { Box, Text } from '@ttoss/ui';
 import * as React from 'react';
 
 /**
@@ -13,7 +14,7 @@ import * as React from 'react';
  * `age` picks the cohort whose values are rendered.
  */
 const workspaceConfig: GeovisWorkspaceConfig = {
-  leftSidebar: {
+  controls: {
     menus: [
       {
         id: 'variable',
@@ -50,24 +51,48 @@ const workspaceConfig: GeovisWorkspaceConfig = {
  * config, so they stay in sync with the map by construction.
  */
 const legendWorkspaceConfig: GeovisWorkspaceConfig = {
-  leftSidebar: workspaceConfig.leftSidebar,
-  rightSidebar: {
-    title: 'POPULAÇÃO 65+ COMO % DA POPULAÇÃO TOTAL',
-    legendWithColor: {
-      description:
-        'Proporção da população total do distrito com 65 anos ou mais.',
-      sources: {
-        title: 'Fonte dos dados:',
-        items: [
-          {
-            label: 'Projeções populacionais por sexo e idade do SEADE (2025)',
-            href: 'https://repositorio.seade.gov.br/dataset/populacao-residente-municipio-de-sao-paulo-evolucao',
-          },
-          { label: 'Geometria: Distritos Municipais de São Paulo.' },
-        ],
-      },
+  controls: workspaceConfig.controls,
+  rightSidebar: { title: 'POPULAÇÃO 65+ COMO % DA POPULAÇÃO TOTAL' },
+  legend: {
+    description:
+      'Proporção da população total do distrito com 65 anos ou mais.',
+    sources: {
+      title: 'Fonte dos dados:',
+      items: [
+        {
+          label: 'Projeções populacionais por sexo e idade do SEADE (2025)',
+          href: 'https://repositorio.seade.gov.br/dataset/populacao-residente-municipio-de-sao-paulo-evolucao',
+        },
+        { label: 'Geometria: Distritos Municipais de São Paulo.' },
+      ],
     },
   },
+};
+
+/**
+ * Custom `controls` slot panel that replaces the default menu list. Reads the
+ * live spec through `useGeoVis()` — the same runtime access the default panel
+ * gets — to show it is not limited to config-driven content.
+ */
+const CustomControlsPanel = () => {
+  const { spec } = useGeoVis();
+
+  return (
+    <Box sx={{ paddingX: '2' }}>
+      <Text sx={{ fontSize: 'sm', color: 'display.text.primary.default' }}>
+        This map has {spec.layers.length} layer(s).
+      </Text>
+    </Box>
+  );
+};
+
+/**
+ * Variant whose `controls` slot is overridden with a custom component instead
+ * of the config-driven menu list, demonstrating slot override (ADR-0002).
+ */
+const customControlsConfig: GeovisWorkspaceConfig = {
+  slots: { controls: { component: CustomControlsPanel } },
+  rightSidebar: workspaceConfig.rightSidebar,
 };
 
 type Position = [number, number];
@@ -288,10 +313,10 @@ export const Default: Story = {
 
 /**
  * The right sidebar hosts a full color-legend panel: a description and data
- * sources declared in the config (`rightSidebar.legendWithColor`), plus the
- * map's own runtime-resolved legend swatches — no hand-authored duplicate of
- * what the spec already resolves. Switching the variable changes the map's
- * active legend, and the sidebar's swatches follow with no config edit. Open
+ * sources declared in the config (`legend`), plus the map's own runtime-
+ * resolved legend swatches — no hand-authored duplicate of what the spec
+ * already resolves. Switching the variable changes the map's active legend,
+ * and the sidebar's swatches follow with no config edit. Open
  * the details panel to see it.
  */
 export const WithColorLegend: Story = {
@@ -301,12 +326,23 @@ export const WithColorLegend: Story = {
 };
 
 /**
- * Only the left sidebar is defined — the right sidebar and its button are absent.
+ * Only the `controls` slot has content — the right sidebar and its button are
+ * absent, since none of its slots (legend/warnings/inspector/metadata) do.
  */
 export const LeftSidebarOnly: Story = {
   render: () => {
-    return (
-      <WorkspaceStory config={{ leftSidebar: workspaceConfig.leftSidebar }} />
-    );
+    return <WorkspaceStory config={{ controls: workspaceConfig.controls }} />;
+  },
+};
+
+/**
+ * The `controls` slot renders a custom component instead of the default menu
+ * list (`config.slots.controls.component`), while still reading the live
+ * GeoVis spec through `useGeoVis()` — the same runtime access the default
+ * panel it replaces gets.
+ */
+export const CustomControlsOverride: Story = {
+  render: () => {
+    return <WorkspaceStory config={customControlsConfig} />;
   },
 };

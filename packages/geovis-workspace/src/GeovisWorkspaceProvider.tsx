@@ -36,7 +36,7 @@ export const getInitialSelection = ({
 }): GeovisWorkspaceSelection => {
   const selection: GeovisWorkspaceSelection = {};
 
-  const menus = config.leftSidebar?.menus ?? [];
+  const menus = config.controls?.menus ?? [];
 
   for (const menu of menus) {
     selection[menu.id] = menu.defaultValue;

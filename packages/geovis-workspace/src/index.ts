@@ -1,12 +1,15 @@
 export {
   type GeovisWorkspaceConfig,
   type GeovisWorkspaceContextValue,
-  type GeovisWorkspaceLeftSidebar,
-  type GeovisWorkspaceLegendWithColor,
+  type GeovisWorkspaceControls,
+  type GeovisWorkspaceLegendConfig,
   type GeovisWorkspaceMenu,
   type GeovisWorkspaceMenuItem,
-  type GeovisWorkspaceRightSidebar,
+  type GeovisWorkspaceRightSidebarState,
   type GeovisWorkspaceSelection,
+  type GeovisWorkspaceSidebarState,
+  type GeovisWorkspaceSlotConfig,
+  type GeovisWorkspaceSlotName,
   type GeovisWorkspaceSource,
   type GeovisWorkspaceSources,
 } from './context/GeovisWorkspaceContext';

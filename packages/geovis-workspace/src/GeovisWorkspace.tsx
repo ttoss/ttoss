@@ -1,5 +1,5 @@
 import type { VisualizationSpec } from '@ttoss/geovis';
-import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
+import { GeoVisProvider } from '@ttoss/geovis';
 import { Box } from '@ttoss/ui';
 
 import { Layout } from './components/Layout';
@@ -39,9 +39,7 @@ export const GeovisWorkspace = ({
           selection={variables}
           onSelectionChange={onVariableChange}
         >
-          <Layout>
-            <GeoVisCanvas style={{ width: '100%', height: '100%' }} />
-          </Layout>
+          <Layout />
         </GeovisWorkspaceProvider>
       </Box>
     </GeoVisProvider>
