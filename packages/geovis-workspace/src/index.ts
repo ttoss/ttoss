@@ -1,3 +1,4 @@
+export { LayerListControls } from './components/LayerListControls';
 export {
   type GeovisWorkspaceConfig,
   type GeovisWorkspaceContextValue,

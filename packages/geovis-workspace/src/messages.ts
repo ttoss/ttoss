@@ -43,4 +43,17 @@ export const messages = defineMessages({
     description:
       'Shown in the inspector panel when the selected feature has no bound value.',
   },
+  metadataMapType: {
+    defaultMessage: 'Map type: {map_type}',
+    description: "Metadata panel: the spec's mapType, when set.",
+  },
+  metadataSourceCount: {
+    defaultMessage: '{count, plural, one {# source} other {# sources}}',
+    description: 'Metadata panel: number of data sources in the current spec.',
+  },
+  layerVisibilityToggle: {
+    defaultMessage: 'Toggle visibility of layer {layer_id}',
+    description:
+      'Accessible label for the checkbox that toggles a layer in the layer-list controls variant.',
+  },
 });

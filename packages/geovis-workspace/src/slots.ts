@@ -71,10 +71,19 @@ const hasInspectorDefaultContent = ({
   return click !== null;
 };
 
+const hasMetadataDefaultContent = ({
+  spec,
+}: {
+  spec: VisualizationSpec;
+}): boolean => {
+  if (spec.mapType) return true;
+  return spec.sources.length > 0;
+};
+
 /**
  * Whether the slot's own default panel has content, ignoring hidden/override
- * — `map` and `metadata` have no default panel yet (added in PRD-003 Phase
- * 5), so they resolve to no content here.
+ * — `map` has no default panel to gate this way (it always renders its
+ * canvas or cold-start state).
  */
 const DEFAULT_PANEL_HAS_CONTENT: Partial<
   Record<
@@ -94,6 +103,7 @@ const DEFAULT_PANEL_HAS_CONTENT: Partial<
   legend: hasLegendDefaultContent,
   warnings: hasWarningsDefaultContent,
   inspector: hasInspectorDefaultContent,
+  metadata: hasMetadataDefaultContent,
 };
 
 /**

@@ -177,6 +177,11 @@
     "defaultMessage": "The size mode configuration is invalid.",
     "description": "Warnings panel: sizeBy.mode is malformed."
   },
+  "Z+sHcw": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "{count, plural, one {# source} other {# sources}}",
+    "description": "Metadata panel: number of data sources in the current spec."
+  },
   "ZBWmDx": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "The visualization spec does not match the expected schema.",
@@ -197,6 +202,11 @@
     "defaultMessage": "The size range for proportional circles is invalid.",
     "description": "Warnings panel: sizeBy.range is malformed."
   },
+  "e0csSw": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Toggle visibility of layer {layer_id}",
+    "description": "Accessible label for the checkbox that toggles a layer in the layer-list controls variant."
+  },
   "ebJRt+": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Open menu",
@@ -216,6 +226,11 @@
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Close menu",
     "description": "Accessible label for the button that closes the left sidebar."
+  },
+  "s0Ww26": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Map type: {map_type}",
+    "description": "Metadata panel: the spec's mapType, when set."
   },
   "uzIIpa": {
     "module": "@ttoss/geovis-workspace",

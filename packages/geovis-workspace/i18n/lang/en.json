@@ -75,6 +75,10 @@
     "defaultMessage": "The size mode configuration is invalid.",
     "description": "Warnings panel: sizeBy.mode is malformed."
   },
+  "Z+sHcw": {
+    "defaultMessage": "{count, plural, one {# source} other {# sources}}",
+    "description": "Metadata panel: number of data sources in the current spec."
+  },
   "ZBWmDx": {
     "defaultMessage": "The visualization spec does not match the expected schema.",
     "description": "Warnings panel: spec fails JSON schema validation."
@@ -91,6 +95,10 @@
     "defaultMessage": "The size range for proportional circles is invalid.",
     "description": "Warnings panel: sizeBy.range is malformed."
   },
+  "e0csSw": {
+    "defaultMessage": "Toggle visibility of layer {layer_id}",
+    "description": "Accessible label for the checkbox that toggles a layer in the layer-list controls variant."
+  },
   "ebJRt+": {
     "defaultMessage": "Open menu",
     "description": "Accessible label for the button that opens the left sidebar."
@@ -106,6 +114,10 @@
   "ncOMIu": {
     "defaultMessage": "Close menu",
     "description": "Accessible label for the button that closes the left sidebar."
+  },
+  "s0Ww26": {
+    "defaultMessage": "Map type: {map_type}",
+    "description": "Metadata panel: the spec's mapType, when set."
   },
   "uzIIpa": {
     "defaultMessage": "This layer type is not supported.",

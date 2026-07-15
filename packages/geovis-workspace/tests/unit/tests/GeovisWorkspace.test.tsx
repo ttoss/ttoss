@@ -6,6 +6,7 @@ import {
   type GeovisWorkspaceConfig,
   GeovisWorkspaceProvider,
   getInitialSelection,
+  LayerListControls,
   useGeovisWorkspace,
 } from 'src';
 
@@ -1020,4 +1021,119 @@ test('dismissing the inspector selection clears the panel and closes the sidebar
   });
 
   expect(screen.queryByText('districts-fill')).not.toBeInTheDocument();
+});
+
+test('metadata panel shows the map type and pluralized source count', async () => {
+  const specWithMetadata = {
+    ...visualizationSpec,
+    mapType: 'choropleth',
+    sources: [{ id: 's1' }, { id: 's2' }],
+  };
+
+  render(
+    <GeovisWorkspace config={config} visualizationSpec={specWithMetadata} />,
+    { wrapper: Provider }
+  );
+
+  await openRightSidebar();
+
+  expect(screen.getByText('Map type: choropleth')).toBeInTheDocument();
+  expect(screen.getByText('2 sources')).toBeInTheDocument();
+});
+
+test('metadata panel uses the singular form for a single source', async () => {
+  const specWithOneSource = {
+    ...visualizationSpec,
+    sources: [{ id: 's1' }],
+  };
+
+  render(
+    <GeovisWorkspace config={config} visualizationSpec={specWithOneSource} />,
+    { wrapper: Provider }
+  );
+
+  await openRightSidebar();
+
+  expect(screen.getByText('1 source')).toBeInTheDocument();
+});
+
+test('metadata panel contributes no content and no sidebar when the spec has neither mapType nor sources', () => {
+  render(
+    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
+    { wrapper: Provider }
+  );
+
+  expect(
+    screen.queryByRole('button', { name: 'Open details' })
+  ).not.toBeInTheDocument();
+});
+
+test('metadata panel is absent while another slot keeps the sidebar open', async () => {
+  render(
+    <GeovisWorkspace
+      config={{ ...config, legend: { description: 'Descrição' } }}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  await openRightSidebar();
+
+  expect(screen.getByText('Descrição')).toBeInTheDocument();
+  expect(screen.queryByText(/Map type:/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/source/)).not.toBeInTheDocument();
+});
+
+test('LayerListControls renders a visibility checkbox per layer and calls onLayerVisibilityChange on toggle', async () => {
+  const onLayerVisibilityChange = jest.fn();
+
+  const specWithLayers = {
+    ...visualizationSpec,
+    layers: [
+      {
+        id: 'districts-fill',
+        title: 'Districts',
+        visible: true,
+        activeLegendId: 'classes',
+      },
+      { id: 'roads', visible: false },
+    ],
+  };
+
+  render(
+    <GeovisWorkspace
+      config={{ slots: { controls: { component: LayerListControls } } }}
+      visualizationSpec={specWithLayers}
+      onLayerVisibilityChange={onLayerVisibilityChange}
+    />,
+    { wrapper: Provider }
+  );
+
+  await openLeftSidebar();
+
+  const districtsCheckbox = screen.getByRole('checkbox', {
+    name: 'Toggle visibility of layer districts-fill',
+  });
+  const roadsCheckbox = screen.getByRole('checkbox', {
+    name: 'Toggle visibility of layer roads',
+  });
+
+  expect(districtsCheckbox).toBeChecked();
+  expect(screen.getByText('Districts')).toBeInTheDocument();
+  expect(screen.getByText('classes')).toBeInTheDocument();
+
+  expect(roadsCheckbox).not.toBeChecked();
+  expect(screen.getByText('roads')).toBeInTheDocument();
+
+  await act(async () => {
+    fireEvent.click(districtsCheckbox);
+  });
+
+  expect(onLayerVisibilityChange).toHaveBeenCalledWith('districts-fill', false);
+
+  await act(async () => {
+    fireEvent.click(roadsCheckbox);
+  });
+
+  expect(onLayerVisibilityChange).toHaveBeenCalledWith('roads', true);
 });
