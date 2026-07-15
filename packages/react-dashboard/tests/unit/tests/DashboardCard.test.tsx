@@ -3,15 +3,15 @@ import { DashboardCard } from 'src/index';
 
 describe('DashboardCard', () => {
   const mockBigNumberCard = {
+    id: 'revenue',
     title: 'Total Revenue',
     description: 'Total revenue generated',
     numberType: 'currency' as const,
     type: 'bigNumber' as const,
-    sourceType: [{ source: 'api' as const }],
+    currency: 'BRL',
+    locale: 'pt-BR',
     data: {
-      api: {
-        total: 1000,
-      },
+      value: 1000,
     },
   };
 
@@ -34,7 +34,6 @@ describe('DashboardCard', () => {
   test('should render card with description', () => {
     render(<DashboardCard {...mockBigNumberCard} />);
 
-    // The description should be available via tooltip
     expect(screen.getByText('Total Revenue')).toBeInTheDocument();
   });
 
@@ -51,13 +50,15 @@ describe('DashboardCard', () => {
   });
 
   test('should use card-level currency prop for formatting', () => {
-    render(<DashboardCard {...mockBigNumberCard} currency="USD" />);
+    render(
+      <DashboardCard {...mockBigNumberCard} currency="USD" locale="en-US" />
+    );
 
-    expect(screen.getByText(/US\$/)).toBeInTheDocument();
+    expect(screen.getByText(/\$1,000\.00/)).toBeInTheDocument();
   });
 
-  test('should default to BRL when no currency prop is provided', () => {
-    render(<DashboardCard {...mockBigNumberCard} />);
+  test('should use explicit currency when provided', () => {
+    render(<DashboardCard {...mockBigNumberCard} currency="BRL" />);
 
     expect(screen.getByText(/R\$/)).toBeInTheDocument();
   });

@@ -23,9 +23,7 @@ describe('DashboardGrid', () => {
           numberType: 'number',
           type: 'bigNumber',
           sourceType: [{ source: 'api' }],
-          data: {
-            api: { total: 100 },
-          },
+          data: { value: 100 },
         },
       },
       {
@@ -39,9 +37,7 @@ describe('DashboardGrid', () => {
           numberType: 'number',
           type: 'bigNumber',
           sourceType: [{ source: 'api' }],
-          data: {
-            api: { total: 200 },
-          },
+          data: { value: 200 },
         },
       },
     ],
@@ -187,9 +183,7 @@ describe('DashboardGrid', () => {
             numberType: 'currency',
             type: 'bigNumber',
             sourceType: [{ source: 'api' }],
-            data: {
-              api: { total: 1000 },
-            },
+            data: { value: 1000 },
           },
         },
         {
@@ -214,9 +208,7 @@ describe('DashboardGrid', () => {
             numberType: 'number',
             type: 'bigNumber',
             sourceType: [{ source: 'api' }],
-            data: {
-              api: { total: 3.5 },
-            },
+            data: { value: 3.5 },
           },
         },
       ],
