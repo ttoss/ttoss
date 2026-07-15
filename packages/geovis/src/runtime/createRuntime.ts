@@ -1,12 +1,14 @@
 import { applyMapDataPatchToSpec } from '../spec/mapDataPatch';
 import { resolveSpecFromMapType } from '../spec/mapTypeDefaults';
 import type { GeoVisResult } from '../spec/result';
+import { resolveOverallStatus } from '../spec/result';
 import type {
   DataSource,
   VisualizationLayer,
   VisualizationSpec,
 } from '../spec/types';
 import { validateSpec } from '../spec/validateSpec';
+import type { ActionLogEntry, GeoVisAction } from './action';
 import type {
   EngineAdapter,
   MountedView,
@@ -14,6 +16,8 @@ import type {
   SpecPatch,
   SpecPatchTarget,
 } from './adapter';
+import { buildContextPacket, type ContextPacket } from './contextPacket';
+import { compileAction } from './dispatchAction';
 
 export interface GeoVisRuntime {
   readonly spec: VisualizationSpec;
@@ -26,6 +30,17 @@ export interface GeoVisRuntime {
   applyPatch(patch: SpecPatch): GeoVisResult;
   /** Imperatively moves the camera and syncs `spec.view`. Animated by default. */
   setView(options: SetViewOptions): void;
+  /**
+   * Validates and compiles a closed, typed `GeoVisAction` (ADR-0003) to an
+   * existing `SpecPatch`/`update`/`setView` mechanism, applying it only on
+   * success. Every call — accepted or rejected — appends one entry to the
+   * action log (`getActionLog()`).
+   */
+  dispatch(action: GeoVisAction): GeoVisResult;
+  /** Every dispatched action and its outcome, in dispatch order (ADR-0003 audit substrate). */
+  getActionLog(): ReadonlyArray<ActionLogEntry>;
+  /** Versioned, read-only, metadata-only summary of the current map (ADR-0004). */
+  getContextPacket(): ContextPacket;
   destroy(): void;
   getAdapter(): EngineAdapter;
 }
@@ -34,11 +49,74 @@ export interface GeoVisRuntime {
 interface RuntimeState {
   spec: VisualizationSpec;
   result: GeoVisResult;
+  actionLog: ActionLogEntry[];
 }
 
 const VALID_PATCH_TARGETS: SpecPatchTarget[] = ['layer', 'source', 'mapData'];
 
-/** Applies a layer-targeted patch, returning a new spec reference. No-op for unrecognised path shapes. */
+/** Replaces the top-level `visible` field of one layer, by id. */
+const applyLayerVisibleReplace = (
+  spec: VisualizationSpec,
+  layerId: string,
+  value: unknown
+): VisualizationSpec => {
+  return {
+    ...spec,
+    layers: spec.layers.map((layer) => {
+      return layer.id === layerId
+        ? { ...layer, visible: value as boolean }
+        : layer;
+    }),
+  };
+};
+
+/** Replaces one `paint` property of one layer, by id. */
+const applyLayerPaintReplace = (
+  spec: VisualizationSpec,
+  layerId: string,
+  prop: string,
+  value: unknown
+): VisualizationSpec => {
+  return {
+    ...spec,
+    layers: spec.layers.map((layer) => {
+      if (layer.id !== layerId) return layer;
+      return {
+        ...layer,
+        paint: {
+          ...((layer.paint as Record<string, unknown>) ?? {}),
+          [prop]: value,
+        },
+      };
+    }),
+  };
+};
+
+/**
+ * Resolves a `replace` patch's path to the right layer-field mutation. No-op
+ * for unrecognised shapes. Supports two path depths: a top-level field
+ * (`layer.<id>.visible`, 3 parts — added for `dispatch()`'s `toggle-layer`
+ * action, PRD-002) and a nested `paint` property (`layer.<id>.paint.<key>`,
+ * 4 parts). Split out of `applyLayerPatchToSpec` to keep its complexity low.
+ */
+const applyLayerReplace = (
+  spec: VisualizationSpec,
+  path: string,
+  value: unknown
+): VisualizationSpec => {
+  const parts = path.split('.');
+  const layerId = parts[1];
+  if (!layerId) return spec;
+  if (parts.length === 3 && parts[2] === 'visible') {
+    return applyLayerVisibleReplace(spec, layerId, value);
+  }
+  if (parts.length < 4 || parts[2] !== 'paint') return spec;
+  const prop = parts[3];
+  if (!prop) return spec;
+  return applyLayerPaintReplace(spec, layerId, prop, value);
+};
+
+/** Applies a layer-targeted patch, returning a new spec reference. No-op for unrecognised patch shapes. */
 const applyLayerPatchToSpec = (
   spec: VisualizationSpec,
   patch: SpecPatch & { target: 'layer' }
@@ -59,24 +137,7 @@ const applyLayerPatchToSpec = (
     };
   }
   if (patch.op !== 'replace') return spec;
-  const parts = patch.path.split('.');
-  if (parts.length < 4 || parts[2] !== 'paint') return spec;
-  const layerId = parts[1];
-  const prop = parts[3];
-  if (!layerId || !prop) return spec;
-  return {
-    ...spec,
-    layers: spec.layers.map((layer) => {
-      if (layer.id !== layerId) return layer;
-      return {
-        ...layer,
-        paint: {
-          ...((layer.paint as Record<string, unknown>) ?? {}),
-          [prop]: patch.value,
-        },
-      };
-    }),
-  };
+  return applyLayerReplace(spec, patch.path, patch.value);
 };
 
 /** Applies a source-targeted patch; on `remove`, prunes layers that reference the removed source. */
@@ -206,6 +267,33 @@ const applyPatchToRuntime = (
   return result;
 };
 
+/**
+ * Compiles `action` against the current spec and, on success, applies it
+ * through `applyPatchToRuntime` (so it validates and commits exactly like a
+ * hand-written `SpecPatch` would); on rejection, builds the failure result
+ * directly. Every call appends one entry to `state.actionLog`, accepted or
+ * rejected (ADR-0003 audit substrate).
+ */
+const dispatchToRuntime = (
+  adapter: EngineAdapter,
+  state: RuntimeState,
+  action: GeoVisAction
+): GeoVisResult => {
+  const outcome = compileAction(state.spec, action);
+  let result: GeoVisResult;
+  if ('issue' in outcome) {
+    result = {
+      status: resolveOverallStatus([outcome.issue]),
+      issues: [outcome.issue],
+    };
+    state.result = result;
+  } else {
+    result = applyPatchToRuntime(adapter, state, outcome.patch);
+  }
+  state.actionLog.push({ action, result, timestamp: Date.now() });
+  return result;
+};
+
 /** Moves the adapter's camera and merges the defined fields into `state.spec.view`. */
 const setRuntimeView = (
   adapter: EngineAdapter,
@@ -251,6 +339,7 @@ export const createRuntime = (
         ? initialResult.spec
         : initialResolved,
     result: initialResult,
+    actionLog: [],
   };
 
   return {
@@ -271,6 +360,15 @@ export const createRuntime = (
     },
     setView: (options) => {
       setRuntimeView(adapter, state, options);
+    },
+    dispatch: (action) => {
+      return dispatchToRuntime(adapter, state, action);
+    },
+    getActionLog: () => {
+      return state.actionLog;
+    },
+    getContextPacket: () => {
+      return buildContextPacket(state.spec, state.result);
     },
     destroy: () => {
       adapter.destroy();

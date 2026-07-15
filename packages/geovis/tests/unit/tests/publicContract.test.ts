@@ -1,6 +1,8 @@
 // Public contract smoke tests — verifies the package index exports the expected symbols.
 import type {
   ColorBy,
+  ContextPacket,
+  GeoVisAction,
   GeoVisIssue,
   GeoVisIssueCode,
   GeoVisResult,
@@ -32,6 +34,32 @@ test('package exports expected public symbols', () => {
   // GeoVisResult taxonomy (PRD-001 / ADR-0001)
   expect(typeof geovis.ISSUE_CODE_STATUS).toBe('object');
   expect(typeof geovis.resolveOverallStatus).toBe('function');
+  // Action surface and context packet (PRD-002 / ADR-0003 / ADR-0004)
+  expect(typeof geovis.CONTEXT_PACKET_SCHEMA_VERSION).toBe('number');
+});
+
+test('GeoVisAction and ContextPacket types are part of the public contract', () => {
+  const action: GeoVisAction = {
+    type: 'toggle-layer',
+    layerId: 'lyr-1',
+    rationale: 'user hid the layer',
+  };
+  expect(action.type).toBe('toggle-layer');
+
+  const packet: ContextPacket = {
+    schemaVersion: geovis.CONTEXT_PACKET_SCHEMA_VERSION,
+    sources: [{ id: 'src-1', type: 'geojson' }],
+    layers: [{ id: 'lyr-1', geometry: 'polygon', visible: true }],
+    legends: [],
+    allowedActions: ['toggle-layer'],
+    warnings: [],
+    lastResult: {
+      status: 'resolved',
+      spec: { engine: 'maplibre', sources: [], layers: [] },
+      warnings: [],
+    },
+  };
+  expect(packet.allowedActions).toEqual(['toggle-layer']);
 });
 
 test('GeoVisResult taxonomy types are part of the public contract', () => {

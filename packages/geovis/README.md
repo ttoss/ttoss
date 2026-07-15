@@ -904,7 +904,8 @@ type SpecPatch =
   | {
       target: 'layer' | 'source' | 'mapData';
       op: 'replace';
-      path: string; // dot-separated: "layer.<layerId>.paint.<camelCaseKey>"
+      path: string; // dot-separated: "layer.<layerId>.visible"
+      //                "layer.<layerId>.paint.<camelCaseKey>"
       //                "mapData.<mapDataId>"
       //                "mapData.<mapDataId>.data.<geometryId>"
       value?: unknown; // required for 'replace'
@@ -1047,6 +1048,65 @@ const LayerControls = () => {
   );
 };
 ```
+
+## AI Action Surface (`dispatch`)
+
+`runtime.dispatch(action)` is the recommended way to steer a live map — a closed, typed vocabulary of semantic operations (PRD-002, [ADR-0003](./docs/adr/0003-semantic-action-surface.md)) that validates against the current spec before compiling to the same `SpecPatch`/`update`/`setView` mechanisms `applyPatch` uses. Prefer it over hand-written `SpecPatch`es: it targets stable ids instead of internal paint paths, rejects unknown targets with a repairable `GeoVisResult`, and every call — accepted or rejected — is recorded on the action log for audit.
+
+Currently implemented: `toggle-layer`. More actions land per PRD-002 phase (`set-map-data`, `set-filter`, `select-feature`, `set-view-preset`).
+
+```tsx
+const { runtime } = useGeoVis();
+
+// Flips the layer's current visibility
+runtime.dispatch({ type: 'toggle-layer', layerId: 'regions-layer' });
+
+// Or set it explicitly, with an optional audit rationale
+runtime.dispatch({
+  type: 'toggle-layer',
+  layerId: 'regions-layer',
+  visible: false,
+  rationale: 'user unchecked "Regions" in the layer panel',
+});
+```
+
+An unknown `layerId` is rejected before touching the adapter or the spec, with the declared layer ids as repair:
+
+```ts
+const result = runtime.dispatch({ type: 'toggle-layer', layerId: 'ghost' });
+// result.status === 'mismatch'
+// result.issues[0].code === 'unknown-layer-id'
+// result.issues[0].repair[0].values === ['regions-layer', ...]
+```
+
+### Action log
+
+```ts
+runtime.getActionLog();
+// ReadonlyArray<{ action: GeoVisAction; result: GeoVisResult; timestamp: number }>
+```
+
+Every dispatched action is recorded, accepted or rejected, with its `rationale` preserved — the audit substrate for undo/redo and for surfacing "why did the map change" in a workspace UI.
+
+### Context packet
+
+`runtime.getContextPacket()` returns a versioned, read-only, metadata-only summary of the current map ([ADR-0004](./docs/adr/0004-ai-context-packet.md)) — never GeoJSON geometry, `mapData` rows, or full color/threshold lists. It names the same stable ids `dispatch()` accepts, so an AI (or any consumer) can decide what to do next without reading the full spec:
+
+```ts
+runtime.getContextPacket();
+// {
+//   schemaVersion: 1,
+//   mapType: 'choropleth',
+//   sources: [{ id: 'regions-source', type: 'geojson' }],
+//   layers: [{ id: 'regions-layer', geometry: 'polygon', visible: true }],
+//   legends: [{ id: 'pop-legend', scaleKind: 'threshold', domain: [10, 90], unit: 'inhabitants' }],
+//   allowedActions: ['toggle-layer'],
+//   warnings: [],
+//   lastResult: { status: 'resolved', spec, warnings: [] },
+// }
+```
+
+`allowedActions` is the vocabulary above filtered to what the current spec actually supports (e.g. `toggle-layer` only appears once the spec has at least one layer).
 
 ## Proportional Symbols (sizeBy)
 

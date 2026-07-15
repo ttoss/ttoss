@@ -16,6 +16,10 @@ import {
   resolvePromoteIdForSource,
   toMaplibreSource,
 } from './sourceTranslation';
+import {
+  upsertClickAnchorCompanion,
+  upsertOutlineCompanions,
+} from './syncSourcesAndLayers';
 
 export interface LayerHostState {
   spec: VisualizationSpec;
@@ -67,6 +71,54 @@ const applyLayerRemove = (
   };
 };
 
+/**
+ * Applies a `layer.<id>.visible` replace: flips the main layer's MapLibre
+ * `visibility` layout property and re-syncs its outline/click-anchor
+ * companion layers (which derive their own visibility from `layer.visible`)
+ * without a full `syncSourcesAndLayers` pass — added for
+ * `dispatch({ type: 'toggle-layer' })` (PRD-002), same imperative effect as
+ * a full `update()` for this one field, at patch cost.
+ */
+const applyLayerVisibleReplace = (
+  map: maplibregl.Map,
+  viewState: LayerHostState,
+  layerId: string,
+  value: unknown
+): void => {
+  const layerIndex = viewState.spec.layers.findIndex((l) => {
+    return l.id === layerId;
+  });
+  if (layerIndex === -1) return;
+  const nextVisible = value as boolean;
+  if (map.getLayer(layerId)) {
+    map.setLayoutProperty(
+      layerId,
+      'visibility',
+      nextVisible === false ? 'none' : 'visible'
+    );
+  }
+  const nextLayer: VisualizationLayer = {
+    ...viewState.spec.layers[layerIndex],
+    visible: nextVisible,
+  };
+  viewState.spec = {
+    ...viewState.spec,
+    layers: viewState.spec.layers.map((l, i) => {
+      return i === layerIndex ? nextLayer : l;
+    }),
+  };
+  const source = viewState.spec.sources.find((s) => {
+    return s.id === nextLayer.sourceId;
+  });
+  const sourceLayer =
+    nextLayer.sourceLayer ??
+    (source && 'sourceLayer' in source
+      ? (source as { sourceLayer?: string }).sourceLayer
+      : undefined);
+  upsertOutlineCompanions(map, nextLayer, sourceLayer);
+  upsertClickAnchorCompanion(map, nextLayer, sourceLayer);
+};
+
 const applyLayerPaintReplace = (
   map: maplibregl.Map,
   viewState: LayerHostState,
@@ -109,6 +161,12 @@ export const applyLayerPatch = (
     return;
   }
   if (patch.op === 'replace' && patch.value !== undefined) {
+    const parts = patch.path.split('.');
+    const layerId = parts[1];
+    if (parts.length === 3 && parts[2] === 'visible' && layerId) {
+      applyLayerVisibleReplace(map, viewState, layerId, patch.value);
+      return;
+    }
     applyLayerPaintReplace(map, viewState, patch.path, patch.value);
   }
 };

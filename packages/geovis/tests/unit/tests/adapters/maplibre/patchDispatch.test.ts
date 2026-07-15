@@ -27,6 +27,7 @@ const makeMap = () => {
     addSource: jest.fn(),
     removeSource: jest.fn(),
     setPaintProperty: jest.fn(),
+    setLayoutProperty: jest.fn(),
     isStyleLoaded: jest.fn(() => {
       return true;
     }),
@@ -148,6 +149,150 @@ describe('applyLayerPatch — remove', () => {
     expect(map.removeLayer).not.toHaveBeenCalled();
 
     expect(viewState.spec.layers).toHaveLength(0);
+  });
+});
+
+describe('applyLayerPatch — replace visible (PRD-002 toggle-layer)', () => {
+  // op:replace path 'layer.<id>.visible' hides an already-mounted layer via
+  // setLayoutProperty (no full re-sync) and records `visible: false` on spec.
+  test('hides a mounted layer via setLayoutProperty and updates spec', () => {
+    const map = makeMap();
+    jest.mocked(map.getLayer).mockReturnValue({
+      id: 'lyr-1',
+      type: 'fill',
+      source: 'src-1',
+    } as maplibregl.FillLayerSpecification);
+    const viewState = makeViewState();
+    const patch: SpecPatch & { target: 'layer' } = {
+      target: 'layer',
+      op: 'replace',
+      path: 'layer.lyr-1.visible',
+      value: false,
+    };
+
+    applyLayerPatch(map, viewState, patch);
+
+    expect(map.setLayoutProperty).toHaveBeenCalledWith(
+      'lyr-1',
+      'visibility',
+      'none'
+    );
+    expect(viewState.spec.layers[0]).toMatchObject({ visible: false });
+  });
+
+  // Toggling back to visible must pass 'visible' (not just omit the flag).
+  test('shows a mounted layer via setLayoutProperty', () => {
+    const map = makeMap();
+    jest.mocked(map.getLayer).mockReturnValue({
+      id: 'lyr-1',
+      type: 'fill',
+      source: 'src-1',
+    } as maplibregl.FillLayerSpecification);
+    const viewState = makeViewState({
+      ...makeSpec(),
+      layers: [
+        { id: 'lyr-1', sourceId: 'src-1', geometry: 'polygon', visible: false },
+      ],
+    });
+    const patch: SpecPatch & { target: 'layer' } = {
+      target: 'layer',
+      op: 'replace',
+      path: 'layer.lyr-1.visible',
+      value: true,
+    };
+
+    applyLayerPatch(map, viewState, patch);
+
+    expect(map.setLayoutProperty).toHaveBeenCalledWith(
+      'lyr-1',
+      'visibility',
+      'visible'
+    );
+    expect(viewState.spec.layers[0]).toMatchObject({ visible: true });
+  });
+
+  // A layer absent from the live map (e.g. desynced style reload) must not
+  // call setLayoutProperty (MapLibre would throw), but spec still updates.
+  test('does not call setLayoutProperty when layer is not on the map, but spec still updates', () => {
+    const map = makeMap();
+    const viewState = makeViewState();
+    const patch: SpecPatch & { target: 'layer' } = {
+      target: 'layer',
+      op: 'replace',
+      path: 'layer.lyr-1.visible',
+      value: false,
+    };
+
+    applyLayerPatch(map, viewState, patch);
+
+    expect(map.setLayoutProperty).not.toHaveBeenCalled();
+    expect(viewState.spec.layers[0]).toMatchObject({ visible: false });
+  });
+
+  // An unknown layerId is a no-op: nothing on the map or spec changes.
+  test('is a no-op when layerId does not match any layer in spec', () => {
+    const map = makeMap();
+    const viewState = makeViewState();
+    const before = viewState.spec;
+    const patch: SpecPatch & { target: 'layer' } = {
+      target: 'layer',
+      op: 'replace',
+      path: 'layer.ghost.visible',
+      value: false,
+    };
+
+    applyLayerPatch(map, viewState, patch);
+
+    expect(map.setLayoutProperty).not.toHaveBeenCalled();
+    expect(viewState.spec).toBe(before);
+  });
+
+  // Hiding a layer with hoverPaint/clickAnchor companions must re-sync their
+  // visibility too — otherwise a hidden layer's outline/anchor stays visible.
+  test('re-syncs outline and click-anchor companion visibility', () => {
+    const map = makeMap();
+    jest.mocked(map.getLayer).mockImplementation((id) => {
+      return id === 'lyr-1'
+        ? ({
+            id: 'lyr-1',
+            type: 'fill',
+            source: 'src-1',
+          } as maplibregl.FillLayerSpecification)
+        : null;
+    });
+    const viewState = makeViewState({
+      ...makeSpec(),
+      layers: [
+        {
+          id: 'lyr-1',
+          sourceId: 'src-1',
+          geometry: 'polygon',
+          hoverPaint: { lineColor: '#333333', lineWidth: 2 },
+          clickAnchor: { iconImage: 'pin' },
+        },
+      ],
+    });
+    const patch: SpecPatch & { target: 'layer' } = {
+      target: 'layer',
+      op: 'replace',
+      path: 'layer.lyr-1.visible',
+      value: false,
+    };
+
+    applyLayerPatch(map, viewState, patch);
+
+    expect(map.addLayer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'lyr-1-hover-outline',
+        layout: { visibility: 'none' },
+      })
+    );
+    expect(map.addLayer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'lyr-1-click-anchor',
+        layout: expect.objectContaining({ visibility: 'none' }),
+      })
+    );
   });
 });
 

@@ -163,8 +163,13 @@ const upsertCompanionOutline = (
   }
 };
 
-/** Upserts hover and selected outline companion layers for a single spec layer. */
-const upsertOutlineCompanions = (
+/**
+ * Upserts hover and selected outline companion layers for a single spec layer.
+ * Exported so `patchDispatch.ts` can keep companion visibility in sync when a
+ * layer's `visible` field is patched outside a full `syncSourcesAndLayers` pass
+ * (`dispatch({ type: 'toggle-layer' })`, PRD-002).
+ */
+export const upsertOutlineCompanions = (
   map: maplibregl.Map,
   layer: VisualizationSpec['layers'][number],
   sourceLayer: string | undefined
@@ -201,8 +206,11 @@ const upsertOutlineCompanions = (
   }
 };
 
-/** Upserts the click-anchor symbol companion layer for a single spec layer. */
-const upsertClickAnchorCompanion = (
+/**
+ * Upserts the click-anchor symbol companion layer for a single spec layer.
+ * Exported for the same reason as `upsertOutlineCompanions` above.
+ */
+export const upsertClickAnchorCompanion = (
   map: maplibregl.Map,
   layer: VisualizationSpec['layers'][number],
   sourceLayer: string | undefined
