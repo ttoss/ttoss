@@ -14,10 +14,30 @@ This plan turns the PRD into six vertical slices, each cutting through the full 
 
 ```ts
 type GeoVisAction =
-  | { type: 'set-map-data'; layerId: string; mapDataId: string; rationale?: string }
-  | { type: 'set-filter'; layerId: string; filter: LayerFilter | null; rationale?: string }
-  | { type: 'toggle-layer'; layerId: string; visible?: boolean; rationale?: string }
-  | { type: 'select-feature'; layerId: string; featureId: string | number | null; rationale?: string }
+  | {
+      type: 'set-map-data';
+      layerId: string;
+      mapDataId: string;
+      rationale?: string;
+    }
+  | {
+      type: 'set-filter';
+      layerId: string;
+      filter: LayerFilter | null;
+      rationale?: string;
+    }
+  | {
+      type: 'toggle-layer';
+      layerId: string;
+      visible?: boolean;
+      rationale?: string;
+    }
+  | {
+      type: 'select-feature';
+      layerId: string;
+      featureId: string | number | null;
+      rationale?: string;
+    }
   | { type: 'set-view-preset'; presetId: string; rationale?: string };
 
 interface GeoVisRuntime {
@@ -175,3 +195,17 @@ Reclassify `SpecPatch`/`applyPatch` in the README/JSDoc as the documented escape
 ## Sequencing notes
 
 Phase 1 is the entry gate: it builds `dispatch()`, the action log, and the packet skeleton every later phase extends. Phases 2–5 are independent of each other once Phase 1 lands — each adds exactly one action and one packet field — and can proceed in any order or in parallel. Phase 6 depends on all of 1–5, since it finalizes cross-action `allowedActions` gating and only then migrates the remaining hook. Each phase is one PR following the package workflow (tests → dependents → build → coverage threshold → README).
+
+## Implementation notes
+
+All six phases are implemented. Corrections and scoping decisions made during implementation, beyond what the plan anticipated — flagged as non-trivial where a synchronous confirmation wasn't available in this session:
+
+- **`toggle-layer` exposed a real gap: no `SpecPatch` could touch `layer.visible`.** The only `replace` mechanism `applyLayerPatchToSpec`/`applyLayerPatch` handled was `paint` properties; visibility toggling only ever existed via a full `update(spec)` (e.g. `useBoundaryToggle`). Rather than route `toggle-layer` through a full re-mount — which would violate ADR-0003's "actions must not require re-emitting the whole spec" — the existing mechanism was generalized to accept top-level layer fields (`layer.<id>.visible`), not just `paint.<key>`. `set-map-data` (`.mapDataId`) and `set-filter` (`.filter`) reuse the same generalization; both the runtime (`createRuntime.ts`) and the MapLibre adapter (`patchDispatch.ts`) dispatch on a small `field → applier` lookup table rather than growing a long `if` chain, to stay under the repo's `complexity` lint threshold as fields were added.
+- **Selection promoted from `GeoVisClickContext` to the runtime** (`getSelection()`), consolidating what `useMapClick` used to do directly via `map.setFeatureState` into one adapter method (`setSelection`, `adapters/maplibre/selection.ts`). The old `needsSelectedState` gate — which limited the `feature-state.selected` write to layers with `selectedPaint`/`clickAnchor` — was dropped; every click now dispatches `select-feature` unconditionally. The write is inert for layers without a companion layer consuming it, verified against `syncSourcesAndLayers.ts`'s consumers, so this is not expected to be user-visible, but it is a behavior change from before.
+- **Found and fixed a Phase 1 gap:** `GeoVisContextValue` had no `dispatch`, so a React consumer calling `useGeoVis().runtime.dispatch(...)` directly for a spec-changing action would go stale — `committed.spec`/`result` never re-synced, unlike `applyPatch`/`setView`. Added `dispatch` to `GeoVisContextValue`/`GeoVisProvider` in Phase 2, mirroring `applyPatch`'s existing sync pattern, once `select-feature` made the gap concrete.
+- **`set-map-data` and `set-filter` validate only the action-level referential check (`layerId` exists) themselves.** Whether `mapDataId` is a declared entry, shares the layer's source, or whether the layer's source type declares the filter capability, is left to the same `validateSpec` pass `applyPatchToRuntime` already runs for every patch — reusing `unknown-map-data-id`/`source-scope-conflict`/`unsupported-data-feature` instead of duplicating referential logic in `dispatchAction.ts`.
+- **`set-filter`'s capability (`CapabilitySet.dataFeatures.filter`) is declared `geojson`-only**, mirroring `featureState`'s "declared means tested" scoping — even though MapLibre's native `filter` isn't inherently limited to `geojson` sources. The narrower declaration reflects what's fixture-tested today, not an engine limitation; it may widen once other source types are covered.
+- **`filter: null` / `set-view-preset`'s non-existence path both needed to avoid `applyPatchToRuntime`'s existing "`replace` with `value: undefined` is a no-op" guard.** `set-filter`'s clear compiles to `value: null` specifically (never `undefined`) so clearing is a real, applied change, not silently swallowed.
+- **`useBoundaryToggle` was not migrated to `dispatch()`, despite Phase 6's original wording.** On inspection, `useBoundaryToggle` is a pre-runtime spec-composition hook — it derives a new `VisualizationSpec` for the caller to pass into `<GeoVisProvider spec={...}>`; it never touches a live `runtime` and has no access to one. `dispatch()` only exists on an already-mounted runtime. Migrating it would mean a breaking redesign of its public API (returning `{toggle, isVisible}` only, requiring callers to restructure around a `runtime`/`dispatch` obtained from inside a `GeoVisProvider` tree) rather than a convergence — a materially different, larger change than what "migrate remaining hooks" implied. Left as-is; only `useMapClick`/`useGeoVisClick` (Phase 2) actually fit the "runtime-mutating hook" pattern this Should item targets.
+- **Undo/redo was not built.** The action log (`getActionLog()`) is the substrate PRD-002 asks for; computing inverse actions and an undo/redo stack is left to a workspace-level consumer, as scoped in D4.
+- **Schema note:** `VisualizationSpec.view`'s inline JSON Schema was factored into `$defs/ViewState` so `viewPresets[].view` could reuse it instead of duplicating the shape.

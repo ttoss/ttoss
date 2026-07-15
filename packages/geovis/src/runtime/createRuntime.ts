@@ -26,7 +26,12 @@ export interface GeoVisRuntime {
   mount(container: HTMLElement, viewId: string): MountedView;
   /** Validates `spec` first; on failure the adapter is never called and `spec`/`result` are unchanged. */
   update(spec: VisualizationSpec): GeoVisResult;
-  /** Validates the patched spec first; on failure the adapter is never called and `spec`/`result` are unchanged. */
+  /**
+   * Low-level escape hatch (PRD-002) — prefer `dispatch()` for anything
+   * expressible as one of its actions; it targets stable ids and is logged.
+   * Validates the patched spec first; on failure the adapter is never
+   * called and `spec`/`result` are unchanged.
+   */
   applyPatch(patch: SpecPatch): GeoVisResult;
   /** Imperatively moves the camera and syncs `spec.view`. Animated by default. */
   setView(options: SetViewOptions): void;

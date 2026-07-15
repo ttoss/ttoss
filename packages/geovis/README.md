@@ -887,6 +887,8 @@ Each `GeoVisIssue` carries a machine-readable `code`, a `subject` locating the o
 
 ## Applying Patches
 
+> **`applyPatch` is a low-level escape hatch, not the primary mutation API.** Prefer [`dispatch()`](#ai-action-surface-dispatch) for anything expressible as one of its actions (`toggle-layer`, `select-feature`, `set-map-data`, `set-filter`, `set-view-preset`) — it targets stable spec ids instead of internal paint paths, and every call is recorded on the action log. `applyPatch` stays public and fully supported for the layer-visibility, `mapDataId`, `filter`, and paint-property replaces that don't yet have (or will never need) a dedicated action, and for `add`/`remove` — the same "available, not primary" role `getNativeInstance()` plays for direct engine access.
+
 Use `useGeoVis` to access `applyPatch` for efficient updates without re-rendering the full spec.
 
 **Supported `target` values:**
@@ -1171,7 +1173,7 @@ runtime.getActionLog();
 // ReadonlyArray<{ action: GeoVisAction; result: GeoVisResult; timestamp: number }>
 ```
 
-Every dispatched action is recorded, accepted or rejected, with its `rationale` preserved — the audit substrate for undo/redo and for surfacing "why did the map change" in a workspace UI.
+Every dispatched action is recorded, accepted or rejected, with its `rationale` preserved — the substrate for surfacing "why did the map change" in a workspace UI. Undo/redo itself is not built on top of this log yet; that's a "Should" item left for a workspace-level consumer (e.g. `@ttoss/geovis-workspace`) to derive.
 
 ### Context packet
 
