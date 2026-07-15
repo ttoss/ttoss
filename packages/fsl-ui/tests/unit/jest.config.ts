@@ -1,6 +1,11 @@
 import { jestUnitConfig } from '@ttoss/config';
+import { getTransformIgnorePatterns } from '@ttoss/test-utils';
 
 export default jestUnitConfig({
+  // ESM-only deps pulled in by the @ttoss/forms bridge test (react-intl,
+  // react-markdown & friends) must be babel-transformed — same setting
+  // @ttoss/forms itself uses.
+  transformIgnorePatterns: getTransformIgnorePatterns(),
   setupFilesAfterEnv: ['./setupTests.tsx'],
   testEnvironment: 'jsdom',
   coveragePathIgnorePatterns: [

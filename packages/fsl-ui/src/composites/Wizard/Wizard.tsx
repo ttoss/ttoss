@@ -9,7 +9,7 @@ import { createCompositeScope } from '../scope';
 // Wizard — composition-driven composite (Structure entity, root).
 //
 // This composite is the second runtime proof that FSL `Composition` is
-// behavior-driving (ISSUE.md §2.4), complementing `DialogActions` (§2.2):
+// behavior-driving (CONTRIBUTING §2.3, Pattern B), complementing `DialogActions` (Pattern A):
 //
 //   - DialogActions dispatches on the `composition` prop of *leaf* children
 //     (runtime value on a `Button`) to REORDER the DOM per platform.
@@ -154,6 +154,39 @@ export interface WizardState {
 
 const wizardScope = createCompositeScope<WizardState>('Wizard');
 
+// Visually-hidden style for the aria-live progress region — standard
+// screen-reader-only clip pattern (content is announced, never painted).
+const VISUALLY_HIDDEN_STYLE: React.CSSProperties = {
+  position: 'absolute',
+  width: '1px',
+  height: '1px',
+  padding: 0,
+  margin: '-1px',
+  overflow: 'hidden',
+  clipPath: 'inset(50%)',
+  whiteSpace: 'nowrap',
+  border: 0,
+};
+
+/**
+ * Default step announcement — an English fallback, documented per the
+ * package i18n rule (CONTRIBUTING §6 / ADR-001): supplementary AT feedback
+ * may ship a default; localized hosts override via
+ * {@link WizardProps.announceStep}.
+ */
+const defaultAnnounceStep = ({
+  currentStep,
+  totalSteps,
+  isComplete,
+}: {
+  currentStep: number;
+  totalSteps: number;
+  isComplete: boolean;
+}): string => {
+  if (isComplete) return 'Complete';
+  return `Step ${currentStep + 1} of ${totalSteps}`;
+};
+
 // ---------------------------------------------------------------------------
 // Wizard — host (Structure entity, root)
 // ---------------------------------------------------------------------------
@@ -200,8 +233,21 @@ export interface WizardProps {
   onStepChange?: (step: number) => void;
   /**
    * Accessible name for the wizard region (rendered as `aria-label`).
+   * Always provide one (or `aria-labelledby`) — the wizard renders a
+   * `<section>` landmark and screen-reader users navigate by its name.
    */
   'aria-label'?: string;
+  /**
+   * Builds the text announced by the wizard's visually-hidden
+   * `aria-live=polite` region whenever the active step changes.
+   * The default is an English fallback (`"Step 2 of 3"` / `"Complete"`) —
+   * localized hosts supply their own copy here (CONTRIBUTING §6).
+   */
+  announceStep?: (state: {
+    currentStep: number;
+    totalSteps: number;
+    isComplete: boolean;
+  }) => string;
   /**
    * Expected children: any number of {@link WizardStep} (in order), an
    * optional {@link WizardSummary}, and an optional {@link WizardNavigation}.
@@ -228,7 +274,7 @@ export interface WizardProps {
  *     <WizardStep>Second step content</WizardStep>
  *     <WizardStep>Third step content</WizardStep>
  *     <WizardSummary>All done!</WizardSummary>
- *     <WizardNavigation />
+ *     <WizardNavigation prevLabel="Back" nextLabel="Next" finishLabel="Finish" />
  *   </Wizard>
  * );
  * ```
@@ -237,11 +283,13 @@ export const Wizard = ({
   currentStep,
   defaultStep = 0,
   onStepChange,
+  announceStep = defaultAnnounceStep,
   children,
   ...props
 }: WizardProps) => {
   const [internalStep, setInternalStep] = React.useState(defaultStep);
   const step = currentStep ?? internalStep;
+  const rootRef = React.useRef<HTMLElement | null>(null);
 
   const setStep = React.useCallback(
     (next: number) => {
@@ -310,10 +358,24 @@ export const Wizard = ({
     ? classified.summary
     : (classified.steps[safeStep] ?? null);
 
+  // Focus management (audit A12): when the active step changes — not on
+  // mount — move focus to the newly rendered step/summary body so keyboard
+  // and screen-reader users land at the top of the new content instead of
+  // on a stale (possibly unmounted) control.
+  const prevStepRef = React.useRef(safeStep);
+  React.useEffect(() => {
+    if (prevStepRef.current === safeStep) return;
+    prevStepRef.current = safeStep;
+    rootRef.current
+      ?.querySelector<HTMLElement>('[data-part="content"]')
+      ?.focus();
+  }, [safeStep]);
+
   return (
     <wizardScope.Provider value={contextValue}>
       <section
         {...props}
+        ref={rootRef}
         data-scope="wizard"
         data-part="root"
         data-current-step={safeStep}
@@ -329,6 +391,17 @@ export const Wizard = ({
           } as React.CSSProperties
         }
       >
+        {/* Progress announcement — visually hidden, polite (audit A12). */}
+        <div
+          data-scope="wizard"
+          data-part="status"
+          aria-live="polite"
+          style={VISUALLY_HIDDEN_STYLE}
+        >
+          {totalSteps > 0
+            ? announceStep({ currentStep: safeStep, totalSteps, isComplete })
+            : null}
+        </div>
         {activeStep}
         {classified.navigation}
         {classified.unknown}
@@ -376,6 +449,8 @@ const WizardStepBase = (props: WizardStepProps) => {
   wizardScope.use(wizardStepMeta.displayName);
   return (
     <div
+      // Focus target for the host's step-change focus management (A12).
+      tabIndex={-1}
       {...props}
       data-scope="wizard"
       data-part="content"
@@ -427,6 +502,8 @@ const WizardSummaryBase = (props: WizardSummaryProps) => {
   wizardScope.use(wizardSummaryMeta.displayName);
   return (
     <div
+      // Focus target for the host's step-change focus management (A12).
+      tabIndex={-1}
       {...props}
       data-scope="wizard"
       data-part="content"
@@ -460,41 +537,62 @@ export const wizardNavigationMeta = {
   composition: 'navigation',
 } as const satisfies ComponentMeta<'Structure'>;
 
-/**
- * Props for {@link WizardNavigation}.
- */
-export interface WizardNavigationProps {
-  /** Label for the "previous step" button. @default 'Back' */
-  prevLabel?: React.ReactNode;
-  /** Label for the "next step" button. @default 'Next' */
-  nextLabel?: React.ReactNode;
-  /** Label for the final-step button. @default 'Finish' */
-  finishLabel?: React.ReactNode;
+interface WizardNavigationCommonProps {
   /**
    * Fires when the user advances past the last step (first click of
    * `Finish`). The Wizard host transitions to the `isComplete` state
    * and renders the {@link WizardSummary} if one is provided.
    */
   onFinish?: () => void;
+}
+
+interface WizardNavigationLabelProps extends WizardNavigationCommonProps {
+  /**
+   * Label for the "previous step" button. **Required** — flow-critical
+   * labels have no English default (CONTRIBUTING §6 / ADR-001); the
+   * caller supplies localized copy.
+   */
+  prevLabel: React.ReactNode;
+  /** Label for the "next step" button. **Required** — see `prevLabel`. */
+  nextLabel: React.ReactNode;
+  /** Label for the final-step button. **Required** — see `prevLabel`. */
+  finishLabel: React.ReactNode;
+  children?: never;
+}
+
+interface WizardNavigationRenderProps extends WizardNavigationCommonProps {
   /**
    * Replace the default button row with a render-prop so the host can
    * compose custom controls while still reading wizard state from the
-   * same context (validation gating, async next, etc.).
+   * same context (validation gating, async next, etc.). When provided,
+   * the label props do not apply — the render-prop owns all copy.
    */
-  children?: (state: WizardState) => React.ReactNode;
+  children: (state: WizardState) => React.ReactNode;
+  prevLabel?: never;
+  nextLabel?: never;
+  finishLabel?: never;
 }
+
+/**
+ * Props for {@link WizardNavigation} — either the default row with
+ * caller-supplied labels, or a render-prop that owns the whole row.
+ */
+export type WizardNavigationProps =
+  | WizardNavigationLabelProps
+  | WizardNavigationRenderProps;
 
 /**
  * Default navigation row for a {@link Wizard}. Reads wizard state from
  * React context — rendering is otherwise deterministic: `Back` is
  * disabled on the first step; the primary button switches label from
- * `Next` to `Finish` on the last step and fires `onFinish` before
- * advancing.
+ * the next label to the finish label on the last step and fires
+ * `onFinish` before advancing. All labels are caller-supplied — the
+ * package ships no user-facing copy (CONTRIBUTING §6 / ADR-001).
  */
 const WizardNavigationBase = ({
-  prevLabel = 'Back',
-  nextLabel = 'Next',
-  finishLabel = 'Finish',
+  prevLabel,
+  nextLabel,
+  finishLabel,
   onFinish,
   children,
 }: WizardNavigationProps) => {

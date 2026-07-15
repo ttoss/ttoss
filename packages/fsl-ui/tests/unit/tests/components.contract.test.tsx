@@ -21,9 +21,8 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { toCssVarName } from '@ttoss/fsl-theme/css';
-import type * as React from 'react';
 import * as pkg from 'src/index';
 import {
   ENTITIES,
@@ -34,6 +33,8 @@ import {
   STRUCTURAL_ROLES,
 } from 'src/semantics/taxonomy';
 import { ENTITY_TOKEN_MAPPING } from 'src/tokens/projection';
+
+import { DOM_FIXTURES } from './domFixtures';
 
 // ---------------------------------------------------------------------------
 // Auto-discovery helpers
@@ -235,14 +236,28 @@ describe('contract: taxonomy legality', () => {
 // ---------------------------------------------------------------------------
 
 describe('contract: token hygiene', () => {
-  // `var(--x, fallback)` is forbidden — fallbacks mask missing token coverage
-  // and create silent drift across themes. See ui2-guardrails G1/G10.
-  const VAR_WITH_FALLBACK = /\bvar\(\s*--[^,)]+,[^)]*\)/;
+  // `var(--tt-*, fallback)` is forbidden — fallbacks on THEME tokens mask
+  // missing token coverage and create silent drift across themes.
+  // Host knobs (`--fsl-*`, CONTRACT.md §7) are the one exception and are
+  // covered by the escape-hatch suite below.
+  const THEME_VAR_WITH_FALLBACK = /\bvar\(\s*--tt-[^,)]+,[^)]*\)/;
 
   test.each(componentSources)(
-    '%s contains no var(--x, fallback)',
+    '%s contains no var(--tt-*, fallback)',
     (_path, source) => {
-      expect(stripComments(source)).not.toMatch(VAR_WITH_FALLBACK);
+      expect(stripComments(source)).not.toMatch(THEME_VAR_WITH_FALLBACK);
+    }
+  );
+
+  // Raw `var(--…)` reads outside the two sanctioned namespaces (`--tt-`
+  // theme tokens emitted by `vars.*`, `--fsl-` host knobs via `fslVar`)
+  // would create an unreviewable styling side channel.
+  const FOREIGN_VAR = /\bvar\(\s*--(?!tt-|fsl-)/;
+
+  test.each(componentSources)(
+    '%s reads no CSS variables outside the --tt-/--fsl- namespaces',
+    (_path, source) => {
+      expect(stripComments(source)).not.toMatch(FOREIGN_VAR);
     }
   );
 
@@ -265,6 +280,105 @@ describe('contract: token hygiene', () => {
       // The backdrop scrim has its own semantic token (`vars.overlay.scrim`)
       // — no `rgba(...)` literal is permitted in any component source.
       expect(stripComments(source)).not.toMatch(RGB_LITERAL);
+    }
+  );
+});
+
+// ---------------------------------------------------------------------------
+// 4a. Escape hatches — CONTRACT.md §7
+//
+// Host knobs are `--fsl-<scope>-<knob>` custom properties consumed through
+// `fslVar`. Two rules are enforceable statically:
+//   - every knob read goes through `fslVar(…)` (never a hand-written
+//     `var(--fsl-…)`), which guarantees the fallback argument exists;
+//   - no `var(--fsl-…)` without a fallback anywhere in a component source.
+// ---------------------------------------------------------------------------
+
+describe('contract: escape hatches (§7)', () => {
+  const RAW_FSL_VAR = /\bvar\(\s*--fsl-/;
+  const FSL_VAR_WITHOUT_FALLBACK = /\bvar\(\s*--fsl-[a-z0-9-]+\s*\)/;
+
+  test.each(componentSources)(
+    '%s consumes --fsl-* knobs only through fslVar (with fallback)',
+    (_path, source) => {
+      const stripped = stripComments(source);
+      // A hand-written `var(--fsl-…)` bypasses the helper.
+      expect(stripped).not.toMatch(RAW_FSL_VAR);
+      expect(stripped).not.toMatch(FSL_VAR_WITHOUT_FALLBACK);
+    }
+  );
+
+  test('fslVar output always contains the fallback', async () => {
+    const { fslVar } = await import('src/tokens/escapeHatch');
+    expect(fslVar('--fsl-dialog-max-width', 'min(500px, 90vw)')).toBe(
+      'var(--fsl-dialog-max-width, min(500px, 90vw))'
+    );
+  });
+
+  test('DialogModal surface reads the --fsl-dialog-max-width knob', () => {
+    render(
+      <pkg.DialogTrigger defaultOpen>
+        <pkg.Button>Open</pkg.Button>
+        <pkg.DialogModal>
+          <pkg.Dialog aria-label="test">content</pkg.Dialog>
+        </pkg.DialogModal>
+      </pkg.DialogTrigger>
+    );
+    const surface = document.querySelector<HTMLElement>(
+      '[data-scope="dialog"][data-part="surface"]'
+    );
+    expect(surface?.style.maxWidth).toBe(
+      'var(--fsl-dialog-max-width, min(500px, 90vw))'
+    );
+  });
+
+  test('Menu popover reads the --fsl-menu-{min,max}-width knobs', () => {
+    render(
+      <pkg.MenuTrigger defaultOpen>
+        <pkg.Button>T</pkg.Button>
+        <pkg.Menu>
+          <pkg.MenuItem>Item</pkg.MenuItem>
+        </pkg.Menu>
+      </pkg.MenuTrigger>
+    );
+    const popover = document.querySelector<HTMLElement>(
+      '[data-scope="menu"][data-part="root"]'
+    );
+    expect(popover?.style.minWidth).toBe('var(--fsl-menu-min-width, 12rem)');
+    expect(popover?.style.maxWidth).toBe(
+      'var(--fsl-menu-max-width, min(320px, 90vw))'
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 4a2. RTL correctness — logical CSS properties only
+//
+// Physical horizontal properties (`left:`, `marginRight:`, …) break
+// right-to-left layouts. Components must use logical equivalents
+// (`insetInlineStart`, `marginInlineEnd`, …). Vertical physical properties
+// are included for consistency (`insetBlockStart` over `top`).
+// ---------------------------------------------------------------------------
+
+describe('contract: logical CSS properties (RTL)', () => {
+  // Style-object keys for physical box placement. `inset:` (all four
+  // sides at once, e.g. `inset: 0`) is direction-agnostic and stays legal.
+  const PHYSICAL_PROPERTY = new RegExp(
+    String.raw`\b(top|left|right|bottom` +
+      String.raw`|margin(Top|Left|Right|Bottom)` +
+      String.raw`|padding(Top|Left|Right|Bottom)` +
+      String.raw`|border(Top|Left|Right|Bottom)\w*)\s*:`
+  );
+
+  test.each(componentSources)(
+    '%s uses no physical box properties',
+    (_path, source) => {
+      const offending = stripComments(source)
+        .split('\n')
+        .filter((line) => {
+          return PHYSICAL_PROPERTY.test(line);
+        });
+      expect(offending).toEqual([]);
     }
   );
 });
@@ -354,437 +468,12 @@ describe('contract: CSS var prefix', () => {
 
   test('semantic.colors.* emits the --tt-colors- prefix (not --tt-color-)', () => {
     // Resolves the `--tt-color-*` vs `--tt-colors-*` ambiguity flagged in
-    // ui2-guardrails.md: the canonical prefix is `--tt-colors-`.
+    // the naming decision: the canonical prefix is `--tt-colors-`.
     expect(
       toCssVarName('semantic.colors.action.primary.background.default')
     ).toBe('--tt-colors-action-primary-background-default');
   });
 });
-
-// ---------------------------------------------------------------------------
-// 7. DOM data-attribute contract
-//
-// Renders each component in its minimal context and asserts that an element
-// with the correct `[data-scope][data-part]` appears in the document.
-//
-// Fixture structure:
-//   scope  — expected `data-scope` value on the element declared by the meta.
-//            For composite sub-parts this is the HOST's kebab-case name, not
-//            the sub-part's (e.g. DialogHeading uses scope="dialog").
-//   render — factory returning the JSX to mount. Overlays use `defaultOpen`
-//            so they appear in the DOM without interactive setup.
-//   open   — optional post-render action for composites that open via a
-//            trigger click (ConfirmationDialog).
-//
-// Rule: if a new `*Meta` is added and no fixture is defined here, the test
-// for that component will throw — add the fixture before shipping.
-// ---------------------------------------------------------------------------
-type DomFixture = {
-  scope: string;
-  element: () => React.ReactElement;
-  open?: () => void;
-};
-
-const DOM_FIXTURES: Record<string, DomFixture> = {
-  // ── standalone components ─────────────────────────────────────────────
-  Button: {
-    scope: 'button',
-    element: () => {
-      return <pkg.Button>x</pkg.Button>;
-    },
-  },
-  Checkbox: {
-    scope: 'checkbox',
-    element: () => {
-      return <pkg.Checkbox>x</pkg.Checkbox>;
-    },
-  },
-  Link: {
-    scope: 'link',
-    element: () => {
-      return <pkg.Link href="#">x</pkg.Link>;
-    },
-  },
-  ProgressBar: {
-    scope: 'progress-bar',
-    element: () => {
-      return <pkg.ProgressBar aria-label="loading" />;
-    },
-  },
-  Switch: {
-    scope: 'switch',
-    element: () => {
-      return <pkg.Switch>x</pkg.Switch>;
-    },
-  },
-  // ── RadioGroup / Radio ────────────────────────────────────────────
-  RadioGroup: {
-    scope: 'radio-group',
-    element: () => {
-      return (
-        <pkg.RadioGroup>
-          <pkg.Radio value="a">A</pkg.Radio>
-        </pkg.RadioGroup>
-      );
-    },
-  },
-  Radio: {
-    scope: 'radio',
-    element: () => {
-      return (
-        <pkg.RadioGroup>
-          <pkg.Radio value="a">A</pkg.Radio>
-        </pkg.RadioGroup>
-      );
-    },
-  },
-  // ── Select / SelectItem ───────────────────────────────────────────
-  Select: {
-    scope: 'select',
-    element: () => {
-      return (
-        <pkg.Select>
-          <pkg.SelectItem id="a">A</pkg.SelectItem>
-        </pkg.Select>
-      );
-    },
-  },
-  SelectItem: {
-    scope: 'select',
-    element: () => {
-      return (
-        <pkg.Select defaultOpen>
-          <pkg.SelectItem id="a">A</pkg.SelectItem>
-        </pkg.Select>
-      );
-    },
-  },
-  // ── Toast / ToastRegion ───────────────────────────────────────────
-  // Both need a queue with an item so the region renders and a toast appears.
-  ToastRegion: {
-    scope: 'toast-region',
-    element: () => {
-      const queue = pkg.createToastQueue<pkg.ToastContent>({
-        maxVisibleToasts: 5,
-      });
-      queue.add({ title: 'x' });
-      return <pkg.ToastRegion queue={queue} />;
-    },
-  },
-  Toast: {
-    scope: 'toast',
-    element: () => {
-      const queue = pkg.createToastQueue<pkg.ToastContent>({
-        maxVisibleToasts: 5,
-      });
-      queue.add({ title: 'test' });
-      return <pkg.ToastRegion queue={queue} />;
-    },
-  },
-  // ── Accordion ────────────────────────────────────────────────────────
-  Accordion: {
-    scope: 'accordion',
-    element: () => {
-      return (
-        <pkg.Accordion>
-          <pkg.AccordionItem id="x">
-            <pkg.AccordionTrigger>T</pkg.AccordionTrigger>
-            <pkg.AccordionPanel>P</pkg.AccordionPanel>
-          </pkg.AccordionItem>
-        </pkg.Accordion>
-      );
-    },
-  },
-  AccordionItem: {
-    scope: 'accordion',
-    element: () => {
-      return (
-        <pkg.Accordion>
-          <pkg.AccordionItem id="x">
-            <pkg.AccordionTrigger>T</pkg.AccordionTrigger>
-            <pkg.AccordionPanel>P</pkg.AccordionPanel>
-          </pkg.AccordionItem>
-        </pkg.Accordion>
-      );
-    },
-  },
-  AccordionTrigger: {
-    scope: 'accordion',
-    element: () => {
-      return (
-        <pkg.Accordion>
-          <pkg.AccordionItem id="x">
-            <pkg.AccordionTrigger>T</pkg.AccordionTrigger>
-            <pkg.AccordionPanel>P</pkg.AccordionPanel>
-          </pkg.AccordionItem>
-        </pkg.Accordion>
-      );
-    },
-  },
-  AccordionPanel: {
-    scope: 'accordion',
-    element: () => {
-      return (
-        <pkg.Accordion>
-          <pkg.AccordionItem id="x">
-            <pkg.AccordionTrigger>T</pkg.AccordionTrigger>
-            <pkg.AccordionPanel>P</pkg.AccordionPanel>
-          </pkg.AccordionItem>
-        </pkg.Accordion>
-      );
-    },
-  },
-  // ── Dialog ────────────────────────────────────────────────────────────
-  // Dialog, DialogHeading, DialogBody, DialogActions render without a
-  // modal wrapper (React Aria emits role=dialog on the div regardless).
-  Dialog: {
-    scope: 'dialog',
-    element: () => {
-      return (
-        <pkg.Dialog aria-label="test">
-          <pkg.DialogHeading>H</pkg.DialogHeading>
-          <pkg.DialogBody>B</pkg.DialogBody>
-          <pkg.DialogActions>
-            <pkg.Button composition="primaryAction">OK</pkg.Button>
-          </pkg.DialogActions>
-        </pkg.Dialog>
-      );
-    },
-  },
-  DialogHeading: {
-    scope: 'dialog',
-    element: () => {
-      return (
-        <pkg.Dialog aria-label="test">
-          <pkg.DialogHeading>H</pkg.DialogHeading>
-        </pkg.Dialog>
-      );
-    },
-  },
-  DialogBody: {
-    scope: 'dialog',
-    element: () => {
-      return (
-        <pkg.Dialog aria-label="test">
-          <pkg.DialogBody>B</pkg.DialogBody>
-        </pkg.Dialog>
-      );
-    },
-  },
-  DialogActions: {
-    scope: 'dialog',
-    element: () => {
-      return (
-        <pkg.Dialog aria-label="test">
-          <pkg.DialogActions>
-            <pkg.Button composition="primaryAction">OK</pkg.Button>
-          </pkg.DialogActions>
-        </pkg.Dialog>
-      );
-    },
-  },
-  // DialogModal is a portal overlay — use defaultOpen via DialogTrigger.
-  DialogModal: {
-    scope: 'dialog',
-    element: () => {
-      return (
-        <pkg.DialogTrigger defaultOpen>
-          <pkg.Button>Open</pkg.Button>
-          <pkg.DialogModal>
-            <pkg.Dialog aria-label="test">content</pkg.Dialog>
-          </pkg.DialogModal>
-        </pkg.DialogTrigger>
-      );
-    },
-  },
-  // ConfirmationDialog wraps Dialog and overrides data-scope via the prop
-  // added to Dialog. The dialog is closed on initial render; trigger click
-  // opens it.
-  ConfirmationDialog: {
-    scope: 'confirmation-dialog',
-    element: () => {
-      return (
-        <pkg.ConfirmationDialog
-          trigger={<pkg.Button>open</pkg.Button>}
-          title="Confirm?"
-          onConfirm={() => {}}
-        />
-      );
-    },
-    open: () => {
-      return fireEvent.click(screen.getByRole('button', { name: 'open' }));
-    },
-  },
-  // ── Form ────────────────────────────────────────────────────────────────
-  Form: {
-    scope: 'form',
-    element: () => {
-      return <pkg.Form>x</pkg.Form>;
-    },
-  },
-  FormActions: {
-    scope: 'form',
-    element: () => {
-      return (
-        <pkg.Form>
-          <pkg.FormActions>
-            <pkg.FormSubmit>Save</pkg.FormSubmit>
-          </pkg.FormActions>
-        </pkg.Form>
-      );
-    },
-  },
-  // FormSubmit delegates to Button but overrides data-scope="form-submit".
-  FormSubmit: {
-    scope: 'form-submit',
-    element: () => {
-      return (
-        <pkg.Form>
-          <pkg.FormSubmit>Save</pkg.FormSubmit>
-        </pkg.Form>
-      );
-    },
-  },
-  // ── Menu / MenuItem ───────────────────────────────────────────────
-  // Popover only renders when open. Use defaultOpen on MenuTrigger.
-  Menu: {
-    scope: 'menu',
-    element: () => {
-      return (
-        <pkg.MenuTrigger defaultOpen>
-          <pkg.Button>T</pkg.Button>
-          <pkg.Menu>
-            <pkg.MenuItem>Item</pkg.MenuItem>
-          </pkg.Menu>
-        </pkg.MenuTrigger>
-      );
-    },
-  },
-  MenuItem: {
-    scope: 'menu',
-    element: () => {
-      return (
-        <pkg.MenuTrigger defaultOpen>
-          <pkg.Button>T</pkg.Button>
-          <pkg.Menu>
-            <pkg.MenuItem>Item</pkg.MenuItem>
-          </pkg.Menu>
-        </pkg.MenuTrigger>
-      );
-    },
-  },
-  // ── TextField ─────────────────────────────────────────────────────────
-  TextField: {
-    scope: 'text-field',
-    element: () => {
-      return (
-        <pkg.TextField>
-          <pkg.TextFieldControl />
-        </pkg.TextField>
-      );
-    },
-  },
-  TextFieldLabel: {
-    scope: 'text-field',
-    element: () => {
-      return (
-        <pkg.TextField>
-          <pkg.TextFieldLabel>Label</pkg.TextFieldLabel>
-          <pkg.TextFieldControl />
-        </pkg.TextField>
-      );
-    },
-  },
-  TextFieldControl: {
-    scope: 'text-field',
-    element: () => {
-      return (
-        <pkg.TextField>
-          <pkg.TextFieldControl />
-        </pkg.TextField>
-      );
-    },
-  },
-  TextFieldDescription: {
-    scope: 'text-field',
-    element: () => {
-      return (
-        <pkg.TextField>
-          <pkg.TextFieldControl />
-          <pkg.TextFieldDescription>Hint</pkg.TextFieldDescription>
-        </pkg.TextField>
-      );
-    },
-  },
-  TextFieldError: {
-    scope: 'text-field',
-    element: () => {
-      return (
-        <pkg.TextField isInvalid>
-          <pkg.TextFieldControl />
-          <pkg.TextFieldError>Required</pkg.TextFieldError>
-        </pkg.TextField>
-      );
-    },
-  },
-  // ── Wizard ──────────────────────────────────────────────────────────────
-  Wizard: {
-    scope: 'wizard',
-    element: () => {
-      return (
-        <pkg.Wizard aria-label="test">
-          <pkg.WizardStep>
-            <p>step</p>
-          </pkg.WizardStep>
-          <pkg.WizardNavigation />
-        </pkg.Wizard>
-      );
-    },
-  },
-  WizardStep: {
-    scope: 'wizard',
-    element: () => {
-      return (
-        <pkg.Wizard aria-label="test">
-          <pkg.WizardStep>
-            <p>step</p>
-          </pkg.WizardStep>
-        </pkg.Wizard>
-      );
-    },
-  },
-  // WizardSummary only renders when Wizard is complete (currentStep >= totalSteps).
-  // With defaultStep=1 and exactly 1 WizardStep, isComplete=true on mount.
-  WizardSummary: {
-    scope: 'wizard',
-    element: () => {
-      return (
-        <pkg.Wizard aria-label="test" defaultStep={1}>
-          <pkg.WizardStep>
-            <p>step</p>
-          </pkg.WizardStep>
-          <pkg.WizardSummary>
-            <p>done</p>
-          </pkg.WizardSummary>
-        </pkg.Wizard>
-      );
-    },
-  },
-  WizardNavigation: {
-    scope: 'wizard',
-    element: () => {
-      return (
-        <pkg.Wizard aria-label="test">
-          <pkg.WizardStep>
-            <p>step</p>
-          </pkg.WizardStep>
-          <pkg.WizardNavigation />
-        </pkg.Wizard>
-      );
-    },
-  },
-};
-
 describe('contract: DOM data-attributes', () => {
   test.each(discoveredMetas)(
     '%s renders [data-scope][data-part] per meta',
@@ -793,7 +482,7 @@ describe('contract: DOM data-attributes', () => {
       if (fixture === undefined) {
         throw new Error(
           `No DOM fixture for "${componentName}". ` +
-            `Add an entry to DOM_FIXTURES in components.contract.test.tsx.`
+            `Add an entry to DOM_FIXTURES in domFixtures.tsx.`
         );
       }
 

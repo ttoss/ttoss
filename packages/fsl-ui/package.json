@@ -17,24 +17,34 @@
     "./semantics": "./src/semantics/index.ts"
   },
   "files": [
-    "dist"
+    "dist",
+    "llms.txt",
+    "src/tokens/CONTRACT.md"
   ],
   "scripts": {
     "build": "tsdown",
-    "test": "jest --projects tests/unit"
+    "test": "jest --projects tests/unit",
+    "verify:treeshake": "node scripts/verify-treeshake.mjs"
   },
   "dependencies": {
     "@ttoss/fsl-theme": "workspace:^",
-    "react-aria-components": "^1.9.0"
+    "react-aria-components": "~1.19.0"
   },
   "devDependencies": {
     "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@ttoss/config": "workspace:^",
+    "@ttoss/forms": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
+    "@types/jest-axe": "^3.5.9",
+    "esbuild": "^0.28.0",
     "jest": "^30.4.2",
+    "jest-axe": "^10.0.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "tsdown": "^0.22.2"
+    "react-hook-form": "^7.71.1",
+    "tsdown": "^0.22.2",
+    "zod": "^4.4.3"
   },
   "peerDependencies": {
     "react": ">=18",

@@ -1,11 +1,12 @@
 import { vars } from '@ttoss/fsl-theme/vars';
-import type * as React from 'react';
+import * as React from 'react';
 import {
   ProgressBar as RACProgressBar,
   type ProgressBarProps as RACProgressBarProps,
 } from 'react-aria-components';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
+import { ANIMATION_NAMES, ensureKeyframes } from '../../tokens/keyframes';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -30,6 +31,13 @@ export const progressBarMeta = {
 } as const satisfies ComponentMeta<'Feedback'>;
 
 type FeedbackColors = (typeof vars.colors.feedback)[EvaluationsFor<'Feedback'>];
+
+// Layout constants (CONTRIBUTING §4 layout-literal rule) — geometry of the
+// indeterminate sweep, not semantic tokens:
+// the fill occupies 40% of the track and one sweep cycle takes 1.2s (slow
+// enough to read as "working", fast enough to read as "alive").
+const INDETERMINATE_FILL_WIDTH = '40%';
+const INDETERMINATE_CYCLE_DURATION = '1.2s';
 
 /** Track (body) style — the empty rail the fill animates across. */
 const buildTrackStyle = (c: FeedbackColors): React.CSSProperties => {
@@ -58,14 +66,14 @@ const buildFillStyle = ({
 }): React.CSSProperties => {
   return {
     height: '100%',
-    width: isIndeterminate ? '40%' : `${percentage ?? 0}%`,
+    width: isIndeterminate ? INDETERMINATE_FILL_WIDTH : `${percentage ?? 0}%`,
     backgroundColor: c?.border?.default,
     borderRadius: 'inherit',
     transitionProperty: 'width',
     transitionDuration: vars.motion.transition.enter.duration,
     transitionTimingFunction: vars.motion.transition.enter.easing,
     animation: isIndeterminate
-      ? 'tt-progressbar-indeterminate 1.2s infinite'
+      ? `${ANIMATION_NAMES.progressBarIndeterminate} ${INDETERMINATE_CYCLE_DURATION} linear infinite`
       : undefined,
   };
 };
@@ -118,6 +126,12 @@ export const ProgressBar = ({
   ...props
 }: ProgressBarProps) => {
   const c = vars.colors.feedback[evaluation];
+
+  // The indeterminate sweep references a registered @keyframes name —
+  // inject the package stylesheet before the browser paints this style.
+  React.useInsertionEffect(() => {
+    ensureKeyframes();
+  }, []);
 
   return (
     <RACProgressBar

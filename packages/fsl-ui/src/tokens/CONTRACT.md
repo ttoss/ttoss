@@ -347,7 +347,60 @@ const valid = ENTITY_EVALUATION['Action'];
 
 ---
 
-## §7 — Full Example: Button (Entity = Action)
+## §7 — Escape Hatches: Composite-Scoped CSS Custom Properties
+
+Composites own their layout: they expose no `style`/`className` and no
+visual props. The **single sanctioned customization channel** is a
+composite-scoped CSS custom property — a _knob_ — named
+`--fsl-<scope>-<knob>` and consumed through the `fslVar` helper
+(`src/tokens/escapeHatch.ts`):
+
+```typescript
+maxWidth: fslVar('--fsl-dialog-max-width', DIALOG_MAX_WIDTH_DEFAULT),
+```
+
+Hosts customize with ordinary CSS — no component code involved:
+
+```css
+/* Wider dialogs across the app */
+[data-scope='dialog'] {
+  --fsl-dialog-max-width: 720px;
+}
+
+/* One specific menu */
+.settings-menu [data-scope='menu'] {
+  --fsl-menu-max-width: 480px;
+}
+```
+
+Rules (enforced by the contract tests):
+
+1. Every knob read MUST go through `fslVar` and MUST carry a fallback —
+   the component's default. A knob without a fallback is a violation.
+2. The `--fsl-` namespace is reserved for host knobs. `--tt-*` theme
+   tokens never take fallbacks (that ban is unchanged — fallbacks on theme
+   tokens mask missing token coverage).
+3. Knobs are for **geometry the host legitimately owns** (widths, heights
+   of overlay surfaces). Colors, spacing steps, typography, and anything
+   else covered by a semantic token are NOT knobs — they belong to the
+   theme.
+4. Where the underlying React Aria primitive exposes safe positioning
+   props (`placement`, `offset`, `crossOffset`, `shouldFlip`,
+   `containerPadding`), the composite forwards them as ordinary props —
+   positioning is behavior, not chrome.
+
+Registered knobs:
+
+| Knob                      | Component     | Fallback           |
+| ------------------------- | ------------- | ------------------ |
+| `--fsl-dialog-max-width`  | `DialogModal` | `min(500px, 90vw)` |
+| `--fsl-dialog-max-height` | `DialogModal` | `90vh`             |
+| `--fsl-menu-min-width`    | `Menu`        | `12rem`            |
+| `--fsl-menu-max-width`    | `Menu`        | `min(320px, 90vw)` |
+
+---
+
+## §8 — Full Example: Button (Entity = Action)
 
 `entity: 'Action'` → §1 row: colors=`action`, radii=`control`, border=`outline.control`,
 sizing=`hit.base`, spacing=`inset.control.md`, typography=`label.md`, motion=`feedback`, elevation=`flat`.

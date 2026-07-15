@@ -12,6 +12,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
+import { fslVar } from '../../tokens/escapeHatch';
 import { createPresenceScope } from '../scope';
 
 // ---------------------------------------------------------------------------
@@ -156,6 +157,13 @@ export const dialogModalMeta = {
 type InformationalColors =
   (typeof vars.colors.informational)[EvaluationsFor<'Overlay'>];
 
+// Layout constants (CONTRIBUTING §4 layout-literal rule) — defaults for the
+// modal surface geometry. 500px is a comfortable reading measure for dialog
+// copy; the 90vw/90vh clamps keep the surface inside small viewports.
+// Hosts override via the §7 escape hatches below, not by editing these.
+const DIALOG_MAX_WIDTH_DEFAULT = 'min(500px, 90vw)';
+const DIALOG_MAX_HEIGHT_DEFAULT = '90vh';
+
 /**
  * The active enter/exit motion spec, or `null` when the surface is at rest.
  * Collapses the repeated `transition[isEntering ? 'enter' : 'exit']` lookups
@@ -209,8 +217,9 @@ const buildModalSurfaceStyle = ({
   const inTransition = isEntering || isExiting;
   return {
     boxSizing: 'border-box',
-    maxWidth: 'min(500px, 90vw)',
-    maxHeight: '90vh',
+    // Host knobs (CONTRACT.md §7): override via CSS on [data-scope="dialog"].
+    maxWidth: fslVar('--fsl-dialog-max-width', DIALOG_MAX_WIDTH_DEFAULT),
+    maxHeight: fslVar('--fsl-dialog-max-height', DIALOG_MAX_HEIGHT_DEFAULT),
     overflow: 'auto',
     borderRadius: vars.radii.surface,
     borderWidth: vars.border.outline.surface.width,

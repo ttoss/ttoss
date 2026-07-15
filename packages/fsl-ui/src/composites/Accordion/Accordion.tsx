@@ -2,6 +2,7 @@ import { vars } from '@ttoss/fsl-theme/vars';
 import * as React from 'react';
 import {
   Button as RACButton,
+  type ButtonProps as RACButtonProps,
   Disclosure as RACDisclosure,
   DisclosureGroup as RACDisclosureGroup,
   type DisclosureGroupProps as RACDisclosureGroupProps,
@@ -217,9 +218,9 @@ export const AccordionItem = ({ children, ...props }: AccordionItemProps) => {
       style={
         {
           boxSizing: 'border-box',
-          // Divider between siblings — collapses on the first item via
-          // sibling selectors when consumers compose without the group, and
-          // is naturally clipped at the group bottom by `overflow: hidden`.
+          // Divider between siblings: every item draws a block-start border,
+          // including the first — where it visually merges with the group's
+          // own border (both read the same navigation border color).
           borderBlockStartWidth: vars.border.divider.width,
           borderBlockStartStyle: vars.border.divider.style,
           borderBlockStartColor:
@@ -240,22 +241,39 @@ AccordionItem.displayName = accordionItemMeta.displayName;
 
 /**
  * Props for the AccordionTrigger component.
+ *
+ * Extends the full React Aria `Button` API (minus `style`/`className` and
+ * the reserved `slot`) so behavior props — `isDisabled`, `onPress`, `id`,
+ * `aria-*` — flow through to the underlying trigger button.
  */
-export interface AccordionTriggerProps {
+export interface AccordionTriggerProps extends Omit<
+  RACButtonProps,
+  'style' | 'className' | 'children' | 'slot'
+> {
+  /**
+   * HTML heading level of the wrapping heading element. Pick the level
+   * that fits the host page's document outline.
+   * @default 3
+   */
+  headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
   /** Visible label content of the trigger row. */
   children?: React.ReactNode;
 }
 
 /**
- * The clickable header of an `AccordionItem`. Renders inside an `<h3>`
- * (per RAC's recommended structure) and exposes `aria-expanded` / a
- * controlled chevron icon.
+ * The clickable header of an `AccordionItem`. Renders inside a heading
+ * element (level via `headingLevel`, default `<h3>` per RAC's recommended
+ * structure) and exposes `aria-expanded` / a controlled chevron icon.
  *
  * Reads `isExpanded`, `isHovered`, `isFocusVisible`, `isDisabled` from RAC's
  * `Button` render-props and resolves them through the canonical state
  * cascade in [`resolveInteractiveStyle`](../../tokens/resolveInteractiveStyle.ts).
  */
-export const AccordionTrigger = ({ children }: AccordionTriggerProps) => {
+export const AccordionTrigger = ({
+  headingLevel = 3,
+  children,
+  ...props
+}: AccordionTriggerProps) => {
   const { evaluation } = accordionScope.use(accordionTriggerMeta.displayName);
   const c = vars.colors.navigation[evaluation];
   // RAC propagates the live Disclosure state to descendants via this context.
@@ -267,12 +285,13 @@ export const AccordionTrigger = ({ children }: AccordionTriggerProps) => {
 
   return (
     <RACHeading
-      level={3}
+      level={headingLevel}
       data-scope="accordion"
       data-part="header"
       style={{ margin: 0 }}
     >
       <RACButton
+        {...props}
         slot="trigger"
         data-scope="accordion"
         data-part="trigger"

@@ -33,6 +33,14 @@ audit, valid as of commit `81c257d`.
 
 ## Workstream A — Audit findings remediation
 
+> **Status: ✅ COMPLETE (2026-07-15).** All 16 findings remediated in one
+> pass. Package state after the pass: 662 tests green, 100% coverage on
+> every dimension, axe + keyboard suites in place, `@ttoss/forms` bridge
+> proven, packaging carries the AI surface (`llms.txt` + CONTRACT in the
+> tarball). Per-item notes below (⤷). Local tsdown builds remain blocked by
+> the pre-existing container env issue — CI is authoritative (relevant to
+> D2 only, not to any A-item AC).
+
 ### A-P0: bugs and broken promises
 
 **A1. ProgressBar indeterminate animation is dead** `S`
@@ -47,6 +55,8 @@ audit, valid as of commit `81c257d`.
 - AC: indeterminate bar visibly animates in a browser; reduced-motion disables
   it; invariant test fails if a keyframe goes missing again.
 
+> ⤷ **Done.** `src/tokens/keyframes.ts` — `ANIMATION_NAMES` registry + `ensureKeyframes()` (idempotent, SSR-safe `<style id="fsl-ui-keyframes">` injection with a `prefers-reduced-motion: reduce` kill switch), wired via `useInsertionEffect` in ProgressBar. Invariant #8 lives in `keyframes.test.ts`: every `animation:` in `src/` must reference `ANIMATION_NAMES.*` (or reset), and every registered name must have a `@keyframes` block.
+
 **A2. Dialog width is unconfigurable** `S` _(depends on A6 decision)_
 `Dialog.tsx` hardcodes `maxWidth: 'min(500px, 90vw)'` on the internal modal
 surface; `style`/`className` are omitted and the documented wrapper workaround
@@ -58,6 +68,8 @@ cannot reach the constrained element.
 - AC: a host can set the width via CSS targeting `[data-scope="dialog"]`
   without touching component code; default behavior unchanged; documented in
   CONTRACT.md.
+
+> ⤷ **Done.** `--fsl-dialog-max-width` + `--fsl-dialog-max-height` knobs via `fslVar` with the previous literals as fallbacks; documented in CONTRACT.md §7 and covered by contract tests asserting the rendered `var(...)` values.
 
 **A3. i18n decision — 7 hardcoded English defaults** `M` _(decision + ADR)_
 `Wizard` (Back/Next/Finish), `ConfirmationDialog` (Confirm/Cancel/"Click again
@@ -71,6 +83,8 @@ to confirm"), `Select` ("Select…"). No i18n rule exists in CONTRIBUTING.
   forbidden for flow-critical labels.
 - AC: `tsc` forces callers to supply the labels; ADR recorded; CONTRIBUTING
   rule added; tests updated.
+
+> ⤷ **Done.** ADR-001 + CONTRIBUTING §6. `ConfirmationDialog`: `confirmLabel`/`cancelLabel` required, `armedLabel` required-iff-destructive via a discriminated union on `consequence`. `WizardNavigation`: labels required unless the render-prop `children` owns the row (union type). `Select` placeholder and the Wizard `announceStep` live-region copy stay as documented English fallbacks with override props.
 
 **A4. npm packaging breaks the AI-first promise** `S`
 `files: ["dist"]` omits `CONTRACT.md`; README references `src/…` paths that do
@@ -86,6 +100,8 @@ examples.
 - AC: `npm pack` tarball contains the AI surface; README quickstart works
   copy-paste in a fresh Vite app.
 
+> ⤷ **Done.** `files: ["dist", "llms.txt", "src/tokens/CONTRACT.md"]`; `llms.txt` authored (semantic model, catalog, Entity→token map, cascade, integration rules); README rewritten with install → `createTheme()` + `ThemeProvider` → first Button, verified against the real fsl-theme API.
+
 **A5. Stale references and old identity** `S`
 
 - `ISSUE.md §2.2/2.3/2.4` cited in `Wizard.tsx`, `ConfirmationDialog.tsx`,
@@ -99,6 +115,8 @@ examples.
   spread/`any` hole worth closing).
 - AC: `grep -rn "ISSUE.md\|ui2\|theme2" src tests CONTRIBUTING.md` returns
   nothing; the phantom-prop compiles no more.
+
+> ⤷ **Done.** Grep is clean (src, tests, CONTRIBUTING, README). Evidence-rule comments now point at CONTRIBUTING §2.3 (Patterns A/B + Consequence dispatch). Phantom `totalSteps` removed from `compositeScope.test.tsx` — it survived because jest runs babel without type-checking; `tsc` (build/CI) is the type gate.
 
 ### A-P1: real-world API & robustness
 
@@ -118,6 +136,8 @@ width, Menu popover sizing (`12rem` / `min(320px, 90vw)` hardcoded), popover
 - AC: policy section in CONTRACT; Dialog + Menu retrofitted; contract test
   asserting every `--fsl-*` var has a fallback value.
 
+> ⤷ **Done.** CONTRACT.md §7 (policy + registered-knob table) and ADR-002. `src/tokens/escapeHatch.ts` (`fslVar`) is the single consumption path; contract tests ban raw/fallback-less `var(--fsl-…)` and any CSS var outside the `--tt-`/`--fsl-` namespaces. Menu also forwards `crossOffset`/`shouldFlip`/`containerPadding`.
+
 **A7. AccordionTrigger swallows the Button API** `S`
 Accepts only `children`; drops `isDisabled`, `onPress`, `id`, `slot` — the
 computed disabled styling is unreachable dead state. Also `level={3}` is fixed
@@ -127,6 +147,8 @@ on the heading.
   (default 3).
 - AC: `<AccordionTrigger isDisabled>` renders the already-implemented disabled
   state; heading level configurable; tests for both.
+
+> ⤷ **Done.** `AccordionTriggerProps` extends RAC `ButtonProps` (minus `style`/`className`/`slot`); `headingLevel` prop (default 3). Tests cover `isDisabled` (button disabled + no toggle), `onPress`, `id`, and heading levels.
 
 **A8. RTL correctness** `S`
 `Switch.tsx` positions the thumb with physical `left:`.
@@ -138,6 +160,8 @@ on the heading.
 - AC: Switch thumb slides correctly under `dir="rtl"` (jsdom assertion on the
   computed style key); invariant test green.
 
+> ⤷ **Done.** Thumb now uses `insetInlineStart`/`insetBlockStart` and transitions `inset-inline-start`; Toast region `bottom` → `insetBlockEnd`. New contract invariant bans physical box properties (`top/left/right/bottom`, `margin*/padding*/border*` physical variants) across `src/`; `Switch.test.tsx` asserts the logical keys.
+
 **A9. Toast rides RAC `UNSTABLE_` APIs on an open range** `S` _(decision)_
 `UNSTABLE_Toast*` with `react-aria-components: ^1.9.0` — a RAC minor may
 rename/break.
@@ -145,6 +169,8 @@ rename/break.
 - Pin `~1.9.0` until RAC stabilizes Toast; add a canary test that imports the
   `UNSTABLE_` symbols and fails loudly with an upgrade note if absent.
 - AC: lockfile pins the minor; canary test exists.
+
+> ⤷ **Done.** Pinned `~1.19.0` — the minor the package actually ran against (the audit text said `~1.9.0`, but the lockfile had been resolving `^1.9.0` → 1.19.0; pinning to 1.9.0 literally would have been a silent downgrade that breaks ToastRegion). Canary: `racCanary.test.ts` imports every consumed `UNSTABLE_` symbol with an upgrade note. ADR-003.
 
 **A10. Tree-shaking verification** `M`
 Single entry bundles all components into one chunk; `sideEffects: false`
@@ -159,6 +185,8 @@ should let bundlers shake it, but nobody proved it — if it fails, importing
 - Document the measured cost of RAC in the README (market transparency).
 - AC: probe in CI with a byte budget; README states the numbers.
 
+> ⤷ **Done.** `scripts/verify-treeshake.mjs` (`pnpm run verify:treeshake`, esbuild, prefers dist / falls back to src): Button-only bundle = **1 812 bytes** minified (budget 16 000), zero composite leakage. README states the number.
+
 **A11. `@ttoss/forms` (RHF + Zod) bridge** `L` _(strategic)_
 The monorepo standard is `@ttoss/forms`; fsl-ui `Form` is RAC-native. Without
 a bridge every app must pick a side and adoption dies there.
@@ -170,6 +198,8 @@ a bridge every app must pick a side and adoption dies there.
   devDependency for the integration test and is never modified.
 - AC: a real form (3 fields + Zod schema + submit) built with @ttoss/forms +
   fsl-ui controls, as a test; decision recorded as ADR.
+
+> ⤷ **Done.** `formsBridge.test.tsx`: TextField + Select + Checkbox wired through `Controller`/`useForm`/`zodResolver`/`z` re-exported by `@ttoss/forms` (devDependency; source untouched). Invalid submit blocks + surfaces `aria-invalid`; valid submit delivers typed values; error round-trip clears. Decision = documented recipe, no adapter entry: ADR-004. Jest `transformIgnorePatterns` scoped via `getTransformIgnorePatterns()` to compile the ESM chain @ttoss/forms drags in.
 
 ### A-P3: accessibility & test hardening
 
@@ -183,6 +213,8 @@ exists only as `data-*`.
 - AC: keyboard/screen-reader flow test (focus lands on new step; live region
   text updates).
 
+> ⤷ **Done.** On step change (never on mount) focus moves to the new step/summary body (`tabIndex={-1}` targets); visually-hidden `aria-live="polite"` region announces progress; `announceStep` prop overrides the English fallback (i18n rule §6). Five behavior tests including a pt-BR localization test.
+
 **A13. a11y + keyboard test layer** `M`
 Everything is `fireEvent.click`; no ARIA assertions; no axe.
 
@@ -194,6 +226,8 @@ Everything is `fireEvent.click`; no ARIA assertions; no axe.
 - AC: axe suite green package-wide; keyboard suites for the 5 interactive
   composites.
 
+> ⤷ **Done.** `DOM_FIXTURES` extracted to `domFixtures.tsx` (shared, auto-covering: a new component's fixture feeds both contract + axe suites). `a11y.test.tsx`: jest-axe green over every canonical render (TextField fixtures gained proper labels). `keyboard.test.tsx` (user-event): Menu (Enter/arrows/activate/Escape+focus restore), Dialog (Escape + focus trap), Select (open/select/Escape), Accordion (Enter toggle, Tab order). Tabs joins when built (Wave 1).
+
 **A14. Layout-literal rule** `S`
 `12rem`, `320px`, `500px`, `1.2s`, `40%`, `2px` etc. — CONTRACT bans color
 literals but is silent on layout.
@@ -202,6 +236,8 @@ literals but is silent on layout.
   constants with a justification comment (the `TRACK_W` pattern in Switch);
   magic inline literals forbidden.
 - AC: rule documented; existing literals converted to named constants.
+
+> ⤷ **Done.** Rule in CONTRIBUTING §4. Converted: Menu (`12rem`, `min(320px,90vw)`, offset 4), Dialog (`min(500px,90vw)`, `90vh`), ProgressBar (`40%`, `1.2s`), Toast (`240px`, region max-width) — each with a justification comment. `outlineOffset` micro-nudges documented as the tolerated inline exception.
 
 ### A-P4: documentation (docs/website)
 
@@ -215,6 +251,8 @@ Every "see the React implementation" link in the corpus lands on an
   restate (repo docs rule).
 - AC: page live; no dangling "under construction".
 
+> ⤷ **Done.** `docs/design/ui-components/index.md` written: what fsl-ui is, catalog by Entity, customization model (§7 knobs + data-attributes), links to component-model/design-tokens — no content duplication.
+
 **A16. CONTRIBUTING §2.3 example vs code divergence** `S`
 Doc example spreads `{...props}` after data-attrs (caller could override
 `data-composition`); real code spreads before. Fix the example. Also remove the
@@ -222,6 +260,8 @@ aspirational "sibling selectors" comment in `Accordion.tsx` (~line 220) that
 describes unimplemented divider collapsing.
 
 - AC: doc matches code; comment removed or implemented.
+
+> ⤷ **Done.** §2.3 Pattern B example now spreads `{...props}` before the identity attributes (with the rationale in a comment); the aspirational sibling-selector comment in `Accordion.tsx` replaced with a description of the actual divider behavior.
 
 ---
 
@@ -235,10 +275,10 @@ express a component cleanly, that's a finding, not a workaround).
 
 ### B0. Sequencing rule (read first)
 
-**Foundations before scale.** A6 (escape hatches), A3 (i18n rule), B1 (icon
-story) and A14 (literal rule) MUST land before the component waves — every
-one of the ~25 new components consumes those decisions; deciding after means
-25× rework.
+**Foundations before scale.** A6 (escape hatches ✅), A3 (i18n rule ✅) and
+A14 (literal rule ✅) landed with Workstream A. Only **B1 (icon story)** still
+blocks the component waves — every one of the ~25 new components consumes
+these decisions; deciding after means 25× rework.
 
 **Per-component Definition of Done** (applies to every row below):
 
@@ -277,18 +317,18 @@ Status: ✅ shipped · 🔧 shipped-but-audit-items · ⬜ to build · ⏸ defer
 | Tabs                                                    | ⬜     | Navigation       | root + item + indicator + content(panel)                                   | navigation                                | primary/muted                     | **selected + current**             | none                                                                                                                                                     | Fills the empty Navigation story; panel is `structure: content`; keyboard arrows tested                                                                                                  |
 | Breadcrumbs                                             | ⬜     | Navigation       | root + item                                                                | navigation                                | primary/muted                     | current                            | none                                                                                                                                                     | Last item = `current`; separator is decorative (aria-hidden)                                                                                                                             |
 | Disclosure (single)                                     | ⬜     | Disclosure       | root + trigger + content                                                   | navigation                                | primary/muted                     | expanded                           | none                                                                                                                                                     | Standalone counterpart of Accordion (which is DisclosureGroup); trivial extraction from Accordion internals                                                                              |
-| Accordion (DisclosureGroup)                             | 🔧     | Disclosure       | —                                                                          | navigation                                | —                                 | expanded                           | —                                                                                                                                                        | A7 (trigger API), A16 (stale comment)                                                                                                                                                    |
+| Accordion (DisclosureGroup)                             | ✅     | Disclosure       | —                                                                          | navigation                                | —                                 | expanded                           | —                                                                                                                                                        | A7 + A16 resolved (2026-07-15)                                                                                                                                                           |
 | Checkbox                                                | ✅     | Selection        | root + selectionControl + indicator + label                                | input                                     | none                              | checked/indeterminate/invalid      | —                                                                                                                                                        | —                                                                                                                                                                                        |
 | CheckboxGroup                                           | ⬜     | Selection        | root + label + description + validationMessage                             | input                                     | none                              | invalid (group-level)              | none                                                                                                                                                     | Mirrors RadioGroup shape; group invalid propagates to items                                                                                                                              |
 | RadioGroup / Radio                                      | ✅     | Selection        | —                                                                          | input                                     | —                                 | —                                  | —                                                                                                                                                        | —                                                                                                                                                                                        |
-| Switch                                                  | 🔧     | Selection        | —                                                                          | input                                     | —                                 | —                                  | —                                                                                                                                                        | A8 (RTL `left:`)                                                                                                                                                                         |
-| Select                                                  | ✅     | Selection        | —                                                                          | input                                     | —                                 | —                                  | —                                                                                                                                                        | popover sizing → A6                                                                                                                                                                      |
+| Switch                                                  | ✅     | Selection        | —                                                                          | input                                     | —                                 | —                                  | —                                                                                                                                                        | A8 resolved — logical props (2026-07-15)                                                                                                                                                 |
+| Select                                                  | ✅     | Selection        | —                                                                          | input                                     | —                                 | —                                  | —                                                                                                                                                        | A6 knobs shipped                                                                                                                                                                         |
 | ListBox (standalone)                                    | ⬜     | Collection       | root + item                                                                | informational (surface) / items use input | —                                 | selected                           | none                                                                                                                                                     | Container informational, items are Selection-pattern: precedent set by Select's items; document this split in CONTRACT                                                                   |
 | GridList                                                | ⬜     | Collection       | root + item + selectionControl                                             | informational                             | primary/muted                     | selected                           | none                                                                                                                                                     | Multi-select rows; drag handle deferred with DnD                                                                                                                                         |
 | Table                                                   | ⬜ `L` | Collection       | root + item + title(columnheader) + content(cell) + actions?               | informational                             | primary/muted                     | selected + hover(row)              | possibly none — map columnheader→`title`, row→`item`, cell→`content`; if that reads wrong in practice, propose `cell`/`row` roles via FSL §17 governance | The largest single build; sort indicators need B1 icons; virtualization deferred (RAC Virtualizer, phase later)                                                                          |
 | Tree                                                    | ⬜     | Collection       | root + item + indicator + trigger                                          | informational                             | primary/muted                     | selected + expanded                | none                                                                                                                                                     | expanded is legal on informational ✓                                                                                                                                                     |
 | TagGroup                                                | ⬜     | Selection        | root + item + closeTrigger                                                 | input                                     | none                              | selected                           | none                                                                                                                                                     | Removable tags = closeTrigger part; the "filter chip" ambiguity from the docs audit gets its canonical answer here (selected, not pressed) — write it into colors.md "common confusions" |
-| Menu                                                    | ✅     | Collection       | —                                                                          | informational                             | —                                 | —                                  | —                                                                                                                                                        | popover knobs → A6                                                                                                                                                                       |
+| Menu                                                    | ✅     | Collection       | —                                                                          | informational                             | —                                 | —                                  | —                                                                                                                                                        | A6 knobs shipped                                                                                                                                                                         |
 | TextField                                               | ✅     | Input            | —                                                                          | input                                     | —                                 | invalid ✓                          | —                                                                                                                                                        | —                                                                                                                                                                                        |
 | TextArea                                                | ⬜     | Input            | root + control + label + description + validationMessage                   | input                                     | none                              | invalid                            | none                                                                                                                                                     | Reuse TextField parts; RAC TextField with multiline; `field-sizing`/rows decision                                                                                                        |
 | SearchField                                             | ⬜     | Input            | root + control + closeTrigger + icon                                       | input                                     | none                              | invalid                            | none                                                                                                                                                     | Clear button = closeTrigger; icon needs B1                                                                                                                                               |
@@ -296,13 +336,13 @@ Status: ✅ shipped · 🔧 shipped-but-audit-items · ⬜ to build · ⏸ defer
 | Slider                                                  | ⬜     | Input            | root + control(thumb) + label + status(output)                             | input                                     | none                              | disabled/focused/**droptarget?no** | mapping decision: thumb→`control`, track→`surface`(part), output→`status`. If `surface` reads wrong for track, admit `track` via FSL §17                 | RTL + keyboard heavy; hit-target tokens on thumb                                                                                                                                         |
 | ComboBox                                                | ⬜ `L` | Input            | root + control + trigger + label + item(s via ListBox) + validationMessage | input                                     | none                              | invalid/expanded                   | none                                                                                                                                                     | Input entity (freeform + choice); popover reuses ListBox; the accordion-vs-select of ambiguity cases — document Entity rationale in meta JSDoc                                           |
 | Autocomplete                                            | ⏸      | Input            | —                                                                          | input                                     | —                                 | —                                  | —                                                                                                                                                        | RAC newer API; wait for ComboBox learnings                                                                                                                                               |
-| Form                                                    | ✅     | Structure        | —                                                                          | informational                             | —                                 | —                                  | —                                                                                                                                                        | A11 bridge                                                                                                                                                                               |
-| Dialog/Modal                                            | ✅     | Overlay          | —                                                                          | informational                             | —                                 | —                                  | —                                                                                                                                                        | A2 width                                                                                                                                                                                 |
+| Form                                                    | ✅     | Structure        | —                                                                          | informational                             | —                                 | —                                  | —                                                                                                                                                        | A11 resolved — RHF/Zod recipe test                                                                                                                                                       |
+| Dialog/Modal                                            | ✅     | Overlay          | —                                                                          | informational                             | —                                 | —                                  | —                                                                                                                                                        | A2 resolved — --fsl-dialog-\* knobs                                                                                                                                                      |
 | Popover (standalone)                                    | ⬜     | Overlay          | root + surface + positioner                                                | informational                             | primary/muted                     | —                                  | none                                                                                                                                                     | Extract from Menu/Select internals into a public composite; layer `overlay` (not blocking); A6 knobs from day one                                                                        |
 | Tooltip                                                 | ⬜     | Overlay          | root + surface + positioner                                                | informational                             | primary/muted                     | —                                  | none                                                                                                                                                     | Non-blocking, `zIndex.layer.overlay`, `motion.transition`; no focusable content rule documented                                                                                          |
-| ProgressBar                                             | 🔧     | Feedback         | —                                                                          | feedback                                  | —                                 | —                                  | —                                                                                                                                                        | A1 keyframes                                                                                                                                                                             |
+| ProgressBar                                             | ✅     | Feedback         | —                                                                          | feedback                                  | —                                 | —                                  | —                                                                                                                                                        | A1 resolved — keyframes registry                                                                                                                                                         |
 | Meter                                                   | ⬜     | Feedback         | root + label + status + body(track) + content(fill)                        | feedback                                  | primary/positive/caution/negative | —                                  | none                                                                                                                                                     | Sibling of ProgressBar (static value vs activity) — JSDoc must disambiguate per lexicon style                                                                                            |
-| Toast                                                   | 🔧     | Feedback         | —                                                                          | feedback                                  | —                                 | —                                  | —                                                                                                                                                        | A9 UNSTABLE pin                                                                                                                                                                          |
+| Toast                                                   | ✅     | Feedback         | —                                                                          | feedback                                  | —                                 | —                                  | —                                                                                                                                                        | A9 resolved — pinned ~1.19.0 + canary                                                                                                                                                    |
 | Separator                                               | ⬜     | Structure        | root                                                                       | informational                             | muted                             | —                                  | none                                                                                                                                                     | `border.divider` token consumer — first pure-Structure atomic                                                                                                                            |
 | Group                                                   | ⬜     | Structure        | root + label                                                               | informational                             | primary/muted                     | —                                  | none                                                                                                                                                     | Field grouping wrapper                                                                                                                                                                   |
 | Toolbar                                                 | ⬜     | Structure        | root + actions                                                             | informational                             | primary/muted                     | —                                  | none                                                                                                                                                     | Arrow-key navigation between actions (RAC) — keyboard tests                                                                                                                              |
@@ -354,10 +394,8 @@ Record the gate in this file when flipped.
 ## Suggested execution order
 
 ```
-A1 A2 A4 A5 A7 A8 A9 (P0/quick, parallel)
-→ A6 + A3 + B1 + A14 (foundation decisions, sequential-ish)
-→ Wave 1 ∥ A12 A13 (a11y layer grows with the wave)
-→ A10 A11 A15 A16
+[✅ done 2026-07-15] A1–A16 (all of Workstream A, incl. foundations A6/A3/A14)
+→ B1 icon story → Wave 1 (a11y layer already in place — extend per component)
 → Wave 2 → Wave 3
 → D1 benchmark → D2 gate → Phase 3
 ```

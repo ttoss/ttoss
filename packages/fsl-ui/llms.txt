@@ -1,0 +1,107 @@
+# @ttoss/fsl-ui
+
+Semantic, token-native React component library. Built on React Aria
+Components; styled exclusively with `@ttoss/fsl-theme` CSS-variable tokens.
+Every component declares a formal semantic identity (FSL — Foundational
+Semantic Language) that determines which tokens it may consume.
+
+Ground truth in the published package: `src/tokens/CONTRACT.md` (full Layer-2
+contract). This file is the distilled, machine-oriented summary.
+
+## Setup
+
+```tsx
+import { createTheme } from '@ttoss/fsl-theme';
+import { ThemeProvider } from '@ttoss/fsl-theme/react';
+import { Button } from '@ttoss/fsl-ui';
+
+const theme = createTheme(); // base theme + dark alternate
+
+<ThemeProvider theme={theme} defaultMode="system">
+  <Button evaluation="primary" onPress={save}>Save</Button>
+</ThemeProvider>
+```
+
+Without a ThemeProvider (or ThemeHead/ThemeScript on SSR) the CSS variables
+are undefined and components render unstyled.
+
+## Semantic model (what the props mean)
+
+- entity — what the component IS (fixed per component, not a prop):
+  Action, Input, Selection, Navigation, Disclosure, Overlay, Feedback,
+  Collection, Structure.
+- evaluation (prop) — AUTHORIAL emphasis, chosen when writing the UI:
+  e.g. 'primary' | 'secondary' | 'accent' | 'muted' | 'negative' on Action.
+  Input/Selection components have NO evaluation prop (data entry carries no
+  authorial voice); validation is the runtime `invalid` STATE (`isInvalid`),
+  never `evaluation="negative"`.
+- consequence (prop) — effect on state: 'neutral' | 'committing' |
+  'destructive'. Drives MECHANISM (e.g. ConfirmationDialog two-click arming),
+  not color. Destructive ≠ negative color; pair them explicitly if desired.
+- composition (prop on leaves) — slot the element plays inside a parent:
+  'primaryAction' | 'secondaryAction' | 'dismissAction' … DialogActions
+  reorders children by it per platform convention.
+- State — runtime only (hover, active, focused, disabled, checked,
+  indeterminate, expanded, invalid, …). Emitted by React Aria render props;
+  priority cascade: disabled > invalid > expanded > indeterminate >
+  selected > focusVisible > pressed > hovered > default.
+
+## Component catalog (all exports also ship a `*Meta` identity object)
+
+Action:      Button, MenuItem (inside Menu), FormSubmit (inside Form)
+Navigation:  Link
+Disclosure:  Accordion, AccordionItem, AccordionTrigger, AccordionPanel
+Selection:   Checkbox, RadioGroup/Radio, Switch, Select/SelectItem
+Input:       TextField (+ TextFieldLabel/Control/Description/Error)
+Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
+             DialogActions, Menu, MenuTrigger, ConfirmationDialog
+Feedback:    ProgressBar, Toast, ToastRegion, createToastQueue
+Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
+             WizardNavigation
+
+## Entity → token map (a component reads ONLY its row)
+
+Action      → colors.action,        radii.control, motion.feedback
+Input       → colors.input,         radii.control, motion.feedback
+Selection   → colors.input,         radii.control, motion.feedback
+Navigation  → colors.navigation,    radii.control, motion.feedback
+Disclosure  → colors.navigation,    radii.control, motion.transition
+Overlay     → colors.informational, radii.surface, motion.transition, elevation.overlay
+Feedback    → colors.feedback,      radii.surface, elevation.raised
+Collection  → colors.informational, radii.surface
+Structure   → colors.informational, radii.surface
+
+Color path formula: `vars.colors.{ux}[evaluation][background|border|text][state]`
+→ CSS var `--tt-colors-{ux}-{evaluation}-{dimension}-{state}`.
+
+## Rules an integrating agent must follow
+
+1. Composites accept NO `style`/`className`. Customize geometry via CSS
+   custom-property knobs on the composite scope (fallbacks built in):
+   `--fsl-dialog-max-width` (default min(500px, 90vw)),
+   `--fsl-dialog-max-height` (90vh), `--fsl-menu-min-width` (12rem),
+   `--fsl-menu-max-width` (min(320px, 90vw)).
+   Example: `[data-scope='dialog'] { --fsl-dialog-max-width: 720px; }`
+2. There is NO `size` prop anywhere. Different density = different
+   semantic identity = different component.
+3. i18n: flow-critical labels are REQUIRED props with no defaults —
+   ConfirmationDialog (confirmLabel, cancelLabel, armedLabel when
+   consequence="destructive") and WizardNavigation (prevLabel, nextLabel,
+   finishLabel). Supply localized copy from the host app.
+4. Validation: pass `isInvalid` (or React Aria `validate`) — never a color
+   prop. Invalid styling comes from `input.*.{dimension}.invalid` tokens.
+5. Destructive confirms: `<ConfirmationDialog consequence="destructive">`
+   requires TWO clicks (arming). `consequence="committing"` +
+   `evaluation="negative"` gives a red one-click confirm.
+6. Every element exposes `data-scope`/`data-part` (plus `data-evaluation`,
+   `data-consequence`, `data-composition`, `data-arming` where relevant) —
+   use these for CSS targeting and tests; never rely on internal class names.
+7. All layout is logical-property based (RTL-safe); keep host CSS logical too.
+
+## Package facts
+
+- ESM only, `sideEffects: false`, tree-shakes (Button-only import ≈ 1.8 KB
+  min before deps). Peer deps: react >= 18, react-dom >= 18.
+- `react-aria-components` pinned `~1.19.0` while Toast uses UNSTABLE_ APIs.
+- SSR-safe: the only DOM injection (`@keyframes` for ProgressBar) happens in
+  a client-only insertion effect.

@@ -40,6 +40,13 @@ export const toastMeta = {
 
 type FeedbackColors = (typeof vars.colors.feedback)[EvaluationsFor<'Feedback'>];
 
+// Layout constants (CONTRIBUTING §4 layout-literal rule) — toast geometry.
+// 240px keeps a short toast from collapsing to its title width; the region
+// clamp (420px / viewport minus breathing room) keeps long toasts readable
+// without spanning the whole screen.
+const TOAST_MIN_WIDTH = '240px';
+const TOAST_REGION_MAX_WIDTH = 'min(420px, calc(100vw - 2rem))';
+
 /** Root surface style — raised feedback card chrome. */
 const buildToastRootStyle = (c: FeedbackColors): React.CSSProperties => {
   return {
@@ -47,7 +54,7 @@ const buildToastRootStyle = (c: FeedbackColors): React.CSSProperties => {
     display: 'flex',
     alignItems: 'flex-start',
     gap: vars.spacing.gap.inline.md,
-    minWidth: 240,
+    minWidth: TOAST_MIN_WIDTH,
     padding: vars.spacing.inset.surface.md,
     borderRadius: vars.radii.surface,
     borderWidth: vars.border.outline.surface.width,
@@ -286,13 +293,13 @@ export const ToastRegion = (props: ToastRegionProps) => {
         {
           boxSizing: 'border-box',
           position: 'fixed',
-          bottom: vars.spacing.inset.surface.md,
+          insetBlockEnd: vars.spacing.inset.surface.md,
           insetInlineEnd: vars.spacing.inset.surface.md,
           display: 'flex',
           flexDirection: 'column',
           gap: vars.spacing.gap.stack.sm,
           zIndex: vars.zIndex.layer.transient,
-          maxWidth: 'min(420px, calc(100vw - 2rem))',
+          maxWidth: TOAST_REGION_MAX_WIDTH,
           outline: 'none',
         } as React.CSSProperties
       }

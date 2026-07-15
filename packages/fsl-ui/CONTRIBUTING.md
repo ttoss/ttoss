@@ -1,4 +1,4 @@
-# Contributing to `@ttoss/ui2`
+# Contributing to `@ttoss/fsl-ui`
 
 > **To author a component you need exactly two files: this file + `src/tokens/CONTRACT.md`.
 > FSL docs are reference philosophy — you do not need them.**
@@ -53,7 +53,7 @@ Rule: if a part could be placed inside a different parent, it's a Composite sub-
 
 ```tsx
 // src/components/Chip/Chip.tsx
-import { vars } from '@ttoss/theme2/vars';
+import { vars } from '@ttoss/fsl-theme/vars';
 import { Button as RACButton } from 'react-aria-components';
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
@@ -249,12 +249,14 @@ const rank = (child.props as { composition?: string }).composition;
 Use the local `defineWizardSlot` helper (or the equivalent for a new composite) to attach the literal — no cast, no post-declaration mutation. The dispatcher walks through `React.memo` / `React.forwardRef` wrappers so consumer-side memoisation does not silently break classification.
 
 ```tsx
+// Spread `props` FIRST, identity attributes after — a caller must never be
+// able to override `data-scope`/`data-part`/`data-composition`.
 const WizardStepBase = (props: WizardStepProps) => (
   <div
+    {...props}
     data-scope="wizard"
     data-part="content"
     data-composition="step"
-    {...props}
   />
 );
 // `Object.assign` keeps the literal type and avoids a cast; the helper is
@@ -297,7 +299,10 @@ Then add `ENTITY_TOKEN_MAPPING[MyEntity]` in `src/tokens/projection.ts` and the 
 
 - `taxonomy.ts` imports nothing. `src/semantics/` never learns colors, `vars`, or CSS.
 - Types derive from arrays via `(typeof X)[number]` — never a standalone union.
-- Components consume only `vars.*`. No hex/rgb literals. No `var(--x, fallback)`. Contract tests enforce.
+- Components consume only `vars.*`. No hex/rgb literals. No `var(--tt-*, fallback)`. Host knobs use `--fsl-*` custom properties **only** through `fslVar` and always with a fallback (CONTRACT.md §7 / ADR-002). Contract tests enforce.
+- **Layout-literal rule.** A layout literal (`12rem`, `500px`, `1.2s`, `40%`, …) is allowed only as a **named module-level constant with a justification comment** (the `TRACK_W` pattern in `Switch.tsx`). Magic inline literals in style objects are forbidden — a reviewer must be able to ask "why this number?" and find the answer next to the name. Focus-ring `outlineOffset` micro-nudges (`'2px'`, `'-1px'`) are the sole tolerated inline exception.
+- **Logical CSS properties only.** `insetInlineStart`, `marginBlockEnd`, `paddingInline`, … — never `left`, `top`, `marginRight`, `borderLeftWidth`, etc. RTL correctness is a contract-test invariant.
+- Every `animation:` references a name from `ANIMATION_NAMES` (`src/tokens/keyframes.ts`), whose `@keyframes` ships via `ensureKeyframes()` — never a bare string (contract invariant #8).
 - State-dependent colors go through `resolveInteractiveStyle`. Structural tokens (`radii`, `border.*`, `sizing`, `spacing`, `typography`, `motion`) are literal `vars.*` reads.
 - Every exported component has a matching `*Meta` export. Name pair is camelCase meta ↔ PascalCase component (`chipMeta` ↔ `Chip`) — enforced by the contract test's auto-discovery.
 - Every rendered element carries `data-scope` + `data-part`. Sub-parts of a composite reuse the host's `data-scope`.
@@ -309,3 +314,61 @@ Then add `ENTITY_TOKEN_MAPPING[MyEntity]` in `src/tokens/projection.ts` and the 
 ## 5 — Running tests locally
 
 `tests/unit/jest.config.ts` pins `coverageThreshold` to **100%** on every dimension. Those numbers are calibrated for the **full suite** (`pnpm run test`); narrowing the run with `--testPathPatterns=...` will fail the threshold check by design — the missing files are never executed, not actually uncovered. Treat threshold failures as authoritative only when the full suite ran.
+
+---
+
+## 6 — Internationalization (i18n)
+
+Components in this package **never** depend on `@ttoss/react-i18n` (or any i18n runtime). All user-facing text is caller-supplied. The rule, per ADR-001:
+
+1. **Flow-critical labels are required props with no defaults.** A label the user must read to complete or cancel a flow (confirm/cancel buttons, wizard navigation) has no English fallback — TypeScript forces the caller to supply localized copy (`ConfirmationDialog.confirmLabel/cancelLabel/armedLabel`, `WizardNavigation.prevLabel/nextLabel/finishLabel`).
+2. **Supplementary text may ship a documented English fallback.** Hint/AT text whose absence does not block the flow (the `Select` placeholder, the Wizard's `announceStep` live-region copy) defaults to English, is documented as a fallback in its JSDoc, and always has an override prop.
+3. **Decorative glyphs are not text.** Unicode chevrons/checks (`▸ ✓ ✕`) are `aria-hidden` visuals — no i18n applies.
+
+When adding a component, classify every string it renders into 1–3 before writing the props.
+
+---
+
+## 7 — Decisions (ADRs)
+
+Canonical trade-off record for this package, mirroring the `@ttoss/fsl-theme` convention: IDs sequential, never reused; append only; superseded entries keep their ID with `Status: superseded-by:ADR-NNN`. Search here before re-litigating a decision.
+
+### ADR-001: All user-facing copy is caller-supplied; flow-critical labels are required props
+
+Status: accepted (2026-07-15)
+Tags: i18n, api-design, labels
+
+Decision: the package ships no i18n runtime and no English defaults for flow-critical labels — `ConfirmationDialog` (`confirmLabel`, `cancelLabel`, `armedLabel` when destructive) and `WizardNavigation` (`prevLabel`, `nextLabel`, `finishLabel`) require them at the type level. Supplementary text (Select placeholder, Wizard step announcement) keeps a documented English fallback with an override prop.
+Rejected: depending on `@ttoss/react-i18n` — would couple the base layer to one i18n stack and violate the layer boundary (fsl-ui sits below application concerns); shipping English defaults for everything — silently produces mixed-language UIs in localized apps, the worst failure mode because it passes review.
+Cost: slightly noisier call sites; every consumer types three extra props on `WizardNavigation`.
+Anchors: `src/composites/ConfirmationDialog/ConfirmationDialog.tsx` (props union), `src/composites/Wizard/Wizard.tsx` (`WizardNavigationProps`), §6 above.
+
+### ADR-002: Escape hatches are composite-scoped `--fsl-*` CSS custom properties
+
+Status: accepted (2026-07-15)
+Tags: styling, escape-hatch, api-design
+
+Decision: composites expose no `style`/`className`; the single sanctioned customization channel is a `--fsl-<scope>-<knob>` custom property consumed through `fslVar(knob, fallback)` — fallback mandatory, `--tt-` theme tokens still never take fallbacks. Safe React Aria positioning props (`placement`, `offset`, `crossOffset`, `shouldFlip`, `containerPadding`) are forwarded as ordinary props. Full policy: CONTRACT.md §7.
+Rejected: re-adding `style`/`className` to composites — reopens the unreviewable styling side channel the no-visual-props doctrine exists to close; a `size`/`width` prop per composite — every knob would become permanent API surface with bespoke names.
+Cost: knob discoverability depends on documentation (CONTRACT.md §7 table + llms.txt); CSS-only overrides are less greppable than props.
+Anchors: `src/tokens/escapeHatch.ts`, `src/composites/Dialog/Dialog.tsx`, `src/composites/Menu/Menu.tsx`, CONTRACT.md §7.
+
+### ADR-003: `react-aria-components` is pinned to `~1.19.0` while Toast rides `UNSTABLE_` APIs
+
+Status: accepted (2026-07-15)
+Tags: dependencies, toast, stability
+
+Decision: the dependency range is `~1.19.0` (patch-only) because `Toast` consumes `UNSTABLE_Toast*` exports that React Aria may rename in any minor. A canary test imports every `UNSTABLE_` symbol we consume and fails with an upgrade note if one disappears. Widen the range back to `^` only when RAC stabilizes Toast (drop of the `UNSTABLE_` prefix) — then delete the canary.
+Rejected: keeping a caret range — a transitive minor bump could break production toasts without any code change on our side; vendoring a toast implementation — duplicates RAC's queue semantics for a temporary problem.
+Cost: fsl-ui consumers do not receive RAC minor features until the pin is revisited.
+Anchors: `package.json` (`react-aria-components`), `tests/unit/tests/racCanary.test.ts`, `src/components/Toast/Toast.tsx`.
+
+### ADR-004: `@ttoss/forms` interop is a documented recipe, not an adapter entry point
+
+Status: accepted (2026-07-15)
+Tags: forms, integration, react-hook-form
+
+Decision: fsl-ui controls connect to the monorepo's form standard (`@ttoss/forms` = react-hook-form + Zod) through the plain react-hook-form `Controller`, mapping `field.value/onChange/onBlur` and `fieldState.invalid` onto the controls' controlled props (`isInvalid`, `value`, `onChange`). The pattern lives as an integration test (`tests/unit/tests/formsBridge.test.tsx`) that consumes `@ttoss/forms` as a devDependency — no `@ttoss/fsl-ui/forms` entry ships.
+Rejected (for now): an adapter entry (`@ttoss/fsl-ui/forms` with `FormFieldTextField` etc.) — premature until real apps reveal which field wrappers earn their existence; modifying `@ttoss/forms` — out of scope by the plan's scope guard.
+Cost: consumers write the `Controller` wiring by hand (≈6 lines per field) until an adapter is justified.
+Anchors: `tests/unit/tests/formsBridge.test.tsx`, ROADMAP A11.

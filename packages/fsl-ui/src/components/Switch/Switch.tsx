@@ -169,8 +169,10 @@ export const Switch = ({ children, ...props }: SwitchProps) => {
       }}
     >
       {({ isHovered, isPressed, isDisabled, isFocusVisible, isSelected }) => {
-        // Thumb left position — slides right when ON
-        const thumbLeft = isSelected
+        // Thumb inline-start position — slides toward inline-end when ON.
+        // Logical property: under `dir="rtl"` the thumb correctly slides
+        // left instead of right.
+        const thumbInsetInlineStart = isSelected
           ? `calc(${TRACK_W} - ${THUMB_SIZE} - ${THUMB_OFFSET})`
           : THUMB_OFFSET;
 
@@ -197,13 +199,13 @@ export const Switch = ({ children, ...props }: SwitchProps) => {
                 aria-hidden
                 style={{
                   position: 'absolute',
-                  top: THUMB_OFFSET,
-                  left: thumbLeft,
+                  insetBlockStart: THUMB_OFFSET,
+                  insetInlineStart: thumbInsetInlineStart,
                   width: THUMB_SIZE,
                   height: THUMB_SIZE,
                   borderRadius: vars.radii.round,
                   backgroundColor: resolveThumbColor({ c, isSelected }),
-                  transitionProperty: 'left, background-color',
+                  transitionProperty: 'inset-inline-start, background-color',
                   transitionDuration: vars.motion.feedback.duration,
                   transitionTimingFunction: vars.motion.feedback.easing,
                 }}

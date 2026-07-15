@@ -107,7 +107,13 @@ describe('contract: composite sub-parts throw outside host', () => {
       'WizardNavigation',
       'Wizard',
       () => {
-        return <WizardNavigation />;
+        return (
+          <WizardNavigation
+            prevLabel="Back"
+            nextLabel="Next"
+            finishLabel="Finish"
+          />
+        );
       },
     ],
     [
@@ -213,11 +219,15 @@ describe('contract: composite sub-parts render inside host', () => {
   test('Wizard scope satisfies sub-parts', () => {
     expect(() => {
       return render(
-        <Wizard currentStep={0} totalSteps={2}>
+        <Wizard currentStep={0}>
           <WizardStep>step</WizardStep>
           <WizardStep>step 2</WizardStep>
           <WizardSummary>done</WizardSummary>
-          <WizardNavigation />
+          <WizardNavigation
+            prevLabel="Back"
+            nextLabel="Next"
+            finishLabel="Finish"
+          />
         </Wizard>
       );
     }).not.toThrow();

@@ -8,7 +8,7 @@
  *
  * If this suite is deleted and nothing else dispatches on `consequence`,
  * the dimension collapses to documented convention and belongs out of
- * `ComponentMeta`. See ISSUE.md §2.3.
+ * `ComponentMeta`. See CONTRIBUTING §2.3 ("Consequence dispatch").
  */
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { Button, ConfirmationDialog } from 'src/index';
@@ -38,6 +38,7 @@ describe('ConfirmationDialog — consequence-driven mechanism', () => {
           trigger={<Button>Open</Button>}
           title="Archive post?"
           confirmLabel="Archive"
+          cancelLabel="Cancel"
           consequence="neutral"
           onConfirm={onConfirm}
         >
@@ -58,6 +59,7 @@ describe('ConfirmationDialog — consequence-driven mechanism', () => {
           trigger={<Button>Open</Button>}
           title="Publish?"
           confirmLabel="Publish"
+          cancelLabel="Cancel"
           consequence="committing"
           onConfirm={onConfirm}
         >
@@ -79,6 +81,7 @@ describe('ConfirmationDialog — consequence-driven mechanism', () => {
           title="Delete?"
           confirmLabel="Delete"
           armedLabel="Click again"
+          cancelLabel="Cancel"
           consequence="destructive"
           onConfirm={onConfirm}
           {...overrides}
@@ -156,6 +159,7 @@ describe('ConfirmationDialog — consequence-driven mechanism', () => {
           trigger={<Button>Open</Button>}
           title="Act?"
           confirmLabel="Go"
+          cancelLabel="Cancel"
           consequence="neutral"
           onConfirm={onConfirm}
         />
@@ -171,6 +175,8 @@ describe('ConfirmationDialog — consequence-driven mechanism', () => {
           trigger={<Button>Open</Button>}
           title="Act?"
           confirmLabel="Go"
+          cancelLabel="Cancel"
+          armedLabel="Click again to run"
           consequence="destructive"
           onConfirm={onConfirm}
         />

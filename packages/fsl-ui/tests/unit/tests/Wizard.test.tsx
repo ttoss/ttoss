@@ -3,8 +3,8 @@
  * Wizard — runtime composition-driven step selection.
  *
  * These tests are the evidence that the FSL `Composition` dimension is
- * behavior-driving in a *second* context (ISSUE.md §2.4), distinct from
- * `DialogActions` (§2.2):
+ * behavior-driving in a *second* context (CONTRIBUTING §2.3, Pattern B), distinct from
+ * `DialogActions` (Pattern A):
  *
  *   - DialogActions dispatches on the `composition` prop of *leaf*
  *     children to REORDER the DOM.
@@ -42,7 +42,11 @@ describe('Wizard — composition-driven step selection', () => {
         <WizardStep>Second</WizardStep>
         <WizardStep>Third</WizardStep>
         <WizardSummary>All done!</WizardSummary>
-        <WizardNavigation />
+        <WizardNavigation
+          prevLabel="Back"
+          nextLabel="Next"
+          finishLabel="Finish"
+        />
       </Wizard>
     );
     fireEvent.click(screen.getByRole('button', { name: 'Finish' }));
@@ -66,7 +70,11 @@ describe('Wizard — composition-driven step selection', () => {
       <Wizard currentStep={0} aria-label="Onboarding">
         <WizardStep>First</WizardStep>
         <WizardStep>Second</WizardStep>
-        <WizardNavigation />
+        <WizardNavigation
+          prevLabel="Back"
+          nextLabel="Next"
+          finishLabel="Finish"
+        />
       </Wizard>
     );
     expect(screen.getByRole('button', { name: 'Back' })).toBeInTheDocument();
@@ -76,7 +84,11 @@ describe('Wizard — composition-driven step selection', () => {
       <Wizard currentStep={1} aria-label="Onboarding">
         <WizardStep>First</WizardStep>
         <WizardStep>Second</WizardStep>
-        <WizardNavigation />
+        <WizardNavigation
+          prevLabel="Back"
+          nextLabel="Next"
+          finishLabel="Finish"
+        />
       </Wizard>
     );
     expect(screen.getByRole('button', { name: 'Back' })).toBeInTheDocument();
@@ -86,7 +98,11 @@ describe('Wizard — composition-driven step selection', () => {
   test('children order does not affect which sub-part is dispatched', () => {
     render(
       <Wizard defaultStep={0} aria-label="Onboarding">
-        <WizardNavigation />
+        <WizardNavigation
+          prevLabel="Back"
+          nextLabel="Next"
+          finishLabel="Finish"
+        />
         <WizardSummary>All done!</WizardSummary>
         <WizardStep>First</WizardStep>
         <WizardStep>Second</WizardStep>
@@ -106,7 +122,11 @@ describe('Wizard — navigation behavior', () => {
       <Wizard defaultStep={0}>
         <WizardStep>First</WizardStep>
         <WizardStep>Second</WizardStep>
-        <WizardNavigation />
+        <WizardNavigation
+          prevLabel="Back"
+          nextLabel="Next"
+          finishLabel="Finish"
+        />
       </Wizard>
     );
     expect(screen.getByRole('button', { name: 'Back' })).toBeDisabled();
@@ -117,7 +137,11 @@ describe('Wizard — navigation behavior', () => {
       <Wizard defaultStep={0}>
         <WizardStep>First</WizardStep>
         <WizardStep>Second</WizardStep>
-        <WizardNavigation />
+        <WizardNavigation
+          prevLabel="Back"
+          nextLabel="Next"
+          finishLabel="Finish"
+        />
       </Wizard>
     );
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
@@ -130,7 +154,11 @@ describe('Wizard — navigation behavior', () => {
       <Wizard defaultStep={0}>
         <WizardStep>First</WizardStep>
         <WizardStep>Second</WizardStep>
-        <WizardNavigation />
+        <WizardNavigation
+          prevLabel="Back"
+          nextLabel="Next"
+          finishLabel="Finish"
+        />
       </Wizard>
     );
     expect(screen.getByRole('button', { name: 'Next' })).toBeInTheDocument();
@@ -148,7 +176,12 @@ describe('Wizard — navigation behavior', () => {
         <WizardStep>First</WizardStep>
         <WizardStep>Second</WizardStep>
         <WizardSummary>Done</WizardSummary>
-        <WizardNavigation onFinish={onFinish} />
+        <WizardNavigation
+          prevLabel="Back"
+          nextLabel="Next"
+          finishLabel="Finish"
+          onFinish={onFinish}
+        />
       </Wizard>
     );
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
@@ -163,7 +196,11 @@ describe('Wizard — navigation behavior', () => {
       <Wizard currentStep={0} onStepChange={onStepChange}>
         <WizardStep>First</WizardStep>
         <WizardStep>Second</WizardStep>
-        <WizardNavigation />
+        <WizardNavigation
+          prevLabel="Back"
+          nextLabel="Next"
+          finishLabel="Finish"
+        />
       </Wizard>
     );
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
@@ -175,7 +212,11 @@ describe('Wizard — navigation behavior', () => {
       <Wizard currentStep={1} onStepChange={onStepChange}>
         <WizardStep>First</WizardStep>
         <WizardStep>Second</WizardStep>
-        <WizardNavigation />
+        <WizardNavigation
+          prevLabel="Back"
+          nextLabel="Next"
+          finishLabel="Finish"
+        />
       </Wizard>
     );
     expect(screen.getByText('Second')).toBeInTheDocument();
@@ -187,7 +228,13 @@ describe('Wizard — navigation behavior', () => {
     console.error = jest.fn();
     try {
       expect(() => {
-        return render(<WizardNavigation />);
+        return render(
+          <WizardNavigation
+            prevLabel="Back"
+            nextLabel="Next"
+            finishLabel="Finish"
+          />
+        );
       }).toThrow(/<WizardNavigation> must be rendered inside <Wizard>/);
     } finally {
       console.error = originalError;
@@ -231,7 +278,11 @@ describe('Wizard — DOM contract', () => {
     render(
       <Wizard defaultStep={0}>
         <WizardStep>First</WizardStep>
-        <WizardNavigation />
+        <WizardNavigation
+          prevLabel="Back"
+          nextLabel="Next"
+          finishLabel="Finish"
+        />
       </Wizard>
     );
     expect(
@@ -277,7 +328,11 @@ describe('Wizard — slot static identity (Pattern B contract)', () => {
         <MemoStep>Memoised step body</MemoStep>
         <MemoStep>Memoised second step</MemoStep>
         <MemoSummary>Memoised summary</MemoSummary>
-        <MemoNavigation />
+        <MemoNavigation
+          prevLabel="Back"
+          nextLabel="Next"
+          finishLabel="Finish"
+        />
       </Wizard>
     );
 
@@ -313,7 +368,11 @@ describe('Wizard — slot static identity (Pattern B contract)', () => {
       <Wizard defaultStep={0} aria-label="Forwarded wizard">
         <ForwardedStep>Forwarded step body</ForwardedStep>
         <ForwardedStep>Forwarded second step</ForwardedStep>
-        <WizardNavigation />
+        <WizardNavigation
+          prevLabel="Back"
+          nextLabel="Next"
+          finishLabel="Finish"
+        />
       </Wizard>
     );
 
@@ -347,7 +406,11 @@ describe('Wizard — slot static identity (Pattern B contract)', () => {
       <Wizard defaultStep={0} aria-label="Nested wrapper wizard">
         <NestedStep>Nested step body</NestedStep>
         <NestedStep>Nested second step</NestedStep>
-        <WizardNavigation />
+        <WizardNavigation
+          prevLabel="Back"
+          nextLabel="Next"
+          finishLabel="Finish"
+        />
       </Wizard>
     );
 
@@ -364,7 +427,11 @@ describe('Wizard — slot static identity (Pattern B contract)', () => {
       <Wizard defaultStep={0} aria-label="Mixed children wizard">
         <WizardStep>Real step</WizardStep>
         <div data-testid="stranger">unrelated</div>
-        <WizardNavigation />
+        <WizardNavigation
+          prevLabel="Back"
+          nextLabel="Next"
+          finishLabel="Finish"
+        />
       </Wizard>
     );
 
@@ -372,5 +439,102 @@ describe('Wizard — slot static identity (Pattern B contract)', () => {
     // as the active step body).
     expect(screen.getByText('Real step')).toBeInTheDocument();
     expect(screen.getByTestId('stranger')).toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// A12 — focus management + progress announcements
+// ---------------------------------------------------------------------------
+
+describe('Wizard — focus management and announcements (A12)', () => {
+  test('advancing moves focus to the new step body', () => {
+    render(
+      <Wizard defaultStep={0} aria-label="Onboarding">
+        <WizardStep aria-label="Step one">First</WizardStep>
+        <WizardStep aria-label="Step two">Second</WizardStep>
+        <WizardNavigation
+          prevLabel="Back"
+          nextLabel="Next"
+          finishLabel="Finish"
+        />
+      </Wizard>
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    const second = screen.getByText('Second').closest('[data-part="content"]');
+    expect(second).toHaveFocus();
+  });
+
+  test('no focus is stolen on initial mount', () => {
+    render(
+      <Wizard defaultStep={0} aria-label="Onboarding">
+        <WizardStep>First</WizardStep>
+        <WizardStep>Second</WizardStep>
+      </Wizard>
+    );
+    expect(
+      screen.getByText('First').closest('[data-part="content"]')
+    ).not.toHaveFocus();
+  });
+
+  test('finishing moves focus to the summary body', () => {
+    render(
+      <Wizard defaultStep={0} aria-label="Onboarding">
+        <WizardStep>Only step</WizardStep>
+        <WizardSummary>All done!</WizardSummary>
+        <WizardNavigation
+          prevLabel="Back"
+          nextLabel="Next"
+          finishLabel="Finish"
+        />
+      </Wizard>
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Finish' }));
+    expect(
+      screen.getByText('All done!').closest('[data-part="content"]')
+    ).toHaveFocus();
+  });
+
+  test('aria-live region announces the current step and updates', () => {
+    const { container } = render(
+      <Wizard defaultStep={0} aria-label="Onboarding">
+        <WizardStep>First</WizardStep>
+        <WizardStep>Second</WizardStep>
+        <WizardSummary>All done!</WizardSummary>
+        <WizardNavigation
+          prevLabel="Back"
+          nextLabel="Next"
+          finishLabel="Finish"
+        />
+      </Wizard>
+    );
+    const status = container.querySelector(
+      '[data-scope="wizard"][data-part="status"]'
+    );
+    expect(status).toHaveAttribute('aria-live', 'polite');
+    expect(status).toHaveTextContent('Step 1 of 2');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    expect(status).toHaveTextContent('Step 2 of 2');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Finish' }));
+    expect(status).toHaveTextContent('Complete');
+  });
+
+  test('announceStep overrides the English fallback (localization hook)', () => {
+    const { container } = render(
+      <Wizard
+        defaultStep={0}
+        aria-label="Cadastro"
+        announceStep={({ currentStep, totalSteps }) => {
+          return `Etapa ${currentStep + 1} de ${totalSteps}`;
+        }}
+      >
+        <WizardStep>Primeira</WizardStep>
+        <WizardStep>Segunda</WizardStep>
+      </Wizard>
+    );
+    expect(
+      container.querySelector('[data-scope="wizard"][data-part="status"]')
+    ).toHaveTextContent('Etapa 1 de 2');
   });
 });

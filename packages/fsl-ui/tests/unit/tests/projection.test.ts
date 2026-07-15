@@ -34,9 +34,9 @@ describe('projection / foundation disjointness', () => {
 // ---------------------------------------------------------------------------
 // 1b. Cross-package coupling: UX_CONTEXTS ⊆ keyof vars.colors
 //
-// `UX_CONTEXTS` is ui2's contract with theme-v2: every ux-context ui2 claims
-// to consume must exist as a subtree under `vars.colors`. Without this check,
-// a theme-v2 rename (e.g. `feedback` → `status`) would let ui2 keep an
+// `UX_CONTEXTS` is fsl-ui's contract with fsl-theme: every ux-context this
+// package claims to consume must exist as a subtree under `vars.colors`.
+// Without this check, an fsl-theme rename (e.g. `feedback` → `status`) would let fsl-ui keep an
 // outdated vocabulary — components would fail at a different layer, but the
 // mismatch would not be localized.
 // ---------------------------------------------------------------------------

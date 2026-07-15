@@ -89,7 +89,14 @@ export interface SelectProps<T extends object = object> extends Omit<
 > {
   /** Label displayed above the trigger button. */
   label?: React.ReactNode;
-  /** Placeholder shown in the trigger when no value is selected. */
+  /**
+   * Placeholder shown in the trigger when no value is selected.
+   *
+   * Ships a documented English fallback (`'Select…'`) — the placeholder is
+   * supplementary hint text, not a flow-critical label (CONTRIBUTING §6 /
+   * ADR-001). Localized hosts should still supply their own copy.
+   * @default 'Select…'
+   */
   placeholder?: string;
   /** `SelectItem` children rendered inside the dropdown ListBox. */
   children?: React.ReactNode;

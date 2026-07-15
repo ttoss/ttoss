@@ -20,7 +20,7 @@ import {
 // ConfirmationDialog — consequence-driven composite (Overlay entity, root)
 //
 // This is the runtime proof that FSL `Consequence` is behavior-driving and
-// not merely cosmetic (ISSUE.md §2.3). The component reads its authorial
+// not merely cosmetic (CONTRIBUTING §2.3, "Consequence dispatch"). The component reads its authorial
 // `consequence` prop at runtime to select the confirm *mechanism*:
 //
 //   neutral     → single click confirms
@@ -34,7 +34,7 @@ import {
 // If this composite is deleted and nothing else dispatches on `consequence`,
 // the dimension collapses to documented convention and belongs out of
 // `ComponentMeta` — the analogue of what DialogActions established for
-// `composition` in §2.2.
+// `composition` (Pattern A).
 // ---------------------------------------------------------------------------
 
 /**
@@ -117,10 +117,7 @@ const useArmedConfirm = ({
   return { isArmed, confirm, reset };
 };
 
-/**
- * Props for {@link ConfirmationDialog}.
- */
-export interface ConfirmationDialogProps {
+interface ConfirmationDialogBaseProps {
   /**
    * The element that opens the dialog. Typically a {@link Button}.
    * React Aria's `DialogTrigger` wires open/close state to it.
@@ -131,30 +128,16 @@ export interface ConfirmationDialogProps {
   /** Body content — usually a short explanation of what will happen. */
   children?: React.ReactNode;
   /**
-   * Label for the confirm button.
-   * @default 'Confirm'
+   * Label for the confirm button. **Required** — flow-critical labels
+   * have no English default (CONTRIBUTING §6 / ADR-001); the caller
+   * supplies localized copy.
    */
-  confirmLabel?: React.ReactNode;
+  confirmLabel: React.ReactNode;
   /**
-   * Label shown on the confirm button while it is *armed* (destructive
-   * consequence, first click already received, awaiting second). Only
-   * rendered when `consequence === 'destructive'`.
-   * @default 'Click again to confirm'
+   * Label for the cancel / dismiss button. **Required** — see
+   * `confirmLabel`.
    */
-  armedLabel?: React.ReactNode;
-  /**
-   * Label for the cancel / dismiss button.
-   * @default 'Cancel'
-   */
-  cancelLabel?: React.ReactNode;
-  /**
-   * Effect on state the confirm action produces. **Selects the confirm
-   * mechanism** (see component-level comment): `destructive` requires a
-   * two-click arming protocol; `neutral` / `committing` confirm on the
-   * first click.
-   * @default 'neutral'
-   */
-  consequence?: ConsequencesFor<'Action'>;
+  cancelLabel: React.ReactNode;
   /**
    * Semantic emphasis for the confirm button (authorial voice, orthogonal
    * to `consequence`). `destructive` consequence does not imply a
@@ -178,6 +161,42 @@ export interface ConfirmationDialogProps {
   platform?: DialogActionsPlatform;
 }
 
+interface ConfirmationDialogDestructiveProps extends ConfirmationDialogBaseProps {
+  /**
+   * Effect on state the confirm action produces. **Selects the confirm
+   * mechanism** (see component-level comment): `destructive` requires a
+   * two-click arming protocol; `neutral` / `committing` confirm on the
+   * first click.
+   */
+  consequence: Extract<ConsequencesFor<'Action'>, 'destructive'>;
+  /**
+   * Label shown on the confirm button while it is *armed* (first click
+   * already received, awaiting second). **Required** for `destructive` —
+   * it is flow-critical copy the user must be able to read.
+   */
+  armedLabel: React.ReactNode;
+}
+
+interface ConfirmationDialogNonDestructiveProps extends ConfirmationDialogBaseProps {
+  /**
+   * Effect on state the confirm action produces. `neutral` / `committing`
+   * confirm on the first click — no arming protocol.
+   * @default 'neutral'
+   */
+  consequence?: Exclude<ConsequencesFor<'Action'>, 'destructive'>;
+  /** Only destructive confirmations have an armed state. */
+  armedLabel?: never;
+}
+
+/**
+ * Props for {@link ConfirmationDialog}. A discriminated union on
+ * `consequence`: `destructive` requires `armedLabel`; other consequences
+ * forbid it. The type system enforces what the arming mechanism needs.
+ */
+export type ConfirmationDialogProps =
+  | ConfirmationDialogDestructiveProps
+  | ConfirmationDialogNonDestructiveProps;
+
 /**
  * A Dialog composite that demands confirmation before invoking a side effect.
  *
@@ -195,6 +214,7 @@ export interface ConfirmationDialogProps {
  *   trigger={<Button>Publish</Button>}
  *   title="Publish post?"
  *   confirmLabel="Publish"
+ *   cancelLabel="Cancel"
  *   consequence="committing"
  *   onConfirm={publish}
  * >
@@ -208,6 +228,8 @@ export interface ConfirmationDialogProps {
  *   trigger={<Button evaluation="negative">Delete account</Button>}
  *   title="Delete account?"
  *   confirmLabel="Delete"
+ *   armedLabel="Click again to confirm"
+ *   cancelLabel="Cancel"
  *   consequence="destructive"
  *   evaluation="negative"
  *   onConfirm={deleteAccount}
@@ -228,6 +250,7 @@ export interface ConfirmationDialogProps {
  *   trigger={<Button evaluation="negative">Unsubscribe</Button>}
  *   title="Unsubscribe?"
  *   confirmLabel="Unsubscribe"
+ *   cancelLabel="Cancel"
  *   consequence="committing"
  *   evaluation="negative"
  *   onConfirm={unsubscribe}
@@ -238,9 +261,9 @@ export const ConfirmationDialog = ({
   trigger,
   title,
   children,
-  confirmLabel = 'Confirm',
-  armedLabel = 'Click again to confirm',
-  cancelLabel = 'Cancel',
+  confirmLabel,
+  armedLabel,
+  cancelLabel,
   consequence = 'neutral',
   evaluation = 'primary',
   onConfirm,

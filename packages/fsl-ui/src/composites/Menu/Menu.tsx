@@ -17,9 +17,19 @@ import type {
   ConsequencesFor,
   EvaluationsFor,
 } from '../../semantics';
+import { fslVar } from '../../tokens/escapeHatch';
 import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import { createPresenceScope } from '../scope';
+
+// Layout constants (CONTRIBUTING §4 layout-literal rule) — popover surface
+// geometry. 12rem keeps short menus from collapsing to their widest item;
+// the 320px/90vw clamp keeps long labels inside small viewports; 4px is the
+// visual breathing room between trigger and surface. Hosts override the
+// widths via the §7 escape hatches below.
+const MENU_MIN_WIDTH_DEFAULT = '12rem';
+const MENU_MAX_WIDTH_DEFAULT = 'min(320px, 90vw)';
+const MENU_OFFSET_DEFAULT = 4;
 
 // ---------------------------------------------------------------------------
 // Composite scope — presence-only host guard.
@@ -93,6 +103,21 @@ export interface MenuProps<T extends object> extends Omit<
    * Popover offset (px) from the trigger.
    */
   offset?: RACPopoverProps['offset'];
+  /**
+   * Popover offset (px) along the cross axis of `placement`.
+   */
+  crossOffset?: RACPopoverProps['crossOffset'];
+  /**
+   * Whether the popover flips to the opposite side when it would overflow
+   * the viewport.
+   * @default true
+   */
+  shouldFlip?: RACPopoverProps['shouldFlip'];
+  /**
+   * Minimum distance (px) the popover keeps from the viewport edges when
+   * positioning.
+   */
+  containerPadding?: RACPopoverProps['containerPadding'];
 }
 
 /**
@@ -119,7 +144,10 @@ export interface MenuProps<T extends object> extends Omit<
 export const Menu = <T extends object>({
   evaluation = 'primary',
   placement = 'bottom start',
-  offset = 4,
+  offset = MENU_OFFSET_DEFAULT,
+  crossOffset,
+  shouldFlip,
+  containerPadding,
   children,
   ...props
 }: MenuProps<T>) => {
@@ -130,14 +158,19 @@ export const Menu = <T extends object>({
       <RACPopover
         placement={placement}
         offset={offset}
+        crossOffset={crossOffset}
+        shouldFlip={shouldFlip}
+        containerPadding={containerPadding}
         data-scope="menu"
         data-part="root"
         data-evaluation={evaluation}
         style={
           {
             boxSizing: 'border-box',
-            minWidth: '12rem',
-            maxWidth: 'min(320px, 90vw)',
+            // Host knobs (CONTRACT.md §7): override via CSS on
+            // [data-scope="menu"][data-part="root"].
+            minWidth: fslVar('--fsl-menu-min-width', MENU_MIN_WIDTH_DEFAULT),
+            maxWidth: fslVar('--fsl-menu-max-width', MENU_MAX_WIDTH_DEFAULT),
             borderRadius: vars.radii.surface,
             borderWidth: vars.border.outline.surface.width,
             borderStyle: vars.border.outline.surface.style,

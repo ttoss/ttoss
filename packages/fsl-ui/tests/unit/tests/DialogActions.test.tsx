@@ -8,7 +8,7 @@
  *
  * If this test suite is deleted and nothing else dispatches on
  * `composition`, the dimension collapses to documented convention and
- * belongs out of `ComponentMeta`. See ISSUE.md §2.2.
+ * belongs out of `ComponentMeta`. See CONTRIBUTING §2.3 (Pattern A).
  */
 import { render, screen } from '@testing-library/react';
 import type * as React from 'react';
