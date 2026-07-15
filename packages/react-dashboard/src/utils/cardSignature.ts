@@ -3,6 +3,11 @@ import type { DashboardCard } from '../DashboardCard';
 import type { CardCatalogItem } from '../dashboardCardCatalog';
 import type { SectionDivider } from '../DashboardSectionDivider';
 
+/** App-layer extension: metrics are used for card identity but are not part of the OSS card interface. */
+type DashboardCardWithMetrics = DashboardCard & {
+  metrics?: Record<string, string[]>[];
+};
+
 /**
  * Recursively sorts object keys and array elements to produce a
  * deterministic JSON string regardless of key insertion order.
@@ -43,7 +48,7 @@ export const getCardSignature = (
     return null;
   }
 
-  const dashboardCard = card as DashboardCard;
+  const dashboardCard = card as DashboardCardWithMetrics;
 
   if (dashboardCard.id) {
     return `id:${dashboardCard.id}`;

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.22.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.21.1...@ttoss/http-server-mcp@0.22.0) (2026-07-14)
+
+### Features
+
+- **react-dashboard:** add BigNumberSparkline card for lineChart type ([#1124](https://github.com/ttoss/ttoss/issues/1124)) ([3917371](https://github.com/ttoss/ttoss/commit/3917371afeb9e8bde26cabe13d7284119948786d))
+
 ## [0.21.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.21.0...@ttoss/http-server-mcp@0.21.1) (2026-07-11)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp

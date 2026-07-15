@@ -20,7 +20,7 @@ describe('dashboardCardCatalog', () => {
         numberType: 'number',
         type: 'bigNumber',
         sourceType: [{ source: 'api' }],
-        data: { api: { total: 10 } },
+        data: { value: 10 },
       },
     };
 

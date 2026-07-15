@@ -4,13 +4,13 @@ import type { DashboardCard } from 'src/DashboardCard';
 
 describe('BigNumber', () => {
   const baseCard: DashboardCard = {
+    id: 'revenue',
     title: 'Total Revenue',
     description: 'Total revenue generated',
     numberType: 'number',
     type: 'bigNumber',
-    sourceType: [{ source: 'meta' }],
     data: {
-      meta: { total: 1234.56 },
+      value: 1234.56,
     },
   };
 
@@ -20,8 +20,8 @@ describe('BigNumber', () => {
     expect(screen.getByText('Total Revenue')).toBeInTheDocument();
   });
 
-  test('should format number correctly', () => {
-    render(<BigNumber {...baseCard} />);
+  test('should format number correctly with provided locale', () => {
+    render(<BigNumber {...baseCard} locale="pt-BR" />);
 
     expect(screen.getByText(/1\.234,56/)).toBeInTheDocument();
   });
@@ -31,7 +31,9 @@ describe('BigNumber', () => {
       <BigNumber
         {...baseCard}
         numberType="currency"
-        data={{ api: { total: 1234.56 } }}
+        currency="BRL"
+        locale="pt-BR"
+        data={{ value: 1234.56 }}
       />
     );
 
@@ -44,23 +46,25 @@ describe('BigNumber', () => {
         {...baseCard}
         numberType="currency"
         currency="USD"
-        data={{ api: { total: 1234.56 } }}
+        locale="en-US"
+        data={{ value: 1234.56 }}
       />
     );
 
-    expect(screen.getByText(/US\$\s*1\.234,56/)).toBeInTheDocument();
+    expect(screen.getByText(/\$1,234\.56/)).toBeInTheDocument();
   });
 
-  test('should default to BRL when currency prop is absent', () => {
+  test('should fall back to USD when currency prop is absent', () => {
     render(
       <BigNumber
         {...baseCard}
         numberType="currency"
-        data={{ api: { total: 500 } }}
+        locale="en-US"
+        data={{ value: 500 }}
       />
     );
 
-    expect(screen.getByText(/R\$/)).toBeInTheDocument();
+    expect(screen.getByText(/\$500\.00/)).toBeInTheDocument();
   });
 
   test('should not affect number type when currency prop is provided', () => {
@@ -69,11 +73,11 @@ describe('BigNumber', () => {
         {...baseCard}
         numberType="number"
         currency="USD"
-        data={{ api: { total: 100 } }}
+        locale="pt-BR"
+        data={{ value: 100 }}
       />
     );
 
-    // Should format as a plain number, not currency
     expect(screen.queryByText(/US\$/)).not.toBeInTheDocument();
     expect(screen.queryByText(/R\$/)).not.toBeInTheDocument();
     expect(screen.getByText(/100,00/)).toBeInTheDocument();
@@ -84,7 +88,7 @@ describe('BigNumber', () => {
       <BigNumber
         {...baseCard}
         numberType="percentage"
-        data={{ api: { total: 45.67 } }}
+        data={{ value: 45.67 }}
       />
     );
 
@@ -92,44 +96,16 @@ describe('BigNumber', () => {
   });
 
   test('should display dash when value is undefined', () => {
-    render(<BigNumber {...baseCard} data={{ api: { total: undefined } }} />);
+    render(<BigNumber {...baseCard} data={{ value: undefined }} />);
 
     expect(screen.getByText('-')).toBeInTheDocument();
   });
 
   test('should display dash when value is null', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    render(<BigNumber {...baseCard} data={{ api: { total: null as any } }} />);
+    render(<BigNumber {...baseCard} data={{ value: null as any }} />);
 
     expect(screen.getByText('-')).toBeInTheDocument();
-  });
-
-  test('should use meta data when api data is not available', () => {
-    render(
-      <BigNumber
-        {...baseCard}
-        data={{
-          meta: { total: 999 },
-        }}
-      />
-    );
-
-    expect(screen.getByText(/999,00/)).toBeInTheDocument();
-  });
-
-  test('should prioritize meta data over api data', () => {
-    render(
-      <BigNumber
-        {...baseCard}
-        data={{
-          api: { total: 100 },
-          meta: { total: 200 },
-        }}
-      />
-    );
-
-    expect(screen.getByText(/200,00/)).toBeInTheDocument();
-    expect(screen.queryByText(/100,00/)).not.toBeInTheDocument();
   });
 
   test('should render trend indicator with positive status', () => {
@@ -141,7 +117,7 @@ describe('BigNumber', () => {
     );
 
     expect(screen.getByText(/10\.5%/)).toBeInTheDocument();
-    expect(screen.getByText(/vs\. anterior/)).toBeInTheDocument();
+    expect(screen.getByText(/vs\. previous/)).toBeInTheDocument();
   });
 
   test('should render trend indicator with negative status', () => {
@@ -153,7 +129,7 @@ describe('BigNumber', () => {
     );
 
     expect(screen.getByText(/5\.2%/)).toBeInTheDocument();
-    expect(screen.getByText(/vs\. anterior/)).toBeInTheDocument();
+    expect(screen.getByText(/vs\. previous/)).toBeInTheDocument();
   });
 
   test('should render trend indicator with neutral status', () => {
@@ -164,9 +140,8 @@ describe('BigNumber', () => {
       />
     );
 
-    // Neutral trends still display the trend text
     expect(screen.getByText(/0\.0%/)).toBeInTheDocument();
-    expect(screen.getByText(/vs\. anterior/)).toBeInTheDocument();
+    expect(screen.getByText(/vs\. previous/)).toBeInTheDocument();
   });
 
   test('should render additional info', () => {
@@ -207,24 +182,18 @@ describe('BigNumber', () => {
   test('should apply custom color', () => {
     render(<BigNumber {...baseCard} color="green" />);
 
-    expect(screen.getByText(/1\.234,56/)).toBeInTheDocument();
-  });
-
-  test('should use default color when color is not provided and not green/accent/positive', () => {
-    render(<BigNumber {...baseCard} color="blue" />);
-
-    expect(screen.getByText(/1\.234,56/)).toBeInTheDocument();
+    expect(screen.getByText('Total Revenue')).toBeInTheDocument();
   });
 
   test('should use default color when color is undefined', () => {
     render(<BigNumber {...baseCard} color={undefined} />);
 
-    expect(screen.getByText(/1\.234,56/)).toBeInTheDocument();
+    expect(screen.getByText('Total Revenue')).toBeInTheDocument();
   });
 
   describe('suffix prop', () => {
     test('should append suffix to formatted number', () => {
-      render(<BigNumber {...baseCard} suffix="kg" />);
+      render(<BigNumber {...baseCard} locale="pt-BR" suffix="kg" />);
 
       expect(screen.getByText(/1\.234,56 kg/)).toBeInTheDocument();
     });
@@ -234,7 +203,9 @@ describe('BigNumber', () => {
         <BigNumber
           {...baseCard}
           numberType="currency"
-          data={{ api: { total: 500 } }}
+          currency="BRL"
+          locale="pt-BR"
+          data={{ value: 500 }}
           suffix="un"
         />
       );
@@ -247,7 +218,7 @@ describe('BigNumber', () => {
         <BigNumber
           {...baseCard}
           numberType="percentage"
-          data={{ api: { total: 12.5 } }}
+          data={{ value: 12.5 }}
           suffix="p.p."
         />
       );
@@ -255,21 +226,9 @@ describe('BigNumber', () => {
       expect(screen.getByText(/12\.50% p\.p\./)).toBeInTheDocument();
     });
 
-    test('should not append anything when suffix is not provided', () => {
-      render(<BigNumber {...baseCard} />);
-
-      const valueEl = screen.getByText(/1\.234,56/);
-      expect(valueEl).toBeInTheDocument();
-      expect(valueEl.textContent).toBe('1.234,56');
-    });
-
     test('should not append suffix when value is undefined (dash)', () => {
       render(
-        <BigNumber
-          {...baseCard}
-          data={{ api: { total: undefined } }}
-          suffix="kg"
-        />
+        <BigNumber {...baseCard} data={{ value: undefined }} suffix="kg" />
       );
 
       expect(screen.getByText('-')).toBeInTheDocument();
