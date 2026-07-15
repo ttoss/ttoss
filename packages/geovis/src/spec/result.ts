@@ -28,6 +28,7 @@ export type GeoVisIssueCode =
   | 'unknown-source'
   | 'unknown-layer-id'
   | 'unknown-feature-id'
+  | 'unknown-view-preset'
   | 'source-scope-conflict'
   | 'duplicate-dimension'
   | 'state-key-collision'
@@ -59,6 +60,7 @@ export const ISSUE_CODE_STATUS: Record<
   'unknown-source': 'mismatch',
   'unknown-layer-id': 'mismatch',
   'unknown-feature-id': 'mismatch',
+  'unknown-view-preset': 'mismatch',
   'source-scope-conflict': 'mismatch',
   'duplicate-dimension': 'mismatch',
   'state-key-collision': 'mismatch',

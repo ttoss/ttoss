@@ -11,6 +11,7 @@ import type {
   LegendSpec,
   NormalizationSpec,
   RepairOption,
+  ViewPreset,
   VisualizationLayer,
   VisualizationSpec,
 } from 'src/index';
@@ -115,6 +116,28 @@ test('SetFilterAction and LayerFilter are part of the public contract', () => {
     filter,
   };
   expect(layer.filter).toEqual(filter);
+});
+
+test('SetViewPresetAction and ViewPreset are part of the public contract', () => {
+  const preset: ViewPreset = {
+    id: 'overview',
+    label: 'Overview',
+    view: { center: [0, 0], zoom: 2 },
+  };
+  const action: GeoVisAction = {
+    type: 'set-view-preset',
+    presetId: preset.id,
+    rationale: 'AI zoomed out to the overview',
+  };
+  expect(action.type).toBe('set-view-preset');
+
+  const spec: VisualizationSpec = {
+    engine: 'maplibre',
+    sources: [],
+    layers: [],
+    viewPresets: [preset],
+  };
+  expect(spec.viewPresets?.[0].id).toBe('overview');
 });
 
 test('GeoVisResult taxonomy types are part of the public contract', () => {

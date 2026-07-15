@@ -7,13 +7,14 @@ import type { LayerFilter } from '../spec/types';
  * stable spec id — the same ids `getContextPacket()` names — never a raw
  * `SpecPatch` path or engine expression. Grows one variant per PRD-002
  * phase; currently: `toggle-layer`, `select-feature`, `set-map-data`,
- * `set-filter`.
+ * `set-filter`, `set-view-preset`.
  */
 export type GeoVisAction =
   | ToggleLayerAction
   | SelectFeatureAction
   | SetMapDataAction
-  | SetFilterAction;
+  | SetFilterAction
+  | SetViewPresetAction;
 
 /** Flips (or explicitly sets) a layer's visibility. */
 export interface ToggleLayerAction {
@@ -76,6 +77,20 @@ export interface SetFilterAction {
   layerId: string;
   /** The predicate to apply, or `null` to clear the layer's current filter. */
   filter: LayerFilter | null;
+  /** Optional free-text reason, preserved on the action log entry for audit. */
+  rationale?: string;
+}
+
+/**
+ * Moves the camera to a named `ViewPreset` declared in `spec.viewPresets` —
+ * bounded to positions the application actually curated, instead of raw
+ * coordinates an AI would otherwise have to invent. Compiles to the same
+ * `runtime.setView()` mechanism a UI camera control already uses.
+ */
+export interface SetViewPresetAction {
+  type: 'set-view-preset';
+  /** Id of the preset to move to — must match `spec.viewPresets[].id`. */
+  presetId: string;
   /** Optional free-text reason, preserved on the action log entry for audit. */
   rationale?: string;
 }

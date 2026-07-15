@@ -70,6 +70,7 @@ Top-level spec object passed to `GeoVisProvider`.
 | `legendEnabled` | `boolean`                 |          | Controls whether the resolved `mapType` auto-generates legends. Defaults to `true`. Has no effect on legends supplied directly via `legends`.                             |
 | `mapData`       | `MapData[]`               |          | Attribute datasets joined to GeoJSON sources for choropleth coloring and tooltips.                                                                                        |
 | `metadata`      | `Record<string, unknown>` |          | Arbitrary consumer metadata; not read by the runtime.                                                                                                                     |
+| `viewPresets`   | `ViewPreset[]`            |          | Named camera positions (`{ id, label?, view }`) `dispatch({ type: 'set-view-preset' })` can target by `id`. See [AI Action Surface](#ai-action-surface-dispatch).         |
 
 ### `LegendSpec`
 
@@ -1054,7 +1055,7 @@ const LayerControls = () => {
 
 `runtime.dispatch(action)` is the recommended way to steer a live map — a closed, typed vocabulary of semantic operations (PRD-002, [ADR-0003](./docs/adr/0003-semantic-action-surface.md)) that validates against the current spec before compiling to the same `SpecPatch`/`update`/`setView` mechanisms `applyPatch` uses. Prefer it over hand-written `SpecPatch`es: it targets stable ids instead of internal paint paths, rejects unknown targets with a repairable `GeoVisResult`, and every call — accepted or rejected — is recorded on the action log for audit.
 
-Currently implemented: `toggle-layer`, `select-feature`, `set-map-data`, `set-filter`. More actions land per PRD-002 phase (`set-view-preset`).
+Currently implemented (the full v1 vocabulary): `toggle-layer`, `select-feature`, `set-map-data`, `set-filter`, `set-view-preset`.
 
 ```tsx
 const { runtime } = useGeoVis();
@@ -1135,6 +1136,34 @@ runtime.dispatch({
 
 `LayerFilter` supports `eq` / `neq` / `gt` / `gte` / `lt` / `lte` (scalar `value`) and `in` / `not-in` (array `value`). Filtering is gated by `CapabilitySet.dataFeatures.filter` per source type — declared `['geojson']` on the MapLibre adapter today; a layer whose source type isn't declared is rejected with `unsupported-data-feature`, the same way an unsupported source or layer geometry is.
 
+`set-view-preset` moves the camera to a named position declared in `spec.viewPresets` — bounded to positions the application actually curated, instead of raw coordinates an AI would otherwise have to invent:
+
+```ts
+const spec = {
+  // ...
+  viewPresets: [
+    {
+      id: 'country',
+      label: 'Country view',
+      view: { center: [-51.9, -14.2], zoom: 3.5 },
+    },
+    {
+      id: 'capital',
+      label: 'Capital',
+      view: { center: [-47.9, -15.8], zoom: 10, pitch: 30 },
+    },
+  ],
+};
+
+runtime.dispatch({
+  type: 'set-view-preset',
+  presetId: 'capital',
+  rationale: 'AI zoomed in on the capital',
+});
+```
+
+Compiles to the same `runtime.setView()` mechanism a UI camera control already uses — no new engine code. An unknown `presetId` is rejected with the declared preset ids as repair. Only `center`/`zoom`/`pitch`/`bearing` are applied; `view.projection` isn't — `setView()`'s imperative camera move never supported switching projection (a pre-existing limitation, not introduced by this action); use `update(spec)` for that.
+
 ### Action log
 
 ```ts
@@ -1160,14 +1189,15 @@ runtime.getContextPacket();
 //     filter: { property: 'status', operator: 'eq', value: 'active' },
 //   }],
 //   legends: [{ id: 'pop-legend', scaleKind: 'threshold', domain: [10, 90], unit: 'inhabitants' }],
+//   viewPresets: [{ id: 'capital', label: 'Capital' }],
 //   selection: { layerId: 'regions-layer', featureId: 'BR' },
-//   allowedActions: ['toggle-layer', 'select-feature', 'set-map-data', 'set-filter'],
+//   allowedActions: ['toggle-layer', 'select-feature', 'set-map-data', 'set-filter', 'set-view-preset'],
 //   warnings: [],
 //   lastResult: { status: 'resolved', spec, warnings: [] },
 // }
 ```
 
-`allowedActions` is the vocabulary above filtered to what the current spec and active adapter actually support (e.g. `toggle-layer` only appears once the spec has at least one layer; `set-filter` only appears once the adapter declares filter support for a source type present in the spec).
+`allowedActions` is the vocabulary above filtered to what the current spec and active adapter actually support (e.g. `toggle-layer` only appears once the spec has at least one layer; `set-filter` only appears once the adapter declares filter support for a source type present in the spec; `set-view-preset` only appears once the spec declares at least one entry in `viewPresets`). `viewPresets` in the packet lists only `id`/`label` — never the presets' raw `view` camera values.
 
 ## Proportional Symbols (sizeBy)
 

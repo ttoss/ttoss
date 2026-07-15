@@ -524,6 +524,22 @@ export interface VisualizationSpec {
    * Consumers should not set this field directly.
    */
   __resolved?: boolean;
+
+  /**
+   * Named, curated camera positions the AI (or a UI control) can jump to by
+   * id (`dispatch({ type: 'set-view-preset' })`, PRD-002) — bounded to
+   * positions the application actually declared, instead of raw coordinates
+   * an AI would otherwise have to invent.
+   */
+  viewPresets?: ViewPreset[];
 }
 
 export type GeovisSpec = VisualizationSpec;
+
+/** A named camera position `set-view-preset` can target by `id`. */
+export interface ViewPreset {
+  id: string;
+  /** Human-readable label, e.g. for a UI picker. */
+  label?: string;
+  view: ViewState;
+}

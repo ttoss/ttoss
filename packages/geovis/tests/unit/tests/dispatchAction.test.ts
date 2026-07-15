@@ -277,3 +277,73 @@ describe('compileAction — set-filter', () => {
     });
   });
 });
+
+describe('compileAction — set-view-preset', () => {
+  const specWithPresets = (): VisualizationSpec => {
+    return {
+      ...makeSpec(),
+      viewPresets: [
+        {
+          id: 'overview',
+          label: 'Overview',
+          view: { center: [0, 0], zoom: 2 },
+        },
+        { id: 'detail', view: { zoom: 8, pitch: 30, bearing: 45 } },
+      ],
+    };
+  };
+
+  test('resolves the declared preset to SetViewOptions', () => {
+    const outcome = compileAction(specWithPresets(), {
+      type: 'set-view-preset',
+      presetId: 'overview',
+    });
+    expect(outcome).toEqual({
+      setViewOptions: {
+        center: [0, 0],
+        zoom: 2,
+        pitch: undefined,
+        bearing: undefined,
+      },
+    });
+  });
+
+  test('carries every camera field the preset declares', () => {
+    const outcome = compileAction(specWithPresets(), {
+      type: 'set-view-preset',
+      presetId: 'detail',
+    });
+    expect(outcome).toEqual({
+      setViewOptions: { center: undefined, zoom: 8, pitch: 30, bearing: 45 },
+    });
+  });
+
+  test('an unknown presetId compiles to an unknown-view-preset issue listing declared preset ids', () => {
+    const outcome = compileAction(specWithPresets(), {
+      type: 'set-view-preset',
+      presetId: 'ghost',
+    });
+    expect('issue' in outcome && outcome.issue).toMatchObject({
+      code: 'unknown-view-preset',
+      subject: { path: 'action.presetId', id: 'ghost' },
+      repair: [
+        {
+          kind: 'allowed-values',
+          path: 'action.presetId',
+          values: ['overview', 'detail'],
+        },
+      ],
+    });
+  });
+
+  test('a spec with no viewPresets always rejects with an empty allowed-values list', () => {
+    const outcome = compileAction(makeSpec(), {
+      type: 'set-view-preset',
+      presetId: 'anything',
+    });
+    expect('issue' in outcome && outcome.issue).toMatchObject({
+      code: 'unknown-view-preset',
+      repair: [{ kind: 'allowed-values', values: [] }],
+    });
+  });
+});

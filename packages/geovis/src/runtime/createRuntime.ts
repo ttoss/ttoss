@@ -333,12 +333,33 @@ const applyPatchToRuntime = (
   return result;
 };
 
+/** Moves the adapter's camera and merges the defined fields into `state.spec.view`. */
+const setRuntimeView = (
+  adapter: EngineAdapter,
+  state: RuntimeState,
+  options: SetViewOptions
+): void => {
+  const { animate: _a, ...cameraFields } = options;
+  const definedFields = Object.fromEntries(
+    Object.entries(cameraFields).filter(([, v]) => {
+      return v !== undefined;
+    })
+  );
+  if (Object.keys(definedFields).length === 0) return;
+  adapter.setView(options);
+  const prevView = state.spec.view ?? {};
+  const nextView = { ...prevView, ...definedFields };
+  state.spec = { ...state.spec, view: nextView };
+};
+
 /**
- * Compiles `action` against the current spec to one of three outcomes:
+ * Compiles `action` against the current spec to one of four outcomes:
  * - a `SpecPatch` — applied through `applyPatchToRuntime`, validating and
  *   committing exactly like a hand-written patch would;
  * - a selection update — runtime-level ephemeral state, committed directly
  *   and forwarded to `adapter.setSelection`, never touching `state.spec`;
+ * - a camera move — forwarded to `setRuntimeView`, the same mechanism
+ *   `runtime.setView()` already uses;
  * - a rejection issue — built into the failure result directly.
  * Every call appends one entry to `state.actionLog`, accepted or rejected
  * (ADR-0003 audit substrate).
@@ -360,30 +381,14 @@ const dispatchToRuntime = (
     state.selection = outcome.selection;
     adapter.setSelection?.(outcome.selection);
     result = state.result;
+  } else if ('setViewOptions' in outcome) {
+    setRuntimeView(adapter, state, outcome.setViewOptions);
+    result = state.result;
   } else {
     result = applyPatchToRuntime(adapter, state, outcome.patch);
   }
   state.actionLog.push({ action, result, timestamp: Date.now() });
   return result;
-};
-
-/** Moves the adapter's camera and merges the defined fields into `state.spec.view`. */
-const setRuntimeView = (
-  adapter: EngineAdapter,
-  state: RuntimeState,
-  options: SetViewOptions
-): void => {
-  const { animate: _a, ...cameraFields } = options;
-  const definedFields = Object.fromEntries(
-    Object.entries(cameraFields).filter(([, v]) => {
-      return v !== undefined;
-    })
-  );
-  if (Object.keys(definedFields).length === 0) return;
-  adapter.setView(options);
-  const prevView = state.spec.view ?? {};
-  const nextView = { ...prevView, ...definedFields };
-  state.spec = { ...state.spec, view: nextView };
 };
 
 /**
