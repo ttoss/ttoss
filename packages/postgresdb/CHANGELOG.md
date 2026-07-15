@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.10.0...@ttoss/postgresdb@0.11.0) (2026-07-15)
+
+### Features
+
+- **postgresdb:** bound syncWithAdvisoryLock wait with optional lockTimeoutMs ([#1141](https://github.com/ttoss/ttoss/issues/1141)) ([1ac89f3](https://github.com/ttoss/ttoss/commit/1ac89f3782610c8ac2b86a5e4bf87057b23f9a84))
+
 # 0.10.0 (2026-07-15)
 
 ### Features
