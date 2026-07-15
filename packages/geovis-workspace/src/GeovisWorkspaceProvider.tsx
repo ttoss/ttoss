@@ -1,3 +1,4 @@
+import type { RepairOption } from '@ttoss/geovis';
 import * as React from 'react';
 
 import {
@@ -22,6 +23,19 @@ export interface GeovisWorkspaceProviderProps {
    * selected. Use it to rebuild the `visualizationSpec` in the parent.
    */
   onSelectionChange?: (selection: GeovisWorkspaceSelection) => void;
+  /**
+   * Called with the chosen `RepairOption` when a repair button is pressed in
+   * the `warnings` slot's default panel. Omit to render repair buttons
+   * disabled rather than absent.
+   */
+  onRepair?: (repair: RepairOption) => void;
+  /**
+   * Whether the GeoVis runtime has ever resolved successfully. Computed by
+   * `GeovisWorkspace` (which has runtime access) and forwarded here so it
+   * reaches context; defaults to `false` for standalone usage without a
+   * GeoVis runtime.
+   */
+  hasResolvedOnce?: boolean;
 }
 
 /**
@@ -55,6 +69,8 @@ export const GeovisWorkspaceProvider = ({
   config,
   selection,
   onSelectionChange,
+  onRepair,
+  hasResolvedOnce = false,
 }: GeovisWorkspaceProviderProps) => {
   const isControlled = selection !== undefined;
 
@@ -109,6 +125,8 @@ export const GeovisWorkspaceProvider = ({
       setLeftSidebarOpen,
       isRightSidebarOpen,
       setRightSidebarOpen,
+      onRepair,
+      hasResolvedOnce,
     };
   }, [
     config,
@@ -118,6 +136,8 @@ export const GeovisWorkspaceProvider = ({
     setLeftSidebarOpen,
     isRightSidebarOpen,
     setRightSidebarOpen,
+    onRepair,
+    hasResolvedOnce,
   ]);
 
   return (

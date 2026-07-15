@@ -28,4 +28,9 @@ export const messages = defineMessages({
     description:
       'Accessible label for the button that closes the right sidebar.',
   },
+  coldStartTitle: {
+    defaultMessage: 'Map could not be shown',
+    description:
+      'Title shown in the map area on first mount when the spec fails before anything has ever resolved.',
+  },
 });

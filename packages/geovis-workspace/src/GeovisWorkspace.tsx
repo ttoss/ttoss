@@ -1,4 +1,4 @@
-import type { VisualizationSpec } from '@ttoss/geovis';
+import type { RepairOption, VisualizationSpec } from '@ttoss/geovis';
 import { GeoVisProvider } from '@ttoss/geovis';
 import { Box } from '@ttoss/ui';
 
@@ -7,13 +7,46 @@ import {
   type GeovisWorkspaceConfig,
   type GeovisWorkspaceSelection,
 } from './context/GeovisWorkspaceContext';
-import { GeovisWorkspaceProvider } from './GeovisWorkspaceProvider';
+import {
+  GeovisWorkspaceProvider,
+  type GeovisWorkspaceProviderProps,
+} from './GeovisWorkspaceProvider';
+import { useHasResolvedOnce } from './hooks/useHasResolvedOnce';
+
+/**
+ * Reads whether the GeoVis runtime has ever resolved and forwards it into
+ * `GeovisWorkspaceProvider`. Kept as a separate component (rather than
+ * inlined in `GeovisWorkspaceProvider`) since that provider is also usable
+ * standalone, without a GeoVis runtime — `useGeoVis()` is only safe to call
+ * here, inside `GeoVisProvider`.
+ */
+const GeovisWorkspaceProviderWithRuntime = ({
+  children,
+  ...providerProps
+}: GeovisWorkspaceProviderProps) => {
+  const hasResolvedOnce = useHasResolvedOnce();
+
+  return (
+    <GeovisWorkspaceProvider
+      {...providerProps}
+      hasResolvedOnce={hasResolvedOnce}
+    >
+      {children}
+    </GeovisWorkspaceProvider>
+  );
+};
 
 export interface GeovisWorkspaceProps {
   config: GeovisWorkspaceConfig;
   visualizationSpec: VisualizationSpec;
   variables?: GeovisWorkspaceSelection;
   onVariableChange?: (variables: GeovisWorkspaceSelection) => void;
+  /**
+   * Called with the chosen `RepairOption` when a repair button is pressed in
+   * the `warnings` slot's default panel. Omit to render repair buttons
+   * disabled rather than absent.
+   */
+  onRepair?: (repair: RepairOption) => void;
 }
 
 /**
@@ -25,6 +58,7 @@ export const GeovisWorkspace = ({
   visualizationSpec,
   variables,
   onVariableChange,
+  onRepair,
 }: GeovisWorkspaceProps) => {
   return (
     <GeoVisProvider spec={visualizationSpec}>
@@ -34,13 +68,14 @@ export const GeovisWorkspace = ({
           overlays stay confined to the workspace instead of escaping into
           whatever container the host application renders it in. */}
       <Box sx={{ position: 'relative' }}>
-        <GeovisWorkspaceProvider
+        <GeovisWorkspaceProviderWithRuntime
           config={config}
           selection={variables}
           onSelectionChange={onVariableChange}
+          onRepair={onRepair}
         >
           <Layout />
-        </GeovisWorkspaceProvider>
+        </GeovisWorkspaceProviderWithRuntime>
       </Box>
     </GeoVisProvider>
   );
