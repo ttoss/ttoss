@@ -14,10 +14,30 @@ This plan turns the PRD into six vertical slices, each cutting through the full 
 
 ```ts
 type GeoVisAction =
-  | { type: 'set-map-data'; layerId: string; mapDataId: string; rationale?: string }
-  | { type: 'set-filter'; layerId: string; filter: LayerFilter | null; rationale?: string }
-  | { type: 'toggle-layer'; layerId: string; visible?: boolean; rationale?: string }
-  | { type: 'select-feature'; layerId: string; featureId: string | number | null; rationale?: string }
+  | {
+      type: 'set-map-data';
+      layerId: string;
+      mapDataId: string;
+      rationale?: string;
+    }
+  | {
+      type: 'set-filter';
+      layerId: string;
+      filter: LayerFilter | null;
+      rationale?: string;
+    }
+  | {
+      type: 'toggle-layer';
+      layerId: string;
+      visible?: boolean;
+      rationale?: string;
+    }
+  | {
+      type: 'select-feature';
+      layerId: string;
+      featureId: string | number | null;
+      rationale?: string;
+    }
   | { type: 'set-view-preset'; presetId: string; rationale?: string };
 
 interface GeoVisRuntime {

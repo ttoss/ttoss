@@ -15,10 +15,19 @@ This plan turns the PRD into six vertical slices, each cutting through the full 
 `GeoVisProvider` moves from inside the map slot to the root of `GeovisWorkspace`, wrapping `GeovisWorkspaceProvider` and `Layout` so every panel — not just the canvas — can call `useGeoVis()`, `useGeoVisClick()`, and `useGeoVisHover()`:
 
 ```tsx
-export const GeovisWorkspace = ({ config, visualizationSpec, variables, onVariableChange }: GeovisWorkspaceProps) => {
+export const GeovisWorkspace = ({
+  config,
+  visualizationSpec,
+  variables,
+  onVariableChange,
+}: GeovisWorkspaceProps) => {
   return (
     <GeoVisProvider spec={visualizationSpec}>
-      <GeovisWorkspaceProvider config={config} selection={variables} onSelectionChange={onVariableChange}>
+      <GeovisWorkspaceProvider
+        config={config}
+        selection={variables}
+        onSelectionChange={onVariableChange}
+      >
         <Layout />
       </GeovisWorkspaceProvider>
     </GeoVisProvider>
@@ -57,9 +66,9 @@ export interface GeovisWorkspaceConfig {
 }
 ```
 
-The six names are the closed, versioned vocabulary ADR-0002 calls for — adding one is additive, renaming one is breaking, exactly like `GeoVisIssueCode`. **Placement stays fixed in v1**: `controls` renders in the left sidebar; `legend`, `warnings`, `inspector`, and `metadata` stack in that order in the right sidebar; `map` fills the main area. Only a slot's *content* (override or hide) is configurable — rearranging which physical region hosts which slot is not exposed, since neither the PRD's exit criterion nor its Should items ask for it, and it can be added later as a purely additive `region` field without breaking the name vocabulary. `Layout` becomes a slot renderer: for each of the six names it reads `config.slots?.[name]`, renders `component` if given, nothing if `hidden`, otherwise the slot's own default panel — the same override-or-default resolution `Layout` already does per-sidebar, generalized from two regions to six slots.
+The six names are the closed, versioned vocabulary ADR-0002 calls for — adding one is additive, renaming one is breaking, exactly like `GeoVisIssueCode`. **Placement stays fixed in v1**: `controls` renders in the left sidebar; `legend`, `warnings`, `inspector`, and `metadata` stack in that order in the right sidebar; `map` fills the main area. Only a slot's _content_ (override or hide) is configurable — rearranging which physical region hosts which slot is not exposed, since neither the PRD's exit criterion nor its Should items ask for it, and it can be added later as a purely additive `region` field without breaking the name vocabulary. `Layout` becomes a slot renderer: for each of the six names it reads `config.slots?.[name]`, renders `component` if given, nothing if `hidden`, otherwise the slot's own default panel — the same override-or-default resolution `Layout` already does per-sidebar, generalized from two regions to six slots.
 
-`controls`' menu groups and `legend`'s description/sources are not slot overrides — they configure the *default* panel's content (the same distinction ADR-0001 draws between "layout" and "annotations"), so they live as sibling top-level config, not nested inside `slots`.
+`controls`' menu groups and `legend`'s description/sources are not slot overrides — they configure the _default_ panel's content (the same distinction ADR-0001 draws between "layout" and "annotations"), so they live as sibling top-level config, not nested inside `slots`.
 
 ### D3 — Repair surface: severity, i18n keying, and repair application (ADR-0003)
 
@@ -69,7 +78,11 @@ The `warnings` slot's default panel subscribes to `useGeoVis().result`. Severity
 const warningMessages = defineMessages({
   'unknown-map-data-id': { defaultMessage: '...', description: '...' },
   // one entry per GeoVisIssueCode, plus a closed fallback key
-  fallback: { defaultMessage: '{message}', description: 'Untranslated issue message, used for a code with no catalog entry yet.' },
+  fallback: {
+    defaultMessage: '{message}',
+    description:
+      'Untranslated issue message, used for a code with no catalog entry yet.',
+  },
 });
 ```
 
