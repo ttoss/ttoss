@@ -34,6 +34,7 @@ export interface GeoVisContextValue {
   runtime: GeoVisRuntime | null;
   /** The last successfully accepted spec — unchanged while `result` is a failure (ADR-0001: nothing renders on failure). */
   spec: VisualizationSpec;
+  /** Low-level escape hatch (PRD-002) — prefer `dispatch` below for anything expressible as one of its actions. */
   applyPatch: (patch: SpecPatch) => void;
   /** Imperatively moves the camera and syncs `spec.view`. Animated by default. */
   setView: (options: SetViewOptions) => void;
