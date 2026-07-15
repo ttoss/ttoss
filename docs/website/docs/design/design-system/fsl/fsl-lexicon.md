@@ -330,6 +330,7 @@ Not every state is meaningful for every interaction kind.
 | **current**       | A state indicating the current item, location, or active point in a navigational or ordered structure. | Not simply selected.                                                                       |
 | **visited**       | A state indicating prior navigation visitation where such history is semantically meaningful.          | Not available for all interaction kinds.                                                   |
 | **droptarget**    | A state indicating that the entity is currently a relevant target for drop-based interaction.          | Not generic active state.                                                                  |
+| **invalid**       | A runtime state indicating the entity's current value failed validation.                               | Not **negative** (Evaluation) — invalid is a runtime outcome of the user's data, never an authorial valence choice. |
 
 ### State law
 
@@ -337,6 +338,7 @@ Not every state is meaningful for every interaction kind.
 - `visited` only makes sense where navigation semantics support it.
 - `indeterminate` only makes sense where tri-state interaction semantics support it.
 - `checked` is not legal for every entity or interaction.
+- `invalid` only makes sense where validation semantics apply (value entry and selection).
 
 ---
 
@@ -512,6 +514,15 @@ The meaning those terms carried is recovered at the correct layers:
 - **ARIA mapping** — the concrete pairing between `disclose.toggle` + revealed Entity and the ARIA `role="listbox|grid|tree|dialog"` + `aria-haspopup` attribute lives in the Web/ARIA **Projection Profile**, where it belongs.
 
 Operational rule: the core Interaction Kind vocabulary contains no `popup.*` terms. Downstream projection profiles may introduce such pairings as projection-level names, but must not re-inject them into the FSL core.
+
+---
+
+## 10.15 invalid vs negative
+
+- **invalid** is a State — the runtime outcome of validating the user's data.
+- **negative** is an Evaluation — authorial valence chosen when the expression is written.
+
+A control becomes `invalid` because of what the user entered; it is voiced `negative` because of what the author meant. Expressing validation by re-voicing the control (`evaluation: negative`) is a category mistake: state lives in the user's data, evaluation lives in the author's pen. Adjacent display parts (a validationMessage) lawfully carry `negative` valence *about* the invalid state. Mirrors §10.5 (`negative` ≠ `destructive`) and §10.6 (`muted` ≠ `disabled`).
 
 ---
 

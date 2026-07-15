@@ -560,6 +560,8 @@ export const baseTheme: ThemeTokens = {
             indeterminate: '{core.colors.brand.300}',
             pressed: '{core.colors.neutral.100}',
             expanded: '{core.colors.neutral.50}',
+            // invalid: field stays readable — the red signal lives on the border
+            invalid: '{core.colors.neutral.0}',
             // focused: omitted — focus shown via border ring, background unchanged
           },
           border: {
@@ -573,11 +575,16 @@ export const baseTheme: ThemeTokens = {
             indeterminate: '{core.colors.brand.300}',
             pressed: '{core.colors.neutral.500}',
             expanded: '{core.colors.brand.500}',
+            // red.600 on neutral.0: 4.83:1 — clears the 3:1 non-text floor
+            invalid: '{core.colors.red.600}',
           },
           text: {
             default: '{core.colors.neutral.900}',
             disabled: '{core.colors.neutral.500}',
             checked: '{core.colors.neutral.0}',
+            // invalid: value stays readable in the control; valence text lives
+            // on the validationMessage via input.negative.text.*
+            invalid: '{core.colors.neutral.900}',
             // brand.300 (indeterminate bg) is light — use dark text for contrast
             indeterminate: '{core.colors.neutral.900}',
             // hover/active/focused/selected: all neutral.900 — omitted
@@ -1552,16 +1559,20 @@ export const darkAlternate: ModeOverride = {
             droptarget: '{core.colors.neutral.700}', // neutral.50 is near-white on dark
             pressed: '{core.colors.neutral.500}', // neutral.100 is near-white on dark
             expanded: '{core.colors.neutral.500}', // neutral.50 is near-white on dark
+            invalid: '{core.colors.neutral.700}', // base neutral.0 would flash white on dark
           },
           border: {
             default: '{core.colors.neutral.500}',
             hover: '{core.colors.neutral.300}',
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.700}',
+            invalid: '{core.colors.red.300}', // red.600 is too dark against neutral.700
           },
           text: {
             default: '{core.colors.neutral.0}',
             disabled: '{core.colors.neutral.500}',
+            invalid: '{core.colors.neutral.0}', // base neutral.900 would vanish on dark
+            
             // text.indeterminate pairs with bg.indeterminate = brand.300 (inherited from base)
             // brand.300 is light — neutral.900 (dark) gives ~6.6:1 ✓; do NOT override here
           },

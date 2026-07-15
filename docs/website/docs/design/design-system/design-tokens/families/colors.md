@@ -279,7 +279,7 @@ Most contexts share an **interactive base**: `default`, `hover`, `active`, `focu
 | `ux`            | Allowed states (full, no implicit base)                                                                                          |
 | :-------------- | :------------------------------------------------------------------------------------------------------------------------------- |
 | `action`        | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `pressed`, `expanded`                                         |
-| `input`         | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `selected`, `checked`, `indeterminate`, `pressed`, `expanded` |
+| `input`         | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `selected`, `checked`, `indeterminate`, `pressed`, `expanded`, `invalid` |
 | `navigation`    | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `selected`, `current`, `visited`, `expanded`                  |
 | `feedback`      | `default`, `focused`, `disabled` _(communicative, not interactive)_                                                              |
 | `informational` | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `selected`, `visited`, `expanded`                             |

@@ -7,7 +7,6 @@ export default jestUnitConfig({
     '/node_modules/',
     // barrel files — no executable logic
     'src/index.ts',
-    'src/model.ts',
     'src/semantics/index.ts',
     'src/tokens/index.ts',
     // pure `as const` data — no branches to cover

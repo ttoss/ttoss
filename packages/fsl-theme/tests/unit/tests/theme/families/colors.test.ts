@@ -92,7 +92,7 @@ const BASE_STATES = new Set([
 // surfaces: accordions, collapsible panels) and `navigation` (mega-nav panels).
 const CONTEXT_EXTRA_STATES: Readonly<Record<string, ReadonlyArray<string>>> = {
   action: ['pressed', 'expanded'],
-  input: ['checked', 'indeterminate', 'pressed', 'expanded'],
+  input: ['checked', 'indeterminate', 'pressed', 'expanded', 'invalid'],
   navigation: ['current', 'visited', 'expanded'],
   feedback: [],
   informational: ['visited', 'expanded'],

@@ -191,6 +191,7 @@ State is not a prop passed at the expression level — it is runtime-resolved by
 | **current**       | Navigation item matches the current location   |
 | **visited**       | Link has been previously visited               |
 | **droptarget**    | Element is a valid target for a drag operation |
+| **invalid**       | Control's value failed validation (runtime — `isInvalid`, never authorial; Lexicon §10.15) |
 
 Not all states are meaningful for every Entity — `checked` is only surfaced by selection components; `visited` only by navigation links. Legality here is React Aria's runtime concern (it only emits the render-prop for applicable primitives), not a build-time matrix.
 

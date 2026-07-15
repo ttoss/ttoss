@@ -503,3 +503,19 @@ Anchors: `src/roots/toCssVars.ts` › `toCssVarName`, `src/roots/tokenRegistry.t
 Re-litigation answers:
 
 - "Is this a breaking rename?" → no shipped token uses the fallback path (all are registered); only hypothetical extension vars change, pre-adoption (ADR-012).
+
+### ADR-017: Validation outcome is the `invalid` State, not the `negative` role
+
+Status: accepted (2026-07-15)
+Tags: colors, validation, states, fsl-ui, governance
+
+Decision: validation failure is a **runtime State** — `input.{role}.{dimension}.invalid` — flipped by `isInvalid`/form libraries; the `negative` Evaluation role on a control is authorial valence and never expresses validation; adjacent display parts (validationMessage, icon) keep consuming `input.negative.*`.
+Rejected: mapping `isInvalid` to the `negative` role on the control (this file's previous doctrine in `colors.ts`) — makes a runtime fact look like an authorial choice (`<TextField evaluation="negative">` is a category mistake) and collides with the industry-consensus boolean-state model (React Aria `isInvalid`, Spectrum `validationState`, MUI `error`); keeping the fsl-theme/fsl-ui doctrines split — `@ttoss/fsl-ui` already shipped `invalid` in `STATES` + `STATE_PRIORITY` and consumed `input.primary.*.invalid`, which resolved to `undefined` (invalid fields rendered visually silent).
+Cost: a 12th input state in the contract; themes overriding `input.primary` should supply mode-safe `invalid` values (dark inherits light values unless overridden — see `darkAlternate`).
+Anchors: `src/families/colors.ts` › `InputColorStates.invalid`, `src/baseTheme.ts` › `input.primary.*.invalid`, `packages/fsl-ui/src/semantics/taxonomy.ts` › `STATES`/`STATE_PRIORITY`, `fsl-lexicon.md` §7/§10.15.
+
+Re-litigation answers:
+
+- "States are not free-form (FSL §7) — why admit a new one?" → through governance, which is this ADR plus the Lexicon §7 entry; the state has runtime legality (only where validation semantics apply) like `visited`/`indeterminate`.
+- "Why does validationMessage still use `negative`?" → it *displays* valence about the outcome; the control *carries* the state. Same split as Lexicon §10.9 (part vs slot).
+- "`invalid` equals `negative` visually — parallel vocabulary?" → same value, different meaning axis (State vs Evaluation); divergence stays free (e.g. themes may tint invalid backgrounds without touching the negative role).

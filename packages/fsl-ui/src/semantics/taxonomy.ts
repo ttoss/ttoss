@@ -186,12 +186,13 @@ export type Consequence = (typeof CONSEQUENCES)[number];
 // State — §7
 // "What semantic or interactional state is active?"
 //
-// Note on `invalid` — closes the FSL Lexicon §7 gap for form controls. It is
-// a *runtime* state (driven by validation outcome), not an authorial
-// emphasis. The mirror distinction to Lexicon §10.5 (`negative` ≠
-// `destructive`) is: `invalid` (State) ≠ `negative` (Evaluation). Validation
-// feedback is therefore expressed by toggling state, not by re-coloring the
-// control via Evaluation. See `ENTITY_EVALUATION` design note below.
+// Note on `invalid` — a *runtime* state (driven by validation outcome), not
+// an authorial emphasis. Formalized in FSL Lexicon §7 + §10.15 and backed by
+// `input.{role}.*.invalid` tokens in @ttoss/fsl-theme (ADR-017). The mirror
+// distinction to Lexicon §10.5 (`negative` ≠ `destructive`) is: `invalid`
+// (State) ≠ `negative` (Evaluation). Validation feedback is therefore
+// expressed by toggling state, not by re-coloring the control via
+// Evaluation. See `ENTITY_EVALUATION` design note below.
 // ---------------------------------------------------------------------------
 
 export const STATES = [

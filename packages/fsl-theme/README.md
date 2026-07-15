@@ -66,7 +66,7 @@ One entry per semantic family. Use `vars.*` for typed CSS variable references; u
 - `ux` — FSL Entity Kind: `action` · `input` · `navigation` · `feedback` · `informational`
 - `role` — Evaluation: `primary` · `secondary` · `accent` · `muted` · `positive` · `caution` · `negative`
 - `dimension` — `background` · `border` · `text`
-- `state` — `default` · `hover` · `active` · `focused` · `disabled` · `selected` · `pressed` · `expanded` · `checked` · `indeterminate` · `current` · `visited` · `droptarget` (legality varies per `ux` — see the colors family spec)
+- `state` — `default` · `hover` · `active` · `focused` · `disabled` · `selected` · `pressed` · `expanded` · `checked` · `indeterminate` · `current` · `visited` · `droptarget` · `invalid` (legality varies per `ux` — see the colors family spec)
 
 ## Pick a token in 60s
 

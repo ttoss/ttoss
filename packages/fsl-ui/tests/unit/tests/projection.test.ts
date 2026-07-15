@@ -81,3 +81,47 @@ describe('ENTITY_TOKEN_MAPPING', () => {
     }
   });
 });
+
+// ---------------------------------------------------------------------------
+// Cross-package drift guard — STATE_PRIORITY states must be token-backed
+//
+// `resolveInteractiveStyle` is strict: when a flag is set, the mapped state's
+// value is returned even when `undefined`. A state key that exists in the
+// taxonomy but has no token in @ttoss/fsl-theme therefore renders *nothing*
+// (the bug ADR-017 fixed for `invalid`). This guard pins the contract: every
+// signal state consumed by form controls resolves to a real CSS var.
+// ---------------------------------------------------------------------------
+
+describe('STATE_PRIORITY states are token-backed on input.primary', () => {
+  const CONTROL_SIGNAL_STATES = [
+    'invalid',
+    'checked',
+    'indeterminate',
+    'disabled',
+  ] as const;
+
+  test.each(CONTROL_SIGNAL_STATES)(
+    'input.primary border/background back the %s state',
+    (state) => {
+      const subtree = vars.colors.input.primary as Record<
+        string,
+        Record<string, string | undefined>
+      >;
+      expect(subtree.border?.[state] ?? subtree.background?.[state]).toMatch(
+        /^var\(--tt-colors-input-primary-/
+      );
+    }
+  );
+
+  test('invalid is fully backed on all three dimensions (ADR-017)', () => {
+    expect(vars.colors.input.primary.background.invalid).toBe(
+      'var(--tt-colors-input-primary-background-invalid)'
+    );
+    expect(vars.colors.input.primary.border.invalid).toBe(
+      'var(--tt-colors-input-primary-border-invalid)'
+    );
+    expect(vars.colors.input.primary.text.invalid).toBe(
+      'var(--tt-colors-input-primary-text-invalid)'
+    );
+  });
+});

@@ -290,6 +290,7 @@ Not every state is legal in every `ux` context. Illegal combinations are TypeScr
 | `current` | — | — | ✅ (active route) | — | — |
 | `visited` | — | — | ✅ | — | ✅ (link in content) |
 | `droptarget` | ✅ | ✅ (file input) | ✅ | — | ✅ |
+| `invalid` | — | ✅ (runtime validation outcome — `isInvalid`, never authorial; pairs with `input.negative.*` on the validationMessage) | — | — | — |
 
 State disambiguation rules:
 - **`active` vs `pressed`**: `active` = the brief moment of clicking (transient). `pressed` = persistent toggle engaged ("Bold" button). Never use `active` for toggle state.
