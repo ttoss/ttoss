@@ -8,7 +8,6 @@ const makeSpec = (
   }
 ): VisualizationSpec => {
   return {
-    id: 'test',
     engine: 'maplibre',
     mapType: 'dotDensity',
     basemap: {
@@ -96,7 +95,6 @@ describe('dotDensity happy path — zero-config', () => {
 
   test('aligns sourceId with first mapData mapId when sources out of order', () => {
     const resolved = resolveSpecFromMapType({
-      id: 'test',
       engine: 'maplibre',
       mapType: 'dotDensity',
       basemap: {
@@ -192,7 +190,6 @@ describe('resolveDotDensity', () => {
     overrides?: Partial<VisualizationSpec>
   ): VisualizationSpec => {
     return {
-      id: 'test',
       engine: 'maplibre',
       mapType: 'dotDensity',
       sources: [
@@ -242,7 +239,6 @@ describe('resolveDotDensity', () => {
 
   test('returns empty layers and legends when sourceId cannot be matched', () => {
     const result = resolveDotDensity({
-      id: 'test',
       engine: 'maplibre',
       sources: [],
       layers: [],

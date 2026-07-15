@@ -6,9 +6,6 @@
   "additionalProperties": false,
   "required": ["engine", "sources", "layers"],
   "properties": {
-    "id": {
-      "type": "string"
-    },
     "schemaVersion": {
       "type": "number"
     },
