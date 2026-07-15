@@ -57,7 +57,7 @@ Composites accept no `style`/`className`. Geometry the host legitimately owns is
 }
 ```
 
-The registered knobs and the full policy live in [`src/tokens/CONTRACT.md`](./src/tokens/CONTRACT.md) §7.
+The registered knobs and the full policy live in `src/tokens/CONTRACT.md` §7.
 
 ## AI-first surface
 
