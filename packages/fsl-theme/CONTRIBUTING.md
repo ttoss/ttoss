@@ -517,5 +517,5 @@ Anchors: `src/families/colors.ts` › `InputColorStates.invalid`, `src/baseTheme
 Re-litigation answers:
 
 - "States are not free-form (FSL §7) — why admit a new one?" → through governance, which is this ADR plus the Lexicon §7 entry; the state has runtime legality (only where validation semantics apply) like `visited`/`indeterminate`.
-- "Why does validationMessage still use `negative`?" → it *displays* valence about the outcome; the control *carries* the state. Same split as Lexicon §10.9 (part vs slot).
+- "Why does validationMessage still use `negative`?" → it _displays_ valence about the outcome; the control _carries_ the state. Same split as Lexicon §10.9 (part vs slot).
 - "`invalid` equals `negative` visually — parallel vocabulary?" → same value, different meaning axis (State vs Evaluation); divergence stays free (e.g. themes may tint invalid backgrounds without touching the negative role).

@@ -14,6 +14,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
+import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 
 // ---------------------------------------------------------------------------
@@ -44,6 +45,33 @@ export const selectItemMeta = {
   structure: 'item',
   composition: 'selection',
 } as const satisfies ComponentMeta<'Selection'>;
+
+type InputColors = typeof vars.colors.input.primary;
+
+/** Trigger label color — invalid dominates default (Selection has no evaluation). */
+const resolveSelectLabelColor = ({
+  c,
+  isInvalid,
+}: {
+  c: InputColors;
+  isInvalid?: boolean;
+}): string | undefined => {
+  const text = c?.text ?? {};
+  return isInvalid ? text.invalid : text.default;
+};
+
+/** Dropdown popover surface style — Selection-entity chrome. */
+const buildPopoverStyle = (c: InputColors): React.CSSProperties => {
+  return {
+    boxSizing: 'border-box',
+    borderRadius: vars.radii.control,
+    borderWidth: vars.border.outline.control.width,
+    borderStyle: vars.border.outline.control.style,
+    borderColor: c?.border?.default,
+    backgroundColor: c?.background?.default,
+    overflow: 'hidden',
+  };
+};
 
 // Visual-only symbol — not user-facing text, no i18n needed.
 const CHEVRON_DOWN = String.fromCharCode(0x25bc);
@@ -116,7 +144,7 @@ export const Select = <T extends object = object>({
                 data-part="label"
                 style={{
                   ...(vars.text.label.md as React.CSSProperties),
-                  color: isInvalid ? c?.text?.invalid : c?.text?.default,
+                  color: resolveSelectLabelColor({ c, isInvalid }),
                 }}
               >
                 {label}
@@ -164,9 +192,7 @@ export const Select = <T extends object = object>({
                   transitionProperty: 'background-color, border-color, color',
                   transitionDuration: vars.motion.feedback.duration,
                   transitionTimingFunction: vars.motion.feedback.easing,
-                  outline: isFocusVisible
-                    ? `${vars.focus.ring.width} ${vars.focus.ring.style} ${vars.focus.ring.color}`
-                    : 'none',
+                  outline: focusRingOutline(isFocusVisible),
                 } as React.CSSProperties;
               }}
             >
@@ -207,16 +233,8 @@ export const Select = <T extends object = object>({
             <RACPopover
               data-scope="select"
               data-part="positioner"
-              style={{
-                // Surface within the Select composite — uses Selection entity tokens.
-                boxSizing: 'border-box',
-                borderRadius: vars.radii.control,
-                borderWidth: vars.border.outline.control.width,
-                borderStyle: vars.border.outline.control.style,
-                borderColor: c?.border?.default,
-                backgroundColor: c?.background?.default,
-                overflow: 'hidden',
-              }}
+              // Surface within the Select composite — uses Selection entity tokens.
+              style={buildPopoverStyle(c)}
             >
               <RACListBox
                 data-scope="select"
@@ -297,9 +315,7 @@ export const SelectItem = ({ children, ...props }: SelectItemProps) => {
               isSelected,
               isHovered,
             }) ?? c?.text?.default,
-          outline: isFocusVisible
-            ? `${vars.focus.ring.width} ${vars.focus.ring.style} ${vars.focus.ring.color}`
-            : 'none',
+          outline: focusRingOutline(isFocusVisible),
           outlineOffset: '2px',
           transitionProperty: 'background-color, color',
           transitionDuration: vars.motion.feedback.duration,

@@ -276,13 +276,13 @@ Not every `{ux} × role × state` is valid. Allowed **roles** per context are in
 
 Most contexts share an **interactive base**: `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`. `feedback` is the exception — feedback is communicative, not interactive (FSL §3), so only `default`, `focused` (focusable wrapper / close button), and `disabled` apply.
 
-| `ux`            | Allowed states (full, no implicit base)                                                                                          |
-| :-------------- | :------------------------------------------------------------------------------------------------------------------------------- |
-| `action`        | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `pressed`, `expanded`                                         |
+| `ux`            | Allowed states (full, no implicit base)                                                                                                     |
+| :-------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| `action`        | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `pressed`, `expanded`                                                    |
 | `input`         | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `selected`, `checked`, `indeterminate`, `pressed`, `expanded`, `invalid` |
-| `navigation`    | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `selected`, `current`, `visited`, `expanded`                  |
-| `feedback`      | `default`, `focused`, `disabled` _(communicative, not interactive)_                                                              |
-| `informational` | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `selected`, `visited`, `expanded`                             |
+| `navigation`    | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `selected`, `current`, `visited`, `expanded`                             |
+| `feedback`      | `default`, `focused`, `disabled` _(communicative, not interactive)_                                                                         |
+| `informational` | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `selected`, `visited`, `expanded`                                        |
 
 ### Dimension expectations
 

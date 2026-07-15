@@ -14,6 +14,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
+import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import { createPresenceScope } from '../scope';
 
@@ -224,9 +225,7 @@ export const TextFieldControl = (props: TextFieldControlProps) => {
               isDisabled,
               isInvalid,
             }) ?? colors?.text?.default,
-          outline: isFocusVisible
-            ? `${vars.focus.ring.width} ${vars.focus.ring.style} ${vars.focus.ring.color}`
-            : 'none',
+          outline: focusRingOutline(isFocusVisible),
           ...(vars.text.label.md as React.CSSProperties),
         } as React.CSSProperties;
       }}

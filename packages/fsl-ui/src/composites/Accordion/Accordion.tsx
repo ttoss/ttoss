@@ -13,6 +13,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
+import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import { createCompositeScope } from '../scope';
 
@@ -308,9 +309,7 @@ export const AccordionTrigger = ({ children }: AccordionTriggerProps) => {
             transitionProperty: 'background-color, color',
             transitionDuration: vars.motion.transition.enter.duration,
             transitionTimingFunction: vars.motion.transition.enter.easing,
-            outline: isFocusVisible
-              ? `${vars.focus.ring.width} ${vars.focus.ring.style} ${vars.focus.ring.color}`
-              : 'none',
+            outline: focusRingOutline(isFocusVisible),
             outlineOffset: '-2px',
           } as React.CSSProperties;
         }}

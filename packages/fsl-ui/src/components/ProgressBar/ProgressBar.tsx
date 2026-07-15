@@ -29,6 +29,47 @@ export const progressBarMeta = {
   structure: 'root',
 } as const satisfies ComponentMeta<'Feedback'>;
 
+type FeedbackColors = (typeof vars.colors.feedback)[EvaluationsFor<'Feedback'>];
+
+/** Track (body) style — the empty rail the fill animates across. */
+const buildTrackStyle = (c: FeedbackColors): React.CSSProperties => {
+  return {
+    position: 'relative',
+    overflow: 'hidden',
+    width: '100%',
+    height: vars.spacing.gap.stack.sm,
+    backgroundColor: c?.background?.default,
+    borderRadius: vars.radii.control,
+    borderWidth: vars.border.outline.surface.width,
+    borderStyle: vars.border.outline.surface.style,
+    borderColor: c?.border?.default,
+  };
+};
+
+/** Fill (content) style — width tracks percentage; indeterminate animates. */
+const buildFillStyle = ({
+  c,
+  percentage,
+  isIndeterminate,
+}: {
+  c: FeedbackColors;
+  percentage?: number | null;
+  isIndeterminate?: boolean;
+}): React.CSSProperties => {
+  return {
+    height: '100%',
+    width: isIndeterminate ? '40%' : `${percentage ?? 0}%`,
+    backgroundColor: c?.border?.default,
+    borderRadius: 'inherit',
+    transitionProperty: 'width',
+    transitionDuration: vars.motion.transition.enter.duration,
+    transitionTimingFunction: vars.motion.transition.enter.easing,
+    animation: isIndeterminate
+      ? 'tt-progressbar-indeterminate 1.2s infinite'
+      : undefined,
+  };
+};
+
 // ---------------------------------------------------------------------------
 // ProgressBar
 // ---------------------------------------------------------------------------
@@ -129,39 +170,13 @@ export const ProgressBar = ({
             <div
               data-scope="progress-bar"
               data-part="body"
-              style={
-                {
-                  position: 'relative',
-                  overflow: 'hidden',
-                  width: '100%',
-                  height: vars.spacing.gap.stack.sm,
-                  backgroundColor: c?.background?.default,
-                  borderRadius: vars.radii.control,
-                  borderWidth: vars.border.outline.surface.width,
-                  borderStyle: vars.border.outline.surface.style,
-                  borderColor: c?.border?.default,
-                } as React.CSSProperties
-              }
+              style={buildTrackStyle(c)}
             >
               {/* Fill */}
               <div
                 data-scope="progress-bar"
                 data-part="content"
-                style={
-                  {
-                    height: '100%',
-                    width: isIndeterminate ? '40%' : `${percentage ?? 0}%`,
-                    backgroundColor: c?.border?.default,
-                    borderRadius: 'inherit',
-                    transitionProperty: 'width',
-                    transitionDuration: vars.motion.transition.enter.duration,
-                    transitionTimingFunction:
-                      vars.motion.transition.enter.easing,
-                    animation: isIndeterminate
-                      ? 'tt-progressbar-indeterminate 1.2s infinite'
-                      : undefined,
-                  } as React.CSSProperties
-                }
+                style={buildFillStyle({ c, percentage, isIndeterminate })}
               />
             </div>
           </>

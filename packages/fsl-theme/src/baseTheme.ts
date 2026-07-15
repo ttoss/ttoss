@@ -1572,7 +1572,7 @@ export const darkAlternate: ModeOverride = {
             default: '{core.colors.neutral.0}',
             disabled: '{core.colors.neutral.500}',
             invalid: '{core.colors.neutral.0}', // base neutral.900 would vanish on dark
-            
+
             // text.indeterminate pairs with bg.indeterminate = brand.300 (inherited from base)
             // brand.300 is light — neutral.900 (dark) gives ~6.6:1 ✓; do NOT override here
           },

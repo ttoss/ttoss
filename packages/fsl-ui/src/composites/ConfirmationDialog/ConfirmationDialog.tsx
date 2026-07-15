@@ -47,6 +47,77 @@ export const confirmationDialogMeta = {
 } as const satisfies ComponentMeta<'Overlay'>;
 
 /**
+ * Owns the consequence-driven confirm mechanism so the component body stays
+ * declarative. `destructive` requires a two-click arm→confirm within
+ * `armWindowMs`; everything else confirms on the first click. Toggling
+ * `consequence` mid-lifetime resets arming via the render-phase adjustment
+ * pattern (no extra commit).
+ */
+const useArmedConfirm = ({
+  consequence,
+  onConfirm,
+  armWindowMs,
+}: {
+  consequence: ConsequencesFor<'Action'>;
+  onConfirm: () => void;
+  armWindowMs: number;
+}): {
+  isArmed: boolean;
+  confirm: (close: () => void) => void;
+  reset: () => void;
+} => {
+  const requiresArming = consequence === 'destructive';
+  const [isArmed, setIsArmed] = React.useState(false);
+  const armTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearArmTimer = React.useCallback(() => {
+    if (armTimerRef.current !== null) {
+      clearTimeout(armTimerRef.current);
+      armTimerRef.current = null;
+    }
+  }, []);
+
+  const [prevConsequence, setPrevConsequence] = React.useState(consequence);
+  if (prevConsequence !== consequence) {
+    setPrevConsequence(consequence);
+    setIsArmed(false);
+  }
+
+  React.useEffect(() => {
+    return () => {
+      clearArmTimer();
+    };
+  }, [clearArmTimer]);
+
+  const reset = React.useCallback(() => {
+    clearArmTimer();
+    setIsArmed(false);
+  }, [clearArmTimer]);
+
+  const arm = React.useCallback(() => {
+    setIsArmed(true);
+    clearArmTimer();
+    armTimerRef.current = setTimeout(() => {
+      armTimerRef.current = null;
+      setIsArmed(false);
+    }, armWindowMs);
+  }, [armWindowMs, clearArmTimer]);
+
+  const confirm = (close: () => void): void => {
+    const definitive = !requiresArming || isArmed;
+    if (!definitive) {
+      arm();
+      return;
+    }
+    reset();
+    onConfirm();
+    close();
+  };
+
+  return { isArmed, confirm, reset };
+};
+
+/**
  * Props for {@link ConfirmationDialog}.
  */
 export interface ConfirmationDialogProps {
@@ -176,69 +247,21 @@ export const ConfirmationDialog = ({
   armWindowMs = 2000,
   platform = 'ios',
 }: ConfirmationDialogProps) => {
-  const requiresArming = consequence === 'destructive';
-  const [isArmed, setIsArmed] = React.useState(false);
-  const armTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const clearArmTimer = React.useCallback(() => {
-    if (armTimerRef.current !== null) {
-      clearTimeout(armTimerRef.current);
-      armTimerRef.current = null;
-    }
-  }, []);
-
-  // Reset arming when the dimension that drives the mechanism changes, so
-  // toggling `consequence` mid-lifetime never strands a stale armed state.
-  // Uses the render-phase adjustment pattern (React docs: "adjusting state
-  // when a prop changes") instead of an effect — no extra commit, no
-  // cascading render. A pending arm timer firing later is benign: it only
-  // sets `isArmed` to the value it already has.
-  const [prevConsequence, setPrevConsequence] = React.useState(consequence);
-  if (prevConsequence !== consequence) {
-    setPrevConsequence(consequence);
-    setIsArmed(false);
-  }
-
-  React.useEffect(() => {
-    return () => {
-      clearArmTimer();
-    };
-  }, [clearArmTimer]);
-
-  const resetArm = React.useCallback(() => {
-    clearArmTimer();
-    setIsArmed(false);
-  }, [clearArmTimer]);
-
-  const handleConfirmClick = (close: () => void) => {
-    if (!requiresArming) {
-      onConfirm();
-      close();
-      return;
-    }
-    if (isArmed) {
-      resetArm();
-      onConfirm();
-      close();
-      return;
-    }
-    setIsArmed(true);
-    clearArmTimer();
-    armTimerRef.current = setTimeout(() => {
-      armTimerRef.current = null;
-      setIsArmed(false);
-    }, armWindowMs);
-  };
+  const { isArmed, confirm, reset } = useArmedConfirm({
+    consequence,
+    onConfirm,
+    armWindowMs,
+  });
 
   const currentConfirmLabel =
-    requiresArming && isArmed ? armedLabel : confirmLabel;
+    consequence === 'destructive' && isArmed ? armedLabel : confirmLabel;
 
   return (
     <DialogTrigger
       onOpenChange={(open) => {
         // Closing the dialog (ESC, backdrop, Cancel) must not leave an
         // armed state behind for the next open.
-        if (!open) resetArm();
+        if (!open) reset();
       }}
     >
       {trigger}
@@ -255,7 +278,7 @@ export const ConfirmationDialog = ({
                     composition="dismissAction"
                     evaluation="muted"
                     onPress={() => {
-                      return resetArm();
+                      return reset();
                     }}
                   >
                     {cancelLabel}
@@ -266,7 +289,7 @@ export const ConfirmationDialog = ({
                     evaluation={evaluation}
                     data-arming={isArmed ? 'true' : undefined}
                     onPress={() => {
-                      return handleConfirmClick(close);
+                      return confirm(close);
                     }}
                   >
                     {currentConfirmLabel}

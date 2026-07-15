@@ -153,6 +153,80 @@ export const dialogModalMeta = {
   structure: 'surface',
 } as const satisfies ComponentMeta<'Overlay'>;
 
+type InformationalColors =
+  (typeof vars.colors.informational)[EvaluationsFor<'Overlay'>];
+
+/**
+ * The active enter/exit motion spec, or `null` when the surface is at rest.
+ * Collapses the repeated `transition[isEntering ? 'enter' : 'exit']` lookups
+ * into a single resolution the style builders read from.
+ */
+const resolveTransitionPhase = ({
+  isEntering,
+  isExiting,
+}: {
+  isEntering?: boolean;
+  isExiting?: boolean;
+}): { duration: string; easing: string } | null => {
+  if (isEntering) return vars.motion.transition.enter;
+  if (isExiting) return vars.motion.transition.exit;
+  return null;
+};
+
+/** Scrim backdrop style — dims + centers, fades on enter/exit. */
+const buildBackdropStyle = ({
+  isEntering,
+  isExiting,
+}: {
+  isEntering?: boolean;
+  isExiting?: boolean;
+}): React.CSSProperties => {
+  const phase = resolveTransitionPhase({ isEntering, isExiting });
+  return {
+    position: 'fixed',
+    inset: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: vars.zIndex.layer.blocking,
+    backgroundColor: vars.overlay.scrim,
+    transition: phase ? `opacity ${phase.duration} ${phase.easing}` : undefined,
+    opacity: isExiting ? 0 : 1,
+  };
+};
+
+/** Modal surface style — the blocking card; scales + fades on enter/exit. */
+const buildModalSurfaceStyle = ({
+  colors,
+  isEntering,
+  isExiting,
+}: {
+  colors: InformationalColors;
+  isEntering?: boolean;
+  isExiting?: boolean;
+}): React.CSSProperties => {
+  const phase = resolveTransitionPhase({ isEntering, isExiting });
+  const inTransition = isEntering || isExiting;
+  return {
+    boxSizing: 'border-box',
+    maxWidth: 'min(500px, 90vw)',
+    maxHeight: '90vh',
+    overflow: 'auto',
+    borderRadius: vars.radii.surface,
+    borderWidth: vars.border.outline.surface.width,
+    borderStyle: vars.border.outline.surface.style,
+    borderColor: colors?.border?.default,
+    boxShadow: vars.elevation.surface.overlay,
+    backgroundColor: colors?.background?.default,
+    outline: 'none',
+    transition: phase
+      ? `transform ${phase.duration} ${phase.easing}, opacity ${phase.duration} ${phase.easing}`
+      : undefined,
+    transform: inTransition ? 'scale(0.95)' : 'scale(1)',
+    opacity: inTransition ? 0 : 1,
+  };
+};
+
 /**
  * Props for the DialogModal wrapper.
  */
@@ -199,20 +273,7 @@ export const DialogModal = ({
       data-scope="dialog"
       data-part="backdrop"
       style={({ isEntering, isExiting }) => {
-        return {
-          position: 'fixed',
-          inset: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: vars.zIndex.layer.blocking,
-          backgroundColor: vars.overlay.scrim,
-          transition:
-            isEntering || isExiting
-              ? `opacity ${vars.motion.transition[isEntering ? 'enter' : 'exit'].duration} ${vars.motion.transition[isEntering ? 'enter' : 'exit'].easing}`
-              : undefined,
-          opacity: isExiting ? 0 : 1,
-        } as React.CSSProperties;
+        return buildBackdropStyle({ isEntering, isExiting });
       }}
     >
       <RACModal
@@ -220,29 +281,7 @@ export const DialogModal = ({
         data-part="surface"
         data-evaluation={evaluation}
         style={({ isEntering, isExiting }) => {
-          return {
-            boxSizing: 'border-box',
-            maxWidth: 'min(500px, 90vw)',
-            maxHeight: '90vh',
-            overflow: 'auto',
-            borderRadius: vars.radii.surface,
-            borderWidth: vars.border.outline.surface.width,
-            borderStyle: vars.border.outline.surface.style,
-            borderColor: colors?.border?.default,
-            boxShadow: vars.elevation.surface.overlay,
-            backgroundColor: colors?.background?.default,
-            outline: 'none',
-            transition:
-              isEntering || isExiting
-                ? `transform ${vars.motion.transition[isEntering ? 'enter' : 'exit'].duration} ${vars.motion.transition[isEntering ? 'enter' : 'exit'].easing}, opacity ${vars.motion.transition[isEntering ? 'enter' : 'exit'].duration} ${vars.motion.transition[isEntering ? 'enter' : 'exit'].easing}`
-                : undefined,
-            transform: isEntering
-              ? 'scale(0.95)'
-              : isExiting
-                ? 'scale(0.95)'
-                : 'scale(1)',
-            opacity: isEntering || isExiting ? 0 : 1,
-          } as React.CSSProperties;
+          return buildModalSurfaceStyle({ colors, isEntering, isExiting });
         }}
       >
         {children}

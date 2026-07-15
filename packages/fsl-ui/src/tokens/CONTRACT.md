@@ -249,12 +249,16 @@ style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => ({
   color:           resolveInteractiveStyle(c?.text,       { isHovered, isPressed, isDisabled })
                  ?? c?.text?.default,
 
-  // Focus ring (always via outline, never via border — avoids layout shift)
-  outline: isFocusVisible
-    ? `${vars.focus.ring.width} ${vars.focus.ring.style} ${vars.focus.ring.color}`
-    : 'none',
+  // Focus ring — always via outline, never via border (avoids layout shift).
+  // Applied through the single-source helper, same rule as the state cascade.
+  outline: focusRingOutline(isFocusVisible),
 })}
 ```
+
+The focus ring is applied via `focusRingOutline` (`src/tokens/focusRing.ts`) —
+the single source of truth for the `vars.focus.ring.*` outline, mirroring how
+`resolveInteractiveStyle` centralises the state cascade. Do **not** inline the
+`vars.focus.ring.*` ternary in component code.
 
 ### §3.1 — `resolveInteractiveStyle` helper
 

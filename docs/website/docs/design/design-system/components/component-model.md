@@ -176,21 +176,21 @@ State answers: _What interactional or semantic condition is currently active?_
 
 State is not a prop passed at the expression level — it is runtime-resolved by React Aria render props (`isHovered`, `isFocused`, `isPressed`, `isSelected`, …) and surfaced as the CSS selector layer:
 
-| State             | Meaning                                        |
-| :---------------- | :--------------------------------------------- |
-| **default**       | No special condition active                    |
-| **hover**         | Pointer is over the element                    |
-| **active**        | Element is being activated / pressed           |
-| **focused**       | Element has keyboard focus                     |
-| **disabled**      | Element is not interactive                     |
-| **selected**      | Item is selected within a collection           |
-| **pressed**       | Toggle is in its on-press state                |
-| **checked**       | Checkbox-like element is checked               |
-| **indeterminate** | Mixed or partial selection state               |
-| **expanded**      | Disclosure or select is open                   |
-| **current**       | Navigation item matches the current location   |
-| **visited**       | Link has been previously visited               |
-| **droptarget**    | Element is a valid target for a drag operation |
+| State             | Meaning                                                                                    |
+| :---------------- | :----------------------------------------------------------------------------------------- |
+| **default**       | No special condition active                                                                |
+| **hover**         | Pointer is over the element                                                                |
+| **active**        | Element is being activated / pressed                                                       |
+| **focused**       | Element has keyboard focus                                                                 |
+| **disabled**      | Element is not interactive                                                                 |
+| **selected**      | Item is selected within a collection                                                       |
+| **pressed**       | Toggle is in its on-press state                                                            |
+| **checked**       | Checkbox-like element is checked                                                           |
+| **indeterminate** | Mixed or partial selection state                                                           |
+| **expanded**      | Disclosure or select is open                                                               |
+| **current**       | Navigation item matches the current location                                               |
+| **visited**       | Link has been previously visited                                                           |
+| **droptarget**    | Element is a valid target for a drag operation                                             |
 | **invalid**       | Control's value failed validation (runtime — `isInvalid`, never authorial; Lexicon §10.15) |
 
 Not all states are meaningful for every Entity — `checked` is only surfaced by selection components; `visited` only by navigation links. Legality here is React Aria's runtime concern (it only emits the render-prop for applicable primitives), not a build-time matrix.

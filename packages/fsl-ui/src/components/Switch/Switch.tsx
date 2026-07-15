@@ -6,6 +6,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
+import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 
 // ---------------------------------------------------------------------------
@@ -38,6 +39,85 @@ const TRACK_H = '1.5rem';
 const THUMB_SIZE = '1.125rem';
 // Offset = (trackH - thumbSize) / 2 ≈ 0.1875rem
 const THUMB_OFFSET = '0.1875rem';
+
+type InputColors = typeof vars.colors.input.primary;
+
+const TRACK_STYLE_STATIC = {
+  boxSizing: 'border-box',
+  position: 'relative',
+  flexShrink: 0,
+  display: 'inline-block',
+  width: TRACK_W,
+  height: TRACK_H,
+  borderRadius: vars.radii.round,
+  borderWidth: vars.border.outline.control.width,
+  borderStyle: vars.border.outline.control.style,
+  transitionProperty: 'background-color, border-color',
+  transitionDuration: vars.motion.feedback.duration,
+  transitionTimingFunction: vars.motion.feedback.easing,
+  outlineOffset: '2px',
+} satisfies React.CSSProperties;
+
+/** Sliding-track style (state-dependent background/border + focus ring). */
+const buildTrackStyle = ({
+  c,
+  isDisabled,
+  isSelected,
+  isHovered,
+  isPressed,
+  isFocusVisible,
+}: {
+  c: InputColors;
+  isDisabled?: boolean;
+  isSelected?: boolean;
+  isHovered?: boolean;
+  isPressed?: boolean;
+  isFocusVisible?: boolean;
+}): React.CSSProperties => {
+  return {
+    ...TRACK_STYLE_STATIC,
+    backgroundColor: resolveInteractiveStyle(c?.background, {
+      isDisabled,
+      isSelected,
+      isHovered,
+      isPressed,
+    }),
+    borderColor: resolveInteractiveStyle(c?.border, {
+      isDisabled,
+      isSelected,
+      isFocusVisible,
+    }),
+    outline: focusRingOutline(isFocusVisible),
+  };
+};
+
+/**
+ * Thumb color:
+ *   ON  → text.checked (typically neutral.0 = white on brand track)
+ *   OFF → border.default (typically neutral.300 = visible on light track)
+ */
+const resolveThumbColor = ({
+  c,
+  isSelected,
+}: {
+  c: InputColors;
+  isSelected?: boolean;
+}): string | undefined => {
+  const text = c?.text ?? {};
+  return isSelected ? (text.checked ?? text.default) : c?.border?.default;
+};
+
+/** Label color — disabled dominates default (Selection has no evaluation). */
+const resolveLabelColor = ({
+  c,
+  isDisabled,
+}: {
+  c: InputColors;
+  isDisabled?: boolean;
+}): string | undefined => {
+  const text = c?.text ?? {};
+  return isDisabled ? text.disabled : text.default;
+};
 
 /**
  * Props for the Switch component.
@@ -89,27 +169,6 @@ export const Switch = ({ children, ...props }: SwitchProps) => {
       }}
     >
       {({ isHovered, isPressed, isDisabled, isFocusVisible, isSelected }) => {
-        // Track background: default (off) → checked (on)
-        const trackBg = resolveInteractiveStyle(c?.background, {
-          isDisabled,
-          isSelected,
-          isHovered,
-          isPressed,
-        });
-
-        const trackBorderColor = resolveInteractiveStyle(c?.border, {
-          isDisabled,
-          isSelected,
-          isFocusVisible,
-        });
-
-        // Thumb color:
-        //   ON  → c?.text?.checked  (typically neutral.0 = white on brand bg)
-        //   OFF → c?.border?.default (typically neutral.300 = visible on light track)
-        const thumbColor = isSelected
-          ? (c?.text?.checked ?? c?.text?.default)
-          : c?.border?.default;
-
         // Thumb left position — slides right when ON
         const thumbLeft = isSelected
           ? `calc(${TRACK_W} - ${THUMB_SIZE} - ${THUMB_OFFSET})`
@@ -122,26 +181,14 @@ export const Switch = ({ children, ...props }: SwitchProps) => {
               data-scope="switch"
               data-part="control"
               aria-hidden
-              style={{
-                boxSizing: 'border-box',
-                position: 'relative',
-                flexShrink: 0,
-                display: 'inline-block',
-                width: TRACK_W,
-                height: TRACK_H,
-                borderRadius: vars.radii.round,
-                borderWidth: vars.border.outline.control.width,
-                borderStyle: vars.border.outline.control.style,
-                backgroundColor: trackBg,
-                borderColor: trackBorderColor,
-                transitionProperty: 'background-color, border-color',
-                transitionDuration: vars.motion.feedback.duration,
-                transitionTimingFunction: vars.motion.feedback.easing,
-                outline: isFocusVisible
-                  ? `${vars.focus.ring.width} ${vars.focus.ring.style} ${vars.focus.ring.color}`
-                  : 'none',
-                outlineOffset: '2px',
-              }}
+              style={buildTrackStyle({
+                c,
+                isDisabled,
+                isSelected,
+                isHovered,
+                isPressed,
+                isFocusVisible,
+              })}
             >
               {/* indicator — the sliding thumb */}
               <span
@@ -155,7 +202,7 @@ export const Switch = ({ children, ...props }: SwitchProps) => {
                   width: THUMB_SIZE,
                   height: THUMB_SIZE,
                   borderRadius: vars.radii.round,
-                  backgroundColor: thumbColor,
+                  backgroundColor: resolveThumbColor({ c, isSelected }),
                   transitionProperty: 'left, background-color',
                   transitionDuration: vars.motion.feedback.duration,
                   transitionTimingFunction: vars.motion.feedback.easing,
@@ -168,9 +215,7 @@ export const Switch = ({ children, ...props }: SwitchProps) => {
               <span
                 data-scope="switch"
                 data-part="label"
-                style={{
-                  color: isDisabled ? c?.text?.disabled : c?.text?.default,
-                }}
+                style={{ color: resolveLabelColor({ c, isDisabled }) }}
               >
                 {children}
               </span>

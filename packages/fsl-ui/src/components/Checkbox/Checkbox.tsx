@@ -6,6 +6,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
+import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 
 // ---------------------------------------------------------------------------
@@ -31,6 +32,99 @@ export const checkboxMeta = {
   entity: 'Selection',
   structure: 'root',
 } as const satisfies ComponentMeta<'Selection'>;
+
+type InputColors = typeof vars.colors.input.primary;
+
+// Static box chrome — flag-independent, hoisted so the render callback only
+// computes the state-dependent leaves.
+const BOX_STYLE_STATIC = {
+  boxSizing: 'border-box',
+  flexShrink: 0,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '1.125rem',
+  height: '1.125rem',
+  borderRadius: vars.radii.control,
+  borderStyle: vars.border.outline.control.style,
+  transitionProperty: 'background-color, border-color, border-width',
+  transitionDuration: vars.motion.feedback.duration,
+  transitionTimingFunction: vars.motion.feedback.easing,
+  outlineOffset: '2px',
+} satisfies React.CSSProperties;
+
+/** Box (selectionControl) style — the visual checkbox square. */
+const buildBoxStyle = ({
+  c,
+  isSelected,
+  isIndeterminate,
+  isInvalid,
+  isDisabled,
+  isHovered,
+  isPressed,
+  isFocusVisible,
+}: {
+  c: InputColors;
+  isSelected?: boolean;
+  isIndeterminate?: boolean;
+  isInvalid?: boolean;
+  isDisabled?: boolean;
+  isHovered?: boolean;
+  isPressed?: boolean;
+  isFocusVisible?: boolean;
+}): React.CSSProperties => {
+  const checkedLike = isSelected || isIndeterminate;
+  return {
+    ...BOX_STYLE_STATIC,
+    borderWidth: checkedLike
+      ? vars.border.outline.selected.width
+      : vars.border.outline.control.width,
+    backgroundColor: resolveInteractiveStyle(c?.background, {
+      isDisabled,
+      isInvalid,
+      isSelected,
+      isIndeterminate,
+      isHovered,
+      isPressed,
+    }),
+    borderColor: resolveInteractiveStyle(c?.border, {
+      isDisabled,
+      isInvalid,
+      isSelected,
+      isIndeterminate,
+      isFocusVisible,
+    }),
+    outline: focusRingOutline(isFocusVisible),
+  };
+};
+
+/** Indicator glyph color — destructures `text` once to keep `?.` bounded. */
+const resolveIndicatorColor = ({
+  text,
+  isIndeterminate,
+}: {
+  text: NonNullable<InputColors['text']>;
+  isIndeterminate?: boolean;
+}): string | undefined => {
+  return isIndeterminate
+    ? (text.indeterminate ?? text.checked ?? text.default)
+    : (text.checked ?? text.default);
+};
+
+/** Label color — invalid dominates disabled dominates default. */
+const resolveLabelColor = ({
+  text,
+  isInvalid,
+  isDisabled,
+}: {
+  text: NonNullable<InputColors['text']>;
+  isInvalid?: boolean;
+  isDisabled?: boolean;
+}): string | undefined => {
+  if (isInvalid) return text.invalid;
+  if (isDisabled) return text.disabled;
+  return text.default;
+};
 
 /**
  * Props for the Checkbox component.
@@ -92,31 +186,8 @@ export const Checkbox = ({ children, ...props }: CheckboxProps) => {
         isIndeterminate,
         isInvalid,
       }) => {
-        const borderWidth =
-          isSelected || isIndeterminate
-            ? vars.border.outline.selected.width
-            : vars.border.outline.control.width;
-
-        const bgColor = resolveInteractiveStyle(c?.background, {
-          isDisabled,
-          isInvalid,
-          isSelected,
-          isIndeterminate,
-          isHovered,
-          isPressed,
-        });
-
-        const borderColor = resolveInteractiveStyle(c?.border, {
-          isDisabled,
-          isInvalid,
-          isSelected,
-          isIndeterminate,
-          isFocusVisible,
-        });
-
-        const indicatorColor = isIndeterminate
-          ? (c?.text?.indeterminate ?? c?.text?.checked ?? c?.text?.default)
-          : (c?.text?.checked ?? c?.text?.default);
+        const text = c?.text ?? {};
+        const showIndicator = isSelected || isIndeterminate;
 
         return (
           <>
@@ -125,37 +196,25 @@ export const Checkbox = ({ children, ...props }: CheckboxProps) => {
               data-scope="checkbox"
               data-part="selectionControl"
               aria-hidden
-              style={{
-                boxSizing: 'border-box',
-                flexShrink: 0,
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '1.125rem',
-                height: '1.125rem',
-                borderRadius: vars.radii.control,
-                borderWidth,
-                borderStyle: vars.border.outline.control.style,
-                backgroundColor: bgColor,
-                borderColor,
-                transitionProperty:
-                  'background-color, border-color, border-width',
-                transitionDuration: vars.motion.feedback.duration,
-                transitionTimingFunction: vars.motion.feedback.easing,
-                outline: isFocusVisible
-                  ? `${vars.focus.ring.width} ${vars.focus.ring.style} ${vars.focus.ring.color}`
-                  : 'none',
-                outlineOffset: '2px',
-              }}
+              style={buildBoxStyle({
+                c,
+                isSelected,
+                isIndeterminate,
+                isInvalid,
+                isDisabled,
+                isHovered,
+                isPressed,
+                isFocusVisible,
+              })}
             >
               {/* indicator — checkmark or dash */}
-              {(isSelected || isIndeterminate) && (
+              {showIndicator && (
                 <span
                   data-scope="checkbox"
                   data-part="indicator"
                   aria-hidden
                   style={{
-                    color: indicatorColor,
+                    color: resolveIndicatorColor({ text, isIndeterminate }),
                     fontSize: '0.75em',
                     lineHeight: 1,
                     userSelect: 'none',
@@ -172,11 +231,7 @@ export const Checkbox = ({ children, ...props }: CheckboxProps) => {
                 data-scope="checkbox"
                 data-part="label"
                 style={{
-                  color: isInvalid
-                    ? c?.text?.invalid
-                    : isDisabled
-                      ? c?.text?.disabled
-                      : c?.text?.default,
+                  color: resolveLabelColor({ text, isInvalid, isDisabled }),
                 }}
               >
                 {children}

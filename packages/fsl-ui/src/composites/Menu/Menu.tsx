@@ -17,6 +17,7 @@ import type {
   ConsequencesFor,
   EvaluationsFor,
 } from '../../semantics';
+import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import { createPresenceScope } from '../scope';
 
@@ -275,9 +276,7 @@ export const MenuItem = ({
               isPressed,
               isDisabled,
             }) ?? colors?.text?.default,
-          outline: isFocusVisible
-            ? `${vars.focus.ring.width} ${vars.focus.ring.style} ${vars.focus.ring.color}`
-            : 'none',
+          outline: focusRingOutline(isFocusVisible),
           outlineOffset: '-1px',
         } as React.CSSProperties;
       }}

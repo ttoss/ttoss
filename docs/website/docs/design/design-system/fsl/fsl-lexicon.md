@@ -315,21 +315,21 @@ State answers:
 State is governed by legality.
 Not every state is meaningful for every interaction kind.
 
-| Term              | Meaning                                                                                                | Distinguish from                                                                           |
-| ----------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
-| **default**       | The baseline state in the absence of another active state.                                             | Not “normal looking”; it is the unmodified semantic base state.                            |
-| **hover**         | A pointer-proximity state indicating hover-capable engagement.                                         | Not `focused`; hover is not keyboard focus.                                                |
-| **active**        | A currently engaged action state, often during direct interaction.                                     | Not `selected` or `pressed` in all cases.                                                  |
-| **focused**       | A state indicating current input or interaction focus.                                                 | Not `hover`.                                                                               |
-| **disabled**      | A state indicating the entity is unavailable for normal interaction.                                   | Not `muted`; disabled is availability, not emphasis.                                       |
-| **selected**      | A state indicating inclusion or chosen membership in a set.                                            | Not always `checked`; selection and checkedness are related but not identical universally. |
-| **pressed**       | A state indicating active pressed engagement, often in command/toggle controls.                        | Not always persistent like `selected`.                                                     |
-| **checked**       | A state indicating affirmative selection or toggle-on condition in applicable interaction kinds.       | Not `selected` in every interaction model.                                                 |
-| **indeterminate** | A state indicating partial, mixed, or unresolved condition in a tri-state model.                       | Not a visual ambiguity; it is a lawful third semantic state.                               |
-| **expanded**      | A state indicating disclosed or expanded content/structure.                                            | Not `selected`; expansion is visibility structure.                                         |
-| **current**       | A state indicating the current item, location, or active point in a navigational or ordered structure. | Not simply selected.                                                                       |
-| **visited**       | A state indicating prior navigation visitation where such history is semantically meaningful.          | Not available for all interaction kinds.                                                   |
-| **droptarget**    | A state indicating that the entity is currently a relevant target for drop-based interaction.          | Not generic active state.                                                                  |
+| Term              | Meaning                                                                                                | Distinguish from                                                                                                    |
+| ----------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| **default**       | The baseline state in the absence of another active state.                                             | Not “normal looking”; it is the unmodified semantic base state.                                                     |
+| **hover**         | A pointer-proximity state indicating hover-capable engagement.                                         | Not `focused`; hover is not keyboard focus.                                                                         |
+| **active**        | A currently engaged action state, often during direct interaction.                                     | Not `selected` or `pressed` in all cases.                                                                           |
+| **focused**       | A state indicating current input or interaction focus.                                                 | Not `hover`.                                                                                                        |
+| **disabled**      | A state indicating the entity is unavailable for normal interaction.                                   | Not `muted`; disabled is availability, not emphasis.                                                                |
+| **selected**      | A state indicating inclusion or chosen membership in a set.                                            | Not always `checked`; selection and checkedness are related but not identical universally.                          |
+| **pressed**       | A state indicating active pressed engagement, often in command/toggle controls.                        | Not always persistent like `selected`.                                                                              |
+| **checked**       | A state indicating affirmative selection or toggle-on condition in applicable interaction kinds.       | Not `selected` in every interaction model.                                                                          |
+| **indeterminate** | A state indicating partial, mixed, or unresolved condition in a tri-state model.                       | Not a visual ambiguity; it is a lawful third semantic state.                                                        |
+| **expanded**      | A state indicating disclosed or expanded content/structure.                                            | Not `selected`; expansion is visibility structure.                                                                  |
+| **current**       | A state indicating the current item, location, or active point in a navigational or ordered structure. | Not simply selected.                                                                                                |
+| **visited**       | A state indicating prior navigation visitation where such history is semantically meaningful.          | Not available for all interaction kinds.                                                                            |
+| **droptarget**    | A state indicating that the entity is currently a relevant target for drop-based interaction.          | Not generic active state.                                                                                           |
 | **invalid**       | A runtime state indicating the entity's current value failed validation.                               | Not **negative** (Evaluation) — invalid is a runtime outcome of the user's data, never an authorial valence choice. |
 
 ### State law
@@ -522,7 +522,7 @@ Operational rule: the core Interaction Kind vocabulary contains no `popup.*` ter
 - **invalid** is a State — the runtime outcome of validating the user's data.
 - **negative** is an Evaluation — authorial valence chosen when the expression is written.
 
-A control becomes `invalid` because of what the user entered; it is voiced `negative` because of what the author meant. Expressing validation by re-voicing the control (`evaluation: negative`) is a category mistake: state lives in the user's data, evaluation lives in the author's pen. Adjacent display parts (a validationMessage) lawfully carry `negative` valence *about* the invalid state. Mirrors §10.5 (`negative` ≠ `destructive`) and §10.6 (`muted` ≠ `disabled`).
+A control becomes `invalid` because of what the user entered; it is voiced `negative` because of what the author meant. Expressing validation by re-voicing the control (`evaluation: negative`) is a category mistake: state lives in the user's data, evaluation lives in the author's pen. Adjacent display parts (a validationMessage) lawfully carry `negative` valence _about_ the invalid state. Mirrors §10.5 (`negative` ≠ `destructive`) and §10.6 (`muted` ≠ `disabled`).
 
 ---
 

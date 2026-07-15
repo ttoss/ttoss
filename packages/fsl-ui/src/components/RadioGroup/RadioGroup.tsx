@@ -9,6 +9,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
+import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 
 // ---------------------------------------------------------------------------
@@ -114,6 +115,81 @@ RadioGroup.displayName = radioGroupMeta.displayName;
 // Radio — individual option
 // ---------------------------------------------------------------------------
 
+type InputColors = typeof vars.colors.input.primary;
+
+const RADIO_BOX_STATIC = {
+  boxSizing: 'border-box',
+  flexShrink: 0,
+  position: 'relative',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '1.125rem',
+  height: '1.125rem',
+  borderRadius: vars.radii.round,
+  borderStyle: vars.border.outline.control.style,
+  transitionProperty: 'background-color, border-color, border-width',
+  transitionDuration: vars.motion.feedback.duration,
+  transitionTimingFunction: vars.motion.feedback.easing,
+  outlineOffset: '2px',
+} satisfies React.CSSProperties;
+
+/** Circular radio-indicator style (state-dependent chrome + focus ring). */
+const buildRadioBoxStyle = ({
+  c,
+  isSelected,
+  isInvalid,
+  isDisabled,
+  isHovered,
+  isPressed,
+  isFocusVisible,
+}: {
+  c: InputColors;
+  isSelected?: boolean;
+  isInvalid?: boolean;
+  isDisabled?: boolean;
+  isHovered?: boolean;
+  isPressed?: boolean;
+  isFocusVisible?: boolean;
+}): React.CSSProperties => {
+  return {
+    ...RADIO_BOX_STATIC,
+    borderWidth: isSelected
+      ? vars.border.outline.selected.width
+      : vars.border.outline.control.width,
+    backgroundColor: resolveInteractiveStyle(c?.background, {
+      isDisabled,
+      isInvalid,
+      isSelected,
+      isHovered,
+      isPressed,
+    }),
+    borderColor: resolveInteractiveStyle(c?.border, {
+      isDisabled,
+      isInvalid,
+      isSelected,
+      isFocusVisible,
+    }),
+    outline: focusRingOutline(isFocusVisible),
+  };
+};
+
+/** Label color — invalid dominates disabled dominates default. */
+const resolveRadioLabelColor = ({
+  c,
+  isInvalid,
+  isDisabled,
+}: {
+  c: InputColors;
+  isInvalid?: boolean;
+  isDisabled?: boolean;
+}): string | undefined => {
+  const text = c?.text ?? {};
+  if (isInvalid) return text.invalid;
+  if (isDisabled) return text.disabled;
+  return text.default;
+};
+
 /**
  * Props for the Radio component.
  */
@@ -165,24 +241,7 @@ export const Radio = ({ children, ...props }: RadioProps) => {
         isSelected,
         isInvalid,
       }) => {
-        const borderWidth = isSelected
-          ? vars.border.outline.selected.width
-          : vars.border.outline.control.width;
-
-        const bgColor = resolveInteractiveStyle(c?.background, {
-          isDisabled,
-          isInvalid,
-          isSelected,
-          isHovered,
-          isPressed,
-        });
-
-        const borderColor = resolveInteractiveStyle(c?.border, {
-          isDisabled,
-          isInvalid,
-          isSelected,
-          isFocusVisible,
-        });
+        const text = c?.text ?? {};
 
         return (
           <>
@@ -191,29 +250,15 @@ export const Radio = ({ children, ...props }: RadioProps) => {
               data-scope="radio"
               data-part="selectionControl"
               aria-hidden
-              style={{
-                boxSizing: 'border-box',
-                flexShrink: 0,
-                position: 'relative',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '1.125rem',
-                height: '1.125rem',
-                borderRadius: vars.radii.round,
-                borderWidth,
-                borderStyle: vars.border.outline.control.style,
-                backgroundColor: bgColor,
-                borderColor,
-                transitionProperty:
-                  'background-color, border-color, border-width',
-                transitionDuration: vars.motion.feedback.duration,
-                transitionTimingFunction: vars.motion.feedback.easing,
-                outline: isFocusVisible
-                  ? `${vars.focus.ring.width} ${vars.focus.ring.style} ${vars.focus.ring.color}`
-                  : 'none',
-                outlineOffset: '2px',
-              }}
+              style={buildRadioBoxStyle({
+                c,
+                isSelected,
+                isInvalid,
+                isDisabled,
+                isHovered,
+                isPressed,
+                isFocusVisible,
+              })}
             >
               {/* indicator — inner dot when selected */}
               {isSelected && (
@@ -225,7 +270,7 @@ export const Radio = ({ children, ...props }: RadioProps) => {
                     width: '0.4375rem',
                     height: '0.4375rem',
                     borderRadius: vars.radii.round,
-                    backgroundColor: c?.text?.checked ?? c?.text?.default,
+                    backgroundColor: text.checked ?? text.default,
                     flexShrink: 0,
                   }}
                 />
@@ -238,11 +283,7 @@ export const Radio = ({ children, ...props }: RadioProps) => {
                 data-scope="radio"
                 data-part="label"
                 style={{
-                  color: isInvalid
-                    ? c?.text?.invalid
-                    : isDisabled
-                      ? c?.text?.disabled
-                      : c?.text?.default,
+                  color: resolveRadioLabelColor({ c, isInvalid, isDisabled }),
                 }}
               >
                 {children}

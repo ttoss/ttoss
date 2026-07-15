@@ -12,6 +12,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
+import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 
 // ---------------------------------------------------------------------------
@@ -36,6 +37,64 @@ export const toastMeta = {
   entity: 'Feedback',
   structure: 'root',
 } as const satisfies ComponentMeta<'Feedback'>;
+
+type FeedbackColors = (typeof vars.colors.feedback)[EvaluationsFor<'Feedback'>];
+
+/** Root surface style — raised feedback card chrome. */
+const buildToastRootStyle = (c: FeedbackColors): React.CSSProperties => {
+  return {
+    boxSizing: 'border-box',
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: vars.spacing.gap.inline.md,
+    minWidth: 240,
+    padding: vars.spacing.inset.surface.md,
+    borderRadius: vars.radii.surface,
+    borderWidth: vars.border.outline.surface.width,
+    borderStyle: vars.border.outline.surface.style,
+    borderColor: c?.border?.default,
+    backgroundColor: c?.background?.default,
+    color: c?.text?.default,
+    boxShadow: vars.elevation.surface.raised,
+    outline: 'none',
+  };
+};
+
+/** Close-button (closeTrigger) style — icon button, transparent by default. */
+const buildCloseTriggerStyle = ({
+  c,
+  isHovered,
+  isPressed,
+  isDisabled,
+  isFocusVisible,
+}: {
+  c: FeedbackColors;
+  isHovered?: boolean;
+  isPressed?: boolean;
+  isDisabled?: boolean;
+  isFocusVisible?: boolean;
+}): React.CSSProperties => {
+  const flags = { isHovered, isPressed, isDisabled, isFocusVisible } as const;
+  const text = c?.text ?? {};
+  return {
+    boxSizing: 'border-box',
+    flexShrink: 0,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: vars.sizing.icon.lg,
+    height: vars.sizing.icon.lg,
+    padding: 0,
+    border: 'none',
+    borderRadius: vars.radii.control,
+    background: resolveInteractiveStyle(c?.background, flags) ?? 'transparent',
+    color: resolveInteractiveStyle(text, flags) ?? text.default,
+    cursor: isDisabled ? 'not-allowed' : 'pointer',
+    opacity: isDisabled ? vars.opacity.disabled : undefined,
+    outline: focusRingOutline(isFocusVisible),
+    outlineOffset: '2px',
+  };
+};
 
 /** Formal semantic identity — ToastRegion (Feedback entity, root host). */
 export const toastRegionMeta = {
@@ -118,6 +177,7 @@ export interface ToastProps {
 export const Toast = ({ toast }: ToastProps) => {
   const evaluation = toast.content.evaluation ?? 'primary';
   const c = vars.colors.feedback[evaluation];
+  const textColor = c?.text?.default;
 
   return (
     <RACToast<ToastContent>
@@ -125,24 +185,7 @@ export const Toast = ({ toast }: ToastProps) => {
       data-scope="toast"
       data-part="root"
       data-evaluation={evaluation}
-      style={
-        {
-          boxSizing: 'border-box',
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: vars.spacing.gap.inline.md,
-          minWidth: 240,
-          padding: vars.spacing.inset.surface.md,
-          borderRadius: vars.radii.surface,
-          borderWidth: vars.border.outline.surface.width,
-          borderStyle: vars.border.outline.surface.style,
-          borderColor: c?.border?.default,
-          backgroundColor: c?.background?.default,
-          color: c?.text?.default,
-          boxShadow: vars.elevation.surface.raised,
-          outline: 'none',
-        } as React.CSSProperties
-      }
+      style={buildToastRootStyle(c)}
     >
       <RACToastContent
         data-scope="toast"
@@ -164,7 +207,7 @@ export const Toast = ({ toast }: ToastProps) => {
           style={
             {
               ...(vars.text.label.md as React.CSSProperties),
-              color: c?.text?.default,
+              color: textColor,
             } as React.CSSProperties
           }
         >
@@ -178,7 +221,7 @@ export const Toast = ({ toast }: ToastProps) => {
             style={
               {
                 ...(vars.text.body.md as React.CSSProperties),
-                color: c?.text?.default,
+                color: textColor,
               } as React.CSSProperties
             }
           >
@@ -192,33 +235,13 @@ export const Toast = ({ toast }: ToastProps) => {
         data-scope="toast"
         data-part="closeTrigger"
         style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => {
-          const flags = {
+          return buildCloseTriggerStyle({
+            c,
             isHovered,
             isPressed,
             isDisabled,
             isFocusVisible,
-          } as const;
-          return {
-            boxSizing: 'border-box',
-            flexShrink: 0,
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: vars.sizing.icon.lg,
-            height: vars.sizing.icon.lg,
-            padding: 0,
-            border: 'none',
-            borderRadius: vars.radii.control,
-            background:
-              resolveInteractiveStyle(c?.background, flags) ?? 'transparent',
-            color: resolveInteractiveStyle(c?.text, flags) ?? c?.text?.default,
-            cursor: isDisabled ? 'not-allowed' : 'pointer',
-            opacity: isDisabled ? vars.opacity.disabled : undefined,
-            outline: isFocusVisible
-              ? `${vars.focus.ring.width} ${vars.focus.ring.style} ${vars.focus.ring.color}`
-              : 'none',
-            outlineOffset: '2px',
-          } as React.CSSProperties;
+          });
         }}
       >
         <span aria-hidden>{String.fromCharCode(0x2715) /* ✕ */}</span>
