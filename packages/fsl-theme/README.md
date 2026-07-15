@@ -34,38 +34,39 @@ Components consume only semantic tokens. Core tokens never change between light 
 
 One entry per semantic family. Use `vars.*` for typed CSS variable references; use the `semantic.*` path shape below when naming tokens in TypeScript or in discussion.
 
-| Family    | Path shape                                                          | Leaf value              |
-| --------- | ------------------------------------------------------------------- | ----------------------- |
-| colors    | `semantic.colors.{ux}.{role}.{dimension}.{state}`                   | CSS color               |
-| spacing   | `semantic.spacing.inset.{control,surface}.{sm,md,lg}`               | CSS length              |
-|           | `semantic.spacing.gap.{stack,inline}.{xs,sm,md,lg,xl}`              | CSS length              |
-|           | `semantic.spacing.gutter.{page,section}`                            | CSS length / `clamp()`  |
-|           | `semantic.spacing.separation.interactive.min`                       | CSS length              |
-| text      | `semantic.text.{display,headline,title,body,label,code}.{lg,md,sm}` | TextStyle object        |
-| sizing    | `semantic.sizing.hit.{min,base,prominent}`                          | CSS length              |
-|           | `semantic.sizing.icon.{sm,md,lg}`                                   | CSS length              |
-|           | `semantic.sizing.identity.{sm,md,lg,xl}`                            | CSS length              |
-|           | `semantic.sizing.measure.reading`                                   | CSS `ch` / `clamp()`    |
-|           | `semantic.sizing.surface.maxWidth`                                  | CSS length              |
-|           | `semantic.sizing.viewport.{height,width}.full`                      | CSS dvh/dvw             |
-| radii     | `semantic.radii.{control,surface,round}`                            | CSS length              |
-| border    | `semantic.border.divider`                                           | `{width, style}`        |
-|           | `semantic.border.outline.{surface,control,selected}`                | `{width, style}`        |
-| focus     | `semantic.focus.ring`                                               | `{width, style, color}` |
-| elevation | `semantic.elevation.surface.{flat,raised,overlay,blocking}`         | CSS box-shadow          |
-|           | `semantic.elevation.tonal.{raised,overlay,blocking}`                | CSS color (optional)    |
-| opacity   | `semantic.opacity.{scrim,loading,disabled}`                         | number in (0, 1)        |
-| overlay   | `semantic.overlay.scrim`                                            | CSS color with alpha    |
-| motion    | `semantic.motion.{feedback,emphasis,decorative}`                    | `{duration, easing}`    |
-|           | `semantic.motion.transition.{enter,exit}`                           | `{duration, easing}`    |
-| zIndex    | `semantic.zIndex.layer.{base,sticky,overlay,blocking,transient}`    | integer                 |
+| Family    | Path shape                                                       | Leaf value              |
+| --------- | ---------------------------------------------------------------- | ----------------------- |
+| colors    | `semantic.colors.{ux}.{role}.{dimension}.{state}`                | CSS color               |
+| spacing   | `semantic.spacing.inset.{control,surface}.{sm,md,lg}`            | CSS length              |
+|           | `semantic.spacing.gap.{stack,inline}.{xs,sm,md,lg,xl}`           | CSS length              |
+|           | `semantic.spacing.gutter.{page,section}`                         | CSS length / `clamp()`  |
+|           | `semantic.spacing.separation.interactive.min`                    | CSS length              |
+| text      | `semantic.text.{display,headline,title,body,label}.{lg,md,sm}`   | TextStyle object        |
+|           | `semantic.text.code.{md,sm}`                                     | TextStyle object        |
+| sizing    | `semantic.sizing.hit.{min,base,prominent}`                       | CSS length              |
+|           | `semantic.sizing.icon.{sm,md,lg}`                                | CSS length              |
+|           | `semantic.sizing.identity.{sm,md,lg,xl}`                         | CSS length              |
+|           | `semantic.sizing.measure.reading`                                | CSS `ch` / `clamp()`    |
+|           | `semantic.sizing.surface.maxWidth`                               | CSS length              |
+|           | `semantic.sizing.viewport.{height,width}.full`                   | CSS dvh/dvw             |
+| radii     | `semantic.radii.{control,surface,round}`                         | CSS length              |
+| border    | `semantic.border.divider`                                        | `{width, style}`        |
+|           | `semantic.border.outline.{surface,control,selected}`             | `{width, style}`        |
+| focus     | `semantic.focus.ring`                                            | `{width, style, color}` |
+| elevation | `semantic.elevation.surface.{flat,raised,overlay,blocking}`      | CSS box-shadow          |
+|           | `semantic.elevation.tonal.{raised,overlay,blocking}`             | CSS color (optional)    |
+| opacity   | `semantic.opacity.{scrim,loading,disabled}`                      | number in (0, 1)        |
+| overlay   | `semantic.overlay.scrim`                                         | CSS color with alpha    |
+| motion    | `semantic.motion.{feedback,emphasis,decorative}`                 | `{duration, easing}`    |
+|           | `semantic.motion.transition.{enter,exit}`                        | `{duration, easing}`    |
+| zIndex    | `semantic.zIndex.layer.{base,sticky,overlay,blocking,transient}` | integer                 |
 
 **Colors axes** (`semantic.colors.{ux}.{role}.{dimension}.{state}`):
 
 - `ux` — FSL Entity Kind: `action` · `input` · `navigation` · `feedback` · `informational`
 - `role` — Evaluation: `primary` · `secondary` · `accent` · `muted` · `positive` · `caution` · `negative`
 - `dimension` — `background` · `border` · `text`
-- `state` — `default` · `hover` · `active` · `focused` · `disabled` · `selected` · `pressed`
+- `state` — `default` · `hover` · `active` · `focused` · `disabled` · `selected` · `pressed` · `expanded` · `checked` · `indeterminate` · `current` · `visited` · `droptarget` · `invalid` (legality varies per `ux` — see the colors family spec)
 
 ## Pick a token in 60s
 
@@ -220,7 +221,7 @@ export const App = () => (
 );
 ```
 
-`ThemeProvider` injects CSS Custom Properties via React 19 style hoisting and persists mode to localStorage.
+`ThemeProvider` injects CSS Custom Properties via React 19 style hoisting, persists mode to localStorage, and keeps open tabs in sync via the `storage` event. The react entry point ships with `'use client'`, so it can be imported directly from a Next.js App Router layout.
 
 ### Hooks
 
@@ -242,7 +243,10 @@ import { useResolvedTokens } from '@ttoss/fsl-theme/react';
 
 // Non-CSS environments (React Native, canvas) — resolved raw values
 const resolved = useResolvedTokens();
-// resolved['semantic.colors.action.primary.background.default'] → '#0469E3'
+// resolved['semantic.colors.action.primary.background.default'] → '#020617'
+// ⚠ CSS-coupled tokens (spacing steps, fluid text sizes, hit/viewport sizing —
+// see model.md §8) stay as CSS expressions (var()/calc()/clamp()/cqi) and are
+// not usable outside a CSS engine. Colors and scalar tokens resolve fully.
 ```
 
 ### Consuming tokens
@@ -376,16 +380,23 @@ import { getThemeStylesContent } from '@ttoss/fsl-theme/css';
 
 const css = getThemeStylesContent(myTheme);
 // → :root { --tt-* } + :root[data-tt-mode="dark"] { --tt-* (overrides) }
+//   + @media (prefers-color-scheme: dark) fallback for no-JS / pre-hydration
+
+// Fixed light/dark default (dark only via explicit toggle)? Skip the OS fallback:
+const lightFirstCss = getThemeStylesContent(myTheme, undefined, {
+  systemModeFallback: false,
+});
+// <ThemeProvider> / <ThemeHead> derive this automatically from `defaultMode`.
 ```
 
 ## Storybook / micro-frontends
 
-Anchor theme attributes to a specific element instead of `<html>`:
+Anchor theme attributes to a specific element instead of `<html>`. Always pair `root` with a `themeId` — without one, the CSS targets `:root` on `<html>` while the attributes land on the element, and the alternate mode would never apply (a dev warning fires on this combination):
 
 ```tsx
 const rootRef = React.useRef<HTMLDivElement>(null);
 <div ref={rootRef}>
-  <ThemeProvider theme={myTheme} root={rootRef.current ?? undefined}>
+  <ThemeProvider theme={myTheme} themeId="story" root={rootRef}>
     <Story />
   </ThemeProvider>
 </div>;

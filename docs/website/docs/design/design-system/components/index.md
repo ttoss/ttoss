@@ -82,27 +82,27 @@ A component becomes public only when it is clearly reusable, semantically stable
 
 ttoss Components is organized by the [Component Model](./component-model):
 
-- **Responsibility** defines component identity.
-- **Host.Role** defines composition only when needed.
+- **Entity** defines component identity (immutable per component).
+- **Composition** names the slot an instance occupies inside a composite — a flat vocabulary with per-Entity legality; there is no `Host` level in the data model (parent disambiguation happens in the DOM via `data-scope`/`data-part`).
 
-This aims to keep the public model small, explicit, and durable.
+This keeps the public model small, explicit, and durable. Implemented by `@ttoss/fsl-ui` (`taxonomy.ts` + `ComponentMeta`).
 
 ## Variants
 
 ttoss does not use a single global visual menu of variants.
 
-Variants are **small semantic axes defined per responsibility**, only when they represent a real reusable distinction.
+Variants are **small semantic axes defined per Entity**, only when they represent a real reusable distinction.
 
 That means:
 
-- variants are responsibility-specific
+- variants are Entity-specific
 - variants are semantic
 - variants are not a dumping ground for visual options
 - state is not variant
 
 The system starts by asking:
 
-- what responsibility does this belong to?
+- what Entity does this belong to?
 - what type of component is it?
 - what semantic distinctions actually matter here?
 

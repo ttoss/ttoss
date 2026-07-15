@@ -63,12 +63,16 @@ export const getThemeScriptContent = (
   // IMPORTANT: if you add a new DOM attribute in runtime.ts apply(), add it
   // to this template string too. Both are co-located (ssrScript.ts imports
   // runtime.ts) so drift is immediately visible.
+  //
+  // `<` is escaped as the JS string escape `\u003C` so no config value (e.g. a storageKey
+  // containing `</script>`) can close the inline <script> tag early —
+  // JSON.stringify alone does not escape HTML-significant characters.
   const cfg = JSON.stringify({
     storageKey,
     defaultTheme,
     defaultMode,
     validModes: [...VALID_MODES],
-  });
+  }).replace(/</g, '\\u003C');
   // Self-contained IIFE: replicates resolveTheme() + apply() from runtime.ts
   // as plain JavaScript so it runs synchronously before the app bundle loads.
   return (
