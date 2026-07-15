@@ -1,3 +1,4 @@
+import { GeoVisLegend, useGeoVis } from '@ttoss/geovis';
 import { useI18n } from '@ttoss/react-i18n';
 import { Box, Flex, Heading, IconButton, Link, Text } from '@ttoss/ui';
 import type * as React from 'react';
@@ -29,14 +30,31 @@ const SourceItem = ({ label, href }: GeovisWorkspaceSource) => {
   );
 };
 
+/** Renders every top-level legend the committed spec resolves, in declaration order. */
+const RuntimeLegends = () => {
+  const { spec } = useGeoVis();
+
+  const legends = spec.legends ?? [];
+  if (legends.length === 0) return null;
+
+  return (
+    <Flex sx={{ flexDirection: 'column', gap: '2' }}>
+      {legends.map((legend) => {
+        return (
+          <GeoVisLegend key={legend.id} legendId={legend.id} noPositionWrap />
+        );
+      })}
+    </Flex>
+  );
+};
+
 /**
  * Color legend panel driven by `rightSidebar.legendWithColor`: an optional
- * description, a swatch-per-class legend and a list of data sources. Each block
- * renders only when present in the spec.
+ * description, the spec's runtime-resolved legends and a list of data sources.
+ * Each block renders only when present.
  */
 const LegendWithColorPanel = ({
   description,
-  legend,
   sources,
 }: GeovisWorkspaceLegendWithColor) => {
   return (
@@ -47,44 +65,7 @@ const LegendWithColorPanel = ({
         </Text>
       )}
 
-      {legend && (
-        <Flex sx={{ flexDirection: 'column', gap: '2' }}>
-          {legend.title && (
-            <Text
-              sx={{
-                fontSize: 'xs',
-                fontWeight: 'semibold',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                color: '#6b7280',
-              }}
-            >
-              {legend.title}
-            </Text>
-          )}
-
-          <Flex sx={{ flexDirection: 'column', gap: '1' }}>
-            {legend.items.map((item) => {
-              return (
-                <Flex key={item.label} sx={{ alignItems: 'center', gap: '2' }}>
-                  <Box
-                    sx={{
-                      width: '20px',
-                      height: '14px',
-                      borderRadius: '2px',
-                      flexShrink: 0,
-                      backgroundColor: item.color,
-                    }}
-                  />
-                  <Text sx={{ fontSize: 'xs', color: '#374151' }}>
-                    {item.label}
-                  </Text>
-                </Flex>
-              );
-            })}
-          </Flex>
-        </Flex>
-      )}
+      <RuntimeLegends />
 
       {sources && (
         <Box>

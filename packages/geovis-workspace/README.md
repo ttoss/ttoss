@@ -158,13 +158,14 @@ const config: GeovisWorkspaceConfig = {
 
 ### `GeovisWorkspaceLegendWithColor`
 
-A declarative color-legend panel: a description, a swatch-per-class legend and a
-list of (optionally linked) data sources. Each block renders only when present.
+A declarative color-legend panel: a description and a list of (optionally
+linked) data sources, plus the class swatches the map's own
+`visualizationSpec.legends` already resolves — there is no hand-authored
+swatch list to keep in sync with the map. Each block renders only when present.
 
 | Property      | Type                                            | Description                       |
 | ------------- | ----------------------------------------------- | --------------------------------- |
 | `description` | `string`                                        | Paragraph under the title.        |
-| `legend`      | `{ title?: string; items: { color; label }[] }` | Class swatches (color + label).   |
 | `sources`     | `{ title?: string; items: { label; href? }[] }` | Data sources; `href` adds a link. |
 
 ```tsx
@@ -173,13 +174,6 @@ const config: GeovisWorkspaceConfig = {
     title: 'POPULAÇÃO 65+ COMO % DA POPULAÇÃO TOTAL',
     legendWithColor: {
       description: 'Proporção da população total com 65 anos ou mais.',
-      legend: {
-        title: 'Classes',
-        items: [
-          { color: '#eff3ff', label: '0% – 5%' },
-          { color: '#08519c', label: '20% – 100%' },
-        ],
-      },
       sources: {
         title: 'Fonte dos dados:',
         items: [

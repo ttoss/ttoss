@@ -3,8 +3,6 @@ export {
   type GeovisWorkspaceContextValue,
   type GeovisWorkspaceDetailsState,
   type GeovisWorkspaceLeftSidebar,
-  type GeovisWorkspaceLegend,
-  type GeovisWorkspaceLegendItem,
   type GeovisWorkspaceLegendWithColor,
   type GeovisWorkspaceMenu,
   type GeovisWorkspaceMenuItem,
