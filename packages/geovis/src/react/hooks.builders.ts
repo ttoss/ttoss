@@ -1,6 +1,7 @@
 import type { Map as MapLibreMap, MapLayerMouseEvent } from 'maplibre-gl';
 import type * as React from 'react';
 
+import type { GeoVisRuntime } from '../runtime/createRuntime';
 import type { MapClickInfo, MapHoverInfo } from './contexts';
 
 // ASCII control characters chosen as internal separators so arbitrary
@@ -84,19 +85,22 @@ export const clearHover = (
   setHover(null);
 };
 
-export const clearSelected = (
-  map: MapLibreMap,
-  prevSelectedState: PrevFeatureState
-) => {
-  if (prevSelectedState.current) {
-    map.setFeatureState(
-      {
-        source: prevSelectedState.current.sourceId,
-        id: prevSelectedState.current.id,
-      },
-      { selected: false }
-    );
-    prevSelectedState.current = null;
+/**
+ * Clears whatever the runtime currently has selected by dispatching
+ * `select-feature` with `featureId: null` — a no-op when nothing is
+ * selected. Replaces the old direct `map.setFeatureState({ selected: false })`
+ * call now that selection is runtime-level state, shared with `dispatch()`
+ * (PRD-002 Phase 2): the adapter (`setSelection`) is what actually clears the
+ * feature-state, from the same code path a `select-feature` dispatch uses.
+ */
+export const dispatchClearSelection = (runtime: GeoVisRuntime): void => {
+  const current = runtime.getSelection();
+  if (current) {
+    runtime.dispatch({
+      type: 'select-feature',
+      layerId: current.layerId,
+      featureId: null,
+    });
   }
 };
 
@@ -105,10 +109,7 @@ export interface BuildHandleClickParams {
   layerId: string;
   sourceByLayerId: Map<string, string>;
   setClick: React.Dispatch<React.SetStateAction<MapClickInfo | null>>;
-  /** Tracks the last feature whose selected state was set so it can be cleared on deselect. */
-  prevSelectedState: PrevFeatureState;
-  /** Whether this layer needs `selected` feature-state (has selectedPaint or clickAnchor.iconImage). */
-  needsSelectedState: boolean;
+  runtime: GeoVisRuntime;
 }
 
 /**
@@ -117,44 +118,38 @@ export interface BuildHandleClickParams {
  * Extracted at module scope (mirrors `buildHandleMove`) so `useMapClick`
  * stays under the `max-lines-per-function` threshold.
  *
- * Only sets `selected: true` feature-state when `needsSelectedState` is true
- * (layer has `selectedPaint` or `clickAnchor.iconImage`). Layers tracked only
- * for `activeLegendId` will not receive selected state, avoiding unintended
- * side effects on consumer expressions that use `feature-state.selected`.
+ * Dispatches `select-feature` on the runtime for every click, regardless of
+ * whether the layer declares `selectedPaint`/`clickAnchor` — the resulting
+ * `feature-state.selected` write is inert for layers with no companion layer
+ * consuming it, so this no longer needs the old per-layer gate.
  */
 export const buildHandleClick = ({
   map,
   layerId,
   sourceByLayerId,
   setClick,
-  prevSelectedState,
-  needsSelectedState,
+  runtime,
 }: BuildHandleClickParams) => {
   return (event: MapLayerMouseEvent) => {
     const feature = event.features?.[0];
     if (!feature || feature.id == null) {
-      clearSelected(map, prevSelectedState);
+      dispatchClearSelection(runtime);
       setClick(null);
       return;
     }
     const resolvedLayerId = feature.layer?.id ?? layerId;
     const sourceId = sourceByLayerId.get(resolvedLayerId);
     if (!sourceId) {
-      clearSelected(map, prevSelectedState);
+      dispatchClearSelection(runtime);
       setClick(null);
       return;
     }
 
-    // Swap selected feature-state: clear previous, mark new.
-    // Only set selected state when the layer has visual feedback (selectedPaint or clickAnchor.iconImage).
-    clearSelected(map, prevSelectedState);
-    if (needsSelectedState) {
-      map.setFeatureState(
-        { source: sourceId, id: feature.id },
-        { selected: true }
-      );
-      prevSelectedState.current = { sourceId, id: feature.id };
-    }
+    runtime.dispatch({
+      type: 'select-feature',
+      layerId: resolvedLayerId,
+      featureId: feature.id,
+    });
 
     const state = map.getFeatureState({
       source: sourceId,

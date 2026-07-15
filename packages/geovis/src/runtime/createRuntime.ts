@@ -8,7 +8,7 @@ import type {
   VisualizationSpec,
 } from '../spec/types';
 import { validateSpec } from '../spec/validateSpec';
-import type { ActionLogEntry, GeoVisAction } from './action';
+import type { ActionLogEntry, GeoVisAction, GeoVisSelection } from './action';
 import type {
   EngineAdapter,
   MountedView,
@@ -41,6 +41,8 @@ export interface GeoVisRuntime {
   getActionLog(): ReadonlyArray<ActionLogEntry>;
   /** Versioned, read-only, metadata-only summary of the current map (ADR-0004). */
   getContextPacket(): ContextPacket;
+  /** The runtime's current selection (set via `dispatch({ type: 'select-feature' })`), or `null`. */
+  getSelection(): GeoVisSelection | null;
   destroy(): void;
   getAdapter(): EngineAdapter;
 }
@@ -50,6 +52,7 @@ interface RuntimeState {
   spec: VisualizationSpec;
   result: GeoVisResult;
   actionLog: ActionLogEntry[];
+  selection: GeoVisSelection | null;
 }
 
 const VALID_PATCH_TARGETS: SpecPatchTarget[] = ['layer', 'source', 'mapData'];
@@ -268,11 +271,14 @@ const applyPatchToRuntime = (
 };
 
 /**
- * Compiles `action` against the current spec and, on success, applies it
- * through `applyPatchToRuntime` (so it validates and commits exactly like a
- * hand-written `SpecPatch` would); on rejection, builds the failure result
- * directly. Every call appends one entry to `state.actionLog`, accepted or
- * rejected (ADR-0003 audit substrate).
+ * Compiles `action` against the current spec to one of three outcomes:
+ * - a `SpecPatch` — applied through `applyPatchToRuntime`, validating and
+ *   committing exactly like a hand-written patch would;
+ * - a selection update — runtime-level ephemeral state, committed directly
+ *   and forwarded to `adapter.setSelection`, never touching `state.spec`;
+ * - a rejection issue — built into the failure result directly.
+ * Every call appends one entry to `state.actionLog`, accepted or rejected
+ * (ADR-0003 audit substrate).
  */
 const dispatchToRuntime = (
   adapter: EngineAdapter,
@@ -287,6 +293,10 @@ const dispatchToRuntime = (
       issues: [outcome.issue],
     };
     state.result = result;
+  } else if ('selection' in outcome) {
+    state.selection = outcome.selection;
+    adapter.setSelection?.(outcome.selection);
+    result = state.result;
   } else {
     result = applyPatchToRuntime(adapter, state, outcome.patch);
   }
@@ -340,6 +350,7 @@ export const createRuntime = (
         : initialResolved,
     result: initialResult,
     actionLog: [],
+    selection: null,
   };
 
   return {
@@ -368,7 +379,10 @@ export const createRuntime = (
       return state.actionLog;
     },
     getContextPacket: () => {
-      return buildContextPacket(state.spec, state.result);
+      return buildContextPacket(state.spec, state.result, state.selection);
+    },
+    getSelection: () => {
+      return state.selection;
     },
     destroy: () => {
       adapter.destroy();

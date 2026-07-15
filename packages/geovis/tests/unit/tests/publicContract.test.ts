@@ -51,7 +51,8 @@ test('GeoVisAction and ContextPacket types are part of the public contract', () 
     sources: [{ id: 'src-1', type: 'geojson' }],
     layers: [{ id: 'lyr-1', geometry: 'polygon', visible: true }],
     legends: [],
-    allowedActions: ['toggle-layer'],
+    selection: null,
+    allowedActions: ['toggle-layer', 'select-feature'],
     warnings: [],
     lastResult: {
       status: 'resolved',
@@ -59,7 +60,22 @@ test('GeoVisAction and ContextPacket types are part of the public contract', () 
       warnings: [],
     },
   };
-  expect(packet.allowedActions).toEqual(['toggle-layer']);
+  expect(packet.allowedActions).toEqual(['toggle-layer', 'select-feature']);
+});
+
+test('SelectFeatureAction and GeoVisSelection are part of the public contract', () => {
+  const selectAction: GeoVisAction = {
+    type: 'select-feature',
+    layerId: 'lyr-1',
+    featureId: 'BR',
+  };
+  const clearAction: GeoVisAction = {
+    type: 'select-feature',
+    layerId: 'lyr-1',
+    featureId: null,
+  };
+  expect(selectAction.type).toBe('select-feature');
+  expect(clearAction.type).toBe('select-feature');
 });
 
 test('GeoVisResult taxonomy types are part of the public contract', () => {
