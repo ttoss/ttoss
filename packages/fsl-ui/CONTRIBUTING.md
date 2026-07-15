@@ -372,3 +372,13 @@ Decision: fsl-ui controls connect to the monorepo's form standard (`@ttoss/forms
 Rejected (for now): an adapter entry (`@ttoss/fsl-ui/forms` with `FormFieldTextField` etc.) — premature until real apps reveal which field wrappers earn their existence; modifying `@ttoss/forms` — out of scope by the plan's scope guard.
 Cost: consumers write the `Controller` wiring by hand (≈6 lines per field) until an adapter is justified.
 Anchors: `tests/unit/tests/formsBridge.test.tsx`, ROADMAP A11.
+
+### ADR-005: Iconify is the official glyph provider; an internal intent layer wraps it
+
+Status: accepted (2026-07-15)
+Tags: icons, provider, semantics, iconify, lucide
+
+Decision: glyphs are never hand-authored SVG inside this package. **Iconify is the official provider**, consumed through `@iconify-icon/react` (the same integration `@ttoss/react-icons` already uses in the monorepo). An internal semantic layer (`src/components/Icon/`) implements the `icon-system.md` intent contract (`icon.{family}.{intent}`): `intents.ts` declares the provider-agnostic intent vocabulary, `glyphs.ts` maps each intent to a **Lucide** glyph (per-icon `@iconify/icons-lucide/*`, tree-shakeable) and registers it offline via `addIcon` behind an idempotent `ensureIconGlyphs()` — no runtime API fetch, SSR-safe. The `Icon` component is Entity=Structure (`data-scope`/`data-part="icon"`, `currentColor`, sized by `vars.sizing.icon.*`). It is **internal**: not exported from `src/index.ts`. The layer is the seed of a future standalone `@ttoss/fsl-icon` package (promotion is a separate, governed step — see ROADMAP D-line).
+Rejected: hand-drawn inline SVGs per glyph — the maintenance burden and inconsistency the provider model exists to eliminate; unicode glyphs as v1 (`▸ ✓ ✕ −`) — no sizing/color control, inconsistent cross-platform rendering, and no path to the DatePicker/SearchField icon needs of later waves; putting the glyph mapping in `@ttoss/fsl-theme` — glyphs are renderable SVG, not serializable design tokens (`icon-system.md`: a token "resolves to CSS"; Icon "renders visual UI"), so they do not belong in the token layer; runtime Iconify API fetch — a network dependency incompatible with SSR and the offline guarantee; reusing `@ttoss/react-icons` — would couple the FSL stack to the legacy `@ttoss/ui` icon package (string-name API, not intent-based) that the ROADMAP treats as read-only.
+Cost: a curated intent→glyph map must be maintained (kept minimal — only the intents live components consume); adding an intent for a future component is a two-line edit in `intents.ts` + `glyphs.ts`.
+Anchors: `src/components/Icon/intents.ts`, `src/components/Icon/glyphs.ts`, `src/components/Icon/Icon.tsx`, `docs/design/design-system/components/icon-system.md`, ROADMAP B1.

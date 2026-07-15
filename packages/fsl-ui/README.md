@@ -59,6 +59,8 @@ Composites accept no `style`/`className`. Geometry the host legitimately owns is
 
 The registered knobs and the full policy live in `src/tokens/CONTRACT.md` §7.
 
+Icons are internal: components render glyphs through a semantic layer over the [Iconify](https://iconify.design/) provider (default set: Lucide), registered offline (no runtime network fetch). There is no public `Icon` export yet — see CONTRIBUTING ADR-005.
+
 ## AI-first surface
 
 The published tarball ships the machine-readable ground truth:

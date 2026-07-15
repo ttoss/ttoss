@@ -59,6 +59,12 @@ Feedback:    ProgressBar, Toast, ToastRegion, createToastQueue
 Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              WizardNavigation
 
+Icons: INTERNAL only (not exported). Components render glyphs through an
+internal semantic Icon layer (`src/components/Icon/`) that maps `icon.{family}.{intent}`
+intents to Lucide glyphs via the Iconify provider (`@iconify-icon/react`),
+registered offline (no runtime API fetch). Future standalone `@ttoss/fsl-icon`.
+See CONTRIBUTING ADR-005.
+
 ## Entity → token map (a component reads ONLY its row)
 
 Action      → colors.action,        radii.control, motion.feedback
@@ -104,4 +110,7 @@ Color path formula: `vars.colors.{ux}[evaluation][background|border|text][state]
   min before deps). Peer deps: react >= 18, react-dom >= 18.
 - `react-aria-components` pinned `~1.19.0` while Toast uses UNSTABLE_ APIs.
 - SSR-safe: the only DOM injection (`@keyframes` for ProgressBar) happens in
-  a client-only insertion effect.
+  a client-only insertion effect. Icon glyphs register into an in-memory
+  Iconify registry (no DOM, no network), so they are SSR-safe too.
+- Icons: Iconify (`@iconify-icon/react`) is the official glyph provider;
+  default set is Lucide (`@iconify/icons-lucide`, per-icon / tree-shakeable).

@@ -13,6 +13,7 @@ import {
   Heading as RACHeading,
 } from 'react-aria-components';
 
+import { Icon } from '../../components/Icon';
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
@@ -90,9 +91,6 @@ export const accordionPanelMeta = {
   entity: 'Disclosure',
   structure: 'content',
 } as const satisfies ComponentMeta<'Disclosure'>;
-
-// Visual-only chevron — purely decorative, no i18n.
-const CHEVRON = String.fromCharCode(0x25b8); // ▸ — rotates 90° when expanded
 
 // ---------------------------------------------------------------------------
 // Accordion — group orchestrator
@@ -358,7 +356,7 @@ export const AccordionTrigger = ({
             } as React.CSSProperties
           }
         >
-          {CHEVRON}
+          <Icon intent="disclosure.collapse" />
         </span>
       </RACButton>
     </RACHeading>

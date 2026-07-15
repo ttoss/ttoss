@@ -275,10 +275,11 @@ express a component cleanly, that's a finding, not a workaround).
 
 ### B0. Sequencing rule (read first)
 
-**Foundations before scale.** A6 (escape hatches ✅), A3 (i18n rule ✅) and
-A14 (literal rule ✅) landed with Workstream A. Only **B1 (icon story)** still
-blocks the component waves — every one of the ~25 new components consumes
-these decisions; deciding after means 25× rework.
+**Foundations before scale.** A6 (escape hatches ✅), A3 (i18n rule ✅), A14
+(literal rule ✅) landed with Workstream A, and **B1 (icon story ✅, 2026-07-15,
+ADR-005)** is now done — every one of the ~25 new components consumes these
+decisions; deciding after would have meant 25× rework. **Foundations complete
+— Wave 1 is unblocked.**
 
 **Per-component Definition of Done** (applies to every row below):
 
@@ -296,12 +297,32 @@ these decisions; deciding after means 25× rework.
 
 ### B1. Icon story (pre-requisite) `M`
 
-Unicode glyphs (▸ ✓ − ✕) are v0. Decide: minimal internal `Icon` (inline SVG,
-Entity Structure, `data-part="icon"`, sized by `vars.sizing.icon.*`) covering
+> **Status: ✅ DONE (2026-07-15).** Decision (ADR-005): **Iconify is the
+> official glyph provider** — no hand-authored SVG, no unicode v1. An internal
+> semantic layer (`src/components/Icon/`) implements the `icon-system.md`
+> intent contract (`icon.{family}.{intent}`): `intents.ts` (provider-agnostic
+> vocabulary, subset in use), `glyphs.ts` (default **Lucide** mapping, per-icon
+> `@iconify/icons-lucide/*`, registered offline via `addIcon` behind an
+> idempotent `ensureIconGlyphs()` — SSR-safe, no runtime API fetch), `Icon.tsx`
+> (Entity=Structure, `data-scope`/`data-part="icon"`, `currentColor`, sized by
+> `vars.sizing.icon.*`, `size` sm/md/lg). **Internal** — not exported from
+> `index.ts`; seed of the future standalone `@ttoss/fsl-icon`. The four v0
+> unicode consumers (Accordion ▸, Checkbox ✓/−, Select ▼, Toast ✕) are
+> retrofitted to `<Icon intent=…>`. 682 tests green, axe clean, `tsc`/build
+> green (Node 24 unblocks local builds). Documented in CONTRACT §9 + llms.txt.
+>
+> ⤷ **Friction log (FSL validation).** The mapping was clean — Icon fits
+> Entity=Structure with the existing `icon` structural role (no
+> `STRUCTURAL_ROLES` addition, no governance proposal needed). One real defect
+> surfaced and was fixed: on a custom element (`<iconify-icon>`), React renders
+> `aria-hidden={true}` as an empty attribute (`aria-hidden=""`), which does not
+> hide from AT — the value must be the string `"true"`. No taxonomy divergence.
+
+Original decision brief (kept for the record): minimal internal `Icon`,
+Entity Structure, `data-part="icon"`, sized by `vars.sizing.icon.*`, covering
 the ~6 internal glyphs (chevron-down/right, check, dash, close, plus
-calendar/search for later waves) — or codify unicode as the v1 decision.
-Recommended: minimal internal Icon (not exported publicly yet), aligned with
-`icon-system.md`'s intent; unblocks DatePicker/SearchField later.
+calendar/search for later waves), aligned with `icon-system.md`'s intent;
+unblocks DatePicker/SearchField later.
 
 ### B2. Catalog — full RAC coverage table
 
@@ -395,7 +416,8 @@ Record the gate in this file when flipped.
 
 ```
 [✅ done 2026-07-15] A1–A16 (all of Workstream A, incl. foundations A6/A3/A14)
-→ B1 icon story → Wave 1 (a11y layer already in place — extend per component)
+[✅ done 2026-07-15] B1 icon story (ADR-005 — Iconify/Lucide internal layer)
+→ Wave 1 (a11y layer already in place — extend per component)
 → Wave 2 → Wave 3
 → D1 benchmark → D2 gate → Phase 3
 ```
