@@ -98,7 +98,7 @@ only a slot's _content_ is configurable:
 | `controls`  | Left sidebar  | Menu groups from `config.controls`.                                                 |
 | `legend`    | Right sidebar | Description/sources from `config.legend` plus the spec's legends.                   |
 | `warnings`  | Right sidebar | Issues from `useGeoVis().result` — see [Warnings and repair](#warnings-and-repair). |
-| `inspector` | Right sidebar | None yet (PRD-003 Phase 4).                                                         |
+| `inspector` | Right sidebar | The clicked feature from `useGeoVisClick()`, with a dismiss button.                 |
 | `metadata`  | Right sidebar | None yet (PRD-003 Phase 5).                                                         |
 
 A sidebar renders only when at least one of its slots has content — an
@@ -145,6 +145,15 @@ canvas — the `warnings` panel stays empty in that case, since the empty state
 already shows the same issues. Once any resolve succeeds, later failures keep
 the last good map visible while the `warnings` panel lists the new issue, the
 same "nothing renders on failure" contract `GeoVisProvider` already has.
+
+## Inspector
+
+The `inspector` slot's default panel shows the last clicked feature from
+`useGeoVisClick()` — its `layerId`, `value`, and `featureId` — with a dismiss
+button. That button (and pressing Escape, or clicking empty space on the map)
+all clear the same selection via `useDismissGeoVisClick()`, so the panel and
+the map's selection highlight always stay in sync. The panel renders nothing
+when no feature is selected.
 
 ## API
 
