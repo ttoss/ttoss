@@ -27,32 +27,7 @@
       "enum": ["choropleth", "dotDensity", "proportionalCircles"]
     },
     "view": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [],
-      "properties": {
-        "center": {
-          "type": "array",
-          "items": {
-            "type": "number"
-          },
-          "minItems": 2,
-          "maxItems": 2
-        },
-        "zoom": {
-          "type": "number"
-        },
-        "pitch": {
-          "type": "number"
-        },
-        "bearing": {
-          "type": "number"
-        },
-        "projection": {
-          "type": "string",
-          "enum": ["mercator", "vertical-perspective"]
-        }
-      }
+      "$ref": "#/$defs/ViewState"
     },
     "basemap": {
       "type": "object",
@@ -566,9 +541,56 @@
           }
         }
       }
+    },
+    "viewPresets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "view"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "type": "string"
+          },
+          "view": {
+            "$ref": "#/$defs/ViewState"
+          }
+        }
+      }
     }
   },
   "$defs": {
+    "ViewState": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "center": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "zoom": {
+          "type": "number"
+        },
+        "pitch": {
+          "type": "number"
+        },
+        "bearing": {
+          "type": "number"
+        },
+        "projection": {
+          "type": "string",
+          "enum": ["mercator", "vertical-perspective"]
+        }
+      }
+    },
     "CategoricalColorBy": {
       "type": "object",
       "additionalProperties": false,

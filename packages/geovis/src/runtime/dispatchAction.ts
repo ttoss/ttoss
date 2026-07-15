@@ -6,14 +6,16 @@ import type {
   SelectFeatureAction,
   SetFilterAction,
   SetMapDataAction,
+  SetViewPresetAction,
   ToggleLayerAction,
 } from './action';
-import type { SpecPatch } from './adapter';
+import type { SetViewOptions, SpecPatch } from './adapter';
 
 /** What compiling a `GeoVisAction` against the current spec produces. */
 export type ActionOutcome =
   | { patch: SpecPatch }
   | { selection: GeoVisSelection | null }
+  | { setViewOptions: SetViewOptions }
   | { issue: GeoVisIssue };
 
 /**
@@ -213,10 +215,57 @@ const compileSetFilter = (
 };
 
 /**
+ * Builds the `unknown-view-preset` issue for an action targeting a
+ * `presetId` absent from `spec.viewPresets`, listing every declared preset
+ * id as repair — never the presets' raw `view` camera values (ADR-0004:
+ * the packet, and by extension this repair, never hands back coordinates).
+ */
+const buildUnknownViewPresetIssue = (
+  spec: VisualizationSpec,
+  presetId: string
+): GeoVisIssue => {
+  return {
+    code: 'unknown-view-preset',
+    subject: { path: 'action.presetId', id: presetId },
+    message: `action references unknown view preset '${presetId}'`,
+    repair: [
+      {
+        kind: 'allowed-values',
+        path: 'action.presetId',
+        values: (spec.viewPresets ?? []).map((p) => {
+          return p.id;
+        }),
+      },
+    ],
+  };
+};
+
+/**
+ * Compiles `set-view-preset` to the existing `runtime.setView()` mechanism —
+ * resolves `presetId` against `spec.viewPresets` and hands back its `view`
+ * as `SetViewOptions`. `projection` is not carried over: `setView`'s
+ * imperative camera move never supported it (a pre-existing limitation,
+ * not introduced here) — only `update(spec)` can change projection.
+ */
+const compileSetViewPreset = (
+  spec: VisualizationSpec,
+  action: SetViewPresetAction
+): ActionOutcome => {
+  const preset = spec.viewPresets?.find((p) => {
+    return p.id === action.presetId;
+  });
+  if (!preset) {
+    return { issue: buildUnknownViewPresetIssue(spec, action.presetId) };
+  }
+  const { center, zoom, pitch, bearing } = preset.view;
+  return { setViewOptions: { center, zoom, pitch, bearing } };
+};
+
+/**
  * Compiles a `GeoVisAction` against the current spec to either an existing
- * `SpecPatch` mechanism, a runtime-level selection update, or a rejection
- * issue — never more than one, and never mutating anything itself (the
- * caller validates and commits).
+ * `SpecPatch` mechanism, a runtime-level selection update, a camera move, or
+ * a rejection issue — never more than one, and never mutating anything
+ * itself (the caller validates and commits).
  */
 export const compileAction = (
   spec: VisualizationSpec,
@@ -231,5 +280,7 @@ export const compileAction = (
       return compileSetMapData(spec, action);
     case 'set-filter':
       return compileSetFilter(spec, action);
+    case 'set-view-preset':
+      return compileSetViewPreset(spec, action);
   }
 };

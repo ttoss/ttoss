@@ -272,3 +272,32 @@ describe('buildContextPacket — data bindings and set-map-data (PRD-002 Phase 3
     expect(packet.allowedActions).not.toContain('set-map-data');
   });
 });
+
+describe('buildContextPacket — viewPresets and set-view-preset (PRD-002 Phase 5)', () => {
+  test('viewPresets is empty when the spec declares none, and set-view-preset is not allowed', () => {
+    const spec = makeSpec();
+    const packet = buildContextPacket(spec, RESOLVED(spec), null, CAPABILITIES);
+    expect(packet.viewPresets).toEqual([]);
+    expect(packet.allowedActions).not.toContain('set-view-preset');
+  });
+
+  test('declared viewPresets are summarized to id/label, never the raw view camera values', () => {
+    const spec: VisualizationSpec = {
+      ...makeSpec(),
+      viewPresets: [
+        {
+          id: 'overview',
+          label: 'Overview',
+          view: { center: [10, 20], zoom: 3 },
+        },
+        { id: 'detail', view: { zoom: 8 } },
+      ],
+    };
+    const packet = buildContextPacket(spec, RESOLVED(spec), null, CAPABILITIES);
+    expect(packet.viewPresets).toEqual([
+      { id: 'overview', label: 'Overview' },
+      { id: 'detail', label: undefined },
+    ]);
+    expect(packet.allowedActions).toContain('set-view-preset');
+  });
+});

@@ -682,3 +682,57 @@ describe('validateSpec — aggregation and status precedence', () => {
     }
   });
 });
+
+describe('validateSpec — viewPresets (PRD-002 Phase 5)', () => {
+  const baseSpec = {
+    engine: 'maplibre' as const,
+    sources: [
+      {
+        id: 'states',
+        type: 'geojson' as const,
+        data: { type: 'FeatureCollection' as const, features: [] },
+      },
+    ],
+    layers: [
+      { id: 'states-fill', sourceId: 'states', geometry: 'polygon' as const },
+    ],
+  };
+
+  test('a well-formed viewPresets entry is valid', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      viewPresets: [
+        {
+          id: 'overview',
+          label: 'Overview',
+          view: { center: [0, 0], zoom: 2 },
+        },
+        { id: 'detail', view: { zoom: 8, pitch: 30 } },
+      ],
+    });
+    expect(result.status).toBe('resolved');
+  });
+
+  test('a viewPresets entry missing id or view fails schema validation', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      viewPresets: [{ label: 'Overview', view: { zoom: 2 } }],
+    });
+    expect(result.status).toBe('invalid');
+    if (result.status !== 'resolved') {
+      expect(
+        result.issues.every((i) => {
+          return i.code === 'invalid-schema';
+        })
+      ).toBe(true);
+    }
+  });
+
+  test('an unrecognised field on a viewPresets entry fails schema validation', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      viewPresets: [{ id: 'overview', view: { zoom: 2 }, extra: true }],
+    });
+    expect(result.status).toBe('invalid');
+  });
+});

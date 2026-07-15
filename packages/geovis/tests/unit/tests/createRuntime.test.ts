@@ -767,6 +767,91 @@ describe('createRuntime — dispatch set-filter (PRD-002 Phase 4)', () => {
   });
 });
 
+describe('createRuntime — dispatch set-view-preset (PRD-002 Phase 5)', () => {
+  const makeSpecWithPresets = (): VisualizationSpec => {
+    return {
+      ...makeSpec(),
+      viewPresets: [
+        {
+          id: 'overview',
+          label: 'Overview',
+          view: { center: [10, 20], zoom: 3 },
+        },
+      ],
+    };
+  };
+
+  test('moves the camera via adapter.setView and syncs spec.view', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpecWithPresets());
+
+    const result = runtime.dispatch({
+      type: 'set-view-preset',
+      presetId: 'overview',
+    });
+
+    expect(adapter.setView).toHaveBeenCalledWith(
+      expect.objectContaining({ center: [10, 20], zoom: 3 })
+    );
+    expect(runtime.spec.view).toMatchObject({ center: [10, 20], zoom: 3 });
+    expect(result).toBe(runtime.result);
+  });
+
+  test('never calls adapter.applyPatch (a camera move is not a SpecPatch)', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpecWithPresets());
+
+    runtime.dispatch({ type: 'set-view-preset', presetId: 'overview' });
+
+    expect(adapter.applyPatch).not.toHaveBeenCalled();
+  });
+
+  test('an unknown presetId is rejected before touching the adapter, spec unchanged', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpecWithPresets());
+    const before = runtime.spec;
+
+    const result = runtime.dispatch({
+      type: 'set-view-preset',
+      presetId: 'ghost',
+    });
+
+    expect(result.status).toBe('mismatch');
+    if (result.status !== 'resolved') {
+      expect(result.issues[0].code).toBe('unknown-view-preset');
+      expect(result.issues[0].repair).toEqual([
+        {
+          kind: 'allowed-values',
+          path: 'action.presetId',
+          values: ['overview'],
+        },
+      ]);
+    }
+    expect(runtime.spec).toBe(before);
+    expect(adapter.setView).not.toHaveBeenCalled();
+  });
+
+  test('is logged on the action log like any other dispatch', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpecWithPresets());
+
+    runtime.dispatch({
+      type: 'set-view-preset',
+      presetId: 'overview',
+      rationale: 'AI zoomed out to the overview',
+    });
+
+    const log = runtime.getActionLog();
+    expect(log[0]).toMatchObject({
+      action: {
+        type: 'set-view-preset',
+        presetId: 'overview',
+        rationale: 'AI zoomed out to the overview',
+      },
+    });
+  });
+});
+
 describe('createRuntime — getContextPacket() (PRD-002, ADR-0004)', () => {
   test('reports sources, layers, allowed actions, and the last result — metadata only', () => {
     const adapter = makeAdapter();
@@ -893,5 +978,33 @@ describe('createRuntime — getContextPacket() (PRD-002, ADR-0004)', () => {
     expect(runtime.getContextPacket().allowedActions).not.toContain(
       'set-filter'
     );
+  });
+
+  test('viewPresets are reported by id/label, never raw camera coordinates; set-view-preset is allowed once declared', () => {
+    const adapter = makeAdapter();
+    const spec: VisualizationSpec = {
+      ...makeSpec(),
+      viewPresets: [
+        {
+          id: 'overview',
+          label: 'Overview',
+          view: { center: [10, 20], zoom: 3 },
+        },
+      ],
+    };
+    const runtime = createRuntime(adapter, spec);
+
+    const packet = runtime.getContextPacket();
+    expect(packet.viewPresets).toEqual([{ id: 'overview', label: 'Overview' }]);
+    expect(packet.allowedActions).toContain('set-view-preset');
+  });
+
+  test('set-view-preset is not allowed when the spec declares no viewPresets', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+
+    const packet = runtime.getContextPacket();
+    expect(packet.viewPresets).toEqual([]);
+    expect(packet.allowedActions).not.toContain('set-view-preset');
   });
 });

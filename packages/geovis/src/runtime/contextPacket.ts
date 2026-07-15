@@ -38,6 +38,12 @@ export interface ContextPacketLegend {
   unit?: string;
 }
 
+/** A declared `ViewPreset`'s id/label — never its raw `view` camera values (ADR-0004). */
+export interface ContextPacketViewPreset {
+  id: string;
+  label?: string;
+}
+
 /**
  * Versioned, read-only, metadata-only summary of the current map (ADR-0004).
  * Contains aggregates only — never GeoJSON geometry, `mapData[].data` rows,
@@ -52,6 +58,8 @@ export interface ContextPacket {
   sources: ContextPacketSource[];
   layers: ContextPacketLayer[];
   legends: ContextPacketLegend[];
+  /** Declared `viewPresets`, id/label only — never raw camera coordinates (ADR-0004). */
+  viewPresets: ContextPacketViewPreset[];
   /** The runtime's current selection, or `null` when nothing is selected. */
   selection: GeoVisSelection | null;
   /** The ADR-0003 vocabulary, filtered to what the current spec actually supports. */
@@ -108,6 +116,7 @@ const computeAllowedActions = (
     return sourceType && capabilities.dataFeatures.filter.includes(sourceType);
   });
   if (canFilter) actions.push('set-filter');
+  if ((spec.viewPresets?.length ?? 0) > 0) actions.push('set-view-preset');
   return actions;
 };
 
@@ -151,6 +160,9 @@ export const buildContextPacket = (
       };
     }),
     legends: (spec.legends ?? []).map(buildLegendSummary),
+    viewPresets: (spec.viewPresets ?? []).map((p) => {
+      return { id: p.id, label: p.label };
+    }),
     selection,
     allowedActions: computeAllowedActions(spec, capabilities),
     warnings: result.status === 'resolved' ? result.warnings : [],
