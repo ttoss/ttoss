@@ -1021,13 +1021,13 @@ importers:
         specifier: workspace:^
         version: link:../test-utils
       jest:
-        specifier: ^30.3.0
+        specifier: ^30.4.2
         version: 30.4.2(@types/node@24.12.4)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.15.40(@swc/helpers@0.5.23))(@types/node@24.12.4)(typescript@6.0.3))
       react:
-        specifier: ^19.2.4
+        specifier: ^19.2.6
         version: 19.2.6
       react-dom:
-        specifier: ^19.2.4
+        specifier: ^19.2.6
         version: 19.2.6(react@19.2.6)
       tsdown:
         specifier: ^0.22.2
