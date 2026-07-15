@@ -4,6 +4,7 @@ import type {
   LngLat,
   VisualizationSpec,
 } from '../spec/types';
+import type { GeoVisSelection } from './action';
 
 /**
  * Options accepted by `EngineAdapter.setView` and `GeoVisRuntime.setView`.
@@ -32,6 +33,13 @@ export interface EngineAdapter {
   applyPatch?(patch: SpecPatch): void;
   /** Imperatively moves the camera. Animated by default. */
   setView(options: SetViewOptions): void;
+  /**
+   * Applies (or, with `null`, clears) the runtime's current selection —
+   * swaps `feature-state.selected` on the live map. Optional: adapters that
+   * don't support feature-state selection simply skip this (`dispatch()`
+   * still tracks selection at the runtime level either way).
+   */
+  setSelection?(selection: GeoVisSelection | null): void;
   destroy(): void;
   getNativeInstance(): unknown;
 }

@@ -5,9 +5,9 @@ import type { GeoVisResult } from '../spec/result';
  * accepts (ADR-0003, PRD-002). Every variant targets the map through a
  * stable spec id — the same ids `getContextPacket()` names — never a raw
  * `SpecPatch` path or engine expression. Grows one variant per PRD-002
- * phase; currently: `toggle-layer`.
+ * phase; currently: `toggle-layer`, `select-feature`.
  */
-export type GeoVisAction = ToggleLayerAction;
+export type GeoVisAction = ToggleLayerAction | SelectFeatureAction;
 
 /** Flips (or explicitly sets) a layer's visibility. */
 export interface ToggleLayerAction {
@@ -16,6 +16,29 @@ export interface ToggleLayerAction {
   layerId: string;
   /** Explicit next visibility. Omitted: flips the layer's current visibility. */
   visible?: boolean;
+  /** Optional free-text reason, preserved on the action log entry for audit. */
+  rationale?: string;
+}
+
+/**
+ * The runtime's current selection — framework-agnostic, shared by
+ * `dispatch({ type: 'select-feature' })` and `getContextPacket()` (ADR-0004).
+ * Never carries geometry: `featureId` is the same stable id `mapData` rows
+ * and click events already key on.
+ */
+export interface GeoVisSelection {
+  /** Id of the layer the selected feature belongs to — matches `spec.layers[].id`. */
+  layerId: string;
+  featureId: string | number;
+}
+
+/** Selects (or, with `featureId: null`, clears) a feature on a layer. */
+export interface SelectFeatureAction {
+  type: 'select-feature';
+  /** Id of the layer to select on — must match `spec.layers[].id`. */
+  layerId: string;
+  /** Feature id to select, or `null` to clear the current selection. */
+  featureId: string | number | null;
   /** Optional free-text reason, preserved on the action log entry for audit. */
   rationale?: string;
 }

@@ -32,6 +32,7 @@ const makeAdapter = (): jest.Mocked<EngineAdapter> => {
     update: jest.fn(),
     applyPatch: jest.fn(),
     setView: jest.fn(),
+    setSelection: jest.fn(),
     destroy: jest.fn(),
     getNativeInstance: jest.fn(),
   } as unknown as jest.Mocked<EngineAdapter>;
@@ -475,6 +476,99 @@ describe('createRuntime — dispatch() (PRD-002 action surface)', () => {
   });
 });
 
+describe('createRuntime — dispatch select-feature and getSelection() (PRD-002 Phase 2)', () => {
+  test('selecting a feature updates getSelection() and forwards to adapter.setSelection', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+
+    const result = runtime.dispatch({
+      type: 'select-feature',
+      layerId: 'lyr-1',
+      featureId: 'BR',
+    });
+
+    expect(result.status).not.toBe('invalid');
+    expect(runtime.getSelection()).toEqual({
+      layerId: 'lyr-1',
+      featureId: 'BR',
+    });
+    expect(adapter.setSelection).toHaveBeenCalledWith({
+      layerId: 'lyr-1',
+      featureId: 'BR',
+    });
+  });
+
+  test('select-feature never mutates runtime.spec — selection is runtime-level state, not spec data', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+    const before = runtime.spec;
+
+    runtime.dispatch({
+      type: 'select-feature',
+      layerId: 'lyr-1',
+      featureId: 'BR',
+    });
+
+    expect(runtime.spec).toBe(before);
+    expect(adapter.applyPatch).not.toHaveBeenCalled();
+  });
+
+  test('select-feature returns the current result unchanged (does not touch spec validity)', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+    const before = runtime.result;
+
+    const result = runtime.dispatch({
+      type: 'select-feature',
+      layerId: 'lyr-1',
+      featureId: 'BR',
+    });
+
+    expect(result).toBe(before);
+    expect(runtime.result).toBe(before);
+  });
+
+  test('featureId: null clears the selection and forwards null to adapter.setSelection', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+    runtime.dispatch({
+      type: 'select-feature',
+      layerId: 'lyr-1',
+      featureId: 'BR',
+    });
+
+    runtime.dispatch({
+      type: 'select-feature',
+      layerId: 'lyr-1',
+      featureId: null,
+    });
+
+    expect(runtime.getSelection()).toBeNull();
+    expect(adapter.setSelection).toHaveBeenLastCalledWith(null);
+  });
+
+  test('getSelection() is null before anything is selected', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+    expect(runtime.getSelection()).toBeNull();
+  });
+
+  test('an unknown layerId is rejected and does not update the selection', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+
+    const result = runtime.dispatch({
+      type: 'select-feature',
+      layerId: 'ghost',
+      featureId: 'BR',
+    });
+
+    expect(result.status).toBe('mismatch');
+    expect(runtime.getSelection()).toBeNull();
+    expect(adapter.setSelection).not.toHaveBeenCalled();
+  });
+});
+
 describe('createRuntime — getContextPacket() (PRD-002, ADR-0004)', () => {
   test('reports sources, layers, allowed actions, and the last result — metadata only', () => {
     const adapter = makeAdapter();
@@ -487,7 +581,7 @@ describe('createRuntime — getContextPacket() (PRD-002, ADR-0004)', () => {
     expect(packet.layers).toEqual([
       { id: 'lyr-1', geometry: 'polygon', visible: true },
     ]);
-    expect(packet.allowedActions).toEqual(['toggle-layer']);
+    expect(packet.allowedActions).toEqual(['toggle-layer', 'select-feature']);
     expect(packet.lastResult).toBe(runtime.result);
     expect(packet.warnings).toEqual([]);
   });
@@ -512,5 +606,21 @@ describe('createRuntime — getContextPacket() (PRD-002, ADR-0004)', () => {
     const runtime = createRuntime(adapter, { ...makeSpec(), layers: [] });
 
     expect(runtime.getContextPacket().allowedActions).toEqual([]);
+  });
+
+  test('reflects a dispatched select-feature immediately', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+
+    runtime.dispatch({
+      type: 'select-feature',
+      layerId: 'lyr-1',
+      featureId: 'BR',
+    });
+
+    expect(runtime.getContextPacket().selection).toEqual({
+      layerId: 'lyr-1',
+      featureId: 'BR',
+    });
   });
 });

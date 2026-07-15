@@ -1053,7 +1053,7 @@ const LayerControls = () => {
 
 `runtime.dispatch(action)` is the recommended way to steer a live map — a closed, typed vocabulary of semantic operations (PRD-002, [ADR-0003](./docs/adr/0003-semantic-action-surface.md)) that validates against the current spec before compiling to the same `SpecPatch`/`update`/`setView` mechanisms `applyPatch` uses. Prefer it over hand-written `SpecPatch`es: it targets stable ids instead of internal paint paths, rejects unknown targets with a repairable `GeoVisResult`, and every call — accepted or rejected — is recorded on the action log for audit.
 
-Currently implemented: `toggle-layer`. More actions land per PRD-002 phase (`set-map-data`, `set-filter`, `select-feature`, `set-view-preset`).
+Currently implemented: `toggle-layer`, `select-feature`. More actions land per PRD-002 phase (`set-map-data`, `set-filter`, `set-view-preset`).
 
 ```tsx
 const { runtime } = useGeoVis();
@@ -1079,6 +1079,28 @@ const result = runtime.dispatch({ type: 'toggle-layer', layerId: 'ghost' });
 // result.issues[0].repair[0].values === ['regions-layer', ...]
 ```
 
+`select-feature` selects (or, with `featureId: null`, clears) a feature on a layer — the same runtime-level state a click on the map produces, so an AI turn and a human click are indistinguishable in the action log and the context packet:
+
+```tsx
+runtime.dispatch({
+  type: 'select-feature',
+  layerId: 'regions-layer',
+  featureId: 'BR',
+});
+
+// Clear the selection
+runtime.dispatch({
+  type: 'select-feature',
+  layerId: 'regions-layer',
+  featureId: null,
+});
+
+runtime.getSelection();
+// { layerId: 'regions-layer', featureId: 'BR' } | null
+```
+
+`useGeoVisClick()` and `<GeoVisMarker>`-driven click anchors already dispatch `select-feature` internally — a human click and `runtime.dispatch({ type: 'select-feature', ... })` produce the identical selection and action-log entry.
+
 ### Action log
 
 ```ts
@@ -1100,7 +1122,8 @@ runtime.getContextPacket();
 //   sources: [{ id: 'regions-source', type: 'geojson' }],
 //   layers: [{ id: 'regions-layer', geometry: 'polygon', visible: true }],
 //   legends: [{ id: 'pop-legend', scaleKind: 'threshold', domain: [10, 90], unit: 'inhabitants' }],
-//   allowedActions: ['toggle-layer'],
+//   selection: { layerId: 'regions-layer', featureId: 'BR' },
+//   allowedActions: ['toggle-layer', 'select-feature'],
 //   warnings: [],
 //   lastResult: { status: 'resolved', spec, warnings: [] },
 // }
@@ -1315,6 +1338,8 @@ Returns the last clicked feature on the active map as `MapClickInfo | null` (`nu
 **Tracking:** `useGeoVisClick` only populates when the user clicks a feature on a layer configured with `activeLegendId` **and** the feature has an id (numeric or string). Clicks on untracked layers or features without ids are treated as outside-clicks and clear the selection.
 
 Lives in a dedicated context (`GeoVisClickContext`) so click-state changes do not re-render `useGeoVis()` consumers. Must be called inside `GeoVisProvider`.
+
+Internally, every click dispatches `select-feature` on the runtime (see [AI Action Surface](#ai-action-surface-dispatch)) — `runtime.getSelection()` and `getContextPacket().selection` reflect the same selection this hook reports, and the action shows up in `getActionLog()` like any other dispatched action.
 
 #### `MapClickInfo` fields
 

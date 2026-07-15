@@ -1,7 +1,18 @@
 import type { GeoVisIssue } from '../spec/result';
-import type { VisualizationSpec } from '../spec/types';
-import type { GeoVisAction, ToggleLayerAction } from './action';
+import type { VisualizationLayer, VisualizationSpec } from '../spec/types';
+import type {
+  GeoVisAction,
+  GeoVisSelection,
+  SelectFeatureAction,
+  ToggleLayerAction,
+} from './action';
 import type { SpecPatch } from './adapter';
+
+/** What compiling a `GeoVisAction` against the current spec produces. */
+export type ActionOutcome =
+  | { patch: SpecPatch }
+  | { selection: GeoVisSelection | null }
+  | { issue: GeoVisIssue };
 
 /**
  * Builds the `unknown-layer-id` issue for an action targeting a `layerId`
@@ -30,6 +41,31 @@ export const buildUnknownLayerIdIssue = (
 };
 
 /**
+ * Builds the `unknown-feature-id` issue for a `select-feature` action whose
+ * `featureId` isn't a row of the layer's joined `mapData` — only checked
+ * when the layer declares `mapDataId` (the only case this is cheap: the
+ * rows are already loaded, no geometry/engine query needed).
+ */
+const buildUnknownFeatureIdIssue = (
+  layer: VisualizationLayer,
+  featureId: string | number,
+  allowedFeatureIds: ReadonlyArray<string | number>
+): GeoVisIssue => {
+  return {
+    code: 'unknown-feature-id',
+    subject: { path: 'action.featureId', id: String(featureId) },
+    message: `layer '${layer.id}' has no mapData row for featureId '${featureId}'`,
+    repair: [
+      {
+        kind: 'allowed-values',
+        path: 'action.featureId',
+        values: allowedFeatureIds,
+      },
+    ],
+  };
+};
+
+/**
  * Compiles `toggle-layer` to the layer-visibility `SpecPatch` (extends the
  * existing `replace`-on-`layer` mechanism, previously `paint`-only, to a
  * top-level `visible` field — see `createRuntime.ts#applyLayerPatchToSpec`
@@ -39,7 +75,7 @@ export const buildUnknownLayerIdIssue = (
 const compileToggleLayer = (
   spec: VisualizationSpec,
   action: ToggleLayerAction
-): { patch: SpecPatch } | { issue: GeoVisIssue } => {
+): ActionOutcome => {
   const layer = spec.layers.find((l) => {
     return l.id === action.layerId;
   });
@@ -62,16 +98,68 @@ const compileToggleLayer = (
 };
 
 /**
+ * Compiles `select-feature` to a `GeoVisSelection` update — runtime-level
+ * ephemeral state, never part of the spec (selection is not map data).
+ * `featureId: null` clears the selection unconditionally, skipping the
+ * `layerId` check entirely: clearing "whatever is selected" is always valid,
+ * even if the previously-selected layer was since removed from the spec.
+ */
+const compileSelectFeature = (
+  spec: VisualizationSpec,
+  action: SelectFeatureAction
+): ActionOutcome => {
+  if (action.featureId === null) {
+    return { selection: null };
+  }
+  const layer = spec.layers.find((l) => {
+    return l.id === action.layerId;
+  });
+  if (!layer) {
+    return {
+      issue: buildUnknownLayerIdIssue(spec, action.layerId, 'action.layerId'),
+    };
+  }
+  if (layer.mapDataId) {
+    const mapData = spec.mapData?.find((md) => {
+      return md.mapDataId === layer.mapDataId;
+    });
+    if (mapData) {
+      const allowedFeatureIds = mapData.data.map((row) => {
+        return row.geometryId;
+      });
+      const exists = allowedFeatureIds.some((id) => {
+        return String(id) === String(action.featureId);
+      });
+      if (!exists) {
+        return {
+          issue: buildUnknownFeatureIdIssue(
+            layer,
+            action.featureId,
+            allowedFeatureIds
+          ),
+        };
+      }
+    }
+  }
+  return {
+    selection: { layerId: action.layerId, featureId: action.featureId },
+  };
+};
+
+/**
  * Compiles a `GeoVisAction` against the current spec to either an existing
- * `SpecPatch`/`setView` mechanism or a rejection issue — never both, and
- * never mutating anything itself (the caller validates and commits).
+ * `SpecPatch` mechanism, a runtime-level selection update, or a rejection
+ * issue — never more than one, and never mutating anything itself (the
+ * caller validates and commits).
  */
 export const compileAction = (
   spec: VisualizationSpec,
   action: GeoVisAction
-): { patch: SpecPatch } | { issue: GeoVisIssue } => {
+): ActionOutcome => {
   switch (action.type) {
     case 'toggle-layer':
       return compileToggleLayer(spec, action);
+    case 'select-feature':
+      return compileSelectFeature(spec, action);
   }
 };

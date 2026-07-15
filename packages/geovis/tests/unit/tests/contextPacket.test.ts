@@ -26,7 +26,7 @@ describe('buildContextPacket — legend summary', () => {
       ...makeSpec(),
       legends: [{ id: 'legend-1' }],
     };
-    const packet = buildContextPacket(spec, RESOLVED(spec));
+    const packet = buildContextPacket(spec, RESOLVED(spec), null);
     expect(packet.legends).toEqual([{ id: 'legend-1' }]);
   });
 
@@ -40,7 +40,7 @@ describe('buildContextPacket — legend summary', () => {
         },
       ],
     };
-    const packet = buildContextPacket(spec, RESOLVED(spec));
+    const packet = buildContextPacket(spec, RESOLVED(spec), null);
     expect(packet.legends).toEqual([
       { id: 'legend-1', scaleKind: 'categorical' },
     ]);
@@ -62,7 +62,7 @@ describe('buildContextPacket — legend summary', () => {
         },
       ],
     };
-    const packet = buildContextPacket(spec, RESOLVED(spec));
+    const packet = buildContextPacket(spec, RESOLVED(spec), null);
     expect(packet.legends).toEqual([
       {
         id: 'legend-1',
@@ -87,7 +87,7 @@ describe('buildContextPacket — legend summary', () => {
         },
       ],
     };
-    const packet = buildContextPacket(spec, RESOLVED(spec));
+    const packet = buildContextPacket(spec, RESOLVED(spec), null);
     expect(packet.legends[0].domain).toBeUndefined();
   });
 
@@ -107,7 +107,7 @@ describe('buildContextPacket — legend summary', () => {
         },
       ],
     };
-    const packet = buildContextPacket(spec, RESOLVED(spec));
+    const packet = buildContextPacket(spec, RESOLVED(spec), null);
     expect(packet.legends[0].unit).toBeUndefined();
   });
 });
@@ -126,7 +126,7 @@ describe('buildContextPacket — warnings and lastResult', () => {
         },
       ],
     };
-    const packet = buildContextPacket(spec, result);
+    const packet = buildContextPacket(spec, result, null);
     expect(packet.warnings).toBe(result.warnings);
     expect(packet.lastResult).toBe(result);
   });
@@ -143,7 +143,7 @@ describe('buildContextPacket — warnings and lastResult', () => {
         },
       ],
     };
-    const packet = buildContextPacket(spec, result);
+    const packet = buildContextPacket(spec, result, null);
     expect(packet.warnings).toEqual([]);
     expect(packet.lastResult).toBe(result);
   });
@@ -152,7 +152,36 @@ describe('buildContextPacket — warnings and lastResult', () => {
 describe('buildContextPacket — mapType passthrough', () => {
   test('mapType is included when declared on the spec', () => {
     const spec: VisualizationSpec = { ...makeSpec(), mapType: 'choropleth' };
-    const packet = buildContextPacket(spec, RESOLVED(spec));
+    const packet = buildContextPacket(spec, RESOLVED(spec), null);
     expect(packet.mapType).toBe('choropleth');
+  });
+});
+
+describe('buildContextPacket — selection and allowedActions (PRD-002 Phase 2)', () => {
+  test('selection is null when nothing is selected', () => {
+    const spec = makeSpec();
+    const packet = buildContextPacket(spec, RESOLVED(spec), null);
+    expect(packet.selection).toBeNull();
+  });
+
+  test('selection passes through the given GeoVisSelection verbatim', () => {
+    const spec = makeSpec();
+    const packet = buildContextPacket(spec, RESOLVED(spec), {
+      layerId: 'lyr-1',
+      featureId: 'BR',
+    });
+    expect(packet.selection).toEqual({ layerId: 'lyr-1', featureId: 'BR' });
+  });
+
+  test('select-feature is allowed alongside toggle-layer once the spec has a layer', () => {
+    const spec = makeSpec();
+    const packet = buildContextPacket(spec, RESOLVED(spec), null);
+    expect(packet.allowedActions).toEqual(['toggle-layer', 'select-feature']);
+  });
+
+  test('neither action is allowed when the spec has no layers', () => {
+    const spec: VisualizationSpec = { ...makeSpec(), layers: [] };
+    const packet = buildContextPacket(spec, RESOLVED(spec), null);
+    expect(packet.allowedActions).toEqual([]);
   });
 });

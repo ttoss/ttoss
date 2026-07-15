@@ -6,7 +6,7 @@ import type {
   MapType,
   VisualizationSpec,
 } from '../spec/types';
-import type { GeoVisAction } from './action';
+import type { GeoVisAction, GeoVisSelection } from './action';
 
 /** Current `ContextPacket` schema version (ADR-0004, versioned like the spec schema). */
 export const CONTEXT_PACKET_SCHEMA_VERSION = 1;
@@ -44,6 +44,8 @@ export interface ContextPacket {
   sources: ContextPacketSource[];
   layers: ContextPacketLayer[];
   legends: ContextPacketLegend[];
+  /** The runtime's current selection, or `null` when nothing is selected. */
+  selection: GeoVisSelection | null;
   /** The ADR-0003 vocabulary, filtered to what the current spec actually supports. */
   allowedActions: GeoVisAction['type'][];
   /** Non-blocking issues from the last `resolved` result (e.g. policy violations). */
@@ -81,18 +83,22 @@ const computeAllowedActions = (
   spec: VisualizationSpec
 ): GeoVisAction['type'][] => {
   const actions: GeoVisAction['type'][] = [];
-  if (spec.layers.length > 0) actions.push('toggle-layer');
+  if (spec.layers.length > 0) {
+    actions.push('toggle-layer', 'select-feature');
+  }
   return actions;
 };
 
 /**
- * Derives the current `ContextPacket` from `spec` and the last `GeoVisResult`.
- * Cheap enough to call on every turn (ADR-0004 consequence) — no geometry or
- * data-row traversal, only the spec's own metadata arrays.
+ * Derives the current `ContextPacket` from `spec`, the last `GeoVisResult`,
+ * and the runtime's current selection. Cheap enough to call on every turn
+ * (ADR-0004 consequence) — no geometry or data-row traversal, only the
+ * spec's own metadata arrays.
  */
 export const buildContextPacket = (
   spec: VisualizationSpec,
-  result: GeoVisResult
+  result: GeoVisResult,
+  selection: GeoVisSelection | null
 ): ContextPacket => {
   return {
     schemaVersion: CONTEXT_PACKET_SCHEMA_VERSION,
@@ -104,6 +110,7 @@ export const buildContextPacket = (
       return { id: l.id, geometry: l.geometry, visible: l.visible !== false };
     }),
     legends: (spec.legends ?? []).map(buildLegendSummary),
+    selection,
     allowedActions: computeAllowedActions(spec),
     warnings: result.status === 'resolved' ? result.warnings : [],
     lastResult: result,

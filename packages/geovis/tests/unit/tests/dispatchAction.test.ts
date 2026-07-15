@@ -63,3 +63,133 @@ describe('compileAction — toggle-layer', () => {
     });
   });
 });
+
+describe('compileAction — select-feature', () => {
+  test('selecting a known feature on a layer with no mapData join compiles to that selection unchecked', () => {
+    const outcome = compileAction(makeSpec(), {
+      type: 'select-feature',
+      layerId: 'lyr-1',
+      featureId: 'BR',
+    });
+    expect(outcome).toEqual({
+      selection: { layerId: 'lyr-1', featureId: 'BR' },
+    });
+  });
+
+  test('featureId: null always compiles to clearing the selection, skipping the layerId check entirely', () => {
+    const outcome = compileAction(makeSpec(), {
+      type: 'select-feature',
+      layerId: 'ghost',
+      featureId: null,
+    });
+    expect(outcome).toEqual({ selection: null });
+  });
+
+  test('an unknown layerId (when selecting, not clearing) compiles to an unknown-layer-id issue', () => {
+    const outcome = compileAction(makeSpec(), {
+      type: 'select-feature',
+      layerId: 'ghost',
+      featureId: 'BR',
+    });
+    expect('issue' in outcome && outcome.issue).toMatchObject({
+      code: 'unknown-layer-id',
+      subject: { path: 'action.layerId', id: 'ghost' },
+    });
+  });
+
+  test("a featureId absent from the layer's joined mapData rows compiles to an unknown-feature-id issue", () => {
+    const spec: VisualizationSpec = {
+      ...makeSpec(),
+      layers: [
+        {
+          id: 'lyr-1',
+          sourceId: 'src-1',
+          geometry: 'polygon',
+          mapDataId: 'pop',
+        },
+      ],
+      mapData: [
+        {
+          mapDataId: 'pop',
+          mapId: 'src-1',
+          data: [{ geometryId: 'BR', value: 211 }],
+        },
+      ],
+    };
+    const outcome = compileAction(spec, {
+      type: 'select-feature',
+      layerId: 'lyr-1',
+      featureId: 'ghost-feature',
+    });
+    expect('issue' in outcome && outcome.issue).toMatchObject({
+      code: 'unknown-feature-id',
+      subject: { path: 'action.featureId', id: 'ghost-feature' },
+      repair: [
+        { kind: 'allowed-values', path: 'action.featureId', values: ['BR'] },
+      ],
+    });
+  });
+
+  test("a featureId present in the layer's joined mapData rows compiles successfully", () => {
+    const spec: VisualizationSpec = {
+      ...makeSpec(),
+      layers: [
+        {
+          id: 'lyr-1',
+          sourceId: 'src-1',
+          geometry: 'polygon',
+          mapDataId: 'pop',
+        },
+      ],
+      mapData: [
+        {
+          mapDataId: 'pop',
+          mapId: 'src-1',
+          data: [{ geometryId: 'BR', value: 211 }],
+        },
+      ],
+    };
+    const outcome = compileAction(spec, {
+      type: 'select-feature',
+      layerId: 'lyr-1',
+      featureId: 'BR',
+    });
+    expect(outcome).toEqual({
+      selection: { layerId: 'lyr-1', featureId: 'BR' },
+    });
+  });
+
+  test('a layer with mapDataId pointing to a since-removed mapData entry skips the featureId check', () => {
+    const spec: VisualizationSpec = {
+      ...makeSpec(),
+      layers: [
+        {
+          id: 'lyr-1',
+          sourceId: 'src-1',
+          geometry: 'polygon',
+          mapDataId: 'ghost-mapdata',
+        },
+      ],
+    };
+    const outcome = compileAction(spec, {
+      type: 'select-feature',
+      layerId: 'lyr-1',
+      featureId: 'anything',
+    });
+    expect(outcome).toEqual({
+      selection: { layerId: 'lyr-1', featureId: 'anything' },
+    });
+  });
+
+  test('carries the action rationale through (type-level check; rationale is not part of the selection outcome)', () => {
+    const outcome = compileAction(makeSpec(), {
+      type: 'select-feature',
+      layerId: 'lyr-1',
+      featureId: 'BR',
+      rationale: 'AI inspected the highest-population state',
+    });
+    expect(outcome).toEqual({
+      selection: { layerId: 'lyr-1', featureId: 'BR' },
+    });
+  });
+});

@@ -3,6 +3,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { log } from '@ttoss/logger';
 import maplibregl from 'maplibre-gl';
 
+import type { GeoVisSelection } from '../../runtime/action';
 import type {
   CapabilitySet,
   EngineAdapter,
@@ -22,6 +23,7 @@ import {
   removeMapDataFromSource,
 } from './mapDataFeatureState';
 import { applyLayerPatch, applySourcePatch } from './patchDispatch';
+import { applySelectionToMap } from './selection';
 import { toMaplibreSource } from './sourceTranslation';
 import { syncSourcesAndLayers } from './syncSourcesAndLayers';
 
@@ -313,6 +315,11 @@ const CAPABILITIES: CapabilitySet = {
 
 const createMapLibreAdapter = (): EngineAdapter => {
   const _views: ViewMap = new Map();
+  // Tracks the selection currently applied on the map(s), so `setSelection`
+  // can clear the previously-selected feature before setting the next one —
+  // mirrors the click hook's old `prevSelectedState` ref, now owned here
+  // since selection is runtime-level state, not React-only (PRD-002 Phase 2).
+  let _prevSelection: GeoVisSelection | null = null;
   return {
     id: 'maplibre',
     getCapabilities: () => {
@@ -332,6 +339,17 @@ const createMapLibreAdapter = (): EngineAdapter => {
       for (const viewState of _views.values()) {
         applySetView(viewState.map, options);
       }
+    },
+    setSelection: (selection) => {
+      for (const viewState of _views.values()) {
+        applySelectionToMap(
+          viewState.map,
+          viewState.spec,
+          _prevSelection,
+          selection
+        );
+      }
+      _prevSelection = selection;
     },
     destroy: () => {
       destroyAll(_views);
