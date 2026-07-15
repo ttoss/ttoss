@@ -99,11 +99,12 @@ only a slot's _content_ is configurable:
 | `legend`    | Right sidebar | Description/sources from `config.legend` plus the spec's legends.                   |
 | `warnings`  | Right sidebar | Issues from `useGeoVis().result` — see [Warnings and repair](#warnings-and-repair). |
 | `inspector` | Right sidebar | The clicked feature from `useGeoVisClick()`, with a dismiss button.                 |
-| `metadata`  | Right sidebar | None yet (PRD-003 Phase 5).                                                         |
+| `metadata`  | Right sidebar | The spec's `mapType` and source count — see [Metadata](#metadata).                  |
 
 A sidebar renders only when at least one of its slots has content — an
-override component, or (for `controls`/`legend`) non-empty config or a
-spec-resolved legend. Use `config.slots` to hide a slot or replace its default
+override component, or (for `controls`/`legend`/`metadata`) non-empty config,
+a spec-resolved legend, or (for `metadata`) a spec with a `mapType` or at
+least one source. Use `config.slots` to hide a slot or replace its default
 panel with a custom component, which gets the same runtime access
 (`useGeoVis()`, `useGeoVisClick()`, `useGeoVisHover()`) as the default it
 replaces:
@@ -155,17 +156,56 @@ all clear the same selection via `useDismissGeoVisClick()`, so the panel and
 the map's selection highlight always stay in sync. The panel renders nothing
 when no feature is selected.
 
+## Metadata
+
+The `metadata` slot's default panel needs no config: it reads the current
+`visualizationSpec` via `useGeoVis()` and shows the `mapType`, when set, and a
+pluralized source count. It renders nothing — and contributes no content
+toward showing the right sidebar — when the spec has neither, so it never
+appears as an always-on placeholder.
+
+## Layer list controls
+
+`LayerListControls` is an opt-in, publicly exported alternative to the
+`controls` slot's default menu panel: one row per `visualizationSpec.layers`
+entry with a visibility checkbox and its `activeLegendId`, reading
+`useGeoVis().spec.layers` instead of `config.controls.menus`. Enable it via
+`config.slots.controls`, and rebuild `visualizationSpec` with the toggled
+layer's `visible` field from `onLayerVisibilityChange` — the workspace never
+mutates the spec itself, the same delegation `onVariableChange` and
+`onRepair` already use:
+
+```tsx
+import { GeovisWorkspace, LayerListControls } from '@ttoss/geovis-workspace';
+
+<GeovisWorkspace
+  config={{ slots: { controls: { component: LayerListControls } } }}
+  visualizationSpec={visualizationSpec}
+  onLayerVisibilityChange={(layerId, visible) => {
+    setVisualizationSpec((spec) => {
+      return {
+        ...spec,
+        layers: spec.layers.map((layer) => {
+          return layer.id === layerId ? { ...layer, visible } : layer;
+        }),
+      };
+    });
+  }}
+/>;
+```
+
 ## API
 
 ### `GeovisWorkspace` props
 
-| Prop                | Type                                  | Description                                                                                            |
-| ------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `config`            | `GeovisWorkspaceConfig`               | Describes the slots. Required.                                                                         |
-| `visualizationSpec` | `VisualizationSpec`                   | GeoVis spec rendered in the main map area. Required.                                                   |
-| `variables`         | `Record<string, string \| undefined>` | Controlled selection per menu group. Omit for uncontrolled.                                            |
-| `onVariableChange`  | `(variables) => void`                 | Called with the full next selection when an item is picked.                                            |
-| `onRepair`          | `(repair: RepairOption) => void`      | Called with the chosen repair when a repair button is pressed. Omit to render repair buttons disabled. |
+| Prop                      | Type                                          | Description                                                                                            |
+| ------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `config`                  | `GeovisWorkspaceConfig`                       | Describes the slots. Required.                                                                         |
+| `visualizationSpec`       | `VisualizationSpec`                           | GeoVis spec rendered in the main map area. Required.                                                   |
+| `variables`               | `Record<string, string \| undefined>`         | Controlled selection per menu group. Omit for uncontrolled.                                            |
+| `onVariableChange`        | `(variables) => void`                         | Called with the full next selection when an item is picked.                                            |
+| `onRepair`                | `(repair: RepairOption) => void`              | Called with the chosen repair when a repair button is pressed. Omit to render repair buttons disabled. |
+| `onLayerVisibilityChange` | `(layerId: string, visible: boolean) => void` | Called with a layer's id and its next `visible` value when `LayerListControls` toggles it.             |
 
 ### `GeovisWorkspaceConfig`
 

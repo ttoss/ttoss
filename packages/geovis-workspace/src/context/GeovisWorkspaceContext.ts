@@ -112,6 +112,15 @@ export interface GeovisWorkspaceContextValue {
   /** Called with the chosen `RepairOption` when a repair button is pressed. */
   onRepair?: (repair: RepairOption) => void;
   /**
+   * Called with a layer's id and its next `visible` value when the
+   * `LayerListControls` `controls` slot variant toggles it. Only the
+   * application can rebuild `visualizationSpec` with the new value — the
+   * same delegation shape `onRepair`/`onVariableChange` already use, since
+   * `SpecPatch`'s `'layer'` target only supports `paint` properties, not
+   * arbitrary layer fields like `visible`.
+   */
+  onLayerVisibilityChange?: (layerId: string, visible: boolean) => void;
+  /**
    * Whether `useGeoVis().result` has ever been `'resolved'` since this
    * workspace mounted. Shared through context (rather than each consumer
    * tracking it independently) so slots that mount only once there is

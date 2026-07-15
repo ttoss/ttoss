@@ -47,6 +47,12 @@ export interface GeovisWorkspaceProps {
    * disabled rather than absent.
    */
   onRepair?: (repair: RepairOption) => void;
+  /**
+   * Called with a layer's id and its next `visible` value when the
+   * `LayerListControls` `controls` slot variant toggles it. Rebuild
+   * `visualizationSpec` with that layer's `visible` field updated.
+   */
+  onLayerVisibilityChange?: (layerId: string, visible: boolean) => void;
 }
 
 /**
@@ -59,6 +65,7 @@ export const GeovisWorkspace = ({
   variables,
   onVariableChange,
   onRepair,
+  onLayerVisibilityChange,
 }: GeovisWorkspaceProps) => {
   return (
     <GeoVisProvider spec={visualizationSpec}>
@@ -73,6 +80,7 @@ export const GeovisWorkspace = ({
           selection={variables}
           onSelectionChange={onVariableChange}
           onRepair={onRepair}
+          onLayerVisibilityChange={onLayerVisibilityChange}
         >
           <Layout />
         </GeovisWorkspaceProviderWithRuntime>

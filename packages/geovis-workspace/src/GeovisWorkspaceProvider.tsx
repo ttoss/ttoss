@@ -30,6 +30,11 @@ export interface GeovisWorkspaceProviderProps {
    */
   onRepair?: (repair: RepairOption) => void;
   /**
+   * Called with a layer's id and its next `visible` value when the
+   * `LayerListControls` `controls` slot variant toggles it.
+   */
+  onLayerVisibilityChange?: (layerId: string, visible: boolean) => void;
+  /**
    * Whether the GeoVis runtime has ever resolved successfully. Computed by
    * `GeovisWorkspace` (which has runtime access) and forwarded here so it
    * reaches context; defaults to `false` for standalone usage without a
@@ -70,6 +75,7 @@ export const GeovisWorkspaceProvider = ({
   selection,
   onSelectionChange,
   onRepair,
+  onLayerVisibilityChange,
   hasResolvedOnce = false,
 }: GeovisWorkspaceProviderProps) => {
   const isControlled = selection !== undefined;
@@ -126,6 +132,7 @@ export const GeovisWorkspaceProvider = ({
       isRightSidebarOpen,
       setRightSidebarOpen,
       onRepair,
+      onLayerVisibilityChange,
       hasResolvedOnce,
     };
   }, [
@@ -137,6 +144,7 @@ export const GeovisWorkspaceProvider = ({
     isRightSidebarOpen,
     setRightSidebarOpen,
     onRepair,
+    onLayerVisibilityChange,
     hasResolvedOnce,
   ]);
 
