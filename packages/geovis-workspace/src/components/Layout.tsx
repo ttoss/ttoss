@@ -1,12 +1,14 @@
 import { GeoVisCanvas, useGeoVis } from '@ttoss/geovis';
 import { useI18n } from '@ttoss/react-i18n';
-import { Box, Flex, IconButton } from '@ttoss/ui';
+import { Box, Flex, IconButton, Text } from '@ttoss/ui';
 import type * as React from 'react';
 
 import type { GeovisWorkspaceSlotName } from '../context/GeovisWorkspaceContext';
 import { useGeovisWorkspace } from '../hooks/useGeovisWorkspace';
 import { messages } from '../messages';
 import { slotHasContent } from '../slots';
+import { isColdStart } from '../warnings';
+import { IssueList } from './IssueList';
 import { LeftSidebar } from './LeftSidebar';
 import { RightSidebar } from './RightSidebar';
 
@@ -23,14 +25,64 @@ const DefaultMapPanel = () => {
   return <GeoVisCanvas style={{ width: '100%', height: '100%' }} />;
 };
 
+/**
+ * Cold-start empty state: no spec has ever resolved, so there is nothing to
+ * show yet in place of an uninitialized canvas (ADR-0003). Once any resolve
+ * succeeds, `GeoVisProvider`'s own "nothing renders on failure" contract
+ * takes over for later failures — this view only ever covers the first one.
+ */
+const MapColdStartEmptyState = () => {
+  const { result } = useGeoVis();
+  const { onRepair } = useGeovisWorkspace();
+  const {
+    intl: { formatMessage },
+  } = useI18n();
+
+  if (result.status === 'resolved') return null;
+
+  return (
+    <Flex
+      sx={{
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '3',
+        width: '100%',
+        height: '100%',
+        padding: '6',
+        overflowY: 'auto',
+      }}
+    >
+      <Text
+        sx={{
+          fontSize: 'sm',
+          fontWeight: 'semibold',
+          color: 'display.text.primary.default',
+        }}
+      >
+        {formatMessage(messages.coldStartTitle)}
+      </Text>
+
+      <IssueList issues={result.issues} severity="error" onRepair={onRepair} />
+    </Flex>
+  );
+};
+
 /** Resolves and renders the `map` slot's override-or-default content. */
 const MapSlot = () => {
-  const { config } = useGeovisWorkspace();
+  const { config, hasResolvedOnce } = useGeovisWorkspace();
+  const { result } = useGeoVis();
 
   if (config.slots?.map?.hidden === true) return null;
 
   const MapOverride = config.slots?.map?.component;
-  return MapOverride ? <MapOverride /> : <DefaultMapPanel />;
+  if (MapOverride) return <MapOverride />;
+
+  if (isColdStart({ result, hasResolvedOnce })) {
+    return <MapColdStartEmptyState />;
+  }
+
+  return <DefaultMapPanel />;
 };
 
 /**
@@ -174,14 +226,20 @@ const OpenRightSidebarButton = () => {
  * show — an explicit `hidden` always suppresses a slot regardless.
  */
 export const Layout = () => {
-  const { config, isLeftSidebarOpen, isRightSidebarOpen } =
+  const { config, isLeftSidebarOpen, isRightSidebarOpen, hasResolvedOnce } =
     useGeovisWorkspace();
-  const { spec } = useGeoVis();
+  const { spec, result } = useGeoVis();
 
-  const hasLeftSidebar = slotHasContent({ config, spec, slot: 'controls' });
+  const hasLeftSidebar = slotHasContent({
+    config,
+    spec,
+    result,
+    hasResolvedOnce,
+    slot: 'controls',
+  });
 
   const hasRightSidebar = RIGHT_SIDEBAR_SLOTS.some((slot) => {
-    return slotHasContent({ config, spec, slot });
+    return slotHasContent({ config, spec, result, hasResolvedOnce, slot });
   });
 
   return (

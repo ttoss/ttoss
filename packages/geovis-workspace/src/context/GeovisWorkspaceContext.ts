@@ -1,3 +1,4 @@
+import type { RepairOption } from '@ttoss/geovis';
 import * as React from 'react';
 
 export interface GeovisWorkspaceMenuItem {
@@ -108,6 +109,16 @@ export interface GeovisWorkspaceContextValue {
   isRightSidebarOpen: boolean;
   /** Opens or closes the right sidebar. */
   setRightSidebarOpen: ({ open }: { open: boolean }) => void;
+  /** Called with the chosen `RepairOption` when a repair button is pressed. */
+  onRepair?: (repair: RepairOption) => void;
+  /**
+   * Whether `useGeoVis().result` has ever been `'resolved'` since this
+   * workspace mounted. Shared through context (rather than each consumer
+   * tracking it independently) so slots that mount only once there is
+   * content — like the `warnings` panel — see the same history as slots
+   * that are always mounted, such as `map`.
+   */
+  hasResolvedOnce: boolean;
 }
 
 export const GeovisWorkspaceContext = React.createContext<

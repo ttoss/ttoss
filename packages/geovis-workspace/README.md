@@ -92,14 +92,14 @@ The workspace is built from six named slots. `map` fills the main area;
 `metadata` stack in that order in the right sidebar. Placement is fixed —
 only a slot's _content_ is configurable:
 
-| Slot        | Region        | Default panel                                                     |
-| ----------- | ------------- | ----------------------------------------------------------------- |
-| `map`       | Main area     | The GeoVis canvas.                                                |
-| `controls`  | Left sidebar  | Menu groups from `config.controls`.                               |
-| `legend`    | Right sidebar | Description/sources from `config.legend` plus the spec's legends. |
-| `warnings`  | Right sidebar | None yet (PRD-003 Phase 3).                                       |
-| `inspector` | Right sidebar | None yet (PRD-003 Phase 4).                                       |
-| `metadata`  | Right sidebar | None yet (PRD-003 Phase 5).                                       |
+| Slot        | Region        | Default panel                                                                       |
+| ----------- | ------------- | ----------------------------------------------------------------------------------- |
+| `map`       | Main area     | The GeoVis canvas.                                                                  |
+| `controls`  | Left sidebar  | Menu groups from `config.controls`.                                                 |
+| `legend`    | Right sidebar | Description/sources from `config.legend` plus the spec's legends.                   |
+| `warnings`  | Right sidebar | Issues from `useGeoVis().result` — see [Warnings and repair](#warnings-and-repair). |
+| `inspector` | Right sidebar | None yet (PRD-003 Phase 4).                                                         |
+| `metadata`  | Right sidebar | None yet (PRD-003 Phase 5).                                                         |
 
 A sidebar renders only when at least one of its slots has content — an
 override component, or (for `controls`/`legend`) non-empty config or a
@@ -117,16 +117,46 @@ const config: GeovisWorkspaceConfig = {
 };
 ```
 
+## Warnings and repair
+
+The `warnings` slot's default panel renders every issue on the current
+`useGeoVis().result`: `resolved` results show their (non-blocking) `warnings`;
+any other status shows its (blocking) `issues`. Each issue renders a
+translated message keyed by its code (falling back to the raw message for a
+code with no catalog entry yet), a monospace `subject` reference, and a
+button per `repair` candidate. Pass `onRepair` to `GeovisWorkspace` to apply
+one — omit it and repair buttons still render, disabled rather than hidden:
+
+```tsx
+<GeovisWorkspace
+  config={config}
+  visualizationSpec={visualizationSpec}
+  onRepair={(repair) => {
+    // repair is always a `set-value` — for an `allowed-values` issue with
+    // several buttons, each one applies as a `set-value` for that one value.
+    setVisualizationSpec((spec) => applyRepair(spec, repair));
+  }}
+/>
+```
+
+A failure with no prior successful resolve (cold start) renders a
+repair-affordance empty state in the `map` slot instead of an uninitialized
+canvas — the `warnings` panel stays empty in that case, since the empty state
+already shows the same issues. Once any resolve succeeds, later failures keep
+the last good map visible while the `warnings` panel lists the new issue, the
+same "nothing renders on failure" contract `GeoVisProvider` already has.
+
 ## API
 
 ### `GeovisWorkspace` props
 
-| Prop                | Type                                  | Description                                                 |
-| ------------------- | ------------------------------------- | ----------------------------------------------------------- |
-| `config`            | `GeovisWorkspaceConfig`               | Describes the slots. Required.                              |
-| `visualizationSpec` | `VisualizationSpec`                   | GeoVis spec rendered in the main map area. Required.        |
-| `variables`         | `Record<string, string \| undefined>` | Controlled selection per menu group. Omit for uncontrolled. |
-| `onVariableChange`  | `(variables) => void`                 | Called with the full next selection when an item is picked. |
+| Prop                | Type                                  | Description                                                                                            |
+| ------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `config`            | `GeovisWorkspaceConfig`               | Describes the slots. Required.                                                                         |
+| `visualizationSpec` | `VisualizationSpec`                   | GeoVis spec rendered in the main map area. Required.                                                   |
+| `variables`         | `Record<string, string \| undefined>` | Controlled selection per menu group. Omit for uncontrolled.                                            |
+| `onVariableChange`  | `(variables) => void`                 | Called with the full next selection when an item is picked.                                            |
+| `onRepair`          | `(repair: RepairOption) => void`      | Called with the chosen repair when a repair button is pressed. Omit to render repair buttons disabled. |
 
 ### `GeovisWorkspaceConfig`
 

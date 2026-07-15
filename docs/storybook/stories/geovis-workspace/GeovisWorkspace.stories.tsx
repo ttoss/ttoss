@@ -1,11 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
-import { useGeoVis, type VisualizationSpec } from '@ttoss/geovis';
+import {
+  type RepairOption,
+  useGeoVis,
+  type VisualizationSpec,
+} from '@ttoss/geovis';
 import {
   GeovisWorkspace,
   type GeovisWorkspaceConfig,
   getInitialSelection,
 } from '@ttoss/geovis-workspace';
-import { Box, Text } from '@ttoss/ui';
+import { Box, Button, Flex, Text } from '@ttoss/ui';
 import * as React from 'react';
 
 /**
@@ -257,6 +261,43 @@ const buildSpec = ({
 };
 
 /**
+ * A layer whose `mapDataId` matches no `mapData` entry — `@ttoss/geovis`'s
+ * own validation rejects this with a real `unknown-map-data-id` failure
+ * (mismatch), carrying an `allowed-values` repair listing the real id.
+ */
+const buildBrokenSpec = (): VisualizationSpec => {
+  const spec = buildSpec({ variable: 'cumulative-rate', age: '65-plus' });
+
+  return {
+    ...spec,
+    layers: spec.layers.map((layer) => {
+      return { ...layer, mapDataId: 'does-not-exist' };
+    }),
+  };
+};
+
+/**
+ * A spec whose `metadata` flags a cartography policy violation (a raw-count
+ * metric shown instead of a population-normalized rate) — `GeoVisProvider`
+ * surfaces this as a `policy-violation` warning on an otherwise-resolved
+ * result, with a `set-value` repair to the normalized alternative.
+ */
+const buildPolicyViolationSpec = (): VisualizationSpec => {
+  const spec = buildSpec({ variable: 'cumulative-rate', age: '65-plus' });
+
+  return {
+    ...spec,
+    metadata: {
+      isPolicyInvalid: true,
+      invalidReason: 'raw-count-metric',
+      metricField: 'population',
+      normalizedField: 'populationPer1000',
+      normalizedLabel: 'per 1,000 residents',
+    },
+  };
+};
+
+/**
  * Drives the workspace: holds the selection state, derives the GeoVis spec from
  * it via `buildSpec`, and feeds both back into `GeovisWorkspace`. Picking a
  * menu item updates the selection, rebuilds the spec, and recolors the map.
@@ -344,5 +385,102 @@ export const LeftSidebarOnly: Story = {
 export const CustomControlsOverride: Story = {
   render: () => {
     return <WorkspaceStory config={customControlsConfig} />;
+  },
+};
+
+const BROKEN_MAP_DATA_PATH = 'layers[regions-fill].mapDataId';
+
+/**
+ * Toggles between a working spec and `buildBrokenSpec()`'s failing one, so
+ * the story demonstrates a real failure *after* a successful resolve: the
+ * map keeps showing the last good spec while the warnings panel lists the
+ * new issue. `onRepair` applies the chosen `set-value` back onto the layer,
+ * the same delegation shape `onVariableChange` already uses.
+ */
+const BlockingFailureAfterResolveStory = () => {
+  const [mapDataId, setMapDataId] = React.useState('choropleth');
+
+  const visualizationSpec = React.useMemo(() => {
+    const spec = buildSpec({ variable: 'cumulative-rate', age: '65-plus' });
+    return {
+      ...spec,
+      layers: spec.layers.map((layer) => {
+        return { ...layer, mapDataId };
+      }),
+    };
+  }, [mapDataId]);
+
+  const handleRepair = (repair: RepairOption) => {
+    if (repair.kind === 'set-value' && repair.path === BROKEN_MAP_DATA_PATH) {
+      setMapDataId(String(repair.value));
+    }
+  };
+
+  return (
+    <Flex sx={{ flexDirection: 'column', gap: '3' }}>
+      <Button
+        type="button"
+        onClick={() => {
+          setMapDataId((current) => {
+            return current === 'choropleth' ? 'does-not-exist' : 'choropleth';
+          });
+        }}
+      >
+        {mapDataId === 'choropleth'
+          ? 'Break the map data reference'
+          : 'Fix the map data reference'}
+      </Button>
+
+      <GeovisWorkspace
+        config={workspaceConfig}
+        visualizationSpec={visualizationSpec}
+        onRepair={handleRepair}
+      />
+    </Flex>
+  );
+};
+
+/**
+ * A failure after a successful mount: the map keeps the last good spec
+ * visible while the warnings panel lists the `unknown-map-data-id` issue,
+ * with an `allowed-values` repair. Click "Break the map data reference" to
+ * trigger it, then use the repair button to fix it via `onRepair`.
+ */
+export const BlockingFailureAfterResolve: Story = {
+  render: () => {
+    return <BlockingFailureAfterResolveStory />;
+  },
+};
+
+/**
+ * A failure on first mount, before anything has ever resolved: the `map`
+ * slot shows a repair-affordance empty state instead of an uninitialized
+ * canvas, since there is no "last good spec" yet to fall back to.
+ */
+export const ColdStartFailure: Story = {
+  render: () => {
+    return (
+      <GeovisWorkspace
+        config={workspaceConfig}
+        visualizationSpec={buildBrokenSpec()}
+      />
+    );
+  },
+};
+
+/**
+ * A resolved result that still carries a non-blocking warning: the spec's
+ * `metadata` flags a cartography policy violation, surfaced by the
+ * `warnings` slot as a `'warning'`-severity issue with a `set-value` repair
+ * to the normalized alternative — the map renders normally throughout.
+ */
+export const ResolvedWithWarnings: Story = {
+  render: () => {
+    return (
+      <GeovisWorkspace
+        config={workspaceConfig}
+        visualizationSpec={buildPolicyViolationSpec()}
+      />
+    );
   },
 };

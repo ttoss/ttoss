@@ -9,6 +9,7 @@ import {
 } from '../context/GeovisWorkspaceContext';
 import { useGeovisWorkspace } from '../hooks/useGeovisWorkspace';
 import { messages } from '../messages';
+import { WarningsPanel } from './WarningsPanel';
 
 /** Renders one data-source entry, as an external link when `href` is set. */
 const SourceItem = ({ label, href }: GeovisWorkspaceSource) => {
@@ -110,12 +111,12 @@ const RIGHT_SIDEBAR_SLOTS: GeovisWorkspaceSlotName[] = [
   'metadata',
 ];
 
-/** Default panel per right-sidebar slot; warnings/inspector/metadata land in later PRD-003 phases. */
+/** Default panel per right-sidebar slot; inspector/metadata land in later PRD-003 phases. */
 const DEFAULT_PANELS: Record<GeovisWorkspaceSlotName, React.ComponentType> = {
   map: EmptyPanel,
   controls: EmptyPanel,
   legend: LegendPanel,
-  warnings: EmptyPanel,
+  warnings: WarningsPanel,
   inspector: EmptyPanel,
   metadata: EmptyPanel,
 };

@@ -1,10 +1,11 @@
-import type { VisualizationSpec } from '@ttoss/geovis';
+import type { GeoVisResult, VisualizationSpec } from '@ttoss/geovis';
 import type * as React from 'react';
 
 import {
   type GeovisWorkspaceConfig,
   type GeovisWorkspaceSlotName,
 } from './context/GeovisWorkspaceContext';
+import { getResultIssues, isColdStart } from './warnings';
 
 /** Whether a slot's `hidden` flag is set. Hidden always wins over content. */
 export const isSlotHidden = ({
@@ -46,10 +47,22 @@ const hasLegendDefaultContent = ({
   return legendCount > 0;
 };
 
+const hasWarningsDefaultContent = ({
+  result,
+  hasResolvedOnce,
+}: {
+  result: GeoVisResult;
+  hasResolvedOnce: boolean;
+}): boolean => {
+  // The map slot's cold-start empty state exclusively covers this case.
+  if (isColdStart({ result, hasResolvedOnce })) return false;
+  return getResultIssues(result).length > 0;
+};
+
 /**
  * Whether the slot's own default panel has content, ignoring hidden/override
- * — `map`, `warnings`, `inspector`, and `metadata` have no default panel yet
- * (added in PRD-003 Phases 3-5), so only `controls` and `legend` resolve here.
+ * — `map`, `inspector`, and `metadata` have no default panel yet (added in
+ * PRD-003 Phases 4-5), so they resolve to no content here.
  */
 const DEFAULT_PANEL_HAS_CONTENT: Partial<
   Record<
@@ -57,6 +70,8 @@ const DEFAULT_PANEL_HAS_CONTENT: Partial<
     (args: {
       config: GeovisWorkspaceConfig;
       spec: VisualizationSpec;
+      result: GeoVisResult;
+      hasResolvedOnce: boolean;
     }) => boolean
   >
 > = {
@@ -64,6 +79,7 @@ const DEFAULT_PANEL_HAS_CONTENT: Partial<
     return hasControlsDefaultContent(config);
   },
   legend: hasLegendDefaultContent,
+  warnings: hasWarningsDefaultContent,
 };
 
 /**
@@ -74,15 +90,21 @@ const DEFAULT_PANEL_HAS_CONTENT: Partial<
 export const slotHasContent = ({
   config,
   spec,
+  result,
+  hasResolvedOnce,
   slot,
 }: {
   config: GeovisWorkspaceConfig;
   spec: VisualizationSpec;
+  result: GeoVisResult;
+  hasResolvedOnce: boolean;
   slot: GeovisWorkspaceSlotName;
 }): boolean => {
   if (isSlotHidden({ config, slot })) return false;
   if (getSlotOverride({ config, slot })) return true;
 
   const hasDefaultContent = DEFAULT_PANEL_HAS_CONTENT[slot];
-  return hasDefaultContent ? hasDefaultContent({ config, spec }) : false;
+  return hasDefaultContent
+    ? hasDefaultContent({ config, spec, result, hasResolvedOnce })
+    : false;
 };
