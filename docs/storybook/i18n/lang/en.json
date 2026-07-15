@@ -92,6 +92,11 @@
     "defaultMessage": "This view feature is not supported.",
     "description": "Warnings panel: a view-level feature is not implemented by the engine adapter."
   },
+  "0tNse0": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Dismiss selection",
+    "description": "Accessible label for the button that clears the inspector panel selection."
+  },
   "26nzWk": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Map could not be shown",
@@ -111,6 +116,11 @@
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "A layer references a source that does not exist.",
     "description": "Warnings panel: layer.sourceId has no matching source."
+  },
+  "6Rj6DM": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "No value",
+    "description": "Shown in the inspector panel when the selected feature has no bound value."
   },
   "AVBgd7": {
     "module": "@ttoss/geovis-workspace",

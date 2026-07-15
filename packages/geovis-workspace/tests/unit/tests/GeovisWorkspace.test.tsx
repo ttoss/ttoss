@@ -9,9 +9,16 @@ import {
   useGeovisWorkspace,
 } from 'src';
 
+interface MockClick {
+  layerId: string;
+  featureId: string | number;
+  value: number | string | null;
+}
+
 interface MockSpec {
   legends?: { id: string }[];
   mockResult?: unknown;
+  mockClick?: MockClick | null;
 }
 
 jest.mock('@ttoss/geovis', () => {
@@ -19,6 +26,8 @@ jest.mock('@ttoss/geovis', () => {
   const MockGeoVisContext = ReactModule.createContext<{
     spec: MockSpec;
     result: unknown;
+    click: MockClick | null;
+    dismiss: () => void;
   } | null>(null);
 
   return {
@@ -31,8 +40,21 @@ jest.mock('@ttoss/geovis', () => {
         spec,
         warnings: [],
       };
+
+      const [click, setClick] = ReactModule.useState<MockClick | null>(() => {
+        return spec.mockClick ?? null;
+      });
+
+      ReactModule.useEffect(() => {
+        setClick(spec.mockClick ?? null);
+      }, [spec.mockClick]);
+
+      const dismiss = ReactModule.useCallback(() => {
+        setClick(null);
+      }, []);
+
       return (
-        <MockGeoVisContext.Provider value={{ spec, result }}>
+        <MockGeoVisContext.Provider value={{ spec, result, click, dismiss }}>
           <div data-testid="geovis-provider">{children}</div>
         </MockGeoVisContext.Provider>
       );
@@ -44,6 +66,20 @@ jest.mock('@ttoss/geovis', () => {
       const context = ReactModule.useContext(MockGeoVisContext);
       if (!context) throw new Error('useGeoVis used outside GeoVisProvider');
       return context;
+    },
+    useGeoVisClick: () => {
+      const context = ReactModule.useContext(MockGeoVisContext);
+      if (!context) {
+        throw new Error('useGeoVisClick used outside GeoVisProvider');
+      }
+      return context.click;
+    },
+    useDismissGeoVisClick: () => {
+      const context = ReactModule.useContext(MockGeoVisContext);
+      if (!context) {
+        throw new Error('useDismissGeoVisClick used outside GeoVisProvider');
+      }
+      return context.dismiss;
     },
     GeoVisLegend: ({ legendId }: { legendId: string }) => {
       return <div data-testid={`legend-${legendId}`}>{legendId}</div>;
@@ -906,4 +942,82 @@ test('once a resolve succeeds, a later failure keeps the canvas instead of re-sh
 
   expect(screen.getByTestId('geovis-canvas')).toBeInTheDocument();
   expect(screen.queryByText('Map could not be shown')).not.toBeInTheDocument();
+});
+
+test('right sidebar is absent when nothing is selected on the map', () => {
+  render(
+    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
+    { wrapper: Provider }
+  );
+
+  expect(
+    screen.queryByRole('button', { name: 'Open details' })
+  ).not.toBeInTheDocument();
+});
+
+test('inspector panel shows the selected feature and clearing the selection removes it', async () => {
+  const { rerender } = render(
+    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
+    { wrapper: Provider }
+  );
+
+  expect(
+    screen.queryByRole('button', { name: 'Open details' })
+  ).not.toBeInTheDocument();
+
+  rerender(
+    <GeovisWorkspace
+      config={config}
+      visualizationSpec={{
+        ...visualizationSpec,
+        mockClick: { layerId: 'districts-fill', featureId: 'sp', value: 42 },
+      }}
+    />
+  );
+
+  await openRightSidebar();
+
+  expect(screen.getByText('districts-fill')).toBeInTheDocument();
+  expect(screen.getByText('42')).toBeInTheDocument();
+  expect(screen.getByText('sp')).toBeInTheDocument();
+});
+
+test('inspector panel shows a fallback when the selected feature has no value', async () => {
+  render(
+    <GeovisWorkspace
+      config={config}
+      visualizationSpec={{
+        ...visualizationSpec,
+        mockClick: { layerId: 'districts-fill', featureId: 'sp', value: null },
+      }}
+    />,
+    { wrapper: Provider }
+  );
+
+  await openRightSidebar();
+
+  expect(screen.getByText('No value')).toBeInTheDocument();
+});
+
+test('dismissing the inspector selection clears the panel and closes the sidebar content', async () => {
+  render(
+    <GeovisWorkspace
+      config={config}
+      visualizationSpec={{
+        ...visualizationSpec,
+        mockClick: { layerId: 'districts-fill', featureId: 'sp', value: 42 },
+      }}
+    />,
+    { wrapper: Provider }
+  );
+
+  await openRightSidebar();
+
+  expect(screen.getByText('districts-fill')).toBeInTheDocument();
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'Dismiss selection' }));
+  });
+
+  expect(screen.queryByText('districts-fill')).not.toBeInTheDocument();
 });

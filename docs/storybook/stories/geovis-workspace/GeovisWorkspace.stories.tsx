@@ -484,3 +484,16 @@ export const ResolvedWithWarnings: Story = {
     );
   },
 };
+
+/**
+ * Click any region on the map to select it — the `inspector` slot's default
+ * panel (right sidebar) shows the layer, its bound value, and the feature
+ * id. Dismiss the selection via the panel's own close button, pressing
+ * Escape, or clicking empty space on the map: all three clear the same
+ * `useGeoVisClick()` selection (and its highlight on the map) at once.
+ */
+export const InspectFeature: Story = {
+  render: () => {
+    return <WorkspaceStory config={workspaceConfig} />;
+  },
+};

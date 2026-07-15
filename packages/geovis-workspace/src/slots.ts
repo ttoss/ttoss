@@ -1,4 +1,8 @@
-import type { GeoVisResult, VisualizationSpec } from '@ttoss/geovis';
+import type {
+  GeoVisResult,
+  MapClickInfo,
+  VisualizationSpec,
+} from '@ttoss/geovis';
 import type * as React from 'react';
 
 import {
@@ -59,10 +63,18 @@ const hasWarningsDefaultContent = ({
   return getResultIssues(result).length > 0;
 };
 
+const hasInspectorDefaultContent = ({
+  click,
+}: {
+  click: MapClickInfo | null;
+}): boolean => {
+  return click !== null;
+};
+
 /**
  * Whether the slot's own default panel has content, ignoring hidden/override
- * — `map`, `inspector`, and `metadata` have no default panel yet (added in
- * PRD-003 Phases 4-5), so they resolve to no content here.
+ * — `map` and `metadata` have no default panel yet (added in PRD-003 Phase
+ * 5), so they resolve to no content here.
  */
 const DEFAULT_PANEL_HAS_CONTENT: Partial<
   Record<
@@ -72,6 +84,7 @@ const DEFAULT_PANEL_HAS_CONTENT: Partial<
       spec: VisualizationSpec;
       result: GeoVisResult;
       hasResolvedOnce: boolean;
+      click: MapClickInfo | null;
     }) => boolean
   >
 > = {
@@ -80,6 +93,7 @@ const DEFAULT_PANEL_HAS_CONTENT: Partial<
   },
   legend: hasLegendDefaultContent,
   warnings: hasWarningsDefaultContent,
+  inspector: hasInspectorDefaultContent,
 };
 
 /**
@@ -92,12 +106,14 @@ export const slotHasContent = ({
   spec,
   result,
   hasResolvedOnce,
+  click,
   slot,
 }: {
   config: GeovisWorkspaceConfig;
   spec: VisualizationSpec;
   result: GeoVisResult;
   hasResolvedOnce: boolean;
+  click: MapClickInfo | null;
   slot: GeovisWorkspaceSlotName;
 }): boolean => {
   if (isSlotHidden({ config, slot })) return false;
@@ -105,6 +121,6 @@ export const slotHasContent = ({
 
   const hasDefaultContent = DEFAULT_PANEL_HAS_CONTENT[slot];
   return hasDefaultContent
-    ? hasDefaultContent({ config, spec, result, hasResolvedOnce })
+    ? hasDefaultContent({ config, spec, result, hasResolvedOnce, click })
     : false;
 };

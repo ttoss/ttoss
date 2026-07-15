@@ -7,6 +7,10 @@
     "defaultMessage": "This view feature is not supported.",
     "description": "Warnings panel: a view-level feature is not implemented by the engine adapter."
   },
+  "0tNse0": {
+    "defaultMessage": "Dismiss selection",
+    "description": "Accessible label for the button that clears the inspector panel selection."
+  },
   "26nzWk": {
     "defaultMessage": "Map could not be shown",
     "description": "Title shown in the map area on first mount when the spec fails before anything has ever resolved."
@@ -22,6 +26,10 @@
   "4Kaze0": {
     "defaultMessage": "A layer references a source that does not exist.",
     "description": "Warnings panel: layer.sourceId has no matching source."
+  },
+  "6Rj6DM": {
+    "defaultMessage": "No value",
+    "description": "Shown in the inspector panel when the selected feature has no bound value."
   },
   "AVBgd7": {
     "defaultMessage": "Two sources conflict with each other.",

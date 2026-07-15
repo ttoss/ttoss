@@ -33,4 +33,14 @@ export const messages = defineMessages({
     description:
       'Title shown in the map area on first mount when the spec fails before anything has ever resolved.',
   },
+  dismissInspector: {
+    defaultMessage: 'Dismiss selection',
+    description:
+      'Accessible label for the button that clears the inspector panel selection.',
+  },
+  inspectorNoValue: {
+    defaultMessage: 'No value',
+    description:
+      'Shown in the inspector panel when the selected feature has no bound value.',
+  },
 });

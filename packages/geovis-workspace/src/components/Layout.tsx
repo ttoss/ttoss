@@ -1,4 +1,4 @@
-import { GeoVisCanvas, useGeoVis } from '@ttoss/geovis';
+import { GeoVisCanvas, useGeoVis, useGeoVisClick } from '@ttoss/geovis';
 import { useI18n } from '@ttoss/react-i18n';
 import { Box, Flex, IconButton, Text } from '@ttoss/ui';
 import type * as React from 'react';
@@ -229,17 +229,26 @@ export const Layout = () => {
   const { config, isLeftSidebarOpen, isRightSidebarOpen, hasResolvedOnce } =
     useGeovisWorkspace();
   const { spec, result } = useGeoVis();
+  const click = useGeoVisClick();
 
   const hasLeftSidebar = slotHasContent({
     config,
     spec,
     result,
     hasResolvedOnce,
+    click,
     slot: 'controls',
   });
 
   const hasRightSidebar = RIGHT_SIDEBAR_SLOTS.some((slot) => {
-    return slotHasContent({ config, spec, result, hasResolvedOnce, slot });
+    return slotHasContent({
+      config,
+      spec,
+      result,
+      hasResolvedOnce,
+      click,
+      slot,
+    });
   });
 
   return (
