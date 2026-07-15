@@ -306,6 +306,11 @@ const upsertLayers = (map: maplibregl.Map, spec: VisualizationSpec): void => {
         'visibility',
         layer.visible === false ? 'none' : 'visible'
       );
+      map.setFilter(
+        layer.id,
+        (desiredLayer as { filter?: maplibregl.FilterSpecification }).filter ??
+          null
+      );
       reapplyLayerPaint(map, spec, layer);
     }
 

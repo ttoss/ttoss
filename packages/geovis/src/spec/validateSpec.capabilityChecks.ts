@@ -52,6 +52,45 @@ export const validateLayerCapabilities = (
   return issues;
 };
 
+/**
+ * Validates that every layer declaring `filter` targets a source type the
+ * active adapter has fixture-tested filter compilation for
+ * (`CapabilitySet.dataFeatures.filter`, PRD-002). First producer of the
+ * `unsupported-data-feature` code — reserved since PRD-001, no other check
+ * emits it yet.
+ */
+export const validateFilterCapabilities = (
+  spec: VisualizationSpec,
+  capabilities: CapabilitySet
+): GeoVisIssue[] => {
+  const issues: GeoVisIssue[] = [];
+  const sourceTypeById = new Map(
+    spec.sources.map((s) => {
+      return [s.id, s.type] as const;
+    })
+  );
+  for (const layer of spec.layers) {
+    if (!layer.filter) continue;
+    const sourceType = sourceTypeById.get(layer.sourceId);
+    if (sourceType && capabilities.dataFeatures.filter.includes(sourceType)) {
+      continue;
+    }
+    issues.push({
+      code: 'unsupported-data-feature',
+      subject: { path: `layers[${layer.id}].filter`, id: layer.id },
+      message: `layer '${layer.id}' declares a filter, but its source type does not support filtering on the active adapter`,
+      repair: [
+        {
+          kind: 'allowed-values',
+          path: `sources[${layer.sourceId}].type`,
+          values: capabilities.dataFeatures.filter,
+        },
+      ],
+    });
+  }
+  return issues;
+};
+
 /** Validates that requested camera features (pitch, bearing) are supported by the active adapter. */
 export const validateViewCapabilities = (
   spec: VisualizationSpec,

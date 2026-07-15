@@ -70,6 +70,12 @@ export interface CapabilitySet {
      * is what `mapData`, `sizeBy`, and value-driven `colorBy` all depend on.
      */
     featureState: DataSource['type'][];
+    /**
+     * Source types where a declarative `VisualizationLayer.filter` compiles
+     * to a working native engine filter (`dispatch({ type: 'set-filter' })`,
+     * PRD-002).
+     */
+    filter: DataSource['type'][];
   };
   /** Camera/view features. */
   viewFeatures: {

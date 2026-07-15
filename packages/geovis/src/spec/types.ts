@@ -340,6 +340,37 @@ export interface VisualizationLayer {
    * standard feature-state resolution.
    */
   propertyName?: string;
+  /**
+   * Declarative predicate that hides features not matching it, compiled to
+   * the engine's native filter expression (`dispatch({ type: 'set-filter' })`,
+   * PRD-002). Reads `feature.properties[property]` — the same direct-access
+   * path `propertyName` uses above, not the `mapData`-joined feature-state
+   * value. Gated by `CapabilitySet.dataFeatures.filter` per source type.
+   */
+  filter?: LayerFilter;
+}
+
+/** Comparison used by a `LayerFilter` — a closed set mapped to native engine filter expressions. */
+export type LayerFilterOperator =
+  | 'eq'
+  | 'neq'
+  | 'gt'
+  | 'gte'
+  | 'lt'
+  | 'lte'
+  | 'in'
+  | 'not-in';
+
+/**
+ * Declarative, engine-agnostic filter predicate on one `VisualizationLayer`.
+ * `in`/`not-in` expect `value` to be an array; the other operators expect a
+ * single scalar.
+ */
+export interface LayerFilter {
+  /** GeoJSON feature property to filter on. */
+  property: string;
+  operator: LayerFilterOperator;
+  value: string | number | Array<string | number>;
 }
 
 /**

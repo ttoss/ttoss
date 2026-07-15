@@ -4,6 +4,7 @@ import type {
   GeoVisAction,
   GeoVisSelection,
   SelectFeatureAction,
+  SetFilterAction,
   SetMapDataAction,
   ToggleLayerAction,
 } from './action';
@@ -181,6 +182,37 @@ const compileSetMapData = (
 };
 
 /**
+ * Compiles `set-filter` to the layer's `filter`-replacing `SpecPatch`
+ * (another top-level-field replace on `layer`, alongside `visible` and
+ * `mapDataId`). `filter: null` compiles to `value: null` (never `undefined`,
+ * which `applyPatchToRuntime` treats as a no-op) so clearing a filter is a
+ * real, applied change. Capability gating (`unsupported-data-feature`) is
+ * left to the same `validateSpec` pass every patch already goes through.
+ */
+const compileSetFilter = (
+  spec: VisualizationSpec,
+  action: SetFilterAction
+): ActionOutcome => {
+  const layer = spec.layers.find((l) => {
+    return l.id === action.layerId;
+  });
+  if (!layer) {
+    return {
+      issue: buildUnknownLayerIdIssue(spec, action.layerId, 'action.layerId'),
+    };
+  }
+  return {
+    patch: {
+      target: 'layer',
+      op: 'replace',
+      path: `layer.${action.layerId}.filter`,
+      value: action.filter,
+      rationale: action.rationale,
+    },
+  };
+};
+
+/**
  * Compiles a `GeoVisAction` against the current spec to either an existing
  * `SpecPatch` mechanism, a runtime-level selection update, or a rejection
  * issue — never more than one, and never mutating anything itself (the
@@ -197,5 +229,7 @@ export const compileAction = (
       return compileSelectFeature(spec, action);
     case 'set-map-data':
       return compileSetMapData(spec, action);
+    case 'set-filter':
+      return compileSetFilter(spec, action);
   }
 };

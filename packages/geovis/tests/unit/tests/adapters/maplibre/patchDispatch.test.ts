@@ -28,6 +28,7 @@ const makeMap = () => {
     removeSource: jest.fn(),
     setPaintProperty: jest.fn(),
     setLayoutProperty: jest.fn(),
+    setFilter: jest.fn(),
     isStyleLoaded: jest.fn(() => {
       return true;
     }),
@@ -373,6 +374,105 @@ describe('applyLayerPatch — replace mapDataId (PRD-002 set-map-data)', () => {
 
     applyLayerPatch(map, viewState, patch);
 
+    expect(viewState.spec).toBe(before);
+  });
+});
+
+describe('applyLayerPatch — replace filter (PRD-002 set-filter)', () => {
+  test('calls map.setFilter with the compiled expression and updates spec.layers[].filter', () => {
+    const map = makeMap();
+    jest.mocked(map.getLayer).mockReturnValue({
+      id: 'lyr-1',
+      type: 'fill',
+      source: 'src-1',
+    } as maplibregl.FillLayerSpecification);
+    const viewState = makeViewState();
+    const patch: SpecPatch & { target: 'layer' } = {
+      target: 'layer',
+      op: 'replace',
+      path: 'layer.lyr-1.filter',
+      value: { property: 'status', operator: 'eq', value: 'active' },
+    };
+
+    applyLayerPatch(map, viewState, patch);
+
+    expect(map.setFilter).toHaveBeenCalledWith('lyr-1', [
+      '==',
+      ['get', 'status'],
+      'active',
+    ]);
+    expect(viewState.spec.layers[0]).toMatchObject({
+      filter: { property: 'status', operator: 'eq', value: 'active' },
+    });
+  });
+
+  // value: null clears the filter -- this is the mechanism by which
+  // dispatch({type:'set-filter', filter:null}) actually clears, distinct
+  // from value: undefined which applyPatchToRuntime treats as a no-op.
+  test('value: null calls map.setFilter with null and removes spec.layers[].filter', () => {
+    const map = makeMap();
+    jest.mocked(map.getLayer).mockReturnValue({
+      id: 'lyr-1',
+      type: 'fill',
+      source: 'src-1',
+    } as maplibregl.FillLayerSpecification);
+    const specWithFilter: VisualizationSpec = {
+      ...makeSpec(),
+      layers: [
+        {
+          id: 'lyr-1',
+          sourceId: 'src-1',
+          geometry: 'polygon',
+          filter: { property: 'status', operator: 'eq', value: 'active' },
+        },
+      ],
+    };
+    const viewState = makeViewState(specWithFilter);
+    const patch: SpecPatch & { target: 'layer' } = {
+      target: 'layer',
+      op: 'replace',
+      path: 'layer.lyr-1.filter',
+      value: null,
+    };
+
+    applyLayerPatch(map, viewState, patch);
+
+    expect(map.setFilter).toHaveBeenCalledWith('lyr-1', null);
+    expect(viewState.spec.layers[0].filter).toBeUndefined();
+  });
+
+  test('does not call map.setFilter when the layer is not on the map, but spec still updates', () => {
+    const map = makeMap();
+    const viewState = makeViewState();
+    const patch: SpecPatch & { target: 'layer' } = {
+      target: 'layer',
+      op: 'replace',
+      path: 'layer.lyr-1.filter',
+      value: { property: 'status', operator: 'eq', value: 'active' },
+    };
+
+    applyLayerPatch(map, viewState, patch);
+
+    expect(map.setFilter).not.toHaveBeenCalled();
+    expect(viewState.spec.layers[0]).toMatchObject({
+      filter: { property: 'status', operator: 'eq', value: 'active' },
+    });
+  });
+
+  test('is a no-op when layerId does not match any layer in spec', () => {
+    const map = makeMap();
+    const viewState = makeViewState();
+    const before = viewState.spec;
+    const patch: SpecPatch & { target: 'layer' } = {
+      target: 'layer',
+      op: 'replace',
+      path: 'layer.ghost.filter',
+      value: { property: 'status', operator: 'eq', value: 'active' },
+    };
+
+    applyLayerPatch(map, viewState, patch);
+
+    expect(map.setFilter).not.toHaveBeenCalled();
     expect(viewState.spec).toBe(before);
   });
 });

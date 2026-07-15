@@ -6,6 +6,7 @@ import { resolveOverallStatus } from './result';
 import schema from './schema.json';
 import type { VisualizationSpec } from './types';
 import {
+  validateFilterCapabilities,
   validateLayerCapabilities,
   validateSourceCapabilities,
   validateViewCapabilities,
@@ -61,6 +62,7 @@ export const validateSpec = (
     ...validateMapDataDimensions(spec),
     ...(capabilities ? validateSourceCapabilities(spec, capabilities) : []),
     ...(capabilities ? validateLayerCapabilities(spec, capabilities) : []),
+    ...(capabilities ? validateFilterCapabilities(spec, capabilities) : []),
     ...(capabilities ? validateViewCapabilities(spec, capabilities) : []),
   ];
 

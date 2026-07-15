@@ -6,6 +6,7 @@ import type {
   VisualizationLayer,
   VisualizationSpec,
 } from '../../spec/types';
+import { layerFilterToExpression } from './layerFilter';
 import { stripUndefinedPaint, toMaplibreLayer } from './layerTranslation';
 import {
   cancelPendingStyleListenersForLayer,
@@ -152,6 +153,49 @@ const applyLayerMapDataIdReplace = (
   reapplyLayerPaint(map, nextSpec, nextLayer);
 };
 
+/**
+ * Applies a `layer.<id>.filter` replace: writes the layer's native
+ * `filter` via `map.setFilter` — `value: null` clears it. Added for
+ * `dispatch({ type: 'set-filter' })` (PRD-002); no feature-state or paint
+ * change, filtering only affects which features the layer renders.
+ */
+const applyLayerFilterReplace = (
+  map: maplibregl.Map,
+  viewState: LayerHostState,
+  layerId: string,
+  value: unknown
+): void => {
+  const layerIndex = viewState.spec.layers.findIndex((l) => {
+    return l.id === layerId;
+  });
+  if (layerIndex === -1) return;
+  const nextFilter = value as VisualizationLayer['filter'] | null;
+  if (map.getLayer(layerId)) {
+    map.setFilter(
+      layerId,
+      nextFilter
+        ? (layerFilterToExpression(
+            nextFilter
+          ) as maplibregl.FilterSpecification)
+        : null
+    );
+  }
+  const currentLayer = viewState.spec.layers[layerIndex];
+  let nextLayer: VisualizationLayer;
+  if (nextFilter) {
+    nextLayer = { ...currentLayer, filter: nextFilter };
+  } else {
+    const { filter: _omit, ...rest } = currentLayer;
+    nextLayer = rest;
+  }
+  viewState.spec = {
+    ...viewState.spec,
+    layers: viewState.spec.layers.map((l, i) => {
+      return i === layerIndex ? nextLayer : l;
+    }),
+  };
+};
+
 /** Top-level (non-`paint`) layer fields a `replace` patch can target, by path segment. */
 const LAYER_TOP_LEVEL_FIELD_APPLIERS: Record<
   string,
@@ -164,6 +208,7 @@ const LAYER_TOP_LEVEL_FIELD_APPLIERS: Record<
 > = {
   visible: applyLayerVisibleReplace,
   mapDataId: applyLayerMapDataIdReplace,
+  filter: applyLayerFilterReplace,
 };
 
 const applyLayerPaintReplace = (

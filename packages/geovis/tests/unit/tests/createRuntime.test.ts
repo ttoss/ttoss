@@ -16,7 +16,7 @@ const PERMISSIVE_CAPABILITIES: CapabilitySet = {
     'video',
   ],
   layerGeometries: ['polygon', 'line', 'point', 'symbol', 'heatmap', 'raster'],
-  dataFeatures: { featureState: ['geojson'] },
+  dataFeatures: { featureState: ['geojson'], filter: ['geojson'] },
   viewFeatures: { pitch: true, bearing: true },
 };
 
@@ -686,6 +686,87 @@ describe('createRuntime — dispatch set-map-data (PRD-002 Phase 3)', () => {
   });
 });
 
+describe('createRuntime — dispatch set-filter (PRD-002 Phase 4)', () => {
+  test('sets the layer filter and calls adapter.applyPatch', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+
+    const result = runtime.dispatch({
+      type: 'set-filter',
+      layerId: 'lyr-1',
+      filter: { property: 'status', operator: 'eq', value: 'active' },
+    });
+
+    expect(result.status).toBe('resolved');
+    expect(runtime.spec.layers[0]).toMatchObject({
+      filter: { property: 'status', operator: 'eq', value: 'active' },
+    });
+    expect(adapter.applyPatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        target: 'layer',
+        op: 'replace',
+        path: 'layer.lyr-1.filter',
+        value: { property: 'status', operator: 'eq', value: 'active' },
+      })
+    );
+  });
+
+  test('filter: null clears a previously-set filter', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+    runtime.dispatch({
+      type: 'set-filter',
+      layerId: 'lyr-1',
+      filter: { property: 'status', operator: 'eq', value: 'active' },
+    });
+
+    runtime.dispatch({ type: 'set-filter', layerId: 'lyr-1', filter: null });
+
+    expect(runtime.spec.layers[0].filter).toBeUndefined();
+  });
+
+  test('an unknown layerId is rejected before touching the adapter', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+    adapter.applyPatch.mockClear();
+
+    const result = runtime.dispatch({
+      type: 'set-filter',
+      layerId: 'ghost',
+      filter: { property: 'status', operator: 'eq', value: 'active' },
+    });
+
+    expect(result.status).toBe('mismatch');
+    if (result.status !== 'resolved') {
+      expect(result.issues[0].code).toBe('unknown-layer-id');
+    }
+    expect(adapter.applyPatch).not.toHaveBeenCalled();
+  });
+
+  test('a filter on a source type the adapter does not declare filter support for is rejected as unsupported-data-feature', () => {
+    const adapter = makeAdapter();
+    adapter.getCapabilities.mockReturnValue({
+      ...PERMISSIVE_CAPABILITIES,
+      dataFeatures: { featureState: ['geojson'], filter: [] },
+    });
+    const runtime = createRuntime(adapter, makeSpec());
+    const before = runtime.spec;
+
+    const result = runtime.dispatch({
+      type: 'set-filter',
+      layerId: 'lyr-1',
+      filter: { property: 'status', operator: 'eq', value: 'active' },
+    });
+
+    expect(result.status).toBe('unsupported');
+    if (result.status !== 'resolved') {
+      expect(result.issues[0].code).toBe('unsupported-data-feature');
+    }
+    expect(runtime.spec).toBe(before);
+    expect(adapter.applyPatch).not.toHaveBeenCalled();
+  });
+});
+
 describe('createRuntime — getContextPacket() (PRD-002, ADR-0004)', () => {
   test('reports sources, layers, allowed actions, and the last result — metadata only', () => {
     const adapter = makeAdapter();
@@ -698,7 +779,11 @@ describe('createRuntime — getContextPacket() (PRD-002, ADR-0004)', () => {
     expect(packet.layers).toEqual([
       { id: 'lyr-1', geometry: 'polygon', visible: true },
     ]);
-    expect(packet.allowedActions).toEqual(['toggle-layer', 'select-feature']);
+    expect(packet.allowedActions).toEqual([
+      'toggle-layer',
+      'select-feature',
+      'set-filter',
+    ]);
     expect(packet.lastResult).toBe(runtime.result);
     expect(packet.warnings).toEqual([]);
   });
@@ -777,6 +862,36 @@ describe('createRuntime — getContextPacket() (PRD-002, ADR-0004)', () => {
 
     expect(runtime.getContextPacket().allowedActions).not.toContain(
       'set-map-data'
+    );
+  });
+
+  test('set-filter is allowed when the adapter declares filter support for a present source type, and reflects a dispatched filter', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+
+    expect(runtime.getContextPacket().allowedActions).toContain('set-filter');
+
+    runtime.dispatch({
+      type: 'set-filter',
+      layerId: 'lyr-1',
+      filter: { property: 'status', operator: 'eq', value: 'active' },
+    });
+
+    expect(runtime.getContextPacket().layers[0]).toMatchObject({
+      filter: { property: 'status', operator: 'eq', value: 'active' },
+    });
+  });
+
+  test('set-filter is not allowed when the adapter declares no filter-capable source types', () => {
+    const adapter = makeAdapter();
+    adapter.getCapabilities.mockReturnValue({
+      ...PERMISSIVE_CAPABILITIES,
+      dataFeatures: { featureState: ['geojson'], filter: [] },
+    });
+    const runtime = createRuntime(adapter, makeSpec());
+
+    expect(runtime.getContextPacket().allowedActions).not.toContain(
+      'set-filter'
     );
   });
 });

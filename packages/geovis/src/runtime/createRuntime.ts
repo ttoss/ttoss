@@ -94,6 +94,32 @@ const applyLayerMapDataIdReplace = (
   };
 };
 
+/**
+ * Replaces the top-level `filter` field of one layer, by id — added for
+ * `dispatch()`'s `set-filter` action (PRD-002). `value: null` (never
+ * `undefined` — see `applyPatchToRuntime`'s no-op guard) omits the field
+ * entirely rather than storing a literal `null`, keeping `filter` strictly
+ * optional at the type level. Capability gating (`unsupported-data-feature`)
+ * is checked afterwards by the same `validateSpec` pass every patch goes through.
+ */
+const applyLayerFilterReplace = (
+  spec: VisualizationSpec,
+  layerId: string,
+  value: unknown
+): VisualizationSpec => {
+  return {
+    ...spec,
+    layers: spec.layers.map((layer) => {
+      if (layer.id !== layerId) return layer;
+      if (value == null) {
+        const { filter: _omit, ...rest } = layer;
+        return rest;
+      }
+      return { ...layer, filter: value as VisualizationLayer['filter'] };
+    }),
+  };
+};
+
 /** Replaces one `paint` property of one layer, by id. */
 const applyLayerPaintReplace = (
   spec: VisualizationSpec,
@@ -127,13 +153,14 @@ const LAYER_TOP_LEVEL_FIELD_APPLIERS: Record<
 > = {
   visible: applyLayerVisibleReplace,
   mapDataId: applyLayerMapDataIdReplace,
+  filter: applyLayerFilterReplace,
 };
 
 /**
  * Resolves a `replace` patch's path to the right layer-field mutation. No-op
  * for unrecognised shapes. Supports two path depths: a top-level field
- * (`layer.<id>.visible` / `layer.<id>.mapDataId`, 3 parts — added for
- * `dispatch()`'s `toggle-layer`/`set-map-data` actions, PRD-002) and a
+ * (`layer.<id>.visible` / `.mapDataId` / `.filter`, 3 parts — one per
+ * `dispatch()` action, PRD-002 — see `LAYER_TOP_LEVEL_FIELD_APPLIERS`) and a
  * nested `paint` property (`layer.<id>.paint.<key>`, 4 parts). Split out of
  * `applyLayerPatchToSpec` to keep its complexity low.
  */
@@ -415,7 +442,12 @@ export const createRuntime = (
       return state.actionLog;
     },
     getContextPacket: () => {
-      return buildContextPacket(state.spec, state.result, state.selection);
+      return buildContextPacket(
+        state.spec,
+        state.result,
+        state.selection,
+        adapter.getCapabilities()
+      );
     },
     getSelection: () => {
       return state.selection;
