@@ -382,6 +382,10 @@
             "type": "object",
             "additionalProperties": true
           },
+          "click": {
+            "type": "object",
+            "additionalProperties": true
+          },
           "sizeBy": {
             "allOf": [
               {

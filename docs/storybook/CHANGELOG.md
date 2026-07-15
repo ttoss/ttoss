@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.41.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.40.0...@docs/storybook@3.41.0) (2026-07-15)
+
+### Features
+
+- **geovis:** spec-driven layer click via layer.click.onSelect ([#1131](https://github.com/ttoss/ttoss/issues/1131)) ([b8b2ae0](https://github.com/ttoss/ttoss/commit/b8b2ae001156cfb3cc9a3fb1d2fd98cf70ba10f7))
+
+# [3.40.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.39.0...@docs/storybook@3.40.0) (2026-07-14)
+
+### Features
+
+- **react-dashboard:** add BigNumberSparkline card for lineChart type ([#1124](https://github.com/ttoss/ttoss/issues/1124)) ([3917371](https://github.com/ttoss/ttoss/commit/3917371afeb9e8bde26cabe13d7284119948786d))
+
 # [3.39.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.38.0...@docs/storybook@3.39.0) (2026-07-11)
 
 ### Features

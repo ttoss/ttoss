@@ -5,6 +5,7 @@ import {
   DataType,
   initialize,
   Model,
+  syncWithAdvisoryLock,
   Table,
 } from '@ttoss/postgresdb';
 
@@ -94,4 +95,4 @@ export const models = {
   Product,
 };
 
-export { initialize };
+export { initialize, syncWithAdvisoryLock };

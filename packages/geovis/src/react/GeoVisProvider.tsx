@@ -20,7 +20,12 @@ import {
   GeoVisContext,
   GeoVisHoverContext,
 } from './contexts';
-import { useClickAnchor, useMapClick, useMapHover } from './hooks';
+import {
+  useClickAnchor,
+  useClickSelect,
+  useMapClick,
+  useMapHover,
+} from './hooks';
 
 // Re-export the contexts and hooks so existing public-API consumers
 // (`@ttoss/geovis` re-exports `./react/GeoVisProvider`) keep working after
@@ -107,6 +112,9 @@ const ClickProvider = ({
 }) => {
   const clickedMapFeature = useMapClick({ runtime, spec });
   useClickAnchor({ runtime, spec, click: clickedMapFeature });
+  // Spec-driven click reaction: invoke the clicked layer's `click.onSelect`
+  // automatically, so consumers do not read `useGeoVisClick()` in the tree.
+  useClickSelect({ spec, click: clickedMapFeature });
   return (
     <GeoVisClickContext.Provider value={clickedMapFeature}>
       {children}
