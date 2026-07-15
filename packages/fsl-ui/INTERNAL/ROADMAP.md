@@ -37,9 +37,8 @@ audit, valid as of commit `81c257d`.
 > pass. Package state after the pass: 662 tests green, 100% coverage on
 > every dimension, axe + keyboard suites in place, `@ttoss/forms` bridge
 > proven, packaging carries the AI surface (`llms.txt` + CONTRACT in the
-> tarball). Per-item notes below (⤷). Local tsdown builds remain blocked by
-> the pre-existing container env issue — CI is authoritative (relevant to
-> D2 only, not to any A-item AC).
+> tarball). Per-item notes below (⤷). The build and `tsc` type-check run
+> locally under Node 24 (the repo standard, `engines.node >= 24`).
 
 ### A-P0: bugs and broken promises
 
@@ -309,7 +308,7 @@ decisions; deciding after would have meant 25× rework. **Foundations complete
 > `index.ts`; seed of the future standalone `@ttoss/fsl-icon`. The four v0
 > unicode consumers (Accordion ▸, Checkbox ✓/−, Select ▼, Toast ✕) are
 > retrofitted to `<Icon intent=…>`. 682 tests green, axe clean, `tsc`/build
-> green (Node 24 unblocks local builds). Documented in CONTRACT §9 + llms.txt.
+> green locally (Node 24). Documented in CONTRACT §9 + llms.txt.
 >
 > ⤷ **Friction log (FSL validation).** The mapping was clean — Icon fits
 > Entity=Structure with the existing `icon` structural role (no
@@ -406,8 +405,7 @@ confirm, themed composite; measure token-selection correctness + semantic
 error rate + human corrections.
 
 **D2. `private: true` flip gate** `S` — flip only when: CI green including a
-real tsdown build (local builds are blocked by a pre-existing container env
-issue — CI is authoritative), A-P0 complete, A13 axe suite green, D1 executed.
+real tsdown build, A-P0 complete, A13 axe suite green, D1 executed.
 Record the gate in this file when flipped.
 
 ---
