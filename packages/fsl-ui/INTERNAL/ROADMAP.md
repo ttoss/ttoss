@@ -9,6 +9,22 @@
 > Out of scope by explicit decision: Storybook wiring, adoption/migration work,
 > `private: true` flip (gated — see D2).
 
+## Scope guard (binding for every executor of this plan)
+
+Writable surfaces — **only**:
+
+- `packages/fsl-ui/**`
+- `packages/fsl-theme/**` (only when an item genuinely requires it, e.g. new
+  tokens)
+- `docs/website/docs/design/**` pages that document fsl-ui / fsl-theme
+  (A15 targets the `ui-components` **documentation page**, not any package)
+
+Read-only — never modified by this plan: every other package, including
+`@ttoss/ui`, `@ttoss/forms`, `@ttoss/components` (they may be _consumed_ as
+devDependencies for integration tests, e.g. A11, but their source is
+untouchable). No Storybook files, no root CI/workflow files — anything this
+plan needs to run in CI ships as a script inside `packages/fsl-ui`.
+
 Legend: effort `S` (≤ half day) · `M` (1–2 days) · `L` (3+ days). Every item
 lists acceptance criteria (AC). File:line references are evidence from the
 audit, valid as of commit `81c257d`.
@@ -135,9 +151,10 @@ Single entry bundles all components into one chunk; `sideEffects: false`
 should let bundlers shake it, but nobody proved it — if it fails, importing
 `Button` drags Wizard + Dialog + all of RAC.
 
-- Bundle probe in CI (esbuild/rollup building `import { Button } from
-'@ttoss/fsl-ui'` against the built dist; assert output size below a budget
-  and absence of `Wizard` code).
+- Bundle probe as a script inside `packages/fsl-ui` (wired to its own
+  `test`/`build:verify` script — no root CI/workflow changes): esbuild/rollup
+  building `import { Button } from '@ttoss/fsl-ui'` against the built dist;
+  assert output size below a budget and absence of `Wizard` code.
 - If shaking fails: per-component entries in tsdown + exports map.
 - Document the measured cost of RAC in the README (market transparency).
 - AC: probe in CI with a byte budget; README states the numbers.
@@ -148,7 +165,9 @@ a bridge every app must pick a side and adoption dies there.
 
 - Spike: controlled-component pattern connecting RHF `Controller` to fsl-ui
   controls (`isInvalid`, `validate`, `value/onChange`); decide between a
-  documented recipe vs. an adapter entry (`@ttoss/fsl-ui/forms`).
+  documented recipe vs. an adapter entry (`@ttoss/fsl-ui/forms`). Either way
+  the code lives **inside fsl-ui**; `@ttoss/forms` is consumed as a
+  devDependency for the integration test and is never modified.
 - AC: a real form (3 fields + Zod schema + submit) built with @ttoss/forms +
   fsl-ui controls, as a test; decision recorded as ADR.
 
