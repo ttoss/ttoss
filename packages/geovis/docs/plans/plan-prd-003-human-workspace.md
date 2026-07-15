@@ -157,3 +157,13 @@ No new runtime behavior. Update `README.md`'s API tables for the full `GeovisWor
 ## Sequencing notes
 
 Phase 1 is the entry gate: nothing else can subscribe to the runtime until the provider is hoisted. Phase 2 depends only on Phase 1 (it needs the hoisted tree to generalize two panels into six slots) and is itself the gate for everything slot-shaped. Phases 3 and 4 are independent of each other once Phase 2 lands — one adds the `warnings` slot's panel, the other the `inspector` slot's — and can proceed in parallel or either order. Phase 5 depends on both, since the metadata/layer-list panels are additional slot content on the same `Layout` and its Storybook sweep is easiest done once every other default panel already exists for comparison. Phase 6 is documentation and coverage bookkeeping only, run last per the package workflow (tests → dependents → build → coverage threshold → README). Each phase is one PR.
+
+## Verification against current codebase (2026-07-15)
+
+Re-derived from PRD-003 and cross-checked against `packages/geovis-workspace/src` and `packages/geovis/src`: no phase below has landed yet.
+
+- `GeovisWorkspace.tsx` still mounts `GeoVisProvider` inside the map-only `GeovisWorkspaceMap` (Phase 1 not started).
+- `GeovisWorkspaceContext.ts` still models two named regions (`leftSidebar`, `rightSidebar`) with hand-authored `legendWithColor.legend` swatches, not the six-slot vocabulary (Phases 1–2 not started).
+- `GeoVisLegend`, `useGeoVisClick`, `useGeoVisHover`, `GeoVisResultStatus`, and `RepairOption` all exist as public `@ttoss/geovis` exports today, so D1/D3/D4 can build directly on them without any upstream PRD-001/PRD-002 work.
+
+No changes to the phase breakdown were needed — the plan already matches the codebase and the PRD's Must/Should/Won't scope.
