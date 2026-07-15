@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.10.0...@ttoss/geovis@0.11.0) (2026-07-15)
+
+### Features
+
+- **geovis:** spec-driven layer click via layer.click.onSelect ([#1131](https://github.com/ttoss/ttoss/issues/1131)) ([b8b2ae0](https://github.com/ttoss/ttoss/commit/b8b2ae001156cfb3cc9a3fb1d2fd98cf70ba10f7))
+
 # [0.10.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.9.0...@ttoss/geovis@0.10.0) (2026-07-11)
 
 ### Features
