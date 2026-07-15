@@ -117,6 +117,44 @@ pnpm dlx @ttoss/postgresdb-cli sync
 
 This imports `db` from `src/db.ts` and syncs the schema.
 
+### Advisory-Locked Sync (multi-instance boot)
+
+Calling `sequelize.sync({ alter: true })` on boot behind more than one instance
+(rolling deploys, auto-scale-out, instance refresh) races: the generated
+`ALTER TABLE` DDL runs concurrently against the same database and can deadlock,
+error, or leave the schema inconsistent.
+
+`syncWithAdvisoryLock` serializes the sync across instances using a Postgres
+session-level advisory lock (`pg_advisory_lock`). One instance runs the sync
+while the others block, then run against the already-migrated schema (a no-op).
+The lock is acquired and released on a single dedicated connection and is
+always released on both the success and failure paths.
+
+```typescript
+import { syncWithAdvisoryLock } from '@ttoss/postgresdb';
+
+await syncWithAdvisoryLock({
+  sequelize,
+  key: 0x50a7_5c_00, // stable, caller-chosen 64-bit key kept constant across releases
+  sync: { alter: true },
+});
+```
+
+You can also run it as part of `initialize` via the `syncLock` option:
+
+```typescript
+const db = await initialize({
+  models,
+  syncLock: { key: 0x50a7_5c_00, sync: { alter: true } },
+});
+```
+
+A blocking session-level lock (not `pg_try_advisory_lock`) is used on purpose:
+waiters must block until the holder finishes rather than skip the sync. The
+lock `key` is caller-supplied and must be a stable 64-bit integer kept constant
+across releases so every instance competes for the same lock. Single-instance
+boot is unaffected — the lock is acquired and released with no contention.
+
 ### CRUD Operations
 
 All models are accessible via the `db` object. See [Sequelize documentation](https://sequelize.org/master/manual/model-querying-basics.html) for complete query API.
@@ -364,6 +402,18 @@ Initializes database connection and loads models.
 **Options:** All [Sequelize options](https://sequelize.org/api/v6/class/src/sequelize.js~sequelize#instance-constructor-constructor) except `dialect` (always `postgres`), plus:
 
 - `models` (required): Object mapping model names to model classes
+- `createVectorExtension` (optional): Creates the pgvector extension when `true`
+- `syncLock` (optional): Runs an advisory-locked `sequelize.sync()` after connecting. Accepts `{ key, sync }` — see `syncWithAdvisoryLock`
+
+### `syncWithAdvisoryLock(options)`
+
+Serializes a boot-time `sequelize.sync()` across concurrently-starting instances using a Postgres session-level advisory lock.
+
+**Options:**
+
+- `sequelize` (required): The Sequelize instance to synchronize
+- `key` (required): A stable, caller-chosen 64-bit integer used as the advisory lock key. Keep it constant across releases
+- `sync` (optional): Options forwarded to `sequelize.sync()` (e.g. `{ alter: true }`)
 
 ### Decorators
 
