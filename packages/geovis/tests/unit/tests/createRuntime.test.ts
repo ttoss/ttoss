@@ -384,3 +384,133 @@ describe('createRuntime — validation gating (Phase 3/4)', () => {
     }).not.toThrow();
   });
 });
+
+describe('createRuntime — dispatch() (PRD-002 action surface)', () => {
+  test('toggle-layer with no explicit `visible` flips the layer, compiling to the layer-visibility SpecPatch', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+
+    const result = runtime.dispatch({ type: 'toggle-layer', layerId: 'lyr-1' });
+
+    expect(result.status).toBe('resolved');
+    expect(runtime.spec.layers[0]).toMatchObject({ visible: false });
+    expect(adapter.applyPatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        target: 'layer',
+        op: 'replace',
+        path: 'layer.lyr-1.visible',
+        value: false,
+      })
+    );
+  });
+
+  test('toggle-layer with an explicit `visible` sets that value regardless of current state', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+
+    runtime.dispatch({ type: 'toggle-layer', layerId: 'lyr-1', visible: true });
+
+    expect(runtime.spec.layers[0]).toMatchObject({ visible: true });
+  });
+
+  test('toggle-layer twice flips back to the original visibility', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+
+    runtime.dispatch({ type: 'toggle-layer', layerId: 'lyr-1' });
+    runtime.dispatch({ type: 'toggle-layer', layerId: 'lyr-1' });
+
+    expect(runtime.spec.layers[0].visible).not.toBe(false);
+  });
+
+  test('an unknown layerId is rejected before touching the adapter, spec unchanged', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+    adapter.applyPatch.mockClear();
+
+    const before = runtime.spec;
+    const result = runtime.dispatch({ type: 'toggle-layer', layerId: 'ghost' });
+
+    expect(result.status).toBe('mismatch');
+    if (result.status !== 'resolved') {
+      expect(result.issues[0].code).toBe('unknown-layer-id');
+      expect(result.issues[0].repair).toEqual([
+        { kind: 'allowed-values', path: 'action.layerId', values: ['lyr-1'] },
+      ]);
+    }
+    expect(runtime.spec).toBe(before);
+    expect(adapter.applyPatch).not.toHaveBeenCalled();
+    expect(runtime.result).toBe(result);
+  });
+
+  test('every dispatch — accepted or rejected — appends one action log entry with the action and its result', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+
+    const accepted = runtime.dispatch({
+      type: 'toggle-layer',
+      layerId: 'lyr-1',
+      rationale: 'user hid the layer',
+    });
+    const rejected = runtime.dispatch({
+      type: 'toggle-layer',
+      layerId: 'ghost',
+    });
+
+    const log = runtime.getActionLog();
+    expect(log).toHaveLength(2);
+    expect(log[0]).toMatchObject({
+      action: {
+        type: 'toggle-layer',
+        layerId: 'lyr-1',
+        rationale: 'user hid the layer',
+      },
+      result: accepted,
+    });
+    expect(log[1]).toMatchObject({
+      action: { type: 'toggle-layer', layerId: 'ghost' },
+      result: rejected,
+    });
+    expect(typeof log[0].timestamp).toBe('number');
+  });
+});
+
+describe('createRuntime — getContextPacket() (PRD-002, ADR-0004)', () => {
+  test('reports sources, layers, allowed actions, and the last result — metadata only', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+
+    const packet = runtime.getContextPacket();
+
+    expect(packet.schemaVersion).toBe(1);
+    expect(packet.sources).toEqual([{ id: 'src-1', type: 'geojson' }]);
+    expect(packet.layers).toEqual([
+      { id: 'lyr-1', geometry: 'polygon', visible: true },
+    ]);
+    expect(packet.allowedActions).toEqual(['toggle-layer']);
+    expect(packet.lastResult).toBe(runtime.result);
+    expect(packet.warnings).toEqual([]);
+  });
+
+  test('reflects a dispatched toggle-layer immediately', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+
+    runtime.dispatch({
+      type: 'toggle-layer',
+      layerId: 'lyr-1',
+      visible: false,
+    });
+
+    expect(runtime.getContextPacket().layers[0]).toMatchObject({
+      visible: false,
+    });
+  });
+
+  test('allowedActions is empty when the spec has no layers', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, { ...makeSpec(), layers: [] });
+
+    expect(runtime.getContextPacket().allowedActions).toEqual([]);
+  });
+});
