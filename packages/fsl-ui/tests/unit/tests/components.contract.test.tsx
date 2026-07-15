@@ -262,7 +262,7 @@ describe('contract: token hygiene', () => {
     '%s contains no raw rgb/hsl literal with numeric channels',
     (_path, source) => {
       // Absolute rule: components read colors via `vars.colors.*` only.
-      // The backdrop scrim has its own semantic token (`vars.colors.overlay.scrim`)
+      // The backdrop scrim has its own semantic token (`vars.overlay.scrim`)
       // — no `rgba(...)` literal is permitted in any component source.
       expect(stripComments(source)).not.toMatch(RGB_LITERAL);
     }

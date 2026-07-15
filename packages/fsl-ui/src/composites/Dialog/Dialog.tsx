@@ -206,7 +206,7 @@ export const DialogModal = ({
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: vars.zIndex.layer.blocking,
-          backgroundColor: vars.colors.overlay.scrim,
+          backgroundColor: vars.overlay.scrim,
           transition:
             isEntering || isExiting
               ? `opacity ${vars.motion.transition[isEntering ? 'enter' : 'exit'].duration} ${vars.motion.transition[isEntering ? 'enter' : 'exit'].easing}`

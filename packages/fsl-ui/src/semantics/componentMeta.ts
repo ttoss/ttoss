@@ -42,8 +42,9 @@ export interface ComponentMeta<E extends Entity = Entity> {
   /**
    * Effect on state produced by the interaction (FSL §6).
    * Orthogonal to `evaluation` — this is *what the act does*, not *how it
-   * is voiced*. A `destructive` Action is expressed here, not via
-   * `evaluation: 'negative'` (which is not legal on Action anyway).
+   * is voiced*. A `destructive` consequence drives the interaction
+   * mechanism (e.g. ConfirmationDialog arming); pairing it with
+   * `evaluation: 'negative'` for color is the author's separate call.
    * Legality is enforced by `ENTITY_CONSEQUENCE[entity]`.
    */
   consequence?: ConsequencesFor<E>;

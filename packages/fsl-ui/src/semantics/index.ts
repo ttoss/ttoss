@@ -11,7 +11,27 @@
 
 export type { ComponentMeta } from './componentMeta';
 export type {
+  CompositionRole,
   CompositionsFor,
+  Consequence,
   ConsequencesFor,
+  Entity,
+  Evaluation,
   EvaluationsFor,
+  State,
+  StructuralRole,
+  StructuresFor,
+} from './taxonomy';
+export {
+  COMPOSITION_ROLES,
+  CONSEQUENCES,
+  ENTITIES,
+  ENTITY_COMPOSITION,
+  ENTITY_CONSEQUENCE,
+  ENTITY_EVALUATION,
+  ENTITY_STRUCTURE,
+  EVALUATIONS,
+  STATE_PRIORITY,
+  STATES,
+  STRUCTURAL_ROLES,
 } from './taxonomy';

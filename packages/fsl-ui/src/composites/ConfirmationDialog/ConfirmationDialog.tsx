@@ -189,10 +189,15 @@ export const ConfirmationDialog = ({
 
   // Reset arming when the dimension that drives the mechanism changes, so
   // toggling `consequence` mid-lifetime never strands a stale armed state.
-  React.useEffect(() => {
+  // Uses the render-phase adjustment pattern (React docs: "adjusting state
+  // when a prop changes") instead of an effect — no extra commit, no
+  // cascading render. A pending arm timer firing later is benign: it only
+  // sets `isArmed` to the value it already has.
+  const [prevConsequence, setPrevConsequence] = React.useState(consequence);
+  if (prevConsequence !== consequence) {
+    setPrevConsequence(consequence);
     setIsArmed(false);
-    clearArmTimer();
-  }, [consequence, clearArmTimer]);
+  }
 
   React.useEffect(() => {
     return () => {

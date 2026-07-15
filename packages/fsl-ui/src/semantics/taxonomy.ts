@@ -59,7 +59,7 @@
 //   Context       │ DEFERRED │ Refinement dimension (density, mode, a11y
 //                 │          │ preferences). No prototype exercises it yet.
 //                 │          │ Readmission criterion: stabilisation of mode
-//                 │          │ switching validated end-to-end via theme-v2.
+//                 │          │ switching validated end-to-end via @ttoss/fsl-theme.
 //
 // Status key (FSL §13.3):
 //   CODIFIED — Dimension is part of this profile's authorial vocabulary.

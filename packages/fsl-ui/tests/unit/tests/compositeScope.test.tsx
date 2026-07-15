@@ -21,6 +21,7 @@ import {
   AccordionItem,
   AccordionPanel,
   AccordionTrigger,
+  Button,
   Dialog,
   DialogActions,
   DialogBody,
@@ -41,7 +42,6 @@ import {
   WizardStep,
   WizardSummary,
 } from '../../../src';
-import { Button } from '../../../src';
 import {
   createCompositeScope,
   createPresenceScope,

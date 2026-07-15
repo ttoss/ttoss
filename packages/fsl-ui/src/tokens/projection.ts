@@ -34,7 +34,7 @@ import type { Entity } from '../semantics/taxonomy';
 
 /**
  * UX color contexts — the Colors column of CONTRACT.md §1.
- * Each context corresponds to a `vars.colors.{ux}` subtree in theme-v2.
+ * Each context corresponds to a `vars.colors.{ux}` subtree in @ttoss/fsl-theme.
  */
 export const UX_CONTEXTS = [
   'action',

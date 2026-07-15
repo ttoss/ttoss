@@ -40,12 +40,14 @@ import type { EvaluationsFor } from '../../semantics';
 // Type is derived — no manual union to maintain.
 // Source of truth: ENTITY_EVALUATION in taxonomy.ts.
 type FooEvaluation = EvaluationsFor<(typeof fooMeta)['entity']>;
-// → 'primary' | 'secondary' | 'accent' | 'muted'
+// → 'primary' | 'secondary' | 'accent' | 'muted' | 'negative'
 ```
 
-Destructive Actions are expressed via `consequence: 'destructive'`
-(FSL §6), not via an evaluation slot. `negative` is a Feedback-only
-evaluation — see §6 and ENTITY_CONSEQUENCE in `taxonomy.ts`.
+`evaluation` and `consequence` are orthogonal: `consequence: 'destructive'`
+(FSL §6) drives the interaction _mechanism_ (e.g. ConfirmationDialog arming);
+`evaluation: 'negative'` drives the adverse _color voice_. A destructive
+action typically pairs both, but neither implies the other — see §6 and
+ENTITY_CONSEQUENCE in `taxonomy.ts`.
 
 ### Step 3 — Read token paths from §1
 
@@ -82,7 +84,7 @@ A component MUST use ONLY tokens from its Entity row.
 | Focus ring       | `vars.focus.ring.width` / `.style` / `.color` |
 | Disabled opacity | `vars.opacity.disabled`                       |
 | Scrim opacity    | `vars.opacity.scrim`                          |
-| Scrim color      | `vars.colors.overlay.scrim`                   |
+| Scrim color      | `vars.overlay.scrim`                          |
 | Z-Index          | `vars.zIndex.layer.{base                      | sticky | overlay | blocking | transient}` |
 
 ### §1.1 — Mapping Rationale
@@ -143,9 +145,9 @@ Example:
 
 ```typescript
 const c = vars.colors.action[evaluation]; // evaluation = 'primary'
-c.background.default; // → var(--tt-action-primary-background-default)
-c.border.focused; // → var(--tt-action-primary-border-focused)
-c.text.disabled; // → var(--tt-action-primary-text-disabled)
+c.background.default; // → var(--tt-colors-action-primary-background-default)
+c.border.focused; // → var(--tt-colors-action-primary-border-focused)
+c.text.disabled; // → var(--tt-colors-action-primary-text-disabled)
 ```
 
 Not every dimension/state combination is defined in every theme — optional chaining (`?.`) is required.
@@ -327,15 +329,16 @@ The contract test [`components.contract.test.tsx`](../../tests/unit/tests/compon
 > Read it directly — do not rely on any other copy.
 
 ```typescript
-import { ENTITY_EVALUATION } from '@ttoss/fsl-ui/semantics/taxonomy';
+import { ENTITY_EVALUATION } from '@ttoss/fsl-ui/semantics';
 
 // Which evaluations are valid for a given entity:
 const valid = ENTITY_EVALUATION['Action'];
-// → ['primary', 'secondary', 'accent', 'muted']
+// → ['primary', 'secondary', 'accent', 'muted', 'negative']
 //
-// Note: 'negative' is NOT legal on Action. Destructive Actions express
-// effect-on-state through `consequence: 'destructive'` (see
-// ENTITY_CONSEQUENCE), keeping Evaluation for authorial voice only.
+// Note: 'negative' on Action is the adverse color *voice*. It does not
+// imply behavior — effect-on-state is expressed separately through
+// `consequence: 'destructive'` (see ENTITY_CONSEQUENCE), which drives
+// interaction mechanics (e.g. ConfirmationDialog arming).
 ```
 
 ---

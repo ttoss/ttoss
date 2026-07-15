@@ -15,7 +15,7 @@ Grammar reminder:
   - `ux`: `action` \| `input` \| `navigation` \| `feedback` \| `informational`
   - `role`: `primary` \| `secondary` \| `accent` \| `muted` \| `positive` \| `caution` \| `negative`
   - `dimension`: `background` \| `border` \| `text`
-  - `state` (optional): `hover` \| `active` \| `focused` \| `disabled` \| `selected` \| `checked` \| `current` \| etc.
+  - `state` (optional): `hover` \| `active` \| `focused` \| `disabled` \| `selected` \| `pressed` \| `checked` \| `indeterminate` \| `expanded` \| `current` \| `visited` \| `droptarget` (legality varies per `ux` — see [colors.md](./families/colors.md))
 - everything else: `semantic.{family}.{group}.{step?}`
 
 ---

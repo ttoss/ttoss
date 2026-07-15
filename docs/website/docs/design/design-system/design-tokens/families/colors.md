@@ -131,17 +131,17 @@ See [Usage Examples](#usage-examples) below for concrete tokens.
 
 The `ux` axis is a projection-scoped subset of FSL Entity Kinds (FSL Structural Language §17.1). This normative table maps each FSL Entity Kind → token UX context; the planned resolver (see [component-model.md](/docs/design/design-system/components/component-model) — not yet implemented) will consume it to translate a component's Entity into its token context:
 
-| FSL Entity Kind | Token `ux`      | Notes                                                                                                                |
-| :-------------- | :-------------- | :------------------------------------------------------------------------------------------------------------------- |
-| `Action`        | `action`        | 1:1                                                                                                                  |
-| `Input`         | `input`         | 1:1                                                                                                                  |
-| `Selection`     | `input`         | checkbox, radio, picker — no separate `selection` UX context                                                         |
-| `Navigation`    | `navigation`    | 1:1                                                                                                                  |
-| `Feedback`      | `feedback`      | 1:1                                                                                                                  |
-| `Collection`    | `informational` | menu, list, table                                                                                                    |
-| `Overlay`       | `informational` | dialog, popover                                                                                                      |
-| `Disclosure`    | `informational` | accordion, collapsible panel, `<details>` — in-place reveal (FSL §1); uses `expanded` state for open/closed contract |
-| `Structure`     | `informational` | panel, shell, frame                                                                                                  |
+| FSL Entity Kind | Token `ux`      | Notes                                                                                                                                                                |
+| :-------------- | :-------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Action`        | `action`        | 1:1                                                                                                                                                                  |
+| `Input`         | `input`         | 1:1                                                                                                                                                                  |
+| `Selection`     | `input`         | checkbox, radio, picker — no separate `selection` UX context                                                                                                         |
+| `Navigation`    | `navigation`    | 1:1                                                                                                                                                                  |
+| `Feedback`      | `feedback`      | 1:1                                                                                                                                                                  |
+| `Collection`    | `informational` | menu, list, table                                                                                                                                                    |
+| `Overlay`       | `informational` | dialog, popover                                                                                                                                                      |
+| `Disclosure`    | `navigation`    | accordion, collapsible panel, `<details>` — in-place reveal answers "what's here?" (structural orientation, ADR-001); uses `expanded` state for open/closed contract |
+| `Structure`     | `informational` | panel, shell, frame                                                                                                                                                  |
 
 Interaction patterns that do not correspond to an Entity Kind (tooltips, helper banners, search/filter widgets) are expressed through existing kinds — typically `Overlay` for guidance and `Input` for discovery.
 

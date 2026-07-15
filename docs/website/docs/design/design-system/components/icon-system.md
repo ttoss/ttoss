@@ -4,7 +4,11 @@ title: Icon
 
 # Icon
 
-**Responsibility: Structure**
+:::caution Status: specification — not yet implemented
+`@ttoss/fsl-ui` does not ship an Icon component yet. This document also predates the shipped Component Semantics Projection vocabulary: read **Responsibility** as **Entity**, and the **Host** tables as authoring guidance — the shipped data model has no `Host` level (parent disambiguation happens in the DOM via `data-scope`/`data-part`; see [Component Model](/docs/design/design-system/components/component-model)). Enforcement described as "compile time / build time" is the intended shape, not shipped behaviour.
+:::
+
+**Entity: Structure**
 
 Icon is a **semantic visual component** that renders a glyph to reinforce meaning in the interface.
 
@@ -161,7 +165,7 @@ Icon consumes the sizing tokens from the `icon` family:
 | `sizing.icon.md` | Standard icons             |
 | `sizing.icon.lg` | Prominent or display icons |
 
-These map to `core.size.ramp.ui` steps and are fluid (responsive via `clamp()`).
+These map to `core.sizing.ramp.ui` steps and are fluid (responsive via `clamp()`).
 
 ### Motion
 

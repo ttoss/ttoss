@@ -180,7 +180,7 @@ Interaction Kind is fundamental because interactive meaning cannot be recovered 
 - **dismiss** is not just a low-emphasis button.
   It is an interaction kind with retreat/close semantics.
 
-- `popup.*` kinds exist to prevent collapsing all popup behavior into one ambiguous bucket.
+- `popup.*` kinds were **removed** from the core (see §10.14) — popup semantics live in projection profiles, expressed via `disclose.toggle` plus an independent Entity expression for the revealed surface.
 
 ---
 
@@ -282,11 +282,11 @@ Consequence exists because some meanings materially shape user experience and ri
 
 A component-semantics profile may codify a narrower subset of this vocabulary
 when the broader terms collapse into one of the narrower ones or into another
-dimension. The planned `@ttoss/ui2` profile (see
+dimension. The `@ttoss/fsl-ui` profile (see
 [`component-model.md`](/docs/design/design-system/components/component-model) —
-specified, not yet implemented) is intended to codify three values —
-**neutral**, **committing**, **destructive** — rejecting the others with
-explicit rationale:
+implemented in `packages/fsl-ui/src/semantics/taxonomy.ts`) codifies three
+values — **neutral**, **committing**, **destructive** — rejecting the others
+with explicit rationale:
 
 - **reversible** is the logical complement of `committing`; carrying both
   doubles the vocabulary without adding an expressible distinction.

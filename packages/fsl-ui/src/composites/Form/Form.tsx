@@ -251,7 +251,7 @@ export interface FormSubmitProps extends Omit<ButtonProps, 'type'> {
   /**
    * Whether the form is currently submitting. When true, the button is
    * disabled to prevent double-submit and emits `data-pending` for host
-   * CSS (spinner, skeleton). Host-controlled — ui2 does not own the
+   * CSS (spinner, skeleton). Host-controlled — fsl-ui does not own the
    * submission lifecycle.
    */
   isPending?: boolean;
