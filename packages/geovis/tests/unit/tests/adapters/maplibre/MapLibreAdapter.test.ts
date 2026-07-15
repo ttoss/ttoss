@@ -69,6 +69,7 @@ const makeMapMock = () => {
     setLayoutProperty: jest.fn(),
     setPaintProperty: jest.fn(),
     setFeatureState: jest.fn(),
+    setFilter: jest.fn(),
     setStyle: jest.fn(),
     setCenter: jest.fn(),
     setZoom: jest.fn(),
@@ -225,6 +226,7 @@ describe('createMapLibreAdapter', () => {
       ],
       dataFeatures: {
         featureState: ['geojson'],
+        filter: ['geojson'],
       },
       viewFeatures: {
         pitch: true,

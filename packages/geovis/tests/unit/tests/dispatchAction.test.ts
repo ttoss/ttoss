@@ -236,3 +236,44 @@ describe('compileAction — set-map-data', () => {
     expect('patch' in outcome).toBe(true);
   });
 });
+
+describe('compileAction — set-filter', () => {
+  test('compiles to a layer.<id>.filter replace patch, carrying the rationale', () => {
+    const outcome = compileAction(makeSpec(), {
+      type: 'set-filter',
+      layerId: 'lyr-1',
+      filter: { property: 'status', operator: 'eq', value: 'active' },
+      rationale: 'AI narrowed the view to active regions',
+    });
+    expect(outcome).toEqual({
+      patch: {
+        target: 'layer',
+        op: 'replace',
+        path: 'layer.lyr-1.filter',
+        value: { property: 'status', operator: 'eq', value: 'active' },
+        rationale: 'AI narrowed the view to active regions',
+      },
+    });
+  });
+
+  test('filter: null compiles to value: null, never value: undefined (which would be a no-op downstream)', () => {
+    const outcome = compileAction(makeSpec(), {
+      type: 'set-filter',
+      layerId: 'lyr-1',
+      filter: null,
+    });
+    expect('patch' in outcome && outcome.patch.value).toBeNull();
+  });
+
+  test('an unknown layerId compiles to an unknown-layer-id issue', () => {
+    const outcome = compileAction(makeSpec(), {
+      type: 'set-filter',
+      layerId: 'ghost',
+      filter: { property: 'status', operator: 'eq', value: 'active' },
+    });
+    expect('issue' in outcome && outcome.issue).toMatchObject({
+      code: 'unknown-layer-id',
+      subject: { path: 'action.layerId', id: 'ghost' },
+    });
+  });
+});

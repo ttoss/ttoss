@@ -1,16 +1,19 @@
 import type { GeoVisResult } from '../spec/result';
+import type { LayerFilter } from '../spec/types';
 
 /**
  * Closed, typed vocabulary of semantic operations `GeoVisRuntime.dispatch()`
  * accepts (ADR-0003, PRD-002). Every variant targets the map through a
  * stable spec id — the same ids `getContextPacket()` names — never a raw
  * `SpecPatch` path or engine expression. Grows one variant per PRD-002
- * phase; currently: `toggle-layer`, `select-feature`, `set-map-data`.
+ * phase; currently: `toggle-layer`, `select-feature`, `set-map-data`,
+ * `set-filter`.
  */
 export type GeoVisAction =
   | ToggleLayerAction
   | SelectFeatureAction
-  | SetMapDataAction;
+  | SetMapDataAction
+  | SetFilterAction;
 
 /** Flips (or explicitly sets) a layer's visibility. */
 export interface ToggleLayerAction {
@@ -58,6 +61,21 @@ export interface SetMapDataAction {
   layerId: string;
   /** Id of the `MapData` entry to bind — must match `spec.mapData[].mapDataId`. */
   mapDataId: string;
+  /** Optional free-text reason, preserved on the action log entry for audit. */
+  rationale?: string;
+}
+
+/**
+ * Sets (or, with `filter: null`, clears) a declarative predicate that hides
+ * non-matching features on a layer — compiled to the engine's native filter
+ * expression. Gated by `CapabilitySet.dataFeatures.filter` per source type.
+ */
+export interface SetFilterAction {
+  type: 'set-filter';
+  /** Id of the layer to filter — must match `spec.layers[].id`. */
+  layerId: string;
+  /** The predicate to apply, or `null` to clear the layer's current filter. */
+  filter: LayerFilter | null;
   /** Optional free-text reason, preserved on the action log entry for audit. */
   rationale?: string;
 }

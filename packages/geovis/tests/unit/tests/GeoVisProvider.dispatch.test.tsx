@@ -16,7 +16,7 @@ jest.mock('src/adapters/maplibre/MapLibreAdapter', () => {
           return {
             sourceTypes: ['geojson'],
             layerGeometries: ['polygon'],
-            dataFeatures: { featureState: ['geojson'] },
+            dataFeatures: { featureState: ['geojson'], filter: ['geojson'] },
             viewFeatures: { pitch: false, bearing: false },
           };
         }),

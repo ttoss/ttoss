@@ -7,6 +7,7 @@ import type {
   GeoVisIssueCode,
   GeoVisResult,
   LabelFormatSpec,
+  LayerFilter,
   LegendSpec,
   NormalizationSpec,
   RepairOption,
@@ -86,6 +87,34 @@ test('SetMapDataAction is part of the public contract', () => {
     rationale: 'AI switched to the 2020 census dataset',
   };
   expect(action.type).toBe('set-map-data');
+});
+
+test('SetFilterAction and LayerFilter are part of the public contract', () => {
+  const filter: LayerFilter = {
+    property: 'status',
+    operator: 'eq',
+    value: 'active',
+  };
+  const setAction: GeoVisAction = {
+    type: 'set-filter',
+    layerId: 'lyr-1',
+    filter,
+  };
+  const clearAction: GeoVisAction = {
+    type: 'set-filter',
+    layerId: 'lyr-1',
+    filter: null,
+  };
+  expect(setAction.type).toBe('set-filter');
+  expect(clearAction.type).toBe('set-filter');
+
+  const layer: VisualizationLayer = {
+    id: 'regions',
+    sourceId: 'regions-source',
+    geometry: 'polygon',
+    filter,
+  };
+  expect(layer.filter).toEqual(filter);
 });
 
 test('GeoVisResult taxonomy types are part of the public contract', () => {

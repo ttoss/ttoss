@@ -13,6 +13,7 @@ import type {
   VisualizationLayer,
 } from '../../spec/types';
 import type { LegendSpec } from '../../spec/types.legend';
+import { layerFilterToExpression } from './layerFilter';
 import {
   buildFillColorExpression,
   buildProportionalCircleRadiusExpression,
@@ -32,6 +33,7 @@ interface BaseFields {
   maxzoom?: number;
   layout: { visibility: 'visible' | 'none' };
   ['source-layer']?: string;
+  filter?: unknown[];
 }
 
 /** Builds the common MapLibre layer fields from a GeoVis layer. */
@@ -50,6 +52,7 @@ const buildBase = (
   };
   const effective = layer.sourceLayer ?? sourceLayer;
   if (effective) base['source-layer'] = effective;
+  if (layer.filter) base.filter = layerFilterToExpression(layer.filter);
   return base;
 };
 

@@ -291,6 +291,11 @@ const destroyAll = (views: ViewMap): void => {
  * aspirational. `dataFeatures.featureState` is narrower than `sourceTypes`:
  * every source type mounts, but `setFeatureState` joining (`mapData`,
  * `sizeBy`) only works for `geojson`, whose features carry stable ids.
+ * `dataFeatures.filter` (`VisualizationLayer.filter`, PRD-002) is declared
+ * `geojson`-only for the same "declared means tested" reason, though
+ * MapLibre's native `filter` works on any source with feature properties —
+ * the narrower declaration reflects what's fixture-covered today, not an
+ * engine limitation; it may widen once other source types are tested.
  * `pitch`/`bearing` are genuinely applied to the camera (see `applySetView`),
  * unlike the previous `supports3D: false` flag, which was dead and incorrect.
  */
@@ -306,6 +311,7 @@ const CAPABILITIES: CapabilitySet = {
   layerGeometries: ['polygon', 'line', 'point', 'symbol', 'heatmap', 'raster'],
   dataFeatures: {
     featureState: ['geojson'],
+    filter: ['geojson'],
   },
   viewFeatures: {
     pitch: true,

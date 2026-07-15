@@ -446,6 +446,33 @@
           "propertyName": {
             "type": "string",
             "description": "GeoJSON feature property name for direct data access. When set (and mapDataId is absent), the expression reads from feature.properties[propertyName] via ['get', ...]."
+          },
+          "filter": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["property", "operator", "value"],
+            "properties": {
+              "property": {
+                "type": "string",
+                "minLength": 1
+              },
+              "operator": {
+                "type": "string",
+                "enum": ["eq", "neq", "gt", "gte", "lt", "lte", "in", "not-in"]
+              },
+              "value": {
+                "oneOf": [
+                  { "type": "string" },
+                  { "type": "number" },
+                  {
+                    "type": "array",
+                    "items": {
+                      "oneOf": [{ "type": "string" }, { "type": "number" }]
+                    }
+                  }
+                ]
+              }
+            }
           }
         }
       }

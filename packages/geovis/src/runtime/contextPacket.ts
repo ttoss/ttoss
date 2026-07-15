@@ -2,11 +2,13 @@ import type { GeoVisIssue, GeoVisResult } from '../spec/result';
 import type {
   DataSource,
   GeoVisGeometryType,
+  LayerFilter,
   LegendSpec,
   MapType,
   VisualizationSpec,
 } from '../spec/types';
 import type { GeoVisAction, GeoVisSelection } from './action';
+import type { CapabilitySet } from './adapter';
 
 /** Current `ContextPacket` schema version (ADR-0004, versioned like the spec schema). */
 export const CONTEXT_PACKET_SCHEMA_VERSION = 1;
@@ -24,6 +26,8 @@ export interface ContextPacketLayer {
   mapDataId?: string;
   /** The bound `MapData` entry's own `dimension`, when declared. */
   dimension?: 'color' | 'size';
+  /** The layer's current filter predicate, if any — matches `set-filter`'s `filter`. */
+  filter?: LayerFilter;
 }
 
 export interface ContextPacketLegend {
@@ -82,9 +86,10 @@ const buildLegendSummary = (legend: LegendSpec): ContextPacketLegend => {
   };
 };
 
-/** The ADR-0003 vocabulary filtered to what `spec` currently supports. */
+/** The ADR-0003 vocabulary filtered to what `spec` and the active adapter currently support. */
 const computeAllowedActions = (
-  spec: VisualizationSpec
+  spec: VisualizationSpec,
+  capabilities: CapabilitySet
 ): GeoVisAction['type'][] => {
   const actions: GeoVisAction['type'][] = [];
   if (spec.layers.length > 0) {
@@ -93,6 +98,16 @@ const computeAllowedActions = (
   if (spec.layers.length > 0 && (spec.mapData?.length ?? 0) > 0) {
     actions.push('set-map-data');
   }
+  const sourceTypeById = new Map(
+    spec.sources.map((s) => {
+      return [s.id, s.type] as const;
+    })
+  );
+  const canFilter = spec.layers.some((l) => {
+    const sourceType = sourceTypeById.get(l.sourceId);
+    return sourceType && capabilities.dataFeatures.filter.includes(sourceType);
+  });
+  if (canFilter) actions.push('set-filter');
   return actions;
 };
 
@@ -116,7 +131,8 @@ const resolveLayerDimension = (
 export const buildContextPacket = (
   spec: VisualizationSpec,
   result: GeoVisResult,
-  selection: GeoVisSelection | null
+  selection: GeoVisSelection | null,
+  capabilities: CapabilitySet
 ): ContextPacket => {
   return {
     schemaVersion: CONTEXT_PACKET_SCHEMA_VERSION,
@@ -131,11 +147,12 @@ export const buildContextPacket = (
         visible: l.visible !== false,
         mapDataId: l.mapDataId,
         dimension: resolveLayerDimension(spec, l),
+        filter: l.filter,
       };
     }),
     legends: (spec.legends ?? []).map(buildLegendSummary),
     selection,
-    allowedActions: computeAllowedActions(spec),
+    allowedActions: computeAllowedActions(spec, capabilities),
     warnings: result.status === 'resolved' ? result.warnings : [],
     lastResult: result,
   };
