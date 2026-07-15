@@ -2,8 +2,6 @@ export {
   type GeovisWorkspaceConfig,
   type GeovisWorkspaceContextValue,
   type GeovisWorkspaceLeftSidebar,
-  type GeovisWorkspaceLegend,
-  type GeovisWorkspaceLegendItem,
   type GeovisWorkspaceLegendWithColor,
   type GeovisWorkspaceMenu,
   type GeovisWorkspaceMenuItem,

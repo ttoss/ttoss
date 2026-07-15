@@ -1,5 +1,6 @@
 import { I18nProvider } from '@ttoss/react-i18n';
 import { act, fireEvent, render, screen } from '@ttoss/test-utils/react';
+import type * as React from 'react';
 import {
   GeovisWorkspace,
   type GeovisWorkspaceConfig,
@@ -9,12 +10,32 @@ import {
 } from 'src';
 
 jest.mock('@ttoss/geovis', () => {
+  const ReactModule = jest.requireActual('react');
+  const MockGeoVisContext = ReactModule.createContext<{
+    spec: { legends?: { id: string }[] };
+  } | null>(null);
+
   return {
-    GeoVisProvider: ({ children }: React.PropsWithChildren) => {
-      return <div data-testid="geovis-provider">{children}</div>;
+    GeoVisProvider: ({
+      spec,
+      children,
+    }: React.PropsWithChildren<{ spec: { legends?: { id: string }[] } }>) => {
+      return (
+        <MockGeoVisContext.Provider value={{ spec }}>
+          <div data-testid="geovis-provider">{children}</div>
+        </MockGeoVisContext.Provider>
+      );
     },
     GeoVisCanvas: () => {
       return <div data-testid="geovis-canvas" />;
+    },
+    useGeoVis: () => {
+      const context = ReactModule.useContext(MockGeoVisContext);
+      if (!context) throw new Error('useGeoVis used outside GeoVisProvider');
+      return context;
+    },
+    GeoVisLegend: ({ legendId }: { legendId: string }) => {
+      return <div data-testid={`legend-${legendId}`}>{legendId}</div>;
     },
   };
 });
@@ -52,6 +73,11 @@ const visualizationSpec = {
   engine: 'maplibre' as const,
   sources: [],
   layers: [],
+};
+
+const visualizationSpecWithLegends = {
+  ...visualizationSpec,
+  legends: [{ id: 'classes' }],
 };
 
 const openLeftSidebar = async () => {
@@ -302,13 +328,6 @@ test('right sidebar renders the legendWithColor panel from the config', async ()
       title: 'População 65+',
       legendWithColor: {
         description: 'Proporção da população total com 65 anos ou mais.',
-        legend: {
-          title: 'Classes',
-          items: [
-            { color: '#eff3ff', label: '0% – 5%' },
-            { color: '#08519c', label: '20% – 100%' },
-          ],
-        },
         sources: {
           title: 'Fonte dos dados:',
           items: [
@@ -323,7 +342,7 @@ test('right sidebar renders the legendWithColor panel from the config', async ()
   render(
     <GeovisWorkspace
       config={configWithLegend}
-      visualizationSpec={visualizationSpec}
+      visualizationSpec={visualizationSpecWithLegends}
     />,
     { wrapper: Provider }
   );
@@ -335,8 +354,7 @@ test('right sidebar renders the legendWithColor panel from the config', async ()
   expect(
     screen.getByText('Proporção da população total com 65 anos ou mais.')
   ).toBeInTheDocument();
-  expect(screen.getByText('Classes')).toBeInTheDocument();
-  expect(screen.getByText('0% – 5%')).toBeInTheDocument();
+  expect(screen.getByTestId('legend-classes')).toBeInTheDocument();
   expect(screen.getByText('Fonte dos dados:')).toBeInTheDocument();
   expect(
     screen.getByText('Geometria: Distritos Municipais.')
@@ -345,6 +363,25 @@ test('right sidebar renders the legendWithColor panel from the config', async ()
   const link = screen.getByRole('link', { name: 'SEADE (2025)' });
   expect(link).toHaveAttribute('href', 'https://example.com/seade');
   expect(link).toHaveAttribute('target', '_blank');
+});
+
+test('right sidebar renders no legend block when the spec has no legends', async () => {
+  render(
+    <GeovisWorkspace
+      config={{
+        ...config,
+        rightSidebar: { legendWithColor: {} },
+      }}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'Open details' }));
+  });
+
+  expect(screen.queryByTestId(/^legend-/)).not.toBeInTheDocument();
 });
 
 test('closing the right sidebar brings its open button back', async () => {

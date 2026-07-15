@@ -45,8 +45,9 @@ const workspaceConfig: GeovisWorkspaceConfig = {
 
 /**
  * Variant whose right sidebar carries a full color-legend panel — title,
- * description, a swatch-per-class legend and linked data sources — entirely
- * declared in the config via `rightSidebar.legendWithColor`.
+ * description, the map's own runtime-resolved legend and linked data sources.
+ * The legend swatches come from `visualizationSpec.legends`, not from this
+ * config, so they stay in sync with the map by construction.
  */
 const legendWorkspaceConfig: GeovisWorkspaceConfig = {
   leftSidebar: workspaceConfig.leftSidebar,
@@ -55,16 +56,6 @@ const legendWorkspaceConfig: GeovisWorkspaceConfig = {
     legendWithColor: {
       description:
         'Proporção da população total do distrito com 65 anos ou mais.',
-      legend: {
-        title: 'Classes',
-        items: [
-          { color: '#eff3ff', label: '0% - 5%' },
-          { color: '#bdd7e7', label: '5% - 10%' },
-          { color: '#6baed6', label: '10% - 15%' },
-          { color: '#3182bd', label: '15% - 20%' },
-          { color: '#08519c', label: '20% - 100%' },
-        ],
-      },
       sources: {
         title: 'Fonte dos dados:',
         items: [
@@ -160,7 +151,10 @@ const AGE_FACTORS: Record<string, number> = {
  * Derives a GeoVis spec from the current workspace selection. Every region
  * keeps the same geometry; only its joined `value` (in `mapData`) and the
  * layer's `activeLegendId` change, so switching the variable or the age range
- * recolors the map in place.
+ * recolors the map in place. `legends` lives at the spec's top level (not on
+ * the layer) so `GeovisWorkspace`'s right sidebar can render the active one
+ * straight from `visualizationSpec` — the same registry the layer's
+ * `activeLegendId` already resolves colors from.
  */
 const buildSpec = ({
   variable,
@@ -198,6 +192,18 @@ const buildSpec = ({
         },
       },
     ],
+    legends: Object.entries(VARIABLES).map(([id, config]) => {
+      return {
+        id,
+        colorBy: {
+          type: 'quantitative' as const,
+          property: 'value',
+          scale: 'threshold' as const,
+          thresholds: config.thresholds,
+          colors: config.colors,
+        },
+      };
+    }),
     layers: [
       {
         id: 'regions-fill',
@@ -206,18 +212,6 @@ const buildSpec = ({
         mapDataId: 'choropleth',
         activeLegendId: variable,
         paint: { fillOpacity: 0.78, lineColor: '#1f2937' },
-        legends: Object.entries(VARIABLES).map(([id, config]) => {
-          return {
-            id,
-            colorBy: {
-              type: 'quantitative' as const,
-              property: 'value',
-              scale: 'threshold' as const,
-              thresholds: config.thresholds,
-              colors: config.colors,
-            },
-          };
-        }),
       },
     ],
     mapData: [
@@ -293,9 +287,12 @@ export const Default: Story = {
 };
 
 /**
- * The right sidebar hosts a full color-legend panel declared in the config
- * (`rightSidebar.legendWithColor`): description, class swatches and linked data
- * sources. Open the details panel to see it.
+ * The right sidebar hosts a full color-legend panel: a description and data
+ * sources declared in the config (`rightSidebar.legendWithColor`), plus the
+ * map's own runtime-resolved legend swatches — no hand-authored duplicate of
+ * what the spec already resolves. Switching the variable changes the map's
+ * active legend, and the sidebar's swatches follow with no config edit. Open
+ * the details panel to see it.
  */
 export const WithColorLegend: Story = {
   render: () => {

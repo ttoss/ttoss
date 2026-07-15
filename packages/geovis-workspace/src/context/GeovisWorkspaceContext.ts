@@ -25,20 +25,6 @@ export interface GeovisWorkspaceLeftSidebar {
   initialState?: 'open' | 'closed';
 }
 
-export interface GeovisWorkspaceLegendItem {
-  /** Swatch fill color (any CSS color string or theme color token). */
-  color: string;
-  /** Text shown next to the swatch, e.g. a value range like "0% – 5%". */
-  label: string;
-}
-
-export interface GeovisWorkspaceLegend {
-  /** Optional heading rendered above the legend swatches. */
-  title?: string;
-  /** One entry per legend class. */
-  items: GeovisWorkspaceLegendItem[];
-}
-
 export interface GeovisWorkspaceSource {
   /** Source description text. */
   label: string;
@@ -56,8 +42,6 @@ export interface GeovisWorkspaceSources {
 export interface GeovisWorkspaceLegendWithColor {
   /** Descriptive paragraph rendered under the right sidebar title. */
   description?: string;
-  /** Color legend (a swatch and label per class). */
-  legend?: GeovisWorkspaceLegend;
   /** Data sources, each optionally rendered as an external link. */
   sources?: GeovisWorkspaceSources;
 }
