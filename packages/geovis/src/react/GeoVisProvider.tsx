@@ -18,6 +18,7 @@ import {
 } from '../ui/GeoVisLegend.utils';
 import {
   GeoVisClickContext,
+  GeoVisClickDismissContext,
   GeoVisContext,
   GeoVisHoverContext,
 } from './contexts';
@@ -33,8 +34,10 @@ export type {
 } from './contexts';
 export {
   GeoVisClickContext,
+  GeoVisClickDismissContext,
   GeoVisContext,
   GeoVisHoverContext,
+  useDismissGeoVisClick,
   useGeoVis,
   useGeoVisClick,
   useGeoVisHover,
@@ -142,11 +145,13 @@ const ClickProvider = ({
   spec: VisualizationSpec;
   children: React.ReactNode;
 }) => {
-  const clickedMapFeature = useMapClick({ runtime, spec });
+  const { click: clickedMapFeature, dismiss } = useMapClick({ runtime, spec });
   useClickAnchor({ runtime, spec, click: clickedMapFeature });
   return (
     <GeoVisClickContext.Provider value={clickedMapFeature}>
-      {children}
+      <GeoVisClickDismissContext.Provider value={dismiss}>
+        {children}
+      </GeoVisClickDismissContext.Provider>
     </GeoVisClickContext.Provider>
   );
 };

@@ -150,3 +150,35 @@ export const useGeoVisClick = (): MapClickInfo | null => {
   }
   return ctx;
 };
+
+/**
+ * Dismisses the current click selection, if any — the same feature-state and
+ * `null` reset Escape/outside-click already trigger, exposed so custom UI
+ * (e.g. an inspector panel's own dismiss button) can stay in sync with them
+ * instead of re-implementing the reset itself.
+ *
+ * @remarks
+ * Default value is `undefined` (the "no provider" sentinel), mirroring
+ * {@link GeoVisClickContext}. Unlike that context, the function reference
+ * itself does not need distinguishing from a real value — there is no valid
+ * "no dismiss" state once inside a provider — so a plain function default
+ * would work too, but `undefined` keeps the two contexts symmetric.
+ */
+export const GeoVisClickDismissContext = React.createContext<
+  (() => void) | undefined
+>(undefined);
+
+/**
+ * Returns a stable function that clears the current click selection, exactly
+ * as Escape or clicking outside a tracked layer already do. Must be called
+ * inside `<GeoVisProvider>`.
+ */
+export const useDismissGeoVisClick = (): (() => void) => {
+  const ctx = React.useContext(GeoVisClickDismissContext);
+  if (!ctx) {
+    throw new Error(
+      'useDismissGeoVisClick must be used inside <GeoVisProvider>'
+    );
+  }
+  return ctx;
+};

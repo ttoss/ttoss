@@ -1289,6 +1289,28 @@ const CenterOnClick = () => {
 // Place <CenterOnClick /> anywhere inside <GeoVisProvider>
 ```
 
+### `useDismissGeoVisClick`
+
+Returns a stable `() => void` that clears the current click selection — the exact same reset `Escape` or clicking outside a tracked layer/feature already trigger (feature-state included). Use it to wire a custom dismiss control (e.g. a close button on a selection panel) without re-implementing the reset, so all three dismiss paths stay in sync. Must be called inside `GeoVisProvider`.
+
+```tsx
+import { useDismissGeoVisClick, useGeoVisClick } from '@ttoss/geovis';
+
+const SelectionPanel = () => {
+  const click = useGeoVisClick();
+  const dismiss = useDismissGeoVisClick();
+
+  if (!click) return null;
+
+  return (
+    <div>
+      <button onClick={dismiss}>Close</button>
+      <p>{click.featureId}</p>
+    </div>
+  );
+};
+```
+
 ### `useMapData`
 
 Returns indexed map data for a `mapDataId` as `{ mapDataId, mapId, joinKey, values, rows }`.

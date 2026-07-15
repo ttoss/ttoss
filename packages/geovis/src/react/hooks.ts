@@ -1,6 +1,5 @@
 import type {
   Map as MapLibreMap,
-  MapMouseEvent,
   Marker as MapLibreMarker,
   MarkerOptions as MapLibreMarkerOptions,
 } from 'maplibre-gl';
@@ -11,6 +10,7 @@ import type { VisualizationSpec } from '../spec/types';
 import type { MapClickInfo, MapHoverInfo } from './contexts';
 import { useGeoVis } from './contexts';
 import {
+  attachClickDismissListeners,
   buildClickTracking,
   buildHandleClick,
   buildHandleMove,
@@ -153,20 +153,35 @@ interface UseMapClickParams {
   spec: VisualizationSpec;
 }
 
+export interface UseMapClickResult {
+  /** The last clicked {@link MapClickInfo}, or `null` when no feature is selected. */
+  click: MapClickInfo | null;
+  /**
+   * Clears the click selection the same way Escape/outside-click already do
+   * (feature-state included) — a stable reference across renders, safe to
+   * call even before the effect below has attached (a no-op then).
+   */
+  dismiss: () => void;
+}
+
+const noopDismiss = () => {};
+
 /**
  * Tracks the last clicked feature on every layer (any geometry type) that has
  * an `activeLegendId` declared. Supports point, line, polygon, symbol, and
  * heatmap geometries — the geometry filter is intentionally absent so
  * consumers can wire click-to-center (or any click reaction) on any layer.
- *
- * @returns The last clicked {@link MapClickInfo}, or `null` when no feature
- * is selected.
  */
 export const useMapClick = ({
   runtime,
   spec,
-}: UseMapClickParams): MapClickInfo | null => {
+}: UseMapClickParams): UseMapClickResult => {
   const [click, setClick] = React.useState<MapClickInfo | null>(null);
+  // Holds the effect's own dismiss closure so the returned `dismiss` can stay
+  // a stable reference across renders while still reaching the current map
+  // instance and prevSelectedState — updated on every effect run, read only
+  // from the `dismiss` callback below (an event handler, not render).
+  const dismissImplRef = React.useRef<() => void>(noopDismiss);
 
   const trackedKey = React.useMemo(() => {
     return spec.layers
@@ -196,6 +211,12 @@ export const useMapClick = ({
     const { tracked, sourceByLayerId } = buildClickTracking(trackedKey);
     const prevSelectedState: PrevFeatureState = { current: null };
 
+    const dismissSelection = () => {
+      clearSelected(map, prevSelectedState);
+      setClick(null);
+    };
+    dismissImplRef.current = dismissSelection;
+
     const handlers = tracked.map(({ layerId, hasSelectedPaint }) => {
       return {
         layerId,
@@ -222,37 +243,27 @@ export const useMapClick = ({
     const trackedLayerIds = tracked.map((t) => {
       return t.layerId;
     });
-    const handleOutsideClick = (event: MapMouseEvent) => {
-      const hits = map.queryRenderedFeatures(event.point, {
-        layers: trackedLayerIds,
-      });
-      if (!hits || hits.length === 0) {
-        clearSelected(map, prevSelectedState);
-        setClick(null);
-      }
-    };
-    map.on('click', handleOutsideClick);
-
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        clearSelected(map, prevSelectedState);
-        setClick(null);
-      }
-    };
-    window.addEventListener('keydown', handleEscape);
+    const detachDismissListeners = attachClickDismissListeners({
+      map,
+      trackedLayerIds,
+      dismissSelection,
+    });
 
     return () => {
       for (const { layerId, handleClick } of handlers) {
         map.off('click', layerId, handleClick);
       }
-      map.off('click', handleOutsideClick);
-      window.removeEventListener('keydown', handleEscape);
-      clearSelected(map, prevSelectedState);
-      setClick(null);
+      detachDismissListeners();
+      dismissImplRef.current = noopDismiss;
+      dismissSelection();
     };
   }, [runtime, trackedKey]);
 
-  return click;
+  const dismiss = React.useCallback(() => {
+    dismissImplRef.current();
+  }, []);
+
+  return { click, dismiss };
 };
 
 export interface UseMapDataResult {
