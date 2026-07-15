@@ -4,7 +4,7 @@
 
 import { act, render, renderHook, waitFor } from '@testing-library/react';
 import * as React from 'react';
-import { useGeoVisClick } from 'src/react/contexts';
+import { useDismissGeoVisClick, useGeoVisClick } from 'src/react/contexts';
 import { GeoVisProvider, useGeoVis } from 'src/react/GeoVisProvider';
 import type { VisualizationSpec } from 'src/spec/types';
 
@@ -389,5 +389,100 @@ describe('GeoVisClickContext', () => {
     await waitFor(() => {
       expect(result.current).toBeNull();
     });
+  });
+
+  // 7. useDismissGeoVisClick throws outside provider
+  test('useDismissGeoVisClick throws when used outside GeoVisProvider', async () => {
+    expect(() => {
+      renderHook(() => {
+        return useDismissGeoVisClick();
+      });
+    }).toThrow('useDismissGeoVisClick must be used inside <GeoVisProvider>');
+  });
+
+  // 8. dismiss() clears the click selection the same way Escape does
+  test('dismiss() clears the click selection', async () => {
+    const onReady = jest.fn();
+
+    const { result } = renderHook(
+      () => {
+        return { click: useGeoVisClick(), dismiss: useDismissGeoVisClick() };
+      },
+      {
+        wrapper: ({ children }) => {
+          return (
+            <GeoVisProvider spec={buildSpec()}>
+              <ExposeRuntime onReady={onReady} />
+              {children}
+            </GeoVisProvider>
+          );
+        },
+      }
+    );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
+    await waitFor(() => {
+      expect(onReady).toHaveBeenCalled();
+    });
+
+    mockCurrentMap.getFeatureState.mockReturnValue({ value: 42 });
+
+    triggerClick(mockCurrentMap, 'districts-fill', {
+      point: { x: 10, y: 20 },
+      lngLat: { lng: -46.6, lat: -23.5 },
+      features: [{ id: 'sp', layer: { id: 'districts-fill' } }],
+    });
+
+    await waitFor(() => {
+      expect(result.current.click).not.toBeNull();
+    });
+
+    act(() => {
+      result.current.dismiss();
+    });
+
+    await waitFor(() => {
+      expect(result.current.click).toBeNull();
+    });
+  });
+
+  // 9. dismiss() is a safe no-op once the effect has torn down (e.g. after unmount)
+  test('dismiss() does not throw after the component unmounts', async () => {
+    const onReady = jest.fn();
+
+    const { result, unmount } = renderHook(
+      () => {
+        return useDismissGeoVisClick();
+      },
+      {
+        wrapper: ({ children }) => {
+          return (
+            <GeoVisProvider spec={buildSpec()}>
+              <ExposeRuntime onReady={onReady} />
+              {children}
+            </GeoVisProvider>
+          );
+        },
+      }
+    );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
+    await waitFor(() => {
+      expect(onReady).toHaveBeenCalled();
+    });
+
+    const dismiss = result.current;
+
+    unmount();
+
+    expect(() => {
+      dismiss();
+    }).not.toThrow();
   });
 });

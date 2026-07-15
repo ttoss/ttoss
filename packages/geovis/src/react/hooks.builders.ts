@@ -1,4 +1,8 @@
-import type { Map as MapLibreMap, MapLayerMouseEvent } from 'maplibre-gl';
+import type {
+  Map as MapLibreMap,
+  MapLayerMouseEvent,
+  MapMouseEvent,
+} from 'maplibre-gl';
 import type * as React from 'react';
 
 import type { GeoVisRuntime } from '../runtime/createRuntime';
@@ -103,6 +107,46 @@ export const dispatchClearSelection = (runtime: GeoVisRuntime): void => {
       featureId: null,
     });
   }
+};
+
+/**
+ * Wires the two ways a click selection dismisses itself without a direct
+ * feature click: clicking empty space (no tracked layer hit at that point)
+ * and pressing Escape. Both call the same `dismissSelection`, so a
+ * consumer-triggered dismiss (e.g. an inspector panel's dismiss button)
+ * reaches the identical reset by calling it too, instead of re-implementing
+ * this pair of listeners.
+ *
+ * @returns A cleanup function that removes both listeners.
+ */
+export const attachClickDismissListeners = ({
+  map,
+  trackedLayerIds,
+  dismissSelection,
+}: {
+  map: MapLibreMap;
+  trackedLayerIds: string[];
+  dismissSelection: () => void;
+}): (() => void) => {
+  const handleOutsideClick = (event: MapMouseEvent) => {
+    const hits = map.queryRenderedFeatures(event.point, {
+      layers: trackedLayerIds,
+    });
+    if (!hits || hits.length === 0) {
+      dismissSelection();
+    }
+  };
+  map.on('click', handleOutsideClick);
+
+  const handleEscape = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') dismissSelection();
+  };
+  window.addEventListener('keydown', handleEscape);
+
+  return () => {
+    map.off('click', handleOutsideClick);
+    window.removeEventListener('keydown', handleEscape);
+  };
 };
 
 export interface BuildHandleClickParams {
