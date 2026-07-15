@@ -2,11 +2,12 @@
  * Exports the necessary classes from the sequelize-typescript package.
  */
 import pgvector from 'pgvector/sequelize';
-import type { DataType as DataTypeInterface } from 'sequelize';
+import type { DataType as DataTypeInterface, SyncOptions } from 'sequelize';
 import { DataType as SequelizeDataType, Sequelize } from 'sequelize-typescript';
 
 pgvector.registerType(Sequelize);
 
+export type { SyncOptions };
 export type { ModelCtor, SequelizeOptions } from 'sequelize-typescript';
 export {
   // Hook decorators

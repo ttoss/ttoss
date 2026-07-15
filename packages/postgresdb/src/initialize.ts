@@ -3,6 +3,10 @@ import {
   Sequelize,
   type SequelizeOptions,
 } from './sequelize-typescript';
+import {
+  syncWithAdvisoryLock,
+  type SyncWithAdvisoryLockOptions,
+} from './syncWithAdvisoryLock';
 
 let sequelize: Sequelize;
 
@@ -14,11 +18,20 @@ export type Options<Models> = Omit<SequelizeOptions, 'models' | 'dialect'> & {
    * @default false
    */
   createVectorExtension?: boolean;
+  /**
+   * If provided, runs `sequelize.sync()` after connecting, serialized across
+   * concurrently-starting instances with a Postgres session-level advisory
+   * lock. Use this when multiple instances may boot at once (rolling deploys,
+   * auto-scale-out) and each runs `sync()` against the same database.
+   * @default undefined
+   */
+  syncLock?: Omit<SyncWithAdvisoryLockOptions, 'sequelize'>;
 };
 
 export const initialize = async <Models extends { [key: string]: ModelCtor }>({
   models,
   createVectorExtension = false,
+  syncLock,
   ...restOptions
 }: Options<Models>): Promise<
   {
@@ -53,13 +66,22 @@ export const initialize = async <Models extends { [key: string]: ModelCtor }>({
     });
   }
 
-  if (username && password && database && host && port) {
+  const hasCredentials = [username, password, database, host, port].every(
+    Boolean
+  );
+
+  if (hasCredentials) {
     await sequelize.authenticate();
   }
 
   // Create the pgvector extension
   if (createVectorExtension) {
     await sequelize.query('CREATE EXTENSION IF NOT EXISTS vector;');
+  }
+
+  // Run an advisory-locked schema sync when requested.
+  if (syncLock) {
+    await syncWithAdvisoryLock({ sequelize, ...syncLock });
   }
 
   const close = sequelize.close;
