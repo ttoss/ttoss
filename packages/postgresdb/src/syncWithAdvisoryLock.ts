@@ -16,6 +16,25 @@ export type SyncWithAdvisoryLockOptions = {
    * @default undefined
    */
   sync?: SyncOptions;
+  /**
+   * Upper bound in milliseconds on how long to wait to *acquire* the advisory
+   * lock, enforced via Postgres `lock_timeout`. When omitted the wait is
+   * unbounded (the historical behavior).
+   *
+   * Why bound it: a session-level advisory lock held by an instance that died
+   * mid-sync (SIGKILL, OOM) stays held until its backend is reaped — behind a
+   * connection pooler or Aurora that can take minutes. Without a bound, every
+   * later boot blocks on `pg_advisory_lock` forever and the whole deploy
+   * deadlocks. With it, acquisition fails fast with `canceling statement due to
+   * lock timeout`, which the caller can surface (e.g. exit the process) instead
+   * of hanging silently.
+   *
+   * It must be **larger than a legitimate `sync` duration**, so an instance that
+   * is merely waiting for a live peer's migration waits it out rather than
+   * aborting. Must be a positive integer; other values are ignored.
+   * @default undefined
+   */
+  lockTimeoutMs?: number;
 };
 
 /**
@@ -48,6 +67,7 @@ export const syncWithAdvisoryLock = async ({
   sequelize,
   key,
   sync,
+  lockTimeoutMs,
 }: SyncWithAdvisoryLockOptions): Promise<void> => {
   const connectionManager = sequelize.connectionManager;
 
@@ -57,7 +77,20 @@ export const syncWithAdvisoryLock = async ({
     query: (sql: string, values?: unknown[]) => Promise<unknown>;
   };
 
+  const bounded =
+    typeof lockTimeoutMs === 'number' &&
+    Number.isInteger(lockTimeoutMs) &&
+    lockTimeoutMs > 0;
+
   try {
+    if (bounded) {
+      // `lockTimeoutMs` is validated as a positive integer here, so inlining it
+      // is safe — SET does not accept bind parameters. If the lock is held
+      // beyond this, pg_advisory_lock below rejects with
+      // "canceling statement due to lock timeout".
+      await connection.query(`SET lock_timeout = ${lockTimeoutMs}`);
+    }
+
     await connection.query('SELECT pg_advisory_lock($1)', [key]);
 
     try {
@@ -66,6 +99,14 @@ export const syncWithAdvisoryLock = async ({
       await connection.query('SELECT pg_advisory_unlock($1)', [key]);
     }
   } finally {
+    if (bounded) {
+      // Restore the default so the timeout does not leak onto later borrowers
+      // of this pooled connection. Best-effort: the connection may already be
+      // in an error state.
+      await connection.query('SET lock_timeout = 0').catch(() => {
+        return undefined;
+      });
+    }
     connectionManager.releaseConnection(connection);
   }
 };
