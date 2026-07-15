@@ -185,3 +185,75 @@ describe('buildContextPacket — selection and allowedActions (PRD-002 Phase 2)'
     expect(packet.allowedActions).toEqual([]);
   });
 });
+
+describe('buildContextPacket — data bindings and set-map-data (PRD-002 Phase 3)', () => {
+  test('a layer with no mapDataId reports neither mapDataId nor dimension', () => {
+    const spec = makeSpec();
+    const packet = buildContextPacket(spec, RESOLVED(spec), null);
+    expect(packet.layers[0].mapDataId).toBeUndefined();
+    expect(packet.layers[0].dimension).toBeUndefined();
+  });
+
+  test("a layer bound to a mapData entry reports its mapDataId and the entry's dimension", () => {
+    const spec: VisualizationSpec = {
+      ...makeSpec(),
+      layers: [
+        {
+          id: 'lyr-1',
+          sourceId: 'src-1',
+          geometry: 'polygon',
+          mapDataId: 'pop',
+        },
+      ],
+      mapData: [
+        {
+          mapDataId: 'pop',
+          mapId: 'src-1',
+          dimension: 'size',
+          data: [{ geometryId: 'BR', value: 211 }],
+        },
+      ],
+    };
+    const packet = buildContextPacket(spec, RESOLVED(spec), null);
+    expect(packet.layers[0]).toMatchObject({
+      mapDataId: 'pop',
+      dimension: 'size',
+    });
+  });
+
+  test('a layer whose mapDataId references a since-removed entry reports it with no dimension', () => {
+    const spec: VisualizationSpec = {
+      ...makeSpec(),
+      layers: [
+        {
+          id: 'lyr-1',
+          sourceId: 'src-1',
+          geometry: 'polygon',
+          mapDataId: 'ghost',
+        },
+      ],
+    };
+    const packet = buildContextPacket(spec, RESOLVED(spec), null);
+    expect(packet.layers[0].mapDataId).toBe('ghost');
+    expect(packet.layers[0].dimension).toBeUndefined();
+  });
+
+  test('set-map-data is allowed once the spec has a layer and at least one mapData entry', () => {
+    const spec: VisualizationSpec = {
+      ...makeSpec(),
+      mapData: [{ mapDataId: 'pop', mapId: 'src-1', data: [] }],
+    };
+    const packet = buildContextPacket(spec, RESOLVED(spec), null);
+    expect(packet.allowedActions).toEqual([
+      'toggle-layer',
+      'select-feature',
+      'set-map-data',
+    ]);
+  });
+
+  test('set-map-data is not allowed when the spec has no mapData entries', () => {
+    const spec = makeSpec();
+    const packet = buildContextPacket(spec, RESOLVED(spec), null);
+    expect(packet.allowedActions).not.toContain('set-map-data');
+  });
+});

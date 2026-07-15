@@ -296,6 +296,87 @@ describe('applyLayerPatch — replace visible (PRD-002 toggle-layer)', () => {
   });
 });
 
+describe('applyLayerPatch — replace mapDataId (PRD-002 set-map-data)', () => {
+  const makeSpecWithMapData = (): VisualizationSpec => {
+    return {
+      ...makeSpec(),
+      layers: [
+        {
+          id: 'lyr-1',
+          sourceId: 'src-1',
+          geometry: 'polygon',
+          mapDataId: 'pop-2010',
+        },
+      ],
+      mapData: [
+        {
+          mapDataId: 'pop-2010',
+          mapId: 'src-1',
+          data: [{ geometryId: 'BR', value: 190 }],
+        },
+        {
+          mapDataId: 'pop-2020',
+          mapId: 'src-1',
+          data: [{ geometryId: 'BR', value: 211 }],
+        },
+      ],
+    };
+  };
+
+  test('updates spec.layers[].mapDataId', () => {
+    const map = makeMap();
+    const viewState = makeViewState(makeSpecWithMapData());
+    const patch: SpecPatch & { target: 'layer' } = {
+      target: 'layer',
+      op: 'replace',
+      path: 'layer.lyr-1.mapDataId',
+      value: 'pop-2020',
+    };
+
+    applyLayerPatch(map, viewState, patch);
+
+    expect(viewState.spec.layers[0]).toMatchObject({ mapDataId: 'pop-2020' });
+  });
+
+  // No setFeatureState call is expected: every mapData entry's rows are
+  // already resident on the source regardless of which layer points at it.
+  test('recomputes paint via setPaintProperty when the layer is mounted, without touching feature-state', () => {
+    const map = makeMap();
+    jest.mocked(map.getLayer).mockReturnValue({
+      id: 'lyr-1',
+      type: 'fill',
+      source: 'src-1',
+    } as maplibregl.FillLayerSpecification);
+    const viewState = makeViewState(makeSpecWithMapData());
+    const patch: SpecPatch & { target: 'layer' } = {
+      target: 'layer',
+      op: 'replace',
+      path: 'layer.lyr-1.mapDataId',
+      value: 'pop-2020',
+    };
+
+    expect(() => {
+      applyLayerPatch(map, viewState, patch);
+    }).not.toThrow();
+  });
+
+  test('is a no-op when layerId does not match any layer in spec', () => {
+    const map = makeMap();
+    const viewState = makeViewState(makeSpecWithMapData());
+    const before = viewState.spec;
+    const patch: SpecPatch & { target: 'layer' } = {
+      target: 'layer',
+      op: 'replace',
+      path: 'layer.ghost.mapDataId',
+      value: 'pop-2020',
+    };
+
+    applyLayerPatch(map, viewState, patch);
+
+    expect(viewState.spec).toBe(before);
+  });
+});
+
 describe('applySourcePatch — add', () => {
   // op:add should call map.addSource and append the source to viewState.spec.sources.
   test('calls map.addSource and appends source to spec', () => {

@@ -73,6 +73,27 @@ const applyLayerVisibleReplace = (
   };
 };
 
+/**
+ * Replaces the top-level `mapDataId` field of one layer, by id — added for
+ * `dispatch()`'s `set-map-data` action (PRD-002). Referential validity of
+ * the new `mapDataId` (declared entry, source scope) is checked afterwards
+ * by the same `validateSpec` pass every patch already goes through.
+ */
+const applyLayerMapDataIdReplace = (
+  spec: VisualizationSpec,
+  layerId: string,
+  value: unknown
+): VisualizationSpec => {
+  return {
+    ...spec,
+    layers: spec.layers.map((layer) => {
+      return layer.id === layerId
+        ? { ...layer, mapDataId: value as string | undefined }
+        : layer;
+    }),
+  };
+};
+
 /** Replaces one `paint` property of one layer, by id. */
 const applyLayerPaintReplace = (
   spec: VisualizationSpec,
@@ -95,12 +116,26 @@ const applyLayerPaintReplace = (
   };
 };
 
+/** Top-level (non-`paint`) layer fields `dispatch()` actions can replace, by path segment. */
+const LAYER_TOP_LEVEL_FIELD_APPLIERS: Record<
+  string,
+  (
+    spec: VisualizationSpec,
+    layerId: string,
+    value: unknown
+  ) => VisualizationSpec
+> = {
+  visible: applyLayerVisibleReplace,
+  mapDataId: applyLayerMapDataIdReplace,
+};
+
 /**
  * Resolves a `replace` patch's path to the right layer-field mutation. No-op
  * for unrecognised shapes. Supports two path depths: a top-level field
- * (`layer.<id>.visible`, 3 parts — added for `dispatch()`'s `toggle-layer`
- * action, PRD-002) and a nested `paint` property (`layer.<id>.paint.<key>`,
- * 4 parts). Split out of `applyLayerPatchToSpec` to keep its complexity low.
+ * (`layer.<id>.visible` / `layer.<id>.mapDataId`, 3 parts — added for
+ * `dispatch()`'s `toggle-layer`/`set-map-data` actions, PRD-002) and a
+ * nested `paint` property (`layer.<id>.paint.<key>`, 4 parts). Split out of
+ * `applyLayerPatchToSpec` to keep its complexity low.
  */
 const applyLayerReplace = (
   spec: VisualizationSpec,
@@ -110,8 +145,9 @@ const applyLayerReplace = (
   const parts = path.split('.');
   const layerId = parts[1];
   if (!layerId) return spec;
-  if (parts.length === 3 && parts[2] === 'visible') {
-    return applyLayerVisibleReplace(spec, layerId, value);
+  if (parts.length === 3) {
+    const applyField = LAYER_TOP_LEVEL_FIELD_APPLIERS[parts[2] ?? ''];
+    return applyField ? applyField(spec, layerId, value) : spec;
   }
   if (parts.length < 4 || parts[2] !== 'paint') return spec;
   const prop = parts[3];
