@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.10.0 (2026-07-15)
+
+### Features
+
+- **@ttoss/postgresdb:** add advisory-locked schema sync (syncWithAdvisoryLock) ([#1134](https://github.com/ttoss/ttoss/issues/1134)) ([e5fa162](https://github.com/ttoss/ttoss/commit/e5fa162377fa5683c794737853f9389f540ce3b4))
+
 ## [0.9.9](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.9.8...@ttoss/postgresdb@0.9.9) (2026-06-10)
 
 **Note:** Version bump only for package @ttoss/postgresdb

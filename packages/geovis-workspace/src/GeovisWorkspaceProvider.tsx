@@ -1,8 +1,10 @@
+import type { MapClickInfo } from '@ttoss/geovis';
 import * as React from 'react';
 
 import {
   type GeovisWorkspaceConfig,
   GeovisWorkspaceContext,
+  type GeovisWorkspaceDetailsState,
   type GeovisWorkspaceSelection,
 } from './context/GeovisWorkspaceContext';
 
@@ -100,6 +102,62 @@ export const GeovisWorkspaceProvider = ({
     []
   );
 
+  const [details, setDetails] =
+    React.useState<GeovisWorkspaceDetailsState | null>(null);
+
+  // Read the latest fetcher through a ref so `selectFeature` stays stable even
+  // when the parent recreates `config` on every render.
+  const onFeatureSelect = config.rightSidebar?.onFeatureSelect;
+  const onFeatureSelectRef = React.useRef(onFeatureSelect);
+  React.useEffect(() => {
+    onFeatureSelectRef.current = onFeatureSelect;
+  }, [onFeatureSelect]);
+
+  // Monotonic request id: only the response of the latest request wins, so
+  // rapid clicks never render a stale (out-of-order) result.
+  const requestIdRef = React.useRef(0);
+
+  const selectFeature = React.useCallback(
+    (info: MapClickInfo | null) => {
+      const fetcher = onFeatureSelectRef.current;
+
+      if (!fetcher) {
+        return;
+      }
+
+      if (info === null) {
+        requestIdRef.current += 1;
+        setDetails(null);
+        return;
+      }
+
+      const requestId = (requestIdRef.current += 1);
+
+      setDetails({ feature: info, data: null, loading: true, error: null });
+      setRightSidebarOpen({ open: true });
+
+      Promise.resolve()
+        .then(() => {
+          return fetcher(info);
+        })
+        .then((data) => {
+          if (requestId !== requestIdRef.current) {
+            return;
+          }
+
+          setDetails({ feature: info, data, loading: false, error: null });
+        })
+        .catch((error: unknown) => {
+          if (requestId !== requestIdRef.current) {
+            return;
+          }
+
+          setDetails({ feature: info, data: null, loading: false, error });
+        });
+    },
+    [setRightSidebarOpen]
+  );
+
   const value = React.useMemo(() => {
     return {
       config,
@@ -109,6 +167,8 @@ export const GeovisWorkspaceProvider = ({
       setLeftSidebarOpen,
       isRightSidebarOpen,
       setRightSidebarOpen,
+      details,
+      selectFeature,
     };
   }, [
     config,
@@ -118,6 +178,8 @@ export const GeovisWorkspaceProvider = ({
     setLeftSidebarOpen,
     isRightSidebarOpen,
     setRightSidebarOpen,
+    details,
+    selectFeature,
   ]);
 
   return (

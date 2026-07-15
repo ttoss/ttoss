@@ -125,9 +125,11 @@ export const RightSidebar = () => {
     intl: { formatMessage },
   } = useI18n();
 
-  const { config, setRightSidebarOpen } = useGeovisWorkspace();
+  const { config, setRightSidebarOpen, details } = useGeovisWorkspace();
 
   const legendWithColor = config.rightSidebar?.legendWithColor;
+
+  const renderDetails = config.rightSidebar?.renderDetails;
 
   return (
     <Flex
@@ -181,6 +183,8 @@ export const RightSidebar = () => {
       >
         {config.rightSidebar?.title ?? formatMessage(messages.detailsTitle)}
       </Heading>
+
+      {renderDetails && details && renderDetails(details)}
 
       {legendWithColor && <LegendWithColorPanel {...legendWithColor} />}
     </Flex>

@@ -1,3 +1,4 @@
+import type { MapClickInfo } from '@ttoss/geovis';
 import * as React from 'react';
 
 export interface GeovisWorkspaceMenuItem {
@@ -62,6 +63,21 @@ export interface GeovisWorkspaceLegendWithColor {
   sources?: GeovisWorkspaceSources;
 }
 
+export interface GeovisWorkspaceDetailsState {
+  /** The clicked feature these details describe, or `null` when cleared. */
+  feature: MapClickInfo | null;
+  /**
+   * Value resolved by `onFeatureSelect`. `null` while the request is in
+   * flight, when it failed, or when the selection was cleared. Typed as
+   * `unknown` — narrow it inside `renderDetails`.
+   */
+  data: unknown;
+  /** `true` while `onFeatureSelect` is in flight. */
+  loading: boolean;
+  /** Error thrown/rejected by `onFeatureSelect`, or `null`. */
+  error: unknown;
+}
+
 export interface GeovisWorkspaceRightSidebar {
   /** Title displayed at the top of the right sidebar. */
   title?: string;
@@ -69,6 +85,20 @@ export interface GeovisWorkspaceRightSidebar {
   legendWithColor?: GeovisWorkspaceLegendWithColor;
   /** Whether the sidebar starts open or closed. Defaults to `'closed'`. */
   initialState?: 'open' | 'closed';
+  /**
+   * Fetches details for a feature clicked on the map. The workspace calls it
+   * with the clicked feature, opens the right sidebar, and tracks the
+   * loading/error/data state — exposed to `renderDetails`. Requires the clicked
+   * layer to be click-trackable (it declares `activeLegendId` or `click` in the
+   * `visualizationSpec`).
+   */
+  onFeatureSelect?: (info: MapClickInfo) => Promise<unknown> | unknown;
+  /**
+   * Renders the details of the clicked feature inside the right sidebar. Called
+   * with the current fetch state so it can render loading, error and data. Only
+   * used alongside `onFeatureSelect`.
+   */
+  renderDetails?: (state: GeovisWorkspaceDetailsState) => React.ReactNode;
 }
 
 export interface GeovisWorkspaceConfig {
@@ -96,6 +126,17 @@ export interface GeovisWorkspaceContextValue {
   isRightSidebarOpen: boolean;
   /** Opens or closes the right sidebar. */
   setRightSidebarOpen: ({ open }: { open: boolean }) => void;
+  /**
+   * Fetch state for the feature currently clicked on the map, or `null` when
+   * no feature is selected (or `onFeatureSelect` is not configured).
+   */
+  details: GeovisWorkspaceDetailsState | null;
+  /**
+   * Runs `rightSidebar.onFeatureSelect` for the given feature (opening the
+   * sidebar and tracking loading/error/data), or clears the details when
+   * called with `null`. Wired to map clicks by the workspace.
+   */
+  selectFeature: (info: MapClickInfo | null) => void;
 }
 
 export const GeovisWorkspaceContext = React.createContext<

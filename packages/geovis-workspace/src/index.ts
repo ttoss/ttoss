@@ -1,6 +1,7 @@
 export {
   type GeovisWorkspaceConfig,
   type GeovisWorkspaceContextValue,
+  type GeovisWorkspaceDetailsState,
   type GeovisWorkspaceLeftSidebar,
   type GeovisWorkspaceLegend,
   type GeovisWorkspaceLegendItem,
