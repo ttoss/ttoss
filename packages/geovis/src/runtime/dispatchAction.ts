@@ -4,6 +4,7 @@ import type {
   GeoVisAction,
   GeoVisSelection,
   SelectFeatureAction,
+  SetMapDataAction,
   ToggleLayerAction,
 } from './action';
 import type { SpecPatch } from './adapter';
@@ -147,6 +148,39 @@ const compileSelectFeature = (
 };
 
 /**
+ * Compiles `set-map-data` to the layer's `mapDataId`-rebinding `SpecPatch`
+ * (another top-level-field replace on `layer`, alongside `visible` — see
+ * `createRuntime.ts#applyLayerReplace`). Only the `layerId` referential
+ * check happens here; whether `mapDataId` itself is a declared entry, and
+ * whether it shares the layer's source, is left to the same `validateSpec`
+ * pass `applyPatchToRuntime` already runs for every patch — reusing the
+ * existing `unknown-map-data-id`/`source-scope-conflict` checks rather than
+ * duplicating them.
+ */
+const compileSetMapData = (
+  spec: VisualizationSpec,
+  action: SetMapDataAction
+): ActionOutcome => {
+  const layer = spec.layers.find((l) => {
+    return l.id === action.layerId;
+  });
+  if (!layer) {
+    return {
+      issue: buildUnknownLayerIdIssue(spec, action.layerId, 'action.layerId'),
+    };
+  }
+  return {
+    patch: {
+      target: 'layer',
+      op: 'replace',
+      path: `layer.${action.layerId}.mapDataId`,
+      value: action.mapDataId,
+      rationale: action.rationale,
+    },
+  };
+};
+
+/**
  * Compiles a `GeoVisAction` against the current spec to either an existing
  * `SpecPatch` mechanism, a runtime-level selection update, or a rejection
  * issue — never more than one, and never mutating anything itself (the
@@ -161,5 +195,7 @@ export const compileAction = (
       return compileToggleLayer(spec, action);
     case 'select-feature':
       return compileSelectFeature(spec, action);
+    case 'set-map-data':
+      return compileSetMapData(spec, action);
   }
 };

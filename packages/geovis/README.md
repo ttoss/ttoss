@@ -1053,7 +1053,7 @@ const LayerControls = () => {
 
 `runtime.dispatch(action)` is the recommended way to steer a live map — a closed, typed vocabulary of semantic operations (PRD-002, [ADR-0003](./docs/adr/0003-semantic-action-surface.md)) that validates against the current spec before compiling to the same `SpecPatch`/`update`/`setView` mechanisms `applyPatch` uses. Prefer it over hand-written `SpecPatch`es: it targets stable ids instead of internal paint paths, rejects unknown targets with a repairable `GeoVisResult`, and every call — accepted or rejected — is recorded on the action log for audit.
 
-Currently implemented: `toggle-layer`, `select-feature`. More actions land per PRD-002 phase (`set-map-data`, `set-filter`, `set-view-preset`).
+Currently implemented: `toggle-layer`, `select-feature`, `set-map-data`. More actions land per PRD-002 phase (`set-filter`, `set-view-preset`).
 
 ```tsx
 const { runtime } = useGeoVis();
@@ -1101,6 +1101,19 @@ runtime.getSelection();
 
 `useGeoVisClick()` and `<GeoVisMarker>`-driven click anchors already dispatch `select-feature` internally — a human click and `runtime.dispatch({ type: 'select-feature', ... })` produce the identical selection and action-log entry.
 
+`set-map-data` rebinds which `mapData` entry drives a layer's styling — "swap the joined dataset". Since a `mapData` entry's own `dimension` (`'color' | 'size'`) travels with it, picking a different entry can also swap which dimension the layer reads, without a separate field:
+
+```tsx
+runtime.dispatch({
+  type: 'set-map-data',
+  layerId: 'regions-layer',
+  mapDataId: 'pop-2020',
+  rationale: 'AI switched to the 2020 census dataset',
+});
+```
+
+Only `layerId` is checked here directly; whether `mapDataId` is a declared entry, and whether it shares the layer's source, are validated by the same pass every spec update already runs — an invalid rebind is rejected with the same `unknown-map-data-id`/`source-scope-conflict` issues (and repairs) a hand-written `SpecPatch` would get.
+
 ### Action log
 
 ```ts
@@ -1120,10 +1133,10 @@ runtime.getContextPacket();
 //   schemaVersion: 1,
 //   mapType: 'choropleth',
 //   sources: [{ id: 'regions-source', type: 'geojson' }],
-//   layers: [{ id: 'regions-layer', geometry: 'polygon', visible: true }],
+//   layers: [{ id: 'regions-layer', geometry: 'polygon', visible: true, mapDataId: 'pop-2020', dimension: 'color' }],
 //   legends: [{ id: 'pop-legend', scaleKind: 'threshold', domain: [10, 90], unit: 'inhabitants' }],
 //   selection: { layerId: 'regions-layer', featureId: 'BR' },
-//   allowedActions: ['toggle-layer', 'select-feature'],
+//   allowedActions: ['toggle-layer', 'select-feature', 'set-map-data'],
 //   warnings: [],
 //   lastResult: { status: 'resolved', spec, warnings: [] },
 // }

@@ -17,6 +17,7 @@ import {
   toMaplibreSource,
 } from './sourceTranslation';
 import {
+  reapplyLayerPaint,
   upsertClickAnchorCompanion,
   upsertOutlineCompanions,
 } from './syncSourcesAndLayers';
@@ -119,6 +120,52 @@ const applyLayerVisibleReplace = (
   upsertClickAnchorCompanion(map, nextLayer, sourceLayer);
 };
 
+/**
+ * Applies a `layer.<id>.mapDataId` replace: rebinds the layer to a
+ * different `MapData` entry and recomputes its paint (`reapplyLayerPaint`).
+ * No feature-state write is needed here — every `MapData` entry's rows are
+ * already resident on their source regardless of which layer currently
+ * points at it (`reapplyAllMapData` applies all of them unconditionally) —
+ * added for `dispatch({ type: 'set-map-data' })` (PRD-002).
+ */
+const applyLayerMapDataIdReplace = (
+  map: maplibregl.Map,
+  viewState: LayerHostState,
+  layerId: string,
+  value: unknown
+): void => {
+  const layerIndex = viewState.spec.layers.findIndex((l) => {
+    return l.id === layerId;
+  });
+  if (layerIndex === -1) return;
+  const nextLayer: VisualizationLayer = {
+    ...viewState.spec.layers[layerIndex],
+    mapDataId: value as string | undefined,
+  };
+  const nextSpec: VisualizationSpec = {
+    ...viewState.spec,
+    layers: viewState.spec.layers.map((l, i) => {
+      return i === layerIndex ? nextLayer : l;
+    }),
+  };
+  viewState.spec = nextSpec;
+  reapplyLayerPaint(map, nextSpec, nextLayer);
+};
+
+/** Top-level (non-`paint`) layer fields a `replace` patch can target, by path segment. */
+const LAYER_TOP_LEVEL_FIELD_APPLIERS: Record<
+  string,
+  (
+    map: maplibregl.Map,
+    viewState: LayerHostState,
+    layerId: string,
+    value: unknown
+  ) => void
+> = {
+  visible: applyLayerVisibleReplace,
+  mapDataId: applyLayerMapDataIdReplace,
+};
+
 const applyLayerPaintReplace = (
   map: maplibregl.Map,
   viewState: LayerHostState,
@@ -163,9 +210,12 @@ export const applyLayerPatch = (
   if (patch.op === 'replace' && patch.value !== undefined) {
     const parts = patch.path.split('.');
     const layerId = parts[1];
-    if (parts.length === 3 && parts[2] === 'visible' && layerId) {
-      applyLayerVisibleReplace(map, viewState, layerId, patch.value);
-      return;
+    if (parts.length === 3 && layerId) {
+      const applyField = LAYER_TOP_LEVEL_FIELD_APPLIERS[parts[2] ?? ''];
+      if (applyField) {
+        applyField(map, viewState, layerId, patch.value);
+        return;
+      }
     }
     applyLayerPaintReplace(map, viewState, patch.path, patch.value);
   }

@@ -20,6 +20,10 @@ export interface ContextPacketLayer {
   id: string;
   geometry: GeoVisGeometryType;
   visible: boolean;
+  /** Id of the bound `MapData` entry, if any — matches `set-map-data`'s `mapDataId`. */
+  mapDataId?: string;
+  /** The bound `MapData` entry's own `dimension`, when declared. */
+  dimension?: 'color' | 'size';
 }
 
 export interface ContextPacketLegend {
@@ -86,7 +90,21 @@ const computeAllowedActions = (
   if (spec.layers.length > 0) {
     actions.push('toggle-layer', 'select-feature');
   }
+  if (spec.layers.length > 0 && (spec.mapData?.length ?? 0) > 0) {
+    actions.push('set-map-data');
+  }
   return actions;
+};
+
+/** Resolves the `dimension` of the `MapData` entry a layer is bound to, if any. */
+const resolveLayerDimension = (
+  spec: VisualizationSpec,
+  layer: VisualizationSpec['layers'][number]
+): 'color' | 'size' | undefined => {
+  if (!layer.mapDataId) return undefined;
+  return spec.mapData?.find((md) => {
+    return md.mapDataId === layer.mapDataId;
+  })?.dimension;
 };
 
 /**
@@ -107,7 +125,13 @@ export const buildContextPacket = (
       return { id: s.id, type: s.type };
     }),
     layers: spec.layers.map((l) => {
-      return { id: l.id, geometry: l.geometry, visible: l.visible !== false };
+      return {
+        id: l.id,
+        geometry: l.geometry,
+        visible: l.visible !== false,
+        mapDataId: l.mapDataId,
+        dimension: resolveLayerDimension(spec, l),
+      };
     }),
     legends: (spec.legends ?? []).map(buildLegendSummary),
     selection,

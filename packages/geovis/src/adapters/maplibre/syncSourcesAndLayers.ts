@@ -240,16 +240,55 @@ export const upsertClickAnchorCompanion = (
   }
 };
 
+/** Resolves the underlying vector-tile `source-layer` for a spec layer, falling back to its source's. */
+const resolveSourceLayerFor = (
+  spec: VisualizationSpec,
+  layer: VisualizationSpec['layers'][number]
+): string | undefined => {
+  const source = spec.sources.find((s) => {
+    return s.id === layer.sourceId;
+  });
+  const sourceLayer =
+    source && 'sourceLayer' in source
+      ? (source as { sourceLayer?: string }).sourceLayer
+      : undefined;
+  return layer.sourceLayer ?? sourceLayer;
+};
+
+/**
+ * Recomputes one already-mounted layer's paint from its current spec-driven
+ * bindings (`mapData`, legends, `sizeBy`) and writes every property via
+ * `setPaintProperty`. This is the same recomputation `upsertLayers` performs
+ * below for an existing layer during a full `update()` — factored out so a
+ * lighter-weight patch (`dispatch({ type: 'set-map-data' })`, PRD-002) can
+ * trigger it without a full `syncSourcesAndLayers` pass. No-op if the layer
+ * isn't on the map yet.
+ */
+export const reapplyLayerPaint = (
+  map: maplibregl.Map,
+  spec: VisualizationSpec,
+  layer: VisualizationSpec['layers'][number]
+): void => {
+  if (!map.getLayer(layer.id)) return;
+  const desiredLayer = toMaplibreLayer(
+    layer,
+    resolveSourceLayerFor(spec, layer),
+    spec.legends,
+    spec.mapData,
+    spec.scaleMaxValue
+  );
+  stripUndefinedPaint(desiredLayer);
+  const paint = (desiredLayer as { paint?: Record<string, unknown> }).paint;
+  if (!paint) return;
+  for (const [property, value] of Object.entries(paint)) {
+    writePaintProperty(map, spec, layer, property, value);
+  }
+};
+
 /** Adds new layers and updates visibility/paint in-place (avoids remove-and-re-add flicker). */
 const upsertLayers = (map: maplibregl.Map, spec: VisualizationSpec): void => {
   for (const layer of spec.layers) {
-    const source = spec.sources.find((s) => {
-      return s.id === layer.sourceId;
-    });
-    const sourceLayer =
-      source && 'sourceLayer' in source
-        ? (source as { sourceLayer?: string }).sourceLayer
-        : undefined;
+    const sourceLayer = resolveSourceLayerFor(spec, layer);
     const desiredLayer = toMaplibreLayer(
       layer,
       sourceLayer,
@@ -267,13 +306,7 @@ const upsertLayers = (map: maplibregl.Map, spec: VisualizationSpec): void => {
         'visibility',
         layer.visible === false ? 'none' : 'visible'
       );
-
-      const paint = (desiredLayer as { paint?: Record<string, unknown> }).paint;
-      if (paint) {
-        for (const [property, value] of Object.entries(paint)) {
-          writePaintProperty(map, spec, layer, property, value);
-        }
-      }
+      reapplyLayerPaint(map, spec, layer);
     }
 
     const effectiveSourceLayer = layer.sourceLayer ?? sourceLayer;

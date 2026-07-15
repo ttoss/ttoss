@@ -569,6 +569,123 @@ describe('createRuntime — dispatch select-feature and getSelection() (PRD-002 
   });
 });
 
+describe('createRuntime — dispatch set-map-data (PRD-002 Phase 3)', () => {
+  const makeSpecWithTwoMapData = (): VisualizationSpec => {
+    return {
+      ...makeSpec(),
+      layers: [
+        {
+          id: 'lyr-1',
+          sourceId: 'src-1',
+          geometry: 'polygon',
+          mapDataId: 'pop-2010',
+        },
+      ],
+      mapData: [
+        {
+          mapDataId: 'pop-2010',
+          mapId: 'src-1',
+          data: [{ geometryId: 'BR', value: 190 }],
+        },
+        {
+          mapDataId: 'pop-2020',
+          mapId: 'src-1',
+          data: [{ geometryId: 'BR', value: 211 }],
+        },
+      ],
+    };
+  };
+
+  test('rebinds the layer to another declared mapDataId and calls adapter.applyPatch', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpecWithTwoMapData());
+
+    const result = runtime.dispatch({
+      type: 'set-map-data',
+      layerId: 'lyr-1',
+      mapDataId: 'pop-2020',
+    });
+
+    expect(result.status).toBe('resolved');
+    expect(runtime.spec.layers[0]).toMatchObject({ mapDataId: 'pop-2020' });
+    expect(adapter.applyPatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        target: 'layer',
+        op: 'replace',
+        path: 'layer.lyr-1.mapDataId',
+        value: 'pop-2020',
+      })
+    );
+  });
+
+  test('an unknown layerId is rejected before touching the adapter', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpecWithTwoMapData());
+
+    const result = runtime.dispatch({
+      type: 'set-map-data',
+      layerId: 'ghost',
+      mapDataId: 'pop-2020',
+    });
+
+    expect(result.status).toBe('mismatch');
+    if (result.status !== 'resolved') {
+      expect(result.issues[0].code).toBe('unknown-layer-id');
+    }
+    expect(adapter.applyPatch).not.toHaveBeenCalled();
+  });
+
+  test('an unknown mapDataId is rejected by the normal validateSpec pass, not a bespoke check', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpecWithTwoMapData());
+    const before = runtime.spec;
+
+    const result = runtime.dispatch({
+      type: 'set-map-data',
+      layerId: 'lyr-1',
+      mapDataId: 'does-not-exist',
+    });
+
+    expect(result.status).toBe('mismatch');
+    if (result.status !== 'resolved') {
+      expect(result.issues[0].code).toBe('unknown-map-data-id');
+    }
+    expect(runtime.spec).toBe(before);
+    expect(adapter.applyPatch).not.toHaveBeenCalled();
+  });
+
+  test('a mapDataId from a different source is rejected as a source-scope-conflict', () => {
+    const adapter = makeAdapter();
+    const spec: VisualizationSpec = {
+      ...makeSpecWithTwoMapData(),
+      sources: [
+        ...makeSpecWithTwoMapData().sources,
+        {
+          id: 'src-2',
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: [] },
+        },
+      ],
+      mapData: [
+        ...makeSpecWithTwoMapData().mapData!,
+        { mapDataId: 'other-source-data', mapId: 'src-2', data: [] },
+      ],
+    };
+    const runtime = createRuntime(adapter, spec);
+
+    const result = runtime.dispatch({
+      type: 'set-map-data',
+      layerId: 'lyr-1',
+      mapDataId: 'other-source-data',
+    });
+
+    expect(result.status).toBe('mismatch');
+    if (result.status !== 'resolved') {
+      expect(result.issues[0].code).toBe('source-scope-conflict');
+    }
+  });
+});
+
 describe('createRuntime — getContextPacket() (PRD-002, ADR-0004)', () => {
   test('reports sources, layers, allowed actions, and the last result — metadata only', () => {
     const adapter = makeAdapter();
@@ -622,5 +739,44 @@ describe('createRuntime — getContextPacket() (PRD-002, ADR-0004)', () => {
       layerId: 'lyr-1',
       featureId: 'BR',
     });
+  });
+
+  test('set-map-data is allowed once the spec has both a layer and a mapData entry, and reflects a dispatched rebind', () => {
+    const adapter = makeAdapter();
+    const spec: VisualizationSpec = {
+      ...makeSpec(),
+      layers: [{ id: 'lyr-1', sourceId: 'src-1', geometry: 'polygon' }],
+      mapData: [
+        {
+          mapDataId: 'pop-2020',
+          mapId: 'src-1',
+          dimension: 'color',
+          data: [{ geometryId: 'BR', value: 211 }],
+        },
+      ],
+    };
+    const runtime = createRuntime(adapter, spec);
+
+    expect(runtime.getContextPacket().allowedActions).toContain('set-map-data');
+
+    runtime.dispatch({
+      type: 'set-map-data',
+      layerId: 'lyr-1',
+      mapDataId: 'pop-2020',
+    });
+
+    expect(runtime.getContextPacket().layers[0]).toMatchObject({
+      mapDataId: 'pop-2020',
+      dimension: 'color',
+    });
+  });
+
+  test('set-map-data is not allowed when the spec has no mapData entries', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+
+    expect(runtime.getContextPacket().allowedActions).not.toContain(
+      'set-map-data'
+    );
   });
 });

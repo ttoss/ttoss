@@ -78,6 +78,16 @@ test('SelectFeatureAction and GeoVisSelection are part of the public contract', 
   expect(clearAction.type).toBe('select-feature');
 });
 
+test('SetMapDataAction is part of the public contract', () => {
+  const action: GeoVisAction = {
+    type: 'set-map-data',
+    layerId: 'lyr-1',
+    mapDataId: 'pop-2020',
+    rationale: 'AI switched to the 2020 census dataset',
+  };
+  expect(action.type).toBe('set-map-data');
+});
+
 test('GeoVisResult taxonomy types are part of the public contract', () => {
   const repair: RepairOption = {
     kind: 'allowed-values',

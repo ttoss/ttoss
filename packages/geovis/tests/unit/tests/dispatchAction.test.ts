@@ -193,3 +193,46 @@ describe('compileAction — select-feature', () => {
     });
   });
 });
+
+describe('compileAction — set-map-data', () => {
+  test('compiles to a layer.<id>.mapDataId replace patch, carrying the rationale', () => {
+    const outcome = compileAction(makeSpec(), {
+      type: 'set-map-data',
+      layerId: 'lyr-1',
+      mapDataId: 'pop-2020',
+      rationale: 'AI switched to the 2020 census dataset',
+    });
+    expect(outcome).toEqual({
+      patch: {
+        target: 'layer',
+        op: 'replace',
+        path: 'layer.lyr-1.mapDataId',
+        value: 'pop-2020',
+        rationale: 'AI switched to the 2020 census dataset',
+      },
+    });
+  });
+
+  test('an unknown layerId compiles to an unknown-layer-id issue', () => {
+    const outcome = compileAction(makeSpec(), {
+      type: 'set-map-data',
+      layerId: 'ghost',
+      mapDataId: 'pop-2020',
+    });
+    expect('issue' in outcome && outcome.issue).toMatchObject({
+      code: 'unknown-layer-id',
+      subject: { path: 'action.layerId', id: 'ghost' },
+    });
+  });
+
+  test('does not itself validate mapDataId — that is left to validateSpec downstream', () => {
+    // A bogus mapDataId still compiles to a patch; createRuntime's dispatch()
+    // is what rejects it via the normal validateSpec pass (see createRuntime.test.ts).
+    const outcome = compileAction(makeSpec(), {
+      type: 'set-map-data',
+      layerId: 'lyr-1',
+      mapDataId: 'does-not-exist',
+    });
+    expect('patch' in outcome).toBe(true);
+  });
+});
