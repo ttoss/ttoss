@@ -1,22 +1,17 @@
 import 'react-grid-layout/css/styles.css';
 
-import { Box, Flex, Global, IconButton, Spinner } from '@ttoss/ui';
+import { Box, Flex, Global, Spinner } from '@ttoss/ui';
 import * as React from 'react';
 import { type Layout, Responsive, WidthProvider } from 'react-grid-layout';
 
 import type { DashboardTemplate } from './Dashboard';
-import {
-  DashboardCard,
-  type DashboardCard as DashboardCardProps,
-} from './DashboardCard';
+import { type DashboardCard as DashboardCardProps } from './DashboardCard';
+import { buildGridItems } from './DashboardGridItems';
 import { useDashboard } from './DashboardProvider';
-import { DashboardSectionDivider } from './DashboardSectionDivider';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const ALLOWED_X_COLUMNS = [0, 3, 6, 9];
-const ROW_HEIGHT = 32;
-const MARGIN_Y = 10;
 
 const snapXToAllowedColumns = (x: number, w: number, cols: number): number => {
   const maxX = Math.max(0, cols - w);
@@ -27,150 +22,6 @@ const snapXToAllowedColumns = (x: number, w: number, cols: number): number => {
   return validColumns.reduce((closest, current) => {
     return Math.abs(current - x) < Math.abs(closest - x) ? current : closest;
   });
-};
-
-const RemoveCardButton = ({ onClick }: { onClick: () => void }) => {
-  return (
-    <IconButton
-      aria-label="Remove card"
-      icon="close"
-      onClick={onClick}
-      sx={{
-        borderRadius: 'full',
-        '&:hover': { color: 'red' },
-        position: 'absolute',
-        bottom: 1,
-        right: 0,
-        zIndex: 2,
-      }}
-    />
-  );
-};
-
-const DragHandle = () => {
-  return (
-    <IconButton
-      className="dashboard-card-drag-handle"
-      sx={{
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        zIndex: 1,
-        cursor: 'grab',
-        '&:active': { cursor: 'grabbing' },
-      }}
-      aria-label="Drag card"
-      icon="lucide:grip-vertical"
-    />
-  );
-};
-
-type GridCardProps = {
-  itemKey: string;
-  card: DashboardCardProps;
-  currency?: string;
-  clickable: boolean;
-  isEditMode: boolean;
-  onCardClick: (key: string, card: DashboardCardProps) => void;
-  onRemove: (key: string) => void;
-};
-
-const GridCard = ({
-  itemKey,
-  card,
-  currency,
-  clickable,
-  isEditMode,
-  onCardClick,
-  onRemove,
-}: GridCardProps) => {
-  const handleClick = clickable
-    ? () => {
-        return onCardClick(itemKey, card);
-      }
-    : undefined;
-  const handleKeyDown = clickable
-    ? (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' || e.key === ' ') onCardClick(itemKey, card);
-      }
-    : undefined;
-  return (
-    <div
-      role={clickable ? 'button' : undefined}
-      tabIndex={clickable ? 0 : undefined}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      style={clickable ? { cursor: 'pointer' } : undefined}
-    >
-      {isEditMode ? (
-        <>
-          <DragHandle />
-          <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
-            <DashboardCard {...{ currency }} {...card} />
-            <RemoveCardButton
-              onClick={() => {
-                return onRemove(itemKey);
-              }}
-            />
-          </Box>
-        </>
-      ) : (
-        <DashboardCard {...{ currency }} {...card} />
-      )}
-    </div>
-  );
-};
-
-type GridSectionDividerProps = {
-  itemKey: string;
-  card: React.ComponentProps<typeof DashboardSectionDivider>;
-  isEditMode: boolean;
-  onTitleChange: (key: string, title: string) => void;
-  onRemove: (key: string) => void;
-};
-
-const GridSectionDivider = ({
-  itemKey,
-  card,
-  isEditMode,
-  onTitleChange,
-  onRemove,
-}: GridSectionDividerProps) => {
-  if (!isEditMode) return <DashboardSectionDivider {...card} />;
-  return (
-    <>
-      <DragHandle />
-      <Box
-        sx={{
-          position: 'relative',
-          overflow: 'visible',
-          width: '100%',
-          height: '100%',
-          border: 'sm',
-          borderStyle: 'dashed',
-          borderColor: 'display.border.muted.default',
-          borderRadius: 'md',
-          cursor: 'grab',
-          '&:active': { cursor: 'grabbing' },
-        }}
-      >
-        <Box sx={{ paddingLeft: '6' }}>
-          <DashboardSectionDivider
-            {...card}
-            editable
-            onTitleChange={(title) => {
-              return onTitleChange(itemKey, title);
-            }}
-          />
-        </Box>
-        <RemoveCardButton
-          onClick={() => {
-            return onRemove(itemKey);
-          }}
-        />
-      </Box>
-    </>
-  );
 };
 
 export type DashboardGridProps = {
@@ -212,29 +63,64 @@ const buildLayout = (template: DashboardTemplate, isEditMode: boolean) => {
   return { xs: base, sm: base, md: base, lg: base, xl: base, '2xl': base };
 };
 
-const computeSlot = (
-  template: DashboardTemplate | undefined,
-  selectedKey: string | null | undefined,
-  renderCardDetail: DashboardGridProps['renderCardDetail'],
-  close: () => void
-): { marginTop: number; content: React.ReactNode } | null => {
-  if (!template || !selectedKey || !renderCardDetail) return null;
+const SLOT_KEY = '__detail_slot__';
+const SLOT_H = 12;
+
+const buildSlotLayout = (
+  base: ReturnType<typeof buildLayout>,
+  selectedKey: string,
+  template: DashboardTemplate
+): ReturnType<typeof buildLayout> => {
   const selectedItem = template.grid.find((i) => {
     return i.i === selectedKey;
   });
-  if (!selectedItem || selectedItem.card.type === 'sectionDivider') return null;
-  const maxY = Math.max(
-    ...template.grid.map((i) => {
-      return i.y + i.h;
-    })
-  );
-  const cardBottomPx =
-    (selectedItem.y + selectedItem.h) * (ROW_HEIGHT + MARGIN_Y) - MARGIN_Y;
-  const gridHeightPx = maxY * (ROW_HEIGHT + MARGIN_Y) - MARGIN_Y;
-  return {
-    marginTop: cardBottomPx - gridHeightPx,
-    content: renderCardDetail(selectedItem.card as DashboardCardProps, close),
+  if (!selectedItem) return base;
+  const slotY = selectedItem.y + selectedItem.h;
+  const slotItem: Layout = {
+    i: SLOT_KEY,
+    x: 0,
+    y: slotY,
+    w: COLS_NUM,
+    h: SLOT_H,
+    isDraggable: false,
+    isResizable: false,
+    static: true,
   };
+  const insertAndShift = (items: Layout[]) => {
+    const shifted = items.map((item) => {
+      if (item.y >= slotY) return { ...item, y: item.y + SLOT_H };
+      return item;
+    });
+    return [...shifted, slotItem];
+  };
+  return {
+    xs: insertAndShift(base.xs),
+    sm: insertAndShift(base.sm),
+    md: insertAndShift(base.md),
+    lg: insertAndShift(base.lg),
+    xl: insertAndShift(base.xl),
+    '2xl': insertAndShift(base['2xl']),
+  };
+};
+
+const renderSlotChild = (
+  template: DashboardTemplate,
+  selectedKey: string | null | undefined,
+  renderDetail: DashboardGridProps['renderCardDetail'],
+  close: () => void
+): React.ReactNode => {
+  if (!selectedKey || !renderDetail) return null;
+  const item = template.grid.find((i) => {
+    return i.i === selectedKey;
+  });
+  if (!item || item.card.type === 'sectionDivider') return null;
+  return (
+    <div key={SLOT_KEY}>
+      <Box sx={{ width: '100%', height: '100%', padding: 2 }}>
+        {renderDetail(item.card as DashboardCardProps, close)}
+      </Box>
+    </div>
+  );
 };
 
 const getCardClickable = (
@@ -271,7 +157,120 @@ const useDragHandlers = (
       isDraggingRef.current = false;
     }, 0);
   };
-  return { isDraggingRef, handleLayoutChange, snapDrag, handleDragStop };
+  const onDragStart = () => {
+    isDraggingRef.current = true;
+  };
+  return {
+    isDraggingRef,
+    handleLayoutChange,
+    snapDrag,
+    handleDragStop,
+    onDragStart,
+  };
+};
+
+const resolveLayouts = (
+  selectedTemplate: DashboardTemplate | undefined,
+  isEditMode: boolean,
+  selectedCardKey: string | null | undefined,
+  renderCardDetail: DashboardGridProps['renderCardDetail']
+) => {
+  if (!selectedTemplate) return undefined;
+  const base = buildLayout(selectedTemplate, isEditMode);
+  if (selectedCardKey && renderCardDetail) {
+    return buildSlotLayout(base, selectedCardKey, selectedTemplate);
+  }
+  return base;
+};
+
+const useCardClickHandler = (
+  isEditMode: boolean,
+  isDraggingRef: React.MutableRefObject<boolean>,
+  renderCardDetail: DashboardGridProps['renderCardDetail'],
+  clickableCardFilter: DashboardGridProps['clickableCardFilter'],
+  setSelectedCardKey: DashboardGridProps['setSelectedCardKey']
+) => {
+  const isClickable = (card: DashboardCardProps) => {
+    return getCardClickable(card, renderCardDetail, clickableCardFilter);
+  };
+  const handleCardClick = (key: string, card: DashboardCardProps) => {
+    if (isEditMode || isDraggingRef.current || !isClickable(card)) return;
+    setSelectedCardKey?.((prev) => {
+      return prev === key ? null : key;
+    });
+  };
+  return { isClickable, handleCardClick };
+};
+
+type ActiveGridProps = {
+  layouts: ReturnType<typeof buildLayout>;
+  selectedTemplate: DashboardTemplate;
+  currency?: string;
+  isEditMode: boolean;
+  isCardClickable: (card: DashboardCardProps) => boolean;
+  handleCardClick: (key: string, card: DashboardCardProps) => void;
+  removeCard: (key: string) => void;
+  updateCard: (key: string, data: { title: string }) => void;
+  selectedCardKey?: string | null;
+  renderCardDetail?: DashboardGridProps['renderCardDetail'];
+  close: () => void;
+  handleLayoutChange: (l: Layout[]) => void;
+  snapDrag: (_l: Layout[], _o: Layout, newItem: Layout) => void;
+  onDragStart: () => void;
+  handleDragStop: (l: Layout[], o: Layout, newItem: Layout) => void;
+};
+
+const ActiveGrid = ({
+  layouts,
+  selectedTemplate,
+  currency,
+  isEditMode,
+  isCardClickable,
+  handleCardClick,
+  removeCard,
+  updateCard,
+  selectedCardKey,
+  renderCardDetail,
+  close,
+  handleLayoutChange,
+  snapDrag,
+  onDragStart,
+  handleDragStop,
+}: ActiveGridProps) => {
+  return (
+    <ResponsiveGridLayout
+      className="layout"
+      layouts={layouts}
+      breakpoints={BREAKPOINTS}
+      cols={COLS}
+      rowHeight={32}
+      margin={[10, 10]}
+      containerPadding={[0, 0]}
+      onLayoutChange={handleLayoutChange}
+      onDrag={snapDrag}
+      onDragStart={onDragStart}
+      onDragStop={handleDragStop}
+      draggableHandle=".dashboard-card-drag-handle"
+    >
+      {buildGridItems({
+        template: selectedTemplate,
+        currency,
+        isEditMode,
+        isCardClickable,
+        handleCardClick,
+        onRemove: removeCard,
+        onTitleChange: (key, title) => {
+          return updateCard(key, { title });
+        },
+      })}
+      {renderSlotChild(
+        selectedTemplate,
+        selectedCardKey,
+        renderCardDetail,
+        close
+      )}
+    </ResponsiveGridLayout>
+  );
 };
 
 export const DashboardGrid = ({
@@ -286,36 +285,33 @@ export const DashboardGrid = ({
   ...rest
 }: DashboardGridProps) => {
   const { onLayoutChange, removeCard, updateCard } = useDashboard();
-  const { isDraggingRef, handleLayoutChange, snapDrag, handleDragStop } =
-    useDragHandlers(isEditMode, onLayoutChange);
+  const {
+    isDraggingRef,
+    handleLayoutChange,
+    snapDrag,
+    handleDragStop,
+    onDragStart,
+  } = useDragHandlers(isEditMode, onLayoutChange);
+  const { isClickable: isCardClickable, handleCardClick } = useCardClickHandler(
+    isEditMode,
+    isDraggingRef,
+    renderCardDetail,
+    clickableCardFilter,
+    setSelectedCardKey
+  );
 
   const close = React.useCallback(() => {
     return setSelectedCardKey?.(null);
   }, [setSelectedCardKey]);
 
-  const layouts = selectedTemplate
-    ? buildLayout(selectedTemplate, isEditMode)
-    : undefined;
-
-  const slot = computeSlot(
+  const layouts = resolveLayouts(
     selectedTemplate,
+    isEditMode,
     selectedCardKey,
-    renderCardDetail,
-    close
+    renderCardDetail
   );
 
   if (!selectedTemplate || !layouts) return null;
-
-  const isCardClickable = (card: DashboardCardProps) => {
-    return getCardClickable(card, renderCardDetail, clickableCardFilter);
-  };
-
-  const handleCardClick = (key: string, card: DashboardCardProps) => {
-    if (isEditMode || isDraggingRef.current || !isCardClickable(card)) return;
-    setSelectedCardKey?.((prev) => {
-      return prev === key ? null : key;
-    });
-  };
 
   return (
     <Box
@@ -339,59 +335,23 @@ export const DashboardGrid = ({
           <Spinner />
         </Flex>
       ) : (
-        <ResponsiveGridLayout
-          className="layout"
+        <ActiveGrid
           layouts={layouts}
-          breakpoints={BREAKPOINTS}
-          cols={COLS}
-          rowHeight={32}
-          margin={[10, 10]}
-          containerPadding={[0, 0]}
-          onLayoutChange={handleLayoutChange}
-          onDrag={snapDrag}
-          onDragStart={() => {
-            isDraggingRef.current = true;
-          }}
-          onDragStop={handleDragStop}
-          draggableHandle=".dashboard-card-drag-handle"
-        >
-          {selectedTemplate.grid.map((item) => {
-            if (item.card.type === 'sectionDivider') {
-              return (
-                <div key={item.i}>
-                  <GridSectionDivider
-                    itemKey={item.i}
-                    card={item.card}
-                    isEditMode={isEditMode}
-                    onTitleChange={(key, title) => {
-                      return updateCard(key, { title });
-                    }}
-                    onRemove={removeCard}
-                  />
-                </div>
-              );
-            }
-            const card = item.card as DashboardCardProps;
-            return (
-              <div key={item.i}>
-                <GridCard
-                  itemKey={item.i}
-                  card={card}
-                  currency={currency}
-                  clickable={isCardClickable(card)}
-                  isEditMode={isEditMode}
-                  onCardClick={handleCardClick}
-                  onRemove={removeCard}
-                />
-              </div>
-            );
-          })}
-        </ResponsiveGridLayout>
-      )}
-      {slot && (
-        <Box sx={{ width: '100%', marginTop: `${slot.marginTop}px` }}>
-          {slot.content}
-        </Box>
+          selectedTemplate={selectedTemplate}
+          currency={currency}
+          isEditMode={isEditMode}
+          isCardClickable={isCardClickable}
+          handleCardClick={handleCardClick}
+          removeCard={removeCard}
+          updateCard={updateCard}
+          selectedCardKey={selectedCardKey}
+          renderCardDetail={renderCardDetail}
+          close={close}
+          handleLayoutChange={handleLayoutChange}
+          snapDrag={snapDrag}
+          onDragStart={onDragStart}
+          handleDragStop={handleDragStop}
+        />
       )}
     </Box>
   );
