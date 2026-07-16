@@ -54,6 +54,13 @@ export type DomFixture = {
   scope: string;
   element: () => React.ReactElement;
   open?: () => void;
+  /**
+   * Optional jest-axe run options for this fixture's a11y check. Use only to
+   * suppress a documented tooling false-positive (never a real violation) —
+   * see the Meter fixture for the canonical example (RAC's deliberate
+   * `role="meter progressbar"` fallback trips axe's `aria-allowed-attr`).
+   */
+  axeOptions?: Record<string, unknown>;
 };
 
 export const DOM_FIXTURES: Record<string, DomFixture> = {
@@ -99,6 +106,20 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
     element: () => {
       return <pkg.Switch>x</pkg.Switch>;
     },
+  },
+  Meter: {
+    scope: 'meter',
+    element: () => {
+      return <pkg.Meter aria-label="Storage" label="Storage used" value={40} />;
+    },
+    // React Aria's useMeter deliberately renders `role="meter progressbar"`
+    // (a documented Firefox/Chrome fallback — meter is not universally
+    // supported). axe-core's `aria-allowed-attr` mishandles the
+    // space-separated role fallback list: it resolves the element to a
+    // generic role and rejects the valid `aria-value*` attributes. The DOM is
+    // correct for real assistive tech; this is a known axe limitation, so the
+    // single rule is disabled for this fixture only. See ROADMAP Meter row.
+    axeOptions: { rules: { 'aria-allowed-attr': { enabled: false } } },
   },
   Tabs: { scope: 'tabs', element: treeTabs },
   TabList: { scope: 'tabs', element: treeTabs },

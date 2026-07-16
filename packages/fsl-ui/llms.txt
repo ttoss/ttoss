@@ -59,7 +59,9 @@ Input:       TextField, TextArea (each + Label/Control/Description/Error),
 Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
              DialogActions, Menu, MenuTrigger, ConfirmationDialog,
              Popover, PopoverTrigger, Tooltip, TooltipTrigger
-Feedback:    ProgressBar, Toast, ToastRegion, createToastQueue
+Feedback:    ProgressBar, Meter, Toast, ToastRegion, createToastQueue
+             (Meter = static quantity in a range e.g. battery/disk;
+             ProgressBar = a task in flight. Pick by "state" vs "progressing")
 Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              WizardNavigation, Separator, Group (labelled role=group frame),
              Toolbar (role=toolbar, arrow-key roving nav over its controls)

@@ -27,7 +27,8 @@ describe('a11y: axe on every canonical render', () => {
       const results = await axe(
         document.body.contains(container) && container.childElementCount > 0
           ? container
-          : document.body
+          : document.body,
+        fixture.axeOptions
       );
       expect(results.violations).toEqual([]);
     },

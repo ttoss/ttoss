@@ -21,6 +21,8 @@ export type { GroupProps } from './components/Group/Group';
 export { Group, groupMeta } from './components/Group/Group';
 export type { LinkProps } from './components/Link/Link';
 export { Link, linkMeta } from './components/Link/Link';
+export type { MeterProps } from './components/Meter/Meter';
+export { Meter, meterMeta } from './components/Meter/Meter';
 export type { ProgressBarProps } from './components/ProgressBar/ProgressBar';
 export {
   ProgressBar,
