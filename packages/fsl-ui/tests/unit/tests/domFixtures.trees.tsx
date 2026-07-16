@@ -17,7 +17,7 @@ import * as pkg from 'src/index';
 
 export const treeRadio = (): React.ReactElement => {
   return (
-    <pkg.RadioGroup>
+    <pkg.RadioGroup label="Choice">
       <pkg.Radio value="a">A</pkg.Radio>
     </pkg.RadioGroup>
   );
@@ -25,7 +25,7 @@ export const treeRadio = (): React.ReactElement => {
 
 export const treeSelect = (defaultOpen?: boolean): React.ReactElement => {
   return (
-    <pkg.Select defaultOpen={defaultOpen}>
+    <pkg.Select label="Choice" defaultOpen={defaultOpen}>
       <pkg.SelectItem id="a">A</pkg.SelectItem>
     </pkg.Select>
   );

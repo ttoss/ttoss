@@ -228,13 +228,20 @@ export interface TagProps extends Omit<RACTagProps, 'style' | 'className'> {
  * <Tag id="react">React</Tag>
  * ```
  */
-export const Tag = ({ children, ...props }: TagProps) => {
+export const Tag = ({ children, textValue, ...props }: TagProps) => {
   const { removeLabel } = tagGroupScope.use(tagMeta.displayName);
   const c = vars.colors.input.primary;
+  // The tag renders a render-function child (label span + optional remove
+  // button), so React Aria cannot infer the tag's accessible text from plain
+  // children — derive it from string children (or the caller-supplied
+  // `textValue`) to satisfy the collection a11y contract.
+  const resolvedTextValue =
+    textValue ?? (typeof children === 'string' ? children : undefined);
 
   return (
     <RACTag
       {...props}
+      textValue={resolvedTextValue}
       data-scope="tag-group"
       data-part="item"
       style={({ isSelected, isHovered, isFocusVisible, isDisabled }) => {
