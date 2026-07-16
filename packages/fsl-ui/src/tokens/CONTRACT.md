@@ -397,6 +397,7 @@ Registered knobs:
 | `--fsl-dialog-max-height` | `DialogModal` | `90vh`             |
 | `--fsl-menu-min-width`    | `Menu`        | `12rem`            |
 | `--fsl-menu-max-width`    | `Menu`        | `min(320px, 90vw)` |
+| `--fsl-popover-max-width` | `Popover`     | `min(320px, 90vw)` |
 
 ---
 

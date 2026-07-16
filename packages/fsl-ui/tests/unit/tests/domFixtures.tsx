@@ -297,6 +297,18 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
   // ── Menu / MenuItem ───────────────────────────────────────────────
   Menu: { scope: 'menu', element: treeMenu },
   MenuItem: { scope: 'menu', element: treeMenu },
+  // ── Popover (standalone) ──────────────────────────────────────────
+  Popover: {
+    scope: 'popover',
+    element: () => {
+      return (
+        <pkg.PopoverTrigger defaultOpen>
+          <pkg.Button>T</pkg.Button>
+          <pkg.Popover>content</pkg.Popover>
+        </pkg.PopoverTrigger>
+      );
+    },
+  },
   // ── TextField ─────────────────────────────────────────────────────
   TextField: { scope: 'text-field', element: treeTextField },
   TextFieldLabel: { scope: 'text-field', element: treeTextField },

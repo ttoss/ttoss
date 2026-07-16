@@ -147,6 +147,12 @@ export {
   menuMeta,
   MenuTrigger,
 } from './composites/Menu/Menu';
+export type { PopoverProps } from './composites/Popover/Popover';
+export {
+  Popover,
+  popoverMeta,
+  PopoverTrigger,
+} from './composites/Popover/Popover';
 export type {
   TextFieldControlProps,
   TextFieldDescriptionProps,
