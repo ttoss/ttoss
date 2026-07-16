@@ -105,6 +105,17 @@ const treeTextField = () => {
   );
 };
 
+const treeTabs = () => {
+  return (
+    <pkg.Tabs aria-label="sections">
+      <pkg.TabList aria-label="sections">
+        <pkg.Tab id="a">A</pkg.Tab>
+      </pkg.TabList>
+      <pkg.TabPanel id="a">Panel A</pkg.TabPanel>
+    </pkg.Tabs>
+  );
+};
+
 const treeBreadcrumbs = () => {
   return (
     <pkg.Breadcrumbs>
@@ -172,6 +183,10 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       return <pkg.Switch>x</pkg.Switch>;
     },
   },
+  Tabs: { scope: 'tabs', element: treeTabs },
+  TabList: { scope: 'tabs', element: treeTabs },
+  Tab: { scope: 'tabs', element: treeTabs },
+  TabPanel: { scope: 'tabs', element: treeTabs },
   Separator: {
     scope: 'separator',
     element: () => {

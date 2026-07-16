@@ -49,7 +49,8 @@ are undefined and components render unstyled.
 ## Component catalog (all exports also ship a `*Meta` identity object)
 
 Action:      Button, ToggleButton, MenuItem (inside Menu), FormSubmit (inside Form)
-Navigation:  Link, Breadcrumbs/Breadcrumb
+Navigation:  Link, Breadcrumbs/Breadcrumb, Tabs/TabList/Tab
+             (TabPanel is Structure — the content revealed by the tabs)
 Disclosure:  Accordion, AccordionItem, AccordionTrigger, AccordionPanel
 Selection:   Checkbox, RadioGroup/Radio, Switch, Select/SelectItem,
              ToggleButtonGroup

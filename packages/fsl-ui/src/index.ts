@@ -46,6 +46,22 @@ export { Separator, separatorMeta } from './components/Separator/Separator';
 export type { SwitchProps } from './components/Switch/Switch';
 export { Switch, switchMeta } from './components/Switch/Switch';
 export type {
+  TabListProps,
+  TabPanelProps,
+  TabProps,
+  TabsProps,
+} from './components/Tabs/Tabs';
+export {
+  Tab,
+  TabList,
+  tabListMeta,
+  tabMeta,
+  TabPanel,
+  tabPanelMeta,
+  Tabs,
+  tabsMeta,
+} from './components/Tabs/Tabs';
+export type {
   ToastContent,
   ToastProps,
   ToastQueue,
