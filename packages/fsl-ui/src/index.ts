@@ -86,6 +86,8 @@ export {
   ToggleButtonGroup,
   toggleButtonGroupMeta,
 } from './components/ToggleButtonGroup/ToggleButtonGroup';
+export type { ToolbarProps } from './components/Toolbar/Toolbar';
+export { Toolbar, toolbarMeta } from './components/Toolbar/Toolbar';
 export type {
   AccordionItemProps,
   AccordionPanelProps,

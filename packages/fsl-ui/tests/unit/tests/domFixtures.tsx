@@ -120,6 +120,17 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
     scope: 'toggle-button-group',
     element: treeToggleButtonGroup,
   },
+  Toolbar: {
+    scope: 'toolbar',
+    element: () => {
+      return (
+        <pkg.Toolbar aria-label="formatting">
+          <pkg.Button aria-label="Bold">B</pkg.Button>
+          <pkg.Button aria-label="Italic">I</pkg.Button>
+        </pkg.Toolbar>
+      );
+    },
+  },
   // ── RadioGroup / Radio ────────────────────────────────────────────
   RadioGroup: { scope: 'radio-group', element: treeRadio },
   Radio: { scope: 'radio', element: treeRadio },
