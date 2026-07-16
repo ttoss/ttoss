@@ -17,6 +17,8 @@ export type { ButtonProps } from './components/Button/Button';
 export { Button, buttonMeta } from './components/Button/Button';
 export type { CheckboxProps } from './components/Checkbox/Checkbox';
 export { Checkbox, checkboxMeta } from './components/Checkbox/Checkbox';
+export type { GroupProps } from './components/Group/Group';
+export { Group, groupMeta } from './components/Group/Group';
 export type { LinkProps } from './components/Link/Link';
 export { Link, linkMeta } from './components/Link/Link';
 export type { ProgressBarProps } from './components/ProgressBar/ProgressBar';

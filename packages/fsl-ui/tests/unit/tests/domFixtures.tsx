@@ -72,6 +72,16 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
   },
   Breadcrumbs: { scope: 'breadcrumbs', element: treeBreadcrumbs },
   Breadcrumb: { scope: 'breadcrumbs', element: treeBreadcrumbs },
+  Group: {
+    scope: 'group',
+    element: () => {
+      return (
+        <pkg.Group label="Details">
+          <pkg.Button>x</pkg.Button>
+        </pkg.Group>
+      );
+    },
+  },
   Link: {
     scope: 'link',
     element: () => {

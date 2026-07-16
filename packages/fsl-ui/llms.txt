@@ -61,7 +61,7 @@ Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
              Popover, PopoverTrigger, Tooltip, TooltipTrigger
 Feedback:    ProgressBar, Toast, ToastRegion, createToastQueue
 Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
-             WizardNavigation, Separator
+             WizardNavigation, Separator, Group (labelled role=group frame)
 
 Icons: INTERNAL only (not exported). Components render glyphs through an
 internal semantic Icon layer (`src/components/Icon/`) that maps `icon.{family}.{intent}`
