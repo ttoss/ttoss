@@ -54,8 +54,11 @@ Navigation:  Link, Breadcrumbs/Breadcrumb, Tabs/TabList/Tab
 Disclosure:  Accordion, AccordionItem, AccordionTrigger, AccordionPanel,
              Disclosure, DisclosureTrigger, DisclosurePanel (standalone single
              section — Accordion is the DisclosureGroup)
-Selection:   Checkbox, RadioGroup/Radio, Switch, Select/SelectItem,
-             ToggleButtonGroup
+Selection:   Checkbox, CheckboxGroup, RadioGroup/Radio, Switch,
+             Select/SelectItem, ToggleButtonGroup
+             (CheckboxGroup group-level isInvalid propagates to child Checkboxes;
+             its label part is Selection/label, but description + validationMessage
+             are internal parts — Selection has no such structural roles)
 Input:       TextField, TextArea (each + Label/Control/Description/Error),
              SearchField (+ Label/Control; leading search + clear glyphs)
 Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,

@@ -48,6 +48,19 @@ export const treeAccordion = (): React.ReactElement => {
   );
 };
 
+export const treeCheckboxGroup = (): React.ReactElement => {
+  return (
+    <pkg.CheckboxGroup
+      aria-label="Notifications"
+      label="Notifications"
+      description="Pick at least one"
+    >
+      <pkg.Checkbox value="email">Email</pkg.Checkbox>
+      <pkg.Checkbox value="sms">SMS</pkg.Checkbox>
+    </pkg.CheckboxGroup>
+  );
+};
+
 export const treeDisclosure = (): React.ReactElement => {
   return (
     <pkg.Disclosure>

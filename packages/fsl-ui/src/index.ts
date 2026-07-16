@@ -17,6 +17,11 @@ export type { ButtonProps } from './components/Button/Button';
 export { Button, buttonMeta } from './components/Button/Button';
 export type { CheckboxProps } from './components/Checkbox/Checkbox';
 export { Checkbox, checkboxMeta } from './components/Checkbox/Checkbox';
+export type { CheckboxGroupProps } from './components/CheckboxGroup/CheckboxGroup';
+export {
+  CheckboxGroup,
+  checkboxGroupMeta,
+} from './components/CheckboxGroup/CheckboxGroup';
 export type { GroupProps } from './components/Group/Group';
 export { Group, groupMeta } from './components/Group/Group';
 export type { LinkProps } from './components/Link/Link';

@@ -22,6 +22,7 @@ import * as pkg from 'src/index';
 import {
   treeAccordion,
   treeBreadcrumbs,
+  treeCheckboxGroup,
   treeDialog,
   treeDisclosure,
   treeMenu,
@@ -78,6 +79,7 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       return <pkg.Checkbox>x</pkg.Checkbox>;
     },
   },
+  CheckboxGroup: { scope: 'checkbox-group', element: treeCheckboxGroup },
   Breadcrumbs: { scope: 'breadcrumbs', element: treeBreadcrumbs },
   Breadcrumb: { scope: 'breadcrumbs', element: treeBreadcrumbs },
   Group: {
