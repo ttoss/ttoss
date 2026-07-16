@@ -19,6 +19,22 @@ import { fireEvent, screen } from '@testing-library/react';
 import type * as React from 'react';
 import * as pkg from 'src/index';
 
+import {
+  treeAccordion,
+  treeBreadcrumbs,
+  treeDialog,
+  treeMenu,
+  treeRadio,
+  treeSearchField,
+  treeSelect,
+  treeTabs,
+  treeTextArea,
+  treeTextField,
+  treeToast,
+  treeToggleButtonGroup,
+  treeWizard,
+} from './domFixtures.trees';
+
 // ---------------------------------------------------------------------------
 // 7. DOM data-attribute contract
 //
@@ -30,143 +46,14 @@ import * as pkg from 'src/index';
 //            so they appear in the DOM without interactive setup.
 //   open   — optional post-render action for composites that open via a
 //            trigger click (ConfirmationDialog).
+//
+// Shared composite trees live in `domFixtures.trees.tsx` (declared once,
+// reused across every sub-part meta) — see that file's header for the rule.
 // ---------------------------------------------------------------------------
 export type DomFixture = {
   scope: string;
   element: () => React.ReactElement;
   open?: () => void;
-};
-
-// ── shared composite trees (declared once, reused across sub-parts) ────────
-const treeRadio = () => {
-  return (
-    <pkg.RadioGroup>
-      <pkg.Radio value="a">A</pkg.Radio>
-    </pkg.RadioGroup>
-  );
-};
-
-const treeSelect = (defaultOpen?: boolean) => {
-  return (
-    <pkg.Select defaultOpen={defaultOpen}>
-      <pkg.SelectItem id="a">A</pkg.SelectItem>
-    </pkg.Select>
-  );
-};
-
-const treeToast = () => {
-  const queue = pkg.createToastQueue<pkg.ToastContent>({ maxVisibleToasts: 5 });
-  queue.add({ title: 'x' });
-  return <pkg.ToastRegion queue={queue} />;
-};
-
-const treeAccordion = () => {
-  return (
-    <pkg.Accordion>
-      <pkg.AccordionItem id="x">
-        <pkg.AccordionTrigger>T</pkg.AccordionTrigger>
-        <pkg.AccordionPanel>P</pkg.AccordionPanel>
-      </pkg.AccordionItem>
-    </pkg.Accordion>
-  );
-};
-
-const treeDialog = () => {
-  return (
-    <pkg.Dialog aria-label="test">
-      <pkg.DialogHeading>H</pkg.DialogHeading>
-      <pkg.DialogBody>B</pkg.DialogBody>
-      <pkg.DialogActions>
-        <pkg.Button composition="primaryAction">OK</pkg.Button>
-      </pkg.DialogActions>
-    </pkg.Dialog>
-  );
-};
-
-const treeMenu = () => {
-  return (
-    <pkg.MenuTrigger defaultOpen>
-      <pkg.Button>T</pkg.Button>
-      <pkg.Menu>
-        <pkg.MenuItem>Item</pkg.MenuItem>
-      </pkg.Menu>
-    </pkg.MenuTrigger>
-  );
-};
-
-const treeTextField = () => {
-  return (
-    <pkg.TextField isInvalid>
-      <pkg.TextFieldLabel>Label</pkg.TextFieldLabel>
-      <pkg.TextFieldControl />
-      <pkg.TextFieldDescription>Hint</pkg.TextFieldDescription>
-      <pkg.TextFieldError>Required</pkg.TextFieldError>
-    </pkg.TextField>
-  );
-};
-
-const treeSearchField = () => {
-  return (
-    <pkg.SearchField clearLabel="Clear search">
-      <pkg.SearchFieldLabel>Search</pkg.SearchFieldLabel>
-      <pkg.SearchFieldControl />
-    </pkg.SearchField>
-  );
-};
-
-const treeTextArea = () => {
-  return (
-    <pkg.TextArea isInvalid>
-      <pkg.TextAreaLabel>Notes</pkg.TextAreaLabel>
-      <pkg.TextAreaControl />
-      <pkg.TextAreaDescription>Optional</pkg.TextAreaDescription>
-      <pkg.TextAreaError>Required</pkg.TextAreaError>
-    </pkg.TextArea>
-  );
-};
-
-const treeTabs = () => {
-  return (
-    <pkg.Tabs aria-label="sections">
-      <pkg.TabList aria-label="sections">
-        <pkg.Tab id="a">A</pkg.Tab>
-      </pkg.TabList>
-      <pkg.TabPanel id="a">Panel A</pkg.TabPanel>
-    </pkg.Tabs>
-  );
-};
-
-const treeBreadcrumbs = () => {
-  return (
-    <pkg.Breadcrumbs>
-      <pkg.Breadcrumb href="#a">A</pkg.Breadcrumb>
-      <pkg.Breadcrumb>B</pkg.Breadcrumb>
-    </pkg.Breadcrumbs>
-  );
-};
-
-const treeToggleButtonGroup = () => {
-  return (
-    <pkg.ToggleButtonGroup aria-label="view">
-      <pkg.ToggleButton id="a">A</pkg.ToggleButton>
-      <pkg.ToggleButton id="b">B</pkg.ToggleButton>
-    </pkg.ToggleButtonGroup>
-  );
-};
-
-const treeWizard = () => {
-  return (
-    <pkg.Wizard aria-label="test">
-      <pkg.WizardStep>
-        <p>step</p>
-      </pkg.WizardStep>
-      <pkg.WizardNavigation
-        prevLabel="Back"
-        nextLabel="Next"
-        finishLabel="Finish"
-      />
-    </pkg.Wizard>
-  );
 };
 
 export const DOM_FIXTURES: Record<string, DomFixture> = {
