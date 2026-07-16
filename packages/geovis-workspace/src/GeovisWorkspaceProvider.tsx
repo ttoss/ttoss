@@ -105,13 +105,19 @@ export const GeovisWorkspaceProvider = ({
   const [details, setDetails] =
     React.useState<GeovisWorkspaceDetailsState | null>(null);
 
-  // Read the latest fetcher through a ref so `selectFeature` stays stable even
-  // when the parent recreates `config` on every render.
+  // Read the latest callbacks through refs so `selectFeature` stays stable
+  // even when the parent recreates `config` on every render.
   const onFeatureSelect = config.rightSidebar?.onFeatureSelect;
   const onFeatureSelectRef = React.useRef(onFeatureSelect);
   React.useEffect(() => {
     onFeatureSelectRef.current = onFeatureSelect;
   }, [onFeatureSelect]);
+
+  const shouldOpen = config.rightSidebar?.shouldOpen;
+  const shouldOpenRef = React.useRef(shouldOpen);
+  React.useEffect(() => {
+    shouldOpenRef.current = shouldOpen;
+  }, [shouldOpen]);
 
   // Monotonic request id: only the response of the latest request wins, so
   // rapid clicks never render a stale (out-of-order) result.
@@ -128,6 +134,13 @@ export const GeovisWorkspaceProvider = ({
       if (info === null) {
         requestIdRef.current += 1;
         setDetails(null);
+        setRightSidebarOpen({ open: false });
+        return;
+      }
+
+      const guard = shouldOpenRef.current;
+      if (guard && !guard(info)) {
+        setRightSidebarOpen({ open: false });
         return;
       }
 
