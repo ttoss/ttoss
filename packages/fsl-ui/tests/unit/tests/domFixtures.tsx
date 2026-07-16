@@ -23,6 +23,7 @@ import {
   treeAccordion,
   treeBreadcrumbs,
   treeDialog,
+  treeDisclosure,
   treeMenu,
   treeRadio,
   treeSearchField,
@@ -176,6 +177,10 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
   AccordionItem: { scope: 'accordion', element: treeAccordion },
   AccordionTrigger: { scope: 'accordion', element: treeAccordion },
   AccordionPanel: { scope: 'accordion', element: treeAccordion },
+  // ── Disclosure ────────────────────────────────────────────────────
+  Disclosure: { scope: 'disclosure', element: treeDisclosure },
+  DisclosureTrigger: { scope: 'disclosure', element: treeDisclosure },
+  DisclosurePanel: { scope: 'disclosure', element: treeDisclosure },
   // ── Dialog ────────────────────────────────────────────────────────
   Dialog: { scope: 'dialog', element: treeDialog },
   DialogHeading: { scope: 'dialog', element: treeDialog },

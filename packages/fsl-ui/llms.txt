@@ -51,7 +51,9 @@ are undefined and components render unstyled.
 Action:      Button, ToggleButton, MenuItem (inside Menu), FormSubmit (inside Form)
 Navigation:  Link, Breadcrumbs/Breadcrumb, Tabs/TabList/Tab
              (TabPanel is Structure — the content revealed by the tabs)
-Disclosure:  Accordion, AccordionItem, AccordionTrigger, AccordionPanel
+Disclosure:  Accordion, AccordionItem, AccordionTrigger, AccordionPanel,
+             Disclosure, DisclosureTrigger, DisclosurePanel (standalone single
+             section — Accordion is the DisclosureGroup)
 Selection:   Checkbox, RadioGroup/Radio, Switch, Select/SelectItem,
              ToggleButtonGroup
 Input:       TextField, TextArea (each + Label/Control/Description/Error),

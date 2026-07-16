@@ -133,6 +133,19 @@ export {
   DialogTrigger,
 } from './composites/Dialog/Dialog';
 export type {
+  DisclosurePanelProps,
+  DisclosureProps,
+  DisclosureTriggerProps,
+} from './composites/Disclosure/Disclosure';
+export {
+  Disclosure,
+  disclosureMeta,
+  DisclosurePanel,
+  disclosurePanelMeta,
+  DisclosureTrigger,
+  disclosureTriggerMeta,
+} from './composites/Disclosure/Disclosure';
+export type {
   FormActionsProps,
   FormProps,
   FormSubmitProps,

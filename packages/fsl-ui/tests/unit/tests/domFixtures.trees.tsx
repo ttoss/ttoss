@@ -48,6 +48,15 @@ export const treeAccordion = (): React.ReactElement => {
   );
 };
 
+export const treeDisclosure = (): React.ReactElement => {
+  return (
+    <pkg.Disclosure>
+      <pkg.DisclosureTrigger>Section</pkg.DisclosureTrigger>
+      <pkg.DisclosurePanel>Panel content</pkg.DisclosurePanel>
+    </pkg.Disclosure>
+  );
+};
+
 export const treeDialog = (): React.ReactElement => {
   return (
     <pkg.Dialog aria-label="test">

@@ -26,6 +26,9 @@ import {
   DialogActions,
   DialogBody,
   DialogHeading,
+  Disclosure,
+  DisclosurePanel,
+  DisclosureTrigger,
   Form,
   FormActions,
   FormSubmit,
@@ -138,6 +141,20 @@ describe('contract: composite sub-parts throw outside host', () => {
       },
     ],
     [
+      'DisclosureTrigger',
+      'Disclosure',
+      () => {
+        return <DisclosureTrigger>x</DisclosureTrigger>;
+      },
+    ],
+    [
+      'DisclosurePanel',
+      'Disclosure',
+      () => {
+        return <DisclosurePanel>x</DisclosurePanel>;
+      },
+    ],
+    [
       'TextFieldLabel',
       'TextField',
       () => {
@@ -242,6 +259,17 @@ describe('contract: composite sub-parts render inside host', () => {
             <AccordionPanel>panel</AccordionPanel>
           </AccordionItem>
         </Accordion>
+      );
+    }).not.toThrow();
+  });
+
+  test('Disclosure scope satisfies sub-parts', () => {
+    expect(() => {
+      return render(
+        <Disclosure>
+          <DisclosureTrigger>label</DisclosureTrigger>
+          <DisclosurePanel>panel</DisclosurePanel>
+        </Disclosure>
       );
     }).not.toThrow();
   });
