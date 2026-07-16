@@ -54,7 +54,8 @@ Navigation:  Link, Breadcrumbs/Breadcrumb, Tabs/TabList/Tab
 Disclosure:  Accordion, AccordionItem, AccordionTrigger, AccordionPanel
 Selection:   Checkbox, RadioGroup/Radio, Switch, Select/SelectItem,
              ToggleButtonGroup
-Input:       TextField, TextArea (each + Label/Control/Description/Error)
+Input:       TextField, TextArea (each + Label/Control/Description/Error),
+             SearchField (+ Label/Control; leading search + clear glyphs)
 Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
              DialogActions, Menu, MenuTrigger, ConfirmationDialog,
              Popover, PopoverTrigger, Tooltip, TooltipTrigger

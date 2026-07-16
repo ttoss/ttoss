@@ -105,6 +105,15 @@ const treeTextField = () => {
   );
 };
 
+const treeSearchField = () => {
+  return (
+    <pkg.SearchField clearLabel="Clear search">
+      <pkg.SearchFieldLabel>Search</pkg.SearchFieldLabel>
+      <pkg.SearchFieldControl />
+    </pkg.SearchField>
+  );
+};
+
 const treeTextArea = () => {
   return (
     <pkg.TextArea isInvalid>
@@ -332,6 +341,10 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       );
     },
   },
+  // ── SearchField ───────────────────────────────────────────────────
+  SearchField: { scope: 'search-field', element: treeSearchField },
+  SearchFieldLabel: { scope: 'search-field', element: treeSearchField },
+  SearchFieldControl: { scope: 'search-field', element: treeSearchField },
   // ── TextArea ──────────────────────────────────────────────────────
   TextArea: { scope: 'text-area', element: treeTextArea },
   TextAreaLabel: { scope: 'text-area', element: treeTextArea },

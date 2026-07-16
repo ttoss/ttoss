@@ -154,6 +154,19 @@ export {
   PopoverTrigger,
 } from './composites/Popover/Popover';
 export type {
+  SearchFieldControlProps,
+  SearchFieldLabelProps,
+  SearchFieldProps,
+} from './composites/SearchField/SearchField';
+export {
+  SearchField,
+  SearchFieldControl,
+  searchFieldControlMeta,
+  SearchFieldLabel,
+  searchFieldLabelMeta,
+  searchFieldMeta,
+} from './composites/SearchField/SearchField';
+export type {
   TextAreaControlProps,
   TextAreaDescriptionProps,
   TextAreaErrorProps,
