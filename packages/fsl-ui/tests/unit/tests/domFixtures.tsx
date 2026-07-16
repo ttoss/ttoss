@@ -83,6 +83,12 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
     },
   },
   CheckboxGroup: { scope: 'checkbox-group', element: treeCheckboxGroup },
+  FileTrigger: {
+    scope: 'file-trigger',
+    element: () => {
+      return <pkg.FileTrigger>Upload</pkg.FileTrigger>;
+    },
+  },
   Breadcrumbs: { scope: 'breadcrumbs', element: treeBreadcrumbs },
   Breadcrumb: { scope: 'breadcrumbs', element: treeBreadcrumbs },
   Group: {

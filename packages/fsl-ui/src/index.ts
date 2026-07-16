@@ -22,6 +22,11 @@ export {
   CheckboxGroup,
   checkboxGroupMeta,
 } from './components/CheckboxGroup/CheckboxGroup';
+export type { FileTriggerProps } from './components/FileTrigger/FileTrigger';
+export {
+  FileTrigger,
+  fileTriggerMeta,
+} from './components/FileTrigger/FileTrigger';
 export type {
   GridListItemProps,
   GridListProps,
