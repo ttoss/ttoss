@@ -48,6 +48,11 @@ export {
   ToastRegion,
   toastRegionMeta,
 } from './components/Toast/Toast';
+export type { ToggleButtonProps } from './components/ToggleButton/ToggleButton';
+export {
+  ToggleButton,
+  toggleButtonMeta,
+} from './components/ToggleButton/ToggleButton';
 export type {
   AccordionItemProps,
   AccordionPanelProps,

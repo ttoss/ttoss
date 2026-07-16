@@ -158,6 +158,12 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       return <pkg.Separator />;
     },
   },
+  ToggleButton: {
+    scope: 'toggle-button',
+    element: () => {
+      return <pkg.ToggleButton>x</pkg.ToggleButton>;
+    },
+  },
   // ── RadioGroup / Radio ────────────────────────────────────────────
   RadioGroup: { scope: 'radio-group', element: treeRadio },
   Radio: { scope: 'radio', element: treeRadio },
