@@ -26,12 +26,17 @@ import {
   DialogActions,
   DialogBody,
   DialogHeading,
+  Disclosure,
+  DisclosurePanel,
+  DisclosureTrigger,
   Form,
   FormActions,
   FormSubmit,
   Menu,
   MenuItem,
   MenuTrigger,
+  Tag,
+  TagGroup,
   TextField,
   TextFieldControl,
   TextFieldDescription,
@@ -138,6 +143,20 @@ describe('contract: composite sub-parts throw outside host', () => {
       },
     ],
     [
+      'DisclosureTrigger',
+      'Disclosure',
+      () => {
+        return <DisclosureTrigger>x</DisclosureTrigger>;
+      },
+    ],
+    [
+      'DisclosurePanel',
+      'Disclosure',
+      () => {
+        return <DisclosurePanel>x</DisclosurePanel>;
+      },
+    ],
+    [
       'TextFieldLabel',
       'TextField',
       () => {
@@ -170,6 +189,13 @@ describe('contract: composite sub-parts throw outside host', () => {
       'Menu',
       () => {
         return <MenuItem>x</MenuItem>;
+      },
+    ],
+    [
+      'Tag',
+      'TagGroup',
+      () => {
+        return <Tag>x</Tag>;
       },
     ],
     [
@@ -246,6 +272,17 @@ describe('contract: composite sub-parts render inside host', () => {
     }).not.toThrow();
   });
 
+  test('Disclosure scope satisfies sub-parts', () => {
+    expect(() => {
+      return render(
+        <Disclosure>
+          <DisclosureTrigger>label</DisclosureTrigger>
+          <DisclosurePanel>panel</DisclosurePanel>
+        </Disclosure>
+      );
+    }).not.toThrow();
+  });
+
   test('TextField scope satisfies sub-parts', () => {
     expect(() => {
       return render(
@@ -268,6 +305,16 @@ describe('contract: composite sub-parts render inside host', () => {
             <MenuItem>item</MenuItem>
           </Menu>
         </MenuTrigger>
+      );
+    }).not.toThrow();
+  });
+
+  test('TagGroup scope satisfies sub-parts', () => {
+    expect(() => {
+      return render(
+        <TagGroup aria-label="filters">
+          <Tag id="a">A</Tag>
+        </TagGroup>
       );
     }).not.toThrow();
   });

@@ -6,18 +6,19 @@ title: ttoss UI Components
 
 ## Catalog
 
-| Entity     | Components                                                                                                       |
-| ---------- | ---------------------------------------------------------------------------------------------------------------- |
-| Action     | `Button`, `MenuItem`, `FormSubmit`                                                                               |
-| Navigation | `Link`                                                                                                           |
-| Disclosure | `Accordion` (`AccordionItem` / `AccordionTrigger` / `AccordionPanel`)                                            |
-| Selection  | `Checkbox`, `RadioGroup` / `Radio`, `Switch`, `Select` / `SelectItem`                                            |
-| Input      | `TextField` (`TextFieldLabel` / `TextFieldControl` / `TextFieldDescription` / `TextFieldError`)                  |
-| Overlay    | `Dialog` family (`DialogModal` / `DialogHeading` / `DialogBody` / `DialogActions`), `Menu`, `ConfirmationDialog` |
-| Feedback   | `ProgressBar`, `Toast` / `ToastRegion`                                                                           |
-| Structure  | `Form` / `FormActions`, `Wizard` (`WizardStep` / `WizardSummary` / `WizardNavigation`)                           |
+| Entity     | Components                                                                                                                                                        |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Action     | `Button`, `ToggleButton`, `FileTrigger`, `MenuItem`, `FormSubmit`                                                                                                 |
+| Navigation | `Link`, `Breadcrumbs` / `Breadcrumb`, `Tabs` / `TabList` / `Tab`                                                                                                  |
+| Disclosure | `Accordion` (`AccordionItem` / `AccordionTrigger` / `AccordionPanel`), `Disclosure` (`DisclosureTrigger` / `DisclosurePanel`)                                     |
+| Selection  | `Checkbox`, `CheckboxGroup`, `RadioGroup` / `Radio`, `Switch`, `Select` / `SelectItem`, `ToggleButtonGroup`, `TagGroup` / `Tag`                                   |
+| Collection | `ListBox` / `ListBoxItem`, `GridList` / `GridListItem` (container is Collection, selectable items are Selection — ADR-007)                                        |
+| Input      | `TextField`, `TextArea`, `SearchField` (each with `*Label` / `*Control` / …), `NumberField`, `Slider`                                                             |
+| Overlay    | `Dialog` family (`DialogModal` / `DialogHeading` / `DialogBody` / `DialogActions`), `Menu`, `ConfirmationDialog`, `Popover`, `Tooltip`                            |
+| Feedback   | `ProgressBar`, `Meter`, `Toast` / `ToastRegion`                                                                                                                   |
+| Structure  | `Form` / `FormActions`, `Wizard` (`WizardStep` / `WizardSummary` / `WizardNavigation`), `Separator`, `Group`, `Toolbar`, `TabPanel` (the content the tabs reveal) |
 
-The full React Aria atomic catalog is being implemented in waves under the same pattern; each component lands with contract tests, keyboard tests, and an axe accessibility suite.
+Waves 1 and 2 of the full React Aria atomic catalog are complete; the heavier components (`ComboBox`, `Table`, `Tree`) and the date/time suite follow under the same pattern. Every component lands with contract tests, keyboard tests, and an axe accessibility suite.
 
 ## Customization model
 
