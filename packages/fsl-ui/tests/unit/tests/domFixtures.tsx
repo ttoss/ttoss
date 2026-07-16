@@ -25,6 +25,7 @@ import {
   treeCheckboxGroup,
   treeDialog,
   treeDisclosure,
+  treeListBox,
   treeMenu,
   treeRadio,
   treeSearchField,
@@ -257,6 +258,9 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       );
     },
   },
+  // ── ListBox / ListBoxItem ─────────────────────────────────────────
+  ListBox: { scope: 'list-box', element: treeListBox },
+  ListBoxItem: { scope: 'list-box', element: treeListBox },
   // ── Menu / MenuItem ───────────────────────────────────────────────
   Menu: { scope: 'menu', element: treeMenu },
   MenuItem: { scope: 'menu', element: treeMenu },

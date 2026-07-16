@@ -82,6 +82,15 @@ export const treeDialog = (): React.ReactElement => {
   );
 };
 
+export const treeListBox = (): React.ReactElement => {
+  return (
+    <pkg.ListBox aria-label="Frameworks" selectionMode="single">
+      <pkg.ListBoxItem id="react">React</pkg.ListBoxItem>
+      <pkg.ListBoxItem id="vue">Vue</pkg.ListBoxItem>
+    </pkg.ListBox>
+  );
+};
+
 export const treeMenu = (): React.ReactElement => {
   return (
     <pkg.MenuTrigger defaultOpen>

@@ -62,6 +62,10 @@ Selection:   Checkbox, CheckboxGroup, RadioGroup/Radio, Switch,
              TagGroup/Tag: a chosen tag uses the `selected` State, NOT `pressed`
              — a tag is set membership, not a toggle; remove button is an
              internal closeTrigger part (not a Selection role))
+Collection:  ListBox/ListBoxItem (+ Menu/MenuItem, listed under Overlay for
+             its popover surface). ADR-007: the CONTAINER is Collection
+             (informational surface) but selectable ITEMS are Selection
+             (input chrome, `selected` State) — one composite, two entities.
 Input:       TextField, TextArea (each + Label/Control/Description/Error),
              SearchField (+ Label/Control; leading search + clear glyphs),
              NumberField (label/description/errorMessage props + −/+ steppers)
