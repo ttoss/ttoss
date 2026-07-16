@@ -3,6 +3,16 @@
 // Components are React Aria wrappers with hooks — the whole component entry
 // is a client module (Next.js App Router). The `./semantics` entry stays
 // directive-free: taxonomy data is server-safe.
+export type {
+  BreadcrumbProps,
+  BreadcrumbsProps,
+} from './components/Breadcrumbs/Breadcrumbs';
+export {
+  Breadcrumb,
+  breadcrumbMeta,
+  Breadcrumbs,
+  breadcrumbsMeta,
+} from './components/Breadcrumbs/Breadcrumbs';
 export type { ButtonProps } from './components/Button/Button';
 export { Button, buttonMeta } from './components/Button/Button';
 export type { CheckboxProps } from './components/Checkbox/Checkbox';

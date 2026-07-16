@@ -105,6 +105,15 @@ const treeTextField = () => {
   );
 };
 
+const treeBreadcrumbs = () => {
+  return (
+    <pkg.Breadcrumbs>
+      <pkg.Breadcrumb href="#a">A</pkg.Breadcrumb>
+      <pkg.Breadcrumb>B</pkg.Breadcrumb>
+    </pkg.Breadcrumbs>
+  );
+};
+
 const treeToggleButtonGroup = () => {
   return (
     <pkg.ToggleButtonGroup aria-label="view">
@@ -143,6 +152,8 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       return <pkg.Checkbox>x</pkg.Checkbox>;
     },
   },
+  Breadcrumbs: { scope: 'breadcrumbs', element: treeBreadcrumbs },
+  Breadcrumb: { scope: 'breadcrumbs', element: treeBreadcrumbs },
   Link: {
     scope: 'link',
     element: () => {
