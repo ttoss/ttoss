@@ -61,6 +61,10 @@
         "visible": {
           "type": "boolean",
           "description": "When false, basemap tiles are hidden. GeoJSON layers remain interactive."
+        },
+        "labels": {
+          "type": "boolean",
+          "description": "When false, the basemap's text/icon labels (symbol layers) are hidden. Defaults to true."
         }
       }
     },
