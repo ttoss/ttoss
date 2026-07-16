@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.1](https://github.com/ttoss/ttoss/compare/@docs/website@3.1.0...@docs/website@3.1.1) (2026-07-16)
+
+**Note:** Version bump only for package @docs/website
+
+# [3.1.0](https://github.com/ttoss/ttoss/compare/@docs/website@3.0.0...@docs/website@3.1.0) (2026-07-15)
+
+### Features
+
+- introduce @ttoss/fsl-ui semantic component library ([#1133](https://github.com/ttoss/ttoss/issues/1133)) ([a45b9ea](https://github.com/ttoss/ttoss/commit/a45b9ea3c540df4df47f4760659789d248120aa8)), closes [#8](https://github.com/ttoss/ttoss/issues/8)
+
 # [3.0.0](https://github.com/ttoss/ttoss/compare/@docs/website@2.12.1...@docs/website@3.0.0) (2026-07-12)
 
 - fsl-theme: close spec↔reality gap, remove incomplete themes (#1128) ([06fc033](https://github.com/ttoss/ttoss/commit/06fc033151019174df769f4bd2dfe7e11c3bfb06)), closes [#1128](https://github.com/ttoss/ttoss/issues/1128) [#spacing-order-rule](https://github.com/ttoss/ttoss/issues/spacing-order-rule) [#errors-validation-must-fail-when](https://github.com/ttoss/ttoss/issues/errors-validation-must-fail-when)
