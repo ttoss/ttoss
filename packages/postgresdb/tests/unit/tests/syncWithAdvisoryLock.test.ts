@@ -102,6 +102,39 @@ describe('syncWithAdvisoryLock', () => {
     });
   });
 
+  test('should fail fast when the lock is held longer than lockTimeoutMs', async () => {
+    const holderConnection = (await sequelize.connectionManager.getConnection({
+      type: 'write',
+    })) as { query: (sql: string, values?: unknown[]) => Promise<unknown> };
+
+    // A peer holds the lock and never releases it within the timeout window,
+    // simulating an instance that died mid-sync while holding the lock.
+    await holderConnection.query('SELECT pg_advisory_lock($1)', [LOCK_KEY]);
+
+    const syncSpy = jest.spyOn(sequelize, 'sync');
+
+    try {
+      await expect(
+        syncWithAdvisoryLock({ sequelize, key: LOCK_KEY, lockTimeoutMs: 500 })
+      ).rejects.toThrow(/lock timeout/i);
+
+      // It aborted at acquisition, so sync must never have run.
+      expect(syncSpy).not.toHaveBeenCalled();
+    } finally {
+      syncSpy.mockRestore();
+      await holderConnection.query('SELECT pg_advisory_unlock($1)', [LOCK_KEY]);
+      sequelize.connectionManager.releaseConnection(holderConnection);
+    }
+
+    // The waiter released its connection cleanly, and lock_timeout did not leak:
+    // a fresh bounded sync against the now-free lock succeeds.
+    await syncWithAdvisoryLock({
+      sequelize,
+      key: LOCK_KEY,
+      lockTimeoutMs: 5000,
+    });
+  });
+
   test('should serialize concurrent syncs against the same key', async () => {
     const events: string[] = [];
 

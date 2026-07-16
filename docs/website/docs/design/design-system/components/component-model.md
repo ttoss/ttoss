@@ -6,8 +6,8 @@ title: Component Model
 
 The Component Model is the **Component Semantics Projection** — [layer 3 of the FSL architecture](/docs/design/design-system/fsl/). It derives from the [FSL Lexicon](/docs/design/design-system/fsl/fsl-lexicon) and [FSL Structural Language](/docs/design/design-system/fsl/fsl-structural-language) and must not define vocabulary that contradicts them.
 
-:::caution Status: specification — not yet implemented
-This document is the **design specification** for the Component Semantics Projection. The code artifacts it references — `taxonomy.ts`, `ComponentMeta`, `ENTITY_COMPOSITION` / `ENTITY_STRUCTURE` / `ENTITY_TOKEN_MAPPING`, the `@ttoss/ui2` package, and the Deterministic Resolver — **do not exist yet**. Only the [Semantic Token Projection](/docs/design/design-system/design-tokens/model) (layer 4, `@ttoss/fsl-theme`) is implemented. References below describe the intended shape of that future code, not shipped behaviour. Treat "is / consumes / enforced by" as "will".
+:::info Status: implemented in `@ttoss/fsl-ui`
+This document is the design specification for the Component Semantics Projection, now **implemented** by `@ttoss/fsl-ui`: `taxonomy.ts` (vocabulary + legality matrices), `ComponentMeta`, `ENTITY_COMPOSITION` / `ENTITY_STRUCTURE` / `ENTITY_TOKEN_MAPPING` (`packages/fsl-ui/src/tokens/projection.ts`), and contract tests that auto-validate every component against the matrices. The [Semantic Token Projection](/docs/design/design-system/design-tokens/model) (layer 4, `@ttoss/fsl-theme`) is also implemented. The **Deterministic Resolver** (layer 5) remains planned. Where this document and the shipped code diverge, the code + its contract tests are the source of truth.
 :::
 
 The central rule:
@@ -18,23 +18,22 @@ The central rule:
 
 The model adopts FSL dimension names directly (no projection renames; FSL §17.1 permits renames but this profile keeps the foundation vocabulary):
 
-| FSL dimension    | Model name      | Notes                                                                                                                                     |
-| :--------------- | :-------------- | :---------------------------------------------------------------------------------------------------------------------------------------- |
-| Entity Kind      | **Entity**      | Values identical; field name is `entity` in `ComponentMeta` and all `*Meta` declarations                                                  |
-| Structural Role  | **Structure**   | Root structural role of the component (e.g. `root`); legal values constrained per Entity via `ENTITY_STRUCTURE`                           |
-| Composition Role | **Composition** | Flat vocabulary; values identical to FSL Lexicon §4. Per-Entity legality via `ENTITY_COMPOSITION` in `taxonomy.ts`.                       |
-| Interaction Kind | —               | **Deferred** per FSL §13.3 — not codified in this profile. See `taxonomy.ts` §Dimension Coverage for rationale and readmission criterion. |
-| Evaluation       | **Evaluation**  | Values identical                                                                                                                          |
-| Consequence      | **Consequence** | Values identical                                                                                                                          |
-| State            | **State**       | Values identical; runtime-resolved by React Aria render props, not authorially declared                                                   |
+| FSL dimension    | Model name      | Notes                                                                                                                                                                       |
+| :--------------- | :-------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Entity Kind      | **Entity**      | Values identical; field name is `entity` in `ComponentMeta` and all `*Meta` declarations                                                                                    |
+| Structural Role  | **Structure**   | Root structural role of the component (e.g. `root`); legal values constrained per Entity via `ENTITY_STRUCTURE`                                                             |
+| Composition Role | **Composition** | Flat vocabulary; Lexicon §4 values plus three declared profile extensions (`step`, `summary`, `navigation`). Per-Entity legality via `ENTITY_COMPOSITION` in `taxonomy.ts`. |
+| Interaction Kind | —               | **Deferred** per FSL §13.3 — not codified in this profile. See `taxonomy.ts` §Dimension Coverage for rationale and readmission criterion.                                   |
+| Evaluation       | **Evaluation**  | Values identical                                                                                                                                                            |
+| Consequence      | **Consequence** | Values identical                                                                                                                                                            |
+| State            | **State**       | Values identical; runtime-resolved by React Aria render props, not authorially declared                                                                                     |
 
 ## Entity → Token UX context mapping
 
-The normative Entity → `ux` context mapping is **planned** to live in
-`ENTITY_TOKEN_MAPPING` in `packages/ui2/src/tokens/projection.ts` — intended to
-be the single source of truth consumed by the resolver and enforced by contract
-tests. That artifact does not exist yet (see status note above); until it does,
-the table below is the authoring reference.
+The normative Entity → `ux` context mapping lives in `ENTITY_TOKEN_MAPPING`
+in `packages/fsl-ui/src/tokens/projection.ts` — the single source of truth,
+enforced by contract tests. The table below mirrors it for reading; on any
+divergence, the code wins.
 
 | Entity         | Token `ux` context | Notes                                                                             |
 | :------------- | :----------------- | :-------------------------------------------------------------------------------- |
@@ -65,7 +64,7 @@ type ComponentExpression = {
 
 All dimensions are defined in `taxonomy.ts` and derived from FSL core vocabulary.
 
-> **Code type (planned):** the implementation will expose `ComponentMeta<E>` — the identity type every component declares (`entity`, `structure`, `composition?`, `consequence?`). `ComponentExpression` above is the projection's conceptual shape; `ComponentMeta` is its intended runtime surface. Neither ships yet.
+> **Code type:** the implementation exposes `ComponentMeta<E>` (`packages/fsl-ui/src/semantics/componentMeta.ts`) — the identity type every component declares (`entity`, `structure`, `composition?`, `consequence?`). `ComponentExpression` above is the projection's conceptual shape; `ComponentMeta` is its shipped runtime surface.
 
 ---
 
@@ -93,28 +92,28 @@ Every component has exactly one Entity. It cannot change based on context, varia
 
 Composition answers: _What slot does this instance occupy inside a larger composite?_
 
-Composition is a **flat vocabulary** per FSL Lexicon §4 and FSL §5.4. A composition role names the slot; legality is per Entity (not per parent component). When omitted, the component resolves tokens from its Entity default.
+Composition is a **flat vocabulary** per FSL Lexicon §4 and FSL §5.4. A composition role names the slot; legality is per Entity (not per parent component). When omitted, the component resolves tokens from its Entity default. The vocabulary is the Lexicon §4 set **plus three profile extensions** (`step`, `summary`, `navigation` — Structure-only slots), declared per FSL §17's extension model.
 
 ### Composition roles
 
 The projection codifies 14 composition roles. The table shows each role's meaning and which Entities may carry it (source of truth: `ENTITY_COMPOSITION` in `taxonomy.ts`).
 
-| Role                | Meaning                                                | Legal Entities               |
-| :------------------ | :----------------------------------------------------- | :--------------------------- |
-| **primaryAction**   | main forward / commit action in a composite            | Action                       |
-| **secondaryAction** | subordinate but intentional action                     | Action                       |
-| **dismissAction**   | cancel / close without committing                      | Action                       |
-| **heading**         | compositional heading slot                             | Overlay, Structure           |
-| **body**            | compositional body slot                                | Overlay, Structure           |
-| **status**          | compositional status / validation slot                 | Input, Feedback              |
-| **control**         | primary control-bearing slot                           | Input, Selection, Disclosure |
-| **label**           | naming / label slot                                    | Input, Selection, Structure  |
-| **description**     | descriptive / helper-text slot                         | Input, Selection, Structure  |
-| **supporting**      | supporting child slot (broader than label/description) | Input, Structure             |
-| **selection**       | selection-bearing slot                                 | Selection                    |
-| **step**            | step slot (e.g. progression marker)                    | Structure                    |
-| **summary**         | summary slot                                           | Structure                    |
-| **navigation**      | navigation slot inside a structural composite          | Structure                    |
+| Role                | Meaning                                                | Legal Entities              |
+| :------------------ | :----------------------------------------------------- | :-------------------------- |
+| **primaryAction**   | main forward / commit action in a composite            | Action                      |
+| **secondaryAction** | subordinate but intentional action                     | Action                      |
+| **dismissAction**   | cancel / close without committing                      | Action                      |
+| **heading**         | compositional heading slot                             | Overlay, Structure          |
+| **body**            | compositional body slot                                | Overlay, Structure          |
+| **status**          | compositional status / validation slot                 | Input, Feedback             |
+| **control**         | primary control-bearing slot                           | Input, Selection            |
+| **label**           | naming / label slot                                    | Input, Selection, Structure |
+| **description**     | descriptive / helper-text slot                         | Input, Selection, Structure |
+| **supporting**      | supporting child slot (broader than label/description) | Input, Structure            |
+| **selection**       | selection-bearing slot                                 | Selection                   |
+| **step**            | step slot (e.g. progression marker)                    | Structure                   |
+| **summary**         | summary slot                                           | Structure                   |
+| **navigation**      | navigation slot inside a structural composite          | Structure                   |
 
 ### Parent disambiguation
 
@@ -177,21 +176,22 @@ State answers: _What interactional or semantic condition is currently active?_
 
 State is not a prop passed at the expression level — it is runtime-resolved by React Aria render props (`isHovered`, `isFocused`, `isPressed`, `isSelected`, …) and surfaced as the CSS selector layer:
 
-| State             | Meaning                                        |
-| :---------------- | :--------------------------------------------- |
-| **default**       | No special condition active                    |
-| **hover**         | Pointer is over the element                    |
-| **active**        | Element is being activated / pressed           |
-| **focused**       | Element has keyboard focus                     |
-| **disabled**      | Element is not interactive                     |
-| **selected**      | Item is selected within a collection           |
-| **pressed**       | Toggle is in its on-press state                |
-| **checked**       | Checkbox-like element is checked               |
-| **indeterminate** | Mixed or partial selection state               |
-| **expanded**      | Disclosure or select is open                   |
-| **current**       | Navigation item matches the current location   |
-| **visited**       | Link has been previously visited               |
-| **droptarget**    | Element is a valid target for a drag operation |
+| State             | Meaning                                                                                    |
+| :---------------- | :----------------------------------------------------------------------------------------- |
+| **default**       | No special condition active                                                                |
+| **hover**         | Pointer is over the element                                                                |
+| **active**        | Element is being activated / pressed                                                       |
+| **focused**       | Element has keyboard focus                                                                 |
+| **disabled**      | Element is not interactive                                                                 |
+| **selected**      | Item is selected within a collection                                                       |
+| **pressed**       | Toggle is in its on-press state                                                            |
+| **checked**       | Checkbox-like element is checked                                                           |
+| **indeterminate** | Mixed or partial selection state                                                           |
+| **expanded**      | Disclosure or select is open                                                               |
+| **current**       | Navigation item matches the current location                                               |
+| **visited**       | Link has been previously visited                                                           |
+| **droptarget**    | Element is a valid target for a drag operation                                             |
+| **invalid**       | Control's value failed validation (runtime — `isInvalid`, never authorial; Lexicon §10.15) |
 
 Not all states are meaningful for every Entity — `checked` is only surfaced by selection components; `visited` only by navigation links. Legality here is React Aria's runtime concern (it only emits the render-prop for applicable primitives), not a build-time matrix.
 
