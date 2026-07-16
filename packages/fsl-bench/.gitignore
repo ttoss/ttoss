@@ -1,0 +1,5 @@
+# Per-sample compile/bundle scratch space
+.bench-tmp/
+
+# Campaign outputs (reports are committed deliberately, raw runs are not)
+results/
