@@ -77,6 +77,8 @@ export {
 } from './components/Select/Select';
 export type { SeparatorProps } from './components/Separator/Separator';
 export { Separator, separatorMeta } from './components/Separator/Separator';
+export type { SliderProps } from './components/Slider/Slider';
+export { Slider, sliderMeta } from './components/Slider/Slider';
 export type { SwitchProps } from './components/Switch/Switch';
 export { Switch, switchMeta } from './components/Switch/Switch';
 export type {

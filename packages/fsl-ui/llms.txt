@@ -70,7 +70,8 @@ Collection:  ListBox/ListBoxItem, GridList/GridListItem (+ Menu/MenuItem,
              (per-row checkbox).
 Input:       TextField, TextArea (each + Label/Control/Description/Error),
              SearchField (+ Label/Control; leading search + clear glyphs),
-             NumberField (label/description/errorMessage props + −/+ steppers)
+             NumberField (label/description/errorMessage props + −/+ steppers),
+             Slider (label + value output; single value or [min,max] range)
 Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
              DialogActions, Menu, MenuTrigger, ConfirmationDialog,
              Popover, PopoverTrigger, Tooltip, TooltipTrigger

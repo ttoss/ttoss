@@ -143,6 +143,12 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       return <pkg.Separator />;
     },
   },
+  Slider: {
+    scope: 'slider',
+    element: () => {
+      return <pkg.Slider label="Volume" defaultValue={50} />;
+    },
+  },
   ToggleButton: {
     scope: 'toggle-button',
     element: () => {
