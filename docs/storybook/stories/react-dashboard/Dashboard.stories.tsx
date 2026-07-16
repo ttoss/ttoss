@@ -1229,7 +1229,7 @@ const mockBreakdown = [
 
 const WithCardDetailStory = () => {
   return (
-    <Box sx={{ width: '100%', padding: '4' }}>
+    <Box sx={{ width: '100%', minWidth: '900px', padding: '4' }}>
       <Box
         sx={{
           mb: 4,
