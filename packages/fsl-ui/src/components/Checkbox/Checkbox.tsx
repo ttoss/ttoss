@@ -8,6 +8,7 @@ import {
 import type { ComponentMeta } from '../../semantics';
 import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import { Icon } from '../Icon';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -215,12 +216,18 @@ export const Checkbox = ({ children, ...props }: CheckboxProps) => {
                   aria-hidden
                   style={{
                     color: resolveIndicatorColor({ text, isIndeterminate }),
-                    fontSize: '0.75em',
                     lineHeight: 1,
                     userSelect: 'none',
                   }}
                 >
-                  {isIndeterminate ? '−' : '✓'}
+                  <Icon
+                    intent={
+                      isIndeterminate
+                        ? 'selection.indeterminate'
+                        : 'selection.checked'
+                    }
+                    size="sm"
+                  />
                 </span>
               )}
             </span>

@@ -4,8 +4,8 @@ title: Icon
 
 # Icon
 
-:::caution Status: specification — not yet implemented
-`@ttoss/fsl-ui` does not ship an Icon component yet. This document also predates the shipped Component Semantics Projection vocabulary: read **Responsibility** as **Entity**, and the **Host** tables as authoring guidance — the shipped data model has no `Host` level (parent disambiguation happens in the DOM via `data-scope`/`data-part`; see [Component Model](/docs/design/design-system/components/component-model)). Enforcement described as "compile time / build time" is the intended shape, not shipped behaviour.
+:::caution Status: specification — partially implemented (internal)
+`@ttoss/fsl-ui` ships an **internal** Icon layer (`src/components/Icon/`) that implements a **subset** of this contract: Iconify is the official glyph provider (default set: Lucide), consumed via intents (`icon.{family}.{intent}`) registered offline. It is not yet a public component or a standalone `@ttoss/fsl-icon` package, and it covers only the intents shipped components use today — the full canonical registry below is the target, not the current surface. See `@ttoss/fsl-ui` CONTRIBUTING ADR-005. This document also predates the shipped Component Semantics Projection vocabulary: read **Responsibility** as **Entity**, and the **Host** tables as authoring guidance — the shipped data model has no `Host` level (parent disambiguation happens in the DOM via `data-scope`/`data-part`; see [Component Model](/docs/design/design-system/components/component-model)). Enforcement described as "compile time / build time" is the intended shape, not shipped behaviour.
 :::
 
 **Entity: Structure**

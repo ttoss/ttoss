@@ -27,6 +27,8 @@
     "verify:treeshake": "node scripts/verify-treeshake.mjs"
   },
   "dependencies": {
+    "@iconify-icon/react": "^2.2.0",
+    "@iconify/icons-lucide": "^1.2.135",
     "@ttoss/fsl-theme": "workspace:^",
     "react-aria-components": "~1.19.0"
   },

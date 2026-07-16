@@ -397,6 +397,8 @@ Registered knobs:
 | `--fsl-dialog-max-height` | `DialogModal` | `90vh`             |
 | `--fsl-menu-min-width`    | `Menu`        | `12rem`            |
 | `--fsl-menu-max-width`    | `Menu`        | `min(320px, 90vw)` |
+| `--fsl-popover-max-width` | `Popover`     | `min(320px, 90vw)` |
+| `--fsl-tooltip-max-width` | `Tooltip`     | `min(280px, 90vw)` |
 
 ---
 
@@ -464,3 +466,38 @@ export const Button = ({ evaluation = 'primary', ...props }: ButtonProps) => {
   );
 };
 ```
+
+---
+
+## §9 — Icons (internal glyph layer)
+
+When a component needs a glyph (chevron, check, close, …), do **not** hardcode
+a unicode character or hand-author SVG. Use the internal `Icon`
+(`src/components/Icon/`) — a semantic layer over the Iconify provider
+(ADR-005):
+
+```typescript
+import { Icon } from '../Icon'; // from src/components/*; '../../components/Icon' from composites
+
+<Icon intent="disclosure.expand" />          // named by meaning, not glyph
+<Icon intent="action.close" size="sm" />     // sm | md (default) | lg → vars.sizing.icon.*
+<Icon intent="action.search" label={label} /> // labelled (role=img) instead of decorative
+```
+
+Rules:
+
+1. **Intent, not glyph.** Pick an `icon.{family}.{intent}` from
+   `src/components/Icon/intents.ts`. Need one that is not there yet? Add the
+   intent to `intents.ts` **and** its Lucide glyph to `glyphs.ts` (a two-line
+   edit; the `satisfies Record<IconIntent, …>` makes a missing glyph a compile
+   error). The registry grows only when a real component needs it.
+2. **Color is inherited.** Icon renders `currentColor`; set the color on the
+   surrounding element (as Checkbox's `indicator` does). Icon reads no color
+   token.
+3. **Size is the only token Icon reads** — `vars.sizing.icon.{sm|md|lg}` via
+   the `size` prop. This is not the §4 density `size` (that governs interactive
+   hit targets); a glyph legitimately scales with its context.
+4. **Decorative by default** (`aria-hidden`). Pass `label` only when the icon
+   is the sole carrier of meaning — and pass caller-localized copy (§6/i18n).
+5. Icon is **internal** — never re-export it from `src/index.ts`. It is the
+   seed of a future standalone `@ttoss/fsl-icon` package.

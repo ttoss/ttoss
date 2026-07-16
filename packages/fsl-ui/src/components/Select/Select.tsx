@@ -16,6 +16,7 @@ import {
 import type { ComponentMeta } from '../../semantics';
 import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import { Icon } from '../Icon';
 
 // ---------------------------------------------------------------------------
 // Semantic identities — Layer 1
@@ -72,9 +73,6 @@ const buildPopoverStyle = (c: InputColors): React.CSSProperties => {
     overflow: 'hidden',
   };
 };
-
-// Visual-only symbol — not user-facing text, no i18n needed.
-const CHEVRON_DOWN = String.fromCharCode(0x25bc);
 
 // ---------------------------------------------------------------------------
 // Select — root orchestrator
@@ -232,7 +230,7 @@ export const Select = <T extends object = object>({
                 aria-hidden
                 style={{ flexShrink: 0 }}
               >
-                {CHEVRON_DOWN}
+                <Icon intent="disclosure.expand" />
               </span>
             </RACButton>
 

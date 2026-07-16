@@ -48,16 +48,26 @@ are undefined and components render unstyled.
 
 ## Component catalog (all exports also ship a `*Meta` identity object)
 
-Action:      Button, MenuItem (inside Menu), FormSubmit (inside Form)
-Navigation:  Link
+Action:      Button, ToggleButton, MenuItem (inside Menu), FormSubmit (inside Form)
+Navigation:  Link, Breadcrumbs/Breadcrumb, Tabs/TabList/Tab
+             (TabPanel is Structure — the content revealed by the tabs)
 Disclosure:  Accordion, AccordionItem, AccordionTrigger, AccordionPanel
-Selection:   Checkbox, RadioGroup/Radio, Switch, Select/SelectItem
-Input:       TextField (+ TextFieldLabel/Control/Description/Error)
+Selection:   Checkbox, RadioGroup/Radio, Switch, Select/SelectItem,
+             ToggleButtonGroup
+Input:       TextField, TextArea (each + Label/Control/Description/Error),
+             SearchField (+ Label/Control; leading search + clear glyphs)
 Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
-             DialogActions, Menu, MenuTrigger, ConfirmationDialog
+             DialogActions, Menu, MenuTrigger, ConfirmationDialog,
+             Popover, PopoverTrigger, Tooltip, TooltipTrigger
 Feedback:    ProgressBar, Toast, ToastRegion, createToastQueue
 Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
-             WizardNavigation
+             WizardNavigation, Separator
+
+Icons: INTERNAL only (not exported). Components render glyphs through an
+internal semantic Icon layer (`src/components/Icon/`) that maps `icon.{family}.{intent}`
+intents to Lucide glyphs via the Iconify provider (`@iconify-icon/react`),
+registered offline (no runtime API fetch). Future standalone `@ttoss/fsl-icon`.
+See CONTRIBUTING ADR-005.
 
 ## Entity → token map (a component reads ONLY its row)
 
@@ -80,7 +90,9 @@ Color path formula: `vars.colors.{ux}[evaluation][background|border|text][state]
    custom-property knobs on the composite scope (fallbacks built in):
    `--fsl-dialog-max-width` (default min(500px, 90vw)),
    `--fsl-dialog-max-height` (90vh), `--fsl-menu-min-width` (12rem),
-   `--fsl-menu-max-width` (min(320px, 90vw)).
+   `--fsl-menu-max-width` (min(320px, 90vw)),
+   `--fsl-popover-max-width` (min(320px, 90vw)),
+   `--fsl-tooltip-max-width` (min(280px, 90vw)).
    Example: `[data-scope='dialog'] { --fsl-dialog-max-width: 720px; }`
 2. There is NO `size` prop anywhere. Different density = different
    semantic identity = different component.
@@ -104,4 +116,7 @@ Color path formula: `vars.colors.{ux}[evaluation][background|border|text][state]
   min before deps). Peer deps: react >= 18, react-dom >= 18.
 - `react-aria-components` pinned `~1.19.0` while Toast uses UNSTABLE_ APIs.
 - SSR-safe: the only DOM injection (`@keyframes` for ProgressBar) happens in
-  a client-only insertion effect.
+  a client-only insertion effect. Icon glyphs register into an in-memory
+  Iconify registry (no DOM, no network), so they are SSR-safe too.
+- Icons: Iconify (`@iconify-icon/react`) is the official glyph provider;
+  default set is Lucide (`@iconify/icons-lucide`, per-icon / tree-shakeable).

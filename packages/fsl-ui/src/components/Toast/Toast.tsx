@@ -14,6 +14,7 @@ import {
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import { Icon } from '../Icon';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -251,7 +252,7 @@ export const Toast = ({ toast }: ToastProps) => {
           });
         }}
       >
-        <span aria-hidden>{String.fromCharCode(0x2715) /* ✕ */}</span>
+        <Icon intent="action.close" size="sm" />
       </RACButton>
     </RACToast>
   );

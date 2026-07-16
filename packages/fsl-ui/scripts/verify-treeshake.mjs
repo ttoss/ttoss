@@ -3,7 +3,7 @@
  *
  * Bundles `import { Button } from '@ttoss/fsl-ui'` with esbuild against the
  * built `dist/` output (falling back to `src/` when dist is absent — e.g.
- * in environments where the tsdown build cannot run) and asserts:
+ * when the probe runs before a build) and asserts:
  *
  *   1. Composite code is shaken out — the bundle must not contain the
  *      Wizard/DialogModal/ConfirmationDialog implementations.
