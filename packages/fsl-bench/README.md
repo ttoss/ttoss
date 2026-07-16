@@ -79,7 +79,9 @@ a campaign's start and its report.
 
 ```bash
 export ANTHROPIC_API_KEY=...   # provider: anthropic (default model claude-opus-4-8)
-export GEMINI_API_KEY=...      # provider: gemini (default model gemini-2.5-pro)
+export GEMINI_API_KEY=...      # provider: gemini (default model gemini-pro-latest — a Google-maintained
+                                # alias; pinned snapshots like gemini-2.5-pro get retired for new
+                                # keys/projects on a rolling basis and 404)
 
 pnpm run bench                 # full matrix: 5 scenarios x 5 conditions x 2 providers x 5 reps
 pnpm run bench -- --dry        # print the matrix, no API calls

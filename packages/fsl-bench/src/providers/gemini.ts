@@ -13,9 +13,15 @@ const sleep = (ms: number): Promise<void> => {
  * Google Gemini provider via the REST generateContent endpoint (no SDK
  * dependency). Auth via GEMINI_API_KEY. Retries retryable statuses with
  * exponential backoff.
+ *
+ * Default is the `gemini-pro-latest` alias (Google-maintained, always
+ * resolves to the current recommended pro-tier model) rather than a pinned
+ * version — pinned snapshots (e.g. `gemini-2.5-pro`) get retired for new
+ * API keys/projects on a rolling basis and 404. Override with
+ * FSL_BENCH_GEMINI_MODEL to pin a specific snapshot for a frozen campaign.
  */
 export const createGeminiProvider = ({
-  model = process.env.FSL_BENCH_GEMINI_MODEL ?? 'gemini-2.5-pro',
+  model = process.env.FSL_BENCH_GEMINI_MODEL ?? 'gemini-pro-latest',
 }: {
   model?: string;
 } = {}): Provider => {
