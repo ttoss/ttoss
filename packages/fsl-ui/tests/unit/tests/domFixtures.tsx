@@ -105,6 +105,17 @@ const treeTextField = () => {
   );
 };
 
+const treeTextArea = () => {
+  return (
+    <pkg.TextArea isInvalid>
+      <pkg.TextAreaLabel>Notes</pkg.TextAreaLabel>
+      <pkg.TextAreaControl />
+      <pkg.TextAreaDescription>Optional</pkg.TextAreaDescription>
+      <pkg.TextAreaError>Required</pkg.TextAreaError>
+    </pkg.TextArea>
+  );
+};
+
 const treeTabs = () => {
   return (
     <pkg.Tabs aria-label="sections">
@@ -321,6 +332,12 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       );
     },
   },
+  // ── TextArea ──────────────────────────────────────────────────────
+  TextArea: { scope: 'text-area', element: treeTextArea },
+  TextAreaLabel: { scope: 'text-area', element: treeTextArea },
+  TextAreaControl: { scope: 'text-area', element: treeTextArea },
+  TextAreaDescription: { scope: 'text-area', element: treeTextArea },
+  TextAreaError: { scope: 'text-area', element: treeTextArea },
   // ── TextField ─────────────────────────────────────────────────────
   TextField: { scope: 'text-field', element: treeTextField },
   TextFieldLabel: { scope: 'text-field', element: treeTextField },

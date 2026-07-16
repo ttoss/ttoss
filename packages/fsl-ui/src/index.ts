@@ -154,6 +154,25 @@ export {
   PopoverTrigger,
 } from './composites/Popover/Popover';
 export type {
+  TextAreaControlProps,
+  TextAreaDescriptionProps,
+  TextAreaErrorProps,
+  TextAreaLabelProps,
+  TextAreaProps,
+} from './composites/TextArea/TextArea';
+export {
+  TextArea,
+  TextAreaControl,
+  textAreaControlMeta,
+  TextAreaDescription,
+  textAreaDescriptionMeta,
+  TextAreaError,
+  textAreaErrorMeta,
+  TextAreaLabel,
+  textAreaLabelMeta,
+  textAreaMeta,
+} from './composites/TextArea/TextArea';
+export type {
   TextFieldControlProps,
   TextFieldDescriptionProps,
   TextFieldErrorProps,
