@@ -172,6 +172,12 @@ export {
   textFieldLabelMeta,
   textFieldMeta,
 } from './composites/TextField/TextField';
+export type { TooltipProps } from './composites/Tooltip/Tooltip';
+export {
+  Tooltip,
+  tooltipMeta,
+  TooltipTrigger,
+} from './composites/Tooltip/Tooltip';
 export type {
   WizardNavigationProps,
   WizardProps,

@@ -398,6 +398,7 @@ Registered knobs:
 | `--fsl-menu-min-width`    | `Menu`        | `12rem`            |
 | `--fsl-menu-max-width`    | `Menu`        | `min(320px, 90vw)` |
 | `--fsl-popover-max-width` | `Popover`     | `min(320px, 90vw)` |
+| `--fsl-tooltip-max-width` | `Tooltip`     | `min(280px, 90vw)` |
 
 ---
 

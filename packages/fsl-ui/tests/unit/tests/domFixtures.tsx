@@ -297,6 +297,18 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
   // ── Menu / MenuItem ───────────────────────────────────────────────
   Menu: { scope: 'menu', element: treeMenu },
   MenuItem: { scope: 'menu', element: treeMenu },
+  // ── Tooltip ───────────────────────────────────────────────────────
+  Tooltip: {
+    scope: 'tooltip',
+    element: () => {
+      return (
+        <pkg.TooltipTrigger defaultOpen>
+          <pkg.Button>T</pkg.Button>
+          <pkg.Tooltip>Tip</pkg.Tooltip>
+        </pkg.TooltipTrigger>
+      );
+    },
+  },
   // ── Popover (standalone) ──────────────────────────────────────────
   Popover: {
     scope: 'popover',

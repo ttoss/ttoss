@@ -57,7 +57,7 @@ Selection:   Checkbox, RadioGroup/Radio, Switch, Select/SelectItem,
 Input:       TextField (+ TextFieldLabel/Control/Description/Error)
 Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
              DialogActions, Menu, MenuTrigger, ConfirmationDialog,
-             Popover, PopoverTrigger
+             Popover, PopoverTrigger, Tooltip, TooltipTrigger
 Feedback:    ProgressBar, Toast, ToastRegion, createToastQueue
 Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              WizardNavigation, Separator
@@ -90,7 +90,8 @@ Color path formula: `vars.colors.{ux}[evaluation][background|border|text][state]
    `--fsl-dialog-max-width` (default min(500px, 90vw)),
    `--fsl-dialog-max-height` (90vh), `--fsl-menu-min-width` (12rem),
    `--fsl-menu-max-width` (min(320px, 90vw)),
-   `--fsl-popover-max-width` (min(320px, 90vw)).
+   `--fsl-popover-max-width` (min(320px, 90vw)),
+   `--fsl-tooltip-max-width` (min(280px, 90vw)).
    Example: `[data-scope='dialog'] { --fsl-dialog-max-width: 720px; }`
 2. There is NO `size` prop anywhere. Different density = different
    semantic identity = different component.
