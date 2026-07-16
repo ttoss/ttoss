@@ -1162,7 +1162,7 @@ const cardDetailTemplate: DashboardTemplate[] = [
         i: 'revenue',
         x: 0,
         y: 0,
-        w: 4,
+        w: 12,
         h: 4,
         card: {
           id: 'revenue',
@@ -1176,9 +1176,9 @@ const cardDetailTemplate: DashboardTemplate[] = [
       },
       {
         i: 'roas',
-        x: 4,
-        y: 0,
-        w: 4,
+        x: 0,
+        y: 5,
+        w: 12,
         h: 4,
         card: {
           id: 'roas',
@@ -1192,9 +1192,9 @@ const cardDetailTemplate: DashboardTemplate[] = [
       },
       {
         i: 'ctr',
-        x: 8,
-        y: 0,
-        w: 4,
+        x: 0,
+        y: 10,
+        w: 12,
         h: 4,
         card: {
           id: 'ctr',
