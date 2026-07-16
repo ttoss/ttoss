@@ -1,3 +1,4 @@
+export type { LayerClickConfig } from './react/click';
 export * from './react/GeoVisCanvas';
 export * from './react/GeoVisProvider';
 export type { UseMapDataResult } from './react/hooks';

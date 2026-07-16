@@ -3,10 +3,10 @@
  * FSL Layer 4: Semantic Token Projection
  *
  * This file is the formal TypeScript type contract for the Semantic Token
- * Projection (layer 4) — the implemented layer. It derives from the FSL
- * foundation (layers 1–2); the planned Component Semantics Projection (layer 3,
- * not yet built) will consume these tokens. It must not define vocabulary that
- * contradicts the FSL Lexicon or FSL Structural Language.
+ * Projection (layer 4). It derives from the FSL foundation (layers 1–2); the
+ * Component Semantics Projection (layer 3, implemented by `@ttoss/fsl-ui`)
+ * consumes these tokens. It must not define vocabulary that contradicts the
+ * FSL Lexicon or FSL Structural Language.
  *
  * Structure (post-decomposition):
  *   - Per-family types live in `./families/<family>.ts` (one file per token

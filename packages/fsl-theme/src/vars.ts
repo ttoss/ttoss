@@ -26,15 +26,15 @@ export { buildVarsMap } from './roots/toVars';
  * import { vars } from '@ttoss/fsl-theme/vars';
  *
  * <Button style={{ background: vars.colors.action.primary.background.default }} />
- * // → background: 'var(--tt-action-primary-background-default)'
+ * // → background: 'var(--tt-colors-action-primary-background-default)'
  * ```
  *
  * ## Usage in CSS / CSS Modules
  *
  * ```css
  * .button {
- *   background: var(--tt-action-primary-background-default);
- *   color: var(--tt-action-primary-text-default);
+ *   background: var(--tt-colors-action-primary-background-default);
+ *   color: var(--tt-colors-action-primary-text-default);
  * }
  * ```
  *
@@ -79,7 +79,7 @@ export { buildVarsMap } from './roots/toVars';
  *   buildVarsMap(myTheme.base) as CssVarsMap<MySemanticTokens>;
  *
  * myVars.colors.brandX.primary.default;
- * // → 'var(--tt-colors-brandx-primary-default)'
+ * // → 'var(--tt-colors-brandX-primary-default)'  (camelCase is preserved)
  * ```
  *
  * For one-off custom keys where the extra structure is trivial, use

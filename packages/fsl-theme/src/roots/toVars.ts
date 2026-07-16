@@ -55,7 +55,7 @@ export type CssVarsMap<T> = {
  *
  * const vars = buildVarsMap(baseTheme);
  * vars.colors.action.primary.background.default
- * // → 'var(--tt-action-primary-background-default)'
+ * // → 'var(--tt-colors-action-primary-background-default)'
  * ```
  */
 export const buildVarsMap = (
