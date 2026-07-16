@@ -35,6 +35,8 @@ import {
   Menu,
   MenuItem,
   MenuTrigger,
+  Tag,
+  TagGroup,
   TextField,
   TextFieldControl,
   TextFieldDescription,
@@ -190,6 +192,13 @@ describe('contract: composite sub-parts throw outside host', () => {
       },
     ],
     [
+      'Tag',
+      'TagGroup',
+      () => {
+        return <Tag>x</Tag>;
+      },
+    ],
+    [
       'FormActions',
       'Form',
       () => {
@@ -296,6 +305,16 @@ describe('contract: composite sub-parts render inside host', () => {
             <MenuItem>item</MenuItem>
           </Menu>
         </MenuTrigger>
+      );
+    }).not.toThrow();
+  });
+
+  test('TagGroup scope satisfies sub-parts', () => {
+    expect(() => {
+      return render(
+        <TagGroup aria-label="filters">
+          <Tag id="a">A</Tag>
+        </TagGroup>
       );
     }).not.toThrow();
   });

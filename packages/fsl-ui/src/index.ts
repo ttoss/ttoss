@@ -195,6 +195,13 @@ export {
   searchFieldLabelMeta,
   searchFieldMeta,
 } from './composites/SearchField/SearchField';
+export type { TagGroupProps, TagProps } from './composites/TagGroup/TagGroup';
+export {
+  Tag,
+  TagGroup,
+  tagGroupMeta,
+  tagMeta,
+} from './composites/TagGroup/TagGroup';
 export type {
   TextAreaControlProps,
   TextAreaDescriptionProps,

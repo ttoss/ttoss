@@ -124,6 +124,15 @@ export const treeTextArea = (): React.ReactElement => {
   );
 };
 
+export const treeTagGroup = (): React.ReactElement => {
+  return (
+    <pkg.TagGroup aria-label="Filters" label="Filters" onRemove={() => {}}>
+      <pkg.Tag id="react">React</pkg.Tag>
+      <pkg.Tag id="vue">Vue</pkg.Tag>
+    </pkg.TagGroup>
+  );
+};
+
 export const treeTabs = (): React.ReactElement => {
   return (
     <pkg.Tabs aria-label="sections">

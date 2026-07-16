@@ -30,6 +30,7 @@ import {
   treeSearchField,
   treeSelect,
   treeTabs,
+  treeTagGroup,
   treeTextArea,
   treeTextField,
   treeToast,
@@ -283,6 +284,9 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       );
     },
   },
+  // ── TagGroup / Tag ────────────────────────────────────────────────
+  TagGroup: { scope: 'tag-group', element: treeTagGroup },
+  Tag: { scope: 'tag-group', element: treeTagGroup },
   // ── SearchField ───────────────────────────────────────────────────
   SearchField: { scope: 'search-field', element: treeSearchField },
   SearchFieldLabel: { scope: 'search-field', element: treeSearchField },
