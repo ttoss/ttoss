@@ -10,7 +10,7 @@ import {
   type DashboardTemplate,
   DEFAULT_CARD_CATALOG,
 } from '@ttoss/react-dashboard';
-import { Box, Button, Heading, Stack, Text } from '@ttoss/ui';
+import { Box, Button, Flex, Heading, Stack, Text } from '@ttoss/ui';
 import * as React from 'react';
 
 const meta: Meta = {
@@ -1148,6 +1148,109 @@ export const WithCustomHeaderChildren: StoryObj = {
       description: {
         story:
           'Dashboard with custom header buttons. The `headerChildren` wrapper automatically centers all children vertically, so no per-child `alignSelf` or `height` overrides are needed.',
+      },
+    },
+  },
+};
+
+const WithCardDetailStory = () => {
+  const [filters, setFilters] =
+    React.useState<DashboardFilter[]>(defaultFilters);
+
+  const selectedTemplateId =
+    (filters.find((f) => {
+      return f.key === 'template';
+    })?.value as string) || 'default';
+  const selectedTemplate =
+    defaultTemplates.find((t) => {
+      return t.id === selectedTemplateId;
+    }) || defaultTemplates[0];
+
+  return (
+    <Box sx={{ width: '100%', padding: '4' }}>
+      <Dashboard
+        templates={defaultTemplates}
+        filters={filters}
+        selectedTemplate={selectedTemplate}
+        loading={false}
+        onFiltersChange={setFilters}
+        clickableCardFilter={(card) => {
+          return (
+            (card as { sourceType?: { source: string }[] }).sourceType?.some(
+              (s) => {
+                return s.source === 'api';
+              }
+            ) ?? false
+          );
+        }}
+        renderCardDetail={(card, close) => {
+          return (
+            <Box
+              sx={{
+                border: '1px solid',
+                borderColor: 'display.border.default',
+                borderRadius: 'md',
+                p: 6,
+                bg: 'display.bg.secondary.default',
+              }}
+            >
+              <Flex
+                sx={{
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  mb: 4,
+                }}
+              >
+                {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+                <Heading sx={{ fontSize: 'lg' }}>{card.title} — Detail</Heading>
+                <Button variant="secondary" onClick={close}>
+                  {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+                  Close
+                </Button>
+              </Flex>
+              {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+              <Text
+                sx={{ color: 'display.text.secondary.default', fontSize: 'sm' }}
+              >
+                This slot is rendered immediately below the clicked card&apos;s
+                row. Click the same card again to close, or click a different
+                card to move the slot.
+              </Text>
+              <Box
+                sx={{
+                  mt: 4,
+                  p: 4,
+                  bg: 'display.bg.primary.default',
+                  borderRadius: 'sm',
+                }}
+              >
+                {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+                <Text sx={{ fontFamily: 'mono', fontSize: 'xs' }}>
+                  card.id: {(card as { id?: string }).id ?? '(none)'}
+                  {'\n'}
+                  card.type: {card.type}
+                  {'\n'}
+                  card.numberType:{' '}
+                  {(card as { numberType?: string }).numberType ?? '(none)'}
+                </Text>
+              </Box>
+            </Box>
+          );
+        }}
+      />
+    </Box>
+  );
+};
+
+export const WithCardDetail: StoryObj = {
+  render: () => {
+    return <WithCardDetailStory />;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Dashboard with `renderCardDetail` and `clickableCardFilter`. Click any card to open a detail slot positioned immediately below that card's row. Click the same card to close (toggle), or click a different card to move the slot. Section dividers are not clickable.",
       },
     },
   },

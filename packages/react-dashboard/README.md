@@ -99,6 +99,37 @@ const MyDashboard = () => {
 };
 ```
 
+## Card Detail Expansion
+
+Use `renderCardDetail` to open an expansion slot immediately below the clicked card's row. Combine with `clickableCardFilter` to restrict which cards are interactive.
+
+```tsx
+import { Dashboard, type DashboardCardProps } from '@ttoss/react-dashboard';
+
+<Dashboard
+  selectedTemplate={template}
+  renderCardDetail={(card: DashboardCardProps, close) => (
+    <div>
+      <h2>{card.title} — Detail</h2>
+      <button onClick={close}>Close</button>
+    </div>
+  )}
+  clickableCardFilter={(card: DashboardCardProps) =>
+    card.sourceType?.some((s) => s.source === 'api') ?? false
+  }
+/>;
+```
+
+### Behavior
+
+- Clicking a card that passes `clickableCardFilter` opens the slot below that card's row
+- Clicking the same card again closes the slot (toggle)
+- Clicking a different card moves the slot
+- Dragging a card does not trigger the slot
+- `isEditMode` disables click handling entirely
+- On mobile breakpoints (`xs`/`sm`), the slot renders below the full grid
+- Consumers not passing `renderCardDetail` see no behavior change
+
 ### Editable Dashboard Usage
 
 Use `editable` mode to let users reorganize cards, remove/add cards from a catalog, save changes to the current template, or save a cloned template.
