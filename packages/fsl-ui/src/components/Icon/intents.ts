@@ -32,9 +32,11 @@ export const ICON_INTENTS = [
   // selection — control states. Opposition rule: checked ≠ indeterminate.
   'selection.checked',
   'selection.indeterminate',
-  // action — direct user actions.
+  // action — direct user actions. Opposition rule: increment ≠ decrement.
   'action.close',
   'action.search',
+  'action.increment',
+  'action.decrement',
 ] as const;
 
 /** A semantic icon intent — the public "name" of an icon. */

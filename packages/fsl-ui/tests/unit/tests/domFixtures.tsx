@@ -19,6 +19,27 @@ import { fireEvent, screen } from '@testing-library/react';
 import type * as React from 'react';
 import * as pkg from 'src/index';
 
+import {
+  treeAccordion,
+  treeBreadcrumbs,
+  treeCheckboxGroup,
+  treeDialog,
+  treeDisclosure,
+  treeGridList,
+  treeListBox,
+  treeMenu,
+  treeRadio,
+  treeSearchField,
+  treeSelect,
+  treeTabs,
+  treeTagGroup,
+  treeTextArea,
+  treeTextField,
+  treeToast,
+  treeToggleButtonGroup,
+  treeWizard,
+} from './domFixtures.trees';
+
 // ---------------------------------------------------------------------------
 // 7. DOM data-attribute contract
 //
@@ -30,143 +51,21 @@ import * as pkg from 'src/index';
 //            so they appear in the DOM without interactive setup.
 //   open   — optional post-render action for composites that open via a
 //            trigger click (ConfirmationDialog).
+//
+// Shared composite trees live in `domFixtures.trees.tsx` (declared once,
+// reused across every sub-part meta) — see that file's header for the rule.
 // ---------------------------------------------------------------------------
 export type DomFixture = {
   scope: string;
   element: () => React.ReactElement;
   open?: () => void;
-};
-
-// ── shared composite trees (declared once, reused across sub-parts) ────────
-const treeRadio = () => {
-  return (
-    <pkg.RadioGroup>
-      <pkg.Radio value="a">A</pkg.Radio>
-    </pkg.RadioGroup>
-  );
-};
-
-const treeSelect = (defaultOpen?: boolean) => {
-  return (
-    <pkg.Select defaultOpen={defaultOpen}>
-      <pkg.SelectItem id="a">A</pkg.SelectItem>
-    </pkg.Select>
-  );
-};
-
-const treeToast = () => {
-  const queue = pkg.createToastQueue<pkg.ToastContent>({ maxVisibleToasts: 5 });
-  queue.add({ title: 'x' });
-  return <pkg.ToastRegion queue={queue} />;
-};
-
-const treeAccordion = () => {
-  return (
-    <pkg.Accordion>
-      <pkg.AccordionItem id="x">
-        <pkg.AccordionTrigger>T</pkg.AccordionTrigger>
-        <pkg.AccordionPanel>P</pkg.AccordionPanel>
-      </pkg.AccordionItem>
-    </pkg.Accordion>
-  );
-};
-
-const treeDialog = () => {
-  return (
-    <pkg.Dialog aria-label="test">
-      <pkg.DialogHeading>H</pkg.DialogHeading>
-      <pkg.DialogBody>B</pkg.DialogBody>
-      <pkg.DialogActions>
-        <pkg.Button composition="primaryAction">OK</pkg.Button>
-      </pkg.DialogActions>
-    </pkg.Dialog>
-  );
-};
-
-const treeMenu = () => {
-  return (
-    <pkg.MenuTrigger defaultOpen>
-      <pkg.Button>T</pkg.Button>
-      <pkg.Menu>
-        <pkg.MenuItem>Item</pkg.MenuItem>
-      </pkg.Menu>
-    </pkg.MenuTrigger>
-  );
-};
-
-const treeTextField = () => {
-  return (
-    <pkg.TextField isInvalid>
-      <pkg.TextFieldLabel>Label</pkg.TextFieldLabel>
-      <pkg.TextFieldControl />
-      <pkg.TextFieldDescription>Hint</pkg.TextFieldDescription>
-      <pkg.TextFieldError>Required</pkg.TextFieldError>
-    </pkg.TextField>
-  );
-};
-
-const treeSearchField = () => {
-  return (
-    <pkg.SearchField clearLabel="Clear search">
-      <pkg.SearchFieldLabel>Search</pkg.SearchFieldLabel>
-      <pkg.SearchFieldControl />
-    </pkg.SearchField>
-  );
-};
-
-const treeTextArea = () => {
-  return (
-    <pkg.TextArea isInvalid>
-      <pkg.TextAreaLabel>Notes</pkg.TextAreaLabel>
-      <pkg.TextAreaControl />
-      <pkg.TextAreaDescription>Optional</pkg.TextAreaDescription>
-      <pkg.TextAreaError>Required</pkg.TextAreaError>
-    </pkg.TextArea>
-  );
-};
-
-const treeTabs = () => {
-  return (
-    <pkg.Tabs aria-label="sections">
-      <pkg.TabList aria-label="sections">
-        <pkg.Tab id="a">A</pkg.Tab>
-      </pkg.TabList>
-      <pkg.TabPanel id="a">Panel A</pkg.TabPanel>
-    </pkg.Tabs>
-  );
-};
-
-const treeBreadcrumbs = () => {
-  return (
-    <pkg.Breadcrumbs>
-      <pkg.Breadcrumb href="#a">A</pkg.Breadcrumb>
-      <pkg.Breadcrumb>B</pkg.Breadcrumb>
-    </pkg.Breadcrumbs>
-  );
-};
-
-const treeToggleButtonGroup = () => {
-  return (
-    <pkg.ToggleButtonGroup aria-label="view">
-      <pkg.ToggleButton id="a">A</pkg.ToggleButton>
-      <pkg.ToggleButton id="b">B</pkg.ToggleButton>
-    </pkg.ToggleButtonGroup>
-  );
-};
-
-const treeWizard = () => {
-  return (
-    <pkg.Wizard aria-label="test">
-      <pkg.WizardStep>
-        <p>step</p>
-      </pkg.WizardStep>
-      <pkg.WizardNavigation
-        prevLabel="Back"
-        nextLabel="Next"
-        finishLabel="Finish"
-      />
-    </pkg.Wizard>
-  );
+  /**
+   * Optional jest-axe run options for this fixture's a11y check. Use only to
+   * suppress a documented tooling false-positive (never a real violation) —
+   * see the Meter fixture for the canonical example (RAC's deliberate
+   * `role="meter progressbar"` fallback trips axe's `aria-allowed-attr`).
+   */
+  axeOptions?: Record<string, unknown>;
 };
 
 export const DOM_FIXTURES: Record<string, DomFixture> = {
@@ -183,8 +82,25 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       return <pkg.Checkbox>x</pkg.Checkbox>;
     },
   },
+  CheckboxGroup: { scope: 'checkbox-group', element: treeCheckboxGroup },
+  FileTrigger: {
+    scope: 'file-trigger',
+    element: () => {
+      return <pkg.FileTrigger>Upload</pkg.FileTrigger>;
+    },
+  },
   Breadcrumbs: { scope: 'breadcrumbs', element: treeBreadcrumbs },
   Breadcrumb: { scope: 'breadcrumbs', element: treeBreadcrumbs },
+  Group: {
+    scope: 'group',
+    element: () => {
+      return (
+        <pkg.Group label="Details">
+          <pkg.Button>x</pkg.Button>
+        </pkg.Group>
+      );
+    },
+  },
   Link: {
     scope: 'link',
     element: () => {
@@ -203,6 +119,26 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       return <pkg.Switch>x</pkg.Switch>;
     },
   },
+  NumberField: {
+    scope: 'number-field',
+    element: () => {
+      return <pkg.NumberField label="Quantity" defaultValue={1} />;
+    },
+  },
+  Meter: {
+    scope: 'meter',
+    element: () => {
+      return <pkg.Meter aria-label="Storage" label="Storage used" value={40} />;
+    },
+    // React Aria's useMeter deliberately renders `role="meter progressbar"`
+    // (a documented Firefox/Chrome fallback — meter is not universally
+    // supported). axe-core's `aria-allowed-attr` mishandles the
+    // space-separated role fallback list: it resolves the element to a
+    // generic role and rejects the valid `aria-value*` attributes. The DOM is
+    // correct for real assistive tech; this is a known axe limitation, so the
+    // single rule is disabled for this fixture only. See ROADMAP Meter row.
+    axeOptions: { rules: { 'aria-allowed-attr': { enabled: false } } },
+  },
   Tabs: { scope: 'tabs', element: treeTabs },
   TabList: { scope: 'tabs', element: treeTabs },
   Tab: { scope: 'tabs', element: treeTabs },
@@ -211,6 +147,12 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
     scope: 'separator',
     element: () => {
       return <pkg.Separator />;
+    },
+  },
+  Slider: {
+    scope: 'slider',
+    element: () => {
+      return <pkg.Slider label="Volume" defaultValue={50} />;
     },
   },
   ToggleButton: {
@@ -222,6 +164,17 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
   ToggleButtonGroup: {
     scope: 'toggle-button-group',
     element: treeToggleButtonGroup,
+  },
+  Toolbar: {
+    scope: 'toolbar',
+    element: () => {
+      return (
+        <pkg.Toolbar aria-label="formatting">
+          <pkg.Button aria-label="Bold">B</pkg.Button>
+          <pkg.Button aria-label="Italic">I</pkg.Button>
+        </pkg.Toolbar>
+      );
+    },
   },
   // ── RadioGroup / Radio ────────────────────────────────────────────
   RadioGroup: { scope: 'radio-group', element: treeRadio },
@@ -247,6 +200,10 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
   AccordionItem: { scope: 'accordion', element: treeAccordion },
   AccordionTrigger: { scope: 'accordion', element: treeAccordion },
   AccordionPanel: { scope: 'accordion', element: treeAccordion },
+  // ── Disclosure ────────────────────────────────────────────────────
+  Disclosure: { scope: 'disclosure', element: treeDisclosure },
+  DisclosureTrigger: { scope: 'disclosure', element: treeDisclosure },
+  DisclosurePanel: { scope: 'disclosure', element: treeDisclosure },
   // ── Dialog ────────────────────────────────────────────────────────
   Dialog: { scope: 'dialog', element: treeDialog },
   DialogHeading: { scope: 'dialog', element: treeDialog },
@@ -314,6 +271,12 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       );
     },
   },
+  // ── GridList / GridListItem ───────────────────────────────────────
+  GridList: { scope: 'grid-list', element: treeGridList },
+  GridListItem: { scope: 'grid-list', element: treeGridList },
+  // ── ListBox / ListBoxItem ─────────────────────────────────────────
+  ListBox: { scope: 'list-box', element: treeListBox },
+  ListBoxItem: { scope: 'list-box', element: treeListBox },
   // ── Menu / MenuItem ───────────────────────────────────────────────
   Menu: { scope: 'menu', element: treeMenu },
   MenuItem: { scope: 'menu', element: treeMenu },
@@ -341,6 +304,9 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       );
     },
   },
+  // ── TagGroup / Tag ────────────────────────────────────────────────
+  TagGroup: { scope: 'tag-group', element: treeTagGroup },
+  Tag: { scope: 'tag-group', element: treeTagGroup },
   // ── SearchField ───────────────────────────────────────────────────
   SearchField: { scope: 'search-field', element: treeSearchField },
   SearchFieldLabel: { scope: 'search-field', element: treeSearchField },

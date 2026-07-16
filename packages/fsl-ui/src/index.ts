@@ -17,8 +17,47 @@ export type { ButtonProps } from './components/Button/Button';
 export { Button, buttonMeta } from './components/Button/Button';
 export type { CheckboxProps } from './components/Checkbox/Checkbox';
 export { Checkbox, checkboxMeta } from './components/Checkbox/Checkbox';
+export type { CheckboxGroupProps } from './components/CheckboxGroup/CheckboxGroup';
+export {
+  CheckboxGroup,
+  checkboxGroupMeta,
+} from './components/CheckboxGroup/CheckboxGroup';
+export type { FileTriggerProps } from './components/FileTrigger/FileTrigger';
+export {
+  FileTrigger,
+  fileTriggerMeta,
+} from './components/FileTrigger/FileTrigger';
+export type {
+  GridListItemProps,
+  GridListProps,
+} from './components/GridList/GridList';
+export {
+  GridList,
+  GridListItem,
+  gridListItemMeta,
+  gridListMeta,
+} from './components/GridList/GridList';
+export type { GroupProps } from './components/Group/Group';
+export { Group, groupMeta } from './components/Group/Group';
 export type { LinkProps } from './components/Link/Link';
 export { Link, linkMeta } from './components/Link/Link';
+export type {
+  ListBoxItemProps,
+  ListBoxProps,
+} from './components/ListBox/ListBox';
+export {
+  ListBox,
+  ListBoxItem,
+  listBoxItemMeta,
+  listBoxMeta,
+} from './components/ListBox/ListBox';
+export type { MeterProps } from './components/Meter/Meter';
+export { Meter, meterMeta } from './components/Meter/Meter';
+export type { NumberFieldProps } from './components/NumberField/NumberField';
+export {
+  NumberField,
+  numberFieldMeta,
+} from './components/NumberField/NumberField';
 export type { ProgressBarProps } from './components/ProgressBar/ProgressBar';
 export {
   ProgressBar,
@@ -43,6 +82,8 @@ export {
 } from './components/Select/Select';
 export type { SeparatorProps } from './components/Separator/Separator';
 export { Separator, separatorMeta } from './components/Separator/Separator';
+export type { SliderProps } from './components/Slider/Slider';
+export { Slider, sliderMeta } from './components/Slider/Slider';
 export type { SwitchProps } from './components/Switch/Switch';
 export { Switch, switchMeta } from './components/Switch/Switch';
 export type {
@@ -84,6 +125,8 @@ export {
   ToggleButtonGroup,
   toggleButtonGroupMeta,
 } from './components/ToggleButtonGroup/ToggleButtonGroup';
+export type { ToolbarProps } from './components/Toolbar/Toolbar';
+export { Toolbar, toolbarMeta } from './components/Toolbar/Toolbar';
 export type {
   AccordionItemProps,
   AccordionPanelProps,
@@ -127,6 +170,19 @@ export {
   DialogTrigger,
 } from './composites/Dialog/Dialog';
 export type {
+  DisclosurePanelProps,
+  DisclosureProps,
+  DisclosureTriggerProps,
+} from './composites/Disclosure/Disclosure';
+export {
+  Disclosure,
+  disclosureMeta,
+  DisclosurePanel,
+  disclosurePanelMeta,
+  DisclosureTrigger,
+  disclosureTriggerMeta,
+} from './composites/Disclosure/Disclosure';
+export type {
   FormActionsProps,
   FormProps,
   FormSubmitProps,
@@ -166,6 +222,13 @@ export {
   searchFieldLabelMeta,
   searchFieldMeta,
 } from './composites/SearchField/SearchField';
+export type { TagGroupProps, TagProps } from './composites/TagGroup/TagGroup';
+export {
+  Tag,
+  TagGroup,
+  tagGroupMeta,
+  tagMeta,
+} from './composites/TagGroup/TagGroup';
 export type {
   TextAreaControlProps,
   TextAreaDescriptionProps,
