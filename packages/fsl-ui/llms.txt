@@ -60,7 +60,8 @@ Selection:   Checkbox, CheckboxGroup, RadioGroup/Radio, Switch,
              its label part is Selection/label, but description + validationMessage
              are internal parts — Selection has no such structural roles)
 Input:       TextField, TextArea (each + Label/Control/Description/Error),
-             SearchField (+ Label/Control; leading search + clear glyphs)
+             SearchField (+ Label/Control; leading search + clear glyphs),
+             NumberField (label/description/errorMessage props + −/+ steppers)
 Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
              DialogActions, Menu, MenuTrigger, ConfirmationDialog,
              Popover, PopoverTrigger, Tooltip, TooltipTrigger

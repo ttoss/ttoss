@@ -110,6 +110,12 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       return <pkg.Switch>x</pkg.Switch>;
     },
   },
+  NumberField: {
+    scope: 'number-field',
+    element: () => {
+      return <pkg.NumberField label="Quantity" defaultValue={1} />;
+    },
+  },
   Meter: {
     scope: 'meter',
     element: () => {
