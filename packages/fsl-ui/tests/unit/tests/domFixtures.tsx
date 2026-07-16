@@ -105,6 +105,15 @@ const treeTextField = () => {
   );
 };
 
+const treeToggleButtonGroup = () => {
+  return (
+    <pkg.ToggleButtonGroup aria-label="view">
+      <pkg.ToggleButton id="a">A</pkg.ToggleButton>
+      <pkg.ToggleButton id="b">B</pkg.ToggleButton>
+    </pkg.ToggleButtonGroup>
+  );
+};
+
 const treeWizard = () => {
   return (
     <pkg.Wizard aria-label="test">
@@ -163,6 +172,10 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
     element: () => {
       return <pkg.ToggleButton>x</pkg.ToggleButton>;
     },
+  },
+  ToggleButtonGroup: {
+    scope: 'toggle-button-group',
+    element: treeToggleButtonGroup,
   },
   // ── RadioGroup / Radio ────────────────────────────────────────────
   RadioGroup: { scope: 'radio-group', element: treeRadio },

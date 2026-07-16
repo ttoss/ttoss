@@ -51,7 +51,8 @@ are undefined and components render unstyled.
 Action:      Button, ToggleButton, MenuItem (inside Menu), FormSubmit (inside Form)
 Navigation:  Link
 Disclosure:  Accordion, AccordionItem, AccordionTrigger, AccordionPanel
-Selection:   Checkbox, RadioGroup/Radio, Switch, Select/SelectItem
+Selection:   Checkbox, RadioGroup/Radio, Switch, Select/SelectItem,
+             ToggleButtonGroup
 Input:       TextField (+ TextFieldLabel/Control/Description/Error)
 Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
              DialogActions, Menu, MenuTrigger, ConfirmationDialog

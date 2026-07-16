@@ -53,6 +53,11 @@ export {
   ToggleButton,
   toggleButtonMeta,
 } from './components/ToggleButton/ToggleButton';
+export type { ToggleButtonGroupProps } from './components/ToggleButtonGroup/ToggleButtonGroup';
+export {
+  ToggleButtonGroup,
+  toggleButtonGroupMeta,
+} from './components/ToggleButtonGroup/ToggleButtonGroup';
 export type {
   AccordionItemProps,
   AccordionPanelProps,
