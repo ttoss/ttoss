@@ -31,6 +31,8 @@ export {
   selectItemMeta,
   selectMeta,
 } from './components/Select/Select';
+export type { SeparatorProps } from './components/Separator/Separator';
+export { Separator, separatorMeta } from './components/Separator/Separator';
 export type { SwitchProps } from './components/Switch/Switch';
 export { Switch, switchMeta } from './components/Switch/Switch';
 export type {

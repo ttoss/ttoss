@@ -10,6 +10,10 @@
  * suite throws on any component without one. Fixtures must be *accessible*
  * renders (labels/aria where the real usage would have them): they are the
  * package's statement of canonical usage.
+ *
+ * Composites share one element factory across their sub-parts (a sub-part
+ * only needs its `[data-scope][data-part]` to appear in the mounted tree),
+ * so the whole composite is declared once as a `treeXxx` factory and reused.
  */
 import { fireEvent, screen } from '@testing-library/react';
 import type * as React from 'react';
@@ -18,25 +22,102 @@ import * as pkg from 'src/index';
 // ---------------------------------------------------------------------------
 // 7. DOM data-attribute contract
 //
-// Renders each component in its minimal context and asserts that an element
-// with the correct `[data-scope][data-part]` appears in the document.
-//
 // Fixture structure:
 //   scope  — expected `data-scope` value on the element declared by the meta.
 //            For composite sub-parts this is the HOST's kebab-case name, not
 //            the sub-part's (e.g. DialogHeading uses scope="dialog").
-//   render — factory returning the JSX to mount. Overlays use `defaultOpen`
+//   element — factory returning the JSX to mount. Overlays use `defaultOpen`
 //            so they appear in the DOM without interactive setup.
 //   open   — optional post-render action for composites that open via a
 //            trigger click (ConfirmationDialog).
-//
-// Rule: if a new `*Meta` is added and no fixture is defined here, the test
-// for that component will throw — add the fixture before shipping.
 // ---------------------------------------------------------------------------
 export type DomFixture = {
   scope: string;
   element: () => React.ReactElement;
   open?: () => void;
+};
+
+// ── shared composite trees (declared once, reused across sub-parts) ────────
+const treeRadio = () => {
+  return (
+    <pkg.RadioGroup>
+      <pkg.Radio value="a">A</pkg.Radio>
+    </pkg.RadioGroup>
+  );
+};
+
+const treeSelect = (defaultOpen?: boolean) => {
+  return (
+    <pkg.Select defaultOpen={defaultOpen}>
+      <pkg.SelectItem id="a">A</pkg.SelectItem>
+    </pkg.Select>
+  );
+};
+
+const treeToast = () => {
+  const queue = pkg.createToastQueue<pkg.ToastContent>({ maxVisibleToasts: 5 });
+  queue.add({ title: 'x' });
+  return <pkg.ToastRegion queue={queue} />;
+};
+
+const treeAccordion = () => {
+  return (
+    <pkg.Accordion>
+      <pkg.AccordionItem id="x">
+        <pkg.AccordionTrigger>T</pkg.AccordionTrigger>
+        <pkg.AccordionPanel>P</pkg.AccordionPanel>
+      </pkg.AccordionItem>
+    </pkg.Accordion>
+  );
+};
+
+const treeDialog = () => {
+  return (
+    <pkg.Dialog aria-label="test">
+      <pkg.DialogHeading>H</pkg.DialogHeading>
+      <pkg.DialogBody>B</pkg.DialogBody>
+      <pkg.DialogActions>
+        <pkg.Button composition="primaryAction">OK</pkg.Button>
+      </pkg.DialogActions>
+    </pkg.Dialog>
+  );
+};
+
+const treeMenu = () => {
+  return (
+    <pkg.MenuTrigger defaultOpen>
+      <pkg.Button>T</pkg.Button>
+      <pkg.Menu>
+        <pkg.MenuItem>Item</pkg.MenuItem>
+      </pkg.Menu>
+    </pkg.MenuTrigger>
+  );
+};
+
+const treeTextField = () => {
+  return (
+    <pkg.TextField isInvalid>
+      <pkg.TextFieldLabel>Label</pkg.TextFieldLabel>
+      <pkg.TextFieldControl />
+      <pkg.TextFieldDescription>Hint</pkg.TextFieldDescription>
+      <pkg.TextFieldError>Required</pkg.TextFieldError>
+    </pkg.TextField>
+  );
+};
+
+const treeWizard = () => {
+  return (
+    <pkg.Wizard aria-label="test">
+      <pkg.WizardStep>
+        <p>step</p>
+      </pkg.WizardStep>
+      <pkg.WizardNavigation
+        prevLabel="Back"
+        nextLabel="Next"
+        finishLabel="Finish"
+      />
+    </pkg.Wizard>
+  );
 };
 
 export const DOM_FIXTURES: Record<string, DomFixture> = {
@@ -71,172 +152,41 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       return <pkg.Switch>x</pkg.Switch>;
     },
   },
+  Separator: {
+    scope: 'separator',
+    element: () => {
+      return <pkg.Separator />;
+    },
+  },
   // ── RadioGroup / Radio ────────────────────────────────────────────
-  RadioGroup: {
-    scope: 'radio-group',
-    element: () => {
-      return (
-        <pkg.RadioGroup>
-          <pkg.Radio value="a">A</pkg.Radio>
-        </pkg.RadioGroup>
-      );
-    },
-  },
-  Radio: {
-    scope: 'radio',
-    element: () => {
-      return (
-        <pkg.RadioGroup>
-          <pkg.Radio value="a">A</pkg.Radio>
-        </pkg.RadioGroup>
-      );
-    },
-  },
+  RadioGroup: { scope: 'radio-group', element: treeRadio },
+  Radio: { scope: 'radio', element: treeRadio },
   // ── Select / SelectItem ───────────────────────────────────────────
   Select: {
     scope: 'select',
     element: () => {
-      return (
-        <pkg.Select>
-          <pkg.SelectItem id="a">A</pkg.SelectItem>
-        </pkg.Select>
-      );
+      return treeSelect();
     },
   },
   SelectItem: {
     scope: 'select',
     element: () => {
-      return (
-        <pkg.Select defaultOpen>
-          <pkg.SelectItem id="a">A</pkg.SelectItem>
-        </pkg.Select>
-      );
+      return treeSelect(true);
     },
   },
   // ── Toast / ToastRegion ───────────────────────────────────────────
-  // Both need a queue with an item so the region renders and a toast appears.
-  ToastRegion: {
-    scope: 'toast-region',
-    element: () => {
-      const queue = pkg.createToastQueue<pkg.ToastContent>({
-        maxVisibleToasts: 5,
-      });
-      queue.add({ title: 'x' });
-      return <pkg.ToastRegion queue={queue} />;
-    },
-  },
-  Toast: {
-    scope: 'toast',
-    element: () => {
-      const queue = pkg.createToastQueue<pkg.ToastContent>({
-        maxVisibleToasts: 5,
-      });
-      queue.add({ title: 'test' });
-      return <pkg.ToastRegion queue={queue} />;
-    },
-  },
-  // ── Accordion ────────────────────────────────────────────────────────
-  Accordion: {
-    scope: 'accordion',
-    element: () => {
-      return (
-        <pkg.Accordion>
-          <pkg.AccordionItem id="x">
-            <pkg.AccordionTrigger>T</pkg.AccordionTrigger>
-            <pkg.AccordionPanel>P</pkg.AccordionPanel>
-          </pkg.AccordionItem>
-        </pkg.Accordion>
-      );
-    },
-  },
-  AccordionItem: {
-    scope: 'accordion',
-    element: () => {
-      return (
-        <pkg.Accordion>
-          <pkg.AccordionItem id="x">
-            <pkg.AccordionTrigger>T</pkg.AccordionTrigger>
-            <pkg.AccordionPanel>P</pkg.AccordionPanel>
-          </pkg.AccordionItem>
-        </pkg.Accordion>
-      );
-    },
-  },
-  AccordionTrigger: {
-    scope: 'accordion',
-    element: () => {
-      return (
-        <pkg.Accordion>
-          <pkg.AccordionItem id="x">
-            <pkg.AccordionTrigger>T</pkg.AccordionTrigger>
-            <pkg.AccordionPanel>P</pkg.AccordionPanel>
-          </pkg.AccordionItem>
-        </pkg.Accordion>
-      );
-    },
-  },
-  AccordionPanel: {
-    scope: 'accordion',
-    element: () => {
-      return (
-        <pkg.Accordion>
-          <pkg.AccordionItem id="x">
-            <pkg.AccordionTrigger>T</pkg.AccordionTrigger>
-            <pkg.AccordionPanel>P</pkg.AccordionPanel>
-          </pkg.AccordionItem>
-        </pkg.Accordion>
-      );
-    },
-  },
-  // ── Dialog ────────────────────────────────────────────────────────────
-  // Dialog, DialogHeading, DialogBody, DialogActions render without a
-  // modal wrapper (React Aria emits role=dialog on the div regardless).
-  Dialog: {
-    scope: 'dialog',
-    element: () => {
-      return (
-        <pkg.Dialog aria-label="test">
-          <pkg.DialogHeading>H</pkg.DialogHeading>
-          <pkg.DialogBody>B</pkg.DialogBody>
-          <pkg.DialogActions>
-            <pkg.Button composition="primaryAction">OK</pkg.Button>
-          </pkg.DialogActions>
-        </pkg.Dialog>
-      );
-    },
-  },
-  DialogHeading: {
-    scope: 'dialog',
-    element: () => {
-      return (
-        <pkg.Dialog aria-label="test">
-          <pkg.DialogHeading>H</pkg.DialogHeading>
-        </pkg.Dialog>
-      );
-    },
-  },
-  DialogBody: {
-    scope: 'dialog',
-    element: () => {
-      return (
-        <pkg.Dialog aria-label="test">
-          <pkg.DialogBody>B</pkg.DialogBody>
-        </pkg.Dialog>
-      );
-    },
-  },
-  DialogActions: {
-    scope: 'dialog',
-    element: () => {
-      return (
-        <pkg.Dialog aria-label="test">
-          <pkg.DialogActions>
-            <pkg.Button composition="primaryAction">OK</pkg.Button>
-          </pkg.DialogActions>
-        </pkg.Dialog>
-      );
-    },
-  },
+  ToastRegion: { scope: 'toast-region', element: treeToast },
+  Toast: { scope: 'toast', element: treeToast },
+  // ── Accordion ─────────────────────────────────────────────────────
+  Accordion: { scope: 'accordion', element: treeAccordion },
+  AccordionItem: { scope: 'accordion', element: treeAccordion },
+  AccordionTrigger: { scope: 'accordion', element: treeAccordion },
+  AccordionPanel: { scope: 'accordion', element: treeAccordion },
+  // ── Dialog ────────────────────────────────────────────────────────
+  Dialog: { scope: 'dialog', element: treeDialog },
+  DialogHeading: { scope: 'dialog', element: treeDialog },
+  DialogBody: { scope: 'dialog', element: treeDialog },
+  DialogActions: { scope: 'dialog', element: treeDialog },
   // DialogModal is a portal overlay — use defaultOpen via DialogTrigger.
   DialogModal: {
     scope: 'dialog',
@@ -251,9 +201,7 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       );
     },
   },
-  // ConfirmationDialog wraps Dialog and overrides data-scope via the prop
-  // added to Dialog. The dialog is closed on initial render; trigger click
-  // opens it.
+  // ConfirmationDialog opens on trigger click.
   ConfirmationDialog: {
     scope: 'confirmation-dialog',
     element: () => {
@@ -271,7 +219,7 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       return fireEvent.click(screen.getByRole('button', { name: 'open' }));
     },
   },
-  // ── Form ────────────────────────────────────────────────────────────────
+  // ── Form ──────────────────────────────────────────────────────────
   Form: {
     scope: 'form',
     element: () => {
@@ -302,123 +250,19 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
     },
   },
   // ── Menu / MenuItem ───────────────────────────────────────────────
-  // Popover only renders when open. Use defaultOpen on MenuTrigger.
-  Menu: {
-    scope: 'menu',
-    element: () => {
-      return (
-        <pkg.MenuTrigger defaultOpen>
-          <pkg.Button>T</pkg.Button>
-          <pkg.Menu>
-            <pkg.MenuItem>Item</pkg.MenuItem>
-          </pkg.Menu>
-        </pkg.MenuTrigger>
-      );
-    },
-  },
-  MenuItem: {
-    scope: 'menu',
-    element: () => {
-      return (
-        <pkg.MenuTrigger defaultOpen>
-          <pkg.Button>T</pkg.Button>
-          <pkg.Menu>
-            <pkg.MenuItem>Item</pkg.MenuItem>
-          </pkg.Menu>
-        </pkg.MenuTrigger>
-      );
-    },
-  },
-  // ── TextField ─────────────────────────────────────────────────────────
-  TextField: {
-    scope: 'text-field',
-    element: () => {
-      return (
-        <pkg.TextField>
-          <pkg.TextFieldLabel>Label</pkg.TextFieldLabel>
-          <pkg.TextFieldControl />
-        </pkg.TextField>
-      );
-    },
-  },
-  TextFieldLabel: {
-    scope: 'text-field',
-    element: () => {
-      return (
-        <pkg.TextField>
-          <pkg.TextFieldLabel>Label</pkg.TextFieldLabel>
-          <pkg.TextFieldControl />
-        </pkg.TextField>
-      );
-    },
-  },
-  TextFieldControl: {
-    scope: 'text-field',
-    element: () => {
-      return (
-        <pkg.TextField>
-          <pkg.TextFieldLabel>Label</pkg.TextFieldLabel>
-          <pkg.TextFieldControl />
-        </pkg.TextField>
-      );
-    },
-  },
-  TextFieldDescription: {
-    scope: 'text-field',
-    element: () => {
-      return (
-        <pkg.TextField>
-          <pkg.TextFieldLabel>Label</pkg.TextFieldLabel>
-          <pkg.TextFieldControl />
-          <pkg.TextFieldDescription>Hint</pkg.TextFieldDescription>
-        </pkg.TextField>
-      );
-    },
-  },
-  TextFieldError: {
-    scope: 'text-field',
-    element: () => {
-      return (
-        <pkg.TextField isInvalid>
-          <pkg.TextFieldLabel>Label</pkg.TextFieldLabel>
-          <pkg.TextFieldControl />
-          <pkg.TextFieldError>Required</pkg.TextFieldError>
-        </pkg.TextField>
-      );
-    },
-  },
-  // ── Wizard ──────────────────────────────────────────────────────────────
-  Wizard: {
-    scope: 'wizard',
-    element: () => {
-      return (
-        <pkg.Wizard aria-label="test">
-          <pkg.WizardStep>
-            <p>step</p>
-          </pkg.WizardStep>
-          <pkg.WizardNavigation
-            prevLabel="Back"
-            nextLabel="Next"
-            finishLabel="Finish"
-          />
-        </pkg.Wizard>
-      );
-    },
-  },
-  WizardStep: {
-    scope: 'wizard',
-    element: () => {
-      return (
-        <pkg.Wizard aria-label="test">
-          <pkg.WizardStep>
-            <p>step</p>
-          </pkg.WizardStep>
-        </pkg.Wizard>
-      );
-    },
-  },
-  // WizardSummary only renders when Wizard is complete (currentStep >= totalSteps).
-  // With defaultStep=1 and exactly 1 WizardStep, isComplete=true on mount.
+  Menu: { scope: 'menu', element: treeMenu },
+  MenuItem: { scope: 'menu', element: treeMenu },
+  // ── TextField ─────────────────────────────────────────────────────
+  TextField: { scope: 'text-field', element: treeTextField },
+  TextFieldLabel: { scope: 'text-field', element: treeTextField },
+  TextFieldControl: { scope: 'text-field', element: treeTextField },
+  TextFieldDescription: { scope: 'text-field', element: treeTextField },
+  TextFieldError: { scope: 'text-field', element: treeTextField },
+  // ── Wizard ────────────────────────────────────────────────────────
+  Wizard: { scope: 'wizard', element: treeWizard },
+  WizardStep: { scope: 'wizard', element: treeWizard },
+  WizardNavigation: { scope: 'wizard', element: treeWizard },
+  // WizardSummary only renders when the wizard is complete.
   WizardSummary: {
     scope: 'wizard',
     element: () => {
@@ -430,23 +274,6 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
           <pkg.WizardSummary>
             <p>done</p>
           </pkg.WizardSummary>
-        </pkg.Wizard>
-      );
-    },
-  },
-  WizardNavigation: {
-    scope: 'wizard',
-    element: () => {
-      return (
-        <pkg.Wizard aria-label="test">
-          <pkg.WizardStep>
-            <p>step</p>
-          </pkg.WizardStep>
-          <pkg.WizardNavigation
-            prevLabel="Back"
-            nextLabel="Next"
-            finishLabel="Finish"
-          />
         </pkg.Wizard>
       );
     },
