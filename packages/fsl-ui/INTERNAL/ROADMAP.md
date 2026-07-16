@@ -386,9 +386,35 @@ Status: ✅ shipped · 🔧 shipped-but-audit-items · ⬜ to build · ⏸ defer
   Tabs (TabPanel is Structure/content, not Navigation); SearchField (Input has
   no `icon`/`closeTrigger` → `leadingAdornment`/`trailingAdornment`). No
   taxonomy changes were needed — every case resolved to an existing role/Entity.
-- **Wave 2 — data & forms depth** `~2-3 wks`:
-  NumberField, Slider, CheckboxGroup, TagGroup, ListBox, GridList, Toolbar,
-  Group, Meter, Disclosure, FileTrigger.
+- **Wave 2 — data & forms depth** `~2-3 wks`: ✅ **COMPLETE (2026-07-16).**
+  Group, Toolbar, Meter, Disclosure, CheckboxGroup, NumberField, TagGroup,
+  ListBox, GridList, Slider, FileTrigger — all shipped with the per-component
+  DoD (contract auto-discovery, axe, behavior + keyboard tests, JSDoc,
+  catalog). Suite: 1 285 tests green, 100% coverage, build + tsc green.
+  **Friction log (FSL D1 validation data):**
+  - **ADR-007** — a Collection container may host Selection-pattern items
+    (ListBox/GridList: container = Collection/informational, items =
+    Selection/input). The entity→ux contract test unions all declared
+    entities' contexts, so one file lawfully reads both. No taxonomy change.
+  - **ADR-008** — Slider's ROADMAP mapping wanted track→`surface`,
+    output→`status`, but Input has neither role. Resolved with internal parts
+    (no meta); the FSL §17 widening is **deferred, not proposed** — nothing
+    dispatches on those identities (evidence rule). thumb→`control` is legal.
+  - **CheckboxGroup / TagGroup / NumberField** — Selection has no
+    `description`/`validationMessage`/`closeTrigger` and Input has no `trigger`
+    role. Every one resolved to **internal data-parts** (no meta, no legality
+    claim) via the RadioGroup-`label` / SearchField-clear-button precedent;
+    only lawful roots + items carry metas. Zero taxonomy additions.
+  - **TagGroup** shipped the canonical "filter chip → `selected` (not
+    `pressed`)" answer into colors.md "Common confusions".
+  - **Meter** — RAC's deliberate `role="meter progressbar"` fallback trips
+    axe `aria-allowed-attr` (a tooling limitation, not FSL); the correct DOM is
+    kept and a per-fixture `axeOptions` disables only that rule for Meter.
+  - New Icon intents `action.increment`/`action.decrement` (ADR-005 growth
+    rule) for the NumberField steppers.
+    Net FSL finding: the flat per-entity vocabulary expressed all 11 components
+    without a single taxonomy change — the "missing" roles the ROADMAP part
+    lists implied are documentation artifacts, not expressivity gaps.
 - **Wave 3 — the heavies** `~3 wks`:
   ComboBox, Table, Tree.
 - **Phase 3 — date/time suite** (own dependency + i18n decisions): Calendar,
