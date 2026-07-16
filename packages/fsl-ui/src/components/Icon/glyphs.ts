@@ -17,6 +17,7 @@ import checkGlyph from '@iconify/icons-lucide/check';
 import chevronDownGlyph from '@iconify/icons-lucide/chevron-down';
 import chevronRightGlyph from '@iconify/icons-lucide/chevron-right';
 import minusGlyph from '@iconify/icons-lucide/minus';
+import plusGlyph from '@iconify/icons-lucide/plus';
 import searchGlyph from '@iconify/icons-lucide/search';
 import xGlyph from '@iconify/icons-lucide/x';
 import { addIcon } from '@iconify-icon/react';
@@ -37,6 +38,8 @@ const INTENT_GLYPHS = {
   'selection.indeterminate': minusGlyph,
   'action.close': xGlyph,
   'action.search': searchGlyph,
+  'action.increment': plusGlyph,
+  'action.decrement': minusGlyph,
 } as const satisfies Record<IconIntent, GlyphData>;
 
 /**

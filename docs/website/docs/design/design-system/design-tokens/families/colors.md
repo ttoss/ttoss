@@ -260,6 +260,7 @@ Several states sound interchangeable but answer different questions. Pick by **w
 **Common confusions resolved:**
 
 - **Tab in a tablist** → `selected` (one of many) and, when it represents the live route, also `current`. Not `active`, not `pressed`.
+- **Filter chip / removable tag (`TagGroup`)** → `selected` (set membership — the user picked this one of many). Not `pressed`: a tag is not a toggle button. Removal is a separate close affordance (a remove button inside the tag), not a state.
 - **Toggle button ("Bold" in a toolbar)** → `pressed` (persistent). `active` is the brief moment of clicking.
 - **Checkbox / Switch / Radio** → `checked`. Not `selected`, not `pressed`.
 - **Open accordion section** → `expanded`. Not `active`, not `selected`.
