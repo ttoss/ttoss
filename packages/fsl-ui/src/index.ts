@@ -22,6 +22,16 @@ export {
   CheckboxGroup,
   checkboxGroupMeta,
 } from './components/CheckboxGroup/CheckboxGroup';
+export type {
+  GridListItemProps,
+  GridListProps,
+} from './components/GridList/GridList';
+export {
+  GridList,
+  GridListItem,
+  gridListItemMeta,
+  gridListMeta,
+} from './components/GridList/GridList';
 export type { GroupProps } from './components/Group/Group';
 export { Group, groupMeta } from './components/Group/Group';
 export type { LinkProps } from './components/Link/Link';

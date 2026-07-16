@@ -25,6 +25,7 @@ import {
   treeCheckboxGroup,
   treeDialog,
   treeDisclosure,
+  treeGridList,
   treeListBox,
   treeMenu,
   treeRadio,
@@ -258,6 +259,9 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       );
     },
   },
+  // ── GridList / GridListItem ───────────────────────────────────────
+  GridList: { scope: 'grid-list', element: treeGridList },
+  GridListItem: { scope: 'grid-list', element: treeGridList },
   // ── ListBox / ListBoxItem ─────────────────────────────────────────
   ListBox: { scope: 'list-box', element: treeListBox },
   ListBoxItem: { scope: 'list-box', element: treeListBox },

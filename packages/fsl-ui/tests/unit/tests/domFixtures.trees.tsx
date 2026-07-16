@@ -82,6 +82,19 @@ export const treeDialog = (): React.ReactElement => {
   );
 };
 
+export const treeGridList = (): React.ReactElement => {
+  return (
+    <pkg.GridList aria-label="Files" selectionMode="multiple">
+      <pkg.GridListItem id="a" textValue="Report">
+        Report.pdf
+      </pkg.GridListItem>
+      <pkg.GridListItem id="b" textValue="Notes">
+        Notes.txt
+      </pkg.GridListItem>
+    </pkg.GridList>
+  );
+};
+
 export const treeListBox = (): React.ReactElement => {
   return (
     <pkg.ListBox aria-label="Frameworks" selectionMode="single">
