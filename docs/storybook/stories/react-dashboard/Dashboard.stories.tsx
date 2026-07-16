@@ -1242,8 +1242,8 @@ const WithCardDetailStory = () => {
       >
         {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
         <Text sx={{ fontSize: 'sm', color: 'display.text.secondary.default' }}>
-          👆 Click any card to open its detail panel below that row. Click the
-          same card again to close. Click a different card to move the panel.
+          👆 Click any card to open a full-width detail panel on the row below.
+          Click the same card again to close. Click a different card to move it.
         </Text>
       </Box>
       <Dashboard

@@ -15,7 +15,8 @@ import { DashboardSectionDivider } from './DashboardSectionDivider';
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const ALLOWED_X_COLUMNS = [0, 3, 6, 9];
-const DETAIL_EXTRA_ROWS = 10;
+const ROW_HEIGHT = 32;
+const MARGIN_Y = 10;
 
 const snapXToAllowedColumns = (x: number, w: number, cols: number): number => {
   const maxX = Math.max(0, cols - w);
@@ -70,8 +71,6 @@ type GridCardProps = {
   currency?: string;
   clickable: boolean;
   isEditMode: boolean;
-  expanded: boolean;
-  detailContent?: React.ReactNode;
   onCardClick: (key: string, card: DashboardCardProps) => void;
   onRemove: (key: string) => void;
 };
@@ -82,8 +81,6 @@ const GridCard = ({
   currency,
   clickable,
   isEditMode,
-  expanded,
-  detailContent,
   onCardClick,
   onRemove,
 }: GridCardProps) => {
@@ -103,12 +100,7 @@ const GridCard = ({
       tabIndex={clickable ? 0 : undefined}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
-      style={{
-        ...(clickable ? { cursor: 'pointer' } : undefined),
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
+      style={clickable ? { cursor: 'pointer' } : undefined}
     >
       {isEditMode ? (
         <>
@@ -123,19 +115,7 @@ const GridCard = ({
           </Box>
         </>
       ) : (
-        <>
-          <DashboardCard {...{ currency }} {...card} />
-          {expanded && detailContent && (
-            <Box
-              sx={{ flex: 1, overflow: 'auto', mt: 2 }}
-              onClick={(e) => {
-                return e.stopPropagation();
-              }}
-            >
-              {detailContent}
-            </Box>
-          )}
-        </>
+        <DashboardCard {...{ currency }} {...card} />
       )}
     </div>
   );
@@ -232,25 +212,28 @@ const buildLayout = (template: DashboardTemplate, isEditMode: boolean) => {
   return { xs: base, sm: base, md: base, lg: base, xl: base, '2xl': base };
 };
 
-const buildExpandedLayouts = (
-  base: ReturnType<typeof buildLayout>,
-  selectedKey: string | null | undefined
-): ReturnType<typeof buildLayout> => {
-  if (!selectedKey) return base;
-  const expand = (items: Layout[]) => {
-    return items.map((item) => {
-      return item.i === selectedKey
-        ? { ...item, h: item.h + DETAIL_EXTRA_ROWS }
-        : item;
-    });
-  };
+const computeSlot = (
+  template: DashboardTemplate | undefined,
+  selectedKey: string | null | undefined,
+  renderCardDetail: DashboardGridProps['renderCardDetail'],
+  close: () => void
+): { marginTop: number; content: React.ReactNode } | null => {
+  if (!template || !selectedKey || !renderCardDetail) return null;
+  const selectedItem = template.grid.find((i) => {
+    return i.i === selectedKey;
+  });
+  if (!selectedItem || selectedItem.card.type === 'sectionDivider') return null;
+  const maxY = Math.max(
+    ...template.grid.map((i) => {
+      return i.y + i.h;
+    })
+  );
+  const cardBottomPx =
+    (selectedItem.y + selectedItem.h) * (ROW_HEIGHT + MARGIN_Y) - MARGIN_Y;
+  const gridHeightPx = maxY * (ROW_HEIGHT + MARGIN_Y) - MARGIN_Y;
   return {
-    xs: expand(base.xs),
-    sm: expand(base.sm),
-    md: expand(base.md),
-    lg: expand(base.lg),
-    xl: expand(base.xl),
-    '2xl': expand(base['2xl']),
+    marginTop: cardBottomPx - gridHeightPx,
+    content: renderCardDetail(selectedItem.card as DashboardCardProps, close),
   };
 };
 
@@ -310,14 +293,16 @@ export const DashboardGrid = ({
     return setSelectedCardKey?.(null);
   }, [setSelectedCardKey]);
 
-  const baseLayouts = selectedTemplate
+  const layouts = selectedTemplate
     ? buildLayout(selectedTemplate, isEditMode)
     : undefined;
 
-  const layouts =
-    baseLayouts && renderCardDetail
-      ? buildExpandedLayouts(baseLayouts, selectedCardKey)
-      : baseLayouts;
+  const slot = computeSlot(
+    selectedTemplate,
+    selectedCardKey,
+    renderCardDetail,
+    close
+  );
 
   if (!selectedTemplate || !layouts) return null;
 
@@ -387,11 +372,6 @@ export const DashboardGrid = ({
               );
             }
             const card = item.card as DashboardCardProps;
-            const isExpanded = selectedCardKey === item.i;
-            const detailContent =
-              isExpanded && renderCardDetail
-                ? renderCardDetail(card, close)
-                : undefined;
             return (
               <div key={item.i}>
                 <GridCard
@@ -400,8 +380,6 @@ export const DashboardGrid = ({
                   currency={currency}
                   clickable={isCardClickable(card)}
                   isEditMode={isEditMode}
-                  expanded={isExpanded}
-                  detailContent={detailContent}
                   onCardClick={handleCardClick}
                   onRemove={removeCard}
                 />
@@ -409,6 +387,11 @@ export const DashboardGrid = ({
             );
           })}
         </ResponsiveGridLayout>
+      )}
+      {slot && (
+        <Box sx={{ width: '100%', marginTop: `${slot.marginTop}px` }}>
+          {slot.content}
+        </Box>
       )}
     </Box>
   );
