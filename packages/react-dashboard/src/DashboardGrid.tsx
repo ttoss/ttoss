@@ -126,7 +126,14 @@ const GridCard = ({
         <>
           <DashboardCard {...{ currency }} {...card} />
           {expanded && detailContent && (
-            <Box sx={{ flex: 1, overflow: 'auto', mt: 2 }}>{detailContent}</Box>
+            <Box
+              sx={{ flex: 1, overflow: 'auto', mt: 2 }}
+              onClick={(e) => {
+                return e.stopPropagation();
+              }}
+            >
+              {detailContent}
+            </Box>
           )}
         </>
       )}
