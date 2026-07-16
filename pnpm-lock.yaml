@@ -351,12 +351,12 @@ importers:
       docusaurus-plugin-llms:
         specifier: ^0.4.0
         version: 0.4.0(@docusaurus/core@3.10.1(@docusaurus/faster@3.10.1(@docusaurus/types@3.10.1(@swc/core@1.15.40(@swc/helpers@0.5.23))(postcss@8.5.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@swc/helpers@0.5.23)(postcss@8.5.15))(@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.6))(@rspack/core@1.7.11(@swc/helpers@0.5.23))(@swc/core@1.15.40(@swc/helpers@0.5.23))(postcss@8.5.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@6.0.3))
-      docusaurus-plugin-typedoc:
-        specifier: ^1.4.2
-        version: 1.4.2(typedoc-plugin-markdown@4.11.0(typedoc@0.28.19(typescript@6.0.3)))
       typedoc:
         specifier: ^0.28.19
         version: 0.28.19(typescript@6.0.3)
+      typedoc-docusaurus-theme:
+        specifier: ^1.4.2
+        version: 1.4.2(typedoc-plugin-markdown@4.11.0(typedoc@0.28.19(typescript@6.0.3)))
       typedoc-plugin-markdown:
         specifier: ^4.11.0
         version: 4.11.0(typedoc@0.28.19(typescript@6.0.3))
@@ -709,7 +709,7 @@ importers:
         version: 8.21.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@theme-ui/css':
         specifier: ^0.17.4
-        version: 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))
+        version: 0.17.4(@emotion/react@11.14.0(react@19.2.6))
       '@types/react-modal':
         specifier: ^3.16.3
         version: 3.16.3
@@ -9816,11 +9816,6 @@ packages:
     engines: {node: '>=18.0'}
     peerDependencies:
       '@docusaurus/core': ^3.0.0
-
-  docusaurus-plugin-typedoc@1.4.2:
-    resolution: {integrity: sha512-1qerRejLSYxEWdyVPLDMMeKFPLA/37yZAsdwJy9ThHFQR78+v3b5spSbk67VHGLr2mAn4FVHu0aGJ6p7iWotSg==}
-    peerDependencies:
-      typedoc-plugin-markdown: '>=4.8.0'
 
   dom-accessibility-api@0.5.16:
     resolution: {integrity: sha512-X7BJ2yElsnOJ30pZF4uIIDfBEVgF4XEBxL9Bxhy6dnrm5hkzqmsWHGTiHqRiITNhMyFLyAiWndIJP7Z1NTteDg==}
@@ -22054,7 +22049,7 @@ snapshots:
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.15)(react@19.2.6)
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.6))
       deepmerge: 4.3.1
       react: 19.2.6
 
@@ -22065,7 +22060,7 @@ snapshots:
       '@styled-system/should-forward-prop': 5.1.5
       '@styled-system/space': 5.1.2
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.6))
       '@theme-ui/theme-provider': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
       '@types/styled-system': 5.1.25
       react: 19.2.6
@@ -22073,11 +22068,11 @@ snapshots:
   '@theme-ui/core@0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.15)(react@19.2.6)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.6))
       deepmerge: 4.3.1
       react: 19.2.6
 
-  '@theme-ui/css@0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))':
+  '@theme-ui/css@0.17.4(@emotion/react@11.14.0(react@19.2.6))':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.15)(react@19.2.6)
       csstype: 3.2.3
@@ -22086,13 +22081,13 @@ snapshots:
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.15)(react@19.2.6)
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.6))
       react: 19.2.6
 
   '@theme-ui/match-media@0.17.4(@theme-ui/core@0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6))(@theme-ui/css@0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6)))(react@19.2.6)':
     dependencies:
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.6))
       react: 19.2.6
 
   '@theme-ui/theme-provider@0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)':
@@ -22100,7 +22095,7 @@ snapshots:
       '@emotion/react': 11.14.0(@types/react@19.2.15)(react@19.2.6)
       '@theme-ui/color-modes': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.6))
       react: 19.2.6
 
   '@ts-morph/common@0.29.0':
@@ -25534,11 +25529,6 @@ snapshots:
       gray-matter: 4.0.3
       minimatch: 9.0.9
       yaml: 2.9.0
-
-  docusaurus-plugin-typedoc@1.4.2(typedoc-plugin-markdown@4.11.0(typedoc@0.28.19(typescript@6.0.3))):
-    dependencies:
-      typedoc-docusaurus-theme: 1.4.2(typedoc-plugin-markdown@4.11.0(typedoc@0.28.19(typescript@6.0.3)))
-      typedoc-plugin-markdown: 4.11.0(typedoc@0.28.19(typescript@6.0.3))
 
   dom-accessibility-api@0.5.16: {}
 
@@ -32293,7 +32283,7 @@ snapshots:
       '@theme-ui/color-modes': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
       '@theme-ui/components': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(@theme-ui/theme-provider@0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6))(react@19.2.6)
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.6))
       '@theme-ui/global': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
       '@theme-ui/theme-provider': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
       react: 19.2.6
