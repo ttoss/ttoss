@@ -185,6 +185,8 @@ should let bundlers shake it, but nobody proved it — if it fails, importing
 - AC: probe in CI with a byte budget; README states the numbers.
 
 > ⤷ **Done.** `scripts/verify-treeshake.mjs` (`pnpm run verify:treeshake`, esbuild, prefers dist / falls back to src): Button-only bundle = **1 812 bytes** minified (budget 16 000), zero composite leakage. README states the number.
+>
+> ⤷ **Follow-up (2026-07-16, ADR-006).** Once Node 24 made `dist` locally buildable, the probe (reading `dist`) exposed that the default single-chunk build did **not** tree-shake — a Button-only import dragged Wizard/ConfirmationDialog/ToastRegion (61 KB). Fixed by `unbundle: true` in `tsdown.config.ts` (one module per file; `index.mjs` is a pure re-export barrel). The probe now measures `dist` at the same **1 812 bytes** as `src`; the guarantee holds for the published artifact.
 
 **A11. `@ttoss/forms` (RHF + Zod) bridge** `L` _(strategic)_
 The monorepo standard is `@ttoss/forms`; fsl-ui `Form` is RAC-native. Without
