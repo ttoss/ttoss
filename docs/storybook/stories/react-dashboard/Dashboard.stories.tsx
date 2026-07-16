@@ -1153,87 +1153,223 @@ export const WithCustomHeaderChildren: StoryObj = {
   },
 };
 
+const cardDetailTemplate: DashboardTemplate[] = [
+  {
+    id: 'card-detail-demo',
+    name: 'Card Detail Demo',
+    grid: [
+      {
+        i: 'revenue',
+        x: 0,
+        y: 0,
+        w: 4,
+        h: 4,
+        card: {
+          id: 'revenue',
+          title: 'Total Revenue',
+          numberType: 'currency',
+          type: 'bigNumber',
+          sourceType: [{ source: 'api' }],
+          data: { value: 150000 },
+          trend: { value: 15.5, status: 'positive' },
+        },
+      },
+      {
+        i: 'roas',
+        x: 4,
+        y: 0,
+        w: 4,
+        h: 4,
+        card: {
+          id: 'roas',
+          title: 'ROAS',
+          numberType: 'number',
+          type: 'bigNumber',
+          sourceType: [{ source: 'api' }],
+          data: { value: 3.5 },
+          variant: 'light-green',
+        },
+      },
+      {
+        i: 'ctr',
+        x: 8,
+        y: 0,
+        w: 4,
+        h: 4,
+        card: {
+          id: 'ctr',
+          title: 'CTR',
+          numberType: 'percentage',
+          type: 'bigNumber',
+          sourceType: [{ source: 'api' }],
+          data: { value: 2.35 },
+          trend: { value: 5.2, status: 'negative' },
+        },
+      },
+    ],
+  },
+];
+
+const cardDetailFilters: DashboardFilter[] = [
+  {
+    key: 'template',
+    type: DashboardFilterType.SELECT,
+    label: 'Template',
+    value: 'card-detail-demo',
+    options: [{ label: 'Card Detail Demo', value: 'card-detail-demo' }],
+  },
+];
+
+const mockBreakdown = [
+  { campaign: 'Black Friday', value: 62000 },
+  { campaign: 'Remarketing', value: 45000 },
+  { campaign: 'Prospecting', value: 28000 },
+  { campaign: 'Brand', value: 15000 },
+];
+
 const WithCardDetailStory = () => {
-  const [filters, setFilters] =
-    React.useState<DashboardFilter[]>(defaultFilters);
-
-  const selectedTemplateId =
-    (filters.find((f) => {
-      return f.key === 'template';
-    })?.value as string) || 'default';
-  const selectedTemplate =
-    defaultTemplates.find((t) => {
-      return t.id === selectedTemplateId;
-    }) || defaultTemplates[0];
-
   return (
     <Box sx={{ width: '100%', padding: '4' }}>
+      <Box
+        sx={{
+          mb: 4,
+          p: 3,
+          bg: 'display.bg.secondary.default',
+          borderRadius: 'md',
+          border: '1px dashed',
+          borderColor: 'display.border.default',
+        }}
+      >
+        {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+        <Text sx={{ fontSize: 'sm', color: 'display.text.secondary.default' }}>
+          👆 Click any card to open its detail panel below that row. Click the
+          same card again to close. Click a different card to move the panel.
+        </Text>
+      </Box>
       <Dashboard
-        templates={defaultTemplates}
-        filters={filters}
-        selectedTemplate={selectedTemplate}
+        templates={cardDetailTemplate}
+        filters={cardDetailFilters}
+        selectedTemplate={cardDetailTemplate[0]}
         loading={false}
-        onFiltersChange={setFilters}
-        clickableCardFilter={(card) => {
-          return (
-            (card as { sourceType?: { source: string }[] }).sourceType?.some(
-              (s) => {
-                return s.source === 'api';
-              }
-            ) ?? false
-          );
+        clickableCardFilter={() => {
+          return true;
         }}
         renderCardDetail={(card, close) => {
           return (
             <Box
               sx={{
-                border: '1px solid',
-                borderColor: 'display.border.default',
+                border: '2px solid',
+                borderColor: 'primary',
                 borderRadius: 'md',
                 p: 6,
                 bg: 'display.bg.secondary.default',
+                mt: 2,
               }}
             >
               <Flex
                 sx={{
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  mb: 4,
+                  mb: 5,
                 }}
               >
-                {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
-                <Heading sx={{ fontSize: 'lg' }}>{card.title} — Detail</Heading>
+                <Box>
+                  {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+                  <Text
+                    sx={{
+                      fontSize: 'xs',
+                      textTransform: 'uppercase',
+                      letterSpacing: 'wide',
+                      color: 'display.text.secondary.default',
+                      mb: 1,
+                    }}
+                  >
+                    Detail panel
+                  </Text>
+                  {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+                  <Heading sx={{ fontSize: 'xl' }}>{card.title}</Heading>
+                </Box>
                 <Button variant="secondary" onClick={close}>
                   {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
-                  Close
+                  ✕ Close
                 </Button>
               </Flex>
-              {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
-              <Text
-                sx={{ color: 'display.text.secondary.default', fontSize: 'sm' }}
-              >
-                This slot is rendered immediately below the clicked card&apos;s
-                row. Click the same card again to close, or click a different
-                card to move the slot.
-              </Text>
-              <Box
-                sx={{
-                  mt: 4,
-                  p: 4,
-                  bg: 'display.bg.primary.default',
-                  borderRadius: 'sm',
-                }}
-              >
-                {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
-                <Text sx={{ fontFamily: 'mono', fontSize: 'xs' }}>
-                  card.id: {(card as { id?: string }).id ?? '(none)'}
-                  {'\n'}
-                  card.type: {card.type}
-                  {'\n'}
-                  card.numberType:{' '}
-                  {(card as { numberType?: string }).numberType ?? '(none)'}
-                </Text>
-              </Box>
+              <Flex sx={{ gap: 4, flexWrap: 'wrap' }}>
+                <Box sx={{ flex: '1 1 240px' }}>
+                  {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+                  <Text
+                    sx={{
+                      fontSize: 'sm',
+                      fontWeight: 'bold',
+                      mb: 3,
+                      color: 'display.text.secondary.default',
+                    }}
+                  >
+                    Top Campaigns
+                  </Text>
+                  <Stack sx={{ gap: 2 }}>
+                    {mockBreakdown.map((row) => {
+                      return (
+                        <Flex
+                          key={row.campaign}
+                          sx={{
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            p: 3,
+                            bg: 'display.bg.primary.default',
+                            borderRadius: 'sm',
+                          }}
+                        >
+                          {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+                          <Text sx={{ fontSize: 'sm' }}>{row.campaign}</Text>
+                          {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+                          <Text sx={{ fontSize: 'sm', fontWeight: 'bold' }}>
+                            ${row.value.toLocaleString()}
+                          </Text>
+                        </Flex>
+                      );
+                    })}
+                  </Stack>
+                </Box>
+                <Box sx={{ flex: '1 1 240px' }}>
+                  {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+                  <Text
+                    sx={{
+                      fontSize: 'sm',
+                      fontWeight: 'bold',
+                      mb: 3,
+                      color: 'display.text.secondary.default',
+                    }}
+                  >
+                    Daily Trend (last 7 days)
+                  </Text>
+                  <Flex
+                    sx={{
+                      gap: 1,
+                      alignItems: 'flex-end',
+                      height: '80px',
+                      bg: 'display.bg.primary.default',
+                      borderRadius: 'sm',
+                      p: 3,
+                    }}
+                  >
+                    {[40, 65, 55, 80, 70, 90, 75].map((h, i) => {
+                      return (
+                        <Box
+                          key={i}
+                          sx={{
+                            flex: 1,
+                            bg: 'primary',
+                            borderRadius: '2px',
+                            opacity: 0.7 + i * 0.04,
+                            height: `${h}%`,
+                          }}
+                        />
+                      );
+                    })}
+                  </Flex>
+                </Box>
+              </Flex>
             </Box>
           );
         }}
@@ -1250,7 +1386,7 @@ export const WithCardDetail: StoryObj = {
     docs: {
       description: {
         story:
-          "Dashboard with `renderCardDetail` and `clickableCardFilter`. Click any card to open a detail slot positioned immediately below that card's row. Click the same card to close (toggle), or click a different card to move the slot. Section dividers are not clickable.",
+          "Click any card to open a detail panel immediately below that card's row — showing a campaign breakdown and a 7-day bar chart. Click the same card again to close the panel (toggle), or click a different card to move it. The panel is rendered by `renderCardDetail(card, close)` and positioned in document flow right after the grid.",
       },
     },
   },
