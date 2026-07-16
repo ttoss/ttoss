@@ -15,6 +15,7 @@ import type {
   SymbolPaint,
   VisualizationLayer,
 } from 'src/spec/types';
+import { makeMapMock } from 'tests/unit/__mocks__/maplibre-gl';
 
 jest.mock('maplibre-gl', () => {
   return {
@@ -45,38 +46,6 @@ Object.defineProperty(global, 'URL', {
   }),
   writable: true,
 });
-
-const makeMapMock = () => {
-  return {
-    on: jest.fn(),
-    once: jest.fn(),
-    off: jest.fn(),
-    remove: jest.fn(),
-    addControl: jest.fn(),
-    addSource: jest.fn(),
-    addLayer: jest.fn(),
-    getSource: jest.fn(() => {
-      return null;
-    }),
-    getLayer: jest.fn(() => {
-      return null;
-    }),
-    removeLayer: jest.fn(),
-    removeSource: jest.fn(),
-    isStyleLoaded: jest.fn(() => {
-      return true;
-    }),
-    setLayoutProperty: jest.fn(),
-    setPaintProperty: jest.fn(),
-    setStyle: jest.fn(),
-    setCenter: jest.fn(),
-    setZoom: jest.fn(),
-    setPitch: jest.fn(),
-    setBearing: jest.fn(),
-    flyTo: jest.fn(),
-    jumpTo: jest.fn(),
-  };
-};
 
 const makeSpec = () => {
   return {

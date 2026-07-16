@@ -4,6 +4,7 @@ import {
   reapplyLegendDrivenFillPaint,
   setPaintWhenReady,
 } from 'src/adapters/maplibre/legendFillPaint';
+import { makeMapMock } from 'tests/unit/__mocks__/maplibre-gl';
 
 jest.mock('maplibre-gl', () => {
   return {
@@ -14,9 +15,10 @@ jest.mock('maplibre-gl', () => {
   };
 });
 
-const makeMapMock = () => {
+/** Builds a map mock with real event-handler tracking (on/off/once). */
+const makeEventMapMock = () => {
   const handlers: Record<string, Array<(...a: unknown[]) => void>> = {};
-  return {
+  return makeMapMock({
     on: jest.fn((evt: string, cb: (...a: unknown[]) => void) => {
       handlers[evt] = handlers[evt] ?? [];
       handlers[evt].push(cb);
@@ -30,38 +32,15 @@ const makeMapMock = () => {
       handlers[evt] = handlers[evt] ?? [];
       handlers[evt].push(cb);
     }),
-    getLayer: jest.fn(() => {
-      return null;
-    }),
-    setPaintProperty: jest.fn(),
-    isStyleLoaded: jest.fn(() => {
-      return true;
-    }),
-    remove: jest.fn(),
-    addSource: jest.fn(),
-    addLayer: jest.fn(),
-    getSource: jest.fn(() => {
-      return null;
-    }),
-    removeLayer: jest.fn(),
-    removeSource: jest.fn(),
-    setLayoutProperty: jest.fn(),
-    setStyle: jest.fn(),
-    setCenter: jest.fn(),
-    setZoom: jest.fn(),
-    setPitch: jest.fn(),
-    setBearing: jest.fn(),
-    _handlers: handlers,
-  };
+  });
 };
-
 beforeEach(() => {
   jest.clearAllMocks();
 });
 
 describe('cancelPendingStyleListenersForLayer', () => {
   test('returns early when no pending listeners exist for the map', () => {
-    const map = makeMapMock() as unknown as maplibregl.Map;
+    const map = makeEventMapMock() as unknown as maplibregl.Map;
     // Should not throw even when no listeners were ever registered
     expect(() => {
       return cancelPendingStyleListenersForLayer(map, 'layer-a');
@@ -70,7 +49,7 @@ describe('cancelPendingStyleListenersForLayer', () => {
   });
 
   test('cancels pending listeners matching the layerId prefix', () => {
-    const map = makeMapMock() as unknown as maplibregl.Map;
+    const map = makeEventMapMock() as unknown as maplibregl.Map;
 
     // Use isStyleLoaded=true + getLayer=null so setPaintWhenReady registers styledata listeners
     jest.mocked(map.isStyleLoaded).mockReturnValue(true);
@@ -96,7 +75,7 @@ describe('cancelPendingStyleListenersForLayer', () => {
   });
 
   test('does not cancel listeners for other layers', () => {
-    const map = makeMapMock() as unknown as maplibregl.Map;
+    const map = makeEventMapMock() as unknown as maplibregl.Map;
 
     jest.mocked(map.isStyleLoaded).mockReturnValue(true);
     jest.mocked(map.getLayer).mockReturnValue(null);
@@ -116,7 +95,7 @@ describe('cancelPendingStyleListenersForLayer', () => {
 
 describe('setPaintWhenReady', () => {
   test('applies paint immediately when style is loaded and layer exists', () => {
-    const map = makeMapMock() as unknown as maplibregl.Map;
+    const map = makeEventMapMock() as unknown as maplibregl.Map;
     jest.mocked(map.isStyleLoaded).mockReturnValue(true);
     jest.mocked(map.getLayer).mockReturnValue({} as never);
 
@@ -131,7 +110,7 @@ describe('setPaintWhenReady', () => {
   });
 
   test('defers to styledata when style loaded but layer missing', () => {
-    const map = makeMapMock() as unknown as maplibregl.Map;
+    const map = makeEventMapMock() as unknown as maplibregl.Map;
     jest.mocked(map.isStyleLoaded).mockReturnValue(true);
     jest.mocked(map.getLayer).mockReturnValue(null);
 
@@ -142,7 +121,7 @@ describe('setPaintWhenReady', () => {
   });
 
   test('cancels existing listener before registering new one for same key', () => {
-    const map = makeMapMock() as unknown as maplibregl.Map;
+    const map = makeEventMapMock() as unknown as maplibregl.Map;
     jest.mocked(map.isStyleLoaded).mockReturnValue(true);
     jest.mocked(map.getLayer).mockReturnValue(null);
 
@@ -158,7 +137,7 @@ describe('setPaintWhenReady', () => {
   });
 
   test('defers to style.load when style is not loaded', () => {
-    const map = makeMapMock() as unknown as maplibregl.Map;
+    const map = makeEventMapMock() as unknown as maplibregl.Map;
     jest.mocked(map.isStyleLoaded).mockReturnValue(false);
     jest.mocked(map.getLayer).mockReturnValue(null);
 
@@ -170,7 +149,7 @@ describe('setPaintWhenReady', () => {
   });
 
   test('style.load callback applies paint when layer appears', () => {
-    const map = makeMapMock() as unknown as maplibregl.Map;
+    const map = makeEventMapMock() as unknown as maplibregl.Map;
     jest.mocked(map.isStyleLoaded).mockReturnValue(false);
     jest.mocked(map.getLayer).mockReturnValue(null);
 
@@ -199,7 +178,7 @@ describe('setPaintWhenReady', () => {
 
 describe('reapplyLegendDrivenFillPaint', () => {
   test('skips non-polygon layers', () => {
-    const map = makeMapMock() as unknown as maplibregl.Map;
+    const map = makeEventMapMock() as unknown as maplibregl.Map;
     jest.mocked(map.isStyleLoaded).mockReturnValue(true);
 
     const spec = {
@@ -217,7 +196,7 @@ describe('reapplyLegendDrivenFillPaint', () => {
   });
 
   test('skips polygon layers without active legends', () => {
-    const map = makeMapMock() as unknown as maplibregl.Map;
+    const map = makeEventMapMock() as unknown as maplibregl.Map;
     jest.mocked(map.isStyleLoaded).mockReturnValue(true);
 
     const spec = {

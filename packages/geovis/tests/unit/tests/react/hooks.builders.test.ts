@@ -9,6 +9,7 @@ import {
   TRACKED_FIELD_SEP,
   TRACKED_RECORD_SEP,
 } from 'src/react/hooks.builders';
+import { makeMapMock as makeBaseMapMock } from 'tests/unit/__mocks__/maplibre-gl';
 
 jest.mock('maplibre-gl', () => {
   return {
@@ -20,11 +21,7 @@ jest.mock('maplibre-gl', () => {
 });
 
 const makeMapMock = () => {
-  return {
-    setFeatureState: jest.fn(),
-    getFeatureState: jest.fn(() => {
-      return {};
-    }),
+  return makeBaseMapMock({
     getCanvas: jest.fn(() => {
       return {
         style: {},
@@ -33,10 +30,7 @@ const makeMapMock = () => {
         },
       };
     }),
-    queryRenderedFeatures: jest.fn(() => {
-      return [];
-    }),
-  };
+  });
 };
 
 beforeEach(() => {
