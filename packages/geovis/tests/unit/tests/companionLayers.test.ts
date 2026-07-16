@@ -9,7 +9,7 @@
 
 import { syncSourcesAndLayers } from 'src/adapters/maplibre/syncSourcesAndLayers';
 import type { VisualizationSpec } from 'src/spec/types';
-import { makeMapMock } from 'tests/unit/__mocks__/maplibre-gl';
+import { makeMapMock } from 'tests/unit/helpers/makeMapMock';
 
 // ---------------------------------------------------------------------------
 // Spec builder

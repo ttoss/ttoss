@@ -36,7 +36,7 @@ import * as React from 'react';
 import { GeoVisCanvas } from 'src/react/GeoVisCanvas';
 import { GeoVisProvider, useGeoVis } from 'src/react/GeoVisProvider';
 import type { VisualizationSpec } from 'src/spec/types';
-import { makeMapMock } from 'tests/unit/__mocks__/maplibre-gl';
+import { makeMapMock } from 'tests/unit/helpers/makeMapMock';
 
 // ---------------------------------------------------------------------------
 // maplibre-gl mock

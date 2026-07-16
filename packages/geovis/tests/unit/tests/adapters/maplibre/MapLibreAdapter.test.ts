@@ -15,7 +15,7 @@ import type {
   SymbolPaint,
   VisualizationLayer,
 } from 'src/spec/types';
-import { makeMapMock } from 'tests/unit/__mocks__/maplibre-gl';
+import { makeMapMock } from 'tests/unit/helpers/makeMapMock';
 
 jest.mock('maplibre-gl', () => {
   return {

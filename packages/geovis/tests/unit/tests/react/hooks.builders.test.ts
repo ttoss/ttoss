@@ -9,7 +9,7 @@ import {
   TRACKED_FIELD_SEP,
   TRACKED_RECORD_SEP,
 } from 'src/react/hooks.builders';
-import { makeMapMock as makeBaseMapMock } from 'tests/unit/__mocks__/maplibre-gl';
+import { makeMapMock as makeBaseMapMock } from 'tests/unit/helpers/makeMapMock';
 
 jest.mock('maplibre-gl', () => {
   return {
