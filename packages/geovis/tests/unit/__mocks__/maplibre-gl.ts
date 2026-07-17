@@ -1,3 +1,5 @@
+import { makeMapMock } from '../helpers/makeMapMock';
+
 /**
  * Minimal Jest stub for `maplibre-gl`.
  *
@@ -87,5 +89,6 @@ export default maplibreglStub;
 module.exports = {
   __esModule: true,
   default: maplibreglStub,
+  makeMapMock,
   ...maplibreglStub,
 };

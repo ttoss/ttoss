@@ -9,29 +9,7 @@
 
 import { syncSourcesAndLayers } from 'src/adapters/maplibre/syncSourcesAndLayers';
 import type { VisualizationSpec } from 'src/spec/types';
-
-// ---------------------------------------------------------------------------
-// Mock map — only the methods called by syncSourcesAndLayers are needed
-// ---------------------------------------------------------------------------
-
-const makeMapMock = () => {
-  return {
-    addSource: jest.fn(),
-    addLayer: jest.fn(),
-    getSource: jest.fn(() => {
-      return null;
-    }),
-    getLayer: jest.fn(() => {
-      return null;
-    }),
-    removeLayer: jest.fn(),
-    removeSource: jest.fn(),
-    setLayoutProperty: jest.fn(),
-    setPaintProperty: jest.fn(),
-  };
-};
-
-type MapMock = ReturnType<typeof makeMapMock>;
+import { makeMapMock } from 'tests/unit/helpers/makeMapMock';
 
 // ---------------------------------------------------------------------------
 // Spec builder
@@ -61,6 +39,8 @@ const buildSpec = (extra: LayerExtra = {}): VisualizationSpec => {
     ],
   };
 };
+
+type MapMock = ReturnType<typeof makeMapMock>;
 
 /** Returns the `addLayer` call arguments for the layer with the given id. */
 const findAddLayerCall = (

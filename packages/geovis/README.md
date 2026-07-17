@@ -56,20 +56,20 @@ const MyMap = () => (
 
 Top-level spec object passed to `GeoVisProvider`.
 
-| Field           | Type                      | Required | Description                                                                                                                                                               |
-| --------------- | ------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `engine`        | `'maplibre'`              | ✓        | Engine adapter to use. Currently only `'maplibre'` is supported.                                                                                                          |
-| `sources`       | `DataSource[]`            | ✓        | Data sources referenced by layers. Supported types: `'geojson'`, `'vector-tiles'`, `'raster-tiles'`, `'raster-dem'`, `'image'`, `'video'`.                                |
-| `layers`        | `VisualizationLayer[]`    | ✓        | Ordered list of layers to render (bottom-to-top).                                                                                                                         |
-| `title`         | `string`                  |          | Human-readable title.                                                                                                                                                     |
-| `description`   | `string`                  |          | Human-readable description.                                                                                                                                               |
-| `mapType`       | `MapType`                 |          | Auto-configuration hint (`'choropleth'`). When set, layers and legends are auto-generated from `mapData` — see [mapType auto-configuration](#maptype-auto-configuration). |
-| `view`          | `ViewState`               |          | Initial camera state: `center`, `zoom`, `pitch`, `bearing`, `projection`.                                                                                                 |
-| `basemap`       | `BaseMapSpec`             |          | Basemap tile style. Pass `visible: false` to hide tiles and show only GeoJSON layers. When hidden, the canvas container receives a `#fcfcfc` background.                  |
-| `legends`       | `LegendSpec[]`            |          | Shared legend registry. Layers reference entries via `activeLegendId`.                                                                                                    |
-| `legendEnabled` | `boolean`                 |          | Controls whether the resolved `mapType` auto-generates legends. Defaults to `true`. Has no effect on legends supplied directly via `legends`.                             |
-| `mapData`       | `MapData[]`               |          | Attribute datasets joined to GeoJSON sources for choropleth coloring and tooltips.                                                                                        |
-| `metadata`      | `Record<string, unknown>` |          | Arbitrary consumer metadata; not read by the runtime.                                                                                                                     |
+| Field           | Type                      | Required | Description                                                                                                                                                                                                                                       |
+| --------------- | ------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `engine`        | `'maplibre'`              | ✓        | Engine adapter to use. Currently only `'maplibre'` is supported.                                                                                                                                                                                  |
+| `sources`       | `DataSource[]`            | ✓        | Data sources referenced by layers. Supported types: `'geojson'`, `'vector-tiles'`, `'raster-tiles'`, `'raster-dem'`, `'image'`, `'video'`.                                                                                                        |
+| `layers`        | `VisualizationLayer[]`    | ✓        | Ordered list of layers to render (bottom-to-top).                                                                                                                                                                                                 |
+| `title`         | `string`                  |          | Human-readable title.                                                                                                                                                                                                                             |
+| `description`   | `string`                  |          | Human-readable description.                                                                                                                                                                                                                       |
+| `mapType`       | `MapType`                 |          | Auto-configuration hint (`'choropleth'`). When set, layers and legends are auto-generated from `mapData` — see [mapType auto-configuration](#maptype-auto-configuration).                                                                         |
+| `view`          | `ViewState`               |          | Initial camera state: `center`, `zoom`, `pitch`, `bearing`, `projection`.                                                                                                                                                                         |
+| `basemap`       | `BaseMapSpec`             |          | Basemap tile style. Pass `visible: false` to hide tiles and show only GeoJSON layers. When hidden, the canvas container receives a `#fcfcfc` background. Set `labels: false` to hide basemap text/icon symbol layers while keeping tiles visible. |
+| `legends`       | `LegendSpec[]`            |          | Shared legend registry. Layers reference entries via `activeLegendId`.                                                                                                                                                                            |
+| `legendEnabled` | `boolean`                 |          | Controls whether the resolved `mapType` auto-generates legends. Defaults to `true`. Has no effect on legends supplied directly via `legends`.                                                                                                     |
+| `mapData`       | `MapData[]`               |          | Attribute datasets joined to GeoJSON sources for choropleth coloring and tooltips.                                                                                                                                                                |
+| `metadata`      | `Record<string, unknown>` |          | Arbitrary consumer metadata; not read by the runtime.                                                                                                                                                                                             |
 
 ### `LegendSpec`
 
@@ -86,6 +86,16 @@ Each entry in `spec.legends` (or `layer.legends`) defines one choropleth legend.
 | `position`      | `LegendPosition`    |          | Corner overlay position: `'top-left'`, `'top-right'`, `'bottom-left'`, `'bottom-right'`. When set, `GeoVisLegend` applies absolute CSS positioning. |
 | `noDataLabel`   | `string`            |          | Label for the "no data" swatch at the bottom of the legend. When omitted, no "no data" entry is shown.                                              |
 | `reference`     | `string`            |          | Bibliographic attribution below the swatches. Supports `{link:visible text\|https://example.com}` inline link syntax.                               |
+
+### `BaseMapSpec`
+
+Configures the basemap tile layer.
+
+| Field      | Type      | Required | Description                                                                                                                     |
+| ---------- | --------- | -------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `styleUrl` | `string`  |          | URL of a MapLibre Style Specification JSON. When omitted, the demo tiles are used.                                              |
+| `visible`  | `boolean` |          | When `false`, basemap tiles are hidden and the canvas shows a blank `#fcfcfc` background. GeoJSON layers remain interactive.    |
+| `labels`   | `boolean` |          | When `false`, basemap text and icon symbol layers are hidden while tiles remain visible. User symbol layers are left untouched. |
 
 ### `LabelFormatSpec`
 

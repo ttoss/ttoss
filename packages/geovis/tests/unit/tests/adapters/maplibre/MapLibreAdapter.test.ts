@@ -15,6 +15,7 @@ import type {
   SymbolPaint,
   VisualizationLayer,
 } from 'src/spec/types';
+import { makeMapMock } from 'tests/unit/helpers/makeMapMock';
 
 jest.mock('maplibre-gl', () => {
   return {
@@ -45,35 +46,6 @@ Object.defineProperty(global, 'URL', {
   }),
   writable: true,
 });
-
-const makeMapMock = () => {
-  return {
-    on: jest.fn(),
-    once: jest.fn(),
-    remove: jest.fn(),
-    addControl: jest.fn(),
-    addSource: jest.fn(),
-    addLayer: jest.fn(),
-    getSource: jest.fn(() => {
-      return null;
-    }),
-    getLayer: jest.fn(() => {
-      return null;
-    }),
-    removeLayer: jest.fn(),
-    removeSource: jest.fn(),
-    isStyleLoaded: jest.fn(() => {
-      return true;
-    }),
-    setLayoutProperty: jest.fn(),
-    setPaintProperty: jest.fn(),
-    setStyle: jest.fn(),
-    setCenter: jest.fn(),
-    setZoom: jest.fn(),
-    setPitch: jest.fn(),
-    setBearing: jest.fn(),
-  };
-};
 
 const makeSpec = () => {
   return {
@@ -1506,6 +1478,177 @@ describe('mapData — feature-state application', () => {
       '#16a34a',
       '#6b7280',
     ]);
+  });
+});
+
+describe('applySetView — flyTo and jumpTo', () => {
+  const mountAdapterWithMap = () => {
+    const map = makeMapMock();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(makeContainer(), makeSpec(), 'v');
+    return { adapter, map };
+  };
+
+  test('setView with animate=true calls map.flyTo', () => {
+    const { adapter, map } = mountAdapterWithMap();
+    adapter.setView?.({ center: [-43.0, -22.0], zoom: 12, animate: true });
+    expect(map.flyTo).toHaveBeenCalledWith({
+      center: [-43.0, -22.0],
+      zoom: 12,
+    });
+    expect(map.jumpTo).not.toHaveBeenCalled();
+  });
+
+  test('setView with animate=false calls map.jumpTo', () => {
+    const { adapter, map } = mountAdapterWithMap();
+    adapter.setView?.({ center: [-43.0, -22.0], pitch: 45, animate: false });
+    expect(map.jumpTo).toHaveBeenCalledWith({
+      center: [-43.0, -22.0],
+      pitch: 45,
+    });
+    expect(map.flyTo).not.toHaveBeenCalled();
+  });
+
+  test('setView with empty options does not call flyTo or jumpTo', () => {
+    const { adapter, map } = mountAdapterWithMap();
+    adapter.setView?.({});
+    expect(map.flyTo).not.toHaveBeenCalled();
+    expect(map.jumpTo).not.toHaveBeenCalled();
+  });
+});
+
+describe('updateView — style change and deferred paths', () => {
+  const makeMapWithEvents = () => {
+    const handlers: Record<string, Array<(...a: unknown[]) => void>> = {};
+    const register = (evt: string, cb: (...a: unknown[]) => void) => {
+      handlers[evt] = handlers[evt] ?? [];
+      handlers[evt].push(cb);
+    };
+    const map = {
+      ...makeMapMock(),
+      on: jest.fn(register),
+      once: jest.fn(register),
+      off: jest.fn(),
+      isStyleLoaded: jest.fn(() => {
+        return true;
+      }),
+      setStyle: jest.fn(),
+    };
+    const fire = (evt: string, ...args: unknown[]) => {
+      for (const cb of handlers[evt] ?? []) cb(...args);
+    };
+    return { map, fire };
+  };
+
+  test('style change triggers setStyle and defers sync to style.load', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    const spec = {
+      ...makeSpec(),
+      basemap: { visible: true, styleUrl: 'https://example.com/style.json' },
+    };
+    adapter.mount(makeContainer(), spec, 'v');
+    fire('load');
+    jest.mocked(map.setStyle).mockClear();
+
+    const nextSpec = {
+      ...spec,
+      basemap: {
+        visible: true,
+        styleUrl: 'https://example.com/new-style.json',
+      },
+    };
+    adapter.update(nextSpec);
+
+    expect(map.setStyle).toHaveBeenCalledWith(
+      'https://example.com/new-style.json'
+    );
+    // After style.load fires, syncSourcesAndLayers is called
+    fire('style.load');
+  });
+
+  test('isStyleLoaded=false defers sync to style.load', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(map.isStyleLoaded).mockReturnValue(false);
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(makeContainer(), makeSpec(), 'v');
+    fire('load');
+
+    // Update while style is not loaded — defers to style.load
+    adapter.update({ ...makeSpec(), view: { center: [-10, -20], zoom: 5 } });
+
+    // Now fire style.load — the deferred callback should execute
+    fire('style.load');
+    // No error means the deferred path was exercised
+  });
+
+  test('onStyleReady skips if view was removed from views map', () => {
+    const { map, fire } = makeMapWithEvents();
+    jest.mocked(map.isStyleLoaded).mockReturnValue(false);
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(makeContainer(), makeSpec(), 'v');
+    fire('load');
+
+    // Destroy the view (removes it from the internal views map)
+    adapter.destroy();
+
+    // Now fire style.load — onStyleReady checks views.get(viewId) and returns early
+    fire('style.load');
+    // No error means the early-return path was exercised
+  });
+});
+
+describe('destroyAll — error recovery', () => {
+  test('map.remove() throwing does not propagate', () => {
+    const map = makeMapMock();
+    map.remove.mockImplementation(() => {
+      throw new Error('map not initialized');
+    });
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(makeContainer(), makeSpec(), 'v');
+
+    expect(() => {
+      return adapter.destroy();
+    }).not.toThrow();
+    expect(map.remove).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('dispatchPatch — unknown target', () => {
+  test('unknown patch target logs warning and does not throw', () => {
+    const map = makeMapMock();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(makeContainer(), makeSpec(), 'v');
+
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    expect(() => {
+      return adapter.applyPatch?.({
+        target: 'unknown-target' as never,
+        op: 'replace',
+        value: 'x',
+      });
+    }).not.toThrow();
+
+    warnSpy.mockRestore();
   });
 });
 

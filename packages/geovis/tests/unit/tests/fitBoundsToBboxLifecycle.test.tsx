@@ -36,6 +36,7 @@ import * as React from 'react';
 import { GeoVisCanvas } from 'src/react/GeoVisCanvas';
 import { GeoVisProvider, useGeoVis } from 'src/react/GeoVisProvider';
 import type { VisualizationSpec } from 'src/spec/types';
+import { makeMapMock } from 'tests/unit/helpers/makeMapMock';
 
 // ---------------------------------------------------------------------------
 // maplibre-gl mock
@@ -80,45 +81,6 @@ afterAll(() => {
 // ---------------------------------------------------------------------------
 // Mock map factory
 // ---------------------------------------------------------------------------
-
-const makeMapMock = () => {
-  return {
-    on: jest.fn(),
-    once: jest.fn(),
-    off: jest.fn(),
-    remove: jest.fn(),
-    addControl: jest.fn(),
-    addSource: jest.fn(),
-    addLayer: jest.fn(),
-    getSource: jest.fn(() => {
-      return null;
-    }),
-    getLayer: jest.fn(() => {
-      return null;
-    }),
-    removeLayer: jest.fn(),
-    removeSource: jest.fn(),
-    isStyleLoaded: jest.fn(() => {
-      return true;
-    }),
-    setLayoutProperty: jest.fn(),
-    setPaintProperty: jest.fn(),
-    setStyle: jest.fn(),
-    setCenter: jest.fn(),
-    setZoom: jest.fn(),
-    setPitch: jest.fn(),
-    setBearing: jest.fn(),
-    isSourceLoaded: jest.fn(() => {
-      return false;
-    }),
-    setFeatureState: jest.fn(),
-    getContainer: jest.fn(() => {
-      return { clientWidth: 800, clientHeight: 520 };
-    }),
-    resize: jest.fn(),
-    fitBounds: jest.fn(),
-  };
-};
 
 // ---------------------------------------------------------------------------
 // Fixtures
