@@ -31,13 +31,19 @@ export type DashboardGridProps = {
   /** ISO 4217 currency code applied to all cards with `numberType="currency"`. Card-level `currency` takes precedence. */
   currency?: string;
   'data-export-target'?: boolean;
-  selectedCardKey?: string | null;
-  setSelectedCardKey?: React.Dispatch<React.SetStateAction<string | null>>;
+  selectedCardKey?: string | string[] | null;
+  setSelectedCardKey?: React.Dispatch<
+    React.SetStateAction<string | string[] | null>
+  >;
   renderCardDetail?: (
     card: DashboardCardProps,
     close: () => void
   ) => React.ReactNode;
   clickableCardFilter?: (card: DashboardCardProps) => boolean;
+  /** Number of grid rows for the detail slot. Defaults to 12 (384 px at rowHeight=32). */
+  detailSlotHeight?: number;
+  /** 'single' (default): one slot at a time, toggles off on re-click. 'multi': each card gets its own independent slot. */
+  detailMode?: 'single' | 'multi';
 };
 
 const COLS_NUM = 12;
@@ -64,12 +70,14 @@ const buildLayout = (template: DashboardTemplate, isEditMode: boolean) => {
 };
 
 const SLOT_KEY = '__detail_slot__';
-const SLOT_H = 12;
+const DEFAULT_SLOT_H = 12;
 
 const buildSlotLayout = (
   base: ReturnType<typeof buildLayout>,
   selectedKey: string,
-  template: DashboardTemplate
+  template: DashboardTemplate,
+  slotH: number,
+  slotIndex: number
 ): ReturnType<typeof buildLayout> => {
   const selectedItem = template.grid.find((i) => {
     return i.i === selectedKey;
@@ -77,18 +85,18 @@ const buildSlotLayout = (
   if (!selectedItem) return base;
   const slotY = selectedItem.y + selectedItem.h;
   const slotItem: Layout = {
-    i: SLOT_KEY,
+    i: `${SLOT_KEY}:${slotIndex}`,
     x: 0,
     y: slotY,
     w: COLS_NUM,
-    h: SLOT_H,
+    h: slotH,
     isDraggable: false,
     isResizable: false,
     static: true,
   };
   const insertAndShift = (items: Layout[]) => {
     const shifted = items.map((item) => {
-      if (item.y >= slotY) return { ...item, y: item.y + SLOT_H };
+      if (item.y >= slotY) return { ...item, y: item.y + slotH };
       return item;
     });
     return [...shifted, slotItem];
@@ -107,17 +115,19 @@ const renderSlotChild = (
   template: DashboardTemplate,
   selectedKey: string | null | undefined,
   renderDetail: DashboardGridProps['renderCardDetail'],
-  close: () => void
+  makeClose: (key: string) => () => void,
+  slotIndex: number
 ): React.ReactNode => {
   if (!selectedKey || !renderDetail) return null;
   const item = template.grid.find((i) => {
     return i.i === selectedKey;
   });
   if (!item || item.card.type === 'sectionDivider') return null;
+  const slotKey = `${SLOT_KEY}:${slotIndex}`;
   return (
-    <div key={SLOT_KEY}>
+    <div key={slotKey}>
       <Box sx={{ width: '100%', height: '100%', padding: 2 }}>
-        {renderDetail(item.card as DashboardCardProps, close)}
+        {renderDetail(item.card as DashboardCardProps, makeClose(selectedKey))}
       </Box>
     </div>
   );
@@ -172,30 +182,55 @@ const useDragHandlers = (
 const resolveLayouts = (
   selectedTemplate: DashboardTemplate | undefined,
   isEditMode: boolean,
-  selectedCardKey: string | null | undefined,
-  renderCardDetail: DashboardGridProps['renderCardDetail']
+  selectedCardKey: string | string[] | null | undefined,
+  renderCardDetail: DashboardGridProps['renderCardDetail'],
+  slotH: number
 ) => {
   if (!selectedTemplate) return undefined;
   const base = buildLayout(selectedTemplate, isEditMode);
-  if (selectedCardKey && renderCardDetail) {
-    return buildSlotLayout(base, selectedCardKey, selectedTemplate);
-  }
-  return base;
+  if (!renderCardDetail) return base;
+  const keys = Array.isArray(selectedCardKey)
+    ? selectedCardKey
+    : selectedCardKey
+      ? [selectedCardKey]
+      : [];
+  if (keys.length === 0) return base;
+  return keys.reduce((layouts, key, index) => {
+    return buildSlotLayout(layouts, key, selectedTemplate, slotH, index);
+  }, base);
 };
 
-const useCardClickHandler = (
-  isEditMode: boolean,
-  isDraggingRef: React.MutableRefObject<boolean>,
-  renderCardDetail: DashboardGridProps['renderCardDetail'],
-  clickableCardFilter: DashboardGridProps['clickableCardFilter'],
-  setSelectedCardKey: DashboardGridProps['setSelectedCardKey']
-) => {
+type CardClickHandlerOptions = {
+  isEditMode: boolean;
+  isDraggingRef: React.MutableRefObject<boolean>;
+  renderCardDetail: DashboardGridProps['renderCardDetail'];
+  clickableCardFilter: DashboardGridProps['clickableCardFilter'];
+  setSelectedCardKey: DashboardGridProps['setSelectedCardKey'];
+  detailMode: 'single' | 'multi';
+};
+
+const useCardClickHandler = ({
+  isEditMode,
+  isDraggingRef,
+  renderCardDetail,
+  clickableCardFilter,
+  setSelectedCardKey,
+  detailMode,
+}: CardClickHandlerOptions) => {
   const isClickable = (card: DashboardCardProps) => {
     return getCardClickable(card, renderCardDetail, clickableCardFilter);
   };
   const handleCardClick = (key: string, card: DashboardCardProps) => {
     if (isEditMode || isDraggingRef.current || !isClickable(card)) return;
     setSelectedCardKey?.((prev) => {
+      if (detailMode === 'multi') {
+        const current = Array.isArray(prev) ? prev : prev ? [prev] : [];
+        return current.includes(key)
+          ? current.filter((k) => {
+              return k !== key;
+            })
+          : [...current, key];
+      }
       return prev === key ? null : key;
     });
   };
@@ -211,9 +246,9 @@ type ActiveGridProps = {
   handleCardClick: (key: string, card: DashboardCardProps) => void;
   removeCard: (key: string) => void;
   updateCard: (key: string, data: { title: string }) => void;
-  selectedCardKey?: string | null;
+  selectedCardKeys: string[];
   renderCardDetail?: DashboardGridProps['renderCardDetail'];
-  close: () => void;
+  makeClose: (key: string) => () => void;
   handleLayoutChange: (l: Layout[]) => void;
   snapDrag: (_l: Layout[], _o: Layout, newItem: Layout) => void;
   onDragStart: () => void;
@@ -229,9 +264,9 @@ const ActiveGrid = ({
   handleCardClick,
   removeCard,
   updateCard,
-  selectedCardKey,
+  selectedCardKeys,
   renderCardDetail,
-  close,
+  makeClose,
   handleLayoutChange,
   snapDrag,
   onDragStart,
@@ -263,12 +298,15 @@ const ActiveGrid = ({
           return updateCard(key, { title });
         },
       })}
-      {renderSlotChild(
-        selectedTemplate,
-        selectedCardKey,
-        renderCardDetail,
-        close
-      )}
+      {selectedCardKeys.map((key, index) => {
+        return renderSlotChild(
+          selectedTemplate,
+          key,
+          renderCardDetail,
+          makeClose,
+          index
+        );
+      })}
     </ResponsiveGridLayout>
   );
 };
@@ -282,6 +320,8 @@ export const DashboardGrid = ({
   setSelectedCardKey,
   renderCardDetail,
   clickableCardFilter,
+  detailSlotHeight = DEFAULT_SLOT_H,
+  detailMode = 'single',
   ...rest
 }: DashboardGridProps) => {
   const { onLayoutChange, removeCard, updateCard } = useDashboard();
@@ -293,22 +333,44 @@ export const DashboardGrid = ({
     onDragStart,
   } = useDragHandlers(isEditMode, onLayoutChange);
   const { isClickable: isCardClickable, handleCardClick } = useCardClickHandler(
-    isEditMode,
-    isDraggingRef,
-    renderCardDetail,
-    clickableCardFilter,
-    setSelectedCardKey
+    {
+      isEditMode,
+      isDraggingRef,
+      renderCardDetail,
+      clickableCardFilter,
+      setSelectedCardKey,
+      detailMode,
+    }
   );
 
-  const close = React.useCallback(() => {
-    return setSelectedCardKey?.(null);
-  }, [setSelectedCardKey]);
+  const makeClose = React.useCallback(
+    (key: string) => {
+      return () => {
+        setSelectedCardKey?.((prev) => {
+          if (Array.isArray(prev)) {
+            return prev.filter((k) => {
+              return k !== key;
+            });
+          }
+          return null;
+        });
+      };
+    },
+    [setSelectedCardKey]
+  );
+
+  const selectedCardKeys = Array.isArray(selectedCardKey)
+    ? selectedCardKey
+    : selectedCardKey
+      ? [selectedCardKey]
+      : [];
 
   const layouts = resolveLayouts(
     selectedTemplate,
     isEditMode,
     selectedCardKey,
-    renderCardDetail
+    renderCardDetail,
+    detailSlotHeight
   );
 
   if (!selectedTemplate || !layouts) return null;
@@ -344,9 +406,9 @@ export const DashboardGrid = ({
           handleCardClick={handleCardClick}
           removeCard={removeCard}
           updateCard={updateCard}
-          selectedCardKey={selectedCardKey}
+          selectedCardKeys={selectedCardKeys}
           renderCardDetail={renderCardDetail}
-          close={close}
+          makeClose={makeClose}
           handleLayoutChange={handleLayoutChange}
           snapDrag={snapDrag}
           onDragStart={onDragStart}

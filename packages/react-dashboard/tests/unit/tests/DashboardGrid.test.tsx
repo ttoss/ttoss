@@ -524,4 +524,318 @@ describe('DashboardGrid', () => {
       expect(screen.queryByText('Detail: Card 1')).not.toBeInTheDocument();
     });
   });
+
+  describe('controlled selectedCardKey', () => {
+    const controlledTemplate: DashboardTemplate = {
+      id: 'controlled-template',
+      name: 'Controlled Template',
+      grid: [
+        {
+          i: 'card-1',
+          x: 0,
+          y: 0,
+          w: 4,
+          h: 2,
+          card: {
+            id: 'card-1',
+            title: 'Card 1',
+            numberType: 'number',
+            type: 'bigNumber',
+            sourceType: [{ source: 'api' }],
+            data: { value: 100 },
+          },
+        },
+        {
+          i: 'card-2',
+          x: 4,
+          y: 0,
+          w: 4,
+          h: 2,
+          card: {
+            id: 'card-2',
+            title: 'Card 2',
+            numberType: 'number',
+            type: 'bigNumber',
+            sourceType: [{ source: 'api' }],
+            data: { value: 200 },
+          },
+        },
+      ],
+    };
+
+    const renderDetail = (card: DashboardCardProps, close: () => void) => {
+      return (
+        <div>
+          <span>Detail: {card.title}</span>
+          <button onClick={close}>Close</button>
+        </div>
+      );
+    };
+
+    test('should display detail for the externally controlled selectedCardKey', () => {
+      render(
+        <Dashboard
+          selectedTemplate={controlledTemplate}
+          templates={[controlledTemplate]}
+          filters={[]}
+          loading={false}
+          renderCardDetail={renderDetail}
+          selectedCardKey="card-1"
+        />
+      );
+
+      expect(screen.getByText('Detail: Card 1')).toBeInTheDocument();
+    });
+
+    test('should call onCardSelect when a card is clicked in controlled mode', () => {
+      const onCardSelect = jest.fn();
+
+      render(
+        <Dashboard
+          selectedTemplate={controlledTemplate}
+          templates={[controlledTemplate]}
+          filters={[]}
+          loading={false}
+          renderCardDetail={renderDetail}
+          selectedCardKey={null}
+          onCardSelect={onCardSelect}
+        />
+      );
+
+      const allButtons = screen.getAllByRole('button');
+      const card1Button = allButtons.find((b) => {
+        return b.textContent?.includes('Card 1');
+      });
+      expect(card1Button).toBeDefined();
+      fireEvent.click(card1Button!);
+
+      expect(onCardSelect).toHaveBeenCalledWith(
+        'card-1',
+        expect.objectContaining({ title: 'Card 1' })
+      );
+    });
+
+    test('should call onCardSelect with null when the same card is clicked again', () => {
+      const onCardSelect = jest.fn();
+
+      render(
+        <Dashboard
+          selectedTemplate={controlledTemplate}
+          templates={[controlledTemplate]}
+          filters={[]}
+          loading={false}
+          renderCardDetail={renderDetail}
+          selectedCardKey="card-1"
+          onCardSelect={onCardSelect}
+        />
+      );
+
+      const allButtons = screen.getAllByRole('button');
+      const card1Button = allButtons.find((b) => {
+        return b.textContent?.includes('Card 1');
+      });
+      expect(card1Button).toBeDefined();
+      fireEvent.click(card1Button!);
+
+      expect(onCardSelect).toHaveBeenCalledWith(null, null);
+    });
+  });
+
+  describe('detailSlotHeight', () => {
+    const slotTemplate: DashboardTemplate = {
+      id: 'slot-template',
+      name: 'Slot Template',
+      grid: [
+        {
+          i: 'card-1',
+          x: 0,
+          y: 0,
+          w: 4,
+          h: 2,
+          card: {
+            id: 'card-1',
+            title: 'Card 1',
+            numberType: 'number',
+            type: 'bigNumber',
+            sourceType: [{ source: 'api' }],
+            data: { value: 100 },
+          },
+        },
+      ],
+    };
+
+    const renderDetail = (card: DashboardCardProps, close: () => void) => {
+      return (
+        <div>
+          <span>Detail: {card.title}</span>
+          <button onClick={close}>Close</button>
+        </div>
+      );
+    };
+
+    test('should render detail slot with custom height when detailSlotHeight is provided', () => {
+      render(
+        <Dashboard
+          selectedTemplate={slotTemplate}
+          templates={[slotTemplate]}
+          filters={[]}
+          loading={false}
+          renderCardDetail={renderDetail}
+          detailSlotHeight={6}
+        />
+      );
+
+      const allButtons = screen.getAllByRole('button');
+      const card1Button = allButtons.find((b) => {
+        return b.textContent?.includes('Card 1');
+      });
+      expect(card1Button).toBeDefined();
+      fireEvent.click(card1Button!);
+
+      // Detail slot should still open regardless of height
+      expect(screen.getByText('Detail: Card 1')).toBeInTheDocument();
+    });
+  });
+
+  describe('detailMode multi', () => {
+    const multiTemplate: DashboardTemplate = {
+      id: 'multi-template',
+      name: 'Multi Template',
+      grid: [
+        {
+          i: 'card-1',
+          x: 0,
+          y: 0,
+          w: 4,
+          h: 2,
+          card: {
+            id: 'card-1',
+            title: 'Card 1',
+            numberType: 'number',
+            type: 'bigNumber',
+            sourceType: [{ source: 'api' }],
+            data: { value: 100 },
+          },
+        },
+        {
+          i: 'card-2',
+          x: 4,
+          y: 0,
+          w: 4,
+          h: 2,
+          card: {
+            id: 'card-2',
+            title: 'Card 2',
+            numberType: 'number',
+            type: 'bigNumber',
+            sourceType: [{ source: 'api' }],
+            data: { value: 200 },
+          },
+        },
+      ],
+    };
+
+    const renderDetail = (card: DashboardCardProps, close: () => void) => {
+      return (
+        <div>
+          <span>Detail: {card.title}</span>
+          <button onClick={close}>Close</button>
+        </div>
+      );
+    };
+
+    test('should allow two cards to be expanded simultaneously in multi mode', () => {
+      render(
+        <Dashboard
+          selectedTemplate={multiTemplate}
+          templates={[multiTemplate]}
+          filters={[]}
+          loading={false}
+          renderCardDetail={renderDetail}
+          detailMode="multi"
+        />
+      );
+
+      const allButtons = screen.getAllByRole('button');
+      const card1Button = allButtons.find((b) => {
+        return b.textContent?.includes('Card 1');
+      });
+      const card2Button = allButtons.find((b) => {
+        return b.textContent?.includes('Card 2');
+      });
+      expect(card1Button).toBeDefined();
+      expect(card2Button).toBeDefined();
+
+      fireEvent.click(card1Button!);
+      expect(screen.getByText('Detail: Card 1')).toBeInTheDocument();
+      expect(screen.queryByText('Detail: Card 2')).not.toBeInTheDocument();
+
+      fireEvent.click(card2Button!);
+      // Both should now be open
+      expect(screen.getByText('Detail: Card 1')).toBeInTheDocument();
+      expect(screen.getByText('Detail: Card 2')).toBeInTheDocument();
+    });
+
+    test('should close individual slots in multi mode when close is called', () => {
+      render(
+        <Dashboard
+          selectedTemplate={multiTemplate}
+          templates={[multiTemplate]}
+          filters={[]}
+          loading={false}
+          renderCardDetail={renderDetail}
+          detailMode="multi"
+        />
+      );
+
+      const allButtons = screen.getAllByRole('button');
+      const card1Button = allButtons.find((b) => {
+        return b.textContent?.includes('Card 1');
+      });
+      const card2Button = allButtons.find((b) => {
+        return b.textContent?.includes('Card 2');
+      });
+      expect(card1Button).toBeDefined();
+      expect(card2Button).toBeDefined();
+
+      fireEvent.click(card1Button!);
+      fireEvent.click(card2Button!);
+
+      expect(screen.getByText('Detail: Card 1')).toBeInTheDocument();
+      expect(screen.getByText('Detail: Card 2')).toBeInTheDocument();
+
+      // Close only Card 1
+      const closeButtons = screen.getAllByRole('button', { name: 'Close' });
+      fireEvent.click(closeButtons[0]);
+
+      expect(screen.queryByText('Detail: Card 1')).not.toBeInTheDocument();
+      expect(screen.getByText('Detail: Card 2')).toBeInTheDocument();
+    });
+
+    test('should toggle a slot closed in multi mode when same card is clicked again', () => {
+      render(
+        <Dashboard
+          selectedTemplate={multiTemplate}
+          templates={[multiTemplate]}
+          filters={[]}
+          loading={false}
+          renderCardDetail={renderDetail}
+          detailMode="multi"
+        />
+      );
+
+      const allButtons = screen.getAllByRole('button');
+      const card1Button = allButtons.find((b) => {
+        return b.textContent?.includes('Card 1');
+      });
+      expect(card1Button).toBeDefined();
+
+      fireEvent.click(card1Button!);
+      expect(screen.getByText('Detail: Card 1')).toBeInTheDocument();
+
+      // Second click on same card should close it
+      fireEvent.click(card1Button!);
+      expect(screen.queryByText('Detail: Card 1')).not.toBeInTheDocument();
+    });
+  });
 });
