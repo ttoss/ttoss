@@ -9,7 +9,7 @@
     "directory": "docs/fsl-studio"
   },
   "license": "MIT",
-  "author": "ttoss",
+  "author": "Ennio Lopes <enniolopes@gmail.com>",
   "type": "module",
   "scripts": {
     "build": "tsc --noEmit -p tsconfig.json && vite build",

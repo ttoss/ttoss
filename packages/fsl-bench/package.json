@@ -9,7 +9,7 @@
     "directory": "packages/fsl-bench"
   },
   "license": "MIT",
-  "author": "ttoss",
+  "author": "Ennio Lopes <enniolopes@gmail.com>",
   "type": "module",
   "scripts": {
     "bench": "node --experimental-strip-types src/runner.ts",
