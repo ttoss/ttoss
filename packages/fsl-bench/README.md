@@ -75,6 +75,11 @@ and **frozen**: any edit after a campaign invalidates comparability —
 change them only with a suite-version bump recorded here, and never between
 a campaign's start and its report.
 
+The freeze is enforced, not just stated: `registry.test.ts` pins each
+prompt's text by sha256, so any wording change fails the suite. A
+deliberate change means updating `FROZEN_PROMPT_HASHES` there **and**
+bumping the suite version in this section — never a silent edit.
+
 ## Running a campaign
 
 ```bash
