@@ -622,6 +622,23 @@ themeId)` emits element-scoped selectors (`[data-tt-theme]` /
 - The `fsl` skill and the `fsl-ui-skill` bench condition will be implemented in the public
   `ttoss/skills` repository (user decision), not in this monorepo.
 
+**typecheck.mjs retired — root-cause fix in the packages (2026-07-17, user-directed):**
+
+- The Studio's `scripts/typecheck.mjs` (diagnostic filtering) existed to mask 28 latent type
+  errors in `packages/fsl-ui` sources — real bugs, reproducible inside the package itself;
+  nothing in the monorepo ran `tsc` over it. By user direction the §2 read-only guard was
+  lifted: the errors were fixed at the source (the `?? {}` fallback idiom replaced by
+  optional chaining, preserving graceful degradation; render-prop `children` narrowed to
+  `ReactNode` on GridListItem/SearchField; `data-scope` declared on DialogProps; one csstype
+  cast in Tabs), `@types/react`/`@types/node` devDeps added, and `tsc --noEmit` wired into
+  both packages' `test` scripts so they stay clean. `fsl-ui` also lost `private: true`
+  (publishable, like fsl-theme already was; dist + declarations verified against
+  `publishConfig`).
+- The Studio now runs plain `tsc --noEmit` in its build — no custom script, no react `paths`
+  mapping. AD-x note: the workspace containers run Node 22 while the repo requires ≥24;
+  tsdown's formatjs plugin fails under 22 (babel ESM linking) — builds here used a standalone
+  Node 24, CI is unaffected.
+
 ## 15. References
 
 - Problem/strategy: `packages/fsl-ui/INTERNAL/` (PURPOSE, STRATEGIC_EVAL, BENCHMARK_EVAL,

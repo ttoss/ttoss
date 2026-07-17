@@ -57,8 +57,8 @@ const resolveSelectLabelColor = ({
   c: InputColors;
   isInvalid?: boolean;
 }): string | undefined => {
-  const text = c?.text ?? {};
-  return isInvalid ? text.invalid : text.default;
+  const text = c?.text;
+  return isInvalid ? text?.invalid : text?.default;
 };
 
 /** Dropdown popover surface style — Selection-entity chrome. */

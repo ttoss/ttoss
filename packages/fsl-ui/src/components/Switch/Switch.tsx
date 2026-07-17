@@ -103,8 +103,8 @@ const resolveThumbColor = ({
   c: InputColors;
   isSelected?: boolean;
 }): string | undefined => {
-  const text = c?.text ?? {};
-  return isSelected ? (text.checked ?? text.default) : c?.border?.default;
+  const text = c?.text;
+  return isSelected ? (text?.checked ?? text?.default) : c?.border?.default;
 };
 
 /** Label color — disabled dominates default (Selection has no evaluation). */
@@ -115,8 +115,8 @@ const resolveLabelColor = ({
   c: InputColors;
   isDisabled?: boolean;
 }): string | undefined => {
-  const text = c?.text ?? {};
-  return isDisabled ? text.disabled : text.default;
+  const text = c?.text;
+  return isDisabled ? text?.disabled : text?.default;
 };
 
 /**

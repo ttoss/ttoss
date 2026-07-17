@@ -4,26 +4,10 @@
     /*
      * Keep compiler flags identical to the workspace base: the Studio
      * consumes @ttoss/fsl-ui and @ttoss/fsl-theme via their src/ exports, so
-     * tsc type-checks their sources too — and those sources are calibrated
-     * against @ttoss/config's flags (same approach as fsl-bench's gauntlet).
+     * tsc type-checks their sources too — and those packages typecheck
+     * cleanly under these same flags (their own test scripts run tsc).
      */
-    "isolatedModules": true,
-
-    /*
-     * fsl-ui/fsl-theme sources import react but do not carry @types/react
-     * (react is a peer), and pnpm hoists @types into the virtual store, out
-     * of tsc's walk-up path from packages/. Resolve React's types
-     * program-wide from this app's own node_modules — same mapping
-     * fsl-bench's gauntlet uses (packages stay read-only for this app,
-     * PRD §2).
-     */
-    "paths": {
-      "react": ["./node_modules/@types/react"],
-      "react/jsx-runtime": ["./node_modules/@types/react/jsx-runtime"],
-      "react/jsx-dev-runtime": ["./node_modules/@types/react/jsx-dev-runtime"],
-      "react-dom": ["./node_modules/@types/react-dom"],
-      "react-dom/client": ["./node_modules/@types/react-dom/client"]
-    }
+    "isolatedModules": true
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

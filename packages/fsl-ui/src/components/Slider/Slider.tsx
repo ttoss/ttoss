@@ -97,8 +97,8 @@ const buildThumbStyle = ({
   isFocusVisible?: boolean;
   isDisabled?: boolean;
 }): React.CSSProperties => {
-  const border = c?.border ?? {};
-  const background = c?.background ?? {};
+  const border = c?.border;
+  const background = c?.background;
   const key = isDisabled ? 'disabled' : 'default';
   return {
     boxSizing: 'border-box',
@@ -107,8 +107,8 @@ const buildThumbStyle = ({
     borderRadius: vars.radii.round,
     borderWidth: vars.border.outline.control.width,
     borderStyle: vars.border.outline.control.style,
-    borderColor: border[key],
-    backgroundColor: background[key],
+    borderColor: border?.[key],
+    backgroundColor: background?.[key],
     outline: focusRingOutline(isFocusVisible),
   };
 };

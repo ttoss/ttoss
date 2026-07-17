@@ -125,8 +125,8 @@ const buildStepperStyle = ({
 const resolveFieldTextColors = (
   c: InputColors
 ): { base: string | undefined; invalid: string | undefined } => {
-  const text = c?.text ?? {};
-  return { base: text.default, invalid: text.invalid ?? text.default };
+  const text = c?.text;
+  return { base: text?.default, invalid: text?.invalid ?? text?.default };
 };
 
 /** The `<input>` itself — borderless; the surrounding `Group` owns the frame. */
