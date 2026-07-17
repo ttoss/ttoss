@@ -60,7 +60,7 @@ points) require interactive usage scenarios that have nowhere to run.
 
 Writable surfaces — **only**:
 
-- `docs/playground/**` — the FSL Studio app (this directory).
+- `docs/fsl-studio/**` — the FSL Studio app (this directory).
 - `packages/fsl-bench/**` — only for: (a) extracting the semantic lint into a browser-safe
   export, (b) adding the third benchmark condition (`llms.txt + skill`). Never touch
   provider credentials, golden fixtures' semantics, or the honesty rules in its README.
@@ -83,10 +83,10 @@ Four deliverables that close the loop _experience → use → verify → evolve_
 
 | #   | Deliverable                                                                                           | Where                         | Phase |
 | --- | ----------------------------------------------------------------------------------------------------- | ----------------------------- | ----- |
-| E1  | **FSL Studio** — web app: Theme Lab + Component Lab + example pages + exports                         | `docs/playground`             | 0–2   |
+| E1  | **FSL Studio** — web app: Theme Lab + Component Lab + example pages + exports                         | `docs/fsl-studio`             | 0–2   |
 | E2  | **`fsl` skill** — agent activation procedure                                                          | `ttoss/skills` repo           | 3     |
 | E3  | **Proof** — fsl-bench third condition + D1 campaign executed                                          | `packages/fsl-bench`          | 3     |
-| E4  | **AI layer + feedback channel** — BYOK generation with verification, prompt export, GitHub issue flow | `docs/playground`, `.github/` | 4     |
+| E4  | **AI layer + feedback channel** — BYOK generation with verification, prompt export, GitHub issue flow | `docs/fsl-studio`, `.github/` | 4     |
 
 The Studio is the _operational surface_; the skill is the _distribution mechanism_; the
 bench is the _proof_; the issue flow is the _return channel_.
@@ -95,9 +95,11 @@ bench is the _proof_; the issue flow is the _return channel_.
 
 ## 4. Architecture decisions (binding)
 
-**AD-1 — Location: workspace app at `docs/playground`, package name `@docs/playground`.**
+**AD-1 — Location: workspace app at `docs/fsl-studio`, package name `@docs/fsl-studio`.**
 Follows the existing convention (`@docs/website`, `docs/storybook`). The pnpm workspace glob
-`docs/*` already covers it. Rationale: fsl-ui/fsl-theme `exports` point to `src/` in dev, so
+`docs/*` already covers it. Naming decision (2026-07-17): the product is **FSL Studio** and
+the directory is `fsl-studio` — deliberately not `playground`, so that generic name stays
+free for possible future playgrounds of other ttoss products. Rationale: fsl-ui/fsl-theme `exports` point to `src/` in dev, so
 the Studio consumes live source with zero publish loop — the packages are `private: true`
 and under active development (Wave 3 pending), which makes co-location the dominant factor.
 Extraction to a dedicated FSL monorepo is a deliberate post-D2 option, not now.
@@ -322,7 +324,7 @@ Each requirement lists acceptance criteria (AC). IDs are stable — reference th
 
 ### F1 — App shell, state, and sharing (Phase 0–1)
 
-- F1.1 Vite + React 19 + TS strict app at `docs/playground`; consumes `@ttoss/fsl-ui`,
+- F1.1 Vite + React 19 + TS strict app at `docs/fsl-studio`; consumes `@ttoss/fsl-ui`,
   `@ttoss/fsl-theme` as `workspace:^`; scripts: `dev`, `build`, `test`, `deploy`
   (carlin static-app). Wired into turbo via the standard package script names.
 - F1.2 `SessionState = { themeDiff, lens, selection, compositions[], history }` in a single
@@ -508,7 +510,34 @@ mobile-optimized editing UI (responsive rendering yes, editing ergonomics deskto
 - **OQ-4** (Phase 4): Gemini as a second BYOK provider in the Studio (bench already
   abstracts providers). Default: Anthropic-only in v1.
 
-## 14. References
+## 14. Implementation notes (running log)
+
+Recorded per §0.3 — decisions and findings made during implementation, for later sessions.
+
+**Phase 0 (2026-07-17):**
+
+- **Type-checking strategy.** The app's TS program pulls fsl-ui/fsl-theme sources in (src/
+  exports), and judging those sources under a foreign environment proved fragile (missing
+  `@types/react` resolution from `packages/`, environment-dependent diagnostics). Adopted
+  the fsl-bench gauntlet policy: `scripts/typecheck.mjs` compiles the program and reports
+  only diagnostics inside `src/` — wrong API usage always surfaces at the call site
+  (precedent: `packages/fsl-bench/src/gauntlet/compile.ts`). The build script is
+  `node scripts/typecheck.mjs && vite build`.
+- **React types mapping.** fsl-ui/fsl-theme treat react as a peer and carry no
+  `@types/react`; pnpm hoists `@types` into the virtual store, outside tsc's walk-up path.
+  The app maps `react`/`react/jsx-runtime`/`react-dom` to its own `node_modules/@types` via
+  `paths` (same mapping the gauntlet uses).
+- **Upstream finding (report, don't fix here — §2):** `packages/ui` carries `@types/react`
+  as a devDependency but `packages/fsl-ui`/`packages/fsl-theme` do not; adding it there
+  would let workspace consumers type-check their sources without the mapping above.
+- **Stage mode scoping verified in a real browser:** `getThemeStylesContent(bundle,
+themeId)` emits element-scoped selectors (`[data-tt-theme]` /
+  `[data-tt-theme][data-tt-mode="dark"]`), and side-by-side light/dark panes render
+  correctly in Chromium (light `rgb(255,255,255)` vs dark `rgb(15,23,42)` backgrounds).
+- **AD-5 note stands:** the Phase-0 stage computes theme CSS once from a module constant;
+  the `validateRefs`-in-production question remains open for Phase 1.
+
+## 15. References
 
 - Problem/strategy: `packages/fsl-ui/INTERNAL/` (PURPOSE, STRATEGIC_EVAL, BENCHMARK_EVAL,
   ROADMAP), `docs/website/docs/design/design-system/fsl/`.

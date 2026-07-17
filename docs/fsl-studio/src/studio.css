@@ -1,0 +1,131 @@
+/*
+ * FSL Studio shell layout. Colors, spacing, radii, and typography come from
+ * the theme's CSS custom properties (--tt-*) so the chrome re-themes with the
+ * canonical theme — including the future "apply to Studio" toggle (PRD §6.1).
+ */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--tt-text-body-md-font-family, system-ui, sans-serif);
+  color: var(--tt-colors-informational-primary-text-default);
+  background-color: var(--tt-colors-informational-primary-background-default);
+}
+
+.studio {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.studio-header {
+  display: flex;
+  align-items: center;
+  gap: var(--tt-spacing-6, 1.5rem);
+  padding-block: var(--tt-spacing-3, 0.75rem);
+  padding-inline: var(--tt-spacing-5, 1.25rem);
+  border-block-end: 1px solid
+    var(--tt-colors-informational-primary-border-default);
+}
+
+.studio-brand {
+  font-weight: 700;
+}
+
+.studio-body {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) minmax(0, 4fr) minmax(14rem, 1fr);
+  flex: 1;
+  min-block-size: 0;
+}
+
+.studio-navigator,
+.studio-inspector {
+  padding: var(--tt-spacing-4, 1rem);
+  overflow-y: auto;
+}
+
+.studio-navigator {
+  border-inline-end: 1px solid
+    var(--tt-colors-informational-primary-border-default);
+}
+
+.studio-inspector {
+  border-inline-start: 1px solid
+    var(--tt-colors-informational-primary-border-default);
+}
+
+.studio-empty-state {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--tt-colors-informational-muted-text-default);
+}
+
+.stage {
+  padding: var(--tt-spacing-4, 1rem);
+  overflow: auto;
+}
+
+.stage-panes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--tt-spacing-4, 1rem);
+  block-size: 100%;
+}
+
+.stage-pane {
+  padding: var(--tt-spacing-5, 1.25rem);
+  border: 1px solid var(--tt-colors-informational-primary-border-default);
+  border-radius: 0.5rem;
+  color: var(--tt-colors-informational-primary-text-default);
+  background-color: var(--tt-colors-informational-primary-background-default);
+}
+
+.stage-pane-label {
+  display: block;
+  margin-block-end: var(--tt-spacing-4, 1rem);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--tt-colors-informational-muted-text-default);
+}
+
+.stage-sample {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tt-spacing-4, 1rem);
+}
+
+.stage-sample-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--tt-spacing-3, 0.75rem);
+}
+
+@media (max-width: 60rem) {
+  .studio-body {
+    grid-template-columns: 1fr;
+  }
+
+  .studio-navigator,
+  .studio-inspector {
+    border: none;
+    border-block-end: 1px solid
+      var(--tt-colors-informational-primary-border-default);
+  }
+
+  .stage-panes {
+    grid-template-columns: 1fr;
+  }
+}
