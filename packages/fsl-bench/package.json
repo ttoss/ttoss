@@ -14,7 +14,7 @@
   "scripts": {
     "bench": "node --experimental-strip-types src/runner.ts",
     "bench:report": "node --experimental-strip-types src/reportCli.ts",
-    "test": "jest --projects tests/unit"
+    "test": "tsc --noEmit -p tsconfig.json && jest --projects tests/unit"
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.110.0",
