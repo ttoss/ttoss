@@ -14,7 +14,7 @@ ThemeTokens
 action.primary.background.default: '{core.colors.brand.500}'
 ```
 
-A `semantic` value holding a raw value (not a `{ref}`) is an audited exception — see [Token Model §8 — RawValue inventory](../../docs/website/docs/design/01-design-system/02-design-tokens/model.md#8-rawvalue-exceptions-are-rare-intentional-and-registered).
+A `semantic` value holding a raw value (not a `{ref}`) is an audited exception — see [Token Model §8 — RawValue inventory](../../docs/website/docs/design/design-system/design-tokens/model.md#8-rawvalue-exceptions-are-rare-intentional-and-registered).
 
 ---
 
@@ -33,7 +33,7 @@ src/
   runtime.ts            — framework-agnostic mode manager (data attributes + localStorage)
   themeBootstrap.ts     — read-only mode resolution (no DOM writes — see ADR-002)
   ssrScript.ts          — inline JS string for SSR flash prevention (see ADR-003)
-  runtime-entry.ts      — sub-path entry for '@ttoss/theme2/runtime'
+  runtime-entry.ts      — sub-path entry for '@ttoss/fsl-theme/runtime'
 
   roots/
     helpers.ts          — isTokenRef, extractRefPath, deepMerge, flattenObject, toFlatTokens
@@ -95,7 +95,7 @@ Helpers in `roots/helpers.ts`: `isTokenRef`, `extractRefPath`, `toFlatTokens` (r
 | `core.<family>.<sub>`     | `--tt-core-<family>-<sub>` |
 | `semantic.<family>.<sub>` | `--tt-<family>-<sub>`      |
 
-Examples: `core.colors.brand.500` → `--tt-core-colors-brand-500`; `semantic.colors.action.primary.background.default` → `--tt-colors-action-primary-background-default`; `core.elevation.emphatic.2` → `--tt-core-elevation-emphatic-2`; `semantic.dataviz.color.sequential.0` → `--tt-dataviz-sequential-0`.
+Examples: `core.colors.brand.500` → `--tt-core-colors-brand-500`; `semantic.colors.action.primary.background.default` → `--tt-colors-action-primary-background-default`; `core.elevation.emphatic.2` → `--tt-core-elevation-emphatic-2`; `semantic.dataviz.color.scale.sequential.1` → `--tt-dataviz-color-scale-sequential-1`.
 
 `toCssVars` behavior: `core` → raw value; `semantic` → `{ref}` replaced by `var(--tt-…)`, compound expressions handled inline.
 
@@ -106,7 +106,7 @@ Examples: `core.colors.brand.500` → `--tt-core-colors-brand-500`; `semantic.co
 `vars` is a typed mirror of `SemanticTokens` where every leaf is a `var(--tt-*)` string. Generated once at build-time from `baseBundle`; never changes at runtime. Var names are stable across themes — only the CSS custom property values change on theme/mode switch.
 
 ```ts
-import { vars } from '@ttoss/theme2/vars';
+import { vars } from '@ttoss/fsl-theme/vars';
 vars.colors.action.primary.background.default;
 // → 'var(--tt-colors-action-primary-background-default)'
 ```
@@ -143,7 +143,7 @@ User-facing integration: see [README — Next.js (SSR)](./README.md#nextjs-ssr).
 
 ## Naming rules
 
-Each family owns its semantic grammar — see `Types.ts` for the contract and the family doc (e.g. [`colors.md`](../../docs/website/docs/design/01-design-system/02-design-tokens/02-families/colors.md)) for the full path syntax.
+Each family owns its semantic grammar — see `Types.ts` for the contract and the family doc (e.g. [`colors.md`](../../docs/website/docs/design/design-system/design-tokens/families/colors.md)) for the full path syntax.
 
 Forbidden in `semantic` names across all families:
 
@@ -172,7 +172,7 @@ Every selectable `semantic` leaf carries JSDoc that closes a _selection_ decisio
 - **Role, not rendering.** What the token _is for_ (`raised surface depth`), never what it _looks like_ (`soft grey shadow`). Renderings change per mode; the role is the invariant.
 - **Discriminator, not symptom.** Cite the question the reader is asking _before_ deciding (`element accepts dropped items`), not what they would observe _after_ (`highlighted drag state`).
 - **Nearest sibling only.** Disambiguate against the _one_ token most likely to be confused, not a list. No competing sibling → omit the line.
-- **Vocabulary borrowed, not invented.** Use the terms the family spec ([`02-families/<family>.md`](../../docs/website/docs/design/01-design-system/02-design-tokens/02-families/)) already defines for that family's axes — `{ux}` and `{role}` for colors, `control`/`surface` for borders/radii/spacing, level numbers for elevation, and so on. Cross-family concepts use FSL Lexicon names (Entity Kind, Structural Role, Evaluation). Forbidden filler: `typically`, `recommended`, `general-purpose`, `flexible`, `in most cases`.
+- **Vocabulary borrowed, not invented.** Use the terms the family spec ([`families/<family>.md`](../../docs/website/docs/design/design-system/design-tokens/families/)) already defines for that family's axes — `{ux}` and `{role}` for colors, `control`/`surface` for borders/radii/spacing, level numbers for elevation, and so on. Cross-family concepts use FSL Lexicon names (Entity Kind, Structural Role, Evaluation). Forbidden filler: `typically`, `recommended`, `general-purpose`, `flexible`, `in most cases`.
 - **One decision per line.** Comma-clause exceptions ("…, except when…") are separate leaves — promote, don't bury.
 
 **Audit before commit.** Could a sibling's JSDoc be swapped onto this leaf without losing accuracy? If yes, re-pick words until only this leaf could carry them.
@@ -206,14 +206,14 @@ Every change touches some subset of these axes. Pick the subset by change kind; 
 | **Default values** (`baseTheme.ts`)                     | Add the value. Mode-sensitive entries also go into `darkAlternate.semantic` (core never).                                                                                               |
 | **CSS naming** (`tokenRegistry.ts`)                     | Add only if a new prefix is needed. More-specific prefixes ordered before less-specific siblings.                                                                                       |
 | **Tests** (`tests/unit/tests/theme/families/*.test.ts`) | Family assertions. Add a Warning test for new ramps/groups with ordering or depth invariants.                                                                                           |
-| **Family doc** (`docs/.../02-families/*.md`)            | Table + example. Use `elevation.md` as a structural template for new families.                                                                                                          |
+| **Family doc** (`docs/.../families/*.md`)               | Table + example. Use `elevation.md` as a structural template for new families.                                                                                                          |
 | **CHANGELOG**                                           | Only on breaking changes. BREAKING entry with before/after token paths.                                                                                                                 |
 
 **Change kinds** (the span over the axes above):
 
 - **Additive within an existing path** (new color step, new spacing step) — Type + Values + Tests + Doc.
 - **New sub-tree or new family** (`core.elevation.emphatic?`, dataviz) — add a CSS-naming entry; mark the sub-tree `optional?` so existing themes still satisfy `ThemeTokens`.
-- **Breaking** (rename, restructure, remove) — all axes + CHANGELOG. Run `grep -r 'old.path'` first to assess blast radius (consumers may reference CSS vars directly). Semantic renames follow the deprecation window in [Governance — Deprecation](../../docs/website/docs/design/01-design-system/02-design-tokens/governance.md#deprecation): keep the old name `optional?` with `/** @deprecated Use newPath instead */`, add the new name as required in the same release, remove the old name only in the next major. Core-path renames change the emitted CSS var name — public breaking, no soft path.
+- **Breaking** (rename, restructure, remove) — all axes + CHANGELOG. Run `grep -r 'old.path'` first to assess blast radius (consumers may reference CSS vars directly). Semantic renames follow the deprecation window in [Governance — Deprecation](../../docs/website/docs/design/design-system/design-tokens/governance.md#deprecation): keep the old name `optional?` with `/** @deprecated Use newPath instead */`, add the new name as required in the same release, remove the old name only in the next major. Core-path renames change the emitted CSS var name — public breaking, no soft path.
 
 ---
 
@@ -260,7 +260,7 @@ Tags: colors, semantic-grammar, fsl-projection, ux-axis
 Decision: `semantic.colors.{ux}.{role}.{dimension}.{state}` is a normative FSL §17.1 projection: `ux` maps to 5 names (`action | input | navigation | feedback | informational`), `informational` collapsing `Collection | Overlay | Structure`; `Selection` → `input`; `Disclosure` → `navigation`; contract in `colors.md`.
 Rejected: 1:1 mirror of all 9 Entity Kinds — triples surface today for hypothetical future divergence (violates model.md §6 "no parallel vocabulary"); rename `informational` to `surface` — `surface` is already a Structural Role in the FSL Lexicon, creates cross-dimension name collision.
 Cost: token names ≠ FSL term names by construction; readers crossing from FSL docs to token docs need the projection table once.
-Anchors: `src/Types.ts` → `SemanticColors`, `docs/website/docs/design/01-design-system/02-design-tokens/model.md#semantic-color-grammar--fsl-projection`, `docs/website/docs/design/01-design-system/02-design-tokens/02-families/colors.md#fsl-entity-kind-mapping`.
+Anchors: `src/Types.ts` → `SemanticColors`, `docs/website/docs/design/design-system/design-tokens/model.md#semantic-color-grammar--fsl-projection`, `docs/website/docs/design/design-system/design-tokens/families/colors.md#fsl-entity-kind-mapping`.
 
 Re-litigation answers:
 
@@ -329,6 +329,7 @@ Re-litigation answers:
 
 - "Race against `destroy()`?" → JS is single-threaded; the listener is removed before `destroy()` returns.
 - "Stale handler when mode changes?" → `syncMediaListener` runs on every `setMode`; the check would be dead code.
+- "The code has `if (destroyed) return` — doesn't that contradict this ADR?" → the guard exists for _mocked_ media queries in tests, which can invoke a captured handler after `destroy()`; real browsers never do. The ADR's claim stands for production paths; the guard is test-harness accommodation, not a defensive-programming pattern to extend.
 
 ### ADR-006: `resolveSemanticTokens` and `bundleToCssVars` both call `deepMerge` — no shared helper
 
@@ -412,10 +413,109 @@ Tags: borders, outline, selected, focus, shape-grouping
 Decision: the selected-state line is `border.outline.selected` (sibling of `outline.surface` and `outline.control`); `focus.ring` remains a top-level `semantic.focus.*` family with a `color` field and an accessibility contract distinct from `border.*`.
 Rejected: keep `border.selected` flat alongside `border.outline.*` — same `SemanticBorderOutline` shape and same CSS mechanism (`outline`) as the rest of `outline.*`, so the flat sibling hides the grouping; collapse `focus.ring` into `outline.focus` — drops the cross-cutting `color: TokenRef<'semantic.${string}'>` field, and `focus.ring` is implemented via CSS `outline` as an accessibility contract that must not layout-shift, not as an "outline-at-rest" variant (borders.md §Focus Implementation).
 Cost: one extra path level for selected-state lines (`border.outline.selected` vs `border.selected`); the canonical set is now four `border.*` entries plus `focus.ring`, breaking strict symmetry with the previous five-entry list.
-Anchors: `src/Types.ts` → `SemanticBorder`, `src/baseTheme.ts` › `semantic.border`, `docs/website/docs/design/01-design-system/02-design-tokens/02-families/borders.md#canonical-semantic-set`.
+Anchors: `src/Types.ts` → `SemanticBorder`, `src/baseTheme.ts` › `semantic.border`, `docs/website/docs/design/design-system/design-tokens/families/borders.md#canonical-semantic-set`.
 
 Re-litigation answers:
 
 - "Why not flatten `outline.{surface,control}` to siblings of `selected` instead?" → `outline.*` is a grouping by CSS mechanism and shape; flattening loses the namespace that lets a component iterate `outline.{surface|control|selected}` uniformly.
 - "Unify `focus.ring` under `outline.focus` for one shape" → `focus.ring.color` is part of the contract; `outline.{surface,control,selected}` intentionally have no `color` (color belongs to the color system per borders.md). Unifying either drops `color` from focus or adds it everywhere — both regressions.
 - "Add `outline.selected.color`" → contradicts borders.md "Color expresses what the line means" / "Width and style express how strong the line is"; selected color is supplied by `semantic.colors.{ux}.{role}.border.selected`.
+
+### ADR-012: Pre-adoption window — hard-rename now, no deprecation aliases
+
+Status: accepted (2026-07-12)
+Tags: governance, versioning, breaking-change, pre-adoption
+
+Decision: while the package has zero consumers, contract renames/removals are applied as **direct breaking changes** — no `@deprecated` aliases, no soft path — landed under a single MAJOR bump via a `BREAKING CHANGE:` commit footer (lerna-lite computes the version). This overrides the deprecation window that `governance.md#deprecation` and the "Token change operations" table below otherwise require for semantic renames.
+Rejected: follow the deprecation window even now — carries dead alias tokens and JSDoc into a system with no consumers, the exact cruft the window exists to avoid; hand-author a changeset file — the repo uses lerna-lite + Conventional Commits, not changesets.
+Cost: the window is time-boxed and self-expiring — the moment the first consumer adopts `@ttoss/fsl-theme`, this ADR no longer applies and `governance.md`'s deprecation window is back in force for every subsequent rename. Residual risk: an unknown external npm consumer of `1.1.x` gets a hard break at `2.0.0` (low — single "Init" release, no repo consumers).
+Anchors: `governance.md#deprecation`, `../../docs/website/docs/design/design-system/design-tokens/governance.md`, this file's "Token change operations" table.
+
+Re-litigation answers:
+
+- "Governance says renames need a deprecation window" → correct, and this ADR overrides it **only** for the pre-adoption window. Expiry is explicit: first consumer adoption.
+- "Why MAJOR if there are no consumers?" → the published `1.1.x` line exists on npm; SemVer honesty for any external consumer requires MAJOR even when the in-repo blast radius is zero.
+- "Where is the changeset?" → there is none; versioning is Conventional Commits + lerna-lite. Breaking changes ride a `BREAKING CHANGE:` footer that enumerates every renamed/removed path.
+
+### ADR-013: `toDTCG` emits a resolved-scalar profile; `$type` omitted for opaque tokens
+
+Status: accepted (2026-07-12)
+Tags: dtcg, interchange, conformance, toDTCG
+
+Decision: `toDTCG` emits a **conformant resolved-scalar** DTCG (2025.10) profile — `$value`s are fully resolved (no `{alias}`), composite shapes are emitted as their individual scalar leaves, and `$type` is **omitted** for opaque tokens (keywords, easing curves, border styles, SVG dash strings) rather than emitting an invalid type. There is no `'string'` DTCG type; the registry's `dtcgType` is now optional and absent for those entries.
+Rejected: emit `$type: 'string'` (the prior behaviour) — `'string'` is not a DTCG type, so conformant importers (Style Dictionary, Tokens Studio) reject/ignore the token; deferred (not rejected) are three enhancements below.
+Cost: the export is a flattened snapshot, not a themeable alias graph, and composites lose their grouped semantics — acceptable for a first conformant profile; see deferred items.
+Anchors: `src/roots/toDTCG.ts` › `inferDtcgType`, `src/roots/tokenRegistry.ts` › `dtcgType?`, `tests/unit/tests/engine/output/toDTCG.test.ts`.
+
+Deferred enhancements (tracked, not yet built — all are additive richness, not conformance fixes):
+
+- **Composite objects** — emit `$type: "typography" | "shadow" | "border" | "transition"` with structured object `$value`s instead of scalar leaves. Requires grouping composite leaves in the tree builder.
+- **Alias preservation** — emit `$value: "{core.colors.brand.500}"` (DTCG dot-path aliases) instead of resolved values, behind a `resolve: false` option, so the export round-trips as a graph.
+- **`$description`** — populate from the semantic-leaf JSDoc (the package's richest asset). Requires a build-time JSDoc-extraction pipeline (ts-morph, as in `scripts/probe-jsdoc-propagation.ts`); `toDTCG` is a pure runtime function over `ThemeTokens` and has no access to the type-source comments.
+
+Re-litigation answers:
+
+- "A resolved snapshot isn't real DTCG" → resolved scalar tokens are fully conformant; aliases and composites are optional spec features, not requirements.
+- "Why omit `$type` instead of picking one?" → opaque values (`tabular-nums`, `cubic-bezier(…)`, `solid`, dash-arrays) have no valid DTCG scalar type; `$type` is optional in the spec, so omission is correct and an invalid type is not.
+- "Easing should be `cubicBezier`" → DTCG `cubicBezier` is a 4-number array; our easings are CSS strings (incl. named `ease`). Converting is part of the deferred composite/typed work, not this profile.
+
+### ADR-014: Canonical bundles emit a `prefers-color-scheme` fallback block
+
+Status: accepted (2026-07-14)
+Tags: css-generation, dark-mode, no-js, progressive-enhancement
+
+Decision: `bundleToCssVars` without `themeId` appends the alternate diff inside `@media (prefers-color-scheme: <alternateMode>)` scoped to `:root:not([data-tt-mode])`, gated by `systemModeFallback` (default `true`; `<ThemeProvider>`/`<ThemeHead>` derive it as `defaultMode === 'system'`), so the OS preference applies before JS runs (and when it never runs); the block self-disables the moment any runtime stamps `data-tt-mode`.
+Rejected: JS-only dark mode (previous behaviour) — no-JS users and pre-`ThemeScript` paints never get dark; duplicating the full dark block under the media query — persisted user choice must always beat the OS preference, which requires the `:not([data-tt-mode])` guard, not duplication.
+Cost: the emitted CSS grows by the diff-block size (+19 KB raw, <1 KB gzip); multi-theme (`themeId`) output intentionally has no fallback — scoping there is runtime-managed; direct `getThemeStylesContent` callers with a fixed light/dark default must pass `{ systemModeFallback: false }` themselves.
+Anchors: `src/roots/toCssVars.ts` › `buildSystemModeFallbackBlock`, `tests/unit/tests/engine/output/toCssVars.test.ts` › "system-mode fallback block".
+
+Re-litigation answers:
+
+- "Why `:not([data-tt-mode])` instead of higher specificity?" → the fallback must lose to any explicit mode, including `data-tt-mode="light"` chosen by a dark-OS user.
+- "Why not emit it for `themeId` bundles?" → scoped bundles exist for runtime-managed multi-theme hosts; an OS-level fallback would fight the host's explicit scoping.
+- "Why gate on `defaultMode === 'system'`?" → a light-first app (`defaultMode="light"`, dark only via toggle) must not render dark for dark-OS users on first paint or without JS; the OS preference is only authoritative when the app declares it follows the OS.
+
+### ADR-015: Text-contrast exemption is muted-only; filled negative uses `red.600`
+
+Status: accepted (2026-07-14)
+Tags: colors, contrast, accessibility, wcag
+
+Decision: the text-vs-background AA Large (3:1) exemption applies only to `*.muted.*` contexts; `action.*` is held to AA Normal (4.5:1), and `red.600` (`#dc2626`, 4.83:1 with `neutral.0`) exists so `action.negative` filled surfaces pass.
+Rejected: blanket `action.*` exemption as "large/bold text" (previous behaviour) — button labels render at `text.label` sizes (14–16px medium), which do not meet the WCAG large-text definition (≥ 24px, or ≥ 18.66px bold); keeping `red.500` as the filled bg — 3.76:1 with white text fails AA Normal in both modes.
+Cost: one extra red step in the core palette; themes overriding the red scale must provide a 600-range step (or remap `action.negative`) to keep the guarantee.
+Anchors: `src/baseTheme.ts` › `core.colors.red.600` + `semantic.colors.action.negative`, `tests/unit/tests/theme/families/colors.test.ts` › "Color contrast — text vs background", `docs/website/docs/design/design-system/design-tokens/families/colors.md#required-pairings`.
+
+Re-litigation answers:
+
+- "Buttons are bold-ish, treat them as large text" → `text.label.md` is 14–16px medium (500); WCAG large text starts at 18.66px **bold**. The exemption would be an audit failure.
+- "Why keep `.muted.` at 3:1?" → muted is _defined_ as intentionally subdued; its contract is documented as AA Large in colors.md.
+
+### ADR-016: Unregistered `semantic.*` paths drop the `semantic-` segment in CSS var names
+
+Status: accepted (2026-07-14)
+Tags: css-naming, extensions, tokenRegistry
+
+Decision: `toCssVarName`'s unregistered-path fallback strips a leading `semantic.` so custom families follow the registered-family convention (`semantic.chart.grid` → `--tt-chart-grid`, like `semantic.colors.*` → `--tt-colors-*`); core paths keep their `core-` segment.
+Rejected: keep the raw path (previous behaviour, `--tt-semantic-chart-grid`) — extensions would diverge from every built-in family's naming for no benefit; requiring a registry entry for every extension — theme-local families should not have to patch the package.
+Cost: a custom semantic family named like a future registered family could collide earlier; `assertDistinctCssVars` catches collisions in dev.
+Anchors: `src/roots/toCssVars.ts` › `toCssVarName`, `src/roots/tokenRegistry.ts`.
+
+Re-litigation answers:
+
+- "Is this a breaking rename?" → no shipped token uses the fallback path (all are registered); only hypothetical extension vars change, pre-adoption (ADR-012).
+
+### ADR-017: Validation outcome is the `invalid` State, not the `negative` role
+
+Status: accepted (2026-07-15)
+Tags: colors, validation, states, fsl-ui, governance
+
+Decision: validation failure is a **runtime State** — `input.{role}.{dimension}.invalid` — flipped by `isInvalid`/form libraries; the `negative` Evaluation role on a control is authorial valence and never expresses validation; adjacent display parts (validationMessage, icon) keep consuming `input.negative.*`.
+Rejected: mapping `isInvalid` to the `negative` role on the control (this file's previous doctrine in `colors.ts`) — makes a runtime fact look like an authorial choice (`<TextField evaluation="negative">` is a category mistake) and collides with the industry-consensus boolean-state model (React Aria `isInvalid`, Spectrum `validationState`, MUI `error`); keeping the fsl-theme/fsl-ui doctrines split — `@ttoss/fsl-ui` already shipped `invalid` in `STATES` + `STATE_PRIORITY` and consumed `input.primary.*.invalid`, which resolved to `undefined` (invalid fields rendered visually silent).
+Cost: a 12th input state in the contract; themes overriding `input.primary` should supply mode-safe `invalid` values (dark inherits light values unless overridden — see `darkAlternate`).
+Anchors: `src/families/colors.ts` › `InputColorStates.invalid`, `src/baseTheme.ts` › `input.primary.*.invalid`, `packages/fsl-ui/src/semantics/taxonomy.ts` › `STATES`/`STATE_PRIORITY`, `fsl-lexicon.md` §7/§10.15.
+
+Re-litigation answers:
+
+- "States are not free-form (FSL §7) — why admit a new one?" → through governance, which is this ADR plus the Lexicon §7 entry; the state has runtime legality (only where validation semantics apply) like `visited`/`indeterminate`.
+- "Why does validationMessage still use `negative`?" → it _displays_ valence about the outcome; the control _carries_ the state. Same split as Lexicon §10.9 (part vs slot).
+- "`invalid` equals `negative` visually — parallel vocabulary?" → same value, different meaning axis (State vs Evaluation); divergence stays free (e.g. themes may tint invalid backgrounds without touching the negative role).

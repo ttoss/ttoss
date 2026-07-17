@@ -1,4 +1,4 @@
-import { baseTheme, darkAlternate } from './baseTheme';
+import { baseBrief, baseTheme, darkAlternate } from './baseTheme';
 import { createTheme } from './createTheme';
 
 /**
@@ -10,6 +10,7 @@ import { createTheme } from './createTheme';
 const baseBundle = createTheme({
   base: baseTheme,
   alternate: darkAlternate,
+  brief: baseBrief,
 });
 
 // ---------------------------------------------------------------------------

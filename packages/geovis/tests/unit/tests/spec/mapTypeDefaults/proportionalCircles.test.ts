@@ -575,7 +575,7 @@ describe('resolveProportionalCircles — legend titles', () => {
     expect(legend!.title).toBe('My custom title');
   });
 
-  test('user legend with a categorical colorBy keeps its own title intact', () => {
+  test('user legend with a categorical colorBy does not strip the size legend of its own independent colorBy', () => {
     const resolved = resolveSpecFromMapType(
       makeSpec({
         scaleMaxValue: 500000,
@@ -634,7 +634,8 @@ describe('resolveProportionalCircles — legend titles', () => {
       return l.id === 'population-legend';
     });
     expect(sizeLegend!.title).toBe('Circle size = total population');
-    expect(sizeLegend!.colorBy).toBeUndefined();
+    expect(sizeLegend!.colorBy).toBeDefined();
+    expect(sizeLegend!.colorBy!.type).toBe('quantitative');
   });
 });
 

@@ -106,12 +106,12 @@ export const resolvePositionStyle = (
   const base = { position: 'absolute' as const, zIndex: 10 };
   const coords =
     position === 'top-left'
-      ? { top: 10, left: 10 }
+      ? { top: 24, left: 24 }
       : position === 'top-right'
-        ? { top: 10, right: 10 }
+        ? { top: 24, right: 24 }
         : position === 'bottom-left'
-          ? { bottom: 10, left: 10 }
-          : { bottom: 10, right: 10 };
+          ? { bottom: 24, left: 24 }
+          : { bottom: 24, right: 24 };
   return { ...base, ...coords };
 };
 
@@ -221,8 +221,33 @@ export const shouldShowCircleItems = (
   // The size key is part of the auto-generated legend; when the spec disables
   // it, the circles must not leak into user legends either.
   if (spec.legendEnabled === false) return false;
+  // The auto-generated size legend always owns the circle reference items,
+  // regardless of its own `colorBy` — that field is independent of other
+  // legends' and must not be used to decide ownership.
+  if (legend?.id === getProportionalCirclesAutoLegendId(spec)) return true;
   const legends = spec.legends;
   if (legends && legends.length > 1 && legend?.colorBy) return false;
+  return true;
+};
+
+/**
+ * The proportionalCircles auto-generated legend always carries a `colorBy`
+ * (`buildColorBy` in `mapTypeDefaults/proportionalCircles.ts`) purely so the
+ * adapter has a legend to build a `circle-color` expression from — every bin
+ * it defines resolves to the same flat color, so it carries no real visual
+ * distinction. Rendering it as a value-band list would just duplicate the
+ * circle size key with meaningless identical-color rows; this legend's UI
+ * job is the circle reference key only (see `shouldShowCircleItems`).
+ */
+export const shouldAutoGenerateColorItems = (
+  legend: LegendSpec | undefined,
+  spec: VisualizationSpec
+): boolean => {
+  if (
+    legend?.id === getProportionalCirclesAutoLegendId(spec) &&
+    spec.mapType === 'proportionalCircles'
+  )
+    return false;
   return true;
 };
 
@@ -236,9 +261,11 @@ export const resolveFormatter = (
 export const buildColorItems = (
   legend: LegendSpec | undefined,
   breaks: number[],
-  formatValue: (value: number) => string
+  formatValue: (value: number) => string,
+  spec: VisualizationSpec
 ): LegendItem[] => {
   if (!legend || !legend.colorBy) return [];
+  if (!shouldAutoGenerateColorItems(legend, spec)) return [];
   if (legend.colorBy.type === 'categorical') {
     return buildCategoricalItems(legend);
   }
@@ -251,19 +278,70 @@ export const hasLegendContent = (
   circleItems: CircledLegendItem[]
 ): boolean => {
   if (!legend) return false;
-  if (items.length === 0 && circleItems.length === 0) return false;
-  return true;
+  if (items.length > 0 || circleItems.length > 0) return true;
+  // Text-only legend (e.g. a dot-density key like `1 point = 1 kitchen`): it
+  // carries no swatches or reference circles, so its meaning lives entirely in
+  // the subtitle. Render it whenever that explanatory text is present.
+  return !!legend.subtitle;
 };
 
+/**
+ * Any legend past the first slot in its position group gets a top divider —
+ * `GeoVisLegendBody` only reaches this check once `hasLegendContent` already
+ * confirmed it has something to render, so no separate content check needed.
+ */
 export const shouldShowTopDivider = (
-  items: LegendItem[],
-  circleItems: CircledLegendItem[],
-  legends: VisualizationSpec['legends']
+  isFirstInPositionGroup: boolean
 ): boolean => {
-  if (circleItems.length === 0) return false;
-  if (items.length > 0) return false;
-  if (!legends || legends.length <= 1) return false;
-  return true;
+  return !isFirstInPositionGroup;
+};
+
+/**
+ * Ids of every legend (top-level or per-layer) declaring the given
+ * `position`, in declaration order. Used to stack same-position legends in
+ * one overlay and to know which member is first (no leading divider).
+ */
+export const collectLegendIdsForPosition = (
+  spec: VisualizationSpec,
+  position: LegendPosition
+): string[] => {
+  const ids: string[] = [];
+  const seen = new Set<string>();
+  const add = (legend?: LegendSpec) => {
+    if (!legend || legend.position !== position || seen.has(legend.id)) return;
+    seen.add(legend.id);
+    ids.push(legend.id);
+  };
+  for (const legend of spec.legends ?? []) add(legend);
+  for (const layer of spec.layers) {
+    for (const legend of layer.legends ?? []) add(legend);
+  }
+  return ids;
+};
+
+/**
+ * Groups every positioned legend id by its `position`, preserving
+ * declaration order within each group. Powers `GeoVisProvider`'s auto-mounted
+ * overlays: a group with 2+ ids renders as one stacked container instead of
+ * separately absolutely-positioned boxes.
+ */
+export const groupLegendIdsByPosition = (
+  spec: VisualizationSpec
+): Map<LegendPosition, string[]> => {
+  const groups = new Map<LegendPosition, string[]>();
+  const addAll = (legends: LegendSpec[] | undefined) => {
+    for (const legend of legends ?? []) {
+      if (!legend.position) continue;
+      if (groups.has(legend.position)) continue;
+      groups.set(
+        legend.position,
+        collectLegendIdsForPosition(spec, legend.position)
+      );
+    }
+  };
+  addAll(spec.legends);
+  for (const layer of spec.layers) addAll(layer.legends);
+  return groups;
 };
 
 export const buildContainerStyle = (

@@ -1,10 +1,10 @@
 /**
  * Motion family validation tests.
  *
- * @see /docs/website/docs/design/01-design-system/02-design-tokens/02-families/motion.md#validation
+ * @see /docs/website/docs/design/design-system/design-tokens/families/motion.md#validation
  */
 
-import { themeAltFlatToTest, themeFlatToTest } from '../../../helpers/theme';
+import { themeFlatToTest } from '../../../fixtures/theme';
 
 // ---------------------------------------------------------------------------
 // Test bundles — extend when new theme bundles are added
@@ -17,8 +17,7 @@ import { themeAltFlatToTest, themeFlatToTest } from '../../../helpers/theme';
 const bundleEntries: ReadonlyArray<{
   label: string;
   base: Record<string, string | number>;
-  alt?: Record<string, string | number>;
-}> = [{ label: 'default', base: themeFlatToTest, alt: themeAltFlatToTest }];
+}> = [{ label: 'default', base: themeFlatToTest }];
 
 // ---------------------------------------------------------------------------
 // Helpers — duration parsing and semantic contract comparison
@@ -64,44 +63,18 @@ const getMotionContract = (
 describe.each(bundleEntries)(
   'Motion errors — duration order ($label)',
   ({ base }) => {
-    // Error #1: core duration order breaks — none > xs is a violation
-    test('none must not exceed xs', () => {
-      const a = parseDurationMs(base['core.motion.duration.none']);
-      const b = parseDurationMs(base['core.motion.duration.xs']);
-      if (a === null || b === null) return;
-      expect(a).toBeLessThanOrEqual(b);
-    });
-
-    // Error #1
-    test('xs must not exceed sm', () => {
-      const a = parseDurationMs(base['core.motion.duration.xs']);
-      const b = parseDurationMs(base['core.motion.duration.sm']);
-      if (a === null || b === null) return;
-      expect(a).toBeLessThanOrEqual(b);
-    });
-
-    // Error #1
-    test('sm must not exceed md', () => {
-      const a = parseDurationMs(base['core.motion.duration.sm']);
-      const b = parseDurationMs(base['core.motion.duration.md']);
-      if (a === null || b === null) return;
-      expect(a).toBeLessThanOrEqual(b);
-    });
-
-    // Error #1
-    test('md must not exceed lg', () => {
-      const a = parseDurationMs(base['core.motion.duration.md']);
-      const b = parseDurationMs(base['core.motion.duration.lg']);
-      if (a === null || b === null) return;
-      expect(a).toBeLessThanOrEqual(b);
-    });
-
-    // Error #1
-    test('lg must not exceed xl', () => {
-      const a = parseDurationMs(base['core.motion.duration.lg']);
-      const b = parseDurationMs(base['core.motion.duration.xl']);
-      if (a === null || b === null) return;
-      expect(a).toBeLessThanOrEqual(b);
+    // Error #1: core duration scale must be non-decreasing
+    test('core duration scale is non-decreasing', () => {
+      const STEPS = ['none', 'xs', 'sm', 'md', 'lg', 'xl'] as const;
+      const values = STEPS.map((k) => {
+        return parseDurationMs(base[`core.motion.duration.${k}`]);
+      });
+      for (let i = 0; i < values.length - 1; i++) {
+        const a = values[i];
+        const b = values[i + 1];
+        if (a === null || b === null) continue;
+        expect(a).toBeLessThanOrEqual(b);
+      }
     });
   }
 );
@@ -153,44 +126,18 @@ describe.each(bundleEntries)(
 describe.each(bundleEntries)(
   'Motion warnings — adjacent durations ($label)',
   ({ base }) => {
-    // Warning #1: adjacent core duration steps must not resolve to the same effective value
-    test('none and xs must not be equal', () => {
-      const a = parseDurationMs(base['core.motion.duration.none']);
-      const b = parseDurationMs(base['core.motion.duration.xs']);
-      if (a === null || b === null) return;
-      expect(a).not.toBe(b);
-    });
-
-    // Warning #1
-    test('xs and sm must not be equal', () => {
-      const a = parseDurationMs(base['core.motion.duration.xs']);
-      const b = parseDurationMs(base['core.motion.duration.sm']);
-      if (a === null || b === null) return;
-      expect(a).not.toBe(b);
-    });
-
-    // Warning #1
-    test('sm and md must not be equal', () => {
-      const a = parseDurationMs(base['core.motion.duration.sm']);
-      const b = parseDurationMs(base['core.motion.duration.md']);
-      if (a === null || b === null) return;
-      expect(a).not.toBe(b);
-    });
-
-    // Warning #1
-    test('md and lg must not be equal', () => {
-      const a = parseDurationMs(base['core.motion.duration.md']);
-      const b = parseDurationMs(base['core.motion.duration.lg']);
-      if (a === null || b === null) return;
-      expect(a).not.toBe(b);
-    });
-
-    // Warning #1
-    test('lg and xl must not be equal', () => {
-      const a = parseDurationMs(base['core.motion.duration.lg']);
-      const b = parseDurationMs(base['core.motion.duration.xl']);
-      if (a === null || b === null) return;
-      expect(a).not.toBe(b);
+    // Warning #1: all adjacent core duration steps must be distinct
+    test('adjacent core duration steps must all be distinct', () => {
+      const STEPS = ['none', 'xs', 'sm', 'md', 'lg', 'xl'] as const;
+      const values = STEPS.map((k) => {
+        return parseDurationMs(base[`core.motion.duration.${k}`]);
+      });
+      for (let i = 0; i < values.length - 1; i++) {
+        const a = values[i];
+        const b = values[i + 1];
+        if (a === null || b === null) continue;
+        expect(a).not.toBe(b);
+      }
     });
   }
 );
@@ -201,36 +148,28 @@ describe.each(bundleEntries)(
 
 describe.each(bundleEntries)(
   'Motion warnings — semantic contracts ($label)',
-  ({ base, alt }) => {
-    const modes = [
-      { mode: 'base', tokens: base },
-      ...(alt !== undefined ? [{ mode: 'alt', tokens: alt }] : []),
-    ];
+  ({ base }) => {
+    // Warning #2–4: semantic contract collapse (non-static themes only).
+    // darkAlternate does not override semantic.motion; tested against base tokens only.
+    test('transition.enter and transition.exit must use different easing (non-static)', () => {
+      if (isStaticMotion(base)) return;
+      expect(base['semantic.motion.transition.enter.easing']).not.toBe(
+        base['semantic.motion.transition.exit.easing']
+      );
+    });
 
-    describe.each(modes)('$mode mode', ({ tokens }) => {
-      // Warning #2: transition.enter and transition.exit must not share the same effective easing in a non-static theme
-      test('transition.enter and transition.exit must use different easing (non-static)', () => {
-        if (isStaticMotion(tokens)) return;
-        expect(tokens['semantic.motion.transition.enter.easing']).not.toBe(
-          tokens['semantic.motion.transition.exit.easing']
-        );
-      });
+    test('feedback and transition.enter must have distinct contracts (non-static)', () => {
+      if (isStaticMotion(base)) return;
+      expect(getMotionContract(base, 'feedback')).not.toBe(
+        getMotionContract(base, 'transition.enter')
+      );
+    });
 
-      // Warning #3: motion.feedback and motion.transition.enter must not share the same effective contract in a non-static theme
-      test('feedback and transition.enter must have distinct contracts (non-static)', () => {
-        if (isStaticMotion(tokens)) return;
-        expect(getMotionContract(tokens, 'feedback')).not.toBe(
-          getMotionContract(tokens, 'transition.enter')
-        );
-      });
-
-      // Warning #4: motion.emphasis must not resolve to the same effective contract as motion.transition.enter in a non-static theme
-      test('emphasis and transition.enter must have distinct contracts (non-static)', () => {
-        if (isStaticMotion(tokens)) return;
-        expect(getMotionContract(tokens, 'emphasis')).not.toBe(
-          getMotionContract(tokens, 'transition.enter')
-        );
-      });
+    test('emphasis and transition.enter must have distinct contracts (non-static)', () => {
+      if (isStaticMotion(base)) return;
+      expect(getMotionContract(base, 'emphasis')).not.toBe(
+        getMotionContract(base, 'transition.enter')
+      );
     });
   }
 );

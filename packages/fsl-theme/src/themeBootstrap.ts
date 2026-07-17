@@ -45,12 +45,14 @@ export const resolveTheme = <M extends string>(
       ? (stored.mode as M)
       : cfg.defaultMode;
 
-  // `window.matchMedia` is client-only; guard so SSR callers degrade to `light`
-  // instead of crashing. The runtime will re-resolve on mount via the same code
-  // path, so client-authoritative state is preserved.
+  // `window.matchMedia` is client-only (and absent in some DOM shims); guard
+  // so SSR and shim callers degrade to `light` instead of crashing. The
+  // runtime will re-resolve on mount via the same code path, so
+  // client-authoritative state is preserved.
   const resolvedMode: 'light' | 'dark' =
     mode === 'system'
       ? typeof window !== 'undefined' &&
+        typeof window.matchMedia === 'function' &&
         window.matchMedia('(prefers-color-scheme: dark)').matches
         ? 'dark'
         : 'light'

@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-dashboard",
-  "version": "0.8.4",
+  "version": "0.11.0",
   "description": "ttoss dashboard module for React apps.",
   "keywords": [
     "React",
@@ -34,7 +34,8 @@
     "@ttoss/react-icons": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "react-day-picker": "^9.13.0",
-    "react-grid-layout": "^1.5.2"
+    "react-grid-layout": "^1.5.2",
+    "react-intl": "^10.1.1"
   },
   "devDependencies": {
     "@ttoss/components": "workspace:^",

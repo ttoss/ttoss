@@ -9,7 +9,7 @@ This file is the LLM-facing guide for using the package in an external applicati
 ## Entry points
 
 ```ts
-import { createTheme, baseTheme, bruttal, corporate, oca, ventures } from '@ttoss/fsl-theme';
+import { createTheme, baseTheme, bruttal } from '@ttoss/fsl-theme';
 import { ThemeProvider, useColorMode, useResolvedTokens } from '@ttoss/fsl-theme/react';
 import { vars } from '@ttoss/fsl-theme/vars';           // typed CSS var(--tt-*) refs — CSS environments
 import { toCssVarName } from '@ttoss/fsl-theme/css';    // raw --tt-* names — tooling / PostCSS
@@ -46,7 +46,7 @@ export function App() {
 **Built-in themes** — extend instead of building from scratch:
 
 ```ts
-import { bruttal, corporate, oca, ventures } from '@ttoss/fsl-theme';
+import { bruttal } from '@ttoss/fsl-theme';
 // Use directly as-is:
 <ThemeProvider theme={bruttal}>...</ThemeProvider>
 // Or extend with brand overrides:
@@ -289,7 +289,8 @@ Not every state is legal in every `ux` context. Illegal combinations are TypeScr
 | `indeterminate` | — | ✅ | — | — | — |
 | `current` | — | — | ✅ (active route) | — | — |
 | `visited` | — | — | ✅ | — | ✅ (link in content) |
-| `droptarget` | — | ✅ (file input) | — | — | ✅ |
+| `droptarget` | ✅ | ✅ (file input) | ✅ | — | ✅ |
+| `invalid` | — | ✅ (runtime validation outcome — `isInvalid`, never authorial; pairs with `input.negative.*` on the validationMessage) | — | — | — |
 
 State disambiguation rules:
 - **`active` vs `pressed`**: `active` = the brief moment of clicking (transient). `pressed` = persistent toggle engaged ("Bold" button). Never use `active` for toggle state.
@@ -575,7 +576,7 @@ const DarkModeToggle = () => {
 ```tsx
 import { useResolvedTokens } from '@ttoss/fsl-theme/react';
 
-// Keys are full semantic dot-paths; values are resolved raw CSS values (hex, px, etc.)
+// Keys are full semantic dot-paths; values are resolved raw CSS values (hex, numbers, etc.)
 const NativeButton = ({ disabled }: { disabled?: boolean }) => {
   const resolved = useResolvedTokens();
   return (
@@ -584,8 +585,7 @@ const NativeButton = ({ disabled }: { disabled?: boolean }) => {
         backgroundColor: disabled
           ? resolved['semantic.colors.action.primary.background.disabled']
           : resolved['semantic.colors.action.primary.background.default'],
-        minHeight: resolved['semantic.sizing.hit.base'],
-        paddingHorizontal: resolved['semantic.spacing.inset.control.md'],
+        opacity: disabled ? Number(resolved['semantic.opacity.disabled']) : 1,
       }}
     />
   );
@@ -593,6 +593,8 @@ const NativeButton = ({ disabled }: { disabled?: boolean }) => {
 ```
 
 `useResolvedTokens()` automatically applies coarse-pointer hit target overrides — mirrors the `@media (any-pointer: coarse)` block that `toCssVars` injects for CSS consumers.
+
+⚠ **CSS-coupled tokens stay unresolved** (model.md §8): spacing steps (`calc(N * var(--tt-core-spacing-engine-unit))`), fluid `text.*.fontSize` / `sizing.hit.*` (`clamp()` + `cqi`), `sizing.viewport.*` (`dvh`/`dvw`), `sizing.measure.reading` (`ch`), and `spacing.gutter.*` are CSS expressions and are **not usable** outside a CSS engine. In non-CSS environments, consume colors, opacity, z-index, font weights/leading, and other scalar tokens — derive dimensional values from your platform's layout system.
 
 ---
 
@@ -614,7 +616,7 @@ const theme = createTheme({
 ```
 
 - Default: `createTheme()` returns the built-in `baseTheme` + built-in `darkAlternate`.
-- `extends`: inherit from a built-in (`bruttal`, `corporate`, `oca`, `ventures`).
+- `extends`: inherit from a built-in (`bruttal`).
 - `alternate: null`: opt out of dark mode entirely (single-mode theme).
 
 ## Intent → override map
@@ -636,7 +638,7 @@ createTheme({
 - All semantic tokens that reference `{core.colors.brand.*}` automatically pick up the new values. No semantic remap needed unless contrast breaks.
 - For dark mode, the built-in `darkAlternate` already remaps semantic references to lighter brand steps — usually no extra work.
 
-**Reference patterns:** `corporate.ts`, `oca.ts`, `ventures.ts` are minimal brand-only overrides.
+**Reference pattern:** `bruttal.ts` shows a full brand customization (palette + geometry + surface model + dark alternate). A brand-hue-only override is insufficient on its own — see the `brand.500` contrast invariant above.
 
 ### Adjust density
 
@@ -727,5 +729,5 @@ Cross-token semantic correctness (the rules above) is **not** statically validat
 
 - README — full grammar tables, usage examples per import path
 - `dist/Types-*.d.ts` — every token has co-located JSDoc with semantics + anti-pattern notes
-- `src/themes/{bruttal,corporate,oca,ventures}.ts` — worked customization patterns
-- Family specs (full grammar, decision matrices, ADRs): `docs/design/01-design-system/02-design-tokens/02-families/{family}.md` in the ttoss monorepo
+- `src/themes/bruttal.ts` — worked customization pattern
+- Family specs (full grammar, decision matrices, ADRs): `docs/design/design-system/design-tokens/families/{family}.md` in the ttoss monorepo

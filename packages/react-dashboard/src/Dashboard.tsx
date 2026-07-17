@@ -1,6 +1,6 @@
 import type { SxProp } from '@ttoss/ui';
 import { Divider, Flex } from '@ttoss/ui';
-import type * as React from 'react';
+import * as React from 'react';
 import type ReactGridLayout from 'react-grid-layout';
 
 import type { DashboardCard } from './DashboardCard';
@@ -41,6 +41,8 @@ const DashboardContent = ({
   currency,
   showFilters = true,
   sx,
+  renderCardDetail,
+  clickableCardFilter,
 }: {
   loading: boolean;
   headerChildren?: React.ReactNode;
@@ -49,6 +51,11 @@ const DashboardContent = ({
   currency?: string;
   showFilters?: boolean;
   sx?: SxProp['sx'];
+  renderCardDetail?: (
+    card: DashboardCard,
+    close: () => void
+  ) => React.ReactNode;
+  clickableCardFilter?: (card: DashboardCard) => boolean;
 }) => {
   const { isEditMode, editingGrid, filters, editable } = useDashboard();
   const effectiveTemplate = resolveTemplate(
@@ -58,6 +65,10 @@ const DashboardContent = ({
   );
   const hasHeaderContent =
     (showFilters && filters.length > 0) || Boolean(headerChildren) || editable;
+
+  const [selectedCardKey, setSelectedCardKey] = React.useState<string | null>(
+    null
+  );
 
   return (
     <Flex
@@ -81,6 +92,10 @@ const DashboardContent = ({
         isEditMode={isEditMode}
         currency={currency}
         data-export-target
+        selectedCardKey={selectedCardKey}
+        setSelectedCardKey={setSelectedCardKey}
+        renderCardDetail={renderCardDetail}
+        clickableCardFilter={clickableCardFilter}
       />
     </Flex>
   );
@@ -102,6 +117,8 @@ export const Dashboard = ({
   currency,
   showFilters = true,
   sx,
+  renderCardDetail,
+  clickableCardFilter,
 }: {
   selectedTemplate?: DashboardTemplate;
   loading?: boolean;
@@ -123,6 +140,13 @@ export const Dashboard = ({
   showFilters?: boolean;
   /** Style overrides applied to the outer container. Use to adjust padding or spacing to fit a surrounding layout. */
   sx?: SxProp['sx'];
+  /** Render a detail slot below the clicked card's row. Receives the card and a `close` callback. */
+  renderCardDetail?: (
+    card: DashboardCard,
+    close: () => void
+  ) => React.ReactNode;
+  /** When provided, only cards for which this returns `true` are clickable. Defaults to all non-sectionDivider cards. */
+  clickableCardFilter?: (card: DashboardCard) => boolean;
 }) => {
   return (
     <DashboardProvider
@@ -144,6 +168,8 @@ export const Dashboard = ({
         currency={currency}
         showFilters={showFilters}
         sx={sx}
+        renderCardDetail={renderCardDetail}
+        clickableCardFilter={clickableCardFilter}
       />
     </DashboardProvider>
   );

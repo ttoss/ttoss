@@ -11,7 +11,7 @@ import {
   type ThemeRuntime,
   type ThemeState,
 } from '../../../../../src/runtime';
-import { clearDom, matchMediaMockImpl } from '../../../helpers/dom';
+import { clearDom, matchMediaMockImpl } from '../../../fixtures/dom';
 
 // ---------------------------------------------------------------------------// jsdom does not implement matchMedia — provide a mock.
 // ---------------------------------------------------------------------------
@@ -503,5 +503,303 @@ describe('createThemeRuntime', () => {
       // Restore default mock
       (window.matchMedia as jest.Mock).mockImplementation(matchMediaMockImpl());
     });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Cross-tab sync (storage events)
+// ---------------------------------------------------------------------------
+
+describe('cross-tab sync via storage events', () => {
+  let runtime: ThemeRuntime;
+
+  afterEach(() => {
+    runtime?.destroy();
+    clearDom();
+  });
+
+  const dispatchStorage = (key: string | null, newValue: string | null) => {
+    window.dispatchEvent(
+      new StorageEvent('storage', { key, newValue } as StorageEventInit)
+    );
+  };
+
+  test('adopts a mode persisted by another tab without re-persisting', () => {
+    runtime = createThemeRuntime({ defaultMode: 'light' });
+    const listener = jest.fn();
+    runtime.subscribe(listener);
+    localStorage.clear(); // isolate persistence assertions
+
+    dispatchStorage(DEFAULT_STORAGE_KEY, JSON.stringify({ mode: 'dark' }));
+
+    expect(runtime.getState()).toEqual({ mode: 'dark', resolvedMode: 'dark' });
+    expect(getAttr(DATA_MODE_ATTR)).toBe('dark');
+    expect(listener).toHaveBeenCalledWith({
+      mode: 'dark',
+      resolvedMode: 'dark',
+    });
+    // The originating tab already wrote the value — this tab must not re-write.
+    expect(localStorage.getItem(DEFAULT_STORAGE_KEY)).toBeNull();
+  });
+
+  test('ignores other keys, malformed JSON, invalid modes, and removals', () => {
+    runtime = createThemeRuntime({ defaultMode: 'light' });
+
+    dispatchStorage('other-key', JSON.stringify({ mode: 'dark' }));
+    dispatchStorage(DEFAULT_STORAGE_KEY, 'not-json');
+    dispatchStorage(DEFAULT_STORAGE_KEY, JSON.stringify({ mode: 'purple' }));
+    dispatchStorage(DEFAULT_STORAGE_KEY, null);
+
+    expect(runtime.getState()).toEqual({
+      mode: 'light',
+      resolvedMode: 'light',
+    });
+  });
+
+  test('respects a custom storageKey', () => {
+    runtime = createThemeRuntime({
+      defaultMode: 'light',
+      storageKey: 'my-key',
+    });
+
+    dispatchStorage(DEFAULT_STORAGE_KEY, JSON.stringify({ mode: 'dark' }));
+    expect(runtime.getState().mode).toBe('light');
+
+    dispatchStorage('my-key', JSON.stringify({ mode: 'dark' }));
+    expect(runtime.getState().mode).toBe('dark');
+  });
+
+  test('stops reacting after destroy()', () => {
+    runtime = createThemeRuntime({ defaultMode: 'light' });
+    runtime.destroy();
+
+    dispatchStorage(DEFAULT_STORAGE_KEY, JSON.stringify({ mode: 'dark' }));
+    expect(runtime.getState().mode).toBe('light');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// matchMedia absence — legacy WebViews / DOM shims
+// ---------------------------------------------------------------------------
+
+describe('matchMedia absence', () => {
+  let runtime: ThemeRuntime;
+  const originalMatchMedia = window.matchMedia;
+
+  afterEach(() => {
+    runtime?.destroy();
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: originalMatchMedia,
+    });
+    clearDom();
+  });
+
+  test('mode "system" degrades to light instead of crashing', () => {
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: undefined,
+    });
+
+    expect(() => {
+      runtime = createThemeRuntime({ defaultMode: 'system' });
+    }).not.toThrow();
+    expect(runtime.getState()).toEqual({
+      mode: 'system',
+      resolvedMode: 'light',
+    });
+
+    // explicit modes still work
+    runtime.setMode('dark');
+    expect(getAttr(DATA_MODE_ATTR)).toBe('dark');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Multiple runtimes on the same root (DEV-only warning)
+// ---------------------------------------------------------------------------
+
+describe('multiple runtimes on the same root', () => {
+  let warnSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
+    clearDom();
+  });
+
+  test('warns when a second runtime attaches to the same root', () => {
+    const first = createThemeRuntime({});
+    expect(warnSpy).not.toHaveBeenCalled();
+
+    const second = createThemeRuntime({});
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Multiple theme runtimes')
+    );
+
+    first.destroy();
+    second.destroy();
+  });
+
+  test('does not warn after the previous runtime is destroyed', () => {
+    const first = createThemeRuntime({});
+    first.destroy();
+
+    const second = createThemeRuntime({});
+    expect(warnSpy).not.toHaveBeenCalled();
+    second.destroy();
+  });
+
+  test('does not warn for runtimes on distinct roots', () => {
+    const div = document.createElement('div');
+    document.body.appendChild(div);
+
+    const first = createThemeRuntime({});
+    const second = createThemeRuntime({ root: div });
+    expect(warnSpy).not.toHaveBeenCalled();
+
+    first.destroy();
+    second.destroy();
+    div.remove();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Coverage of remaining branches — production mode + system-mode storage sync
+// ---------------------------------------------------------------------------
+
+describe('production mode — dev bookkeeping is skipped', () => {
+  const originalEnv = process.env.NODE_ENV;
+  let warnSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    process.env.NODE_ENV = 'production';
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    process.env.NODE_ENV = originalEnv;
+    warnSpy.mockRestore();
+    clearDom();
+  });
+
+  test('no multi-runtime warning in production', () => {
+    const first = createThemeRuntime({});
+    const second = createThemeRuntime({});
+    expect(warnSpy).not.toHaveBeenCalled();
+    first.destroy();
+    second.destroy();
+  });
+});
+
+describe('cross-tab sync — system mode resolution', () => {
+  let runtime: ThemeRuntime;
+
+  afterEach(() => {
+    runtime?.destroy();
+    (window.matchMedia as jest.Mock).mockImplementation(matchMediaMockImpl());
+    clearDom();
+  });
+
+  test('adopting system mode from another tab resolves via matchMedia', () => {
+    (window.matchMedia as jest.Mock).mockImplementation(
+      matchMediaMockImpl({ dark: true })
+    );
+    runtime = createThemeRuntime({ defaultMode: 'light' });
+
+    window.dispatchEvent(
+      new StorageEvent('storage', {
+        key: DEFAULT_STORAGE_KEY,
+        newValue: JSON.stringify({ mode: 'system' }),
+      } as StorageEventInit)
+    );
+
+    expect(runtime.getState()).toEqual({
+      mode: 'system',
+      resolvedMode: 'dark',
+    });
+  });
+});
+
+describe('cross-tab sync — system mode with light preference', () => {
+  let runtime: ThemeRuntime;
+
+  afterEach(() => {
+    runtime?.destroy();
+    clearDom();
+  });
+
+  test('resolves system to light when the OS preference is light', () => {
+    runtime = createThemeRuntime({ defaultMode: 'dark' });
+
+    window.dispatchEvent(
+      new StorageEvent('storage', {
+        key: DEFAULT_STORAGE_KEY,
+        newValue: JSON.stringify({ mode: 'system' }),
+      } as StorageEventInit)
+    );
+
+    expect(runtime.getState()).toEqual({
+      mode: 'system',
+      resolvedMode: 'light',
+    });
+  });
+});
+
+describe('destroy — registry entry created in production', () => {
+  const originalEnv = process.env.NODE_ENV;
+
+  afterEach(() => {
+    process.env.NODE_ENV = originalEnv;
+    clearDom();
+  });
+
+  test('destroying a production-created runtime in dev does not throw', () => {
+    process.env.NODE_ENV = 'production';
+    const runtime = createThemeRuntime({});
+    process.env.NODE_ENV = 'test';
+    expect(() => {
+      return runtime.destroy();
+    }).not.toThrow();
+  });
+});
+
+describe('cross-tab sync — storageArea guard', () => {
+  let runtime: ThemeRuntime;
+
+  afterEach(() => {
+    runtime?.destroy();
+    clearDom();
+  });
+
+  test('ignores storage events from sessionStorage', () => {
+    runtime = createThemeRuntime({ defaultMode: 'light' });
+
+    window.dispatchEvent(
+      new StorageEvent('storage', {
+        key: DEFAULT_STORAGE_KEY,
+        newValue: JSON.stringify({ mode: 'dark' }),
+        storageArea: sessionStorage,
+      } as StorageEventInit)
+    );
+
+    expect(runtime.getState().mode).toBe('light');
+  });
+
+  test('accepts events whose storageArea is localStorage', () => {
+    runtime = createThemeRuntime({ defaultMode: 'light' });
+
+    window.dispatchEvent(
+      new StorageEvent('storage', {
+        key: DEFAULT_STORAGE_KEY,
+        newValue: JSON.stringify({ mode: 'dark' }),
+        storageArea: localStorage,
+      } as StorageEventInit)
+    );
+
+    expect(runtime.getState().mode).toBe('dark');
   });
 });

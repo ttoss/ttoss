@@ -1,12 +1,6 @@
 import type { Meta, StoryFn } from '@storybook/react-webpack5';
 import type { GeoJSONFeatureCollection } from '@ttoss/geovis';
-import {
-  formatCompactNumber,
-  GeoVisCanvas,
-  GeoVisHoverTooltip,
-  GeoVisLegend,
-  GeoVisProvider,
-} from '@ttoss/geovis';
+import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
 import * as React from 'react';
 
 import type {
@@ -17,8 +11,8 @@ import type {
 import {
   buildCentroidGeoJson,
   buildSpec,
+  buildTooltipData,
   normalizePopulationData,
-  renderTooltip,
   sumValues,
 } from './helpers/gender-dominance-helpers';
 import {
@@ -42,10 +36,13 @@ const AVAILABLE_YEARS = [
   2000, 2005, 2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050,
 ] as const;
 
+type LegendPosition = 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right';
+
 /* eslint-disable react/prop-types */
 export const GenderDominanceBivariate: StoryFn<{
   year: Year;
   legendEnabled: boolean;
+  legendPosition: LegendPosition | 'none';
   minRadiusPx: number;
   maxRadiusPx: number;
   circleOpacity: number;
@@ -54,6 +51,7 @@ export const GenderDominanceBivariate: StoryFn<{
 }> = ({
   year,
   legendEnabled,
+  legendPosition,
   minRadiusPx,
   maxRadiusPx,
   circleOpacity,
@@ -74,7 +72,7 @@ export const GenderDominanceBivariate: StoryFn<{
         return res.json();
       })
       .then((json: Record<string, Record<string, ApiDistrictEntry>>) => {
-        return setPopulationData(normalizePopulationData(json));
+        setPopulationData(normalizePopulationData(json));
       })
       .catch((error) => {
         // eslint-disable-next-line no-console
@@ -91,16 +89,13 @@ export const GenderDominanceBivariate: StoryFn<{
         const withIds: GeoJSONFeatureCollection = {
           ...json,
           features: json.features.map((f) => {
-            return {
-              ...f,
-              id: String(f.properties?.cd_distrit),
-            };
+            return { ...f, id: String(f.properties?.cd_distrit) };
           }),
         };
         setDistrictGeoJson(withIds);
       })
       .catch(() => {
-        setDistrictGeoJson(null);
+        return setDistrictGeoJson(null);
       });
   }, []);
 
@@ -108,7 +103,6 @@ export const GenderDominanceBivariate: StoryFn<{
     if (!districtGeoJson) return null;
     return buildCentroidGeoJson(districtGeoJson);
   }, [districtGeoJson]);
-
   const districtBbox = React.useMemo(() => {
     if (!districtGeoJson) return null;
     return computeBbox(districtGeoJson as GeoJSON.FeatureCollection);
@@ -137,15 +131,16 @@ export const GenderDominanceBivariate: StoryFn<{
     });
   }, [populationData, year]);
 
+  const tooltipData = React.useMemo(() => {
+    return buildTooltipData(populationData, year);
+  }, [populationData, year]);
+
   const spec = React.useMemo(() => {
     if (!districtGeoJson || !centroidGeoJson) return null;
-    // `scaleMaxValue` is intentionally omitted: the resolver derives a
-    // nice-rounded ceiling (e.g. 487 321 → 500 000) from the size dataset, so
-    // the reference-circle labels read as clean round numbers (125k / 250k /
-    // 500k) instead of the raw-max decimals a manual Math.max would produce.
-    return buildSpec({
+    const s = buildSpec({
       sizeData,
       colorData,
+      tooltipData,
       year,
       districtGeoJson,
       centroidGeoJson,
@@ -156,9 +151,22 @@ export const GenderDominanceBivariate: StoryFn<{
       strokeWidth,
       strokeOpacity,
     });
+    // Set the gender legend's position from the story control. The
+    // auto-generated circles legend always defaults to 'bottom-right'; when
+    // the gender legend shares that same corner, GeoVisProvider stacks both
+    // inside one grouped overlay (with a divider) instead of overlapping two
+    // separate absolutely-positioned boxes.
+    const genderLegend = s.legends?.find((l) => {
+      return l.id === 'gender';
+    });
+    if (genderLegend && legendPosition !== 'none') {
+      genderLegend.position = legendPosition;
+    }
+    return s;
   }, [
     sizeData,
     colorData,
+    tooltipData,
     year,
     districtGeoJson,
     centroidGeoJson,
@@ -168,6 +176,7 @@ export const GenderDominanceBivariate: StoryFn<{
     circleOpacity,
     strokeWidth,
     strokeOpacity,
+    legendPosition,
   ]);
 
   if (!districtGeoJson || !centroidGeoJson || !districtBbox || !spec) {
@@ -194,17 +203,7 @@ export const GenderDominanceBivariate: StoryFn<{
             style={{ width: '100%', height: '100%' }}
           />
           <FitBoundsToBbox bbox={districtBbox} />
-          <GeoVisHoverTooltip
-            render={(info) => {
-              return renderTooltip(info, populationData, year);
-            }}
-          />
         </div>
-        <GeoVisLegend legendId="gender" formatValue={formatCompactNumber} />
-        <GeoVisLegend
-          legendId="population-legend"
-          formatValue={formatCompactNumber}
-        />
       </GeoVisProvider>
     </div>
   );
@@ -222,9 +221,16 @@ GenderDominanceBivariate.argTypes = {
     description:
       'Controls whether auto-generated legends are produced by the resolved mapType',
   },
+  legendPosition: {
+    control: { type: 'select' },
+    options: ['none', 'top-left', 'top-right', 'bottom-left', 'bottom-right'],
+    description:
+      'Positioned overlay for the gender dominance legend. Defaults to the same corner as the auto-generated circle-size legend so both stack in one grouped overlay.',
+  },
 };
 
 GenderDominanceBivariate.args = {
   year: 2025,
   legendEnabled: true,
+  legendPosition: 'bottom-right',
 };

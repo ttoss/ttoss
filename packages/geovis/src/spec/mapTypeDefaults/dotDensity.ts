@@ -1,7 +1,7 @@
 import type { VisualizationLayer, VisualizationSpec } from '../types';
 import { findMatchSourceId } from './utils';
 
-const DEFAULT_DOT_DENSITY_PAINT = {
+export const DEFAULT_DOT_DENSITY_PAINT = {
   circleColor: '#E4572E',
   circleRadius: 2.4,
   circleStrokeColor: '#FAF9F7',

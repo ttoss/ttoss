@@ -3,7 +3,7 @@
  */
 
 import { getThemeScriptContent } from '../../../../../src/ssrScript';
-import { clearDom } from '../../../helpers/dom';
+import { clearDom } from '../../../fixtures/dom';
 
 // ---------------------------------------------------------------------------
 // getThemeScriptContent
@@ -56,25 +56,12 @@ describe('getThemeScriptContent', () => {
     expect(script).toContain('"bruttal"');
   });
 
-  test('sets data-tt-mode attribute', () => {
-    const script = getThemeScriptContent();
-    expect(script).toContain('data-tt-mode');
-  });
-
-  test('checks prefers-color-scheme for system mode', () => {
-    const script = getThemeScriptContent();
-    expect(script).toContain('prefers-color-scheme');
-  });
-
-  test('reads from localStorage', () => {
-    const script = getThemeScriptContent();
-    expect(script).toContain('localStorage.getItem');
-  });
-
-  test('sets colorScheme style', () => {
-    const script = getThemeScriptContent();
-    expect(script).toContain('colorScheme');
-  });
+  // Note: implementation-detail string-containment tests for 'data-tt-mode',
+  // 'prefers-color-scheme', 'localStorage.getItem', and 'colorScheme' are
+  // omitted — the behavioral tests below ('bootstraps default state into DOM',
+  // 'restores persisted mode from localStorage', 'falls back to light mode
+  // when window.matchMedia is unavailable') verify the same contracts through
+  // actual execution.
 
   test('is valid JavaScript (can be evaluated)', () => {
     // In a real browser, this would run. We just verify it parses.
@@ -141,4 +128,77 @@ describe('getThemeScriptContent', () => {
       return getThemeScriptContent({ defaultTheme: 'my-theme_v2' });
     }).not.toThrow();
   });
+});
+
+// ---------------------------------------------------------------------------
+// HTML injection guard — storageKey escaping
+// ---------------------------------------------------------------------------
+
+describe('getThemeScriptContent — HTML injection guard', () => {
+  afterEach(clearDom);
+
+  test('a storageKey containing </script> cannot close the inline tag', () => {
+    const script = getThemeScriptContent({
+      storageKey: '</script><script>alert(1)//',
+    });
+    expect(script).not.toContain('</script>');
+    expect(script).toContain('\\u003C'); // `<` escaped as a JS string escape
+  });
+
+  test('an escaped storageKey still round-trips through localStorage', () => {
+    const storageKey = 'weird "<key>"';
+    localStorage.setItem(storageKey, JSON.stringify({ mode: 'dark' }));
+    new Function(getThemeScriptContent({ storageKey }))();
+    expect(document.documentElement.getAttribute('data-tt-mode')).toBe('dark');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Differential test — the IIFE must mirror runtime.ts apply() (ADR-003)
+// ---------------------------------------------------------------------------
+
+describe('getThemeScriptContent — parity with createThemeRuntime', () => {
+  afterEach(clearDom);
+
+  const snapshotDom = () => {
+    return {
+      theme: document.documentElement.getAttribute('data-tt-theme'),
+      mode: document.documentElement.getAttribute('data-tt-mode'),
+      colorScheme: document.documentElement.style.colorScheme,
+    };
+  };
+
+  test.each([
+    { config: { defaultMode: 'light' as const }, persisted: null },
+    { config: { defaultMode: 'dark' as const }, persisted: null },
+    {
+      config: { defaultTheme: 'bruttal', defaultMode: 'light' as const },
+      persisted: JSON.stringify({ mode: 'dark' }),
+    },
+    {
+      config: { defaultMode: 'dark' as const },
+      persisted: 'not-json',
+    },
+  ])(
+    'IIFE and runtime produce identical DOM state (%#)',
+    async ({ config, persisted }) => {
+      const { createThemeRuntime } = await import('../../../../../src/runtime');
+
+      const storageKey = config.defaultTheme
+        ? `parity-${config.defaultTheme}`
+        : 'parity-key';
+      if (persisted !== null) localStorage.setItem(storageKey, persisted);
+
+      new Function(getThemeScriptContent({ ...config, storageKey }))();
+      const scriptState = snapshotDom();
+      clearDom();
+
+      if (persisted !== null) localStorage.setItem(storageKey, persisted);
+      const runtime = createThemeRuntime({ ...config, storageKey });
+      const runtimeState = snapshotDom();
+      runtime.destroy();
+
+      expect(scriptState).toEqual(runtimeState);
+    }
+  );
 });
