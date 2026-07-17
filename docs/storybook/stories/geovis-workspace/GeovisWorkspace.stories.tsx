@@ -5,6 +5,7 @@ import {
   type GeovisWorkspaceConfig,
   getInitialSelection,
 } from '@ttoss/geovis-workspace';
+import { Box, Flex, Text } from '@ttoss/ui';
 import * as React from 'react';
 
 /**
@@ -237,6 +238,120 @@ const buildSpec = ({
   };
 };
 
+interface RegionDetailsData {
+  name: string;
+  description: string;
+  population: number;
+  status: 'Atualizado' | 'Pendente';
+}
+
+/**
+ * Simulates an API call: resolves the clicked region's details after a short
+ * delay, so the workspace shows its loading state before the data arrives.
+ */
+const fetchRegionDetails = (
+  featureId: string | number
+): Promise<RegionDetailsData> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const region = REGIONS.find((item) => {
+        return item.id === Number(featureId);
+      });
+
+      const intensity = region?.intensity ?? 0.5;
+
+      resolve({
+        name: region?.name ?? `Região ${featureId}`,
+        description: `Recorte sintético usado para demonstrar o carregamento sob demanda dos detalhes de ${
+          region?.name ?? 'uma região'
+        }.`,
+        population: Math.round(intensity * 1_200_000),
+        status: Number(featureId) % 2 === 0 ? 'Pendente' : 'Atualizado',
+      });
+    }, 600);
+  });
+};
+
+/** App-owned panel that renders the fetched region details. */
+const RegionDetailsPanel = ({
+  name,
+  description,
+  population,
+  status,
+}: RegionDetailsData) => {
+  return (
+    <Flex sx={{ flexDirection: 'column', gap: '3' }}>
+      <Text sx={{ fontSize: 'md', fontWeight: 'bold', color: '#111827' }}>
+        {name}
+      </Text>
+      <Text sx={{ fontSize: 'sm', color: '#374151', lineHeight: 'base' }}>
+        {description}
+      </Text>
+      <Flex sx={{ alignItems: 'center', gap: '2' }}>
+        <Text sx={{ fontSize: 'sm', color: '#6b7280' }}>População:</Text>
+        <Text sx={{ fontSize: 'sm', fontWeight: 'semibold', color: '#111827' }}>
+          {population.toLocaleString('pt-BR')}
+        </Text>
+      </Flex>
+      <Box
+        sx={{
+          alignSelf: 'flex-start',
+          paddingX: '2',
+          paddingY: '1',
+          borderRadius: 'full',
+          fontSize: 'xs',
+          fontWeight: 'semibold',
+          color: status === 'Atualizado' ? '#166534' : '#92400e',
+          backgroundColor: status === 'Atualizado' ? '#dcfce7' : '#fef3c7',
+        }}
+      >
+        {status}
+      </Box>
+    </Flex>
+  );
+};
+
+/**
+ * Variant whose right sidebar loads details on demand: clicking a region calls
+ * `rightSidebar.onFeatureSelect` (a simulated API request), auto-opens the
+ * sidebar, and renders the result via `rightSidebar.renderDetails`. The
+ * workspace tracks the loading/error state for the app.
+ */
+const featureDetailsWorkspaceConfig: GeovisWorkspaceConfig = {
+  leftSidebar: workspaceConfig.leftSidebar,
+  rightSidebar: {
+    title: 'Detalhes da região',
+    onFeatureSelect: (info) => {
+      return fetchRegionDetails(info.featureId);
+    },
+    renderDetails: ({ loading, error, data }) => {
+      if (loading) {
+        return (
+          <Text sx={{ fontSize: 'sm', color: '#6b7280' }}>Carregando…</Text>
+        );
+      }
+
+      if (error) {
+        return (
+          <Text sx={{ fontSize: 'sm', color: '#b91c1c' }}>
+            Não foi possível carregar os detalhes.
+          </Text>
+        );
+      }
+
+      if (!data) {
+        return (
+          <Text sx={{ fontSize: 'sm', color: '#6b7280' }}>
+            Clique numa região no mapa para ver os detalhes.
+          </Text>
+        );
+      }
+
+      return <RegionDetailsPanel {...(data as RegionDetailsData)} />;
+    },
+  },
+};
+
 /**
  * Drives the workspace: holds the selection state, derives the GeoVis spec from
  * it via `buildSpec`, and feeds both back into `GeovisWorkspace`. Picking a
@@ -311,5 +426,18 @@ export const LeftSidebarOnly: Story = {
     return (
       <WorkspaceStory config={{ leftSidebar: workspaceConfig.leftSidebar }} />
     );
+  },
+};
+
+/**
+ * Click-to-load details: clicking a region on the map fires
+ * `rightSidebar.onFeatureSelect` (a simulated API request), the right sidebar
+ * opens automatically, and the fetched data is rendered through
+ * `rightSidebar.renderDetails` — showing a loading state first, then the
+ * region's details.
+ */
+export const WithFeatureDetails: Story = {
+  render: () => {
+    return <WorkspaceStory config={featureDetailsWorkspaceConfig} />;
   },
 };

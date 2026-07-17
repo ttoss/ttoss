@@ -13,9 +13,12 @@ import { useGeoVis } from './contexts';
 import {
   buildClickTracking,
   buildHandleClick,
+  buildHandleGlobalCursor,
   buildHandleMove,
   buildHandleWindowFocus,
+  buildHoverTrackedKey,
   buildHoverTracking,
+  buildPointerLayerIds,
   clearHover,
   clearSelected,
   type PrevFeatureState,
@@ -48,27 +51,16 @@ export const useMapHover = ({
   // window-focus recheck can query the same point without a new mouse event.
   const lastPointRef = React.useRef<{ x: number; y: number } | null>(null);
 
-  // Identify polygon layers that participate in legend-driven interactions.
-  // Stored as a string key so the effect's dependency array stays stable when
+  // Encoded as a string key so the effect's dependency array stays stable when
   // the spec object reference changes but the relevant subset does not.
   // Depends on `spec.layers` (not the whole `spec`) so high-frequency spec
-  // updates such as `mapData` patches do NOT detach/reattach the MapLibre
-  // event handlers below.
+  // updates such as `mapData` patches do NOT detach/reattach the handlers.
   const trackedKey = React.useMemo(() => {
-    return spec.layers
-      .filter((layer) => {
-        // Only polygon layers can have hoverPaint and/or activeLegendId, so we can skip non-polygons entirely. This also avoids attaching hover handlers to
-        // non-polygon layers that have active legends (e.g. symbol layers with
-        // `icon-image` driven by an active legend) but do not support hoverPaint.
-        return (
-          layer.geometry === 'polygon' &&
-          (layer.activeLegendId != null || layer.hoverPaint != null)
-        );
-      })
-      .map((layer) => {
-        return `${layer.id}${TRACKED_FIELD_SEP}${layer.sourceId}${TRACKED_FIELD_SEP}${layer.hoverPaint ? '1' : '0'}`;
-      })
-      .join(TRACKED_RECORD_SEP);
+    return buildHoverTrackedKey(spec.layers);
+  }, [spec.layers]);
+
+  const pointerLayerIds = React.useMemo(() => {
+    return buildPointerLayerIds(spec.layers);
   }, [spec.layers]);
 
   React.useEffect(() => {
@@ -107,6 +99,12 @@ export const useMapHover = ({
       clearHover(map, setHover, prevHoveredState);
     };
 
+    const handleGlobalCursor = buildHandleGlobalCursor({
+      map,
+      pointerLayerIds,
+    });
+    map.on('mousemove', handleGlobalCursor);
+
     const handleWindowFocus = buildHandleWindowFocus({
       map,
       trackedLayerIds,
@@ -138,12 +136,13 @@ export const useMapHover = ({
         map.off('mousemove', layerId, handleMove);
         map.off('mouseleave', layerId, handleLeave);
       }
+      map.off('mousemove', handleGlobalCursor);
       window.removeEventListener('focus', handleWindowFocus);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       lastPointRef.current = null;
       clearHover(map, setHover, prevHoveredState);
     };
-  }, [runtime, trackedKey]);
+  }, [runtime, trackedKey, pointerLayerIds]);
 
   return hover;
 };
@@ -172,10 +171,11 @@ export const useMapClick = ({
     return spec.layers
       .filter((layer) => {
         return (
-          // All geometry types are supported for click interactions, so we only check for the presence of `activeLegendId` or `selectedPaint` to determine whether the layer should be tracked.
+          // All geometry types are supported for click interactions, so we only check for the presence of `activeLegendId`, `selectedPaint`, `clickAnchor`, or a spec-driven `click` reaction to determine whether the layer should be tracked.
           layer.activeLegendId != null ||
           layer.selectedPaint != null ||
-          layer.clickAnchor != null
+          layer.clickAnchor != null ||
+          layer.click != null
         );
       })
       .map((layer) => {
@@ -302,6 +302,16 @@ const buildMarkerOptions = (anchor: ClickAnchorSpec): MapLibreMarkerOptions => {
   return opts;
 };
 
+const darkenHex = (hex: string, amount: number): string => {
+  const clean = hex.replace('#', '');
+  if (clean.length !== 6) return hex;
+  const num = parseInt(clean, 16);
+  const r = Math.max(0, Math.round(((num >> 16) & 0xff) * (1 - amount)));
+  const g = Math.max(0, Math.round(((num >> 8) & 0xff) * (1 - amount)));
+  const b = Math.max(0, Math.round((num & 0xff) * (1 - amount)));
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+};
+
 export const useClickAnchor = ({
   runtime,
   spec,
@@ -334,6 +344,24 @@ export const useClickAnchor = ({
       marker = new maplibregl.Marker(buildMarkerOptions(anchor))
         .setLngLat(click.lngLat)
         .addTo(map);
+
+      const STYLE_ID = 'geovis-pin-drop-keyframes';
+      if (!document.getElementById(STYLE_ID)) {
+        const style = document.createElement('style');
+        style.id = STYLE_ID;
+        style.textContent = `@keyframes geovis-pin-drop{0%{transform:translateY(-24px) scale(.7);opacity:0}70%{transform:translateY(4px) scale(1.05);opacity:1}85%{transform:translateY(-3px) scale(.98)}100%{transform:translateY(0) scale(1);opacity:1}}`;
+        document.head.appendChild(style);
+      }
+      const svg = marker.getElement().firstElementChild as SVGElement | null;
+      if (svg) {
+        if (anchor.color) {
+          const darkerColor = darkenHex(anchor.color, 0.3);
+          const whiteFillGroup = svg.querySelector('g[fill="#FFFFFF"]');
+          whiteFillGroup?.setAttribute('fill', darkerColor);
+        }
+        (svg as unknown as HTMLElement).style.animation =
+          'geovis-pin-drop 0.35s cubic-bezier(0.34,1.56,0.64,1)';
+      }
     })();
 
     return () => {
@@ -341,6 +369,55 @@ export const useClickAnchor = ({
       if (marker) marker.remove();
     };
   }, [runtime, click, spec.layers]);
+};
+
+interface UseClickSelectParams {
+  spec: VisualizationSpec;
+  click: MapClickInfo | null;
+}
+
+/**
+ * Invokes the spec-driven `layer.click.onSelect` callback whenever the click
+ * selection changes. Mirrors {@link useClickAnchor}: the reaction is declared on
+ * the layer in the spec, so consumers do not read `useGeoVisClick()` in a child
+ * of the provider.
+ *
+ * On selection, calls the clicked layer's `onSelect(info)`. On clear
+ * (`click === null` — Escape or a click outside every tracked layer), calls
+ * `onSelect(null)` once on the layer that last held a selection, matching the
+ * "clears to null" semantics of `GeoVisClickContext`.
+ *
+ * A `lastNotified` ref gates the effect on the click *selection* changing, so
+ * unrelated spec updates (e.g. high-frequency `mapData` patches) that keep the
+ * same click do not re-fire `onSelect`.
+ */
+export const useClickSelect = ({ spec, click }: UseClickSelectParams): void => {
+  const lastNotifiedRef = React.useRef<MapClickInfo | null>(null);
+  const lastLayerIdRef = React.useRef<string | null>(null);
+
+  React.useEffect(() => {
+    // Only react when the selection itself changes, not on other spec updates.
+    if (click === lastNotifiedRef.current) return;
+    lastNotifiedRef.current = click;
+
+    if (click) {
+      lastLayerIdRef.current = click.layerId;
+      const layer = spec.layers.find((l) => {
+        return l.id === click.layerId;
+      });
+      layer?.click?.onSelect?.(click);
+      return;
+    }
+
+    // Cleared: notify the layer that last held a selection, exactly once.
+    const lastLayerId = lastLayerIdRef.current;
+    if (lastLayerId === null) return;
+    lastLayerIdRef.current = null;
+    const layer = spec.layers.find((l) => {
+      return l.id === lastLayerId;
+    });
+    layer?.click?.onSelect?.(null);
+  }, [click, spec]);
 };
 
 export const useMapData = (mapDataId: string): UseMapDataResult | undefined => {

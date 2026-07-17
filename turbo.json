@@ -15,9 +15,24 @@
       "dependsOn": ["^build", "i18n"],
       "outputs": ["dist/**", "build/**", ".next/**", "storybook-static/**"]
     },
+    "@docs/website#build": {
+      "dependsOn": ["^build", "i18n"],
+      "inputs": [
+        "**/*",
+        "$TURBO_ROOT$/packages/*/README.md",
+        "$TURBO_ROOT$/packages/*/src/**",
+        "$TURBO_ROOT$/packages/*/package.json"
+      ],
+      "outputs": ["build/**"]
+    },
     "@docs/website#deploy": {
       "dependsOn": ["build"],
-      "inputs": ["**/*", "../packages/*/README.md"],
+      "inputs": [
+        "**/*",
+        "$TURBO_ROOT$/packages/*/README.md",
+        "$TURBO_ROOT$/packages/*/src/**",
+        "$TURBO_ROOT$/packages/*/package.json"
+      ],
       "env": ["AWS_*", "CARLIN_*", "ENVIRONMENT"],
       "outputs": [".carlin/**"]
     },

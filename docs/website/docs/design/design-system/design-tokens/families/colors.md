@@ -93,6 +93,7 @@ const coreColors = {
       100: '#FEE2E2',
       300: '#FCA5A5',
       500: '#EF4444',
+      600: '#DC2626', // filled negative surfaces: neutral.0 text at AA Normal
       700: '#B91C1C',
       900: '#7F1D1D',
     },
@@ -130,17 +131,17 @@ See [Usage Examples](#usage-examples) below for concrete tokens.
 
 The `ux` axis is a projection-scoped subset of FSL Entity Kinds (FSL Structural Language §17.1). This normative table maps each FSL Entity Kind → token UX context; the planned resolver (see [component-model.md](/docs/design/design-system/components/component-model) — not yet implemented) will consume it to translate a component's Entity into its token context:
 
-| FSL Entity Kind | Token `ux`      | Notes                                                                                                                |
-| :-------------- | :-------------- | :------------------------------------------------------------------------------------------------------------------- |
-| `Action`        | `action`        | 1:1                                                                                                                  |
-| `Input`         | `input`         | 1:1                                                                                                                  |
-| `Selection`     | `input`         | checkbox, radio, picker — no separate `selection` UX context                                                         |
-| `Navigation`    | `navigation`    | 1:1                                                                                                                  |
-| `Feedback`      | `feedback`      | 1:1                                                                                                                  |
-| `Collection`    | `informational` | menu, list, table                                                                                                    |
-| `Overlay`       | `informational` | dialog, popover                                                                                                      |
-| `Disclosure`    | `informational` | accordion, collapsible panel, `<details>` — in-place reveal (FSL §1); uses `expanded` state for open/closed contract |
-| `Structure`     | `informational` | panel, shell, frame                                                                                                  |
+| FSL Entity Kind | Token `ux`      | Notes                                                                                                                                                                |
+| :-------------- | :-------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Action`        | `action`        | 1:1                                                                                                                                                                  |
+| `Input`         | `input`         | 1:1                                                                                                                                                                  |
+| `Selection`     | `input`         | checkbox, radio, picker — no separate `selection` UX context                                                                                                         |
+| `Navigation`    | `navigation`    | 1:1                                                                                                                                                                  |
+| `Feedback`      | `feedback`      | 1:1                                                                                                                                                                  |
+| `Collection`    | `informational` | menu, list, table                                                                                                                                                    |
+| `Overlay`       | `informational` | dialog, popover                                                                                                                                                      |
+| `Disclosure`    | `navigation`    | accordion, collapsible panel, `<details>` — in-place reveal answers "what's here?" (structural orientation, ADR-001); uses `expanded` state for open/closed contract |
+| `Structure`     | `informational` | panel, shell, frame                                                                                                                                                  |
 
 Interaction patterns that do not correspond to an Entity Kind (tooltips, helper banners, search/filter widgets) are expressed through existing kinds — typically `Overlay` for guidance and `Input` for discovery.
 
@@ -259,6 +260,7 @@ Several states sound interchangeable but answer different questions. Pick by **w
 **Common confusions resolved:**
 
 - **Tab in a tablist** → `selected` (one of many) and, when it represents the live route, also `current`. Not `active`, not `pressed`.
+- **Filter chip / removable tag (`TagGroup`)** → `selected` (set membership — the user picked this one of many). Not `pressed`: a tag is not a toggle button. Removal is a separate close affordance (a remove button inside the tag), not a state.
 - **Toggle button ("Bold" in a toolbar)** → `pressed` (persistent). `active` is the brief moment of clicking.
 - **Checkbox / Switch / Radio** → `checked`. Not `selected`, not `pressed`.
 - **Open accordion section** → `expanded`. Not `active`, not `selected`.
@@ -275,13 +277,13 @@ Not every `{ux} × role × state` is valid. Allowed **roles** per context are in
 
 Most contexts share an **interactive base**: `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`. `feedback` is the exception — feedback is communicative, not interactive (FSL §3), so only `default`, `focused` (focusable wrapper / close button), and `disabled` apply.
 
-| `ux`            | Allowed states (full, no implicit base)                                                                                          |
-| :-------------- | :------------------------------------------------------------------------------------------------------------------------------- |
-| `action`        | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `pressed`, `expanded`                                         |
-| `input`         | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `selected`, `checked`, `indeterminate`, `pressed`, `expanded` |
-| `navigation`    | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `selected`, `current`, `visited`, `expanded`                  |
-| `feedback`      | `default`, `focused`, `disabled` _(communicative, not interactive)_                                                              |
-| `informational` | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `selected`, `visited`, `expanded`                             |
+| `ux`            | Allowed states (full, no implicit base)                                                                                                     |
+| :-------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| `action`        | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `pressed`, `expanded`                                                    |
+| `input`         | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `selected`, `checked`, `indeterminate`, `pressed`, `expanded`, `invalid` |
+| `navigation`    | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `selected`, `current`, `visited`, `expanded`                             |
+| `feedback`      | `default`, `focused`, `disabled` _(communicative, not interactive)_                                                                         |
+| `informational` | `default`, `hover`, `active`, `focused`, `disabled`, `droptarget`, `selected`, `visited`, `expanded`                                        |
 
 ### Dimension expectations
 
@@ -462,6 +464,10 @@ Validation must check at least these pairings:
    - `*.text.*` against the corresponding `*.background.*`
    - normal text: `≥ 4.5:1`
    - large text: `≥ 3:1`
+   - Only `*.muted.*` contexts (intentionally subdued) are held to the large-text
+     floor. All other contexts — including `action.*` button labels, which render
+     at `text.label` sizes and do **not** qualify as WCAG large text — must meet
+     `≥ 4.5:1`.
 
 2. **Border / non-text pairing**
    - `*.border.*` against the adjacent background it sits on

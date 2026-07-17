@@ -37,10 +37,18 @@ const levenshtein = (a: string, b: string): number => {
  * Validate that every `{ref}` in the merged theme points to an existing path.
  * Emits `console.warn` for each broken reference with a "did you mean?" suggestion.
  *
+ * `onlyOwnerKeys` restricts which token paths are *checked* (resolution still
+ * looks at the whole tree) — used to validate just the leaves an alternate
+ * introduces without re-warning refs already reported for the base.
+ *
  * **DEV-only** — callers gate this behind `process.env.NODE_ENV !== 'production'`
  * so bundlers tree-shake the entire call in production builds.
  */
-export const validateRefs = (theme: ThemeTokens): void => {
+export const validateRefs = (
+  theme: ThemeTokens,
+  options: { onlyOwnerKeys?: ReadonlySet<string> } = {}
+): void => {
+  const { onlyOwnerKeys } = options;
   const { core, semantic } = flattenTheme(theme);
   const all = { ...core, ...semantic };
   const allKeys = Object.keys(all);
@@ -64,6 +72,7 @@ export const validateRefs = (theme: ThemeTokens): void => {
   };
 
   for (const [ownerKey, value] of Object.entries(all)) {
+    if (onlyOwnerKeys && !onlyOwnerKeys.has(ownerKey)) continue;
     if (typeof value !== 'string' || !value.includes('{')) continue;
 
     // Match every {ref} in the value (pure refs and compound expressions)
