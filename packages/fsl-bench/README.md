@@ -101,7 +101,8 @@ Model overrides: `FSL_BENCH_ANTHROPIC_MODEL`, `FSL_BENCH_GEMINI_MODEL`.
 
 Every completion, extracted code and gauntlet verdict is appended to
 `results/<runId>/samples.jsonl` (the audit trail; content hashes of prompt
-and context included per sample). `results/` is gitignored — the campaign
+and context included per sample). Raw run data under `results/` is
+gitignored; each run's `report.md` is trackable — the campaign
 **report** is committed deliberately and its headline lands in
 `fsl-ui/INTERNAL/ROADMAP.md` §D1, gating D2.
 
