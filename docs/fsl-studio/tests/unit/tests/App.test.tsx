@@ -71,7 +71,7 @@ test('lens selection cannot be emptied (one lens is always active)', async () =>
 test('stage theme CSS is emitted element-scoped for the panes', () => {
   const { container } = render(<App />);
 
-  const stageStyle = container.querySelector('style');
+  const stageStyle = container.querySelector('.stage style');
   expect(stageStyle?.textContent).toContain(
     '[data-tt-theme="fsl-studio-stage"]'
   );

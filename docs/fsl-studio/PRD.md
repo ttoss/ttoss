@@ -537,6 +537,34 @@ themeId)` emits element-scoped selectors (`[data-tt-theme]` /
 - **AD-5 note stands:** the Phase-0 stage computes theme CSS once from a module constant;
   the `validateRefs`-in-production question remains open for Phase 1.
 
+**Phase 1 (2026-07-17):**
+
+- **Editable surface = core color scales.** Deviates from F2.1's "semantic layer first":
+  semantic color tokens are references, not independently editable values, and core color
+  edits are what produce the cascade the wow depends on (`brand` is referenced ~149× in the
+  base theme). The Theme Lab edits `core.colors.<hue>.<step>` via color pickers; other token
+  families and semantic-ref remapping are deferred to a later phase. Recorded per §0.3.
+- **Diff-as-source-of-truth.** F2.3's "history with per-edit revert" and "diff-vs-base" are
+  one structure: the override map itself. Reverting a leaf = removing it from the diff; the
+  diff _is_ the `overrides` argument to `createTheme` for both preview and export. Avoids the
+  superseded-edit ambiguity of an edit log and keeps one source of truth. Origin (manual/AI)
+  is tracked in the store; the ✦ AI marker lights up in Phase 4.
+- **`validateRefs` question resolved for Phase 1:** the reachable edit surface is raw core
+  color _values_, which `validateRefs` does not inspect (it validates `{ref}` strings only),
+  so the `NODE_ENV` production gating is moot here. Revisit when semantic-ref remap editing
+  lands. The reachable ambient a11y check is WCAG contrast (F2.6), which is implemented.
+- **Chrome re-theming (F2.5) — key finding.** ThemeProvider's `theme` prop injects an
+  href-keyed `<style>` that React 19 hoists and does **not** reliably update on bundle change
+  (verified: applied edits didn't reach `:root`). Fix: inject the chrome's `:root` CSS with a
+  plain `<style>` text child ourselves (mirroring the stage, which always worked), and let
+  ThemeProvider own only the color-mode runtime. Verified in Chromium: apply → chrome accent
+  `#0469e3`→`#e11d48`, fallback → back to `#0469e3`.
+- **SC-1 demonstrated in Chromium:** one brand-color edit re-themes the accent button in
+  ~120 ms (< 400 ms Doherty; the < 60 s wow is instant), the change diff and contrast update
+  live, and export ships runnable `createTheme` code, DTCG JSON, and `:root` CSS.
+- **Contrast scope:** light mode only in Phase 1 (curated pairs); dark-mode contrast is a
+  follow-up.
+
 ## 15. References
 
 - Problem/strategy: `packages/fsl-ui/INTERNAL/` (PURPOSE, STRATEGIC_EVAL, BENCHMARK_EVAL,

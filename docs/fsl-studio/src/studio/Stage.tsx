@@ -1,24 +1,25 @@
 import { getThemeStylesContent } from '@ttoss/fsl-theme/css';
 import * as React from 'react';
 
-import { STAGE_THEME_ID, studioBundle } from '../theme';
+import { STAGE_THEME_ID } from '../theme';
 import { StageSample } from './StageSample';
+import { useThemeStore } from './theme/themeStore';
 
 /**
  * The stage: the permanent orientation axis of the Studio (PRD §6.2).
  * Renders the current content in light and dark simultaneously, using
  * element-scoped theme CSS so the panes are independent of the chrome's
- * color mode.
+ * color mode. The CSS re-derives whenever the live bundle changes — an edit
+ * to any token re-themes both panes in the same frame (PRD AD-5).
  */
 export const Stage = () => {
-  // Phase 0: the bundle is a module constant, so the CSS is computed once.
-  // Phase 1 recomputes this on every accepted token edit (PRD AD-5) — the
-  // memo dependency then becomes the session's theme state.
+  const { liveBundle } = useThemeStore();
+
   const stageCss = React.useMemo(() => {
-    return getThemeStylesContent(studioBundle, STAGE_THEME_ID, {
+    return getThemeStylesContent(liveBundle, STAGE_THEME_ID, {
       systemModeFallback: false,
     });
-  }, []);
+  }, [liveBundle]);
 
   return (
     <section className="stage" aria-label="Stage">

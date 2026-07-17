@@ -3,6 +3,8 @@ import * as React from 'react';
 
 import { type Lens, LENS_EMPTY_STATE, LENS_LABELS, LENSES } from './lenses';
 import { Stage } from './Stage';
+import { ThemeInspector } from './theme/ThemeInspector';
+import { ThemeNavigator } from './theme/ThemeNavigator';
 
 /**
  * The Studio shell: navigator / stage / inspector, with the lens switcher in
@@ -37,15 +39,23 @@ export const StudioShell = () => {
       </header>
       <div className="studio-body">
         <aside className="studio-navigator" aria-label="Navigator">
-          <p className="studio-empty-state">
-            {LENS_EMPTY_STATE[lens].navigator}
-          </p>
+          {lens === 'theme' ? (
+            <ThemeNavigator />
+          ) : (
+            <p className="studio-empty-state">
+              {LENS_EMPTY_STATE[lens].navigator}
+            </p>
+          )}
         </aside>
         <Stage />
         <aside className="studio-inspector" aria-label="Inspector">
-          <p className="studio-empty-state">
-            {LENS_EMPTY_STATE[lens].inspector}
-          </p>
+          {lens === 'theme' ? (
+            <ThemeInspector />
+          ) : (
+            <p className="studio-empty-state">
+              {LENS_EMPTY_STATE[lens].inspector}
+            </p>
+          )}
         </aside>
       </div>
     </div>
