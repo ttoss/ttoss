@@ -93,7 +93,7 @@ auth you have). Pick any subset per run with `--providers`:
 | ----------- | ------------------------- | ------------------------------------------------------------------------------------ | --------------------------- |
 | `anthropic` | Anthropic API             | `ANTHROPIC_API_KEY`                                                                  | `claude-opus-4-8`           |
 | `gemini`    | Google AI API             | `GEMINI_API_KEY`                                                                     | `gemini-pro-latest`¹        |
-| `vertex`    | Claude via Vertex AI      | `GOOGLE_APPLICATION_CREDENTIALS` + `ANTHROPIC_VERTEX_PROJECT_ID` + `CLOUD_ML_REGION` | `claude-sonnet-5`           |
+| `vertex`    | Claude via Vertex AI      | `GOOGLE_APPLICATION_CREDENTIALS` + `ANTHROPIC_VERTEX_PROJECT_ID` + `CLOUD_ML_REGION` | `claude-opus-4-8`           |
 | `bedrock`   | Claude via Amazon Bedrock | AWS credentials chain + `AWS_REGION`                                                 | `anthropic.claude-opus-4-8` |
 
 ¹ Google-maintained alias resolving to the current pro-tier model — pinned
@@ -101,10 +101,19 @@ snapshots (e.g. `gemini-2.5-pro`) get retired for new keys/projects and 404.
 
 **Model override**, highest precedence first: inline spec
 (`--providers vertex:claude-opus-4-8`) → env (`FSL_BENCH_<PROVIDER>_MODEL`)
-→ the default above. For a frozen campaign, pin exact model ids via inline
-spec or env and record them with the report. `vertex`/`bedrock` are the same
-Claude family through cloud channels — the D1 A/B needs one Claude + one
+→ the default above. The channel is transport, not model choice: the three
+Claude channels share one default model (Bedrock spells it with its
+`anthropic.` prefix), and any Claude model your project/account has enabled
+on that channel is reachable via override. A channel may be repeated with
+different models in one run — `--providers vertex:claude-opus-4-8,vertex:claude-sonnet-5`
+benchmarks both. For a frozen campaign, pin exact model ids via inline spec
+or env and record them with the report. The D1 A/B needs one Claude + one
 Gemini, whichever channel is available to you.
+
+Vertex and Bedrock catalogs host other model families too; these entries
+speak the Anthropic Messages API, so they cover the Claude family only.
+Another family through those channels would be a new registry entry
+(`src/providers/index.ts`) — one entry + one factory.
 
 ## Running a campaign
 

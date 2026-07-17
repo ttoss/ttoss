@@ -56,7 +56,11 @@ export const PROVIDERS: Record<ProviderId, ProviderEntry> = {
   },
   vertex: {
     create: createVertexProvider,
-    defaultModel: 'claude-sonnet-5',
+    // Channels are transport, not model choice: the three Claude channels
+    // share one default model (Bedrock spells it with its `anthropic.`
+    // prefix). Which models are actually callable depends on what the
+    // user's project/account has enabled — override per run as needed.
+    defaultModel: 'claude-opus-4-8',
     auth: 'GOOGLE_APPLICATION_CREDENTIALS + ANTHROPIC_VERTEX_PROJECT_ID + CLOUD_ML_REGION',
   },
   bedrock: {
