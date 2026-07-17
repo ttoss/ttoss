@@ -86,6 +86,16 @@ export interface GeovisWorkspaceRightSidebar {
   /** Whether the sidebar starts open or closed. Defaults to `'closed'`. */
   initialState?: 'open' | 'closed';
   /**
+   * Guards whether a map click should open the right sidebar. Called before
+   * `onFeatureSelect` — return `false` to silently ignore the click. When
+   * omitted every click-trackable layer click opens the sidebar.
+   *
+   * @example
+   * // Only open when the user clicks the kitchen-points layer
+   * shouldOpen: (info) => info.layerId === COZINHAS_POINTS_LAYER_ID
+   */
+  shouldOpen?: (info: MapClickInfo) => boolean;
+  /**
    * Fetches details for a feature clicked on the map. The workspace calls it
    * with the clicked feature, opens the right sidebar, and tracks the
    * loading/error/data state — exposed to `renderDetails`. Requires the clicked

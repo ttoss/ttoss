@@ -2,6 +2,7 @@ import type { Map as MapLibreMap, MapLayerMouseEvent } from 'maplibre-gl';
 import type * as React from 'react';
 
 import type { GeoVisRuntime } from '../runtime/createRuntime';
+import type { VisualizationSpec } from '../spec/types';
 import type { MapClickInfo, MapHoverInfo } from './contexts';
 
 // ASCII control characters chosen as internal separators so arbitrary
@@ -239,7 +240,6 @@ export const buildHandleMove = ({
     // Keep the last valid cursor position so the window-focus recheck can
     // query the same point without waiting for a new mousemove event.
     lastPointRef.current = { x: event.point.x, y: event.point.y };
-    map.getCanvas().style.cursor = 'pointer';
     const rect = map.getCanvas().getBoundingClientRect();
     setHover({
       layerId: resolvedLayerId,
@@ -326,7 +326,6 @@ export const buildHandleWindowFocus = ({
     // Convert the retained canvas-relative point to viewport-absolute so
     // the snapshot matches the coordinate space produced by buildHandleMove.
     const rect = map.getCanvas().getBoundingClientRect();
-    map.getCanvas().style.cursor = 'pointer';
     setHover({
       layerId: resolvedLayerId,
       sourceId,
@@ -366,6 +365,77 @@ export const buildHoverTracking = (
     return t.layerId;
   });
   return { tracked, sourceByLayerId, hoverPaintLayerIds, trackedLayerIds };
+};
+
+/**
+ * Encodes the hover-tracked polygon layers into a stable string key used as a
+ * `useEffect` dependency. Only polygon layers with `activeLegendId` or
+ * `hoverPaint` are included; non-polygons are intentionally excluded.
+ */
+export const buildHoverTrackedKey = (
+  layers: VisualizationSpec['layers']
+): string => {
+  return layers
+    .filter((layer) => {
+      return (
+        layer.geometry === 'polygon' &&
+        (layer.activeLegendId != null || layer.hoverPaint != null)
+      );
+    })
+    .map((layer) => {
+      return `${layer.id}${TRACKED_FIELD_SEP}${layer.sourceId}${TRACKED_FIELD_SEP}${layer.hoverPaint ? '1' : '0'}`;
+    })
+    .join(TRACKED_RECORD_SEP);
+};
+
+/**
+ * Returns the set of layer IDs that declare `click` or `clickAnchor` and
+ * therefore warrant a pointer cursor on hover.
+ */
+export const buildPointerLayerIds = (
+  layers: VisualizationSpec['layers']
+): Set<string> => {
+  return new Set(
+    layers
+      .filter((layer) => {
+        return layer.click != null || layer.clickAnchor != null;
+      })
+      .map((layer) => {
+        return layer.id;
+      })
+  );
+};
+
+export interface BuildHandleGlobalCursorParams {
+  map: MapLibreMap;
+  /** Layer IDs that declare `click` or `clickAnchor`; only these get `cursor: pointer`. */
+  pointerLayerIds: Set<string>;
+}
+
+/**
+ * Builds the global (non-layer-scoped) `mousemove` handler that sets the map
+ * canvas cursor. Because MapLibre dispatches map-level `mousemove` before
+ * layer-scoped events, this handler runs first and its value is then overridden
+ * by per-layer handlers — which is fine: the per-layer handlers do not touch
+ * the cursor, so this handler's decision always stands.
+ *
+ * Sets `pointer` when the cursor is over any layer in `pointerLayerIds`,
+ * `default` otherwise (including when `pointerLayerIds` is empty).
+ */
+export const buildHandleGlobalCursor = ({
+  map,
+  pointerLayerIds,
+}: BuildHandleGlobalCursorParams) => {
+  return (event: { point: { x: number; y: number } }) => {
+    const hits =
+      pointerLayerIds.size > 0
+        ? map.queryRenderedFeatures(
+            [event.point.x, event.point.y] as [number, number],
+            { layers: [...pointerLayerIds] }
+          )
+        : [];
+    map.getCanvas().style.cursor = hits.length > 0 ? 'pointer' : 'default';
+  };
 };
 
 export interface DecodedClickTracking {
