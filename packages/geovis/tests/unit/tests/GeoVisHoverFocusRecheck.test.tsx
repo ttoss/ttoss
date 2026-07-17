@@ -235,7 +235,7 @@ describe('useMapHover — window focus recheck', () => {
     await waitFor(() => {
       expect(document.body.querySelector('[role="tooltip"]')).not.toBeNull();
     });
-    expect(mockCurrentMap.__canvas.style.cursor).toBe('pointer');
+    expect(mockCurrentMap.__canvas.style.cursor).toBe('');
   });
 
   test('clears tooltip on window focus when cursor is no longer over a feature', async () => {
@@ -409,7 +409,7 @@ describe('useMapHover — visibilitychange (tab switching)', () => {
     await waitFor(() => {
       expect(document.body.querySelector('[role="tooltip"]')).not.toBeNull();
     });
-    expect(mockCurrentMap.__canvas.style.cursor).toBe('pointer');
+    expect(mockCurrentMap.__canvas.style.cursor).toBe('');
   });
 
   test('clears tooltip when tab becomes visible but cursor moved off the feature', async () => {

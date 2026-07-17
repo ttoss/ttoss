@@ -29,6 +29,7 @@ jest.mock('maplibre-gl', () => {
       setLngLat: jest.fn().mockReturnThis(),
       addTo: jest.fn().mockReturnThis(),
       remove: jest.fn(),
+      getElement: jest.fn().mockReturnValue({ firstElementChild: null }),
     };
   });
   return { __esModule: true, default: { Marker } };
