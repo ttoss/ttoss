@@ -453,7 +453,7 @@ error rate + human corrections.
 >   bare export-list context; the delta isolates the grammar's
 >   contribution from model priors. This is the decisive number.
 > - **Models** — one Anthropic + one non-Anthropic (Gemini) for claim
->   neutrality; defaults `claude-opus-4-8` / `gemini-2.5-pro`,
+>   neutrality; defaults `claude-opus-4-8` / `gemini-pro-latest`,
 >   env-overridable.
 > - **Grading** — objective gauntlet (tsc strict → jsdom render → RTL
 >   behavior asserts in an isolated child process per sample) + mechanical
