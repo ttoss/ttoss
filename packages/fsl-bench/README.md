@@ -80,6 +80,9 @@ prompt's text by sha256, so any wording change fails the suite. A
 deliberate change means updating `FROZEN_PROMPT_HASHES` there **and**
 bumping the suite version in this section — never a silent edit.
 
+**Current suite version: 1** (this line is the single definition site —
+campaign reports compare only within a suite version).
+
 ## Running a campaign
 
 ```bash
