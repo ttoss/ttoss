@@ -1,0 +1,9 @@
+# Per-sample compile/bundle scratch space
+.bench-tmp/
+
+# Campaign outputs: raw runs (samples.jsonl, artifacts) stay untracked;
+# the rendered report of a run IS committable — the negations below make
+# that possible (git cannot re-include a file under a fully ignored dir).
+results/**
+!results/*/
+!results/*/report.md

@@ -1,0 +1,48 @@
+{
+  "name": "@ttoss/fsl-bench",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI-executability benchmark harness for @ttoss/fsl-ui (ROADMAP D1). Measures first-pass success and semantic error rate of LLM-generated UI code against headless baselines.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/fsl-bench"
+  },
+  "license": "MIT",
+  "author": "ttoss",
+  "type": "module",
+  "scripts": {
+    "bench": "node --experimental-strip-types src/runner.ts",
+    "bench:report": "node --experimental-strip-types src/reportCli.ts",
+    "test": "tsc --noEmit -p tsconfig.json && jest --projects tests/unit"
+  },
+  "devDependencies": {
+    "@anthropic-ai/bedrock-sdk": "^0.32.0",
+    "@anthropic-ai/sdk": "^0.110.0",
+    "@anthropic-ai/vertex-sdk": "^0.19.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^7.0.0",
+    "@radix-ui/react-alert-dialog": "^1.1.0",
+    "@radix-ui/react-dialog": "^1.1.0",
+    "@radix-ui/react-dropdown-menu": "^2.1.0",
+    "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-switch": "^1.1.0",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@ttoss/config": "workspace:^",
+    "@ttoss/fsl-theme": "workspace:^",
+    "@ttoss/fsl-ui": "workspace:^",
+    "@types/jsdom": "^27.0.0",
+    "@types/node": "^24.12.0",
+    "@types/react": "^19.2.14",
+    "esbuild": "^0.28.0",
+    "jest": "^30.4.2",
+    "jsdom": "^27.0.0",
+    "react": "^19.2.6",
+    "react-aria-components": "~1.19.0",
+    "react-dom": "^19.2.6",
+    "typescript": "~6.0.3"
+  }
+}

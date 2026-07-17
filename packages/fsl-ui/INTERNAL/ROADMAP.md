@@ -16,6 +16,10 @@ Writable surfaces — **only**:
 - `packages/fsl-ui/**`
 - `packages/fsl-theme/**` (only when an item genuinely requires it, e.g. new
   tokens)
+- `packages/fsl-bench/**` (added 2026-07-16 for Workstream D — the D1
+  benchmark harness lives in its own private package so its dependencies
+  (baseline libraries, model SDKs) never touch the measured package, and so
+  it consumes fsl-ui the way an external app would)
 - `docs/website/docs/design/**` pages that document fsl-ui / fsl-theme
   (A15 targets the `ui-components` **documentation page**, not any package)
 
@@ -436,6 +440,35 @@ baselines) once A4 (llms.txt) and Wave 1 land. This produces the launch
 number. Fixed prompt suite: dialog, field+validation, menu, destructive
 confirm, themed composite; measure token-selection correctness + semantic
 error rate + human corrections.
+
+> ⤷ **Harness shipped (2026-07-16): `packages/fsl-bench`.** Decisions
+> recorded:
+>
+> - **Cohort** — headless cohort = fsl-ui, React Aria Components, Radix
+>   Primitives; **MUI is an opinionated control in a separate column**
+>   (BENCHMARK_EVAL cohort rule; MUI's training-data prevalence inside the
+>   cohort would confound grammar-vs-priors, as a control it strengthens
+>   the claim).
+> - **A/B condition** — fsl-ui runs with the shipped `llms.txt` AND with a
+>   bare export-list context; the delta isolates the grammar's
+>   contribution from model priors. This is the decisive number.
+> - **Models** — one Anthropic + one non-Anthropic (Gemini) for claim
+>   neutrality; defaults `claude-opus-4-8` / `gemini-pro-latest`,
+>   overridable per run. Transport channels are user-selectable (direct
+>   APIs, Claude via Vertex AI or Amazon Bedrock) — auth and per-channel
+>   defaults live in the fsl-bench README.
+> - **Grading** — objective gauntlet (tsc strict → jsdom render → RTL
+>   behavior asserts in an isolated child process per sample) + mechanical
+>   semantic lint; repair loop ≤ 2 (rounds-to-green proxies human
+>   corrections); Wilson 95% intervals. Calibrated by 20 golden fixtures
+>   (every scenario × every library must pass with zero findings) — the
+>   fairness proof, enforced in `fsl-bench`'s test suite.
+> - Methodology + honesty rules (freeze-before-run, full audit JSONL,
+>   spot-check protocol) live in `packages/fsl-bench/README.md`.
+>
+> **Pending:** the launch campaign itself (needs `ANTHROPIC_API_KEY` +
+> `GEMINI_API_KEY`; `pnpm run bench` in `packages/fsl-bench`). Record the
+> headline numbers here when run — D2 stays gated until then.
 
 **D2. `private: true` flip gate** `S` — flip only when: CI green including a
 real tsdown build, A-P0 complete, A13 axe suite green, D1 executed.
