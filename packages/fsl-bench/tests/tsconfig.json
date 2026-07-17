@@ -1,0 +1,10 @@
+{
+  "extends": "@ttoss/config/tsconfig.test.json",
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "paths": {
+      "src/*": ["../src/*"],
+      "tests/*": ["./*"]
+    }
+  }
+}
