@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.3.0...@ttoss/geovis-workspace@0.4.0) (2026-07-17)
+
+### Features
+
+- **geovis, geovis-workspace:** add cursor control, shouldOpen guard,… ([#1147](https://github.com/ttoss/ttoss/issues/1147)) ([92136f8](https://github.com/ttoss/ttoss/commit/92136f8aba7928617b05921722a4691c55ba293b))
+
 # [0.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.2.10...@ttoss/geovis-workspace@0.3.0) (2026-07-15)
 
 ### Features
