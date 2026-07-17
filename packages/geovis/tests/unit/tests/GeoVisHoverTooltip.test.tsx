@@ -204,7 +204,7 @@ describe('GeoVisHoverTooltip', () => {
     const tooltip = document.querySelector('[role="tooltip"]') as HTMLElement;
     expect(tooltip.textContent).toContain('Feature #42');
     expect(tooltip.textContent).toContain('150 people');
-    expect(mockCurrentMap.__canvas.style.cursor).toBe('pointer');
+    expect(mockCurrentMap.__canvas.style.cursor).toBe('');
   });
 
   test('hides tooltip on mouseleave and resets cursor', async () => {
@@ -362,7 +362,7 @@ describe('GeoVisHoverTooltip', () => {
     await waitFor(() => {
       expect(document.querySelector('[role="tooltip"]')).not.toBeNull();
     });
-    expect(mockCurrentMap.__canvas.style.cursor).toBe('pointer');
+    expect(mockCurrentMap.__canvas.style.cursor).toBe('');
 
     // Now hit a feature whose `layer.id` is unknown to `sourceByLayerId`.
     triggerMove(mockCurrentMap, 'districts-fill', { x: 2, y: 2 }, [

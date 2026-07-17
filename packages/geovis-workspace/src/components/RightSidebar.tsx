@@ -137,7 +137,7 @@ export const RightSidebar = () => {
         position: 'relative',
         flexDirection: 'column',
         gap: '4',
-        width: '256px',
+        width: '300px',
         height: '100%',
         flexShrink: 0,
         paddingX: '4',
