@@ -36,7 +36,7 @@
  *
  * // Input in error — negative valence overrides the default
  * .input--error:focus-visible {
- *   outline-color: var(--tt-input-negative-border-focused);
+ *   outline-color: var(--tt-colors-input-negative-border-focused);
  * }
  * ```
  *

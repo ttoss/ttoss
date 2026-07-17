@@ -4,13 +4,29 @@ import type { DeepPartial, ThemeTokens } from '../Types';
 // Token reference utilities
 // ---------------------------------------------------------------------------
 
-/** Check if a value is a token reference like `{core.colors.brand.500}` */
+/**
+ * Check if a value is a **pure** token reference like `{core.colors.brand.500}`.
+ *
+ * A pure ref is a single `{path}` with no interior braces. Compound expressions
+ * (`clamp({a}, {b})`) and multi-ref strings (`{a} {b}`) are NOT pure refs — they
+ * start `{`/end `}` but carry interior braces, and must go through the compound
+ * resolution path instead. Without the interior-brace check `{a} {b}` would be
+ * mis-parsed as the single path `a} {b`.
+ */
+const hasInteriorBraces = (value: string): boolean => {
+  // A pure ref has `{` only at index 0 and `}` only at the final index.
+  return (
+    value.indexOf('{', 1) !== -1 || value.indexOf('}') !== value.length - 1
+  );
+};
+
 export const isTokenRef = (value: unknown): value is `{${string}}` => {
   return (
     typeof value === 'string' &&
     value.length > 2 &&
     value.startsWith('{') &&
-    value.endsWith('}')
+    value.endsWith('}') &&
+    !hasInteriorBraces(value)
   );
 };
 
@@ -52,6 +68,15 @@ export const isPlainObject = (
 // ---------------------------------------------------------------------------
 
 /**
+ * Prototype-chain keys that must never be written from override data —
+ * `result['__proto__']` reaches the prototype setter, not an own property.
+ * Guards `createTheme`'s public `overrides` against prototype pollution.
+ */
+const isUnsafeMergeKey = (key: string): boolean => {
+  return key === '__proto__' || key === 'constructor' || key === 'prototype';
+};
+
+/**
  * Recursively merges `overrides` into `base`.
  * - Plain objects are merged recursively.
  * - All other values (primitives, arrays) are replaced.
@@ -64,6 +89,10 @@ export const deepMerge = <T>(base: T, overrides: DeepPartial<T>): T => {
   const result = { ...base } as Record<string, unknown>;
 
   for (const key of Object.keys(overrides)) {
+    if (isUnsafeMergeKey(key)) {
+      continue;
+    }
+
     const baseVal = result[key];
     const overVal = (overrides as Record<string, unknown>)[key];
 
@@ -132,93 +161,6 @@ export const flattenTheme = (
 };
 
 // ---------------------------------------------------------------------------
-// DEV-only ref validation
-// ---------------------------------------------------------------------------
-
-/**
- * Compute the Levenshtein edit distance between two strings.
- * Used exclusively by `validateRefs` to power "did you mean?" suggestions.
- */
-const levenshtein = (a: string, b: string): number => {
-  const m = a.length;
-  const n = b.length;
-  const dp: number[][] = Array.from({ length: m + 1 }, () => {
-    return Array.from({ length: n + 1 }, () => {
-      return 0;
-    });
-  });
-
-  for (let i = 0; i <= m; i++) dp[i][0] = i;
-  for (let j = 0; j <= n; j++) dp[0][j] = j;
-
-  for (let i = 1; i <= m; i++) {
-    for (let j = 1; j <= n; j++) {
-      dp[i][j] =
-        a[i - 1] === b[j - 1]
-          ? dp[i - 1][j - 1]
-          : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
-    }
-  }
-
-  return dp[m][n];
-};
-
-/**
- * Validate that every `{ref}` in the merged theme points to an existing path.
- * Emits `console.warn` for each broken reference with a "did you mean?" suggestion.
- *
- * **DEV-only** — callers gate this behind `process.env.NODE_ENV !== 'production'`
- * so bundlers tree-shake the entire call in production builds.
- */
-export const validateRefs = (theme: ThemeTokens): void => {
-  const { core, semantic } = flattenTheme(theme);
-  const all = { ...core, ...semantic };
-  const allKeys = Object.keys(all);
-
-  const findSuggestion = (refPath: string, candidates: string[]): string => {
-    if (candidates.length === 0) return '';
-    let bestDist = Infinity;
-    let bestKey = '';
-    for (const candidate of candidates) {
-      const dist = levenshtein(refPath, candidate);
-      if (dist < bestDist) {
-        bestDist = dist;
-        bestKey = candidate;
-      }
-    }
-    // Only suggest if reasonably close (less than 40% of the path length)
-    if (bestDist <= Math.ceil(refPath.length * 0.4)) {
-      return `\n   Did you mean '{${bestKey}}'?`;
-    }
-    return '';
-  };
-
-  for (const [ownerKey, value] of Object.entries(all)) {
-    if (typeof value !== 'string' || !value.includes('{')) continue;
-
-    // Match every {ref} in the value (pure refs and compound expressions)
-    let match: RegExpExecArray | null;
-    const re = new RegExp(COMPOUND_REF_RE.source, COMPOUND_REF_RE.flags);
-    while ((match = re.exec(value)) !== null) {
-      const refPath = match[1];
-      if (all[refPath] !== undefined) continue;
-
-      // Find "did you mean?" suggestion among keys sharing the same top-level prefix
-      const prefix = refPath.split('.')[0];
-      const candidates = allKeys.filter((k) => {
-        return k.startsWith(prefix + '.');
-      });
-      const suggestion = findSuggestion(refPath, candidates);
-
-      // eslint-disable-next-line no-console
-      console.warn(
-        `[fsl-theme] Invalid token reference '{${refPath}}' at path '${ownerKey}'.${suggestion}`
-      );
-    }
-  }
-};
-
-// ---------------------------------------------------------------------------
 // Flatten + resolve all refs to raw values
 // ---------------------------------------------------------------------------
 
@@ -282,8 +224,8 @@ export const toFlatTokens = (
   /**
    * Resolve all embedded `{path}` refs in a raw string expression.
    *
-   * Handles both pure refs (`{core.space.4}`) and compound expressions
-   * (`clamp({core.space.4}, {core.space.6}, {core.space.12})`).
+   * Handles both pure refs (`{core.spacing.4}`) and compound expressions
+   * (`clamp({core.spacing.4}, {core.spacing.6}, {core.spacing.12})`).
    */
   const resolveInline = (
     value: string,
@@ -302,6 +244,13 @@ export const toFlatTokens = (
       }
       const childSeen = new Set(seen).add(path);
       const resolved = resolveRef(target, childSeen, ownerKey);
+      // If the target is itself a compound expression with embedded refs,
+      // `resolveRef` returns it verbatim (it only recurses on pure refs) —
+      // re-resolve so chained compound refs expand fully. The `childSeen`
+      // guard bounds this against cycles.
+      if (typeof resolved === 'string' && resolved.includes('{')) {
+        return resolveInline(resolved, childSeen, ownerKey);
+      }
       return String(resolved);
     });
   };
@@ -313,7 +262,7 @@ export const toFlatTokens = (
         // pure token ref e.g. {core.colors.brand.500}
         resolved[key] = resolveRef(value, new Set(), key);
       } else if (value.includes('{')) {
-        // compound expression with embedded refs (e.g. clamp({core.space.4}, ...))
+        // compound expression with embedded refs (e.g. clamp({core.spacing.4}, ...))
         resolved[key] = resolveInline(value, new Set(), key);
       } else {
         resolved[key] = value;

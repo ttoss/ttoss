@@ -5,4 +5,12 @@ export default jestUnitConfig({
   testEnvironment: 'jsdom',
   setupFiles: ['<rootDir>/setup.ts'],
   transformIgnorePatterns: getTransformIgnorePatterns(),
+  coverageThreshold: {
+    global: {
+      statements: 99,
+      branches: 96,
+      functions: 100,
+      lines: 99,
+    },
+  },
 });

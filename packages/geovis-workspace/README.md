@@ -119,11 +119,42 @@ its own group. Read the current selection anywhere inside the workspace with
 
 ### `GeovisWorkspaceRightSidebar`
 
-| Property          | Type                             | Description                                              |
-| ----------------- | -------------------------------- | -------------------------------------------------------- |
-| `title`           | `string`                         | Title shown at the top of the sidebar.                   |
-| `legendWithColor` | `GeovisWorkspaceLegendWithColor` | Color-legend panel. Omit to hide it.                     |
-| `initialState`    | `'open' \| 'closed'`             | Whether the sidebar starts open. Defaults to `'closed'`. |
+| Property          | Type                                    | Description                                              |
+| ----------------- | --------------------------------------- | -------------------------------------------------------- |
+| `title`           | `string`                                | Title shown at the top of the sidebar.                   |
+| `legendWithColor` | `GeovisWorkspaceLegendWithColor`        | Color-legend panel. Omit to hide it.                     |
+| `initialState`    | `'open' \| 'closed'`                    | Whether the sidebar starts open. Defaults to `'closed'`. |
+| `onFeatureSelect` | `(info) => Promise<unknown> \| unknown` | Fetch details for a clicked map feature. See below.      |
+| `renderDetails`   | `(state) => React.ReactNode`            | Render the fetched details inside the sidebar.           |
+
+### Feature details on click
+
+Set `rightSidebar.onFeatureSelect` to load details when the user clicks a
+feature on the map. The workspace opens the right sidebar automatically, calls
+`onFeatureSelect` with the clicked feature (`info` carries `featureId`,
+`lngLat`, `value`, `layerId`), and tracks the loading/error/data state — exposed
+to `renderDetails` as `{ feature, data, loading, error }`. Rapid clicks are
+guarded: only the latest response is rendered. Clicking outside (or pressing
+Escape) clears the details without closing the sidebar.
+
+The clicked layer must be **click-trackable** — it declares `activeLegendId` or
+`click` in the `visualizationSpec`.
+
+```tsx
+const config: GeovisWorkspaceConfig = {
+  rightSidebar: {
+    title: 'Region details',
+    onFeatureSelect: (info) =>
+      fetch(`/api/regions/${info.featureId}`).then((res) => res.json()),
+    renderDetails: ({ data, loading, error }) => {
+      if (loading) return <Text>Loading…</Text>;
+      if (error) return <Text>Could not load details.</Text>;
+      if (!data) return null;
+      return <RegionDetails {...(data as RegionData)} />;
+    },
+  },
+};
+```
 
 ### `GeovisWorkspaceLegendWithColor`
 

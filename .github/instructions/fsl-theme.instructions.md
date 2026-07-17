@@ -14,13 +14,13 @@ documented in the artifacts below.
 Each artifact answers exactly **one** question. Read the artifact whose
 question matches your task; do not duplicate content across them.
 
-| Artifact                                                                                         | Answers                                                                                                                                                       |
-| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **JSDoc in code**                                                                                | _How do I use this symbol right now?_                                                                                                                         |
-| [`README.md`](../../packages/fsl-theme/README.md)                                                | _What is this package and how do I integrate it?_                                                                                                             |
-| [`CONTRIBUTING.md`](../../packages/fsl-theme/CONTRIBUTING.md)                                    | _How do I modify the package without breaking it?_ — including the ADRs that explain why each invariant exists                                                |
-| [`CHANGELOG.md`](../../packages/fsl-theme/CHANGELOG.md)                                          | _What changed between releases and how do I migrate?_                                                                                                         |
-| [`docs/.../01-design-system/index.md`](../../docs/website/docs/design/01-design-system/index.md) | _What are the foundational concepts (FSL, token model, families, components)?_ — see its **Document Map** to jump to the exact spec without reading siblings. |
+| Artifact                                                                                   | Answers                                                                                                                                                       |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **JSDoc in code**                                                                          | _How do I use this symbol right now?_                                                                                                                         |
+| [`README.md`](../../packages/fsl-theme/README.md)                                          | _What is this package and how do I integrate it?_                                                                                                             |
+| [`CONTRIBUTING.md`](../../packages/fsl-theme/CONTRIBUTING.md)                              | _How do I modify the package without breaking it?_ — including the ADRs that explain why each invariant exists                                                |
+| [`CHANGELOG.md`](../../packages/fsl-theme/CHANGELOG.md)                                    | _What changed between releases and how do I migrate?_                                                                                                         |
+| [`docs/.../design-system/index.md`](../../docs/website/docs/design/design-system/index.md) | _What are the foundational concepts (FSL, token model, families, components)?_ — see its **Document Map** to jump to the exact spec without reading siblings. |
 
 The ADR workflow, review protocol, and placement rules live inside the
 `Decisions (ADRs)` section of `CONTRIBUTING.md` — consult it before

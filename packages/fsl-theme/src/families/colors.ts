@@ -7,7 +7,7 @@
  *   - dimension: background | border | text  (per component; not all are required)
  *   - state:     default | hover | active | focused | disabled | selected | …
  *
- * @see /docs/website/docs/design/01-design-system/02-design-tokens/02-families/colors.md
+ * @see /docs/website/docs/design/design-system/design-tokens/families/colors.md
  * ========================================================================== */
 
 import type { CoreColorRef, RawValue } from './primitives';
@@ -102,14 +102,18 @@ interface ActionColorStates extends BaseColorStates {
   expanded?: CoreColorRef;
 }
 
-/** `input` context: adds `checked`, `indeterminate`, `pressed`, `expanded` for form controls.
+/** `input` context: adds `checked`, `indeterminate`, `pressed`, `expanded`,
+ * and `invalid` for form controls.
  *
- * Validation failure is *not* a state — it is an Evaluation (FSL Lexicon §5).
- * Components that fail validation render with the `input.negative.*` role,
- * not with an `invalid` state on `input.primary.*`. This avoids dual
- * representation of the same semantic concept and keeps FSL §7 State Law
- * intact ("States are not free-form"). React Aria's `isInvalid` flag maps
- * to selecting the `negative` role, not to a new state.
+ * Validation doctrine (ADR-017, mirrors `@ttoss/fsl-ui` taxonomy): validation
+ * outcome is a **runtime State** (`invalid`), never an authorial Evaluation —
+ * evaluation lives in the author's pen, state lives in the user's data.
+ * The control itself flips to `input.{role}.*.invalid` when React Aria's
+ * `isInvalid` (or a form library) says so; adjacent *display* parts
+ * (validationMessage, icon) still consume the `input.negative.*` role — they
+ * report valence, the control carries state. The mirror distinction to
+ * Lexicon §10.5 (`negative` ≠ `destructive`) is `invalid` (State) ≠
+ * `negative` (Evaluation) — Lexicon §10.15.
  *
  * Structural Role → token mapping (FSL Lexicon §2): a part declared with
  * Structural Role `validationMessage` consumes `input.negative.text.*` for
@@ -129,6 +133,14 @@ interface InputColorStates extends BaseColorStates {
   pressed?: CoreColorRef;
   /** Combobox / select / disclosure-style input is currently open. */
   expanded?: CoreColorRef;
+  /**
+   * Runtime validation outcome — the control's value failed validation.
+   * Use when React Aria's `isInvalid` (or a form library) asserts failure.
+   * Pair with `input.negative.text.*` on the validationMessage; do not use
+   * the `negative` role on the control itself — that is authorial valence
+   * (Lexicon §10.15).
+   */
+  invalid?: CoreColorRef;
 }
 
 /** `navigation` context: adds `selected`, `current`, `visited`, `expanded`. */
@@ -145,10 +157,10 @@ interface NavigationColorStates extends BaseColorStates {
 
 /** `informational` context: adds `selected`, `visited`, `expanded`.
  *
- * `expanded` covers in-place disclosure on presentational surfaces (accordions,
- * collapsible panels, expandable cards). `Disclosure` Entity Kinds project to
- * `informational` per FSL identity (in-place reveal, not movement across
- * destinations — FSL Lexicon §1). */
+ * `expanded` covers in-place disclosure on presentational surfaces
+ * (accordions, collapsible panels, expandable cards). Note: `Disclosure`
+ * Entity Kinds project to `navigation` (ADR-001); `expanded` here serves
+ * presentational surfaces that disclose without being Disclosure entities. */
 interface InformationalColorStates extends BaseColorStates {
   /** Presentational element is **one of many** and the user picked it (selectable list row, focused card in a deck). */
   selected?: CoreColorRef;
@@ -180,7 +192,7 @@ interface FeedbackColorStates {
 interface ColorDimensionOf<S extends BaseColorStates> {
   /** Fills and surface backgrounds. Use for any colored area larger than a line. */
   background?: S;
-  /** Outlines, separators, rings, and other line-color pairings. For line *geometry* (width, style) consume `semantic.borders.*` instead — this dimension is colour only. */
+  /** Outlines, separators, rings, and other line-color pairings. For line *geometry* (width, style) consume `semantic.border.*` instead — this dimension is colour only. */
   border?: S;
   /** Readable foreground — labels, paragraphs, and text-like icons that inherit `currentColor`. */
   text?: S;

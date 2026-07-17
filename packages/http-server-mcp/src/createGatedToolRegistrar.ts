@@ -173,39 +173,40 @@ export const createGatedToolRegistrar = ({
   notFoundMessage = 'Not found',
 }: CreateGatedToolRegistrarOptions) => {
   const register = (def: GatedToolDef): void => {
+    const handler = async (args: Record<string, unknown>) => {
+      const identity = resolveIdentity() as ToolIdentity | undefined;
+      if (!identity) return toolError('Unauthorized');
+
+      const ctx: ToolCallContext = { identity, args, handler: def.name };
+
+      if (enforceScope) {
+        const scopeError = checkScope(identity, def.requiredScope);
+        if (scopeError) return scopeError;
+      }
+
+      await runGates([...gates, ...(def.gates ?? [])], ctx);
+
+      const extra = buildContext ? buildContext(ctx) : {};
+      try {
+        const result = await def.method({ ...args, ...extra });
+        if (result == null) return toolError(notFoundMessage);
+        return {
+          content: [{ type: 'text' as const, text: JSON.stringify(result) }],
+        };
+      } catch (error) {
+        if (onError) await onError(error, ctx);
+        throw error;
+      }
+    };
+
+    type RegisterToolArgs = Parameters<McpServer['registerTool']>;
     server.registerTool(
       def.name,
       {
         description: def.description,
-        inputSchema: def.inputSchema as Parameters<
-          McpServer['registerTool']
-        >[1]['inputSchema'],
+        inputSchema: def.inputSchema as RegisterToolArgs[1]['inputSchema'],
       },
-      async (args: Record<string, unknown>) => {
-        const identity = resolveIdentity() as ToolIdentity | undefined;
-        if (!identity) return toolError('Unauthorized');
-
-        const ctx: ToolCallContext = { identity, args, handler: def.name };
-
-        if (enforceScope) {
-          const scopeError = checkScope(identity, def.requiredScope);
-          if (scopeError) return scopeError;
-        }
-
-        await runGates([...gates, ...(def.gates ?? [])], ctx);
-
-        const extra = buildContext ? buildContext(ctx) : {};
-        try {
-          const result = await def.method({ ...args, ...extra });
-          if (result == null) return toolError(notFoundMessage);
-          return {
-            content: [{ type: 'text' as const, text: JSON.stringify(result) }],
-          };
-        } catch (error) {
-          if (onError) await onError(error, ctx);
-          throw error;
-        }
-      }
+      handler as unknown as RegisterToolArgs[2]
     );
   };
   return { register };

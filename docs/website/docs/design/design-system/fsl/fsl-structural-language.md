@@ -65,14 +65,14 @@ The semantic architecture is composed of five layers:
 2. **FSL Structural Language**  
    The formal structure of valid semantic expressions.
 
-3. **Component Semantics Projection**  
-   The component model derived from FSL. Realized by `component-model.md` and `taxonomy.ts`.
+3. **Component Semantics Projection** _(implemented)_  
+   The component model derived from FSL. Specified by `component-model.md`; realized by `@ttoss/fsl-ui` (`taxonomy.ts` — vocabulary + legality matrices + contract tests).
 
-4. **Semantic Token Projection**  
-   The semantic token model derived from FSL. Realized by the design tokens documentation and `Types.ts`.
+4. **Semantic Token Projection** _(implemented)_  
+   The semantic token model derived from FSL. Realized by the design tokens documentation and `Types.ts` (`@ttoss/fsl-theme`).
 
-5. **Deterministic Resolver**  
-   The engine that parses, normalizes, validates, projects, and explains semantic outputs. Realized by build-time and runtime tooling, not by documentation.
+5. **Deterministic Resolver** _(planned)_  
+   The engine that parses, normalizes, validates, projects, and explains semantic outputs. This document (§14) specifies its interface; no such tooling exists yet.
 
 This document defines only layer 2.
 
@@ -852,7 +852,7 @@ A Projection Profile may introduce new names for foundational dimensions when th
 2. The foundational vocabulary is preserved in meaning.
 3. The projection name does not introduce new semantic content that belongs in the foundational layer.
 
-Example: the Component Semantics Projection renames the `Entity` dimension to `Responsibility`. The values remain identical; only the dimension name changes to better fit the component model.
+Example: a Component Semantics Projection could rename the `Entity` dimension to `Responsibility` — values identical, only the dimension name changes to fit the component model. (The shipped `@ttoss/fsl-ui` profile chose **not** to rename: it keeps the foundation names — see `component-model.md` §FSL dimension mapping.)
 
 ---
 

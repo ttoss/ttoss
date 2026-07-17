@@ -1,3 +1,4 @@
+import type { LayerClickConfig } from '../react/click';
 import type { HoverTooltipConfig } from '../react/tooltip';
 import type { LegendSpec } from './types.legend';
 
@@ -323,6 +324,15 @@ export interface VisualizationLayer {
    * spec layer keeps no runtime dependency on React.
    */
   hoverTooltip?: HoverTooltipConfig;
+  /**
+   * Spec-driven click reaction. When present, `<GeoVisProvider>` invokes
+   * `click.onSelect` for features clicked on this layer — without the consumer
+   * placing a component or calling `useGeoVisClick()` in the tree. Declaring
+   * `click` also opts the layer into click tracking, so `activeLegendId` is not
+   * required. Typed via a type-only import so the data-only spec layer keeps no
+   * runtime dependency on React (mirrors `hoverTooltip`).
+   */
+  click?: LayerClickConfig;
   /**
    * Proportional symbol configuration. When present on a point layer,
    * `circle-radius` is driven by a data expression instead of a static value.

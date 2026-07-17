@@ -90,7 +90,7 @@ export const semanticDataviz: SemanticDataviz = {
     status: {
       missing: '{core.colors.neutral.200}',
       suppressed: '{core.colors.neutral.700}',
-      na: '{core.colors.neutral.500}',
+      notApplicable: '{core.colors.neutral.500}',
     },
   },
   encoding: {

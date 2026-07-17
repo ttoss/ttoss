@@ -1,3 +1,4 @@
+export { Sparkline } from './Cards/BigNumberSparkline';
 export { Dashboard } from './Dashboard';
 export { type DashboardTemplate } from './Dashboard';
 export { type DashboardGridItem } from './Dashboard';

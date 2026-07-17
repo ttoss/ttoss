@@ -56,6 +56,9 @@ const STRUCTURAL_KEYS = new Set<string>([
  *   `legends`, they are filled from the resolved layer.
  * - If the user layer has a `paint` object, it is merged with the resolved
  *   layer's paint, with user-provided values taking precedence.
+ * - `sizeBy` is merged the same way: a user layer that declares only `range`
+ *   still inherits the resolved `transform` (proportionalCircles' `'sqrt'`),
+ *   which the size legend and the radius expression both depend on.
  *
  * Returns a new object — `match` (a reference into the caller's `spec.layers`)
  * is never mutated, so re-resolving the same spec object (e.g. `legendEnabled`
@@ -77,6 +80,15 @@ const injectResolvedFields = (
   }
   if (rl.paint) {
     next.paint = { ...rl.paint, ...match.paint };
+  }
+  if (rl.sizeBy && match.sizeBy) {
+    // Spreading two `SizeBy` union members loses the discriminant for the
+    // compiler, but merging user fields over resolved defaults keeps a valid
+    // shape at runtime (user values win; missing ones are filled).
+    next.sizeBy = {
+      ...rl.sizeBy,
+      ...match.sizeBy,
+    } as VisualizationLayer['sizeBy'];
   }
   return next;
 };
@@ -111,6 +123,8 @@ const mergeResolvedLayers = (
  * When a user legend lacks `colorBy`, it inherits from the matching
  * resolved legend. When the user provides a partial `colorBy` (e.g.
  * only `colors`), the missing fields are filled from the auto-generated one.
+ * The resolved legend's non-colorBy fields (title, subtitle, position, etc.)
+ * are preserved through `{ ...match, ...userLegend }`.
  */
 export const mergeLegends = (
   userLegends: LegendSpec[],
@@ -127,7 +141,7 @@ export const mergeLegends = (
     usedIds.add(match.id);
     if (!match.colorBy) return userLegend;
     if (!userLegend.colorBy) {
-      return { ...userLegend, colorBy: match.colorBy };
+      return { ...match, ...userLegend, colorBy: match.colorBy };
     }
     if (
       match.colorBy.type === 'quantitative' &&
@@ -164,6 +178,12 @@ export const mergeLegends = (
  * gets its `colorBy` clobbered by the size legend's `colorBy` whenever there
  * is exactly one resolved legend — silently merging two unrelated legends
  * into one and losing the "Circle size = ..." entry entirely.
+ *
+ * When a user legend matches by id but has no `colorBy`, the resolved
+ * legend's non-colorBy fields (title, subtitle, position, etc.) are
+ * preserved through `{ ...match, ...userLegend }` — a user who provides
+ * only `{ id: 'pop-legend' }` still gets the auto-generated title and a
+ * default position (for auto-mount by GeoVisProvider).
  */
 export const mergeLegendsByIdOnly = (
   userLegends: LegendSpec[],
@@ -178,18 +198,17 @@ export const mergeLegendsByIdOnly = (
     usedIds.add(match.id);
     if (!match.colorBy) return userLegend;
     if (!userLegend.colorBy) {
-      return { ...userLegend, colorBy: match.colorBy };
+      return { ...match, ...userLegend, colorBy: match.colorBy };
     }
-    if (
-      match.colorBy.type === 'quantitative' &&
-      userLegend.colorBy.type === 'quantitative'
-    ) {
-      return {
-        ...userLegend,
-        colorBy: { ...match.colorBy, ...userLegend.colorBy },
-      };
-    }
-    return userLegend;
+    // `type`/`thresholds`/`colors` (and non-colorBy fields like `position`)
+    // come from the resolved legend; the user legend only needs to carry the
+    // fields it wants to override (e.g. `defaultColor`) — no need to repeat
+    // `type`, and no need to repeat `position` just to keep auto-mounting.
+    return {
+      ...match,
+      ...userLegend,
+      colorBy: { ...match.colorBy, ...userLegend.colorBy },
+    };
   });
   // `usedIds` already covers every resolved id a user legend could share,
   // because the match above is an exact id lookup across all of

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { DashboardCard } from '@ttoss/react-dashboard';
 import { Box, Stack } from '@ttoss/ui';
@@ -28,9 +29,7 @@ export const CurrencyCard: StoryObj = {
           numberType="currency"
           type="bigNumber"
           sourceType={[{ source: 'api' }]}
-          data={{
-            api: { total: 150000 },
-          }}
+          data={{ value: 150000 }}
         />
       </Box>
     );
@@ -57,9 +56,7 @@ export const CurrencyCardUSD: StoryObj = {
           currency="USD"
           type="bigNumber"
           sourceType={[{ source: 'api' }]}
-          data={{
-            api: { total: 150000 },
-          }}
+          data={{ value: 150000 }}
         />
       </Box>
     );
@@ -86,9 +83,7 @@ export const CurrencyCardEUR: StoryObj = {
           currency="EUR"
           type="bigNumber"
           sourceType={[{ source: 'api' }]}
-          data={{
-            api: { total: 150000 },
-          }}
+          data={{ value: 150000 }}
         />
       </Box>
     );
@@ -121,7 +116,7 @@ export const CurrencyComparison: StoryObj = {
             numberType="currency"
             type="bigNumber"
             sourceType={[{ source: 'api' }]}
-            data={{ api: { total: 150000 } }}
+            data={{ value: 150000 }}
           />
         </Box>
         <Box sx={{ width: '300px' }}>
@@ -132,7 +127,7 @@ export const CurrencyComparison: StoryObj = {
             currency="USD"
             type="bigNumber"
             sourceType={[{ source: 'api' }]}
-            data={{ api: { total: 150000 } }}
+            data={{ value: 150000 }}
           />
         </Box>
         <Box sx={{ width: '300px' }}>
@@ -143,7 +138,7 @@ export const CurrencyComparison: StoryObj = {
             currency="EUR"
             type="bigNumber"
             sourceType={[{ source: 'api' }]}
-            data={{ api: { total: 150000 } }}
+            data={{ value: 150000 }}
           />
         </Box>
         <Box sx={{ width: '300px' }}>
@@ -154,7 +149,7 @@ export const CurrencyComparison: StoryObj = {
             currency="MXN"
             type="bigNumber"
             sourceType={[{ source: 'api' }]}
-            data={{ api: { total: 150000 } }}
+            data={{ value: 150000 }}
           />
         </Box>
       </Stack>
@@ -181,9 +176,7 @@ export const PercentageCard: StoryObj = {
           numberType="percentage"
           type="bigNumber"
           sourceType={[{ source: 'api' }]}
-          data={{
-            api: { total: 2.35 },
-          }}
+          data={{ value: 2.35 }}
         />
       </Box>
     );
@@ -209,9 +202,7 @@ export const NumberCard: StoryObj = {
           numberType="number"
           type="bigNumber"
           sourceType={[{ source: 'api' }]}
-          data={{
-            api: { total: 3.5 },
-          }}
+          data={{ value: 3.5 }}
         />
       </Box>
     );
@@ -237,9 +228,7 @@ export const WithPositiveTrend: StoryObj = {
           numberType="currency"
           type="bigNumber"
           sourceType={[{ source: 'api' }]}
-          data={{
-            api: { total: 150000 },
-          }}
+          data={{ value: 150000 }}
           trend={{
             value: 15.5,
             status: 'positive',
@@ -269,9 +258,7 @@ export const WithNegativeTrend: StoryObj = {
           numberType="percentage"
           type="bigNumber"
           sourceType={[{ source: 'api' }]}
-          data={{
-            api: { total: 2.35 },
-          }}
+          data={{ value: 2.35 }}
           trend={{
             value: 5.2,
             status: 'negative',
@@ -300,9 +287,7 @@ export const WithNeutralTrend: StoryObj = {
           numberType="number"
           type="bigNumber"
           sourceType={[{ source: 'api' }]}
-          data={{
-            api: { total: 1250000 },
-          }}
+          data={{ value: 1250000 }}
           trend={{
             value: 0.1,
             status: 'neutral',
@@ -332,9 +317,7 @@ export const WithStatus: StoryObj = {
           numberType="number"
           type="bigNumber"
           sourceType={[{ source: 'api' }]}
-          data={{
-            api: { total: 42 },
-          }}
+          data={{ value: 42 }}
           status={{
             text: 'Active',
             icon: 'mdi:check-circle',
@@ -364,9 +347,7 @@ export const WithAdditionalInfo: StoryObj = {
           numberType="currency"
           type="bigNumber"
           sourceType={[{ source: 'api' }]}
-          data={{
-            api: { total: 150000 },
-          }}
+          data={{ value: 150000 }}
           trend={{
             value: 15.5,
             status: 'positive',
@@ -397,9 +378,7 @@ export const DarkVariant: StoryObj = {
           numberType="currency"
           type="bigNumber"
           sourceType={[{ source: 'api' }]}
-          data={{
-            api: { total: 0.85 },
-          }}
+          data={{ value: 0.85 }}
           variant="dark"
         />
       </Box>
@@ -426,9 +405,7 @@ export const LightGreenVariant: StoryObj = {
           numberType="number"
           type="bigNumber"
           sourceType={[{ source: 'api' }]}
-          data={{
-            api: { total: 3.5 },
-          }}
+          data={{ value: 3.5 }}
           variant="light-green"
         />
       </Box>
@@ -464,7 +441,7 @@ export const WithSuffix: StoryObj = {
             numberDecimalPlaces={2}
             type="bigNumber"
             sourceType={[{ source: 'api' }]}
-            data={{ api: { total: 1500.5 } }}
+            data={{ value: 1500.5 }}
             suffix="kg"
           />
         </Box>
@@ -476,7 +453,7 @@ export const WithSuffix: StoryObj = {
             numberType="currency"
             type="bigNumber"
             sourceType={[{ source: 'api' }]}
-            data={{ api: { total: 12500 } }}
+            data={{ value: 12500 }}
             suffix="un"
           />
         </Box>
@@ -489,7 +466,7 @@ export const WithSuffix: StoryObj = {
             numberDecimalPlaces={1}
             type="bigNumber"
             sourceType={[{ source: 'api' }]}
-            data={{ api: { total: 2.3 } }}
+            data={{ value: 2.3 }}
             suffix="p.p."
           />
         </Box>
@@ -526,9 +503,7 @@ export const CustomDecimalPlaces: StoryObj = {
             numberDecimalPlaces={0}
             type="bigNumber"
             sourceType={[{ source: 'api' }]}
-            data={{
-              api: { total: 1234.567 },
-            }}
+            data={{ value: 1234.567 }}
           />
         </Box>
         <Box sx={{ width: '300px' }}>
@@ -540,9 +515,7 @@ export const CustomDecimalPlaces: StoryObj = {
             numberDecimalPlaces={2}
             type="bigNumber"
             sourceType={[{ source: 'api' }]}
-            data={{
-              api: { total: 1234.567 },
-            }}
+            data={{ value: 1234.567 }}
           />
         </Box>
         <Box sx={{ width: '300px' }}>
@@ -554,9 +527,7 @@ export const CustomDecimalPlaces: StoryObj = {
             numberDecimalPlaces={4}
             type="bigNumber"
             sourceType={[{ source: 'api' }]}
-            data={{
-              api: { total: 1234.567 },
-            }}
+            data={{ value: 1234.567 }}
           />
         </Box>
       </Stack>
@@ -585,9 +556,7 @@ export const CompleteExample: StoryObj = {
           numberType="currency"
           type="bigNumber"
           sourceType={[{ source: 'api' }]}
-          data={{
-            api: { total: 250000 },
-          }}
+          data={{ value: 250000 }}
           trend={{
             value: 22.5,
             status: 'positive',
@@ -629,7 +598,7 @@ export const CardGrid: StoryObj = {
             numberType="currency"
             type="bigNumber"
             sourceType={[{ source: 'api' }]}
-            data={{ api: { total: 150000 } }}
+            data={{ value: 150000 }}
             trend={{ value: 15.5, status: 'positive' }}
           />
         </Box>
@@ -640,7 +609,7 @@ export const CardGrid: StoryObj = {
             numberType="number"
             type="bigNumber"
             sourceType={[{ source: 'api' }]}
-            data={{ api: { total: 3.5 } }}
+            data={{ value: 3.5 }}
             variant="light-green"
           />
         </Box>
@@ -651,7 +620,7 @@ export const CardGrid: StoryObj = {
             numberType="currency"
             type="bigNumber"
             sourceType={[{ source: 'api' }]}
-            data={{ api: { total: 0.85 } }}
+            data={{ value: 0.85 }}
             variant="dark"
           />
         </Box>
@@ -662,7 +631,7 @@ export const CardGrid: StoryObj = {
             numberType="percentage"
             type="bigNumber"
             sourceType={[{ source: 'api' }]}
-            data={{ api: { total: 2.35 } }}
+            data={{ value: 2.35 }}
             trend={{ value: 5.2, status: 'negative' }}
           />
         </Box>

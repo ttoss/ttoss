@@ -1,10 +1,10 @@
 /**
  * Sizing family validation tests.
  *
- * @see /docs/website/docs/design/01-design-system/02-design-tokens/02-families/sizing.md#validation
+ * @see /docs/website/docs/design/design-system/design-tokens/families/sizing.md#validation
  */
 
-import { themeAltFlatToTest, themeFlatToTest } from '../../../helpers/theme';
+import { themeAltFlatToTest, themeFlatToTest } from '../../../fixtures/theme';
 
 // Error #5 — generated output does not emit fine-pointer hit values as the
 // baseline and coarse-pointer hit values inside @media (any-pointer: coarse).

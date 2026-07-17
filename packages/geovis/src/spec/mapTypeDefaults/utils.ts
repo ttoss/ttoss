@@ -109,6 +109,35 @@ export const niceCeil = (value: number): number => {
   return niceFraction * magnitude;
 };
 
+/**
+ * Rounds a positive value DOWN to a "nice" cartographic number — the largest
+ * value of the form `{1, 2, 2.5, 5, 10} × 10ⁿ` that is `<= value`. The floor
+ * counterpart of {@link niceCeil}: used for legend reference values that must
+ * stay at or below the data they describe (e.g. a `≥ 500` row derived from a
+ * data maximum of 523), so a reference never advertises a value no datum
+ * reaches.
+ *
+ * Returns `0` for non-positive or non-finite inputs.
+ *
+ * @param value - The raw value to round down.
+ * @returns A nice floor `<= value`, or `0` when `value` is not a positive finite number.
+ * @example
+ * niceFloor(523);    // 500
+ * niceFloor(261.5);  // 250
+ * niceFloor(130.75); // 100
+ */
+export const niceFloor = (value: number): number => {
+  if (!Number.isFinite(value) || value <= 0) return 0;
+  const exponent = Math.floor(Math.log10(value));
+  const magnitude = 10 ** exponent;
+  const fraction = value / magnitude;
+  const niceFraction = [...NICE_FRACTIONS].reverse().find((candidate) => {
+    return candidate <= fraction;
+  });
+  // `fraction` is always in [1, 10), so candidate `1` always matches.
+  return (niceFraction ?? 1) * magnitude;
+};
+
 export const pickPaletteColors = (
   palette: readonly string[],
   count: number

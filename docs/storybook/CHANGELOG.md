@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.42.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.41.0...@docs/storybook@3.42.0) (2026-07-17)
+
+### Features
+
+- **react-dashboard:** add renderCardDetail and clickableCardFilter for in-grid card expansion ([#1139](https://github.com/ttoss/ttoss/issues/1139)) ([8c4ebf4](https://github.com/ttoss/ttoss/commit/8c4ebf4ae0bad6934473a70c3e40e13e938cf104)), closes [#1138](https://github.com/ttoss/ttoss/issues/1138)
+
+# [3.41.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.40.0...@docs/storybook@3.41.0) (2026-07-15)
+
+### Features
+
+- **geovis:** spec-driven layer click via layer.click.onSelect ([#1131](https://github.com/ttoss/ttoss/issues/1131)) ([b8b2ae0](https://github.com/ttoss/ttoss/commit/b8b2ae001156cfb3cc9a3fb1d2fd98cf70ba10f7))
+
+# [3.40.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.39.0...@docs/storybook@3.40.0) (2026-07-14)
+
+### Features
+
+- **react-dashboard:** add BigNumberSparkline card for lineChart type ([#1124](https://github.com/ttoss/ttoss/issues/1124)) ([3917371](https://github.com/ttoss/ttoss/commit/3917371afeb9e8bde26cabe13d7284119948786d))
+
+# [3.39.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.38.0...@docs/storybook@3.39.0) (2026-07-11)
+
+### Features
+
+- **geovis:** refine mapType defaults and fix fallback logic for circle color and legends ([#1120](https://github.com/ttoss/ttoss/issues/1120)) ([e161747](https://github.com/ttoss/ttoss/commit/e1617475f356eaf7421b8009776e646132ef81e6))
+
 # [3.38.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.37.2...@docs/storybook@3.38.0) (2026-07-03)
 
 ### Features

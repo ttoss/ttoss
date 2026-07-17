@@ -15,7 +15,7 @@ Grammar reminder:
   - `ux`: `action` \| `input` \| `navigation` \| `feedback` \| `informational`
   - `role`: `primary` \| `secondary` \| `accent` \| `muted` \| `positive` \| `caution` \| `negative`
   - `dimension`: `background` \| `border` \| `text`
-  - `state` (optional): `hover` \| `active` \| `focused` \| `disabled` \| `selected` \| `checked` \| `current` \| etc.
+  - `state` (optional): `hover` \| `active` \| `focused` \| `disabled` \| `selected` \| `pressed` \| `checked` \| `indeterminate` \| `expanded` \| `current` \| `visited` \| `droptarget` \| `invalid` (legality varies per `ux` — see [colors.md](./families/colors.md))
 - everything else: `semantic.{family}.{group}.{step?}`
 
 ---
@@ -152,10 +152,10 @@ See [Motion](./families/motion.md), [Opacity](./families/opacity.md), [Z-Index](
 | Reference line (target/baseline)   | `semantic.dataviz.color.reference.{baseline,target}`                |
 | Highlighted / selected series      | `semantic.dataviz.color.state.{highlight,selected}`                 |
 | De-emphasized (context) series     | `semantic.dataviz.color.state.muted`                                |
-| Missing / not-applicable data      | `semantic.dataviz.color.status.{missing,suppressed,not-applicable}` |
-| Non-color differentiator — shape   | `semantic.dataviz.encoding.shape.{1..8}`                            |
-| Non-color differentiator — pattern | `semantic.dataviz.encoding.pattern.{1..6}`                          |
-| Line style (solid/dashed/dotted)   | `semantic.dataviz.encoding.stroke.{solid,dashed,dotted}`            |
+| Missing / not-applicable data      | `semantic.dataviz.color.status.{missing,suppressed,notApplicable}`  |
+| Non-color differentiator — shape   | `semantic.dataviz.encoding.shape.series.{1..8}`                     |
+| Non-color differentiator — pattern | `semantic.dataviz.encoding.pattern.series.{1..6}`                   |
+| Analytical stroke role             | `semantic.dataviz.encoding.stroke.{reference,forecast,uncertainty}` |
 
 See [Data Visualization](./data-visualization/index.md).
 

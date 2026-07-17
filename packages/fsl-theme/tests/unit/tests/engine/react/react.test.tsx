@@ -6,6 +6,7 @@ import { act, render, renderHook } from '@ttoss/test-utils/react';
 import type * as React from 'react';
 
 import { baseBundle } from '../../../../../src/baseBundle';
+import { createTheme } from '../../../../../src/createTheme';
 import { useDatavizTokens } from '../../../../../src/dataviz/useDatavizTokens';
 import { withDataviz } from '../../../../../src/dataviz/withDataviz';
 import {
@@ -18,7 +19,7 @@ import {
   useTokens,
 } from '../../../../../src/react';
 import { DATA_MODE_ATTR, DATA_THEME_ATTR } from '../../../../../src/runtime';
-import { clearDom, matchMediaMockImpl } from '../../../helpers/dom';
+import { clearDom, matchMediaMockImpl } from '../../../fixtures/dom';
 
 // jsdom does not implement matchMedia reliably — provide a stable light-mode mock
 // so all tests that create a ThemeProvider (which internally creates a runtime) are
@@ -252,6 +253,37 @@ describe('ThemeProvider prop reactivity', () => {
 
     expect(styles).toMatch(/:root\s*\{/);
     expect(styles).not.toContain('[data-tt-theme=');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// SSR style injection — hoistable <style> carries a stable href (React 19
+// dedup key). Without href the same :root block duplicates per provider.
+// ---------------------------------------------------------------------------
+
+describe('SSR style injection (href dedup key)', () => {
+  test('ThemeProvider server-renders a hoistable <style> keyed on a stable href + the CSS', async () => {
+    const { renderToStaticMarkup } = await import('react-dom/server');
+    const html = renderToStaticMarkup(
+      <ThemeProvider theme={defaultBundle}>
+        <div />
+      </ThemeProvider>
+    );
+    expect(html).toContain(':root');
+    // React reflects the hoist key as `href` or `data-href` depending on
+    // renderer; assert on the stable key value, not the attribute spelling.
+    expect(html).toMatch(/href="tt-theme-root"/);
+  });
+
+  test('themeId scopes the href so distinct themes coexist (no dedup collision)', async () => {
+    const { renderToStaticMarkup } = await import('react-dom/server');
+    const html = renderToStaticMarkup(
+      <ThemeProvider theme={defaultBundle} themeId="brand-a">
+        <div />
+      </ThemeProvider>
+    );
+    expect(html).toMatch(/href="tt-theme-brand-a"/);
+    expect(html).toContain('[data-tt-theme="brand-a"]');
   });
 });
 
@@ -1115,5 +1147,218 @@ describe('ThemeHead', () => {
     );
     const script = container.querySelector('script');
     expect(script?.innerHTML).toContain('"dark"');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// DEV-only warnings — root/themeId pairing and hoisted-style dedup mismatch
+// ---------------------------------------------------------------------------
+
+describe('ThemeProvider DEV warnings', () => {
+  let warnSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
+    clearDom();
+  });
+
+  test('warns when root is passed without themeId', () => {
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+
+    render(
+      <ThemeProvider theme={defaultBundle} root={container}>
+        <div>child</div>
+      </ThemeProvider>
+    );
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('`root` was passed without `themeId`')
+    );
+    container.remove();
+  });
+
+  test('does not warn when root is paired with themeId', () => {
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+
+    render(
+      <ThemeProvider theme={defaultBundle} themeId="scoped" root={container}>
+        <div>child</div>
+      </ThemeProvider>
+    );
+
+    expect(warnSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining('`root` was passed without `themeId`')
+    );
+    container.remove();
+  });
+
+  test('warns when two providers with different themes share the same style href', () => {
+    const themeA = createTheme({
+      overrides: { core: { colors: { brand: { 500: '#AA0000' } } } },
+    });
+    const themeB = createTheme({
+      overrides: { core: { colors: { brand: { 500: '#00BB00' } } } },
+    });
+
+    render(
+      <>
+        <ThemeProvider theme={themeA}>
+          <div>a</div>
+        </ThemeProvider>
+        <ThemeProvider theme={themeB}>
+          <div>b</div>
+        </ThemeProvider>
+      </>
+    );
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('share the same style key')
+    );
+  });
+
+  test('does not warn for two providers with distinct themeIds', () => {
+    const themeA = createTheme({
+      overrides: { core: { colors: { brand: { 500: '#AA0000' } } } },
+    });
+    const themeB = createTheme({
+      overrides: { core: { colors: { brand: { 500: '#00BB00' } } } },
+    });
+
+    render(
+      <>
+        <ThemeProvider theme={themeA} themeId="brand-a">
+          <div>a</div>
+        </ThemeProvider>
+        <ThemeProvider theme={themeB} themeId="brand-b">
+          <div>b</div>
+        </ThemeProvider>
+      </>
+    );
+
+    expect(warnSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining('share the same style key')
+    );
+  });
+
+  test('does not warn when the same theme is re-rendered (dedup is intended)', () => {
+    const { rerender } = render(
+      <ThemeProvider theme={defaultBundle}>
+        <div>a</div>
+      </ThemeProvider>
+    );
+    rerender(
+      <ThemeProvider theme={defaultBundle}>
+        <div>b</div>
+      </ThemeProvider>
+    );
+
+    expect(warnSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining('share the same style key')
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// systemModeFallback derivation from defaultMode
+// ---------------------------------------------------------------------------
+
+describe('OS-preference fallback follows defaultMode', () => {
+  // renderToStaticMarkup sidesteps React 19's per-document hoisted-style
+  // cache, which would swallow repeat injections of the same href in jsdom.
+  const staticMarkup = (node: React.ReactElement): string => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { renderToStaticMarkup } = require('react-dom/server');
+    return renderToStaticMarkup(node);
+  };
+
+  test('ThemeProvider: system default emits the fallback; fixed light does not', () => {
+    const system = staticMarkup(
+      <ThemeProvider theme={defaultBundle}>
+        <div>x</div>
+      </ThemeProvider>
+    );
+    const light = staticMarkup(
+      <ThemeProvider theme={defaultBundle} defaultMode="light">
+        <div>x</div>
+      </ThemeProvider>
+    );
+
+    expect(system).toContain('@media (prefers-color-scheme: dark)');
+    expect(light).not.toContain('@media (prefers-color-scheme:');
+  });
+
+  test('ThemeHead derives the gate from its defaultMode', () => {
+    const fixedDark = staticMarkup(
+      <ThemeHead theme={defaultBundle} defaultMode="dark" />
+    );
+    const system = staticMarkup(<ThemeHead theme={defaultBundle} />);
+
+    expect(fixedDark).not.toContain('@media (prefers-color-scheme:');
+    expect(system).toContain('@media (prefers-color-scheme: dark)');
+  });
+
+  test('ThemeStyles exposes an explicit systemModeFallback prop', () => {
+    const suppressed = staticMarkup(
+      <ThemeStyles theme={defaultBundle} systemModeFallback={false} />
+    );
+    expect(suppressed).not.toContain('@media (prefers-color-scheme:');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// root as RefObject — no transient attach to <html>
+// ---------------------------------------------------------------------------
+
+describe('ThemeProvider root as RefObject', () => {
+  let warnSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
+    clearDom();
+  });
+
+  test('attaches directly to the ref element with no transient <html> attach', () => {
+    // Manual ref object + callback ref — the file imports React as type-only.
+    const rootRef: { current: HTMLDivElement | null } = { current: null };
+
+    render(
+      <ThemeProvider theme={defaultBundle} defaultMode="light">
+        <div
+          ref={(el) => {
+            rootRef.current = el;
+          }}
+          data-testid="scope"
+        >
+          <ThemeProvider
+            theme={defaultBundle}
+            themeId="scoped"
+            defaultMode="light"
+            root={rootRef}
+          >
+            <div>x</div>
+          </ThemeProvider>
+        </div>
+      </ThemeProvider>
+    );
+
+    const scope = document.querySelector('[data-testid="scope"]');
+    expect(scope?.getAttribute(DATA_MODE_ATTR)).toBe('light');
+    expect(scope?.getAttribute(DATA_THEME_ATTR)).toBe('scoped');
+    // The outer provider owns <html>; the scoped one never touched it.
+    expect(document.documentElement.getAttribute(DATA_THEME_ATTR)).toBeNull();
+    // No spurious multi-runtime warning — the ref form never attaches to <html>.
+    expect(warnSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining('Multiple theme runtimes')
+    );
   });
 });

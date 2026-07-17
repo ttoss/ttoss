@@ -1,12 +1,12 @@
 /**
  * Dataviz Validation Tests
  *
- * @see /docs/website/docs/design/01-design-system/02-design-tokens/03-data-visualization/dataviz-colors.md#validation
- * @see /docs/website/docs/design/01-design-system/02-design-tokens/03-data-visualization/dataviz-encodings.md#validation
- * @see /docs/website/docs/design/01-design-system/02-design-tokens/03-data-visualization/index.md#validation
+ * @see /docs/website/docs/design/design-system/design-tokens/data-visualization/dataviz-colors.md#validation
+ * @see /docs/website/docs/design/design-system/design-tokens/data-visualization/dataviz-encodings.md#validation
+ * @see /docs/website/docs/design/design-system/design-tokens/data-visualization/index.md#validation
  */
 
-import { themeFlatToTest, themeToTest } from '../../../helpers/theme';
+import { themeFlatToTest, themeToTest } from '../../../fixtures/theme';
 
 // themeToTest.base — unresolved refs; used for structural and reference-pattern checks.
 // themeFlatToTest  — all {refs} resolved to final hex/number; used for value-equality checks.
@@ -45,7 +45,7 @@ const statusValues = (): (string | number)[] => {
   return [
     flat['semantic.dataviz.color.status.missing'],
     flat['semantic.dataviz.color.status.suppressed'],
-    flat['semantic.dataviz.color.status.na'],
+    flat['semantic.dataviz.color.status.notApplicable'],
   ];
 };
 
