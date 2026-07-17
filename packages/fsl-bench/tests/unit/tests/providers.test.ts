@@ -10,6 +10,8 @@ const ENV_KEYS = [
   'FSL_BENCH_VERTEX_MODEL',
   'FSL_BENCH_BEDROCK_MODEL',
   'ANTHROPIC_VERTEX_PROJECT_ID',
+  'GOOGLE_APPLICATION_CREDENTIALS_JSON',
+  'GOOGLE_CLOUD_PROJECT',
   'CLOUD_ML_REGION',
   'AWS_REGION',
 ];
@@ -62,6 +64,25 @@ describe('parseProviderSpec', () => {
   });
 });
 
+describe('createProvider — vertex family dispatch', () => {
+  test('vertex accepts both claude-* and gemini-* model ids', () => {
+    expect(createProvider('vertex:claude-opus-4-8').model).toBe(
+      'claude-opus-4-8'
+    );
+    expect(createProvider('vertex:gemini-3.5-flash').model).toBe(
+      'gemini-3.5-flash'
+    );
+    // Both are the same channel in the report's provider column.
+    expect(createProvider('vertex:gemini-3.5-flash').name).toBe('vertex');
+  });
+
+  test('vertex rejects a model of unknown family at construction', () => {
+    expect(() => {
+      return createProvider('vertex:gpt-5');
+    }).toThrow(/cannot infer the model family of "gpt-5"/);
+  });
+});
+
 describe('createProvider — model resolution', () => {
   test('uses the registry default when nothing overrides', () => {
     for (const [id, entry] of Object.entries(PROVIDERS)) {
@@ -96,10 +117,19 @@ describe('createProvider — lazy auth', () => {
     }
   });
 
-  test('vertex surfaces an actionable auth error at call time', async () => {
+  test('vertex (claude family) surfaces an actionable auth error at call time', async () => {
     await expect(
       createProvider('vertex').generate({ system: 's', messages: [] })
-    ).rejects.toThrow('ANTHROPIC_VERTEX_PROJECT_ID');
+    ).rejects.toThrow('GOOGLE_APPLICATION_CREDENTIALS_JSON');
+  });
+
+  test('vertex (gemini family) surfaces the same auth error at call time', async () => {
+    await expect(
+      createProvider('vertex:gemini-3.5-flash').generate({
+        system: 's',
+        messages: [],
+      })
+    ).rejects.toThrow('GOOGLE_APPLICATION_CREDENTIALS_JSON');
   });
 
   test('bedrock surfaces an actionable auth error at call time', async () => {

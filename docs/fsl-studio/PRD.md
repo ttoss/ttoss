@@ -602,6 +602,26 @@ themeId)` emits element-scoped selectors (`[data-tt-theme]` /
   and fail when co-located with userEvent-based tests.
 - 104 unit tests, 100% coverage on every dimension.
 
+**fsl-bench provider refactor (2026-07-17, user-directed):**
+
+- By explicit user direction (D1 credential unblocking), `packages/fsl-bench` providers were
+  refactored to channel×model axes: the `vertex` channel is multi-family — Model Garden hosts
+  Claude (Anthropic Messages dialect) and Gemini (`generateContent` dialect) — and the model
+  id picks the dialect (`--providers vertex:gemini-3.5-flash,vertex:gemini-2.5-pro`). Pure
+  resolution logic lives in `src/providers/vertexConfig.ts` (100% covered); transport in
+  `src/providers/vertex.ts` (coverage-excluded like the other transports).
+- Credential bootstrap: `GOOGLE_APPLICATION_CREDENTIALS_JSON` takes the full service-account
+  key as an env string (the shape environment secrets arrive in; no file on disk; the key's
+  `project_id` is used). Fallback: standard ADC + `ANTHROPIC_VERTEX_PROJECT_ID` /
+  `GOOGLE_CLOUD_PROJECT`; `CLOUD_ML_REGION` overrides the `global` default location.
+- Smoke-validated against the user's real project: `vertex:gemini-3.5-flash` and
+  `vertex:gemini-2.5-pro` both answered; the Claude arm authenticates and reaches Vertex but
+  is quota-blocked (429, quota 0, increase requests auto-denied — sandbox project profile).
+  D1 campaign plan: two Gemini models via one credential; a Claude leg can be added later via
+  `anthropic:<model>` (needs `ANTHROPIC_API_KEY`) without further code changes.
+- The `fsl` skill and the `fsl-ui-skill` bench condition will be implemented in the public
+  `ttoss/skills` repository (user decision), not in this monorepo.
+
 ## 15. References
 
 - Problem/strategy: `packages/fsl-ui/INTERNAL/` (PURPOSE, STRATEGIC_EVAL, BENCHMARK_EVAL,

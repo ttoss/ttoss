@@ -30,11 +30,12 @@ import type {
  *   pnpm run bench                       # full matrix, 5 reps
  *   pnpm run bench -- --reps 3 --providers anthropic \
  *     --libraries fsl-ui,react-aria --scenarios dialog,menu
- *   pnpm run bench -- --providers vertex:claude-opus-4-8,gemini
+ *   pnpm run bench -- --providers vertex:gemini-3.5-flash,vertex:gemini-2.5-pro
  *   pnpm run bench -- --dry              # print the matrix, no API calls
  *
  * Providers (`<id>` or `<id>:<model>`): anthropic, gemini, vertex, bedrock
- * — auth and default models in the provider registry (src/providers) and
+ * — vertex serves both Claude and Gemini (the model id picks the dialect);
+ * auth and default models in the provider registry (src/providers) and
  * README. Every completion, code extraction and gauntlet verdict is
  * appended to results/<runId>/samples.jsonl (the audit trail); the report
  * is rendered at the end.
