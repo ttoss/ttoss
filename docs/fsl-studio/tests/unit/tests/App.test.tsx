@@ -41,19 +41,21 @@ test('stage renders fsl-ui components in light and dark panes', () => {
   expect(deleteButton).toHaveAttribute('data-consequence', 'destructive');
 });
 
-test('switching lens swaps the panels but never resets the stage', async () => {
+test('switching lens swaps the panels and the stage subject, keeping the frame', async () => {
   const user = userEvent.setup();
   render(<App />);
 
   const navigator = screen.getByRole('complementary', { name: 'Navigator' });
   const themeCopy = navigator.textContent;
+  // Theme lens stage subject is the sample gallery.
+  expect(screen.getAllByRole('button', { name: 'Save' })).toHaveLength(2);
 
   await user.click(screen.getByRole('radio', { name: 'Components' }));
 
+  // Panels swap; the stage frame (both panes) persists (PRD §6.2).
   expect(navigator.textContent).not.toBe(themeCopy);
-  // Stage persistence (PRD §6.2): same panes, same content, no remount reset.
   expect(screen.getByTestId('stage-pane-light')).toBeInTheDocument();
-  expect(screen.getAllByRole('button', { name: 'Save' })).toHaveLength(2);
+  expect(screen.getByTestId('stage-pane-dark')).toBeInTheDocument();
 });
 
 test('lens selection cannot be emptied (one lens is always active)', async () => {

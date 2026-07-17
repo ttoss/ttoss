@@ -565,6 +565,43 @@ themeId)` emits element-scoped selectors (`[data-tt-theme]` /
 - **Contrast scope:** light mode only in Phase 1 (curated pairs); dark-mode contrast is a
   follow-up.
 
+**Phase 2 (2026-07-17):**
+
+- **Catalog auto-discovery works as specified (F3.1).** `catalog.ts` enumerates the
+  `@ttoss/fsl-ui` barrel and keeps every `*Meta`-shaped export, so a new component appears
+  with zero registration. A test asserts `CATALOG.length` equals the count of `*Meta`
+  exports (reachability AC).
+- **Legality panel is matrix-driven (F3.2, AD-6).** The inspector offers only
+  `ENTITY_EVALUATION[entity]` / `ENTITY_CONSEQUENCE[entity]` values, so an illegal
+  combination cannot be expressed. A property test over the whole catalog asserts the offered
+  props are always a subset of the matrices (the "no illegal combination" AC).
+- **Preview + copy-JSX are one registry (F3.2/F3.3).** `previews.tsx` pairs a live
+  `render(sel)` with the matching `code(sel)` per component so they never drift. It is a
+  curated set (~16 components across all 5 non-Input/Selection entities that carry
+  evaluation, plus Input/Selection controls). Components without a registry entry still
+  appear in the catalog with full identity + legal-props + CONTRACT link and are shown live
+  in the example pages; we never emit an unverified snippet (keeps the "copied JSX
+  typechecks" AC honest — the call-site typecheck also guards it at build).
+- **Example pages (F3.5)** are hand-authored (form+validation, destructive confirm, wizard,
+  dashboard), aligned with the fsl-bench golden scenarios but not imported from it (those are
+  prompt specs, not React). They demonstrate the composites the preview registry doesn't
+  cover. Toast deferred (needs the queue API) — noted for a later pass.
+- **Stage subject follows the active lens (refines §6.2).** The stage _frame_ (light/dark
+  panes) persists across lens switches, but the subject reflects the lens (Theme → sample
+  gallery; Components → selected component/page). Both are themed by the live bundle, so
+  editing the theme and flipping to Components re-themes the selection — verified in Chromium
+  (example page accent → `#e11d48` after a brand edit). Fuller "keep a specific component on
+  stage while theming" is a Phase 4 refinement once session compositions exist. The Phase 0
+  stage-persistence test was updated to assert the frame persists (not specific content).
+- **`meta.consequence` identity row removed:** no shipped `*Meta` declares an intrinsic
+  `consequence`, so rendering it was an unreachable branch; authorial consequence surfaces in
+  the legal-props panel. Re-add if a future component sets it.
+- **Testing lesson reinforced:** `userEvent.setup()` installs a lingering clipboard stub that
+  shadows a manual mock, so the copy-JSX tests live in their own file
+  (`ComponentCopy.test.tsx`) driven purely by `fireEvent` — verified they pass in isolation
+  and fail when co-located with userEvent-based tests.
+- 104 unit tests, 100% coverage on every dimension.
+
 ## 15. References
 
 - Problem/strategy: `packages/fsl-ui/INTERNAL/` (PURPOSE, STRATEGIC_EVAL, BENCHMARK_EVAL,
