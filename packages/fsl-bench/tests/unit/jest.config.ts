@@ -14,8 +14,10 @@ export default jestUnitConfig({
     '/node_modules/',
     // Network + CLI orchestration — exercised only in real campaigns (needs
     // API keys); everything they orchestrate (gauntlet, report, extract,
-    // stats) is unit-tested.
-    'src/providers/',
+    // stats) is unit-tested. The provider REGISTRY (providers/index.ts) is
+    // pure logic and stays covered; only the transport impls are excluded.
+    'src/providers/claude.ts',
+    'src/providers/gemini.ts',
     'src/runner.ts',
     'src/reportCli.ts',
     // Gauntlet L2/L3 executes in a dedicated child Node process (native

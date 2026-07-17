@@ -454,7 +454,9 @@ error rate + human corrections.
 >   contribution from model priors. This is the decisive number.
 > - **Models** — one Anthropic + one non-Anthropic (Gemini) for claim
 >   neutrality; defaults `claude-opus-4-8` / `gemini-pro-latest`,
->   env-overridable.
+>   overridable per run. Transport channels are user-selectable (direct
+>   APIs, Claude via Vertex AI or Amazon Bedrock) — auth and per-channel
+>   defaults live in the fsl-bench README.
 > - **Grading** — objective gauntlet (tsc strict → jsdom render → RTL
 >   behavior asserts in an isolated child process per sample) + mechanical
 >   semantic lint; repair loop ≤ 2 (rounds-to-green proxies human

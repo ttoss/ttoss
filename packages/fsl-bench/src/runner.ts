@@ -11,9 +11,8 @@ import {
   LIBRARIES,
   loadContext,
 } from './libraries.ts';
-import { createAnthropicProvider } from './providers/anthropic.ts';
-import { createGeminiProvider } from './providers/gemini.ts';
 import type { ChatMessage, Provider } from './providers/index.ts';
+import { createProvider } from './providers/index.ts';
 import { renderReport } from './report.ts';
 import { getScenario, SCENARIOS } from './scenarios/index.ts';
 import type {
@@ -31,12 +30,14 @@ import type {
  *   pnpm run bench                       # full matrix, 5 reps
  *   pnpm run bench -- --reps 3 --providers anthropic \
  *     --libraries fsl-ui,react-aria --scenarios dialog,menu
+ *   pnpm run bench -- --providers vertex:claude-opus-4-8,gemini
  *   pnpm run bench -- --dry              # print the matrix, no API calls
  *
- * Requires ANTHROPIC_API_KEY and/or GEMINI_API_KEY. Every completion, code
- * extraction and gauntlet verdict is appended to
- * results/<runId>/samples.jsonl (the audit trail); the report is rendered
- * at the end.
+ * Providers (`<id>` or `<id>:<model>`): anthropic, gemini, vertex, bedrock
+ * — auth and default models in the provider registry (src/providers) and
+ * README. Every completion, code extraction and gauntlet verdict is
+ * appended to results/<runId>/samples.jsonl (the audit trail); the report
+ * is rendered at the end.
  */
 const MAX_REPAIR_ROUNDS = 2;
 
@@ -158,7 +159,8 @@ interface CliOptions {
   reps: number;
   scenarios: ScenarioId[];
   libraries: LibraryId[];
-  providers: ('anthropic' | 'gemini')[];
+  /** Provider specs: `<id>` or `<id>:<model>` (see providers/index.ts). */
+  providers: string[];
   dry: boolean;
   runId: string;
 }
@@ -191,9 +193,7 @@ const parseArgs = (argv: string[]): CliOptions => {
     } else if (argument === '--libraries') {
       options.libraries = argv[(index += 1)].split(',') as LibraryId[];
     } else if (argument === '--providers') {
-      options.providers = argv[(index += 1)].split(
-        ','
-      ) as CliOptions['providers'];
+      options.providers = argv[(index += 1)].split(',');
     } else {
       throw new Error(`Unknown argument: ${argument}`);
     }
@@ -248,11 +248,7 @@ const describeOutcome = (sample: SampleRecord): string => {
 const main = async (): Promise<void> => {
   const options = parseArgs(process.argv.slice(2));
 
-  const providers: Provider[] = options.providers.map((name) => {
-    return name === 'anthropic'
-      ? createAnthropicProvider()
-      : createGeminiProvider();
-  });
+  const providers: Provider[] = options.providers.map(createProvider);
 
   const matrix = buildMatrix(options, providers);
 

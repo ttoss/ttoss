@@ -83,21 +83,38 @@ bumping the suite version in this section — never a silent edit.
 **Current suite version: 1** (this line is the single definition site —
 campaign reports compare only within a suite version).
 
+## Providers and models
+
+Two orthogonal choices: the **model family** (Claude, Gemini — what the
+report compares) and the **transport channel** (how you reach it — whichever
+auth you have). Pick any subset per run with `--providers`:
+
+| Provider    | Channel                   | Auth (env)                                                                           | Default model               |
+| ----------- | ------------------------- | ------------------------------------------------------------------------------------ | --------------------------- |
+| `anthropic` | Anthropic API             | `ANTHROPIC_API_KEY`                                                                  | `claude-opus-4-8`           |
+| `gemini`    | Google AI API             | `GEMINI_API_KEY`                                                                     | `gemini-pro-latest`¹        |
+| `vertex`    | Claude via Vertex AI      | `GOOGLE_APPLICATION_CREDENTIALS` + `ANTHROPIC_VERTEX_PROJECT_ID` + `CLOUD_ML_REGION` | `claude-sonnet-5`           |
+| `bedrock`   | Claude via Amazon Bedrock | AWS credentials chain + `AWS_REGION`                                                 | `anthropic.claude-opus-4-8` |
+
+¹ Google-maintained alias resolving to the current pro-tier model — pinned
+snapshots (e.g. `gemini-2.5-pro`) get retired for new keys/projects and 404.
+
+**Model override**, highest precedence first: inline spec
+(`--providers vertex:claude-opus-4-8`) → env (`FSL_BENCH_<PROVIDER>_MODEL`)
+→ the default above. For a frozen campaign, pin exact model ids via inline
+spec or env and record them with the report. `vertex`/`bedrock` are the same
+Claude family through cloud channels — the D1 A/B needs one Claude + one
+Gemini, whichever channel is available to you.
+
 ## Running a campaign
 
 ```bash
-export ANTHROPIC_API_KEY=...   # provider: anthropic (default model claude-opus-4-8)
-export GEMINI_API_KEY=...      # provider: gemini (default model gemini-pro-latest — a Google-maintained
-                                # alias; pinned snapshots like gemini-2.5-pro get retired for new
-                                # keys/projects on a rolling basis and 404)
-
-pnpm run bench                 # full matrix: 5 scenarios x 5 conditions x 2 providers x 5 reps
+pnpm run bench                 # full matrix: 5 scenarios x 5 conditions x default providers (anthropic,gemini) x 5 reps
 pnpm run bench -- --dry        # print the matrix, no API calls
-pnpm run bench -- --reps 3 --providers anthropic --scenarios dialog,menu
+pnpm run bench -- --providers vertex,gemini            # Claude via Vertex instead of the direct API
+pnpm run bench -- --providers bedrock:anthropic.claude-sonnet-5 --reps 3 --scenarios dialog,menu
 pnpm run bench:report -- <runId>   # re-render a past run's report
 ```
-
-Model overrides: `FSL_BENCH_ANTHROPIC_MODEL`, `FSL_BENCH_GEMINI_MODEL`.
 
 Every completion, extracted code and gauntlet verdict is appended to
 `results/<runId>/samples.jsonl` (the audit trail; content hashes of prompt
