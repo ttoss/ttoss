@@ -4,6 +4,11 @@
 // is a client module (Next.js App Router). The `./semantics` entry stays
 // directive-free: taxonomy data is server-safe.
 export type {
+  AppShellProps,
+  AppShellSidebarWidth,
+} from './components/AppShell/AppShell';
+export { AppShell, appShellMeta } from './components/AppShell/AppShell';
+export type {
   BoxBackground,
   BoxBorder,
   BoxMaxWidth,

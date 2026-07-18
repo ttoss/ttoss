@@ -120,6 +120,18 @@ describe('Box', () => {
     expect(root()?.style.maxWidth).toBe('');
   });
 
+  test('grow fills the flex main axis and allows shrinking', () => {
+    render(<Box grow />);
+    const el = root();
+    expect(el?.style.flexGrow).toBe('1');
+    expect(el?.style.minWidth).toBe('0');
+  });
+
+  test('grow defaults off (no flex-grow)', () => {
+    render(<Box />);
+    expect(root()?.style.flexGrow).toBe('');
+  });
+
   test('forwards pass-through props to the root', () => {
     render(<Box id="panel" aria-label="Panel" role="group" />);
     const el = root();

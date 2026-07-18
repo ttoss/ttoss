@@ -70,6 +70,12 @@ export type DomFixture = {
 
 export const DOM_FIXTURES: Record<string, DomFixture> = {
   // ── standalone components ─────────────────────────────────────────────
+  AppShell: {
+    scope: 'app-shell',
+    element: () => {
+      return <pkg.AppShell>main</pkg.AppShell>;
+    },
+  },
   Box: {
     scope: 'box',
     element: () => {

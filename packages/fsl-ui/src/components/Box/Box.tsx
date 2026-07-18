@@ -95,6 +95,13 @@ const borderStyleFor = (
   };
 };
 
+/** Flex-item growth: fill the main axis and allow shrinking past content. */
+const growStyle = (
+  grow: boolean
+): Pick<React.CSSProperties, 'flexGrow' | 'minWidth'> => {
+  return grow ? { flexGrow: 1, minWidth: 0 } : {};
+};
+
 /** Props for the Box component. */
 export interface BoxProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
@@ -141,6 +148,15 @@ export interface BoxProps extends Omit<
    * @default 'none'
    */
   maxWidth?: BoxMaxWidth;
+  /**
+   * Let the Box grow to fill the free space along a flex parent's main axis
+   * (`flex-grow: 1`, with `min-width: 0` so it can also shrink past its
+   * content). Use it inside a horizontal `Stack` to make one child — a field,
+   * an input — take the remaining width. A structural flex behaviour, not a
+   * length.
+   * @default false
+   */
+  grow?: boolean;
   /** The Box's content. */
   children?: React.ReactNode;
 }
@@ -174,6 +190,7 @@ export const Box = ({
   border = 'none',
   width = 'auto',
   maxWidth = 'none',
+  grow = false,
   children,
   ...props
 }: BoxProps) => {
@@ -192,6 +209,7 @@ export const Box = ({
           ...borderStyleFor(border),
           width: WIDTH[width],
           maxWidth: MAX_WIDTH[maxWidth],
+          ...growStyle(grow),
         } as React.CSSProperties
       }
     >
