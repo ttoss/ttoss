@@ -22,6 +22,7 @@ import {
   TagGroup,
   TextField,
   TextFieldControl,
+  TextFieldError,
   TextFieldLabel,
   ToggleButton,
   Toolbar,
@@ -225,12 +226,22 @@ export const PREVIEWS: Record<string, PreviewDef> = {
   },
 
   TextField: {
+    // The preview also shows the invalid runtime state (F3.2): validation is
+    // `isInvalid`, never a color prop — seeing it beside the default makes
+    // that contract visible. The copied snippet stays the minimal, valid one.
     render: () => {
       return (
-        <TextField>
-          <TextFieldLabel>Email</TextFieldLabel>
-          <TextFieldControl type="email" />
-        </TextField>
+        <div className="preview-col">
+          <TextField>
+            <TextFieldLabel>Email</TextFieldLabel>
+            <TextFieldControl type="email" />
+          </TextField>
+          <TextField isInvalid>
+            <TextFieldLabel>Email (invalid state)</TextFieldLabel>
+            <TextFieldControl type="email" />
+            <TextFieldError>Email is required.</TextFieldError>
+          </TextField>
+        </div>
       );
     },
     code: () => {
