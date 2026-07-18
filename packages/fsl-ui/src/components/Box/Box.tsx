@@ -8,7 +8,7 @@ import type { ComponentMeta } from '../../semantics';
 //
 // Entity = Structure → CONTRACT.md §1 row: colors `informational`, radii
 // `surface`, border `outline.surface`, spacing `inset.surface`. Box is the
-// sanctioned, token-constrained escape hatch (D1 / ADR-021): a generic block
+// sanctioned, token-constrained escape hatch (D1 / ADR-009): a generic block
 // container whose every visual prop accepts *only* a token key — never a raw
 // `style`/`className`. It is expressive enough to compose one-off layout
 // containers (a padded region, a width-constrained column, a subtly grouped
@@ -146,7 +146,7 @@ export interface BoxProps extends Omit<
 }
 
 /**
- * The token-constrained escape hatch — a generic block container (D1 / ADR-021).
+ * The token-constrained escape hatch — a generic block container (D1 / ADR-009).
  *
  * Entity = Structure. Reach for Box when you need a one-off padded, sized, or
  * lightly-grouped region that is not a flex/grid layout (`Stack`/`Grid`) and

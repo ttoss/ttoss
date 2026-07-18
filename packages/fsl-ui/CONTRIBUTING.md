@@ -414,3 +414,20 @@ Governance disposition: **the widening is NOT proposed at this time.** Per the e
 Rejected: adding `surface`/`status` (or a new `track`) to `ENTITY_STRUCTURE.Input` now — nominal, unevidenced vocabulary growth; declaring the track as `Input`/`surface` or output as `Input`/`status` — illegal today (contract test fails), and the whole point of the matrices is that they fail.
 Cost: Slider's track/output are not auto-discovered identities (no contract-test row); they are covered by the component's behavior + axe tests instead.
 Anchors: `src/components/Slider/Slider.tsx`, ROADMAP Slider row, `src/semantics/taxonomy.ts` (`ENTITY_STRUCTURE.Input`).
+
+### ADR-009: A token-constrained presentational layer (Box/Grid/Container) is the sanctioned composition escape hatch
+
+Status: accepted (2026-07-18)
+Tags: presentational-layer, structure, escape-hatch, composition, governance
+
+Context: FSL Studio — the first real consumer — needed **827 lines of `studio.css`** with zero token redefinitions and zero library overrides (measured, EVOLUTION.md §1). The CSS filled a _vacuum_: the package shipped 34 interactive controls but nothing for composition (no `Box`/`Grid`/`Container`), so every shell, layout, and one-off region had no library answer and fell to raw CSS. The doctrine simultaneously forbade variation (§4 "no size prop") and free escape (§7 host-knobs only for composites), leaving no way to express a padded/sized/grouped region.
+Decision: ship a **presentational layer** — `Box` (generic block escape hatch), `Grid` (2D), `Container` (page shell), alongside the existing `Stack`/`Surface`/`Text`/`Heading` — all Entity = `Structure`. The escape hatch is real but **token-constrained**: every visual prop accepts _only_ a token key (`padding="md"`, `background="muted"`, `radius="surface"`, `columns={3}`, `maxWidth="reading"`) — never a raw `style`/`className`/hex/px. Layout _behaviour_ keywords that are not design tokens (flex/grid alignment, `auto`/`100%`/`fit-content`, `text-align`, `tabular-nums`) are allowed as literals, exactly as `Stack` already maps `align`/`justify` to flex keywords. This supersedes "no style at all": expressive enough to compose any app layout, constrained enough that no arbitrary value can enter a consumer.
+Rejected: a free `style`/`className` prop (re-admits arbitrary hex/px — the exact drift the token contract exists to prevent); a component-per-layout explosion (does not scale — the Studio proved 38 hand-rolled selectors); leaving composition to host CSS (the status quo that produced 827 lines); a `weight` prop on Text/Heading (weight belongs to the type-scale step — a free weight knob is the same "no size prop" violation §4 forbids).
+Cost: a broader public surface (four+ layout primitives) and a standing judgement call at review time — "is this prop a token key or a layout keyword?" (the contract tests still forbid hex/rgb/`var(--tt-*,fallback)` in every component source, which catches the dangerous cases). `Box` overlaps `Surface` on padding/background/border, disambiguated by intent: `Surface` bears elevation/depth; `Box` is a plain container.
+Anchors: `src/components/{Box,Grid,Container,Stack,Surface,Text,Heading}`, `src/tokens/CONTRACT.md` §4/§7, `packages/fsl-ui/INTERNAL/EVOLUTION.md` §3 (D1).
+
+Re-litigation answers:
+
+- "Doesn't an escape hatch break 'no arbitrary values in consumers'?" → no — Box accepts only token keys and layout keywords; there is no channel for a raw hex/px. The principle is preserved; only "no style prop at all" is superseded.
+- "Why is `columns={3}` allowed but `width: 300px` is not?" → a track _count_ is structural (like flex order), not a length; `300px` is an arbitrary length. Box exposes the former and forbids the latter.
+- "When should I use Box vs Surface vs Stack vs Grid?" → Stack = 1D flex rhythm; Grid = 2D; Container = centered page shell; Surface = depth-bearing card; Box = everything else (a plain padded/sized/grouped region).

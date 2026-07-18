@@ -68,14 +68,17 @@ This _strengthens_ "meaning defined once survives every projection".
 
 ## 3. Key architectural decisions (to be ratified as ADRs)
 
-### D1 — `Box` is the sanctioned, token-constrained escape hatch
+### D1 — `Box` is the sanctioned, token-constrained escape hatch (ratified: ADR-009)
 
 Supersedes "no style at all". `Box` (and the layout primitives) expose **typed
 props that accept only token keys** — `padding="md"` (spacing scale),
-`background="informational.primary"` (semantic color), `radius="surface"`,
-`maxWidth="…"` (sizing) — never a free `style`/`className`. Expressive enough to
-compose any app layout; constrained enough that no arbitrary value can enter.
-The old `--fsl-*` host knobs (§7) remain for host-owned geometry on composites.
+`background="muted"` (informational color), `radius="surface"`,
+`maxWidth="reading"` (sizing) — never a free `style`/`className`. Expressive
+enough to compose any app layout; constrained enough that no arbitrary value can
+enter. The old `--fsl-*` host knobs (§7) remain for host-owned geometry on
+composites. **Done in WS-A** (ratified as fsl-ui ADR-009): `Box`, `Grid`,
+`Container` shipped alongside `Stack`/`Surface`; `Text`/`Heading` gained
+`align` + tabular `numeric`.
 
 ### D1.5 — `hit` collapses to a single theme-defined floor (ADR-020)
 
@@ -133,9 +136,11 @@ coverage, JSDoc, `llms.txt`/CONTRACT update) and, where architectural, an ADR.
     CONTRACT §4, `llms.txt`, tests.
   - ⏳ **Remaining:** implement the `data-tt-density` projection runtime
     (emitter block + provider + per-density remaps per §3 D2).
-- **WS-A — Presentational layer (fsl-ui).** `Box` (D1), `Grid` (2D),
-  `Container`; complete `Text`/`Heading` (`weight`, eyebrow/label treatment);
-  keep `Stack`/`Surface`. All token-constrained, no raw values.
+- **WS-A — Presentational layer (fsl-ui). ✅ DONE.** `Box` (D1 / ADR-009),
+  `Grid` (2D), `Container`; `Text`/`Heading` gained `align` + tabular `numeric`
+  (a free `weight` prop was rejected — weight belongs to the type step;
+  uppercase eyebrows read as `label-sm`/`muted`). `Stack`/`Surface` kept. All
+  token-constrained, no raw values, 100% coverage.
 - **WS-B — Control density adoption (fsl-ui).** Wire the density-aware steps
   through the controls (they mostly inherit; verify `Button` et al. resolve the
   projected steps); add the density provider export/wiring.
