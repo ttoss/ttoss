@@ -1,5 +1,6 @@
 import { getThemeStylesContent } from '@ttoss/fsl-theme/css';
 import { toDTCG } from '@ttoss/fsl-theme/dtcg';
+import { Stack, Text } from '@ttoss/fsl-ui';
 import * as React from 'react';
 
 import { generateThemeCode } from './overrides';
@@ -56,36 +57,38 @@ export const ExportPanel = () => {
   };
 
   return (
-    <section className="theme-export" aria-label="Export">
-      <div className="theme-export-tabs" role="tablist" aria-label="Format">
-        {FORMATS.map((f) => {
-          const selected = format === f.id;
-          return (
-            <button
-              key={f.id}
-              type="button"
-              role="tab"
-              aria-selected={selected}
-              className="theme-export-tab"
-              onClick={() => {
-                return setFormat(f.id);
-              }}
-            >
-              {f.label}
-            </button>
-          );
-        })}
-        <button type="button" className="theme-export-copy" onClick={copy}>
-          {copied ? 'Copied' : 'Copy'}
-        </button>
-      </div>
-      <pre className="theme-export-code" data-testid="export-content">
-        <code>{content}</code>
-      </pre>
-      <p className="theme-hint">
-        Use with the fsl skill:{' '}
-        <code>npx skills add ttoss/skills --skill fsl</code>
-      </p>
+    <section aria-label="Export">
+      <Stack gap="sm">
+        <div className="theme-export-tabs" role="tablist" aria-label="Format">
+          {FORMATS.map((f) => {
+            const selected = format === f.id;
+            return (
+              <button
+                key={f.id}
+                type="button"
+                role="tab"
+                aria-selected={selected}
+                className="theme-export-tab"
+                onClick={() => {
+                  return setFormat(f.id);
+                }}
+              >
+                {f.label}
+              </button>
+            );
+          })}
+          <button type="button" className="theme-export-copy" onClick={copy}>
+            {copied ? 'Copied' : 'Copy'}
+          </button>
+        </div>
+        <pre className="theme-export-code" data-testid="export-content">
+          <code>{content}</code>
+        </pre>
+        <Text variant="body-sm" tone="muted">
+          Use with the fsl skill:{' '}
+          <code>npx skills add ttoss/skills --skill fsl</code>
+        </Text>
+      </Stack>
     </section>
   );
 };

@@ -30,9 +30,9 @@ body {
 .studio-header {
   display: flex;
   align-items: center;
-  gap: var(--tt-spacing-6, 1.5rem);
-  padding-block: var(--tt-spacing-3, 0.75rem);
-  padding-inline: var(--tt-spacing-5, 1.25rem);
+  gap: var(--tt-core-spacing-6);
+  padding-block: var(--tt-core-spacing-3);
+  padding-inline: 1.25rem;
   border-block-end: 1px solid
     var(--tt-colors-informational-primary-border-default);
 }
@@ -55,7 +55,7 @@ body {
 
 .studio-navigator,
 .studio-inspector {
-  padding: var(--tt-spacing-4, 1rem);
+  padding: var(--tt-core-spacing-4);
   overflow-y: auto;
 }
 
@@ -77,14 +77,14 @@ body {
 }
 
 .stage {
-  padding: var(--tt-spacing-4, 1rem);
+  padding: var(--tt-core-spacing-4);
   overflow: auto;
 }
 
 .stage-panes {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--tt-spacing-4, 1rem);
+  gap: var(--tt-core-spacing-4);
   block-size: 100%;
 }
 
@@ -141,24 +141,24 @@ body {
 .theme-scale {
   border: 1px solid var(--tt-colors-informational-primary-border-default);
   border-radius: 0.5rem;
-  padding: var(--tt-spacing-3, 0.75rem);
+  padding: var(--tt-core-spacing-3);
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--tt-spacing-1, 0.25rem);
+  gap: var(--tt-core-spacing-1);
 }
 
 .theme-scale-legend {
   font-size: 0.8125rem;
   font-weight: 600;
-  padding-inline: var(--tt-spacing-2, 0.5rem);
+  padding-inline: var(--tt-core-spacing-2);
 }
 
 .theme-swatch-row {
   display: grid;
   grid-template-columns: 2.5rem 2rem 1fr auto;
   align-items: center;
-  gap: var(--tt-spacing-2, 0.5rem);
+  gap: var(--tt-core-spacing-2);
 }
 
 .theme-swatch-label {
@@ -181,8 +181,8 @@ body {
   font-size: 0.8125rem;
   font-variant-numeric: tabular-nums;
   min-inline-size: 0;
-  padding-block: var(--tt-spacing-1, 0.25rem);
-  padding-inline: var(--tt-spacing-2, 0.5rem);
+  padding-block: var(--tt-core-spacing-1);
+  padding-inline: var(--tt-core-spacing-2);
   border: 1px solid var(--tt-colors-input-primary-border-default,
     var(--tt-colors-informational-primary-border-default));
   border-radius: 0.25rem;
@@ -201,7 +201,7 @@ body {
 .theme-apply {
   display: flex;
   align-items: center;
-  gap: var(--tt-spacing-2, 0.5rem);
+  gap: var(--tt-core-spacing-2);
   font-size: 0.875rem;
 }
 
@@ -211,14 +211,14 @@ body {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--tt-spacing-1, 0.25rem);
+  gap: var(--tt-core-spacing-1);
 }
 
 .theme-diff-row {
   display: grid;
   grid-template-columns: 1rem 1fr auto auto;
   align-items: center;
-  gap: var(--tt-spacing-2, 0.5rem);
+  gap: var(--tt-core-spacing-2);
   font-size: 0.8125rem;
 }
 
@@ -243,10 +243,10 @@ body {
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--tt-spacing-1, 0.25rem);
+  gap: var(--tt-core-spacing-1);
   /* A recessed reference panel groups the ratios into a designed surface
      rather than loose text (a subtly different surface stratum). */
-  padding: var(--tt-spacing-3, 0.75rem);
+  padding: var(--tt-core-spacing-3);
   border-radius: var(--tt-radii-surface, 0.5rem);
   background-color: var(--tt-colors-informational-secondary-background-default);
 }
@@ -255,7 +255,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--tt-spacing-2, 0.5rem);
+  gap: var(--tt-core-spacing-2);
   font-size: 0.8125rem;
 }
 
@@ -267,7 +267,7 @@ body {
   min-inline-size: 5rem;
   text-align: end;
   padding-block: 0.1rem;
-  padding-inline: var(--tt-spacing-2, 0.5rem);
+  padding-inline: var(--tt-core-spacing-2);
   border-radius: var(--tt-radii-control, 0.25rem);
 }
 
@@ -286,17 +286,12 @@ body {
     var(--tt-colors-informational-primary-background-default));
 }
 
-.theme-export {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-2, 0.5rem);
-  margin-block-start: var(--tt-spacing-3, 0.75rem);
-}
+/* .theme-export layout is composed with Stack. */
 
 .theme-export-tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--tt-spacing-1, 0.25rem);
+  gap: var(--tt-core-spacing-1);
 }
 
 .theme-export-tab[aria-selected='true'] {
@@ -313,7 +308,7 @@ body {
   margin: 0;
   max-block-size: 20rem;
   overflow: auto;
-  padding: var(--tt-spacing-3, 0.75rem);
+  padding: var(--tt-core-spacing-3);
   border: 1px solid var(--tt-colors-informational-primary-border-default);
   border-radius: 0.5rem;
   font-size: 0.75rem;
@@ -344,8 +339,8 @@ body {
   cursor: pointer;
   inline-size: 100%;
   text-align: start;
-  padding-block: var(--tt-spacing-1, 0.25rem);
-  padding-inline: var(--tt-spacing-2, 0.5rem);
+  padding-block: var(--tt-core-spacing-1);
+  padding-inline: var(--tt-core-spacing-2);
   border: none;
   border-radius: 0.25rem;
   color: var(--tt-colors-informational-primary-text-default);
@@ -364,12 +359,12 @@ body {
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: var(--tt-spacing-2, 0.5rem);
+  gap: var(--tt-core-spacing-2);
 }
 
 .component-identity {
   flex-direction: column;
-  gap: var(--tt-spacing-1, 0.25rem);
+  gap: var(--tt-core-spacing-1);
   font-size: 0.8125rem;
 }
 
@@ -401,7 +396,7 @@ body {
 .component-code {
   margin: 0;
   overflow: auto;
-  padding: var(--tt-spacing-3, 0.75rem);
+  padding: var(--tt-core-spacing-3);
   border: 1px solid var(--tt-colors-informational-primary-border-default);
   border-radius: 0.5rem;
   font-size: 0.75rem;
@@ -412,8 +407,8 @@ body {
 .component-identity-card {
   display: flex;
   flex-direction: column;
-  gap: var(--tt-spacing-2, 0.5rem);
-  padding: var(--tt-spacing-5, 1.25rem);
+  gap: var(--tt-core-spacing-2);
+  padding: 1.25rem;
   border: 1px dashed var(--tt-colors-informational-primary-border-default);
   border-radius: 0.5rem;
 }
@@ -428,7 +423,7 @@ body {
   display: grid;
   grid-template-columns: minmax(6rem, 1fr) minmax(0, 1.4fr) auto auto;
   align-items: center;
-  gap: var(--tt-spacing-2, 0.5rem);
+  gap: var(--tt-core-spacing-2);
   padding-block: 0.1rem;
 }
 
@@ -443,8 +438,8 @@ body {
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
   min-inline-size: 0;
-  padding-block: var(--tt-spacing-1, 0.25rem);
-  padding-inline: var(--tt-spacing-2, 0.5rem);
+  padding-block: var(--tt-core-spacing-1);
+  padding-inline: var(--tt-core-spacing-2);
   border: 1px solid var(--tt-colors-input-primary-border-default, #ccc);
   border-radius: var(--tt-radii-control, 0.25rem);
   background: var(--tt-colors-input-primary-background-default, transparent);
@@ -465,7 +460,7 @@ body {
 .studio-ref-errors {
   font-size: 0.8125rem;
   color: var(--tt-colors-feedback-negative-text-default, #b91c1c);
-  margin-inline-start: var(--tt-spacing-3, 0.75rem);
+  margin-inline-start: var(--tt-core-spacing-3);
 }
 
 /* -- Task-first home (PRD §6.2) ------------------------------------------- */
@@ -489,7 +484,7 @@ body {
 .home-task {
   display: block;
   text-align: start;
-  padding: var(--tt-core-spacing-5);
+  padding: 1.25rem;
   font: inherit;
   color: inherit;
   cursor: pointer;
@@ -535,7 +530,7 @@ body {
 .stage-toolbar {
   display: flex;
   justify-content: center;
-  padding-block-end: var(--tt-spacing-3, 0.75rem);
+  padding-block-end: var(--tt-core-spacing-3);
 }
 
 /* Stage grid (altitude) is composed with Grid/Surface/Stack/Text. */
@@ -550,9 +545,9 @@ body {
   background: none;
   border: 1px solid var(--tt-colors-informational-primary-border-default, #ddd);
   border-radius: var(--tt-radii-control, 0.25rem);
-  padding-block: var(--tt-spacing-1, 0.25rem);
-  padding-inline: var(--tt-spacing-2, 0.5rem);
-  margin-inline-start: var(--tt-spacing-3, 0.75rem);
+  padding-block: var(--tt-core-spacing-1);
+  padding-inline: var(--tt-core-spacing-2);
+  margin-inline-start: var(--tt-core-spacing-3);
 }
 
 .palette-overlay {
@@ -579,7 +574,7 @@ body {
 
 .palette-input {
   font: inherit;
-  padding: var(--tt-spacing-3, 0.75rem);
+  padding: var(--tt-core-spacing-3);
   border: none;
   border-block-end: 1px solid
     var(--tt-colors-informational-muted-border-default, #e5e5e5);
@@ -593,14 +588,14 @@ body {
 .palette-list {
   list-style: none;
   margin: 0;
-  padding: var(--tt-spacing-1, 0.25rem);
+  padding: var(--tt-core-spacing-1);
   max-block-size: 40vh;
   overflow-y: auto;
 }
 
 .palette-option {
-  padding-block: var(--tt-spacing-2, 0.5rem);
-  padding-inline: var(--tt-spacing-3, 0.75rem);
+  padding-block: var(--tt-core-spacing-2);
+  padding-inline: var(--tt-core-spacing-3);
   border-radius: var(--tt-radii-control, 0.25rem);
   cursor: pointer;
   font-size: 0.875rem;
@@ -611,7 +606,7 @@ body {
 }
 
 .palette-empty {
-  padding: var(--tt-spacing-3, 0.75rem);
+  padding: var(--tt-core-spacing-3);
   font-size: 0.875rem;
   color: var(--tt-colors-informational-muted-text-default);
 }
