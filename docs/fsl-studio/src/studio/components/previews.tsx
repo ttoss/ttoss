@@ -13,6 +13,7 @@ import {
   SearchFieldControl,
   SearchFieldLabel,
   Separator,
+  Stack,
   Switch,
   Tab,
   TabList,
@@ -72,7 +73,7 @@ export const PREVIEWS: Record<string, PreviewDef> = {
   Button: {
     render: (sel) => {
       return (
-        <div className="preview-row">
+        <Stack direction="horizontal" gap="md" wrap align="center">
           <Button
             evaluation={actionEval(sel)}
             consequence={sel.consequence as Consequence | undefined}
@@ -86,7 +87,7 @@ export const PREVIEWS: Record<string, PreviewDef> = {
           >
             Disabled
           </Button>
-        </div>
+        </Stack>
       );
     },
     code: (sel) => {
@@ -97,7 +98,7 @@ export const PREVIEWS: Record<string, PreviewDef> = {
   ToggleButton: {
     render: (sel) => {
       return (
-        <div className="preview-row">
+        <Stack direction="horizontal" gap="md" wrap align="center">
           <ToggleButton evaluation={sel.evaluation as 'primary' | 'muted'}>
             Grid view
           </ToggleButton>
@@ -107,7 +108,7 @@ export const PREVIEWS: Record<string, PreviewDef> = {
           >
             Selected
           </ToggleButton>
-        </div>
+        </Stack>
       );
     },
     code: (sel) => {
@@ -193,10 +194,10 @@ export const PREVIEWS: Record<string, PreviewDef> = {
   Checkbox: {
     render: () => {
       return (
-        <div className="preview-col">
+        <Stack gap="xs">
           <Checkbox>Accept terms</Checkbox>
           <Checkbox isDisabled>Unavailable option</Checkbox>
-        </div>
+        </Stack>
       );
     },
     code: () => {
@@ -231,7 +232,7 @@ export const PREVIEWS: Record<string, PreviewDef> = {
     // that contract visible. The copied snippet stays the minimal, valid one.
     render: () => {
       return (
-        <div className="preview-col">
+        <Stack gap="xs">
           <TextField>
             <TextFieldLabel>Email</TextFieldLabel>
             <TextFieldControl type="email" />
@@ -241,7 +242,7 @@ export const PREVIEWS: Record<string, PreviewDef> = {
             <TextFieldControl type="email" />
             <TextFieldError>Email is required.</TextFieldError>
           </TextField>
-        </div>
+        </Stack>
       );
     },
     code: () => {
@@ -323,11 +324,11 @@ export const PREVIEWS: Record<string, PreviewDef> = {
   Separator: {
     render: () => {
       return (
-        <div className="preview-col">
+        <Stack gap="xs">
           <span>Above</span>
           <Separator />
           <span>Below</span>
-        </div>
+        </Stack>
       );
     },
     code: () => {

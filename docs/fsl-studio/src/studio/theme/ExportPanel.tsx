@@ -1,6 +1,6 @@
 import { getThemeStylesContent } from '@ttoss/fsl-theme/css';
 import { toDTCG } from '@ttoss/fsl-theme/dtcg';
-import { Stack, Text } from '@ttoss/fsl-ui';
+import { Code, Stack, Text } from '@ttoss/fsl-ui';
 import * as React from 'react';
 
 import { generateThemeCode } from './overrides';
@@ -81,9 +81,9 @@ export const ExportPanel = () => {
             {copied ? 'Copied' : 'Copy'}
           </button>
         </div>
-        <pre className="theme-export-code" data-testid="export-content">
-          <code>{content}</code>
-        </pre>
+        <Code block data-testid="export-content">
+          {content}
+        </Code>
         <Text variant="body-sm" tone="muted">
           Use with the fsl skill:{' '}
           <code>npx skills add ttoss/skills --skill fsl</code>

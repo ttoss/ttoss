@@ -1,4 +1,6 @@
 import {
+  Box,
+  ColorField,
   Disclosure,
   DisclosurePanel,
   DisclosureTrigger,
@@ -14,11 +16,6 @@ import { PRESETS } from './presets';
 import { useThemeStore } from './themeStore';
 import { type TokenFamily, type TokenLeaf } from './tokenTree';
 
-/** A 6-digit hex is required by `<input type="color">`; fall back safely. */
-const forColorInput = (value: string): string => {
-  return /^#[0-9a-fA-F]{6}$/.test(value) ? value : '#000000';
-};
-
 /**
  * One editable token leaf. The input holds the raw authored value — a
  * literal or a `{ref}` string (editing a semantic leaf to another ref is the
@@ -32,21 +29,24 @@ const TokenRow = ({ leaf, display }: { leaf: TokenLeaf; display: string }) => {
   const broken = store.brokenRefs.includes(leaf.path);
 
   return (
-    <div className="token-row">
-      <label className="token-row-label" htmlFor={`token-${leaf.path}`}>
-        {display}
-      </label>
-      <input
-        id={`token-${leaf.path}`}
-        type="text"
-        className="token-row-input"
-        aria-label={leaf.path}
-        aria-invalid={broken || undefined}
-        value={override ?? leaf.raw}
-        onChange={(event) => {
-          return store.setToken(leaf.path, event.target.value);
-        }}
-      />
+    <Stack direction="horizontal" gap="sm" align="center">
+      <Box grow>
+        <Text as="span" variant="label-sm" tone="muted">
+          {display}
+        </Text>
+      </Box>
+      <Box grow>
+        <input
+          type="text"
+          className="token-row-input"
+          aria-label={leaf.path}
+          aria-invalid={broken || undefined}
+          value={override ?? leaf.raw}
+          onChange={(event) => {
+            return store.setToken(leaf.path, event.target.value);
+          }}
+        />
+      </Box>
       {broken ? (
         <span
           className="token-broken-badge"
@@ -68,7 +68,7 @@ const TokenRow = ({ leaf, display }: { leaf: TokenLeaf; display: string }) => {
           Revert
         </button>
       ) : null}
-    </div>
+    </Stack>
   );
 };
 
@@ -158,29 +158,23 @@ const CoreColorScales = () => {
               const overridden = store.overrides[path];
               const value = overridden ?? base;
               const isOverridden = overridden != null;
-              const inputId = `color-${scale.hue}-${step}`;
               return (
-                <div key={step} className="theme-swatch-row">
-                  <label className="theme-swatch-label" htmlFor={inputId}>
-                    {step}
-                  </label>
-                  <input
-                    id={inputId}
-                    type="color"
-                    className="theme-swatch-input"
-                    aria-label={`${scale.hue} ${step} color`}
-                    value={forColorInput(value)}
-                    onChange={(event) => {
-                      return store.setToken(path, event.target.value);
-                    }}
-                  />
-                  <input
-                    type="text"
-                    className="theme-swatch-hex"
-                    aria-label={`${scale.hue} ${step} hex`}
+                <Stack
+                  key={step}
+                  direction="horizontal"
+                  gap="sm"
+                  align="center"
+                >
+                  <Box grow>
+                    <Text as="span" variant="label-sm" tone="muted">
+                      {step}
+                    </Text>
+                  </Box>
+                  <ColorField
+                    label={`${scale.hue} ${step}`}
                     value={value}
-                    onChange={(event) => {
-                      return store.setToken(path, event.target.value);
+                    onChange={(next) => {
+                      return store.setToken(path, next);
                     }}
                   />
                   {isOverridden ? (
@@ -194,10 +188,8 @@ const CoreColorScales = () => {
                     >
                       Revert
                     </button>
-                  ) : (
-                    <span className="theme-revert-placeholder" aria-hidden />
-                  )}
-                </div>
+                  ) : null}
+                </Stack>
               );
             })}
           </fieldset>

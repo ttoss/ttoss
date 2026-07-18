@@ -1,5 +1,6 @@
 import {
   AppShell,
+  Badge,
   Box,
   Stack,
   Text,
@@ -36,9 +37,9 @@ const RefErrorsCounter = () => {
     return null;
   }
   return (
-    <span className="studio-ref-errors">
+    <Badge evaluation="caution">
       ⚠ {brokenRefs.length} ref error{brokenRefs.length === 1 ? '' : 's'}
-    </span>
+    </Badge>
   );
 };
 

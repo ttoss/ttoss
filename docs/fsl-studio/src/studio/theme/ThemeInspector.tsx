@@ -1,4 +1,6 @@
 import {
+  Badge,
+  Box,
   Button,
   ConfirmationDialog,
   Heading,
@@ -31,14 +33,23 @@ const ContrastList = ({
       <ul className="theme-contrast">
         {results.map((result) => {
           return (
-            <li key={result.label} className="theme-contrast-row">
-              <span className="theme-contrast-label">{result.label}</span>
-              <span
-                className={`theme-contrast-badge theme-contrast-${result.rating}`}
-              >
-                {result.rating === 'fail' ? 'Fail' : result.rating}{' '}
-                {result.ratio.toFixed(1)}:1
-              </span>
+            <li key={result.label}>
+              <Stack direction="horizontal" gap="sm" align="center">
+                <Box grow>
+                  <Text as="span" variant="body-sm">
+                    {result.label}
+                  </Text>
+                </Box>
+                <Badge
+                  evaluation={
+                    result.rating === 'fail' ? 'negative' : 'positive'
+                  }
+                  numeric="tabular"
+                >
+                  {result.rating === 'fail' ? 'Fail' : result.rating}{' '}
+                  {result.ratio.toFixed(1)}:1
+                </Badge>
+              </Stack>
             </li>
           );
         })}
@@ -53,6 +64,54 @@ const ContrastList = ({
  * contrast for both modes, and the export peak. Exporting with broken refs
  * goes through the one sanctioned escalation dialog (PRD §6.4-P2).
  */
+/** One row of the change diff: origin marker, path, value, and per-leaf revert. */
+const DiffRow = ({ path }: { path: string }) => {
+  const store = useThemeStore();
+  const value = store.overrides[path];
+  const broken = store.brokenRefs.includes(path);
+  return (
+    <li>
+      <Stack direction="horizontal" gap="sm" align="center">
+        {looksLikeColor(value) ? (
+          <span
+            className="theme-diff-swatch"
+            style={{ backgroundColor: value }}
+            aria-hidden
+          />
+        ) : null}
+        <Box grow>
+          <Text as="span" variant="body-sm">
+            {/* ✎ marks a manual edit; the ✦ AI-origin marker activates with
+                the Generate lens (Phase 4). */}
+            {store.origin(path) === 'ai' ? '✦' : '✎'} {path}
+          </Text>
+        </Box>
+        <Text as="span" variant="body-sm" tone="muted">
+          {value}
+        </Text>
+        {broken ? (
+          <span
+            className="token-broken-badge"
+            role="img"
+            aria-label={`Broken reference at ${path}`}
+          >
+            ⚠
+          </span>
+        ) : null}
+        <button
+          type="button"
+          className="theme-revert"
+          onClick={() => {
+            return store.revertToken(path);
+          }}
+        >
+          Revert
+        </button>
+      </Stack>
+    </li>
+  );
+};
+
 export const ThemeInspector = () => {
   const store = useThemeStore();
   const [showExport, setShowExport] = React.useState(false);
@@ -100,43 +159,7 @@ export const ThemeInspector = () => {
           <>
             <ul className="theme-diff">
               {paths.map((path) => {
-                const value = store.overrides[path];
-                const broken = store.brokenRefs.includes(path);
-                return (
-                  <li key={path} className="theme-diff-row">
-                    {looksLikeColor(value) ? (
-                      <span
-                        className="theme-diff-swatch"
-                        style={{ backgroundColor: value }}
-                        aria-hidden
-                      />
-                    ) : null}
-                    <span className="theme-diff-path">
-                      {/* ✎ marks a manual edit; the ✦ AI-origin marker
-                          activates with the Generate lens (Phase 4). */}
-                      {store.origin(path) === 'ai' ? '✦' : '✎'} {path}
-                    </span>
-                    <span className="theme-diff-value">{value}</span>
-                    {broken ? (
-                      <span
-                        className="token-broken-badge"
-                        role="img"
-                        aria-label={`Broken reference at ${path}`}
-                      >
-                        ⚠
-                      </span>
-                    ) : null}
-                    <button
-                      type="button"
-                      className="theme-revert"
-                      onClick={() => {
-                        return store.revertToken(path);
-                      }}
-                    >
-                      Revert
-                    </button>
-                  </li>
-                );
+                return <DiffRow key={path} path={path} />;
               })}
             </ul>
             <Button

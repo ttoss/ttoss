@@ -85,48 +85,11 @@
   padding-inline: var(--tt-core-spacing-2);
 }
 
-.theme-swatch-row {
-  display: grid;
-  grid-template-columns: 2.5rem 2rem 1fr auto;
-  align-items: center;
-  gap: var(--tt-core-spacing-2);
-}
-
-.theme-swatch-label {
-  font-size: 0.75rem;
-  font-variant-numeric: tabular-nums;
-  color: var(--tt-colors-informational-muted-text-default);
-}
-
-.theme-swatch-input {
-  inline-size: 2rem;
-  block-size: 1.75rem;
-  padding: 0;
-  border: 1px solid var(--tt-colors-informational-primary-border-default);
-  border-radius: 0.25rem;
-  background: none;
-}
-
-.theme-swatch-hex {
-  font: inherit;
-  font-size: 0.8125rem;
-  font-variant-numeric: tabular-nums;
-  min-inline-size: 0;
-  padding-block: var(--tt-core-spacing-1);
-  padding-inline: var(--tt-core-spacing-2);
-  border: 1px solid var(--tt-colors-input-primary-border-default,
-    var(--tt-colors-informational-primary-border-default));
-  border-radius: 0.25rem;
-  color: var(--tt-colors-informational-primary-text-default);
-  background-color: var(--tt-colors-informational-primary-background-default);
-}
+/* Colour swatch rows are now the fsl-ui `ColorField`; the token value rows are
+ * `Stack` + `Box grow` + a native input. */
 
 .theme-revert {
   font-size: 0.75rem;
-}
-
-.theme-revert-placeholder {
-  display: inline-block;
 }
 
 .theme-apply {
@@ -145,28 +108,11 @@
   gap: var(--tt-core-spacing-1);
 }
 
-.theme-diff-row {
-  display: grid;
-  grid-template-columns: 1rem 1fr auto auto;
-  align-items: center;
-  gap: var(--tt-core-spacing-2);
-  font-size: 0.8125rem;
-}
-
 .theme-diff-swatch {
   inline-size: 1rem;
   block-size: 1rem;
   border-radius: 0.25rem;
   border: 1px solid var(--tt-colors-informational-primary-border-default);
-}
-
-.theme-diff-path {
-  font-variant-numeric: tabular-nums;
-}
-
-.theme-diff-value {
-  font-variant-numeric: tabular-nums;
-  color: var(--tt-colors-informational-muted-text-default);
 }
 
 .theme-contrast {
@@ -182,42 +128,9 @@
   background-color: var(--tt-colors-informational-secondary-background-default);
 }
 
-.theme-contrast-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--tt-core-spacing-2);
-  font-size: 0.8125rem;
-}
+/* Contrast rows are `Stack` + `Badge`; the panel keeps its recessed surface. */
 
-.theme-contrast-badge {
-  font-size: 0.75rem;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  /* Fixed width so ratings line up in a scannable column. */
-  min-inline-size: 5rem;
-  text-align: end;
-  padding-block: 0.1rem;
-  padding-inline: var(--tt-core-spacing-2);
-  border-radius: var(--tt-radii-control, 0.25rem);
-}
-
-.theme-contrast-AAA,
-.theme-contrast-AA {
-  color: var(--tt-colors-feedback-positive-text-default,
-    var(--tt-colors-informational-primary-text-default));
-  background-color: var(--tt-colors-feedback-positive-background-default,
-    var(--tt-colors-informational-primary-background-default));
-}
-
-.theme-contrast-fail {
-  color: var(--tt-colors-feedback-negative-text-default,
-    var(--tt-colors-informational-primary-text-default));
-  background-color: var(--tt-colors-feedback-negative-background-default,
-    var(--tt-colors-informational-primary-background-default));
-}
-
-/* .theme-export layout is composed with Stack. */
+/* .theme-export layout is composed with Stack; the code block is `Code`. */
 
 .theme-export-tabs {
   display: flex;
@@ -233,18 +146,6 @@
 
 .theme-export-copy {
   margin-inline-start: auto;
-}
-
-.theme-export-code {
-  margin: 0;
-  max-block-size: 20rem;
-  overflow: auto;
-  padding: var(--tt-core-spacing-3);
-  border: 1px solid var(--tt-colors-informational-primary-border-default);
-  border-radius: 0.5rem;
-  font-size: 0.75rem;
-  line-height: 1.5;
-  background-color: var(--tt-colors-informational-primary-background-default);
 }
 
 /* ----------------------------------------------------------------------------
@@ -324,17 +225,6 @@
   border-color: var(--tt-colors-action-accent-background-default);
 }
 
-.component-code {
-  margin: 0;
-  overflow: auto;
-  padding: var(--tt-core-spacing-3);
-  border: 1px solid var(--tt-colors-informational-primary-border-default);
-  border-radius: 0.5rem;
-  font-size: 0.75rem;
-  line-height: 1.5;
-  background-color: var(--tt-colors-informational-primary-background-default);
-}
-
 .component-identity-card {
   display: flex;
   flex-direction: column;
@@ -348,26 +238,15 @@
  * is now composed with fsl-ui primitives (Stack/Grid) — WS-E proof that the
  * presentational layer removes hand-rolled content CSS. */
 
-/* -- Token tree (semantic + core navigator, PRD F2.1/F2.2) --------------- */
-
-.token-row {
-  display: grid;
-  grid-template-columns: minmax(6rem, 1fr) minmax(0, 1.4fr) auto auto;
-  align-items: center;
-  gap: var(--tt-core-spacing-2);
-  padding-block: 0.1rem;
-}
-
-.token-row-label {
-  font-size: 0.75rem;
-  overflow-wrap: anywhere;
-  color: var(--tt-colors-informational-muted-text-default);
-}
+/* -- Token tree (semantic + core navigator, PRD F2.1/F2.2) ---------------
+ * Rows are `Stack` + `Box grow`; only the dense native value input keeps a
+ * bespoke style (a lighter control than the full TextField composite). */
 
 .token-row-input {
   font: inherit;
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
+  inline-size: 100%;
   min-inline-size: 0;
   padding-block: var(--tt-core-spacing-1);
   padding-inline: var(--tt-core-spacing-2);
@@ -384,14 +263,6 @@
 .token-broken-badge {
   font-size: 0.75rem;
   color: var(--tt-colors-feedback-negative-text-default, #b91c1c);
-}
-
-/* -- Peripheral ref-error counter (PRD §6.4-P2) --------------------------- */
-
-.studio-ref-errors {
-  font-size: 0.8125rem;
-  color: var(--tt-colors-feedback-negative-text-default, #b91c1c);
-  margin-inline-start: var(--tt-core-spacing-3);
 }
 
 /* -- Task-first home (PRD §6.2) ------------------------------------------- */
@@ -542,27 +413,3 @@
   color: var(--tt-colors-informational-muted-text-default);
 }
 
-/* -- Reduced motion (PRD F1.5) ---------------------------------------------
-   fsl-theme's own CSS already carries reduced-motion token overrides; this
-   covers the Studio chrome's transitions. */
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-.studio-brand {
-  font: inherit;
-  font-weight: 700;
-  color: inherit;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-}

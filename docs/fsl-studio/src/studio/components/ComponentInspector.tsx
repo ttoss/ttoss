@@ -1,4 +1,4 @@
-import { Button, Heading, Link, Stack, Text } from '@ttoss/fsl-ui';
+import { Button, Code, Heading, Link, Stack, Text } from '@ttoss/fsl-ui';
 import * as React from 'react';
 
 import {
@@ -206,9 +206,9 @@ export const ComponentInspector = () => {
         </Heading>
         {code ? (
           <>
-            <pre className="component-code" data-testid="component-code">
-              <code>{code}</code>
-            </pre>
+            <Code block data-testid="component-code">
+              {code}
+            </Code>
             <CopyButton text={code} />
             <Text variant="body-sm" tone="muted">
               Flow-critical labels are required props with no English defaults —
