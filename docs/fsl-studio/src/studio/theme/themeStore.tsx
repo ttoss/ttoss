@@ -4,46 +4,47 @@ import * as React from 'react';
 
 import {
   buildBundle,
-  type ColorOverrides,
-  presetBundle,
-  type PresetId,
-  removeColorLeaf,
-  setColorLeaf,
+  removeToken,
+  setToken,
+  type TokenOverrides,
 } from './overrides';
-import { computeContrast, type ContrastResult } from './palette';
+import { computeThemeContrast, type ThemeContrast } from './palette';
+import { presetBundle, type PresetId } from './presets';
+import {
+  coreFamilies,
+  findBrokenRefs,
+  semanticFamilies,
+  type TokenFamily,
+} from './tokenTree';
 
 export type Origin = 'manual' | 'ai';
 
 /** A hue's editable scale, read from the active preset's core palette. */
 export interface PaletteScale {
   hue: string;
-  /** Ordered steps with their preset (unedited) hex value. */
+  /** Ordered steps with their preset (unedited) value. */
   steps: { step: string; base: string }[];
 }
 
 export interface ThemeReducerState {
   preset: PresetId;
-  colors: ColorOverrides;
+  overrides: TokenOverrides;
   origins: Record<string, Origin>;
   applyToStudio: boolean;
 }
 
 export type ThemeAction =
-  | { type: 'setColor'; hue: string; step: string; value: string }
-  | { type: 'revertColor'; hue: string; step: string }
+  | { type: 'setToken'; path: string; value: string }
+  | { type: 'revertToken'; path: string }
   | { type: 'resetAll' }
   | { type: 'setPreset'; preset: PresetId }
   | { type: 'setApplyToStudio'; value: boolean };
 
 export const initialThemeState: ThemeReducerState = {
   preset: 'base',
-  colors: {},
+  overrides: {},
   origins: {},
   applyToStudio: false,
-};
-
-const pathKey = (hue: string, step: string) => {
-  return `${hue}.${step}`;
 };
 
 export const themeReducer = (
@@ -51,36 +52,28 @@ export const themeReducer = (
   action: ThemeAction
 ): ThemeReducerState => {
   switch (action.type) {
-    case 'setColor': {
+    case 'setToken': {
       return {
         ...state,
-        colors: setColorLeaf(
-          state.colors,
-          action.hue,
-          action.step,
-          action.value
-        ),
-        origins: {
-          ...state.origins,
-          [pathKey(action.hue, action.step)]: 'manual',
-        },
+        overrides: setToken(state.overrides, action.path, action.value),
+        origins: { ...state.origins, [action.path]: 'manual' },
       };
     }
-    case 'revertColor': {
+    case 'revertToken': {
       const origins = { ...state.origins };
-      delete origins[pathKey(action.hue, action.step)];
+      delete origins[action.path];
       return {
         ...state,
-        colors: removeColorLeaf(state.colors, action.hue, action.step),
+        overrides: removeToken(state.overrides, action.path),
         origins,
       };
     }
     case 'resetAll': {
-      return { ...state, colors: {}, origins: {} };
+      return { ...state, overrides: {}, origins: {} };
     }
     case 'setPreset': {
       // Switching preset starts a fresh diff against that preset (PRD §14).
-      return { ...state, preset: action.preset, colors: {}, origins: {} };
+      return { ...state, preset: action.preset, overrides: {}, origins: {} };
     }
     case 'setApplyToStudio': {
       return { ...state, applyToStudio: action.value };
@@ -91,9 +84,11 @@ export const themeReducer = (
   }
 };
 
+export type { ThemeContrast };
+
 export interface ThemeStore {
   preset: PresetId;
-  colors: ColorOverrides;
+  overrides: TokenOverrides;
   applyToStudio: boolean;
   /** The edited bundle — drives the stage always, and the chrome when applied. */
   liveBundle: ThemeBundle;
@@ -101,11 +96,17 @@ export interface ThemeStore {
   fallbackBundle: ThemeBundle;
   /** Editable palette (hues + steps) read from the active preset. */
   palette: PaletteScale[];
-  /** Curated contrast results for the live theme (light mode). */
-  contrast: ContrastResult[];
-  origin: (hue: string, step: string) => Origin | undefined;
-  setColor: (hue: string, step: string, value: string) => void;
-  revertColor: (hue: string, step: string) => void;
+  /** Curated contrast results for the live theme, light and dark. */
+  contrast: ThemeContrast;
+  /** Flat paths whose resolved value still contains a broken `{ref}`. */
+  brokenRefs: string[];
+  /** Semantic families (raw leaves) of the active preset, for the navigator. */
+  semanticTree: TokenFamily[];
+  /** Core families (colors excluded) of the active preset. */
+  coreTree: TokenFamily[];
+  origin: (path: string) => Origin | undefined;
+  setToken: (path: string, value: string) => void;
+  revertToken: (path: string) => void;
   resetAll: () => void;
   setPreset: (preset: PresetId) => void;
   setApplyToStudio: (value: boolean) => void;
@@ -135,44 +136,69 @@ const buildPalette = (bundle: ThemeBundle): PaletteScale[] => {
 
 export const ThemeStoreProvider = ({
   children,
+  initial,
 }: {
   children: React.ReactNode;
+  /** Boot-time state (URL fork / draft restore, PRD F1.2/F1.3). */
+  initial?: Partial<ThemeReducerState>;
 }) => {
-  const [state, dispatch] = React.useReducer(themeReducer, initialThemeState);
+  const [state, dispatch] = React.useReducer(themeReducer, {
+    ...initialThemeState,
+    ...initial,
+  });
 
   const fallbackBundle = React.useMemo(() => {
     return presetBundle(state.preset);
   }, [state.preset]);
 
   const liveBundle = React.useMemo(() => {
-    return buildBundle(state.preset, state.colors);
-  }, [state.preset, state.colors]);
+    return buildBundle(state.preset, state.overrides);
+  }, [state.preset, state.overrides]);
 
   const palette = React.useMemo(() => {
     return buildPalette(fallbackBundle);
   }, [fallbackBundle]);
 
-  const contrast = React.useMemo(() => {
-    return computeContrast(toFlatTokens(liveBundle.base));
+  const semanticTree = React.useMemo(() => {
+    return semanticFamilies(fallbackBundle);
+  }, [fallbackBundle]);
+
+  const coreTree = React.useMemo(() => {
+    return coreFamilies(fallbackBundle);
+  }, [fallbackBundle]);
+
+  const lightFlat = React.useMemo(() => {
+    return toFlatTokens(liveBundle.base);
   }, [liveBundle]);
+
+  const contrast = React.useMemo<ThemeContrast>(() => {
+    return computeThemeContrast(liveBundle, lightFlat);
+  }, [liveBundle, lightFlat]);
+
+  const brokenRefs = React.useMemo(() => {
+    return findBrokenRefs(lightFlat);
+  }, [lightFlat]);
 
   const value = React.useMemo<ThemeStore>(() => {
     return {
       preset: state.preset,
-      colors: state.colors,
+      overrides: state.overrides,
       applyToStudio: state.applyToStudio,
       liveBundle,
       fallbackBundle,
       palette,
       contrast,
-      origin: (hue, step) => {
-        return state.origins[pathKey(hue, step)];
+      brokenRefs,
+      semanticTree,
+      coreTree,
+      origin: (path) => {
+        return state.origins[path];
       },
-      setColor: (hue, step, colorValue) => {
-        return dispatch({ type: 'setColor', hue, step, value: colorValue });
+      setToken: (path, tokenValue) => {
+        return dispatch({ type: 'setToken', path, value: tokenValue });
       },
-      revertColor: (hue, step) => {
-        return dispatch({ type: 'revertColor', hue, step });
+      revertToken: (path) => {
+        return dispatch({ type: 'revertToken', path });
       },
       resetAll: () => {
         return dispatch({ type: 'resetAll' });
@@ -184,7 +210,16 @@ export const ThemeStoreProvider = ({
         return dispatch({ type: 'setApplyToStudio', value: v });
       },
     };
-  }, [state, liveBundle, fallbackBundle, palette, contrast]);
+  }, [
+    state,
+    liveBundle,
+    fallbackBundle,
+    palette,
+    contrast,
+    brokenRefs,
+    semanticTree,
+    coreTree,
+  ]);
 
   return (
     <ThemeStoreCtx.Provider value={value}>{children}</ThemeStoreCtx.Provider>

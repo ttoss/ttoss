@@ -10,6 +10,24 @@ import { Stage } from './Stage';
 import { StageSample } from './StageSample';
 import { ThemeInspector } from './theme/ThemeInspector';
 import { ThemeNavigator } from './theme/ThemeNavigator';
+import { useThemeStore } from './theme/themeStore';
+
+/**
+ * Peripheral broken-ref counter (PRD §6.4-P2): validation is ambient — a
+ * discreet header signal, never a modal or toast. The per-token badges live
+ * on the offending rows in the navigator and the diff.
+ */
+const RefErrorsCounter = () => {
+  const { brokenRefs } = useThemeStore();
+  if (brokenRefs.length === 0) {
+    return null;
+  }
+  return (
+    <span className="studio-ref-errors">
+      ⚠ {brokenRefs.length} ref error{brokenRefs.length === 1 ? '' : 's'}
+    </span>
+  );
+};
 
 /**
  * The Studio shell: navigator / stage / inspector, with the lens switcher in
@@ -31,6 +49,7 @@ export const StudioShell = () => {
       <div className="studio">
         <header className="studio-header">
           <span className="studio-brand">FSL Studio</span>
+          <RefErrorsCounter />
           <ToggleButtonGroup
             aria-label="Lens"
             selectionMode="single"

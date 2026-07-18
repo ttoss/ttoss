@@ -29,13 +29,13 @@ export const ExportPanel = () => {
 
   const content = React.useMemo(() => {
     if (format === 'code') {
-      return generateThemeCode(store.preset, store.colors);
+      return generateThemeCode(store.preset, store.overrides);
     }
     if (format === 'dtcg') {
       return JSON.stringify(toDTCG(store.liveBundle.base), null, 2);
     }
     return getThemeStylesContent(store.liveBundle);
-  }, [format, store.preset, store.colors, store.liveBundle]);
+  }, [format, store.preset, store.overrides, store.liveBundle]);
 
   const copied = copiedContent === content;
 

@@ -538,3 +538,58 @@ body {
   gap: var(--tt-spacing-4, 1rem);
   margin-block-end: var(--tt-spacing-4, 1rem);
 }
+
+/* -- Token tree (semantic + core navigator, PRD F2.1/F2.2) --------------- */
+
+.token-row {
+  display: grid;
+  grid-template-columns: minmax(6rem, 1fr) minmax(0, 1.4fr) auto auto;
+  align-items: center;
+  gap: var(--tt-spacing-2, 0.5rem);
+  padding-block: 0.1rem;
+}
+
+.token-row-label {
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+  color: var(--tt-colors-informational-muted-text-default);
+}
+
+.token-row-input {
+  font: inherit;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  min-inline-size: 0;
+  padding-block: var(--tt-spacing-1, 0.25rem);
+  padding-inline: var(--tt-spacing-2, 0.5rem);
+  border: 1px solid var(--tt-colors-input-primary-border-default, #ccc);
+  border-radius: var(--tt-radii-control, 0.25rem);
+  background: var(--tt-colors-input-primary-background-default, transparent);
+  color: inherit;
+}
+
+.token-row-input[aria-invalid='true'] {
+  border-color: var(--tt-colors-input-negative-border-default, #b91c1c);
+}
+
+.token-broken-badge {
+  font-size: 0.75rem;
+  color: var(--tt-colors-feedback-negative-text-default, #b91c1c);
+}
+
+/* -- Peripheral ref-error counter (PRD §6.4-P2) --------------------------- */
+
+.studio-ref-errors {
+  font-size: 0.8125rem;
+  color: var(--tt-colors-feedback-negative-text-default, #b91c1c);
+  margin-inline-start: var(--tt-spacing-3, 0.75rem);
+}
+
+.theme-contrast-mode {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-block: var(--tt-spacing-2, 0.5rem) var(--tt-spacing-1, 0.25rem);
+  color: var(--tt-colors-informational-muted-text-default);
+}

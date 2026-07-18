@@ -1,146 +1,150 @@
 import {
-  bruttal,
   createTheme,
   type DeepPartial,
   type ThemeBundle,
   type ThemeTokens,
 } from '@ttoss/fsl-theme';
 
+import { AUTHORED_PRESETS, presetBundle, type PresetId } from './presets';
+
 /**
  * Theme Lab editing model (PRD F2.2/F2.3).
  *
- * Phase-1 editable surface = **core color scales** (brand, neutral, and any
- * other hue the preset defines). Semantic color tokens are references, not
- * independently editable values, and core color edits are what produce the
- * cascade the "wow" depends on (brand.500 is referenced ~149× in the base
- * theme). Non-color families and semantic-ref remapping are deferred to a
- * later phase (recorded in PRD §14).
- *
- * The single source of truth is the override diff itself: a map of
- * `hue → step → hex`. That diff *is* the "changes vs preset" view (F2.3) and
- * *is* the `overrides` argument to `createTheme` for both live preview and
- * code export — one structure, no derived duplicate to keep in sync.
+ * The editable surface is any token leaf, addressed by its flat dotted path:
+ * core values (`core.colors.brand.500`, `core.radii.md`, …) and semantic
+ * remaps (`semantic.radii.control` → `{core.radii.none}`, …). The single
+ * source of truth is the override diff itself — a flat `path → value` map.
+ * That diff *is* the "changes vs preset" view (F2.3) and, unflattened, *is*
+ * the `overrides` argument to `createTheme` for both live preview and code
+ * export — one structure, no derived duplicate to keep in sync.
  */
-export type ColorOverrides = Record<string, Record<string, string>>;
+export type TokenOverrides = Record<string, string>;
 
-export type PresetId = 'base' | 'bruttal';
+export type { PresetId };
 
-export interface PresetSpec {
-  id: PresetId;
-  label: string;
-  description: string;
-}
-
-export const PRESETS: readonly PresetSpec[] = [
-  {
-    id: 'base',
-    label: 'Base',
-    description:
-      'The default FSL foundation — light base with a dark alternate.',
-  },
-  {
-    id: 'bruttal',
-    label: 'Bruttal',
-    description: 'The built-in high-contrast, expressive brand theme.',
-  },
-];
-
-/** The unedited bundle for a preset — also the "fallback" chrome theme. */
-export const presetBundle = (preset: PresetId): ThemeBundle => {
-  return preset === 'bruttal' ? bruttal : createTheme();
-};
-
-/**
- * Build the live bundle: the preset with the color overrides applied. `base`
- * extends the default foundation; `bruttal` extends the built-in bundle so it
- * inherits bruttal's alternate. The nested override object satisfies
- * `DeepPartial<ThemeTokens>` structurally but the color-scale type requires a
- * `500` step, which a partial diff intentionally omits — hence the cast.
- */
-export const buildBundle = (
-  preset: PresetId,
-  colors: ColorOverrides
-): ThemeBundle => {
-  const overrides = {
-    core: { colors },
-  } as DeepPartial<ThemeTokens>;
-
-  return preset === 'bruttal'
-    ? createTheme({ extends: bruttal, overrides })
-    : createTheme({ overrides });
-};
-
-/** Immutable set of one color leaf. */
-export const setColorLeaf = (
-  colors: ColorOverrides,
-  hue: string,
-  step: string,
+/** Immutable set of one token leaf. */
+export const setToken = (
+  overrides: TokenOverrides,
+  path: string,
   value: string
-): ColorOverrides => {
-  return {
-    ...colors,
-    [hue]: { ...colors[hue], [step]: value },
-  };
+): TokenOverrides => {
+  return { ...overrides, [path]: value };
 };
 
-/** Immutable removal of one color leaf, pruning an emptied hue. */
-export const removeColorLeaf = (
-  colors: ColorOverrides,
-  hue: string,
-  step: string
-): ColorOverrides => {
-  const hueEntry = colors[hue];
-  if (!hueEntry || !(step in hueEntry)) {
-    return colors;
+/** Immutable removal of one token leaf. */
+export const removeToken = (
+  overrides: TokenOverrides,
+  path: string
+): TokenOverrides => {
+  if (!(path in overrides)) {
+    return overrides;
   }
-
-  const nextHue = { ...hueEntry };
-  delete nextHue[step];
-
-  const next = { ...colors };
-  if (Object.keys(nextHue).length === 0) {
-    delete next[hue];
-  } else {
-    next[hue] = nextHue;
-  }
+  const next = { ...overrides };
+  delete next[path];
   return next;
 };
 
-export interface ColorLeaf {
-  hue: string;
-  step: string;
-}
-
-/** Flatten the override diff into a stable, sorted leaf list. */
-export const listColorLeaves = (colors: ColorOverrides): ColorLeaf[] => {
-  const leaves: ColorLeaf[] = [];
-  for (const hue of Object.keys(colors).sort()) {
-    for (const step of Object.keys(colors[hue]).sort()) {
-      leaves.push({ hue, step });
-    }
-  }
-  return leaves;
+/** The override diff as a stable, sorted path list. */
+export const listTokenPaths = (overrides: TokenOverrides): string[] => {
+  return Object.keys(overrides).sort();
 };
 
-export const hasOverrides = (colors: ColorOverrides): boolean => {
-  return Object.keys(colors).length > 0;
+export const hasOverrides = (overrides: TokenOverrides): boolean => {
+  return Object.keys(overrides).length > 0;
 };
 
 /**
- * Generate a runnable `createTheme(...)` snippet reproducing the edited theme
- * (PRD F2.7). The override diff serializes directly as the `overrides` object
- * literal — numeric step keys quote to valid TS object keys.
+ * Unflatten the diff's dotted paths into the nested object `createTheme`
+ * expects. A non-leaf collision (a path that is a prefix of another) keeps
+ * the deeper structure: sorted iteration puts the prefix first, so the deeper
+ * path's segment walk replaces the stray leaf — the UI only produces leaf
+ * paths, this only matters for defensively handling foreign URL payloads.
  */
-export const generateThemeCode = (
+export const nestOverrides = (
+  overrides: TokenOverrides
+): DeepPartial<ThemeTokens> => {
+  const root: Record<string, unknown> = {};
+
+  for (const path of listTokenPaths(overrides)) {
+    const segments = path.split('.');
+    let node = root;
+    for (const segment of segments.slice(0, -1)) {
+      const existing = node[segment];
+      if (typeof existing === 'object' && existing !== null) {
+        node = existing as Record<string, unknown>;
+      } else {
+        const child: Record<string, unknown> = {};
+        node[segment] = child;
+        node = child;
+      }
+    }
+    node[segments[segments.length - 1]] = overrides[path];
+  }
+
+  return root as DeepPartial<ThemeTokens>;
+};
+
+/**
+ * Minimal recursive merge for plain override objects (`b` wins on leaves).
+ * Used to inline an authored preset's overrides under the user diff for code
+ * export, and to resolve the dark alternate for contrast checks.
+ */
+export const mergeDeep = <T extends Record<string, unknown>>(
+  a: T,
+  b: Record<string, unknown>
+): T => {
+  const out: Record<string, unknown> = { ...a };
+  for (const key of Object.keys(b)) {
+    const prev = out[key];
+    const next = b[key];
+    out[key] =
+      typeof prev === 'object' &&
+      prev !== null &&
+      typeof next === 'object' &&
+      next !== null
+        ? mergeDeep(
+            prev as Record<string, unknown>,
+            next as Record<string, unknown>
+          )
+        : next;
+  }
+  return out as T;
+};
+
+/**
+ * Build the live bundle: the preset with the override diff applied on top.
+ * Extending the preset's bundle inherits its alternate (dark mode) too.
+ */
+export const buildBundle = (
   preset: PresetId,
-  colors: ColorOverrides
-): string => {
-  const overridesLiteral = JSON.stringify({ core: { colors } }, null, 2)
+  overrides: TokenOverrides
+): ThemeBundle => {
+  return createTheme({
+    extends: presetBundle(preset),
+    overrides: nestOverrides(overrides),
+  });
+};
+
+const serializeOverrides = (nested: object): string => {
+  return JSON.stringify(nested, null, 2)
     .split('\n')
     .map((line, index) => {
       return index === 0 ? line : `  ${line}`;
     })
     .join('\n');
+};
+
+/**
+ * Generate a runnable `createTheme(...)` snippet reproducing the edited theme
+ * (PRD F2.7). `base` embeds the diff alone; `bruttal` extends the published
+ * export; Studio-authored presets inline their own overrides under the diff
+ * (merged, diff wins) so the exported code runs anywhere without the Studio.
+ */
+export const generateThemeCode = (
+  preset: PresetId,
+  overrides: TokenOverrides
+): string => {
+  const nested = nestOverrides(overrides);
 
   if (preset === 'bruttal') {
     return [
@@ -148,17 +152,25 @@ export const generateThemeCode = (
       '',
       'export const theme = createTheme({',
       '  extends: bruttal,',
-      `  overrides: ${overridesLiteral},`,
+      `  overrides: ${serializeOverrides(nested)},`,
       '});',
       '',
     ].join('\n');
   }
 
+  const authored = AUTHORED_PRESETS[preset];
+  const merged = authored
+    ? mergeDeep(
+        authored.overrides as Record<string, unknown>,
+        nested as Record<string, unknown>
+      )
+    : nested;
+
   return [
     "import { createTheme } from '@ttoss/fsl-theme';",
     '',
     'export const theme = createTheme({',
-    `  overrides: ${overridesLiteral},`,
+    `  overrides: ${serializeOverrides(merged)},`,
     '});',
     '',
   ].join('\n');

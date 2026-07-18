@@ -1,6 +1,8 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { App } from 'src/App';
+import { ThemeInspector } from 'src/studio/theme/ThemeInspector';
+import { ThemeStoreProvider } from 'src/studio/theme/themeStore';
 
 const stageStyle = (container: HTMLElement): string => {
   return container.querySelector('.stage style')?.textContent ?? '';
@@ -112,11 +114,14 @@ test('apply-to-Studio toggle exposes the safe-fallback control', async () => {
   expect(toggle).not.toBeChecked();
 });
 
-test('contrast section surfaces curated pairs ambiently', () => {
+test('contrast section surfaces curated pairs for light and dark', () => {
   render(<App />);
   const inspector = screen.getByRole('complementary', { name: 'Inspector' });
-  expect(within(inspector).getByText('Accent action')).toBeInTheDocument();
-  expect(within(inspector).getByText('Surface')).toBeInTheDocument();
+  // Each curated pair is checked in both modes (F2.6 dark follow-up done).
+  expect(within(inspector).getByText('Light')).toBeInTheDocument();
+  expect(within(inspector).getByText('Dark')).toBeInTheDocument();
+  expect(within(inspector).getAllByText('Accent action')).toHaveLength(2);
+  expect(within(inspector).getAllByText('Surface')).toHaveLength(2);
 });
 
 test('export peak ships all three formats', async () => {
@@ -201,6 +206,181 @@ describe('export copy', () => {
       await screen.findByRole('button', { name: 'Copy' })
     ).toBeInTheDocument();
   });
+});
+
+describe('semantic layer navigator (F2.1/F2.2)', () => {
+  test('semantic families disclose leaves; a remap re-derives the theme', async () => {
+    const user = userEvent.setup();
+    const { container } = render(<App />);
+
+    // Semantic radii family: 3 leaves (control, surface, round).
+    await user.click(screen.getByRole('button', { name: 'radii · 3' }));
+    const control = screen.getByLabelText('semantic.radii.control');
+    expect(control).toHaveValue('{core.radii.md}');
+
+    fireEvent.change(control, { target: { value: '{core.radii.none}' } });
+
+    // The remap flows into the stage CSS same-frame (radius collapses to 0).
+    expect(stageStyle(container)).toContain('0px');
+    const inspector = screen.getByRole('complementary', { name: 'Inspector' });
+    expect(within(inspector).getByText('Changes (1)')).toBeInTheDocument();
+    expect(
+      within(inspector).getByText(/semantic\.radii\.control/)
+    ).toBeInTheDocument();
+  });
+
+  test('semantic colors group by ux context before leaves render', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    // Two "colors" disclosures exist (semantic family, core scales); the
+    // semantic one comes first in DOM order.
+    const [semanticColors] = screen.getAllByRole('button', {
+      name: /^colors · \d+$/,
+    });
+    await user.click(semanticColors);
+    // Contexts appear as sub-disclosures; leaves are not rendered yet.
+    expect(
+      screen.getByRole('button', { name: /^action · \d+$/ })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByLabelText(
+        'semantic.colors.action.accent.background.default'
+      )
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /^action · \d+$/ }));
+    expect(
+      screen.getByLabelText('semantic.colors.action.accent.background.default')
+    ).toBeInTheDocument();
+  });
+
+  test('a token row reverts its own override', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(screen.getByRole('button', { name: 'radii · 3' }));
+    const control = screen.getByLabelText('semantic.radii.control');
+    fireEvent.change(control, { target: { value: '{core.radii.none}' } });
+
+    await user.click(
+      screen.getByRole('button', { name: 'Revert semantic.radii.control' })
+    );
+    expect(screen.getByLabelText('semantic.radii.control')).toHaveValue(
+      '{core.radii.md}'
+    );
+  });
+
+  test('core families expose raw values one level down', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    // Core radii: 6 leaves (none, sm, md, lg, xl, full).
+    await user.click(screen.getByRole('button', { name: 'radii · 6' }));
+    const md = screen.getByLabelText('core.radii.md');
+    expect(md).toHaveValue('8px');
+
+    fireEvent.change(md, { target: { value: '10px' } });
+    const inspector = screen.getByRole('complementary', { name: 'Inspector' });
+    expect(within(inspector).getByText(/core\.radii\.md/)).toBeInTheDocument();
+  });
+});
+
+describe('broken refs: ambient validation + sanctioned escalation (F2.2)', () => {
+  const breakOneRef = async (user: ReturnType<typeof userEvent.setup>) => {
+    await user.click(screen.getByRole('button', { name: 'radii · 3' }));
+    fireEvent.change(screen.getByLabelText('semantic.radii.control'), {
+      target: { value: '{core.radii.nope}' },
+    });
+  };
+
+  test('a broken remap surfaces ambiently: row badge + peripheral counter', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await breakOneRef(user);
+
+    // Badge on the offending navigator row…
+    expect(
+      screen.getByRole('img', { name: 'Broken reference' })
+    ).toBeInTheDocument();
+    // …and on its diff row…
+    expect(
+      screen.getByRole('img', {
+        name: 'Broken reference at semantic.radii.control',
+      })
+    ).toBeInTheDocument();
+    // …and the peripheral header counter. Never a modal, never a toast.
+    expect(screen.getByText('⚠ 1 ref error')).toBeInTheDocument();
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+
+    // Two broken tokens pluralize the counter.
+    fireEvent.change(screen.getByLabelText('semantic.radii.surface'), {
+      target: { value: '{core.radii.nada}' },
+    });
+    expect(screen.getByText('⚠ 2 ref errors')).toBeInTheDocument();
+  });
+
+  test('exporting with broken refs goes through the escalation dialog', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await breakOneRef(user);
+    const inspector = screen.getByRole('complementary', { name: 'Inspector' });
+
+    await user.click(
+      within(inspector).getByRole('button', { name: 'Export theme' })
+    );
+    // The one sanctioned escalation (PRD §6.4-P2): a dialog, not a toast.
+    expect(screen.getByText('Broken token references')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Export anyway' }));
+    expect(screen.getByTestId('export-content')).toBeInTheDocument();
+  });
+
+  test('the escalation dialog pluralizes for multiple broken refs', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await breakOneRef(user);
+    fireEvent.change(screen.getByLabelText('semantic.radii.surface'), {
+      target: { value: '{core.radii.nada}' },
+    });
+    const inspector = screen.getByRole('complementary', { name: 'Inspector' });
+
+    await user.click(
+      within(inspector).getByRole('button', { name: 'Export theme' })
+    );
+    expect(screen.getByText(/2 tokens resolve/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Go back' }));
+  });
+
+  test('the escalation dialog can be declined', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await breakOneRef(user);
+    const inspector = screen.getByRole('complementary', { name: 'Inspector' });
+
+    await user.click(
+      within(inspector).getByRole('button', { name: 'Export theme' })
+    );
+    await user.click(screen.getByRole('button', { name: 'Go back' }));
+    expect(screen.queryByTestId('export-content')).not.toBeInTheDocument();
+  });
+});
+
+test('an AI-origin diff entry shows the ✦ marker', () => {
+  // Nothing in Phases 0–2 produces an AI edit; the marker activates with the
+  // Generate lens (Phase 4). The store already tracks origin, so render the
+  // inspector against a forked initial state carrying one.
+  render(
+    <ThemeStoreProvider
+      initial={{
+        overrides: { 'core.radii.md': '10px' },
+        origins: { 'core.radii.md': 'ai' },
+      }}
+    >
+      <ThemeInspector />
+    </ThemeStoreProvider>
+  );
+  expect(screen.getByText(/✦ core\.radii\.md/)).toBeInTheDocument();
 });
 
 test('editing via the native color input updates the theme', () => {
