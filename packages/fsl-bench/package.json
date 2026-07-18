@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/fsl-bench",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "AI-executability benchmark harness for @ttoss/fsl-ui (ROADMAP D1). Measures first-pass success and semantic error rate of LLM-generated UI code against headless baselines.",
   "repository": {
