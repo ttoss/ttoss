@@ -4,6 +4,16 @@
 // is a client module (Next.js App Router). The `./semantics` entry stays
 // directive-free: taxonomy data is server-safe.
 export type {
+  BoxBackground,
+  BoxBorder,
+  BoxMaxWidth,
+  BoxPadding,
+  BoxProps,
+  BoxRadius,
+  BoxWidth,
+} from './components/Box/Box';
+export { Box, boxMeta } from './components/Box/Box';
+export type {
   BreadcrumbProps,
   BreadcrumbsProps,
 } from './components/Breadcrumbs/Breadcrumbs';

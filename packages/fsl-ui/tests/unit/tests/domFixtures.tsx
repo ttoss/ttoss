@@ -70,6 +70,12 @@ export type DomFixture = {
 
 export const DOM_FIXTURES: Record<string, DomFixture> = {
   // ── standalone components ─────────────────────────────────────────────
+  Box: {
+    scope: 'box',
+    element: () => {
+      return <pkg.Box>content</pkg.Box>;
+    },
+  },
   Button: {
     scope: 'button',
     element: () => {
