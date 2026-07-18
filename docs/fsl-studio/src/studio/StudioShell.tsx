@@ -1,4 +1,11 @@
-import { ToggleButton, ToggleButtonGroup } from '@ttoss/fsl-ui';
+import {
+  AppShell,
+  Box,
+  Stack,
+  Text,
+  ToggleButton,
+  ToggleButtonGroup,
+} from '@ttoss/fsl-ui';
 import * as React from 'react';
 
 import { ColorModeToggle } from './ColorModeToggle';
@@ -71,76 +78,88 @@ export const StudioShell = () => {
   }, [lens, altitude, selection]);
 
   return (
-    <div className="studio">
-      <header className="studio-header">
-        <button type="button" className="studio-brand" onClick={goHome}>
-          FSL Studio
-        </button>
-        <RefErrorsCounter />
-        <ToggleButtonGroup
-          aria-label="Lens"
-          selectionMode="single"
-          disallowEmptySelection
-          selectedKeys={[lens]}
-          onSelectionChange={(keys) => {
-            // Single selection + disallowEmptySelection: RAC guarantees
-            // exactly one key, and the only ids in the group are lenses.
-            setLens([...keys][0] as Lens);
-          }}
-        >
-          {LENSES.map((id) => {
-            return (
-              <ToggleButton key={id} id={id} evaluation="muted">
-                {LENS_LABELS[id]}
-              </ToggleButton>
-            );
-          })}
-        </ToggleButtonGroup>
-        <CommandPalette />
-        <ColorModeToggle />
-      </header>
-      <div className="studio-body">
-        <aside className="studio-navigator" aria-label="Navigator">
-          {lens === 'theme' ? <ThemeNavigator /> : null}
-          {lens === 'components' ? <ComponentNavigator /> : null}
-          {lens === 'generate' ? (
-            <p className="studio-empty-state">
-              {LENS_EMPTY_STATE.generate.navigator}
-            </p>
-          ) : null}
-        </aside>
-        <Stage
-          renderSubject={renderSubject}
-          toolbar={
+    <AppShell
+      sidebarWidth="md"
+      asideWidth="md"
+      sidebarLabel="Navigator"
+      asideLabel="Inspector"
+      header={
+        <Box paddingBlock="sm" paddingInline="md">
+          <Stack direction="horizontal" gap="md" align="center">
+            <button type="button" className="studio-brand" onClick={goHome}>
+              FSL Studio
+            </button>
+            <RefErrorsCounter />
             <ToggleButtonGroup
-              aria-label="Stage altitude"
+              aria-label="Lens"
               selectionMode="single"
               disallowEmptySelection
-              selectedKeys={[altitude]}
+              selectedKeys={[lens]}
               onSelectionChange={(keys) => {
-                setAltitude([...keys][0] as Altitude);
+                // Single selection + disallowEmptySelection: RAC guarantees
+                // exactly one key, and the only ids in the group are lenses.
+                setLens([...keys][0] as Lens);
               }}
             >
-              {ALTITUDES.map((id) => {
+              {LENSES.map((id) => {
                 return (
                   <ToggleButton key={id} id={id} evaluation="muted">
-                    {ALTITUDE_LABELS[id]}
+                    {LENS_LABELS[id]}
                   </ToggleButton>
                 );
               })}
             </ToggleButtonGroup>
-          }
-        />
-        <aside className="studio-inspector" aria-label="Inspector">
+            <CommandPalette />
+            <Box grow />
+            <ColorModeToggle />
+          </Stack>
+        </Box>
+      }
+      sidebar={
+        <Box padding="md">
+          {lens === 'theme' ? <ThemeNavigator /> : null}
+          {lens === 'components' ? <ComponentNavigator /> : null}
+          {lens === 'generate' ? (
+            <Text variant="body-sm" tone="muted">
+              {LENS_EMPTY_STATE.generate.navigator}
+            </Text>
+          ) : null}
+        </Box>
+      }
+      aside={
+        <Box padding="md">
           {lens === 'theme' ? <ThemeInspector /> : null}
           {lens === 'components' ? <ComponentInspector /> : null}
           {lens === 'generate' ? (
-            <p className="studio-empty-state">
+            <Text variant="body-sm" tone="muted">
               {LENS_EMPTY_STATE.generate.inspector}
-            </p>
+            </Text>
           ) : null}
-        </aside>
-      </div>
-    </div>
+        </Box>
+      }
+    >
+      <Stage
+        renderSubject={renderSubject}
+        toolbar={
+          <ToggleButtonGroup
+            aria-label="Stage altitude"
+            selectionMode="single"
+            disallowEmptySelection
+            selectedKeys={[altitude]}
+            onSelectionChange={(keys) => {
+              setAltitude([...keys][0] as Altitude);
+            }}
+          >
+            {ALTITUDES.map((id) => {
+              return (
+                <ToggleButton key={id} id={id} evaluation="muted">
+                  {ALTITUDE_LABELS[id]}
+                </ToggleButton>
+              );
+            })}
+          </ToggleButtonGroup>
+        }
+      />
+    </AppShell>
   );
 };

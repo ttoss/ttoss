@@ -53,6 +53,10 @@ export interface AppShellProps extends Omit<
    * @default 'sm'
    */
   asideWidth?: AppShellSidebarWidth;
+  /** Accessible name for the start `sidebar` landmark (`aria-label`). */
+  sidebarLabel?: string;
+  /** Accessible name for the end `aside` landmark (`aria-label`). */
+  asideLabel?: string;
   /** The main region — always takes the remaining space and scrolls. */
   children?: React.ReactNode;
 }
@@ -103,6 +107,8 @@ export const AppShell = ({
   aside,
   sidebarWidth = 'sm',
   asideWidth = 'sm',
+  sidebarLabel,
+  asideLabel,
   children,
   ...props
 }: AppShellProps) => {
@@ -151,6 +157,7 @@ export const AppShell = ({
           <aside
             data-scope="app-shell"
             data-part="sidebar"
+            aria-label={sidebarLabel}
             style={
               {
                 overflowY: 'auto',
@@ -172,6 +179,7 @@ export const AppShell = ({
           <aside
             data-scope="app-shell"
             data-part="aside"
+            aria-label={asideLabel}
             style={
               {
                 overflowY: 'auto',

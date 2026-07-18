@@ -84,6 +84,21 @@ describe('AppShell', () => {
     );
   });
 
+  test('names the sidebar and aside landmarks via labels', () => {
+    render(
+      <AppShell
+        sidebar={<i>n</i>}
+        aside={<i>i</i>}
+        sidebarLabel="Navigator"
+        asideLabel="Inspector"
+      >
+        main
+      </AppShell>
+    );
+    expect(part('sidebar')).toHaveAttribute('aria-label', 'Navigator');
+    expect(part('aside')).toHaveAttribute('aria-label', 'Inspector');
+  });
+
   test('the shell fills the viewport height', () => {
     render(<AppShell>main</AppShell>);
     expect(part('root')?.style.blockSize).toBe('100dvh');

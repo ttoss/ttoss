@@ -1,84 +1,33 @@
 /*
- * FSL Studio shell layout. Colors, spacing, radii, and typography come from
- * the theme's CSS custom properties (--tt-*) so the chrome re-themes with the
- * canonical theme — including the future "apply to Studio" toggle (PRD §6.1).
+ * FSL Studio — residual app CSS.
+ *
+ * The base layer (reset + body binding) comes from `<ThemeReset />`
+ * (@ttoss/fsl-theme); the app frame from `<AppShell>`; all layout/text/widgets
+ * from fsl-ui primitives. What remains here is the irreducibly app-specific:
+ * the brand wordmark, the dual light/dark stage compare (a bespoke 2-pane
+ * grid), and the domain editor widgets (token/diff rows, command palette).
+ * Every value is a `var(--tt-*)` read — this sheet consumes the theme, never
+ * redefines or overrides it.
  */
 
-* {
-  box-sizing: border-box;
-}
-
-html,
-body,
-#root {
-  height: 100%;
-  margin: 0;
-}
-
-body {
-  font-family: var(--tt-text-body-md-font-family, system-ui, sans-serif);
-  color: var(--tt-colors-informational-primary-text-default);
-  background-color: var(--tt-colors-informational-primary-background-default);
-}
-
-.studio {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.studio-header {
-  display: flex;
-  align-items: center;
-  gap: var(--tt-core-spacing-6);
-  padding-block: var(--tt-core-spacing-3);
-  padding-inline: 1.25rem;
-  border-block-end: 1px solid
-    var(--tt-colors-informational-primary-border-default);
-}
-
 .studio-brand {
+  font: inherit;
   font-weight: 700;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+  padding: 0;
 }
 
-/* Color-mode toggle sits at the far end of the header. */
-.studio-mode-toggle {
-  margin-inline-start: auto;
-}
-
-.studio-body {
-  display: grid;
-  grid-template-columns: minmax(12rem, 1fr) minmax(0, 4fr) minmax(14rem, 1fr);
-  flex: 1;
-  min-block-size: 0;
-}
-
-.studio-navigator,
-.studio-inspector {
-  padding: var(--tt-core-spacing-4);
-  overflow-y: auto;
-}
-
-.studio-navigator {
-  border-inline-end: 1px solid
-    var(--tt-colors-informational-primary-border-default);
-}
-
-.studio-inspector {
-  border-inline-start: 1px solid
-    var(--tt-colors-informational-primary-border-default);
-}
-
-.studio-empty-state {
-  margin: 0;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  color: var(--tt-colors-informational-muted-text-default);
-}
-
+/* The stage's side-by-side light/dark compare is bespoke to the Studio: two
+   theme-scoped panes rendered simultaneously (see Stage.tsx). Each pane is an
+   fsl-ui `Surface`; the scope host generates no box (`display: contents`) so
+   the Surface is the grid item. */
 .stage {
   padding: var(--tt-core-spacing-4);
   overflow: auto;
+  block-size: 100%;
 }
 
 .stage-panes {
@@ -88,29 +37,11 @@ body {
   block-size: 100%;
 }
 
-/* Stage panes are now the fsl-ui `Surface` primitive (see Stage.tsx): depth,
-   surface colour, radius, and padding come from the component, not from ad-hoc
-   chrome CSS. The scope host carries the theme attributes but generates no box
-   (`display: contents`), so the Surface is the grid item. */
 .stage-pane-scope {
   display: contents;
 }
 
-/* Stage pane labels + sample/grid content are composed with primitives
- * (Stack/Grid/Surface/Text). */
-
 @media (max-width: 60rem) {
-  .studio-body {
-    grid-template-columns: 1fr;
-  }
-
-  .studio-navigator,
-  .studio-inspector {
-    border: none;
-    border-block-end: 1px solid
-      var(--tt-colors-informational-primary-border-default);
-  }
-
   .stage-panes {
     grid-template-columns: 1fr;
   }

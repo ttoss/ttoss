@@ -23,16 +23,14 @@ export const ColorModeToggle = () => {
   const { mode, setMode } = useColorMode();
 
   return (
-    <span className="studio-mode-toggle">
-      <Button
-        evaluation="muted"
-        aria-label={`Color mode: ${MODE_LABEL[mode]}. Activate to switch.`}
-        onPress={() => {
-          return setMode(NEXT_MODE[mode]);
-        }}
-      >
-        {MODE_LABEL[mode]}
-      </Button>
-    </span>
+    <Button
+      evaluation="muted"
+      aria-label={`Color mode: ${MODE_LABEL[mode]}. Activate to switch.`}
+      onPress={() => {
+        return setMode(NEXT_MODE[mode]);
+      }}
+    >
+      {MODE_LABEL[mode]}
+    </Button>
   );
 };
