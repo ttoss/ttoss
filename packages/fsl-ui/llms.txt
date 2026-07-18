@@ -85,7 +85,11 @@ Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              Surface (depth container: level=flat|raised|overlay|blocking,
              padding=none|sm|md|lg; pairs the elevation shadow with the tonal
              surface colour so depth reads in light AND dark — use for cards,
-             panels, sheets instead of a hand-rolled div)
+             panels, sheets instead of a hand-rolled div),
+             Heading (h1-h6 bound to the type scale: level=1..6 sets the
+             element, size overrides the visual step — never a raw font-size),
+             Text (body/label copy: variant=body|label-lg|md|sm, tone=muted for
+             secondary hierarchy, as=p|span|div — never a raw font-size)
 
 Icons: INTERNAL only (not exported). Components render glyphs through an
 internal semantic Icon layer (`src/components/Icon/`) that maps `icon.{family}.{intent}`

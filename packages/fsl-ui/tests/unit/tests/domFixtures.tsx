@@ -101,10 +101,22 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       );
     },
   },
+  Heading: {
+    scope: 'heading',
+    element: () => {
+      return <pkg.Heading level={2}>Section</pkg.Heading>;
+    },
+  },
   Link: {
     scope: 'link',
     element: () => {
       return <pkg.Link href="#">x</pkg.Link>;
+    },
+  },
+  Text: {
+    scope: 'text',
+    element: () => {
+      return <pkg.Text>Body copy</pkg.Text>;
     },
   },
   ProgressBar: {

@@ -1,5 +1,6 @@
 import {
   Button,
+  Heading,
   Link,
   Meter,
   Separator,
@@ -8,6 +9,7 @@ import {
   TabList,
   TabPanel,
   Tabs,
+  Text,
 } from '@ttoss/fsl-ui';
 
 /**
@@ -22,6 +24,12 @@ import {
 export const StageSample = () => {
   return (
     <div className="stage-sample">
+      <div>
+        <Heading level={3}>Account settings</Heading>
+        <Text variant="body-sm" tone="muted">
+          Manage how your workspace behaves.
+        </Text>
+      </div>
       <div className="stage-sample-row">
         <Button evaluation="primary">Save</Button>
         <Button evaluation="accent">Publish</Button>

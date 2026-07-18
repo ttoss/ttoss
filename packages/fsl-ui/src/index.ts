@@ -39,6 +39,12 @@ export {
 } from './components/GridList/GridList';
 export type { GroupProps } from './components/Group/Group';
 export { Group, groupMeta } from './components/Group/Group';
+export type {
+  HeadingLevel,
+  HeadingProps,
+  HeadingSize,
+} from './components/Heading/Heading';
+export { Heading, headingMeta } from './components/Heading/Heading';
 export type { LinkProps } from './components/Link/Link';
 export { Link, linkMeta } from './components/Link/Link';
 export type {
@@ -108,6 +114,13 @@ export {
   Tabs,
   tabsMeta,
 } from './components/Tabs/Tabs';
+export type {
+  TextAs,
+  TextProps,
+  TextTone,
+  TextVariant,
+} from './components/Text/Text';
+export { Text, textMeta } from './components/Text/Text';
 export type {
   ToastContent,
   ToastProps,
