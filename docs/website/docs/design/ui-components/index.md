@@ -6,17 +6,17 @@ title: ttoss UI Components
 
 ## Catalog
 
-| Entity     | Components                                                                                                                                                        |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Action     | `Button`, `ToggleButton`, `FileTrigger`, `MenuItem`, `FormSubmit`                                                                                                 |
-| Navigation | `Link`, `Breadcrumbs` / `Breadcrumb`, `Tabs` / `TabList` / `Tab`                                                                                                  |
-| Disclosure | `Accordion` (`AccordionItem` / `AccordionTrigger` / `AccordionPanel`), `Disclosure` (`DisclosureTrigger` / `DisclosurePanel`)                                     |
-| Selection  | `Checkbox`, `CheckboxGroup`, `RadioGroup` / `Radio`, `Switch`, `Select` / `SelectItem`, `ToggleButtonGroup`, `TagGroup` / `Tag`                                   |
-| Collection | `ListBox` / `ListBoxItem`, `GridList` / `GridListItem` (container is Collection, selectable items are Selection — ADR-007)                                        |
-| Input      | `TextField`, `TextArea`, `SearchField` (each with `*Label` / `*Control` / …), `NumberField`, `Slider`                                                             |
-| Overlay    | `Dialog` family (`DialogModal` / `DialogHeading` / `DialogBody` / `DialogActions`), `Menu`, `ConfirmationDialog`, `Popover`, `Tooltip`                            |
-| Feedback   | `ProgressBar`, `Meter`, `Toast` / `ToastRegion`                                                                                                                   |
-| Structure  | `Form` / `FormActions`, `Wizard` (`WizardStep` / `WizardSummary` / `WizardNavigation`), `Separator`, `Group`, `Toolbar`, `TabPanel` (the content the tabs reveal) |
+| Entity     | Components                                                                                                                                                                                                                                                                                     |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Action     | `Button`, `ToggleButton`, `FileTrigger`, `MenuItem`, `FormSubmit`                                                                                                                                                                                                                              |
+| Navigation | `Link`, `Breadcrumbs` / `Breadcrumb`, `Tabs` / `TabList` / `Tab`                                                                                                                                                                                                                               |
+| Disclosure | `Accordion` (`AccordionItem` / `AccordionTrigger` / `AccordionPanel`), `Disclosure` (`DisclosureTrigger` / `DisclosurePanel`)                                                                                                                                                                  |
+| Selection  | `Checkbox`, `CheckboxGroup`, `RadioGroup` / `Radio`, `Switch`, `Select` / `SelectItem`, `ToggleButtonGroup`, `TagGroup` / `Tag`                                                                                                                                                                |
+| Collection | `ListBox` / `ListBoxItem`, `GridList` / `GridListItem` (container is Collection, selectable items are Selection — ADR-007)                                                                                                                                                                     |
+| Input      | `TextField`, `TextArea`, `SearchField` (each with `*Label` / `*Control` / …), `NumberField`, `Slider`                                                                                                                                                                                          |
+| Overlay    | `Dialog` family (`DialogModal` / `DialogHeading` / `DialogBody` / `DialogActions`), `Menu`, `ConfirmationDialog`, `Popover`, `Tooltip`                                                                                                                                                         |
+| Feedback   | `ProgressBar`, `Meter`, `Toast` / `ToastRegion`                                                                                                                                                                                                                                                |
+| Structure  | **Presentational primitives** — `Surface` (depth container), `Heading` / `Text` (type scale), `Stack` (layout rhythm) — plus `Form` / `FormActions`, `Wizard` (`WizardStep` / `WizardSummary` / `WizardNavigation`), `Separator`, `Group`, `Toolbar`, `TabPanel` (the content the tabs reveal) |
 
 Waves 1 and 2 of the full React Aria atomic catalog are complete; the heavier components (`ComboBox`, `Table`, `Tree`) and the date/time suite follow under the same pattern. Every component lands with contract tests, keyboard tests, and an axe accessibility suite.
 
@@ -34,6 +34,7 @@ Every element renders `data-scope` / `data-part` (plus `data-evaluation`, `data-
 
 ## Where to go next
 
+- [Composition guidelines](/docs/design/ui-components/composition) — how to compose the primitives and controls so "semantically correct" also reads as "well designed".
 - [Component model](/docs/design/design-system/components/component-model) — the theory this package implements, including the Entity → token projection.
 - [Design tokens](/docs/design/design-system/design-tokens/model) — the `@ttoss/fsl-theme` grammar the components consume.
 - The package's `README.md` (quickstart) and `CONTRIBUTING.md` (authoring rules, ADRs) in `packages/fsl-ui/`.
