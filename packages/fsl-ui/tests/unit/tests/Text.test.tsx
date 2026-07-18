@@ -7,7 +7,14 @@
  */
 import { render } from '@testing-library/react';
 import { vars } from '@ttoss/fsl-theme/vars';
-import { Text, type TextAs, type TextTone, type TextVariant } from 'src/index';
+import {
+  Text,
+  type TextAlign,
+  type TextAs,
+  type TextNumeric,
+  type TextTone,
+  type TextVariant,
+} from 'src/index';
 
 const root = () => {
   return document.querySelector<HTMLElement>(
@@ -53,6 +60,29 @@ describe('Text', () => {
   ])('as=%s renders <%s>', (as, tag) => {
     render(<Text as={as}>x</Text>);
     expect(root()?.tagName).toBe(tag);
+  });
+
+  test('defaults to start alignment and normal figures', () => {
+    render(<Text>x</Text>);
+    const el = root();
+    expect(el?.style.textAlign).toBe('start');
+    expect(el?.style.fontVariantNumeric).toBe('');
+  });
+
+  test.each<[TextAlign]>([['start'], ['center'], ['end']])(
+    'align=%s sets text-align',
+    (align) => {
+      render(<Text align={align}>x</Text>);
+      expect(root()?.style.textAlign).toBe(align);
+    }
+  );
+
+  test.each<[TextNumeric, string]>([
+    ['normal', ''],
+    ['tabular', 'tabular-nums'],
+  ])('numeric=%s controls tabular figures', (numeric, css) => {
+    render(<Text numeric={numeric}>123</Text>);
+    expect(root()?.style.fontVariantNumeric).toBe(css);
   });
 
   test('forwards pass-through props to the root', () => {

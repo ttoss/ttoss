@@ -58,6 +58,7 @@ export {
 export type { GroupProps } from './components/Group/Group';
 export { Group, groupMeta } from './components/Group/Group';
 export type {
+  HeadingAlign,
   HeadingLevel,
   HeadingProps,
   HeadingSize,
@@ -141,7 +142,9 @@ export {
   tabsMeta,
 } from './components/Tabs/Tabs';
 export type {
+  TextAlign,
   TextAs,
+  TextNumeric,
   TextProps,
   TextTone,
   TextVariant,

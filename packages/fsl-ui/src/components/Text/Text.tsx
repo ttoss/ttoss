@@ -33,6 +33,12 @@ export type TextVariant =
 /** The tone of the text colour — default inherits; `muted` recedes. */
 export type TextTone = 'default' | 'muted';
 
+/** Inline text alignment. */
+export type TextAlign = 'start' | 'center' | 'end';
+
+/** Numeric figure style — `tabular` aligns digits in columns (metrics, tables). */
+export type TextNumeric = 'normal' | 'tabular';
+
 /** The element Text renders as. */
 export type TextAs = 'p' | 'span' | 'div';
 
@@ -63,6 +69,18 @@ export interface TextProps extends Omit<
    * @default 'default'
    */
   tone?: TextTone;
+  /**
+   * Inline alignment (`text-align`). A layout keyword, not a design token.
+   * @default 'start'
+   */
+  align?: TextAlign;
+  /**
+   * Numeric figure style. `tabular` renders `tabular-nums` so digits occupy
+   * equal width — use it for metrics, counts, and any figures that must line up
+   * in a column. A rendering *meaning*, not a raw style.
+   * @default 'normal'
+   */
+  numeric?: TextNumeric;
   /**
    * The element to render. `p` for paragraphs, `span` for inline runs, `div`
    * for grouping.
@@ -98,6 +116,8 @@ const colorForTone = (tone: TextTone): string | undefined => {
 export const Text = ({
   variant = 'body-md',
   tone = 'default',
+  align = 'start',
+  numeric = 'normal',
   as = 'p',
   children,
   ...props
@@ -115,6 +135,9 @@ export const Text = ({
         {
           margin: 0,
           color: colorForTone(tone),
+          textAlign: align,
+          fontVariantNumeric:
+            numeric === 'tabular' ? 'tabular-nums' : undefined,
           ...TYPE_BY_VARIANT[variant],
         } as React.CSSProperties
       }

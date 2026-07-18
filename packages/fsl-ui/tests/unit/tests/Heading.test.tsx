@@ -8,7 +8,12 @@
  */
 import { render } from '@testing-library/react';
 import { vars } from '@ttoss/fsl-theme/vars';
-import { Heading, type HeadingLevel, type HeadingSize } from 'src/index';
+import {
+  Heading,
+  type HeadingAlign,
+  type HeadingLevel,
+  type HeadingSize,
+} from 'src/index';
 
 const root = () => {
   return document.querySelector<HTMLElement>(
@@ -55,6 +60,18 @@ describe('Heading', () => {
     expect(el?.style.color).toBe('inherit');
     expect(el?.style.margin).toBe('0px');
   });
+
+  test.each<[HeadingAlign]>([['start'], ['center'], ['end']])(
+    'align=%s sets text-align',
+    (align) => {
+      render(
+        <Heading level={2} align={align}>
+          x
+        </Heading>
+      );
+      expect(root()?.style.textAlign).toBe(align);
+    }
+  );
 
   test('forwards pass-through props to the root', () => {
     render(

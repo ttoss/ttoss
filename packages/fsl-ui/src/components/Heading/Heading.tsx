@@ -24,6 +24,9 @@ export const headingMeta = {
 /** Heading rank — sets the rendered `<h1>`…`<h6>` element and the default size. */
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
+/** Inline heading alignment. */
+export type HeadingAlign = 'start' | 'center' | 'end';
+
 /** A step of the heading type scale (`{family}-{step}`). */
 export type HeadingSize =
   | 'display-lg'
@@ -78,6 +81,11 @@ export interface HeadingProps extends Omit<
    * Use it to decouple appearance from rank (e.g. a visually small `<h2>`).
    */
   size?: HeadingSize;
+  /**
+   * Inline alignment (`text-align`). A layout keyword, not a design token.
+   * @default 'start'
+   */
+  align?: HeadingAlign;
   /** The heading text. */
   children?: React.ReactNode;
 }
@@ -97,7 +105,13 @@ export interface HeadingProps extends Omit<
  * <Heading level={2} size="title-md">Payment methods</Heading>
  * ```
  */
-export const Heading = ({ level, size, children, ...props }: HeadingProps) => {
+export const Heading = ({
+  level,
+  size,
+  align = 'start',
+  children,
+  ...props
+}: HeadingProps) => {
   const resolvedSize = size ?? DEFAULT_SIZE_BY_LEVEL[level];
   const Tag = `h${level}` as const;
 
@@ -111,6 +125,7 @@ export const Heading = ({ level, size, children, ...props }: HeadingProps) => {
         {
           margin: 0,
           color: 'inherit',
+          textAlign: align,
           ...TYPE_BY_SIZE[resolvedSize],
         } as React.CSSProperties
       }
