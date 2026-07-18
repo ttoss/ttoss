@@ -149,6 +149,12 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       return <pkg.Separator />;
     },
   },
+  Surface: {
+    scope: 'surface',
+    element: () => {
+      return <pkg.Surface>content</pkg.Surface>;
+    },
+  },
   Slider: {
     scope: 'slider',
     element: () => {

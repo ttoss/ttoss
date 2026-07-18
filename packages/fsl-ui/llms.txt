@@ -81,7 +81,11 @@ Feedback:    ProgressBar, Meter, Toast, ToastRegion, createToastQueue
              ProgressBar = a task in flight. Pick by "state" vs "progressing")
 Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              WizardNavigation, Separator, Group (labelled role=group frame),
-             Toolbar (role=toolbar, arrow-key roving nav over its controls)
+             Toolbar (role=toolbar, arrow-key roving nav over its controls),
+             Surface (depth container: level=flat|raised|overlay|blocking,
+             padding=none|sm|md|lg; pairs the elevation shadow with the tonal
+             surface colour so depth reads in light AND dark — use for cards,
+             panels, sheets instead of a hand-rolled div)
 
 Icons: INTERNAL only (not exported). Components render glyphs through an
 internal semantic Icon layer (`src/components/Icon/`) that maps `icon.{family}.{intent}`

@@ -83,20 +83,12 @@ body {
   block-size: 100%;
 }
 
-.stage-pane {
-  padding: var(--tt-spacing-5, 1.25rem);
-  border: 1px solid var(--tt-colors-informational-muted-border-default);
-  border-radius: var(--tt-radii-surface, 0.5rem);
-  color: var(--tt-colors-informational-primary-text-default);
-  /* Depth from the FSL surface contract: the tonal token is the surface
-     colour at the `raised` stratum (white in light, a lighter neutral in
-     dark), and the paired shadow recipe carries the lift. On the near-black
-     dark canvas the tonal lightening — not the shadow — is what reads. */
-  background-color: var(
-    --tt-elevation-tonal-raised,
-    var(--tt-colors-informational-primary-background-default)
-  );
-  box-shadow: var(--tt-elevation-surface-raised);
+/* Stage panes are now the fsl-ui `Surface` primitive (see Stage.tsx): depth,
+   surface colour, radius, and padding come from the component, not from ad-hoc
+   chrome CSS. The scope host carries the theme attributes but generates no box
+   (`display: contents`), so the Surface is the grid item. */
+.stage-pane-scope {
+  display: contents;
 }
 
 .stage-pane-label {
