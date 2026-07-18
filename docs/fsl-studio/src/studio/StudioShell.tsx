@@ -1,6 +1,7 @@
 import { ToggleButton, ToggleButtonGroup } from '@ttoss/fsl-ui';
 import * as React from 'react';
 
+import { ColorModeToggle } from './ColorModeToggle';
 import { ComponentInspector } from './components/ComponentInspector';
 import { ComponentNavigator } from './components/ComponentNavigator';
 import { ComponentStageContent } from './components/ComponentStageContent';
@@ -96,6 +97,7 @@ export const StudioShell = () => {
           })}
         </ToggleButtonGroup>
         <CommandPalette />
+        <ColorModeToggle />
       </header>
       <div className="studio-body">
         <aside className="studio-navigator" aria-label="Navigator">

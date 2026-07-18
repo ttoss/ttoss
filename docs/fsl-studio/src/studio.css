@@ -41,6 +41,11 @@ body {
   font-weight: 700;
 }
 
+/* Color-mode toggle sits at the far end of the header. */
+.studio-mode-toggle {
+  margin-inline-start: auto;
+}
+
 .studio-body {
   display: grid;
   grid-template-columns: minmax(12rem, 1fr) minmax(0, 4fr) minmax(14rem, 1fr);
