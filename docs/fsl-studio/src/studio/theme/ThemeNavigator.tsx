@@ -77,7 +77,9 @@ const LazyDisclosure = ({
 }) => {
   const [open, setOpen] = React.useState(defaultOpen);
   return (
-    <Disclosure isExpanded={open} onExpandedChange={setOpen}>
+    // muted: these are token-tree section labels, not navigational links —
+    // the primary (link-coloured) evaluation reads wrong for a dense tree.
+    <Disclosure isExpanded={open} onExpandedChange={setOpen} evaluation="muted">
       <DisclosureTrigger>
         {title} · {count}
       </DisclosureTrigger>
