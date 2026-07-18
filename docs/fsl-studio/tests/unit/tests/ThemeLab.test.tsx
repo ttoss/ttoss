@@ -8,8 +8,15 @@ const stageStyle = (container: HTMLElement): string => {
   return container.querySelector('.stage style')?.textContent ?? '';
 };
 
+/** Boot into the Theme lens through the task-first home (PRD §6.2). */
+const renderThemeLab = () => {
+  const utils = render(<App />);
+  fireEvent.click(screen.getByRole('button', { name: /Create a theme/ }));
+  return utils;
+};
+
 test('editing the brand scale cascades to the stage (the wow)', () => {
-  const { container } = render(<App />);
+  const { container } = renderThemeLab();
 
   // Accent surfaces resolve to the brand color; before editing, the distinctive
   // value is absent from the stage CSS.
@@ -25,7 +32,7 @@ test('editing the brand scale cascades to the stage (the wow)', () => {
 
 test('a color edit shows in the change diff and reverts individually', async () => {
   const user = userEvent.setup();
-  render(<App />);
+  renderThemeLab();
   const inspector = screen.getByRole('complementary', { name: 'Inspector' });
 
   expect(within(inspector).getByText(/No changes yet/)).toBeInTheDocument();
@@ -44,7 +51,7 @@ test('a color edit shows in the change diff and reverts individually', async () 
 
 test('reset all clears the diff', async () => {
   const user = userEvent.setup();
-  render(<App />);
+  renderThemeLab();
   const inspector = screen.getByRole('complementary', { name: 'Inspector' });
 
   fireEvent.change(screen.getByLabelText('brand 500 hex'), {
@@ -63,7 +70,7 @@ test('reset all clears the diff', async () => {
 
 test('reverting via the diff row also works', async () => {
   const user = userEvent.setup();
-  render(<App />);
+  renderThemeLab();
   const inspector = screen.getByRole('complementary', { name: 'Inspector' });
 
   fireEvent.change(screen.getByLabelText('brand 500 hex'), {
@@ -83,7 +90,7 @@ test('reverting via the diff row also works', async () => {
 
 test('switching preset starts a fresh diff', async () => {
   const user = userEvent.setup();
-  render(<App />);
+  renderThemeLab();
   const inspector = screen.getByRole('complementary', { name: 'Inspector' });
 
   fireEvent.change(screen.getByLabelText('brand 500 hex'), {
@@ -97,7 +104,7 @@ test('switching preset starts a fresh diff', async () => {
 
 test('apply-to-Studio toggle exposes the safe-fallback control', async () => {
   const user = userEvent.setup();
-  render(<App />);
+  renderThemeLab();
 
   const toggle = screen.getByRole('checkbox', {
     name: /Apply this theme to the Studio/,
@@ -115,7 +122,7 @@ test('apply-to-Studio toggle exposes the safe-fallback control', async () => {
 });
 
 test('contrast section surfaces curated pairs for light and dark', () => {
-  render(<App />);
+  renderThemeLab();
   const inspector = screen.getByRole('complementary', { name: 'Inspector' });
   // Each curated pair is checked in both modes (F2.6 dark follow-up done).
   expect(within(inspector).getByText('Light')).toBeInTheDocument();
@@ -126,7 +133,7 @@ test('contrast section surfaces curated pairs for light and dark', () => {
 
 test('export peak ships all three formats', async () => {
   const user = userEvent.setup();
-  render(<App />);
+  renderThemeLab();
   const inspector = screen.getByRole('complementary', { name: 'Inspector' });
 
   await user.click(
@@ -166,7 +173,7 @@ describe('export copy', () => {
   });
 
   const openExport = () => {
-    render(<App />);
+    renderThemeLab();
     const inspector = screen.getByRole('complementary', { name: 'Inspector' });
     fireEvent.click(
       within(inspector).getByRole('button', { name: 'Export theme' })
@@ -211,7 +218,7 @@ describe('export copy', () => {
 describe('semantic layer navigator (F2.1/F2.2)', () => {
   test('semantic families disclose leaves; a remap re-derives the theme', async () => {
     const user = userEvent.setup();
-    const { container } = render(<App />);
+    const { container } = renderThemeLab();
 
     // Semantic radii family: 3 leaves (control, surface, round).
     await user.click(screen.getByRole('button', { name: 'radii · 3' }));
@@ -231,7 +238,7 @@ describe('semantic layer navigator (F2.1/F2.2)', () => {
 
   test('semantic colors group by ux context before leaves render', async () => {
     const user = userEvent.setup();
-    render(<App />);
+    renderThemeLab();
 
     // Two "colors" disclosures exist (semantic family, core scales); the
     // semantic one comes first in DOM order.
@@ -257,7 +264,7 @@ describe('semantic layer navigator (F2.1/F2.2)', () => {
 
   test('a token row reverts its own override', async () => {
     const user = userEvent.setup();
-    render(<App />);
+    renderThemeLab();
 
     await user.click(screen.getByRole('button', { name: 'radii · 3' }));
     const control = screen.getByLabelText('semantic.radii.control');
@@ -273,7 +280,7 @@ describe('semantic layer navigator (F2.1/F2.2)', () => {
 
   test('core families expose raw values one level down', async () => {
     const user = userEvent.setup();
-    render(<App />);
+    renderThemeLab();
 
     // Core radii: 6 leaves (none, sm, md, lg, xl, full).
     await user.click(screen.getByRole('button', { name: 'radii · 6' }));
@@ -296,7 +303,7 @@ describe('broken refs: ambient validation + sanctioned escalation (F2.2)', () =>
 
   test('a broken remap surfaces ambiently: row badge + peripheral counter', async () => {
     const user = userEvent.setup();
-    render(<App />);
+    renderThemeLab();
     await breakOneRef(user);
 
     // Badge on the offending navigator row…
@@ -322,7 +329,7 @@ describe('broken refs: ambient validation + sanctioned escalation (F2.2)', () =>
 
   test('exporting with broken refs goes through the escalation dialog', async () => {
     const user = userEvent.setup();
-    render(<App />);
+    renderThemeLab();
     await breakOneRef(user);
     const inspector = screen.getByRole('complementary', { name: 'Inspector' });
 
@@ -338,7 +345,7 @@ describe('broken refs: ambient validation + sanctioned escalation (F2.2)', () =>
 
   test('the escalation dialog pluralizes for multiple broken refs', async () => {
     const user = userEvent.setup();
-    render(<App />);
+    renderThemeLab();
     await breakOneRef(user);
     fireEvent.change(screen.getByLabelText('semantic.radii.surface'), {
       target: { value: '{core.radii.nada}' },
@@ -354,7 +361,7 @@ describe('broken refs: ambient validation + sanctioned escalation (F2.2)', () =>
 
   test('the escalation dialog can be declined', async () => {
     const user = userEvent.setup();
-    render(<App />);
+    renderThemeLab();
     await breakOneRef(user);
     const inspector = screen.getByRole('complementary', { name: 'Inspector' });
 
@@ -384,14 +391,14 @@ test('an AI-origin diff entry shows the ✦ marker', () => {
 });
 
 test('editing via the native color input updates the theme', () => {
-  render(<App />);
+  renderThemeLab();
   const colorInput = screen.getByLabelText('brand 500 color');
   fireEvent.change(colorInput, { target: { value: '#abcdef' } });
   expect(screen.getByLabelText('brand 500 hex')).toHaveValue('#abcdef');
 });
 
 test('a non-6-digit hex override falls back safely in the color input', () => {
-  render(<App />);
+  renderThemeLab();
   fireEvent.change(screen.getByLabelText('brand 500 hex'), {
     target: { value: '#fff' },
   });

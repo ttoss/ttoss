@@ -13,7 +13,7 @@ import {
 const openComponentsLens = async () => {
   const user = userEvent.setup();
   render(<App />);
-  await user.click(screen.getByRole('radio', { name: 'Components' }));
+  await user.click(screen.getByRole('button', { name: /Explore components/ }));
   return user;
 };
 
@@ -114,7 +114,9 @@ test('selecting an example page renders it on the stage', async () => {
 test('the Generate lens shows its placeholder panels', async () => {
   const user = userEvent.setup();
   render(<App />);
-  await user.click(screen.getByRole('radio', { name: 'Generate' }));
+  await user.click(
+    screen.getByRole('button', { name: /Generate a composite/ })
+  );
 
   expect(
     within(navigator()).getByText(/session compositions will live here/)

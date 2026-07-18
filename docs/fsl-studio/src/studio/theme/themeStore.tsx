@@ -89,6 +89,8 @@ export type { ThemeContrast };
 export interface ThemeStore {
   preset: PresetId;
   overrides: TokenOverrides;
+  /** Per-path edit origin map (✎ manual / ✦ AI) — serialized with the session. */
+  origins: Record<string, Origin>;
   applyToStudio: boolean;
   /** The edited bundle — drives the stage always, and the chrome when applied. */
   liveBundle: ThemeBundle;
@@ -183,6 +185,7 @@ export const ThemeStoreProvider = ({
     return {
       preset: state.preset,
       overrides: state.overrides,
+      origins: state.origins,
       applyToStudio: state.applyToStudio,
       liveBundle,
       fallbackBundle,

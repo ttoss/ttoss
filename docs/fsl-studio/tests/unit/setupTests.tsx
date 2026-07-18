@@ -7,6 +7,13 @@
  */
 import '@ttoss/test-utils/react';
 
+// The session layer projects state onto the URL hash and localStorage
+// drafts (PRD F1.2/F1.3); both persist across tests in a file, so reset.
+beforeEach(() => {
+  window.localStorage.clear();
+  window.history.replaceState(null, '', '/');
+});
+
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: (query: string) => {

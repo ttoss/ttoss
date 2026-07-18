@@ -17,8 +17,11 @@ import { useThemeStore } from './theme/themeStore';
  */
 export const Stage = ({
   renderSubject,
+  toolbar,
 }: {
   renderSubject: () => React.ReactNode;
+  /** Stage-level controls (the altitude switcher, PRD F1.4). */
+  toolbar?: React.ReactNode;
 }) => {
   const { liveBundle } = useThemeStore();
 
@@ -31,6 +34,7 @@ export const Stage = ({
   return (
     <section className="stage" aria-label="Stage">
       <style>{stageCss}</style>
+      {toolbar ? <div className="stage-toolbar">{toolbar}</div> : null}
       <div className="stage-panes">
         <div
           className="stage-pane"

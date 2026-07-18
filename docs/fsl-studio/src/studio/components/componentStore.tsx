@@ -67,13 +67,16 @@ const ComponentStoreCtx = React.createContext<ComponentStore | null>(null);
 
 export const ComponentStoreProvider = ({
   children,
+  initial,
 }: {
   children: React.ReactNode;
+  /** Boot-time state (URL fork / draft restore, PRD F1.2/F1.3). */
+  initial?: Partial<ComponentReducerState>;
 }) => {
-  const [state, dispatch] = React.useReducer(
-    componentReducer,
-    initialComponentState
-  );
+  const [state, dispatch] = React.useReducer(componentReducer, {
+    ...initialComponentState,
+    ...initial,
+  });
 
   const value = React.useMemo<ComponentStore>(() => {
     return {
