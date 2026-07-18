@@ -300,10 +300,14 @@ body {
 .theme-contrast {
   list-style: none;
   margin: 0;
-  padding: 0;
   display: flex;
   flex-direction: column;
   gap: var(--tt-spacing-1, 0.25rem);
+  /* A recessed reference panel groups the ratios into a designed surface
+     rather than loose text (a subtly different surface stratum). */
+  padding: var(--tt-spacing-3, 0.75rem);
+  border-radius: var(--tt-radii-surface, 0.5rem);
+  background-color: var(--tt-colors-informational-secondary-background-default);
 }
 
 .theme-contrast-row {
@@ -316,10 +320,14 @@ body {
 
 .theme-contrast-badge {
   font-size: 0.75rem;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
+  /* Fixed width so ratings line up in a scannable column. */
+  min-inline-size: 5rem;
+  text-align: end;
   padding-block: 0.1rem;
   padding-inline: var(--tt-spacing-2, 0.5rem);
-  border-radius: 0.25rem;
+  border-radius: var(--tt-radii-control, 0.25rem);
 }
 
 .theme-contrast-AAA,
