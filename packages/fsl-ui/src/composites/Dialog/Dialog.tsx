@@ -80,6 +80,13 @@ export interface DialogProps extends Omit<
   'style' | 'className'
 > {
   /**
+   * Semantic scope marker rendered as the `data-scope` attribute — lets
+   * composites built on Dialog (e.g. ConfirmationDialog) re-scope the
+   * surface for styling and testing hooks.
+   * @default 'dialog'
+   */
+  'data-scope'?: string;
+  /**
    * Semantic emphasis.
    * @default 'primary'
    */

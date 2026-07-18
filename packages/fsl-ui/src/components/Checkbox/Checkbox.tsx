@@ -99,17 +99,17 @@ const buildBoxStyle = ({
   };
 };
 
-/** Indicator glyph color — destructures `text` once to keep `?.` bounded. */
+/** Indicator glyph color — a theme may omit the dimension; degrade to undefined. */
 const resolveIndicatorColor = ({
   text,
   isIndeterminate,
 }: {
-  text: NonNullable<InputColors['text']>;
+  text: InputColors['text'];
   isIndeterminate?: boolean;
 }): string | undefined => {
   return isIndeterminate
-    ? (text.indeterminate ?? text.checked ?? text.default)
-    : (text.checked ?? text.default);
+    ? (text?.indeterminate ?? text?.checked ?? text?.default)
+    : (text?.checked ?? text?.default);
 };
 
 /** Label color — invalid dominates disabled dominates default. */
@@ -118,13 +118,13 @@ const resolveLabelColor = ({
   isInvalid,
   isDisabled,
 }: {
-  text: NonNullable<InputColors['text']>;
+  text: InputColors['text'];
   isInvalid?: boolean;
   isDisabled?: boolean;
 }): string | undefined => {
-  if (isInvalid) return text.invalid;
-  if (isDisabled) return text.disabled;
-  return text.default;
+  if (isInvalid) return text?.invalid;
+  if (isDisabled) return text?.disabled;
+  return text?.default;
 };
 
 /**
@@ -187,7 +187,7 @@ export const Checkbox = ({ children, ...props }: CheckboxProps) => {
         isIndeterminate,
         isInvalid,
       }) => {
-        const text = c?.text ?? {};
+        const text = c?.text;
         const showIndicator = isSelected || isIndeterminate;
 
         return (

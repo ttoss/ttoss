@@ -114,13 +114,15 @@ describe('STATE_PRIORITY states are token-backed on input.primary', () => {
   );
 
   test('invalid is fully backed on all three dimensions (ADR-017)', () => {
-    expect(vars.colors.input.primary.background.invalid).toBe(
+    // `?.` keeps the assertion strength: a missing dimension yields
+    // undefined, which fails the toBe against the expected var reference.
+    expect(vars.colors.input.primary.background?.invalid).toBe(
       'var(--tt-colors-input-primary-background-invalid)'
     );
-    expect(vars.colors.input.primary.border.invalid).toBe(
+    expect(vars.colors.input.primary.border?.invalid).toBe(
       'var(--tt-colors-input-primary-border-invalid)'
     );
-    expect(vars.colors.input.primary.text.invalid).toBe(
+    expect(vars.colors.input.primary.text?.invalid).toBe(
       'var(--tt-colors-input-primary-text-invalid)'
     );
   });

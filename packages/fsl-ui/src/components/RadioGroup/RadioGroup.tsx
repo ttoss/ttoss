@@ -184,10 +184,10 @@ const resolveRadioLabelColor = ({
   isInvalid?: boolean;
   isDisabled?: boolean;
 }): string | undefined => {
-  const text = c?.text ?? {};
-  if (isInvalid) return text.invalid;
-  if (isDisabled) return text.disabled;
-  return text.default;
+  const text = c?.text;
+  if (isInvalid) return text?.invalid;
+  if (isDisabled) return text?.disabled;
+  return text?.default;
 };
 
 /**
@@ -241,7 +241,7 @@ export const Radio = ({ children, ...props }: RadioProps) => {
         isSelected,
         isInvalid,
       }) => {
-        const text = c?.text ?? {};
+        const text = c?.text;
 
         return (
           <>
@@ -270,7 +270,7 @@ export const Radio = ({ children, ...props }: RadioProps) => {
                     width: '0.4375rem',
                     height: '0.4375rem',
                     borderRadius: vars.radii.round,
-                    backgroundColor: text.checked ?? text.default,
+                    backgroundColor: text?.checked ?? text?.default,
                     flexShrink: 0,
                   }}
                 />

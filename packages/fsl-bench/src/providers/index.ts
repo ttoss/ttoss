@@ -1,9 +1,6 @@
-import {
-  createAnthropicProvider,
-  createBedrockProvider,
-  createVertexProvider,
-} from './claude.ts';
+import { createAnthropicProvider, createBedrockProvider } from './claude.ts';
 import { createGeminiProvider } from './gemini.ts';
+import { createVertexProvider } from './vertex.ts';
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
@@ -27,9 +24,11 @@ export interface Provider {
 /**
  * The provider space has two orthogonal axes: the MODEL FAMILY (Claude,
  * Gemini — what the report compares) and the TRANSPORT CHANNEL (how the
- * model is reached — which auth the user has). A ProviderId names one
- * family+channel pair; adding a channel is one registry entry + one
- * factory, nothing else changes.
+ * model is reached — which auth the user has). A ProviderId names a
+ * channel; single-vendor channels imply their family, multi-vendor
+ * channels (vertex) infer the family — and thus the wire dialect — from
+ * the model id. Adding a channel is one registry entry + one factory,
+ * nothing else changes.
  */
 export type ProviderId = 'anthropic' | 'gemini' | 'vertex' | 'bedrock';
 
@@ -56,12 +55,12 @@ export const PROVIDERS: Record<ProviderId, ProviderEntry> = {
   },
   vertex: {
     create: createVertexProvider,
-    // Channels are transport, not model choice: the three Claude channels
-    // share one default model (Bedrock spells it with its `anthropic.`
-    // prefix). Which models are actually callable depends on what the
-    // user's project/account has enabled — override per run as needed.
+    // Multi-family channel: Vertex hosts Claude (partner model) AND Gemini
+    // (native), and the model id picks the dialect — vertex:claude-* and
+    // vertex:gemini-* both work. Which models are actually callable depends
+    // on the project's Model Garden enablement + quota — override per run.
     defaultModel: 'claude-opus-4-8',
-    auth: 'GOOGLE_APPLICATION_CREDENTIALS + ANTHROPIC_VERTEX_PROJECT_ID + CLOUD_ML_REGION',
+    auth: 'GOOGLE_APPLICATION_CREDENTIALS_JSON (service-account key contents) or ADC',
   },
   bedrock: {
     create: createBedrockProvider,

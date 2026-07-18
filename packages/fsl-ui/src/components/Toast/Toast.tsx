@@ -83,7 +83,7 @@ const buildCloseTriggerStyle = ({
   isFocusVisible?: boolean;
 }): React.CSSProperties => {
   const flags = { isHovered, isPressed, isDisabled, isFocusVisible } as const;
-  const text = c?.text ?? {};
+  const text = c?.text;
   return {
     boxSizing: 'border-box',
     flexShrink: 0,
@@ -96,7 +96,7 @@ const buildCloseTriggerStyle = ({
     border: 'none',
     borderRadius: vars.radii.control,
     background: resolveInteractiveStyle(c?.background, flags) ?? 'transparent',
-    color: resolveInteractiveStyle(text, flags) ?? text.default,
+    color: resolveInteractiveStyle(text, flags) ?? text?.default,
     cursor: isDisabled ? 'not-allowed' : 'pointer',
     opacity: isDisabled ? vars.opacity.disabled : undefined,
     outline: focusRingOutline(isFocusVisible),

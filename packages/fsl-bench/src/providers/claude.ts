@@ -1,20 +1,21 @@
 import { AnthropicBedrockMantle } from '@anthropic-ai/bedrock-sdk';
 import Anthropic from '@anthropic-ai/sdk';
-import { AnthropicVertex } from '@anthropic-ai/vertex-sdk';
 
 import type { ChatMessage, Provider, ProviderId } from './index.ts';
 
 /**
- * Claude providers — one model family, three transport channels (direct
- * Anthropic API, Google Vertex AI, Amazon Bedrock). All three SDK clients
+ * Claude via the Anthropic Messages dialect — spoken by the direct
+ * Anthropic API, Google Vertex AI, and Amazon Bedrock. All the SDK clients
  * expose the same `messages.create` surface, so the generation logic exists
- * once and each channel contributes only its client construction + auth.
+ * once and each channel contributes only its client construction + auth
+ * (this file hosts the direct API and Bedrock channels; the Vertex channel
+ * lives in vertex.ts because it also serves Gemini).
  *
  * Clients are constructed lazily (on first generate), so building a
  * provider never touches the environment — auth errors surface at call
  * time with an actionable message.
  */
-interface ClaudeMessagesClient {
+export interface ClaudeMessagesClient {
   messages: {
     create(params: {
       model: string;
@@ -36,7 +37,7 @@ const requireEnv = (name: string, hint: string): string => {
   return value;
 };
 
-const createClaudeProvider = ({
+export const createClaudeProvider = ({
   name,
   model,
   createClient,
@@ -84,35 +85,6 @@ export const createAnthropicProvider = ({
     model,
     createClient: () => {
       return new Anthropic({ maxRetries: 4 });
-    },
-  });
-};
-
-/**
- * Claude via Google Vertex AI (Model Garden). Auth via Application Default
- * Credentials — point GOOGLE_APPLICATION_CREDENTIALS at a service-account
- * key, or run `gcloud auth application-default login`.
- */
-export const createVertexProvider = ({
-  model,
-}: {
-  model: string;
-}): Provider => {
-  return createClaudeProvider({
-    name: 'vertex',
-    model,
-    createClient: () => {
-      return new AnthropicVertex({
-        projectId: requireEnv(
-          'ANTHROPIC_VERTEX_PROJECT_ID',
-          'set it to the GCP project with Claude enabled in Model Garden'
-        ),
-        region: requireEnv(
-          'CLOUD_ML_REGION',
-          'set it to a region where the model is servable (e.g. us-east5)'
-        ),
-        maxRetries: 4,
-      }) as unknown as ClaudeMessagesClient;
     },
   });
 };

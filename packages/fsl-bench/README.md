@@ -89,31 +89,38 @@ Two orthogonal choices: the **model family** (Claude, Gemini — what the
 report compares) and the **transport channel** (how you reach it — whichever
 auth you have). Pick any subset per run with `--providers`:
 
-| Provider    | Channel                   | Auth (env)                                                                           | Default model               |
-| ----------- | ------------------------- | ------------------------------------------------------------------------------------ | --------------------------- |
-| `anthropic` | Anthropic API             | `ANTHROPIC_API_KEY`                                                                  | `claude-opus-4-8`           |
-| `gemini`    | Google AI API             | `GEMINI_API_KEY`                                                                     | `gemini-pro-latest`¹        |
-| `vertex`    | Claude via Vertex AI      | `GOOGLE_APPLICATION_CREDENTIALS` + `ANTHROPIC_VERTEX_PROJECT_ID` + `CLOUD_ML_REGION` | `claude-opus-4-8`           |
-| `bedrock`   | Claude via Amazon Bedrock | AWS credentials chain + `AWS_REGION`                                                 | `anthropic.claude-opus-4-8` |
+| Provider    | Channel                             | Auth (env)                                      | Default model               |
+| ----------- | ----------------------------------- | ----------------------------------------------- | --------------------------- |
+| `anthropic` | Anthropic API                       | `ANTHROPIC_API_KEY`                             | `claude-opus-4-8`           |
+| `gemini`    | Google AI API                       | `GEMINI_API_KEY`                                | `gemini-pro-latest`¹        |
+| `vertex`    | Claude **and** Gemini via Vertex AI | `GOOGLE_APPLICATION_CREDENTIALS_JSON` (or ADC)² | `claude-opus-4-8`           |
+| `bedrock`   | Claude via Amazon Bedrock           | AWS credentials chain + `AWS_REGION`            | `anthropic.claude-opus-4-8` |
 
 ¹ Google-maintained alias resolving to the current pro-tier model — pinned
 snapshots (e.g. `gemini-2.5-pro`) get retired for new keys/projects and 404.
 
+² `GOOGLE_APPLICATION_CREDENTIALS_JSON` takes the **full service-account
+key file contents** as a string — the shape environment secrets arrive in;
+no file on disk needed, and the key's `project_id` is used automatically.
+Without it, standard Application Default Credentials apply
+(`GOOGLE_APPLICATION_CREDENTIALS` file path or `gcloud auth
+application-default login`; name the project via
+`ANTHROPIC_VERTEX_PROJECT_ID` or `GOOGLE_CLOUD_PROJECT`). Optional
+`CLOUD_ML_REGION` overrides the default `global` location.
+
 **Model override**, highest precedence first: inline spec
 (`--providers vertex:claude-opus-4-8`) → env (`FSL_BENCH_<PROVIDER>_MODEL`)
-→ the default above. The channel is transport, not model choice: the three
-Claude channels share one default model (Bedrock spells it with its
-`anthropic.` prefix), and any Claude model your project/account has enabled
-on that channel is reachable via override. A channel may be repeated with
-different models in one run — `--providers vertex:claude-opus-4-8,vertex:claude-sonnet-5`
-benchmarks both. For a frozen campaign, pin exact model ids via inline spec
-or env and record them with the report. The D1 A/B needs one Claude + one
-Gemini, whichever channel is available to you.
-
-Vertex and Bedrock catalogs host other model families too; these entries
-speak the Anthropic Messages API, so they cover the Claude family only.
-Another family through those channels would be a new registry entry
-(`src/providers/index.ts`) — one entry + one factory.
+→ the default above. The channel is transport, not model choice: any model
+your project/account has enabled on a channel is reachable via override,
+and a channel may be repeated with different models in one run. `vertex`
+is a multi-family channel — Model Garden hosts Claude (partner model,
+Anthropic Messages dialect) and Gemini (native, `generateContent`
+dialect), and the model id picks the dialect, so
+`--providers vertex:gemini-3.5-flash,vertex:gemini-2.5-pro` runs an
+all-Vertex campaign on one credential. For a frozen campaign, pin exact
+model ids via inline spec or env and record them with the report. The D1
+A/B needs two independent models, whichever channels are available to you
+(two families is stronger evidence than two models of one family).
 
 ## Running a campaign
 
@@ -121,6 +128,7 @@ Another family through those channels would be a new registry entry
 pnpm run bench                 # full matrix: 5 scenarios x 5 conditions x default providers (anthropic,gemini) x 5 reps
 pnpm run bench -- --dry        # print the matrix, no API calls
 pnpm run bench -- --providers vertex,gemini            # Claude via Vertex instead of the direct API
+pnpm run bench -- --providers vertex:gemini-3.5-flash,vertex:gemini-2.5-pro   # all-Vertex, one credential
 pnpm run bench -- --providers bedrock:anthropic.claude-sonnet-5 --reps 3 --scenarios dialog,menu
 pnpm run bench:report -- <runId>   # re-render a past run's report
 ```
