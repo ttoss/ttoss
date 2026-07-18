@@ -63,7 +63,13 @@ export const baseTheme: ThemeTokens = {
         300: '#cbd5e1',
         400: '#94a3b8',
         500: '#64748b',
+        600: '#475569',
         700: '#334155',
+        // 800 fills the 700→900 gap so dark surfaces can stratify in fine
+        // steps (canvas 900 → raised 800 → overlay 700) — depth in dark comes
+        // from surfaces lightening as they rise, not from near-invisible
+        // shadows. @see elevation.md — "Surface + Shadow".
+        800: '#1e293b',
         900: '#0f172a',
         1000: '#020617',
       },
@@ -1083,6 +1089,18 @@ export const baseTheme: ThemeTokens = {
         overlay: '{core.elevation.level.3}',
         blocking: '{core.elevation.level.4}',
       },
+      // Tonal surface colour per stratum (the "surface colour at that depth"
+      // half of elevation.md's Surface + Shadow rule). In light, a raised
+      // surface is the brightest neutral (white) and lift is carried by the
+      // shadow; the dark alternate remaps these to progressively lighter
+      // neutrals so depth survives where shadows go invisible on a near-black
+      // canvas. A surface component reads `tonal` for its background and the
+      // paired `surface` recipe for its shadow.
+      tonal: {
+        raised: '{core.colors.neutral.0}',
+        overlay: '{core.colors.neutral.0}',
+        blocking: '{core.colors.neutral.0}',
+      },
     },
 
     // -- Typography ---------------------------------------------------------
@@ -1900,6 +1918,15 @@ export const darkAlternate: ModeOverride = {
         raised: '{core.elevation.emphatic.2}',
         overlay: '{core.elevation.emphatic.3}',
         blocking: '{core.elevation.emphatic.4}',
+      },
+      // Dark depth is carried by surface lightening, not shadow: the canvas
+      // sits at neutral.900, so each rising stratum steps toward a lighter
+      // neutral (800 → 700). This is the mechanism the base shadows cannot
+      // provide on a near-black background (elevation.md Rule 6).
+      tonal: {
+        raised: '{core.colors.neutral.800}',
+        overlay: '{core.colors.neutral.700}',
+        blocking: '{core.colors.neutral.700}',
       },
     },
   },
