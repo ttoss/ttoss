@@ -520,37 +520,9 @@ body {
   border-radius: 0.5rem;
 }
 
-.preview-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--tt-spacing-3, 0.75rem);
-}
-
-.preview-col {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-2, 0.5rem);
-}
-
-.example-form,
-.example-dashboard {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-4, 1rem);
-}
-
-.example-form-actions {
-  display: flex;
-  gap: var(--tt-spacing-3, 0.75rem);
-}
-
-.example-dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
-  gap: var(--tt-spacing-4, 1rem);
-  margin-block-end: var(--tt-spacing-4, 1rem);
-}
+/* Example-page layout (.preview-row/col, .example-form*, .example-dashboard*)
+ * is now composed with fsl-ui primitives (Stack/Grid) — WS-E proof that the
+ * presentational layer removes hand-rolled content CSS. */
 
 /* -- Token tree (semantic + core navigator, PRD F2.1/F2.2) --------------- */
 
