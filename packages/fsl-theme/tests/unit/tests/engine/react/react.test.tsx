@@ -7,12 +7,14 @@ import type * as React from 'react';
 
 import { baseBundle } from '../../../../../src/baseBundle';
 import { createTheme } from '../../../../../src/createTheme';
+import { getPreflightStyles, PREFLIGHT_CSS } from '../../../../../src/css';
 import { useDatavizTokens } from '../../../../../src/dataviz/useDatavizTokens';
 import { withDataviz } from '../../../../../src/dataviz/withDataviz';
 import {
   DensityProvider,
   ThemeHead,
   ThemeProvider,
+  ThemeReset,
   ThemeScript,
   ThemeStyles,
   useColorMode,
@@ -1398,5 +1400,35 @@ describe('DensityProvider / useDensity', () => {
     );
     const scope = container.querySelector('[data-tt-density="compact"]');
     expect(scope?.tagName).toBe('SECTION');
+  });
+});
+
+describe('ThemeReset / preflight', () => {
+  test('getPreflightStyles returns the preflight CSS', () => {
+    expect(getPreflightStyles()).toBe(PREFLIGHT_CSS);
+  });
+
+  test('preflight resets box-sizing and binds the body to tokens', () => {
+    expect(PREFLIGHT_CSS).toContain('box-sizing: border-box;');
+    expect(PREFLIGHT_CSS).toContain(
+      'var(--tt-colors-informational-primary-background-default)'
+    );
+    expect(PREFLIGHT_CSS).toContain('prefers-reduced-motion: reduce');
+    // Layout-agnostic: the base declares no layout (that is fsl-ui / the app).
+    expect(PREFLIGHT_CSS).not.toContain('display:');
+    expect(PREFLIGHT_CSS).not.toContain('grid');
+  });
+
+  test('ThemeReset injects the preflight into a <style> tag', () => {
+    const { container } = render(<ThemeReset />);
+    const style = container.querySelector('style');
+    expect(style?.textContent).toBe(PREFLIGHT_CSS);
+  });
+
+  test('ThemeReset forwards a CSP nonce', () => {
+    const { container } = render(<ThemeReset nonce="abc123" />);
+    expect(container.querySelector('style')?.getAttribute('nonce')).toBe(
+      'abc123'
+    );
   });
 });

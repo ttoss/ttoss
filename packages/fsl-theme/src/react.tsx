@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import { getThemeStylesContent } from './css';
 import { deepMerge, toFlatTokens } from './roots/helpers';
+import { PREFLIGHT_CSS } from './roots/preflight';
 import {
   createThemeRuntime,
   type ResolvedMode,
@@ -917,6 +918,41 @@ export const ThemeStyles = ({
         __html: getThemeStylesContent(theme, themeId, { systemModeFallback }),
       }}
     />
+  );
+};
+
+// ---------------------------------------------------------------------------
+// ThemeReset
+// ---------------------------------------------------------------------------
+
+/** Props for the `ThemeReset` component. */
+export interface ThemeResetProps {
+  /** CSP nonce forwarded to the injected `<style>` element. */
+  nonce?: string;
+}
+
+/**
+ * Injects the theme's base stylesheet (the {@link PREFLIGHT_CSS} preflight):
+ * a box-sizing reset, the document body's default typography and colour drawn
+ * from the semantic tokens, and the global reduced-motion guard. Render it
+ * once at the app root, alongside `<ThemeProvider>` / `<ThemeStyles>` — so the
+ * base layer is the theme's responsibility, not hand-written per app.
+ *
+ * It sets no widths, heights, or component styling (those belong to
+ * `@ttoss/fsl-ui` and the app). Requires the `--tt-*` custom properties to be
+ * present on the page.
+ *
+ * @example
+ * ```tsx
+ * <ThemeProvider theme={theme}>
+ *   <ThemeReset />
+ *   <App />
+ * </ThemeProvider>
+ * ```
+ */
+export const ThemeReset = ({ nonce }: ThemeResetProps = {}) => {
+  return (
+    <style nonce={nonce} dangerouslySetInnerHTML={{ __html: PREFLIGHT_CSS }} />
   );
 };
 
