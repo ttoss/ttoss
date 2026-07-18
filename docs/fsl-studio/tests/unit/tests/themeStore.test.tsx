@@ -131,13 +131,13 @@ describe('useThemeStore', () => {
 
     render(
       <ThemeStoreProvider
-        initial={{ preset: 'minimalist', overrides: { [BRAND]: '#abcdef' } }}
+        initial={{ preset: 'bruttal', overrides: { [BRAND]: '#abcdef' } }}
       >
         <Probe />
       </ThemeStoreProvider>
     );
 
-    expect(screen.getByTestId('preset').textContent).toBe('minimalist');
+    expect(screen.getByTestId('preset').textContent).toBe('bruttal');
     expect(screen.getByTestId('value').textContent).toBe('#abcdef');
   });
 

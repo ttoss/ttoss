@@ -695,6 +695,23 @@ phases now ships; Phases 0–2 are complete against their Definitions of Done.
 - Suite: 187 tests, 100% coverage on every dimension; `tsc --noEmit` + Vite
   build green (Node 24 toolchain — see the Phase-0 container note).
 
+**Preset correction (2026-07-18, user-directed):** the style-reference-inspired
+presets (minimalist, neobrutalism, glass, 90s) were **removed**. They conflated
+two distinct layers of the Visual Reference Architecture
+(`docs/website/docs/design/style-references`): a _style reference_ documents a
+visual language and sits below the semantic contract; a _built-in theme_ is a
+concrete token implementation. The reference docs are still stubs
+("under construction"), so shipping authored presets under those names both
+pre-empted an unfinished decision and presented fictional themes as if they were
+system built-ins. The Theme Lab preset picker now offers **only the built-in
+themes `@ttoss/fsl-theme` actually exports** — `base` (`createTheme()`) and
+`bruttal` — and grows when the package ships more. Consequences: `AUTHORED_PRESETS`
+and the `ThemeBrief`-carrying preset specs are gone; `generateThemeCode` no longer
+inlines an authored preset's overrides (only `base` = diff alone / `bruttal` =
+`extends: bruttal` remain); `mergeDeep` stays (still resolves the dark alternate
+for contrast). Suite after the change: 178 tests, 100% coverage; `tsc` + build
+green (Node 24).
+
 ## 15. References
 
 - Problem/strategy: `packages/fsl-ui/INTERNAL/` (PURPOSE, STRATEGIC_EVAL, BENCHMARK_EVAL,

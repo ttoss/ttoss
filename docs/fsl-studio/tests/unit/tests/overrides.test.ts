@@ -121,18 +121,4 @@ describe('generateThemeCode', () => {
     );
     expect(code).toContain('extends: bruttal');
   });
-
-  test('authored preset snippet inlines its overrides, diff winning', () => {
-    const code = generateThemeCode('neobrutalism', {
-      'core.colors.brand.500': '#ff0000',
-    });
-    // Runnable anywhere: no Studio-only imports, preset payload inlined.
-    expect(code).toContain("import { createTheme } from '@ttoss/fsl-theme'");
-    expect(code).not.toContain('extends');
-    // Preset signature carried over…
-    expect(code).toContain('{core.radii.none}');
-    // …and the user's diff wins on the collided leaf.
-    expect(code).toContain('"#ff0000"');
-    expect(code).not.toContain('#6d28d9');
-  });
 });
