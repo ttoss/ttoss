@@ -2,6 +2,7 @@ import {
   Button,
   Checkbox,
   ConfirmationDialog,
+  createToastQueue,
   Meter,
   ProgressBar,
   Select,
@@ -16,6 +17,7 @@ import {
   TextFieldDescription,
   TextFieldError,
   TextFieldLabel,
+  ToastRegion,
   Wizard,
   WizardNavigation,
   WizardStep,
@@ -148,6 +150,51 @@ const DashboardPage = () => {
   );
 };
 
+const TOAST_EVALUATIONS = [
+  'primary',
+  'positive',
+  'caution',
+  'negative',
+] as const;
+
+const ToastsPage = () => {
+  // One queue per page instance: each stage pane keeps its own toasts, so
+  // the two color modes never share a notification stack. The region is
+  // viewport-fixed by design but inherits the pane's theme vars through the
+  // DOM, so its surfaces still follow the pane's mode.
+  const [queue] = React.useState(() => {
+    return createToastQueue();
+  });
+
+  return (
+    <div className="preview-col">
+      <div className="preview-row">
+        {TOAST_EVALUATIONS.map((evaluation) => {
+          return (
+            <Button
+              key={evaluation}
+              evaluation="muted"
+              onPress={() => {
+                queue.add(
+                  {
+                    title: `A ${evaluation} toast`,
+                    description: 'Queued from the example page.',
+                    evaluation,
+                  },
+                  { timeout: 5000 }
+                );
+              }}
+            >
+              Toast: {evaluation}
+            </Button>
+          );
+        })}
+      </div>
+      <ToastRegion queue={queue} />
+    </div>
+  );
+};
+
 export interface ExamplePage {
   id: string;
   label: string;
@@ -187,6 +234,15 @@ export const EXAMPLE_PAGES: readonly ExamplePage[] = [
     description: 'Feedback surfaces: meters, a progress bar, and tabs.',
     render: () => {
       return <DashboardPage />;
+    },
+  },
+  {
+    id: 'toasts',
+    label: 'Toasts',
+    description:
+      'Queued Feedback toasts across every legal evaluation — primary, positive, caution, negative.',
+    render: () => {
+      return <ToastsPage />;
     },
   },
 ];

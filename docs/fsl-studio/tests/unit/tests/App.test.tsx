@@ -1,9 +1,18 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { App } from 'src/App';
+import { Stage } from 'src/studio/Stage';
+import { ThemeStoreProvider } from 'src/studio/theme/themeStore';
+
+/** Boot into the studio (Theme lens) through the task-first home. */
+const renderStudio = () => {
+  const utils = render(<App />);
+  fireEvent.click(screen.getByRole('button', { name: /Create a theme/ }));
+  return utils;
+};
 
 test('renders the shell with brand, lens switcher, and side panels', () => {
-  render(<App />);
+  renderStudio();
 
   expect(screen.getByText('FSL Studio')).toBeInTheDocument();
 
@@ -22,7 +31,7 @@ test('renders the shell with brand, lens switcher, and side panels', () => {
 });
 
 test('stage renders fsl-ui components in light and dark panes', () => {
-  render(<App />);
+  renderStudio();
 
   const light = screen.getByTestId('stage-pane-light');
   const dark = screen.getByTestId('stage-pane-dark');
@@ -43,7 +52,7 @@ test('stage renders fsl-ui components in light and dark panes', () => {
 
 test('switching lens swaps the panels and the stage subject, keeping the frame', async () => {
   const user = userEvent.setup();
-  render(<App />);
+  renderStudio();
 
   const navigator = screen.getByRole('complementary', { name: 'Navigator' });
   const themeCopy = navigator.textContent;
@@ -60,7 +69,7 @@ test('switching lens swaps the panels and the stage subject, keeping the frame',
 
 test('lens selection cannot be emptied (one lens is always active)', async () => {
   const user = userEvent.setup();
-  render(<App />);
+  renderStudio();
 
   const themeLens = screen.getByRole('radio', { name: 'Theme' });
   expect(themeLens).toHaveAttribute('aria-checked', 'true');
@@ -71,11 +80,25 @@ test('lens selection cannot be emptied (one lens is always active)', async () =>
 });
 
 test('stage theme CSS is emitted element-scoped for the panes', () => {
-  const { container } = render(<App />);
+  const { container } = renderStudio();
 
   const stageStyle = container.querySelector('.stage style');
   expect(stageStyle?.textContent).toContain(
     '[data-tt-theme="fsl-studio-stage"]'
   );
   expect(stageStyle?.textContent).toContain('[data-tt-mode="dark"]');
+});
+
+test('the stage renders without a toolbar (optional prop)', () => {
+  const { container } = render(
+    <ThemeStoreProvider>
+      <Stage
+        renderSubject={() => {
+          return <span>subject</span>;
+        }}
+      />
+    </ThemeStoreProvider>
+  );
+  expect(container.querySelector('.stage-toolbar')).toBeNull();
+  expect(screen.getAllByText('subject')).toHaveLength(2);
 });

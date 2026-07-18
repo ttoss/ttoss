@@ -98,3 +98,29 @@ describe('example pages', () => {
     expect(screen.queryByText('Delete account?')).not.toBeInTheDocument();
   });
 });
+
+test('toasts page queues a toast per evaluation and dismisses', async () => {
+  const user = userEvent.setup();
+  const page = findPage('toasts');
+  render(wrap(<>{page?.render()}</>));
+
+  await user.click(screen.getByRole('button', { name: 'Toast: positive' }));
+  const region = screen.getByRole('region', { name: /notification/i });
+  expect(within(region).getByText('A positive toast')).toBeInTheDocument();
+  expect(
+    within(region).getByText('Queued from the example page.')
+  ).toBeInTheDocument();
+
+  await user.click(screen.getByRole('button', { name: 'Toast: negative' }));
+  expect(within(region).getByText('A negative toast')).toBeInTheDocument();
+
+  // Dismissing removes exactly that toast from the queue.
+  const positiveRoot = within(region)
+    .getByText('A positive toast')
+    .closest('[data-scope="toast"][data-part="root"]');
+  await user.click(within(positiveRoot as HTMLElement).getByRole('button'));
+  expect(
+    within(region).queryByText('A positive toast')
+  ).not.toBeInTheDocument();
+  expect(within(region).getByText('A negative toast')).toBeInTheDocument();
+});

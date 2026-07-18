@@ -1,3 +1,8 @@
+import { type ThemeBundle } from '@ttoss/fsl-theme';
+import { toFlatTokens } from '@ttoss/fsl-theme/css';
+
+import { mergeDeep } from './overrides';
+
 /**
  * Palette helpers for the Theme Lab — WCAG contrast math and the curated
  * text/background pairs the Studio surfaces ambiently (PRD F2.6).
@@ -150,4 +155,37 @@ export const computeContrast = (
   }
 
   return results;
+};
+
+export interface ThemeContrast {
+  light: ContrastResult[];
+  /** Empty when the bundle opted out of an alternate mode. */
+  dark: ContrastResult[];
+}
+
+/**
+ * Contrast for both modes of a bundle (PRD F2.6, dark follow-up). The dark
+ * tokens are the base with the alternate's semantic remaps merged on top —
+ * the same projection `getThemeStylesContent` emits for the dark selector.
+ * `lightFlat` is the pre-resolved light map (shared with broken-ref
+ * detection, so each edit resolves the base once).
+ */
+export const computeThemeContrast = (
+  bundle: ThemeBundle,
+  lightFlat: Record<string, string | number>
+): ThemeContrast => {
+  const { alternate } = bundle;
+  return {
+    light: computeContrast(lightFlat),
+    dark: alternate
+      ? computeContrast(
+          toFlatTokens(
+            mergeDeep(
+              bundle.base as unknown as Record<string, unknown>,
+              alternate as unknown as Record<string, unknown>
+            ) as unknown as ThemeBundle['base']
+          )
+        )
+      : [],
+  };
 };

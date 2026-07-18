@@ -1,5 +1,8 @@
+import { createTheme } from '@ttoss/fsl-theme';
+import { toFlatTokens } from '@ttoss/fsl-theme/css';
 import {
   computeContrast,
+  computeThemeContrast,
   contrastRatio,
   parseHex,
   rateContrast,
@@ -94,5 +97,29 @@ describe('computeContrast', () => {
       'semantic.colors.action.accent.background.default': 'blue',
     };
     expect(computeContrast(resolved)).toHaveLength(0);
+  });
+});
+
+describe('computeThemeContrast', () => {
+  test('computes both modes when the bundle has an alternate', () => {
+    const bundle = createTheme();
+    const lightFlat = toFlatTokens(bundle.base);
+    const { light, dark } = computeThemeContrast(bundle, lightFlat);
+    expect(light.length).toBeGreaterThan(0);
+    expect(dark.length).toBeGreaterThan(0);
+    // Dark surfaces resolve to different values than light ones.
+    const surfaceLight = light.find((result) => {
+      return result.label === 'Surface';
+    });
+    const surfaceDark = dark.find((result) => {
+      return result.label === 'Surface';
+    });
+    expect(surfaceLight?.background).not.toBe(surfaceDark?.background);
+  });
+
+  test('a single-mode bundle yields no dark results', () => {
+    const bundle = createTheme({ alternate: null });
+    const lightFlat = toFlatTokens(bundle.base);
+    expect(computeThemeContrast(bundle, lightFlat).dark).toEqual([]);
   });
 });

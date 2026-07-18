@@ -639,6 +639,62 @@ themeId)` emits element-scoped selectors (`[data-tt-theme]` /
   tsdown's formatjs plugin fails under 22 (babel ESM linking) — builds here used a standalone
   Node 24, CI is unaffected.
 
+**Pre-Phase-3 completion (2026-07-18):** everything F1/F2 deferred by earlier
+phases now ships; Phases 0–2 are complete against their Definitions of Done.
+
+- **Flat override model supersedes Phase-1 `ColorOverrides`.** The diff is now
+  a flat `path → value` map covering any core leaf and semantic remaps
+  (`semantic.radii.control` → `{core.radii.none}`), unflattened into
+  `createTheme` for preview and export. Diff-as-source-of-truth is unchanged.
+- **F2.1/F2.2 navigator:** semantic layer first, grouped by family, colors
+  sub-grouped by ux context; leaves render only while a disclosure is open.
+  Core sits one level down; its **colors disclosure is default-open** — the
+  brand scale is the SC-1 wow surface and must stay reachable at a glance.
+- **Ref validation is resolution-based, not console-based.** `toFlatTokens`
+  leaves unresolved refs as `{path}` in the output; any surviving brace
+  expression marks a broken token. Same mechanical check as `validateRefs`,
+  but readable as data (browser-safe, no console capture), which resolves the
+  AD-5 production-gating question for good. Ambient surfacing: row badges +
+  peripheral header counter; the one sanctioned escalation is the
+  ConfirmationDialog on export with broken refs (F2 AC).
+- **F2.4 presets:** the style-reference docs (minimalism, neobrutalism,
+  glass, 90s) are still stubs, so the presets are deliberately conservative —
+  a WCAG-checked brand scale plus the style's clearest token-layer signature
+  (radii/elevation/border), each with a `ThemeBrief`. Export codegen inlines
+  an authored preset's overrides under the user diff (diff wins) so the
+  snippet runs anywhere; `bruttal` still exports as `extends: bruttal`.
+- **F2.6 dark contrast** ships: dark tokens = base ⊕ alternate semantic
+  remaps, same projection the CSS emits; both mode lists always render since
+  every preset carries an alternate (asserted in tests).
+- **F1.2/F1.3 session:** `SessionSnapshot` (lens, altitude, theme diff +
+  origins, component selection) → lz-string URL hash; opening a link forks
+  under a new draft id; foreign payloads sanitize field-by-field.
+  `applyToStudio` is deliberately **not** serialized — a shared link must not
+  re-skin the receiver's editor chrome. Drafts autosave debounced (250 ms) to
+  localStorage, last-write-wins documented in-app, write failures swallowed.
+- **Home (§6.2)** is the boot target without a hash: three task cards +
+  the drafts shelf. The studio brand button returns home and clears the hash.
+- **F1.4 altitudes:** `component` (lens subject), `page` (selected or first
+  example page), `grid` (all example pages — the semantic-drift view), owned
+  by the session and persistent across lens switches.
+- **F1.5 ⌘K palette:** commands derive from the same sources as the
+  navigators (lenses, altitudes, presets, catalog, pages, apply-toggle,
+  home) — no second registry to drift. Combobox + listbox +
+  `aria-activedescendant`. `prefers-reduced-motion` covered for the chrome
+  (fsl-theme CSS already carries token-level reduced-motion).
+- **Toast example page** unblocked by the queue API (`createToastQueue` +
+  `ToastRegion`): one queue per page instance so each stage pane keeps its
+  own stack. TextField's preview now also shows the `isInvalid` runtime
+  state (F3.2), snippet unchanged.
+- **Axe CI gate** (F1 AC): home, both lenses, and the open palette. Two rules
+  excluded with cause: `color-contrast` (jsdom paints nothing; contrast is
+  checked as data by the Theme Lab) and `aria-allowed-attr` — **upstream
+  finding (report, don't fix here — §2):** React Aria's Meter renders the
+  standard fallback `role="meter progressbar"`, which axe misreads as
+  disallowing `aria-value*`.
+- Suite: 187 tests, 100% coverage on every dimension; `tsc --noEmit` + Vite
+  build green (Node 24 toolchain — see the Phase-0 container note).
+
 ## 15. References
 
 - Problem/strategy: `packages/fsl-ui/INTERNAL/` (PURPOSE, STRATEGIC_EVAL, BENCHMARK_EVAL,

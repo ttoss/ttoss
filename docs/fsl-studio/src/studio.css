@@ -538,3 +538,301 @@ body {
   gap: var(--tt-spacing-4, 1rem);
   margin-block-end: var(--tt-spacing-4, 1rem);
 }
+
+/* -- Token tree (semantic + core navigator, PRD F2.1/F2.2) --------------- */
+
+.token-row {
+  display: grid;
+  grid-template-columns: minmax(6rem, 1fr) minmax(0, 1.4fr) auto auto;
+  align-items: center;
+  gap: var(--tt-spacing-2, 0.5rem);
+  padding-block: 0.1rem;
+}
+
+.token-row-label {
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+  color: var(--tt-colors-informational-muted-text-default);
+}
+
+.token-row-input {
+  font: inherit;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  min-inline-size: 0;
+  padding-block: var(--tt-spacing-1, 0.25rem);
+  padding-inline: var(--tt-spacing-2, 0.5rem);
+  border: 1px solid var(--tt-colors-input-primary-border-default, #ccc);
+  border-radius: var(--tt-radii-control, 0.25rem);
+  background: var(--tt-colors-input-primary-background-default, transparent);
+  color: inherit;
+}
+
+.token-row-input[aria-invalid='true'] {
+  border-color: var(--tt-colors-input-negative-border-default, #b91c1c);
+}
+
+.token-broken-badge {
+  font-size: 0.75rem;
+  color: var(--tt-colors-feedback-negative-text-default, #b91c1c);
+}
+
+/* -- Peripheral ref-error counter (PRD §6.4-P2) --------------------------- */
+
+.studio-ref-errors {
+  font-size: 0.8125rem;
+  color: var(--tt-colors-feedback-negative-text-default, #b91c1c);
+  margin-inline-start: var(--tt-spacing-3, 0.75rem);
+}
+
+.theme-contrast-mode {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-block: var(--tt-spacing-2, 0.5rem) var(--tt-spacing-1, 0.25rem);
+  color: var(--tt-colors-informational-muted-text-default);
+}
+
+/* -- Task-first home (PRD §6.2) ------------------------------------------- */
+
+.home {
+  min-block-size: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tt-spacing-6, 1.5rem);
+  padding: var(--tt-spacing-8, 2rem);
+  background: var(--tt-colors-informational-primary-background-default, #fff);
+  color: var(--tt-colors-informational-primary-text-default, #111);
+}
+
+.home-brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.home-question {
+  font-size: 1.125rem;
+  margin: 0;
+  color: var(--tt-colors-informational-muted-text-default);
+}
+
+.home-tasks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--tt-spacing-4, 1rem);
+  inline-size: min(56rem, 100%);
+}
+
+.home-task {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tt-spacing-2, 0.5rem);
+  text-align: start;
+  padding: var(--tt-spacing-5, 1.25rem);
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  background: var(--tt-colors-informational-primary-background-default, #fff);
+  border: 1px solid var(--tt-colors-informational-primary-border-default, #ddd);
+  border-radius: var(--tt-radii-surface, 0.5rem);
+}
+
+.home-task:hover {
+  border-color: var(--tt-colors-action-accent-background-default, #0469e3);
+}
+
+.home-task-title {
+  font-weight: 600;
+}
+
+.home-task-description {
+  font-size: 0.875rem;
+  color: var(--tt-colors-informational-muted-text-default);
+}
+
+.home-drafts {
+  inline-size: min(56rem, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--tt-spacing-2, 0.5rem);
+}
+
+.home-drafts-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0;
+  color: var(--tt-colors-informational-muted-text-default);
+}
+
+.home-drafts-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--tt-spacing-1, 0.25rem);
+}
+
+.home-draft-row {
+  display: flex;
+  align-items: center;
+  gap: var(--tt-spacing-2, 0.5rem);
+}
+
+.home-draft-open,
+.home-draft-delete {
+  font: inherit;
+  font-size: 0.875rem;
+  color: inherit;
+  cursor: pointer;
+  background: none;
+  border: 1px solid var(--tt-colors-informational-primary-border-default, #ddd);
+  border-radius: var(--tt-radii-control, 0.25rem);
+  padding-block: var(--tt-spacing-1, 0.25rem);
+  padding-inline: var(--tt-spacing-3, 0.75rem);
+}
+
+.home-draft-open {
+  flex: 1;
+  text-align: start;
+}
+
+/* -- Stage toolbar + grid altitude (PRD F1.4) ------------------------------ */
+
+.stage-toolbar {
+  display: flex;
+  justify-content: center;
+  padding-block-end: var(--tt-spacing-3, 0.75rem);
+}
+
+.stage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--tt-spacing-4, 1rem);
+}
+
+.stage-grid-cell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tt-spacing-3, 0.75rem);
+  padding: var(--tt-spacing-4, 1rem);
+  border: 1px solid var(--tt-colors-informational-muted-border-default, #e5e5e5);
+  border-radius: var(--tt-radii-surface, 0.5rem);
+  min-inline-size: 0;
+}
+
+.stage-grid-title {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--tt-colors-informational-muted-text-default);
+}
+
+/* -- Command palette (PRD F1.5) -------------------------------------------- */
+
+.palette-open {
+  font: inherit;
+  font-size: 0.8125rem;
+  color: inherit;
+  cursor: pointer;
+  background: none;
+  border: 1px solid var(--tt-colors-informational-primary-border-default, #ddd);
+  border-radius: var(--tt-radii-control, 0.25rem);
+  padding-block: var(--tt-spacing-1, 0.25rem);
+  padding-inline: var(--tt-spacing-2, 0.5rem);
+  margin-inline-start: var(--tt-spacing-3, 0.75rem);
+}
+
+.palette-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--tt-zindex-overlay, 1000);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-block-start: 15vh;
+  background: var(--tt-colors-overlay-scrim, rgba(0, 0, 0, 0.4));
+}
+
+.palette {
+  inline-size: min(36rem, 92vw);
+  display: flex;
+  flex-direction: column;
+  background: var(--tt-colors-informational-primary-background-default, #fff);
+  color: var(--tt-colors-informational-primary-text-default, #111);
+  border: 1px solid var(--tt-colors-informational-primary-border-default, #ddd);
+  border-radius: var(--tt-radii-surface, 0.5rem);
+  box-shadow: var(--tt-elevation-surface-overlay, 0 8px 16px rgba(0, 0, 0, 0.1));
+}
+
+.palette-input {
+  font: inherit;
+  padding: var(--tt-spacing-3, 0.75rem);
+  border: none;
+  border-block-end: 1px solid
+    var(--tt-colors-informational-muted-border-default, #e5e5e5);
+  border-start-start-radius: inherit;
+  border-start-end-radius: inherit;
+  background: transparent;
+  color: inherit;
+  outline: none;
+}
+
+.palette-list {
+  list-style: none;
+  margin: 0;
+  padding: var(--tt-spacing-1, 0.25rem);
+  max-block-size: 40vh;
+  overflow-y: auto;
+}
+
+.palette-option {
+  padding-block: var(--tt-spacing-2, 0.5rem);
+  padding-inline: var(--tt-spacing-3, 0.75rem);
+  border-radius: var(--tt-radii-control, 0.25rem);
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.palette-option[aria-selected='true'] {
+  background: var(--tt-colors-action-muted-background-hover, #f1f5f9);
+}
+
+.palette-empty {
+  padding: var(--tt-spacing-3, 0.75rem);
+  font-size: 0.875rem;
+  color: var(--tt-colors-informational-muted-text-default);
+}
+
+/* -- Reduced motion (PRD F1.5) ---------------------------------------------
+   fsl-theme's own CSS already carries reduced-motion token overrides; this
+   covers the Studio chrome's transitions. */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.studio-brand {
+  font: inherit;
+  font-weight: 700;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
