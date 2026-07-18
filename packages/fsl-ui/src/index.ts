@@ -8,6 +8,8 @@ export type {
   AppShellSidebarWidth,
 } from './components/AppShell/AppShell';
 export { AppShell, appShellMeta } from './components/AppShell/AppShell';
+export type { BadgeNumeric, BadgeProps } from './components/Badge/Badge';
+export { Badge, badgeMeta } from './components/Badge/Badge';
 export type {
   BoxBackground,
   BoxBorder,
@@ -37,6 +39,10 @@ export {
   CheckboxGroup,
   checkboxGroupMeta,
 } from './components/CheckboxGroup/CheckboxGroup';
+export type { CodeProps, CodeSize } from './components/Code/Code';
+export { Code, codeMeta } from './components/Code/Code';
+export type { ColorFieldProps } from './components/ColorField/ColorField';
+export { ColorField, colorFieldMeta } from './components/ColorField/ColorField';
 export type {
   ContainerGutter,
   ContainerProps,

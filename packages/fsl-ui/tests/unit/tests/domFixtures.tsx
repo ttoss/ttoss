@@ -76,6 +76,12 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       return <pkg.AppShell>main</pkg.AppShell>;
     },
   },
+  Badge: {
+    scope: 'badge',
+    element: () => {
+      return <pkg.Badge>New</pkg.Badge>;
+    },
+  },
   Box: {
     scope: 'box',
     element: () => {
@@ -86,6 +92,20 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
     scope: 'button',
     element: () => {
       return <pkg.Button>x</pkg.Button>;
+    },
+  },
+  Code: {
+    scope: 'code',
+    element: () => {
+      return <pkg.Code>npm i</pkg.Code>;
+    },
+  },
+  ColorField: {
+    scope: 'color-field',
+    element: () => {
+      return (
+        <pkg.ColorField label="Brand" value="#0469e3" onChange={() => {}} />
+      );
     },
   },
   Container: {
