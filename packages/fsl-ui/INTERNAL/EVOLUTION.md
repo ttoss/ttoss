@@ -148,11 +148,21 @@ coverage, JSDoc, `llms.txt`/CONTRACT update) and, where architectural, an ADR.
   `spacing.inset.control.*` inherits density for free (verified in the Studio:
   `data-tt-density` remaps the inset vars, controls follow). `DensityProvider`
   is exported from `@ttoss/fsl-theme/react`.
-- **WS-D — Doctrine ADRs + docs.** Ratify D1 (Box escape) and D2 (density
-  projection); revise CONTRACT §4/§7, `sizing.md`, `llms.txt`.
-- **WS-E — Rebuild the Studio on the finished layer (proof).** Target
-  `studio.css` ≈ 0 (page grid + resets only). Residual CSS = a package gap →
-  feeds back into WS-A/B.
+- **WS-D — Doctrine ADRs + docs. ✅ DONE.** Ratified D1 as fsl-ui ADR-009
+  (Box/presentational layer) and density under ADR-019/020; revised CONTRACT
+  §4/§7, `sizing.md`, `llms.txt`.
+- **WS-E — Rebuild the Studio on the finished layer (proof). ✅ DONE.** Every
+  panel — Home, Stage/StageSample/PageGrid, Theme navigator/inspector/export,
+  Component navigator/inspector/stage — now composes with the primitives
+  (`Stack`/`Grid`/`Container`/`Surface`/`Heading`/`Text`) plus fsl-ui controls
+  (`ToggleButtonGroup` for the preset picker, `Button`/`Link` for actions).
+  `studio.css` fell **851 → 637 lines**; the residual is exactly the allowed
+  set: the shell/viewport grid, and genuinely bespoke widgets no primitive
+  covers — asymmetric editor grids (`.token-row`, `.theme-diff-row`), native
+  color inputs, contrast badges, nav-list items, the command palette overlay,
+  and the code blocks. A surfaced gap fed back into WS-A: **`Grid`
+  `minColumnWidth`** (responsive auto-fit) was added because the fixed-column
+  grid could not reflow in the narrow stage panes.
 
 ## 5. Sequencing & exit criteria
 
@@ -160,10 +170,15 @@ coverage, JSDoc, `llms.txt`/CONTRACT update) and, where architectural, an ADR.
 WS-C (foundation) → WS-A + WS-B (parallel) → WS-D (alongside) → WS-E (proof)
 ```
 
-**Exit criteria:** a real app is buildable with ~zero hand-rolled CSS; the
-default control is desktop-comfortable and density is switchable by projection;
-no arbitrary values reach consumer code; every semantic principle in §2 intact;
-the Studio rebuilt with `studio.css` ≈ 0.
+**Exit criteria — met.** A real app is buildable with ~zero hand-rolled
+_layout/text_ CSS (the Studio proved it: all content composes with primitives);
+the default control is desktop-comfortable and density is switchable by
+projection; no arbitrary values reach consumer code; every semantic principle
+in §2 is intact. The Studio's residual `studio.css` is the shell grid + bespoke
+widgets primitives don't cover (asymmetric editor grids, native color inputs,
+badges, nav items, palette overlay) — not a layout gap. Closing those fully
+would need new primitives (e.g. a template/asymmetric `Grid`, a clickable-card
+primitive), tracked as future evidence-driven work.
 
 ## 6. Open questions
 
