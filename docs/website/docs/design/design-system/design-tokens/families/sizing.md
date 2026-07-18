@@ -132,13 +132,16 @@ const coreSizing = {
     },
 
     hit: {
-      // Fine: clamp(floor, preferred, max) — floor is fixed px; preferred scales with rem
+      // Fine: clamp(floor, preferred, max) — floor is fixed px; preferred scales
+      // with rem. These are the `comfortable` (default) caps, tuned desktop-first;
+      // the density projection remaps them for `compact`/`spacious` (see below).
       fine: {
-        min: 'clamp(28px, 1.75rem, 40px)',
-        base: 'clamp(36px, 2.5rem, 48px)',
-        prominent: 'clamp(44px, 3rem, 56px)',
+        min: 'clamp(28px, 1.75rem, 32px)',
+        base: 'clamp(32px, 2rem, 36px)',
+        prominent: 'clamp(40px, 2.5rem, 44px)',
       },
-      // Coarse: always fixed px — touch ergonomics require predictable, reliable targets
+      // Coarse: always fixed px — touch ergonomics require predictable, reliable
+      // targets. `min` is 44px (Apple HIG floor), never below it.
       coarse: { min: '44px', base: '48px', prominent: '56px' },
     },
   },
@@ -222,10 +225,10 @@ In CSS output, fine values are the baseline and coarse values are injected insid
 ```css
 :root {
   --tt-sizing-hit-base: clamp(
-    36px,
-    2.5rem,
-    48px
-  ); /* fine baseline — fluid, ergonomic floor guaranteed */
+    32px,
+    2rem,
+    36px
+  ); /* fine baseline (comfortable) — fluid, ergonomic floor guaranteed */
 }
 
 @media (any-pointer: coarse) {
@@ -237,6 +240,19 @@ In CSS output, fine values are the baseline and coarse values are injected insid
 
 > The semantic token remains stable (`hit.base`).
 > The runtime adapts the value.
+
+### Density projection
+
+`hit.*` (and control `spacing.inset.control.*`) also adapt to a **density**
+axis — `data-tt-density ∈ {compact, comfortable, spacious}`, default
+`comfortable` — set once like colour mode. Density is a theme projection: the
+semantic geometry tokens remap to different core steps per density, so a whole
+app can be denser on desktop without any per-component `size` prop. Density
+tunes **fine-pointer** geometry only; the coarse-pointer touch floor above
+always wins for accessibility. Control geometry adapts to **user font (`rem`)
+and density** — never to the container (`cqi`), which is reserved for _layout_
+sizing/spacing (a hit target must not grow because the window is wider). See
+ADR-019 and `packages/fsl-ui/INTERNAL/EVOLUTION.md`.
 
 ## Rules of Engagement (non-negotiable)
 

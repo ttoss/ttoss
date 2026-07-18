@@ -294,21 +294,26 @@ export const baseTheme: ThemeTokens = {
       },
 
       hit: {
+        // `hit.*` is an ergonomic FLOOR (min interactive target), never the
+        // visual size — the control's height comes from its inset + type, with
+        // `hit` guaranteeing the minimum (sizing.md). These are the `comfortable`
+        // fine-pointer caps; the density projection (ADR-019) remaps them for
+        // `compact`/`spacious`.
         // Fine: clamp(floor, preferred, max) — floor is the fixed ergonomic
         // minimum; preferred scales with rem so user font-size preferences
-        // (accessibility) are respected. Caps tuned to medium-high density:
+        // (accessibility) are respected. Caps tuned desktop-first (mouse):
         //   min  32px → secondary / icon-only / dense list controls
-        //   base 40px → default button (Material 40, GitHub 40, Tailwind 40)
-        //   prominent 48px → hero CTAs and primary form submits
+        //   base 36px → default button (GitHub ~32, Linear ~32, Stripe ~36)
+        //   prominent 44px → hero CTAs and primary form submits
         // 24px WCAG 2.2 minimum is well exceeded at every step.
         fine: {
           min: 'clamp(28px, 1.75rem, 32px)',
-          base: 'clamp(32px, 2rem, 40px)',
-          prominent: 'clamp(40px, 2.5rem, 48px)',
+          base: 'clamp(32px, 2rem, 36px)',
+          prominent: 'clamp(40px, 2.5rem, 44px)',
         },
         // Coarse: always fixed px — touch ergonomics require predictable,
-        // reliable targets (Apple HIG 44px floor, Material 48dp default).
-        coarse: { min: '32px', base: '48px', prominent: '56px' },
+        // reliable targets. `min` is 44px (Apple HIG floor), not below it.
+        coarse: { min: '44px', base: '48px', prominent: '56px' },
       },
     },
 
