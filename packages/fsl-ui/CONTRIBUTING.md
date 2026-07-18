@@ -75,7 +75,7 @@ export interface ChipProps {
 }
 
 // 3. Read CONTRACT.md §1 row for 'Action':
-//    colors=action, radii=control, border=outline.control, sizing=hit.base,
+//    colors=action, radii=control, border=outline.control, sizing=hit,
 //    spacing=inset.control.md, typography=label.md, motion=feedback, elevation=flat.
 // 4. Wire data-* (§5) + state cascade (§3) via resolveInteractiveStyle.
 export const Chip = ({
@@ -95,7 +95,7 @@ export const Chip = ({
         borderRadius: vars.radii.control,
         borderWidth: vars.border.outline.control.width,
         borderStyle: vars.border.outline.control.style,
-        minHeight: vars.sizing.hit.base,
+        minHeight: vars.sizing.hit,
         paddingBlock: vars.spacing.inset.control.md,
         paddingInline: vars.spacing.inset.control.md,
         ...(vars.text.label.md as React.CSSProperties),

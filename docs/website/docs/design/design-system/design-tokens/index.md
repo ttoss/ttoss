@@ -23,7 +23,7 @@ style={{
   color:           theme.semantic.colors.action.primary.text.default,
   borderRadius:    theme.semantic.radii.control,
   padding:         theme.semantic.spacing.inset.control.md,
-  minHeight:       theme.semantic.sizing.hit.base,
+  minHeight:       theme.semantic.sizing.hit,
 }}
 ```
 
