@@ -1,4 +1,10 @@
-import { Button, ConfirmationDialog } from '@ttoss/fsl-ui';
+import {
+  Button,
+  ConfirmationDialog,
+  Heading,
+  Stack,
+  Text,
+} from '@ttoss/fsl-ui';
 import * as React from 'react';
 
 import { ExportPanel } from './ExportPanel';
@@ -18,8 +24,10 @@ const ContrastList = ({
   results: ContrastResult[];
 }) => {
   return (
-    <>
-      <h3 className="theme-contrast-mode">{mode}</h3>
+    <Stack gap="xs">
+      <Heading level={3} size="title-sm">
+        {mode}
+      </Heading>
       <ul className="theme-contrast">
         {results.map((result) => {
           return (
@@ -35,7 +43,7 @@ const ContrastList = ({
           );
         })}
       </ul>
-    </>
+    </Stack>
   );
 };
 
@@ -52,9 +60,11 @@ export const ThemeInspector = () => {
   const hasBrokenRefs = store.brokenRefs.length > 0;
 
   return (
-    <div className="theme-inspector">
-      <section className="theme-section">
-        <h2 className="theme-section-title">Apply</h2>
+    <Stack gap="md">
+      <Stack gap="sm">
+        <Heading level={2} size="title-sm">
+          Apply
+        </Heading>
         <label className="theme-apply">
           <input
             type="checkbox"
@@ -66,27 +76,26 @@ export const ThemeInspector = () => {
           Apply this theme to the Studio itself
         </label>
         {store.applyToStudio ? (
-          <button
-            type="button"
-            className="theme-fallback"
-            onClick={() => {
+          <Button
+            evaluation="muted"
+            onPress={() => {
               return store.setApplyToStudio(false);
             }}
           >
             Reset Studio to a safe theme
-          </button>
+          </Button>
         ) : null}
-      </section>
+      </Stack>
 
-      <section className="theme-section">
-        <h2 className="theme-section-title">
+      <Stack gap="sm">
+        <Heading level={2} size="title-sm">
           Changes {paths.length > 0 ? `(${paths.length})` : ''}
-        </h2>
+        </Heading>
         {paths.length === 0 ? (
-          <p className="theme-hint">
+          <Text variant="body-sm" tone="muted">
             No changes yet. Edit a token to build a diff against the preset —
             this list is exactly what gets exported.
-          </p>
+          </Text>
         ) : (
           <>
             <ul className="theme-diff">
@@ -130,39 +139,38 @@ export const ThemeInspector = () => {
                 );
               })}
             </ul>
-            <button
-              type="button"
-              className="theme-reset-all"
-              onClick={() => {
+            <Button
+              evaluation="muted"
+              onPress={() => {
                 return store.resetAll();
               }}
             >
               Reset all
-            </button>
+            </Button>
           </>
         )}
-      </section>
+      </Stack>
 
-      <section className="theme-section">
-        <h2 className="theme-section-title">Contrast</h2>
+      <Stack gap="sm">
+        <Heading level={2} size="title-sm">
+          Contrast
+        </Heading>
         {/* Every Studio preset carries a dark alternate (asserted in
             presets.test), so both mode lists always render. */}
         <ContrastList mode="Light" results={store.contrast.light} />
         <ContrastList mode="Dark" results={store.contrast.dark} />
-      </section>
+      </Stack>
 
-      <section className="theme-section">
+      <Stack gap="sm">
         {showExport ? (
-          <button
-            type="button"
-            className="theme-export-toggle"
-            aria-expanded
-            onClick={() => {
+          <Button
+            evaluation="muted"
+            onPress={() => {
               return setShowExport(false);
             }}
           >
             Hide export
-          </button>
+          </Button>
         ) : hasBrokenRefs ? (
           <ConfirmationDialog
             trigger={<Button evaluation="muted">Export theme</Button>}
@@ -181,19 +189,17 @@ export const ThemeInspector = () => {
             values.
           </ConfirmationDialog>
         ) : (
-          <button
-            type="button"
-            className="theme-export-toggle"
-            aria-expanded={false}
-            onClick={() => {
+          <Button
+            evaluation="muted"
+            onPress={() => {
               return setShowExport(true);
             }}
           >
             Export theme
-          </button>
+          </Button>
         )}
         {showExport ? <ExportPanel /> : null}
-      </section>
-    </div>
+      </Stack>
+    </Stack>
   );
 };

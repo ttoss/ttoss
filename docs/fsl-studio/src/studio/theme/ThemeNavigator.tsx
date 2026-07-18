@@ -1,4 +1,13 @@
-import { Disclosure, DisclosurePanel, DisclosureTrigger } from '@ttoss/fsl-ui';
+import {
+  Disclosure,
+  DisclosurePanel,
+  DisclosureTrigger,
+  Heading,
+  Stack,
+  Text,
+  ToggleButton,
+  ToggleButtonGroup,
+} from '@ttoss/fsl-ui';
 import * as React from 'react';
 
 import { PRESETS } from './presets';
@@ -208,43 +217,47 @@ export const ThemeNavigator = () => {
   const store = useThemeStore();
 
   return (
-    <div className="theme-navigator">
-      <section className="theme-section">
-        <h2 className="theme-section-title">Preset</h2>
-        <div className="theme-presets">
+    <Stack gap="md">
+      <Stack gap="sm">
+        <Heading level={2} size="title-sm">
+          Preset
+        </Heading>
+        <ToggleButtonGroup
+          aria-label="Preset"
+          selectionMode="single"
+          disallowEmptySelection
+          selectedKeys={[store.preset]}
+          onSelectionChange={(keys) => {
+            store.setPreset([...keys][0] as (typeof PRESETS)[number]['id']);
+          }}
+        >
           {PRESETS.map((preset) => {
-            const active = store.preset === preset.id;
             return (
-              <button
-                key={preset.id}
-                type="button"
-                className="theme-preset"
-                aria-pressed={active}
-                onClick={() => {
-                  return store.setPreset(preset.id);
-                }}
-                title={preset.description}
-              >
+              <ToggleButton key={preset.id} id={preset.id} evaluation="muted">
                 {preset.label}
-              </button>
+              </ToggleButton>
             );
           })}
-        </div>
-      </section>
+        </ToggleButtonGroup>
+      </Stack>
 
-      <section className="theme-section">
-        <h2 className="theme-section-title">Semantic</h2>
-        <p className="theme-hint">
+      <Stack gap="sm">
+        <Heading level={2} size="title-sm">
+          Semantic
+        </Heading>
+        <Text variant="body-sm" tone="muted">
           Meaning-bearing tokens, mostly references. Remap one to another{' '}
           <code>{'{core.…}'}</code> ref and every consumer follows.
-        </p>
+        </Text>
         {store.semanticTree.map((family) => {
           return <FamilySection key={family.family} family={family} />;
         })}
-      </section>
+      </Stack>
 
-      <section className="theme-section">
-        <h2 className="theme-section-title">Core</h2>
+      <Stack gap="sm">
+        <Heading level={2} size="title-sm">
+          Core
+        </Heading>
         {/* Colors open by default: the brand scale is the SC-1 "wow" surface
             and must stay reachable at a glance (recorded in PRD §14). */}
         <LazyDisclosure
@@ -261,7 +274,7 @@ export const ThemeNavigator = () => {
         {store.coreTree.map((family) => {
           return <FamilySection key={family.family} family={family} />;
         })}
-      </section>
-    </div>
+      </Stack>
+    </Stack>
   );
 };
