@@ -134,16 +134,20 @@ coverage, JSDoc, `llms.txt`/CONTRACT update) and, where architectural, an ADR.
     `comfortable` is desktop-correct (Button ~32–36px); documented the
     responsiveness split (controls: `rem`; layout: `cqi`); updated `sizing.md`,
     CONTRACT §4, `llms.txt`, tests.
-  - ⏳ **Remaining:** implement the `data-tt-density` projection runtime
-    (emitter block + provider + per-density remaps per §3 D2).
+  - ✅ **Done:** implemented the `data-tt-density` projection — `core.density`
+    remaps + emitter `[data-tt-density]` blocks + `DensityProvider`/`useDensity`
+    (`@ttoss/fsl-theme/react`). Scoped to `spacing.inset.control.*` only, since
+    ADR-020 made `hit` a single floor (density must not touch the a11y floor).
 - **WS-A — Presentational layer (fsl-ui). ✅ DONE.** `Box` (D1 / ADR-009),
   `Grid` (2D), `Container`; `Text`/`Heading` gained `align` + tabular `numeric`
   (a free `weight` prop was rejected — weight belongs to the type step;
   uppercase eyebrows read as `label-sm`/`muted`). `Stack`/`Surface` kept. All
   token-constrained, no raw values, 100% coverage.
-- **WS-B — Control density adoption (fsl-ui).** Wire the density-aware steps
-  through the controls (they mostly inherit; verify `Button` et al. resolve the
-  projected steps); add the density provider export/wiring.
+- **WS-B — Control density adoption (fsl-ui). ✅ DONE.** No per-control wiring
+  needed — the projection design means every control that reads
+  `spacing.inset.control.*` inherits density for free (verified in the Studio:
+  `data-tt-density` remaps the inset vars, controls follow). `DensityProvider`
+  is exported from `@ttoss/fsl-theme/react`.
 - **WS-D — Doctrine ADRs + docs.** Ratify D1 (Box escape) and D2 (density
   projection); revise CONTRACT §4/§7, `sizing.md`, `llms.txt`.
 - **WS-E — Rebuild the Studio on the finished layer (proof).** Target

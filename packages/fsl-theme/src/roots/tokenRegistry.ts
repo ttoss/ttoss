@@ -126,6 +126,11 @@ export const TOKEN_PATH_REGISTRY: readonly TokenPathEntry[] = [
     cssPrefix: '--tt-core-spacing-',
     dtcgType: 'dimension',
   },
+  {
+    path: 'core.density.',
+    cssPrefix: '--tt-core-density-',
+    dtcgType: 'dimension',
+  },
   // CSS keywords (auto, fit-content, etc.) are not DTCG dimensions — more-specific entry first.
   {
     path: 'core.sizing.behavior.',

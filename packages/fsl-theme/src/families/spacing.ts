@@ -35,6 +35,35 @@ interface InsetSteps {
   lg: CoreSpacingRef;
 }
 
+/**
+ * Control inset remap for one non-default density (ADR-019). Each step is a
+ * `core.spacing.*` ref, exactly like `semantic.spacing.inset.control.*` — the
+ * emitter overrides that semantic token under `[data-tt-density]`.
+ */
+interface DensityControlInset {
+  sm: RawValue;
+  md: RawValue;
+  lg: RawValue;
+}
+
+/**
+ * Density projection remaps (ADR-019, scoped to `inset.control` by ADR-020).
+ *
+ * Density (`compact | comfortable | spacious`, default `comfortable`) is a
+ * theme projection axis set via `data-tt-density`, exactly like colour mode.
+ * `comfortable` is the base (the shipped `semantic.spacing.inset.control.*`),
+ * so only the two non-default densities carry overrides here. Density tunes
+ * **only** control inset — never `hit`, which ADR-020 fixed as a single
+ * ergonomic floor (and whose touch override must always win). The coarse
+ * pointer floor is therefore unaffected by density.
+ */
+export interface CoreDensity {
+  /** Tighter geometry for information-dense desktop surfaces. */
+  compact: { inset: { control: DensityControlInset } };
+  /** Looser geometry for relaxed / touch-leaning surfaces. */
+  spacious: { inset: { control: DensityControlInset } };
+}
+
 interface GapStackSteps {
   /** Tight vertical rhythm — micro-clusters within a single field. */
   xs: CoreSpacingRef;

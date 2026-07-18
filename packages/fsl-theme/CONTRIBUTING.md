@@ -550,6 +550,7 @@ Re-litigation answers:
 - "Does density violate 'no size prop / density = a different component' (CONTRACT §4)?" → no — density is not a per-component prop, it is a theme projection (like mode); meaning is defined once and survives the projection. §4 is revised, not broken: authors still never pass a size; the theme owns the geometry.
 - "Why can't controls be `cqi`-fluid like spacing?" → ergonomics. A hit target growing with container width is a usability regression; controls adapt to _user font_ (`rem`) and _density_, layout adapts to _container_ (`cqi`).
 - "Is coarse still safe under `compact`?" → yes — `@media (any-pointer: coarse)` forces the touch floor irrespective of density; density only tunes fine-pointer geometry.
+- "How is density scoped, given ADR-020 made `hit` a single value?" → **implemented (2026-07-18) scoped to `spacing.inset.control.*` only.** ADR-020 collapsed `hit` to one ergonomic floor, so density can no longer remap `hit` into per-density values (that would contradict ADR-020 and risk the coarse a11y floor). The emitter emits `[data-tt-density="compact|comfortable|spacious"]` blocks overriding only control inset; `DensityProvider`/`useDensity` (`@ttoss/fsl-theme/react`) set the axis. `comfortable` is the base (also emitted, so a nested `comfortable` resets a denser ancestor).
 
 ### ADR-020: `hit` is a single theme-defined floor, not a min/base/prominent scale
 

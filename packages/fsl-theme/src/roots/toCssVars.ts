@@ -1,4 +1,5 @@
 import type { ThemeBundle, ThemeTokens } from '../Types';
+import { buildDensityBlocks, buildDensityVars } from './density';
 import {
   COMPOUND_REF_RE,
   deepMerge,
@@ -43,7 +44,7 @@ export const toCssVarName = (tokenPath: string): string => {
  *   `clamp({core.spacing.4}, {core.spacing.6}, {core.spacing.12})`
  *   → `clamp(var(--tt-core-spacing-4), var(--tt-core-spacing-6), var(--tt-core-spacing-12))`
  */
-const inlineRefsToVars = (value: string): string => {
+export const inlineRefsToVars = (value: string): string => {
   return value.replace(COMPOUND_REF_RE, (_match, path) => {
     return `var(${toCssVarName(path)})`;
   });
@@ -94,6 +95,10 @@ const buildCssVars = (theme: ThemeTokens): Record<string, string | number> => {
 
   const { core: coreFlat, semantic: semanticFlat } = flattenTheme(theme);
   for (const [path, value] of Object.entries(coreFlat)) {
+    // `core.density.*` is projection config (consumed by buildDensityVars to
+    // emit `[data-tt-density]` blocks), not a token to emit as its own var —
+    // and its `{ref}` values would otherwise leak unresolved into core output.
+    if (path.startsWith('core.density.')) continue;
     vars[toCssVarName(path)] = value;
   }
 
@@ -397,6 +402,7 @@ const toCssVarsBase = (
   const coarseHitVars = buildCoarseHitVars(theme);
   const reducedMotionVars = buildReducedMotionVars(theme);
   const containerQueryVars = extractContainerQueryVars(cssVars);
+  const densityVars = buildDensityVars(theme);
   const selector = buildSelector(options);
   const { colorScheme, mode } = options;
   const effectiveColorScheme = colorScheme ?? mode;
@@ -408,7 +414,7 @@ const toCssVarsBase = (
     containerQueryVars,
     selector,
     toCssString: () => {
-      return buildCssBlock({
+      const block = buildCssBlock({
         selector,
         vars: cssVars,
         containerQueryVars,
@@ -416,6 +422,9 @@ const toCssVarsBase = (
         reducedMotionVars,
         colorScheme: effectiveColorScheme,
       });
+      // Density is a mode-independent, theme-level projection — emit its
+      // `[data-tt-density]` blocks once, scoped to the base selector.
+      return `${block}\n\n${buildDensityBlocks(selector, densityVars)}`;
     },
   };
 };

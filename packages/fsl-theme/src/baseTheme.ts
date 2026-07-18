@@ -312,6 +312,35 @@ export const baseTheme: ThemeTokens = {
       },
     },
 
+    // -- Density (projection axis, ADR-019) ---------------------------------
+    // `comfortable` (default) IS the shipped `semantic.spacing.inset.control.*`
+    // (sm=1, md=2, lg=4). Only the two non-default densities carry overrides,
+    // emitted under `[data-tt-density="…"]`. Density tunes control inset only —
+    // never `hit` (ADR-020: one ergonomic floor; the coarse touch override must
+    // always win), so a11y is unaffected. Values shift ±1 core step per axis.
+    // Values are value-only `var()` literals (like core.spacing steps reference
+    // the engine var) — core stays raw, refs belong to the semantic layer.
+    density: {
+      compact: {
+        inset: {
+          control: {
+            sm: 'var(--tt-core-spacing-0)',
+            md: 'var(--tt-core-spacing-1)',
+            lg: 'var(--tt-core-spacing-3)',
+          },
+        },
+      },
+      spacious: {
+        inset: {
+          control: {
+            sm: 'var(--tt-core-spacing-2)',
+            md: 'var(--tt-core-spacing-3)',
+            lg: 'var(--tt-core-spacing-6)',
+          },
+        },
+      },
+    },
+
     // -- Radii --------------------------------------------------------------
     radii: {
       none: '0px',

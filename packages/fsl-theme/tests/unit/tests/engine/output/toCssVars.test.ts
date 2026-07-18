@@ -270,6 +270,33 @@ describe('toCssVars', () => {
       expect(coarseBlock).toMatch(/--tt-sizing-hit: [^v]/);
     });
 
+    test('emits a [data-tt-density] block for every density', () => {
+      const css = toCssVars(defaultTheme).toCssString();
+      for (const density of ['compact', 'comfortable', 'spacious']) {
+        expect(css).toContain(`:root[data-tt-density="${density}"] {`);
+      }
+    });
+
+    test('density blocks remap only control inset — never hit', () => {
+      const css = toCssVars(defaultTheme).toCssString();
+      const compact = css.slice(
+        css.indexOf(':root[data-tt-density="compact"]')
+      );
+      const block = compact.slice(0, compact.indexOf('}'));
+      expect(block).toContain('--tt-spacing-inset-control-sm:');
+      expect(block).toContain('--tt-spacing-inset-control-md:');
+      expect(block).toContain('--tt-spacing-inset-control-lg:');
+      // Density must never touch the a11y hit floor (ADR-020).
+      expect(block).not.toContain('--tt-sizing-hit');
+    });
+
+    test('density blocks compose with the theme selector', () => {
+      const css = toCssVars(defaultTheme, { themeId: 'default' }).toCssString();
+      expect(css).toContain(
+        '[data-tt-theme="default"][data-tt-density="compact"]'
+      );
+    });
+
     test('coarse block uses correct selector in themed output', () => {
       const css = toCssVars(defaultTheme, { themeId: 'default' }).toCssString();
       expect(css).toContain(

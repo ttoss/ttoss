@@ -238,16 +238,22 @@ In CSS output, the fine value is the baseline and the coarse value is injected i
 
 ### Density projection
 
-`hit` (and control `spacing.inset.control.*`) also adapt to a **density**
-axis — `data-tt-density ∈ {compact, comfortable, spacious}`, default
-`comfortable` — set once like colour mode. Density is a theme projection: the
-semantic geometry tokens remap to different core steps per density, so a whole
-app can be denser on desktop without any per-component `size` prop. Density
-tunes **fine-pointer** geometry only; the coarse-pointer touch floor above
-always wins for accessibility. Control geometry adapts to **user font (`rem`)
-and density** — never to the container (`cqi`), which is reserved for _layout_
-sizing/spacing (a hit target must not grow because the window is wider). See
-ADR-019 and `packages/fsl-ui/INTERNAL/EVOLUTION.md`.
+Control geometry also adapts to a **density** axis — `data-tt-density ∈
+{compact, comfortable, spacious}`, default `comfortable` — set once like colour
+mode (via `DensityProvider` from `@ttoss/fsl-theme/react`, nestable to make a
+region denser than the app default). Density is a theme projection: it remaps
+`spacing.inset.control.*` to different core steps per density, so a whole app —
+or one dense surface — can tighten without any per-component `size` prop.
+Components are unchanged; they read the semantic inset tokens and inherit the
+projection.
+
+Density tunes **control inset only** — never `hit`. Per ADR-020 `hit` is a
+single ergonomic floor whose coarse-pointer touch override must always win, so
+layering density onto it would risk the a11y floor; keeping density off `hit`
+means the touch floor is never affected. Control geometry still adapts to
+**user font (`rem`)** and density — never to the container (`cqi`), which is
+reserved for _layout_ spacing/sizing. See ADR-019 + ADR-020 and
+`packages/fsl-ui/INTERNAL/EVOLUTION.md`.
 
 ## Rules of Engagement (non-negotiable)
 
