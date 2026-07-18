@@ -90,7 +90,7 @@ export const StudioShell = () => {
         >
           {LENSES.map((id) => {
             return (
-              <ToggleButton key={id} id={id}>
+              <ToggleButton key={id} id={id} evaluation="muted">
                 {LENS_LABELS[id]}
               </ToggleButton>
             );
@@ -123,7 +123,7 @@ export const StudioShell = () => {
             >
               {ALTITUDES.map((id) => {
                 return (
-                  <ToggleButton key={id} id={id}>
+                  <ToggleButton key={id} id={id} evaluation="muted">
                     {ALTITUDE_LABELS[id]}
                   </ToggleButton>
                 );
