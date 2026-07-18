@@ -12,19 +12,16 @@ export const PageGrid = () => {
     <Grid minColumnWidth="sm" gap="sm">
       {EXAMPLE_PAGES.map((page) => {
         return (
-          <Surface
-            key={page.id}
-            level="flat"
-            padding="md"
-            aria-label={page.label}
-          >
-            <Stack gap="sm">
-              <Text as="span" variant="label-sm" tone="muted">
-                {page.label}
-              </Text>
-              {page.render()}
-            </Stack>
-          </Surface>
+          <section key={page.id} aria-label={page.label}>
+            <Surface level="flat" padding="md">
+              <Stack gap="sm">
+                <Text as="span" variant="label-sm" tone="muted">
+                  {page.label}
+                </Text>
+                {page.render()}
+              </Stack>
+            </Surface>
+          </section>
         );
       })}
     </Grid>

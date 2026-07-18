@@ -1,3 +1,5 @@
+import { Heading, Stack } from '@ttoss/fsl-ui';
+
 import { catalogByEntity } from './catalog';
 import { useComponentStore } from './componentStore';
 import { EXAMPLE_PAGES } from './examplePages';
@@ -12,11 +14,13 @@ export const ComponentNavigator = () => {
   const groups = catalogByEntity();
 
   return (
-    <div className="component-navigator">
+    <Stack gap="md">
       {groups.map((group) => {
         return (
-          <section key={group.entity} className="component-group">
-            <h2 className="component-group-title">{group.entity}</h2>
+          <Stack key={group.entity} gap="xs">
+            <Heading level={2} size="title-sm">
+              {group.entity}
+            </Heading>
             <ul className="component-list">
               {group.entries.map((entry) => {
                 const active =
@@ -38,12 +42,14 @@ export const ComponentNavigator = () => {
                 );
               })}
             </ul>
-          </section>
+          </Stack>
         );
       })}
 
-      <section className="component-group">
-        <h2 className="component-group-title">Example pages</h2>
+      <Stack gap="xs">
+        <Heading level={2} size="title-sm">
+          Example pages
+        </Heading>
         <ul className="component-list">
           {EXAMPLE_PAGES.map((page) => {
             const active =
@@ -64,7 +70,7 @@ export const ComponentNavigator = () => {
             );
           })}
         </ul>
-      </section>
-    </div>
+      </Stack>
+    </Stack>
   );
 };

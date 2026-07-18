@@ -325,27 +325,9 @@ body {
  * Component Lab (Phase 2)
  * -------------------------------------------------------------------------- */
 
-.component-navigator,
-.component-inspector {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-4, 1rem);
-}
-
-.component-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-1, 0.25rem);
-}
-
-.component-group-title {
-  margin: 0;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--tt-colors-informational-muted-text-default);
-}
+/* Component panel layout/text are composed with primitives (Stack/Heading/
+ * Text/Link/Button). The nav-list items, identity list, prop chips, code
+ * block, and dashed identity card stay bespoke below. */
 
 .component-list {
   list-style: none;
@@ -375,12 +357,6 @@ body {
   background-color: var(--tt-colors-action-accent-background-default);
 }
 
-.component-name {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-}
-
 .component-identity,
 .component-prop-options {
   list-style: none;
@@ -404,41 +380,22 @@ body {
   color: var(--tt-colors-informational-muted-text-default);
 }
 
-.component-prop {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-1, 0.25rem);
-}
-
-.component-prop-label {
-  font-size: 0.8125rem;
-  font-weight: 600;
-}
-
-.component-chip,
-.component-copy,
-.component-contract-link {
+.component-chip {
   font: inherit;
   font-size: 0.75rem;
   cursor: pointer;
-  padding-block: var(--tt-spacing-1, 0.25rem);
-  padding-inline: var(--tt-spacing-2, 0.5rem);
+  padding-block: var(--tt-core-spacing-1);
+  padding-inline: var(--tt-core-spacing-2);
   border: 1px solid var(--tt-colors-informational-primary-border-default);
   border-radius: 0.375rem;
   color: var(--tt-colors-informational-primary-text-default);
   background-color: var(--tt-colors-informational-primary-background-default);
-  text-decoration: none;
 }
 
 .component-chip[aria-pressed='true'] {
   color: var(--tt-colors-action-accent-text-default);
   background-color: var(--tt-colors-action-accent-background-default);
   border-color: var(--tt-colors-action-accent-background-default);
-}
-
-.component-contract-link {
-  display: inline-block;
-  inline-size: fit-content;
 }
 
 .component-code {

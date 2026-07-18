@@ -1,3 +1,4 @@
+import { Button, Heading, Link, Stack, Text } from '@ttoss/fsl-ui';
 import * as React from 'react';
 
 import {
@@ -23,8 +24,10 @@ const PropSelector = ({
   onChange: (value?: string) => void;
 }) => {
   return (
-    <div className="component-prop">
-      <span className="component-prop-label">{label}</span>
+    <Stack gap="xs">
+      <Text as="span" variant="label-sm" tone="muted">
+        {label}
+      </Text>
       <div className="component-prop-options" role="group" aria-label={label}>
         <button
           type="button"
@@ -52,7 +55,7 @@ const PropSelector = ({
           );
         })}
       </div>
-    </div>
+    </Stack>
   );
 };
 
@@ -61,10 +64,9 @@ const CopyButton = ({ text }: { text: string }) => {
   const copied = copiedText === text;
 
   return (
-    <button
-      type="button"
-      className="component-copy"
-      onClick={() => {
+    <Button
+      evaluation="muted"
+      onPress={() => {
         const clipboard = navigator.clipboard;
         if (!clipboard) {
           return;
@@ -81,7 +83,7 @@ const CopyButton = ({ text }: { text: string }) => {
       }}
     >
       {copied ? 'Copied' : 'Copy JSX'}
-    </button>
+    </Button>
   );
 };
 
@@ -97,17 +99,21 @@ export const ComponentInspector = () => {
   if (store.selection.kind === 'page') {
     const page = findPage(store.selection.id);
     return (
-      <div className="component-inspector">
-        <section className="theme-section">
-          <h2 className="theme-section-title">Example page</h2>
-          <p className="component-name">{page?.label}</p>
-          <p className="theme-hint">{page?.description}</p>
-          <p className="theme-hint">
+      <Stack gap="md">
+        <Stack gap="sm">
+          <Heading level={2} size="title-sm">
+            Example page
+          </Heading>
+          <Text variant="label-lg">{page?.label}</Text>
+          <Text variant="body-sm" tone="muted">
+            {page?.description}
+          </Text>
+          <Text variant="body-sm" tone="muted">
             Rendered live on the stage and themed by the current theme. Switch
             to the Theme lens to see edits flow through it.
-          </p>
-        </section>
-      </div>
+          </Text>
+        </Stack>
+      </Stack>
     );
   }
 
@@ -126,10 +132,12 @@ export const ComponentInspector = () => {
   });
 
   return (
-    <div className="component-inspector">
-      <section className="theme-section">
-        <h2 className="theme-section-title">Component</h2>
-        <p className="component-name">{meta.displayName}</p>
+    <Stack gap="md">
+      <Stack gap="sm">
+        <Heading level={2} size="title-sm">
+          Component
+        </Heading>
+        <Text variant="label-lg">{meta.displayName}</Text>
         <ul className="component-identity">
           <li>
             <span className="component-identity-key">entity</span> {meta.entity}
@@ -149,10 +157,12 @@ export const ComponentInspector = () => {
               legal-props panel below. Re-add an identity row here if a future
               component sets it. */}
         </ul>
-      </section>
+      </Stack>
 
-      <section className="theme-section">
-        <h2 className="theme-section-title">Legal props</h2>
+      <Stack gap="sm">
+        <Heading level={2} size="title-sm">
+          Legal props
+        </Heading>
         {evaluations.length > 0 ? (
           <PropSelector
             label="evaluation"
@@ -161,10 +171,10 @@ export const ComponentInspector = () => {
             onChange={store.setEvaluation}
           />
         ) : (
-          <p className="theme-hint">
+          <Text variant="body-sm" tone="muted">
             {meta.entity} carries no <code>evaluation</code> — validation is a
             runtime state (<code>isInvalid</code>), never a color prop.
-          </p>
+          </Text>
         )}
         {consequences.length > 0 ? (
           <PropSelector
@@ -174,45 +184,44 @@ export const ComponentInspector = () => {
             onChange={store.setConsequence}
           />
         ) : null}
-      </section>
+      </Stack>
 
-      <section className="theme-section">
-        <h2 className="theme-section-title">Anatomy</h2>
-        <p className="theme-hint">
+      <Stack gap="sm">
+        <Heading level={2} size="title-sm">
+          Anatomy
+        </Heading>
+        <Text variant="body-sm" tone="muted">
           Root: <code>data-scope</code> on the component,{' '}
           <code>data-part=&quot;{meta.structure}&quot;</code> on its root
           element (CONTRACT §5).
-        </p>
-        <a
-          className="component-contract-link"
-          href={CONTRACT_URL}
-          target="_blank"
-          rel="noreferrer"
-        >
+        </Text>
+        <Link href={CONTRACT_URL} target="_blank" rel="noreferrer">
           Open the {meta.entity} contract →
-        </a>
-      </section>
+        </Link>
+      </Stack>
 
-      <section className="theme-section">
-        <h2 className="theme-section-title">Copy</h2>
+      <Stack gap="sm">
+        <Heading level={2} size="title-sm">
+          Copy
+        </Heading>
         {code ? (
           <>
             <pre className="component-code" data-testid="component-code">
               <code>{code}</code>
             </pre>
             <CopyButton text={code} />
-            <p className="theme-hint">
+            <Text variant="body-sm" tone="muted">
               Flow-critical labels are required props with no English defaults —
               supply localized copy from your app&apos;s i18n.
-            </p>
+            </Text>
           </>
         ) : (
-          <p className="theme-hint">
+          <Text variant="body-sm" tone="muted">
             A verified snippet for {meta.displayName} isn&apos;t in the registry
             yet. Composites like this are shown live in the example pages.
-          </p>
+          </Text>
         )}
-      </section>
-    </div>
+      </Stack>
+    </Stack>
   );
 };
