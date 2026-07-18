@@ -13,7 +13,7 @@ Changes are small and atomic, so a revert removes one behavior instead of unrave
 
 ## Grounding Principles
 
-This pillar operationalizes [The Principle of Asymmetric Risk](/docs/ai/agentic-development-principles/governance-of-agency#the-principle-of-asymmetric-risk), [The Principle of Cheap Generation, Expensive Commitment](/docs/ai/agentic-development-principles/economics-of-interaction#the-principle-of-cheap-generation-expensive-commitment), [The Principle of Atomic Debt Containment](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-principle-of-atomic-debt-containment), and [The Corollary of Side-Effect Predictability Gates](/docs/ai/agentic-development-principles/governance-of-agency#the-corollary-of-side-effect-predictability-gates).
+This pillar operationalizes [The Principle of Reversal Asymmetry](/docs/ai/agentic-development-principles/economics-of-interaction#the-principle-of-reversal-asymmetry) — generation is cheap, but reversal cost grows with time and dependents — together with [The Principle of Asymmetric Risk](/docs/ai/agentic-development-principles/governance-of-agency#the-principle-of-asymmetric-risk), [The Principle of Atomic Debt Containment](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-principle-of-atomic-debt-containment), and [The Corollary of Side-Effect Predictability Gates](/docs/ai/agentic-development-principles/governance-of-agency#the-corollary-of-side-effect-predictability-gates).
 
 ## Failure Mode
 
