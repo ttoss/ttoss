@@ -294,7 +294,7 @@ color:           resolveInteractiveStyle(c?.text,       { isHovered, isPressed, 
 
 | Family     | Standard step | Token path                                 |
 | ---------- | ------------- | ------------------------------------------ |
-| Sizing     | `base`        | `vars.sizing.hit.base`                     |
+| Sizing     | _(single)_    | `vars.sizing.hit`                          |
 | Spacing    | `md`          | `vars.spacing.inset.{control\|surface}.md` |
 | Typography | `md`          | `vars.text.label.md`                       |
 
@@ -407,7 +407,7 @@ Registered knobs:
 ## §8 — Full Example: Button (Entity = Action)
 
 `entity: 'Action'` → §1 row: colors=`action`, radii=`control`, border=`outline.control`,
-sizing=`hit.base`, spacing=`inset.control.md`, typography=`label.md`, motion=`feedback`, elevation=`flat`.
+sizing=`hit`, spacing=`inset.control.md`, typography=`label.md`, motion=`feedback`, elevation=`flat`.
 
 ```typescript
 import { vars } from '@ttoss/fsl-theme/vars';
@@ -440,7 +440,7 @@ export const Button = ({ evaluation = 'primary', ...props }: ButtonProps) => {
         borderRadius: vars.radii.control,
         borderWidth: vars.border.outline.control.width,
         borderStyle: vars.border.outline.control.style,
-        minHeight: vars.sizing.hit.base,
+        minHeight: vars.sizing.hit,
         paddingBlock: vars.spacing.inset.control.md,
         paddingInline: vars.spacing.inset.control.md,
         ...(vars.text.label.md as React.CSSProperties),

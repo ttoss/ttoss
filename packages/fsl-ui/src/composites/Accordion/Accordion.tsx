@@ -43,7 +43,7 @@ const accordionScope = createCompositeScope<AccordionScopeValue>('Accordion');
 //   colors: `navigation.{primary|muted}` (uxContext = navigation),
 //   radii: `control` (trigger button), `surface` (panel container),
 //   border: `outline.control` (trigger), `divider` (between items),
-//   sizing: `hit.base`, spacing: `inset.control`,
+//   sizing: `hit`, spacing: `inset.control`,
 //   typography: `label.md`, elevation: `flat`,
 //   motion: `transition.{enter,exit}` (NOT `feedback` — disclosure animates
 //   container affordances, not micro-feedback on a control).
@@ -309,7 +309,7 @@ export const AccordionTrigger = ({
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: vars.spacing.gap.inline.sm,
-            minHeight: vars.sizing.hit.base,
+            minHeight: vars.sizing.hit,
             paddingBlock: vars.spacing.inset.control.md,
             paddingInline: vars.spacing.inset.control.md,
             border: 'none',

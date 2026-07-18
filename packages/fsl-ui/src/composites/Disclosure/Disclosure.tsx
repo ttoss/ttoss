@@ -37,7 +37,7 @@ const disclosureScope = createCompositeScope<{
 // Entity = Disclosure → CONTRACT.md §1 row:
 //   colors: `navigation.{primary|muted}` (uxContext = navigation),
 //   radii: `control` (trigger) / `surface` (panel), border: `outline.control`,
-//   sizing: `hit.base`, spacing: `inset.control`, typography: `label.md`,
+//   sizing: `hit`, spacing: `inset.control`, typography: `label.md`,
 //   elevation: `flat`, motion: `transition.{enter,exit}` (disclosure chrome
 //   animates the panel affordance, not micro-feedback on a control).
 //
@@ -211,7 +211,7 @@ export const DisclosureTrigger = ({
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: vars.spacing.gap.inline.sm,
-            minHeight: vars.sizing.hit.base,
+            minHeight: vars.sizing.hit,
             paddingBlock: vars.spacing.inset.control.md,
             paddingInline: vars.spacing.inset.control.md,
             border: 'none',

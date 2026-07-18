@@ -12,7 +12,7 @@ import { focusRingOutline } from '../../tokens/focusRing';
 // Semantic identity — Layer 1
 //
 // Entity = Action → CONTRACT.md §1 row (colors `action`, radii `control`,
-// border `outline.control`, sizing `hit.base`, spacing `inset.control`,
+// border `outline.control`, sizing `hit`, spacing `inset.control`,
 // typography `label.md`, motion `feedback`).
 //
 // FRICTION LOG (ROADMAP B2 "proof case for `pressed` ≠ `active`):
@@ -144,7 +144,7 @@ export const ToggleButton = ({
           borderRadius: vars.radii.control,
           borderWidth: vars.border.outline.control.width,
           borderStyle: vars.border.outline.control.style,
-          minHeight: vars.sizing.hit.base,
+          minHeight: vars.sizing.hit,
           paddingBlock: vars.spacing.inset.control.sm,
           paddingInline: vars.spacing.inset.control.lg,
           ...(vars.text.label.md as React.CSSProperties),

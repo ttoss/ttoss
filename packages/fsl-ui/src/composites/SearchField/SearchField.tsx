@@ -204,7 +204,7 @@ export const SearchFieldControl = (props: SearchFieldControlProps) => {
           return {
             boxSizing: 'border-box',
             inlineSize: '100%',
-            minHeight: vars.sizing.hit.base,
+            minHeight: vars.sizing.hit,
             paddingBlock: vars.spacing.inset.control.sm,
             // Leave room for the leading glyph and trailing clear button.
             paddingInlineStart: ADORNMENT_INSET,

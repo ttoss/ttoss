@@ -18,7 +18,7 @@ import { Icon } from '../Icon';
 //   authorial Evaluation per ENTITY_EVALUATION),
 //   radii: `control`,
 //   border: `outline.control` (default) + `selected` (when checked/indeterminate),
-//   sizing: `hit.base`, spacing: `inset.control`, typography: `label.md`,
+//   sizing: `hit`, spacing: `inset.control`, typography: `label.md`,
 //   motion: `feedback`, elevation: `flat`.
 //
 // Validation feedback is a **runtime State** (`invalid`), driven by React
@@ -170,7 +170,7 @@ export const Checkbox = ({ children, ...props }: CheckboxProps) => {
           display: 'inline-flex',
           alignItems: 'center',
           gap: vars.spacing.gap.inline.sm,
-          minHeight: vars.sizing.hit.base,
+          minHeight: vars.sizing.hit,
           cursor: isDisabled ? 'not-allowed' : 'pointer',
           opacity: isDisabled ? vars.opacity.disabled : undefined,
           ...(vars.text.label.md as React.CSSProperties),

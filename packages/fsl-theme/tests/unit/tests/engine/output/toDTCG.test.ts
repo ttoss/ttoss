@@ -206,24 +206,22 @@ describe('toDTCG', () => {
   // ---------------------------------------------------------------------------
 
   describe('coarse-pointer $extensions', () => {
-    test('every semantic.sizing.hit step has com.ttoss.pointer-override with the correct coarse value', () => {
-      for (const step of ['min', 'base', 'prominent'] as const) {
-        expect(
-          leafAt(`semantic.sizing.hit.${step}`)?.$extensions?.[
-            'com.ttoss.pointer-override'
-          ]
-        ).toEqual({
-          condition: 'any-pointer: coarse',
-          value: defaultTheme.core.sizing.hit.coarse[step],
-        });
-      }
+    test('semantic.sizing.hit has com.ttoss.pointer-override with the correct coarse value', () => {
+      expect(
+        leafAt('semantic.sizing.hit')?.$extensions?.[
+          'com.ttoss.pointer-override'
+        ]
+      ).toEqual({
+        condition: 'any-pointer: coarse',
+        value: defaultTheme.core.sizing.hit.coarse,
+      });
     });
 
     test('non-hit semantic and core tokens have no $extensions', () => {
       const nonHit = leaves.filter((l) => {
         return (
           (l.path.startsWith('semantic.') &&
-            !l.path.startsWith('semantic.sizing.hit.')) ||
+            l.path !== 'semantic.sizing.hit') ||
           l.path.startsWith('core.')
         );
       });

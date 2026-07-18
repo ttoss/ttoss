@@ -294,26 +294,21 @@ export const baseTheme: ThemeTokens = {
       },
 
       hit: {
-        // `hit.*` is an ergonomic FLOOR (min interactive target), never the
+        // `hit` is a single ergonomic FLOOR (min interactive target), never the
         // visual size — the control's height comes from its inset + type, with
-        // `hit` guaranteeing the minimum (sizing.md). These are the `comfortable`
-        // fine-pointer caps; the density projection (ADR-019) remaps them for
-        // `compact`/`spacious`.
+        // `hit` guaranteeing the minimum (sizing.md, ADR-020). It is the theme's
+        // one lever for the interactive minimum; because it is `rem`-anchored
+        // (not `cqi`), a control's height never grows with container width.
+        //
         // Fine: clamp(floor, preferred, max) — floor is the fixed ergonomic
         // minimum; preferred scales with rem so user font-size preferences
-        // (accessibility) are respected. Caps tuned desktop-first (mouse):
-        //   min  32px → secondary / icon-only / dense list controls
-        //   base 36px → default button (GitHub ~32, Linear ~32, Stripe ~36)
-        //   prominent 44px → hero CTAs and primary form submits
-        // 24px WCAG 2.2 minimum is well exceeded at every step.
-        fine: {
-          min: 'clamp(28px, 1.75rem, 32px)',
-          base: 'clamp(32px, 2rem, 36px)',
-          prominent: 'clamp(40px, 2.5rem, 44px)',
-        },
-        // Coarse: always fixed px — touch ergonomics require predictable,
-        // reliable targets. `min` is 44px (Apple HIG floor), not below it.
-        coarse: { min: '44px', base: '48px', prominent: '56px' },
+        // (accessibility) are respected. Tuned desktop-first (mouse) at 32px,
+        // matching GitHub/Linear (~32px) and Stripe (~36px); the 24px WCAG 2.2
+        // minimum is well exceeded.
+        fine: 'clamp(32px, 2rem, 36px)',
+        // Coarse: always fixed px — touch ergonomics require a predictable,
+        // reliable target. 48px sits above the 44px Apple HIG floor.
+        coarse: '48px',
       },
     },
 
@@ -1269,22 +1264,28 @@ export const baseTheme: ThemeTokens = {
     // -- Spacing ------------------------------------------------------------
     // Grammar: {pattern}.{context}.{step?}
     //
-    // Values are tuned so that the spec's spacing order holds at the
-    // default ("md" / preferred) step:
+    // Values are tuned so that the containment order holds at the default
+    // ("md" / preferred) step:
     //
-    //   icon-label (inline.xs) < inline (inline.md) < inset.control
-    //     < gap.stack < gutter.section < gutter.page
+    //   inset.control < gap.stack < gutter.section < gutter.page
     //
-    // The hit floor (`core.sizing.hit.fine.base` ≈ 32–40px) keeps controls
-    // touch-safe regardless of inset.control. The base brief is `balanced`
-    // density + `hybrid` pointer, so inset.control sits one step above
-    // inline gaps rather than colliding with them.
+    // (inset.control is deliberately tight — see below — so it no longer sits
+    // above the inline gaps; on a compact control the padding inside it is
+    // allowed to be smaller than the gap between separate items.)
+    //
+    // The hit floor (`core.sizing.hit.fine` ≈ 32–36px) is what makes controls
+    // touch-safe and gives them their height — so inset.control is tuned TIGHT
+    // (ADR-020): block padding must stay under the floor so `hit` binds and the
+    // control resolves to ~32–36px on the desktop, not the ~44–58px the old
+    // generous inset produced. Steps stay `core.spacing.*` aliases (the fluid
+    // range at these low steps is ±2px — imperceptible, and the height is
+    // driven by the rem-anchored `hit` floor, not the inset).
     spacing: {
       inset: {
         control: {
-          sm: '{core.spacing.3}',
-          md: '{core.spacing.4}',
-          lg: '{core.spacing.6}',
+          sm: '{core.spacing.1}',
+          md: '{core.spacing.2}',
+          lg: '{core.spacing.4}',
         },
         // inset.surface ≥ inset.control (validation invariant) and sits
         // above gap.stack at the default step so containers visibly enclose
@@ -1328,11 +1329,7 @@ export const baseTheme: ThemeTokens = {
     // -- Sizing -------------------------------------------------------------
     // Grammar: {family}.{stepOrProperty}
     sizing: {
-      hit: {
-        min: '{core.sizing.hit.fine.min}',
-        base: '{core.sizing.hit.fine.base}',
-        prominent: '{core.sizing.hit.fine.prominent}',
-      },
+      hit: '{core.sizing.hit.fine}',
       icon: {
         sm: '{core.sizing.ramp.ui.2}',
         md: '{core.sizing.ramp.ui.3}',

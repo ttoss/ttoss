@@ -155,9 +155,9 @@ const useCoarsePointer = (): boolean => {
 /**
  * Apply coarse-pointer hit target overrides to a resolved token map.
  *
- * When `isCoarse` is true, replaces `semantic.sizing.hit.{step}` values with
- * the raw coarse values from `core.sizing.hit.coarse.{step}`. This mirrors
- * the `@media (any-pointer: coarse)` block that `toCssVars` emits for CSS
+ * When `isCoarse` is true, replaces the `semantic.sizing.hit` value with the
+ * raw coarse value from `core.sizing.hit.coarse`. This mirrors the
+ * `@media (any-pointer: coarse)` block that `toCssVars` emits for CSS
  * consumers — ensuring non-CSS consumers (React Native, canvas) get
  * touch-appropriate hit targets.
  */
@@ -168,13 +168,7 @@ const applyCoarseHitOverrides = (
 ): Record<string, string | number> => {
   if (!isCoarse) return tokens;
 
-  const overrides: Record<string, string | number> = { ...tokens };
-  for (const [key, value] of Object.entries(theme.core.sizing.hit.coarse)) {
-    if (typeof value === 'string') {
-      overrides[`semantic.sizing.hit.${key}`] = value;
-    }
-  }
-  return overrides;
+  return { ...tokens, 'semantic.sizing.hit': theme.core.sizing.hit.coarse };
 };
 
 export type { ThemeMode } from './runtime';
@@ -677,7 +671,7 @@ export const useTokens = (): SemanticTokens => {
  *
  * ### ⚠ CSS-coupled tokens stay unresolved
  * A registered set of dimensional tokens (model.md §8 — spacing steps, fluid
- * `text.*.fontSize`, `sizing.hit.*`, `sizing.viewport.*`, `sizing.measure.reading`,
+ * `text.*.fontSize`, `sizing.hit`, `sizing.viewport.*`, `sizing.measure.reading`,
  * `spacing.gutter.*`) carry CSS-only constructs (`var()`, `calc()`, `clamp()`,
  * `cqi`, `dvh`, `ch`). This hook returns those **as-is** — they are not usable
  * outside a CSS engine. Colors, opacity, z-index, font weights/leading and

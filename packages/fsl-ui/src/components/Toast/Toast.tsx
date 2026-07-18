@@ -22,7 +22,7 @@ import { Icon } from '../Icon';
 // Entity = Feedback → CONTRACT.md §1 row:
 //   colors: `feedback.{primary|positive|caution|negative}` (uxContext = feedback),
 //   radii: `surface`, border: `outline.surface`,
-//   sizing: `hit.base` (close trigger), spacing: `inset.surface`,
+//   sizing: `hit` (close trigger), spacing: `inset.surface`,
 //   typography: `label.md` (title) + `body.md` (description),
 //   elevation: `raised` — first component in the system to consume it,
 //   motion: `transition.{enter,exit}`.

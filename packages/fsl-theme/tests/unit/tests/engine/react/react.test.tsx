@@ -754,14 +754,9 @@ describe('useResolvedTokens', () => {
       }
     );
 
-    // Coarse hit values should be the raw core.sizing.hit.coarse values
-    const coarseBase = defaultBundle.base.core.sizing.hit.coarse.base;
-    expect(result.current['semantic.sizing.hit.base']).toBe(coarseBase);
-    expect(result.current['semantic.sizing.hit.min']).toBe(
-      defaultBundle.base.core.sizing.hit.coarse.min
-    );
-    expect(result.current['semantic.sizing.hit.prominent']).toBe(
-      defaultBundle.base.core.sizing.hit.coarse.prominent
+    // Coarse hit value should be the raw core.sizing.hit.coarse value
+    expect(result.current['semantic.sizing.hit']).toBe(
+      defaultBundle.base.core.sizing.hit.coarse
     );
 
     // Restore default mock
@@ -787,9 +782,10 @@ describe('useResolvedTokens', () => {
       }
     );
 
-    // Fine hit values — these are clamp() expressions resolved from core.sizing.hit.fine
-    const fineBase = defaultBundle.base.core.sizing.hit.fine.base;
-    expect(result.current['semantic.sizing.hit.base']).toBe(fineBase);
+    // Fine hit value — a clamp() expression resolved from core.sizing.hit.fine
+    expect(result.current['semantic.sizing.hit']).toBe(
+      defaultBundle.base.core.sizing.hit.fine
+    );
   });
 });
 

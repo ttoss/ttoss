@@ -77,10 +77,10 @@ Ramps are the **engine**. They are bounded ranges expressed with `clamp(min, pre
 
 #### 3) Ergonomic hit primitives (required)
 
-- `core.sizing.hit.fine.{min|base|prominent}` — ergonomic floors for fine pointer (mouse, trackpad); may be fluid via `clamp(floor, preferred, max)` where `floor` is a fixed px minimum
-- `core.sizing.hit.coarse.{min|base|prominent}` — fixed px values for coarse pointer (touch); never fluid
+- `core.sizing.hit.fine` — the single ergonomic floor for fine pointer (mouse, trackpad); may be fluid via `clamp(floor, preferred, max)` where `floor` is a fixed px minimum
+- `core.sizing.hit.coarse` — the single fixed px floor for coarse pointer (touch); never fluid
 
-**Coarse** hit targets are **always fixed px** — reliable ergonomic guarantees for touch. **Fine** hit targets may use `clamp(floor, preferred, max)` where `floor` is a fixed px ergonomic minimum, allowing the theme to express density preferences (e.g. via the rem scale) while guaranteeing accessibility. The build output emits fine values as the baseline and coarse values inside `@media (any-pointer: coarse)` automatically.
+`hit` is **one value per pointer profile**, not a scale — the theme's single ergonomic minimum for an interactive target (ADR-020). **Coarse** is **always fixed px** — reliable ergonomic guarantees for touch. **Fine** may use `clamp(floor, preferred, max)` where `floor` is a fixed px ergonomic minimum, so the `rem` `preferred` respects user font-size while accessibility is always guaranteed. The build output emits the fine value as the baseline and the coarse value inside `@media (any-pointer: coarse)` automatically.
 
 ### Example
 
@@ -132,17 +132,14 @@ const coreSizing = {
     },
 
     hit: {
+      // A single ergonomic floor per pointer profile (ADR-020).
       // Fine: clamp(floor, preferred, max) — floor is fixed px; preferred scales
-      // with rem. These are the `comfortable` (default) caps, tuned desktop-first;
-      // the density projection remaps them for `compact`/`spacious` (see below).
-      fine: {
-        min: 'clamp(28px, 1.75rem, 32px)',
-        base: 'clamp(32px, 2rem, 36px)',
-        prominent: 'clamp(40px, 2.5rem, 44px)',
-      },
-      // Coarse: always fixed px — touch ergonomics require predictable, reliable
-      // targets. `min` is 44px (Apple HIG floor), never below it.
-      coarse: { min: '44px', base: '48px', prominent: '56px' },
+      // with rem (not cqi), so a control's height never grows with the window.
+      // Tuned desktop-first at 32px (GitHub/Linear ~32, Stripe ~36).
+      fine: 'clamp(32px, 2rem, 36px)',
+      // Coarse: always fixed px — touch ergonomics require a predictable,
+      // reliable target. 48px sits above the 44px Apple HIG floor.
+      coarse: '48px',
     },
   },
 };
@@ -167,18 +164,18 @@ This avoids ambiguity and prevents token-per-component drift.
 
 #### Families
 
-| `{family}` | Description                                                                                                                                                                                        |
-| :--------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `hit`      | minimum **interactive target** sizing (ergonomic contract). Values adapt to input capability. Fine values may be fluid with `clamp()` (floor must be fixed px). Coarse values are always fixed px. |
-| `icon`     | **visual glyph** sizing only. May be fluid via core ramp.                                                                                                                                          |
-| `identity` | **visual identity object** sizing (profile / brand / entity). May be fluid via core ramp.                                                                                                          |
-| `measure`  | **readability measure** (line-length contract, character-based).                                                                                                                                   |
-| `surface`  | **structural bounds** for UI surfaces (constraints, not components).                                                                                                                               |
-| viewport   | viewport primitives for full-height and full-width layouts.                                                                                                                                        |
+| `{family}` | Description                                                                                                                                                                                                            |
+| :--------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `hit`      | the single minimum **interactive target** floor (ergonomic contract). One value per pointer profile; adapts to input capability. Fine may be fluid with `clamp()` (floor must be fixed px). Coarse is always fixed px. |
+| `icon`     | **visual glyph** sizing only. May be fluid via core ramp.                                                                                                                                                              |
+| `identity` | **visual identity object** sizing (profile / brand / entity). May be fluid via core ramp.                                                                                                                              |
+| `measure`  | **readability measure** (line-length contract, character-based).                                                                                                                                                       |
+| `surface`  | **structural bounds** for UI surfaces (constraints, not components).                                                                                                                                                   |
+| viewport   | viewport primitives for full-height and full-width layouts.                                                                                                                                                            |
 
 #### Canonical shapes
 
-- `hit.{min|base|prominent}`
+- `hit`
 - `icon.{sm|md|lg}`
 - `identity.{sm|md|lg|xl}`
 - `measure.reading`
@@ -188,28 +185,26 @@ This avoids ambiguity and prevents token-per-component drift.
 
 ### Semantic Tokens Summary Table
 
-| token                  | use when you are building…             | contract (must be true)                                                    | default value                      |
-| :--------------------- | :------------------------------------- | :------------------------------------------------------------------------- | :--------------------------------- |
-| `hit.min`              | small / secondary interactive targets  | minimum interactive area; **not visual size**; **must not shrink**         | theme-defined ergonomic minimum    |
-| `hit.base`             | standard buttons / inputs / toggles    | same as above                                                              | theme-defined ergonomic default    |
-| `hit.prominent`        | high-emphasis / low-density targets    | same as above                                                              | theme-defined ergonomic prominent  |
-| `icon.sm`              | small glyphs / dense UI                | visual only; bounded range via core ramp                                   | `core.sizing.ramp.ui.2`            |
-| `icon.md`              | standard icons                         | visual only; bounded range via core ramp                                   | `core.sizing.ramp.ui.3`            |
-| `icon.lg`              | prominent icons                        | visual only; bounded range via core ramp                                   | `core.sizing.ramp.ui.4`            |
-| `identity.sm`          | compact identity objects               | visual only; bounded range via core ramp                                   | `core.sizing.ramp.ui.5`            |
-| `identity.md`          | standard identity objects              | visual only; bounded range via core ramp                                   | `core.sizing.ramp.ui.6`            |
-| `identity.lg`          | prominent identity objects             | visual only; bounded range via core ramp                                   | `core.sizing.ramp.ui.7`            |
-| `identity.xl`          | hero identity / brand objects          | visual only; bounded range via core ramp                                   | `core.sizing.ramp.ui.8`            |
-| `measure.reading`      | long-form text containers              | single bounded readability contract                                        | `clamp(45ch, 60ch, 75ch)`          |
-| `surface.maxWidth`     | cards, panels, dialogs, surface shells | bounded structural max width; container-first                              | `core.sizing.ramp.layout.5`        |
-| `viewport.height.full` | full-height layouts                    | must use dynamic viewport units; use intentionally for full-height layouts | `core.sizing.viewport.height.full` |
-| `viewport.width.full`  | full-width layouts                     | must use dynamic viewport units; use intentionally for full-width layouts  | `core.sizing.viewport.width.full`  |
+| token                  | use when you are building…                                   | contract (must be true)                                                                 | default value                      |
+| :--------------------- | :----------------------------------------------------------- | :-------------------------------------------------------------------------------------- | :--------------------------------- |
+| `hit`                  | any interactive target (buttons, inputs, toggles, list rows) | minimum interactive area; **not visual size**; **must not shrink**; enforce via `min-*` | theme-defined ergonomic floor      |
+| `icon.sm`              | small glyphs / dense UI                                      | visual only; bounded range via core ramp                                                | `core.sizing.ramp.ui.2`            |
+| `icon.md`              | standard icons                                               | visual only; bounded range via core ramp                                                | `core.sizing.ramp.ui.3`            |
+| `icon.lg`              | prominent icons                                              | visual only; bounded range via core ramp                                                | `core.sizing.ramp.ui.4`            |
+| `identity.sm`          | compact identity objects                                     | visual only; bounded range via core ramp                                                | `core.sizing.ramp.ui.5`            |
+| `identity.md`          | standard identity objects                                    | visual only; bounded range via core ramp                                                | `core.sizing.ramp.ui.6`            |
+| `identity.lg`          | prominent identity objects                                   | visual only; bounded range via core ramp                                                | `core.sizing.ramp.ui.7`            |
+| `identity.xl`          | hero identity / brand objects                                | visual only; bounded range via core ramp                                                | `core.sizing.ramp.ui.8`            |
+| `measure.reading`      | long-form text containers                                    | single bounded readability contract                                                     | `clamp(45ch, 60ch, 75ch)`          |
+| `surface.maxWidth`     | cards, panels, dialogs, surface shells                       | bounded structural max width; container-first                                           | `core.sizing.ramp.layout.5`        |
+| `viewport.height.full` | full-height layouts                                          | must use dynamic viewport units; use intentionally for full-height layouts              | `core.sizing.viewport.height.full` |
+| `viewport.width.full`  | full-width layouts                                           | must use dynamic viewport units; use intentionally for full-width layouts               | `core.sizing.viewport.width.full`  |
 
 Accessibility note: WCAG 2.2 Target Size (Minimum) defines a lower baseline of `24×24` CSS px, with exceptions. ttoss recommends stronger ergonomic baselines, especially for coarse pointer environments, while allowing themes to tune values based on product needs.
 
 ### Hit target adaptation
 
-`hit.*` defines an ergonomic contract, not a fixed pixel value.
+`hit` defines an ergonomic contract, not a fixed pixel value.
 
 Implementations should adapt hit targets based on input capability:
 
@@ -220,30 +215,30 @@ The build output handles this automatically. Fine values are emitted as the base
 
 #### Output Guidance (Web)
 
-In CSS output, fine values are the baseline and coarse values are injected inside `@media (any-pointer: coarse)`:
+In CSS output, the fine value is the baseline and the coarse value is injected inside `@media (any-pointer: coarse)`:
 
 ```css
 :root {
-  --tt-sizing-hit-base: clamp(
+  --tt-sizing-hit: clamp(
     32px,
     2rem,
     36px
-  ); /* fine baseline (comfortable) — fluid, ergonomic floor guaranteed */
+  ); /* fine baseline — fluid via rem, ergonomic floor guaranteed */
 }
 
 @media (any-pointer: coarse) {
   :root {
-    --tt-sizing-hit-base: 48px; /* touch override — fixed px, always reliable */
+    --tt-sizing-hit: 48px; /* touch override — fixed px, always reliable */
   }
 }
 ```
 
-> The semantic token remains stable (`hit.base`).
+> The semantic token remains stable (`hit`).
 > The runtime adapts the value.
 
 ### Density projection
 
-`hit.*` (and control `spacing.inset.control.*`) also adapt to a **density**
+`hit` (and control `spacing.inset.control.*`) also adapt to a **density**
 axis — `data-tt-density ∈ {compact, comfortable, spacious}`, default
 `comfortable` — set once like colour mode. Density is a theme projection: the
 semantic geometry tokens remap to different core steps per density, so a whole
@@ -256,7 +251,7 @@ ADR-019 and `packages/fsl-ui/INTERNAL/EVOLUTION.md`.
 
 ## Rules of Engagement (non-negotiable)
 
-1. **Hit vs visual:** never use `icon.*` or `identity.*` as hit targets; always enforce `hit.*` via `min-width` / `min-height`.
+1. **Hit vs visual:** never use `icon.*` or `identity.*` as hit targets; always enforce `hit` via `min-width` / `min-height`.
 2. **Reading vs surface:** use `measure.reading` for long text; use `surface.maxWidth` for structural wrappers.
 3. **No responsive logic in components:** responsiveness lives in Core (ramps + container units), not in component code.
 4. **Dynamic dimensions:** avoid `100vh` and `100vw`; use `viewport.height.full` and `viewport.width.full`.
@@ -268,8 +263,8 @@ Themes may tune:
 - the **core ramps** (`core.sizing.ramp.ui.*`, `core.sizing.ramp.layout.*`)
 - `surface.maxWidth` mapping to a different layout ramp step
 - `measure.reading` in rare cases, validated with real content
-- `core.sizing.hit.fine.*` to tune ergonomic floors for mouse; may use `clamp(floor, preferred, max)` where `floor` is fixed px
-- `core.sizing.hit.coarse.*` to adjust ergonomic targets for touch; always fixed px
+- `core.sizing.hit.fine` to tune the ergonomic floor for mouse; may use `clamp(floor, preferred, max)` where `floor` is fixed px
+- `core.sizing.hit.coarse` to adjust the ergonomic floor for touch; always fixed px
 
 Semantic token names **never change across themes**.
 
@@ -279,20 +274,12 @@ Semantic token names **never change across themes**.
 
 ### Errors (validation must fail when)
 
-- any `hit.coarse.*` token resolves to a fluid or intrinsic value, including `clamp(...)`, `cqi`, `%`, `auto`, or content-sizing keywords
+- `hit.coarse` resolves to a fluid or intrinsic value, including `clamp(...)`, `cqi`, `%`, `auto`, or content-sizing keywords
 
-- any `hit.fine.*` token uses `clamp()` without a fixed px floor (the minimum bound must be a literal `Npx` value, not a variable or formula)
+- `hit.fine` uses `clamp()` without a fixed px floor (the minimum bound must be a literal `Npx` value, not a variable or formula)
 
-- hit targets do not preserve order inside a pointer profile:
-  - `fine.min > fine.base` (compare floors)
-  - `fine.base > fine.prominent` (compare floors)
-  - `coarse.min > coarse.base`
-  - `coarse.base > coarse.prominent`
-
-- any coarse-pointer hit token is smaller than the fine-pointer floor counterpart:
-  - `coarse.min < fine.min` (compare coarse fixed to fine clamp floor)
-  - `coarse.base < fine.base` (compare coarse fixed to fine clamp floor)
-  - `coarse.prominent < fine.prominent` (compare coarse fixed to fine clamp floor)
+- the coarse-pointer hit floor is smaller than the fine-pointer floor:
+  - `coarse < fine` (compare coarse fixed px to fine clamp floor)
 
 - `measure.reading` is not a bounded character-based measure
 
@@ -316,13 +303,13 @@ Semantic token names **never change across themes**.
 - `viewport.height.full` does not resolve to `core.sizing.viewport.height.full`
 - `viewport.width.full` does not resolve to `core.sizing.viewport.width.full`
 
-- any resolved `hit.*` value is below `24px`
+- a resolved `hit` value (fine or coarse) is below `24px`
 
 - adjacent `icon.*` tokens resolve to the same effective value
 
 - adjacent `identity.*` tokens resolve to the same effective value
 
-- all fine-pointer and coarse-pointer hit tokens resolve to the same values
+- the fine-pointer and coarse-pointer hit floors resolve to the same value
 
 - `measure.reading` and `surface.maxWidth` resolve to the same effective value
 
@@ -332,7 +319,7 @@ Semantic token names **never change across themes**.
 
 - Core sizing defines primitives plus the responsive ramps
 - Semantic sizing defines a small set of stable geometry contracts
-- `hit.*` is ergonomic, not visual
+- `hit` is ergonomic, not visual
 - `icon.*` and `identity.*` are visual, not interactive
 - `measure.reading` and `surface.maxWidth` solve different problems
 - Responsiveness lives in the core engine, not in components

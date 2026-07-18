@@ -25,7 +25,7 @@ import { Icon } from '../Icon';
 //   colors: `input.primary` (single neutral chrome — Selection carries no
 //   authorial Evaluation per ENTITY_EVALUATION),
 //   radii: `control`, border: `outline.control` + `selected`,
-//   sizing: `hit.base`, spacing: `inset.control`, typography: `label.md`,
+//   sizing: `hit`, spacing: `inset.control`, typography: `label.md`,
 //   motion: `feedback`, elevation: `flat`.
 //
 // Validation feedback is driven by React Aria's `isInvalid` (or `validate`
@@ -167,7 +167,7 @@ export const Select = <T extends object = object>({
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   gap: vars.spacing.gap.inline.sm,
-                  minHeight: vars.sizing.hit.base,
+                  minHeight: vars.sizing.hit,
                   paddingBlock: vars.spacing.inset.control.md,
                   paddingInline: vars.spacing.inset.control.md,
                   borderRadius: vars.radii.control,

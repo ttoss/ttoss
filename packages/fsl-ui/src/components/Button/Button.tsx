@@ -27,7 +27,8 @@ export const buttonMeta = {
  * Displays a semantic action trigger (entity: Action).
  *
  * Entity = Action → colors: `action`, radii: `control`, border: `outline.control`,
- * sizing: `hit.base`, spacing: `inset.control.md`, typography: `label.md`, motion: `feedback`.
+ * sizing: `hit` (ergonomic floor, drives height), spacing: `inset.control`
+ * (`sm` block / `lg` inline), typography: `label.md`, motion: `feedback`.
  */
 export interface ButtonProps extends Omit<RACButtonProps, 'style'> {
   /**
@@ -94,10 +95,10 @@ export const Button = ({
           borderRadius: vars.radii.control,
           borderWidth: vars.border.outline.control.width,
           borderStyle: vars.border.outline.control.style,
-          minHeight: vars.sizing.hit.base,
-          // Block padding is intentionally tight — `min-height: hit.base`
-          // already enforces the vertical hit target, so we let it drive
-          // height and use a wider inline inset for visual breathing
+          minHeight: vars.sizing.hit,
+          // Block padding is intentionally tight (`inset.control.sm`) so the
+          // rem-anchored `hit` floor binds and drives height (~32–36px on the
+          // desktop); a wider inline inset (`lg`) gives visual breathing
           // (matches MUI/Bootstrap/Tailwind ~1:3 vertical:horizontal ratio).
           paddingBlock: vars.spacing.inset.control.sm,
           paddingInline: vars.spacing.inset.control.lg,

@@ -77,6 +77,20 @@ props that accept only token keys** — `padding="md"` (spacing scale),
 compose any app layout; constrained enough that no arbitrary value can enter.
 The old `--fsl-*` host knobs (§7) remain for host-owned geometry on composites.
 
+### D1.5 — `hit` collapses to a single theme-defined floor (ADR-020)
+
+Refines D2's geometry. `sizing.hit` was a three-step ramp (`min`/`base`/
+`prominent`) but only `hit.base` was ever consumed (17 controls; `min`/
+`prominent` = 0 usages — dead). It collapses to **one value per pointer
+profile** (`hit.fine` / `hit.coarse`), the theme's single ergonomic floor. The
+oversized-button root cause was **not** `hit` but the generous
+`inset.control` block padding riding the fluid engine; the fix is a tight
+`inset.control` (`{core.spacing.1|2|4}`) so the `rem`-anchored `hit` floor
+binds and drives height (Button ~32–36px, was ~44–58px). Because `hit` is
+`rem`-based (not `cqi`), control _height_ is now non-fluid — satisfying
+ADR-019's "control geometry not container-fluid" for the vertical axis without
+a separate rem inset scale. **Done in WS-C.**
+
 ### D2 — Density is a theme projection axis, not a prop or a component
 
 Supersedes CONTRACT §4 "density = different component". A new axis
@@ -95,9 +109,13 @@ giving the desktop-compact lever the doctrine currently forbids.
 
   | token / density        | compact                    | comfortable (default)   | spacious                   |
   | ---------------------- | -------------------------- | ----------------------- | -------------------------- |
-  | `hit.base` floor       | `clamp(28px,1.75rem,32px)` | `clamp(32px,2rem,36px)` | `clamp(36px,2.25rem,44px)` |
+  | `hit` floor            | `clamp(28px,1.75rem,32px)` | `clamp(32px,2rem,36px)` | `clamp(36px,2.25rem,44px)` |
   | control `paddingBlock` | `{core.spacing.1}`         | `{core.spacing.2}`      | `{core.spacing.3}`         |
   | ⇒ resolved button ≈    | ~30px                      | ~34–36px                | ~40–44px                   |
+
+  (`comfortable` is shipped today via the single `hit` + tight `inset.control`
+  of D1.5/ADR-020; the `compact`/`spacious` remap columns are the pending
+  density-projection runtime.)
 
   This fixes the "~44px" default (comfortable ≈ 34–36px on desktop) and
   reconciles the sizing.md ⇄ baseTheme divergence in one pass.
@@ -108,10 +126,13 @@ Each item lands with the package DoD (meta/contract/a11y/behavior tests, 100%
 coverage, JSDoc, `llms.txt`/CONTRACT update) and, where architectural, an ADR.
 
 - **WS-C — Base geometry + density projection (fsl-theme). FOUNDATION.**
-  Reconcile `hit.fine.*` (doc ⇄ base); implement the `data-tt-density`
-  projection (mechanism + per-density remaps per §3 D2); re-tune control
-  geometry so `comfortable` is desktop-correct. Document the responsiveness
-  split (controls: `rem`+density; layout: `cqi`). Update `sizing.md`.
+  - ✅ **Done:** collapsed `hit` to a single theme-defined floor (D1.5 /
+    ADR-020); reconciled `hit.fine` (doc ⇄ base); re-tuned `inset.control` so
+    `comfortable` is desktop-correct (Button ~32–36px); documented the
+    responsiveness split (controls: `rem`; layout: `cqi`); updated `sizing.md`,
+    CONTRACT §4, `llms.txt`, tests.
+  - ⏳ **Remaining:** implement the `data-tt-density` projection runtime
+    (emitter block + provider + per-density remaps per §3 D2).
 - **WS-A — Presentational layer (fsl-ui).** `Box` (D1), `Grid` (2D),
   `Container`; complete `Text`/`Heading` (`weight`, eyebrow/label treatment);
   keep `Stack`/`Surface`. All token-constrained, no raw values.

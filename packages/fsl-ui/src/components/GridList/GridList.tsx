@@ -65,7 +65,7 @@ const buildRowStyle = ({
     display: 'flex',
     alignItems: 'center',
     gap: vars.spacing.gap.inline.sm,
-    minHeight: vars.sizing.hit.base,
+    minHeight: vars.sizing.hit,
     paddingBlock: vars.spacing.inset.control.sm,
     paddingInline: vars.spacing.inset.control.md,
     borderRadius: vars.radii.control,
