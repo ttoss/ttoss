@@ -82,6 +82,23 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       return <pkg.Button>x</pkg.Button>;
     },
   },
+  Container: {
+    scope: 'container',
+    element: () => {
+      return <pkg.Container>content</pkg.Container>;
+    },
+  },
+  Grid: {
+    scope: 'grid',
+    element: () => {
+      return (
+        <pkg.Grid columns={2}>
+          <span>a</span>
+          <span>b</span>
+        </pkg.Grid>
+      );
+    },
+  },
   Checkbox: {
     scope: 'checkbox',
     element: () => {

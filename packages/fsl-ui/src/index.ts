@@ -32,11 +32,19 @@ export {
   CheckboxGroup,
   checkboxGroupMeta,
 } from './components/CheckboxGroup/CheckboxGroup';
+export type {
+  ContainerGutter,
+  ContainerProps,
+  ContainerSize,
+} from './components/Container/Container';
+export { Container, containerMeta } from './components/Container/Container';
 export type { FileTriggerProps } from './components/FileTrigger/FileTrigger';
 export {
   FileTrigger,
   fileTriggerMeta,
 } from './components/FileTrigger/FileTrigger';
+export type { GridAlign, GridGap, GridProps } from './components/Grid/Grid';
+export { Grid, gridMeta } from './components/Grid/Grid';
 export type {
   GridListItemProps,
   GridListProps,
