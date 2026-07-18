@@ -1,3 +1,5 @@
+import { Grid, Stack, Surface, Text } from '@ttoss/fsl-ui';
+
 import { EXAMPLE_PAGES } from './components/examplePages';
 
 /**
@@ -7,19 +9,24 @@ import { EXAMPLE_PAGES } from './components/examplePages';
  */
 export const PageGrid = () => {
   return (
-    <div className="stage-grid">
+    <Grid minColumnWidth="sm" gap="sm">
       {EXAMPLE_PAGES.map((page) => {
         return (
-          <section
+          <Surface
             key={page.id}
-            className="stage-grid-cell"
+            level="flat"
+            padding="md"
             aria-label={page.label}
           >
-            <h3 className="stage-grid-title">{page.label}</h3>
-            {page.render()}
-          </section>
+            <Stack gap="sm">
+              <Text as="span" variant="label-sm" tone="muted">
+                {page.label}
+              </Text>
+              {page.render()}
+            </Stack>
+          </Surface>
         );
       })}
-    </div>
+    </Grid>
   );
 };

@@ -1,5 +1,5 @@
 import { getThemeStylesContent } from '@ttoss/fsl-theme/css';
-import { Surface } from '@ttoss/fsl-ui';
+import { Stack, Surface, Text } from '@ttoss/fsl-ui';
 import * as React from 'react';
 
 import { STAGE_THEME_ID } from '../theme';
@@ -50,8 +50,12 @@ export const Stage = ({
           data-testid="stage-pane-light"
         >
           <Surface level="raised" padding="lg">
-            <span className="stage-pane-label">Light</span>
-            {renderSubject()}
+            <Stack gap="sm">
+              <Text as="span" variant="label-sm" tone="muted">
+                Light
+              </Text>
+              {renderSubject()}
+            </Stack>
           </Surface>
         </div>
         <div
@@ -61,8 +65,12 @@ export const Stage = ({
           data-testid="stage-pane-dark"
         >
           <Surface level="raised" padding="lg">
-            <span className="stage-pane-label">Dark</span>
-            {renderSubject()}
+            <Stack gap="sm">
+              <Text as="span" variant="label-sm" tone="muted">
+                Dark
+              </Text>
+              {renderSubject()}
+            </Stack>
           </Surface>
         </div>
       </div>

@@ -43,7 +43,12 @@ export {
   FileTrigger,
   fileTriggerMeta,
 } from './components/FileTrigger/FileTrigger';
-export type { GridAlign, GridGap, GridProps } from './components/Grid/Grid';
+export type {
+  GridAlign,
+  GridGap,
+  GridMinColumnWidth,
+  GridProps,
+} from './components/Grid/Grid';
 export { Grid, gridMeta } from './components/Grid/Grid';
 export type {
   GridListItemProps,

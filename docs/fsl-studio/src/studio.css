@@ -96,27 +96,8 @@ body {
   display: contents;
 }
 
-.stage-pane-label {
-  display: block;
-  margin-block-end: var(--tt-spacing-4, 1rem);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--tt-colors-informational-muted-text-default);
-}
-
-.stage-sample {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-4, 1rem);
-}
-
-.stage-sample-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--tt-spacing-3, 0.75rem);
-}
+/* Stage pane labels + sample/grid content are composed with primitives
+ * (Stack/Grid/Surface/Text). */
 
 @media (max-width: 60rem) {
   .studio-body {
@@ -649,30 +630,7 @@ body {
   padding-block-end: var(--tt-spacing-3, 0.75rem);
 }
 
-.stage-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-  gap: var(--tt-spacing-4, 1rem);
-}
-
-.stage-grid-cell {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-3, 0.75rem);
-  padding: var(--tt-spacing-4, 1rem);
-  border: 1px solid var(--tt-colors-informational-muted-border-default, #e5e5e5);
-  border-radius: var(--tt-radii-surface, 0.5rem);
-  min-inline-size: 0;
-}
-
-.stage-grid-title {
-  margin: 0;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--tt-colors-informational-muted-text-default);
-}
+/* Stage grid (altitude) is composed with Grid/Surface/Stack/Text. */
 
 /* -- Command palette (PRD F1.5) -------------------------------------------- */
 

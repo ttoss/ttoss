@@ -27,12 +27,29 @@ export type GridGap = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 /** Track (item) alignment along an axis. */
 export type GridAlign = 'start' | 'center' | 'end' | 'stretch';
 
+/**
+ * Minimum column width for a responsive auto-fit grid. A small named
+ * threshold scale (like a breakpoint), not a per-use length — the grid fits as
+ * many equal columns as the container allows, each at least this wide, and
+ * reflows the count automatically.
+ */
+export type GridMinColumnWidth = 'xs' | 'sm' | 'md' | 'lg';
+
 const GAP: Record<GridGap, string> = {
   xs: vars.spacing.gap.stack.xs,
   sm: vars.spacing.gap.stack.sm,
   md: vars.spacing.gap.stack.md,
   lg: vars.spacing.gap.stack.lg,
   xl: vars.spacing.gap.stack.xl,
+};
+
+// Card-width thresholds for auto-fit. Fixed rem thresholds (a named layout
+// scale, like breakpoints) — not arbitrary per-use lengths.
+const MIN_COLUMN_WIDTH: Record<GridMinColumnWidth, string> = {
+  xs: '12rem',
+  sm: '16rem',
+  md: '20rem',
+  lg: '24rem',
 };
 
 const ALIGN: Record<GridAlign, string> = {
@@ -47,6 +64,11 @@ const tracks = (count: number): string => {
   return `repeat(${count}, minmax(0, 1fr))`;
 };
 
+/** Responsive auto-fit template — as many ≥`min`-wide columns as fit. */
+const autoTracks = (min: GridMinColumnWidth): string => {
+  return `repeat(auto-fit, minmax(min(100%, ${MIN_COLUMN_WIDTH[min]}), 1fr))`;
+};
+
 /** Props for the Grid component. */
 export interface GridProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
@@ -55,9 +77,17 @@ export interface GridProps extends Omit<
   /**
    * Number of equal-fraction columns (`repeat(N, minmax(0, 1fr))`). A
    * structural integer, not a length — there is no raw track template.
+   * Ignored when `minColumnWidth` is set (responsive auto-fit takes over).
    * @default 1
    */
   columns?: number;
+  /**
+   * Make the grid **responsive**: fit as many equal columns as the container
+   * allows, each at least this wide, reflowing the count automatically
+   * (`repeat(auto-fit, minmax(…, 1fr))`). Takes a named threshold, not a
+   * length. When set, it overrides `columns`.
+   */
+  minColumnWidth?: GridMinColumnWidth;
   /**
    * Number of equal-fraction rows. Omit to let rows size to content (the
    * common case); set it only for explicit row grids.
@@ -88,15 +118,15 @@ export interface GridProps extends Omit<
  *
  * @example
  * ```tsx
- * <Grid columns={3} gap="lg">
- *   <Surface>Card A</Surface>
- *   <Surface>Card B</Surface>
- *   <Surface>Card C</Surface>
- * </Grid>
+ * // Fixed columns
+ * <Grid columns={3} gap="lg">…</Grid>
+ * // Responsive: as many ≥16rem columns as fit, reflowing automatically
+ * <Grid minColumnWidth="sm" gap="lg">…</Grid>
  * ```
  */
 export const Grid = ({
   columns = 1,
+  minColumnWidth,
   rows,
   gap = 'md',
   align = 'stretch',
@@ -104,17 +134,20 @@ export const Grid = ({
   children,
   ...props
 }: GridProps) => {
+  const templateColumns =
+    minColumnWidth === undefined ? tracks(columns) : autoTracks(minColumnWidth);
+
   return (
     <div
       {...props}
       data-scope="grid"
       data-part="root"
-      data-columns={columns}
+      data-columns={minColumnWidth === undefined ? columns : 'auto'}
       data-gap={gap}
       style={
         {
           display: 'grid',
-          gridTemplateColumns: tracks(columns),
+          gridTemplateColumns: templateColumns,
           gridTemplateRows: rows === undefined ? undefined : tracks(rows),
           gap: GAP[gap],
           alignItems: ALIGN[align],

@@ -6,7 +6,12 @@
  */
 import { render } from '@testing-library/react';
 import { vars } from '@ttoss/fsl-theme/vars';
-import { Grid, type GridAlign, type GridGap } from 'src/index';
+import {
+  Grid,
+  type GridAlign,
+  type GridGap,
+  type GridMinColumnWidth,
+} from 'src/index';
 
 const root = () => {
   return document.querySelector<HTMLElement>(
@@ -44,6 +49,28 @@ describe('Grid', () => {
   test('rows builds explicit row tracks', () => {
     render(<Grid rows={2} />);
     expect(root()?.style.gridTemplateRows).toBe('repeat(2, minmax(0, 1fr))');
+  });
+
+  test.each<[GridMinColumnWidth, string]>([
+    ['xs', '12rem'],
+    ['sm', '16rem'],
+    ['md', '20rem'],
+    ['lg', '24rem'],
+  ])('minColumnWidth=%s builds a responsive auto-fit track', (min, width) => {
+    render(<Grid minColumnWidth={min} />);
+    const el = root();
+    expect(el?.style.gridTemplateColumns).toBe(
+      `repeat(auto-fit, minmax(min(100%, ${width}), 1fr))`
+    );
+    // Auto-fit reports 'auto' rather than a fixed count.
+    expect(el).toHaveAttribute('data-columns', 'auto');
+  });
+
+  test('minColumnWidth overrides a fixed columns count', () => {
+    render(<Grid columns={4} minColumnWidth="sm" />);
+    expect(root()?.style.gridTemplateColumns).toBe(
+      'repeat(auto-fit, minmax(min(100%, 16rem), 1fr))'
+    );
   });
 
   test.each<[GridGap]>([['xs'], ['sm'], ['md'], ['lg'], ['xl']])(
