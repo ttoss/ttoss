@@ -161,6 +161,17 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       return <pkg.Separator />;
     },
   },
+  Stack: {
+    scope: 'stack',
+    element: () => {
+      return (
+        <pkg.Stack>
+          <span>a</span>
+          <span>b</span>
+        </pkg.Stack>
+      );
+    },
+  },
   Surface: {
     scope: 'surface',
     element: () => {

@@ -89,7 +89,10 @@ Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              Heading (h1-h6 bound to the type scale: level=1..6 sets the
              element, size overrides the visual step — never a raw font-size),
              Text (body/label copy: variant=body|label-lg|md|sm, tone=muted for
-             secondary hierarchy, as=p|span|div — never a raw font-size)
+             secondary hierarchy, as=p|span|div — never a raw font-size),
+             Stack (layout rhythm: direction=vertical|horizontal picks the
+             gap.stack|gap.inline family, gap=xs..xl, align, justify, wrap —
+             never a raw gap; use instead of a hand-rolled flex div)
 
 Icons: INTERNAL only (not exported). Components render glyphs through an
 internal semantic Icon layer (`src/components/Icon/`) that maps `icon.{family}.{intent}`

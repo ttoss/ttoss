@@ -91,6 +91,14 @@ export { Separator, separatorMeta } from './components/Separator/Separator';
 export type { SliderProps } from './components/Slider/Slider';
 export { Slider, sliderMeta } from './components/Slider/Slider';
 export type {
+  StackAlign,
+  StackDirection,
+  StackGap,
+  StackJustify,
+  StackProps,
+} from './components/Stack/Stack';
+export { Stack, stackMeta } from './components/Stack/Stack';
+export type {
   SurfaceLevel,
   SurfacePadding,
   SurfaceProps,
