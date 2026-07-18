@@ -1,3 +1,5 @@
+import { Container, Grid, Heading, Stack, Text } from '@ttoss/fsl-ui';
+
 import { type Lens } from './lenses';
 import { listDrafts } from './session/drafts';
 
@@ -43,64 +45,89 @@ export const Home = ({
 
   return (
     <main className="home">
-      <h1 className="home-brand">FSL Studio</h1>
-      <p className="home-question">What do you want to do?</p>
-      <div className="home-tasks">
-        {TASKS.map((task) => {
-          return (
-            <button
-              key={task.lens}
-              type="button"
-              className="home-task"
-              onClick={() => {
-                return onStartTask(task.lens);
-              }}
-            >
-              <span className="home-task-title">{task.title}</span>
-              <span className="home-task-description">{task.description}</span>
-            </button>
-          );
-        })}
-      </div>
+      <Stack gap="md" align="center">
+        <Heading level={1} size="headline-md" align="center">
+          FSL Studio
+        </Heading>
+        <Text variant="body-lg" tone="muted" align="center">
+          What do you want to do?
+        </Text>
+      </Stack>
+
+      <Container size="surface" gutter="none">
+        <Grid columns={3} gap="sm">
+          {TASKS.map((task) => {
+            return (
+              <button
+                key={task.lens}
+                type="button"
+                className="home-task"
+                onClick={() => {
+                  return onStartTask(task.lens);
+                }}
+              >
+                <Stack gap="xs">
+                  <Text as="span" variant="label-lg">
+                    {task.title}
+                  </Text>
+                  <Text as="span" variant="body-sm" tone="muted">
+                    {task.description}
+                  </Text>
+                </Stack>
+              </button>
+            );
+          })}
+        </Grid>
+      </Container>
 
       {drafts.length > 0 ? (
-        <section className="home-drafts" aria-label="Drafts">
-          <h2 className="home-drafts-title">Continue</h2>
-          <ul className="home-drafts-list">
-            {drafts.map((draft) => {
-              const edits = Object.keys(draft.snapshot.theme.overrides).length;
-              return (
-                <li key={draft.id} className="home-draft-row">
-                  <button
-                    type="button"
-                    className="home-draft-open"
-                    onClick={() => {
-                      return onOpenDraft(draft.id);
-                    }}
-                  >
-                    {draft.snapshot.theme.preset} · {edits} edit
-                    {edits === 1 ? '' : 's'} ·{' '}
-                    {new Date(draft.updatedAt).toLocaleString()}
-                  </button>
-                  <button
-                    type="button"
-                    className="home-draft-delete"
-                    aria-label={`Delete draft ${draft.id}`}
-                    onClick={() => {
-                      return onDeleteDraft(draft.id);
-                    }}
-                  >
-                    Delete
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-          <p className="theme-hint">
-            Drafts autosave locally in this browser. The same draft open in two
-            tabs saves last-write-wins.
-          </p>
-        </section>
+        <Container size="surface" gutter="none">
+          <section aria-label="Drafts">
+            <Stack gap="sm">
+              <Heading level={2} size="title-sm">
+                Continue
+              </Heading>
+              <ul className="home-drafts-list">
+                {drafts.map((draft) => {
+                  const edits = Object.keys(
+                    draft.snapshot.theme.overrides
+                  ).length;
+                  return (
+                    <li key={draft.id}>
+                      <Stack direction="horizontal" gap="sm" align="center">
+                        <button
+                          type="button"
+                          className="home-draft-open"
+                          onClick={() => {
+                            return onOpenDraft(draft.id);
+                          }}
+                        >
+                          {draft.snapshot.theme.preset} · {edits} edit
+                          {edits === 1 ? '' : 's'} ·{' '}
+                          {new Date(draft.updatedAt).toLocaleString()}
+                        </button>
+                        <button
+                          type="button"
+                          className="home-draft-delete"
+                          aria-label={`Delete draft ${draft.id}`}
+                          onClick={() => {
+                            return onDeleteDraft(draft.id);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </Stack>
+                    </li>
+                  );
+                })}
+              </ul>
+              <Text variant="body-sm" tone="muted">
+                Drafts autosave locally in this browser. The same draft open in
+                two tabs saves last-write-wins.
+              </Text>
+            </Stack>
+          </section>
+        </Container>
       ) : null}
     </main>
   );

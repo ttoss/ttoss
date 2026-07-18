@@ -581,78 +581,37 @@ body {
 
 /* -- Task-first home (PRD §6.2) ------------------------------------------- */
 
+/* Home layout/text is composed with primitives (Stack/Grid/Container/
+ * Heading/Text). Only the viewport shell and the two bespoke clickable
+ * widgets (task card, draft buttons) keep hand CSS — no primitive covers a
+ * clickable card. */
 .home {
   min-block-size: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--tt-spacing-6, 1.5rem);
-  padding: var(--tt-spacing-8, 2rem);
-  background: var(--tt-colors-informational-primary-background-default, #fff);
-  color: var(--tt-colors-informational-primary-text-default, #111);
-}
-
-.home-brand {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0;
-}
-
-.home-question {
-  font-size: 1.125rem;
-  margin: 0;
-  color: var(--tt-colors-informational-muted-text-default);
-}
-
-.home-tasks {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  gap: var(--tt-spacing-4, 1rem);
-  inline-size: min(56rem, 100%);
+  gap: var(--tt-core-spacing-6);
+  padding: var(--tt-core-spacing-8);
+  background: var(--tt-colors-informational-primary-background-default);
+  color: var(--tt-colors-informational-primary-text-default);
 }
 
 .home-task {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-2, 0.5rem);
+  display: block;
   text-align: start;
-  padding: var(--tt-spacing-5, 1.25rem);
+  padding: var(--tt-core-spacing-5);
   font: inherit;
   color: inherit;
   cursor: pointer;
-  background: var(--tt-colors-informational-primary-background-default, #fff);
-  border: 1px solid var(--tt-colors-informational-primary-border-default, #ddd);
-  border-radius: var(--tt-radii-surface, 0.5rem);
+  background: var(--tt-colors-informational-primary-background-default);
+  border: 1px solid var(--tt-colors-informational-primary-border-default);
+  border-radius: var(--tt-radii-surface);
+  block-size: 100%;
 }
 
 .home-task:hover {
-  border-color: var(--tt-colors-action-accent-background-default, #0469e3);
-}
-
-.home-task-title {
-  font-weight: 600;
-}
-
-.home-task-description {
-  font-size: 0.875rem;
-  color: var(--tt-colors-informational-muted-text-default);
-}
-
-.home-drafts {
-  inline-size: min(56rem, 100%);
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-2, 0.5rem);
-}
-
-.home-drafts-title {
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin: 0;
-  color: var(--tt-colors-informational-muted-text-default);
+  border-color: var(--tt-colors-action-accent-background-default);
 }
 
 .home-drafts-list {
@@ -661,13 +620,7 @@ body {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--tt-spacing-1, 0.25rem);
-}
-
-.home-draft-row {
-  display: flex;
-  align-items: center;
-  gap: var(--tt-spacing-2, 0.5rem);
+  gap: var(--tt-core-spacing-1);
 }
 
 .home-draft-open,
@@ -677,10 +630,10 @@ body {
   color: inherit;
   cursor: pointer;
   background: none;
-  border: 1px solid var(--tt-colors-informational-primary-border-default, #ddd);
-  border-radius: var(--tt-radii-control, 0.25rem);
-  padding-block: var(--tt-spacing-1, 0.25rem);
-  padding-inline: var(--tt-spacing-3, 0.75rem);
+  border: 1px solid var(--tt-colors-informational-primary-border-default);
+  border-radius: var(--tt-radii-control);
+  padding-block: var(--tt-core-spacing-1);
+  padding-inline: var(--tt-core-spacing-3);
 }
 
 .home-draft-open {
