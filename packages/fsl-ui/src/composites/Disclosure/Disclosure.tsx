@@ -290,23 +290,32 @@ export const DisclosurePanel = ({
   const { evaluation } = disclosureScope.use(disclosurePanelMeta.displayName);
   const c = vars.colors.navigation[evaluation];
 
+  // React Aria collapses the panel with `hidden="until-found"`, which sets
+  // `content-visibility: hidden`: the panel's *contents* are skipped but the
+  // element's own box (padding included) still lays out. Padding therefore
+  // lives on an inner wrapper — skipped along with the content when collapsed —
+  // so a collapsed panel occupies zero height instead of leaking its inset.
   return (
     <RACDisclosurePanel
       {...props}
       data-scope="disclosure"
       data-part="content"
-      style={
-        {
-          boxSizing: 'border-box',
-          paddingBlock: vars.spacing.inset.control.md,
-          paddingInline: vars.spacing.inset.control.md,
-          backgroundColor: c?.background?.default,
-          color: c?.text?.default,
-          ...(vars.text.body.md as React.CSSProperties),
-        } as React.CSSProperties
-      }
+      style={{ boxSizing: 'border-box' } as React.CSSProperties}
     >
-      {children}
+      <div
+        style={
+          {
+            boxSizing: 'border-box',
+            paddingBlock: vars.spacing.inset.control.md,
+            paddingInline: vars.spacing.inset.control.md,
+            backgroundColor: c?.background?.default,
+            color: c?.text?.default,
+            ...(vars.text.body.md as React.CSSProperties),
+          } as React.CSSProperties
+        }
+      >
+        {children}
+      </div>
     </RACDisclosurePanel>
   );
 };
