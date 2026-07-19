@@ -28,45 +28,48 @@ const TokenRow = ({ leaf, display }: { leaf: TokenLeaf; display: string }) => {
   const broken = store.brokenRefs.includes(leaf.path);
 
   return (
-    <Stack direction="horizontal" gap="sm" align="center">
-      <Box grow>
-        <Text as="span" variant="label-sm" tone="muted">
-          {display}
-        </Text>
-      </Box>
-      <Box grow>
-        <input
-          type="text"
-          className="token-row-input"
-          aria-label={leaf.path}
-          aria-invalid={broken || undefined}
-          value={override ?? leaf.raw}
-          onChange={(event) => {
-            return store.setToken(leaf.path, event.target.value);
-          }}
-        />
-      </Box>
-      {broken ? (
-        <span
-          className="token-broken-badge"
-          role="img"
-          aria-label="Broken reference"
-        >
-          ⚠
-        </span>
-      ) : null}
-      {isOverridden ? (
-        <button
-          type="button"
-          className="theme-revert"
-          aria-label={`Revert ${leaf.path}`}
-          onClick={() => {
-            return store.revertToken(leaf.path);
-          }}
-        >
-          Revert
-        </button>
-      ) : null}
+    // Label above the field: in the narrow, deeply-nested token tree a
+    // token path and its value both need the full column width — sharing one
+    // row collapses both to an unreadable sliver. Stacking scales to any depth.
+    <Stack gap="xs">
+      <Text as="span" variant="label-sm" tone="muted">
+        {display}
+      </Text>
+      <Stack direction="horizontal" gap="sm" align="center">
+        <Box grow>
+          <input
+            type="text"
+            className="token-row-input"
+            aria-label={leaf.path}
+            aria-invalid={broken || undefined}
+            value={override ?? leaf.raw}
+            onChange={(event) => {
+              return store.setToken(leaf.path, event.target.value);
+            }}
+          />
+        </Box>
+        {broken ? (
+          <span
+            className="token-broken-badge"
+            role="img"
+            aria-label="Broken reference"
+          >
+            ⚠
+          </span>
+        ) : null}
+        {isOverridden ? (
+          <button
+            type="button"
+            className="theme-revert"
+            aria-label={`Revert ${leaf.path}`}
+            onClick={() => {
+              return store.revertToken(leaf.path);
+            }}
+          >
+            Revert
+          </button>
+        ) : null}
+      </Stack>
     </Stack>
   );
 };

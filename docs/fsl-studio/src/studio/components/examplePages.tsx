@@ -131,7 +131,7 @@ const DashboardPage = () => {
       </TabList>
       <TabPanel id="usage">
         <Stack gap="sm">
-          <Grid columns={3} gap="sm">
+          <Grid minColumnWidth="xs" gap="sm">
             <Meter aria-label="Storage" label="Storage" value={72} />
             <Meter
               aria-label="Bandwidth"
