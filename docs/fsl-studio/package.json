@@ -1,6 +1,6 @@
 {
   "name": "@docs/fsl-studio",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "description": "FSL Studio — the operational surface of the FSL design system: theme lab, component lab, and AI-assisted composition on top of @ttoss/fsl-ui and @ttoss/fsl-theme.",
   "repository": {
