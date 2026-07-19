@@ -41,8 +41,6 @@ export {
 } from './components/CheckboxGroup/CheckboxGroup';
 export type { CodeProps, CodeSize } from './components/Code/Code';
 export { Code, codeMeta } from './components/Code/Code';
-export type { ColorFieldProps } from './components/ColorField/ColorField';
-export { ColorField, colorFieldMeta } from './components/ColorField/ColorField';
 export type {
   ContainerGutter,
   ContainerProps,

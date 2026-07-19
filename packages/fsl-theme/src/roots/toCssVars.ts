@@ -1,5 +1,4 @@
 import type { ThemeBundle, ThemeTokens } from '../Types';
-import { buildDensityBlocks, buildDensityVars } from './density';
 import {
   COMPOUND_REF_RE,
   deepMerge,
@@ -95,10 +94,6 @@ const buildCssVars = (theme: ThemeTokens): Record<string, string | number> => {
 
   const { core: coreFlat, semantic: semanticFlat } = flattenTheme(theme);
   for (const [path, value] of Object.entries(coreFlat)) {
-    // `core.density.*` is projection config (consumed by buildDensityVars to
-    // emit `[data-tt-density]` blocks), not a token to emit as its own var —
-    // and its `{ref}` values would otherwise leak unresolved into core output.
-    if (path.startsWith('core.density.')) continue;
     vars[toCssVarName(path)] = value;
   }
 
@@ -402,7 +397,6 @@ const toCssVarsBase = (
   const coarseHitVars = buildCoarseHitVars(theme);
   const reducedMotionVars = buildReducedMotionVars(theme);
   const containerQueryVars = extractContainerQueryVars(cssVars);
-  const densityVars = buildDensityVars(theme);
   const selector = buildSelector(options);
   const { colorScheme, mode } = options;
   const effectiveColorScheme = colorScheme ?? mode;
@@ -414,7 +408,7 @@ const toCssVarsBase = (
     containerQueryVars,
     selector,
     toCssString: () => {
-      const block = buildCssBlock({
+      return buildCssBlock({
         selector,
         vars: cssVars,
         containerQueryVars,
@@ -422,9 +416,6 @@ const toCssVarsBase = (
         reducedMotionVars,
         colorScheme: effectiveColorScheme,
       });
-      // Density is a mode-independent, theme-level projection — emit its
-      // `[data-tt-density]` blocks once, scoped to the base selector.
-      return `${block}\n\n${buildDensityBlocks(selector, densityVars)}`;
     },
   };
 };

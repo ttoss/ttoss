@@ -85,8 +85,19 @@
   padding-inline: var(--tt-core-spacing-2);
 }
 
-/* Colour swatch rows are now the fsl-ui `ColorField`; the token value rows are
- * `Stack` + `Box grow` + a native input. */
+/* Core colour scales: a native swatch + hex text field per step, laid out with
+ * `Stack` + `Box grow`. The swatch is app-specific chrome (a token editor
+ * concern), so it lives here rather than in fsl-ui. */
+.token-color-swatch {
+  inline-size: var(--tt-sizing-hit, 2rem);
+  block-size: var(--tt-sizing-hit, 2rem);
+  flex: none;
+  padding: 0;
+  border: 1px solid var(--tt-colors-input-primary-border-default, #ccc);
+  border-radius: var(--tt-radii-control, 0.25rem);
+  background: none;
+  cursor: pointer;
+}
 
 .theme-revert {
   font-size: 0.75rem;

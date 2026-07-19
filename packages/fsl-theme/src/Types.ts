@@ -53,7 +53,6 @@ import type {
   CoreBorder,
   CoreBreakpoints,
   CoreColors,
-  CoreDensity,
   CoreElevation,
   CoreFont,
   CoreMotion,
@@ -111,8 +110,6 @@ export interface ThemeTokens {
     font: CoreFont;
     spacing: CoreSpacingSteps;
     sizing: CoreSizing;
-    /** Per-density control-inset remaps (ADR-019). Projected via `data-tt-density`. */
-    density: CoreDensity;
     radii: CoreRadii;
     border: CoreBorder;
     opacity: CoreOpacity;

@@ -100,14 +100,6 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       return <pkg.Code>npm i</pkg.Code>;
     },
   },
-  ColorField: {
-    scope: 'color-field',
-    element: () => {
-      return (
-        <pkg.ColorField label="Brand" value="#0469e3" onChange={() => {}} />
-      );
-    },
-  },
   Container: {
     scope: 'container',
     element: () => {

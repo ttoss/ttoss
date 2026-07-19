@@ -96,6 +96,15 @@ a separate rem inset scale. **Done in WS-C.**
 
 ### D2 — Density is a theme projection axis, not a prop or a component
 
+> **Reverted (2026-07-19).** The density projection shipped with **zero real
+> consumers** — the Studio, the only proving ground, never used it. Per the
+> evidence rule it was removed (fsl-theme ADR-019 reverted; `core.density`,
+> `roots/density.ts`, the `[data-tt-density]` emitter blocks, and
+> `DensityProvider`/`useDensity` deleted). CONTRACT §4 "density = a different
+> component" is therefore **not** superseded — it stands as written. The rest of
+> this section is kept as the historical record of the attempt. `hit`'s collapse
+> to a single floor (D1.5 / ADR-020) is independent and stays.
+
 Supersedes CONTRACT §4 "density = different component". A new axis
 `data-tt-density ∈ {compact, comfortable, spacious}` (default `comfortable`),
 set once via a provider exactly like color-mode. It is a **fsl-theme** feature:
@@ -134,23 +143,22 @@ coverage, JSDoc, `llms.txt`/CONTRACT update) and, where architectural, an ADR.
     `comfortable` is desktop-correct (Button ~32–36px); documented the
     responsiveness split (controls: `rem`; layout: `cqi`); updated `sizing.md`,
     CONTRACT §4, `llms.txt`, tests.
-  - ✅ **Done:** implemented the `data-tt-density` projection — `core.density`
-    remaps + emitter `[data-tt-density]` blocks + `DensityProvider`/`useDensity`
-    (`@ttoss/fsl-theme/react`). Scoped to `spacing.inset.control.*` only, since
-    ADR-020 made `hit` a single floor (density must not touch the a11y floor).
+  - ↩️ **Reverted (2026-07-19):** the `data-tt-density` projection was
+    implemented but shipped with no consumer, so it was removed (fsl-theme
+    ADR-019 reverted). `hit`'s single-floor collapse (above) is unaffected.
 - **WS-A — Presentational layer (fsl-ui). ✅ DONE.** `Box` (D1 / ADR-009),
   `Grid` (2D), `Container`; `Text`/`Heading` gained `align` + tabular `numeric`
   (a free `weight` prop was rejected — weight belongs to the type step;
   uppercase eyebrows read as `label-sm`/`muted`). `Stack`/`Surface` kept. All
   token-constrained, no raw values, 100% coverage.
-- **WS-B — Control density adoption (fsl-ui). ✅ DONE.** No per-control wiring
-  needed — the projection design means every control that reads
-  `spacing.inset.control.*` inherits density for free (verified in the Studio:
-  `data-tt-density` remaps the inset vars, controls follow). `DensityProvider`
-  is exported from `@ttoss/fsl-theme/react`.
+- **WS-B — Control density adoption (fsl-ui). ↩️ REVERTED with WS-C.** The
+  projection needed no per-control wiring, but it was removed for lack of a
+  consumer (see D2). Nothing in fsl-ui changed as a result — controls read
+  `spacing.inset.control.*` directly.
 - **WS-D — Doctrine ADRs + docs. ✅ DONE.** Ratified D1 as fsl-ui ADR-009
-  (Box/presentational layer) and density under ADR-019/020; revised CONTRACT
-  §4/§7, `sizing.md`, `llms.txt`.
+  (Box/presentational layer); ratified the `hit` collapse as ADR-020. The
+  density ADR-019 was later reverted (see D2). Revised CONTRACT §4/§7,
+  `sizing.md`, `llms.txt`.
 - **WS-E — Rebuild the Studio on the finished layer (proof). ✅ DONE.** Every
   panel — Home, Stage/StageSample/PageGrid, Theme navigator/inspector/export,
   Component navigator/inspector/stage — now composes with the primitives

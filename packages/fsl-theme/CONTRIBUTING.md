@@ -537,8 +537,18 @@ Re-litigation answers:
 
 ### ADR-019: Density is a theme projection; control geometry is not container-fluid
 
-Status: accepted (2026-07-18)
-Tags: sizing, spacing, density, responsiveness, geometry, governance
+Status: **reverted (2026-07-19)** — the density projection shipped with **zero
+real consumers**. Per the evidence rule (a token/axis is admitted only when a
+runtime consumer dispatches on it), a whole third projection axis — `core.density`,
+`roots/density.ts`, the `[data-tt-density]` emitter blocks, and
+`DensityProvider`/`useDensity` — was speculative surface area. It was removed:
+the only thing that ever exercised it was the Studio, and the Studio does not use
+it. **Scope of the reversal:** only the _density axis_ is gone. ADR-019's other
+ruling — **control geometry is not container-fluid** — stands, now carried
+entirely by ADR-020 (`hit` is `rem`-anchored, so control height never rides `cqi`).
+Reintroduce density only when a real app demands a switchable-density surface.
+Originally: accepted (2026-07-18).
+Tags: sizing, spacing, density, responsiveness, geometry, governance, reverted
 
 Decision: introduce **density** (`compact | comfortable | spacious`, default `comfortable`) as a theme **projection axis** — a `data-tt-density` attribute that remaps the semantic geometry tokens (`sizing.hit.*`, `spacing.inset.control.*`, control type step) to different core steps, exactly as `data-tt-mode` remaps colour. Components are unchanged (they already read the semantic tokens). Two coupled geometry rulings: (1) **control geometry does not use the container-fluid engine** — `spacing.inset.control.*` must resolve from a non-`cqi` scale (rem-anchored), because a control must not grow taller because the window is wider; container-fluidity (`cqi`) stays for _layout_ spacing/sizing only. (2) **hit is a floor, not the visual size** (sizing.md): the visible control height comes from control inset + type; `hit.*` only guarantees the ergonomic minimum.
 Rejected: a `size` prop on controls (arbitrary, breaks "no size" doctrine and meaning-first); a component-per-density (explosion — the Studio proved it does not scale, it hand-rolled 38 control selectors); making control insets `cqi`-fluid (the current state — a Button resolves to ~44px on a wide surface because `inset.control.sm = {core.spacing.3}` rides the fluid engine).
@@ -550,7 +560,7 @@ Re-litigation answers:
 - "Does density violate 'no size prop / density = a different component' (CONTRACT §4)?" → no — density is not a per-component prop, it is a theme projection (like mode); meaning is defined once and survives the projection. §4 is revised, not broken: authors still never pass a size; the theme owns the geometry.
 - "Why can't controls be `cqi`-fluid like spacing?" → ergonomics. A hit target growing with container width is a usability regression; controls adapt to _user font_ (`rem`) and _density_, layout adapts to _container_ (`cqi`).
 - "Is coarse still safe under `compact`?" → yes — `@media (any-pointer: coarse)` forces the touch floor irrespective of density; density only tunes fine-pointer geometry.
-- "How is density scoped, given ADR-020 made `hit` a single value?" → **implemented (2026-07-18) scoped to `spacing.inset.control.*` only.** ADR-020 collapsed `hit` to one ergonomic floor, so density can no longer remap `hit` into per-density values (that would contradict ADR-020 and risk the coarse a11y floor). The emitter emits `[data-tt-density="compact|comfortable|spacious"]` blocks overriding only control inset; `DensityProvider`/`useDensity` (`@ttoss/fsl-theme/react`) set the axis. `comfortable` is the base (also emitted, so a nested `comfortable` resets a denser ancestor).
+- "How is density scoped, given ADR-020 made `hit` a single value?" → moot — the density axis was **reverted (2026-07-19, see ADR-019)** for lack of a real consumer. ADR-020's `hit` collapse stands on its own; there is no `[data-tt-density]` axis to scope.
 
 ### ADR-020: `hit` is a single theme-defined floor, not a min/base/prominent scale
 
@@ -565,5 +575,5 @@ Anchors: `src/families/sizing.ts` › `CoreSizeHit` / `SemanticSizing.hit`, `src
 Re-litigation answers:
 
 - "Doesn't a single value lose expressiveness for CTAs vs dense list rows?" → no evidence it was used — `hit.prominent`/`hit.min` shipped with zero consumers. Emphasis is carried by colour, type, and inset, not by a larger hit floor. If a genuine need appears, reintroduce a scale then (evidence rule), not speculatively.
-- "Does this reopen ADR-019?" → no — ADR-019's density projection and "control geometry not container-fluid" rulings stand. ADR-020 refines the _shape_ of the `hit` token (scale → scalar) and fixes the inset tuning that ADR-019 named as the real oversized-control cause; the vertical axis is now genuinely non-fluid because the rem-anchored `hit` binds the height.
+- "Does this reopen ADR-019?" → ADR-019's density projection was later **reverted (2026-07-19)** for lack of a consumer, but its "control geometry not container-fluid" ruling is unaffected and is now carried entirely here: ADR-020 refines the _shape_ of the `hit` token (scale → scalar) and fixes the inset tuning that was the real oversized-control cause; the vertical axis is genuinely non-fluid because the rem-anchored `hit` binds the height.
 - "Why keep `inset.control` on the `cqi` spacing engine instead of a rem scale?" → the tight steps (`core.spacing.1|2`) drift only ±2px and never bind (the `hit` floor drives height), so the ergonomic guarantee is already met; moving inset onto a separate rem scale is a larger migration (it would break the `MUST_ALIAS` core-spacing invariant and its tests) deferred until evidence shows the ±2px horizontal drift matters.

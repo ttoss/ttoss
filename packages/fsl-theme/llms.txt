@@ -315,8 +315,6 @@ Never both. Never neither.
 
 **§4 — `sizing.hit` is enforced via `min-*`, not visual size.** Apply as `min-width` / `min-height`. The CSS layer auto-injects coarse-pointer overrides under `@media (any-pointer: coarse)` — do not write that media query yourself. `hit` is a single ergonomic floor (not a `min`/`base`/`prominent` scale) — see ADR-020.
 
-**§4b — Density is a projection axis, not a prop.** Set `data-tt-density ∈ {compact, comfortable, spacious}` via `DensityProvider` (`@ttoss/fsl-theme/react`), once near the root or nested for a dense region. It remaps `spacing.inset.control.*` only — components inherit automatically; never pass a size/density prop. It never touches `hit`, so the touch a11y floor is unaffected (ADR-019 + ADR-020).
-
 **§5 — `tonal` elevation requires its shadow counterpart.** Using `vars.elevation.tonal.raised` is only valid when `vars.elevation.surface.raised` is also applied to the same element. Tonal alone breaks depth perception when the theme switches modes.
 
 **§6 — Density propagates across families.** A `sm` / `md` / `lg` decision must be applied uniformly across `spacing.inset.*`, `spacing.gap.*`, `sizing.icon.*`, and `text.label.*` for the same component. Mixing `spacing.inset.control.sm` with `sizing.icon.lg` produces visually inconsistent components.

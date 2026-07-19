@@ -11,14 +11,12 @@ import { getPreflightStyles, PREFLIGHT_CSS } from '../../../../../src/css';
 import { useDatavizTokens } from '../../../../../src/dataviz/useDatavizTokens';
 import { withDataviz } from '../../../../../src/dataviz/withDataviz';
 import {
-  DensityProvider,
   ThemeHead,
   ThemeProvider,
   ThemeReset,
   ThemeScript,
   ThemeStyles,
   useColorMode,
-  useDensity,
   useResolvedTokens,
   useTokens,
 } from '../../../../../src/react';
@@ -1360,46 +1358,6 @@ describe('ThemeProvider root as RefObject', () => {
     expect(warnSpy).not.toHaveBeenCalledWith(
       expect.stringContaining('Multiple theme runtimes')
     );
-  });
-});
-
-describe('DensityProvider / useDensity', () => {
-  test('useDensity defaults to comfortable with no provider', () => {
-    const { result } = renderHook(() => {
-      return useDensity();
-    });
-    expect(result.current).toBe('comfortable');
-  });
-
-  test.each(['compact', 'comfortable', 'spacious'] as const)(
-    'projects density=%s to the subtree and useDensity',
-    (density) => {
-      const seen: string[] = [];
-      const Probe = () => {
-        seen.push(useDensity());
-        return null;
-      };
-      const { container } = render(
-        <DensityProvider density={density}>
-          <Probe />
-        </DensityProvider>
-      );
-      expect(seen[0]).toBe(density);
-      const scope = container.querySelector(`[data-tt-density="${density}"]`);
-      expect(scope).not.toBeNull();
-      // display:contents keeps the scope box-free so layout is untouched.
-      expect((scope as HTMLElement).style.display).toBe('contents');
-    }
-  );
-
-  test('renders the requested element via `as`', () => {
-    const { container } = render(
-      <DensityProvider density="compact" as="section">
-        <span>x</span>
-      </DensityProvider>
-    );
-    const scope = container.querySelector('[data-tt-density="compact"]');
-    expect(scope?.tagName).toBe('SECTION');
   });
 });
 

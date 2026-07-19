@@ -1,6 +1,5 @@
 import {
   Box,
-  ColorField,
   Disclosure,
   DisclosurePanel,
   DisclosureTrigger,
@@ -143,6 +142,69 @@ const FamilySection = ({ family }: { family: TokenFamily }) => {
   );
 };
 
+/** Native `<input type="color">` requires `#rrggbb`; coerce anything else. */
+const hexForSwatch = (value: string): string => {
+  return /^#[0-9a-fA-F]{6}$/.test(value) ? value : '#000000';
+};
+
+/** One core-colour step: a native swatch + hex text field bound to one value. */
+const ColorScaleRow = ({ hue, step, base }: ColorScaleRowProps) => {
+  const store = useThemeStore();
+  const path = `core.colors.${hue}.${step}`;
+  const overridden = store.overrides[path];
+  const value = overridden ?? base;
+
+  return (
+    <Stack direction="horizontal" gap="sm" align="center">
+      <Box grow>
+        <Text as="span" variant="label-sm" tone="muted">
+          {step}
+        </Text>
+      </Box>
+      {/* The swatch is a token-editor concern (app chrome), not a semantic
+          fsl-ui control — so it stays native, styled by studio.css. */}
+      <input
+        type="color"
+        className="token-color-swatch"
+        aria-label={`${hue} ${step} color`}
+        value={hexForSwatch(value)}
+        onChange={(event) => {
+          return store.setToken(path, event.target.value);
+        }}
+      />
+      <Box grow>
+        <input
+          type="text"
+          className="token-row-input"
+          aria-label={`${hue} ${step} hex`}
+          value={value}
+          onChange={(event) => {
+            return store.setToken(path, event.target.value);
+          }}
+        />
+      </Box>
+      {overridden != null ? (
+        <button
+          type="button"
+          className="theme-revert"
+          aria-label={`Revert ${hue} ${step}`}
+          onClick={() => {
+            return store.revertToken(path);
+          }}
+        >
+          Revert
+        </button>
+      ) : null}
+    </Stack>
+  );
+};
+
+interface ColorScaleRowProps {
+  hue: string;
+  step: string | number;
+  base: string;
+}
+
 /** The core color scales keep the dedicated picker editor (the SC-1 wow). */
 const CoreColorScales = () => {
   const store = useThemeStore();
@@ -154,42 +216,13 @@ const CoreColorScales = () => {
           <fieldset key={scale.hue} className="theme-scale">
             <legend className="theme-scale-legend">{scale.hue}</legend>
             {scale.steps.map(({ step, base }) => {
-              const path = `core.colors.${scale.hue}.${step}`;
-              const overridden = store.overrides[path];
-              const value = overridden ?? base;
-              const isOverridden = overridden != null;
               return (
-                <Stack
+                <ColorScaleRow
                   key={step}
-                  direction="horizontal"
-                  gap="sm"
-                  align="center"
-                >
-                  <Box grow>
-                    <Text as="span" variant="label-sm" tone="muted">
-                      {step}
-                    </Text>
-                  </Box>
-                  <ColorField
-                    label={`${scale.hue} ${step}`}
-                    value={value}
-                    onChange={(next) => {
-                      return store.setToken(path, next);
-                    }}
-                  />
-                  {isOverridden ? (
-                    <button
-                      type="button"
-                      className="theme-revert"
-                      aria-label={`Revert ${scale.hue} ${step}`}
-                      onClick={() => {
-                        return store.revertToken(path);
-                      }}
-                    >
-                      Revert
-                    </button>
-                  ) : null}
-                </Stack>
+                  hue={scale.hue}
+                  step={step}
+                  base={base}
+                />
               );
             })}
           </fieldset>
