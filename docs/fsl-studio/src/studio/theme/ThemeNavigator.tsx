@@ -1,14 +1,19 @@
-import { Disclosure, DisclosurePanel, DisclosureTrigger } from '@ttoss/fsl-ui';
+import {
+  Box,
+  Disclosure,
+  DisclosurePanel,
+  DisclosureTrigger,
+  Heading,
+  Stack,
+  Text,
+  ToggleButton,
+  ToggleButtonGroup,
+} from '@ttoss/fsl-ui';
 import * as React from 'react';
 
 import { PRESETS } from './presets';
 import { useThemeStore } from './themeStore';
 import { type TokenFamily, type TokenLeaf } from './tokenTree';
-
-/** A 6-digit hex is required by `<input type="color">`; fall back safely. */
-const forColorInput = (value: string): string => {
-  return /^#[0-9a-fA-F]{6}$/.test(value) ? value : '#000000';
-};
 
 /**
  * One editable token leaf. The input holds the raw authored value — a
@@ -23,43 +28,49 @@ const TokenRow = ({ leaf, display }: { leaf: TokenLeaf; display: string }) => {
   const broken = store.brokenRefs.includes(leaf.path);
 
   return (
-    <div className="token-row">
-      <label className="token-row-label" htmlFor={`token-${leaf.path}`}>
+    // Label above the field: in the narrow, deeply-nested token tree a
+    // token path and its value both need the full column width — sharing one
+    // row collapses both to an unreadable sliver. Stacking scales to any depth.
+    <Stack gap="xs">
+      <Text as="span" variant="label-sm" tone="muted">
         {display}
-      </label>
-      <input
-        id={`token-${leaf.path}`}
-        type="text"
-        className="token-row-input"
-        aria-label={leaf.path}
-        aria-invalid={broken || undefined}
-        value={override ?? leaf.raw}
-        onChange={(event) => {
-          return store.setToken(leaf.path, event.target.value);
-        }}
-      />
-      {broken ? (
-        <span
-          className="token-broken-badge"
-          role="img"
-          aria-label="Broken reference"
-        >
-          ⚠
-        </span>
-      ) : null}
-      {isOverridden ? (
-        <button
-          type="button"
-          className="theme-revert"
-          aria-label={`Revert ${leaf.path}`}
-          onClick={() => {
-            return store.revertToken(leaf.path);
-          }}
-        >
-          Revert
-        </button>
-      ) : null}
-    </div>
+      </Text>
+      <Stack direction="horizontal" gap="sm" align="center">
+        <Box grow>
+          <input
+            type="text"
+            className="token-row-input"
+            aria-label={leaf.path}
+            aria-invalid={broken || undefined}
+            value={override ?? leaf.raw}
+            onChange={(event) => {
+              return store.setToken(leaf.path, event.target.value);
+            }}
+          />
+        </Box>
+        {broken ? (
+          <span
+            className="token-broken-badge"
+            role="img"
+            aria-label="Broken reference"
+          >
+            ⚠
+          </span>
+        ) : null}
+        {isOverridden ? (
+          <button
+            type="button"
+            className="theme-revert"
+            aria-label={`Revert ${leaf.path}`}
+            onClick={() => {
+              return store.revertToken(leaf.path);
+            }}
+          >
+            Revert
+          </button>
+        ) : null}
+      </Stack>
+    </Stack>
   );
 };
 
@@ -77,7 +88,9 @@ const LazyDisclosure = ({
 }) => {
   const [open, setOpen] = React.useState(defaultOpen);
   return (
-    <Disclosure isExpanded={open} onExpandedChange={setOpen}>
+    // muted: these are token-tree section labels, not navigational links —
+    // the primary (link-coloured) evaluation reads wrong for a dense tree.
+    <Disclosure isExpanded={open} onExpandedChange={setOpen} evaluation="muted">
       <DisclosureTrigger>
         {title} · {count}
       </DisclosureTrigger>
@@ -132,6 +145,69 @@ const FamilySection = ({ family }: { family: TokenFamily }) => {
   );
 };
 
+/** Native `<input type="color">` requires `#rrggbb`; coerce anything else. */
+const hexForSwatch = (value: string): string => {
+  return /^#[0-9a-fA-F]{6}$/.test(value) ? value : '#000000';
+};
+
+/** One core-colour step: a native swatch + hex text field bound to one value. */
+const ColorScaleRow = ({ hue, step, base }: ColorScaleRowProps) => {
+  const store = useThemeStore();
+  const path = `core.colors.${hue}.${step}`;
+  const overridden = store.overrides[path];
+  const value = overridden ?? base;
+
+  return (
+    <Stack direction="horizontal" gap="sm" align="center">
+      <Box grow>
+        <Text as="span" variant="label-sm" tone="muted">
+          {step}
+        </Text>
+      </Box>
+      {/* The swatch is a token-editor concern (app chrome), not a semantic
+          fsl-ui control — so it stays native, styled by studio.css. */}
+      <input
+        type="color"
+        className="token-color-swatch"
+        aria-label={`${hue} ${step} color`}
+        value={hexForSwatch(value)}
+        onChange={(event) => {
+          return store.setToken(path, event.target.value);
+        }}
+      />
+      <Box grow>
+        <input
+          type="text"
+          className="token-row-input"
+          aria-label={`${hue} ${step} hex`}
+          value={value}
+          onChange={(event) => {
+            return store.setToken(path, event.target.value);
+          }}
+        />
+      </Box>
+      {overridden != null ? (
+        <button
+          type="button"
+          className="theme-revert"
+          aria-label={`Revert ${hue} ${step}`}
+          onClick={() => {
+            return store.revertToken(path);
+          }}
+        >
+          Revert
+        </button>
+      ) : null}
+    </Stack>
+  );
+};
+
+interface ColorScaleRowProps {
+  hue: string;
+  step: string | number;
+  base: string;
+}
+
 /** The core color scales keep the dedicated picker editor (the SC-1 wow). */
 const CoreColorScales = () => {
   const store = useThemeStore();
@@ -143,50 +219,13 @@ const CoreColorScales = () => {
           <fieldset key={scale.hue} className="theme-scale">
             <legend className="theme-scale-legend">{scale.hue}</legend>
             {scale.steps.map(({ step, base }) => {
-              const path = `core.colors.${scale.hue}.${step}`;
-              const overridden = store.overrides[path];
-              const value = overridden ?? base;
-              const isOverridden = overridden != null;
-              const inputId = `color-${scale.hue}-${step}`;
               return (
-                <div key={step} className="theme-swatch-row">
-                  <label className="theme-swatch-label" htmlFor={inputId}>
-                    {step}
-                  </label>
-                  <input
-                    id={inputId}
-                    type="color"
-                    className="theme-swatch-input"
-                    aria-label={`${scale.hue} ${step} color`}
-                    value={forColorInput(value)}
-                    onChange={(event) => {
-                      return store.setToken(path, event.target.value);
-                    }}
-                  />
-                  <input
-                    type="text"
-                    className="theme-swatch-hex"
-                    aria-label={`${scale.hue} ${step} hex`}
-                    value={value}
-                    onChange={(event) => {
-                      return store.setToken(path, event.target.value);
-                    }}
-                  />
-                  {isOverridden ? (
-                    <button
-                      type="button"
-                      className="theme-revert"
-                      aria-label={`Revert ${scale.hue} ${step}`}
-                      onClick={() => {
-                        return store.revertToken(path);
-                      }}
-                    >
-                      Revert
-                    </button>
-                  ) : (
-                    <span className="theme-revert-placeholder" aria-hidden />
-                  )}
-                </div>
+                <ColorScaleRow
+                  key={step}
+                  hue={scale.hue}
+                  step={step}
+                  base={base}
+                />
               );
             })}
           </fieldset>
@@ -206,43 +245,47 @@ export const ThemeNavigator = () => {
   const store = useThemeStore();
 
   return (
-    <div className="theme-navigator">
-      <section className="theme-section">
-        <h2 className="theme-section-title">Preset</h2>
-        <div className="theme-presets">
+    <Stack gap="md">
+      <Stack gap="sm">
+        <Heading level={2} size="title-sm">
+          Preset
+        </Heading>
+        <ToggleButtonGroup
+          aria-label="Preset"
+          selectionMode="single"
+          disallowEmptySelection
+          selectedKeys={[store.preset]}
+          onSelectionChange={(keys) => {
+            store.setPreset([...keys][0] as (typeof PRESETS)[number]['id']);
+          }}
+        >
           {PRESETS.map((preset) => {
-            const active = store.preset === preset.id;
             return (
-              <button
-                key={preset.id}
-                type="button"
-                className="theme-preset"
-                aria-pressed={active}
-                onClick={() => {
-                  return store.setPreset(preset.id);
-                }}
-                title={preset.description}
-              >
+              <ToggleButton key={preset.id} id={preset.id} evaluation="muted">
                 {preset.label}
-              </button>
+              </ToggleButton>
             );
           })}
-        </div>
-      </section>
+        </ToggleButtonGroup>
+      </Stack>
 
-      <section className="theme-section">
-        <h2 className="theme-section-title">Semantic</h2>
-        <p className="theme-hint">
+      <Stack gap="sm">
+        <Heading level={2} size="title-sm">
+          Semantic
+        </Heading>
+        <Text variant="body-sm" tone="muted">
           Meaning-bearing tokens, mostly references. Remap one to another{' '}
           <code>{'{core.…}'}</code> ref and every consumer follows.
-        </p>
+        </Text>
         {store.semanticTree.map((family) => {
           return <FamilySection key={family.family} family={family} />;
         })}
-      </section>
+      </Stack>
 
-      <section className="theme-section">
-        <h2 className="theme-section-title">Core</h2>
+      <Stack gap="sm">
+        <Heading level={2} size="title-sm">
+          Core
+        </Heading>
         {/* Colors open by default: the brand scale is the SC-1 "wow" surface
             and must stay reachable at a glance (recorded in PRD §14). */}
         <LazyDisclosure
@@ -259,7 +302,7 @@ export const ThemeNavigator = () => {
         {store.coreTree.map((family) => {
           return <FamilySection key={family.family} family={family} />;
         })}
-      </section>
-    </div>
+      </Stack>
+    </Stack>
   );
 };

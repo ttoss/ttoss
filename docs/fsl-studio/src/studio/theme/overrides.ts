@@ -5,7 +5,7 @@ import {
   type ThemeTokens,
 } from '@ttoss/fsl-theme';
 
-import { AUTHORED_PRESETS, presetBundle, type PresetId } from './presets';
+import { presetBundle, type PresetId } from './presets';
 
 /**
  * Theme Lab editing model (PRD F2.2/F2.3).
@@ -86,8 +86,7 @@ export const nestOverrides = (
 
 /**
  * Minimal recursive merge for plain override objects (`b` wins on leaves).
- * Used to inline an authored preset's overrides under the user diff for code
- * export, and to resolve the dark alternate for contrast checks.
+ * Used to resolve the dark alternate over the base for contrast checks.
  */
 export const mergeDeep = <T extends Record<string, unknown>>(
   a: T,
@@ -137,8 +136,7 @@ const serializeOverrides = (nested: object): string => {
 /**
  * Generate a runnable `createTheme(...)` snippet reproducing the edited theme
  * (PRD F2.7). `base` embeds the diff alone; `bruttal` extends the published
- * export; Studio-authored presets inline their own overrides under the diff
- * (merged, diff wins) so the exported code runs anywhere without the Studio.
+ * `bruttal` export so the snippet runs anywhere without the Studio.
  */
 export const generateThemeCode = (
   preset: PresetId,
@@ -158,19 +156,11 @@ export const generateThemeCode = (
     ].join('\n');
   }
 
-  const authored = AUTHORED_PRESETS[preset];
-  const merged = authored
-    ? mergeDeep(
-        authored.overrides as Record<string, unknown>,
-        nested as Record<string, unknown>
-      )
-    : nested;
-
   return [
     "import { createTheme } from '@ttoss/fsl-theme';",
     '',
     'export const theme = createTheme({',
-    `  overrides: ${serializeOverrides(merged)},`,
+    `  overrides: ${serializeOverrides(nested)},`,
     '});',
     '',
   ].join('\n');

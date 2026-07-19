@@ -1,13 +1,16 @@
 import {
   Button,
+  Heading,
   Link,
   Meter,
   Separator,
+  Stack,
   Switch,
   Tab,
   TabList,
   TabPanel,
   Tabs,
+  Text,
 } from '@ttoss/fsl-ui';
 
 /**
@@ -21,21 +24,27 @@ import {
  */
 export const StageSample = () => {
   return (
-    <div className="stage-sample">
-      <div className="stage-sample-row">
+    <Stack gap="sm">
+      <Stack gap="xs">
+        <Heading level={3}>Account settings</Heading>
+        <Text variant="body-sm" tone="muted">
+          Manage how your workspace behaves.
+        </Text>
+      </Stack>
+      <Stack direction="horizontal" gap="md" wrap align="center">
         <Button evaluation="primary">Save</Button>
         <Button evaluation="accent">Publish</Button>
         <Button evaluation="muted">Cancel</Button>
         <Button evaluation="negative" consequence="destructive">
           Delete
         </Button>
-      </div>
-      <div className="stage-sample-row">
+      </Stack>
+      <Stack direction="horizontal" gap="md" wrap align="center">
         <Switch defaultSelected>Notifications</Switch>
         <Link href="https://ttoss.dev/docs/design/design-system/fsl">
           FSL documentation
         </Link>
-      </div>
+      </Stack>
       <Meter aria-label="Storage used" label="Storage used" value={72} />
       <Separator />
       <Tabs>
@@ -46,6 +55,6 @@ export const StageSample = () => {
         <TabPanel id="overview">Overview content.</TabPanel>
         <TabPanel id="activity">Activity content.</TabPanel>
       </Tabs>
-    </div>
+    </Stack>
   );
 };

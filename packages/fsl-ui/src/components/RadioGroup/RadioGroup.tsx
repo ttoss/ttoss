@@ -20,7 +20,7 @@ import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 //   authorial Evaluation per ENTITY_EVALUATION),
 //   radii: `control` (root) / `round` (radio circle),
 //   border: `outline.control` (default) + `selected` (when checked),
-//   sizing: `hit.base`, spacing: `inset.control`, typography: `label.md`,
+//   sizing: `hit`, spacing: `inset.control`, typography: `label.md`,
 //   motion: `feedback`, elevation: `flat`.
 //
 // Validation feedback flows from React Aria's `isInvalid` prop on the group
@@ -225,7 +225,7 @@ export const Radio = ({ children, ...props }: RadioProps) => {
           display: 'inline-flex',
           alignItems: 'center',
           gap: vars.spacing.gap.inline.sm,
-          minHeight: vars.sizing.hit.base,
+          minHeight: vars.sizing.hit,
           cursor: isDisabled ? 'not-allowed' : 'pointer',
           opacity: isDisabled ? vars.opacity.disabled : undefined,
           ...(vars.text.label.md as React.CSSProperties),

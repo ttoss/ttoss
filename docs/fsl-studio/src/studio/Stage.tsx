@@ -1,4 +1,5 @@
 import { getThemeStylesContent } from '@ttoss/fsl-theme/css';
+import { Stack, Surface, Text } from '@ttoss/fsl-ui';
 import * as React from 'react';
 
 import { STAGE_THEME_ID } from '../theme';
@@ -36,22 +37,41 @@ export const Stage = ({
       <style>{stageCss}</style>
       {toolbar ? <div className="stage-toolbar">{toolbar}</div> : null}
       <div className="stage-panes">
+        {/* The stage panes dogfood the fsl-ui `Surface` primitive: each pane
+            is a `raised` surface, so its depth (tonal colour + shadow) is the
+            exact contract any app gets — the Studio renders on the system it
+            edits. The theme-scope host wraps the Surface (`display: contents`,
+            so the Surface is the grid item) — the scope's CSS custom
+            properties still cascade into it, letting light/dark resolve
+            independently of the chrome. */}
         <div
-          className="stage-pane"
+          className="stage-pane-scope"
           data-tt-theme={STAGE_THEME_ID}
           data-testid="stage-pane-light"
         >
-          <span className="stage-pane-label">Light</span>
-          {renderSubject()}
+          <Surface level="raised" padding="lg">
+            <Stack gap="sm">
+              <Text as="span" variant="label-sm" tone="muted">
+                Light
+              </Text>
+              {renderSubject()}
+            </Stack>
+          </Surface>
         </div>
         <div
-          className="stage-pane"
+          className="stage-pane-scope"
           data-tt-theme={STAGE_THEME_ID}
           data-tt-mode="dark"
           data-testid="stage-pane-dark"
         >
-          <span className="stage-pane-label">Dark</span>
-          {renderSubject()}
+          <Surface level="raised" padding="lg">
+            <Stack gap="sm">
+              <Text as="span" variant="label-sm" tone="muted">
+                Dark
+              </Text>
+              {renderSubject()}
+            </Stack>
+          </Surface>
         </div>
       </div>
     </section>

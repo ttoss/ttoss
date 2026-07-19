@@ -37,7 +37,7 @@ const disclosureScope = createCompositeScope<{
 // Entity = Disclosure → CONTRACT.md §1 row:
 //   colors: `navigation.{primary|muted}` (uxContext = navigation),
 //   radii: `control` (trigger) / `surface` (panel), border: `outline.control`,
-//   sizing: `hit.base`, spacing: `inset.control`, typography: `label.md`,
+//   sizing: `hit`, spacing: `inset.control`, typography: `label.md`,
 //   elevation: `flat`, motion: `transition.{enter,exit}` (disclosure chrome
 //   animates the panel affordance, not micro-feedback on a control).
 //
@@ -211,7 +211,7 @@ export const DisclosureTrigger = ({
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: vars.spacing.gap.inline.sm,
-            minHeight: vars.sizing.hit.base,
+            minHeight: vars.sizing.hit,
             paddingBlock: vars.spacing.inset.control.md,
             paddingInline: vars.spacing.inset.control.md,
             border: 'none',
@@ -290,23 +290,32 @@ export const DisclosurePanel = ({
   const { evaluation } = disclosureScope.use(disclosurePanelMeta.displayName);
   const c = vars.colors.navigation[evaluation];
 
+  // React Aria collapses the panel with `hidden="until-found"`, which sets
+  // `content-visibility: hidden`: the panel's *contents* are skipped but the
+  // element's own box (padding included) still lays out. Padding therefore
+  // lives on an inner wrapper — skipped along with the content when collapsed —
+  // so a collapsed panel occupies zero height instead of leaking its inset.
   return (
     <RACDisclosurePanel
       {...props}
       data-scope="disclosure"
       data-part="content"
-      style={
-        {
-          boxSizing: 'border-box',
-          paddingBlock: vars.spacing.inset.control.md,
-          paddingInline: vars.spacing.inset.control.md,
-          backgroundColor: c?.background?.default,
-          color: c?.text?.default,
-          ...(vars.text.body.md as React.CSSProperties),
-        } as React.CSSProperties
-      }
+      style={{ boxSizing: 'border-box' } as React.CSSProperties}
     >
-      {children}
+      <div
+        style={
+          {
+            boxSizing: 'border-box',
+            paddingBlock: vars.spacing.inset.control.md,
+            paddingInline: vars.spacing.inset.control.md,
+            backgroundColor: c?.background?.default,
+            color: c?.text?.default,
+            ...(vars.text.body.md as React.CSSProperties),
+          } as React.CSSProperties
+        }
+      >
+        {children}
+      </div>
     </RACDisclosurePanel>
   );
 };

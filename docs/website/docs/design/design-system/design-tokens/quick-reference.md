@@ -67,15 +67,13 @@ See [Spacing](./families/spacing.md).
 
 ## Sizing — by intent
 
-| I want…                               | Token                                    |
-| :------------------------------------ | :--------------------------------------- |
-| Hit target (minimum a11y size)        | `semantic.sizing.hit.min`                |
-| Hit target (default interactive size) | `semantic.sizing.hit.base`               |
-| Hit target (prominent / primary)      | `semantic.sizing.hit.prominent`          |
-| Inline icon with text                 | `semantic.sizing.icon.{sm,md,lg}`        |
-| Avatar / identity chip                | `semantic.sizing.identity.{sm,md,lg,xl}` |
-| Paragraph max reading width           | `semantic.sizing.measure.reading`        |
-| Surface (card/dialog) max width       | `semantic.sizing.surface.maxWidth`       |
+| I want…                            | Token                                    |
+| :--------------------------------- | :--------------------------------------- |
+| Hit target (min interactive floor) | `semantic.sizing.hit`                    |
+| Inline icon with text              | `semantic.sizing.icon.{sm,md,lg}`        |
+| Avatar / identity chip             | `semantic.sizing.identity.{sm,md,lg,xl}` |
+| Paragraph max reading width        | `semantic.sizing.measure.reading`        |
+| Surface (card/dialog) max width    | `semantic.sizing.surface.maxWidth`       |
 
 See [Sizing](./families/sizing.md).
 

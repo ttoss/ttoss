@@ -86,8 +86,8 @@ test('page and preset commands are available', async () => {
   let input = await openPalette(user);
   await user.type(input, 'preset: bruttal');
   await user.keyboard('{Enter}');
-  expect(screen.getByRole('button', { name: 'Bruttal' })).toHaveAttribute(
-    'aria-pressed',
+  expect(screen.getByRole('radio', { name: 'Bruttal' })).toHaveAttribute(
+    'aria-checked',
     'true'
   );
 

@@ -1,5 +1,5 @@
 import { getThemeStylesContent } from '@ttoss/fsl-theme/css';
-import { ThemeProvider } from '@ttoss/fsl-theme/react';
+import { ThemeProvider, ThemeReset } from '@ttoss/fsl-theme/react';
 import * as React from 'react';
 
 import { ComponentStoreProvider } from './studio/components/componentStore';
@@ -38,6 +38,7 @@ const ChromeThemedShell = () => {
 
   return (
     <ThemeProvider defaultMode="system">
+      <ThemeReset />
       <style>{chromeCss}</style>
       <StudioShell />
     </ThemeProvider>
@@ -105,6 +106,7 @@ export const App = () => {
   if (boot.screen === 'home') {
     return (
       <ThemeProvider defaultMode="system">
+        <ThemeReset />
         <style>{homeCss}</style>
         <Home
           onStartTask={(lens) => {

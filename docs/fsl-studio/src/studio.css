@@ -1,130 +1,47 @@
 /*
- * FSL Studio shell layout. Colors, spacing, radii, and typography come from
- * the theme's CSS custom properties (--tt-*) so the chrome re-themes with the
- * canonical theme — including the future "apply to Studio" toggle (PRD §6.1).
+ * FSL Studio — residual app CSS.
+ *
+ * The base layer (reset + body binding) comes from `<ThemeReset />`
+ * (@ttoss/fsl-theme); the app frame from `<AppShell>`; all layout/text/widgets
+ * from fsl-ui primitives. What remains here is the irreducibly app-specific:
+ * the brand wordmark, the dual light/dark stage compare (a bespoke 2-pane
+ * grid), and the domain editor widgets (token/diff rows, command palette).
+ * Every value is a `var(--tt-*)` read — this sheet consumes the theme, never
+ * redefines or overrides it.
  */
 
-* {
-  box-sizing: border-box;
-}
-
-html,
-body,
-#root {
-  height: 100%;
-  margin: 0;
-}
-
-body {
-  font-family: var(--tt-text-body-md-font-family, system-ui, sans-serif);
-  color: var(--tt-colors-informational-primary-text-default);
-  background-color: var(--tt-colors-informational-primary-background-default);
-}
-
-.studio {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.studio-header {
-  display: flex;
-  align-items: center;
-  gap: var(--tt-spacing-6, 1.5rem);
-  padding-block: var(--tt-spacing-3, 0.75rem);
-  padding-inline: var(--tt-spacing-5, 1.25rem);
-  border-block-end: 1px solid
-    var(--tt-colors-informational-primary-border-default);
-}
-
 .studio-brand {
+  font: inherit;
   font-weight: 700;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+  padding: 0;
 }
 
-.studio-body {
-  display: grid;
-  grid-template-columns: minmax(12rem, 1fr) minmax(0, 4fr) minmax(14rem, 1fr);
-  flex: 1;
-  min-block-size: 0;
-}
-
-.studio-navigator,
-.studio-inspector {
-  padding: var(--tt-spacing-4, 1rem);
-  overflow-y: auto;
-}
-
-.studio-navigator {
-  border-inline-end: 1px solid
-    var(--tt-colors-informational-primary-border-default);
-}
-
-.studio-inspector {
-  border-inline-start: 1px solid
-    var(--tt-colors-informational-primary-border-default);
-}
-
-.studio-empty-state {
-  margin: 0;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  color: var(--tt-colors-informational-muted-text-default);
-}
-
+/* The stage's side-by-side light/dark compare is bespoke to the Studio: two
+   theme-scoped panes rendered simultaneously (see Stage.tsx). Each pane is an
+   fsl-ui `Surface`; the scope host generates no box (`display: contents`) so
+   the Surface is the grid item. */
 .stage {
-  padding: var(--tt-spacing-4, 1rem);
+  padding: var(--tt-core-spacing-4);
   overflow: auto;
+  block-size: 100%;
 }
 
 .stage-panes {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--tt-spacing-4, 1rem);
+  gap: var(--tt-core-spacing-4);
   block-size: 100%;
 }
 
-.stage-pane {
-  padding: var(--tt-spacing-5, 1.25rem);
-  border: 1px solid var(--tt-colors-informational-primary-border-default);
-  border-radius: 0.5rem;
-  color: var(--tt-colors-informational-primary-text-default);
-  background-color: var(--tt-colors-informational-primary-background-default);
-}
-
-.stage-pane-label {
-  display: block;
-  margin-block-end: var(--tt-spacing-4, 1rem);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--tt-colors-informational-muted-text-default);
-}
-
-.stage-sample {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-4, 1rem);
-}
-
-.stage-sample-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--tt-spacing-3, 0.75rem);
+.stage-pane-scope {
+  display: contents;
 }
 
 @media (max-width: 60rem) {
-  .studio-body {
-    grid-template-columns: 1fr;
-  }
-
-  .studio-navigator,
-  .studio-inspector {
-    border: none;
-    border-block-end: 1px solid
-      var(--tt-colors-informational-primary-border-default);
-  }
-
   .stage-panes {
     grid-template-columns: 1fr;
   }
@@ -134,128 +51,62 @@ body {
  * Theme Lab (Phase 1)
  * -------------------------------------------------------------------------- */
 
-.theme-navigator,
-.theme-inspector {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-5, 1.25rem);
-}
+/* Theme panel layout/text/preset-picker are composed with primitives
+ * (Stack/Heading/Text + ToggleButtonGroup for presets, Button for the
+ * standalone actions). Only the dense inline revert + export-tab/copy chips
+ * keep the shared bespoke-button styling below. */
 
-.theme-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-3, 0.75rem);
-}
-
-.theme-section-title {
-  margin: 0;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--tt-colors-informational-muted-text-default);
-}
-
-.theme-hint {
-  margin: 0;
-  font-size: 0.8125rem;
-  line-height: 1.5;
-  color: var(--tt-colors-informational-muted-text-default);
-}
-
-.theme-presets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--tt-spacing-2, 0.5rem);
-}
-
-.theme-preset,
 .theme-revert,
-.theme-reset-all,
-.theme-fallback,
-.theme-export-toggle,
 .theme-export-tab,
 .theme-export-copy {
   font: inherit;
   cursor: pointer;
-  padding-block: var(--tt-spacing-1, 0.25rem);
-  padding-inline: var(--tt-spacing-3, 0.75rem);
+  padding-block: var(--tt-core-spacing-1);
+  padding-inline: var(--tt-core-spacing-3);
   border: 1px solid var(--tt-colors-informational-primary-border-default);
   border-radius: 0.375rem;
   color: var(--tt-colors-informational-primary-text-default);
   background-color: var(--tt-colors-informational-primary-background-default);
 }
 
-.theme-preset[aria-pressed='true'] {
-  color: var(--tt-colors-action-accent-text-default);
-  background-color: var(--tt-colors-action-accent-background-default);
-  border-color: var(--tt-colors-action-accent-background-default);
-}
-
 .theme-scale {
   border: 1px solid var(--tt-colors-informational-primary-border-default);
   border-radius: 0.5rem;
-  padding: var(--tt-spacing-3, 0.75rem);
+  padding: var(--tt-core-spacing-3);
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--tt-spacing-1, 0.25rem);
+  gap: var(--tt-core-spacing-1);
 }
 
 .theme-scale-legend {
   font-size: 0.8125rem;
   font-weight: 600;
-  padding-inline: var(--tt-spacing-2, 0.5rem);
+  padding-inline: var(--tt-core-spacing-2);
 }
 
-.theme-swatch-row {
-  display: grid;
-  grid-template-columns: 2.5rem 2rem 1fr auto;
-  align-items: center;
-  gap: var(--tt-spacing-2, 0.5rem);
-}
-
-.theme-swatch-label {
-  font-size: 0.75rem;
-  font-variant-numeric: tabular-nums;
-  color: var(--tt-colors-informational-muted-text-default);
-}
-
-.theme-swatch-input {
-  inline-size: 2rem;
-  block-size: 1.75rem;
+/* Core colour scales: a native swatch + hex text field per step, laid out with
+ * `Stack` + `Box grow`. The swatch is app-specific chrome (a token editor
+ * concern), so it lives here rather than in fsl-ui. */
+.token-color-swatch {
+  inline-size: var(--tt-sizing-hit, 2rem);
+  block-size: var(--tt-sizing-hit, 2rem);
+  flex: none;
   padding: 0;
-  border: 1px solid var(--tt-colors-informational-primary-border-default);
-  border-radius: 0.25rem;
+  border: 1px solid var(--tt-colors-input-primary-border-default, #ccc);
+  border-radius: var(--tt-radii-control, 0.25rem);
   background: none;
-}
-
-.theme-swatch-hex {
-  font: inherit;
-  font-size: 0.8125rem;
-  font-variant-numeric: tabular-nums;
-  min-inline-size: 0;
-  padding-block: var(--tt-spacing-1, 0.25rem);
-  padding-inline: var(--tt-spacing-2, 0.5rem);
-  border: 1px solid var(--tt-colors-input-primary-border-default,
-    var(--tt-colors-informational-primary-border-default));
-  border-radius: 0.25rem;
-  color: var(--tt-colors-informational-primary-text-default);
-  background-color: var(--tt-colors-informational-primary-background-default);
+  cursor: pointer;
 }
 
 .theme-revert {
   font-size: 0.75rem;
 }
 
-.theme-revert-placeholder {
-  display: inline-block;
-}
-
 .theme-apply {
   display: flex;
   align-items: center;
-  gap: var(--tt-spacing-2, 0.5rem);
+  gap: var(--tt-core-spacing-2);
   font-size: 0.875rem;
 }
 
@@ -265,15 +116,7 @@ body {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--tt-spacing-1, 0.25rem);
-}
-
-.theme-diff-row {
-  display: grid;
-  grid-template-columns: 1rem 1fr auto auto;
-  align-items: center;
-  gap: var(--tt-spacing-2, 0.5rem);
-  font-size: 0.8125rem;
+  gap: var(--tt-core-spacing-1);
 }
 
 .theme-diff-swatch {
@@ -283,66 +126,27 @@ body {
   border: 1px solid var(--tt-colors-informational-primary-border-default);
 }
 
-.theme-diff-path {
-  font-variant-numeric: tabular-nums;
-}
-
-.theme-diff-value {
-  font-variant-numeric: tabular-nums;
-  color: var(--tt-colors-informational-muted-text-default);
-}
-
 .theme-contrast {
   list-style: none;
   margin: 0;
-  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--tt-spacing-1, 0.25rem);
+  gap: var(--tt-core-spacing-1);
+  /* A recessed reference panel groups the ratios into a designed surface
+     rather than loose text (a subtly different surface stratum). */
+  padding: var(--tt-core-spacing-3);
+  border-radius: var(--tt-radii-surface, 0.5rem);
+  background-color: var(--tt-colors-informational-secondary-background-default);
 }
 
-.theme-contrast-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--tt-spacing-2, 0.5rem);
-  font-size: 0.8125rem;
-}
+/* Contrast rows are `Stack` + `Badge`; the panel keeps its recessed surface. */
 
-.theme-contrast-badge {
-  font-size: 0.75rem;
-  font-variant-numeric: tabular-nums;
-  padding-block: 0.1rem;
-  padding-inline: var(--tt-spacing-2, 0.5rem);
-  border-radius: 0.25rem;
-}
-
-.theme-contrast-AAA,
-.theme-contrast-AA {
-  color: var(--tt-colors-feedback-positive-text-default,
-    var(--tt-colors-informational-primary-text-default));
-  background-color: var(--tt-colors-feedback-positive-background-default,
-    var(--tt-colors-informational-primary-background-default));
-}
-
-.theme-contrast-fail {
-  color: var(--tt-colors-feedback-negative-text-default,
-    var(--tt-colors-informational-primary-text-default));
-  background-color: var(--tt-colors-feedback-negative-background-default,
-    var(--tt-colors-informational-primary-background-default));
-}
-
-.theme-export {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-2, 0.5rem);
-  margin-block-start: var(--tt-spacing-3, 0.75rem);
-}
+/* .theme-export layout is composed with Stack; the code block is `Code`. */
 
 .theme-export-tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--tt-spacing-1, 0.25rem);
+  gap: var(--tt-core-spacing-1);
 }
 
 .theme-export-tab[aria-selected='true'] {
@@ -355,43 +159,13 @@ body {
   margin-inline-start: auto;
 }
 
-.theme-export-code {
-  margin: 0;
-  max-block-size: 20rem;
-  overflow: auto;
-  padding: var(--tt-spacing-3, 0.75rem);
-  border: 1px solid var(--tt-colors-informational-primary-border-default);
-  border-radius: 0.5rem;
-  font-size: 0.75rem;
-  line-height: 1.5;
-  background-color: var(--tt-colors-informational-primary-background-default);
-}
-
 /* ----------------------------------------------------------------------------
  * Component Lab (Phase 2)
  * -------------------------------------------------------------------------- */
 
-.component-navigator,
-.component-inspector {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-4, 1rem);
-}
-
-.component-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-1, 0.25rem);
-}
-
-.component-group-title {
-  margin: 0;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--tt-colors-informational-muted-text-default);
-}
+/* Component panel layout/text are composed with primitives (Stack/Heading/
+ * Text/Link/Button). The nav-list items, identity list, prop chips, code
+ * block, and dashed identity card stay bespoke below. */
 
 .component-list {
   list-style: none;
@@ -408,8 +182,8 @@ body {
   cursor: pointer;
   inline-size: 100%;
   text-align: start;
-  padding-block: var(--tt-spacing-1, 0.25rem);
-  padding-inline: var(--tt-spacing-2, 0.5rem);
+  padding-block: var(--tt-core-spacing-1);
+  padding-inline: var(--tt-core-spacing-2);
   border: none;
   border-radius: 0.25rem;
   color: var(--tt-colors-informational-primary-text-default);
@@ -421,12 +195,6 @@ body {
   background-color: var(--tt-colors-action-accent-background-default);
 }
 
-.component-name {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-}
-
 .component-identity,
 .component-prop-options {
   list-style: none;
@@ -434,12 +202,12 @@ body {
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: var(--tt-spacing-2, 0.5rem);
+  gap: var(--tt-core-spacing-2);
 }
 
 .component-identity {
   flex-direction: column;
-  gap: var(--tt-spacing-1, 0.25rem);
+  gap: var(--tt-core-spacing-1);
   font-size: 0.8125rem;
 }
 
@@ -450,30 +218,16 @@ body {
   color: var(--tt-colors-informational-muted-text-default);
 }
 
-.component-prop {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-1, 0.25rem);
-}
-
-.component-prop-label {
-  font-size: 0.8125rem;
-  font-weight: 600;
-}
-
-.component-chip,
-.component-copy,
-.component-contract-link {
+.component-chip {
   font: inherit;
   font-size: 0.75rem;
   cursor: pointer;
-  padding-block: var(--tt-spacing-1, 0.25rem);
-  padding-inline: var(--tt-spacing-2, 0.5rem);
+  padding-block: var(--tt-core-spacing-1);
+  padding-inline: var(--tt-core-spacing-2);
   border: 1px solid var(--tt-colors-informational-primary-border-default);
   border-radius: 0.375rem;
   color: var(--tt-colors-informational-primary-text-default);
   background-color: var(--tt-colors-informational-primary-background-default);
-  text-decoration: none;
 }
 
 .component-chip[aria-pressed='true'] {
@@ -482,86 +236,31 @@ body {
   border-color: var(--tt-colors-action-accent-background-default);
 }
 
-.component-contract-link {
-  display: inline-block;
-  inline-size: fit-content;
-}
-
-.component-code {
-  margin: 0;
-  overflow: auto;
-  padding: var(--tt-spacing-3, 0.75rem);
-  border: 1px solid var(--tt-colors-informational-primary-border-default);
-  border-radius: 0.5rem;
-  font-size: 0.75rem;
-  line-height: 1.5;
-  background-color: var(--tt-colors-informational-primary-background-default);
-}
-
 .component-identity-card {
   display: flex;
   flex-direction: column;
-  gap: var(--tt-spacing-2, 0.5rem);
-  padding: var(--tt-spacing-5, 1.25rem);
+  gap: var(--tt-core-spacing-2);
+  padding: 1.25rem;
   border: 1px dashed var(--tt-colors-informational-primary-border-default);
   border-radius: 0.5rem;
 }
 
-.preview-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--tt-spacing-3, 0.75rem);
-}
+/* Example-page layout (.preview-row/col, .example-form*, .example-dashboard*)
+ * is now composed with fsl-ui primitives (Stack/Grid) — WS-E proof that the
+ * presentational layer removes hand-rolled content CSS. */
 
-.preview-col {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-2, 0.5rem);
-}
-
-.example-form,
-.example-dashboard {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-4, 1rem);
-}
-
-.example-form-actions {
-  display: flex;
-  gap: var(--tt-spacing-3, 0.75rem);
-}
-
-.example-dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
-  gap: var(--tt-spacing-4, 1rem);
-  margin-block-end: var(--tt-spacing-4, 1rem);
-}
-
-/* -- Token tree (semantic + core navigator, PRD F2.1/F2.2) --------------- */
-
-.token-row {
-  display: grid;
-  grid-template-columns: minmax(6rem, 1fr) minmax(0, 1.4fr) auto auto;
-  align-items: center;
-  gap: var(--tt-spacing-2, 0.5rem);
-  padding-block: 0.1rem;
-}
-
-.token-row-label {
-  font-size: 0.75rem;
-  overflow-wrap: anywhere;
-  color: var(--tt-colors-informational-muted-text-default);
-}
+/* -- Token tree (semantic + core navigator, PRD F2.1/F2.2) ---------------
+ * Rows are `Stack` + `Box grow`; only the dense native value input keeps a
+ * bespoke style (a lighter control than the full TextField composite). */
 
 .token-row-input {
   font: inherit;
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
+  inline-size: 100%;
   min-inline-size: 0;
-  padding-block: var(--tt-spacing-1, 0.25rem);
-  padding-inline: var(--tt-spacing-2, 0.5rem);
+  padding-block: var(--tt-core-spacing-1);
+  padding-inline: var(--tt-core-spacing-2);
   border: 1px solid var(--tt-colors-input-primary-border-default, #ccc);
   border-radius: var(--tt-radii-control, 0.25rem);
   background: var(--tt-colors-input-primary-background-default, transparent);
@@ -577,97 +276,39 @@ body {
   color: var(--tt-colors-feedback-negative-text-default, #b91c1c);
 }
 
-/* -- Peripheral ref-error counter (PRD §6.4-P2) --------------------------- */
-
-.studio-ref-errors {
-  font-size: 0.8125rem;
-  color: var(--tt-colors-feedback-negative-text-default, #b91c1c);
-  margin-inline-start: var(--tt-spacing-3, 0.75rem);
-}
-
-.theme-contrast-mode {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-block: var(--tt-spacing-2, 0.5rem) var(--tt-spacing-1, 0.25rem);
-  color: var(--tt-colors-informational-muted-text-default);
-}
-
 /* -- Task-first home (PRD §6.2) ------------------------------------------- */
 
+/* Home layout/text is composed with primitives (Stack/Grid/Container/
+ * Heading/Text). Only the viewport shell and the two bespoke clickable
+ * widgets (task card, draft buttons) keep hand CSS — no primitive covers a
+ * clickable card. */
 .home {
   min-block-size: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--tt-spacing-6, 1.5rem);
-  padding: var(--tt-spacing-8, 2rem);
-  background: var(--tt-colors-informational-primary-background-default, #fff);
-  color: var(--tt-colors-informational-primary-text-default, #111);
-}
-
-.home-brand {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0;
-}
-
-.home-question {
-  font-size: 1.125rem;
-  margin: 0;
-  color: var(--tt-colors-informational-muted-text-default);
-}
-
-.home-tasks {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  gap: var(--tt-spacing-4, 1rem);
-  inline-size: min(56rem, 100%);
+  gap: var(--tt-core-spacing-6);
+  padding: var(--tt-core-spacing-8);
+  background: var(--tt-colors-informational-primary-background-default);
+  color: var(--tt-colors-informational-primary-text-default);
 }
 
 .home-task {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-2, 0.5rem);
+  display: block;
   text-align: start;
-  padding: var(--tt-spacing-5, 1.25rem);
+  padding: 1.25rem;
   font: inherit;
   color: inherit;
   cursor: pointer;
-  background: var(--tt-colors-informational-primary-background-default, #fff);
-  border: 1px solid var(--tt-colors-informational-primary-border-default, #ddd);
-  border-radius: var(--tt-radii-surface, 0.5rem);
+  background: var(--tt-colors-informational-primary-background-default);
+  border: 1px solid var(--tt-colors-informational-primary-border-default);
+  border-radius: var(--tt-radii-surface);
+  block-size: 100%;
 }
 
 .home-task:hover {
-  border-color: var(--tt-colors-action-accent-background-default, #0469e3);
-}
-
-.home-task-title {
-  font-weight: 600;
-}
-
-.home-task-description {
-  font-size: 0.875rem;
-  color: var(--tt-colors-informational-muted-text-default);
-}
-
-.home-drafts {
-  inline-size: min(56rem, 100%);
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-2, 0.5rem);
-}
-
-.home-drafts-title {
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin: 0;
-  color: var(--tt-colors-informational-muted-text-default);
+  border-color: var(--tt-colors-action-accent-background-default);
 }
 
 .home-drafts-list {
@@ -676,13 +317,7 @@ body {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--tt-spacing-1, 0.25rem);
-}
-
-.home-draft-row {
-  display: flex;
-  align-items: center;
-  gap: var(--tt-spacing-2, 0.5rem);
+  gap: var(--tt-core-spacing-1);
 }
 
 .home-draft-open,
@@ -692,10 +327,10 @@ body {
   color: inherit;
   cursor: pointer;
   background: none;
-  border: 1px solid var(--tt-colors-informational-primary-border-default, #ddd);
-  border-radius: var(--tt-radii-control, 0.25rem);
-  padding-block: var(--tt-spacing-1, 0.25rem);
-  padding-inline: var(--tt-spacing-3, 0.75rem);
+  border: 1px solid var(--tt-colors-informational-primary-border-default);
+  border-radius: var(--tt-radii-control);
+  padding-block: var(--tt-core-spacing-1);
+  padding-inline: var(--tt-core-spacing-3);
 }
 
 .home-draft-open {
@@ -708,33 +343,10 @@ body {
 .stage-toolbar {
   display: flex;
   justify-content: center;
-  padding-block-end: var(--tt-spacing-3, 0.75rem);
+  padding-block-end: var(--tt-core-spacing-3);
 }
 
-.stage-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-  gap: var(--tt-spacing-4, 1rem);
-}
-
-.stage-grid-cell {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tt-spacing-3, 0.75rem);
-  padding: var(--tt-spacing-4, 1rem);
-  border: 1px solid var(--tt-colors-informational-muted-border-default, #e5e5e5);
-  border-radius: var(--tt-radii-surface, 0.5rem);
-  min-inline-size: 0;
-}
-
-.stage-grid-title {
-  margin: 0;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--tt-colors-informational-muted-text-default);
-}
+/* Stage grid (altitude) is composed with Grid/Surface/Stack/Text. */
 
 /* -- Command palette (PRD F1.5) -------------------------------------------- */
 
@@ -746,9 +358,9 @@ body {
   background: none;
   border: 1px solid var(--tt-colors-informational-primary-border-default, #ddd);
   border-radius: var(--tt-radii-control, 0.25rem);
-  padding-block: var(--tt-spacing-1, 0.25rem);
-  padding-inline: var(--tt-spacing-2, 0.5rem);
-  margin-inline-start: var(--tt-spacing-3, 0.75rem);
+  padding-block: var(--tt-core-spacing-1);
+  padding-inline: var(--tt-core-spacing-2);
+  margin-inline-start: var(--tt-core-spacing-3);
 }
 
 .palette-overlay {
@@ -775,7 +387,7 @@ body {
 
 .palette-input {
   font: inherit;
-  padding: var(--tt-spacing-3, 0.75rem);
+  padding: var(--tt-core-spacing-3);
   border: none;
   border-block-end: 1px solid
     var(--tt-colors-informational-muted-border-default, #e5e5e5);
@@ -789,14 +401,14 @@ body {
 .palette-list {
   list-style: none;
   margin: 0;
-  padding: var(--tt-spacing-1, 0.25rem);
+  padding: var(--tt-core-spacing-1);
   max-block-size: 40vh;
   overflow-y: auto;
 }
 
 .palette-option {
-  padding-block: var(--tt-spacing-2, 0.5rem);
-  padding-inline: var(--tt-spacing-3, 0.75rem);
+  padding-block: var(--tt-core-spacing-2);
+  padding-inline: var(--tt-core-spacing-3);
   border-radius: var(--tt-radii-control, 0.25rem);
   cursor: pointer;
   font-size: 0.875rem;
@@ -807,32 +419,8 @@ body {
 }
 
 .palette-empty {
-  padding: var(--tt-spacing-3, 0.75rem);
+  padding: var(--tt-core-spacing-3);
   font-size: 0.875rem;
   color: var(--tt-colors-informational-muted-text-default);
 }
 
-/* -- Reduced motion (PRD F1.5) ---------------------------------------------
-   fsl-theme's own CSS already carries reduced-motion token overrides; this
-   covers the Studio chrome's transitions. */
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-.studio-brand {
-  font: inherit;
-  font-weight: 700;
-  color: inherit;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-}

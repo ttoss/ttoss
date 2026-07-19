@@ -1,3 +1,5 @@
+import { Text } from '@ttoss/fsl-ui';
+
 import { findEntry } from './catalog';
 import { useComponentStore } from './componentStore';
 import { findPage } from './examplePages';
@@ -36,15 +38,15 @@ export const ComponentStageContent = () => {
 
   return (
     <div className="component-identity-card">
-      <p className="component-name">{entry.meta.displayName}</p>
-      <p className="theme-hint">
+      <Text variant="label-lg">{entry.meta.displayName}</Text>
+      <Text variant="body-sm" tone="muted">
         {entry.meta.entity} · {entry.meta.structure}
         {entry.meta.composition ? ` · ${entry.meta.composition}` : ''}
-      </p>
-      <p className="theme-hint">
+      </Text>
+      <Text variant="body-sm" tone="muted">
         No standalone preview — this part is exercised inside a composite. See
         the example pages for it in context.
-      </p>
+      </Text>
     </div>
   );
 };

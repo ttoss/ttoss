@@ -98,7 +98,7 @@ test('switching preset starts a fresh diff', async () => {
   });
   expect(within(inspector).getByText('Changes (1)')).toBeInTheDocument();
 
-  await user.click(screen.getByRole('button', { name: 'Bruttal' }));
+  await user.click(screen.getByRole('radio', { name: 'Bruttal' }));
   expect(within(inspector).getByText(/No changes yet/)).toBeInTheDocument();
 });
 

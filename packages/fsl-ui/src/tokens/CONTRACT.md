@@ -294,12 +294,20 @@ color:           resolveInteractiveStyle(c?.text,       { isHovered, isPressed, 
 
 | Family     | Standard step | Token path                                 |
 | ---------- | ------------- | ------------------------------------------ |
-| Sizing     | `base`        | `vars.sizing.hit.base`                     |
+| Sizing     | _(single)_    | `vars.sizing.hit`                          |
 | Spacing    | `md`          | `vars.spacing.inset.{control\|surface}.md` |
 | Typography | `md`          | `vars.text.label.md`                       |
 
 If a design calls for a "small button", the question is: **why is it smaller semantically?**
 Is it a toolbar action? A chip? A compact selection control? Name it, give it an entity, and it gets its own fixed step.
+
+> **Layout is not a control.** The "no size prop" rule governs _interactive_
+> components (Entity ≠ Structure). The presentational layer — `Box`, `Grid`,
+> `Container`, `Stack`, `Surface` (all Entity = `Structure`) — is the sanctioned,
+> **token-constrained** escape hatch (ADR-009): its props accept only token keys
+> (`padding="md"`, `columns={3}`, `maxWidth="reading"`) or layout keywords
+> (`align`, `auto`/`100%`/`fit-content`), never a raw `style`/`className`/hex/px.
+> Compose layouts with these instead of hand-rolling CSS.
 
 ---
 
@@ -349,7 +357,18 @@ const valid = ENTITY_EVALUATION['Action'];
 
 ---
 
-## §7 — Escape Hatches: Composite-Scoped CSS Custom Properties
+## §7 — Escape Hatches
+
+There are **two** sanctioned escape hatches, for two different needs:
+
+1. **Composition → the presentational layer (ADR-009).** To arrange, pad, size,
+   or lightly group content, use `Box`/`Grid`/`Container`/`Stack`/`Surface`
+   (Entity = `Structure`). Their props are token-constrained (token keys +
+   layout keywords only) — this is the answer to "I need custom layout" and
+   replaces hand-rolled CSS. See §4.
+2. **Host geometry on composites → composite-scoped CSS custom properties.**
+   For host-owned geometry knobs on interactive composites (which own their
+   layout and expose no visual props), the single channel is described below.
 
 Composites own their layout: they expose no `style`/`className` and no
 visual props. The **single sanctioned customization channel** is a
@@ -407,7 +426,7 @@ Registered knobs:
 ## §8 — Full Example: Button (Entity = Action)
 
 `entity: 'Action'` → §1 row: colors=`action`, radii=`control`, border=`outline.control`,
-sizing=`hit.base`, spacing=`inset.control.md`, typography=`label.md`, motion=`feedback`, elevation=`flat`.
+sizing=`hit`, spacing=`inset.control.md`, typography=`label.md`, motion=`feedback`, elevation=`flat`.
 
 ```typescript
 import { vars } from '@ttoss/fsl-theme/vars';
@@ -440,7 +459,7 @@ export const Button = ({ evaluation = 'primary', ...props }: ButtonProps) => {
         borderRadius: vars.radii.control,
         borderWidth: vars.border.outline.control.width,
         borderStyle: vars.border.outline.control.style,
-        minHeight: vars.sizing.hit.base,
+        minHeight: vars.sizing.hit,
         paddingBlock: vars.spacing.inset.control.md,
         paddingInline: vars.spacing.inset.control.md,
         ...(vars.text.label.md as React.CSSProperties),

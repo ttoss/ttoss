@@ -146,16 +146,33 @@ export const Meter = ({
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'baseline',
+                    gap: vars.spacing.gap.inline.sm,
                     color: c?.text?.default,
                     ...(vars.text.label.md as React.CSSProperties),
                   } as React.CSSProperties
                 }
               >
-                <span data-scope="meter" data-part="title">
+                <span
+                  data-scope="meter"
+                  data-part="title"
+                  style={
+                    {
+                      minInlineSize: 0,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    } as React.CSSProperties
+                  }
+                >
                   {label}
                 </span>
                 {showValueLabel && (
-                  <span data-scope="meter" data-part="status" aria-hidden>
+                  <span
+                    data-scope="meter"
+                    data-part="status"
+                    aria-hidden
+                    style={{ flex: 'none' } as React.CSSProperties}
+                  >
                     {valueText ?? `${Math.round(percentage)}%`}
                   </span>
                 )}

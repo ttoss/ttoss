@@ -77,7 +77,7 @@ Components consume **only** `semantic.*`. Core values never change between light
 | `semantic.colors.` | `--tt-colors-` | `vars.colors.action.primary.background.default` → `var(--tt-colors-action-primary-background-default)` |
 | `semantic.text.` | `--tt-text-` | `vars.text.body.md.fontSize` → `var(--tt-text-body-md-fontSize)` |
 | `semantic.spacing.` | `--tt-spacing-` | `vars.spacing.inset.control.md` → `var(--tt-spacing-inset-control-md)` |
-| `semantic.sizing.` | `--tt-sizing-` | `vars.sizing.hit.base` → `var(--tt-sizing-hit-base)` |
+| `semantic.sizing.` | `--tt-sizing-` | `vars.sizing.hit` → `var(--tt-sizing-hit)` |
 | `semantic.radii.` | `--tt-radii-` | `vars.radii.control` → `var(--tt-radii-control)` |
 | `semantic.border.` | `--tt-border-` | `vars.border.outline.control.width` → `var(--tt-border-outline-control-width)` |
 | `semantic.focus.` | `--tt-focus-` | `vars.focus.ring.color` → `var(--tt-focus-ring-color)` |
@@ -139,7 +139,7 @@ Valid `{ux, state}` combinations: see [Color state legality](#color-state-legali
 | | `vars.spacing.gutter.{page,section}` | CSS length / `clamp()` |
 | | `vars.spacing.separation.interactive.min` | CSS length |
 | **text** | `vars.text.{display,headline,title,body,label,code}.{lg,md,sm}` | TextStyle (object — see below) |
-| **sizing** | `vars.sizing.hit.{min,base,prominent}` | CSS length |
+| **sizing** | `vars.sizing.hit` | CSS length |
 | | `vars.sizing.icon.{sm,md,lg}` | CSS length |
 | | `vars.sizing.identity.{sm,md,lg,xl}` | CSS length |
 | | `vars.sizing.measure.reading` | CSS `ch` / `clamp()` |
@@ -215,7 +215,7 @@ Available fields: `fontFamily` · `fontSize` · `fontWeight` · `lineHeight` · 
 
 **`width` / `height` / `min-width` / `min-height` → `sizing`**
 
-- Interactive area (hit target) → `vars.sizing.hit.{min|base|prominent}` (apply via `min-width`/`min-height`, not visual size)
+- Interactive area (hit target) → `vars.sizing.hit` (apply via `min-width`/`min-height`, not visual size)
 - Icon glyph → `vars.sizing.icon.{sm|md|lg}`
 - Avatar / identity → `vars.sizing.identity.{sm|md|lg|xl}`
 - Reading line length → `vars.sizing.measure.reading` (use as `max-width`)
@@ -313,7 +313,7 @@ Never both. Never neither.
 
 **§3 — `opacity.disabled` is for visual media only.** Disabled controls and disabled text **must** use `vars.colors.{ux}.{role}.{dimension}.disabled` color tokens (which carry contrast guarantees). `vars.opacity.disabled` is exclusive to images, avatars, illustrations — assets without a color contract.
 
-**§4 — `sizing.hit.*` is enforced via `min-*`, not visual size.** Apply as `min-width` / `min-height`. The CSS layer auto-injects coarse-pointer overrides under `@media (any-pointer: coarse)` — do not write that media query yourself.
+**§4 — `sizing.hit` is enforced via `min-*`, not visual size.** Apply as `min-width` / `min-height`. The CSS layer auto-injects coarse-pointer overrides under `@media (any-pointer: coarse)` — do not write that media query yourself. `hit` is a single ergonomic floor (not a `min`/`base`/`prominent` scale) — see ADR-020.
 
 **§5 — `tonal` elevation requires its shadow counterpart.** Using `vars.elevation.tonal.raised` is only valid when `vars.elevation.surface.raised` is also applied to the same element. Tonal alone breaks depth perception when the theme switches modes.
 
@@ -408,7 +408,7 @@ function PrimaryButton({
           : vars.colors.action.primary.text.default,
         // §6 — density uniform: inset / sizing / typography all md
         padding: `0 ${vars.spacing.inset.control.md}`,
-        minHeight: vars.sizing.hit.base,              // §4: min-height enforces hit target
+        minHeight: vars.sizing.hit,              // §4: min-height enforces hit target
         // typography — each TextStyle field is its own var() string
         fontFamily: vars.text.label.md.fontFamily,
         fontSize: vars.text.label.md.fontSize,
@@ -463,7 +463,7 @@ function TextField({
           borderWidth: vars.border.outline.control.width,
           borderStyle: vars.border.outline.control.style,
           borderRadius: vars.radii.control,
-          minHeight: vars.sizing.hit.base,
+          minHeight: vars.sizing.hit,
           padding: `0 ${vars.spacing.inset.control.md}`,
           fontSize: vars.text.body.md.fontSize,
           lineHeight: vars.text.body.md.lineHeight,
@@ -540,7 +540,7 @@ For every component you generate, verify:
 2. **Focus** (§1) — every focusable element has *exactly one* of: per-ux `{ux}.{role}.border.focused`, system `focus.ring.*`, or valence-aware input override. Never both. Never neither.
 3. **Pairing** (§2) — every `colors.{ux}.{role}.background.{state}` is paired with `colors.{ux}.{role}.text.{state}` at the same state.
 4. **Disabled** (§3) — disabled controls and text use `colors.{ux}.{role}.{dimension}.disabled`; `opacity.disabled` appears only on `<img>`, `<Avatar>`, illustrations.
-5. **Hit target** (§4) — interactive elements set `minWidth` or `minHeight` (not `width`/`height`) to `vars.sizing.hit.*`.
+5. **Hit target** (§4) — interactive elements set `minWidth` or `minHeight` (not `width`/`height`) to `vars.sizing.hit`.
 6. **Density** (§6) — the same step (`sm`/`md`/`lg`) is used across `spacing.inset.*`, `spacing.gap.*`, `sizing.icon.*`, and `text.label.*` within the component.
 7. **Validation** — invalid inputs use `input.negative.*` *role*, never `input.primary.*` + a fictitious `invalid` state.
 8. **Stateful CSS** — `:hover`, `:focus-visible`, `:active`, `:disabled` are written in a `.css` file or CSS-in-JS; inline `style` cannot express pseudo-classes.
@@ -594,7 +594,7 @@ const NativeButton = ({ disabled }: { disabled?: boolean }) => {
 
 `useResolvedTokens()` automatically applies coarse-pointer hit target overrides — mirrors the `@media (any-pointer: coarse)` block that `toCssVars` injects for CSS consumers.
 
-⚠ **CSS-coupled tokens stay unresolved** (model.md §8): spacing steps (`calc(N * var(--tt-core-spacing-engine-unit))`), fluid `text.*.fontSize` / `sizing.hit.*` (`clamp()` + `cqi`), `sizing.viewport.*` (`dvh`/`dvw`), `sizing.measure.reading` (`ch`), and `spacing.gutter.*` are CSS expressions and are **not usable** outside a CSS engine. In non-CSS environments, consume colors, opacity, z-index, font weights/leading, and other scalar tokens — derive dimensional values from your platform's layout system.
+⚠ **CSS-coupled tokens stay unresolved** (model.md §8): spacing steps (`calc(N * var(--tt-core-spacing-engine-unit))`), fluid `text.*.fontSize` (`clamp()` + `cqi`), `sizing.hit` (`clamp()` + `rem`), `sizing.viewport.*` (`dvh`/`dvw`), `sizing.measure.reading` (`ch`), and `spacing.gutter.*` are CSS expressions and are **not usable** outside a CSS engine. In non-CSS environments, consume colors, opacity, z-index, font weights/leading, and other scalar tokens — derive dimensional values from your platform's layout system.
 
 ---
 
@@ -644,12 +644,12 @@ createTheme({
 
 **Override paths (all together):**
 - `core.spacing.{1..16}` — base spacing scale steps
-- `core.sizing.hit.fine.{min,base,prominent}` — fine-pointer hit targets
+- `core.sizing.hit.fine` — fine-pointer hit targets
 - `core.sizing.icon.*` — icon ramp
 - `core.font.size.*` (optional) — type scale
 
 **Invariants:**
-- Touch targets (`core.sizing.hit.coarse.*`) must remain ≥ 44px regardless of fine-pointer values (a11y minimum).
+- Touch targets (`core.sizing.hit.coarse`) must remain ≥ 44px regardless of fine-pointer values (a11y minimum).
 - Density propagates uniformly: if you reduce `core.spacing.4` by 25%, reduce other spacing steps proportionally to preserve the scale ratios.
 - Hit target floors in `clamp()` expressions must remain ergonomic (≥ 32px for fine pointer).
 

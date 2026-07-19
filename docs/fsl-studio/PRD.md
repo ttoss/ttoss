@@ -1,706 +1,625 @@
-# FSL Studio — Product Requirements Document
+# FSL Studio — Product Requirements Document (v2)
 
-> **Status:** Approved for implementation planning · **Owner:** @enniolopes · **Date:** 2026-07-17
-> **Workstream ID:** E (referenced from `packages/fsl-ui/INTERNAL/ROADMAP.md` workstreams A–D)
-> **Audience:** implementation sessions (human or agent). This document is self-contained: an
-> implementer must be able to build any phase from this file plus the referenced source files,
-> without access to the originating conversation.
-
-## 0. Reading guide for implementation sessions
-
-1. Read §2 (scope guard) before touching any file.
-2. Pick the phase you are implementing in §9 and read its Definition of Done.
-3. Every architecture decision in §4 is binding; do not re-litigate them silently — if one
-   proves wrong during implementation, record the objection in this file and stop for review.
-4. UX rules in §6 are requirements, not suggestions. The anti-pattern list (§6.6) is a contract.
-5. Ground-truth source files this PRD depends on (verify against them, not against memory):
-   - `packages/fsl-theme/src/createTheme.ts`, `src/css.ts`, `src/dtcg.ts`, `src/react.tsx`
-   - `packages/fsl-ui/src/semantics/index.ts` (public legality matrices), `src/index.ts`
-   - `packages/fsl-ui/llms.txt`, `packages/fsl-ui/src/tokens/CONTRACT.md`
-   - `packages/fsl-bench/src/gauntlet/lint.ts`, `src/providers/`
-   - `docs/website/blog/2026-03-09-tazuna-ux.md` (design philosophy)
-   - `packages/fsl-ui/INTERNAL/ROADMAP.md` (workstreams A–D, gates D1/D2)
+> **Status:** Draft for review · **Owner:** @enniolopes · **Date:** 2026-07-19
+> **Supersedes:** the 2026-07-17 PRD (v1), archived in git history.
+> **Audience:** implementation sessions (human or agent). Self-contained: a reader
+> should be able to build any phase from this file plus the referenced source.
 
 ---
 
-## 1. Problem and success criteria
+## 0. Why this document exists (the honest reset)
 
-### 1.1 Problem statement
+v1 shipped a working app that was **built right but framed wrong**. The engine is
+sound — client-side theme re-derivation, live light/dark preview, contrast checks,
+DTCG/CSS/TS export, URL-shareable state. The **information architecture failed**:
 
-FSL promises that meaning defined once survives every projection — theme, mode, component,
-agent. Today that promise can only be experienced or verified by cloning the monorepo and
-reading source. The system has no operational surface: nowhere for a human to see the
-semantics rendered, nowhere for a theme author to test a decision before implementing it,
-no activation mechanism for AI agents outside the repo, and no channel through which
-real-world friction returns as system evolution.
+- A **Home screen** ("What do you want to do?") whose three cards each opened the
+  **same** three-pane shell with a different "lens" active — three doors into one room.
+- A header **lens switcher** (Theme | Components | Generate) that **duplicated** those
+  three cards.
+- An orthogonal **altitude switcher** (Component | Page | Grid) crossed on top, and a
+  **dead "Generate" lens** that led to an empty placeholder.
 
-The product was designed to reduce the cost of _deciding correctly_ in UI construction to
-near zero — but the cost of _accessing the product_ remains "clone a monorepo and read a
-500-line contract". The core FSL thesis is verifiability of meaning; verification today is
-a privilege of its authors.
+Net: three navigation systems (home cards ≈ lens tabs, plus altitudes, plus a dead
+route) that the user had to reconcile to do anything. As the owner put it: _"any button
+on the home leads to practically the same page, just changing a tab… not intuitive… it
+became more confusing than helpful."_
 
-This blocks the internal launch plan: gate D2 (flip `private: true`) depends on D1
-(AI-executability benchmark), and STRATEGIC_EVAL criteria 1, 4, 5 and 6 (62/100 weighted
-points) require interactive usage scenarios that have nowhere to run.
+The root cause was not Tazuna UX (which is correct) and not the code. It was **an
+abstraction miss**: v1's problem statement was _strategic_ — "close the loop
+experience → use → verify → evolve", tied to internal launch gates (D1/D2) and an AI
+benchmark. The IA therefore encoded an **internal narrative**, not **user jobs**. When
+you organize an app around your own strategy instead of the user's tasks, you get modes
+that make sense on a roadmap and nowhere else.
 
-### 1.2 Success criteria (problem-level, solution-agnostic)
+v2 re-derives everything from **what real people are trying to do**, and lets the FSL
+system's own structure — the fact that _meaning is a graph of components and tokens_ —
+dictate the architecture. The result is **simpler, more robust, and more useful at
+once**, because it stops inventing navigation and starts exposing the model.
 
-- **SC-1** A person without the monorepo experiences rendered FSL semantics and creates +
-  exports a valid theme in **minutes, not days** (target: theme exported in < 15 min;
-  first "wow" — one brand-color change re-theming a whole page in light and dark — in < 60 s).
-- **SC-2** An AI agent outside the repo is **activated** into the correct procedure and its
-  output passes **mechanical verification**, with the gain measured by fsl-bench (the delta
-  becomes the D1 launch number).
-- **SC-3** A **measurable flow of external demand and friction** reaches the repo
-  (structured issues), so FSL theory validation stops being self-referential.
-
----
-
-## 2. Scope guard (binding for every executor)
-
-Writable surfaces — **only**:
-
-- `docs/fsl-studio/**` — the FSL Studio app (this directory).
-- `packages/fsl-bench/**` — only for: (a) extracting the semantic lint into a browser-safe
-  export, (b) adding the third benchmark condition (`llms.txt + skill`). Never touch
-  provider credentials, golden fixtures' semantics, or the honesty rules in its README.
-- `.github/ISSUE_TEMPLATE/**` — the new `fsl-ui-proposal` issue template (Phase 4).
-- `docs/website/docs/design/**` — only to add links pointing to the Studio (Phase 4).
-- `ttoss/skills` repository (separate repo) — the `skills/fsl` skill (Phase 3).
-
-Read-only — never modified by this plan: `packages/fsl-ui/**`, `packages/fsl-theme/**`
-(consumed as workspace dependencies; if an item seems to require changing them, that is a
-finding to report, not a change to make), Storybook, root CI workflows (the app's checks run
-via its own package scripts wired into the existing turbo pipeline), and every other package.
-
-Non-goals are listed in §12. Anything not listed as writable is out of scope.
+This document is a full replacement. It keeps v1's sound technical decisions (§12) and
+the hard-won engineering findings (Appendix A), and throws away its IA.
 
 ---
 
-## 3. Solution overview
+## 1. Problem
 
-Four deliverables that close the loop _experience → use → verify → evolve_:
+### 1.1 What we are really solving
 
-| #   | Deliverable                                                                                           | Where                         | Phase |
-| --- | ----------------------------------------------------------------------------------------------------- | ----------------------------- | ----- |
-| E1  | **FSL Studio** — web app: Theme Lab + Component Lab + example pages + exports                         | `docs/fsl-studio`             | 0–2   |
-| E2  | **`fsl` skill** — agent activation procedure                                                          | `ttoss/skills` repo           | 3     |
-| E3  | **Proof** — fsl-bench third condition + D1 campaign executed                                          | `packages/fsl-bench`          | 3     |
-| E4  | **AI layer + feedback channel** — BYOK generation with verification, prompt export, GitHub issue flow | `docs/fsl-studio`, `.github/` | 4     |
+FSL's thesis is that **meaning defined once survives every projection** — a component's
+Entity determines its tokens; a token change re-themes every consumer; the same
+semantics are legible to humans and to AI agents. That is a powerful claim, and today it
+is **invisible and unusable outside the monorepo**. To see a component you read source;
+to test a theme you clone and rebuild; to know what a token change breaks you grep; to
+know which props are legal you read a 500-line contract.
 
-The Studio is the _operational surface_; the skill is the _distribution mechanism_; the
-bench is the _proof_; the issue flow is the _return channel_.
+The people who would benefit — app developers, designers, the system's own maintainers,
+and AI agents — have **no place to do their actual jobs against FSL**. Those jobs span a
+clear spectrum:
 
----
+- **Basic (consume):** _find the right component, understand it, see the tokens it uses,
+  copy correct code_ — the job Storybook and a docs site serve.
+- **Advanced (author & maintain):** _create and tune a theme; create/update a component
+  or token; test it; **see the blast-radius of changing one token** across every
+  component and page; verify nothing drifts; export for adoption_ — jobs **no existing
+  tool serves well**, because no other design system has FSL's machine-readable
+  component↔token contract.
 
-## 4. Architecture decisions (binding)
+The problem is not "FSL lacks a docs site." It is: **FSL has no operational surface
+where its meaning can be browsed, authored, tested, and its consequences seen — by the
+humans and agents who build with it.**
 
-**AD-1 — Location: workspace app at `docs/fsl-studio`, package name `@docs/fsl-studio`.**
-Follows the existing convention (`@docs/website`, `docs/storybook`). The pnpm workspace glob
-`docs/*` already covers it. Naming decision (2026-07-17): the product is **FSL Studio** and
-the directory is `fsl-studio` — deliberately not `playground`, so that generic name stays
-free for possible future playgrounds of other ttoss products. Rationale: fsl-ui/fsl-theme `exports` point to `src/` in dev, so
-the Studio consumes live source with zero publish loop — the packages are `private: true`
-and under active development (Wave 3 pending), which makes co-location the dominant factor.
-Extraction to a dedicated FSL monorepo is a deliberate post-D2 option, not now.
+### 1.2 The market gap that makes this worth building
 
-**AD-2 — Stack: Vite + React 19 + TypeScript strict, SPA.** Not Docusaurus (needs an
-interactive runtime, not a docs renderer) and not Storybook (explicitly out of scope per
-fsl-ui ROADMAP; the Studio is an operational tool, not a story gallery). ESM-only, matching
-fsl-ui.
+Surveying the field (Storybook, Chromatic, Backlight, Supernova, Knapsack, zeroheight,
+Tokens Studio, Style Dictionary, Radix Themes, Material Theme Builder, Leonardo, Polaris,
+Chakra/MUI editors, Tailwind), the job spectrum is served **unevenly** and **one band is
+essentially empty**:
 
-**AD-3 — Zero backend in v1.** All state lives client-side (memory + localStorage + URL).
-LLM calls are BYOK direct-from-browser (AD-7). GitHub issues via prefilled URLs (AD-9).
-Consequences: unlimited concurrent users at zero marginal cost, no auth, no abuse surface,
-privacy by architecture (nothing user-created ever reaches a ttoss server). Real-time
-collaboration is explicitly out (fork-by-URL instead).
+- **Browse/consume** is well served (Storybook autodocs, Polaris component pages).
+- **Configure/try** is well served (Storybook Controls, Radix ThemePanel).
+- **Author tokens** is served by expert tools (Tokens Studio, Style Dictionary) with no
+  visual consequence view.
+- **Impact / blast-radius** is served by **nobody** end-to-end. The closest partials —
+  Radix's live global re-theme (shows the ripple but not _what_ changed) and Chromatic's
+  post-hoc visual diff (enumerates changed stories but is **cause-blind**: "40 stories
+  changed", never "…because you edited `semantic.action.primary`") — do not draw the
+  causal chain _token → semantic alias → components → screens_, and none is
+  **legality-aware**.
 
-**AD-4 — Deploy: `carlin deploy static-app`** (same mechanism as `docs/website`), to a
-dedicated subdomain — proposed `studio.ttoss.dev` (final name is Open Question OQ-1). The
-deploy script lives in the app's `package.json`; no root workflow changes.
+FSL uniquely **can** own that band, because it owns the graph: `*Meta.entity` +
+the Entity→Token map (`CONTRACT.md §1`) + `createTheme` reference resolution make the
+dependency chain **computable**. "Edit a semantic token → instantly see the enumerated,
+previewed, contract-checked dependent set" is a capability the entire surveyed market
+lacks. **That is FSL Studio's headline, not a footnote.**
 
-**AD-5 — Theme editing = pure client-side re-derivation.** The edit loop is:
-`createTheme({ overrides, alternate })` (pure function, browser-safe) →
-`getThemeStylesContent` / `toCssVars` (`@ttoss/fsl-theme/css`) → replace the contents of a
-single `<style id="fsl-studio-theme">` element. No rebuild, no network. `validateRefs` runs
-on every edit for live ref validation — note it is gated by `NODE_ENV !== 'production'`
-inside `buildTheme`; the Studio consumes source, so ensure the production bundle keeps
-validation active (define `process.env.NODE_ENV` appropriately for the theme-editing code
-path, or call the validator explicitly; resolve at implementation, record which).
+### 1.3 Success criteria (solution-agnostic)
 
-**AD-6 — The legality-driven props panel is generated, never hand-written.** Source of
-truth: `@ttoss/fsl-ui/semantics` (`ENTITIES`, `ENTITY_EVALUATION`, `ENTITY_CONSEQUENCE`,
-`ENTITY_COMPOSITION`, `ENTITY_STRUCTURE`, `STATES`, `ComponentMeta`). Illegal combinations
-do not render as disabled controls — they do not render at all. Component catalog entries
-derive from the `*Meta` exports of `@ttoss/fsl-ui` (same auto-discovery philosophy as the
-package's contract tests: no manual registry).
-
-**AD-7 — LLM: BYOK, browser-direct.** `@anthropic-ai/sdk` with
-`dangerouslyAllowBrowser: true` (sends the `anthropic-dangerous-direct-browser-access`
-CORS header). The key is the _user's own_ — held in memory by default, localStorage opt-in
-behind an explicit warning; never sent anywhere except `api.anthropic.com`. Default model
-`claude-opus-4-8`, user-selectable. Use `client.messages.stream(...)` +
-`finalMessage()` internally (avoids HTTP timeouts on long outputs); the UI shows a calm
-progress indicator, not token-by-token code streaming (§6.4-P5). Context assembled per
-request: the bundled `llms.txt` (imported at build time from
-`packages/fsl-ui/llms.txt` via Vite raw import), the active theme diff, and — on refine —
-the target composition's current code. The SDK chunk is lazy-loaded; users who never open
-the AI layer never download it.
-
-**AD-8 — Verification tiers (honest layering).** In-browser gauntlet, run on every AI
-output before it renders:
-
-- **V1 typecheck** — TypeScript compiled in-browser (`@typescript/vfs` or equivalent)
-  against bundled `.d.ts` of fsl-ui + React. Lazy-loaded with the AI layer.
-- **V2 sandboxed render** — transpile (esbuild-wasm or sucrase, lazy) and mount inside a
-  sandboxed `<iframe>` (`sandbox="allow-scripts"`, no same-origin) with the active theme's
-  CSS injected; success = mounts without throwing.
-- **V3 semantic lint** — the fsl-bench L4 rules (`src/gauntlet/lint.ts`), extracted into a
-  browser-safe export of `@ttoss/fsl-bench` and consumed via workspace dependency
-  (single source of truth for the rules; the bench stays their home).
-- **Not in the browser:** L3 behavior asserts (RTL/user-event in a child process) — that
-  remains fsl-bench/CI territory. The UI must say so explicitly (verification badges show
-  `behavior: not verified here`). Never imply more verification than actually ran.
-
-**AD-9 — GitHub issue flow: prefilled URL, no API.** A new issue form template
-`.github/ISSUE_TEMPLATE/fsl-ui-proposal.yml` (fields: what/why, proposed Entity, legality
-question, generated code, reproduction link). The Studio builds
-`https://github.com/ttoss/ttoss/issues/new?template=fsl-ui-proposal.yml&…` with fields
-prefilled from session state. Spam protection = GitHub login, by construction. URL length
-is capped (~8 KB): when the payload exceeds it, prefill everything except the code and show
-a copy-paste block for the body instead (the UI explains this).
-
-**AD-10 — URL is the state; localStorage is the drafts shelf.** Session state (theme diff,
-lens, selection, compositions) serializes to the URL hash, compressed with `lz-string`
-(TypeScript-Playground pattern). Opening a shared link = receiving a **fork** (copy) of that
-state. Drafts autosave to localStorage keyed by draft id; two tabs on the same draft =
-last-write-wins (accepted v1 limitation, documented in-app). Oversized states degrade
-gracefully: the share button switches to "download/copy" with an inline explanation.
-
-**AD-11 — The skill is a pointer, never a copy.** `skills/fsl/SKILL.md` teaches procedure
-and points the agent at the ground truth _in the installed package_
-(`node_modules/@ttoss/fsl-ui/llms.txt`, `src/tokens/CONTRACT.md`). It never restates token
-tables or legality matrices. Publication to `ttoss/skills` is gated on D2; authoring and
-bench usage happen before that.
+- **SC-1 — Consume in seconds.** A newcomer with no monorepo finds a component, sees its
+  anatomy, legal props, and the tokens it consumes, and copies correct code — **without
+  choosing a "mode"** and without reading the contract. First render, zero navigation
+  training.
+- **SC-2 — Author a theme in minutes.** A designer changes a brand token and watches a
+  real page re-theme in light **and** dark in **< 400 ms**, then exports a valid theme
+  (DTCG / CSS / `createTheme`) in **< 15 min**. The "wow" — one token rippling across the
+  whole system live — happens in **< 60 s**.
+- **SC-3 — See consequences before committing.** A maintainer edits one semantic token
+  and, **in place**, sees exactly which components, states, and pages change, **which (if
+  any) legality contracts break**, and can accept or revert per token. No CI round-trip,
+  no grep.
+- **SC-4 — Agent-legible.** The same graph that renders the UI is exportable to an AI
+  agent (llms.txt + skill + a machine endpoint), and agent output passes mechanical
+  verification.
+- **SC-5 — One coherent surface.** A user never asks "which tab/mode am I supposed to be
+  in?" There is one workbench; everything else is selection and progressive disclosure.
 
 ---
 
-## 5. Personas and jobs
+## 2. Vision
 
-| Persona                                      | Job to be done                                                              | Served by                         |
-| -------------------------------------------- | --------------------------------------------------------------------------- | --------------------------------- |
-| Theme author (designer/dev adapting a brand) | Create/adjust a theme and _see_ whether meaning survives, before any commit | Theme Lab, example pages, exports |
-| Product developer (fsl-ui consumer)          | Discover components, learn the legal grammar, copy a correct starting point | Component Lab, copy-JSX           |
-| AI agent (outside the repo)                  | Be activated into the correct procedure; produce verified output            | Skill, llms.txt, prompt export    |
-| FSL maintainer                               | Empirical validation + demand signal for the catalog                        | Bench third condition, issue flow |
+**FSL Studio is one workbench for the FSL semantic graph:** select any component or any
+token, see everything true about it — anatomy, legal props, the tokens it consumes or the
+components that consume it — edit in place, and watch the consequences ripple, verified,
+before you commit. It guides without grabbing (Tazuna), it never makes you pilot it, and
+it is as useful to an AI agent as to a person.
+
+> **One-liner:** _See the meaning, change the meaning, and see what the change touches —
+> in one place._
 
 ---
 
-## 6. UX specification
+## 3. Design tenets (binding)
 
-### 6.1 Experience thesis
+1. **The model is the map.** The IA mirrors FSL's data model — a graph of
+   components ↔ tokens — not a table of contents and not an internal roadmap. If a
+   navigation element does not correspond to a real object or a real job, it does not
+   exist.
+2. **One workbench, no false forks.** There is a single working surface. We never ship
+   two controls that do the same thing, nor a screen whose only purpose is to pick which
+   tab opens.
+3. **Tazuna: guide without grabbing.** Eyes on the goal, presence in the periphery,
+   semantically clean signals, steering over restart, directed assistance over
+   theatrical autonomy (§9).
+4. **Consequence is first-class.** Every edit shows its blast-radius. The system absorbs
+   the graph complexity so the user never has to (Tesler's Law).
+5. **Legal-by-construction.** Illegal states are **absent**, not disabled. The UI speaks
+   FSL's vocabulary verbatim (`Entity`, `evaluation`, `consequence`, `data-part`).
+6. **Live, never stale.** Everything renders off the real packages and the real graph;
+   nothing is hand-authored prose that can drift.
+7. **AI-first, human-first — same surface.** What an agent needs (the semantic contract
+   as data) is what a human needs. We expose one graph to both.
 
-The Studio **is the argument**: built entirely with fsl-ui + fsl-theme. The theme being
-edited can be applied to the Studio itself via an **"apply to Studio" toggle**; the app
-chrome keeps a fixed fallback theme one click away (steering, not restart — a broken
-work-in-progress theme must never lock the user out of the editor).
+---
 
-Session-one success metric: **time-to-wow < 60 s** — change a brand color, watch a full
-product page re-theme coherently in light _and_ dark, no signup, no tutorial, no API key.
+## 4. Personas
 
-### 6.2 Information architecture — one stage, three lenses
+| #   | Persona                       | One-line profile                                                                                                                          | Primary altitude |
+| --- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| P1  | **App developer (consumer)**  | Building a product with `@ttoss/fsl-ui`; needs the right component, legal props, correct copy-paste, and to know which tokens it touches. | Basic → mid      |
+| P2  | **Designer / theme author**   | Owns a brand's look; tunes tokens, checks contrast and light/dark, exports a theme to hand to engineering.                                | Mid → advanced   |
+| P3  | **Design-system maintainer**  | Owns `fsl-ui`/`fsl-theme`; adds/edits components and tokens, and must know the **blast-radius** of a change before shipping it.           | Advanced         |
+| P4  | **AI agent**                  | A first-class consumer activated via `llms.txt` + skill; must produce FSL-correct output that passes mechanical verification.             | Cross-cutting    |
+| P5  | **Evaluator / PM / newcomer** | Needs to understand _what FSL is and why it's better_ in minutes, by touching it.                                                         | Basic            |
 
-```
-┌──────────┬──────────────────────────────┬───────────────┐
-│ NAVIGATOR│            STAGE             │   INSPECTOR   │
-│ (left)   │  live preview — always       │   (right)     │
-│ catalog  │  light + dark side by side   │  tokens, or   │
-│ or token │                              │  legal props  │
-│ tree     │                              │  + code       │
-└──────────┴──────────────────────────────┴───────────────┘
-   Lenses: [ Theme ] [ Components ] [ Generate ]   ⌘K palette
-```
+These are not equal in weight. **P3's blast-radius job is the differentiator**; P1's
+consume job is the on-ramp that earns the audience; P4 is the strategic multiplier.
 
-- The three lenses — **Theme**, **Components**, **Generate** — swap the navigator and
-  inspector content, **never the stage**. Switching lens with `InvoiceCard` on stage keeps
-  `InvoiceCard` on stage. Lenses are projections of one `SessionState`
-  (`{ themeDiff, selection, compositions[], history }`), not separate pages.
-- The stage has three altitudes: isolated component → full example page → page grid
-  (semantic-drift view). Light/dark render side by side at every altitude.
-- Home is a task question, not a dashboard: _"What do you want to do?"_ → Create a theme /
-  Explore components / Generate a composite — each opens the right lens pre-loaded with a
-  useful state (never an empty screen). Theme starting presets come from the existing
-  style-references docs (`neobrutalism`, `glass`, `minimalist`, `90s`, …) plus `bruttal`
-  and the base theme.
+---
 
-### 6.3 The prompt bar (AI interaction model)
+## 5. Jobs-to-be-Done → capability matrix
 
-One contextual prompt bar, same component in every lens, with an **explicit target**:
+JTBD phrased as _"When I ***, I want to ***, so I can \_\_\_."_ Tier = basic|advanced.
+Priority = P0 (Studio v1) | P1 (fast-follow) | P2 (later).
 
-```
-▸ Target: [Theme: "my-brand"]   Context: ⓘ 3 items
-┌────────────────────────────────────────────────────────┐
-│ "make it denser, more technical…"                      │
-└────────────────────────────────────────────────────────┘
-[steering chips]                                [Generate →]
+| #   | Job (abbrev.)                        | Persona   | The Studio must let them…                                                                                                                       | Tier      | Prio   |
+| --- | ------------------------------------ | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------ |
+| J1  | Find the right component             | P1,P5     | Search/browse components grouped by Entity; land directly, no menu                                                                              | basic     | P0     |
+| J2  | Understand a component               | P1,P5     | See it rendered, its anatomy (`data-scope`/`data-part`), and its states                                                                         | basic     | P0     |
+| J3  | Know its legal props                 | P1        | See the legality matrix; pick only legal `evaluation`/`consequence`; illegal absent                                                             | basic     | P0     |
+| J4  | Know the tokens it consumes          | P1,P3     | See the exact token set for its Entity, each linking to the token node                                                                          | basic     | P0     |
+| J5  | Copy correct code                    | P1        | Copy JSX for the current legal config, with required i18n labels flagged                                                                        | basic     | P0     |
+| J6  | Try a component's props live         | P1        | Manipulate legal props on a live instance (Controls-style)                                                                                      | basic     | P1     |
+| J7  | Create / tune a theme                | P2        | Edit core & semantic tokens; remap semantic→core; presets as starting points                                                                    | advanced  | P0     |
+| J8  | See a token change ripple            | P2,P3     | Live re-theme of a real page/board in light+dark, < 400 ms                                                                                      | advanced  | P0     |
+| J9  | Check contrast / a11y                | P2        | Ambient WCAG contrast on token pairs, both modes                                                                                                | advanced  | P0     |
+| J10 | **See the blast-radius of a token**  | **P3,P2** | **Edit one token → enumerated + previewed set of affected components/states/pages, with legality violations surfaced, accept/revert per token** | advanced  | **P0** |
+| J11 | Create / maintain a component config | P3        | Compose a legal component variant/state, test it on the stage, keep it as a session composition                                                 | advanced  | P1     |
+| J12 | Verify nothing drifts                | P3        | On a token edit, see contract violations introduced (legality-aware impact)                                                                     | advanced  | P1     |
+| J13 | Export for adoption                  | P1,P2     | Export theme as DTCG / CSS / `createTheme` TS; copy component code                                                                              | basic→adv | P0     |
+| J14 | Activate an AI agent                 | P4        | Get `llms.txt` + skill install + a machine-readable snapshot of the graph                                                                       | basic     | P1     |
+| J15 | Get AI directed assistance           | P2,P3     | Ask for a token diff or a component config; receive a **proposal** in the same diff/impact UI                                                   | advanced  | P2     |
+| J16 | Return friction as evolution         | P3,P1     | File a structured `fsl-ui` proposal from a component/token in context                                                                           | advanced  | P2     |
+| J17 | Understand FSL fast                  | P5        | A live system overview that teaches the thesis by being touched                                                                                 | basic     | P0     |
+
+---
+
+## 6. The core model — the Component ↔ Token semantic graph
+
+Everything in the Studio is a view over one graph, **derived automatically** (no hand
+wiring):
+
+- **Component nodes** — every export from `@ttoss/fsl-ui` with a `*Meta` (34 components +
+  13 composites today). Each declares an `Entity`, a `structure`, and legality
+  (`legalEvaluations`/`legalConsequences` from the matrices).
+- **Token nodes** — every leaf of `@ttoss/fsl-theme` in two layers: `core` (primitives)
+  and `semantic` (`{core.*}` references). Modes remap semantic refs.
+- **Consumes edges** — derived from `CONTRACT.md §1` (Entity → Token Map): an Action
+  component consumes `colors.action`, `radii.control`, `border.outline.control`,
+  `sizing.hit`, `spacing.inset.control`, `typography.label`, `motion.feedback`,
+  `elevation.flat`, plus cross-cutting focus/opacity. This is the **legal** set; it can be
+  refined to **actually-read** by scanning `vars.*` usage where precision matters (OQ-2).
+- **References edges** — `semantic → core`, from `createTheme`/`toFlatTokens` resolution.
+
+```mermaid
+graph LR
+  subgraph Components
+    A[Button · Entity=Action]
+    B[TextField · Entity=Input]
+  end
+  subgraph Semantic tokens
+    SA[colors.action.primary.background]
+    SI[colors.input.primary.border]
+    HIT[sizing.hit]
+  end
+  subgraph Core tokens
+    CN[core.colors.neutral.1000]
+    CB[core.colors.brand.500]
+  end
+  A -- consumes --> SA
+  A -- consumes --> HIT
+  B -- consumes --> SI
+  B -- consumes --> HIT
+  SA -- references --> CN
+  SI -- references --> CB
 ```
 
-Rules (binding):
+Two consequences follow directly, and they are the whole product:
 
-1. **Every request has a visible target** (active theme, or selected composition). The
-   target chip is user-switchable.
-2. **Every result is a proposal, never an application.** Theme target → a token diff in the
-   same diff UI used by manual history. Composition target → code + sandboxed preview +
-   verification badges. User accepts, refines, or discards.
-3. **Refinement is steering, not restart**: free text or grammar-derived chips ("make it
-   destructive", "switch evaluation to muted", "add validation"). Each iteration is a
-   version (v1, v2, …) with diffs between versions and per-version revert.
-4. **One history per object**: AI proposals and manual edits flow through the same
-   history/diff mechanism; entries are tagged by origin (✎ manual / ✦ AI). No parallel
-   "AI changes" system.
-5. **Context is legible and editable pre-send**: an expandable panel shows exactly what
-   will be sent (llms.txt, theme diff, target code) before the request goes out.
+- **Forward (component → tokens):** select a component, list the tokens it consumes. (J4)
+- **Reverse (token → consumers = blast-radius):** select/edit a token, list every
+  component/state/page downstream, and — uniquely — flag any that a change turns
+  **contract-illegal**. (J10, J12)
 
-### 6.4 Tazuna principles → concrete rules
-
-(Source: `docs/website/blog/2026-03-09-tazuna-ux.md`.)
-
-- **P1 Eyes on the goal:** task-first home; no interface piloting to get to work.
-- **P2 Peripheral presence:** validation signals are ambient — WCAG-contrast issues appear
-  as a discreet badge on the affected token + a peripheral counter in the header, never a
-  modal/toast. Zero confirmation toasts (the live preview _is_ the confirmation). Silent
-  autosave with ambient indicator. Escalation only where stakes justify it (exporting a
-  theme with reference errors gets a dialog).
-- **P3 Semantic cleanliness:** the UI uses FSL vocabulary verbatim (`evaluation`,
-  `consequence`, Entity). Illegal prop combinations are absent, not disabled. AI status is
-  honest by construction: verification badges state exactly what ran —
-  `typecheck ✓ · render ✓ · semantic lint ✓ · behavior: not verified here`.
-- **P4 Steering over restart:** token-level history with individual revert; AI
-  refine-in-place with version diffs; browser back always works (URL = state).
-- **P5 Directed assistance, not theatrical autonomy:** AI never auto-applies; no
-  token-by-token code streaming theater — calm progress, then a verified proposal.
-
-### 6.5 Laws of UX — named applications
-
-- **Jakob:** navigator/stage/inspector layout mirrors Figma/Storybook conventions.
-- **Hick:** the grammar reduces choices; the UI shows only legal options. Token navigator
-  opens at the **semantic** layer grouped by family; `core` is one level down, on demand
-  (progressive disclosure; never ~500 leaves at once — Miller/chunking).
-- **Fitts:** inspector adjacent to stage; per-item actions (revert, copy) on item hover.
-- **Doherty (< 400 ms):** token edit → CSS var re-injection is synchronous. Nothing may be
-  added to the edit path that breaks same-frame preview (this is a perf requirement, §8).
-- **Peak-end:** the export screen is the designed peak — three outputs (DTCG / CSS /
-  `createTheme` code) in tabs, one-click copy, and the continuation hook
-  (`npx skills add ttoss/skills --skill fsl`).
-- **Von Restorff:** destructive flows (clear theme/composition) use fsl-ui's own
-  `consequence="destructive"` armed confirmation.
-- **⌘K command palette** for tokens, components, actions.
-
-### 6.6 Anti-patterns (banned — treat as review-blocking)
-
-No onboarding tours/overlays (empty states teach one idea, in place). No decorative toasts.
-No AI action without explicit user request. No modal interrupting an edit. No loading
-spectacle. No sterile empty state (every empty state proposes the next action). No
-verification claim beyond what actually ran.
-
-### 6.7 Built-in vs session compositions
-
-|           | Library (built-in)                              | Session compositions                                             |
-| --------- | ----------------------------------------------- | ---------------------------------------------------------------- |
-| Origin    | `@ttoss/fsl-ui` exports, immutable              | AI-generated or user-edited                                      |
-| Navigator | grouped by Entity                               | separate "Your compositions" group, ✦ badge + verification state |
-| Inspector | legality props panel + copy JSX + CONTRACT link | editable source + versions + verification badges                 |
-| Actions   | copy                                            | refine via AI, export, **propose as fsl-ui issue**               |
-| Lifecycle | package version                                 | localStorage draft, shareable via URL                            |
-
-Session compositions render on the same stage with the active theme (theme edits re-theme
-them live) and can be pinned into the example-page grid.
+No competitor can do the reverse cleanly because none has a machine-readable
+component↔token contract. FSL does. The Studio is the cockpit for it.
 
 ---
 
-## 7. Functional requirements
+## 7. Information Architecture (the decision)
 
-Each requirement lists acceptance criteria (AC). IDs are stable — reference them in commits.
+### 7.1 The shape: one workbench, three regions, no modes
 
-### F1 — App shell, state, and sharing (Phase 0–1)
+One persistent surface. The only top-level control is **what the navigator lists**
+(Components or Tokens) — because in a semantic system both hierarchies are first-class.
+That is a change of _object under inspection_, not a change of _app mode_, and it does
+**not** duplicate any other control.
 
-- F1.1 Vite + React 19 + TS strict app at `docs/fsl-studio`; consumes `@ttoss/fsl-ui`,
-  `@ttoss/fsl-theme` as `workspace:^`; scripts: `dev`, `build`, `test`, `deploy`
-  (carlin static-app). Wired into turbo via the standard package script names.
-- F1.2 `SessionState = { themeDiff, lens, selection, compositions[], history }` in a single
-  store; URL-hash serialization with lz-string; fork semantics on open (AD-10).
-- F1.3 Drafts: autosave to localStorage; drafts list; documented last-write-wins.
-- F1.4 Layout: navigator / stage / inspector; three lenses; stage persistence across lens
-  switches; light+dark side-by-side rendering; three stage altitudes.
-- F1.5 ⌘K palette; complete keyboard navigation; `prefers-reduced-motion` respected.
-- **AC:** deep link reproduces the full state on a fresh browser; stage keeps selection
-  across lens switches; axe clean; deployed URL serves the app.
+```
+┌───────────────────────────────────────────────────────────────────────────┐
+│  FSL Studio        [ ⌘K search ]        theme: Base ▾   ◑ mode   ⭳ Export   │  header
+├──────────────┬─────────────────────────────────────────────┬───────────────┤
+│ NAVIGATOR    │  CANVAS                                       │ INSPECTOR     │
+│              │                                               │ (contextual)  │
+│ ◉ Components │   ┌─ Light ──────────┐  ┌─ Dark ───────────┐  │  ── if a      │
+│ ○ Tokens     │   │  <selection       │  │  <selection      │  │   component:  │
+│              │   │   rendered live>   │  │   rendered live> │  │  · legality   │
+│ ▸ Action     │   │                    │  │                  │  │    matrix     │
+│   Button     │   └────────────────────┘  └──────────────────┘  │  · props(live)│
+│   ToggleBtn  │                                               │  · tokens used│
+│ ▸ Input      │   [ viewport: Fit · Component · Page · Board ]│  · anatomy    │
+│   TextField  │   [ anatomy ⌑ ]  [ states: default/hover/… ] │  · copy JSX   │
+│   Select     │                                               │  ── if a token│
+│ ▸ Structure  │                                               │  · value/ref  │
+│   …          │                                               │  · modes      │
+│              │                                               │  · consumers →│
+│              │                                               │  · contrast   │
+└──────────────┴─────────────────────────────────────────────┴───────────────┘
+```
 
-### F2 — Theme Lab (Phase 1)
+- **Header (persistent):** brand/logo (returns to system overview), **⌘K** universal
+  search over components _and_ tokens, the active **theme/preset** picker, the light/dark
+  **mode** toggle, and **Export** (a peak surface, always one click away). Ambient
+  validation (broken refs, contrast failures) appears here as a **peripheral counter** —
+  never a modal (Tazuna P2).
+- **Navigator (left):** one searchable tree with a segmented root toggle
+  **Components ◉ / Tokens ○**. Components group by Entity (Jakob: like Storybook).
+  Tokens group by family, **semantic first, core on demand** (Miller/Hick: never 500
+  leaves at once).
+- **Canvas (center):** renders the current selection **live, in light and dark
+  side-by-side**. A single **viewport** control (Fit / Component / Page / Board) is an
+  in-context zoom — **this is where v1's "altitude" belongs**, demoted from a global mode
+  to a canvas property. An **anatomy** toggle overlays `data-part` outlines; a **states**
+  row shows legal interaction states.
+- **Inspector (right):** the **contract panel**, contextual to the selection (§7.2).
 
-- F2.1 Token navigator: semantic layer by family (colors, spacing, text, sizing, radii,
-  border, focus, elevation, opacity, overlay, motion, zIndex); core layer on demand.
-- F2.2 Editing: core overrides + semantic alternate remaps; every edit re-derives via
-  `createTheme` and re-injects CSS (< 400 ms perceived, same-frame target); `validateRefs`
-  runs live, errors shown ambiently on the offending token.
-- F2.3 History: per-edit entries, origin-tagged, individual revert; diff-vs-base view.
-- F2.4 Presets: base, `bruttal`, and style-reference-inspired starting briefs.
-- F2.5 "Apply to Studio" toggle + one-click fallback to the chrome theme.
-- F2.6 Ambient a11y checks: WCAG contrast computed for text/background token pairs on edit.
-- F2.7 Export screen (peak): **DTCG** (`toDTCG`), **CSS** (`getThemeStylesContent`), and
-  **TypeScript code** — a generator that serializes the session's diff into a runnable
-  `createTheme({ overrides, alternate })` snippet. The codegen lives in the app
-  (promotion to fsl-theme is a later decision, not this plan's).
-- **AC:** SC-1 walkthrough passes (new user, no docs, theme exported < 15 min; brand-color
-  wow < 60 s); exported TS snippet compiles and reproduces the edited theme; export with
-  ref errors triggers the one sanctioned escalation dialog.
+There is **no home menu**, **no lens tabs**, and **no global altitude axis**. Boot lands
+directly in the workbench (§7.4).
 
-### F3 — Component Lab (Phase 2)
+### 7.2 The inspector adapts to the selected object
 
-- F3.1 Catalog auto-derived from fsl-ui exports/`*Meta`, grouped by Entity; every shipped
-  component present (Waves 1–2 catalog; new components appear without Studio code changes,
-  or with a single-line registration if full auto-discovery proves impractical — record
-  which at implementation).
-- F3.2 Legality props panel generated from the matrices (AD-6); state visualization
-  (hover/invalid/disabled/selected where applicable); `data-scope`/`data-part` inspector.
-- F3.3 Copy JSX: the panel state serializes to a copy-ready snippet (required i18n label
-  props included with placeholder values and a visible "supply localized copy" note).
-- F3.4 Per-Entity link to the relevant CONTRACT.md section.
-- F3.5 Example pages: form with validation, destructive confirmation flow, wizard,
-  feedback dashboard — reusing/aligned with fsl-bench golden scenarios (one source, two
-  consumers). Pages are stage content, themed live.
-- **AC:** zero illegal combination reachable through the UI (property-based test over the
-  matrices); copied JSX typechecks against fsl-ui; every fsl-ui export reachable in the
-  navigator.
+**When a component is selected** — the contract panel answers _"how do I use this
+correctly, and what does it touch?"_:
 
-### F4 — AI layer (Phase 4; scaffolding acceptable in Phase 2 behind a flag)
+- **Legality matrix** — interactive grid of legal `evaluation` × `consequence`; illegal
+  cells are **absent**. Picking a cell re-renders the canvas instance.
+- **Props (live)** — a Storybook-Controls-style table of the component's _legal_ props,
+  bound to the canvas instance. (J6)
+- **Tokens consumed** — the exact set from the Entity→Token map, each a link that jumps
+  the navigator to that token node (forward edge). (J4)
+- **Anatomy** — `data-scope` / `data-part` list, synced with the canvas overlay. (J2)
+- **Copy JSX** — the current legal config as a snippet, required i18n labels flagged. (J5)
+- **Contract link** — deep link into `CONTRACT.md` for the Entity.
 
-- F4.1 Prompt bar per §6.3 (target, proposal, steering, unified history, legible context).
-- F4.2 BYOK settings per AD-7 (key entry, memory-default persistence, model select
-  defaulting to `claude-opus-4-8`, clear key).
-- F4.3 Theme-target generation: prompt + context → token-diff proposal → accept merges
-  into history with per-token revert.
-- F4.4 Composition-target generation: prompt + context → code → verification pipeline
-  (AD-8) → proposal card with badges → accept creates a session composition; refine
-  produces versions.
-- F4.5 Prompt export (works with zero keys): generates
-  `npx skills add ttoss/skills --skill fsl` + a short intent prompt embedding the current
-  theme/composition state.
-- F4.6 Sandbox security: generated code executes only inside the sandboxed iframe; no
-  `eval` in the app context; CSP forbids the iframe from network access.
-- **AC:** invalid generated code is caught by V1/V2/V3 and shown as a failed proposal (not
-  rendered raw); no path applies AI output without an explicit accept; key never appears in
-  URLs, exports, or issue payloads.
+**When a token is selected** — the panel answers _"what is this, and what depends on
+it?"_:
 
-### F5 — Feedback channel (Phase 4)
+- **Value & reference** — raw value or `{core.*}` ref; editable in place (Postel: accept
+  hex/rgb/hsl/ref, normalize).
+- **Modes** — light/dark values; edits target the alternate remap.
+- **Consumers / fan-out** — the reverse index: every component (and example page) that
+  consumes this token, each a link (reverse edge). Selecting expands into the impact
+  drawer (§7.3).
+- **Contrast** — WCAG ratio for the paired text/background token, both modes. (J9)
 
-- F5.1 Issue template `.github/ISSUE_TEMPLATE/fsl-ui-proposal.yml` per AD-9.
-- F5.2 "Propose to fsl-ui" action on session compositions: prefilled issue URL with
-  reproduction deep link; oversized-payload fallback per AD-9.
-- F5.3 `docs/website/docs/design/ui-components/index.md` (and getting-started) link to the
-  Studio.
-- **AC:** clicking through produces a well-formed prefilled issue on GitHub; reproduction
-  link in the issue restores the state.
+### 7.3 Blast-radius as a first-class flow (the headline, J10/J12)
 
-### F6 — Skill `fsl` (Phase 3; `ttoss/skills` repo)
+Editing any token opens the **impact drawer** — the capability no competitor has:
 
-- F6.1 `skills/fsl/SKILL.md` following the repo's Agent Skills format (see the existing
-  `guardian` skill for conventions). Content contract:
-  - Triggers: building UI in a repo that depends on `@ttoss/fsl-ui`; creating/editing a
-    theme with `@ttoss/fsl-theme`.
-  - Procedure (build-UI flow): read `node_modules/@ttoss/fsl-ui/llms.txt` first → decide
-    Entity → evaluation/consequence/composition from the legal sets → never `style`/
-    `className`/size props → validation is `isInvalid`, never a color prop → flow-critical
-    labels are required: ask the user for localized copy, never invent English defaults →
-    verify with `tsc` before presenting.
-  - Procedure (theme flow): pointer to the theme-authoring contract; core overrides vs
-    semantic alternate remaps; export via DTCG/code; validate refs.
-  - Pointer rule (AD-11): no token tables, no legality matrices, no API signatures inline.
-- F6.2 Publication gating: authored now, used by fsl-bench and the Studio's prompt export;
-  published/announced in `ttoss/skills` only at D2 flip.
-- **AC:** skill passes the `npx skills` format validation; a fresh agent following only the
-  skill + installed package produces a component that passes the fsl-bench gauntlet.
+1. **Enumerate (causal, not cause-blind).** Compute the dependent set from the graph:
+   _edited core token → semantic aliases referencing it → components binding those
+   semantics → states → example pages._ Show a count with drill-down: _"touches 2
+   semantic tokens · 11 components · 34 states · 4 pages."_
+2. **Preview, scoped.** Render **exactly the affected components/states** side-by-side
+   **before / after**, light and dark — a Radix-ThemePanel-style live ripple, but scoped
+   to the computed set so it is complete without noise. Re-render **< 400 ms** (Doherty).
+3. **Contract-check (unique).** Because FSL owns legality, flag any change that turns a
+   previously-legal combination **illegal** or breaks a contrast contract — e.g. _"2 of
+   11 now fail AA in dark."_ This is drift detection at edit time, not in CI.
+4. **Gate (steering, not restart).** Accept or revert **per token**; every edit is an
+   origin-tagged history entry (✎ manual / ✦ AI). Browser back always works (URL = state).
 
-### F7 — Bench extension + D1 (Phase 3; `packages/fsl-bench`)
+### 7.4 Boot & the "empty" state (no interstitial)
 
-- F7.1 Extract L4 semantic lint into a browser-safe named export (no Node-only imports in
-  that module path); Studio consumes it via workspace dep.
-- F7.2 Add the third condition to the benchmark matrix: `bare` vs `llms.txt` vs
-  `llms.txt + skill` (the skill content injected as system-prompt context, mirroring how a
-  skill reaches a real agent).
-- F7.3 Run the D1 campaign (requires `ANTHROPIC_API_KEY` + `GEMINI_API_KEY` — the sole
-  external input of this whole plan); record headline numbers in
-  `packages/fsl-ui/INTERNAL/ROADMAP.md` §D1 as that document instructs.
-- **AC:** bench suite green including golden-fixture calibration for the new condition;
-  D1 numbers recorded; skill delta reported with Wilson intervals per bench methodology.
+- No URL hash → land **directly** in the workbench showing a **system overview board**
+  (many real components under the current theme) with the navigator ready. The overview
+  _is_ the SC-1/J17 experience: touch a token, watch it ripple. An inline hint
+  ("select a component, or edit a token") teaches one idea in place — never a tour.
+- Resume: autosaved drafts surface as a discreet **"continue"** affordance in the
+  overview (Zeigarnik: unfinished work pulls toward completion), not a separate screen.
+- A URL hash (`#s=…`) opens as a **fork** of that shared state (privacy by architecture).
+
+### 7.5 Export & adopt (peak surface, J13/J14)
+
+Export is **not a mode** — it is a peak surface reached from the persistent header button
+or ⌘K, from anywhere. Three theme outputs (**DTCG** via `toDTCG`, **CSS** via
+`getThemeStylesContent`, **TS** `createTheme` codegen) in tabs with one-click copy, plus
+the **component** copy-JSX from the inspector, plus the **agent activation** block
+(`npx skills add ttoss/skills --skill fsl` and a machine-readable graph snapshot). The
+"end" is deliberately satisfying (Peak-End): a "what changed" summary of the exported diff.
+
+### 7.6 How AI folds in later (J15) — without a new mode
+
+AI is **directed assistance on the same surface**, never a "Generate lens." A prompt
+affordance in the inspector proposes either a **token diff** (→ rendered in the exact
+impact drawer of §7.3) or a **component config** (→ rendered as a live proposal with
+verification badges stating precisely what ran: `typecheck ✓ · render ✓ · semantic lint
+✓ · behavior: not verified here`). Proposals are accepted/refined/discarded through the
+**same** history/diff mechanism as manual edits (Tazuna P4/P5). No parallel system, no
+theater.
+
+### 7.7 Alternatives considered (and why this won)
+
+Three IA models were designed and scored against simplicity, robustness, scalability,
+JTBD coverage, Tazuna alignment, discoverability, redundancy-avoidance, and
+AI-foldability:
+
+- **A — JTBD "modes"** (Explore vs Author vs Review as distinct surfaces). _Rejected._
+  "Modes" are exactly what produced v1's redundant tabs. Distinct working surfaces for
+  the same objects re-introduce the false-fork and the reconciliation tax (Hick, Tesler,
+  Prägnanz). The jobs are not separated by surface; they are separated by _which object
+  you select and what you do to it_.
+- **B — Object-first workbench** (one persistent Storybook-like shell; object drives
+  everything). _Strong._ Matches Jakob (users know this shell), collapses navigation to
+  selection.
+- **C — Unified graph canvas** (component and token are two views of one linked graph;
+  selecting either reveals the other; blast-radius is native). _Winner, and it subsumes
+  B._ It is the only model that makes the reverse edge (token → consumers) a first-class
+  citizen, which is the differentiator. B is _how it looks_; C is _why it's powerful_.
+
+**Decision: C, realized through B's familiar shell.** One workbench (B's ergonomics) over
+the component↔token graph (C's power). The dual-navigator toggle is the one legitimate
+switch; everything else is selection + progressive disclosure.
 
 ---
 
-## 8. Non-functional requirements
+## 8. Feature set
 
-- **Performance:** token-edit → preview under 400 ms perceived (target: same frame);
-  initial bundle excludes the AI layer (SDK, TS compiler, transpiler all lazy); Lighthouse
-  performance ≥ 90 on the deployed app.
-- **Accessibility:** axe clean in CI for the Studio's own suite; full keyboard operation
-  including stage; `prefers-reduced-motion`; the Studio inherits fsl-ui's a11y but owns its
-  shell's.
-- **Security/privacy:** BYOK key never persisted without opt-in, never leaves the browser
-  except to `api.anthropic.com`; generated code sandboxed per F4.6; no analytics that
-  capture theme/composition content in v1.
-- **i18n:** Studio UI in English (repo docs rule). The Studio itself is a consumer app, not
-  a ttoss package — `@ttoss/react-i18n` wiring is not required in v1 (Open Question OQ-2).
-- **Testing:** unit tests per repo standard (`tests/unit`, jest); the legality-panel
-  property test (F3 AC) and URL round-trip test (F1 AC) are mandatory; coverage thresholds
-  per repo rules.
-- **Browser support:** evergreen browsers; no SSR requirement (SPA).
+Grouped by capability area. Each feature → the JTBD it serves, tier, priority.
 
-## 9. Phases and Definitions of Done
+### 8.1 Component workbench (consume) — J1–J6
 
-Phases ship independently; each is useful alone. Order is binding (cost/risk ascending).
+- **F-C1** Component navigator grouped by Entity, searchable; direct landing. _(J1, basic, P0)_
+- **F-C2** Live canvas render, light+dark, with anatomy overlay + legal states row. _(J2, basic, P0)_
+- **F-C3** Interactive legality matrix; illegal combinations absent. _(J3, basic, P0)_
+- **F-C4** "Tokens consumed" list derived from Entity→Token map, cross-linked to token nodes. _(J4, basic, P0)_
+- **F-C5** Copy-JSX for the current legal config; required i18n labels flagged. _(J5, basic, P0)_
+- **F-C6** Live props/Controls table bound to the instance (legal props only). _(J6, basic, P1)_
 
-| Phase                 | Scope                       | Definition of Done                                                                              |
-| --------------------- | --------------------------- | ----------------------------------------------------------------------------------------------- |
-| **0 — Shell**         | F1.1, F1.4 skeleton, deploy | Public URL renders fsl-ui components with the base theme; CI (test+build) green                 |
-| **1 — Theme Lab**     | F1 complete, F2             | SC-1 met and demonstrated (record the walkthrough); export screen ships all 3 formats           |
-| **2 — Component Lab** | F3                          | F3 ACs met; example pages live; Studio dogfoods fsl-ui for its own chrome                       |
-| **3 — Skill + proof** | F6, F7                      | Skill authored + validated; bench third condition merged; **D1 campaign executed and recorded** |
-| **4 — AI + feedback** | F4, F5                      | F4/F5 ACs met; first structured external issue can be filed end-to-end                          |
+### 8.2 Token & Theme lab (author) — J7–J9
 
-Dependencies: 3 requires API keys (external); 4 requires 3 (skill exists) and the issue
-template. 0–2 require nothing external.
+- **F-T1** Token navigator, semantic-first, core on demand; family grouping. _(J7, advanced, P0)_
+- **F-T2** In-place token editing: core overrides + semantic remaps; Postel-liberal input, normalized. _(J7, advanced, P0)_
+- **F-T3** Preset starting points — only the built-in themes the package actually exports (`base`, `bruttal`); grows when it ships more. _(J7, advanced, P0)_
+- **F-T4** Live re-theme of canvas/board in light+dark, < 400 ms. _(J8, advanced, P0)_
+- **F-T5** Ambient WCAG contrast on token pairs, both modes; peripheral counter. _(J9, advanced, P0)_
 
-## 10. Metrics
+### 8.3 Impact / blast-radius (the differentiator) — J10, J12
 
-- SC-1: time-to-first-exported-theme (target < 15 min), time-to-wow (< 60 s) — measured by
-  moderated walkthroughs at each phase gate (no telemetry in v1).
-- SC-2: D1 first-pass success rates per condition; the `skill − llms.txt` delta.
-- SC-3: count of issues created via the Studio flow; time-to-triage on them.
-- UX contract: zero modals/toasts outside sanctioned escalations (review checklist item);
-  axe violations = 0 in CI.
+- **F-I1** Reverse index: token → consumers (components, states, example pages). _(J10, advanced, P0)_
+- **F-I2** Impact drawer: enumerate + scoped before/after preview. _(J10, advanced, P0)_
+- **F-I3** Legality-aware & contrast-aware violation flags introduced by a change. _(J12, advanced, P1)_
+- **F-I4** Per-token accept/revert; origin-tagged history; URL = state. _(J10, advanced, P0)_
 
-## 11. Risks and mitigations
+### 8.4 Export & adopt — J13, J14
 
-| Risk                                     | Mitigation                                                                                                                              |
-| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| Skill drifts from the contract           | Pointer-only rule (AD-11) + bench regression: skill changes that don't move the benchmark are noise; changes that worsen it are blocked |
-| LLM code executing in-page               | Sandboxed iframe only, CSP, no eval (F4.6)                                                                                              |
-| In-browser TS compiler weight            | Lazy-load with the AI layer; Theme/Component Lab never pays it                                                                          |
-| Example pages rot                        | Single source shared with fsl-bench golden scenarios                                                                                    |
-| `validateRefs` stripped in prod bundle   | Explicit AD-5 note; add a test asserting validation fires in the built app                                                              |
-| URL size limits                          | lz-string + graceful degradation to copy/download (AD-10)                                                                               |
-| fsl-ui API churn (Wave 3) breaks Studio  | Studio consumes `src/` live; its CI runs in the same workspace, so breakage surfaces in PRs that cause it                               |
-| Scope-guard conflict with fsl-ui ROADMAP | This PRD's §2 is disjoint from ROADMAP's guard; both documents reference each other                                                     |
+- **F-X1** Theme export: DTCG / CSS / `createTheme` TS, one-click copy, "what changed" summary. _(J13, P0)_
+- **F-X2** Component copy-JSX (shared with F-C5). _(J13, P0)_
+- **F-X3** Agent activation: skill install command + machine-readable graph snapshot. _(J14, P1)_
 
-## 12. Out of scope (v1, explicit)
+### 8.5 Maintain & compose — J11
 
-Hosted LLM backend or shared API keys; real-time collaboration; DTCG **import**; Storybook
-for fsl-ui; repository extraction/migration; visual editing of components (themes are
-editable; components are grammar, not canvas); telemetry/analytics; auth of any kind;
-mobile-optimized editing UI (responsive rendering yes, editing ergonomics desktop-first).
+- **F-M1** Session compositions: build a legal component variant/state, test on the stage, keep it as a draft (localStorage, shareable via URL). _(J11, advanced, P1)_
 
-## 13. Open questions (resolve before the phase that needs them)
+### 8.6 AI directed-assistance (later) — J15
 
-- **OQ-1** (Phase 0): final subdomain — proposal `studio.ttoss.dev`; needs DNS/ACM check in
-  the existing `carlin.yml` zone.
-- **OQ-2** (Phase 2): should the Studio wire `@ttoss/react-i18n` from the start even with
-  English-only copy, for dogfooding completeness? Default: no (keep v1 lean).
-- **OQ-3** (Phase 3): exact mechanism for injecting skill content into the bench condition
-  (system prompt vs prepended user context) — decide with a calibration run, document in
-  fsl-bench README.
-- **OQ-4** (Phase 4): Gemini as a second BYOK provider in the Studio (bench already
-  abstracts providers). Default: Anthropic-only in v1.
+- **F-A1** Inspector prompt → token-diff proposal into the impact drawer. _(J15, advanced, P2)_
+- **F-A2** Inspector prompt → component-config proposal with honest verification badges. _(J15, advanced, P2)_
 
-## 14. Implementation notes (running log)
+### 8.7 Feedback / evolution — J16
 
-Recorded per §0.3 — decisions and findings made during implementation, for later sessions.
+- **F-E1** "Propose to fsl-ui" from a component/token in context → prefilled GitHub issue. _(J16, advanced, P2)_
 
-**Phase 0 (2026-07-17):**
+---
 
-- **Type-checking strategy.** The app's TS program pulls fsl-ui/fsl-theme sources in (src/
-  exports), and judging those sources under a foreign environment proved fragile (missing
-  `@types/react` resolution from `packages/`, environment-dependent diagnostics). Adopted
-  the fsl-bench gauntlet policy: `scripts/typecheck.mjs` compiles the program and reports
-  only diagnostics inside `src/` — wrong API usage always surfaces at the call site
-  (precedent: `packages/fsl-bench/src/gauntlet/compile.ts`). The build script is
-  `node scripts/typecheck.mjs && vite build`.
-- **React types mapping.** fsl-ui/fsl-theme treat react as a peer and carry no
-  `@types/react`; pnpm hoists `@types` into the virtual store, outside tsc's walk-up path.
-  The app maps `react`/`react/jsx-runtime`/`react-dom` to its own `node_modules/@types` via
-  `paths` (same mapping the gauntlet uses).
-- **Upstream finding (report, don't fix here — §2):** `packages/ui` carries `@types/react`
-  as a devDependency but `packages/fsl-ui`/`packages/fsl-theme` do not; adding it there
-  would let workspace consumers type-check their sources without the mapping above.
-- **Stage mode scoping verified in a real browser:** `getThemeStylesContent(bundle,
-themeId)` emits element-scoped selectors (`[data-tt-theme]` /
-  `[data-tt-theme][data-tt-mode="dark"]`), and side-by-side light/dark panes render
-  correctly in Chromium (light `rgb(255,255,255)` vs dark `rgb(15,23,42)` backgrounds).
-- **AD-5 note stands:** the Phase-0 stage computes theme CSS once from a module constant;
-  the `validateRefs`-in-production question remains open for Phase 1.
+## 9. Tazuna principles → concrete rules
 
-**Phase 1 (2026-07-17):**
+| Tazuna principle                                    | Concrete rule in FSL Studio                                                                                                                                    | Banned anti-pattern                                                                                          |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **1. Eyes on the goal, not the mechanism**          | Land in the workbench; navigation is _selecting an object_, not piloting modes. No interstitial menu.                                                          | A home/menu screen whose buttons just pick a tab.                                                            |
+| **2. Presence without foregrounding**               | Validation (broken refs, contrast, drift) is a **peripheral header counter** + on-row badges; the live preview _is_ the confirmation. Silent autosave.         | Toasts for saves; modals for validation; loading spectacle.                                                  |
+| **3. Semantically clean signals**                   | FSL vocabulary verbatim (`Entity`, `evaluation`, `consequence`, `data-part`). Illegal states absent, not disabled. Verification badges state exactly what ran. | A control that both saves and publishes; a badge that means two things; claiming "verified" beyond what ran. |
+| **4. Steering over restart**                        | Per-token history + revert; AI refine-in-place with version diffs; browser back = state; edits never wipe the session.                                         | "Start over" as the only correction; losing work on a bad edit.                                              |
+| **5. Directed assistance, not theatrical autonomy** | AI proposes into the _same_ diff/impact UI; never auto-applies; calm progress then a verified proposal.                                                        | A separate "Generate" mode; token-by-token code streaming theater; auto-apply.                               |
 
-- **Editable surface = core color scales.** Deviates from F2.1's "semantic layer first":
-  semantic color tokens are references, not independently editable values, and core color
-  edits are what produce the cascade the wow depends on (`brand` is referenced ~149× in the
-  base theme). The Theme Lab edits `core.colors.<hue>.<step>` via color pickers; other token
-  families and semantic-ref remapping are deferred to a later phase. Recorded per §0.3.
-- **Diff-as-source-of-truth.** F2.3's "history with per-edit revert" and "diff-vs-base" are
-  one structure: the override map itself. Reverting a leaf = removing it from the diff; the
-  diff _is_ the `overrides` argument to `createTheme` for both preview and export. Avoids the
-  superseded-edit ambiguity of an edit log and keeps one source of truth. Origin (manual/AI)
-  is tracked in the store; the ✦ AI marker lights up in Phase 4.
-- **`validateRefs` question resolved for Phase 1:** the reachable edit surface is raw core
-  color _values_, which `validateRefs` does not inspect (it validates `{ref}` strings only),
-  so the `NODE_ENV` production gating is moot here. Revisit when semantic-ref remap editing
-  lands. The reachable ambient a11y check is WCAG contrast (F2.6), which is implemented.
-- **Chrome re-theming (F2.5) — key finding.** ThemeProvider's `theme` prop injects an
-  href-keyed `<style>` that React 19 hoists and does **not** reliably update on bundle change
-  (verified: applied edits didn't reach `:root`). Fix: inject the chrome's `:root` CSS with a
-  plain `<style>` text child ourselves (mirroring the stage, which always worked), and let
-  ThemeProvider own only the color-mode runtime. Verified in Chromium: apply → chrome accent
-  `#0469e3`→`#e11d48`, fallback → back to `#0469e3`.
-- **SC-1 demonstrated in Chromium:** one brand-color edit re-themes the accent button in
-  ~120 ms (< 400 ms Doherty; the < 60 s wow is instant), the change diff and contrast update
-  live, and export ships runnable `createTheme` code, DTCG JSON, and `:root` CSS.
-- **Contrast scope:** light mode only in Phase 1 (curated pairs); dark-mode contrast is a
-  follow-up.
+---
 
-**Phase 2 (2026-07-17):**
+## 10. Laws of UX → concrete decisions (and the v1 violations we correct)
 
-- **Catalog auto-discovery works as specified (F3.1).** `catalog.ts` enumerates the
-  `@ttoss/fsl-ui` barrel and keeps every `*Meta`-shaped export, so a new component appears
-  with zero registration. A test asserts `CATALOG.length` equals the count of `*Meta`
-  exports (reachability AC).
-- **Legality panel is matrix-driven (F3.2, AD-6).** The inspector offers only
-  `ENTITY_EVALUATION[entity]` / `ENTITY_CONSEQUENCE[entity]` values, so an illegal
-  combination cannot be expressed. A property test over the whole catalog asserts the offered
-  props are always a subset of the matrices (the "no illegal combination" AC).
-- **Preview + copy-JSX are one registry (F3.2/F3.3).** `previews.tsx` pairs a live
-  `render(sel)` with the matching `code(sel)` per component so they never drift. It is a
-  curated set (~16 components across all 5 non-Input/Selection entities that carry
-  evaluation, plus Input/Selection controls). Components without a registry entry still
-  appear in the catalog with full identity + legal-props + CONTRACT link and are shown live
-  in the example pages; we never emit an unverified snippet (keeps the "copied JSX
-  typechecks" AC honest — the call-site typecheck also guards it at build).
-- **Example pages (F3.5)** are hand-authored (form+validation, destructive confirm, wizard,
-  dashboard), aligned with the fsl-bench golden scenarios but not imported from it (those are
-  prompt specs, not React). They demonstrate the composites the preview registry doesn't
-  cover. Toast deferred (needs the queue API) — noted for a later pass.
-- **Stage subject follows the active lens (refines §6.2).** The stage _frame_ (light/dark
-  panes) persists across lens switches, but the subject reflects the lens (Theme → sample
-  gallery; Components → selected component/page). Both are themed by the live bundle, so
-  editing the theme and flipping to Components re-themes the selection — verified in Chromium
-  (example page accent → `#e11d48` after a brand edit). Fuller "keep a specific component on
-  stage while theming" is a Phase 4 refinement once session compositions exist. The Phase 0
-  stage-persistence test was updated to assert the frame persists (not specific content).
-- **`meta.consequence` identity row removed:** no shipped `*Meta` declares an intrinsic
-  `consequence`, so rendering it was an unreachable branch; authorial consequence surfaces in
-  the legal-props panel. Re-add if a future component sets it.
-- **Testing lesson reinforced:** `userEvent.setup()` installs a lingering clipboard stub that
-  shadows a manual mock, so the copy-JSX tests live in their own file
-  (`ComponentCopy.test.tsx`) driven purely by `fireEvent` — verified they pass in isolation
-  and fail when co-located with userEvent-based tests.
-- 104 unit tests, 100% coverage on every dimension.
+| Law                                    | Decision                                                                                                                                         | v1 violation corrected                                   |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------- |
+| **Jakob**                              | Storybook/Figma shell: navigator + canvas + inspector; no invented nouns ("lens", "altitude").                                                   | v1 invented lens/altitude axes users had to learn.       |
+| **Hick**                               | One top-level toggle (Components/Tokens); progressive disclosure for the rest.                                                                   | v1 multiplied choices (home × lens × altitude).          |
+| **Tesler**                             | The system computes blast-radius; the user never reconciles the graph by hand.                                                                   | v1 pushed a lens×altitude matrix onto the user.          |
+| **Prägnanz / Occam**                   | One canonical view per object; delete duplicate navigation and dead routes.                                                                      | v1 had home cards ≈ lens tabs, and a dead Generate lens. |
+| **Miller / Common Region / Proximity** | Tokens chunked into ~7 families, semantic-first; a token's name+value+edit sit together; component + its consumed tokens share a bounded region. | v1 token tree usable but cramped in the narrow rail.     |
+| **Doherty**                            | Every edit re-renders < 400 ms; nothing added to the edit path may break same-frame preview.                                                     | (kept from v1 — sound.)                                  |
+| **Peak-End / Von Restorff**            | Export is the designed peak; the primary action is visually distinct; overridden/changed tokens stand out.                                       | v1's peak was reachable but the journey to it was noisy. |
+| **Zeigarnik / Goal-Gradient**          | Resume-draft affordance; a visible "unresolved refs / ready to export" indicator.                                                                | v1 had drafts but no completeness signal.                |
+| **Postel**                             | Accept messy token input (hex/rgb/hsl/ref/paste); export strict valid formats.                                                                   | new.                                                     |
 
-**fsl-bench provider refactor (2026-07-17, user-directed):**
+---
 
-- By explicit user direction (D1 credential unblocking), `packages/fsl-bench` providers were
-  refactored to channel×model axes: the `vertex` channel is multi-family — Model Garden hosts
-  Claude (Anthropic Messages dialect) and Gemini (`generateContent` dialect) — and the model
-  id picks the dialect (`--providers vertex:gemini-3.5-flash,vertex:gemini-2.5-pro`). Pure
-  resolution logic lives in `src/providers/vertexConfig.ts` (100% covered); transport in
-  `src/providers/vertex.ts` (coverage-excluded like the other transports).
-- Credential bootstrap: `GOOGLE_APPLICATION_CREDENTIALS_JSON` takes the full service-account
-  key as an env string (the shape environment secrets arrive in; no file on disk; the key's
-  `project_id` is used). Fallback: standard ADC + `ANTHROPIC_VERTEX_PROJECT_ID` /
-  `GOOGLE_CLOUD_PROJECT`; `CLOUD_ML_REGION` overrides the `global` default location.
-- Smoke-validated against the user's real project: `vertex:gemini-3.5-flash` and
-  `vertex:gemini-2.5-pro` both answered; the Claude arm authenticates and reaches Vertex but
-  is quota-blocked (429, quota 0, increase requests auto-denied — sandbox project profile).
-  D1 campaign plan: two Gemini models via one credential; a Claude leg can be added later via
-  `anthropic:<model>` (needs `ANTHROPIC_API_KEY`) without further code changes.
-- The `fsl` skill and the `fsl-ui-skill` bench condition will be implemented in the public
-  `ttoss/skills` repository (user decision), not in this monorepo.
+## 11. Anti-patterns (banned — review-blocking)
 
-**typecheck.mjs retired — root-cause fix in the packages (2026-07-17, user-directed):**
+No interstitial menu whose buttons pick a tab. No two controls doing the same job. No
+global mode axis crossed with another. No dead/placeholder routes in navigation (gate
+unbuilt features as clearly-disabled or omit them). No onboarding tours/overlays. No
+decorative toasts. No modal interrupting an edit. No AI action without explicit request.
+No verification claim beyond what actually ran. No hand-authored content that can drift
+from the packages.
 
-- The Studio's `scripts/typecheck.mjs` (diagnostic filtering) existed to mask 28 latent type
-  errors in `packages/fsl-ui` sources — real bugs, reproducible inside the package itself;
-  nothing in the monorepo ran `tsc` over it. By user direction the §2 read-only guard was
-  lifted: the errors were fixed at the source (the `?? {}` fallback idiom replaced by
-  optional chaining, preserving graceful degradation; render-prop `children` narrowed to
-  `ReactNode` on GridListItem/SearchField; `data-scope` declared on DialogProps; one csstype
-  cast in Tabs), `@types/react`/`@types/node` devDeps added, and `tsc --noEmit` wired into
-  both packages' `test` scripts so they stay clean. `fsl-ui` also lost `private: true`
-  (publishable, like fsl-theme already was; dist + declarations verified against
-  `publishConfig`).
-- The Studio now runs plain `tsc --noEmit` in its build — no custom script, no react `paths`
-  mapping. AD-x note: the workspace containers run Node 22 while the repo requires ≥24;
-  tsdown's formatjs plugin fails under 22 (babel ESM linking) — builds here used a standalone
-  Node 24, CI is unaffected.
+---
 
-**Pre-Phase-3 completion (2026-07-18):** everything F1/F2 deferred by earlier
-phases now ships; Phases 0–2 are complete against their Definitions of Done.
+## 12. Technical architecture (carried from v1 where sound)
 
-- **Flat override model supersedes Phase-1 `ColorOverrides`.** The diff is now
-  a flat `path → value` map covering any core leaf and semantic remaps
-  (`semantic.radii.control` → `{core.radii.none}`), unflattened into
-  `createTheme` for preview and export. Diff-as-source-of-truth is unchanged.
-- **F2.1/F2.2 navigator:** semantic layer first, grouped by family, colors
-  sub-grouped by ux context; leaves render only while a disclosure is open.
-  Core sits one level down; its **colors disclosure is default-open** — the
-  brand scale is the SC-1 wow surface and must stay reachable at a glance.
-- **Ref validation is resolution-based, not console-based.** `toFlatTokens`
-  leaves unresolved refs as `{path}` in the output; any surviving brace
-  expression marks a broken token. Same mechanical check as `validateRefs`,
-  but readable as data (browser-safe, no console capture), which resolves the
-  AD-5 production-gating question for good. Ambient surfacing: row badges +
-  peripheral header counter; the one sanctioned escalation is the
-  ConfirmationDialog on export with broken refs (F2 AC).
-- **F2.4 presets:** the style-reference docs (minimalism, neobrutalism,
-  glass, 90s) are still stubs, so the presets are deliberately conservative —
-  a WCAG-checked brand scale plus the style's clearest token-layer signature
-  (radii/elevation/border), each with a `ThemeBrief`. Export codegen inlines
-  an authored preset's overrides under the user diff (diff wins) so the
-  snippet runs anywhere; `bruttal` still exports as `extends: bruttal`.
-- **F2.6 dark contrast** ships: dark tokens = base ⊕ alternate semantic
-  remaps, same projection the CSS emits; both mode lists always render since
-  every preset carries an alternate (asserted in tests).
-- **F1.2/F1.3 session:** `SessionSnapshot` (lens, altitude, theme diff +
-  origins, component selection) → lz-string URL hash; opening a link forks
-  under a new draft id; foreign payloads sanitize field-by-field.
-  `applyToStudio` is deliberately **not** serialized — a shared link must not
-  re-skin the receiver's editor chrome. Drafts autosave debounced (250 ms) to
-  localStorage, last-write-wins documented in-app, write failures swallowed.
-- **Home (§6.2)** is the boot target without a hash: three task cards +
-  the drafts shelf. The studio brand button returns home and clears the hash.
-- **F1.4 altitudes:** `component` (lens subject), `page` (selected or first
-  example page), `grid` (all example pages — the semantic-drift view), owned
-  by the session and persistent across lens switches.
-- **F1.5 ⌘K palette:** commands derive from the same sources as the
-  navigators (lenses, altitudes, presets, catalog, pages, apply-toggle,
-  home) — no second registry to drift. Combobox + listbox +
-  `aria-activedescendant`. `prefers-reduced-motion` covered for the chrome
-  (fsl-theme CSS already carries token-level reduced-motion).
-- **Toast example page** unblocked by the queue API (`createToastQueue` +
-  `ToastRegion`): one queue per page instance so each stage pane keeps its
-  own stack. TextField's preview now also shows the `isInvalid` runtime
-  state (F3.2), snippet unchanged.
-- **Axe CI gate** (F1 AC): home, both lenses, and the open palette. Two rules
-  excluded with cause: `color-contrast` (jsdom paints nothing; contrast is
-  checked as data by the Theme Lab) and `aria-allowed-attr` — **upstream
-  finding (report, don't fix here — §2):** React Aria's Meter renders the
-  standard fallback `role="meter progressbar"`, which axe misreads as
-  disallowing `aria-value*`.
-- Suite: 187 tests, 100% coverage on every dimension; `tsc --noEmit` + Vite
-  build green (Node 24 toolchain — see the Phase-0 container note).
+- **AD-1 — Location & name.** Workspace app at `docs/fsl-studio`, package `@docs/fsl-studio`.
+- **AD-2 — Stack.** Vite + React 19 + TypeScript strict, SPA, ESM-only. Not Docusaurus
+  (needs a runtime), not Storybook (this is an operational tool over the _system graph_,
+  which Storybook's story-centric model cannot express).
+- **AD-3 — Zero backend (Studio v1).** All state client-side (memory + localStorage +
+  URL). No auth, no abuse surface, privacy by architecture. AI is BYOK direct-from-browser
+  when it lands.
+- **AD-4 — Deploy.** `carlin deploy static-app` to a dedicated subdomain (OQ-1).
+- **AD-5 — Theme editing = client re-derivation.** `createTheme({ overrides, alternate })`
+  → `getThemeStylesContent` → swap one `<style>` element. No rebuild, no network. Ref
+  validity is checked by resolution, not console capture (Appendix A).
+- **AD-6 — The graph is derived, not authored.** Component nodes from `*Meta`; consumes
+  edges from the Entity→Token map (`CONTRACT.md §1`); references edges from
+  `toFlatTokens`. Adding a component/token to the packages adds a graph node with **zero**
+  Studio changes (auto-discovery verified in v1 — Appendix A).
+- **AD-7 — Legality is data.** Legal props come from the exported matrices
+  (`ENTITY_EVALUATION`/`ENTITY_CONSEQUENCE`, `legalEvaluations`/`legalConsequences`),
+  never hardcoded in the Studio.
+- **AD-8 — State model.** `SessionState = { themeDiff, selection, viewport, compositions[],
+history }` in one store; URL-hash (lz-string) serialization; fork-on-open;
+  `applyToStudio` is never serialized (a shared link must not re-skin the receiver).
 
-## 15. References
+The v1 IA constructs — `lenses.ts`, the home task-cards, the altitude axis as a global
+switcher, the Generate lens placeholder — are **removed**. The v1 engine constructs —
+`themeStore`, `createTheme` re-derivation, contrast, export codegen, session/URL, catalog
+auto-discovery, the matrix-driven props panel — are **retained and re-hosted** in the new
+shell.
 
-- Problem/strategy: `packages/fsl-ui/INTERNAL/` (PURPOSE, STRATEGIC_EVAL, BENCHMARK_EVAL,
-  ROADMAP), `docs/website/docs/design/design-system/fsl/`.
-- Design philosophy: [Tazuna UX](https://ttoss.dev/blog/2026/03/09/tazuna-ux),
-  [Calm Technology](https://calmtech.com/), Laws of UX.
-- Prior art: Radix Themes Playground, shadcn create / Shadcn Studio, TypeScript Playground
-  (URL-state pattern), v0.dev (iterative refinement pattern).
-- BYOK pattern: [Anthropic CORS support](https://simonwillison.net/2024/Aug/23/anthropic-dangerous-direct-browser-access/).
+---
+
+## 13. Success metrics
+
+| SC   | Metric                                                               | Target                                                       |
+| ---- | -------------------------------------------------------------------- | ------------------------------------------------------------ |
+| SC-1 | Time for a newcomer to find a component + copy correct code, no docs | < 2 min, zero mode choices                                   |
+| SC-2 | Token edit → live light+dark re-theme                                | < 400 ms; theme exported < 15 min; first ripple "wow" < 60 s |
+| SC-3 | Token edit → enumerated + previewed + contract-checked impact        | in place, no CI round-trip                                   |
+| SC-4 | Agent activated + output passes mechanical verification              | delta measured by fsl-bench                                  |
+| SC-5 | "Which mode am I in?" confusion                                      | zero — one workbench                                         |
+
+---
+
+## 14. Non-goals (Studio v1)
+
+Hosted LLM backend or shared keys (BYOK only, later). Real-time collaboration
+(fork-by-URL instead). DTCG **import**. A browser code IDE (Backlight proved that
+unsustainable — build the _system view_, not the editor). Visual drag-drop component
+_editing_ (components are grammar, not canvas; props are editable, structure is not).
+Telemetry/auth. Mobile-optimized _editing_ (responsive rendering yes; editing is
+desktop-first).
+
+---
+
+## 15. Phasing
+
+- **Phase 0 — Workbench shell + consume (P0):** the one-workbench IA, dual navigator,
+  component canvas (anatomy/states/light-dark), legality matrix, tokens-consumed,
+  copy-JSX, boot-to-overview, ⌘K, URL state. Delivers J1–J5, J17, SC-1, SC-5.
+- **Phase 1 — Token lab + blast-radius (P0):** token navigator/edit, live re-theme,
+  contrast, the reverse index + impact drawer + per-token history, export. Delivers
+  J7–J10, J13, SC-2, SC-3. **This phase is the differentiator — do not descope it.**
+- **Phase 2 — Legality-aware drift, live Controls, compositions, agent activation
+  (P1):** J6, J11, J12, J14.
+- **Phase 3 — AI directed assistance + feedback channel (P2):** J15, J16.
+
+Each phase lands with the package DoD (contract/a11y/behavior tests, 100% coverage,
+JSDoc, live verification) and, where architectural, an ADR.
+
+---
+
+## 16. Open questions
+
+- **OQ-1** Final subdomain (`studio.ttoss.dev`?) — needs DNS/ACM.
+- **OQ-2** Consumes edges: legal set (from Entity→Token map) vs actually-read (scan
+  `vars.*`)? Start with legal set; refine to actually-read if impact previews feel noisy.
+- **OQ-3** Auto-discovery of new components vs one-line registration — v1 proved full
+  auto-discovery works; confirm it holds for the graph edges too.
+- **OQ-4** Machine endpoint for agents: a static JSON graph snapshot in v1; an MCP server
+  later? (zeroheight/Supernova precedent.)
+- **OQ-5** Should the "system overview board" be curated example pages or an
+  auto-generated gallery of all components? Lean curated + a "show all" toggle.
+
+---
+
+## 17. Glossary & references
+
+- **Entity** — a component's semantic kind (Action, Input, Navigation, …) that determines
+  its legal token set (`CONTRACT.md §1`).
+- **Blast-radius** — the set of components/states/pages affected by a token change, plus
+  any legality/contrast violations it introduces.
+- **Consumes / references edges** — component→token (Entity map) / semantic→core
+  (`createTheme` resolution).
+- **Tazuna UX** — `docs/website/blog/2026-03-09-tazuna-ux.md` (guide without grabbing).
+- **Laws of UX** — [lawsofux.com](https://lawsofux.com/) (Jakob, Hick, Fitts, Miller,
+  Tesler, Doherty, Peak-End, Von Restorff, Zeigarnik, Goal-Gradient, Proximity/Common-
+  Region/Similarity/Prägnanz, Occam, Postel).
+- **Prior art:** Storybook (Controls/autodocs), Radix Themes `ThemePanel` (live re-theme),
+  Chromatic (change review), Tokens Studio (core→semantic sets), Style Dictionary
+  (reference resolution), Polaris (component-page template).
+- **Ground-truth sources:** `packages/fsl-ui/src/tokens/CONTRACT.md` (§1 Entity→Token
+  map, legality), `packages/fsl-ui/src/semantics/*` (matrices), `packages/fsl-theme/src/
+createTheme.ts` / `css.ts` / `dtcg.ts` (engine), `packages/fsl-ui/llms.txt`.
+
+---
+
+## 18. Appendix A — retained engineering findings from v1 (heed on rebuild)
+
+These are hard-won facts from the v1 build; the IA changed, but the physics did not.
+
+- **Client re-derivation is fast enough.** One core-color edit re-themed a live page in
+  ~120 ms in Chromium (well under the Doherty 400 ms). The edit loop
+  (`createTheme(overrides)` → `getThemeStylesContent` → swap one `<style>`) is proven.
+- **Diff-as-source-of-truth.** The override map _is_ the state: history, revert, preview,
+  and export are one structure. Reverting a leaf = deleting it from the diff; the diff is
+  the `overrides` argument to `createTheme`. Keep this — it avoids edit-log ambiguity.
+- **React 19 `<style>` hoisting gotcha.** `ThemeProvider`'s `theme` prop injects an
+  href-keyed `<style>` that React 19 hoists and does **not** reliably update when the
+  bundle changes — applied edits won't reach `:root`. Fix: inject the chrome's `:root` CSS
+  with a plain `<style>` text child yourself, and let `ThemeProvider` own only the
+  color-mode runtime. (Confirmed both ways in Chromium.)
+- **Ref validity is resolution-based, not console-based.** `toFlatTokens` leaves an
+  unresolved ref as `{path}` in its output; any surviving brace expression marks a broken
+  token. Browser-safe, no `NODE_ENV` gating needed. Surface ambiently (row badge +
+  peripheral counter); the one sanctioned escalation is a confirm dialog on _export_ with
+  broken refs.
+- **Catalog auto-discovery works.** Enumerate the `@ttoss/fsl-ui` barrel and keep every
+  `*Meta`-shaped export; a test asserts the count equals the number of `*Meta` exports.
+  New components appear with zero registration — the same principle extends to graph nodes.
+- **Legality panel must be matrix-driven** from `@ttoss/fsl-ui/semantics`; property-test
+  that offered props are always a subset of the matrices (the "no illegal combination"
+  guarantee).
+- **Preview + copy-JSX must be one registry** so a live render and its snippet never
+  drift; only emit a snippet for components with a verified entry.
+- **Presets = built-in themes only.** Expose only what `@ttoss/fsl-theme` actually
+  exports (`base`, `bruttal`). Do **not** invent presets from style-reference stubs —
+  that conflates a style reference (a visual language below the contract) with a built-in
+  theme (a concrete token implementation).
+- **Toolchain.** Node ≥ 24 (tsdown's formatjs plugin fails under Node 22). `tsc --noEmit`
+  runs clean over the packages (v1 fixed the latent type errors at source).
+- **Testing gotcha.** `userEvent.setup()` installs a lingering clipboard stub that shadows
+  manual mocks; keep clipboard/copy tests in their own `fireEvent`-only file.

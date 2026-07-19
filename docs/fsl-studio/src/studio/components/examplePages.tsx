@@ -3,11 +3,13 @@ import {
   Checkbox,
   ConfirmationDialog,
   createToastQueue,
+  Grid,
   Meter,
   ProgressBar,
   Select,
   SelectItem,
   Separator,
+  Stack,
   Tab,
   TabList,
   TabPanel,
@@ -41,39 +43,42 @@ const FormPage = () => {
 
   return (
     <form
-      className="example-form"
       onSubmit={(event) => {
         event.preventDefault();
         setSubmitted(true);
       }}
     >
-      <TextField value={email} onChange={setEmail} isInvalid={invalid}>
-        <TextFieldLabel>Email</TextFieldLabel>
-        <TextFieldControl type="email" placeholder="you@example.com" />
-        <TextFieldDescription>We never share your email.</TextFieldDescription>
-        {invalid ? <TextFieldError>Email is required.</TextFieldError> : null}
-      </TextField>
+      <Stack gap="sm">
+        <TextField value={email} onChange={setEmail} isInvalid={invalid}>
+          <TextFieldLabel>Email</TextFieldLabel>
+          <TextFieldControl type="email" placeholder="you@example.com" />
+          <TextFieldDescription>
+            We never share your email.
+          </TextFieldDescription>
+          {invalid ? <TextFieldError>Email is required.</TextFieldError> : null}
+        </TextField>
 
-      <Select label="Framework" placeholder="Choose a framework">
-        <SelectItem id="react">React</SelectItem>
-        <SelectItem id="vue">Vue</SelectItem>
-        <SelectItem id="svelte">Svelte</SelectItem>
-      </Select>
+        <Select label="Framework" placeholder="Choose a framework">
+          <SelectItem id="react">React</SelectItem>
+          <SelectItem id="vue">Vue</SelectItem>
+          <SelectItem id="svelte">Svelte</SelectItem>
+        </Select>
 
-      <Checkbox>I accept the terms of service</Checkbox>
+        <Checkbox>I accept the terms of service</Checkbox>
 
-      <div className="example-form-actions">
-        <Button type="submit" evaluation="primary" consequence="committing">
-          Create account
-        </Button>
-      </div>
+        <Stack direction="horizontal" gap="md">
+          <Button type="submit" evaluation="primary" consequence="committing">
+            Create account
+          </Button>
+        </Stack>
+      </Stack>
     </form>
   );
 };
 
 const ConfirmPage = () => {
   return (
-    <div className="preview-row">
+    <Stack direction="horizontal" gap="md" wrap align="center">
       <ConfirmationDialog
         trigger={<Button evaluation="primary">Publish post</Button>}
         title="Publish post?"
@@ -96,7 +101,7 @@ const ConfirmPage = () => {
       >
         This permanently removes your account and all its data.
       </ConfirmationDialog>
-    </div>
+    </Stack>
   );
 };
 
@@ -119,14 +124,14 @@ const WizardPage = () => {
 
 const DashboardPage = () => {
   return (
-    <div className="example-dashboard">
-      <Tabs>
-        <TabList aria-label="Dashboard sections">
-          <Tab id="usage">Usage</Tab>
-          <Tab id="activity">Activity</Tab>
-        </TabList>
-        <TabPanel id="usage">
-          <div className="example-dashboard-grid">
+    <Tabs>
+      <TabList aria-label="Dashboard sections">
+        <Tab id="usage">Usage</Tab>
+        <Tab id="activity">Activity</Tab>
+      </TabList>
+      <TabPanel id="usage">
+        <Stack gap="sm">
+          <Grid minColumnWidth="xs" gap="sm">
             <Meter aria-label="Storage" label="Storage" value={72} />
             <Meter
               aria-label="Bandwidth"
@@ -140,13 +145,13 @@ const DashboardPage = () => {
               value={12}
               evaluation="negative"
             />
-          </div>
+          </Grid>
           <Separator />
           <ProgressBar label="Sync in progress" value={48} />
-        </TabPanel>
-        <TabPanel id="activity">Recent activity would appear here.</TabPanel>
-      </Tabs>
-    </div>
+        </Stack>
+      </TabPanel>
+      <TabPanel id="activity">Recent activity would appear here.</TabPanel>
+    </Tabs>
   );
 };
 
@@ -167,8 +172,8 @@ const ToastsPage = () => {
   });
 
   return (
-    <div className="preview-col">
-      <div className="preview-row">
+    <Stack gap="xs">
+      <Stack direction="horizontal" gap="md" wrap align="center">
         {TOAST_EVALUATIONS.map((evaluation) => {
           return (
             <Button
@@ -189,9 +194,9 @@ const ToastsPage = () => {
             </Button>
           );
         })}
-      </div>
+      </Stack>
       <ToastRegion queue={queue} />
-    </div>
+    </Stack>
   );
 };
 
