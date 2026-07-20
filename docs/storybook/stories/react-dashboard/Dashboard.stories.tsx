@@ -1274,7 +1274,7 @@ const WithCardDetailStory = () => {
                 }}
               >
                 <Box>
-                  {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+                  {}
                   <Text
                     sx={{
                       fontSize: 'xs',
@@ -1286,17 +1286,16 @@ const WithCardDetailStory = () => {
                   >
                     Detail panel
                   </Text>
-                  {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+                  {}
                   <Heading sx={{ fontSize: 'xl' }}>{card.title}</Heading>
                 </Box>
                 <Button variant="secondary" onClick={close}>
-                  {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
-                  ✕ Close
+                  {}✕ Close
                 </Button>
               </Flex>
               <Flex sx={{ gap: 4, flexWrap: 'wrap' }}>
                 <Box sx={{ flex: '1 1 240px' }}>
-                  {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+                  {}
                   <Text
                     sx={{
                       fontSize: 'sm',
@@ -1320,7 +1319,7 @@ const WithCardDetailStory = () => {
                             borderRadius: 'sm',
                           }}
                         >
-                          {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+                          {}
                           <Text sx={{ fontSize: 'sm' }}>{row.campaign}</Text>
                           {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
                           <Text sx={{ fontSize: 'sm', fontWeight: 'bold' }}>
@@ -1332,7 +1331,7 @@ const WithCardDetailStory = () => {
                   </Stack>
                 </Box>
                 <Box sx={{ flex: '1 1 240px' }}>
-                  {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+                  {}
                   <Text
                     sx={{
                       fontSize: 'sm',
@@ -1387,6 +1386,300 @@ export const WithCardDetail: StoryObj = {
       description: {
         story:
           "Click any card to open a detail panel immediately below that card's row — showing a campaign breakdown and a 7-day bar chart. Click the same card again to close the panel (toggle), or click a different card to move it. The panel is rendered by `renderCardDetail(card, close)` and positioned in document flow right after the grid.",
+      },
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Controlled selection story
+// ---------------------------------------------------------------------------
+
+const controlledDetailTemplate: DashboardTemplate = {
+  id: 'controlled',
+  name: 'Controlled Selection',
+  grid: [
+    {
+      i: 'revenue',
+      x: 0,
+      y: 0,
+      w: 4,
+      h: 4,
+      card: {
+        id: 'revenue',
+        title: 'Revenue',
+        numberType: 'currency',
+        type: 'bigNumber',
+        sourceType: [{ source: 'api' }],
+        data: { value: 150000 },
+        trend: { value: 12.5, status: 'positive' },
+      },
+    },
+    {
+      i: 'roas',
+      x: 4,
+      y: 0,
+      w: 4,
+      h: 4,
+      card: {
+        id: 'roas',
+        title: 'ROAS',
+        numberType: 'number',
+        type: 'bigNumber',
+        sourceType: [{ source: 'api' }],
+        data: { value: 4.2 },
+        trend: { value: -3.1, status: 'negative' },
+      },
+    },
+    {
+      i: 'cpa',
+      x: 8,
+      y: 0,
+      w: 4,
+      h: 4,
+      card: {
+        id: 'cpa',
+        title: 'CPA',
+        numberType: 'currency',
+        type: 'bigNumber',
+        sourceType: [{ source: 'api' }],
+        data: { value: 38.5 },
+        trend: { value: 1.8, status: 'positive' },
+      },
+    },
+  ],
+};
+
+const ControlledSelectionStory = () => {
+  const [selectedKey, setSelectedKey] = React.useState<string | null>(null);
+
+  const handleCardSelect = (key: string | string[] | null) => {
+    setSelectedKey(typeof key === 'string' ? key : null);
+  };
+
+  return (
+    <Box sx={{ width: '100%', minWidth: '900px', padding: '4' }}>
+      <Box
+        sx={{
+          mb: 4,
+          p: 3,
+          bg: 'display.bg.secondary.default',
+          borderRadius: 'default',
+        }}
+      >
+        {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+        <Text sx={{ fontSize: 'sm', fontWeight: 'bold', mb: 2 }}>
+          External selection control
+        </Text>
+        <Flex sx={{ gap: 2, flexWrap: 'wrap' }}>
+          {controlledDetailTemplate.grid.map((item) => {
+            const card = item.card as { title: string };
+            const isSelected = selectedKey === item.i;
+            return (
+              <Button
+                key={item.i}
+                variant={isSelected ? 'primary' : 'secondary'}
+                onClick={() => {
+                  setSelectedKey(isSelected ? null : item.i);
+                }}
+              >
+                {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+                {isSelected ? '✓ ' : ''}
+                {card.title}
+              </Button>
+            );
+          })}
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setSelectedKey(null);
+            }}
+          >
+            {}
+            Clear
+          </Button>
+        </Flex>
+        {}
+        <Text
+          sx={{
+            fontSize: 'xs',
+            mt: 2,
+            color: 'display.text.secondary.default',
+          }}
+        >
+          {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+          Selected: {selectedKey ?? 'none'}
+        </Text>
+      </Box>
+      <Dashboard
+        selectedTemplate={controlledDetailTemplate}
+        templates={[controlledDetailTemplate]}
+        filters={[]}
+        loading={false}
+        showFilters={false}
+        selectedCardKey={selectedKey}
+        onCardSelect={handleCardSelect}
+        renderCardDetail={(card, close) => {
+          return (
+            <Box sx={{ p: 3 }}>
+              <Flex sx={{ justifyContent: 'space-between', mb: 2 }}>
+                {}
+                <Heading sx={{ fontSize: 'lg' }}>{card.title}</Heading>
+                <Button variant="secondary" onClick={close}>
+                  {}✕ Close
+                </Button>
+              </Flex>
+              {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+              <Text sx={{ color: 'display.text.secondary.default' }}>
+                Detail panel for {card.title} — controlled externally.
+              </Text>
+            </Box>
+          );
+        }}
+      />
+    </Box>
+  );
+};
+
+export const WithControlledSelection: StoryObj = {
+  render: () => {
+    return <ControlledSelectionStory />;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates `selectedCardKey` and `onCardSelect` for controlled selection. The buttons above the grid drive the selected card externally — clicking them pre-opens the matching detail slot. Clicking a card in the grid fires `onCardSelect`, which updates the external state.',
+      },
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Multi-slot story
+// ---------------------------------------------------------------------------
+
+const MultiSlotStory = () => {
+  return (
+    <Box sx={{ width: '100%', minWidth: '900px', padding: '4' }}>
+      <Box
+        sx={{
+          mb: 4,
+          p: 3,
+          bg: 'display.bg.secondary.default',
+          borderRadius: 'default',
+        }}
+      >
+        {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+        <Text sx={{ fontSize: 'sm' }}>
+          Click any card to expand it. With{' '}
+          {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+          <code>{'detailMode="multi"'}</code>, each card gets its own
+          independent slot — multiple cards can be open at the same time. Click
+          the same card again (or its Close button) to collapse it.
+        </Text>
+      </Box>
+      <Dashboard
+        selectedTemplate={controlledDetailTemplate}
+        templates={[controlledDetailTemplate]}
+        filters={[]}
+        loading={false}
+        showFilters={false}
+        detailMode="multi"
+        renderCardDetail={(card, close) => {
+          return (
+            <Box sx={{ p: 3 }}>
+              <Flex
+                sx={{
+                  justifyContent: 'space-between',
+                  mb: 3,
+                  alignItems: 'center',
+                }}
+              >
+                {}
+                <Heading sx={{ fontSize: 'lg' }}>{card.title}</Heading>
+                <Button variant="secondary" onClick={close}>
+                  {}✕ Close
+                </Button>
+              </Flex>
+              <Flex sx={{ gap: 4, flexWrap: 'wrap' }}>
+                <Box sx={{ flex: '1 1 240px' }}>
+                  {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+                  <Text sx={{ fontSize: 'sm', fontWeight: 'bold', mb: 3 }}>
+                    Top Campaigns
+                  </Text>
+                  <Stack sx={{ gap: 2 }}>
+                    {mockBreakdown.map((row) => {
+                      return (
+                        <Flex
+                          key={row.campaign}
+                          sx={{
+                            justifyContent: 'space-between',
+                            p: 2,
+                            bg: 'display.bg.primary.default',
+                            borderRadius: 'sm',
+                          }}
+                        >
+                          {}
+                          <Text sx={{ fontSize: 'sm' }}>{row.campaign}</Text>
+                          {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+                          <Text sx={{ fontSize: 'sm', fontWeight: 'bold' }}>
+                            ${row.value.toLocaleString()}
+                          </Text>
+                        </Flex>
+                      );
+                    })}
+                  </Stack>
+                </Box>
+                <Box sx={{ flex: '1 1 240px' }}>
+                  {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
+                  <Text sx={{ fontSize: 'sm', fontWeight: 'bold', mb: 3 }}>
+                    Daily Trend
+                  </Text>
+                  <Flex
+                    sx={{
+                      gap: 1,
+                      alignItems: 'flex-end',
+                      height: '80px',
+                      bg: 'display.bg.primary.default',
+                      borderRadius: 'sm',
+                      p: 3,
+                    }}
+                  >
+                    {[40, 65, 55, 80, 70, 90, 75].map((h, i) => {
+                      return (
+                        <Box
+                          key={i}
+                          sx={{
+                            flex: 1,
+                            bg: 'primary',
+                            borderRadius: '2px',
+                            opacity: 0.7 + i * 0.04,
+                            height: `${h}%`,
+                          }}
+                        />
+                      );
+                    })}
+                  </Flex>
+                </Box>
+              </Flex>
+            </Box>
+          );
+        }}
+      />
+    </Box>
+  );
+};
+
+export const WithMultipleSlots: StoryObj = {
+  render: () => {
+    return <MultiSlotStory />;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Demonstrates `detailMode="multi"` — each card gets its own independent detail slot. Click multiple cards to expand them side-by-side. Each slot has its own close button.',
       },
     },
   },
