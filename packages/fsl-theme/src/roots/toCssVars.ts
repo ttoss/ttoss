@@ -43,7 +43,7 @@ export const toCssVarName = (tokenPath: string): string => {
  *   `clamp({core.spacing.4}, {core.spacing.6}, {core.spacing.12})`
  *   → `clamp(var(--tt-core-spacing-4), var(--tt-core-spacing-6), var(--tt-core-spacing-12))`
  */
-const inlineRefsToVars = (value: string): string => {
+export const inlineRefsToVars = (value: string): string => {
   return value.replace(COMPOUND_REF_RE, (_match, path) => {
     return `var(${toCssVarName(path)})`;
   });
@@ -291,17 +291,13 @@ const buildReducedMotionVars = (theme: ThemeTokens): Record<string, string> => {
  * contains the coarse overrides, to be emitted inside
  * `@media (any-pointer: coarse)`.
  *
- * Derives every `*.coarse.*` path from `core.sizing.hit.coarse` dynamically,
- * so adding a new step to `CoreSizeHitScale` never silently omits it here.
+ * `hit` is a single floor per pointer profile: the coarse override maps
+ * `semantic.sizing.hit` to `core.sizing.hit.coarse`.
  */
 const buildCoarseHitVars = (theme: ThemeTokens): Record<string, string> => {
-  const vars: Record<string, string> = {};
-  for (const [key, value] of Object.entries(theme.core.sizing.hit.coarse)) {
-    if (typeof value === 'string') {
-      vars[toCssVarName(`semantic.sizing.hit.${key}`)] = value;
-    }
-  }
-  return vars;
+  return {
+    [toCssVarName('semantic.sizing.hit')]: theme.core.sizing.hit.coarse,
+  };
 };
 
 // ---------------------------------------------------------------------------

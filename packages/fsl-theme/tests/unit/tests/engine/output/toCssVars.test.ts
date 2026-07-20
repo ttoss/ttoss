@@ -254,10 +254,10 @@ describe('toCssVars', () => {
     test('fine-pointer baseline is a var() ref; coarse override is a raw value', () => {
       const { cssVars, coarseHitVars } = toCssVars(defaultTheme);
       // fine pointer: semantic var resolves to a var() reference (not a raw value)
-      expect(cssVars['--tt-sizing-hit-base']).toMatch(/^var\(/);
+      expect(cssVars['--tt-sizing-hit']).toMatch(/^var\(/);
       // coarse override: raw value (not a var() reference)
-      expect(coarseHitVars['--tt-sizing-hit-base']).not.toMatch(/^var\(/);
-      expect(typeof coarseHitVars['--tt-sizing-hit-base']).toBe('string');
+      expect(coarseHitVars['--tt-sizing-hit']).not.toMatch(/^var\(/);
+      expect(typeof coarseHitVars['--tt-sizing-hit']).toBe('string');
     });
 
     test('toCssString includes @media (any-pointer: coarse) block', () => {
@@ -267,7 +267,7 @@ describe('toCssVars', () => {
       const coarseBlock = css.slice(
         css.indexOf('@media (any-pointer: coarse)')
       );
-      expect(coarseBlock).toMatch(/--tt-sizing-hit-base: [^v]/);
+      expect(coarseBlock).toMatch(/--tt-sizing-hit: [^v]/);
     });
 
     test('coarse block uses correct selector in themed output', () => {

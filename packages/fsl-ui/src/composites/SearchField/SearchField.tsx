@@ -68,13 +68,19 @@ export const searchFieldControlMeta = {
 /** Props for the SearchField root. */
 export interface SearchFieldProps extends Omit<
   RACSearchFieldProps,
-  'style' | 'className'
+  'style' | 'className' | 'children'
 > {
   /**
    * Accessible label for the clear button (caller-localized — no default, per
    * the i18n rule / ADR-001). e.g. "Clear search".
    */
   clearLabel: string;
+  /**
+   * Field parts (label, input, clear button, …). Plain nodes only — the
+   * composite provides its own scope context, so React Aria's
+   * function-children form is not part of this API.
+   */
+  children?: React.ReactNode;
 }
 
 /**
@@ -198,7 +204,7 @@ export const SearchFieldControl = (props: SearchFieldControlProps) => {
           return {
             boxSizing: 'border-box',
             inlineSize: '100%',
-            minHeight: vars.sizing.hit.base,
+            minHeight: vars.sizing.hit,
             paddingBlock: vars.spacing.inset.control.sm,
             // Leave room for the leading glyph and trailing clear button.
             paddingInlineStart: ADORNMENT_INSET,

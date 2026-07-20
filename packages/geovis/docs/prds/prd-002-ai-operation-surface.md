@@ -27,10 +27,10 @@ An LLM operates an existing map through a bounded, validated interface.
 - `runtime.getContextPacket()`: versioned, read-only, metadata-only summary including allowed actions and last structured error ([ADR-0004](https://github.com/ttoss/ttoss/blob/main/packages/geovis/docs/adr/0004-ai-context-packet.md)).
 - Packet IDs are the same stable IDs actions accept.
 - `SpecPatch` demoted to documented escape hatch.
+- React hooks migrated to dispatch the same actions (human/AI convergence). Done for the click hook (`useMapClick`/`useGeoVisClick` dispatch `select-feature`, converging with `dispatch()`). `useBoundaryToggle` was evaluated and **not** migrated — see the plan's implementation notes for why forcing it would be a breaking redesign, not a convergence.
 
 ### Should
 
-- React hooks migrated to dispatch the same actions (human/AI convergence). Done for the click hook (`useMapClick`/`useGeoVisClick` dispatch `select-feature`, converging with `dispatch()`). `useBoundaryToggle` was evaluated and **not** migrated — see the plan's implementation notes for why forcing it would be a breaking redesign, not a convergence.
 - Undo/redo derived from the action log. Not built — the log is the substrate; deriving undo/redo is left to a workspace-level consumer (PRD-008).
 
 ### Won't (non-goals)

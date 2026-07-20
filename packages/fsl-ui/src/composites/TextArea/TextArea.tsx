@@ -167,7 +167,7 @@ export const TextAreaControl = (props: TextAreaControlProps) => {
         return {
           boxSizing: 'border-box',
           resize: 'vertical',
-          minBlockSize: vars.sizing.hit.base,
+          minBlockSize: vars.sizing.hit,
           paddingBlock: vars.spacing.inset.control.sm,
           paddingInline: vars.spacing.inset.control.md,
           borderRadius: vars.radii.control,

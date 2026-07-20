@@ -70,10 +70,51 @@ export type DomFixture = {
 
 export const DOM_FIXTURES: Record<string, DomFixture> = {
   // ── standalone components ─────────────────────────────────────────────
+  AppShell: {
+    scope: 'app-shell',
+    element: () => {
+      return <pkg.AppShell>main</pkg.AppShell>;
+    },
+  },
+  Badge: {
+    scope: 'badge',
+    element: () => {
+      return <pkg.Badge>New</pkg.Badge>;
+    },
+  },
+  Box: {
+    scope: 'box',
+    element: () => {
+      return <pkg.Box>content</pkg.Box>;
+    },
+  },
   Button: {
     scope: 'button',
     element: () => {
       return <pkg.Button>x</pkg.Button>;
+    },
+  },
+  Code: {
+    scope: 'code',
+    element: () => {
+      return <pkg.Code>npm i</pkg.Code>;
+    },
+  },
+  Container: {
+    scope: 'container',
+    element: () => {
+      return <pkg.Container>content</pkg.Container>;
+    },
+  },
+  Grid: {
+    scope: 'grid',
+    element: () => {
+      return (
+        <pkg.Grid columns={2}>
+          <span>a</span>
+          <span>b</span>
+        </pkg.Grid>
+      );
     },
   },
   Checkbox: {
@@ -101,10 +142,22 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       );
     },
   },
+  Heading: {
+    scope: 'heading',
+    element: () => {
+      return <pkg.Heading level={2}>Section</pkg.Heading>;
+    },
+  },
   Link: {
     scope: 'link',
     element: () => {
       return <pkg.Link href="#">x</pkg.Link>;
+    },
+  },
+  Text: {
+    scope: 'text',
+    element: () => {
+      return <pkg.Text>Body copy</pkg.Text>;
     },
   },
   ProgressBar: {
@@ -147,6 +200,23 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
     scope: 'separator',
     element: () => {
       return <pkg.Separator />;
+    },
+  },
+  Stack: {
+    scope: 'stack',
+    element: () => {
+      return (
+        <pkg.Stack>
+          <span>a</span>
+          <span>b</span>
+        </pkg.Stack>
+      );
+    },
+  },
+  Surface: {
+    scope: 'surface',
+    element: () => {
+      return <pkg.Surface>content</pkg.Surface>;
     },
   },
   Slider: {

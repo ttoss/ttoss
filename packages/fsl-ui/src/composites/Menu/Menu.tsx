@@ -291,7 +291,7 @@ export const MenuItem = ({
           alignItems: 'center',
           cursor: isDisabled ? 'not-allowed' : 'pointer',
           borderRadius: vars.radii.control,
-          minHeight: vars.sizing.hit.base,
+          minHeight: vars.sizing.hit,
           paddingBlock: vars.spacing.inset.control.sm,
           paddingInline: vars.spacing.inset.control.md,
           ...(vars.text.label.md as React.CSSProperties),

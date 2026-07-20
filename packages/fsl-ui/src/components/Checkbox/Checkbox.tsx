@@ -18,7 +18,7 @@ import { Icon } from '../Icon';
 //   authorial Evaluation per ENTITY_EVALUATION),
 //   radii: `control`,
 //   border: `outline.control` (default) + `selected` (when checked/indeterminate),
-//   sizing: `hit.base`, spacing: `inset.control`, typography: `label.md`,
+//   sizing: `hit`, spacing: `inset.control`, typography: `label.md`,
 //   motion: `feedback`, elevation: `flat`.
 //
 // Validation feedback is a **runtime State** (`invalid`), driven by React
@@ -99,17 +99,17 @@ const buildBoxStyle = ({
   };
 };
 
-/** Indicator glyph color — destructures `text` once to keep `?.` bounded. */
+/** Indicator glyph color — a theme may omit the dimension; degrade to undefined. */
 const resolveIndicatorColor = ({
   text,
   isIndeterminate,
 }: {
-  text: NonNullable<InputColors['text']>;
+  text: InputColors['text'];
   isIndeterminate?: boolean;
 }): string | undefined => {
   return isIndeterminate
-    ? (text.indeterminate ?? text.checked ?? text.default)
-    : (text.checked ?? text.default);
+    ? (text?.indeterminate ?? text?.checked ?? text?.default)
+    : (text?.checked ?? text?.default);
 };
 
 /** Label color — invalid dominates disabled dominates default. */
@@ -118,13 +118,13 @@ const resolveLabelColor = ({
   isInvalid,
   isDisabled,
 }: {
-  text: NonNullable<InputColors['text']>;
+  text: InputColors['text'];
   isInvalid?: boolean;
   isDisabled?: boolean;
 }): string | undefined => {
-  if (isInvalid) return text.invalid;
-  if (isDisabled) return text.disabled;
-  return text.default;
+  if (isInvalid) return text?.invalid;
+  if (isDisabled) return text?.disabled;
+  return text?.default;
 };
 
 /**
@@ -170,7 +170,7 @@ export const Checkbox = ({ children, ...props }: CheckboxProps) => {
           display: 'inline-flex',
           alignItems: 'center',
           gap: vars.spacing.gap.inline.sm,
-          minHeight: vars.sizing.hit.base,
+          minHeight: vars.sizing.hit,
           cursor: isDisabled ? 'not-allowed' : 'pointer',
           opacity: isDisabled ? vars.opacity.disabled : undefined,
           ...(vars.text.label.md as React.CSSProperties),
@@ -187,7 +187,7 @@ export const Checkbox = ({ children, ...props }: CheckboxProps) => {
         isIndeterminate,
         isInvalid,
       }) => {
-        const text = c?.text ?? {};
+        const text = c?.text;
         const showIndicator = isSelected || isIndeterminate;
 
         return (

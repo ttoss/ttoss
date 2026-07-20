@@ -16,7 +16,7 @@ import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 //   colors: `input.primary` (single neutral chrome — Selection carries no
 //   authorial Evaluation per ENTITY_EVALUATION),
 //   radii: `round` (track + thumb = pill shape),
-//   border: `outline.control`, sizing: `hit.base`,
+//   border: `outline.control`, sizing: `hit`,
 //   spacing: `inset.control`, typography: `label.md`,
 //   motion: `feedback`, elevation: `flat`.
 //
@@ -103,8 +103,8 @@ const resolveThumbColor = ({
   c: InputColors;
   isSelected?: boolean;
 }): string | undefined => {
-  const text = c?.text ?? {};
-  return isSelected ? (text.checked ?? text.default) : c?.border?.default;
+  const text = c?.text;
+  return isSelected ? (text?.checked ?? text?.default) : c?.border?.default;
 };
 
 /** Label color — disabled dominates default (Selection has no evaluation). */
@@ -115,8 +115,8 @@ const resolveLabelColor = ({
   c: InputColors;
   isDisabled?: boolean;
 }): string | undefined => {
-  const text = c?.text ?? {};
-  return isDisabled ? text.disabled : text.default;
+  const text = c?.text;
+  return isDisabled ? text?.disabled : text?.default;
 };
 
 /**
@@ -138,7 +138,7 @@ export interface SwitchProps extends Omit<
  *
  * Entity = Selection → reads `vars.colors.input.primary.*`, radii: `round`
  * (pill track + circular thumb), border: `outline.control`,
- * sizing: `hit.base`, motion: `feedback`.
+ * sizing: `hit`, motion: `feedback`.
  *
  * @example
  * ```tsx
@@ -160,7 +160,7 @@ export const Switch = ({ children, ...props }: SwitchProps) => {
           display: 'inline-flex',
           alignItems: 'center',
           gap: vars.spacing.gap.inline.sm,
-          minHeight: vars.sizing.hit.base,
+          minHeight: vars.sizing.hit,
           cursor: isDisabled ? 'not-allowed' : 'pointer',
           opacity: isDisabled ? vars.opacity.disabled : undefined,
           ...(vars.text.label.md as React.CSSProperties),

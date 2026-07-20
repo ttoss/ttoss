@@ -519,3 +519,61 @@ Re-litigation answers:
 - "States are not free-form (FSL §7) — why admit a new one?" → through governance, which is this ADR plus the Lexicon §7 entry; the state has runtime legality (only where validation semantics apply) like `visited`/`indeterminate`.
 - "Why does validationMessage still use `negative`?" → it _displays_ valence about the outcome; the control _carries_ the state. Same split as Lexicon §10.9 (part vs slot).
 - "`invalid` equals `negative` visually — parallel vocabulary?" → same value, different meaning axis (State vs Evaluation); divergence stays free (e.g. themes may tint invalid backgrounds without touching the negative role).
+
+### ADR-018: Dark depth is carried by tonal surface colour, not shadow
+
+Status: accepted (2026-07-18)
+Tags: elevation, colors, dark-mode, craft, surface
+
+Decision: populate the spec-sanctioned optional `semantic.elevation.tonal.{raised|overlay|blocking}` in `baseTheme` (light: neutral.0; dark alternate: neutral.800 → 700), and add core `neutral.600`/`neutral.800` so the dark canvas (neutral.900) can stratify in fine steps — a surface component reads `tonal` for its background and the paired `surface` recipe for its shadow.
+Rejected: shadow-only depth (previous state) — `emphatic` recipes are near-black shadows that are invisible on the near-black dark canvas (elevation.md Rule 6), so raised surfaces read flat; reusing `informational.{secondary|muted}` as a surface ladder — those are emphasis variants whose value direction inverts between light and dark, so one token cannot mean "raised" in both modes.
+Cost: two new core neutral steps (600/800) emit as CSS vars; `tonal` is now part of the default `vars` shape, so consumers can read `vars.elevation.tonal.*`.
+Anchors: `src/baseTheme.ts` › `semantic.elevation.tonal` (base + `darkAlternate`), `src/baseTheme.ts` › `core.colors.neutral.600/800`, `docs/website/docs/design/design-system/design-tokens/families/elevation.md#surface--shadow`.
+
+Re-litigation answers:
+
+- "Is adding `tonal` a grammar extension needing governance?" → no — `SemanticElevation.tonal` is already declared optional in `families/elevation.ts` and sanctioned by elevation.md; this populates it, it does not invent it.
+- "Why not a new `surface.{canvas|raised}` colour family?" → the tonal contract already expresses surface-colour-at-depth paired with the shadow recipe; a parallel family would duplicate it (model.md "no parallel vocabulary").
+
+### ADR-019: Density is a theme projection; control geometry is not container-fluid
+
+Status: **reverted (2026-07-19)** — the density projection shipped with **zero
+real consumers**. Per the evidence rule (a token/axis is admitted only when a
+runtime consumer dispatches on it), a whole third projection axis — `core.density`,
+`roots/density.ts`, the `[data-tt-density]` emitter blocks, and
+`DensityProvider`/`useDensity` — was speculative surface area. It was removed:
+the only thing that ever exercised it was the Studio, and the Studio does not use
+it. **Scope of the reversal:** only the _density axis_ is gone. ADR-019's other
+ruling — **control geometry is not container-fluid** — stands, now carried
+entirely by ADR-020 (`hit` is `rem`-anchored, so control height never rides `cqi`).
+Reintroduce density only when a real app demands a switchable-density surface.
+Originally: accepted (2026-07-18).
+Tags: sizing, spacing, density, responsiveness, geometry, governance, reverted
+
+Decision: introduce **density** (`compact | comfortable | spacious`, default `comfortable`) as a theme **projection axis** — a `data-tt-density` attribute that remaps the semantic geometry tokens (`sizing.hit.*`, `spacing.inset.control.*`, control type step) to different core steps, exactly as `data-tt-mode` remaps colour. Components are unchanged (they already read the semantic tokens). Two coupled geometry rulings: (1) **control geometry does not use the container-fluid engine** — `spacing.inset.control.*` must resolve from a non-`cqi` scale (rem-anchored), because a control must not grow taller because the window is wider; container-fluidity (`cqi`) stays for _layout_ spacing/sizing only. (2) **hit is a floor, not the visual size** (sizing.md): the visible control height comes from control inset + type; `hit.*` only guarantees the ergonomic minimum.
+Rejected: a `size` prop on controls (arbitrary, breaks "no size" doctrine and meaning-first); a component-per-density (explosion — the Studio proved it does not scale, it hand-rolled 38 control selectors); making control insets `cqi`-fluid (the current state — a Button resolves to ~44px on a wide surface because `inset.control.sm = {core.spacing.3}` rides the fluid engine).
+Cost: a third projection axis in the emitter/runtime (`data-tt-density` blocks + a provider), and control insets move off the shared `core.spacing` engine onto a non-fluid control-spacing scale; pointer-coarse overrides still win for touch a11y regardless of density.
+Anchors: `src/baseTheme.ts` › `core.sizing.hit.*` / `semantic.spacing.inset.control.*`, `docs/website/docs/design/design-system/design-tokens/families/sizing.md`, `packages/fsl-ui/INTERNAL/EVOLUTION.md` §3 (D2), `packages/fsl-ui/src/tokens/CONTRACT.md` §4.
+
+Re-litigation answers:
+
+- "Does density violate 'no size prop / density = a different component' (CONTRACT §4)?" → no — density is not a per-component prop, it is a theme projection (like mode); meaning is defined once and survives the projection. §4 is revised, not broken: authors still never pass a size; the theme owns the geometry.
+- "Why can't controls be `cqi`-fluid like spacing?" → ergonomics. A hit target growing with container width is a usability regression; controls adapt to _user font_ (`rem`) and _density_, layout adapts to _container_ (`cqi`).
+- "Is coarse still safe under `compact`?" → yes — `@media (any-pointer: coarse)` forces the touch floor irrespective of density; density only tunes fine-pointer geometry.
+- "How is density scoped, given ADR-020 made `hit` a single value?" → moot — the density axis was **reverted (2026-07-19, see ADR-019)** for lack of a real consumer. ADR-020's `hit` collapse stands on its own; there is no `[data-tt-density]` axis to scope.
+
+### ADR-020: `hit` is a single theme-defined floor, not a min/base/prominent scale
+
+Status: accepted (2026-07-18)
+Tags: sizing, geometry, ergonomics, evidence, governance
+
+Decision: collapse `core.sizing.hit` and `semantic.sizing.hit` from a three-step ramp (`min` / `base` / `prominent`) to **one value per pointer profile** — `core.sizing.hit.{fine,coarse}` are scalars and `semantic.sizing.hit` is a single ref. `hit` is the theme's one ergonomic **floor** (min interactive target, enforced via `min-*`), never a visual size; the visible control height comes from its inset + type, with `hit` binding the minimum. To make the default control desktop-correct, `semantic.spacing.inset.control.*` is retuned tight (`{core.spacing.1|2|4}`) so block padding stays under the floor and `hit` binds — a Button now resolves to ~32–36px instead of the ~44–58px the old generous inset produced. Because `hit.fine` is `rem`-anchored (`clamp(px, rem, px)`, not `cqi`), the control height never grows with container width — satisfying ADR-019's "control geometry is not container-fluid" ruling for the vertical axis without moving inset off the shared spacing engine (the residual fluid drift at `core.spacing.1` is ±2px and never binds, since `hit` drives height).
+Rejected: keeping the three-step ramp (evidence: across 17 fsl-ui controls only `hit.base` was ever consumed; `hit.min` and `hit.prominent` had **zero** usages — dead tokens that invited copy-paste error and implied a per-size vocabulary the doctrine forbids); removing `hit` entirely (loses the ergonomic/a11y floor and the automatic coarse-pointer touch override); an 18px minimum floor (below WCAG 2.2's 24px and the 44px touch floor; does not scale with user zoom); leaving `inset.control` generous (the actual cause of the oversized button — the floor was never the bottleneck).
+Cost: the emitter (`buildCoarseHitVars`), runtime (`applyCoarseHitOverrides`), and DTCG (`buildHitExtension`) simplify from per-step iteration to a single token; every consumer moves from `vars.sizing.hit.base` to `vars.sizing.hit`; the sizing family type drops `CoreSizeHitScale`. The "standard step" column for sizing in CONTRACT §4 no longer applies (hit has no step). A future need for a distinct prominent/secondary interactive floor would reintroduce a scale — but per the evidence rule that is added only when a real consumer demands it.
+Anchors: `src/families/sizing.ts` › `CoreSizeHit` / `SemanticSizing.hit`, `src/baseTheme.ts` › `core.sizing.hit` / `semantic.sizing.hit` / `semantic.spacing.inset.control`, `src/roots/toCssVars.ts` › `buildCoarseHitVars`, `src/roots/toDTCG.ts` › `buildHitExtension`, `src/react.tsx` › `applyCoarseHitOverrides`, `docs/website/docs/design/design-system/design-tokens/families/sizing.md`, `packages/fsl-ui/src/tokens/CONTRACT.md` §4.
+
+Re-litigation answers:
+
+- "Doesn't a single value lose expressiveness for CTAs vs dense list rows?" → no evidence it was used — `hit.prominent`/`hit.min` shipped with zero consumers. Emphasis is carried by colour, type, and inset, not by a larger hit floor. If a genuine need appears, reintroduce a scale then (evidence rule), not speculatively.
+- "Does this reopen ADR-019?" → ADR-019's density projection was later **reverted (2026-07-19)** for lack of a consumer, but its "control geometry not container-fluid" ruling is unaffected and is now carried entirely here: ADR-020 refines the _shape_ of the `hit` token (scale → scalar) and fixes the inset tuning that was the real oversized-control cause; the vertical axis is genuinely non-fluid because the rem-anchored `hit` binds the height.
+- "Why keep `inset.control` on the `cqi` spacing engine instead of a rem scale?" → the tight steps (`core.spacing.1|2`) drift only ±2px and never bind (the `hit` floor drives height), so the ergonomic guarantee is already met; moving inset onto a separate rem scale is a larger migration (it would break the `MUST_ALIAS` core-spacing invariant and its tests) deferred until evidence shows the ±2px horizontal drift matters.

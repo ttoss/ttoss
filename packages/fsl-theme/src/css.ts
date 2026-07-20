@@ -11,6 +11,7 @@ import { toCssVars } from './roots/toCssVars';
 import type { ThemeBundle } from './Types';
 
 export { type FlatTokenMap, toFlatTokens } from './roots/helpers';
+export { getPreflightStyles, PREFLIGHT_CSS } from './roots/preflight';
 export {
   type BundleCssVarsOptions,
   type BundleCssVarsResult,

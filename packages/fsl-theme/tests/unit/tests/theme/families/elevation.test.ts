@@ -4,7 +4,7 @@
  * @see /docs/website/docs/design/design-system/design-tokens/families/elevation.md#validation
  */
 
-import { themeFlatToTest } from '../../../fixtures/theme';
+import { themeAltFlatToTest, themeFlatToTest } from '../../../fixtures/theme';
 
 // ---------------------------------------------------------------------------
 // Test bundles — extend when new theme bundles are added
@@ -103,6 +103,65 @@ describe.each(bundleEntries)('Elevation errors — $label', ({ base }) => {
     ).toBeLessThan(
       parseShadowDepth(base['semantic.elevation.surface.blocking'])
     );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tonal surface tests — the "surface colour at depth" half of Surface + Shadow
+// (elevation.md). Dark depth is carried here, not by the near-invisible
+// emphatic shadows on a near-black canvas (ADR-018).
+// ---------------------------------------------------------------------------
+
+/** Relative luminance (0 = black … 1 = white) of a #rrggbb colour. */
+const luminance = (hex: string): number => {
+  const m = /^#?([0-9a-f]{6})$/i.exec(String(hex).trim());
+  if (!m) return NaN;
+  const n = parseInt(m[1], 16);
+  const channel = (c: number) => {
+    const s = c / 255;
+    return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+  };
+  const r = channel((n >> 16) & 0xff);
+  const g = channel((n >> 8) & 0xff);
+  const b = channel(n & 0xff);
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+
+describe('Elevation tonal — surface colour at depth', () => {
+  const strata = ['raised', 'overlay', 'blocking'] as const;
+
+  test('base ships a tonal token for every shadowed stratum', () => {
+    for (const stratum of strata) {
+      const value = themeFlatToTest[`semantic.elevation.tonal.${stratum}`];
+      expect(typeof value).toBe('string');
+      expect(String(value)).toMatch(/^#[0-9a-f]{6}$/i);
+    }
+  });
+
+  test('dark tonal surfaces sit above (lighter than) the dark canvas', () => {
+    expect(themeAltFlatToTest).toBeDefined();
+    const alt = themeAltFlatToTest as Record<string, string | number>;
+    // The dark canvas is the primary informational background.
+    const canvas = luminance(
+      String(alt['semantic.colors.informational.primary.background.default'])
+    );
+    for (const stratum of strata) {
+      const surface = luminance(
+        String(alt[`semantic.elevation.tonal.${stratum}`])
+      );
+      expect(surface).toBeGreaterThan(canvas);
+    }
+  });
+
+  test('dark tonal ramp does not darken as strata rise (raised ≤ overlay ≤ blocking)', () => {
+    const alt = themeAltFlatToTest as Record<string, string | number>;
+    const raised = luminance(String(alt['semantic.elevation.tonal.raised']));
+    const overlay = luminance(String(alt['semantic.elevation.tonal.overlay']));
+    const blocking = luminance(
+      String(alt['semantic.elevation.tonal.blocking'])
+    );
+    expect(overlay).toBeGreaterThanOrEqual(raised);
+    expect(blocking).toBeGreaterThanOrEqual(overlay);
   });
 });
 

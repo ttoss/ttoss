@@ -200,7 +200,7 @@ export const TextFieldControl = (props: TextFieldControlProps) => {
       style={({ isHovered, isDisabled, isFocusVisible, isInvalid }) => {
         return {
           boxSizing: 'border-box',
-          minHeight: vars.sizing.hit.base,
+          minHeight: vars.sizing.hit,
           paddingBlock: vars.spacing.inset.control.sm,
           paddingInline: vars.spacing.inset.control.md,
           borderRadius: vars.radii.control,
