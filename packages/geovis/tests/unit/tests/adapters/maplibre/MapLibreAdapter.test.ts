@@ -68,6 +68,8 @@ const makeMapMock = () => {
     }),
     setLayoutProperty: jest.fn(),
     setPaintProperty: jest.fn(),
+    setFeatureState: jest.fn(),
+    setFilter: jest.fn(),
     setStyle: jest.fn(),
     setCenter: jest.fn(),
     setZoom: jest.fn(),
@@ -224,6 +226,7 @@ describe('createMapLibreAdapter', () => {
       ],
       dataFeatures: {
         featureState: ['geojson'],
+        filter: ['geojson'],
       },
       viewFeatures: {
         pitch: true,
@@ -249,6 +252,94 @@ describe('createMapLibreAdapter', () => {
         value: '#ff0000',
       });
     }).not.toThrow();
+  });
+});
+
+describe('createMapLibreAdapter — setSelection (PRD-002 select-feature)', () => {
+  const makeSpecWithLayer = () => {
+    return {
+      ...makeSpec(),
+      sources: [
+        {
+          id: 'src-1',
+          type: 'geojson' as const,
+          data: { type: 'FeatureCollection' as const, features: [] },
+        },
+      ],
+      layers: [
+        { id: 'lyr-1', sourceId: 'src-1', geometry: 'polygon' as const },
+      ],
+    };
+  };
+
+  test("applies the selection to every mounted view, keyed by the layer's sourceId", () => {
+    const map = makeMapMock();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(makeContainer(), makeSpecWithLayer(), 'view-a');
+
+    adapter.setSelection?.({ layerId: 'lyr-1', featureId: 'BR' });
+
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'src-1', id: 'BR' },
+      { selected: true }
+    );
+  });
+
+  test('clears the previous selection before applying the next one', () => {
+    const map = makeMapMock();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(makeContainer(), makeSpecWithLayer(), 'view-a');
+
+    adapter.setSelection?.({ layerId: 'lyr-1', featureId: 'BR' });
+    adapter.setSelection?.({ layerId: 'lyr-1', featureId: 'AR' });
+
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'src-1', id: 'BR' },
+      { selected: false }
+    );
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'src-1', id: 'AR' },
+      { selected: true }
+    );
+  });
+
+  test('setSelection does nothing when no map is mounted', () => {
+    const adapter = createMapLibreAdapter();
+    expect(() => {
+      adapter.setSelection?.({ layerId: 'lyr-1', featureId: 'BR' });
+    }).not.toThrow();
+  });
+
+  test('two adapter instances track selection independently', () => {
+    const mapA = makeMapMock();
+    const mapB = makeMapMock();
+    jest
+      .mocked(maplibregl.Map)
+      .mockImplementationOnce(() => {
+        return mapA as never;
+      })
+      .mockImplementationOnce(() => {
+        return mapB as never;
+      });
+
+    const adapterA = createMapLibreAdapter();
+    const adapterB = createMapLibreAdapter();
+    adapterA.mount(makeContainer(), makeSpecWithLayer(), 'view-a');
+    adapterB.mount(makeContainer(), makeSpecWithLayer(), 'view-b');
+
+    adapterA.setSelection?.({ layerId: 'lyr-1', featureId: 'BR' });
+
+    expect(mapA.setFeatureState).toHaveBeenCalledWith(
+      { source: 'src-1', id: 'BR' },
+      { selected: true }
+    );
+    expect(mapB.setFeatureState).not.toHaveBeenCalled();
   });
 });
 

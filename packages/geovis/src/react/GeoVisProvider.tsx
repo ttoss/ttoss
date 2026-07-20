@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import type { GeoVisAction } from '../runtime/action';
 import type {
   EngineAdapter,
   SetViewOptions,
@@ -329,6 +330,29 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
     [runtime, spec]
   );
 
+  // Mirrors `applyPatch` above: `dispatch()` mutates `runtime.spec` directly
+  // for spec-changing actions (e.g. `toggle-layer`), so `committed` must be
+  // re-synced the same way or `useGeoVis().spec` goes stale. Actions that
+  // don't touch the spec (e.g. `select-feature`) return `runtime.result`
+  // unchanged, so this still re-syncs `committed.result` to the same
+  // reference — a harmless no-op re-render, not a correctness issue.
+  const dispatch = React.useCallback(
+    (action: GeoVisAction) => {
+      if (!runtime) return committed.result;
+      const result = runtime.dispatch(action);
+      if (result.status === 'resolved') {
+        setPatchState({ forSpec: spec, patchedSpec: runtime.spec });
+        setCommitted({ spec: result.spec, result: withPolicyWarnings(result) });
+      } else {
+        setCommitted((prev) => {
+          return { spec: prev.spec, result };
+        });
+      }
+      return result;
+    },
+    [runtime, spec, committed.result]
+  );
+
   if (adapterError) throw adapterError;
 
   // Memoize the context value so that high-frequency hover updates inside
@@ -342,9 +366,10 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
       spec: committed.spec,
       applyPatch,
       setView,
+      dispatch,
       result: committed.result,
     };
-  }, [runtime, committed, applyPatch, setView]);
+  }, [runtime, committed, applyPatch, setView, dispatch]);
 
   return (
     <GeoVisContext.Provider value={ctxValue}>

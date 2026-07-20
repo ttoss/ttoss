@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import type { GeoVisAction } from '../runtime/action';
 import type { SetViewOptions, SpecPatch } from '../runtime/adapter';
 import type { GeoVisRuntime } from '../runtime/createRuntime';
 import type { GeoVisResult } from '../spec/result';
@@ -33,9 +34,16 @@ export interface GeoVisContextValue {
   runtime: GeoVisRuntime | null;
   /** The last successfully accepted spec — unchanged while `result` is a failure (ADR-0001: nothing renders on failure). */
   spec: VisualizationSpec;
+  /** Low-level escape hatch (PRD-002) — prefer `dispatch` below for anything expressible as one of its actions. */
   applyPatch: (patch: SpecPatch) => void;
   /** Imperatively moves the camera and syncs `spec.view`. Animated by default. */
   setView: (options: SetViewOptions) => void;
+  /**
+   * Dispatches a closed, typed `GeoVisAction` (ADR-0003) and keeps `spec`/
+   * `result` above in sync on success — the same pattern as `applyPatch`.
+   * Prefer this over `applyPatch` for anything expressible as an action.
+   */
+  dispatch: (action: GeoVisAction) => GeoVisResult;
   /**
    * The latest `GeoVisResult` from validating the spec (schema, referential
    * integrity, and adapter capabilities) plus cartography policy warnings.

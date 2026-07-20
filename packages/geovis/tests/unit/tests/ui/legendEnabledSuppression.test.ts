@@ -18,7 +18,6 @@ const buildSpec = ({
   legendEnabled?: boolean;
 }): VisualizationSpec => {
   return {
-    id: 'spec',
     engine: 'maplibre',
     legendEnabled,
     sources: [],

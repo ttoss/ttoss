@@ -10,7 +10,6 @@ const makeSpec = (
   }
 ): VisualizationSpec => {
   return {
-    id: 'test',
     engine: 'maplibre',
     mapType: 'choropleth',
     basemap: {
@@ -158,7 +157,6 @@ const makeChoroplethSpec = (
   overrides?: Partial<VisualizationSpec>
 ): VisualizationSpec => {
   return {
-    id: 'test',
     engine: 'maplibre',
     mapType: 'choropleth',
     sources: [
@@ -683,7 +681,6 @@ describe('choropleth happy path — legend metadata preservation', () => {
 describe('choropleth — unknown source', () => {
   test('returns empty layers and legends when sourceId cannot be matched', () => {
     const result = resolveChoropleth({
-      id: 'test',
       engine: 'maplibre',
       sources: [],
       layers: [],
@@ -697,7 +694,6 @@ describe('choropleth — unknown source', () => {
 describe('choropleth — mergeLegends uncovered coverage', () => {
   test('fills missing colorBy via positional fallback when user legend id differs from auto-generated', () => {
     const resolved = resolveSpecFromMapType({
-      id: 'test',
       engine: 'maplibre',
       mapType: 'choropleth',
       sources: [
@@ -724,7 +720,6 @@ describe('choropleth — mergeLegends uncovered coverage', () => {
 
   test('keeps user categorical colorBy when auto-generated legend is quantitative (types differ)', () => {
     const resolved = resolveSpecFromMapType({
-      id: 'test',
       engine: 'maplibre',
       mapType: 'choropleth',
       sources: [

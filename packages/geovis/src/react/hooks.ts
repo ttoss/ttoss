@@ -20,7 +20,7 @@ import {
   buildHoverTracking,
   buildPointerLayerIds,
   clearHover,
-  clearSelected,
+  dispatchClearSelection,
   type PrevFeatureState,
   TRACKED_FIELD_SEP,
   TRACKED_RECORD_SEP,
@@ -194,9 +194,8 @@ export const useMapClick = ({
     if (!map) return;
 
     const { tracked, sourceByLayerId } = buildClickTracking(trackedKey);
-    const prevSelectedState: PrevFeatureState = { current: null };
 
-    const handlers = tracked.map(({ layerId, hasSelectedPaint }) => {
+    const handlers = tracked.map(({ layerId }) => {
       return {
         layerId,
         handleClick: buildHandleClick({
@@ -204,8 +203,7 @@ export const useMapClick = ({
           layerId,
           sourceByLayerId,
           setClick,
-          prevSelectedState,
-          needsSelectedState: hasSelectedPaint,
+          runtime,
         }),
       };
     });
@@ -227,7 +225,7 @@ export const useMapClick = ({
         layers: trackedLayerIds,
       });
       if (!hits || hits.length === 0) {
-        clearSelected(map, prevSelectedState);
+        dispatchClearSelection(runtime);
         setClick(null);
       }
     };
@@ -235,7 +233,7 @@ export const useMapClick = ({
 
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        clearSelected(map, prevSelectedState);
+        dispatchClearSelection(runtime);
         setClick(null);
       }
     };
@@ -247,7 +245,7 @@ export const useMapClick = ({
       }
       map.off('click', handleOutsideClick);
       window.removeEventListener('keydown', handleEscape);
-      clearSelected(map, prevSelectedState);
+      dispatchClearSelection(runtime);
       setClick(null);
     };
   }, [runtime, trackedKey]);

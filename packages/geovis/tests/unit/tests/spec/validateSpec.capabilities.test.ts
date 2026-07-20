@@ -20,7 +20,7 @@ const baseSpec = {
 const restrictiveCapabilities: CapabilitySet = {
   sourceTypes: ['geojson'],
   layerGeometries: ['polygon'],
-  dataFeatures: { featureState: ['geojson'] },
+  dataFeatures: { featureState: ['geojson'], filter: ['geojson'] },
   viewFeatures: { pitch: false, bearing: false },
 };
 
@@ -136,11 +136,79 @@ describe('validateSpec — capabilities (ADR-0002)', () => {
     ]);
   });
 
+  test('rejects a layer filter when the adapter does not declare the filter capability for its source type (PRD-002)', () => {
+    const noFilterCapabilities: CapabilitySet = {
+      ...restrictiveCapabilities,
+      dataFeatures: { featureState: ['geojson'], filter: [] },
+    };
+    const spec = {
+      ...baseSpec,
+      layers: [
+        {
+          id: 'states-fill',
+          sourceId: 'states',
+          geometry: 'polygon' as const,
+          filter: {
+            property: 'status',
+            operator: 'eq' as const,
+            value: 'active',
+          },
+        },
+      ],
+    };
+    const result = validateSpec(spec, noFilterCapabilities);
+    expect(result.status).toBe('unsupported');
+    if (result.status === 'resolved') return;
+    const issue = result.issues.find((i) => {
+      return i.code === 'unsupported-data-feature';
+    });
+    expect(issue).toMatchObject({
+      code: 'unsupported-data-feature',
+      subject: { path: 'layers[states-fill].filter', id: 'states-fill' },
+      repair: [
+        {
+          kind: 'allowed-values',
+          path: 'sources[states].type',
+          values: [],
+        },
+      ],
+    });
+  });
+
+  test('accepts a layer filter when the adapter declares the filter capability for its source type', () => {
+    const spec = {
+      ...baseSpec,
+      layers: [
+        {
+          id: 'states-fill',
+          sourceId: 'states',
+          geometry: 'polygon' as const,
+          filter: {
+            property: 'status',
+            operator: 'eq' as const,
+            value: 'active',
+          },
+        },
+      ],
+    };
+    expect(validateSpec(spec, restrictiveCapabilities).status).toBe('resolved');
+  });
+
+  test('a layer with no filter is unaffected by a restrictive filter capability', () => {
+    const noFilterCapabilities: CapabilitySet = {
+      ...restrictiveCapabilities,
+      dataFeatures: { featureState: ['geojson'], filter: [] },
+    };
+    expect(validateSpec(baseSpec, noFilterCapabilities).status).toBe(
+      'resolved'
+    );
+  });
+
   test('a permissive capability set accepts everything the restrictive one rejects', () => {
     const permissive: CapabilitySet = {
       sourceTypes: ['geojson', 'vector-tiles'],
       layerGeometries: ['polygon', 'heatmap'],
-      dataFeatures: { featureState: ['geojson'] },
+      dataFeatures: { featureState: ['geojson'], filter: ['geojson'] },
       viewFeatures: { pitch: true, bearing: true },
     };
     const spec = {

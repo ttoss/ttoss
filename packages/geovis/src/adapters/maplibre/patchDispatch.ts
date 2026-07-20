@@ -6,6 +6,7 @@ import type {
   VisualizationLayer,
   VisualizationSpec,
 } from '../../spec/types';
+import { layerFilterToExpression } from './layerFilter';
 import { stripUndefinedPaint, toMaplibreLayer } from './layerTranslation';
 import {
   cancelPendingStyleListenersForLayer,
@@ -16,6 +17,11 @@ import {
   resolvePromoteIdForSource,
   toMaplibreSource,
 } from './sourceTranslation';
+import {
+  reapplyLayerPaint,
+  upsertClickAnchorCompanion,
+  upsertOutlineCompanions,
+} from './syncSourcesAndLayers';
 
 export interface LayerHostState {
   spec: VisualizationSpec;
@@ -67,6 +73,144 @@ const applyLayerRemove = (
   };
 };
 
+/**
+ * Applies a `layer.<id>.visible` replace: flips the main layer's MapLibre
+ * `visibility` layout property and re-syncs its outline/click-anchor
+ * companion layers (which derive their own visibility from `layer.visible`)
+ * without a full `syncSourcesAndLayers` pass — added for
+ * `dispatch({ type: 'toggle-layer' })` (PRD-002), same imperative effect as
+ * a full `update()` for this one field, at patch cost.
+ */
+const applyLayerVisibleReplace = (
+  map: maplibregl.Map,
+  viewState: LayerHostState,
+  layerId: string,
+  value: unknown
+): void => {
+  const layerIndex = viewState.spec.layers.findIndex((l) => {
+    return l.id === layerId;
+  });
+  if (layerIndex === -1) return;
+  const nextVisible = value as boolean;
+  if (map.getLayer(layerId)) {
+    map.setLayoutProperty(
+      layerId,
+      'visibility',
+      nextVisible === false ? 'none' : 'visible'
+    );
+  }
+  const nextLayer: VisualizationLayer = {
+    ...viewState.spec.layers[layerIndex],
+    visible: nextVisible,
+  };
+  viewState.spec = {
+    ...viewState.spec,
+    layers: viewState.spec.layers.map((l, i) => {
+      return i === layerIndex ? nextLayer : l;
+    }),
+  };
+  const source = viewState.spec.sources.find((s) => {
+    return s.id === nextLayer.sourceId;
+  });
+  const sourceLayer =
+    nextLayer.sourceLayer ??
+    (source && 'sourceLayer' in source
+      ? (source as { sourceLayer?: string }).sourceLayer
+      : undefined);
+  upsertOutlineCompanions(map, nextLayer, sourceLayer);
+  upsertClickAnchorCompanion(map, nextLayer, sourceLayer);
+};
+
+/**
+ * Applies a `layer.<id>.mapDataId` replace: rebinds the layer to a
+ * different `MapData` entry and recomputes its paint (`reapplyLayerPaint`).
+ * No feature-state write is needed here — every `MapData` entry's rows are
+ * already resident on their source regardless of which layer currently
+ * points at it (`reapplyAllMapData` applies all of them unconditionally) —
+ * added for `dispatch({ type: 'set-map-data' })` (PRD-002).
+ */
+const applyLayerMapDataIdReplace = (
+  map: maplibregl.Map,
+  viewState: LayerHostState,
+  layerId: string,
+  value: unknown
+): void => {
+  const layerIndex = viewState.spec.layers.findIndex((l) => {
+    return l.id === layerId;
+  });
+  if (layerIndex === -1) return;
+  const nextLayer: VisualizationLayer = {
+    ...viewState.spec.layers[layerIndex],
+    mapDataId: value as string | undefined,
+  };
+  const nextSpec: VisualizationSpec = {
+    ...viewState.spec,
+    layers: viewState.spec.layers.map((l, i) => {
+      return i === layerIndex ? nextLayer : l;
+    }),
+  };
+  viewState.spec = nextSpec;
+  reapplyLayerPaint(map, nextSpec, nextLayer);
+};
+
+/**
+ * Applies a `layer.<id>.filter` replace: writes the layer's native
+ * `filter` via `map.setFilter` — `value: null` clears it. Added for
+ * `dispatch({ type: 'set-filter' })` (PRD-002); no feature-state or paint
+ * change, filtering only affects which features the layer renders.
+ */
+const applyLayerFilterReplace = (
+  map: maplibregl.Map,
+  viewState: LayerHostState,
+  layerId: string,
+  value: unknown
+): void => {
+  const layerIndex = viewState.spec.layers.findIndex((l) => {
+    return l.id === layerId;
+  });
+  if (layerIndex === -1) return;
+  const nextFilter = value as VisualizationLayer['filter'] | null;
+  if (map.getLayer(layerId)) {
+    map.setFilter(
+      layerId,
+      nextFilter
+        ? (layerFilterToExpression(
+            nextFilter
+          ) as maplibregl.FilterSpecification)
+        : null
+    );
+  }
+  const currentLayer = viewState.spec.layers[layerIndex];
+  let nextLayer: VisualizationLayer;
+  if (nextFilter) {
+    nextLayer = { ...currentLayer, filter: nextFilter };
+  } else {
+    const { filter: _omit, ...rest } = currentLayer;
+    nextLayer = rest;
+  }
+  viewState.spec = {
+    ...viewState.spec,
+    layers: viewState.spec.layers.map((l, i) => {
+      return i === layerIndex ? nextLayer : l;
+    }),
+  };
+};
+
+/** Top-level (non-`paint`) layer fields a `replace` patch can target, by path segment. */
+const LAYER_TOP_LEVEL_FIELD_APPLIERS: Record<
+  string,
+  (
+    map: maplibregl.Map,
+    viewState: LayerHostState,
+    layerId: string,
+    value: unknown
+  ) => void
+> = {
+  visible: applyLayerVisibleReplace,
+  mapDataId: applyLayerMapDataIdReplace,
+  filter: applyLayerFilterReplace,
+};
+
 const applyLayerPaintReplace = (
   map: maplibregl.Map,
   viewState: LayerHostState,
@@ -109,6 +253,15 @@ export const applyLayerPatch = (
     return;
   }
   if (patch.op === 'replace' && patch.value !== undefined) {
+    const parts = patch.path.split('.');
+    const layerId = parts[1];
+    if (parts.length === 3 && layerId) {
+      const applyField = LAYER_TOP_LEVEL_FIELD_APPLIERS[parts[2] ?? ''];
+      if (applyField) {
+        applyField(map, viewState, layerId, patch.value);
+        return;
+      }
+    }
     applyLayerPaintReplace(map, viewState, patch.path, patch.value);
   }
 };

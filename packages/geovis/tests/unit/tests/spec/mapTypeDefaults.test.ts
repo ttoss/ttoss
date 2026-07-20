@@ -91,7 +91,6 @@ const makeChoroplethSpec = (mapDataEntry: {
   data: Array<{ geometryId: string; value: number | string }>;
 }): VisualizationSpec => {
   return {
-    id: 'test',
     engine: 'maplibre',
     mapType: 'choropleth',
     sources: [
@@ -165,7 +164,6 @@ describe('resolveChoropleth', () => {
 describe('resolveSpecFromMapType', () => {
   test('returns spec unchanged when no mapType', () => {
     const spec = {
-      id: 'test',
       engine: 'maplibre' as const,
       sources: [],
       layers: [],
@@ -175,7 +173,6 @@ describe('resolveSpecFromMapType', () => {
 
   test('resolves choropleth spec', () => {
     const spec = {
-      id: 'test',
       engine: 'maplibre' as const,
       mapType: 'choropleth' as const,
       sources: [
@@ -204,7 +201,6 @@ describe('resolveSpecFromMapType', () => {
       { id: 'custom', sourceId: 'r', geometry: 'polygon' as const },
     ];
     const spec = {
-      id: 'test',
       engine: 'maplibre' as const,
       mapType: 'choropleth' as const,
       sources: [
@@ -244,7 +240,6 @@ describe('resolveSpecFromMapType', () => {
       },
     ];
     const spec = {
-      id: 'test',
       engine: 'maplibre' as const,
       mapType: 'choropleth' as const,
       sources: [
@@ -270,7 +265,6 @@ describe('resolveSpecFromMapType', () => {
 
   test('fills in missing colorBy from single auto-generated legend even when IDs differ', () => {
     const spec = {
-      id: 'test',
       engine: 'maplibre' as const,
       mapType: 'choropleth' as const,
       sources: [
@@ -308,7 +302,6 @@ describe('resolveSpecFromMapType', () => {
 
   test('fills in missing colorBy using positional fallback for multi-legend spec', () => {
     const spec = {
-      id: 'test',
       engine: 'maplibre' as const,
       mapType: 'choropleth' as const,
       sources: [
@@ -352,7 +345,6 @@ describe('resolveSpecFromMapType', () => {
       defaultColor: '#fff',
     };
     const spec = {
-      id: 'test',
       engine: 'maplibre' as const,
       mapType: 'choropleth' as const,
       sources: [
@@ -384,7 +376,6 @@ describe('resolveSpecFromMapType', () => {
   test('inherits thresholds from auto-generated when user provides only colors', () => {
     const greenColors = ['#C7E9C0', '#A1D99B', '#74C476', '#41AB5D'];
     const spec = {
-      id: 'test',
       engine: 'maplibre' as const,
       mapType: 'choropleth' as const,
       sources: [
@@ -497,7 +488,6 @@ describe('resolveSpecFromMapType — dotDensity with a user-supplied legend', ()
       },
     };
     const spec: VisualizationSpec = {
-      id: 'test',
       engine: 'maplibre',
       mapType: 'dotDensity',
       sources: [
@@ -588,7 +578,6 @@ describe('mergeLegends', () => {
 describe('resolveSpecFromMapType — edge cases', () => {
   test('returns the spec unchanged for an unrecognized mapType value', () => {
     const spec = {
-      id: 'test',
       engine: 'maplibre' as const,
       mapType: 'unknownMapType' as unknown as VisualizationSpec['mapType'],
       sources: [],
@@ -599,7 +588,6 @@ describe('resolveSpecFromMapType — edge cases', () => {
 
   test('tolerates a spec missing `layers` entirely (e.g. loosely-typed external JSON)', () => {
     const spec = {
-      id: 'test',
       engine: 'maplibre',
       mapType: 'choropleth',
       sources: [
