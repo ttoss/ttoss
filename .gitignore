@@ -1,5 +1,7 @@
-# Claude Code session state
-.claude/
+# Claude Code session state (but not shared config)
+.claude/*
+!.claude/settings.json
+!.claude/hooks/
 
 # Logs
 logs
