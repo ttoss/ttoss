@@ -277,6 +277,6 @@ describe('validateSpec accepts layer.click', () => {
       ],
     });
 
-    expect(result.valid).toBe(true);
+    expect(result.status).toBe('resolved');
   });
 });
