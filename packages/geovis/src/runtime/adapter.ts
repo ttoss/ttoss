@@ -1,4 +1,9 @@
-import type { LngLat, VisualizationSpec } from '../spec/types';
+import type {
+  DataSource,
+  GeoVisGeometryType,
+  LngLat,
+  VisualizationSpec,
+} from '../spec/types';
 
 /**
  * Options accepted by `EngineAdapter.setView` and `GeoVisRuntime.setView`.
@@ -37,11 +42,32 @@ export interface MountedView {
   destroy(): void;
 }
 
+/**
+ * Structured, introspectable capability tree (ADR-0002). A capability entry
+ * may only be `true`/present when an official test or fixture exercises it —
+ * "declared means tested". `validateSpec` accepts the active adapter's
+ * `CapabilitySet` and rejects anything the spec requires but the adapter does
+ * not declare, so an unsupported spec fails before mount instead of
+ * rendering partially or misbehaving at the engine level.
+ */
 export interface CapabilitySet {
-  supports3D: boolean;
-  supportsRaster: boolean;
-  supportsVectorTiles: boolean;
-  supportsCustomLayers: boolean;
+  /** Source types the adapter can mount onto the map. */
+  sourceTypes: DataSource['type'][];
+  /** Layer geometries the adapter can translate and render. */
+  layerGeometries: GeoVisGeometryType[];
+  /** Data-binding features, scoped to the source types that support them. */
+  dataFeatures: {
+    /**
+     * Source types where per-feature `setFeatureState` joining works — this
+     * is what `mapData`, `sizeBy`, and value-driven `colorBy` all depend on.
+     */
+    featureState: DataSource['type'][];
+  };
+  /** Camera/view features. */
+  viewFeatures: {
+    pitch: boolean;
+    bearing: boolean;
+  };
 }
 
 /**

@@ -5,13 +5,16 @@
 import { act, render } from '@testing-library/react';
 import * as React from 'react';
 import { GeoVisProvider, useGeoVis } from 'src/react/GeoVisProvider';
-import type { PolicyViolation, VisualizationSpec } from 'src/spec/types';
+import type { GeoVisResult } from 'src/spec/result';
+import type { VisualizationSpec } from 'src/spec/types';
 
 // var is hoisted alongside jest.mock, so the reference is valid inside the factory.
 // eslint-disable-next-line no-var
 var mockRuntimeUpdate = jest.fn();
 // eslint-disable-next-line no-var
 var mockRuntimeApplyPatch = jest.fn();
+// eslint-disable-next-line no-var
+var mockRuntimeSetView = jest.fn();
 // Holds the spec that runtime.spec getter returns; tests can mutate this.
 // eslint-disable-next-line no-var
 var mockRuntimeSpec: unknown = {};
@@ -32,6 +35,7 @@ jest.mock('src/runtime/createRuntime', () => {
         }),
         update: mockRuntimeUpdate,
         applyPatch: mockRuntimeApplyPatch,
+        setView: mockRuntimeSetView,
         destroy: jest.fn(),
         getAdapter: jest.fn(),
       };
@@ -64,6 +68,11 @@ const baseSpec: VisualizationSpec = {
   layers: [],
 };
 
+/** Wraps a spec as the `GeoVisResult` shape `runtime.update`/`applyPatch` now return. */
+const resolved = (spec: VisualizationSpec): GeoVisResult => {
+  return { status: 'resolved', spec, warnings: [] };
+};
+
 beforeEach(() => {
   jest.clearAllMocks();
   mockRuntimeSpec = baseSpec;
@@ -71,6 +80,10 @@ beforeEach(() => {
   // runtime?.spec reflects the latest spec passed to the provider.
   mockRuntimeUpdate.mockImplementation((spec: VisualizationSpec) => {
     mockRuntimeSpec = spec;
+    return resolved(spec);
+  });
+  mockRuntimeApplyPatch.mockImplementation(() => {
+    return resolved(mockRuntimeSpec as VisualizationSpec);
   });
 });
 
@@ -154,11 +167,11 @@ describe('GeoVisProvider useGeoVis', () => {
   });
 });
 
-describe('GeoVisProvider policyViolations', () => {
+describe('GeoVisProvider result — policy warnings (ADR-0001, D4)', () => {
   test('is empty when spec has no metadata', async () => {
-    const capturedRef = { current: undefined as PolicyViolation[] | undefined };
+    const capturedRef = { current: undefined as GeoVisResult | undefined };
     const Consumer = () => {
-      capturedRef.current = useGeoVis().policyViolations;
+      capturedRef.current = useGeoVis().result;
       return null;
     };
     await act(async () => {
@@ -168,10 +181,13 @@ describe('GeoVisProvider policyViolations', () => {
         </GeoVisProvider>
       );
     });
-    expect(capturedRef.current).toEqual([]);
+    expect(capturedRef.current?.status).toBe('resolved');
+    if (capturedRef.current?.status === 'resolved') {
+      expect(capturedRef.current.warnings).toEqual([]);
+    }
   });
 
-  test('has one entry when metadata.isPolicyInvalid is true', async () => {
+  test('has one policy-violation warning when metadata.isPolicyInvalid is true', async () => {
     const invalidSpec: VisualizationSpec = {
       ...baseSpec,
       metadata: {
@@ -182,9 +198,9 @@ describe('GeoVisProvider policyViolations', () => {
         normalizedLabel: 'hab por km²',
       },
     };
-    const capturedRef = { current: undefined as PolicyViolation[] | undefined };
+    const capturedRef = { current: undefined as GeoVisResult | undefined };
     const Consumer = () => {
-      capturedRef.current = useGeoVis().policyViolations;
+      capturedRef.current = useGeoVis().result;
       return null;
     };
     await act(async () => {
@@ -194,19 +210,31 @@ describe('GeoVisProvider policyViolations', () => {
         </GeoVisProvider>
       );
     });
-    expect(capturedRef.current).toHaveLength(1);
-    expect(capturedRef.current![0].reason).toBe('raw-count-choropleth');
-    expect(capturedRef.current![0].message).toContain('population');
+    expect(capturedRef.current?.status).toBe('resolved');
+    if (capturedRef.current?.status !== 'resolved') return;
+    expect(capturedRef.current.warnings).toHaveLength(1);
+    const [warning] = capturedRef.current.warnings;
+    expect(warning.code).toBe('policy-violation');
+    expect(warning.subject.id).toBe('raw-count-choropleth');
+    expect(warning.message).toContain('population');
+    expect(warning.repair).toEqual([
+      {
+        kind: 'set-value',
+        path: 'metadata.metricField',
+        value: 'population / sq-km',
+        label: `Use 'population / sq-km' (hab por km²)`,
+      },
+    ]);
   });
 
-  test('uses policy-invalid as fallback reason when invalidReason is absent', async () => {
+  test('uses policy-invalid as fallback subject.id when invalidReason is absent, with no repair', async () => {
     const specNoReason: VisualizationSpec = {
       ...baseSpec,
       metadata: { isPolicyInvalid: true },
     };
-    const capturedRef = { current: undefined as PolicyViolation[] | undefined };
+    const capturedRef = { current: undefined as GeoVisResult | undefined };
     const Consumer = () => {
-      capturedRef.current = useGeoVis().policyViolations;
+      capturedRef.current = useGeoVis().result;
       return null;
     };
     await act(async () => {
@@ -216,8 +244,11 @@ describe('GeoVisProvider policyViolations', () => {
         </GeoVisProvider>
       );
     });
-    expect(capturedRef.current).toHaveLength(1);
-    expect(capturedRef.current![0].reason).toBe('policy-invalid');
+    expect(capturedRef.current?.status).toBe('resolved');
+    if (capturedRef.current?.status !== 'resolved') return;
+    expect(capturedRef.current.warnings).toHaveLength(1);
+    expect(capturedRef.current.warnings[0].subject.id).toBe('policy-invalid');
+    expect(capturedRef.current.warnings[0].repair).toBeUndefined();
   });
 });
 
@@ -233,6 +264,7 @@ describe('GeoVisProvider applyPatch updates context spec', () => {
     // Make mockRuntimeApplyPatch update the runtime spec when called.
     mockRuntimeApplyPatch.mockImplementation(() => {
       mockRuntimeSpec = updatedSpec;
+      return resolved(updatedSpec);
     });
 
     const latestSpecRef = { current: baseSpec as VisualizationSpec };
@@ -267,6 +299,86 @@ describe('GeoVisProvider applyPatch updates context spec', () => {
 
     expect(latestSpecRef.current.layers).toHaveLength(1);
     expect(latestSpecRef.current.layers[0].id).toBe('patched');
+  });
+
+  test('a failed applyPatch surfaces through result and leaves context spec unchanged (ADR-0001)', async () => {
+    const failure: GeoVisResult = {
+      status: 'unsupported',
+      issues: [
+        {
+          code: 'unsupported-patch-target',
+          subject: { path: 'patch.target' },
+          message: 'nope',
+        },
+      ],
+    };
+    mockRuntimeApplyPatch.mockImplementation(() => {
+      return failure;
+    });
+
+    const latestRef = {
+      current: null as { spec: VisualizationSpec; result: GeoVisResult } | null,
+    };
+    const triggerPatchRef = { current: () => {} };
+
+    const Consumer = () => {
+      const { spec, result, applyPatch } = useGeoVis();
+      latestRef.current = { spec: spec as VisualizationSpec, result };
+      triggerPatchRef.current = () => {
+        applyPatch({ target: 'layer', op: 'remove', value: 'x' });
+      };
+      return null;
+    };
+
+    await act(async () => {
+      render(
+        <GeoVisProvider spec={baseSpec}>
+          <Consumer />
+        </GeoVisProvider>
+      );
+    });
+
+    const specBefore = latestRef.current?.spec;
+
+    await act(async () => {
+      triggerPatchRef.current();
+    });
+
+    expect(latestRef.current?.spec).toBe(specBefore);
+    expect(latestRef.current?.result.status).toBe('unsupported');
+  });
+});
+
+describe('GeoVisProvider setView', () => {
+  test('calling setView forwards to runtime.setView and refreshes context spec', async () => {
+    const Consumer = ({
+      onReady,
+    }: {
+      onReady: (ctx: ReturnType<typeof useGeoVis>) => void;
+    }) => {
+      const ctx = useGeoVis();
+      onReady(ctx);
+      return null;
+    };
+
+    let latestCtx: ReturnType<typeof useGeoVis> | undefined;
+    await act(async () => {
+      render(
+        <GeoVisProvider spec={baseSpec}>
+          <Consumer
+            onReady={(ctx) => {
+              latestCtx = ctx;
+            }}
+          />
+        </GeoVisProvider>
+      );
+    });
+
+    await act(async () => {
+      latestCtx?.setView({ zoom: 8 });
+    });
+
+    expect(mockRuntimeSetView).toHaveBeenCalledWith({ zoom: 8 });
   });
 });
 

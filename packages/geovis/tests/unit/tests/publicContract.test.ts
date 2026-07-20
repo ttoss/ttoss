@@ -1,9 +1,13 @@
 // Public contract smoke tests — verifies the package index exports the expected symbols.
 import type {
   ColorBy,
+  GeoVisIssue,
+  GeoVisIssueCode,
+  GeoVisResult,
   LabelFormatSpec,
   LegendSpec,
   NormalizationSpec,
+  RepairOption,
   VisualizationLayer,
   VisualizationSpec,
 } from 'src/index';
@@ -25,6 +29,31 @@ test('package exports expected public symbols', () => {
   expect(typeof geovis.useBoundaryToggle).toBe('function');
   // createRuntime
   expect(typeof geovis.createRuntime).toBe('function');
+  // GeoVisResult taxonomy (PRD-001 / ADR-0001)
+  expect(typeof geovis.ISSUE_CODE_STATUS).toBe('object');
+  expect(typeof geovis.resolveOverallStatus).toBe('function');
+});
+
+test('GeoVisResult taxonomy types are part of the public contract', () => {
+  const repair: RepairOption = {
+    kind: 'allowed-values',
+    path: 'mapData[pop].mapId',
+    values: ['states'],
+  };
+
+  const issue: GeoVisIssue = {
+    code: 'unknown-source' satisfies GeoVisIssueCode,
+    subject: { path: 'mapData[pop].mapId', id: 'pop' },
+    message: "mapData 'pop' references unknown source mapId 'does-not-exist'",
+    repair: [repair],
+  };
+
+  const result: GeoVisResult = { status: 'mismatch', issues: [issue] };
+
+  expect(result.status).toBe('mismatch');
+  if (result.status !== 'resolved') {
+    expect(result.issues[0].code).toBe('unknown-source');
+  }
 });
 
 test('spec types expose legend configuration through the public contract', () => {

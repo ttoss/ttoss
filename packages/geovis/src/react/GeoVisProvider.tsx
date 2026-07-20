@@ -8,7 +8,8 @@ import type {
 import type { GeoVisRuntime } from '../runtime/createRuntime';
 import { createRuntime } from '../runtime/createRuntime';
 import { resolveSpecFromMapType } from '../spec/mapTypeDefaults';
-import type { PolicyViolation, VisualizationSpec } from '../spec/types';
+import type { GeoVisIssue, GeoVisResult } from '../spec/result';
+import type { VisualizationSpec } from '../spec/types';
 import { GeoVisHoverTooltip } from '../ui/GeoVisHoverTooltip';
 import { GeoVisLegend } from '../ui/GeoVisLegend';
 import {
@@ -44,12 +45,18 @@ export {
   useGeoVisHover,
 } from './contexts';
 
-/** Extracts policy violations from `spec.metadata`. Returns an empty array when the spec is valid. */
-const checkPolicies = (spec: VisualizationSpec): PolicyViolation[] => {
-  const violations: PolicyViolation[] = [];
+/**
+ * Extracts cartography policy violations from `spec.metadata` as `GeoVisIssue`s
+ * (code `policy-violation`) — the same reporting channel as validation issues
+ * (ADR-0001, D4). These are always warnings: they never block rendering.
+ * When metadata already computed the normalized alternative, it becomes a
+ * `set-value` repair; otherwise no repair is attached.
+ */
+const checkPolicies = (spec: VisualizationSpec): GeoVisIssue[] => {
+  const issues: GeoVisIssue[] = [];
   const m = spec.metadata;
 
-  if (!m) return violations;
+  if (!m) return issues;
 
   if (m.isPolicyInvalid === true) {
     const reason = (m.invalidReason as string | undefined) ?? 'policy-invalid';
@@ -66,10 +73,40 @@ const checkPolicies = (spec: VisualizationSpec): PolicyViolation[] => {
     if (label) message += ` (${label})`;
     message += '.';
 
-    violations.push({ reason, message });
+    issues.push({
+      code: 'policy-violation',
+      subject: { path: 'metadata.metricField', id: reason },
+      message,
+      ...(normalizedField
+        ? {
+            repair: [
+              {
+                kind: 'set-value' as const,
+                path: 'metadata.metricField',
+                value: normalizedField,
+                label: label
+                  ? `Use '${normalizedField}' (${label})`
+                  : `Use '${normalizedField}'`,
+              },
+            ],
+          }
+        : {}),
+    });
   }
 
-  return violations;
+  return issues;
+};
+
+/** Merges policy issues into a resolved result's warnings; passes failure results through unchanged. */
+const withPolicyWarnings = (result: GeoVisResult): GeoVisResult => {
+  if (result.status !== 'resolved') return result;
+  const policyIssues = checkPolicies(result.spec);
+  if (policyIssues.length === 0) return result;
+  return {
+    status: 'resolved',
+    spec: result.spec,
+    warnings: [...result.warnings, ...policyIssues],
+  };
 };
 
 const resolveAdapter = async (
@@ -131,8 +168,8 @@ const ClickProvider = ({
  * re-renders of `GeoVisProvider` (defining it inside would remount the
  * subtree on every render and defeat the optimization). Without this
  * boundary, every hover event would re-execute the parent's render body —
- * recomputing `effectiveSpec`, `policyViolations`, and the memoized context
- * value. By moving the hover state down, only this small component and the
+ * recomputing `effectiveSpec`, `committed`, and the memoized context value.
+ * By moving the hover state down, only this small component and the
  * consumers of `useGeoVisHover()` re-render on hover.
  */
 const HoverProvider = ({
@@ -188,13 +225,29 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
     return resolveSpecFromMapType(effectiveSpec);
   }, [effectiveSpec]);
 
-  const policyViolations = React.useMemo(() => {
-    return checkPolicies(effectiveSpec);
-  }, [effectiveSpec]);
+  // The last spec/result the runtime actually accepted. Nothing renders on
+  // failure (ADR-0001): `committed.spec` stays at its previous value while
+  // `committed.result` surfaces whatever `validateSpec` rejected. Before a
+  // runtime exists, there is nothing to validate against yet, so the initial
+  // value is optimistic — the runtime's own construction-time validation
+  // corrects it as soon as it becomes available.
+  const [committed, setCommitted] = React.useState<{
+    spec: VisualizationSpec;
+    result: GeoVisResult;
+  }>(() => {
+    return {
+      spec: resolvedSpec,
+      result: withPolicyWarnings({
+        status: 'resolved',
+        spec: resolvedSpec,
+        warnings: [],
+      }),
+    };
+  });
 
   const legendPositionGroups = React.useMemo(() => {
-    return groupLegendIdsByPosition(resolvedSpec);
-  }, [resolvedSpec]);
+    return groupLegendIdsByPosition(committed.spec);
+  }, [committed.spec]);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -229,14 +282,37 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
 
   React.useEffect(() => {
     if (!runtime) return;
-    runtime.update(resolvedSpec);
+    // runtime.update() is an imperative push into the external map/adapter
+    // instance — it cannot run during render — and its synchronous return
+    // value is exactly what `committed` must reflect, so this is the
+    // "synchronize state with an external system" case the lint rule allows,
+    // not state that could instead be derived at render time.
+    const result = runtime.update(resolvedSpec);
+    if (result.status === 'resolved') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCommitted({ spec: result.spec, result: withPolicyWarnings(result) });
+    } else {
+      setCommitted((prev) => {
+        return { spec: prev.spec, result };
+      });
+    }
   }, [runtime, resolvedSpec]);
 
   const applyPatch = React.useCallback(
     (patch: SpecPatch) => {
       if (!runtime) return;
-      runtime.applyPatch(patch);
-      setPatchState({ forSpec: spec, patchedSpec: runtime.spec });
+      const result = runtime.applyPatch(patch);
+      if (result.status === 'resolved') {
+        setPatchState({ forSpec: spec, patchedSpec: runtime.spec });
+        setCommitted({
+          spec: result.spec,
+          result: withPolicyWarnings(result),
+        });
+      } else {
+        setCommitted((prev) => {
+          return { spec: prev.spec, result };
+        });
+      }
     },
     [runtime, spec]
   );
@@ -246,6 +322,9 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
       if (!runtime) return;
       runtime.setView(options);
       setPatchState({ forSpec: spec, patchedSpec: runtime.spec });
+      setCommitted((prev) => {
+        return { ...prev, spec: runtime.spec };
+      });
     },
     [runtime, spec]
   );
@@ -256,21 +335,21 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
   // `HoverProvider` (a child component) cannot cascade into re-renders of
   // `useGeoVis()` consumers. Reference equality of `value` is the signal
   // React uses to notify context subscribers — keeping it stable when
-  // runtime/spec/applyPatch/violations are unchanged is critical here.
+  // runtime/spec/applyPatch/result are unchanged is critical here.
   const ctxValue = React.useMemo(() => {
     return {
       runtime,
-      spec: resolvedSpec,
+      spec: committed.spec,
       applyPatch,
       setView,
-      policyViolations,
+      result: committed.result,
     };
-  }, [runtime, resolvedSpec, applyPatch, setView, policyViolations]);
+  }, [runtime, committed, applyPatch, setView]);
 
   return (
     <GeoVisContext.Provider value={ctxValue}>
-      <ClickProvider runtime={runtime} spec={resolvedSpec}>
-        <HoverProvider runtime={runtime} spec={resolvedSpec}>
+      <ClickProvider runtime={runtime} spec={committed.spec}>
+        <HoverProvider runtime={runtime} spec={committed.spec}>
           {children}
         </HoverProvider>
       </ClickProvider>

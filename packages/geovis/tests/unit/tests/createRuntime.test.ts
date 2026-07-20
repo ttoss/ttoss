@@ -1,22 +1,45 @@
-import { log } from '@ttoss/logger';
-import type { EngineAdapter } from 'src/runtime/adapter';
+import type {
+  CapabilitySet,
+  EngineAdapter,
+  SpecPatch,
+} from 'src/runtime/adapter';
 import { createRuntime } from 'src/runtime/createRuntime';
 import type { VisualizationSpec } from 'src/spec/types';
 
+const PERMISSIVE_CAPABILITIES: CapabilitySet = {
+  sourceTypes: [
+    'geojson',
+    'vector-tiles',
+    'raster-tiles',
+    'raster-dem',
+    'image',
+    'video',
+  ],
+  layerGeometries: ['polygon', 'line', 'point', 'symbol', 'heatmap', 'raster'],
+  dataFeatures: { featureState: ['geojson'] },
+  viewFeatures: { pitch: true, bearing: true },
+};
+
 const makeAdapter = (): jest.Mocked<EngineAdapter> => {
   return {
+    id: 'maplibre',
+    getCapabilities: jest.fn(() => {
+      return PERMISSIVE_CAPABILITIES;
+    }),
     mount: jest.fn(() => {
       return { unmount: jest.fn() };
     }),
     update: jest.fn(),
     applyPatch: jest.fn(),
+    setView: jest.fn(),
     destroy: jest.fn(),
     getNativeInstance: jest.fn(),
-  };
+  } as unknown as jest.Mocked<EngineAdapter>;
 };
 
 const makeSpec = (): VisualizationSpec => {
   return {
+    engine: 'maplibre',
     sources: [
       {
         id: 'src-1',
@@ -224,13 +247,13 @@ describe('createRuntime — applyPatch target:mapData', () => {
 });
 
 describe('createRuntime — applyPatch unknown target', () => {
-  test('emits log.warn and does not throw when target is unrecognised', () => {
+  test('returns an unsupported-patch-target result and does not throw when target is unrecognised', () => {
     const adapter = makeAdapter();
     const runtime = createRuntime(adapter, makeSpec());
-    const warnSpy = jest.spyOn(log, 'warn').mockImplementation(() => {});
 
+    let result: ReturnType<typeof runtime.applyPatch>;
     expect(() => {
-      runtime.applyPatch({
+      result = runtime.applyPatch({
         target: 'view',
         op: 'replace',
         path: 'view.zoom',
@@ -238,18 +261,26 @@ describe('createRuntime — applyPatch unknown target', () => {
       } as unknown as SpecPatch);
     }).not.toThrow();
 
-    expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect(warnSpy.mock.calls[0][0]).toContain('[geovis]');
-    expect(warnSpy.mock.calls[0][0]).toContain('view');
-
-    warnSpy.mockRestore();
+    expect(result!.status).toBe('unsupported');
+    if (result!.status !== 'resolved') {
+      expect(result!.issues).toHaveLength(1);
+      expect(result!.issues[0].code).toBe('unsupported-patch-target');
+      expect(result!.issues[0].message).toContain('view');
+      expect(result!.issues[0].repair).toEqual([
+        {
+          kind: 'allowed-values',
+          path: 'patch.target',
+          values: ['layer', 'source', 'mapData'],
+        },
+      ]);
+    }
+    expect(adapter.applyPatch).not.toHaveBeenCalled();
   });
 
   test('spec is unchanged after an unknown-target patch', () => {
     const adapter = makeAdapter();
     const spec = makeSpec();
     const runtime = createRuntime(adapter, spec);
-    const warnSpy = jest.spyOn(log, 'warn').mockImplementation(() => {});
 
     const before = runtime.spec;
     runtime.applyPatch({
@@ -260,6 +291,96 @@ describe('createRuntime — applyPatch unknown target', () => {
     } as unknown as SpecPatch);
 
     expect(runtime.spec).toBe(before);
-    warnSpy.mockRestore();
+  });
+});
+
+describe('createRuntime — validation gating (Phase 3/4)', () => {
+  test('update() rejects an invalid spec, never calls the adapter, and leaves spec unchanged', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+    adapter.update.mockClear();
+
+    const before = runtime.spec;
+    const result = runtime.update({
+      ...makeSpec(),
+      layers: [{ ...makeSpec().layers[0], mapDataId: 'ghost' }],
+    });
+
+    expect(result.status).toBe('mismatch');
+    expect(runtime.spec).toBe(before);
+    expect(adapter.update).not.toHaveBeenCalled();
+    expect(runtime.result).toBe(result);
+  });
+
+  test('update() accepts a valid spec and calls the adapter', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+
+    const nextSpec = {
+      ...makeSpec(),
+      layers: [{ id: 'lyr-2', sourceId: 'src-1', geometry: 'point' as const }],
+    };
+    const result = runtime.update(nextSpec);
+
+    expect(result.status).toBe('resolved');
+    expect(runtime.spec.layers).toHaveLength(1);
+    expect(adapter.update).toHaveBeenCalled();
+  });
+
+  test('applyPatch() rejects a patch that produces an invalid spec and never calls the adapter', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpec());
+
+    const result = runtime.applyPatch({
+      target: 'layer',
+      op: 'replace',
+      path: 'layer.lyr-1.paint.fillColor',
+      value: '#ff0000',
+    });
+    // sanity: a normal patch still resolves
+    expect(result.status).toBe('resolved');
+
+    adapter.applyPatch.mockClear();
+    const invalidResult = runtime.applyPatch({
+      target: 'layer',
+      op: 'add',
+      value: {
+        id: 'lyr-bad',
+        sourceId: 'does-not-exist',
+        geometry: 'polygon',
+      },
+    });
+
+    expect(invalidResult.status).toBe('mismatch');
+    expect(runtime.spec.layers).toHaveLength(1);
+    expect(adapter.applyPatch).not.toHaveBeenCalled();
+  });
+
+  test('constructor validates the initial spec and exposes it via `result`', () => {
+    const adapter = makeAdapter();
+    const invalidInitial = {
+      ...makeSpec(),
+      layers: [{ ...makeSpec().layers[0], mapDataId: 'ghost' }],
+    };
+    const runtime = createRuntime(adapter, invalidInitial);
+
+    expect(runtime.result.status).toBe('mismatch');
+  });
+
+  test('mount() is a no-op and does not call the adapter when the initial spec is invalid', () => {
+    const adapter = makeAdapter();
+    const invalidInitial = {
+      ...makeSpec(),
+      layers: [{ ...makeSpec().layers[0], mapDataId: 'ghost' }],
+    };
+    const runtime = createRuntime(adapter, invalidInitial);
+
+    const container = {} as HTMLElement;
+    const mounted = runtime.mount(container, 'default');
+
+    expect(adapter.mount).not.toHaveBeenCalled();
+    expect(() => {
+      mounted.destroy();
+    }).not.toThrow();
   });
 });

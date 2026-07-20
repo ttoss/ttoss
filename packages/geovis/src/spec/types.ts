@@ -442,7 +442,21 @@ export interface VisualizationView {
   layers: string[];
 }
 
+/**
+ * Current `VisualizationSpec` schema version (ADR-0001 consequence).
+ * A spec that omits `schemaVersion` is treated as this version — versioning
+ * is additive, existing unversioned specs are not penalized. A spec that
+ * declares a different version is rejected with a repairable `invalid`
+ * issue rather than validated (or silently misinterpreted) against the
+ * wrong shape.
+ */
+export const SPEC_SCHEMA_VERSION = 1;
+
 export interface VisualizationSpec {
+  /** Optional identifier for this spec. Not consumed by the runtime; useful for test fixtures, logging, and multi-map bookkeeping in host apps. */
+  id?: string;
+  /** Schema version this spec was authored against. Omit for the current version — see `SPEC_SCHEMA_VERSION`. */
+  schemaVersion?: number;
   title?: string;
   description?: string;
   engine: 'maplibre';
@@ -492,10 +506,3 @@ export interface VisualizationSpec {
 }
 
 export type GeovisSpec = VisualizationSpec;
-
-export interface PolicyViolation {
-  /** Identifies the violated policy rule. */
-  reason: string;
-  /** Human-readable explanation surfaced to the consumer. */
-  message: string;
-}

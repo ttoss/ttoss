@@ -1,11 +1,17 @@
-import type { PolicyViolation } from '@ttoss/geovis';
+import type { GeoVisIssue } from '@ttoss/geovis';
 
+/**
+ * Renders the cartography policy warning banner from `useGeoVis().result`'s
+ * `warnings` (a `resolved` result's `GeoVisIssue[]`, code `policy-violation`)
+ * — the GeoVisResult taxonomy (ADR-0001) replaced the retired
+ * `policyViolations`/`PolicyViolation` reporting path.
+ */
 export const PolicyWarningBanner = ({
-  violations,
+  warnings,
 }: {
-  violations: PolicyViolation[];
+  warnings: GeoVisIssue[];
 }) => {
-  if (violations.length === 0) return null;
+  if (warnings.length === 0) return null;
   return (
     <div
       role="alert"
@@ -31,10 +37,10 @@ export const PolicyWarningBanner = ({
         left map Kigali appears almost white; on the right it is the darkest.
         <br />
         <strong>Correct:</strong> divide by area before encoding in colour.
-        {violations.map((v) => {
+        {warnings.map((w) => {
           return (
             <span
-              key={v.reason}
+              key={w.subject.id ?? w.code}
               style={{
                 display: 'block',
                 marginTop: 4,
@@ -42,7 +48,7 @@ export const PolicyWarningBanner = ({
                 fontSize: 11,
               }}
             >
-              [{v.reason}]
+              [{w.code}] {w.subject.id ? `(${w.subject.id})` : ''}
             </span>
           );
         })}

@@ -283,11 +283,32 @@ const destroyAll = (views: ViewMap): void => {
   views.clear();
 };
 
+/**
+ * Grounded in what `sourceTranslation.ts`/`layerTranslation.ts` actually
+ * translate and what the package's test suite actually exercises — not
+ * aspirational. `dataFeatures.featureState` is narrower than `sourceTypes`:
+ * every source type mounts, but `setFeatureState` joining (`mapData`,
+ * `sizeBy`) only works for `geojson`, whose features carry stable ids.
+ * `pitch`/`bearing` are genuinely applied to the camera (see `applySetView`),
+ * unlike the previous `supports3D: false` flag, which was dead and incorrect.
+ */
 const CAPABILITIES: CapabilitySet = {
-  supports3D: false,
-  supportsRaster: true,
-  supportsVectorTiles: true,
-  supportsCustomLayers: true,
+  sourceTypes: [
+    'geojson',
+    'vector-tiles',
+    'raster-tiles',
+    'raster-dem',
+    'image',
+    'video',
+  ],
+  layerGeometries: ['polygon', 'line', 'point', 'symbol', 'heatmap', 'raster'],
+  dataFeatures: {
+    featureState: ['geojson'],
+  },
+  viewFeatures: {
+    pitch: true,
+    bearing: true,
+  },
 };
 
 const createMapLibreAdapter = (): EngineAdapter => {
