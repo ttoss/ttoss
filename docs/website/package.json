@@ -3,12 +3,13 @@
   "version": "3.1.4",
   "private": true,
   "scripts": {
-    "build": "NODE_OPTIONS=--max-old-space-size=6144 docusaurus build",
+    "build": "node scripts/generate-api-docs.mts && docusaurus build",
     "build-dev": "NODE_ENV=development docusaurus build",
     "clear": "docusaurus clear",
     "deploy": "carlin deploy static-app",
     "dev": "pnpm start",
     "docusaurus": "docusaurus",
+    "generate-api-docs": "node scripts/generate-api-docs.mts",
     "serve": "docusaurus serve",
     "start": "NODE_OPTIONS=--max-old-space-size=4096 docusaurus start",
     "swizzle": "docusaurus swizzle",
@@ -50,8 +51,8 @@
     "@docusaurus/types": "^3.10.1",
     "carlin": "workspace:^",
     "docusaurus-plugin-llms": "^0.4.0",
-    "docusaurus-plugin-typedoc": "^1.4.2",
     "typedoc": "^0.28.19",
+    "typedoc-docusaurus-theme": "^1.4.2",
     "typedoc-plugin-markdown": "^4.11.0",
     "typescript": "~6.0.3"
   }
