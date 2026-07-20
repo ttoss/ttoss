@@ -31,22 +31,20 @@ interface CoreSizeViewport {
   };
 }
 
-/** Three-step hit target size ramp (min / base / prominent). */
-interface CoreSizeHitScale {
-  min: RawValue;
-  base: RawValue;
-  prominent: RawValue;
-}
-
 /**
- * Hit target sizes split by pointer type.
- * `toCssVars` automatically injects the `coarse` values under `@media (any-pointer: coarse)`.
+ * Hit target floors split by pointer type.
+ *
+ * A **single ergonomic floor per pointer profile** — the minimum interactive
+ * target, never a visual size and never a scale. The theme defines one value;
+ * `toCssVars` injects the `coarse` value under `@media (any-pointer: coarse)`.
+ * (Evidence: the former three-step ramp shipped with only `base` ever consumed
+ * — see ADR-020.)
  */
 interface CoreSizeHit {
-  /** Fine pointer (mouse/trackpad) hit targets */
-  fine: CoreSizeHitScale;
-  /** Coarse pointer (touch) hit targets */
-  coarse: CoreSizeHitScale;
+  /** Fine pointer (mouse/trackpad) hit target floor. */
+  fine: RawValue;
+  /** Coarse pointer (touch) hit target floor. */
+  coarse: RawValue;
 }
 
 export interface CoreSizing {
@@ -62,23 +60,20 @@ export interface CoreSizing {
 
 export interface SemanticSizing {
   /**
-   * Ergonomic hit targets. Each token resolves to the **fine-pointer** value.
-   * The CSS output layer (`toCssVars`) automatically injects coarse-pointer
-   * overrides inside `@media (any-pointer: coarse)` — no component code needed.
+   * Ergonomic hit target — a **single interactive floor** (min interactive
+   * area), not a visual size and not a scale. Enforce via `min-height` /
+   * `min-width`; the visible control size comes from its inset + type, with
+   * `hit` only guaranteeing the ergonomic minimum.
    *
-   * Fine-pointer values (`core.sizing.hit.fine.*`) may use `clamp(floor, preferred, max)`
-   * where `floor` is a fixed `Npx` ergonomic minimum — this guarantees accessibility
-   * while allowing themes to express density preferences (e.g. via the rem scale).
-   * Coarse-pointer values (`core.sizing.hit.coarse.*`) are always fixed `px`.
+   * Resolves to the **fine-pointer** value (`core.sizing.hit.fine`), which may
+   * use `clamp(floor, preferred, max)` where `floor` is a fixed `Npx`
+   * ergonomic minimum — guaranteeing accessibility while letting the rem
+   * `preferred` respect user font-size. The CSS output layer (`toCssVars`)
+   * automatically injects the coarse-pointer override (`core.sizing.hit.coarse`,
+   * always fixed `px`) inside `@media (any-pointer: coarse)` — no component
+   * code needed.
    */
-  hit: {
-    /** Minimum interactive area for small / secondary targets (icon-only buttons, toolbar items). Enforce via `min-width` / `min-height`; not a visual size. */
-    min: CoreSizingRef;
-    /** Default interactive area for standard buttons, inputs, and toggles. Pick when no other step applies. */
-    base: CoreSizingRef;
-    /** Prominent interactive area for high-emphasis or low-density targets (CTAs, dialog actions). */
-    prominent: CoreSizingRef;
-  };
+  hit: CoreSizingRef;
   /**
    * Visual glyph dimensions. Set on the icon element itself; never used to
    * gate the hit target that wraps it (that is `hit.*`).

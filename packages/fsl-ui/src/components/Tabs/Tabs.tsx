@@ -202,7 +202,11 @@ export const Tab = (props: TabProps) => {
                   insetInlineEnd: 0,
                   insetBlockEnd: 0,
                   borderBlockEndWidth: vars.border.outline.selected.width,
-                  borderBlockEndStyle: vars.border.outline.control.style,
+                  // csstype's borderBlockEndStyle union has no `string`
+                  // escape hatch (unlike the shorthand borderStyle), so the
+                  // var() reference needs an explicit cast.
+                  borderBlockEndStyle: vars.border.outline.control
+                    .style as React.CSSProperties['borderBlockEndStyle'],
                   borderBlockEndColor:
                     vars.colors.navigation.primary?.border?.current ??
                     vars.colors.navigation.primary?.border?.default,

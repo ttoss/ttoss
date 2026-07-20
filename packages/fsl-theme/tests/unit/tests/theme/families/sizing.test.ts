@@ -82,64 +82,24 @@ const hitFloorPx = (
 describe('hit targets: ergonomic floors are fixed px', () => {
   for (const { label, base } of bundleEntries) {
     describe(label, () => {
-      // Error #1 (coarse): coarse-pointer hit tokens must be fixed px — touch
-      // ergonomics require predictable, reliable targets (no fluid scaling).
-      test('coarse hit targets are fixed px', () => {
-        for (const step of ['min', 'base', 'prominent']) {
-          expect(isFixedPx(base[`core.sizing.hit.coarse.${step}`])).toBe(true);
-        }
+      // Error #1 (coarse): the coarse-pointer hit floor must be fixed px —
+      // touch ergonomics require a predictable, reliable target (no fluid
+      // scaling).
+      test('coarse hit target is fixed px', () => {
+        expect(isFixedPx(base['core.sizing.hit.coarse'])).toBe(true);
       });
 
-      // Error #1 (fine): fine-pointer hit tokens may be fluid via
+      // Error #1 (fine): the fine-pointer hit floor may be fluid via
       // `clamp(floor, preferred, max)` — but the floor (first argument) must
       // be a fixed px ergonomic minimum so accessibility is always guaranteed.
-      // Plain px values are also acceptable.
-      test('fine hit targets resolve to a fixed px ergonomic floor', () => {
-        for (const step of ['min', 'base', 'prominent']) {
-          const value = base[`core.sizing.hit.fine.${step}`];
-          const str = String(value).trim();
-          if (isFixedPx(str)) continue;
-          const floor = extractClampFloor(str);
-          expect(floor).not.toBeNull();
-          expect(isFixedPx(floor!)).toBe(true);
-        }
+      // A plain px value is also acceptable.
+      test('fine hit target resolves to a fixed px ergonomic floor', () => {
+        const str = String(base['core.sizing.hit.fine']).trim();
+        if (isFixedPx(str)) return;
+        const floor = extractClampFloor(str);
+        expect(floor).not.toBeNull();
+        expect(isFixedPx(floor!)).toBe(true);
       });
-    });
-  }
-});
-
-// ---------------------------------------------------------------------------
-// Scale coherence: larger effort should map to a larger target
-// ---------------------------------------------------------------------------
-
-describe('hit targets: ordering within pointer profile', () => {
-  for (const { label, base } of bundleEntries) {
-    describe(label, () => {
-      // Error #2: hit targets do not preserve order inside a pointer profile
-      test.each(['fine', 'coarse'] as const)(
-        '%s: min < base < prominent',
-        (profile) => {
-          const min = hitFloorPx(
-            base[`core.sizing.hit.${profile}.min`]!,
-            profile
-          );
-          const def = hitFloorPx(
-            base[`core.sizing.hit.${profile}.base`]!,
-            profile
-          );
-          const prominent = hitFloorPx(
-            base[`core.sizing.hit.${profile}.prominent`]!,
-            profile
-          );
-
-          expect(min).not.toBeNaN();
-          expect(def).not.toBeNaN();
-          expect(prominent).not.toBeNaN();
-
-          expect(min).toBeLessThan(def);
-          expect(def).toBeLessThan(prominent);
-        }
-      );
     });
   }
 });
@@ -148,16 +108,13 @@ describe('hit targets: ordering within pointer profile', () => {
 // Touch targets must always equal or exceed their mouse equivalents
 // ---------------------------------------------------------------------------
 
-describe('hit targets: coarse ≥ fine at each step', () => {
+describe('hit targets: coarse ≥ fine', () => {
   for (const { label, base } of bundleEntries) {
     describe(label, () => {
-      // Error #3: any coarse-pointer hit token is smaller than its fine-pointer counterpart
-      test.each(['min', 'base', 'prominent'])('coarse.%s ≥ fine.%s', (step) => {
-        const coarse = hitFloorPx(
-          base[`core.sizing.hit.coarse.${step}`]!,
-          'coarse'
-        );
-        const fine = hitFloorPx(base[`core.sizing.hit.fine.${step}`]!, 'fine');
+      // Error #3: the coarse-pointer hit floor is smaller than the fine one
+      test('coarse ≥ fine', () => {
+        const coarse = hitFloorPx(base['core.sizing.hit.coarse']!, 'coarse');
+        const fine = hitFloorPx(base['core.sizing.hit.fine']!, 'fine');
 
         expect(coarse).not.toBeNaN();
         expect(fine).not.toBeNaN();
@@ -289,14 +246,12 @@ describe('semantic sizing: viewport.height.full alias', () => {
 describe('hit targets: minimum 24px threshold', () => {
   for (const { label, base } of bundleEntries) {
     describe(label, () => {
-      // Warning #5: any resolved hit.* value is below 24px
+      // Warning #5: a resolved hit floor is below the WCAG 2.2 24px minimum
       test('no hit target below 24px', () => {
         for (const profile of ['fine', 'coarse'] as const) {
-          for (const step of ['min', 'base', 'prominent']) {
-            expect(
-              hitFloorPx(base[`core.sizing.hit.${profile}.${step}`]!, profile)
-            ).toBeGreaterThanOrEqual(24);
-          }
+          expect(
+            hitFloorPx(base[`core.sizing.hit.${profile}`]!, profile)
+          ).toBeGreaterThanOrEqual(24);
         }
       });
     });
@@ -343,16 +298,11 @@ describe('semantic sizing: adjacent steps must be distinct', () => {
 describe('hit targets: fine and coarse profiles must differ', () => {
   for (const { label, base } of bundleEntries) {
     describe(label, () => {
-      // Warning #8: all fine-pointer and coarse-pointer hit tokens resolve to the same values
-      test('fine and coarse profiles are not all identical', () => {
-        const steps = ['min', 'base', 'prominent'];
-        const allSame = steps.every((step) => {
-          return (
-            base[`core.sizing.hit.fine.${step}`] ===
-            base[`core.sizing.hit.coarse.${step}`]
-          );
-        });
-        expect(allSame).toBe(false);
+      // Warning #8: the fine- and coarse-pointer hit floors are identical
+      test('fine and coarse floors are not identical', () => {
+        expect(base['core.sizing.hit.fine']).not.toBe(
+          base['core.sizing.hit.coarse']
+        );
       });
     });
   }

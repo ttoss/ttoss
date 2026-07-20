@@ -14,7 +14,7 @@ import { ANIMATION_NAMES, ensureKeyframes } from '../../tokens/keyframes';
 // Entity = Feedback → CONTRACT.md §1 row:
 //   colors: `feedback.{primary|positive|caution|negative}` (uxContext = feedback),
 //   radii: `control` (track), border: `outline.surface` (track outline),
-//   sizing: `hit.base` is not used (non-interactive), spacing: `inset.control`,
+//   sizing: `hit` is not used (non-interactive), spacing: `inset.control`,
 //   typography: `label.md` (label + value), elevation: `flat`
 //   motion: `transition.enter` (value easing; ProgressBar has no dismissal).
 //

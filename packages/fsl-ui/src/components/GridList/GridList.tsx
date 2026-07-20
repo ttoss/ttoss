@@ -65,7 +65,7 @@ const buildRowStyle = ({
     display: 'flex',
     alignItems: 'center',
     gap: vars.spacing.gap.inline.sm,
-    minHeight: vars.sizing.hit.base,
+    minHeight: vars.sizing.hit,
     paddingBlock: vars.spacing.inset.control.sm,
     paddingInline: vars.spacing.inset.control.md,
     borderRadius: vars.radii.control,
@@ -117,13 +117,13 @@ const buildSelectionBoxStyle = ({
   c: InputColors;
   on: boolean;
 }): React.CSSProperties => {
-  const text = c?.text ?? {};
+  const text = c?.text;
   const key = on ? 'checked' : 'default';
   return {
     ...SELECTION_BOX_STYLE,
     backgroundColor: c?.background?.[key],
     borderColor: c?.border?.[key],
-    color: text.checked ?? text.default,
+    color: text?.checked ?? text?.default,
   };
 };
 
@@ -218,8 +218,15 @@ GridList.displayName = gridListMeta.displayName;
 /** Props for the GridListItem component. */
 export type GridListItemProps = Omit<
   RACGridListItemProps,
-  'style' | 'className'
->;
+  'style' | 'className' | 'children'
+> & {
+  /**
+   * Row content. Plain nodes only — the item owns its render prop
+   * internally (selection control + content wrapper), so React Aria's
+   * function-children form is not part of this API.
+   */
+  children?: React.ReactNode;
+};
 
 /**
  * A single selectable row inside a `GridList`. Entity = Selection → reads

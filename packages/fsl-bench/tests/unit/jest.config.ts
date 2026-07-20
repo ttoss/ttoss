@@ -14,10 +14,12 @@ export default jestUnitConfig({
     '/node_modules/',
     // Network + CLI orchestration — exercised only in real campaigns (needs
     // API keys); everything they orchestrate (gauntlet, report, extract,
-    // stats) is unit-tested. The provider REGISTRY (providers/index.ts) is
-    // pure logic and stays covered; only the transport impls are excluded.
+    // stats) is unit-tested. The provider REGISTRY (providers/index.ts) and
+    // the pure vertex resolution (providers/vertexConfig.ts) stay covered;
+    // only the transport impls are excluded.
     'src/providers/claude.ts',
     'src/providers/gemini.ts',
+    'src/providers/vertex.ts',
     'src/runner.ts',
     'src/reportCli.ts',
     // Gauntlet L2/L3 executes in a dedicated child Node process (native
@@ -35,10 +37,10 @@ export default jestUnitConfig({
   ],
   coverageThreshold: {
     global: {
-      statements: 92.9,
-      branches: 80.9,
-      lines: 92.9,
-      functions: 98.1,
+      statements: 93.6,
+      branches: 84,
+      lines: 93.6,
+      functions: 98.3,
     },
   },
 });

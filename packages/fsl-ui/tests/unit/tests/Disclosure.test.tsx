@@ -61,4 +61,25 @@ describe('Disclosure', () => {
       screen.getByRole('heading', { level: 2, name: 'Section' })
     ).toBeInTheDocument();
   });
+
+  test('panel inset lives on an inner wrapper, not the panel element', () => {
+    // Regression: React Aria collapses the panel with `hidden="until-found"`
+    // (content-visibility: hidden), which keeps the element's own box. Padding
+    // on the panel element itself would leak as empty height when collapsed, so
+    // it must sit on an inner wrapper that is skipped along with the content.
+    render(
+      <Disclosure>
+        <DisclosureTrigger>Advanced options</DisclosureTrigger>
+        <DisclosurePanel>Body</DisclosurePanel>
+      </Disclosure>
+    );
+    const panel = document.querySelector<HTMLElement>(
+      '[data-scope="disclosure"][data-part="content"]'
+    );
+    expect(panel?.style.paddingBlock).toBe('');
+    expect(panel?.style.paddingInline).toBe('');
+    const inner = panel?.firstElementChild as HTMLElement | null;
+    expect(inner?.style.paddingBlock).not.toBe('');
+    expect(inner).toHaveTextContent('Body');
+  });
 });

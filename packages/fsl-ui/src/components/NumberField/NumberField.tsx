@@ -22,7 +22,7 @@ import { Icon } from '../Icon';
 // Entity = Input → CONTRACT.md §1 row:
 //   colors: `input.primary` (single neutral chrome — Input carries no
 //   authorial Evaluation per ENTITY_EVALUATION),
-//   radii: `control`, border: `outline.control`, sizing: `hit.base`,
+//   radii: `control`, border: `outline.control`, sizing: `hit`,
 //   spacing: `inset.control`, typography: `label.md`, motion: `feedback`,
 //   elevation: `flat`.
 //
@@ -73,7 +73,7 @@ const buildControlBoxStyle = ({
     boxSizing: 'border-box',
     display: 'inline-flex',
     alignItems: 'center',
-    minHeight: vars.sizing.hit.base,
+    minHeight: vars.sizing.hit,
     borderRadius: vars.radii.control,
     borderWidth: vars.border.outline.control.width,
     borderStyle: vars.border.outline.control.style,
@@ -125,8 +125,8 @@ const buildStepperStyle = ({
 const resolveFieldTextColors = (
   c: InputColors
 ): { base: string | undefined; invalid: string | undefined } => {
-  const text = c?.text ?? {};
-  return { base: text.default, invalid: text.invalid ?? text.default };
+  const text = c?.text;
+  return { base: text?.default, invalid: text?.invalid ?? text?.default };
 };
 
 /** The `<input>` itself — borderless; the surrounding `Group` owns the frame. */

@@ -4,6 +4,23 @@
 // is a client module (Next.js App Router). The `./semantics` entry stays
 // directive-free: taxonomy data is server-safe.
 export type {
+  AppShellProps,
+  AppShellSidebarWidth,
+} from './components/AppShell/AppShell';
+export { AppShell, appShellMeta } from './components/AppShell/AppShell';
+export type { BadgeNumeric, BadgeProps } from './components/Badge/Badge';
+export { Badge, badgeMeta } from './components/Badge/Badge';
+export type {
+  BoxBackground,
+  BoxBorder,
+  BoxMaxWidth,
+  BoxPadding,
+  BoxProps,
+  BoxRadius,
+  BoxWidth,
+} from './components/Box/Box';
+export { Box, boxMeta } from './components/Box/Box';
+export type {
   BreadcrumbProps,
   BreadcrumbsProps,
 } from './components/Breadcrumbs/Breadcrumbs';
@@ -22,11 +39,26 @@ export {
   CheckboxGroup,
   checkboxGroupMeta,
 } from './components/CheckboxGroup/CheckboxGroup';
+export type { CodeProps, CodeSize } from './components/Code/Code';
+export { Code, codeMeta } from './components/Code/Code';
+export type {
+  ContainerGutter,
+  ContainerProps,
+  ContainerSize,
+} from './components/Container/Container';
+export { Container, containerMeta } from './components/Container/Container';
 export type { FileTriggerProps } from './components/FileTrigger/FileTrigger';
 export {
   FileTrigger,
   fileTriggerMeta,
 } from './components/FileTrigger/FileTrigger';
+export type {
+  GridAlign,
+  GridGap,
+  GridMinColumnWidth,
+  GridProps,
+} from './components/Grid/Grid';
+export { Grid, gridMeta } from './components/Grid/Grid';
 export type {
   GridListItemProps,
   GridListProps,
@@ -39,6 +71,13 @@ export {
 } from './components/GridList/GridList';
 export type { GroupProps } from './components/Group/Group';
 export { Group, groupMeta } from './components/Group/Group';
+export type {
+  HeadingAlign,
+  HeadingLevel,
+  HeadingProps,
+  HeadingSize,
+} from './components/Heading/Heading';
+export { Heading, headingMeta } from './components/Heading/Heading';
 export type { LinkProps } from './components/Link/Link';
 export { Link, linkMeta } from './components/Link/Link';
 export type {
@@ -84,6 +123,20 @@ export type { SeparatorProps } from './components/Separator/Separator';
 export { Separator, separatorMeta } from './components/Separator/Separator';
 export type { SliderProps } from './components/Slider/Slider';
 export { Slider, sliderMeta } from './components/Slider/Slider';
+export type {
+  StackAlign,
+  StackDirection,
+  StackGap,
+  StackJustify,
+  StackProps,
+} from './components/Stack/Stack';
+export { Stack, stackMeta } from './components/Stack/Stack';
+export type {
+  SurfaceLevel,
+  SurfacePadding,
+  SurfaceProps,
+} from './components/Surface/Surface';
+export { Surface, surfaceMeta } from './components/Surface/Surface';
 export type { SwitchProps } from './components/Switch/Switch';
 export { Switch, switchMeta } from './components/Switch/Switch';
 export type {
@@ -102,6 +155,15 @@ export {
   Tabs,
   tabsMeta,
 } from './components/Tabs/Tabs';
+export type {
+  TextAlign,
+  TextAs,
+  TextNumeric,
+  TextProps,
+  TextTone,
+  TextVariant,
+} from './components/Text/Text';
+export { Text, textMeta } from './components/Text/Text';
 export type {
   ToastContent,
   ToastProps,

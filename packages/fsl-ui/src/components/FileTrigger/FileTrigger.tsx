@@ -11,7 +11,7 @@ import { Button } from '../Button/Button';
 // Semantic identity — Layer 1
 //
 // Entity = Action → CONTRACT.md §1 row: colors `action`, radii `control`,
-// border `outline.control`, sizing `hit.base`, spacing `inset.control`,
+// border `outline.control`, sizing `hit`, spacing `inset.control`,
 // typography `label`, motion `feedback`.
 //
 // React Aria's `FileTrigger` renders no DOM root of its own — it wires a

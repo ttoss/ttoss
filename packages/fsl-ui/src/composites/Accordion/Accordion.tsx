@@ -43,7 +43,7 @@ const accordionScope = createCompositeScope<AccordionScopeValue>('Accordion');
 //   colors: `navigation.{primary|muted}` (uxContext = navigation),
 //   radii: `control` (trigger button), `surface` (panel container),
 //   border: `outline.control` (trigger), `divider` (between items),
-//   sizing: `hit.base`, spacing: `inset.control`,
+//   sizing: `hit`, spacing: `inset.control`,
 //   typography: `label.md`, elevation: `flat`,
 //   motion: `transition.{enter,exit}` (NOT `feedback` — disclosure animates
 //   container affordances, not micro-feedback on a control).
@@ -309,7 +309,7 @@ export const AccordionTrigger = ({
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: vars.spacing.gap.inline.sm,
-            minHeight: vars.sizing.hit.base,
+            minHeight: vars.sizing.hit,
             paddingBlock: vars.spacing.inset.control.md,
             paddingInline: vars.spacing.inset.control.md,
             border: 'none',
@@ -391,23 +391,31 @@ export const AccordionPanel = ({ children, ...props }: AccordionPanelProps) => {
   const { evaluation } = accordionScope.use(accordionPanelMeta.displayName);
   const c = vars.colors.navigation[evaluation];
 
+  // Padding lives on an inner wrapper, not the panel element: React Aria
+  // collapses the panel with `hidden="until-found"` (content-visibility:
+  // hidden), which skips the contents but keeps the element's own box —
+  // padding on the panel itself would leak as empty height when collapsed.
   return (
     <RACDisclosurePanel
       {...props}
       data-scope="accordion"
       data-part="content"
-      style={
-        {
-          boxSizing: 'border-box',
-          paddingBlock: vars.spacing.inset.control.md,
-          paddingInline: vars.spacing.inset.control.md,
-          backgroundColor: c?.background?.default,
-          color: c?.text?.default,
-          ...(vars.text.body.md as React.CSSProperties),
-        } as React.CSSProperties
-      }
+      style={{ boxSizing: 'border-box' } as React.CSSProperties}
     >
-      {children}
+      <div
+        style={
+          {
+            boxSizing: 'border-box',
+            paddingBlock: vars.spacing.inset.control.md,
+            paddingInline: vars.spacing.inset.control.md,
+            backgroundColor: c?.background?.default,
+            color: c?.text?.default,
+            ...(vars.text.body.md as React.CSSProperties),
+          } as React.CSSProperties
+        }
+      >
+        {children}
+      </div>
     </RACDisclosurePanel>
   );
 };

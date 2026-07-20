@@ -22,7 +22,7 @@ import { Icon } from '../Icon';
 // Entity = Feedback → CONTRACT.md §1 row:
 //   colors: `feedback.{primary|positive|caution|negative}` (uxContext = feedback),
 //   radii: `surface`, border: `outline.surface`,
-//   sizing: `hit.base` (close trigger), spacing: `inset.surface`,
+//   sizing: `hit` (close trigger), spacing: `inset.surface`,
 //   typography: `label.md` (title) + `body.md` (description),
 //   elevation: `raised` — first component in the system to consume it,
 //   motion: `transition.{enter,exit}`.
@@ -83,7 +83,7 @@ const buildCloseTriggerStyle = ({
   isFocusVisible?: boolean;
 }): React.CSSProperties => {
   const flags = { isHovered, isPressed, isDisabled, isFocusVisible } as const;
-  const text = c?.text ?? {};
+  const text = c?.text;
   return {
     boxSizing: 'border-box',
     flexShrink: 0,
@@ -96,7 +96,7 @@ const buildCloseTriggerStyle = ({
     border: 'none',
     borderRadius: vars.radii.control,
     background: resolveInteractiveStyle(c?.background, flags) ?? 'transparent',
-    color: resolveInteractiveStyle(text, flags) ?? text.default,
+    color: resolveInteractiveStyle(text, flags) ?? text?.default,
     cursor: isDisabled ? 'not-allowed' : 'pointer',
     opacity: isDisabled ? vars.opacity.disabled : undefined,
     outline: focusRingOutline(isFocusVisible),

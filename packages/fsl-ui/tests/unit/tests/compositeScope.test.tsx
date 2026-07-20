@@ -231,7 +231,7 @@ describe('contract: composite sub-parts render inside host', () => {
   test('Dialog scope satisfies sub-parts', () => {
     expect(() => {
       return render(
-        <Dialog isOpen onOpenChange={() => {}}>
+        <Dialog>
           <DialogHeading>title</DialogHeading>
           <DialogBody>body</DialogBody>
           <DialogActions>

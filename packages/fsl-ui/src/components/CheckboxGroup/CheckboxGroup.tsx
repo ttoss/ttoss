@@ -55,8 +55,8 @@ type InputColors = typeof vars.colors.input.primary;
 const resolveGroupTextColors = (
   c: InputColors
 ): { base: string | undefined; invalid: string | undefined } => {
-  const text = c?.text ?? {};
-  return { base: text.default, invalid: text.invalid ?? text.default };
+  const text = c?.text;
+  return { base: text?.default, invalid: text?.invalid ?? text?.default };
 };
 
 /** Props for the CheckboxGroup component. */

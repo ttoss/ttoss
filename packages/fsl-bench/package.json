@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/fsl-bench",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "private": true,
   "description": "AI-executability benchmark harness for @ttoss/fsl-ui (ROADMAP D1). Measures first-pass success and semantic error rate of LLM-generated UI code against headless baselines.",
   "repository": {
@@ -9,7 +9,7 @@
     "directory": "packages/fsl-bench"
   },
   "license": "MIT",
-  "author": "ttoss",
+  "author": "Ennio Lopes <enniolopes@gmail.com>",
   "type": "module",
   "scripts": {
     "bench": "node --experimental-strip-types src/runner.ts",
@@ -38,6 +38,7 @@
     "@types/node": "^24.12.0",
     "@types/react": "^19.2.14",
     "esbuild": "^0.28.0",
+    "google-auth-library": "^10.2.0",
     "jest": "^30.4.2",
     "jsdom": "^27.0.0",
     "react": "^19.2.6",

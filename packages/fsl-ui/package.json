@@ -1,7 +1,6 @@
 {
   "name": "@ttoss/fsl-ui",
-  "version": "0.2.3",
-  "private": true,
+  "version": "0.2.5",
   "description": "Semantic, token-native component library for the ttoss ecosystem. Built on React Aria Components with @ttoss/fsl-theme tokens.",
   "repository": {
     "type": "git",
@@ -9,7 +8,7 @@
     "directory": "packages/fsl-ui"
   },
   "license": "MIT",
-  "author": "ttoss",
+  "author": "Ennio Lopes <enniolopes@gmail.com>",
   "sideEffects": false,
   "type": "module",
   "exports": {
@@ -23,7 +22,7 @@
   ],
   "scripts": {
     "build": "tsdown",
-    "test": "jest --projects tests/unit",
+    "test": "tsc --noEmit -p tsconfig.json && jest --projects tests/unit",
     "verify:treeshake": "node scripts/verify-treeshake.mjs"
   },
   "dependencies": {
@@ -39,6 +38,9 @@
     "@ttoss/forms": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@types/jest-axe": "^3.5.9",
+    "@types/node": "^24.12.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.0.2",
     "esbuild": "^0.28.0",
     "jest": "^30.4.2",
     "jest-axe": "^10.0.0",

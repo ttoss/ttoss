@@ -18,7 +18,7 @@ import { focusRingOutline } from '../../tokens/focusRing';
 // Entity = Input → CONTRACT.md §1 row:
 //   colors: `input.primary` (single neutral chrome — Input carries no
 //   authorial Evaluation per ENTITY_EVALUATION),
-//   radii: `control`, border: `outline.control`, sizing: `hit.base`,
+//   radii: `control`, border: `outline.control`, sizing: `hit`,
 //   spacing: `inset.control`, typography: `label.md`, motion: `feedback`.
 //
 // FRICTION LOG (FSL validation, ADR-008): the ROADMAP proposed thumb→control,
@@ -97,8 +97,8 @@ const buildThumbStyle = ({
   isFocusVisible?: boolean;
   isDisabled?: boolean;
 }): React.CSSProperties => {
-  const border = c?.border ?? {};
-  const background = c?.background ?? {};
+  const border = c?.border;
+  const background = c?.background;
   const key = isDisabled ? 'disabled' : 'default';
   return {
     boxSizing: 'border-box',
@@ -107,8 +107,8 @@ const buildThumbStyle = ({
     borderRadius: vars.radii.round,
     borderWidth: vars.border.outline.control.width,
     borderStyle: vars.border.outline.control.style,
-    borderColor: border[key],
-    backgroundColor: background[key],
+    borderColor: border?.[key],
+    backgroundColor: background?.[key],
     outline: focusRingOutline(isFocusVisible),
   };
 };

@@ -32,7 +32,7 @@ export const treeSelect = (defaultOpen?: boolean): React.ReactElement => {
 };
 
 export const treeToast = (): React.ReactElement => {
-  const queue = pkg.createToastQueue<pkg.ToastContent>({ maxVisibleToasts: 5 });
+  const queue = pkg.createToastQueue({ maxVisibleToasts: 5 });
   queue.add({ title: 'x' });
   return <pkg.ToastRegion queue={queue} />;
 };
