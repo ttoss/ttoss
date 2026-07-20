@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.43.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.42.1...@docs/storybook@3.43.0) (2026-07-20)
+
+### Features
+
+- **react-dashboard:** controlled selection, configurable slot height, and multi-slot mode ([#1151](https://github.com/ttoss/ttoss/issues/1151)) ([f4f0c2d](https://github.com/ttoss/ttoss/commit/f4f0c2dff94d8355c85754cf8a9a0a7965ea7891))
+
 ## [3.42.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.42.0...@docs/storybook@3.42.1) (2026-07-17)
 
 **Note:** Version bump only for package @docs/storybook
