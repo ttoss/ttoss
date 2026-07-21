@@ -3,6 +3,7 @@ export {
   type GeovisWorkspaceConfig,
   type GeovisWorkspaceContextValue,
   type GeovisWorkspaceControls,
+  type GeovisWorkspaceDetailsState,
   type GeovisWorkspaceLegendConfig,
   type GeovisWorkspaceMenu,
   type GeovisWorkspaceMenuItem,
