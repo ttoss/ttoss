@@ -17,7 +17,7 @@ import {
   buildHandleWindowFocus,
   buildHoverTracking,
   clearHover,
-  clearSelected,
+  dispatchClearSelection,
   type PrevFeatureState,
   TRACKED_FIELD_SEP,
   TRACKED_RECORD_SEP,
@@ -187,10 +187,11 @@ export const useMapClick = ({
     return spec.layers
       .filter((layer) => {
         return (
-          // All geometry types are supported for click interactions, so we only check for the presence of `activeLegendId` or `selectedPaint` to determine whether the layer should be tracked.
+          // All geometry types are supported for click interactions, so we only check for the presence of `activeLegendId`, `selectedPaint`, or `click.onSelect` to determine whether the layer should be tracked.
           layer.activeLegendId != null ||
           layer.selectedPaint != null ||
-          layer.clickAnchor != null
+          layer.clickAnchor != null ||
+          layer.click?.onSelect != null
         );
       })
       .map((layer) => {
@@ -209,15 +210,14 @@ export const useMapClick = ({
     if (!map) return;
 
     const { tracked, sourceByLayerId } = buildClickTracking(trackedKey);
-    const prevSelectedState: PrevFeatureState = { current: null };
 
     const dismissSelection = () => {
-      clearSelected(map, prevSelectedState);
+      dispatchClearSelection(runtime);
       setClick(null);
     };
     dismissImplRef.current = dismissSelection;
 
-    const handlers = tracked.map(({ layerId, hasSelectedPaint }) => {
+    const handlers = tracked.map(({ layerId }) => {
       return {
         layerId,
         handleClick: buildHandleClick({
@@ -225,8 +225,7 @@ export const useMapClick = ({
           layerId,
           sourceByLayerId,
           setClick,
-          prevSelectedState,
-          needsSelectedState: hasSelectedPaint,
+          runtime,
         }),
       };
     });
@@ -352,6 +351,53 @@ export const useClickAnchor = ({
       if (marker) marker.remove();
     };
   }, [runtime, click, spec.layers]);
+};
+
+interface UseClickSelectParams {
+  spec: VisualizationSpec;
+  click: MapClickInfo | null;
+}
+
+/**
+ * Invokes the spec-driven `layer.click.onSelect` callback whenever the click
+ * selection changes. Mirrors {@link useClickAnchor}: the reaction is declared on
+ * the layer in the spec, so consumers do not read `useGeoVisClick()` in a child
+ * of the provider.
+ *
+ * On selection, calls the clicked layer's `onSelect(info)`. On clear
+ * (`click === null` — Escape or a click outside every tracked layer), calls
+ * `onSelect(null)` once on the layer that last held a selection, matching the
+ * "clears to null" semantics of `GeoVisClickContext`.
+ *
+ * A `lastNotified` ref gates the effect on the click *selection* changing, so
+ * unrelated spec updates (e.g. high-frequency `mapData` patches) that keep the
+ * same click do not re-fire `onSelect`.
+ */
+export const useClickSelect = ({ spec, click }: UseClickSelectParams): void => {
+  const lastNotifiedRef = React.useRef<MapClickInfo | null>(null);
+  const lastLayerIdRef = React.useRef<string | null>(null);
+
+  React.useEffect(() => {
+    if (click === lastNotifiedRef.current) return;
+    lastNotifiedRef.current = click;
+
+    if (click) {
+      lastLayerIdRef.current = click.layerId;
+      const layer = spec.layers.find((l) => {
+        return l.id === click.layerId;
+      });
+      layer?.click?.onSelect?.(click);
+      return;
+    }
+
+    const lastLayerId = lastLayerIdRef.current;
+    if (lastLayerId === null) return;
+    lastLayerIdRef.current = null;
+    const layer = spec.layers.find((l) => {
+      return l.id === lastLayerId;
+    });
+    layer?.click?.onSelect?.(null);
+  }, [click, spec]);
 };
 
 export const useMapData = (mapDataId: string): UseMapDataResult | undefined => {
