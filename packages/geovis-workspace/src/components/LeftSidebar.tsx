@@ -6,19 +6,61 @@ import { useGeovisWorkspace } from '../hooks/useGeovisWorkspace';
 import { messages } from '../messages';
 import { MenuButton } from './MenuButton';
 
+/** Default content of the `controls` slot: the config-driven menu groups. */
+const DefaultControlsPanel = () => {
+  const { config, selection, setSelection } = useGeovisWorkspace();
+
+  const menus = config.controls?.menus ?? [];
+
+  return (
+    <>
+      {menus.map((menu) => {
+        return (
+          <Box key={menu.id} sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Text
+              sx={{
+                fontSize: 'xs',
+                fontWeight: 'semibold',
+                color: '#6b7280',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                marginBottom: '2',
+              }}
+            >
+              {menu.title}
+            </Text>
+
+            {menu.items.map((item) => {
+              return (
+                <MenuButton
+                  key={item.value}
+                  label={item.label}
+                  active={selection[menu.id] === item.value}
+                  onClick={() => {
+                    setSelection({ menuId: menu.id, value: item.value });
+                  }}
+                />
+              );
+            })}
+          </Box>
+        );
+      })}
+    </>
+  );
+};
+
 /**
- * Internal left sidebar that renders the menu groups defined in the config.
- * Reads and writes the per-group selection via GeovisWorkspaceContext.
+ * Internal left sidebar: the chrome hosting the `controls` slot. Rendered
+ * only when `Layout` determines that slot has content.
  */
 export const LeftSidebar = () => {
   const {
     intl: { formatMessage },
   } = useI18n();
 
-  const { config, selection, setSelection, setLeftSidebarOpen } =
-    useGeovisWorkspace();
+  const { config, setLeftSidebarOpen } = useGeovisWorkspace();
 
-  const menus = config.leftSidebar?.menus ?? [];
+  const ControlsOverride = config.slots?.controls?.component;
 
   return (
     <Flex
@@ -59,37 +101,7 @@ export const LeftSidebar = () => {
         }}
       />
 
-      {menus.map((menu) => {
-        return (
-          <Box key={menu.id} sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Text
-              sx={{
-                fontSize: 'xs',
-                fontWeight: 'semibold',
-                color: '#6b7280',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                marginBottom: '2',
-              }}
-            >
-              {menu.title}
-            </Text>
-
-            {menu.items.map((item) => {
-              return (
-                <MenuButton
-                  key={item.value}
-                  label={item.label}
-                  active={selection[menu.id] === item.value}
-                  onClick={() => {
-                    setSelection({ menuId: menu.id, value: item.value });
-                  }}
-                />
-              );
-            })}
-          </Box>
-        );
-      })}
+      {ControlsOverride ? <ControlsOverride /> : <DefaultControlsPanel />}
     </Flex>
   );
 };

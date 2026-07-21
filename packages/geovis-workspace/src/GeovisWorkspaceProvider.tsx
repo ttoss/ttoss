@@ -1,10 +1,9 @@
-import type { MapClickInfo } from '@ttoss/geovis';
+import type { RepairOption } from '@ttoss/geovis';
 import * as React from 'react';
 
 import {
   type GeovisWorkspaceConfig,
   GeovisWorkspaceContext,
-  type GeovisWorkspaceDetailsState,
   type GeovisWorkspaceSelection,
 } from './context/GeovisWorkspaceContext';
 
@@ -24,6 +23,24 @@ export interface GeovisWorkspaceProviderProps {
    * selected. Use it to rebuild the `visualizationSpec` in the parent.
    */
   onSelectionChange?: (selection: GeovisWorkspaceSelection) => void;
+  /**
+   * Called with the chosen `RepairOption` when a repair button is pressed in
+   * the `warnings` slot's default panel. Omit to render repair buttons
+   * disabled rather than absent.
+   */
+  onRepair?: (repair: RepairOption) => void;
+  /**
+   * Called with a layer's id and its next `visible` value when the
+   * `LayerListControls` `controls` slot variant toggles it.
+   */
+  onLayerVisibilityChange?: (layerId: string, visible: boolean) => void;
+  /**
+   * Whether the GeoVis runtime has ever resolved successfully. Computed by
+   * `GeovisWorkspace` (which has runtime access) and forwarded here so it
+   * reaches context; defaults to `false` for standalone usage without a
+   * GeoVis runtime.
+   */
+  hasResolvedOnce?: boolean;
 }
 
 /**
@@ -38,7 +55,7 @@ export const getInitialSelection = ({
 }): GeovisWorkspaceSelection => {
   const selection: GeovisWorkspaceSelection = {};
 
-  const menus = config.leftSidebar?.menus ?? [];
+  const menus = config.controls?.menus ?? [];
 
   for (const menu of menus) {
     selection[menu.id] = menu.defaultValue;
@@ -57,6 +74,9 @@ export const GeovisWorkspaceProvider = ({
   config,
   selection,
   onSelectionChange,
+  onRepair,
+  onLayerVisibilityChange,
+  hasResolvedOnce = false,
 }: GeovisWorkspaceProviderProps) => {
   const isControlled = selection !== undefined;
 
@@ -102,75 +122,6 @@ export const GeovisWorkspaceProvider = ({
     []
   );
 
-  const [details, setDetails] =
-    React.useState<GeovisWorkspaceDetailsState | null>(null);
-
-  // Read the latest callbacks through refs so `selectFeature` stays stable
-  // even when the parent recreates `config` on every render.
-  const onFeatureSelect = config.rightSidebar?.onFeatureSelect;
-  const onFeatureSelectRef = React.useRef(onFeatureSelect);
-  React.useEffect(() => {
-    onFeatureSelectRef.current = onFeatureSelect;
-  }, [onFeatureSelect]);
-
-  const shouldOpen = config.rightSidebar?.shouldOpen;
-  const shouldOpenRef = React.useRef(shouldOpen);
-  React.useEffect(() => {
-    shouldOpenRef.current = shouldOpen;
-  }, [shouldOpen]);
-
-  // Monotonic request id: only the response of the latest request wins, so
-  // rapid clicks never render a stale (out-of-order) result.
-  const requestIdRef = React.useRef(0);
-
-  const selectFeature = React.useCallback(
-    (info: MapClickInfo | null) => {
-      const fetcher = onFeatureSelectRef.current;
-
-      if (!fetcher) {
-        return;
-      }
-
-      if (info === null) {
-        requestIdRef.current += 1;
-        setDetails(null);
-        setRightSidebarOpen({ open: false });
-        return;
-      }
-
-      const guard = shouldOpenRef.current;
-      if (guard && !guard(info)) {
-        setRightSidebarOpen({ open: false });
-        return;
-      }
-
-      const requestId = (requestIdRef.current += 1);
-
-      setDetails({ feature: info, data: null, loading: true, error: null });
-      setRightSidebarOpen({ open: true });
-
-      Promise.resolve()
-        .then(() => {
-          return fetcher(info);
-        })
-        .then((data) => {
-          if (requestId !== requestIdRef.current) {
-            return;
-          }
-
-          setDetails({ feature: info, data, loading: false, error: null });
-        })
-        .catch((error: unknown) => {
-          if (requestId !== requestIdRef.current) {
-            return;
-          }
-
-          setDetails({ feature: info, data: null, loading: false, error });
-        });
-    },
-    [setRightSidebarOpen]
-  );
-
   const value = React.useMemo(() => {
     return {
       config,
@@ -180,8 +131,9 @@ export const GeovisWorkspaceProvider = ({
       setLeftSidebarOpen,
       isRightSidebarOpen,
       setRightSidebarOpen,
-      details,
-      selectFeature,
+      onRepair,
+      onLayerVisibilityChange,
+      hasResolvedOnce,
     };
   }, [
     config,
@@ -191,8 +143,9 @@ export const GeovisWorkspaceProvider = ({
     setLeftSidebarOpen,
     isRightSidebarOpen,
     setRightSidebarOpen,
-    details,
-    selectFeature,
+    onRepair,
+    onLayerVisibilityChange,
+    hasResolvedOnce,
   ]);
 
   return (

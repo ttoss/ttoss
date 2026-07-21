@@ -1,57 +1,91 @@
 import { I18nProvider } from '@ttoss/react-i18n';
 import { act, fireEvent, render, screen } from '@ttoss/test-utils/react';
+import type * as React from 'react';
 import {
   GeovisWorkspace,
   type GeovisWorkspaceConfig,
   GeovisWorkspaceProvider,
   getInitialSelection,
+  LayerListControls,
   useGeovisWorkspace,
 } from 'src';
 
-type MockClickInfo = {
+interface MockClick {
   layerId: string;
-  sourceId: string;
   featureId: string | number;
   value: number | string | null;
-  lngLat: [number, number];
-  point: { x: number; y: number };
-};
+}
 
-// Controls what `useGeoVisClick()` returns inside FeatureClickBridge. Reset in
-// beforeEach; set via `mockClick(...)` to simulate a map click.
-let mockClickInfo: MockClickInfo | null = null;
+interface MockSpec {
+  legends?: { id: string }[];
+  mockResult?: unknown;
+  mockClick?: MockClick | null;
+}
 
 jest.mock('@ttoss/geovis', () => {
+  const ReactModule = jest.requireActual('react');
+  const MockGeoVisContext = ReactModule.createContext<{
+    spec: MockSpec;
+    result: unknown;
+    click: MockClick | null;
+    dismiss: () => void;
+  } | null>(null);
+
   return {
-    GeoVisProvider: ({ children }: React.PropsWithChildren) => {
-      return <div data-testid="geovis-provider">{children}</div>;
+    GeoVisProvider: ({
+      spec,
+      children,
+    }: React.PropsWithChildren<{ spec: MockSpec }>) => {
+      const result = spec.mockResult ?? {
+        status: 'resolved',
+        spec,
+        warnings: [],
+      };
+
+      const [click, setClick] = ReactModule.useState<MockClick | null>(() => {
+        return spec.mockClick ?? null;
+      });
+
+      ReactModule.useEffect(() => {
+        setClick(spec.mockClick ?? null);
+      }, [spec.mockClick]);
+
+      const dismiss = ReactModule.useCallback(() => {
+        setClick(null);
+      }, []);
+
+      return (
+        <MockGeoVisContext.Provider value={{ spec, result, click, dismiss }}>
+          <div data-testid="geovis-provider">{children}</div>
+        </MockGeoVisContext.Provider>
+      );
     },
     GeoVisCanvas: () => {
       return <div data-testid="geovis-canvas" />;
     },
+    useGeoVis: () => {
+      const context = ReactModule.useContext(MockGeoVisContext);
+      if (!context) throw new Error('useGeoVis used outside GeoVisProvider');
+      return context;
+    },
     useGeoVisClick: () => {
-      return mockClickInfo;
+      const context = ReactModule.useContext(MockGeoVisContext);
+      if (!context) {
+        throw new Error('useGeoVisClick used outside GeoVisProvider');
+      }
+      return context.click;
+    },
+    useDismissGeoVisClick: () => {
+      const context = ReactModule.useContext(MockGeoVisContext);
+      if (!context) {
+        throw new Error('useDismissGeoVisClick used outside GeoVisProvider');
+      }
+      return context.dismiss;
+    },
+    GeoVisLegend: ({ legendId }: { legendId: string }) => {
+      return <div data-testid={`legend-${legendId}`}>{legendId}</div>;
     },
   };
-});
-
-const feature = (
-  featureId: string | number,
-  overrides: Partial<MockClickInfo> = {}
-): MockClickInfo => {
-  return {
-    layerId: 'regions-fill',
-    sourceId: 'regions',
-    featureId,
-    value: null,
-    lngLat: [-46.6, -23.5],
-    point: { x: 0, y: 0 },
-    ...overrides,
-  };
-};
-
-beforeEach(() => {
-  mockClickInfo = null;
 });
 
 const Provider = ({ children }: React.PropsWithChildren) => {
@@ -59,7 +93,7 @@ const Provider = ({ children }: React.PropsWithChildren) => {
 };
 
 const config: GeovisWorkspaceConfig = {
-  leftSidebar: {
+  controls: {
     menus: [
       {
         id: 'population',
@@ -79,7 +113,6 @@ const config: GeovisWorkspaceConfig = {
       },
     ],
   },
-  rightSidebar: {},
 };
 
 const visualizationSpec = {
@@ -89,9 +122,68 @@ const visualizationSpec = {
   layers: [],
 };
 
+const visualizationSpecWithLegends = {
+  ...visualizationSpec,
+  legends: [{ id: 'classes' }],
+};
+
+const resolvedWithWarnings = {
+  status: 'resolved' as const,
+  spec: visualizationSpec,
+  warnings: [
+    {
+      code: 'policy-violation' as const,
+      subject: { path: 'metadata.metricField', id: 'policy-invalid' },
+      message: 'Spec violates policy.',
+      repair: [
+        {
+          kind: 'set-value' as const,
+          path: 'metadata.metricField',
+          value: 'safe-field',
+          label: "Use 'safe-field'",
+        },
+      ],
+    },
+  ],
+};
+
+const failingResult = {
+  status: 'mismatch' as const,
+  issues: [
+    {
+      code: 'unknown-map-data-id' as const,
+      subject: { path: 'layers[0].mapDataId', id: 'missing-id' },
+      message: 'Unknown map data id.',
+      repair: [
+        {
+          kind: 'allowed-values' as const,
+          path: 'layers[0].mapDataId',
+          values: ['choropleth', 'dots'],
+        },
+      ],
+    },
+  ],
+};
+
+const visualizationSpecWithWarnings = {
+  ...visualizationSpec,
+  mockResult: resolvedWithWarnings,
+};
+
+const failingVisualizationSpec = {
+  ...visualizationSpec,
+  mockResult: failingResult,
+};
+
 const openLeftSidebar = async () => {
   await act(async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Open menu' }));
+  });
+};
+
+const openRightSidebar = async () => {
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'Open details' }));
   });
 };
 
@@ -147,10 +239,7 @@ test('closing the left sidebar brings the open button back', async () => {
 test('left sidebar starts open when initialState is "open"', () => {
   render(
     <GeovisWorkspace
-      config={{
-        ...config,
-        leftSidebar: { ...config.leftSidebar!, initialState: 'open' },
-      }}
+      config={{ ...config, leftSidebar: { initialState: 'open' } }}
       visualizationSpec={visualizationSpec}
     />,
     { wrapper: Provider }
@@ -165,10 +254,7 @@ test('left sidebar starts open when initialState is "open"', () => {
 test('left sidebar stays closed when initialState is "closed"', () => {
   render(
     <GeovisWorkspace
-      config={{
-        ...config,
-        leftSidebar: { ...config.leftSidebar!, initialState: 'closed' },
-      }}
+      config={{ ...config, leftSidebar: { initialState: 'closed' } }}
       visualizationSpec={visualizationSpec}
     />,
     { wrapper: Provider }
@@ -224,7 +310,7 @@ test('calls onVariableChange with the full next selection', async () => {
 
 test('initializes selection from defaultValue', async () => {
   const configWithDefault: GeovisWorkspaceConfig = {
-    leftSidebar: {
+    controls: {
       menus: [
         {
           id: 'economy',
@@ -278,12 +364,9 @@ test('controlled variables prop drives the active item', async () => {
   );
 });
 
-test('right sidebar renders only when defined in the config', () => {
+test('right sidebar renders only when a slot has content', () => {
   const { rerender } = render(
-    <GeovisWorkspace
-      config={{ leftSidebar: config.leftSidebar }}
-      visualizationSpec={visualizationSpec}
-    />,
+    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
     { wrapper: Provider }
   );
 
@@ -292,7 +375,10 @@ test('right sidebar renders only when defined in the config', () => {
   ).not.toBeInTheDocument();
 
   rerender(
-    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />
+    <GeovisWorkspace
+      config={{ ...config, legend: { description: 'Descrição' } }}
+      visualizationSpec={visualizationSpec}
+    />
   );
 
   expect(
@@ -300,10 +386,10 @@ test('right sidebar renders only when defined in the config', () => {
   ).toBeInTheDocument();
 });
 
-test('left sidebar controls are absent when leftSidebar is undefined', () => {
+test('left sidebar controls are absent when controls has no menus', () => {
   render(
     <GeovisWorkspace
-      config={{ rightSidebar: {} }}
+      config={{ legend: { description: 'Descrição' } }}
       visualizationSpec={visualizationSpec}
     />,
     { wrapper: Provider }
@@ -317,40 +403,33 @@ test('left sidebar controls are absent when leftSidebar is undefined', () => {
 test('right sidebar shows a custom title', async () => {
   render(
     <GeovisWorkspace
-      config={{ ...config, rightSidebar: { title: 'Camadas' } }}
+      config={{
+        ...config,
+        legend: { description: 'Descrição' },
+        rightSidebar: { title: 'Camadas' },
+      }}
       visualizationSpec={visualizationSpec}
     />,
     { wrapper: Provider }
   );
 
-  await act(async () => {
-    fireEvent.click(screen.getByRole('button', { name: 'Open details' }));
-  });
+  await openRightSidebar();
 
   expect(screen.getByText('Camadas')).toBeInTheDocument();
 });
 
-test('right sidebar renders the legendWithColor panel from the config', async () => {
+test('right sidebar renders the legend panel from the config', async () => {
   const configWithLegend: GeovisWorkspaceConfig = {
     ...config,
-    rightSidebar: {
-      title: 'População 65+',
-      legendWithColor: {
-        description: 'Proporção da população total com 65 anos ou mais.',
-        legend: {
-          title: 'Classes',
-          items: [
-            { color: '#eff3ff', label: '0% – 5%' },
-            { color: '#08519c', label: '20% – 100%' },
-          ],
-        },
-        sources: {
-          title: 'Fonte dos dados:',
-          items: [
-            { label: 'SEADE (2025)', href: 'https://example.com/seade' },
-            { label: 'Geometria: Distritos Municipais.' },
-          ],
-        },
+    rightSidebar: { title: 'População 65+' },
+    legend: {
+      description: 'Proporção da população total com 65 anos ou mais.',
+      sources: {
+        title: 'Fonte dos dados:',
+        items: [
+          { label: 'SEADE (2025)', href: 'https://example.com/seade' },
+          { label: 'Geometria: Distritos Municipais.' },
+        ],
       },
     },
   };
@@ -358,20 +437,17 @@ test('right sidebar renders the legendWithColor panel from the config', async ()
   render(
     <GeovisWorkspace
       config={configWithLegend}
-      visualizationSpec={visualizationSpec}
+      visualizationSpec={visualizationSpecWithLegends}
     />,
     { wrapper: Provider }
   );
 
-  await act(async () => {
-    fireEvent.click(screen.getByRole('button', { name: 'Open details' }));
-  });
+  await openRightSidebar();
 
   expect(
     screen.getByText('Proporção da população total com 65 anos ou mais.')
   ).toBeInTheDocument();
-  expect(screen.getByText('Classes')).toBeInTheDocument();
-  expect(screen.getByText('0% – 5%')).toBeInTheDocument();
+  expect(screen.getByTestId('legend-classes')).toBeInTheDocument();
   expect(screen.getByText('Fonte dos dados:')).toBeInTheDocument();
   expect(
     screen.getByText('Geometria: Distritos Municipais.')
@@ -382,15 +458,163 @@ test('right sidebar renders the legendWithColor panel from the config', async ()
   expect(link).toHaveAttribute('target', '_blank');
 });
 
-test('closing the right sidebar brings its open button back', async () => {
+test('right sidebar shows when the legend slot only has sources configured', async () => {
   render(
-    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
+    <GeovisWorkspace
+      config={{
+        ...config,
+        legend: { sources: { items: [{ label: 'SEADE (2025)' }] } },
+      }}
+      visualizationSpec={visualizationSpec}
+    />,
     { wrapper: Provider }
   );
 
-  await act(async () => {
-    fireEvent.click(screen.getByRole('button', { name: 'Open details' }));
-  });
+  await openRightSidebar();
+
+  expect(screen.getByText('SEADE (2025)')).toBeInTheDocument();
+});
+
+test('right sidebar is absent when the legend slot has no content and nothing else configures it', () => {
+  render(
+    <GeovisWorkspace
+      config={{ ...config, legend: {} }}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  expect(
+    screen.queryByRole('button', { name: 'Open details' })
+  ).not.toBeInTheDocument();
+});
+
+test('hiding the legend slot suppresses it even when the spec has legends', () => {
+  render(
+    <GeovisWorkspace
+      config={{ ...config, slots: { legend: { hidden: true } } }}
+      visualizationSpec={visualizationSpecWithLegends}
+    />,
+    { wrapper: Provider }
+  );
+
+  expect(
+    screen.queryByRole('button', { name: 'Open details' })
+  ).not.toBeInTheDocument();
+});
+
+test('a controls slot override replaces the default menu panel and keeps the sidebar visible', async () => {
+  const CustomControls = () => {
+    return <div data-testid="custom-controls">custom</div>;
+  };
+
+  render(
+    <GeovisWorkspace
+      config={{ slots: { controls: { component: CustomControls } } }}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  await openLeftSidebar();
+
+  expect(screen.getByTestId('custom-controls')).toBeInTheDocument();
+  expect(screen.queryByText('População')).not.toBeInTheDocument();
+});
+
+test('hiding the map slot renders no canvas', () => {
+  render(
+    <GeovisWorkspace
+      config={{ ...config, slots: { map: { hidden: true } } }}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  expect(screen.queryByTestId('geovis-canvas')).not.toBeInTheDocument();
+});
+
+test('a map slot override replaces the default canvas', () => {
+  const CustomMap = () => {
+    return <div data-testid="custom-map">custom map</div>;
+  };
+
+  render(
+    <GeovisWorkspace
+      config={{ ...config, slots: { map: { component: CustomMap } } }}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  expect(screen.getByTestId('custom-map')).toBeInTheDocument();
+  expect(screen.queryByTestId('geovis-canvas')).not.toBeInTheDocument();
+});
+
+test('right sidebar shows via a slot override even when legend has no config', async () => {
+  const CustomMetadata = () => {
+    return <div data-testid="custom-metadata">meta</div>;
+  };
+
+  render(
+    <GeovisWorkspace
+      config={{ ...config, slots: { metadata: { component: CustomMetadata } } }}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  await openRightSidebar();
+
+  expect(screen.getByTestId('custom-metadata')).toBeInTheDocument();
+});
+
+test('hidden takes precedence over an override for a right-sidebar slot', async () => {
+  const CustomMetadata = () => {
+    return <div data-testid="custom-metadata">meta</div>;
+  };
+
+  render(
+    <GeovisWorkspace
+      config={{
+        ...config,
+        legend: { description: 'Descrição' },
+        slots: { metadata: { component: CustomMetadata, hidden: true } },
+      }}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  await openRightSidebar();
+
+  expect(screen.queryByTestId('custom-metadata')).not.toBeInTheDocument();
+});
+
+test('hiding the controls slot removes the left sidebar even with menus configured', () => {
+  render(
+    <GeovisWorkspace
+      config={{ ...config, slots: { controls: { hidden: true } } }}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  expect(
+    screen.queryByRole('button', { name: 'Open menu' })
+  ).not.toBeInTheDocument();
+});
+
+test('closing the right sidebar brings its open button back', async () => {
+  render(
+    <GeovisWorkspace
+      config={{ ...config, legend: { description: 'Descrição' } }}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  await openRightSidebar();
 
   await act(async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Close details' }));
@@ -406,6 +630,7 @@ test('right sidebar starts open when initialState is "open"', () => {
     <GeovisWorkspace
       config={{
         ...config,
+        legend: { description: 'Descrição' },
         rightSidebar: { title: 'Camadas', initialState: 'open' },
       }}
       visualizationSpec={visualizationSpec}
@@ -428,7 +653,7 @@ test('getInitialSelection seeds the selection from menu defaultValues', () => {
   expect(
     getInitialSelection({
       config: {
-        leftSidebar: {
+        controls: {
           menus: [
             {
               id: 'economy',
@@ -456,169 +681,6 @@ test('useGeovisWorkspace throws when used outside provider', () => {
   );
 });
 
-const deferred = <T,>() => {
-  let resolve!: (value: T) => void;
-  let reject!: (reason?: unknown) => void;
-
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-
-  return { promise, resolve, reject };
-};
-
-// Builds a fresh element each render: reusing the same element reference would
-// make React bail out and skip re-rendering the click bridge, so it would never
-// re-read the (updated) mocked click selection.
-const renderWorkspace = (
-  rightSidebar: GeovisWorkspaceConfig['rightSidebar']
-) => {
-  const element = () => {
-    return (
-      <GeovisWorkspace
-        config={{ rightSidebar }}
-        visualizationSpec={visualizationSpec}
-      />
-    );
-  };
-
-  const view = render(element(), { wrapper: Provider });
-
-  const click = async (info: MockClickInfo | null) => {
-    await act(async () => {
-      mockClickInfo = info;
-      view.rerender(element());
-    });
-  };
-
-  return { ...view, click };
-};
-
-test('runs onFeatureSelect on click, opens the right sidebar and renders the details', async () => {
-  const onFeatureSelect = jest.fn().mockResolvedValue({ name: 'Centro' });
-
-  const { click } = renderWorkspace({
-    onFeatureSelect,
-    renderDetails: ({ data, feature }) => {
-      return (
-        <div>{`data:${String((data as { name?: string })?.name)} id:${String(
-          feature?.featureId
-        )}`}</div>
-      );
-    },
-  });
-
-  await click(feature(42));
-
-  expect(onFeatureSelect).toHaveBeenCalledWith(
-    expect.objectContaining({ featureId: 42 })
-  );
-  // The sidebar auto-opened, so its close button is present (open button gone).
-  expect(
-    screen.getByRole('button', { name: 'Close details' })
-  ).toBeInTheDocument();
-  expect(await screen.findByText('data:Centro id:42')).toBeInTheDocument();
-});
-
-test('renderDetails receives the loading state before the data resolves', async () => {
-  const pending = deferred<{ name: string }>();
-
-  const { click } = renderWorkspace({
-    onFeatureSelect: () => {
-      return pending.promise;
-    },
-    renderDetails: ({ loading, data }) => {
-      return (
-        <div>
-          {loading
-            ? 'loading'
-            : `data:${String((data as { name?: string })?.name)}`}
-        </div>
-      );
-    },
-  });
-
-  await click(feature(1));
-
-  expect(screen.getByText('loading')).toBeInTheDocument();
-
-  await act(async () => {
-    pending.resolve({ name: 'Norte' });
-  });
-
-  expect(await screen.findByText('data:Norte')).toBeInTheDocument();
-});
-
-test('renderDetails receives the error when onFeatureSelect rejects', async () => {
-  const onFeatureSelect = jest.fn().mockRejectedValue(new Error('boom'));
-
-  const { click } = renderWorkspace({
-    onFeatureSelect,
-    renderDetails: ({ loading, error }) => {
-      if (loading) {
-        return <div>loading</div>;
-      }
-
-      return <div>{`error:${(error as Error)?.message}`}</div>;
-    },
-  });
-
-  await click(feature(7));
-
-  expect(await screen.findByText('error:boom')).toBeInTheDocument();
-});
-
-test('a newer click supersedes an in-flight request (stale response ignored)', async () => {
-  const first = deferred<{ name: string }>();
-  const second = deferred<{ name: string }>();
-
-  const onFeatureSelect = jest
-    .fn()
-    .mockReturnValueOnce(first.promise)
-    .mockReturnValueOnce(second.promise);
-
-  const { click } = renderWorkspace({
-    onFeatureSelect,
-    renderDetails: ({ data }) => {
-      return <div>{`data:${String((data as { name?: string })?.name)}`}</div>;
-    },
-  });
-
-  await click(feature(1));
-  await click(feature(2));
-
-  // Resolve the stale (first) request last — it must not overwrite the latest.
-  await act(async () => {
-    second.resolve({ name: 'second' });
-  });
-  await act(async () => {
-    first.resolve({ name: 'first' });
-  });
-
-  expect(screen.getByText('data:second')).toBeInTheDocument();
-  expect(screen.queryByText('data:first')).not.toBeInTheDocument();
-});
-
-test('clearing the selection removes the rendered details', async () => {
-  const onFeatureSelect = jest.fn().mockResolvedValue({ name: 'Centro' });
-
-  const { click } = renderWorkspace({
-    onFeatureSelect,
-    renderDetails: ({ data }) => {
-      return <div>{`data:${String((data as { name?: string })?.name)}`}</div>;
-    },
-  });
-
-  await click(feature(42));
-
-  expect(await screen.findByText('data:Centro')).toBeInTheDocument();
-
-  await click(null);
-
-  expect(screen.queryByText('data:Centro')).not.toBeInTheDocument();
-});
-
 test('GeovisWorkspaceProvider exposes context to consumers', () => {
   const Consumer = () => {
     const { selection } = useGeovisWorkspace();
@@ -633,4 +695,445 @@ test('GeovisWorkspaceProvider exposes context to consumers', () => {
   );
 
   expect(screen.getByText('none')).toBeInTheDocument();
+});
+
+test('warnings panel shows a resolved result warning with its i18n text and subject', async () => {
+  render(
+    <GeovisWorkspace
+      config={config}
+      visualizationSpec={visualizationSpecWithWarnings}
+    />,
+    { wrapper: Provider }
+  );
+
+  await openRightSidebar();
+
+  expect(
+    screen.getByText('This map violates the cartography policy.')
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText('metadata.metricField (policy-invalid)')
+  ).toBeInTheDocument();
+});
+
+test('warnings panel shows a blocking failure that follows a successful resolve', async () => {
+  const { rerender } = render(
+    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
+    { wrapper: Provider }
+  );
+
+  rerender(
+    <GeovisWorkspace
+      config={config}
+      visualizationSpec={failingVisualizationSpec}
+    />
+  );
+
+  await openRightSidebar();
+
+  expect(
+    screen.getByText('A layer references a map data id that does not exist.')
+  ).toBeInTheDocument();
+  expect(screen.getByTestId('geovis-canvas')).toBeInTheDocument();
+});
+
+test('warnings panel falls back to the raw message for a code with no catalog entry', async () => {
+  const specWithUnknownCode = {
+    ...visualizationSpec,
+    mockResult: {
+      status: 'resolved' as const,
+      spec: visualizationSpec,
+      warnings: [
+        {
+          code: 'made-up-code' as never,
+          subject: { path: '$' },
+          message: 'Raw untranslated message.',
+        },
+      ],
+    },
+  };
+
+  render(
+    <GeovisWorkspace config={config} visualizationSpec={specWithUnknownCode} />,
+    { wrapper: Provider }
+  );
+
+  await openRightSidebar();
+
+  expect(screen.getByText('Raw untranslated message.')).toBeInTheDocument();
+});
+
+test('an allowed-values repair renders one button per value and calls onRepair with the chosen value', async () => {
+  const onRepair = jest.fn();
+
+  const { rerender } = render(
+    <GeovisWorkspace
+      config={config}
+      visualizationSpec={visualizationSpec}
+      onRepair={onRepair}
+    />,
+    { wrapper: Provider }
+  );
+
+  rerender(
+    <GeovisWorkspace
+      config={config}
+      visualizationSpec={failingVisualizationSpec}
+      onRepair={onRepair}
+    />
+  );
+
+  await openRightSidebar();
+
+  const choroplethButton = screen.getByRole('button', { name: 'choropleth' });
+  const dotsButton = screen.getByRole('button', { name: 'dots' });
+  expect(choroplethButton).toBeInTheDocument();
+  expect(dotsButton).toBeInTheDocument();
+
+  await act(async () => {
+    fireEvent.click(choroplethButton);
+  });
+
+  expect(onRepair).toHaveBeenCalledWith({
+    kind: 'set-value',
+    path: 'layers[0].mapDataId',
+    value: 'choropleth',
+  });
+});
+
+test('a set-value repair calls onRepair with the option as-is', async () => {
+  const onRepair = jest.fn();
+
+  render(
+    <GeovisWorkspace
+      config={config}
+      visualizationSpec={visualizationSpecWithWarnings}
+      onRepair={onRepair}
+    />,
+    { wrapper: Provider }
+  );
+
+  await openRightSidebar();
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: "Use 'safe-field'" }));
+  });
+
+  expect(onRepair).toHaveBeenCalledWith({
+    kind: 'set-value',
+    path: 'metadata.metricField',
+    value: 'safe-field',
+    label: "Use 'safe-field'",
+  });
+});
+
+test('a set-value repair without a label falls back to the stringified value', async () => {
+  const specWithUnlabeledRepair = {
+    ...visualizationSpec,
+    mockResult: {
+      status: 'resolved' as const,
+      spec: visualizationSpec,
+      warnings: [
+        {
+          code: 'policy-violation' as const,
+          subject: { path: 'metadata.metricField' },
+          message: 'Spec violates policy.',
+          repair: [
+            {
+              kind: 'set-value' as const,
+              path: 'metadata.metricField',
+              value: 'safe-field',
+            },
+          ],
+        },
+      ],
+    },
+  };
+
+  render(
+    <GeovisWorkspace
+      config={config}
+      visualizationSpec={specWithUnlabeledRepair}
+    />,
+    { wrapper: Provider }
+  );
+
+  await openRightSidebar();
+
+  expect(
+    screen.getByRole('button', { name: 'safe-field' })
+  ).toBeInTheDocument();
+});
+
+test('repair buttons render disabled rather than hidden when onRepair is omitted', async () => {
+  render(
+    <GeovisWorkspace
+      config={config}
+      visualizationSpec={visualizationSpecWithWarnings}
+    />,
+    { wrapper: Provider }
+  );
+
+  await openRightSidebar();
+
+  expect(
+    screen.getByRole('button', { name: "Use 'safe-field'" })
+  ).toBeDisabled();
+});
+
+test('cold start: a failing result before any resolve shows the empty state instead of the canvas', () => {
+  render(
+    <GeovisWorkspace
+      config={config}
+      visualizationSpec={failingVisualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  expect(screen.getByText('Map could not be shown')).toBeInTheDocument();
+  expect(
+    screen.getByText('A layer references a map data id that does not exist.')
+  ).toBeInTheDocument();
+  expect(screen.queryByTestId('geovis-canvas')).not.toBeInTheDocument();
+});
+
+test('cold start: the warnings panel itself suppresses issues even when the sidebar shows for the legend slot', async () => {
+  render(
+    <GeovisWorkspace
+      config={{ ...config, legend: { description: 'Descrição' } }}
+      visualizationSpec={failingVisualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  await openRightSidebar();
+
+  expect(screen.getByText('Descrição')).toBeInTheDocument();
+  // Shown once, by the map's cold-start empty state — not a second time by
+  // the warnings panel, which is also visible now (for the legend slot).
+  expect(
+    screen.getAllByText('A layer references a map data id that does not exist.')
+  ).toHaveLength(1);
+});
+
+test('once a resolve succeeds, a later failure keeps the canvas instead of re-showing the cold-start state', () => {
+  const { rerender } = render(
+    <GeovisWorkspace
+      config={config}
+      visualizationSpec={failingVisualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  expect(screen.getByText('Map could not be shown')).toBeInTheDocument();
+
+  rerender(
+    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />
+  );
+
+  expect(screen.getByTestId('geovis-canvas')).toBeInTheDocument();
+  expect(screen.queryByText('Map could not be shown')).not.toBeInTheDocument();
+
+  rerender(
+    <GeovisWorkspace
+      config={config}
+      visualizationSpec={failingVisualizationSpec}
+    />
+  );
+
+  expect(screen.getByTestId('geovis-canvas')).toBeInTheDocument();
+  expect(screen.queryByText('Map could not be shown')).not.toBeInTheDocument();
+});
+
+test('right sidebar is absent when nothing is selected on the map', () => {
+  render(
+    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
+    { wrapper: Provider }
+  );
+
+  expect(
+    screen.queryByRole('button', { name: 'Open details' })
+  ).not.toBeInTheDocument();
+});
+
+test('inspector panel shows the selected feature and clearing the selection removes it', async () => {
+  const { rerender } = render(
+    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
+    { wrapper: Provider }
+  );
+
+  expect(
+    screen.queryByRole('button', { name: 'Open details' })
+  ).not.toBeInTheDocument();
+
+  rerender(
+    <GeovisWorkspace
+      config={config}
+      visualizationSpec={{
+        ...visualizationSpec,
+        mockClick: { layerId: 'districts-fill', featureId: 'sp', value: 42 },
+      }}
+    />
+  );
+
+  await openRightSidebar();
+
+  expect(screen.getByText('districts-fill')).toBeInTheDocument();
+  expect(screen.getByText('42')).toBeInTheDocument();
+  expect(screen.getByText('sp')).toBeInTheDocument();
+});
+
+test('inspector panel shows a fallback when the selected feature has no value', async () => {
+  render(
+    <GeovisWorkspace
+      config={config}
+      visualizationSpec={{
+        ...visualizationSpec,
+        mockClick: { layerId: 'districts-fill', featureId: 'sp', value: null },
+      }}
+    />,
+    { wrapper: Provider }
+  );
+
+  await openRightSidebar();
+
+  expect(screen.getByText('No value')).toBeInTheDocument();
+});
+
+test('dismissing the inspector selection clears the panel and closes the sidebar content', async () => {
+  render(
+    <GeovisWorkspace
+      config={config}
+      visualizationSpec={{
+        ...visualizationSpec,
+        mockClick: { layerId: 'districts-fill', featureId: 'sp', value: 42 },
+      }}
+    />,
+    { wrapper: Provider }
+  );
+
+  await openRightSidebar();
+
+  expect(screen.getByText('districts-fill')).toBeInTheDocument();
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'Dismiss selection' }));
+  });
+
+  expect(screen.queryByText('districts-fill')).not.toBeInTheDocument();
+});
+
+test('metadata panel shows the map type and pluralized source count', async () => {
+  const specWithMetadata = {
+    ...visualizationSpec,
+    mapType: 'choropleth',
+    sources: [{ id: 's1' }, { id: 's2' }],
+  };
+
+  render(
+    <GeovisWorkspace config={config} visualizationSpec={specWithMetadata} />,
+    { wrapper: Provider }
+  );
+
+  await openRightSidebar();
+
+  expect(screen.getByText('Map type: choropleth')).toBeInTheDocument();
+  expect(screen.getByText('2 sources')).toBeInTheDocument();
+});
+
+test('metadata panel uses the singular form for a single source', async () => {
+  const specWithOneSource = {
+    ...visualizationSpec,
+    sources: [{ id: 's1' }],
+  };
+
+  render(
+    <GeovisWorkspace config={config} visualizationSpec={specWithOneSource} />,
+    { wrapper: Provider }
+  );
+
+  await openRightSidebar();
+
+  expect(screen.getByText('1 source')).toBeInTheDocument();
+});
+
+test('metadata panel contributes no content and no sidebar when the spec has neither mapType nor sources', () => {
+  render(
+    <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
+    { wrapper: Provider }
+  );
+
+  expect(
+    screen.queryByRole('button', { name: 'Open details' })
+  ).not.toBeInTheDocument();
+});
+
+test('metadata panel is absent while another slot keeps the sidebar open', async () => {
+  render(
+    <GeovisWorkspace
+      config={{ ...config, legend: { description: 'Descrição' } }}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  await openRightSidebar();
+
+  expect(screen.getByText('Descrição')).toBeInTheDocument();
+  expect(screen.queryByText(/Map type:/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/source/)).not.toBeInTheDocument();
+});
+
+test('LayerListControls renders a visibility checkbox per layer and calls onLayerVisibilityChange on toggle', async () => {
+  const onLayerVisibilityChange = jest.fn();
+
+  const specWithLayers = {
+    ...visualizationSpec,
+    layers: [
+      {
+        id: 'districts-fill',
+        title: 'Districts',
+        visible: true,
+        activeLegendId: 'classes',
+      },
+      { id: 'roads', visible: false },
+    ],
+  };
+
+  render(
+    <GeovisWorkspace
+      config={{ slots: { controls: { component: LayerListControls } } }}
+      visualizationSpec={specWithLayers}
+      onLayerVisibilityChange={onLayerVisibilityChange}
+    />,
+    { wrapper: Provider }
+  );
+
+  await openLeftSidebar();
+
+  const districtsCheckbox = screen.getByRole('checkbox', {
+    name: 'Toggle visibility of layer districts-fill',
+  });
+  const roadsCheckbox = screen.getByRole('checkbox', {
+    name: 'Toggle visibility of layer roads',
+  });
+
+  expect(districtsCheckbox).toBeChecked();
+  expect(screen.getByText('Districts')).toBeInTheDocument();
+  expect(screen.getByText('classes')).toBeInTheDocument();
+
+  expect(roadsCheckbox).not.toBeChecked();
+  expect(screen.getByText('roads')).toBeInTheDocument();
+
+  await act(async () => {
+    fireEvent.click(districtsCheckbox);
+  });
+
+  expect(onLayerVisibilityChange).toHaveBeenCalledWith('districts-fill', false);
+
+  await act(async () => {
+    fireEvent.click(roadsCheckbox);
+  });
+
+  expect(onLayerVisibilityChange).toHaveBeenCalledWith('roads', true);
 });

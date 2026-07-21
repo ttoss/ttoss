@@ -214,6 +214,7 @@ describe('stacked legend overlays (shared position)', () => {
   };
 
   test('stacks two legends sharing a position in one overlay container, instead of overlapping two absolutely-positioned boxes', async () => {
+    const onReady = jest.fn();
     render(
       <GeoVisProvider
         spec={buildSpec({
@@ -223,10 +224,13 @@ describe('stacked legend overlays (shared position)', () => {
           ],
         })}
       >
-        <div />
+        <ExposeRuntime onReady={onReady} />
       </GeoVisProvider>
     );
     await act(async () => {});
+    await waitFor(() => {
+      expect(onReady).toHaveBeenCalled();
+    });
 
     await waitFor(() => {
       expect(
@@ -257,6 +261,7 @@ describe('stacked legend overlays (shared position)', () => {
   });
 
   test('stacks any number of legends sharing a position (3), preserving declaration order and dividing every legend but the first', async () => {
+    const onReady = jest.fn();
     render(
       <GeoVisProvider
         spec={buildSpec({
@@ -267,10 +272,13 @@ describe('stacked legend overlays (shared position)', () => {
           ],
         })}
       >
-        <div />
+        <ExposeRuntime onReady={onReady} />
       </GeoVisProvider>
     );
     await act(async () => {});
+    await waitFor(() => {
+      expect(onReady).toHaveBeenCalled();
+    });
 
     await waitFor(() => {
       expect(
@@ -301,6 +309,7 @@ describe('stacked legend overlays (shared position)', () => {
   });
 
   test('legends with different positions never share a group, even when both are positioned', async () => {
+    const onReady = jest.fn();
     render(
       <GeoVisProvider
         spec={buildSpec({
@@ -310,10 +319,13 @@ describe('stacked legend overlays (shared position)', () => {
           ],
         })}
       >
-        <div />
+        <ExposeRuntime onReady={onReady} />
       </GeoVisProvider>
     );
     await act(async () => {});
+    await waitFor(() => {
+      expect(onReady).toHaveBeenCalled();
+    });
 
     await waitFor(() => {
       expect(
@@ -339,5 +351,75 @@ describe('stacked legend overlays (shared position)', () => {
     expect(densityBox.style.top).toBe('24px');
     expect(densityBox.style.left).toBe('24px');
     expect(popBox.querySelectorAll('div[aria-hidden="true"]')).toHaveLength(0);
+  });
+
+  test('a single positioned legend in a shared position renders without a group wrapper or divider', async () => {
+    const onReady = jest.fn();
+    render(
+      <GeoVisProvider
+        spec={buildSpec({
+          legends: [legendNamed('pop', 'Population', 'bottom-right')],
+        })}
+      >
+        <ExposeRuntime onReady={onReady} />
+      </GeoVisProvider>
+    );
+    await act(async () => {});
+    await waitFor(() => {
+      expect(onReady).toHaveBeenCalled();
+    });
+
+    await waitFor(() => {
+      expect(
+        document.querySelector('ul[aria-label="Population"]')
+      ).not.toBeNull();
+    });
+
+    const list = document.querySelector('ul[aria-label="Population"]')!;
+    const container = list.closest('div') as HTMLElement;
+
+    // Single legend: the body div itself is the positioned box (no group wrapper).
+    expect(container.style.position).toBe('absolute');
+    expect(container.style.right).toBe('24px');
+    expect(container.style.bottom).toBe('24px');
+    // No dividers — only one legend in the position group.
+    expect(container.querySelectorAll('div[aria-hidden="true"]')).toHaveLength(
+      0
+    );
+  });
+
+  test('mix of positioned and non-positioned legends: positioned get overlays, non-positioned do not', async () => {
+    const onReady = jest.fn();
+    render(
+      <GeoVisProvider
+        spec={buildSpec({
+          legends: [
+            legendNamed('pop', 'Population', 'bottom-right'),
+            { id: 'density', title: 'Density', colorBy: buildColorBy() },
+          ],
+        })}
+      >
+        <ExposeRuntime onReady={onReady} />
+      </GeoVisProvider>
+    );
+    await act(async () => {});
+    await waitFor(() => {
+      expect(onReady).toHaveBeenCalled();
+    });
+
+    await waitFor(() => {
+      expect(
+        document.querySelector('ul[aria-label="Population"]')
+      ).not.toBeNull();
+    });
+
+    // Positioned legend renders as an overlay.
+    const popList = document.querySelector('ul[aria-label="Population"]')!;
+    expect(popList).not.toBeNull();
+    const popContainer = popList.closest('div') as HTMLElement;
+    expect(popContainer.style.position).toBe('absolute');
+
+    // Non-positioned legend does NOT render an overlay.
+    expect(document.querySelector('ul[aria-label="Density"]')).toBeNull();
   });
 });

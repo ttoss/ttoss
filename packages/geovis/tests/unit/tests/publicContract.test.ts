@@ -23,6 +23,7 @@ test('package exports expected public symbols', () => {
   expect(typeof geovis.useGeoVis).toBe('function');
   expect(typeof geovis.useGeoVisHover).toBe('function');
   expect(typeof geovis.useGeoVisClick).toBe('function');
+  expect(typeof geovis.useDismissGeoVisClick).toBe('function');
   expect(typeof geovis.validateSpec).toBe('function');
   expect(typeof geovis.useMapData).toBe('function');
   // Boundary group factory and helpers
