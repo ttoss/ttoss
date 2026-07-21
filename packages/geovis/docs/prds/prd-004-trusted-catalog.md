@@ -25,6 +25,7 @@ AI can only reference mappable reality.
 - Catalog contract covering metrics, datasets, geographies, joins, units, formatters, time ranges, filters, allowed map types, permissions, aliases, and descriptions (strategy §5.2) — typed and JSON-schema validated.
 - Integrity validation reporting through the PRD-001 taxonomy.
 - Introspection surface for AI tools and builders (curated metadata, never raw data).
+- Package location: `@ttoss/geovis-catalog`.
 
 ### Should
 
@@ -40,5 +41,4 @@ PRD-001 (taxonomy for catalog-mismatch reporting). Feeds PRD-005 and PRD-006.
 
 ## Open questions
 
-- Package location: `@ttoss/geovis-catalog` vs. a `catalog` entry point in `@ttoss/geovis`.
 - Catalog governance: who approves entries, and how permissions integrate with application auth.

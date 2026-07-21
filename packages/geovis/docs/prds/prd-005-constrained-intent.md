@@ -25,9 +25,6 @@ AI expresses what the map should answer, never how to draw it.
 - Intent schema capturing analytical task, metric, geography, time, filters, and unresolved ambiguity (strategy §5.1) — Zod schema with derived JSON Schema (repo forms rule: Zod).
 - Validation of intents against a catalog, reporting through the PRD-001 taxonomy.
 - Analytical task vocabulary from strategy §12 (distribution, comparison, ranking, change over time, outlier detection, feature lookup, coverage).
-
-### Should
-
 - Structured-output-friendly design: the JSON Schema usable directly as an LLM tool input schema.
 
 ### Won't (non-goals)
