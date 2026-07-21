@@ -38,12 +38,12 @@ Each chapter includes the core principle statements, failure scenarios, and coro
 
 - [Foundations of Hybrid Allocation](/docs/ai/agentic-development-principles/foundations-of-hybrid-allocation) — What to delegate to AI versus code; the prerequisite structure for applying every other chapter.
 - [Physics of AI Integration](/docs/ai/agentic-development-principles/physics-of-ai-integration) — How AI systems behave as probabilistic machines: context limits, pattern inertia, the closed-loop requirement, adversarial input conflation, proxy collapse, and substrate drift.
-- [Economics of Interaction](/docs/ai/agentic-development-principles/economics-of-interaction) — The cost structure of prompts and model selection; why cheap generation does not mean cheap commitment.
+- [Economics of Interaction](/docs/ai/agentic-development-principles/economics-of-interaction) — The cost structure of prompts and model selection; why cheap generation does not mean cheap commitment, or cheap reversal.
 - [Governance of Technical Debt](/docs/ai/agentic-development-principles/governance-of-technical-debt) — How debt accumulates invisibly in agentic workflows and the constraints that keep it recoverable.
-- [Architecture of Flow](/docs/ai/agentic-development-principles/architecture-of-flow) — How context compounds, where to place agent boundaries (one skilled agent versus a pipeline of specialists), how tools should be designed, and why architecture outlasts any individual artifact.
+- [Architecture of Flow](/docs/ai/agentic-development-principles/architecture-of-flow) — How context compounds and decays, where to place agent boundaries (one skilled agent versus a pipeline of specialists), how tools should be designed, and why architecture outlasts any individual artifact.
 - [Protocol of Communication](/docs/ai/agentic-development-principles/protocol-of-communication) — Why instructions degrade over distance and how protocol standardization limits signal entropy.
 - [Governance of Agency](/docs/ai/agentic-development-principles/governance-of-agency) — The asymmetric risk of AI autonomy and the structural constraints that bound it.
-- [Symbiosis of Human-AI Agency](/docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency) — The division of labor between humans and agents; what each side does better and what atrophies under automation.
+- [Symbiosis of Human-AI Agency](/docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency) — The division of labor between humans and agents; what each side does better, and how both competence and vigilance erode under automation.
 
 ---
 

@@ -329,6 +329,7 @@ Re-litigation answers:
 
 - "Race against `destroy()`?" → JS is single-threaded; the listener is removed before `destroy()` returns.
 - "Stale handler when mode changes?" → `syncMediaListener` runs on every `setMode`; the check would be dead code.
+- "The code has `if (destroyed) return` — doesn't that contradict this ADR?" → the guard exists for _mocked_ media queries in tests, which can invoke a captured handler after `destroy()`; real browsers never do. The ADR's claim stands for production paths; the guard is test-harness accommodation, not a defensive-programming pattern to extend.
 
 ### ADR-006: `resolveSemanticTokens` and `bundleToCssVars` both call `deepMerge` — no shared helper
 
@@ -457,3 +458,122 @@ Re-litigation answers:
 - "A resolved snapshot isn't real DTCG" → resolved scalar tokens are fully conformant; aliases and composites are optional spec features, not requirements.
 - "Why omit `$type` instead of picking one?" → opaque values (`tabular-nums`, `cubic-bezier(…)`, `solid`, dash-arrays) have no valid DTCG scalar type; `$type` is optional in the spec, so omission is correct and an invalid type is not.
 - "Easing should be `cubicBezier`" → DTCG `cubicBezier` is a 4-number array; our easings are CSS strings (incl. named `ease`). Converting is part of the deferred composite/typed work, not this profile.
+
+### ADR-014: Canonical bundles emit a `prefers-color-scheme` fallback block
+
+Status: accepted (2026-07-14)
+Tags: css-generation, dark-mode, no-js, progressive-enhancement
+
+Decision: `bundleToCssVars` without `themeId` appends the alternate diff inside `@media (prefers-color-scheme: <alternateMode>)` scoped to `:root:not([data-tt-mode])`, gated by `systemModeFallback` (default `true`; `<ThemeProvider>`/`<ThemeHead>` derive it as `defaultMode === 'system'`), so the OS preference applies before JS runs (and when it never runs); the block self-disables the moment any runtime stamps `data-tt-mode`.
+Rejected: JS-only dark mode (previous behaviour) — no-JS users and pre-`ThemeScript` paints never get dark; duplicating the full dark block under the media query — persisted user choice must always beat the OS preference, which requires the `:not([data-tt-mode])` guard, not duplication.
+Cost: the emitted CSS grows by the diff-block size (+19 KB raw, <1 KB gzip); multi-theme (`themeId`) output intentionally has no fallback — scoping there is runtime-managed; direct `getThemeStylesContent` callers with a fixed light/dark default must pass `{ systemModeFallback: false }` themselves.
+Anchors: `src/roots/toCssVars.ts` › `buildSystemModeFallbackBlock`, `tests/unit/tests/engine/output/toCssVars.test.ts` › "system-mode fallback block".
+
+Re-litigation answers:
+
+- "Why `:not([data-tt-mode])` instead of higher specificity?" → the fallback must lose to any explicit mode, including `data-tt-mode="light"` chosen by a dark-OS user.
+- "Why not emit it for `themeId` bundles?" → scoped bundles exist for runtime-managed multi-theme hosts; an OS-level fallback would fight the host's explicit scoping.
+- "Why gate on `defaultMode === 'system'`?" → a light-first app (`defaultMode="light"`, dark only via toggle) must not render dark for dark-OS users on first paint or without JS; the OS preference is only authoritative when the app declares it follows the OS.
+
+### ADR-015: Text-contrast exemption is muted-only; filled negative uses `red.600`
+
+Status: accepted (2026-07-14)
+Tags: colors, contrast, accessibility, wcag
+
+Decision: the text-vs-background AA Large (3:1) exemption applies only to `*.muted.*` contexts; `action.*` is held to AA Normal (4.5:1), and `red.600` (`#dc2626`, 4.83:1 with `neutral.0`) exists so `action.negative` filled surfaces pass.
+Rejected: blanket `action.*` exemption as "large/bold text" (previous behaviour) — button labels render at `text.label` sizes (14–16px medium), which do not meet the WCAG large-text definition (≥ 24px, or ≥ 18.66px bold); keeping `red.500` as the filled bg — 3.76:1 with white text fails AA Normal in both modes.
+Cost: one extra red step in the core palette; themes overriding the red scale must provide a 600-range step (or remap `action.negative`) to keep the guarantee.
+Anchors: `src/baseTheme.ts` › `core.colors.red.600` + `semantic.colors.action.negative`, `tests/unit/tests/theme/families/colors.test.ts` › "Color contrast — text vs background", `docs/website/docs/design/design-system/design-tokens/families/colors.md#required-pairings`.
+
+Re-litigation answers:
+
+- "Buttons are bold-ish, treat them as large text" → `text.label.md` is 14–16px medium (500); WCAG large text starts at 18.66px **bold**. The exemption would be an audit failure.
+- "Why keep `.muted.` at 3:1?" → muted is _defined_ as intentionally subdued; its contract is documented as AA Large in colors.md.
+
+### ADR-016: Unregistered `semantic.*` paths drop the `semantic-` segment in CSS var names
+
+Status: accepted (2026-07-14)
+Tags: css-naming, extensions, tokenRegistry
+
+Decision: `toCssVarName`'s unregistered-path fallback strips a leading `semantic.` so custom families follow the registered-family convention (`semantic.chart.grid` → `--tt-chart-grid`, like `semantic.colors.*` → `--tt-colors-*`); core paths keep their `core-` segment.
+Rejected: keep the raw path (previous behaviour, `--tt-semantic-chart-grid`) — extensions would diverge from every built-in family's naming for no benefit; requiring a registry entry for every extension — theme-local families should not have to patch the package.
+Cost: a custom semantic family named like a future registered family could collide earlier; `assertDistinctCssVars` catches collisions in dev.
+Anchors: `src/roots/toCssVars.ts` › `toCssVarName`, `src/roots/tokenRegistry.ts`.
+
+Re-litigation answers:
+
+- "Is this a breaking rename?" → no shipped token uses the fallback path (all are registered); only hypothetical extension vars change, pre-adoption (ADR-012).
+
+### ADR-017: Validation outcome is the `invalid` State, not the `negative` role
+
+Status: accepted (2026-07-15)
+Tags: colors, validation, states, fsl-ui, governance
+
+Decision: validation failure is a **runtime State** — `input.{role}.{dimension}.invalid` — flipped by `isInvalid`/form libraries; the `negative` Evaluation role on a control is authorial valence and never expresses validation; adjacent display parts (validationMessage, icon) keep consuming `input.negative.*`.
+Rejected: mapping `isInvalid` to the `negative` role on the control (this file's previous doctrine in `colors.ts`) — makes a runtime fact look like an authorial choice (`<TextField evaluation="negative">` is a category mistake) and collides with the industry-consensus boolean-state model (React Aria `isInvalid`, Spectrum `validationState`, MUI `error`); keeping the fsl-theme/fsl-ui doctrines split — `@ttoss/fsl-ui` already shipped `invalid` in `STATES` + `STATE_PRIORITY` and consumed `input.primary.*.invalid`, which resolved to `undefined` (invalid fields rendered visually silent).
+Cost: a 12th input state in the contract; themes overriding `input.primary` should supply mode-safe `invalid` values (dark inherits light values unless overridden — see `darkAlternate`).
+Anchors: `src/families/colors.ts` › `InputColorStates.invalid`, `src/baseTheme.ts` › `input.primary.*.invalid`, `packages/fsl-ui/src/semantics/taxonomy.ts` › `STATES`/`STATE_PRIORITY`, `fsl-lexicon.md` §7/§10.15.
+
+Re-litigation answers:
+
+- "States are not free-form (FSL §7) — why admit a new one?" → through governance, which is this ADR plus the Lexicon §7 entry; the state has runtime legality (only where validation semantics apply) like `visited`/`indeterminate`.
+- "Why does validationMessage still use `negative`?" → it _displays_ valence about the outcome; the control _carries_ the state. Same split as Lexicon §10.9 (part vs slot).
+- "`invalid` equals `negative` visually — parallel vocabulary?" → same value, different meaning axis (State vs Evaluation); divergence stays free (e.g. themes may tint invalid backgrounds without touching the negative role).
+
+### ADR-018: Dark depth is carried by tonal surface colour, not shadow
+
+Status: accepted (2026-07-18)
+Tags: elevation, colors, dark-mode, craft, surface
+
+Decision: populate the spec-sanctioned optional `semantic.elevation.tonal.{raised|overlay|blocking}` in `baseTheme` (light: neutral.0; dark alternate: neutral.800 → 700), and add core `neutral.600`/`neutral.800` so the dark canvas (neutral.900) can stratify in fine steps — a surface component reads `tonal` for its background and the paired `surface` recipe for its shadow.
+Rejected: shadow-only depth (previous state) — `emphatic` recipes are near-black shadows that are invisible on the near-black dark canvas (elevation.md Rule 6), so raised surfaces read flat; reusing `informational.{secondary|muted}` as a surface ladder — those are emphasis variants whose value direction inverts between light and dark, so one token cannot mean "raised" in both modes.
+Cost: two new core neutral steps (600/800) emit as CSS vars; `tonal` is now part of the default `vars` shape, so consumers can read `vars.elevation.tonal.*`.
+Anchors: `src/baseTheme.ts` › `semantic.elevation.tonal` (base + `darkAlternate`), `src/baseTheme.ts` › `core.colors.neutral.600/800`, `docs/website/docs/design/design-system/design-tokens/families/elevation.md#surface--shadow`.
+
+Re-litigation answers:
+
+- "Is adding `tonal` a grammar extension needing governance?" → no — `SemanticElevation.tonal` is already declared optional in `families/elevation.ts` and sanctioned by elevation.md; this populates it, it does not invent it.
+- "Why not a new `surface.{canvas|raised}` colour family?" → the tonal contract already expresses surface-colour-at-depth paired with the shadow recipe; a parallel family would duplicate it (model.md "no parallel vocabulary").
+
+### ADR-019: Density is a theme projection; control geometry is not container-fluid
+
+Status: **reverted (2026-07-19)** — the density projection shipped with **zero
+real consumers**. Per the evidence rule (a token/axis is admitted only when a
+runtime consumer dispatches on it), a whole third projection axis — `core.density`,
+`roots/density.ts`, the `[data-tt-density]` emitter blocks, and
+`DensityProvider`/`useDensity` — was speculative surface area. It was removed:
+the only thing that ever exercised it was the Studio, and the Studio does not use
+it. **Scope of the reversal:** only the _density axis_ is gone. ADR-019's other
+ruling — **control geometry is not container-fluid** — stands, now carried
+entirely by ADR-020 (`hit` is `rem`-anchored, so control height never rides `cqi`).
+Reintroduce density only when a real app demands a switchable-density surface.
+Originally: accepted (2026-07-18).
+Tags: sizing, spacing, density, responsiveness, geometry, governance, reverted
+
+Decision: introduce **density** (`compact | comfortable | spacious`, default `comfortable`) as a theme **projection axis** — a `data-tt-density` attribute that remaps the semantic geometry tokens (`sizing.hit.*`, `spacing.inset.control.*`, control type step) to different core steps, exactly as `data-tt-mode` remaps colour. Components are unchanged (they already read the semantic tokens). Two coupled geometry rulings: (1) **control geometry does not use the container-fluid engine** — `spacing.inset.control.*` must resolve from a non-`cqi` scale (rem-anchored), because a control must not grow taller because the window is wider; container-fluidity (`cqi`) stays for _layout_ spacing/sizing only. (2) **hit is a floor, not the visual size** (sizing.md): the visible control height comes from control inset + type; `hit.*` only guarantees the ergonomic minimum.
+Rejected: a `size` prop on controls (arbitrary, breaks "no size" doctrine and meaning-first); a component-per-density (explosion — the Studio proved it does not scale, it hand-rolled 38 control selectors); making control insets `cqi`-fluid (the current state — a Button resolves to ~44px on a wide surface because `inset.control.sm = {core.spacing.3}` rides the fluid engine).
+Cost: a third projection axis in the emitter/runtime (`data-tt-density` blocks + a provider), and control insets move off the shared `core.spacing` engine onto a non-fluid control-spacing scale; pointer-coarse overrides still win for touch a11y regardless of density.
+Anchors: `src/baseTheme.ts` › `core.sizing.hit.*` / `semantic.spacing.inset.control.*`, `docs/website/docs/design/design-system/design-tokens/families/sizing.md`, `packages/fsl-ui/INTERNAL/EVOLUTION.md` §3 (D2), `packages/fsl-ui/src/tokens/CONTRACT.md` §4.
+
+Re-litigation answers:
+
+- "Does density violate 'no size prop / density = a different component' (CONTRACT §4)?" → no — density is not a per-component prop, it is a theme projection (like mode); meaning is defined once and survives the projection. §4 is revised, not broken: authors still never pass a size; the theme owns the geometry.
+- "Why can't controls be `cqi`-fluid like spacing?" → ergonomics. A hit target growing with container width is a usability regression; controls adapt to _user font_ (`rem`) and _density_, layout adapts to _container_ (`cqi`).
+- "Is coarse still safe under `compact`?" → yes — `@media (any-pointer: coarse)` forces the touch floor irrespective of density; density only tunes fine-pointer geometry.
+- "How is density scoped, given ADR-020 made `hit` a single value?" → moot — the density axis was **reverted (2026-07-19, see ADR-019)** for lack of a real consumer. ADR-020's `hit` collapse stands on its own; there is no `[data-tt-density]` axis to scope.
+
+### ADR-020: `hit` is a single theme-defined floor, not a min/base/prominent scale
+
+Status: accepted (2026-07-18)
+Tags: sizing, geometry, ergonomics, evidence, governance
+
+Decision: collapse `core.sizing.hit` and `semantic.sizing.hit` from a three-step ramp (`min` / `base` / `prominent`) to **one value per pointer profile** — `core.sizing.hit.{fine,coarse}` are scalars and `semantic.sizing.hit` is a single ref. `hit` is the theme's one ergonomic **floor** (min interactive target, enforced via `min-*`), never a visual size; the visible control height comes from its inset + type, with `hit` binding the minimum. To make the default control desktop-correct, `semantic.spacing.inset.control.*` is retuned tight (`{core.spacing.1|2|4}`) so block padding stays under the floor and `hit` binds — a Button now resolves to ~32–36px instead of the ~44–58px the old generous inset produced. Because `hit.fine` is `rem`-anchored (`clamp(px, rem, px)`, not `cqi`), the control height never grows with container width — satisfying ADR-019's "control geometry is not container-fluid" ruling for the vertical axis without moving inset off the shared spacing engine (the residual fluid drift at `core.spacing.1` is ±2px and never binds, since `hit` drives height).
+Rejected: keeping the three-step ramp (evidence: across 17 fsl-ui controls only `hit.base` was ever consumed; `hit.min` and `hit.prominent` had **zero** usages — dead tokens that invited copy-paste error and implied a per-size vocabulary the doctrine forbids); removing `hit` entirely (loses the ergonomic/a11y floor and the automatic coarse-pointer touch override); an 18px minimum floor (below WCAG 2.2's 24px and the 44px touch floor; does not scale with user zoom); leaving `inset.control` generous (the actual cause of the oversized button — the floor was never the bottleneck).
+Cost: the emitter (`buildCoarseHitVars`), runtime (`applyCoarseHitOverrides`), and DTCG (`buildHitExtension`) simplify from per-step iteration to a single token; every consumer moves from `vars.sizing.hit.base` to `vars.sizing.hit`; the sizing family type drops `CoreSizeHitScale`. The "standard step" column for sizing in CONTRACT §4 no longer applies (hit has no step). A future need for a distinct prominent/secondary interactive floor would reintroduce a scale — but per the evidence rule that is added only when a real consumer demands it.
+Anchors: `src/families/sizing.ts` › `CoreSizeHit` / `SemanticSizing.hit`, `src/baseTheme.ts` › `core.sizing.hit` / `semantic.sizing.hit` / `semantic.spacing.inset.control`, `src/roots/toCssVars.ts` › `buildCoarseHitVars`, `src/roots/toDTCG.ts` › `buildHitExtension`, `src/react.tsx` › `applyCoarseHitOverrides`, `docs/website/docs/design/design-system/design-tokens/families/sizing.md`, `packages/fsl-ui/src/tokens/CONTRACT.md` §4.
+
+Re-litigation answers:
+
+- "Doesn't a single value lose expressiveness for CTAs vs dense list rows?" → no evidence it was used — `hit.prominent`/`hit.min` shipped with zero consumers. Emphasis is carried by colour, type, and inset, not by a larger hit floor. If a genuine need appears, reintroduce a scale then (evidence rule), not speculatively.
+- "Does this reopen ADR-019?" → ADR-019's density projection was later **reverted (2026-07-19)** for lack of a consumer, but its "control geometry not container-fluid" ruling is unaffected and is now carried entirely here: ADR-020 refines the _shape_ of the `hit` token (scale → scalar) and fixes the inset tuning that was the real oversized-control cause; the vertical axis is genuinely non-fluid because the rem-anchored `hit` binds the height.
+- "Why keep `inset.control` on the `cqi` spacing engine instead of a rem scale?" → the tight steps (`core.spacing.1|2`) drift only ±2px and never bind (the `hit` floor drives height), so the ergonomic guarantee is already met; moving inset onto a separate rem scale is a larger migration (it would break the `MUST_ALIAS` core-spacing invariant and its tests) deferred until evidence shows the ±2px horizontal drift matters.

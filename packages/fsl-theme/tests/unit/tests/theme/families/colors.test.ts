@@ -92,7 +92,7 @@ const BASE_STATES = new Set([
 // surfaces: accordions, collapsible panels) and `navigation` (mega-nav panels).
 const CONTEXT_EXTRA_STATES: Readonly<Record<string, ReadonlyArray<string>>> = {
   action: ['pressed', 'expanded'],
-  input: ['checked', 'indeterminate', 'pressed', 'expanded'],
+  input: ['checked', 'indeterminate', 'pressed', 'expanded', 'invalid'],
   navigation: ['current', 'visited', 'expanded'],
   feedback: [],
   informational: ['visited', 'expanded'],
@@ -309,7 +309,9 @@ describe('Semantic color grammar — ux→role coverage', () => {
 // Error #3 (text pairing) + Error #4: text vs background contrast
 //
 // Required Pairing #1: *.text.* ≥ 4.5:1 against *.background.* (normal text)
-// or ≥ 3:1 for large/bold text (action.* and *.muted.* contexts).
+// or ≥ 3:1 for intentionally subdued *.muted.* contexts (AA Large).
+// action.* is NOT exempt: button labels render at text.label sizes
+// (14-16px medium), which do not qualify as WCAG large text.
 // Error #4 applies the same assertion to each supported alternate mode.
 // ---------------------------------------------------------------------------
 
@@ -326,11 +328,10 @@ describe('Color contrast — text vs background', () => {
           const text = String(base[textPath]);
           const ratio = getContrastRatio(bg, text) as number;
 
-          // action.* uses large/bold text; *.muted.* is intentionally subdued → AA Large
-          const threshold =
-            context.startsWith('action.') || context.includes('.muted.')
-              ? WCAG.AA_LARGE
-              : WCAG.AA_NORMAL;
+          // *.muted.* is intentionally subdued → AA Large; everything else AA Normal
+          const threshold = context.includes('.muted.')
+            ? WCAG.AA_LARGE
+            : WCAG.AA_NORMAL;
 
           expect({
             context,
@@ -354,10 +355,9 @@ describe('Color contrast — text vs background', () => {
             const text = String(alt[textPath]);
             const ratio = getContrastRatio(bg, text) as number;
 
-            const threshold =
-              context.startsWith('action.') || context.includes('.muted.')
-                ? WCAG.AA_LARGE
-                : WCAG.AA_NORMAL;
+            const threshold = context.includes('.muted.')
+              ? WCAG.AA_LARGE
+              : WCAG.AA_NORMAL;
 
             expect({
               context,

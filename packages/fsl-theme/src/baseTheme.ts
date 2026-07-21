@@ -63,7 +63,13 @@ export const baseTheme: ThemeTokens = {
         300: '#cbd5e1',
         400: '#94a3b8',
         500: '#64748b',
+        600: '#475569',
         700: '#334155',
+        // 800 fills the 700→900 gap so dark surfaces can stratify in fine
+        // steps (canvas 900 → raised 800 → overlay 700) — depth in dark comes
+        // from surfaces lightening as they rise, not from near-invisible
+        // shadows. @see elevation.md — "Surface + Shadow".
+        800: '#1e293b',
         900: '#0f172a',
         1000: '#020617',
       },
@@ -72,6 +78,9 @@ export const baseTheme: ThemeTokens = {
         100: '#fee2e2',
         300: '#fca5a5',
         500: '#ef4444',
+        // 600 exists so filled negative surfaces can pair with neutral.0 text
+        // at WCAG AA Normal (4.83:1) — red.500 on white is only 3.76:1.
+        600: '#dc2626',
         700: '#b91c1c',
         900: '#7f1d1d',
       },
@@ -285,21 +294,21 @@ export const baseTheme: ThemeTokens = {
       },
 
       hit: {
+        // `hit` is a single ergonomic FLOOR (min interactive target), never the
+        // visual size — the control's height comes from its inset + type, with
+        // `hit` guaranteeing the minimum (sizing.md, ADR-020). It is the theme's
+        // one lever for the interactive minimum; because it is `rem`-anchored
+        // (not `cqi`), a control's height never grows with container width.
+        //
         // Fine: clamp(floor, preferred, max) — floor is the fixed ergonomic
         // minimum; preferred scales with rem so user font-size preferences
-        // (accessibility) are respected. Caps tuned to medium-high density:
-        //   min  32px → secondary / icon-only / dense list controls
-        //   base 40px → default button (Material 40, GitHub 40, Tailwind 40)
-        //   prominent 48px → hero CTAs and primary form submits
-        // 24px WCAG 2.2 minimum is well exceeded at every step.
-        fine: {
-          min: 'clamp(28px, 1.75rem, 32px)',
-          base: 'clamp(32px, 2rem, 40px)',
-          prominent: 'clamp(40px, 2.5rem, 48px)',
-        },
-        // Coarse: always fixed px — touch ergonomics require predictable,
-        // reliable targets (Apple HIG 44px floor, Material 48dp default).
-        coarse: { min: '32px', base: '48px', prominent: '56px' },
+        // (accessibility) are respected. Tuned desktop-first (mouse) at 32px,
+        // matching GitHub/Linear (~32px) and Stripe (~36px); the 24px WCAG 2.2
+        // minimum is well exceeded.
+        fine: 'clamp(32px, 2rem, 36px)',
+        // Coarse: always fixed px — touch ergonomics require a predictable,
+        // reliable target. 48px sits above the 44px Apple HIG floor.
+        coarse: '48px',
       },
     },
 
@@ -486,9 +495,10 @@ export const baseTheme: ThemeTokens = {
           },
         },
         negative: {
-          // red.500 background, red.500 border, neutral.0 text
+          // red.600 background, red.600 border, neutral.0 text
+          // (red.600 — not 500 — so neutral.0 text meets AA Normal: 4.83:1)
           background: {
-            default: '{core.colors.red.500}',
+            default: '{core.colors.red.600}',
             hover: '{core.colors.red.700}',
             active: '{core.colors.red.900}',
             disabled: '{core.colors.neutral.200}',
@@ -497,7 +507,7 @@ export const baseTheme: ThemeTokens = {
             expanded: '{core.colors.red.700}',
           },
           border: {
-            default: '{core.colors.red.500}',
+            default: '{core.colors.red.600}',
             hover: '{core.colors.red.700}',
             active: '{core.colors.red.900}',
             focused: '{core.colors.red.700}',
@@ -556,6 +566,8 @@ export const baseTheme: ThemeTokens = {
             indeterminate: '{core.colors.brand.300}',
             pressed: '{core.colors.neutral.100}',
             expanded: '{core.colors.neutral.50}',
+            // invalid: field stays readable — the red signal lives on the border
+            invalid: '{core.colors.neutral.0}',
             // focused: omitted — focus shown via border ring, background unchanged
           },
           border: {
@@ -569,11 +581,16 @@ export const baseTheme: ThemeTokens = {
             indeterminate: '{core.colors.brand.300}',
             pressed: '{core.colors.neutral.500}',
             expanded: '{core.colors.brand.500}',
+            // red.600 on neutral.0: 4.83:1 — clears the 3:1 non-text floor
+            invalid: '{core.colors.red.600}',
           },
           text: {
             default: '{core.colors.neutral.900}',
             disabled: '{core.colors.neutral.500}',
             checked: '{core.colors.neutral.0}',
+            // invalid: value stays readable in the control; valence text lives
+            // on the validationMessage via input.negative.text.*
+            invalid: '{core.colors.neutral.900}',
             // brand.300 (indeterminate bg) is light — use dark text for contrast
             indeterminate: '{core.colors.neutral.900}',
             // hover/active/focused/selected: all neutral.900 — omitted
@@ -1072,6 +1089,18 @@ export const baseTheme: ThemeTokens = {
         overlay: '{core.elevation.level.3}',
         blocking: '{core.elevation.level.4}',
       },
+      // Tonal surface colour per stratum (the "surface colour at that depth"
+      // half of elevation.md's Surface + Shadow rule). In light, a raised
+      // surface is the brightest neutral (white) and lift is carried by the
+      // shadow; the dark alternate remaps these to progressively lighter
+      // neutrals so depth survives where shadows go invisible on a near-black
+      // canvas. A surface component reads `tonal` for its background and the
+      // paired `surface` recipe for its shadow.
+      tonal: {
+        raised: '{core.colors.neutral.0}',
+        overlay: '{core.colors.neutral.0}',
+        blocking: '{core.colors.neutral.0}',
+      },
     },
 
     // -- Typography ---------------------------------------------------------
@@ -1235,22 +1264,28 @@ export const baseTheme: ThemeTokens = {
     // -- Spacing ------------------------------------------------------------
     // Grammar: {pattern}.{context}.{step?}
     //
-    // Values are tuned so that the spec's spacing order holds at the
-    // default ("md" / preferred) step:
+    // Values are tuned so that the containment order holds at the default
+    // ("md" / preferred) step:
     //
-    //   icon-label (inline.xs) < inline (inline.md) < inset.control
-    //     < gap.stack < gutter.section < gutter.page
+    //   inset.control < gap.stack < gutter.section < gutter.page
     //
-    // The hit floor (`core.sizing.hit.fine.base` ≈ 32–40px) keeps controls
-    // touch-safe regardless of inset.control. The base brief is `balanced`
-    // density + `hybrid` pointer, so inset.control sits one step above
-    // inline gaps rather than colliding with them.
+    // (inset.control is deliberately tight — see below — so it no longer sits
+    // above the inline gaps; on a compact control the padding inside it is
+    // allowed to be smaller than the gap between separate items.)
+    //
+    // The hit floor (`core.sizing.hit.fine` ≈ 32–36px) is what makes controls
+    // touch-safe and gives them their height — so inset.control is tuned TIGHT
+    // (ADR-020): block padding must stay under the floor so `hit` binds and the
+    // control resolves to ~32–36px on the desktop, not the ~44–58px the old
+    // generous inset produced. Steps stay `core.spacing.*` aliases (the fluid
+    // range at these low steps is ±2px — imperceptible, and the height is
+    // driven by the rem-anchored `hit` floor, not the inset).
     spacing: {
       inset: {
         control: {
-          sm: '{core.spacing.3}',
-          md: '{core.spacing.4}',
-          lg: '{core.spacing.6}',
+          sm: '{core.spacing.1}',
+          md: '{core.spacing.2}',
+          lg: '{core.spacing.4}',
         },
         // inset.surface ≥ inset.control (validation invariant) and sits
         // above gap.stack at the default step so containers visibly enclose
@@ -1294,11 +1329,7 @@ export const baseTheme: ThemeTokens = {
     // -- Sizing -------------------------------------------------------------
     // Grammar: {family}.{stepOrProperty}
     sizing: {
-      hit: {
-        min: '{core.sizing.hit.fine.min}',
-        base: '{core.sizing.hit.fine.base}',
-        prominent: '{core.sizing.hit.fine.prominent}',
-      },
+      hit: '{core.sizing.hit.fine}',
       icon: {
         sm: '{core.sizing.ramp.ui.2}',
         md: '{core.sizing.ramp.ui.3}',
@@ -1506,7 +1537,7 @@ export const darkAlternate: ModeOverride = {
             expanded: '{core.colors.neutral.0}',
           },
         },
-        // negative: red.500 bg/border + neutral.0 text remain valid on dark
+        // negative: red.600 bg/border + neutral.0 text remain valid on dark
         // pages (vivid destructive colour). Only state-specific overrides.
         negative: {
           background: {
@@ -1548,16 +1579,20 @@ export const darkAlternate: ModeOverride = {
             droptarget: '{core.colors.neutral.700}', // neutral.50 is near-white on dark
             pressed: '{core.colors.neutral.500}', // neutral.100 is near-white on dark
             expanded: '{core.colors.neutral.500}', // neutral.50 is near-white on dark
+            invalid: '{core.colors.neutral.700}', // base neutral.0 would flash white on dark
           },
           border: {
             default: '{core.colors.neutral.500}',
             hover: '{core.colors.neutral.300}',
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.700}',
+            invalid: '{core.colors.red.300}', // red.600 is too dark against neutral.700
           },
           text: {
             default: '{core.colors.neutral.0}',
             disabled: '{core.colors.neutral.500}',
+            invalid: '{core.colors.neutral.0}', // base neutral.900 would vanish on dark
+
             // text.indeterminate pairs with bg.indeterminate = brand.300 (inherited from base)
             // brand.300 is light — neutral.900 (dark) gives ~6.6:1 ✓; do NOT override here
           },
@@ -1885,6 +1920,15 @@ export const darkAlternate: ModeOverride = {
         raised: '{core.elevation.emphatic.2}',
         overlay: '{core.elevation.emphatic.3}',
         blocking: '{core.elevation.emphatic.4}',
+      },
+      // Dark depth is carried by surface lightening, not shadow: the canvas
+      // sits at neutral.900, so each rising stratum steps toward a lighter
+      // neutral (800 → 700). This is the mechanism the base shadows cannot
+      // provide on a near-black background (elevation.md Rule 6).
+      tonal: {
+        raised: '{core.colors.neutral.800}',
+        overlay: '{core.colors.neutral.700}',
+        blocking: '{core.colors.neutral.700}',
       },
     },
   },

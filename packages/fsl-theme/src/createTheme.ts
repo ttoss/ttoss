@@ -1,5 +1,5 @@
 import { baseTheme, darkAlternate } from './baseTheme';
-import { deepMerge } from './roots/helpers';
+import { deepMerge, flattenObject } from './roots/helpers';
 import { validateRefs } from './roots/validateRefs';
 import type {
   DeepPartial,
@@ -12,6 +12,56 @@ import type {
 // ---------------------------------------------------------------------------
 // buildTheme (internal)
 // ---------------------------------------------------------------------------
+
+/**
+ * Deep-clone to break shared references between base and result.
+ * Tokens are primitives (strings, numbers) — `structuredClone` is safe and
+ * more correct than a JSON round-trip (preserves `undefined`, `NaN`, etc.).
+ *
+ * Falls back to a JSON round-trip when `structuredClone` is unavailable
+ * (e.g. Jest's jsdom environment, older embedded runtimes) so importing the
+ * package never throws at module-evaluation time. Token trees are plain
+ * string/number leaves, so the fallback is lossless for valid themes.
+ */
+const cloneTokens = <T>(value: T): T => {
+  if (typeof structuredClone === 'function') {
+    return structuredClone(value);
+  }
+  return JSON.parse(JSON.stringify(value)) as T;
+};
+
+/**
+ * DEV-only: validate the refs an alternate introduces against the built base.
+ * The alternate is authored by hand (semantic-only remaps), so a typo'd
+ * dark-mode ref must warn at theme creation instead of silently emitting a
+ * broken CSS var in production.
+ *
+ * Only the leaves the alternate itself provides are checked — base refs were
+ * already validated by `buildTheme`, so they would otherwise warn twice.
+ */
+const validateAlternateRefs = ({
+  base,
+  alternate,
+}: {
+  base: ThemeTokens;
+  alternate: ModeOverride;
+}): void => {
+  const alternateKeys = new Set(
+    Object.keys(
+      flattenObject(alternate.semantic as Record<string, unknown>, 'semantic')
+    )
+  );
+  validateRefs(
+    {
+      core: base.core,
+      semantic: deepMerge(
+        base.semantic,
+        alternate.semantic
+      ) as ThemeTokens['semantic'],
+    },
+    { onlyOwnerKeys: alternateKeys }
+  );
+};
 
 /**
  * Creates a fully resolved `ThemeTokens` by merging partial overrides into a base.
@@ -34,10 +84,7 @@ export const buildTheme = ({
     validateRefs(merged);
   }
 
-  // Deep-clone to break shared references between base and result.
-  // Tokens are primitives (strings, numbers) — structuredClone is safe and
-  // more correct than JSON round-trip (preserves undefined, NaN, etc.).
-  return structuredClone(merged);
+  return cloneTokens(merged);
 };
 
 // ---------------------------------------------------------------------------
@@ -51,6 +98,28 @@ const resolveAlternate = (
   if (alternate === null) return undefined;
   if (alternate !== undefined) return alternate;
   return parentBundle?.alternate ?? darkAlternate;
+};
+
+/** Resolve every `createTheme` input against its `extends` parent + defaults. */
+const resolveBundleInputs = ({
+  parentBundle,
+  baseMode,
+  base,
+  alternate,
+  brief,
+}: {
+  parentBundle?: ThemeBundle;
+  baseMode?: 'light' | 'dark';
+  base?: ThemeTokens;
+  alternate?: ModeOverride | null;
+  brief?: ThemeBrief;
+}) => {
+  return {
+    resolvedBase: base ?? parentBundle?.base,
+    resolvedBaseMode: baseMode ?? parentBundle?.baseMode ?? 'light',
+    resolvedAlternate: resolveAlternate(alternate, parentBundle),
+    resolvedMeta: brief ?? parentBundle?.meta,
+  };
 };
 
 /**
@@ -129,13 +198,17 @@ export const createTheme = ({
    */
   brief?: ThemeBrief;
 } = {}): ThemeBundle => {
-  const resolvedBase = base ?? parentBundle?.base;
-  const resolvedBaseMode = baseMode ?? parentBundle?.baseMode ?? 'light';
-  const resolvedAlternate = resolveAlternate(alternate, parentBundle);
-  const resolvedMeta = brief ?? parentBundle?.meta;
+  const { resolvedBase, resolvedBaseMode, resolvedAlternate, resolvedMeta } =
+    resolveBundleInputs({ parentBundle, baseMode, base, alternate, brief });
+  const builtBase = buildTheme({ base: resolvedBase, overrides });
+
+  if (process.env.NODE_ENV !== 'production' && resolvedAlternate) {
+    validateAlternateRefs({ base: builtBase, alternate: resolvedAlternate });
+  }
+
   return {
     baseMode: resolvedBaseMode,
-    base: buildTheme({ base: resolvedBase, overrides }),
+    base: builtBase,
     alternate: resolvedAlternate,
     ...(resolvedMeta ? { meta: resolvedMeta } : {}),
   };

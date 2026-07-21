@@ -1,0 +1,303 @@
+import type { CapabilitySet } from 'src/runtime/adapter';
+import { buildContextPacket } from 'src/runtime/contextPacket';
+import type { GeoVisResult } from 'src/spec/result';
+import type { VisualizationSpec } from 'src/spec/types';
+
+const RESOLVED = (spec: VisualizationSpec): GeoVisResult => {
+  return { status: 'resolved', spec, warnings: [] };
+};
+
+const CAPABILITIES: CapabilitySet = {
+  sourceTypes: ['geojson'],
+  layerGeometries: ['polygon'],
+  dataFeatures: { featureState: ['geojson'], filter: ['geojson'] },
+  viewFeatures: { pitch: false, bearing: false },
+};
+
+const makeSpec = (): VisualizationSpec => {
+  return {
+    engine: 'maplibre',
+    sources: [
+      {
+        id: 'src-1',
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
+      },
+    ],
+    layers: [{ id: 'lyr-1', sourceId: 'src-1', geometry: 'polygon' }],
+  };
+};
+
+describe('buildContextPacket — legend summary', () => {
+  test('a legend with no colorBy summarizes to just its id', () => {
+    const spec: VisualizationSpec = {
+      ...makeSpec(),
+      legends: [{ id: 'legend-1' }],
+    };
+    const packet = buildContextPacket(spec, RESOLVED(spec), null, CAPABILITIES);
+    expect(packet.legends).toEqual([{ id: 'legend-1' }]);
+  });
+
+  test('a categorical legend reports scaleKind without a domain', () => {
+    const spec: VisualizationSpec = {
+      ...makeSpec(),
+      legends: [
+        {
+          id: 'legend-1',
+          colorBy: { type: 'categorical', property: 'status' },
+        },
+      ],
+    };
+    const packet = buildContextPacket(spec, RESOLVED(spec), null, CAPABILITIES);
+    expect(packet.legends).toEqual([
+      { id: 'legend-1', scaleKind: 'categorical' },
+    ]);
+  });
+
+  test('a threshold legend reports [min, max] as domain, never the full break list', () => {
+    const spec: VisualizationSpec = {
+      ...makeSpec(),
+      legends: [
+        {
+          id: 'legend-1',
+          colorBy: {
+            type: 'quantitative',
+            property: 'value',
+            scale: 'threshold',
+            thresholds: [10, 50, 30, 90],
+          },
+          labelFormat: { type: 'range', unit: 'inhabitants' },
+        },
+      ],
+    };
+    const packet = buildContextPacket(spec, RESOLVED(spec), null, CAPABILITIES);
+    expect(packet.legends).toEqual([
+      {
+        id: 'legend-1',
+        scaleKind: 'threshold',
+        domain: [10, 90],
+        unit: 'inhabitants',
+      },
+    ]);
+  });
+
+  test('a threshold legend with no thresholds omits domain', () => {
+    const spec: VisualizationSpec = {
+      ...makeSpec(),
+      legends: [
+        {
+          id: 'legend-1',
+          colorBy: {
+            type: 'quantitative',
+            property: 'value',
+            scale: 'threshold',
+          },
+        },
+      ],
+    };
+    const packet = buildContextPacket(spec, RESOLVED(spec), null, CAPABILITIES);
+    expect(packet.legends[0].domain).toBeUndefined();
+  });
+
+  test('unit is omitted when labelFormat is not the range variant', () => {
+    const spec: VisualizationSpec = {
+      ...makeSpec(),
+      legends: [
+        {
+          id: 'legend-1',
+          colorBy: {
+            type: 'quantitative',
+            property: 'value',
+            scale: 'threshold',
+            thresholds: [1, 2],
+          },
+          labelFormat: { type: 'count' },
+        },
+      ],
+    };
+    const packet = buildContextPacket(spec, RESOLVED(spec), null, CAPABILITIES);
+    expect(packet.legends[0].unit).toBeUndefined();
+  });
+});
+
+describe('buildContextPacket — warnings and lastResult', () => {
+  test('warnings mirror a resolved result’s warnings; lastResult is the result verbatim', () => {
+    const spec = makeSpec();
+    const result: GeoVisResult = {
+      status: 'resolved',
+      spec,
+      warnings: [
+        {
+          code: 'policy-violation',
+          subject: { path: 'layers[lyr-1]' },
+          message: 'raw counts on a choropleth',
+        },
+      ],
+    };
+    const packet = buildContextPacket(spec, result, null, CAPABILITIES);
+    expect(packet.warnings).toBe(result.warnings);
+    expect(packet.lastResult).toBe(result);
+  });
+
+  test('warnings is empty for a non-resolved result', () => {
+    const spec = makeSpec();
+    const result: GeoVisResult = {
+      status: 'mismatch',
+      issues: [
+        {
+          code: 'unknown-source',
+          subject: { path: 'layers[lyr-1].sourceId' },
+          message: 'unknown source',
+        },
+      ],
+    };
+    const packet = buildContextPacket(spec, result, null, CAPABILITIES);
+    expect(packet.warnings).toEqual([]);
+    expect(packet.lastResult).toBe(result);
+  });
+});
+
+describe('buildContextPacket — mapType passthrough', () => {
+  test('mapType is included when declared on the spec', () => {
+    const spec: VisualizationSpec = { ...makeSpec(), mapType: 'choropleth' };
+    const packet = buildContextPacket(spec, RESOLVED(spec), null, CAPABILITIES);
+    expect(packet.mapType).toBe('choropleth');
+  });
+});
+
+describe('buildContextPacket — selection and allowedActions (PRD-002 Phase 2)', () => {
+  test('selection is null when nothing is selected', () => {
+    const spec = makeSpec();
+    const packet = buildContextPacket(spec, RESOLVED(spec), null, CAPABILITIES);
+    expect(packet.selection).toBeNull();
+  });
+
+  test('selection passes through the given GeoVisSelection verbatim', () => {
+    const spec = makeSpec();
+    const packet = buildContextPacket(
+      spec,
+      RESOLVED(spec),
+      { layerId: 'lyr-1', featureId: 'BR' },
+      CAPABILITIES
+    );
+    expect(packet.selection).toEqual({ layerId: 'lyr-1', featureId: 'BR' });
+  });
+
+  test('select-feature is allowed alongside toggle-layer once the spec has a layer', () => {
+    const spec = makeSpec();
+    const packet = buildContextPacket(spec, RESOLVED(spec), null, CAPABILITIES);
+    expect(packet.allowedActions).toEqual([
+      'toggle-layer',
+      'select-feature',
+      'set-filter',
+    ]);
+  });
+
+  test('neither action is allowed when the spec has no layers', () => {
+    const spec: VisualizationSpec = { ...makeSpec(), layers: [] };
+    const packet = buildContextPacket(spec, RESOLVED(spec), null, CAPABILITIES);
+    expect(packet.allowedActions).toEqual([]);
+  });
+});
+
+describe('buildContextPacket — data bindings and set-map-data (PRD-002 Phase 3)', () => {
+  test('a layer with no mapDataId reports neither mapDataId nor dimension', () => {
+    const spec = makeSpec();
+    const packet = buildContextPacket(spec, RESOLVED(spec), null, CAPABILITIES);
+    expect(packet.layers[0].mapDataId).toBeUndefined();
+    expect(packet.layers[0].dimension).toBeUndefined();
+  });
+
+  test("a layer bound to a mapData entry reports its mapDataId and the entry's dimension", () => {
+    const spec: VisualizationSpec = {
+      ...makeSpec(),
+      layers: [
+        {
+          id: 'lyr-1',
+          sourceId: 'src-1',
+          geometry: 'polygon',
+          mapDataId: 'pop',
+        },
+      ],
+      mapData: [
+        {
+          mapDataId: 'pop',
+          mapId: 'src-1',
+          dimension: 'size',
+          data: [{ geometryId: 'BR', value: 211 }],
+        },
+      ],
+    };
+    const packet = buildContextPacket(spec, RESOLVED(spec), null, CAPABILITIES);
+    expect(packet.layers[0]).toMatchObject({
+      mapDataId: 'pop',
+      dimension: 'size',
+    });
+  });
+
+  test('a layer whose mapDataId references a since-removed entry reports it with no dimension', () => {
+    const spec: VisualizationSpec = {
+      ...makeSpec(),
+      layers: [
+        {
+          id: 'lyr-1',
+          sourceId: 'src-1',
+          geometry: 'polygon',
+          mapDataId: 'ghost',
+        },
+      ],
+    };
+    const packet = buildContextPacket(spec, RESOLVED(spec), null, CAPABILITIES);
+    expect(packet.layers[0].mapDataId).toBe('ghost');
+    expect(packet.layers[0].dimension).toBeUndefined();
+  });
+
+  test('set-map-data is allowed once the spec has a layer and at least one mapData entry', () => {
+    const spec: VisualizationSpec = {
+      ...makeSpec(),
+      mapData: [{ mapDataId: 'pop', mapId: 'src-1', data: [] }],
+    };
+    const packet = buildContextPacket(spec, RESOLVED(spec), null, CAPABILITIES);
+    expect(packet.allowedActions).toEqual([
+      'toggle-layer',
+      'select-feature',
+      'set-map-data',
+      'set-filter',
+    ]);
+  });
+
+  test('set-map-data is not allowed when the spec has no mapData entries', () => {
+    const spec = makeSpec();
+    const packet = buildContextPacket(spec, RESOLVED(spec), null, CAPABILITIES);
+    expect(packet.allowedActions).not.toContain('set-map-data');
+  });
+});
+
+describe('buildContextPacket — viewPresets and set-view-preset (PRD-002 Phase 5)', () => {
+  test('viewPresets is empty when the spec declares none, and set-view-preset is not allowed', () => {
+    const spec = makeSpec();
+    const packet = buildContextPacket(spec, RESOLVED(spec), null, CAPABILITIES);
+    expect(packet.viewPresets).toEqual([]);
+    expect(packet.allowedActions).not.toContain('set-view-preset');
+  });
+
+  test('declared viewPresets are summarized to id/label, never the raw view camera values', () => {
+    const spec: VisualizationSpec = {
+      ...makeSpec(),
+      viewPresets: [
+        {
+          id: 'overview',
+          label: 'Overview',
+          view: { center: [10, 20], zoom: 3 },
+        },
+        { id: 'detail', view: { zoom: 8 } },
+      ],
+    };
+    const packet = buildContextPacket(spec, RESOLVED(spec), null, CAPABILITIES);
+    expect(packet.viewPresets).toEqual([
+      { id: 'overview', label: 'Overview' },
+      { id: 'detail', label: undefined },
+    ]);
+    expect(packet.allowedActions).toContain('set-view-preset');
+  });
+});

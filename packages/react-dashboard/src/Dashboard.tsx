@@ -1,6 +1,6 @@
 import type { SxProp } from '@ttoss/ui';
 import { Divider, Flex } from '@ttoss/ui';
-import type * as React from 'react';
+import * as React from 'react';
 import type ReactGridLayout from 'react-grid-layout';
 
 import type { DashboardCard } from './DashboardCard';
@@ -41,6 +41,12 @@ const DashboardContent = ({
   currency,
   showFilters = true,
   sx,
+  renderCardDetail,
+  clickableCardFilter,
+  selectedCardKey: controlledSelectedCardKey,
+  onCardSelect,
+  detailSlotHeight,
+  detailMode = 'single',
 }: {
   loading: boolean;
   headerChildren?: React.ReactNode;
@@ -49,6 +55,18 @@ const DashboardContent = ({
   currency?: string;
   showFilters?: boolean;
   sx?: SxProp['sx'];
+  renderCardDetail?: (
+    card: DashboardCard,
+    close: () => void
+  ) => React.ReactNode;
+  clickableCardFilter?: (card: DashboardCard) => boolean;
+  selectedCardKey?: string | string[] | null;
+  onCardSelect?: (
+    key: string | string[] | null,
+    card: DashboardCard | null
+  ) => void;
+  detailSlotHeight?: number;
+  detailMode?: 'single' | 'multi';
 }) => {
   const { isEditMode, editingGrid, filters, editable } = useDashboard();
   const effectiveTemplate = resolveTemplate(
@@ -58,6 +76,38 @@ const DashboardContent = ({
   );
   const hasHeaderContent =
     (showFilters && filters.length > 0) || Boolean(headerChildren) || editable;
+
+  const isControlled = controlledSelectedCardKey !== undefined;
+  const [internalSelectedCardKey, setInternalSelectedCardKey] = React.useState<
+    string | string[] | null
+  >(null);
+
+  const selectedCardKey = isControlled
+    ? controlledSelectedCardKey
+    : internalSelectedCardKey;
+
+  const setSelectedCardKey: React.Dispatch<
+    React.SetStateAction<string | string[] | null>
+  > = React.useCallback(
+    (action) => {
+      const next =
+        typeof action === 'function' ? action(selectedCardKey ?? null) : action;
+      if (!isControlled) {
+        setInternalSelectedCardKey(next);
+      }
+      if (onCardSelect) {
+        const firstKey = Array.isArray(next) ? next[0] : next;
+        const card =
+          firstKey && effectiveTemplate
+            ? ((effectiveTemplate.grid.find((item) => {
+                return item.i === firstKey;
+              })?.card as DashboardCard | undefined) ?? null)
+            : null;
+        onCardSelect(next, card);
+      }
+    },
+    [isControlled, onCardSelect, selectedCardKey, effectiveTemplate]
+  );
 
   return (
     <Flex
@@ -81,6 +131,12 @@ const DashboardContent = ({
         isEditMode={isEditMode}
         currency={currency}
         data-export-target
+        selectedCardKey={selectedCardKey}
+        setSelectedCardKey={setSelectedCardKey}
+        renderCardDetail={renderCardDetail}
+        clickableCardFilter={clickableCardFilter}
+        detailSlotHeight={detailSlotHeight}
+        detailMode={detailMode}
       />
     </Flex>
   );
@@ -102,6 +158,12 @@ export const Dashboard = ({
   currency,
   showFilters = true,
   sx,
+  renderCardDetail,
+  clickableCardFilter,
+  selectedCardKey,
+  onCardSelect,
+  detailSlotHeight,
+  detailMode,
 }: {
   selectedTemplate?: DashboardTemplate;
   loading?: boolean;
@@ -123,6 +185,32 @@ export const Dashboard = ({
   showFilters?: boolean;
   /** Style overrides applied to the outer container. Use to adjust padding or spacing to fit a surrounding layout. */
   sx?: SxProp['sx'];
+  /** Render a detail slot below the clicked card's row. Receives the card and a `close` callback. */
+  renderCardDetail?: (
+    card: DashboardCard,
+    close: () => void
+  ) => React.ReactNode;
+  /** When provided, only cards for which this returns `true` are clickable. Defaults to all non-sectionDivider cards. */
+  clickableCardFilter?: (card: DashboardCard) => boolean;
+  /**
+   * Controlled selection. When provided, `DashboardContent` uses this value
+   * instead of its own `useState`. Supply `onCardSelect` to handle changes.
+   * Supports a single key (string) or multiple keys (string[]) when `detailMode='multi'`.
+   * Omit entirely for uncontrolled behavior (default).
+   */
+  selectedCardKey?: string | string[] | null;
+  /**
+   * Called whenever the selected card key changes (controlled and uncontrolled).
+   * `key` is the new selection; `card` is the first selected card or `null` when closed.
+   */
+  onCardSelect?: (
+    key: string | string[] | null,
+    card: DashboardCard | null
+  ) => void;
+  /** Number of grid rows for the detail slot. Defaults to 12 (384 px at rowHeight=32). */
+  detailSlotHeight?: number;
+  /** 'single' (default): one slot at a time. 'multi': each card gets its own independent slot. */
+  detailMode?: 'single' | 'multi';
 }) => {
   return (
     <DashboardProvider
@@ -144,6 +232,12 @@ export const Dashboard = ({
         currency={currency}
         showFilters={showFilters}
         sx={sx}
+        renderCardDetail={renderCardDetail}
+        clickableCardFilter={clickableCardFilter}
+        selectedCardKey={selectedCardKey}
+        onCardSelect={onCardSelect}
+        detailSlotHeight={detailSlotHeight}
+        detailMode={detailMode}
       />
     </DashboardProvider>
   );

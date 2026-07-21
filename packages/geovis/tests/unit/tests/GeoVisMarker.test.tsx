@@ -151,7 +151,7 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
       spec,
       applyPatch: jest.fn(),
       setView: jest.fn(),
-      policyViolations: [],
+      result: { status: 'resolved', spec, warnings: [] },
     };
   }, [mockRuntime, spec]);
 

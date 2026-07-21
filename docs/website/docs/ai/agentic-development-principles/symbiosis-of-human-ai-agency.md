@@ -137,3 +137,19 @@ The skills most at risk of atrophy are precisely the skills most needed when aut
 #### The Corollary of Graduated Autonomy for Skill Development
 
 Scale AI autonomy not only by risk (per [The Corollary of Graduated Agency by Structure and Risk](/docs/ai/agentic-development-principles/governance-of-agency#the-corollary-of-graduated-agency-by-structure-and-risk)) but also by the operator's developmental stage. Junior developers should operate agents at lower autonomy levels—not because the agent is less capable, but because the human needs the friction of direct engagement to build the mental models required for future governance. Autonomy is earned through demonstrated competence, not assumed from agent capability.
+
+### The Principle of Vigilance Decay
+
+Human verification attention declines with observed agent reliability—and it declines faster than the error rate it exists to catch. Each success the operator observes lowers the perceived need to inspect the next output, so sustained high reliability trains reviewers to approve rather than examine. The most trusted agent therefore receives the least scrutiny at exactly the moment its scope, and the cost of its rare failures, is largest. This is automation complacency—documented across decades of human-factors research (Parasuraman & Riley, 1997)—applied to agentic development: reliability does not solve the human sampling problem, it degrades the sampler.
+
+This principle is the counterweight to [The Corollary of Trust-Gated Orchestration](/docs/ai/agentic-development-principles/governance-of-agency#the-corollary-of-trust-gated-orchestration): trust deliberately reduces verification cost, but vigilance decay keeps reducing it past the level at which the trust was calibrated, silently invalidating the calibration. It is distinct from [The Principle of Competence Atrophy](/docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency#the-principle-of-competence-atrophy): atrophy erodes the operator's _ability_ to verify; vigilance decay erodes the _propensity_—a fully competent reviewer simply stops looking. Together they attack both preconditions of [The Principle of Verification Asymmetry](/docs/ai/agentic-development-principles/symbiosis-of-human-ai-agency#the-principle-of-verification-asymmetry), which assumes a reviewer who both can and does verify.
+
+**Failure Scenario:** An agent ships two hundred flawless pull requests over three months. Reviews of its output shrink from careful reads to skimmed approvals—"it's always right." The next PR contains a plausible-looking refactor that weakens an authorization check. It is approved in forty seconds. The reviewer was fully capable of catching it; on the agent's first PR, they would have.
+
+#### The Corollary of Structural Sampling
+
+Because attention is the resource that decays, verification of trusted agents must not depend on it. Enforce review structurally: randomized deep-review sampling, adversarial spot checks, and automated invariant verification applied by tooling that does not habituate. The fraction of an agent's output that receives deep review must be a policy decision, not a byproduct of reviewer sentiment.
+
+#### The Corollary of Trust Expiry
+
+Autonomy granted on a track record is calibrated against a verification level that vigilance decay erodes, so trust grants must expire. Re-earning autonomy under periodically restored scrutiny—recalibration windows in which a trusted agent's output is again reviewed as if new—is the only way to keep the observed reliability that justifies the trust connected to the actual reliability of the agent.

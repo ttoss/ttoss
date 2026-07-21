@@ -70,6 +70,7 @@ Top-level spec object passed to `GeoVisProvider`.
 | `legendEnabled` | `boolean`                 |          | Controls whether the resolved `mapType` auto-generates legends. Defaults to `true`. Has no effect on legends supplied directly via `legends`.                             |
 | `mapData`       | `MapData[]`               |          | Attribute datasets joined to GeoJSON sources for choropleth coloring and tooltips.                                                                                        |
 | `metadata`      | `Record<string, unknown>` |          | Arbitrary consumer metadata; not read by the runtime.                                                                                                                     |
+| `viewPresets`   | `ViewPreset[]`            |          | Named camera positions (`{ id, label?, view }`) `dispatch({ type: 'set-view-preset' })` can target by `id`. See [AI Action Surface](#ai-action-surface-dispatch).         |
 
 ### `LegendSpec`
 
@@ -108,26 +109,27 @@ The `'labels'` type is the recommended choice when label text is known ahead of 
 
 Each entry in `spec.layers` describes one rendered layer.
 
-| Field            | Type                                                                                   | Required | Description                                                                                                                                                                                                                                                              |
-| ---------------- | -------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `id`             | `string`                                                                               | ✓        | Unique layer identifier.                                                                                                                                                                                                                                                 |
-| `sourceId`       | `string`                                                                               | ✓        | References a `DataSource.id` from `spec.sources`.                                                                                                                                                                                                                        |
-| `geometry`       | `GeoVisGeometryType`                                                                   | ✓        | Render type: `'point'`, `'line'`, `'polygon'`, `'raster'`, `'symbol'`, `'heatmap'`.                                                                                                                                                                                      |
-| `sourceLayer`    | `string`                                                                               |          | Vector tile source layer name. Required when `source.type` is `'vector-tiles'`.                                                                                                                                                                                          |
-| `title`          | `string`                                                                               |          | Human-readable layer name.                                                                                                                                                                                                                                               |
-| `visible`        | `boolean`                                                                              |          | Whether the layer is rendered. Defaults to `true`.                                                                                                                                                                                                                       |
-| `minzoom`        | `number`                                                                               |          | Minimum zoom level (0–24) at which the layer is visible.                                                                                                                                                                                                                 |
-| `maxzoom`        | `number`                                                                               |          | Maximum zoom level (0–24) at which the layer is visible.                                                                                                                                                                                                                 |
-| `paint`          | `LayerPaint`                                                                           |          | Per-geometry paint properties. See examples below.                                                                                                                                                                                                                       |
-| `legends`        | `LegendSpec[]`                                                                         |          | Alternative legend definitions exposed as runtime toggles.                                                                                                                                                                                                               |
-| `activeLegendId` | `string`                                                                               |          | Active entry from `legends[]`. Enables choropleth coloring and the hover tooltip.                                                                                                                                                                                        |
-| `mapDataId`      | `string`                                                                               |          | References a `MapData.mapDataId` for per-feature value joining (choropleth / tooltip). When a `MapData` declares `dimension`, the adapter auto-discovers color/size.                                                                                                     |
-| `propertyName`   | `string`                                                                               |          | Reads circle size directly from `feature.properties[propertyName]` via `['get', propertyName]`. Alternative to `mapData` — when both are set, `mapDataId` takes precedence. See [Alternative data source](#alternative-data-source-propertyname).                        |
-| `hoverPaint`     | `{ lineColor?: string; lineWidth?: number }`                                           |          | Outline rendered on the hovered feature via a companion MapLibre line layer driven by `feature-state.hover`.                                                                                                                                                             |
-| `selectedPaint`  | `{ lineColor?: string; lineWidth?: number }`                                           |          | Outline rendered on the selected feature via `feature-state.selected`.                                                                                                                                                                                                   |
-| `clickAnchor`    | `{ iconImage?: string; iconSize?: number; color?: string; offset?: [number, number] }` |          | Spec-driven click marker. Use `iconImage` to render a sprite icon; use `color` for the built-in SVG pin. For a custom HTML element, use `<GeoVisMarker>` instead.                                                                                                        |
-| `sizeBy`         | `SizeBy`                                                                               |          | Proportional symbol configuration. Maps a numeric `mapData` property to `circle-radius`. See [Proportional Symbols](#proportional-symbols-sizeby).                                                                                                                       |
-| `hoverTooltip`   | `HoverTooltipConfig`                                                                   |          | Spec-driven hover tooltip. When present, `<GeoVisProvider>` renders a `<GeoVisHoverTooltip>` automatically for features on this layer — no component needed in the tree. Mirrors `GeoVisHoverTooltipProps`. See [Spec-driven hover tooltip](#spec-driven-hover-tooltip). |
+| Field            | Type                                                                                   | Required | Description                                                                                                                                                                                                                                                                 |
+| ---------------- | -------------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`             | `string`                                                                               | ✓        | Unique layer identifier.                                                                                                                                                                                                                                                    |
+| `sourceId`       | `string`                                                                               | ✓        | References a `DataSource.id` from `spec.sources`.                                                                                                                                                                                                                           |
+| `geometry`       | `GeoVisGeometryType`                                                                   | ✓        | Render type: `'point'`, `'line'`, `'polygon'`, `'raster'`, `'symbol'`, `'heatmap'`.                                                                                                                                                                                         |
+| `sourceLayer`    | `string`                                                                               |          | Vector tile source layer name. Required when `source.type` is `'vector-tiles'`.                                                                                                                                                                                             |
+| `title`          | `string`                                                                               |          | Human-readable layer name.                                                                                                                                                                                                                                                  |
+| `visible`        | `boolean`                                                                              |          | Whether the layer is rendered. Defaults to `true`.                                                                                                                                                                                                                          |
+| `minzoom`        | `number`                                                                               |          | Minimum zoom level (0–24) at which the layer is visible.                                                                                                                                                                                                                    |
+| `maxzoom`        | `number`                                                                               |          | Maximum zoom level (0–24) at which the layer is visible.                                                                                                                                                                                                                    |
+| `paint`          | `LayerPaint`                                                                           |          | Per-geometry paint properties. See examples below.                                                                                                                                                                                                                          |
+| `legends`        | `LegendSpec[]`                                                                         |          | Alternative legend definitions exposed as runtime toggles.                                                                                                                                                                                                                  |
+| `activeLegendId` | `string`                                                                               |          | Active entry from `legends[]`. Enables choropleth coloring and the hover tooltip.                                                                                                                                                                                           |
+| `mapDataId`      | `string`                                                                               |          | References a `MapData.mapDataId` for per-feature value joining (choropleth / tooltip). When a `MapData` declares `dimension`, the adapter auto-discovers color/size.                                                                                                        |
+| `propertyName`   | `string`                                                                               |          | Reads circle size directly from `feature.properties[propertyName]` via `['get', propertyName]`. Alternative to `mapData` — when both are set, `mapDataId` takes precedence. See [Alternative data source](#alternative-data-source-propertyname).                           |
+| `hoverPaint`     | `{ lineColor?: string; lineWidth?: number }`                                           |          | Outline rendered on the hovered feature via a companion MapLibre line layer driven by `feature-state.hover`.                                                                                                                                                                |
+| `selectedPaint`  | `{ lineColor?: string; lineWidth?: number }`                                           |          | Outline rendered on the selected feature via `feature-state.selected`.                                                                                                                                                                                                      |
+| `clickAnchor`    | `{ iconImage?: string; iconSize?: number; color?: string; offset?: [number, number] }` |          | Spec-driven click marker. Use `iconImage` to render a sprite icon; use `color` for the built-in SVG pin. For a custom HTML element, use `<GeoVisMarker>` instead.                                                                                                           |
+| `sizeBy`         | `SizeBy`                                                                               |          | Proportional symbol configuration. Maps a numeric `mapData` property to `circle-radius`. See [Proportional Symbols](#proportional-symbols-sizeby).                                                                                                                          |
+| `hoverTooltip`   | `HoverTooltipConfig`                                                                   |          | Spec-driven hover tooltip. When present, `<GeoVisProvider>` renders a `<GeoVisHoverTooltip>` automatically for features on this layer — no component needed in the tree. Mirrors `GeoVisHoverTooltipProps`. See [Spec-driven hover tooltip](#spec-driven-hover-tooltip).    |
+| `filter`         | `LayerFilter`                                                                          |          | Declarative predicate (`{ property, operator, value }`) that hides non-matching features, compiled to the engine's native filter. Reads `feature.properties[property]`, gated by `CapabilitySet.dataFeatures.filter`. See [AI Action Surface](#ai-action-surface-dispatch). |
 
 ### Paint properties
 
@@ -865,21 +867,27 @@ React.useEffect(() => {
 
 ## Spec Validation
 
-Use `validateSpec` to validate a visualization spec against the JSON schema before passing it to `GeoVisProvider`:
+Use `validateSpec` to validate a visualization spec against the JSON schema before passing it to `GeoVisProvider`. It returns a `GeoVisResult`: a `resolved` status carrying the typed spec, or one of a closed set of failure statuses carrying every issue found in one pass — never only the first — so a repair loop can fix everything in one round trip:
 
 ```tsx
 import { validateSpec } from '@ttoss/geovis';
 
 const result = validateSpec(rawSpec);
 
-if (!result.valid) {
-  console.error('Invalid spec:', result.errors);
+if (result.status !== 'resolved') {
+  for (const issue of result.issues) {
+    console.error(`[${issue.code}] ${issue.message}`, issue.repair);
+  }
 } else {
   // result.spec is fully typed as VisualizationSpec
 }
 ```
 
+Each `GeoVisIssue` carries a machine-readable `code`, a `subject` locating the offending field, a human `message`, and — only when an alternative is already known at the check site (never guessed) — a `repair` list of `allowed-values` or `set-value` options.
+
 ## Applying Patches
+
+> **`applyPatch` is a low-level escape hatch, not the primary mutation API.** Prefer [`dispatch()`](#ai-action-surface-dispatch) for anything expressible as one of its actions (`toggle-layer`, `select-feature`, `set-map-data`, `set-filter`, `set-view-preset`) — it targets stable spec ids instead of internal paint paths, and every call is recorded on the action log. `applyPatch` stays public and fully supported for the layer-visibility, `mapDataId`, `filter`, and paint-property replaces that don't yet have (or will never need) a dedicated action, and for `add`/`remove` — the same "available, not primary" role `getNativeInstance()` plays for direct engine access.
 
 Use `useGeoVis` to access `applyPatch` for efficient updates without re-rendering the full spec.
 
@@ -891,7 +899,7 @@ Use `useGeoVis` to access `applyPatch` for efficient updates without re-renderin
 | `'source'`  | Add, remove, or update a source            |
 | `'mapData'` | Update feature-state data bound to the map |
 
-> **Note:** `view` and `style` changes must be applied via `update(spec)` (full spec replacement), not via `applyPatch`.
+> **Note:** `view` and `style` changes must be applied via `update(spec)` (full spec replacement), not via `applyPatch`. Any other target, or a patch that would produce an invalid spec, is rejected before the adapter is ever called — `runtime.applyPatch`/`runtime.update` return a `GeoVisResult` (`unsupported-patch-target` for the former), and `useGeoVis().result` surfaces it; the map is left untouched (ADR-0001).
 
 A `SpecPatch` has the shape:
 
@@ -900,7 +908,8 @@ type SpecPatch =
   | {
       target: 'layer' | 'source' | 'mapData';
       op: 'replace';
-      path: string; // dot-separated: "layer.<layerId>.paint.<camelCaseKey>"
+      path: string; // dot-separated: "layer.<layerId>.visible"
+      //                "layer.<layerId>.paint.<camelCaseKey>"
       //                "mapData.<mapDataId>"
       //                "mapData.<mapDataId>.data.<geometryId>"
       value?: unknown; // required for 'replace'
@@ -1043,6 +1052,154 @@ const LayerControls = () => {
   );
 };
 ```
+
+## AI Action Surface (`dispatch`)
+
+`runtime.dispatch(action)` is the recommended way to steer a live map — a closed, typed vocabulary of semantic operations (PRD-002, [ADR-0003](./docs/adr/0003-semantic-action-surface.md)) that validates against the current spec before compiling to the same `SpecPatch`/`update`/`setView` mechanisms `applyPatch` uses. Prefer it over hand-written `SpecPatch`es: it targets stable ids instead of internal paint paths, rejects unknown targets with a repairable `GeoVisResult`, and every call — accepted or rejected — is recorded on the action log for audit.
+
+Currently implemented (the full v1 vocabulary): `toggle-layer`, `select-feature`, `set-map-data`, `set-filter`, `set-view-preset`.
+
+```tsx
+const { runtime } = useGeoVis();
+
+// Flips the layer's current visibility
+runtime.dispatch({ type: 'toggle-layer', layerId: 'regions-layer' });
+
+// Or set it explicitly, with an optional audit rationale
+runtime.dispatch({
+  type: 'toggle-layer',
+  layerId: 'regions-layer',
+  visible: false,
+  rationale: 'user unchecked "Regions" in the layer panel',
+});
+```
+
+An unknown `layerId` is rejected before touching the adapter or the spec, with the declared layer ids as repair:
+
+```ts
+const result = runtime.dispatch({ type: 'toggle-layer', layerId: 'ghost' });
+// result.status === 'mismatch'
+// result.issues[0].code === 'unknown-layer-id'
+// result.issues[0].repair[0].values === ['regions-layer', ...]
+```
+
+`select-feature` selects (or, with `featureId: null`, clears) a feature on a layer — the same runtime-level state a click on the map produces, so an AI turn and a human click are indistinguishable in the action log and the context packet:
+
+```tsx
+runtime.dispatch({
+  type: 'select-feature',
+  layerId: 'regions-layer',
+  featureId: 'BR',
+});
+
+// Clear the selection
+runtime.dispatch({
+  type: 'select-feature',
+  layerId: 'regions-layer',
+  featureId: null,
+});
+
+runtime.getSelection();
+// { layerId: 'regions-layer', featureId: 'BR' } | null
+```
+
+`useGeoVisClick()` and `<GeoVisMarker>`-driven click anchors already dispatch `select-feature` internally — a human click and `runtime.dispatch({ type: 'select-feature', ... })` produce the identical selection and action-log entry.
+
+`set-map-data` rebinds which `mapData` entry drives a layer's styling — "swap the joined dataset". Since a `mapData` entry's own `dimension` (`'color' | 'size'`) travels with it, picking a different entry can also swap which dimension the layer reads, without a separate field:
+
+```tsx
+runtime.dispatch({
+  type: 'set-map-data',
+  layerId: 'regions-layer',
+  mapDataId: 'pop-2020',
+  rationale: 'AI switched to the 2020 census dataset',
+});
+```
+
+Only `layerId` is checked here directly; whether `mapDataId` is a declared entry, and whether it shares the layer's source, are validated by the same pass every spec update already runs — an invalid rebind is rejected with the same `unknown-map-data-id`/`source-scope-conflict` issues (and repairs) a hand-written `SpecPatch` would get.
+
+`set-filter` sets (or, with `filter: null`, clears) a declarative predicate that hides features not matching it, compiled to the engine's native filter expression. It reads `feature.properties[property]` directly — the same access path `propertyName` uses elsewhere, not the `mapData`-joined feature-state value:
+
+```tsx
+runtime.dispatch({
+  type: 'set-filter',
+  layerId: 'regions-layer',
+  filter: { property: 'status', operator: 'eq', value: 'active' },
+  rationale: 'AI narrowed the view to active regions',
+});
+
+// Clear it
+runtime.dispatch({
+  type: 'set-filter',
+  layerId: 'regions-layer',
+  filter: null,
+});
+```
+
+`LayerFilter` supports `eq` / `neq` / `gt` / `gte` / `lt` / `lte` (scalar `value`) and `in` / `not-in` (array `value`). Filtering is gated by `CapabilitySet.dataFeatures.filter` per source type — declared `['geojson']` on the MapLibre adapter today; a layer whose source type isn't declared is rejected with `unsupported-data-feature`, the same way an unsupported source or layer geometry is.
+
+`set-view-preset` moves the camera to a named position declared in `spec.viewPresets` — bounded to positions the application actually curated, instead of raw coordinates an AI would otherwise have to invent:
+
+```ts
+const spec = {
+  // ...
+  viewPresets: [
+    {
+      id: 'country',
+      label: 'Country view',
+      view: { center: [-51.9, -14.2], zoom: 3.5 },
+    },
+    {
+      id: 'capital',
+      label: 'Capital',
+      view: { center: [-47.9, -15.8], zoom: 10, pitch: 30 },
+    },
+  ],
+};
+
+runtime.dispatch({
+  type: 'set-view-preset',
+  presetId: 'capital',
+  rationale: 'AI zoomed in on the capital',
+});
+```
+
+Compiles to the same `runtime.setView()` mechanism a UI camera control already uses — no new engine code. An unknown `presetId` is rejected with the declared preset ids as repair. Only `center`/`zoom`/`pitch`/`bearing` are applied; `view.projection` isn't — `setView()`'s imperative camera move never supported switching projection (a pre-existing limitation, not introduced by this action); use `update(spec)` for that.
+
+### Action log
+
+```ts
+runtime.getActionLog();
+// ReadonlyArray<{ action: GeoVisAction; result: GeoVisResult; timestamp: number }>
+```
+
+Every dispatched action is recorded, accepted or rejected, with its `rationale` preserved — the substrate for surfacing "why did the map change" in a workspace UI. Undo/redo itself is not built on top of this log yet; that's a "Should" item left for a workspace-level consumer (e.g. `@ttoss/geovis-workspace`) to derive.
+
+### Context packet
+
+`runtime.getContextPacket()` returns a versioned, read-only, metadata-only summary of the current map ([ADR-0004](./docs/adr/0004-ai-context-packet.md)) — never GeoJSON geometry, `mapData` rows, or full color/threshold lists. It names the same stable ids `dispatch()` accepts, so an AI (or any consumer) can decide what to do next without reading the full spec:
+
+```ts
+runtime.getContextPacket();
+// {
+//   schemaVersion: 1,
+//   mapType: 'choropleth',
+//   sources: [{ id: 'regions-source', type: 'geojson' }],
+//   layers: [{
+//     id: 'regions-layer', geometry: 'polygon', visible: true,
+//     mapDataId: 'pop-2020', dimension: 'color',
+//     filter: { property: 'status', operator: 'eq', value: 'active' },
+//   }],
+//   legends: [{ id: 'pop-legend', scaleKind: 'threshold', domain: [10, 90], unit: 'inhabitants' }],
+//   viewPresets: [{ id: 'capital', label: 'Capital' }],
+//   selection: { layerId: 'regions-layer', featureId: 'BR' },
+//   allowedActions: ['toggle-layer', 'select-feature', 'set-map-data', 'set-filter', 'set-view-preset'],
+//   warnings: [],
+//   lastResult: { status: 'resolved', spec, warnings: [] },
+// }
+```
+
+`allowedActions` is the vocabulary above filtered to what the current spec and active adapter actually support (e.g. `toggle-layer` only appears once the spec has at least one layer; `set-filter` only appears once the adapter declares filter support for a source type present in the spec; `set-view-preset` only appears once the spec declares at least one entry in `viewPresets`). `viewPresets` in the packet lists only `id`/`label` — never the presets' raw `view` camera values.
 
 ## Proportional Symbols (sizeBy)
 
@@ -1218,13 +1375,13 @@ Renders the map inside a `div` container mounted by the active engine. Must be u
 
 Returns the current `GeoVisContextValue`. Must be called inside `GeoVisProvider`.
 
-| Return value       | Type                                | Description                                                                                                    |
-| ------------------ | ----------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `spec`             | `VisualizationSpec`                 | Current effective spec (updated after each `applyPatch`).                                                      |
-| `applyPatch`       | `(patch: SpecPatch) => void`        | Dispatch a patch without re-mounting the map.                                                                  |
-| `setView`          | `(options: SetViewOptions) => void` | Imperatively move the camera (center, zoom, pitch, bearing).                                                   |
-| `policyViolations` | `PolicyViolation[]`                 | Active policy violations derived from the current spec. Each entry has `reason: string` and `message: string`. |
-| `runtime`          | `GeoVisRuntime \| null`             | Low-level runtime instance. Avoid direct access in app code.                                                   |
+| Return value | Type                                | Description                                                                                                                             |
+| ------------ | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `spec`       | `VisualizationSpec`                 | Last spec the runtime accepted. Unchanged while `result` is a failure — nothing renders on failure (ADR-0001).                          |
+| `applyPatch` | `(patch: SpecPatch) => void`        | Dispatch a patch without re-mounting the map.                                                                                           |
+| `setView`    | `(options: SetViewOptions) => void` | Imperatively move the camera (center, zoom, pitch, bearing).                                                                            |
+| `result`     | `GeoVisResult`                      | Latest validation outcome (schema, references, capabilities) plus cartography policy warnings. See [Spec Validation](#spec-validation). |
+| `runtime`    | `GeoVisRuntime \| null`             | Low-level runtime instance. Avoid direct access in app code.                                                                            |
 
 `SetViewOptions` fields: `center?: LngLat`, `zoom?: number`, `pitch?: number`, `bearing?: number`, `animate?: boolean` (defaults `true` — smooth flyTo).
 
@@ -1251,6 +1408,8 @@ Returns the last clicked feature on the active map as `MapClickInfo | null` (`nu
 **Tracking:** `useGeoVisClick` only populates when the user clicks a feature on a layer configured with `activeLegendId` **and** the feature has an id (numeric or string). Clicks on untracked layers or features without ids are treated as outside-clicks and clear the selection.
 
 Lives in a dedicated context (`GeoVisClickContext`) so click-state changes do not re-render `useGeoVis()` consumers. Must be called inside `GeoVisProvider`.
+
+Internally, every click dispatches `select-feature` on the runtime (see [AI Action Surface](#ai-action-surface-dispatch)) — `runtime.getSelection()` and `getContextPacket().selection` reflect the same selection this hook reports, and the action shows up in `getActionLog()` like any other dispatched action.
 
 #### `MapClickInfo` fields
 
@@ -1458,9 +1617,66 @@ Returns `BoundaryToggleResult`:
 
 ### `validateSpec`
 
-Validates a plain object against the `@ttoss/geovis` JSON schema.
+Validates a plain object against the `@ttoss/geovis` JSON schema and cross-field referential rules, aggregating every issue found in one pass.
 
-Returns `{ valid: true, spec: VisualizationSpec }` or `{ valid: false, errors: string[] }`.
+```ts
+function validateSpec(
+  input: unknown,
+  capabilities?: CapabilitySet
+): GeoVisResult;
+```
+
+Returns a `GeoVisResult`: `{ status: 'resolved', spec: VisualizationSpec, warnings: GeoVisIssue[] }` or `{ status: 'invalid' | 'mismatch' | 'unsupported' | 'insufficient-data' | 'needs-clarification', issues: GeoVisIssue[] }`. `insufficient-data` and `needs-clarification` are reserved for future checks (no v1 check produces them yet).
+
+`capabilities` is optional so `validateSpec` stays usable standalone (CI, authoring tools) without an adapter. `GeoVisProvider`/`createRuntime` always pass the active adapter's `getCapabilities()`; without it, only the hardcoded default (feature-state joining restricted to `geojson`) is enforced.
+
+Each `GeoVisIssue` is `{ code, subject: { path, id? }, message, repair? }`:
+
+| `code`                     | Failure status | Meaning                                                                                      |
+| -------------------------- | -------------- | -------------------------------------------------------------------------------------------- |
+| `invalid-schema`           | `invalid`      | value fails the JSON Schema                                                                  |
+| `invalid-schema-version`   | `invalid`      | `schemaVersion` is declared but doesn't match `SPEC_SCHEMA_VERSION`                          |
+| `invalid-threshold-order`  | `invalid`      | legend/sizeBy thresholds not strictly ascending                                              |
+| `invalid-threshold-value`  | `invalid`      | non-finite threshold value                                                                   |
+| `invalid-size-range`       | `invalid`      | `sizeBy.range` not finite, or `min >= max`, or `min <= 0`                                    |
+| `invalid-size-mode`        | `invalid`      | stepped `sizeBy` without thresholds or an active threshold legend                            |
+| `duplicate-map-data-id`    | `mismatch`     | non-unique `mapData.mapDataId`                                                               |
+| `unknown-map-data-id`      | `mismatch`     | layer references an undeclared `mapDataId`                                                   |
+| `unknown-source`           | `mismatch`     | layer or `mapData` references an undeclared source                                           |
+| `source-scope-conflict`    | `mismatch`     | layer's `sourceId` doesn't match its `mapDataId`'s source                                    |
+| `duplicate-dimension`      | `mismatch`     | two `mapData` entries claim the same `dimension` on one source                               |
+| `state-key-collision`      | `mismatch`     | dimensioned `mapData` entries share a `stateKey`                                             |
+| `unsupported-source-type`  | `unsupported`  | source type isn't feature-state-capable, or isn't declared by the active adapter             |
+| `unsupported-layer-type`   | `unsupported`  | layer geometry isn't declared by the active adapter                                          |
+| `unsupported-view-feature` | `unsupported`  | `view.pitch`/`view.bearing` set but not declared by the active adapter                       |
+| `unsupported-patch-target` | `unsupported`  | `applyPatch` called with a target other than `layer`/`source`/`mapData`                      |
+| `policy-violation`         | warning        | cartography policy violation (never blocks rendering — see `GeoVisResult.resolved.warnings`) |
+
+`repair` is present only when the check already has the correct alternative in hand (e.g. the declared `mapDataId`/source ids, the adapter's declared capability list, or the other side of a scope mismatch) — never an invented or guessed value. Its entries are `{ kind: 'allowed-values', path, values }` or `{ kind: 'set-value', path, value, label? }`.
+
+#### Capabilities (`CapabilitySet`)
+
+`EngineAdapter.getCapabilities()` returns a structured, introspectable tree instead of the four dead booleans GeoVis started with:
+
+```ts
+interface CapabilitySet {
+  sourceTypes: DataSource['type'][];
+  layerGeometries: GeoVisGeometryType[];
+  dataFeatures: { featureState: DataSource['type'][] };
+  viewFeatures: { pitch: boolean; bearing: boolean };
+}
+```
+
+**Declared means tested**: an entry is only listed if the package's test suite (or an official fixture) actually exercises it — an untested capability is indistinguishable from a hallucinated one. The MapLibre adapter currently declares:
+
+| Category                        | Declared                                                                  |
+| ------------------------------- | ------------------------------------------------------------------------- |
+| `sourceTypes`                   | `geojson`, `vector-tiles`, `raster-tiles`, `raster-dem`, `image`, `video` |
+| `layerGeometries`               | `polygon`, `line`, `point`, `symbol`, `heatmap`, `raster`                 |
+| `dataFeatures.featureState`     | `geojson` only — `mapData`/`sizeBy` depend on stable per-feature ids      |
+| `viewFeatures.pitch`/`.bearing` | both `true` — genuinely applied to the camera (`applySetView`)            |
+
+`validateSpec`/`createRuntime` reject anything the spec requires but the active adapter doesn't declare, before mount — a spec requiring an unsupported capability never reaches the engine.
 
 ## Legend Type Surface
 

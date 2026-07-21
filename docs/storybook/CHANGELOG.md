@@ -3,6 +3,83 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.43.0...@docs/storybook@4.0.0) (2026-07-20)
+
+- Feat geovis prd-001 repairable errors (#1132) ([884a417](https://github.com/ttoss/ttoss/commit/884a417bf2da1f2c50eae69df6281c2bf7c071b3)), closes [#1132](https://github.com/ttoss/ttoss/issues/1132)
+
+### BREAKING CHANGES
+
+- to validateSpec's return shape, accepted by ADR-0001
+  (pre-1.0). @ttoss/geovis-workspace does not consume validateSpec, so
+  no dependent changes were needed.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01UPEHrtopKmL6s9RQWmdgHR
+
+- feat(geovis): complete PRD-001 phases 2-5 (repair, runtime, capabilities, versioning)
+
+Phase 2: round-trip test proving every D3 repair produces a spec that
+re-validates cleanly.
+
+Phase 3: runtime.update/applyPatch validate before mutating and return
+GeoVisResult; the adapter is never called on failure and spec/result stay
+at their last accepted value. GeoVisProvider consumes results through a
+new `result` context field, retiring PolicyViolation/policyViolations —
+policy violations now flow through the same GeoVisIssue shape as warnings
+on a resolved result.
+
+Phase 4: CapabilitySet becomes the ADR-0002 structured tree (sourceTypes,
+layerGeometries, dataFeatures.featureState, viewFeatures), grounded in
+what MapLibreAdapter actually implements and tests actually exercise.
+validateSpec accepts the active adapter's capabilities and emits
+unsupported-\* issues with repair straight from the tree; unsupported specs
+are rejected before mount.
+
+Phase 5: audited every declared capability against the test suite (one
+raster-geometry gap found and closed rather than hidden) and added spec
+schema versioning (SPEC_SCHEMA_VERSION, schemaVersion field,
+invalid-schema-version issue).
+
+Two gaps found along the way, fixed in place: layers[].sourceId had no
+referential check at all (a genuine "broken reference" hole), and wiring
+real validation into the runtime exposed that a top-level `id` field used
+throughout tests/stories was never in the schema/type (additive fix,
+matches the existing title/description convention).
+
+Split validateSpec.ts and createRuntime.ts per the monorepo's
+max-lines/max-lines-per-function rules once the new logic pushed them
+over the limit.
+
+Updated the InvalidRawCountChoropleth story to read useGeoVis().result
+instead of the retired policyViolations, and fixed a latent bug where the
+fixture's policy metadata never reached the spec the story actually
+builds — the warning banner could never have rendered before this.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01UPEHrtopKmL6s9RQWmdgHR
+
+- fix(geovis): update test to check for resolved status instead of valid
+
+- test(geovis-workspace): adjust coverage thresholds to realistic values
+
+- test(geovis): adjust coverage thresholds to realistic values
+
+# [3.43.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.42.1...@docs/storybook@3.43.0) (2026-07-20)
+
+### Features
+
+- **react-dashboard:** controlled selection, configurable slot height, and multi-slot mode ([#1151](https://github.com/ttoss/ttoss/issues/1151)) ([f4f0c2d](https://github.com/ttoss/ttoss/commit/f4f0c2dff94d8355c85754cf8a9a0a7965ea7891))
+
+## [3.42.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.42.0...@docs/storybook@3.42.1) (2026-07-17)
+
+**Note:** Version bump only for package @docs/storybook
+
+# [3.42.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.41.0...@docs/storybook@3.42.0) (2026-07-17)
+
+### Features
+
+- **react-dashboard:** add renderCardDetail and clickableCardFilter for in-grid card expansion ([#1139](https://github.com/ttoss/ttoss/issues/1139)) ([8c4ebf4](https://github.com/ttoss/ttoss/commit/8c4ebf4ae0bad6934473a70c3e40e13e938cf104)), closes [#1138](https://github.com/ttoss/ttoss/issues/1138)
+
 # [3.41.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@3.40.0...@docs/storybook@3.41.0) (2026-07-15)
 
 ### Features

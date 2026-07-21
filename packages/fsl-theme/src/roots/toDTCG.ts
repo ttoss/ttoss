@@ -126,30 +126,22 @@ const setNestedValue = (
 // Coarse-pointer extensions — declares the hit.fine/hit.coarse coupling
 // ---------------------------------------------------------------------------
 
-/** Semantic hit token prefix that carries coarse-pointer overrides. */
-const SEMANTIC_HIT_PREFIX = 'semantic.sizing.hit.';
+/** Semantic hit token path that carries the coarse-pointer override. */
+const SEMANTIC_HIT_PATH = 'semantic.sizing.hit';
 
 /**
- * Build the `$extensions` metadata for a semantic hit token.
+ * Build the `$extensions` metadata for the semantic hit token.
  *
- * Each `semantic.sizing.hit.{step}` token defaults to the fine-pointer value.
- * The extension declares the corresponding coarse-pointer raw value so that
+ * `semantic.sizing.hit` defaults to the fine-pointer value. The extension
+ * declares the coarse-pointer raw value (`core.sizing.hit.coarse`) so that
  * non-CSS consumers (React Native, design tool pipelines) can locate and
- * apply touch-target overrides without reading `toCssVars` source code.
+ * apply the touch-target override without reading `toCssVars` source code.
  */
-const buildHitExtension = (
-  step: string,
-  theme: ThemeTokens
-): Record<string, unknown> | undefined => {
-  const coarseValue = (
-    theme.core.sizing.hit.coarse as unknown as Record<string, unknown>
-  )[step];
-  if (coarseValue === undefined) return undefined;
-
+const buildHitExtension = (theme: ThemeTokens): Record<string, unknown> => {
   return {
     'com.ttoss.pointer-override': {
       condition: 'any-pointer: coarse',
-      value: coarseValue,
+      value: theme.core.sizing.hit.coarse,
     },
   };
 };
@@ -173,8 +165,8 @@ const buildHitExtension = (
  * alias-preserving / composite output is a deferred enhancement (see
  * CONTRIBUTING.md ADR-013).
  *
- * Semantic hit tokens (`semantic.sizing.hit.*`) include a `$extensions`
- * field declaring their coarse-pointer override value, so non-CSS consumers
+ * The semantic hit token (`semantic.sizing.hit`) includes a `$extensions`
+ * field declaring its coarse-pointer override value, so non-CSS consumers
  * can apply touch-target ergonomics without reading the CSS emitter source.
  *
  * This is the interchange format for design tools (Tokens Studio, Figma,
@@ -204,12 +196,8 @@ export const toDTCG = (theme: ThemeTokens): DTCGTokenTree => {
       token.$type = dtcgType;
     }
 
-    if (path.startsWith(SEMANTIC_HIT_PREFIX)) {
-      const step = path.slice(SEMANTIC_HIT_PREFIX.length);
-      const ext = buildHitExtension(step, theme);
-      if (ext) {
-        token.$extensions = ext;
-      }
+    if (path === SEMANTIC_HIT_PATH) {
+      token.$extensions = buildHitExtension(theme);
     }
 
     setNestedValue(tree, path, token);

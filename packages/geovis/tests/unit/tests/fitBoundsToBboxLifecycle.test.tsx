@@ -198,7 +198,6 @@ interface MapController {
 
 const buildSpec = (mapDataEntries: MapDataRow[]): VisualizationSpec => {
   return {
-    id: 'test-district',
     engine: 'maplibre',
     // view values are intentionally identical across renders — only mapData changes.
     view: { center: [-46.6333, -23.5505] as [number, number], zoom: 10 },

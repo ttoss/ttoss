@@ -1,0 +1,21 @@
+{
+  "extends": "@ttoss/config/tsconfig.json",
+  "compilerOptions": {
+    /**
+     * Runner scripts execute via Node type stripping
+     * (`node --experimental-strip-types`), which requires explicit `.ts`
+     * extensions on relative imports and erasable-only TypeScript syntax.
+     */
+    "allowImportingTsExtensions": true,
+    "paths": {
+      "src/*": ["./src/*"]
+    }
+  },
+  /**
+   * golden/ fixtures are compiled by the gauntlet (src/gauntlet/compile.ts)
+   * with its own calibrated compiler options — the same ones benchmark
+   * samples get. They are excluded here so the package project doesn't need
+   * the workspace-source react-type mappings.
+   */
+  "exclude": ["node_modules", "tests", "golden", ".bench-tmp", "results"]
+}

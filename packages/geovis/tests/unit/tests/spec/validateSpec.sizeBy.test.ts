@@ -1,6 +1,16 @@
 import type { SizeBy } from 'src/spec/types';
 import { validateSpec } from 'src/spec/validateSpec';
 
+const issueMessages = (result: ReturnType<typeof validateSpec>): string => {
+  return result.status === 'resolved'
+    ? ''
+    : result.issues
+        .map((issue) => {
+          return issue.message;
+        })
+        .join('\n');
+};
+
 describe('validateSpec — sizeBy', () => {
   const pointSpec = {
     engine: 'maplibre' as const,
@@ -32,9 +42,13 @@ describe('validateSpec — sizeBy', () => {
       ],
     });
 
-    expect(result.valid).toBe(false);
-    if (!result.valid) {
-      expect(result.errors.join('\n')).toMatch(/range/);
+    expect(result.status).toBe('invalid');
+    if (result.status !== 'resolved') {
+      expect(issueMessages(result)).toMatch(/range/);
+      const issue = result.issues.find((i) => {
+        return i.code === 'invalid-size-range';
+      });
+      expect(issue?.repair).toBeUndefined();
     }
   });
 
@@ -49,9 +63,9 @@ describe('validateSpec — sizeBy', () => {
       ],
     });
 
-    expect(result.valid).toBe(false);
-    if (!result.valid) {
-      expect(result.errors.join('\n')).toMatch(/finite/);
+    expect(result.status).toBe('invalid');
+    if (result.status !== 'resolved') {
+      expect(issueMessages(result)).toMatch(/finite/);
     }
   });
 
@@ -66,9 +80,9 @@ describe('validateSpec — sizeBy', () => {
       ],
     });
 
-    expect(result.valid).toBe(false);
-    if (!result.valid) {
-      expect(result.errors.join('\n')).toMatch(/finite/);
+    expect(result.status).toBe('invalid');
+    if (result.status !== 'resolved') {
+      expect(issueMessages(result)).toMatch(/finite/);
     }
   });
 
@@ -83,9 +97,9 @@ describe('validateSpec — sizeBy', () => {
       ],
     });
 
-    expect(result.valid).toBe(false);
-    if (!result.valid) {
-      expect(result.errors.join('\n')).toMatch(/range/);
+    expect(result.status).toBe('invalid');
+    if (result.status !== 'resolved') {
+      expect(issueMessages(result)).toMatch(/range/);
     }
   });
 
@@ -100,9 +114,9 @@ describe('validateSpec — sizeBy', () => {
       ],
     });
 
-    expect(result.valid).toBe(false);
-    if (!result.valid) {
-      expect(result.errors.join('\n')).toMatch(/range/);
+    expect(result.status).toBe('invalid');
+    if (result.status !== 'resolved') {
+      expect(issueMessages(result)).toMatch(/range/);
     }
   });
 
@@ -117,7 +131,7 @@ describe('validateSpec — sizeBy', () => {
       ],
     });
 
-    expect(result.valid).toBe(true);
+    expect(result.status).toBe('resolved');
   });
 
   test('accepts sizeBy on non-point geometry (warning only, not error)', () => {
@@ -133,8 +147,8 @@ describe('validateSpec — sizeBy', () => {
       ],
     });
 
-    // sizeBy on non-point is a warning, not an error — spec should still be valid
-    expect(result.valid).toBe(true);
+    // sizeBy on non-point is a warning, not an error — spec should still resolve
+    expect(result.status).toBe('resolved');
   });
 
   test('rejects sizeBy.thresholds with non-finite values', () => {
@@ -152,9 +166,13 @@ describe('validateSpec — sizeBy', () => {
       ],
     });
 
-    expect(result.valid).toBe(false);
-    if (!result.valid) {
-      expect(result.errors.join('\n')).toMatch(/non-finite/);
+    expect(result.status).toBe('invalid');
+    if (result.status !== 'resolved') {
+      expect(issueMessages(result)).toMatch(/non-finite/);
+      const issue = result.issues.find((i) => {
+        return i.code === 'invalid-threshold-value';
+      });
+      expect(issue).toBeDefined();
     }
   });
 
@@ -173,9 +191,13 @@ describe('validateSpec — sizeBy', () => {
       ],
     });
 
-    expect(result.valid).toBe(false);
-    if (!result.valid) {
-      expect(result.errors.join('\n')).toMatch(/ascending/);
+    expect(result.status).toBe('invalid');
+    if (result.status !== 'resolved') {
+      expect(issueMessages(result)).toMatch(/ascending/);
+      const issue = result.issues.find((i) => {
+        return i.code === 'invalid-threshold-order';
+      });
+      expect(issue).toBeDefined();
     }
   });
 
@@ -194,10 +216,10 @@ describe('validateSpec — sizeBy', () => {
       ],
     });
 
-    expect(result.valid).toBe(true);
+    expect(result.status).toBe('resolved');
   });
 
-  test('rejects sizeBy with mode stepped and transform sqrt', () => {
+  test('rejects sizeBy with mode stepped and transform sqrt (schema-level, not a custom check)', () => {
     const result = validateSpec({
       ...pointSpec,
       layers: [
@@ -205,6 +227,8 @@ describe('validateSpec — sizeBy', () => {
           ...pointSpec.layers[0],
           // Type assertion needed: discriminated union forbids this at compile
           // time, but JSON-based specs can still produce this invalid combo.
+          // The JSON Schema's `not` constraint on sizeBy rejects it before any
+          // custom check runs, so this is an 'invalid-schema' issue.
           sizeBy: {
             range: [4, 20],
             mode: 'stepped',
@@ -215,11 +239,37 @@ describe('validateSpec — sizeBy', () => {
       ],
     });
 
-    expect(result.valid).toBe(false);
-    if (!result.valid) {
-      expect(result.errors.join('\n')).toMatch(
-        /sqrt.*stepped|stepped.*sqrt|must NOT be valid/
-      );
+    expect(result.status).toBe('invalid');
+    if (result.status !== 'resolved') {
+      expect(issueMessages(result)).toMatch(/must NOT be valid/);
+      expect(
+        result.issues.every((issue) => {
+          return issue.code === 'invalid-schema';
+        })
+      ).toBe(true);
+    }
+  });
+
+  test('rejects sizeBy in stepped mode without thresholds or an active threshold legend', () => {
+    const result = validateSpec({
+      ...pointSpec,
+      layers: [
+        {
+          ...pointSpec.layers[0],
+          sizeBy: { range: [4, 20], mode: 'stepped' },
+        },
+      ],
+    });
+
+    expect(result.status).toBe('invalid');
+    if (result.status !== 'resolved') {
+      expect(issueMessages(result)).toMatch(/requires thresholds/);
+      const issue = result.issues.find((i) => {
+        return i.code === 'invalid-size-mode';
+      });
+      // No static alternative exists — thresholds depend on the data
+      // distribution, so nothing is computable here.
+      expect(issue?.repair).toBeUndefined();
     }
   });
 });

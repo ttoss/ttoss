@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.12.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.11.0...@ttoss/react-dashboard@0.12.0) (2026-07-20)
+
+### Features
+
+- **react-dashboard:** controlled selection, configurable slot height, and multi-slot mode ([#1151](https://github.com/ttoss/ttoss/issues/1151)) ([f4f0c2d](https://github.com/ttoss/ttoss/commit/f4f0c2dff94d8355c85754cf8a9a0a7965ea7891))
+
+# [0.11.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.9.0...@ttoss/react-dashboard@0.11.0) (2026-07-17)
+
+### Features
+
+- **react-dashboard:** add renderCardDetail and clickableCardFilter for in-grid card expansion ([#1139](https://github.com/ttoss/ttoss/issues/1139)) ([8c4ebf4](https://github.com/ttoss/ttoss/commit/8c4ebf4ae0bad6934473a70c3e40e13e938cf104)), closes [#1138](https://github.com/ttoss/ttoss/issues/1138)
+
 # 0.9.0 (2026-07-14)
 
 ### Features

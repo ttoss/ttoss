@@ -1,8 +1,10 @@
 import * as React from 'react';
 
+import type { GeoVisAction } from '../runtime/action';
 import type { SetViewOptions, SpecPatch } from '../runtime/adapter';
 import type { GeoVisRuntime } from '../runtime/createRuntime';
-import type { PolicyViolation, VisualizationSpec } from '../spec/types';
+import type { GeoVisResult } from '../spec/result';
+import type { VisualizationSpec } from '../spec/types';
 
 /**
  * Snapshot of a feature currently hovered on the map.
@@ -30,12 +32,26 @@ export interface MapHoverInfo {
 
 export interface GeoVisContextValue {
   runtime: GeoVisRuntime | null;
+  /** The last successfully accepted spec — unchanged while `result` is a failure (ADR-0001: nothing renders on failure). */
   spec: VisualizationSpec;
+  /** Low-level escape hatch (PRD-002) — prefer `dispatch` below for anything expressible as one of its actions. */
   applyPatch: (patch: SpecPatch) => void;
   /** Imperatively moves the camera and syncs `spec.view`. Animated by default. */
   setView: (options: SetViewOptions) => void;
-  /** Policy violations detected from spec.metadata on mount. Empty when spec is valid. */
-  policyViolations: PolicyViolation[];
+  /**
+   * Dispatches a closed, typed `GeoVisAction` (ADR-0003) and keeps `spec`/
+   * `result` above in sync on success — the same pattern as `applyPatch`.
+   * Prefer this over `applyPatch` for anything expressible as an action.
+   */
+  dispatch: (action: GeoVisAction) => GeoVisResult;
+  /**
+   * The latest `GeoVisResult` from validating the spec (schema, referential
+   * integrity, and adapter capabilities) plus cartography policy warnings.
+   * `resolved.warnings` carries policy violations — they never block
+   * rendering. Any other status means `spec` still reflects the last good
+   * value and the map was not updated.
+   */
+  result: GeoVisResult;
 }
 
 /**

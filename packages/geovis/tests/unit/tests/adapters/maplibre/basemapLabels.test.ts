@@ -11,7 +11,6 @@ const makeSpec = (
   layerIds: string[] = []
 ): VisualizationSpec => {
   return {
-    id: 'spec',
     engine: 'maplibre',
     basemap: labels === undefined ? {} : { labels },
     sources: [],

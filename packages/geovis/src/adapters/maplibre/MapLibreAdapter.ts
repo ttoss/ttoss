@@ -3,6 +3,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { log } from '@ttoss/logger';
 import maplibregl from 'maplibre-gl';
 
+import type { GeoVisSelection } from '../../runtime/action';
 import type {
   CapabilitySet,
   EngineAdapter,
@@ -22,6 +23,7 @@ import {
   removeMapDataFromSource,
 } from './mapDataFeatureState';
 import { applyLayerPatch, applySourcePatch } from './patchDispatch';
+import { applySelectionToMap } from './selection';
 import { toMaplibreSource } from './sourceTranslation';
 import { syncSourcesAndLayers } from './syncSourcesAndLayers';
 
@@ -283,15 +285,47 @@ const destroyAll = (views: ViewMap): void => {
   views.clear();
 };
 
+/**
+ * Grounded in what `sourceTranslation.ts`/`layerTranslation.ts` actually
+ * translate and what the package's test suite actually exercises — not
+ * aspirational. `dataFeatures.featureState` is narrower than `sourceTypes`:
+ * every source type mounts, but `setFeatureState` joining (`mapData`,
+ * `sizeBy`) only works for `geojson`, whose features carry stable ids.
+ * `dataFeatures.filter` (`VisualizationLayer.filter`, PRD-002) is declared
+ * `geojson`-only for the same "declared means tested" reason, though
+ * MapLibre's native `filter` works on any source with feature properties —
+ * the narrower declaration reflects what's fixture-covered today, not an
+ * engine limitation; it may widen once other source types are tested.
+ * `pitch`/`bearing` are genuinely applied to the camera (see `applySetView`),
+ * unlike the previous `supports3D: false` flag, which was dead and incorrect.
+ */
 const CAPABILITIES: CapabilitySet = {
-  supports3D: false,
-  supportsRaster: true,
-  supportsVectorTiles: true,
-  supportsCustomLayers: true,
+  sourceTypes: [
+    'geojson',
+    'vector-tiles',
+    'raster-tiles',
+    'raster-dem',
+    'image',
+    'video',
+  ],
+  layerGeometries: ['polygon', 'line', 'point', 'symbol', 'heatmap', 'raster'],
+  dataFeatures: {
+    featureState: ['geojson'],
+    filter: ['geojson'],
+  },
+  viewFeatures: {
+    pitch: true,
+    bearing: true,
+  },
 };
 
 const createMapLibreAdapter = (): EngineAdapter => {
   const _views: ViewMap = new Map();
+  // Tracks the selection currently applied on the map(s), so `setSelection`
+  // can clear the previously-selected feature before setting the next one —
+  // mirrors the click hook's old `prevSelectedState` ref, now owned here
+  // since selection is runtime-level state, not React-only (PRD-002 Phase 2).
+  let _prevSelection: GeoVisSelection | null = null;
   return {
     id: 'maplibre',
     getCapabilities: () => {
@@ -311,6 +345,17 @@ const createMapLibreAdapter = (): EngineAdapter => {
       for (const viewState of _views.values()) {
         applySetView(viewState.map, options);
       }
+    },
+    setSelection: (selection) => {
+      for (const viewState of _views.values()) {
+        applySelectionToMap(
+          viewState.map,
+          viewState.spec,
+          _prevSelection,
+          selection
+        );
+      }
+      _prevSelection = selection;
     },
     destroy: () => {
       destroyAll(_views);

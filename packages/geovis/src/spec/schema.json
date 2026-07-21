@@ -6,6 +6,9 @@
   "additionalProperties": false,
   "required": ["engine", "sources", "layers"],
   "properties": {
+    "schemaVersion": {
+      "type": "number"
+    },
     "title": {
       "type": "string"
     },
@@ -21,32 +24,7 @@
       "enum": ["choropleth", "dotDensity", "proportionalCircles"]
     },
     "view": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [],
-      "properties": {
-        "center": {
-          "type": "array",
-          "items": {
-            "type": "number"
-          },
-          "minItems": 2,
-          "maxItems": 2
-        },
-        "zoom": {
-          "type": "number"
-        },
-        "pitch": {
-          "type": "number"
-        },
-        "bearing": {
-          "type": "number"
-        },
-        "projection": {
-          "type": "string",
-          "enum": ["mercator", "vertical-perspective"]
-        }
-      }
+      "$ref": "#/$defs/ViewState"
     },
     "basemap": {
       "type": "object",
@@ -444,6 +422,44 @@
           "propertyName": {
             "type": "string",
             "description": "GeoJSON feature property name for direct data access. When set (and mapDataId is absent), the expression reads from feature.properties[propertyName] via ['get', ...]."
+          },
+          "filter": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["property", "operator", "value"],
+            "properties": {
+              "property": {
+                "type": "string",
+                "minLength": 1
+              },
+              "operator": {
+                "type": "string",
+                "enum": ["eq", "neq", "gt", "gte", "lt", "lte", "in", "not-in"]
+              },
+              "value": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "number"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
           }
         }
       }
@@ -537,9 +553,56 @@
           }
         }
       }
+    },
+    "viewPresets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "view"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "type": "string"
+          },
+          "view": {
+            "$ref": "#/$defs/ViewState"
+          }
+        }
+      }
     }
   },
   "$defs": {
+    "ViewState": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "center": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "zoom": {
+          "type": "number"
+        },
+        "pitch": {
+          "type": "number"
+        },
+        "bearing": {
+          "type": "number"
+        },
+        "projection": {
+          "type": "string",
+          "enum": ["mercator", "vertical-perspective"]
+        }
+      }
+    },
     "CategoricalColorBy": {
       "type": "object",
       "additionalProperties": false,

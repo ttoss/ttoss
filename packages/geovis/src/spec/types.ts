@@ -350,6 +350,37 @@ export interface VisualizationLayer {
    * standard feature-state resolution.
    */
   propertyName?: string;
+  /**
+   * Declarative predicate that hides features not matching it, compiled to
+   * the engine's native filter expression (`dispatch({ type: 'set-filter' })`,
+   * PRD-002). Reads `feature.properties[property]` — the same direct-access
+   * path `propertyName` uses above, not the `mapData`-joined feature-state
+   * value. Gated by `CapabilitySet.dataFeatures.filter` per source type.
+   */
+  filter?: LayerFilter;
+}
+
+/** Comparison used by a `LayerFilter` — a closed set mapped to native engine filter expressions. */
+export type LayerFilterOperator =
+  | 'eq'
+  | 'neq'
+  | 'gt'
+  | 'gte'
+  | 'lt'
+  | 'lte'
+  | 'in'
+  | 'not-in';
+
+/**
+ * Declarative, engine-agnostic filter predicate on one `VisualizationLayer`.
+ * `in`/`not-in` expect `value` to be an array; the other operators expect a
+ * single scalar.
+ */
+export interface LayerFilter {
+  /** GeoJSON feature property to filter on. */
+  property: string;
+  operator: LayerFilterOperator;
+  value: string | number | Array<string | number>;
 }
 
 /**
@@ -442,7 +473,19 @@ export interface VisualizationView {
   layers: string[];
 }
 
+/**
+ * Current `VisualizationSpec` schema version (ADR-0001 consequence).
+ * A spec that omits `schemaVersion` is treated as this version — versioning
+ * is additive, existing unversioned specs are not penalized. A spec that
+ * declares a different version is rejected with a repairable `invalid`
+ * issue rather than validated (or silently misinterpreted) against the
+ * wrong shape.
+ */
+export const SPEC_SCHEMA_VERSION = 1;
+
 export interface VisualizationSpec {
+  /** Schema version this spec was authored against. Omit for the current version — see `SPEC_SCHEMA_VERSION`. */
+  schemaVersion?: number;
   title?: string;
   description?: string;
   engine: 'maplibre';
@@ -489,13 +532,22 @@ export interface VisualizationSpec {
    * Consumers should not set this field directly.
    */
   __resolved?: boolean;
+
+  /**
+   * Named, curated camera positions the AI (or a UI control) can jump to by
+   * id (`dispatch({ type: 'set-view-preset' })`, PRD-002) — bounded to
+   * positions the application actually declared, instead of raw coordinates
+   * an AI would otherwise have to invent.
+   */
+  viewPresets?: ViewPreset[];
 }
 
 export type GeovisSpec = VisualizationSpec;
 
-export interface PolicyViolation {
-  /** Identifies the violated policy rule. */
-  reason: string;
-  /** Human-readable explanation surfaced to the consumer. */
-  message: string;
+/** A named camera position `set-view-preset` can target by `id`. */
+export interface ViewPreset {
+  id: string;
+  /** Human-readable label, e.g. for a UI picker. */
+  label?: string;
+  view: ViewState;
 }

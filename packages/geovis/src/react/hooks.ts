@@ -20,8 +20,8 @@ import {
   buildHoverTracking,
   buildPointerLayerIds,
   clearHover,
-  clearSelected,
   type DecodedHoverTracking,
+  dispatchClearSelection,
   type PrevFeatureState,
   TRACKED_FIELD_SEP,
   TRACKED_RECORD_SEP,
@@ -65,11 +65,12 @@ export const useMapHover = ({
   // the spec object reference changes but the relevant subset does not.
   // Depends on `spec.layers` (not the whole `spec`) so high-frequency spec
   // updates such as `mapData` patches do NOT detach/reattach the handlers.
-  const [trackedKey, pointerLayerIds] = React.useMemo(() => {
-    return [
-      buildHoverTrackedKey(spec.layers),
-      buildPointerLayerIds(spec.layers),
-    ] as const;
+  const trackedKey = React.useMemo(() => {
+    return buildHoverTrackedKey(spec.layers);
+  }, [spec.layers]);
+
+  const pointerLayerIds = React.useMemo(() => {
+    return buildPointerLayerIds(spec.layers);
   }, [spec.layers]);
 
   React.useEffect(() => {
@@ -205,9 +206,8 @@ export const useMapClick = ({
     if (!map) return;
 
     const { tracked, sourceByLayerId } = buildClickTracking(trackedKey);
-    const prevSelectedState: PrevFeatureState = { current: null };
 
-    const handlers = tracked.map(({ layerId, hasSelectedPaint }) => {
+    const handlers = tracked.map(({ layerId }) => {
       return {
         layerId,
         handleClick: buildHandleClick({
@@ -215,8 +215,7 @@ export const useMapClick = ({
           layerId,
           sourceByLayerId,
           setClick,
-          prevSelectedState,
-          needsSelectedState: hasSelectedPaint,
+          runtime,
         }),
       };
     });
@@ -238,7 +237,7 @@ export const useMapClick = ({
         layers: trackedLayerIds,
       });
       if (!hits || hits.length === 0) {
-        clearSelected(map, prevSelectedState);
+        dispatchClearSelection(runtime);
         setClick(null);
       }
     };
@@ -246,7 +245,7 @@ export const useMapClick = ({
 
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        clearSelected(map, prevSelectedState);
+        dispatchClearSelection(runtime);
         setClick(null);
       }
     };
@@ -258,7 +257,7 @@ export const useMapClick = ({
       }
       map.off('click', handleOutsideClick);
       window.removeEventListener('keydown', handleEscape);
-      clearSelected(map, prevSelectedState);
+      dispatchClearSelection(runtime);
       setClick(null);
     };
   }, [runtime, trackedKey]);

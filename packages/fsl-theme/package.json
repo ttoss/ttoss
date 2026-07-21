@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/fsl-theme",
-  "version": "2.0.0",
+  "version": "2.1.2",
   "description": "ttoss theme provider for UI.",
   "keywords": [
     "css-variables",
@@ -18,9 +18,9 @@
     "directory": "packages/fsl-theme"
   },
   "license": "MIT",
-  "author": "ttoss",
+  "author": "Ennio Lopes <enniolopes@gmail.com>",
   "contributors": [
-    "Ennio Politi Lopes <enniolopes@gmail.com>"
+    "Ennio Lopes <enniolopes@gmail.com>"
   ],
   "sideEffects": false,
   "type": "module",
@@ -40,14 +40,18 @@
   "scripts": {
     "build": "tsdown",
     "build:verify": "pnpm run build && tsx scripts/probe-jsdoc-propagation.ts",
-    "test": "jest --projects tests/unit"
+    "test": "tsc --noEmit -p tsconfig.json && jest --projects tests/unit"
   },
   "devDependencies": {
     "@testing-library/react": "^16.3.2",
     "@ttoss/config": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
+    "@types/node": "^24.12.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.0.2",
     "jest": "^30.4.2",
     "react": "^19.2.6",
+    "react-dom": "^19.2.6",
     "ts-morph": "^28.0.0",
     "tsdown": "^0.22.2",
     "tsx": "^4.21.0"

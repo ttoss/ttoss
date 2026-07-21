@@ -12,6 +12,7 @@ import createMapLibreAdapter, {
 import type {
   DataSource,
   HeatmapPaint,
+  RasterPaint,
   SymbolPaint,
   VisualizationLayer,
 } from 'src/spec/types';
@@ -67,6 +68,8 @@ const makeMapMock = () => {
     }),
     setLayoutProperty: jest.fn(),
     setPaintProperty: jest.fn(),
+    setFeatureState: jest.fn(),
+    setFilter: jest.fn(),
     setStyle: jest.fn(),
     setCenter: jest.fn(),
     setZoom: jest.fn(),
@@ -202,13 +205,33 @@ describe('createMapLibreAdapter', () => {
     expect(mapB.remove).not.toHaveBeenCalled();
   });
 
-  test('getCapabilities returns correct capabilities', () => {
+  test('getCapabilities returns the structured capability tree (ADR-0002)', () => {
     const adapter = createMapLibreAdapter();
     expect(adapter.getCapabilities()).toEqual({
-      supports3D: false,
-      supportsRaster: true,
-      supportsVectorTiles: true,
-      supportsCustomLayers: true,
+      sourceTypes: [
+        'geojson',
+        'vector-tiles',
+        'raster-tiles',
+        'raster-dem',
+        'image',
+        'video',
+      ],
+      layerGeometries: [
+        'polygon',
+        'line',
+        'point',
+        'symbol',
+        'heatmap',
+        'raster',
+      ],
+      dataFeatures: {
+        featureState: ['geojson'],
+        filter: ['geojson'],
+      },
+      viewFeatures: {
+        pitch: true,
+        bearing: true,
+      },
     });
   });
 
@@ -229,6 +252,94 @@ describe('createMapLibreAdapter', () => {
         value: '#ff0000',
       });
     }).not.toThrow();
+  });
+});
+
+describe('createMapLibreAdapter — setSelection (PRD-002 select-feature)', () => {
+  const makeSpecWithLayer = () => {
+    return {
+      ...makeSpec(),
+      sources: [
+        {
+          id: 'src-1',
+          type: 'geojson' as const,
+          data: { type: 'FeatureCollection' as const, features: [] },
+        },
+      ],
+      layers: [
+        { id: 'lyr-1', sourceId: 'src-1', geometry: 'polygon' as const },
+      ],
+    };
+  };
+
+  test("applies the selection to every mounted view, keyed by the layer's sourceId", () => {
+    const map = makeMapMock();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(makeContainer(), makeSpecWithLayer(), 'view-a');
+
+    adapter.setSelection?.({ layerId: 'lyr-1', featureId: 'BR' });
+
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'src-1', id: 'BR' },
+      { selected: true }
+    );
+  });
+
+  test('clears the previous selection before applying the next one', () => {
+    const map = makeMapMock();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(makeContainer(), makeSpecWithLayer(), 'view-a');
+
+    adapter.setSelection?.({ layerId: 'lyr-1', featureId: 'BR' });
+    adapter.setSelection?.({ layerId: 'lyr-1', featureId: 'AR' });
+
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'src-1', id: 'BR' },
+      { selected: false }
+    );
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'src-1', id: 'AR' },
+      { selected: true }
+    );
+  });
+
+  test('setSelection does nothing when no map is mounted', () => {
+    const adapter = createMapLibreAdapter();
+    expect(() => {
+      adapter.setSelection?.({ layerId: 'lyr-1', featureId: 'BR' });
+    }).not.toThrow();
+  });
+
+  test('two adapter instances track selection independently', () => {
+    const mapA = makeMapMock();
+    const mapB = makeMapMock();
+    jest
+      .mocked(maplibregl.Map)
+      .mockImplementationOnce(() => {
+        return mapA as never;
+      })
+      .mockImplementationOnce(() => {
+        return mapB as never;
+      });
+
+    const adapterA = createMapLibreAdapter();
+    const adapterB = createMapLibreAdapter();
+    adapterA.mount(makeContainer(), makeSpecWithLayer(), 'view-a');
+    adapterB.mount(makeContainer(), makeSpecWithLayer(), 'view-b');
+
+    adapterA.setSelection?.({ layerId: 'lyr-1', featureId: 'BR' });
+
+    expect(mapA.setFeatureState).toHaveBeenCalledWith(
+      { source: 'src-1', id: 'BR' },
+      { selected: true }
+    );
+    expect(mapB.setFeatureState).not.toHaveBeenCalled();
   });
 });
 
@@ -663,6 +774,27 @@ describe('toMaplibreLayer', () => {
       'heatmap-radius': 20,
       'heatmap-intensity': 1,
       'heatmap-weight': 1,
+    });
+  });
+
+  test('raster → raster layer with raster paint properties', () => {
+    const layer: VisualizationLayer = {
+      ...base,
+      geometry: 'raster',
+      paint: { rasterOpacity: 0.5 } as RasterPaint,
+    };
+    const result = toMaplibreLayer(layer);
+    expect(result).toMatchObject({ type: 'raster' });
+    expect((result as { paint: Record<string, unknown> }).paint).toMatchObject({
+      'raster-opacity': 0.5,
+    });
+  });
+
+  test('raster paint defaults raster-opacity to 1 when unset', () => {
+    const layer: VisualizationLayer = { ...base, geometry: 'raster' };
+    const result = toMaplibreLayer(layer);
+    expect((result as { paint: Record<string, unknown> }).paint).toMatchObject({
+      'raster-opacity': 1,
     });
   });
 

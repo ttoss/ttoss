@@ -25,7 +25,15 @@ export const toCssVarName = (tokenPath: string): string => {
       return `${cssPrefix}${rest}`;
     }
   }
-  return `--tt-${tokenPath.replace(/\./g, '-')}`;
+  // Unregistered path fallback. Semantic extensions drop the `semantic.`
+  // segment so custom families follow the same convention as registered ones
+  // (`semantic.chart.grid` → `--tt-chart-grid`, like `semantic.colors.*` →
+  // `--tt-colors-*`). Core extensions keep their `core-` segment.
+  // `assertDistinctCssVars` guards against collisions in dev.
+  const path = tokenPath.startsWith('semantic.')
+    ? tokenPath.slice('semantic.'.length)
+    : tokenPath;
+  return `--tt-${path.replace(/\./g, '-')}`;
 };
 
 /**
@@ -35,7 +43,7 @@ export const toCssVarName = (tokenPath: string): string => {
  *   `clamp({core.spacing.4}, {core.spacing.6}, {core.spacing.12})`
  *   → `clamp(var(--tt-core-spacing-4), var(--tt-core-spacing-6), var(--tt-core-spacing-12))`
  */
-const inlineRefsToVars = (value: string): string => {
+export const inlineRefsToVars = (value: string): string => {
   return value.replace(COMPOUND_REF_RE, (_match, path) => {
     return `var(${toCssVarName(path)})`;
   });
@@ -283,17 +291,13 @@ const buildReducedMotionVars = (theme: ThemeTokens): Record<string, string> => {
  * contains the coarse overrides, to be emitted inside
  * `@media (any-pointer: coarse)`.
  *
- * Derives every `*.coarse.*` path from `core.sizing.hit.coarse` dynamically,
- * so adding a new step to `CoreSizeHitScale` never silently omits it here.
+ * `hit` is a single floor per pointer profile: the coarse override maps
+ * `semantic.sizing.hit` to `core.sizing.hit.coarse`.
  */
 const buildCoarseHitVars = (theme: ThemeTokens): Record<string, string> => {
-  const vars: Record<string, string> = {};
-  for (const [key, value] of Object.entries(theme.core.sizing.hit.coarse)) {
-    if (typeof value === 'string') {
-      vars[toCssVarName(`semantic.sizing.hit.${key}`)] = value;
-    }
-  }
-  return vars;
+  return {
+    [toCssVarName('semantic.sizing.hit')]: theme.core.sizing.hit.coarse,
+  };
 };
 
 // ---------------------------------------------------------------------------
@@ -438,6 +442,18 @@ export interface BundleCssVarsOptions {
    * multi-theme scenarios (Storybook, micro-frontends).
    */
   themeId?: string;
+  /**
+   * Emit the `@media (prefers-color-scheme)` fallback block so the OS
+   * preference applies before JS runs (and without JS). Only meaningful for
+   * themeId-less bundles. Default `true`.
+   *
+   * Set `false` when the app is deliberately single-default (`defaultMode`
+   * `'light'` or `'dark'` with the alternate reachable only via explicit
+   * toggle) — otherwise dark-OS users would get the alternate on first paint
+   * against the app's configured default. `<ThemeProvider>` / `<ThemeHead>`
+   * derive this automatically from their `defaultMode` prop.
+   */
+  systemModeFallback?: boolean;
 }
 
 /**
@@ -451,6 +467,49 @@ export interface BundleCssVarsResult {
   /** Generates a complete CSS string with base + alternate + coarse blocks. */
   toCssString: () => string;
 }
+
+/**
+ * Build the no-JS / pre-hydration system-mode fallback block.
+ *
+ * Canonical 1-theme model only (no `themeId`): before the runtime (or the SSR
+ * bootstrap script) stamps `data-tt-mode`, and for users with JavaScript
+ * disabled, the alternate mode would otherwise never apply. This block scopes
+ * the alternate diff vars to `@media (prefers-color-scheme: <mode>)` behind
+ * `:root:not([data-tt-mode])`, so it applies exactly while no explicit mode
+ * attribute exists and gets out of the way the moment the runtime writes one
+ * (persisted user choice always wins over the OS preference).
+ */
+const buildSystemModeFallbackBlock = ({
+  mode,
+  vars,
+}: {
+  mode: 'light' | 'dark';
+  vars: Record<string, string | number>;
+}): string => {
+  // Callers only invoke this with a non-empty diff (guarded at the call site).
+  const entries = Object.entries(vars);
+  const selector = ':root:not([data-tt-mode])';
+  const lines = entries.map(([name, value]) => {
+    const val = hasCqUnits(value) ? toViewportFallback(String(value)) : value;
+    return `    ${name}: ${val};`;
+  });
+
+  const cqEntries = entries.filter(([, value]) => {
+    return hasCqUnits(value);
+  });
+  const cqBlock =
+    cqEntries.length > 0
+      ? `\n\n  @supports (width: 1cqi) {\n  ${selector} {\n${cqEntries
+          .map(([name, value]) => {
+            return `      ${name}: ${value};`;
+          })
+          .join('\n')}\n  }\n  }`
+      : '';
+
+  return `@media (prefers-color-scheme: ${mode}) {\n  ${selector} {\n    color-scheme: ${mode};\n${lines.join(
+    '\n'
+  )}\n  }${cqBlock}\n}`;
+};
 
 /**
  * Compute a diff record: only entries in `full` whose values differ from `base`.
@@ -489,7 +548,7 @@ const bundleToCssVars = (
   bundle: ThemeBundle,
   options: BundleCssVarsOptions
 ): BundleCssVarsResult => {
-  const { themeId } = options;
+  const { themeId, systemModeFallback = true } = options;
   const { baseMode, base: baseTheme, alternate } = bundle;
   const alternateMode: 'light' | 'dark' =
     baseMode === 'light' ? 'dark' : 'light';
@@ -569,6 +628,18 @@ const bundleToCssVars = (
       const parts = [baseResult.toCssString()];
       if (Object.keys(diffVars).length > 0) {
         parts.push(alternateResult.toCssString());
+        // Canonical 1-theme model: honor the OS preference before JS runs
+        // (and when JS never runs). Multi-theme (themeId) scoping is
+        // runtime-managed, so the fallback is emitted only for `:root` —
+        // and only when the app follows the OS (`systemModeFallback`).
+        if (!themeId && systemModeFallback) {
+          parts.push(
+            buildSystemModeFallbackBlock({
+              mode: alternateMode,
+              vars: diffVars,
+            })
+          );
+        }
       }
       return parts.join('\n\n');
     },

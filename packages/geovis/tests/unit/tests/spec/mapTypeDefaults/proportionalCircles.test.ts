@@ -12,7 +12,6 @@ const makeSpec = (
   }
 ): VisualizationSpec => {
   return {
-    id: 'test',
     engine: 'maplibre',
     mapType: 'proportionalCircles',
     basemap: {
