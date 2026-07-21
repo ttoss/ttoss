@@ -3,22 +3,13 @@ import { useI18n } from '@ttoss/react-i18n';
 import { Box, Flex, IconButton, Text } from '@ttoss/ui';
 import type * as React from 'react';
 
-import type { GeovisWorkspaceSlotName } from '../context/GeovisWorkspaceContext';
 import { useGeovisWorkspace } from '../hooks/useGeovisWorkspace';
 import { messages } from '../messages';
-import { slotHasContent } from '../slots';
+import { RIGHT_SIDEBAR_SLOTS, slotHasContent } from '../slots';
 import { isColdStart } from '../warnings';
 import { IssueList } from './IssueList';
 import { LeftSidebar } from './LeftSidebar';
 import { RightSidebar } from './RightSidebar';
-
-/** Right-sidebar slots, stacked in this fixed order (ADR-0002). */
-const RIGHT_SIDEBAR_SLOTS: GeovisWorkspaceSlotName[] = [
-  'legend',
-  'warnings',
-  'inspector',
-  'metadata',
-];
 
 /** Default content of the `map` slot: the GeoVis canvas filling the main area. */
 const DefaultMapPanel = () => {

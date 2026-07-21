@@ -11,6 +11,14 @@ import {
 } from './context/GeovisWorkspaceContext';
 import { getResultIssues, isColdStart } from './warnings';
 
+/** Right-sidebar slots, stacked in this fixed order (ADR-0002). */
+export const RIGHT_SIDEBAR_SLOTS: GeovisWorkspaceSlotName[] = [
+  'legend',
+  'warnings',
+  'inspector',
+  'metadata',
+];
+
 /** Whether a slot's `hidden` flag is set. Hidden always wins over content. */
 export const isSlotHidden = ({
   config,

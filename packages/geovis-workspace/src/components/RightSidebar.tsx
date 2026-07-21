@@ -9,6 +9,7 @@ import {
 } from '../context/GeovisWorkspaceContext';
 import { useGeovisWorkspace } from '../hooks/useGeovisWorkspace';
 import { messages } from '../messages';
+import { RIGHT_SIDEBAR_SLOTS } from '../slots';
 import { InspectorPanel } from './InspectorPanel';
 import { MetadataPanel } from './MetadataPanel';
 import { WarningsPanel } from './WarningsPanel';
@@ -104,14 +105,6 @@ const LegendPanel = () => {
     </Flex>
   );
 };
-
-/** Right-sidebar slots, stacked in this fixed order (ADR-0002). */
-const RIGHT_SIDEBAR_SLOTS: GeovisWorkspaceSlotName[] = [
-  'legend',
-  'warnings',
-  'inspector',
-  'metadata',
-];
 
 /** Default panel per right-sidebar slot; `map`/`controls` have no right-sidebar panel. */
 const DEFAULT_PANELS: Record<GeovisWorkspaceSlotName, React.ComponentType> = {
