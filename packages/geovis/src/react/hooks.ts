@@ -21,6 +21,7 @@ import {
   buildPointerLayerIds,
   clearHover,
   clearSelected,
+  type DecodedHoverTracking,
   type PrevFeatureState,
   TRACKED_FIELD_SEP,
   TRACKED_RECORD_SEP,
@@ -32,6 +33,15 @@ interface UseMapHoverParams {
   runtime: GeoVisRuntime | null;
   spec: VisualizationSpec;
 }
+
+// Reused when no polygon hover layers are present (pointer-only mode).
+// All fields are read-only at runtime so sharing across hook instances is safe.
+const EMPTY_HOVER_TRACKING: DecodedHoverTracking = {
+  tracked: [],
+  sourceByLayerId: new Map<string, string>(),
+  hoverPaintLayerIds: new Set<string>(),
+  trackedLayerIds: [],
+};
 
 /**
  * Tracks the hovered feature on every polygon layer that has an `activeLegendId`
@@ -55,24 +65,25 @@ export const useMapHover = ({
   // the spec object reference changes but the relevant subset does not.
   // Depends on `spec.layers` (not the whole `spec`) so high-frequency spec
   // updates such as `mapData` patches do NOT detach/reattach the handlers.
-  const trackedKey = React.useMemo(() => {
-    return buildHoverTrackedKey(spec.layers);
-  }, [spec.layers]);
-
-  const pointerLayerIds = React.useMemo(() => {
-    return buildPointerLayerIds(spec.layers);
+  const [trackedKey, pointerLayerIds] = React.useMemo(() => {
+    return [
+      buildHoverTrackedKey(spec.layers),
+      buildPointerLayerIds(spec.layers),
+    ] as const;
   }, [spec.layers]);
 
   React.useEffect(() => {
-    if (!runtime) return;
-    if (!trackedKey) return;
+    if (!runtime || (!trackedKey && pointerLayerIds.size === 0)) return;
 
     const map = runtime.getAdapter().getNativeInstance() as MapLibreMap | null;
     if (!map) return;
 
     const { tracked, sourceByLayerId, hoverPaintLayerIds, trackedLayerIds } =
-      buildHoverTracking(trackedKey);
+      trackedKey ? buildHoverTracking(trackedKey) : EMPTY_HOVER_TRACKING;
     const prevHoveredState: PrevFeatureState = { current: null };
+    // Shared flag: set by the global handler (fires first) so polygon handlers
+    // (fire after) skip their setHover call when the cursor is over a point layer.
+    const pointHovering = { current: false };
 
     const handlers = tracked.map(({ layerId }) => {
       return {
@@ -85,23 +96,23 @@ export const useMapHover = ({
           lastPointRef,
           prevHoveredState,
           hoverPaintLayerIds,
+          pointHovering,
         }),
       };
     });
 
+    // Do NOT clear lastPointRef here: some browsers fire a synthetic
+    // `mouseleave` on alt-tab; the window-focus recheck restores the tooltip.
     const handleLeave = () => {
-      // Do NOT clear lastPointRef here. Some browsers (Windows/Linux) fire a
-      // synthetic `mouseleave` when the user alt-tabs or switches windows.
-      // Retaining the last known position lets the window-focus recheck call
-      // `queryRenderedFeatures` on that point and restore the tooltip if the
-      // cursor is genuinely still over a tracked feature. If the cursor has
-      // moved away, `buildHandleWindowFocus` calls `clearHover` regardless.
-      clearHover(map, setHover, prevHoveredState);
+      return clearHover(map, setHover, prevHoveredState);
     };
 
     const handleGlobalCursor = buildHandleGlobalCursor({
       map,
       pointerLayerIds,
+      trackedLayerIds,
+      setHover,
+      pointHovering,
     });
     map.on('mousemove', handleGlobalCursor);
 

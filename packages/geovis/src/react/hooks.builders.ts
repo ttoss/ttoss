@@ -184,6 +184,13 @@ export interface BuildHandleMoveParams {
   prevHoveredState: PrevFeatureState;
   /** Layer IDs that have `hoverPaint` declared; drives `setFeatureState({ hover })`. */
   hoverPaintLayerIds: Set<string>;
+  /**
+   * Shared ref set by `buildHandleGlobalCursor` (which runs first) to signal
+   * that the cursor is currently over a pointer/click layer. When `true` this
+   * handler returns early so the point-layer hover is not overwritten by a
+   * polygon layer's `mousemove` event that fires immediately after.
+   */
+  pointHovering: { current: boolean };
 }
 
 export const buildHandleMove = ({
@@ -194,8 +201,13 @@ export const buildHandleMove = ({
   lastPointRef,
   prevHoveredState,
   hoverPaintLayerIds,
+  pointHovering,
 }: BuildHandleMoveParams) => {
   return (event: MapLayerMouseEvent) => {
+    // The global mousemove handler (buildHandleGlobalCursor) fires before
+    // layer-scoped events and sets this flag when the cursor is over a pointer
+    // layer. Skip polygon hover update so the point tooltip takes priority.
+    if (pointHovering.current) return;
     // Prefer the delegated `features` payload (already scoped to `layerId`)
     // to avoid an extra `queryRenderedFeatures` call on every mousemove and
     // to disambiguate when multiple tracked layers overlap at the cursor.
@@ -207,7 +219,7 @@ export const buildHandleMove = ({
       clearHover(map, setHover, prevHoveredState);
       return;
     }
-    const resolvedLayerId = feature.layer?.id ?? layerId;
+    const resolvedLayerId = feature.layer ? feature.layer.id : layerId;
     const sourceId = sourceByLayerId.get(resolvedLayerId);
     // Defensive: if the source mapping is missing for any reason, treat the
     // hover as cleared so the cursor/tooltip do not stay stuck on a stale
@@ -415,21 +427,35 @@ export interface BuildHandleGlobalCursorParams {
   map: MapLibreMap;
   /** Layer IDs that declare `click` or `clickAnchor`; only these get `cursor: pointer`. */
   pointerLayerIds: Set<string>;
+  /** Polygon hover-tracked layer IDs; used to avoid clearing hover when the cursor moves onto a polygon. */
+  trackedLayerIds: string[];
+  setHover: React.Dispatch<React.SetStateAction<MapHoverInfo | null>>;
+  /**
+   * Shared ref written here (global fires first) and read by `buildHandleMove`
+   * (layer-scoped fires after). Set to `true` while the cursor is over a pointer
+   * layer so the polygon handler skips its own `setHover` call.
+   */
+  pointHovering: { current: boolean };
 }
 
 /**
- * Builds the global (non-layer-scoped) `mousemove` handler that sets the map
- * canvas cursor. Because MapLibre dispatches map-level `mousemove` before
- * layer-scoped events, this handler runs first and its value is then overridden
- * by per-layer handlers — which is fine: the per-layer handlers do not touch
- * the cursor, so this handler's decision always stands.
+ * Builds the global (non-layer-scoped) `mousemove` handler that controls the
+ * map canvas cursor and drives hover-tooltip state for click/point layers.
  *
- * Sets `pointer` when the cursor is over any layer in `pointerLayerIds`,
- * `default` otherwise (including when `pointerLayerIds` is empty).
+ * Because MapLibre dispatches map-level `mousemove` before layer-scoped events,
+ * this handler runs first. It writes `pointHovering.current` so the polygon
+ * handlers that fire immediately after know whether to skip their `setHover`
+ * call — preventing the polygon tooltip from overwriting the point tooltip.
+ *
+ * Uses `feature.source` (the MapLibre-native source ID) rather than a spec
+ * lookup, so the sourceId is always correct regardless of layer ID suffixes.
  */
 export const buildHandleGlobalCursor = ({
   map,
   pointerLayerIds,
+  trackedLayerIds,
+  setHover,
+  pointHovering,
 }: BuildHandleGlobalCursorParams) => {
   return (event: { point: { x: number; y: number } }) => {
     const hits =
@@ -439,7 +465,32 @@ export const buildHandleGlobalCursor = ({
             { layers: [...pointerLayerIds] }
           )
         : [];
-    map.getCanvas().style.cursor = hits.length > 0 ? 'pointer' : 'default';
+    if (hits.length > 0) {
+      map.getCanvas().style.cursor = 'pointer';
+      const feature = hits[0];
+      const rect = map.getCanvas().getBoundingClientRect();
+      setHover({
+        layerId: feature.layer.id,
+        sourceId: feature.source,
+        featureId: feature.id ?? '',
+        value: null,
+        point: { x: rect.left + event.point.x, y: rect.top + event.point.y },
+      });
+      pointHovering.current = true;
+    } else {
+      map.getCanvas().style.cursor = 'default';
+      if (pointHovering.current) {
+        pointHovering.current = false;
+        const polygonHits =
+          trackedLayerIds.length > 0
+            ? map.queryRenderedFeatures(
+                [event.point.x, event.point.y] as [number, number],
+                { layers: trackedLayerIds }
+              )
+            : [];
+        if (polygonHits.length === 0) setHover(null);
+      }
+    }
   };
 };
 
