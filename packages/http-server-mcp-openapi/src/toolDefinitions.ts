@@ -135,11 +135,24 @@ export const buildInputSchema = (
   };
 };
 
+/**
+ * Deduplicates parameter entries by `name`, keeping the last occurrence. When
+ * path-item-level and operation-level parameters are concatenated (operation
+ * last), this makes the operation-level entry win — as the OpenAPI spec requires.
+ */
+const dedupeByName = <T extends { name: string }>(items: T[]): T[] => {
+  const byName = new Map<string, T>();
+  for (const item of items) {
+    byName.set(item.name, item);
+  }
+  return [...byName.values()];
+};
+
 export const extractPathParams = (args: {
   parameters?: Array<{ name?: string; in?: string; [key: string]: unknown }>;
   spec: OpenApiSpec;
 }): Array<{ name: string; camelName: string }> => {
-  return (args.parameters || [])
+  const params = (args.parameters || [])
     .map((p) => {
       return resolveParameter(p, args.spec);
     })
@@ -152,6 +165,7 @@ export const extractPathParams = (args: {
         camelName: snakeToCamel(p.name || ''),
       };
     });
+  return dedupeByName(params);
 };
 
 export const extractQueryParams = (args: {
@@ -164,7 +178,7 @@ export const extractQueryParams = (args: {
   required: boolean;
   type: string;
 }> => {
-  return (args.parameters || [])
+  const params = (args.parameters || [])
     .map((p) => {
       return resolveParameter(p, args.spec);
     })
@@ -180,6 +194,7 @@ export const extractQueryParams = (args: {
         type: p.schema?.type || 'string',
       };
     });
+  return dedupeByName(params);
 };
 
 const resolveBodySchema = (args: {
@@ -259,6 +274,16 @@ export const processOperation = (args: {
   operation: OperationSpec;
   spec: OpenApiSpec;
   options: Required<OpenApiToToolsOptions>;
+  /**
+   * Parameters declared at the path-item level (shared by every operation on
+   * the path). Merged ahead of the operation's own parameters so operation-level
+   * entries win on a `name`+`in` clash.
+   */
+  pathItemParameters?: Array<{
+    name?: string;
+    in?: string;
+    [key: string]: unknown;
+  }>;
 }): ToolDefinition | null => {
   const httpMethod = args.method.toUpperCase();
   if (!['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].includes(httpMethod)) {
@@ -273,13 +298,20 @@ export const processOperation = (args: {
 
   const toolName = operationIdToToolName(args.operation.operationId);
 
+  // OpenAPI applies path-item-level parameters to every operation on the path;
+  // operation-level parameters override them on a matching name+in.
+  const parameters = [
+    ...(args.pathItemParameters ?? []),
+    ...(args.operation.parameters ?? []),
+  ];
+
   const pathParams = extractPathParams({
-    parameters: args.operation.parameters || [],
+    parameters,
     spec: args.spec,
   });
 
   const queryParams = extractQueryParams({
-    parameters: args.operation.parameters || [],
+    parameters,
     spec: args.spec,
   });
 
@@ -317,14 +349,23 @@ export const processPath = (args: {
   spec: OpenApiSpec;
   options: Required<OpenApiToToolsOptions>;
 }): ToolDefinition[] => {
+  // `parameters` is a path-item-level key (shared params), not an operation.
+  const rawPathItemParameters = (args.pathItem as { parameters?: unknown })
+    .parameters;
+  const pathItemParameters = Array.isArray(rawPathItemParameters)
+    ? rawPathItemParameters
+    : [];
+
   const tools: ToolDefinition[] = [];
   for (const [method, operation] of Object.entries(args.pathItem)) {
+    if (method === 'parameters') continue;
     const tool = processOperation({
       pathTemplate: args.pathTemplate,
       method,
       operation,
       spec: args.spec,
       options: args.options,
+      pathItemParameters,
     });
     if (tool) {
       tools.push(tool);

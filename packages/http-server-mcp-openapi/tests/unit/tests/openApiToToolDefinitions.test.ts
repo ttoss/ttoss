@@ -1,4 +1,8 @@
-import { openApiToToolDefinitions, type ToolDefinition } from 'src/index';
+import {
+  openApiToToolDefinitions,
+  processOperation,
+  type ToolDefinition,
+} from 'src/index';
 
 import { testSpec } from '../fixtures/openApiSpec';
 
@@ -213,6 +217,134 @@ describe('openApiToToolDefinitions', () => {
 
     test('handles a spec with no paths', () => {
       expect(openApiToToolDefinitions({ spec: {} })).toEqual([]);
+    });
+  });
+
+  describe('path-item-level parameters', () => {
+    const spec = {
+      paths: {
+        '/projects/{project_id}/agents/{agent_id}': {
+          // Shared across every operation on this path (incl. a $ref and a query param).
+          parameters: [
+            {
+              name: 'project_id',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+            },
+            { $ref: '#/components/parameters/AgentId' },
+            {
+              name: 'verbose',
+              in: 'query',
+              required: false,
+              schema: { type: 'boolean' },
+            },
+          ],
+          get: { operationId: 'getAgent', description: 'Get agent' },
+          delete: { operationId: 'deleteAgent', description: 'Delete agent' },
+        },
+      },
+      components: {
+        parameters: {
+          AgentId: {
+            name: 'agent_id',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+          },
+        },
+      },
+    };
+    const tools = openApiToToolDefinitions({ spec });
+    const get = tools.find((t) => {
+      return t.name === 'get-agent';
+    })!;
+
+    test('applies path-item params (including a $ref) to the operation', () => {
+      expect(get.path({ projectId: 'p1', agentId: 'a1' })).toBe(
+        '/projects/p1/agents/a1'
+      );
+      expect(get.inputSchema.required).toEqual(
+        expect.arrayContaining(['projectId', 'agentId'])
+      );
+      const props = get.inputSchema.properties as Record<string, unknown>;
+      expect(props.verbose).toEqual({ type: 'boolean', description: '' });
+    });
+
+    test('every operation on the path inherits the shared params', () => {
+      const del = tools.find((t) => {
+        return t.name === 'delete-agent';
+      })!;
+      expect(del.path({ projectId: 'p1', agentId: 'a1' })).toBe(
+        '/projects/p1/agents/a1'
+      );
+      expect(del.inputSchema.required).toEqual(
+        expect.arrayContaining(['projectId', 'agentId'])
+      );
+    });
+
+    test('operation-level parameter overrides a path-item one on name+in', () => {
+      const [tool] = openApiToToolDefinitions({
+        spec: {
+          paths: {
+            '/things': {
+              parameters: [
+                {
+                  name: 'limit',
+                  in: 'query',
+                  required: false,
+                  description: 'shared',
+                  schema: { type: 'integer' },
+                },
+              ],
+              get: {
+                operationId: 'listThings',
+                parameters: [
+                  {
+                    name: 'limit',
+                    in: 'query',
+                    required: true,
+                    description: 'op',
+                    schema: { type: 'integer' },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      });
+      const props = tool.inputSchema.properties as Record<
+        string,
+        { description?: string }
+      >;
+      // No duplicate `limit`; the operation-level definition wins.
+      expect(Object.keys(props)).toEqual(['limit']);
+      expect(props.limit.description).toBe('op');
+      expect(tool.inputSchema.required).toEqual(['limit']);
+    });
+
+    test('processOperation works when called without path-item parameters', () => {
+      const tool = processOperation({
+        pathTemplate: '/x/{id}',
+        method: 'get',
+        operation: {
+          operationId: 'getX',
+          parameters: [
+            {
+              name: 'id',
+              in: 'path',
+              required: true,
+              schema: { type: 'string' },
+            },
+          ],
+        },
+        spec: {},
+        options: {
+          excludeExtension: 'x-mcp-exclude',
+          serverManagedExtension: 'x-mcp-server-managed',
+        },
+      });
+      expect(tool?.path({ id: 'a' })).toBe('/x/a');
     });
   });
 });
