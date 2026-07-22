@@ -52,9 +52,9 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 
 ### F-007 — multi-field rows have no column alignment: Table demanded
 
-- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` catalog (Settings block) · **Severity:** gap · **Status:** open — pulls Wave-3 `Table`
+- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` catalog (Settings block) · **Severity:** gap · **Status:** ✅ fixed (same day — `Table` shipped, Settings retrofitted)
 - The team-members list is name + email + role + actions per row. `GridList` rows are independent flex lines, so fields do not column-align across rows (badges and actions sit ragged, scanning down a column is impossible), and there is no columnheader semantics or sorting. This is the evidence the ROADMAP predicted: a Settings/CRUD flow demands `Table` (root + columnheader + row + cell), not a list.
-- **Workaround:** `GridListItem` with a `Stack`-composed row — acceptable for 3 members, degrades with realistic data.
+- **Action:** `Table`/`TableHeader`/`TableColumn`/`TableBody`/`TableRow`/`TableCell` shipped in fsl-ui (ADR-007 split, sorting via `action.sortAscending`/`sortDescending` intents, row-click selection). The Settings block now renders a sortable table. Deferred until demanded: checkbox selection column, column resizing, virtualization.
 
 ### F-008 — `Select` without typeahead: ComboBox demanded
 
@@ -72,3 +72,16 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 - **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` `Badge` semantics · **Severity:** paper-cut · **Status:** open
 - Role chips ("Admin", "Editor") are descriptive, not evaluative — but the only chip-shaped primitive is `Badge` (Entity = Feedback, valence vocabulary). The block uses `Badge` with the neutral `primary` evaluation, which renders fine but blurs the Feedback entity. `TagGroup` is Selection (interactive), so it is not the answer either.
 - **Backlog:** decide whether descriptive chips are a legitimate `Badge` use (document it) or a small Structure-entity `Tag` primitive.
+
+### F-011 — Table sorting types leaked a react-aria-components import
+
+- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` `Table` API · **Severity:** paper-cut · **Status:** ✅ fixed (same day)
+- Typing `sortDescriptor`/`onSortChange` state required importing `SortDescriptor` from `react-aria-components` — a transitive dependency the consumer would have to install directly (pnpm isolation blocks the import otherwise). Found while retrofitting this block.
+- **Action:** fsl-ui re-exports `SortDescriptor`/`SortDirection` from its root entry.
+
+### F-012 — icons never rendered in production builds (silent addIcon rejection)
+
+- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` Icon layer (`glyphs.ts`) · **Severity:** blocker · **Status:** ✅ fixed (same day)
+- Two stacked silent failures, found only by checking a real browser (the Table sort arrow was missing — then so was every other glyph: Select chevron, Toast close, Checkbox check): (1) camelCase intents produced Iconify-invalid registry names (`fsl-ui:action-sortAscending` — Iconify allows only lowercase `[a-z0-9-]`); (2) far worse, Node-mode CJS interop in Vite/Rolldown bundles wraps the per-icon lucide modules so `addIcon` received `{ __esModule, default: data }` instead of the icon data — **every registration since B1 was silently rejected in production builds** and every icon fell back to a (blocked) Iconify API fetch. Jest never saw it: Babel interop unwraps `.default`, and jsdom asserts attributes, not rendered glyphs.
+- **Action:** `iconifyName` kebab-cases camelCase humps; `unwrapGlyph` normalizes both interop shapes; `ensureIconGlyphs` now **throws** when `addIcon` returns false (registration failure is a hard bug, never silent); regression tests for name validity. Verified in the built Studio: glyph status `rendered`, sort arrow visible.
+- **Lesson for the gate:** DOM-level suites cannot see this class of failure — the per-block visual check in a real browser is load-bearing, not cosmetic.

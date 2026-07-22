@@ -31,7 +31,8 @@ test('renders the team list with no accessibility violations', async () => {
     screen.getByRole('heading', { name: 'Team members' })
   ).toBeInTheDocument();
   const list = screen.getByRole('grid', { name: 'Team members' });
-  expect(within(list).getAllByRole('row')).toHaveLength(3);
+  // 1 header row + 3 data rows.
+  expect(within(list).getAllByRole('row')).toHaveLength(4);
   expect(screen.getByText('ada@ttoss.dev')).toBeInTheDocument();
 
   expect(await axe(container)).toHaveNoViolations();
@@ -65,7 +66,7 @@ test('inviting a member validates, adds the row, and toasts', async () => {
 
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   const list = screen.getByRole('grid', { name: 'Team members' });
-  expect(within(list).getAllByRole('row')).toHaveLength(4);
+  expect(within(list).getAllByRole('row')).toHaveLength(5);
   expect(within(list).getByText('katherine@ttoss.dev')).toBeInTheDocument();
   expect(await screen.findByText('Invitation sent')).toBeInTheDocument();
 });
@@ -80,7 +81,7 @@ test('cancelling the invite dialog leaves the list unchanged', async () => {
 
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   const list = screen.getByRole('grid', { name: 'Team members' });
-  expect(within(list).getAllByRole('row')).toHaveLength(3);
+  expect(within(list).getAllByRole('row')).toHaveLength(4);
 });
 
 test('removing a member requires the two-click destructive arming', async () => {
@@ -108,7 +109,7 @@ test('removing a member requires the two-click destructive arming', async () => 
     within(screen.getByRole('grid', { name: 'Team members' })).getAllByRole(
       'row'
     )
-  ).toHaveLength(2);
+  ).toHaveLength(3);
   expect(await screen.findByText('Member removed')).toBeInTheDocument();
 });
 
@@ -125,4 +126,28 @@ test('cancelling the destructive confirm keeps the member', async () => {
 
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   expect(screen.getByText('grace@ttoss.dev')).toBeInTheDocument();
+});
+
+test('sorting by name flips the row order', async () => {
+  const user = userEvent.setup();
+  renderBlock();
+
+  expect(screen.getAllByRole('rowheader')[0]).toHaveTextContent('Ada Lovelace');
+
+  const nameHeader = screen.getByRole('columnheader', { name: /Name/ });
+  expect(nameHeader).toHaveAttribute('aria-sort', 'ascending');
+
+  await user.click(nameHeader);
+
+  expect(nameHeader).toHaveAttribute('aria-sort', 'descending');
+  expect(screen.getAllByRole('rowheader')[0]).toHaveTextContent('Grace Hopper');
+
+  // Switching to another sortable column resets to ascending.
+  const emailHeader = screen.getByRole('columnheader', { name: /Email/ });
+  await user.click(emailHeader);
+
+  expect(emailHeader).toHaveAttribute('aria-sort', 'ascending');
+  expect(nameHeader).toHaveAttribute('aria-sort', 'none');
+  // ada@ < alan@ < grace@ — Ada leads when sorted by email.
+  expect(screen.getAllByRole('rowheader')[0]).toHaveTextContent('Ada Lovelace');
 });

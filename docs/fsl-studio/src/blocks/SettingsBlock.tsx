@@ -10,13 +10,18 @@ import {
   DialogTrigger,
   Form,
   FormSubmit,
-  GridList,
-  GridListItem,
   Heading,
   Select,
   SelectItem,
+  type SortDescriptor,
   Stack,
   Surface,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
   Text,
   TextField,
   TextFieldControl,
@@ -179,13 +184,26 @@ const InviteForm = ({
 };
 
 /**
- * Block: a settings screen managing a team — list, invite (Create), and
- * destructive removal (Delete). It proves Collection rows with mixed
- * content, the Dialog composite hosting a validated form, the
+ * Block: a settings screen managing a team — sortable table, invite
+ * (Create), and destructive removal (Delete). It proves the Table
+ * composite (column alignment, sorting, rowheader semantics — friction
+ * F-007's fix), the Dialog hosting a validated form, the
  * consequence-driven two-click destructive confirm, and Toast feedback.
  */
 export const SettingsBlock = () => {
   const [members, setMembers] = React.useState<Member[]>(INITIAL_MEMBERS);
+  const [sort, setSort] = React.useState<SortDescriptor>({
+    column: 'name',
+    direction: 'ascending',
+  });
+
+  const sortedMembers = React.useMemo(() => {
+    const key = sort.column === 'email' ? 'email' : 'name';
+    const order = sort.direction === 'descending' ? -1 : 1;
+    return [...members].sort((a, b) => {
+      return a[key].localeCompare(b[key]) * order;
+    });
+  }, [members, sort]);
 
   const invite = (values: InviteValues) => {
     setMembers((current) => {
@@ -244,31 +262,39 @@ export const SettingsBlock = () => {
             </DialogModal>
           </DialogTrigger>
         </Stack>
-        <GridList aria-label="Team members">
-          {members.map((member) => {
-            return (
-              <GridListItem
-                key={member.id}
-                id={member.id}
-                textValue={member.name}
-              >
-                <Stack
-                  direction="horizontal"
-                  gap="md"
-                  align="center"
-                  justify="between"
-                  wrap
-                >
-                  <Stack gap="xs">
+        <Table
+          aria-label="Team members"
+          sortDescriptor={sort}
+          onSortChange={setSort}
+        >
+          <TableHeader>
+            <TableColumn id="name" isRowHeader allowsSorting>
+              Name
+            </TableColumn>
+            <TableColumn id="email" allowsSorting>
+              Email
+            </TableColumn>
+            <TableColumn id="role">Role</TableColumn>
+            <TableColumn id="actions">Actions</TableColumn>
+          </TableHeader>
+          <TableBody>
+            {sortedMembers.map((member) => {
+              return (
+                <TableRow key={member.id} id={member.id}>
+                  <TableCell>
                     <Text as="span" variant="label-md">
                       {member.name}
                     </Text>
+                  </TableCell>
+                  <TableCell>
                     <Text as="span" variant="body-sm" tone="muted">
                       {member.email}
                     </Text>
-                  </Stack>
-                  <Stack direction="horizontal" gap="md" align="center">
+                  </TableCell>
+                  <TableCell>
                     <Badge>{ROLE_LABEL[member.role]}</Badge>
+                  </TableCell>
+                  <TableCell>
                     <ConfirmationDialog
                       trigger={
                         <Button evaluation="muted" consequence="destructive">
@@ -287,12 +313,12 @@ export const SettingsBlock = () => {
                     >
                       They will immediately lose access to the workspace.
                     </ConfirmationDialog>
-                  </Stack>
-                </Stack>
-              </GridListItem>
-            );
-          })}
-        </GridList>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
       </Stack>
     </Surface>
   );

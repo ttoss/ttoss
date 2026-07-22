@@ -68,16 +68,17 @@ export const BlocksPage = () => {
                   What this block proves
                 </Heading>
                 <Text variant="body-sm" tone="muted">
-                  A CRUD flow end-to-end: Collection rows with mixed content
-                  (GridList), a Dialog hosting a validated invite form, the
-                  consequence-driven two-click destructive confirm
+                  A CRUD flow end-to-end: a sortable Table (columnheaders,
+                  keyboard grid navigation — shipped from the friction log this
+                  block produced, F-007), a Dialog hosting a validated invite
+                  form, the consequence-driven two-click destructive confirm
                   (ConfirmationDialog), and Toast feedback from a shared queue.
                 </Text>
                 <Text variant="body-sm" tone="muted">
-                  Try it: invite a member (empty submit shows the invalid
-                  pipeline, including the Select role), then remove one — the
-                  destructive confirm arms on the first click and commits on the
-                  second.
+                  Try it: sort by Name or Email, invite a member (empty submit
+                  shows the invalid pipeline, including the Select role), then
+                  remove one — the destructive confirm arms on the first click
+                  and commits on the second.
                 </Text>
               </Stack>
             </Surface>
