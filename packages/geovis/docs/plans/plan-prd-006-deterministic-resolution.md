@@ -106,12 +106,16 @@ export type ResolveResult =
       status: 'resolved';
       spec: VisualizationSpec;
       warnings: CatalogIssue[];
-      trace: ResolutionTraceEntry[]; // Should item: exposed via spec.metadata, feeds the explain mode (ADR-0004's context packet, consumed one layer up by the application)
+      trace: ResolutionTraceEntry[]; // Should item — see below for how this reaches the explain mode
     }
   | { status: ResolveResultStatus; issues: CatalogIssue[] };
 ```
 
-`trace` is attached under `spec.metadata` (an existing free-form field on `VisualizationSpec` — confirmed against `packages/geovis/src/spec/types.ts`) rather than as a new top-level `VisualizationSpec` field, so this plan needs no further `@ttoss/geovis` schema change beyond D2's export to ship the Should item.
+The first revision of this plan attached `trace` under `spec.metadata`, claiming that fed "the explain mode (ADR-0004's context packet)". That claim doesn't hold up: `buildContextPacket()` in `packages/geovis/src/runtime/contextPacket.ts` derives `ContextPacket` from `spec.mapType`, `spec.sources`, `spec.layers`, `spec.legends`, and `spec.viewPresets` only — it never reads `spec.metadata`, so a `metadata.trace` field would sit there unread, not "feed" anything. Worse, `spec.metadata` (`Record<string, unknown>`) is not truly free-form scratch space either: `GeoVisProvider.checkPolicies` already reads specific reserved keys off it (`isPolicyInvalid`, `invalidReason`, `metricField`, `normalizedField`, …) for the cartography-policy feature, so adding another ad hoc key there recreates the same grab-bag-record pattern instead of using a real, typed channel.
+
+`ContextPacket`'s own docstring says it "grows one field per PRD-002 phase" — but that growth happens inside `@ttoss/geovis`, and `@ttoss/geovis-catalog` depends on `@ttoss/geovis`, never the reverse; `buildContextPacket()` cannot know about a `@ttoss/geovis-catalog` type like `ResolutionTraceEntry` without an inverted, circular package dependency. So `trace` cannot literally live inside `ContextPacket` either, without an upstream `@ttoss/geovis` change this plan has no product mandate to request (unlike D2's `resolveSpecFromMapType` export, which PRD-006 explicitly names as a reuse target).
+
+The fix: `trace` stays exactly where D3 already puts it — a field on `resolve()`'s own `ResolveResult`, nothing more — and this plan does not touch `VisualizationSpec`, `spec.metadata`, or `ContextPacket` at all. The application is the one that already holds both artifacts after generation (it called `resolve()` to get `ResolveResult`, then mounts `result.spec` and calls `runtime.getContextPacket()` for the same turn) and is the correct, and only, place to combine them for whatever it sends the model — e.g. `{ ...packet, resolutionTrace: result.trace }` — exactly the kind of per-application composition PRD-006's own Won't item ("per-application business rules") reserves to the caller, not the package. No new type is recreated to carry this composition; it is documentation guidance, not package surface.
 
 ## Phases
 
@@ -154,10 +158,10 @@ Implement `warnOn` rule application (D4) and the `insufficient-data` status (D7)
 
 ### Phase 4 — Resolution trace
 
-Implement `ResolutionTraceEntry`/`trace` (D7), populated with one entry per decision `resolve()` makes: task-rule lookup, dataset join selection (surfacing PRD-005's `datasetId` resolution when it was inferred rather than supplied), map-type choice, legend choice.
+Implement `ResolutionTraceEntry`/`trace` (D7) directly on `ResolveResult` — no `spec` or `ContextPacket` involvement — populated with one entry per decision `resolve()` makes: task-rule lookup, dataset join selection (surfacing PRD-005's `datasetId` resolution when it was inferred rather than supplied), map-type choice, legend choice. Add the composition example from D7 (`{ ...packet, resolutionTrace: result.trace }`) to `README.md`'s `resolve()` section so applications see the intended combination point without this package needing to implement it.
 
-**Demo:** `result.spec.metadata.trace` for a `distribution` intent lists at least a `'mapType'` and a `'joinedDataset'` entry, each with a human-readable `reason`.
-**Acceptance:** every Phase 2 fixture's resolved result has a non-empty `trace`; trace entries never reference raw `data` values (metadata/decisions only, consistent with the packet's metadata-only rule from `@ttoss/geovis` ADR-0004).
+**Demo:** `result.trace` for a `distribution` intent lists at least a `'mapType'` and a `'joinedDataset'` entry, each with a human-readable `reason`; a small runnable README snippet shows `runtime.getContextPacket()`'s output merged with `result.trace`.
+**Acceptance:** every Phase 2 fixture's resolved result has a non-empty `trace`; trace entries never reference raw `data` values (decisions/metadata only, consistent with the packet's own metadata-only rule from `@ttoss/geovis` ADR-0004, even though `trace` itself never enters the packet type); a test confirms `resolve()`'s output has no `metadata` side-effect on `spec` (guards against the trace-placement mistake this phase's plan previously made).
 
 ### Phase 5 — Extension points and docs
 
@@ -184,5 +188,7 @@ R4's exit criterion ("an AI can only reference catalog entries; the resolver pro
 - Depends on `packages/geovis-catalog` shipping both prior plans' exports (`Catalog`, `CatalogIssue`, `validateCatalog`, `AnalyticalIntent`, `IntentResult`, `validateIntent`) — none of this exists until those plans land.
 - `packages/geovis/src/index.ts` confirmed **not** to export `resolveSpecFromMapType` (only `SEQUENTIAL_PALETTES` from `./spec/mapTypeDefaults/palettes` is re-exported) — this is the finding behind D2/Phase 0, corrected from the prior revision of this plan, which assumed the function was already publicly reusable.
 - `packages/geovis/src/spec/mapTypeDefaults.ts`'s `resolveSpecFromMapType(spec: VisualizationSpec): VisualizationSpec` confirmed as a pure function operating on a spec whose `mapData[].data` already holds real values — it does not fetch data, which is why D3 adds a `data` parameter to this plan's `resolve()` rather than matching PRD-006's literal two-argument text.
-- `packages/geovis/src/spec/types.ts`'s `MapData.data: MapDataRow[]` and `VisualizationSpec`'s free-form `metadata` field (used by D7's `trace`) confirmed present, so no further `@ttoss/geovis` type changes are required by this plan beyond D2's export.
+- `packages/geovis/src/spec/types.ts`'s `MapData.data: MapDataRow[]` confirmed present for D3's `data` parameter; no `@ttoss/geovis` type changes are required by this plan beyond D2's export.
+- `packages/geovis/src/runtime/contextPacket.ts`'s `buildContextPacket()` confirmed to read only `spec.mapType`/`sources`/`layers`/`legends`/`viewPresets` — never `spec.metadata` — which is why D7 no longer routes `trace` through `spec.metadata` (a prior revision of this plan claimed that "fed" `ContextPacket`; it does not, since nothing in `buildContextPacket()` looks at `metadata`).
+- `packages/geovis/src/react/GeoVisProvider.tsx`'s `checkPolicies` confirmed to already read specific reserved keys off `spec.metadata` (`isPolicyInvalid`, `invalidReason`, `metricField`, `normalizedField`, …) for the cartography-policy feature — `spec.metadata` is not neutral free-form scratch space, reinforcing D7's decision to keep `trace` off it entirely rather than add another ad hoc key.
 - `packages/geovis/tests/unit/tests/publicContract.test.ts` confirmed as the existing guard Phase 0 must extend, per that package's own CLAUDE.md instruction.
