@@ -22,22 +22,27 @@ in production use — not feature-complete on paper.**
 The program is two packages and one docs section. Everything else is support
 tooling, admitted only when it serves the adoption gate.
 
-| Surface                    | Ruling                                                                                                                                                                                                                                                                                   |
-| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packages/fsl-theme`       | ✅ **Done** (v2.x): full token model, ~99% enforced coverage, 20 ADRs, professional base theme. Maintenance + additive polish only (P3 aesthetic pass may tune values; no new families without a consumer — evidence rule).                                                              |
-| `packages/fsl-ui`          | 🔥 **Active** — the route below is the plan.                                                                                                                                                                                                                                             |
-| `docs/website/docs/design` | 🔥 **Active** — consolidation only (P0); no new doc families.                                                                                                                                                                                                                            |
-| `packages/fsl-bench`       | ⏸ **Parked.** Real, working evidence instrument — but a benchmark victory is not a release gate (the 2026-07-16 gemini-only run showing fsl-ui behind Radix on first-pass is a signal to iterate `llms.txt` via adoption, not a wall). Re-run after v1 as marketing evidence, on demand. |
-| `docs/fsl-studio`          | 🧊 **Frozen.** Its diagnostic job is done (EVOLUTION WS-E met its exit criteria; `studio.css` 851→637). PRD v2 is not executed. The deployed site stays as a living demo; keep/tear-down of the `FslStudio` deploy stack is an owner decision.                                           |
+| Surface                    | Ruling                                                                                                                                                                                                                                                                                                                                                                                                         |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/fsl-theme`       | ✅ **Done** (v2.x): full token model, ~99% enforced coverage, 20 ADRs, professional base theme. Maintenance + additive polish only (P3 aesthetic pass may tune values; no new families without a consumer — evidence rule).                                                                                                                                                                                    |
+| `packages/fsl-ui`          | 🔥 **Active** — the route below is the plan.                                                                                                                                                                                                                                                                                                                                                                   |
+| `docs/website/docs/design` | 🔥 **Active** — consolidation only (P0); no new doc families.                                                                                                                                                                                                                                                                                                                                                  |
+| `packages/fsl-bench`       | ⏸ **Parked.** Real, working evidence instrument — but a benchmark victory is not a release gate (the 2026-07-16 gemini-only run showing fsl-ui behind Radix on first-pass is a signal to iterate `llms.txt` via adoption, not a wall). Re-run after v1 as marketing evidence, on demand.                                                                                                                       |
+| `docs/fsl-studio`          | 🔥 **Active — the P1 adoption vehicle** (ruling revised 2026-07-22, owner decision). Rebuilt **from scratch with zero reuse** of v1 code. v1 (Tazuna-UX-framed tool) is deleted; PRD v2 is dead. The v2 product frame: a deliberately conventional showcase app — shell + blocks gallery + component catalog + theme lab — that exists to generate the adoption friction log and the aesthetic proving ground. |
 
-### The gate (replaces D1 → D2)
+### The gate (replaces D1 → D2; revised 2026-07-22)
 
-**fsl-ui v1.0 ships when one real ttoss application flow runs on fsl-ui in
-production** and its friction log has been worked down to zero blockers. The
-AI-executability benchmark (D1) is demoted from gate to optional evidence.
-Rationale: a gate the team never runs blocks forever; adoption produces the
-same validation data (the friction log) plus the thing the program actually
-wants — usage.
+**fsl-ui v1.0 ships when Studio v2 is deployed with its four blocks and the
+friction log is worked down to zero blockers.** The blocks (Login,
+Settings/CRUD, Dashboard, Pricing) are real application flows in miniature —
+they exercise forms+validation, tables+selects, dataviz, and marketing
+composition, which is the friction a business app would generate. The
+residual self-reference (the system's own showcase validating the system) is
+accepted and named: **"first screen in an external business app" is the v1.x
+milestone that follows**, not a v1.0 blocker. The AI-executability benchmark
+(D1) stays demoted to optional evidence. Rationale: a gate the team never
+runs blocks forever; the Studio gate is reachable, in-repo, and generates
+representative friction.
 
 ### Route
 
@@ -46,10 +51,13 @@ wants — usage.
   - [x] Remove dead surface: 6 style-reference stubs deleted; `getting-started` written (was "Under Construction"); `built-in-themes/default.md` → `enterprise-neutral.md` reframed as a draft Formal Style Profile (shipped themes: `baseTheme` + `bruttal`); `icon-system.md` migrated off the retired `Responsibility`/`Host`/`*Frame` vocabulary; ui2-era INTERNAL drafts deleted.
   - [ ] Merge the three per-family theme-shaping formats (`theme-authoring.md` × `enterprise-neutral.md` × style-reference profiles) into one canonical layer with the other two linking, not restating.
   - [ ] Single-source the color grammar and the intent→token cheatsheet: design docs canonical, package READMEs keep only the npm-facing quickstart + a link.
-- **P1 — First real adoption (THE gate)**
-  - Pick one production ttoss app screen/flow (owner picks; smallest real one wins) and build it on fsl-ui + fsl-theme.
-  - Keep a friction log (the Wave-1/2 discipline): every hand-rolled style, missing component, or confusing API is a logged item — that log **is** the v1 backlog.
-  - `llms.txt`/CONTRACT fixes discovered while AI-assisting the adoption land immediately (this is what the bench was trying to measure, obtained for free).
+- **P1 — Studio v2 as the adoption app (THE gate)** _(revised 2026-07-22; owner picked the Studio)_
+  - **Zero reuse of v1.** The v1 app is deleted (src, tests, PRD, `studio.css`). Recorded lesson: v1 used the adoption app as a UX experiment (Tazuna-UX-driven navigation/layout) and shipped unusable — the design system's job is to make the _conventional_ excellent; experimental IA does not belong in the adoption vehicle.
+  - **Product frame (fixed, small):** conventional shell (sidebar + content, `AppShell` + fsl-ui primitives only) hosting three surfaces — **Blocks gallery** (the adoption engine), **Component catalog**, **Theme lab**. Nothing from PRD v2 (blast-radius/AI bands) enters.
+  - **Slices, in order:** ① shell + navigation + mode toggle → ② Login block → ③ Settings/CRUD block (this is what pulls Table/ComboBox with real evidence) → ④ Dashboard block (dataviz) → ⑤ Pricing/marketing block → ⑥ catalog + theme lab rebuilt on the proven shell.
+  - **Hard budget:** zero hand-rolled _layout_ CSS. Bespoke CSS only for a widget no primitive covers, one justification comment per rule — a gap found this way is a logged friction item, not a silent workaround.
+  - **Quality ritual per block:** a block merges only with (a) its friction-log entries filed and (b) a side-by-side comparison against 2–3 reference-grade products, light **and** dark. This runs P3's aesthetic bar per delivery instead of as an end phase.
+  - **Friction log:** `docs/fsl-studio/FRICTION.md` (the Wave-1/2 discipline): every hand-rolled style, missing component, confusing API, or `llms.txt`/CONTRACT gap is a logged item — that log **is** the v1 backlog. Doc fixes land immediately (this is what the bench was trying to measure, obtained for free).
 - **P2 — Evidence-driven gaps** _(only what P1 demands, in demand order)_
   - Wave 3 trimmed: **ComboBox** and **Table** are the likely first asks; Tree only on demand. Date/time suite (Phase 3) and Color/DnD (Phase 4) stay deferred until an app asks.
   - Public `Icon` export decision (ADR-005 follow-up) when an app needs glyphs outside shipped components.
@@ -57,7 +65,7 @@ wants — usage.
   - Structured design review of `baseTheme` against 2–3 reference-grade systems (side-by-side screenshots of the same screens, light + dark): typography rhythm, elevation depth (ADR-018 tonal), radii/border character, motion feel, empty/hover/focus states.
   - Findings land as core-value tuning in `baseTheme.ts` (data-only per ADR-008; contrast guarantees per ADR-015 must hold) + the composition "taste layer" doc.
   - The frozen Studio deploy doubles as the visual proving ground — it already renders the catalog; no new Studio features allowed for this.
-- **v1.0 criteria (all of):** adoption gate met · P0 both remaining items done · P2 items the adoption demanded shipped · P3 review executed with findings applied · CHANGELOG migration notes honest.
+- **v1.0 criteria (all of):** adoption gate met (Studio v2 deployed, four blocks, friction log at zero blockers) · P0 both remaining items done · P2 items the adoption demanded shipped · P3 bar applied per block (ritual above) · CHANGELOG migration notes honest. **v1.x milestone:** first screen in an external business app.
 
 ### Anti-scope-creep rules (binding)
 
@@ -68,7 +76,8 @@ wants — usage.
 ### Parking lot
 
 - fsl-bench launch campaign (Anthropic + Gemini, A/B llms.txt) — after v1, as evidence.
-- Studio PRD v2 (blast-radius/impact band) — only if post-v1 demand appears.
+- `@ttoss/fsl-blocks` package — blocks live **inside Studio v2** first; extract to a package only when an external app wants to consume a block (that demand is the trigger — evidence rule).
+- Studio blast-radius/impact band (the dead PRD v2 idea) — only if post-v1 demand appears.
 - More built-in themes beyond `baseTheme`/`bruttal` (the Enterprise Neutral profile is the first candidate) — after P3 defines the quality bar.
 - Density projection (reverted ADR-019) — only when a real app demands a switchable-density surface.
 - Storybook wiring for fsl-ui — deliberately out of scope; the Studio deploy serves the browse need.

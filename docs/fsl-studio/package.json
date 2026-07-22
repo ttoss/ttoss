@@ -2,7 +2,7 @@
   "name": "@docs/fsl-studio",
   "version": "0.1.3",
   "private": true,
-  "description": "FSL Studio — the operational surface of the FSL design system: theme lab, component lab, and AI-assisted composition on top of @ttoss/fsl-ui and @ttoss/fsl-theme.",
+  "description": "FSL Studio — the adoption proving ground for the FSL design system: real application blocks, component catalog, and theme lab built entirely with @ttoss/fsl-ui and @ttoss/fsl-theme.",
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
@@ -19,11 +19,13 @@
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@ttoss/fsl-theme": "workspace:^",
     "@ttoss/fsl-ui": "workspace:^",
-    "lz-string": "^1.5.0",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react-dom": "^19.2.6",
+    "react-hook-form": "^7.71.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@testing-library/react": "^16.3.2",

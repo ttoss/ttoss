@@ -7,8 +7,13 @@
  */
 import '@ttoss/test-utils/react';
 
-// The session layer projects state onto the URL hash and localStorage
-// drafts (PRD F1.2/F1.3); both persist across tests in a file, so reset.
+import { toHaveNoViolations } from 'jest-axe';
+
+expect.extend(toHaveNoViolations);
+
+// The shell projects the current section onto the URL hash and the theme
+// runtime persists the mode in localStorage; both survive across tests in a
+// file, so reset.
 beforeEach(() => {
   window.localStorage.clear();
   window.history.replaceState(null, '', '/');

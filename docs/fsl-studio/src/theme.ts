@@ -1,11 +1,8 @@
+import { createTheme } from '@ttoss/fsl-theme';
+
 /**
- * themeId used to scope the stage panes' CSS. With a themeId,
- * `getThemeStylesContent` emits vars against `[data-tt-theme="<id>"]` and
- * `[data-tt-theme="<id>"][data-tt-mode="dark"]` — element-scoped, which is
- * what lets the stage render light and dark side by side regardless of the
- * chrome's color mode (PRD §6.2).
- *
- * The live theme bundle itself lives in the theme store
- * (`src/studio/theme/themeStore.tsx`).
+ * The Studio runs on the unmodified base theme on purpose: it is the
+ * adoption proving ground for the default `@ttoss/fsl-theme` experience
+ * (P3 aesthetic findings are tuned in `baseTheme`, not overridden here).
  */
-export const STAGE_THEME_ID = 'fsl-studio-stage';
+export const theme = createTheme();
