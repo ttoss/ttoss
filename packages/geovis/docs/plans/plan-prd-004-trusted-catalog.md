@@ -61,7 +61,7 @@ export type CatalogResult =
 
 ### D4 — Catalog schema shape (JSON Schema)
 
-Seeded directly from PRD-004's own field enumeration (metrics, datasets, geographies, joins, units, formatters, time ranges, filters, allowed map types, permissions, aliases, descriptions) and the `Catalog` interface already sketched in [`docs/ai-integration-readiness.md`](../ai-integration-readiness.md) — reused as the shape seed, not redesigned. Authored as `src/schema/catalog.schema.json`, styled like `@ttoss/geovis`'s `spec/schema.json` (`$schema: "https://json-schema.org/draft/2020-12/schema"`, `$id`, `additionalProperties: false`, `$defs` for the repeated sub-shapes):
+Seeded directly from PRD-004's own field enumeration (metrics, datasets, geographies, joins, units, formatters, time ranges, filters, allowed map types, permissions, aliases, descriptions) and the `Catalog` interface already sketched in [`docs/ai-integration-readiness.md`](../ai-integration-readiness.md) — reused as the shape seed, not redesigned. It also carries the minimal domain/source-compatibility fields decided in **D7** (`Geography.kind`/`level`/`parentId`/`codeScheme`/`resolution`, `Metric.kind`'s `density`/`distance`, `Dataset.source`) inline, all additive and optional so the base contract stays minimal; D7 holds the rationale and the field→domain→source mapping. Authored as `src/schema/catalog.schema.json`, styled like `@ttoss/geovis`'s `spec/schema.json` (`$schema: "https://json-schema.org/draft/2020-12/schema"`, `$id`, `additionalProperties: false`, `$defs` for the repeated sub-shapes):
 
 ```json
 {
@@ -109,7 +109,7 @@ Seeded directly from PRD-004's own field enumeration (metrics, datasets, geograp
         "unit": { "type": "string" },
         "kind": {
           "type": "string",
-          "enum": ["count", "rate", "ratio", "index"]
+          "enum": ["count", "rate", "ratio", "index", "density", "distance"]
         },
         "formatter": {
           "type": "string",
@@ -136,6 +136,7 @@ Seeded directly from PRD-004's own field enumeration (metrics, datasets, geograp
         "geometry": { "type": "string", "enum": ["point", "polygon", "line"] },
         "geographyIds": { "type": "array", "items": { "type": "string" } },
         "metricIds": { "type": "array", "items": { "type": "string" } },
+        "source": { "type": "string" },
         "temporal": {
           "type": "object",
           "additionalProperties": false,
@@ -155,7 +156,15 @@ Seeded directly from PRD-004's own field enumeration (metrics, datasets, geograp
         "id": { "type": "string" },
         "label": { "type": "string" },
         "description": { "type": "string" },
-        "aliases": { "type": "array", "items": { "type": "string" } }
+        "aliases": { "type": "array", "items": { "type": "string" } },
+        "kind": {
+          "type": "string",
+          "enum": ["administrative", "grid", "poi", "custom"]
+        },
+        "level": { "type": "number" },
+        "parentId": { "type": "string" },
+        "codeScheme": { "type": "string" },
+        "resolution": { "type": "string" }
       }
     },
     "Join": {
@@ -207,7 +216,7 @@ Seeded directly from PRD-004's own field enumeration (metrics, datasets, geograp
           "type": "array",
           "items": {
             "type": "string",
-            "enum": ["count", "rate", "ratio", "index"]
+            "enum": ["count", "rate", "ratio", "index", "density", "distance"]
           }
         }
       }
@@ -219,13 +228,21 @@ Seeded directly from PRD-004's own field enumeration (metrics, datasets, geograp
 `permissions` stays an untyped, unconstrained object (`{ "type": "object" }`, no `properties`) in v1: PRD-004's own open question ("governance: who approves entries, how permissions integrate with application auth") is explicitly product/org work, not a schema-shape blocker — the schema reserves the slot, this plan does not design an authz engine. The matching hand-written interface, in `src/schema/types.ts`:
 
 ```ts
+export type MetricKind =
+  | 'count'
+  | 'rate'
+  | 'ratio'
+  | 'index'
+  | 'density'
+  | 'distance';
+
 export interface Metric {
   id: string;
   label: string;
   description: string;
   aliases?: string[];
   unit?: string;
-  kind: 'count' | 'rate' | 'ratio' | 'index';
+  kind: MetricKind;
   formatter?: 'number' | 'percent' | 'currency' | 'compact';
   nullPolicy: 'hide' | 'zero' | 'explain';
 }
@@ -237,14 +254,29 @@ export interface Dataset {
   geometry: 'point' | 'polygon' | 'line';
   geographyIds: string[];
   metricIds: string[];
+  /** Provenance/attribution, e.g. 'ibge' | 'ipea' | 'sicar' (D7) — free-form. */
+  source?: string;
   temporal?: { start: string; end: string };
 }
+
+/** How a geography's features are structured (D7). Absent ⇒ 'administrative'. */
+export type GeographyKind = 'administrative' | 'grid' | 'poi' | 'custom';
 
 export interface Geography {
   id: string;
   label: string;
   description: string;
   aliases?: string[];
+  /** Discriminates admin boundary vs. spatial-index grid vs. POI collection vs. custom parcel (D7). */
+  kind?: GeographyKind;
+  /** Ordinal depth in a nesting hierarchy — lower is coarser (D7). */
+  level?: number;
+  /** Geography id one level up that contains this one, enabling roll-up/drill-down (D7). */
+  parentId?: string;
+  /** External code system feature ids follow, e.g. 'ibge:municipio', 'sicar:imovel', 'h3' (D7). */
+  codeScheme?: string;
+  /** Tessellation resolution for `kind: 'grid'`, e.g. 'h3:8', '1km' (D7). */
+  resolution?: string;
 }
 
 export interface Join {
@@ -263,7 +295,7 @@ export interface FilterField {
 export interface MapTypeCatalogEntry {
   name: 'choropleth' | 'dotDensity' | 'proportionalCircles';
   supportedGeometries: Array<'point' | 'polygon' | 'line'>;
-  metricKinds: Array<'count' | 'rate' | 'ratio' | 'index'>;
+  metricKinds: MetricKind[];
 }
 
 export interface Catalog {
@@ -285,6 +317,40 @@ A schema/type parity test (Phase 2) asserts every `Catalog` field the TypeScript
 
 `validateCatalog(input: unknown): CatalogResult` runs, in order, mirroring `validateSpec.ts`'s own structure: (1) `Ajv2020.compile(catalogSchema)` run against `input` → `invalid-catalog-schema`, mapping each Ajv error the same way `validateSpec.ts` already does (`e.instancePath || '(root)'` → `subject.path`, `${path} ${e.message}` → `message`); (2) id-uniqueness checks per collection → `duplicate-*-id`; (3) referential checks — every `join.from`/`join.to` resolves to a known dataset/geography id, every `join.on.left`/`right` names a field the referenced dataset/geography actually declares (datasets/geographies carry no explicit field list in D4's shape beyond `metricIds`/`geographyIds`, so `unresolvable-join-field` is scoped to what's checkable: the join's endpoints exist and the cardinality is one of the two allowed values — full column-level validation against a live warehouse is explicitly the Should-item helper's job, not this Must). No `repair` is computed for `invalid-catalog-schema` (the fix is "correct the input", not a suggerable value); `duplicate-*-id` and `unknown-join-*` issues attach `repair: [{ kind: 'allowed-values', path: ..., values: <the known ids> }]` since the correct set is already in hand — mirroring ADR-0001's own rule that repair values are never invented.
 
+### D6 — Introspection surface
+
+`getCatalogIntrospection(catalog: Catalog)` returns the catalog with any `permissions` field stripped — the curated-metadata contract PRD-004's Must item requires ("never raw data") applies here too: nothing in `Catalog` is raw data (no rows), but `permissions` is the one field that could carry org-internal detail not meant for a model, so introspection omits it by construction rather than trusting every future catalog author to keep it model-safe. `getCatalogJSONSchema()` returns the imported `catalog.schema.json` document as-is — no derivation step, since D1 made the schema itself the source of truth.
+
+### D7 — Domain and source compatibility (minimal geography/metric/dataset extensions)
+
+PRD-004's literal field enumeration (D4) describes an abstract catalog but says nothing about the concrete geospatial domains real GeoVis-consuming applications work in, nor the Brazilian public-data sources they must join against (IBGE, IPEA, SICAR). Walking those domains against the base D4 shape surfaces four things the base contract genuinely cannot express (below); everything else on the user's list is already expressible (the minimality table further down proves it). Every field this decision adds is **optional and additive** (no change to any existing `required` list), so a minimal abstract catalog is unaffected while a Brazilian-source catalog becomes expressible and, crucially, **joinable**.
+
+The four structural gaps and their minimal closure:
+
+1. **A flat `Geography` cannot say what kind of geography it is.** The user's domains explicitly separate _malhas de indexação espacial_ (H3/S2/geohash, IBGE grade estatística), _limites administrativos / fronteiras_ (IBGE malhas territoriais), and _pontos de interesse_. These resolve differently (a grid cell tessellation is not an administrative boundary is not a POI cloud). Added: `Geography.kind: 'administrative' | 'grid' | 'poi' | 'custom'` (optional, absence ⇒ `administrative`, the commonest case, so minimal catalogs stay minimal). `custom` is where SICAR rural parcels (`imóveis` — arbitrary polygons, not part of any official hierarchy) land.
+
+2. **A flat `Geography` cannot express hierarchy.** IBGE territory is strictly nested (país → UF → mesorregião → microrregião → município → distrito → setor censitário), and _demografia_/_perfil socioeconômico_ analyses roll up and drill down that hierarchy constantly. Added: `Geography.level?: number` (ordinal depth, coarser = lower) and `Geography.parentId?: string` (the containing geography one level up). Together they make roll-up/drill-down traversable without hard-coding IBGE's levels into the package.
+
+3. **Nothing declares the external code system feature ids follow — the single most important compatibility hook, and the "id" item on the user's list.** IBGE data is keyed by canonical codes (código de município de 7 dígitos, UF de 2 dígitos, setor censitário de 15 dígitos); IPEA territorial series map onto those same IBGE codes; SICAR uses CAR `código do imóvel`; H3/S2/geohash cells are keyed by their index string. GeoVis already joins data rows to geometry by `geometryId` (`MapDataRow.geometryId` → `feature.id`/`properties[joinKey]`), but nothing says _what those ids are_. Added: `Geography.codeScheme?: string` (free-form, e.g. `'ibge:municipio'`, `'ibge:uf'`, `'ibge:setor-censitario'`, `'sicar:imovel'`, `'h3'`, `'s2'`, `'geohash'`). Free-form string, not an enum, because coding systems are open-ended and application-specific — closing the enum would defeat the compatibility goal. This is what lets a consuming app (or the AI) know an IBGE census extract keyed by 7-digit codes joins _this_ geography and not another.
+
+4. **No metric kind fits distance or density.** _Distâncias de aparelhos urbanos e infraestrutura_ is a continuous length measure; _demografia_ leans on population density (per km²). Neither is a `count`/`rate`/`ratio`/`index`. Added to `Metric.kind`: `'distance'` and `'density'`. (This enum also appears on `MapTypeCatalogEntry.metricKinds`; both were extended in lockstep in D4. The extension ripples — additively — to PRD-006 plan's `MetricKind`/`TaskRule.allowedMetricKinds`; noted there is no need to reopen those plans, since adding enum members is backward-compatible.)
+
+One more field earns inclusion on trust grounds rather than domain-expressibility: `Dataset.source?: string` (`'ibge'` | `'ipea'` | `'sicar'` | free-form) records provenance. A _Trusted_ Catalog that cannot say where a dataset came from is weaker for exactly the attribution/audit reason the PRD's title implies; provenance sits naturally at dataset granularity (one dataset, one source) rather than on the reusable `Metric`. Grid resolution rounds out the grid case: `Geography.resolution?: string` (only meaningful for `kind: 'grid'`, e.g. `'h3:8'`, `'1km'` for the IBGE grade) so a malha de indexação declares its cell size.
+
+**What was deliberately _not_ added, to prove minimality** — every remaining domain/source on the user's list is already expressible with the base D4 shape:
+
+| User's domain / source                           | Covered by                                                                               |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| Fronteiras / limites administrativos             | `Geography.kind: 'administrative'` + polygon `Dataset.geometry` + `level`/`parentId`     |
+| Malhas de indexação espacial (H3/S2/IBGE grade)  | `Geography.kind: 'grid'` + `resolution` + `codeScheme`                                   |
+| Distâncias de aparelhos urbanos / infraestrutura | `Metric.kind: 'distance'` + point/line `Dataset.geometry`                                |
+| Demografia                                       | `Metric.kind: 'count' \| 'density'`                                                      |
+| Perfil socioeconômico (IPEA)                     | existing `Metric.kind: 'index' \| 'ratio'` + `Dataset.source: 'ipea'` — **no new field** |
+| Pontos de interesse                              | `Geography.kind: 'poi'` + point `Dataset.geometry` + existing categorical `FilterField`  |
+| id (código IBGE / CAR / índice de célula)        | `Geography.codeScheme` + existing join mechanism                                         |
+
+So of the eight domains named, only three forced a genuinely new field (`kind`, `codeScheme`, `Metric.kind` extension); hierarchy (`level`/`parentId`), `resolution`, and `source` are the small supporting cast. Nothing here is a Brazil-specific field — `codeScheme` and `source` are free-form strings, so the same catalog shape serves US Census (`codeScheme: 'fips:county'`), Eurostat NUTS, etc.; the IBGE/IPEA/SICAR requirement is met by _values_, not by hard-coded Brazilian _fields_. This keeps the package domain-neutral while satisfying the concrete compatibility goal.
+
 ### Phase 1 — Package bootstrap
 
 Create `packages/geovis-catalog` with the scaffold in D2: `package.json` (with the `ajv`/`@ttoss/geovis` dependencies from D1), `tsdown.config.ts`, `tsconfig.json`, `tests/tsconfig.json`, `tests/unit/jest.config.ts`, empty `src/index.ts`, `README.md` stub, `CHANGELOG.md`. Add the package to root `pnpm-workspace.yaml` coverage (already matched by the `packages/*` glob — no change needed there) and confirm `pnpm install` links it. Confirm a trivial `.json` import builds cleanly through `tsdown` before Phase 2 needs it for real (D2's caveat).
@@ -294,10 +360,10 @@ Create `packages/geovis-catalog` with the scaffold in D2: `package.json` (with t
 
 ### Phase 2 — Catalog schema and types
 
-Implement `catalog.schema.json` and the `Catalog`/`Metric`/`Dataset`/`Geography`/`Join`/`FilterField`/`MapTypeCatalogEntry` interfaces (D4) in `src/schema/`, exported from `src/index.ts`. One fixture catalog (`tests/unit/fixtures/sampleCatalog.ts`) covering every field, used by this phase's and later phases' tests.
+Implement `catalog.schema.json` and the `Catalog`/`Metric`/`Dataset`/`Geography`/`Join`/`FilterField`/`MapTypeCatalogEntry` interfaces (D4, including the D7 fields) in `src/schema/`, exported from `src/index.ts`. One fixture catalog (`tests/unit/fixtures/sampleCatalog.ts`) covering every field, used by this phase's and later phases' tests — modeled on real Brazilian-source shapes so the D7 compatibility claims are concrete, not asserted: an IBGE administrative hierarchy (`kind: 'administrative'`, `codeScheme: 'ibge:uf'` at `level` 1 → `codeScheme: 'ibge:municipio'` at a deeper `level` with `parentId` pointing at the UF), an H3 grid geography (`kind: 'grid'`, `codeScheme: 'h3'`, `resolution: 'h3:8'`), a SICAR parcel geography (`kind: 'custom'`, `codeScheme: 'sicar:imovel'`), a demografia dataset with a `density` metric and `source: 'ibge'`, an infrastructure dataset with a `distance` metric, and an IPEA socioeconomic dataset (`source: 'ipea'`) using existing `index`/`ratio` kinds.
 
-**Demo:** `new Ajv2020({ strict: false }).compile(catalogSchema)(sampleCatalog)` succeeds; a deliberately malformed fixture (missing required field) fails with an Ajv error pointing at the missing field.
-**Acceptance:** one test per field group (metrics, datasets, geographies, joins, mapTypes, filters, permissions-optionality); `Catalog` type exported from `src/index.ts`; a schema/type parity test asserts the JSON Schema and the hand-written interface declare the same field set (D4); public-contract test (mirroring `@ttoss/geovis`'s `publicContract.test.ts` pattern) locks the export surface.
+**Demo:** `new Ajv2020({ strict: false }).compile(catalogSchema)(sampleCatalog)` succeeds; a deliberately malformed fixture (missing required field) fails with an Ajv error pointing at the missing field; a geography with an unknown `kind` value fails validation.
+**Acceptance:** one test per field group (metrics, datasets, geographies, joins, mapTypes, filters, permissions-optionality) plus the D7 fields (`kind`/`level`/`parentId`/`codeScheme`/`resolution`, `Metric.kind: 'density' | 'distance'`, `Dataset.source`); a test confirms a `Geography` omitting `kind` still validates (optional-with-default contract); `Catalog` type exported from `src/index.ts`; a schema/type parity test asserts the JSON Schema and the hand-written interface declare the same field set (D4/D7); public-contract test (mirroring `@ttoss/geovis`'s `publicContract.test.ts` pattern) locks the export surface.
 
 ### Phase 3 — Integrity validation and the catalog result taxonomy
 
@@ -329,6 +395,8 @@ This plan's package (`@ttoss/geovis-catalog`) and its exports (`Catalog`, `catal
 ## Open questions carried forward (not resolved by this plan)
 
 - **Catalog governance** (PRD-004's own open question): who approves catalog entries and how `permissions` integrates with application auth is explicitly out of scope — the application is responsible for enforcing its own authorization logic.
+- **`codeScheme` as a controlled vocabulary** (D7): v1 leaves `codeScheme`/`Dataset.source` as free-form strings for maximum compatibility. Whether a later version ships a registry of well-known values (`ibge:municipio`, `sicar:imovel`, …) with validation/repair — so a typo like `ibge:municipios` becomes an `allowed-values` repair — is deferred; the string field is forward-compatible with that addition.
+- **Cross-`codeScheme` join validation** (D7): declaring `codeScheme` opens a future integrity check ("a join between two geographies of incompatible code schemes is a `mismatch`"). D5's join check stays id/field-level in v1; this is a Should-item extension, not a Must.
 
 ## Verification against current codebase (2026-07-22)
 
@@ -336,4 +404,7 @@ This plan's package (`@ttoss/geovis-catalog`) and its exports (`Catalog`, `catal
 - `packages/geovis/src/spec/validateSpec.ts` and `packages/geovis/src/spec/schema.json` confirm the established pattern in this product family: Ajv + hand-authored JSON Schema. `ajv@^8.18.0` (`Ajv2020` from `ajv/dist/2020`) is a plain `dependencies` entry in `packages/geovis/package.json` — `@ttoss/geovis-catalog` matches that by depending on `ajv` at runtime too.
 - `packages/geovis/docs/ai-integration-readiness.md`'s `Catalog` interface (lines ~466–519) is the closest existing artifact to a catalog shape and was used as the seed for D4.
 - `packages/geovis/src/spec/result.ts` confirms `GeoVisIssueCode` is a hardcoded closed union (not generic), which is why D3 mirrors rather than reuses it.
+- `packages/geovis/src/spec/types.ts` (`MapDataRow.geometryId`, `MapData.joinKey`) confirms GeoVis already joins attribute rows to geometry by feature id — D7's `codeScheme` is the descriptive layer stating _what_ those ids are (IBGE/CAR/H3 codes), the compatibility hook the base D4 shape lacked. No `@ttoss/geovis` change is needed for D7; it is all `@ttoss/geovis-catalog`-local metadata.
+- D7's field set was derived by walking each user-named domain (malhas de indexação espacial, fronteiras, limites administrativos, distâncias de infraestrutura, demografia, perfil socioeconômico, POI, id) and each source (IBGE, IPEA, SICAR) against the base D4 shape; only `Geography.kind`/`level`/`parentId`/`codeScheme`/`resolution`, `Metric.kind`'s `density`/`distance`, and `Dataset.source` were not already expressible — the mapping table in D7 records what each closes and what needed nothing.
+- D6 (introspection surface) had lost its section body in an earlier plan-simplification pass while `getCatalogIntrospection`/`getCatalogJSONSchema` references to it remained (D1, Phase 4); restored here so the plan is internally consistent again.
 - `docs/website/docs/product/geovis/` does not exist — the strategy document every PRD/ADR links to is missing from the repo. Flagged to the user; does not block this plan since the PRD text is self-contained.
