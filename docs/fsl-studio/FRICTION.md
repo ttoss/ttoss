@@ -49,3 +49,26 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 - **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` `TabList` · **Severity:** blocker (for sidebar navigation) · **Status:** ✅ fixed (same day)
 - The JSDoc promised "a row (or column when the parent `Tabs` is vertical)", but the style was a static row with a block-end divider — `orientation="vertical"` rendered the sidebar tabs horizontally, overflowing the rail. Found by the Studio shell's visual check, invisible to the DOM-level test suite.
 - **Action:** `TabList` style now reads the RAC `orientation` render prop — column direction, `gap.stack`, and an inline-end divider when vertical. Regression tests added for both orientations.
+
+### F-007 — multi-field rows have no column alignment: Table demanded
+
+- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` catalog (Settings block) · **Severity:** gap · **Status:** open — pulls Wave-3 `Table`
+- The team-members list is name + email + role + actions per row. `GridList` rows are independent flex lines, so fields do not column-align across rows (badges and actions sit ragged, scanning down a column is impossible), and there is no columnheader semantics or sorting. This is the evidence the ROADMAP predicted: a Settings/CRUD flow demands `Table` (root + columnheader + row + cell), not a list.
+- **Workaround:** `GridListItem` with a `Stack`-composed row — acceptable for 3 members, degrades with realistic data.
+
+### F-008 — `Select` without typeahead: ComboBox demanded
+
+- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` catalog (Settings block) · **Severity:** gap · **Status:** open — pulls Wave-3 `ComboBox`
+- The invite flow was designed with a timezone field and the field was **dropped** because a 30+-option `Select` popover is scan-only — no typeahead, no filtering. A component gap changed the product design; that is the strongest form of adoption evidence. Role (3 options) stayed a `Select`, which is its correct scale.
+
+### F-009 — `Select` has no validation-message part
+
+- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` `Select` (+ `Text` tones) · **Severity:** gap · **Status:** open
+- `TextField` composes `TextFieldError`; `Select` only tints its trigger via the `invalid` State — there is nowhere to render the message. The invite form hand-assembles a live-region `Text` under the Select, and `Text` has no negative/danger tone, so the message cannot even be tinted in-system.
+- **Backlog:** a `SelectError` part (mirroring `TextFieldError`), and/or a negative tone in the `Text` vocabulary for error copy.
+
+### F-010 — no neutral tag primitive for descriptive labels
+
+- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` `Badge` semantics · **Severity:** paper-cut · **Status:** open
+- Role chips ("Admin", "Editor") are descriptive, not evaluative — but the only chip-shaped primitive is `Badge` (Entity = Feedback, valence vocabulary). The block uses `Badge` with the neutral `primary` evaluation, which renders fine but blurs the Feedback entity. `TagGroup` is Selection (interactive), so it is not the answer either.
+- **Backlog:** decide whether descriptive chips are a legitimate `Badge` use (document it) or a small Structure-entity `Tag` primitive.

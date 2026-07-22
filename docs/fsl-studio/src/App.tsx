@@ -1,6 +1,8 @@
 import { ThemeProvider } from '@ttoss/fsl-theme/react';
+import { ToastRegion } from '@ttoss/fsl-ui';
 
 import { Shell } from './app/Shell';
+import { toastQueue } from './app/toasts';
 import { theme } from './theme';
 
 /**
@@ -12,6 +14,7 @@ export const App = () => {
   return (
     <ThemeProvider theme={theme} defaultMode="system">
       <Shell />
+      <ToastRegion queue={toastQueue} />
     </ThemeProvider>
   );
 };

@@ -1,6 +1,15 @@
-import { Container, Grid, Heading, Stack, Surface, Text } from '@ttoss/fsl-ui';
+import {
+  Box,
+  Container,
+  Grid,
+  Heading,
+  Stack,
+  Surface,
+  Text,
+} from '@ttoss/fsl-ui';
 
 import { LoginBlock } from '../blocks/LoginBlock';
+import { SettingsBlock } from '../blocks/SettingsBlock';
 
 /**
  * The blocks gallery — the adoption engine (Program P1). Each block is a
@@ -47,9 +56,36 @@ export const BlocksPage = () => {
             </Surface>
           </Grid>
         </Stack>
+        <Stack gap="md">
+          <Heading level={3} size="title-md">
+            Settings
+          </Heading>
+          <SettingsBlock />
+          <Box maxWidth="reading">
+            <Surface level="flat" padding="lg">
+              <Stack gap="sm">
+                <Heading level={4} size="title-sm">
+                  What this block proves
+                </Heading>
+                <Text variant="body-sm" tone="muted">
+                  A CRUD flow end-to-end: Collection rows with mixed content
+                  (GridList), a Dialog hosting a validated invite form, the
+                  consequence-driven two-click destructive confirm
+                  (ConfirmationDialog), and Toast feedback from a shared queue.
+                </Text>
+                <Text variant="body-sm" tone="muted">
+                  Try it: invite a member (empty submit shows the invalid
+                  pipeline, including the Select role), then remove one — the
+                  destructive confirm arms on the first click and commits on the
+                  second.
+                </Text>
+              </Stack>
+            </Surface>
+          </Box>
+        </Stack>
         <Text variant="body-sm" tone="muted">
-          Next blocks, in order: Settings/CRUD (pulls Table and ComboBox),
-          Dashboard (dataviz tokens), Pricing (marketing composition).
+          Next blocks, in order: Dashboard (dataviz tokens), Pricing (marketing
+          composition).
         </Text>
       </Stack>
     </Container>
