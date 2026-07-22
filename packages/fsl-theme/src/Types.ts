@@ -26,7 +26,7 @@
  *   ────────────┼─────────────────┼───────────────────────────────────────────
  *   ux          │ Entity Kind     │ projection-scoped subset + renaming (§17.1)
  *   role        │ Evaluation      │ projection-scoped name for FSL Evaluation
- *   dimension   │ Structural Role │ subset: background | border | text
+ *   dimension   │ — (projection)  │ background | border | text — projection-defined, not FSL Structural Role terms (model.md)
  *   state       │ State           │ values identical, no renaming
  *
  * Token naming grammar: {ux}.{role}.{dimension}.{state}

@@ -12,6 +12,10 @@ supports-dark-mode: yes
 
 # Enterprise Neutral
 
+:::caution Status: draft — formal style profile, not a shipped theme
+This document is a [Formal Style Profile](/docs/design/style-references) for a planned enterprise archetype. The built-in themes that actually ship with `@ttoss/fsl-theme` today are the default `baseTheme` (exported by `createTheme()`) and `bruttal` — see the [package README](https://github.com/ttoss/ttoss/blob/main/packages/fsl-theme/README.md).
+:::
+
 ## Purpose
 
 Enterprise Neutral is a product-facing archetype for serious, scalable, low-noise interfaces.

@@ -1,4 +1,81 @@
-# fsl-ui — Market-Readiness Roadmap
+# FSL — Program Roadmap
+
+> **Single source of truth for FSL scope and status** (consolidated
+> 2026-07-22). Covers `@ttoss/fsl-theme`, `@ttoss/fsl-ui`, their docs, and the
+> rulings on the satellites (`fsl-bench`, `fsl-studio`). Planning docs it
+> supersedes: `EVOLUTION.md` (closed — exit criteria met, kept as record);
+> `PURPOSE.md` / `STRATEGIC_EVAL.md` (deleted — stale ui2-era drafts; the
+> north star below carries their intent). New planning content lands **here**,
+> never in a new file.
+
+## Program — route to v1
+
+### North star
+
+`fsl-theme` + `fsl-ui` finished to the level where they are the default
+choice over Tailwind/Chakra/Material for ttoss applications: semantic,
+accessible, AI-first, and visually refined out of the box. **Finished means
+in production use — not feature-complete on paper.**
+
+### Scope ruling (2026-07-22)
+
+The program is two packages and one docs section. Everything else is support
+tooling, admitted only when it serves the adoption gate.
+
+| Surface                    | Ruling                                                                                                                                                                                                                                                                                   |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/fsl-theme`       | ✅ **Done** (v2.x): full token model, ~99% enforced coverage, 20 ADRs, professional base theme. Maintenance + additive polish only (P3 aesthetic pass may tune values; no new families without a consumer — evidence rule).                                                              |
+| `packages/fsl-ui`          | 🔥 **Active** — the route below is the plan.                                                                                                                                                                                                                                             |
+| `docs/website/docs/design` | 🔥 **Active** — consolidation only (P0); no new doc families.                                                                                                                                                                                                                            |
+| `packages/fsl-bench`       | ⏸ **Parked.** Real, working evidence instrument — but a benchmark victory is not a release gate (the 2026-07-16 gemini-only run showing fsl-ui behind Radix on first-pass is a signal to iterate `llms.txt` via adoption, not a wall). Re-run after v1 as marketing evidence, on demand. |
+| `docs/fsl-studio`          | 🧊 **Frozen.** Its diagnostic job is done (EVOLUTION WS-E met its exit criteria; `studio.css` 851→637). PRD v2 is not executed. The deployed site stays as a living demo; keep/tear-down of the `FslStudio` deploy stack is an owner decision.                                           |
+
+### The gate (replaces D1 → D2)
+
+**fsl-ui v1.0 ships when one real ttoss application flow runs on fsl-ui in
+production** and its friction log has been worked down to zero blockers. The
+AI-executability benchmark (D1) is demoted from gate to optional evidence.
+Rationale: a gate the team never runs blocks forever; adoption produces the
+same validation data (the friction log) plus the thing the program actually
+wants — usage.
+
+### Route
+
+- **P0 — Docs consolidation** _(started 2026-07-22; first pass landed)_
+  - [x] Fix doc↔code contradictions: `sizing.hit` ramp in fsl-theme README (ADR-020), `dimension` axis in `Types.ts` header (model.md), missing `invalid` State in fsl-structural-language §5.7 (ADR-017), dataviz `foundation`/"v2" framing, theme-authoring self-reference.
+  - [x] Remove dead surface: 6 style-reference stubs deleted; `getting-started` written (was "Under Construction"); `built-in-themes/default.md` → `enterprise-neutral.md` reframed as a draft Formal Style Profile (shipped themes: `baseTheme` + `bruttal`); `icon-system.md` migrated off the retired `Responsibility`/`Host`/`*Frame` vocabulary; ui2-era INTERNAL drafts deleted.
+  - [ ] Merge the three per-family theme-shaping formats (`theme-authoring.md` × `enterprise-neutral.md` × style-reference profiles) into one canonical layer with the other two linking, not restating.
+  - [ ] Single-source the color grammar and the intent→token cheatsheet: design docs canonical, package READMEs keep only the npm-facing quickstart + a link.
+- **P1 — First real adoption (THE gate)**
+  - Pick one production ttoss app screen/flow (owner picks; smallest real one wins) and build it on fsl-ui + fsl-theme.
+  - Keep a friction log (the Wave-1/2 discipline): every hand-rolled style, missing component, or confusing API is a logged item — that log **is** the v1 backlog.
+  - `llms.txt`/CONTRACT fixes discovered while AI-assisting the adoption land immediately (this is what the bench was trying to measure, obtained for free).
+- **P2 — Evidence-driven gaps** _(only what P1 demands, in demand order)_
+  - Wave 3 trimmed: **ComboBox** and **Table** are the likely first asks; Tree only on demand. Date/time suite (Phase 3) and Color/DnD (Phase 4) stay deferred until an app asks.
+  - Public `Icon` export decision (ADR-005 follow-up) when an app needs glyphs outside shipped components.
+- **P3 — Aesthetic excellence pass** _(the "game changer" bar — base theme as flagship)_
+  - Structured design review of `baseTheme` against 2–3 reference-grade systems (side-by-side screenshots of the same screens, light + dark): typography rhythm, elevation depth (ADR-018 tonal), radii/border character, motion feel, empty/hover/focus states.
+  - Findings land as core-value tuning in `baseTheme.ts` (data-only per ADR-008; contrast guarantees per ADR-015 must hold) + the composition "taste layer" doc.
+  - The frozen Studio deploy doubles as the visual proving ground — it already renders the catalog; no new Studio features allowed for this.
+- **v1.0 criteria (all of):** adoption gate met · P0 both remaining items done · P2 items the adoption demanded shipped · P3 review executed with findings applied · CHANGELOG migration notes honest.
+
+### Anti-scope-creep rules (binding)
+
+1. **Evidence rule, program-wide** (extends the existing ADR culture): no new package, doc family, tool, or projection axis without a real consumer already waiting.
+2. New ideas go to the parking lot below — never to a new file, package, or PRD.
+3. A phase is not "in progress" until the previous one's checklist is done or explicitly waived here.
+
+### Parking lot
+
+- fsl-bench launch campaign (Anthropic + Gemini, A/B llms.txt) — after v1, as evidence.
+- Studio PRD v2 (blast-radius/impact band) — only if post-v1 demand appears.
+- More built-in themes beyond `baseTheme`/`bruttal` (the Enterprise Neutral profile is the first candidate) — after P3 defines the quality bar.
+- Density projection (reverted ADR-019) — only when a real app demands a switchable-density surface.
+- Storybook wiring for fsl-ui — deliberately out of scope; the Studio deploy serves the browse need.
+
+---
+
+# Detailed tracker — fsl-ui workstreams
 
 > Working plan produced by the 2026-07-15 deep audit. Two workstreams:
 > **A** — remediate every audit finding; **B** — implement the full React Aria
@@ -6,8 +83,9 @@
 > a complete, reviewed base layer for compositions/patterns and serves as the
 > real-world validation of the FSL theory.
 >
-> Out of scope by explicit decision: Storybook wiring, adoption/migration work,
-> `private: true` flip (gated — see D2).
+> Out of scope by explicit decision: Storybook wiring. Adoption is governed by
+> the Program section above (P1 gate); the `private: true` flip follows the
+> revised D2.
 
 ## Scope guard (binding for every executor of this plan)
 
@@ -434,12 +512,16 @@ lexicon governance proposal) — that friction log IS the validation data.
 
 ## Workstream D — Strategic proof & release gate
 
-**D1. AI-executability benchmark** `L` — run `INTERNAL/STRATEGIC_EVAL.md`
-criterion 6 (first-pass success rate of LLM-generated UI vs Radix/MUI/RAC
-baselines) once A4 (llms.txt) and Wave 1 land. This produces the launch
-number. Fixed prompt suite: dialog, field+validation, menu, destructive
-confirm, themed composite; measure token-selection correctness + semantic
-error rate + human corrections.
+> **Re-gated (2026-07-22, see §Program):** D1 is **parked** — an optional
+> evidence instrument, no longer a release blocker. D2's gate is **adoption**
+> (Program P1), not the benchmark.
+
+**D1. AI-executability benchmark** `L` ⏸ — first-pass success rate of
+LLM-generated UI vs Radix/MUI/RAC baselines (methodology:
+`INTERNAL/BENCHMARK_EVAL.md`), once A4 (llms.txt) and Wave 1 land. This
+produces the launch number. Fixed prompt suite: dialog, field+validation,
+menu, destructive confirm, themed composite; measure token-selection
+correctness + semantic error rate + human corrections.
 
 > ⤷ **Harness shipped (2026-07-16): `packages/fsl-bench`.** Decisions
 > recorded:
@@ -466,13 +548,17 @@ error rate + human corrections.
 > - Methodology + honesty rules (freeze-before-run, full audit JSONL,
 >   spot-check protocol) live in `packages/fsl-bench/README.md`.
 >
-> **Pending:** the launch campaign itself (needs `ANTHROPIC_API_KEY` +
-> `GEMINI_API_KEY`; `pnpm run bench` in `packages/fsl-bench`). Record the
-> headline numbers here when run — D2 stays gated until then.
+> **Parked (2026-07-22):** the launch campaign (needs `ANTHROPIC_API_KEY` +
+> `GEMINI_API_KEY`; `pnpm run bench` in `packages/fsl-bench`) moves to the
+> Program parking lot — run after v1 as evidence, on demand. The 2026-07-16
+> gemini-only calibration run (fsl-ui 48% vs Radix 100% first-pass,
+> `packages/fsl-bench/results/`) is treated as iteration input for
+> `llms.txt`/docs via the P1 friction log, not as a gate.
 
-**D2. `private: true` flip gate** `S` — flip only when: CI green including a
-real tsdown build, A-P0 complete, A13 axe suite green, D1 executed.
-Record the gate in this file when flipped.
+**D2. Release gate** `S` — governed by §Program "The gate": one real ttoss
+application flow on fsl-ui in production, friction log worked to zero
+blockers. CI green including a real tsdown build, A-P0 complete, A13 axe
+suite green remain prerequisites. Record the gate in this file when met.
 
 ---
 
@@ -481,7 +567,8 @@ Record the gate in this file when flipped.
 ```
 [✅ done 2026-07-15] A1–A16 (all of Workstream A, incl. foundations A6/A3/A14)
 [✅ done 2026-07-15] B1 icon story (ADR-005 — Iconify/Lucide internal layer)
-→ Wave 1 (a11y layer already in place — extend per component)
-→ Wave 2 → Wave 3
-→ D1 benchmark → D2 gate → Phase 3
+[✅ done 2026-07-16] Wave 1 + Wave 2
+[✅ done 2026-07-19] EVOLUTION plan (Box/Grid/Container layer, hit collapse)
+→ P0 docs consolidation → P1 adoption (THE gate) → P2 evidence-driven gaps
+→ P3 aesthetic pass → v1.0 → (parking lot: D1 campaign, Phase 3/4 waves)
 ```

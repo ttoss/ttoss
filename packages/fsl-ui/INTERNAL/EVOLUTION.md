@@ -1,6 +1,9 @@
 # fsl-ui / fsl-theme — Evolution & Revision Plan
 
-> **Status:** Approved (2026-07-18) · **Owner:** @enniolopes
+> **Status:** ✅ CLOSED (2026-07-22) — exit criteria met (§5); kept as the
+> historical record of the presentational-layer initiative and the density
+> revert. Live planning happens only in `ROADMAP.md` §Program.
+> Approved 2026-07-18 · **Owner:** @enniolopes
 > **Scope:** `packages/fsl-ui`, `packages/fsl-theme`, their docs and ADRs.
 > **Companion:** `packages/fsl-ui/INTERNAL/ROADMAP.md` (Waves A–D). This plan
 > is the "production-readiness" initiative that follows Wave 2: it closes the

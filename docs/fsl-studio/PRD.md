@@ -1,9 +1,15 @@
 # FSL Studio — Product Requirements Document (v2)
 
-> **Status:** Draft for review · **Owner:** @enniolopes · **Date:** 2026-07-19
-> **Supersedes:** the 2026-07-17 PRD (v1), archived in git history.
-> **Audience:** implementation sessions (human or agent). Self-contained: a reader
-> should be able to build any phase from this file plus the referenced source.
+> **Status:** 🧊 FROZEN (2026-07-22) · **Owner:** @enniolopes
+> The Studio's diagnostic job is done (`packages/fsl-ui/INTERNAL/EVOLUTION.md`
+> WS-E: exit criteria met). This PRD is **not** being executed: no further
+> product investment until the fsl-ui adoption gate is met — see
+> `packages/fsl-ui/INTERNAL/ROADMAP.md` §Program. The deployed site
+> (`studio.ttoss.dev`) stays up as a living demo of the packages; whether to
+> keep or tear down the deploy stack is an owner decision.
+>
+> Original header: Draft for review · Date: 2026-07-19 ·
+> Supersedes the 2026-07-17 PRD (v1), archived in git history.
 
 ---
 
