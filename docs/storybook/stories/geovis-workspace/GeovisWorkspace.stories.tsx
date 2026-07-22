@@ -174,7 +174,6 @@ const buildSpec = ({
   const ageFactor = AGE_FACTORS[age] ?? 1;
 
   return {
-    id: 'geovis-workspace-choropleth',
     title: 'Choropleth driven by workspace selection',
     engine: 'maplibre',
     view: { center: [-46.645, -23.57], zoom: 10.5 },
