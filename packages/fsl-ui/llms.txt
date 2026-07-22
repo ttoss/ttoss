@@ -69,6 +69,14 @@ Collection:  ListBox/ListBoxItem, GridList/GridListItem (+ Menu/MenuItem,
              ITEMS are Selection (input chrome, `selected` State) — one
              composite, two entities. GridListItem also has a selectionControl
              (per-row checkbox).
+             Table/TableHeader/TableColumn/TableBody/TableRow/TableCell —
+             data table with columnheaders, same ADR-007 split (Table =
+             Collection surface, TableRow = Selection). Sorting: controlled
+             sortDescriptor/onSortChange + allowsSorting on TableColumn
+             (aria-sort + direction arrow rendered for you); set isRowHeader
+             on the naming column. Selection: selectionMode single|multiple,
+             row click toggles (no checkbox column yet). Use for column-
+             aligned data; GridList is for single-column rows.
 Input:       TextField, TextArea (each + Label/Control/Description/Error),
              SearchField (+ Label/Control; leading search + clear glyphs),
              NumberField (label/description/errorMessage props + −/+ steppers),

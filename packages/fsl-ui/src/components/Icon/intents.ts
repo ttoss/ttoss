@@ -37,6 +37,9 @@ export const ICON_INTENTS = [
   'action.search',
   'action.increment',
   'action.decrement',
+  // action — column sort direction. Opposition rule: ascending ≠ descending.
+  'action.sortAscending',
+  'action.sortDescending',
 ] as const;
 
 /** A semantic icon intent — the public "name" of an icon. */

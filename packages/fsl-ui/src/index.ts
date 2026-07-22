@@ -140,6 +140,28 @@ export { Surface, surfaceMeta } from './components/Surface/Surface';
 export type { SwitchProps } from './components/Switch/Switch';
 export { Switch, switchMeta } from './components/Switch/Switch';
 export type {
+  SortDescriptor,
+  SortDirection,
+  TableBodyProps,
+  TableCellProps,
+  TableColumnProps,
+  TableHeaderProps,
+  TableProps,
+  TableRowProps,
+} from './components/Table/Table';
+export {
+  Table,
+  TableBody,
+  TableCell,
+  tableCellMeta,
+  TableColumn,
+  tableColumnMeta,
+  TableHeader,
+  tableMeta,
+  TableRow,
+  tableRowMeta,
+} from './components/Table/Table';
+export type {
   TabListProps,
   TabPanelProps,
   TabProps,

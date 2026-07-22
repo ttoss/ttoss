@@ -155,6 +155,29 @@ export const treeTagGroup = (): React.ReactElement => {
   );
 };
 
+export const treeTable = (): React.ReactElement => {
+  return (
+    <pkg.Table aria-label="Team">
+      <pkg.TableHeader>
+        <pkg.TableColumn id="name" isRowHeader allowsSorting>
+          Name
+        </pkg.TableColumn>
+        <pkg.TableColumn id="role">Role</pkg.TableColumn>
+      </pkg.TableHeader>
+      <pkg.TableBody>
+        <pkg.TableRow id="ada">
+          <pkg.TableCell>Ada Lovelace</pkg.TableCell>
+          <pkg.TableCell>Admin</pkg.TableCell>
+        </pkg.TableRow>
+        <pkg.TableRow id="grace">
+          <pkg.TableCell>Grace Hopper</pkg.TableCell>
+          <pkg.TableCell>Editor</pkg.TableCell>
+        </pkg.TableRow>
+      </pkg.TableBody>
+    </pkg.Table>
+  );
+};
+
 export const treeTabs = (): React.ReactElement => {
   return (
     <pkg.Tabs aria-label="sections">
