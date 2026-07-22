@@ -62,6 +62,9 @@ Each OpenAPI operation with an `operationId` and a supported HTTP method
 
 Path params are always required strings. Query and body params carry their
 declared type and `required` flag. Array params keep their `items` schema.
+Parameters declared at the **path-item level** (shared by every operation on a
+path) are merged into each operation; an operation-level parameter overrides a
+path-item one with the same `name`+`in`.
 
 Tool arguments are **camelCase** (`agentId`, `projectId`); the generated
 request path, query string, and body use the original **snake_case** names.
