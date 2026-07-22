@@ -74,13 +74,13 @@ Exit criteria — R3a: an application embeds the workspace without rebuilding co
 
 ## R4 — Grounded Generation
 
-Natural language becomes a validated map through catalog and deterministic resolution. This layer is new — its PRDs decide whether it lands in existing packages or a new one (e.g. `@ttoss/geovis-catalog`).
+Natural language becomes a validated map through catalog and deterministic resolution. This layer is new — it lands in existing packages (`@ttoss/geovis-catalog`).
 
-| Deliverable                                                 | Package   | Basis         |
-| ----------------------------------------------------------- | --------- | ------------- |
-| Catalog contract (metrics, geographies, joins, permissions) | new layer | Strategy §5.2 |
-| Constrained intent schema                                   | new layer | Strategy §5.1 |
-| Deterministic resolver: intent → validated spec             | new layer | Strategy §5.3 |
+| Deliverable                                                 | Package               | Basis         |
+| ----------------------------------------------------------- | --------------------- | ------------- |
+| Catalog contract (metrics, geographies, joins, permissions) | @ttoss/geovis-catalog | Strategy §5.2 |
+| Constrained intent schema                                   | @ttoss/geovis-catalog | Strategy §5.1 |
+| Deterministic resolver: intent → validated spec             | @ttoss/geovis-catalog | Strategy §5.3 |
 
 Exit criteria: an AI can only reference catalog entries; the resolver produces a valid map or a structured failure — never a guess.
 
