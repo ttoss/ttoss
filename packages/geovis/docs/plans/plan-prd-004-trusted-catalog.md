@@ -10,17 +10,17 @@ This is the first of three plans (PRD-004 → PRD-005 → PRD-006) that all land
 
 ## Durable decisions
 
-### D1 — Schema validation: Ajv + hand-authored JSON Schema, not Zod
+### D1 — Schema validation: Ajv + hand-authored JSON Schema
 
-The first version of this plan specified the catalog contract as a Zod schema, citing the repo-wide forms rule ("Use Zod for all new form validation schemas"). That rule is scoped to `@ttoss/forms` — **UI form validation** — and is the wrong precedent here: this package's actual sibling, `@ttoss/geovis`, already validates its own AI-facing contract (`VisualizationSpec`) with a hand-authored JSON Schema (`src/spec/schema.json`, draft 2020-12) compiled by `Ajv2020` (`import Ajv2020 from 'ajv/dist/2020'`) in `validateSpec.ts`, with a hand-written TypeScript interface (`VisualizationSpec` in `types.ts`) kept in sync alongside it — no codegen, no runtime-schema-to-type derivation. `@ttoss/geovis-catalog` is the same kind of artifact (a machine-facing data contract, not a UI form), one layer up the same product stack, so it follows the same established pattern:
+`@ttoss/geovis-catalog` is a machine-facing data contract package in the same product family as `@ttoss/geovis`. Following the established pattern from `@ttoss/geovis`'s own `VisualizationSpec`:
 
-- `catalog.schema.json` — hand-authored JSON Schema, `$id`/`$schema: 2020-12`/`additionalProperties: false`, styled exactly like `spec/schema.json`.
-- `Catalog` — a hand-written TypeScript interface in `types.ts`, kept in sync with the schema by the author (the same manual discipline `@ttoss/geovis` already accepts for `VisualizationSpec`/`schema.json`).
-- `Ajv2020` (from the same `ajv` package and import path `@ttoss/geovis` already depends on) compiles and validates it at runtime.
+- `catalog.schema.json` — hand-authored JSON Schema (draft 2020-12), `$id`/`additionalProperties: false`, styled exactly like `spec/schema.json`.
+- `Catalog` — a hand-written TypeScript interface in `types.ts`, kept in sync with the schema.
+- `Ajv2020` (from `ajv/dist/2020`, the same import `@ttoss/geovis` already uses) compiles and validates at runtime.
 
-This is a straightforward win over Zod here beyond precedent-matching: since the source of truth is already a JSON Schema document, there is no derivation step (no `zod-to-json-schema`, no `z.toJSONSchema()`) to expose it to an LLM tool schema — `getCatalogJSONSchema()` (D6) just returns the imported document. PRD-005's and PRD-006's plans adopt the same choice for consistency within one package; see each plan's own D1.
+Since the source of truth is JSON Schema from the start, `getCatalogJSONSchema()` (D6) returns the imported document directly — no derivation step needed. PRD-005's and PRD-006's plans adopt the same approach for consistency across the same package.
 
-`package.json` dependencies: `ajv` (`^8.18.0`, the exact version already pinned by `@ttoss/geovis`) and `@ttoss/geovis` (for `RepairOption` reuse now, and `VisualizationSpec`/`resolveSpecFromMapType` reuse in PRD-006's plan — see that plan's Verification section for a caveat on the latter). No `zod` dependency.
+`package.json` dependencies: `ajv@^8.18.0` (same version as `@ttoss/geovis`) and `@ttoss/geovis` (for `RepairOption` reuse now, and `VisualizationSpec`/`resolveSpecFromMapType` reuse in PRD-006's plan).
 
 ### D2 — Package bootstrap
 
@@ -285,20 +285,6 @@ A schema/type parity test (Phase 2) asserts every `Catalog` field the TypeScript
 
 `validateCatalog(input: unknown): CatalogResult` runs, in order, mirroring `validateSpec.ts`'s own structure: (1) `Ajv2020.compile(catalogSchema)` run against `input` → `invalid-catalog-schema`, mapping each Ajv error the same way `validateSpec.ts` already does (`e.instancePath || '(root)'` → `subject.path`, `${path} ${e.message}` → `message`); (2) id-uniqueness checks per collection → `duplicate-*-id`; (3) referential checks — every `join.from`/`join.to` resolves to a known dataset/geography id, every `join.on.left`/`right` names a field the referenced dataset/geography actually declares (datasets/geographies carry no explicit field list in D4's shape beyond `metricIds`/`geographyIds`, so `unresolvable-join-field` is scoped to what's checkable: the join's endpoints exist and the cardinality is one of the two allowed values — full column-level validation against a live warehouse is explicitly the Should-item helper's job, not this Must). No `repair` is computed for `invalid-catalog-schema` (the fix is "correct the input", not a suggerable value); `duplicate-*-id` and `unknown-join-*` issues attach `repair: [{ kind: 'allowed-values', path: ..., values: <the known ids> }]` since the correct set is already in hand — mirroring ADR-0001's own rule that repair values are never invented.
 
-### D6 — Introspection surface
-
-`getCatalogIntrospection(catalog: Catalog)` returns the catalog with any `permissions` field stripped — the curated-metadata contract PRD-004's Must item requires ("never raw data") applies here too: nothing in `Catalog` is raw data (no rows), but `permissions` is the one field that could carry org-internal detail not meant for a model, so introspection omits it by construction rather than trusting every future catalog author to keep it model-safe. `getCatalogJSONSchema()` returns the imported `catalog.schema.json` document as-is — no derivation step, since D1 made the schema itself the source of truth.
-
-## Phases
-
-```mermaid
-graph LR
-  P1["1 · Package bootstrap"] --> P2["2 · Catalog schema + types"]
-  P2 --> P3["3 · Integrity validation"]
-  P3 --> P4["4 · Introspection + JSON Schema export"]
-  P4 --> P5["5 · Docs + README"]
-```
-
 ### Phase 1 — Package bootstrap
 
 Create `packages/geovis-catalog` with the scaffold in D2: `package.json` (with the `ajv`/`@ttoss/geovis` dependencies from D1), `tsdown.config.ts`, `tsconfig.json`, `tests/tsconfig.json`, `tests/unit/jest.config.ts`, empty `src/index.ts`, `README.md` stub, `CHANGELOG.md`. Add the package to root `pnpm-workspace.yaml` coverage (already matched by the `packages/*` glob — no change needed there) and confirm `pnpm install` links it. Confirm a trivial `.json` import builds cleanly through `tsdown` before Phase 2 needs it for real (D2's caveat).
@@ -342,13 +328,12 @@ This plan's package (`@ttoss/geovis-catalog`) and its exports (`Catalog`, `catal
 
 ## Open questions carried forward (not resolved by this plan)
 
-- **Catalog governance** (PRD-004's own open question): who approves catalog entries and how `permissions` integrates with application auth is explicitly out of scope — the schema reserves an opaque slot (D4) and this plan does not design an authorization system.
-- The strategy document (`docs/website/docs/product/geovis/strategy.md`) referenced by this PRD, the roadmap, and every ADR does not exist in this repository (see Verification below). This plan proceeded from the PRD's own self-contained requirements text, which is sufficient to implement against, but strategy §5.2's full rationale is unavailable for cross-check.
+- **Catalog governance** (PRD-004's own open question): who approves catalog entries and how `permissions` integrates with application auth is explicitly out of scope — the application is responsible for enforcing its own authorization logic.
 
 ## Verification against current codebase (2026-07-22)
 
 - No `packages/geovis-catalog` directory exists yet — this plan starts from nothing, unlike PRD-001/002/003 whose plans re-derived against partially-built code.
-- `packages/geovis/src/spec/validateSpec.ts` and `packages/geovis/src/spec/schema.json` confirm the actual established pattern in this product family is Ajv + hand-authored JSON Schema, not Zod — `ajv@^8.18.0` (`Ajv2020` from `ajv/dist/2020`) is a plain `dependencies` entry in `packages/geovis/package.json`, not a devDependency, so `@ttoss/geovis-catalog` matches that by depending on `ajv` at runtime too, not `zod`. The repo's "use Zod for new schemas" rule (`.github/instructions/forms.instructions.md` / CLAUDE.md) is scoped to `@ttoss/forms`-style UI form validation and does not extend to this data-contract package — D1 documents why the closer, package-family precedent wins here.
+- `packages/geovis/src/spec/validateSpec.ts` and `packages/geovis/src/spec/schema.json` confirm the established pattern in this product family: Ajv + hand-authored JSON Schema. `ajv@^8.18.0` (`Ajv2020` from `ajv/dist/2020`) is a plain `dependencies` entry in `packages/geovis/package.json` — `@ttoss/geovis-catalog` matches that by depending on `ajv` at runtime too.
 - `packages/geovis/docs/ai-integration-readiness.md`'s `Catalog` interface (lines ~466–519) is the closest existing artifact to a catalog shape and was used as the seed for D4.
 - `packages/geovis/src/spec/result.ts` confirms `GeoVisIssueCode` is a hardcoded closed union (not generic), which is why D3 mirrors rather than reuses it.
 - `docs/website/docs/product/geovis/` does not exist — the strategy document every PRD/ADR links to is missing from the repo. Flagged to the user; does not block this plan since the PRD text is self-contained.

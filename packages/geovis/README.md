@@ -1055,7 +1055,7 @@ const LayerControls = () => {
 
 ## AI Action Surface (`dispatch`)
 
-`runtime.dispatch(action)` is the recommended way to steer a live map — a closed, typed vocabulary of semantic operations (PRD-002, [ADR-0003](./docs/adr/0003-semantic-action-surface.md)) that validates against the current spec before compiling to the same `SpecPatch`/`update`/`setView` mechanisms `applyPatch` uses. Prefer it over hand-written `SpecPatch`es: it targets stable ids instead of internal paint paths, rejects unknown targets with a repairable `GeoVisResult`, and every call — accepted or rejected — is recorded on the action log for audit.
+`runtime.dispatch(action)` is the recommended way to steer a live map — a closed, typed vocabulary of semantic operations (PRD-002, [ADR-0003](https://github.com/ttoss/ttoss/blob/main/packages/geovis/docs/adr/0003-semantic-action-surface.md)) that validates against the current spec before compiling to the same `SpecPatch`/`update`/`setView` mechanisms `applyPatch` uses. Prefer it over hand-written `SpecPatch`es: it targets stable ids instead of internal paint paths, rejects unknown targets with a repairable `GeoVisResult`, and every call — accepted or rejected — is recorded on the action log for audit.
 
 Currently implemented (the full v1 vocabulary): `toggle-layer`, `select-feature`, `set-map-data`, `set-filter`, `set-view-preset`.
 
@@ -1177,7 +1177,7 @@ Every dispatched action is recorded, accepted or rejected, with its `rationale` 
 
 ### Context packet
 
-`runtime.getContextPacket()` returns a versioned, read-only, metadata-only summary of the current map ([ADR-0004](./docs/adr/0004-ai-context-packet.md)) — never GeoJSON geometry, `mapData` rows, or full color/threshold lists. It names the same stable ids `dispatch()` accepts, so an AI (or any consumer) can decide what to do next without reading the full spec:
+`runtime.getContextPacket()` returns a versioned, read-only, metadata-only summary of the current map ([ADR-0004](https://github.com/ttoss/ttoss/blob/main/packages/geovis/docs/adr/0004-ai-context-packet.md)) — never GeoJSON geometry, `mapData` rows, or full color/threshold lists. It names the same stable ids `dispatch()` accepts, so an AI (or any consumer) can decide what to do next without reading the full spec:
 
 ```ts
 runtime.getContextPacket();

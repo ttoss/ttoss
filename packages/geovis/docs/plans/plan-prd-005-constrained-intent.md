@@ -8,9 +8,9 @@ Source: [PRD-005](../prds/prd-005-constrained-intent.md) · Basis: strategy §5.
 
 ## Durable decisions
 
-### D1 — Schema validation: Ajv + hand-authored JSON Schema, not Zod
+### D1 — Schema validation: Ajv + hand-authored JSON Schema
 
-Same choice as PRD-004 plan's D1, for the same reason: this is a machine-facing data contract in the `@ttoss/geovis` product family, and that family's established pattern (`spec/schema.json` + `Ajv2020` + hand-written `types.ts`, not Zod) is the closer precedent than the repo-wide `@ttoss/forms` rule, which is scoped to UI form validation. `AnalyticalIntent` is authored as `src/intent/intent.schema.json` + a hand-written `AnalyticalIntent` interface, validated with the same `Ajv2020` instance pattern `@ttoss/geovis-catalog` already set up for the catalog schema in PRD-004's plan — no second validation library, no `zod` dependency added by this plan either.
+Same approach as PRD-004 plan's D1: `AnalyticalIntent` is authored as `src/intent/intent.schema.json` + a hand-written `AnalyticalIntent` interface, validated with the same `Ajv2020` instance pattern `@ttoss/geovis-catalog` already set up for the catalog schema in PRD-004's plan — no second validation library added.
 
 ### D2 — Intent schema shape (JSON Schema)
 
@@ -31,7 +31,7 @@ export const ANALYTICAL_TASKS = [
 export type AnalyticalTask = (typeof ANALYTICAL_TASKS)[number];
 ```
 
-`ANALYTICAL_TASKS` is a genuine (small) addition beyond `@ttoss/geovis`'s own style — that package expresses closed string unions as bare TS union types (e.g. `VisualizationSpec['mapType']`) with no matching runtime array, because nothing there needs to _iterate_ the union at runtime. This plan's Phase 1 acceptance criterion ("one test per task, and a completeness test that every task has a rule" — reused again in PRD-006's plan) does need to iterate it, so a `readonly` const array with the type derived via `(typeof X)[number]` is the standard TS idiom for keeping one source of truth between the runtime list and the type — not a Zod-specific concern, and not a deviation once introduced, since `@ttoss/geovis`'s own `SEQUENTIAL_PALETTES`-style exported const arrays already establish that this repo is comfortable with the pattern.
+`ANALYTICAL_TASKS` is a genuine (small) addition beyond `@ttoss/geovis`'s own style — that package expresses closed string unions as bare TS union types (e.g. `VisualizationSpec['mapType']`) with no matching runtime array, because nothing there needs to _iterate_ the union at runtime. This plan's Phase 1 acceptance criterion ("one test per task, and a completeness test that every task has a rule" — reused again in PRD-006's plan) does need to iterate it, so a `readonly` const array with the type derived via `(typeof X)[number]` keeps one source of truth between the runtime list and the type.
 
 ```json
 {
@@ -156,7 +156,7 @@ A `'valid'` result always resolves `datasetId` — whether it was supplied and c
 
 ### D5 — Structured-output / tool-schema compatibility
 
-`getIntentJSONSchema()` returns the imported `intent.schema.json` document directly — no derivation step, matching PRD-004 plan's D6 (`getCatalogJSONSchema()`) now that the schema itself is authored as JSON Schema instead of a Zod object. Directly usable as an LLM structured-output or function-calling `input_schema`, per PRD-005's Must item and the pattern already documented in [`ai-integration-readiness.md`](../ai-integration-readiness.md)'s "Pattern 2: Structured Output" section. No NL parsing, prompt templates, or model-calling code is added anywhere in this package (PRD-005's Won't).
+`getIntentJSONSchema()` returns the imported `intent.schema.json` document directly, matching PRD-004 plan's D6 (`getCatalogJSONSchema()`). Directly usable as an LLM structured-output or function-calling `input_schema`, per PRD-005's Must item and the pattern already documented in [`ai-integration-readiness.md`](../ai-integration-readiness.md)'s "Pattern 2: Structured Output" section. No NL parsing, prompt templates, or model-calling code is added anywhere in this package (PRD-005's Won't).
 
 ## Phases
 
@@ -208,7 +208,7 @@ This plan's outputs (`AnalyticalIntent`, `intentSchema`, `validateIntent`, `Inte
 
 ## Verification against current codebase (2026-07-22)
 
-- Depends on `packages/geovis-catalog` existing with `Catalog`, `catalogSchema`, `CatalogResult`, `CatalogIssue`, `CatalogIssueCode`, `validateCatalog` exported — none of this exists until PRD-004's plan ships; this plan cannot be started in isolation.
+- Depends on `packages/geovis-catalog` existing with `Catalog`, `catalogSchema`, `CatalogResult`, `CatalogIssue`, `CatalogIssueCode`, `validateCatalog` exported
 - `ajv@^8.18.0` (already a dependency of `@ttoss/geovis-catalog` per PRD-004 plan's D1) is reused as-is — this plan adds no new dependency.
 - `@ttoss/geovis`'s `ADR-0003` action vocabulary already uses an optional `rationale` field on every semantic action — D2 mirrors that field name/shape for consistency across the AI-facing surface, rather than inventing a differently-named equivalent.
 - `packages/geovis/src/spec/types.ts`'s `SPEC_SCHEMA_VERSION` constant plus `validateSpec.checks.ts`'s `validateSchemaVersion` confirm the plain-`number`-plus-separate-check pattern D2 mirrors for `schemaVersion`/`INTENT_SCHEMA_VERSION`.

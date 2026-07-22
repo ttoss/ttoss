@@ -1,0 +1,58 @@
+{
+  "name": "@ttoss/http-server-mcp-openapi",
+  "version": "0.1.0",
+  "description": "Generate Model Context Protocol (MCP) tools from an OpenAPI specification for @ttoss/http-server-mcp",
+  "keywords": [
+    "ai",
+    "koa",
+    "llm",
+    "mcp",
+    "model-context-protocol",
+    "openapi",
+    "rest",
+    "server"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/http-server-mcp-openapi"
+  },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  ],
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "jest --projects tests/unit"
+  },
+  "dependencies": {
+    "@ttoss/http-server-mcp": "workspace:^"
+  },
+  "devDependencies": {
+    "@ttoss/config": "workspace:^",
+    "@ttoss/http-server": "workspace:^",
+    "jest": "^30.4.2",
+    "supertest": "^7.2.2",
+    "tsdown": "^0.22.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.mts"
+      }
+    },
+    "provenance": true
+  }
+}
