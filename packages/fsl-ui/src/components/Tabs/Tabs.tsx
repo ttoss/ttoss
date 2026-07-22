@@ -124,17 +124,35 @@ export const TabList = <T extends object = object>(props: TabListProps<T>) => {
       {...props}
       data-scope="tabs"
       data-part="control"
-      style={
-        {
+      style={({ orientation }) => {
+        const isVertical = orientation === 'vertical';
+        return {
           boxSizing: 'border-box',
           display: 'flex',
-          gap: vars.spacing.gap.inline.sm,
-          borderBlockEndWidth: vars.border.divider.width,
-          borderBlockEndStyle: vars.border.divider.style,
-          borderBlockEndColor:
-            vars.colors.navigation.muted?.border?.default ?? 'transparent',
-        } as React.CSSProperties
-      }
+          flexDirection: isVertical ? 'column' : 'row',
+          gap: isVertical
+            ? vars.spacing.gap.stack.sm
+            : vars.spacing.gap.inline.sm,
+          // The divider sits between the list and its panels, so it tracks
+          // the reading axis: block-end when horizontal, inline-end when
+          // vertical.
+          ...(isVertical
+            ? {
+                borderInlineEndWidth: vars.border.divider.width,
+                borderInlineEndStyle: vars.border.divider.style,
+                borderInlineEndColor:
+                  vars.colors.navigation.muted?.border?.default ??
+                  'transparent',
+              }
+            : {
+                borderBlockEndWidth: vars.border.divider.width,
+                borderBlockEndStyle: vars.border.divider.style,
+                borderBlockEndColor:
+                  vars.colors.navigation.muted?.border?.default ??
+                  'transparent',
+              }),
+        } as React.CSSProperties;
+      }}
     />
   );
 };

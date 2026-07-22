@@ -78,7 +78,9 @@ Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
              Popover, PopoverTrigger, Tooltip, TooltipTrigger
 Feedback:    ProgressBar, Meter, Toast, ToastRegion, createToastQueue
              (Meter = static quantity in a range e.g. battery/disk;
-             ProgressBar = a task in flight. Pick by "state" vs "progressing")
+             ProgressBar = a task in flight. Pick by "state" vs "progressing"),
+             Badge (status pill: evaluation=primary|positive|caution|negative,
+             numeric=tabular for counts — never a hand-rolled colored span)
 Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              WizardNavigation, Separator, Group (labelled role=group frame),
              Toolbar (role=toolbar, arrow-key roving nav over its controls),
@@ -92,7 +94,23 @@ Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              secondary hierarchy, as=p|span|div — never a raw font-size),
              Stack (layout rhythm: direction=vertical|horizontal picks the
              gap.stack|gap.inline family, gap=xs..xl, align, justify, wrap —
-             never a raw gap; use instead of a hand-rolled flex div)
+             never a raw gap; use instead of a hand-rolled flex div),
+             Box (token-constrained escape hatch, ADR-009: padding/
+             paddingBlock/paddingInline=none|sm|md|lg, background=none|primary|
+             muted, radius=none|control|surface|round, border=none|muted|
+             strong, width=auto|full|fit, maxWidth=none|surface|reading —
+             never a free style/className),
+             Grid (2D layout: columns=N or minColumnWidth=xs|sm|md|lg for
+             responsive auto-fit, rows, gap=xs..xl, align, justify — never a
+             raw track template),
+             Container (centered page column: size=surface|reading,
+             gutter=page|section|none — instead of max-width + margin auto),
+             AppShell (full-viewport app frame: header?, sidebar?, aside?,
+             sidebarWidth/asideWidth=sm|md|lg, sidebarLabel/asideLabel for the
+             landmark names; main content as children — instead of a
+             hand-rolled viewport grid),
+             Code (code text: block=true scrollable <pre> surface, block=false
+             inline <code> run)
 
 Icons: INTERNAL only (not exported). Components render glyphs through an
 internal semantic Icon layer (`src/components/Icon/`) that maps `icon.{family}.{intent}`
