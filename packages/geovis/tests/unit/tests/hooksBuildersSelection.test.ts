@@ -2,7 +2,7 @@ import type { Map as MapLibreMap, MapLayerMouseEvent } from 'maplibre-gl';
 import {
   buildHandleClick,
   dispatchClearSelection,
-} from 'src/react/hooks.builders';
+} from 'src/react/hooks.builders.click';
 import type { GeoVisRuntime } from 'src/runtime/createRuntime';
 
 const makeRuntime = (
@@ -117,5 +117,94 @@ describe('buildHandleClick', () => {
       lngLat: [-46.6, -23.5],
       point: { x: 10, y: 20 },
     });
+  });
+
+  test('resolves featureLngLat from Point geometry when no latKey/lngKey', () => {
+    const setClick = jest.fn();
+    const handleClick = buildHandleClick({
+      map: makeMap(),
+      layerId: 'lyr-1',
+      sourceByLayerId: new Map([['lyr-1', 'src-1']]),
+      setClick,
+      runtime: makeRuntime(null),
+    });
+
+    handleClick({
+      features: [
+        {
+          id: 'BR',
+          layer: { id: 'lyr-1' },
+          geometry: { type: 'Point', coordinates: [-44.1, -22.2] },
+        },
+      ],
+      lngLat: { lng: -46.6, lat: -23.5 },
+      point: { x: 10, y: 20 },
+    } as unknown as MapLayerMouseEvent);
+
+    expect(setClick).toHaveBeenCalledWith(
+      expect.objectContaining({ featureLngLat: [-44.1, -22.2] })
+    );
+  });
+
+  test('resolves featureLngLat from latKey/lngKey feature properties', () => {
+    const setClick = jest.fn();
+    const handleClick = buildHandleClick({
+      map: makeMap(),
+      layerId: 'lyr-1',
+      sourceByLayerId: new Map([['lyr-1', 'src-1']]),
+      setClick,
+      runtime: makeRuntime(null),
+      latKey: 'lat',
+      lngKey: 'lng',
+    });
+
+    handleClick({
+      // Strings exercise the numeric-coercion path; geometry is intentionally
+      // a polygon to prove the property-based position wins over geometry.
+      features: [
+        {
+          id: 'BR',
+          layer: { id: 'lyr-1' },
+          properties: { lat: '-22.2', lng: '-44.1' },
+          geometry: { type: 'Polygon', coordinates: [] },
+        },
+      ],
+      lngLat: { lng: -46.6, lat: -23.5 },
+      point: { x: 10, y: 20 },
+    } as unknown as MapLayerMouseEvent);
+
+    expect(setClick).toHaveBeenCalledWith(
+      expect.objectContaining({ featureLngLat: [-44.1, -22.2] })
+    );
+  });
+
+  test('featureLngLat is undefined when latKey/lngKey properties are not numeric', () => {
+    const setClick = jest.fn();
+    const handleClick = buildHandleClick({
+      map: makeMap(),
+      layerId: 'lyr-1',
+      sourceByLayerId: new Map([['lyr-1', 'src-1']]),
+      setClick,
+      runtime: makeRuntime(null),
+      latKey: 'lat',
+      lngKey: 'lng',
+    });
+
+    handleClick({
+      features: [
+        {
+          id: 'BR',
+          layer: { id: 'lyr-1' },
+          properties: { lat: 'n/a', lng: 'n/a' },
+          geometry: { type: 'Polygon', coordinates: [] },
+        },
+      ],
+      lngLat: { lng: -46.6, lat: -23.5 },
+      point: { x: 10, y: 20 },
+    } as unknown as MapLayerMouseEvent);
+
+    expect(setClick).toHaveBeenCalledWith(
+      expect.objectContaining({ featureLngLat: undefined })
+    );
   });
 });

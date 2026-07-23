@@ -353,6 +353,12 @@
                 },
                 "minItems": 2,
                 "maxItems": 2
+              },
+              "latKey": {
+                "type": "string"
+              },
+              "lngKey": {
+                "type": "string"
               }
             }
           },
@@ -589,6 +595,9 @@
           "maxItems": 2
         },
         "zoom": {
+          "type": "number"
+        },
+        "maxZoomIn": {
           "type": "number"
         },
         "pitch": {

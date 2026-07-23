@@ -10,18 +10,24 @@ import type { VisualizationSpec } from '../spec/types';
 import type { MapClickInfo, MapHoverInfo } from './contexts';
 import { useGeoVis } from './contexts';
 import {
-  attachClickDismissListeners,
-  buildClickTracking,
-  buildHandleClick,
+  buildHandleGlobalCursor,
   buildHandleMove,
   buildHandleWindowFocus,
+  buildHoverTrackedKey,
   buildHoverTracking,
+  buildPointerLayerIds,
   clearHover,
-  dispatchClearSelection,
+  type DecodedHoverTracking,
   type PrevFeatureState,
   TRACKED_FIELD_SEP,
   TRACKED_RECORD_SEP,
 } from './hooks.builders';
+import {
+  attachClickDismissListeners,
+  buildClickTracking,
+  buildHandleClick,
+  dispatchClearSelection,
+} from './hooks.builders.click';
 
 export type { MapClickInfo, MapHoverInfo } from './contexts';
 
@@ -29,6 +35,15 @@ interface UseMapHoverParams {
   runtime: GeoVisRuntime | null;
   spec: VisualizationSpec;
 }
+
+// Reused when no polygon hover layers are present (pointer-only mode).
+// All fields are read-only at runtime so sharing across hook instances is safe.
+const EMPTY_HOVER_TRACKING: DecodedHoverTracking = {
+  tracked: [],
+  sourceByLayerId: new Map<string, string>(),
+  hoverPaintLayerIds: new Set<string>(),
+  trackedLayerIds: [],
+};
 
 /**
  * Tracks the hovered feature on every polygon layer that has an `activeLegendId`
@@ -48,39 +63,30 @@ export const useMapHover = ({
   // window-focus recheck can query the same point without a new mouse event.
   const lastPointRef = React.useRef<{ x: number; y: number } | null>(null);
 
-  // Identify polygon layers that participate in legend-driven interactions.
-  // Stored as a string key so the effect's dependency array stays stable when
+  // Encoded as a string key so the effect's dependency array stays stable when
   // the spec object reference changes but the relevant subset does not.
   // Depends on `spec.layers` (not the whole `spec`) so high-frequency spec
-  // updates such as `mapData` patches do NOT detach/reattach the MapLibre
-  // event handlers below.
+  // updates such as `mapData` patches do NOT detach/reattach the handlers.
   const trackedKey = React.useMemo(() => {
-    return spec.layers
-      .filter((layer) => {
-        // Only polygon layers can have hoverPaint and/or activeLegendId, so we can skip non-polygons entirely. This also avoids attaching hover handlers to
-        // non-polygon layers that have active legends (e.g. symbol layers with
-        // `icon-image` driven by an active legend) but do not support hoverPaint.
-        return (
-          layer.geometry === 'polygon' &&
-          (layer.activeLegendId != null || layer.hoverPaint != null)
-        );
-      })
-      .map((layer) => {
-        return `${layer.id}${TRACKED_FIELD_SEP}${layer.sourceId}${TRACKED_FIELD_SEP}${layer.hoverPaint ? '1' : '0'}`;
-      })
-      .join(TRACKED_RECORD_SEP);
+    return buildHoverTrackedKey(spec.layers);
+  }, [spec.layers]);
+
+  const pointerLayerIds = React.useMemo(() => {
+    return buildPointerLayerIds(spec.layers);
   }, [spec.layers]);
 
   React.useEffect(() => {
-    if (!runtime) return;
-    if (!trackedKey) return;
+    if (!runtime || (!trackedKey && pointerLayerIds.size === 0)) return;
 
     const map = runtime.getAdapter().getNativeInstance() as MapLibreMap | null;
     if (!map) return;
 
     const { tracked, sourceByLayerId, hoverPaintLayerIds, trackedLayerIds } =
-      buildHoverTracking(trackedKey);
+      trackedKey ? buildHoverTracking(trackedKey) : EMPTY_HOVER_TRACKING;
     const prevHoveredState: PrevFeatureState = { current: null };
+    // Shared flag: set by the global handler (fires first) so polygon handlers
+    // (fire after) skip their setHover call when the cursor is over a point layer.
+    const pointHovering = { current: false };
 
     const handlers = tracked.map(({ layerId }) => {
       return {
@@ -93,19 +99,25 @@ export const useMapHover = ({
           lastPointRef,
           prevHoveredState,
           hoverPaintLayerIds,
+          pointHovering,
         }),
       };
     });
 
+    // Do NOT clear lastPointRef here: some browsers fire a synthetic
+    // `mouseleave` on alt-tab; the window-focus recheck restores the tooltip.
     const handleLeave = () => {
-      // Do NOT clear lastPointRef here. Some browsers (Windows/Linux) fire a
-      // synthetic `mouseleave` when the user alt-tabs or switches windows.
-      // Retaining the last known position lets the window-focus recheck call
-      // `queryRenderedFeatures` on that point and restore the tooltip if the
-      // cursor is genuinely still over a tracked feature. If the cursor has
-      // moved away, `buildHandleWindowFocus` calls `clearHover` regardless.
-      clearHover(map, setHover, prevHoveredState);
+      return clearHover(map, setHover, prevHoveredState);
     };
+
+    const handleGlobalCursor = buildHandleGlobalCursor({
+      map,
+      pointerLayerIds,
+      trackedLayerIds,
+      setHover,
+      pointHovering,
+    });
+    map.on('mousemove', handleGlobalCursor);
 
     const handleWindowFocus = buildHandleWindowFocus({
       map,
@@ -143,7 +155,7 @@ export const useMapHover = ({
       lastPointRef.current = null;
       clearHover(map, setHover, prevHoveredState);
     };
-  }, [runtime, trackedKey]);
+  }, [runtime, trackedKey, pointerLayerIds]);
 
   return hover;
 };
@@ -197,7 +209,9 @@ export const useMapClick = ({
       .map((layer) => {
         const needsSelectedState =
           layer.selectedPaint != null || layer.clickAnchor?.iconImage != null;
-        return `${layer.id}${TRACKED_FIELD_SEP}${layer.sourceId}${TRACKED_FIELD_SEP}${needsSelectedState ? '1' : '0'}`;
+        const latKey = layer.clickAnchor?.latKey ?? '';
+        const lngKey = layer.clickAnchor?.lngKey ?? '';
+        return `${layer.id}${TRACKED_FIELD_SEP}${layer.sourceId}${TRACKED_FIELD_SEP}${needsSelectedState ? '1' : '0'}${TRACKED_FIELD_SEP}${latKey}${TRACKED_FIELD_SEP}${lngKey}`;
       })
       .join(TRACKED_RECORD_SEP);
   }, [spec.layers]);
@@ -217,7 +231,7 @@ export const useMapClick = ({
     };
     dismissImplRef.current = dismissSelection;
 
-    const handlers = tracked.map(({ layerId }) => {
+    const handlers = tracked.map(({ layerId, latKey, lngKey }) => {
       return {
         layerId,
         handleClick: buildHandleClick({
@@ -226,6 +240,8 @@ export const useMapClick = ({
           sourceByLayerId,
           setClick,
           runtime,
+          latKey,
+          lngKey,
         }),
       };
     });
@@ -342,7 +358,7 @@ export const useClickAnchor = ({
       if (cancelled) return;
 
       marker = new maplibregl.Marker(buildMarkerOptions(anchor))
-        .setLngLat(click.lngLat)
+        .setLngLat(click.featureLngLat ?? click.lngLat)
         .addTo(map);
     })();
 
