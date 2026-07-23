@@ -1,0 +1,354 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`getCatalogJSONSchema matches the committed schema shape (guards against accidental drift) 1`] = `
+{
+  "$defs": {
+    "Dataset": {
+      "additionalProperties": false,
+      "properties": {
+        "aliases": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "description": {
+          "type": "string",
+        },
+        "geographyIds": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "geometry": {
+          "enum": [
+            "point",
+            "polygon",
+            "line",
+          ],
+          "type": "string",
+        },
+        "id": {
+          "type": "string",
+        },
+        "label": {
+          "type": "string",
+        },
+        "metricIds": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "source": {
+          "type": "string",
+        },
+        "temporal": {
+          "additionalProperties": false,
+          "properties": {
+            "end": {
+              "format": "date",
+              "type": "string",
+            },
+            "start": {
+              "format": "date",
+              "type": "string",
+            },
+          },
+          "required": [
+            "start",
+            "end",
+          ],
+          "type": "object",
+        },
+      },
+      "required": [
+        "id",
+        "label",
+        "description",
+        "geometry",
+        "geographyIds",
+        "metricIds",
+      ],
+      "type": "object",
+    },
+    "FilterField": {
+      "additionalProperties": false,
+      "properties": {
+        "domain": {},
+        "field": {
+          "type": "string",
+        },
+        "kind": {
+          "enum": [
+            "categorical",
+            "numeric",
+            "temporal",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "field",
+        "kind",
+      ],
+      "type": "object",
+    },
+    "Geography": {
+      "additionalProperties": false,
+      "properties": {
+        "aliases": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "codeScheme": {
+          "type": "string",
+        },
+        "description": {
+          "type": "string",
+        },
+        "id": {
+          "type": "string",
+        },
+        "kind": {
+          "enum": [
+            "administrative",
+            "grid",
+            "poi",
+            "custom",
+          ],
+          "type": "string",
+        },
+        "label": {
+          "type": "string",
+        },
+        "level": {
+          "type": "number",
+        },
+        "parentId": {
+          "type": "string",
+        },
+        "resolution": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "id",
+        "label",
+        "description",
+      ],
+      "type": "object",
+    },
+    "Join": {
+      "additionalProperties": false,
+      "properties": {
+        "cardinality": {
+          "enum": [
+            "1:1",
+            "1:m",
+            "m:1",
+          ],
+          "type": "string",
+        },
+        "from": {
+          "type": "string",
+        },
+        "on": {
+          "additionalProperties": false,
+          "properties": {
+            "left": {
+              "type": "string",
+            },
+            "right": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "left",
+            "right",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "from",
+        "to",
+        "on",
+        "cardinality",
+      ],
+      "type": "object",
+    },
+    "MapTypeCatalogEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "metricKinds": {
+          "items": {
+            "enum": [
+              "count",
+              "rate",
+              "ratio",
+              "index",
+              "density",
+              "distance",
+            ],
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "name": {
+          "enum": [
+            "choropleth",
+            "dotDensity",
+            "proportionalCircles",
+          ],
+          "type": "string",
+        },
+        "supportedGeometries": {
+          "items": {
+            "enum": [
+              "point",
+              "polygon",
+              "line",
+            ],
+            "type": "string",
+          },
+          "type": "array",
+        },
+      },
+      "required": [
+        "name",
+        "supportedGeometries",
+        "metricKinds",
+      ],
+      "type": "object",
+    },
+    "Metric": {
+      "additionalProperties": false,
+      "properties": {
+        "aliases": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "description": {
+          "type": "string",
+        },
+        "formatter": {
+          "enum": [
+            "number",
+            "percent",
+            "currency",
+            "compact",
+          ],
+          "type": "string",
+        },
+        "id": {
+          "type": "string",
+        },
+        "kind": {
+          "enum": [
+            "count",
+            "rate",
+            "ratio",
+            "index",
+            "density",
+            "distance",
+          ],
+          "type": "string",
+        },
+        "label": {
+          "type": "string",
+        },
+        "nullPolicy": {
+          "enum": [
+            "hide",
+            "zero",
+            "explain",
+          ],
+          "type": "string",
+        },
+        "unit": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "id",
+        "label",
+        "description",
+        "kind",
+        "nullPolicy",
+      ],
+      "type": "object",
+    },
+  },
+  "$id": "https://ttoss.dev/geovis-catalog/catalog.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "datasets": {
+      "items": {
+        "$ref": "#/$defs/Dataset",
+      },
+      "type": "array",
+    },
+    "domain": {
+      "type": "string",
+    },
+    "filters": {
+      "items": {
+        "$ref": "#/$defs/FilterField",
+      },
+      "type": "array",
+    },
+    "geographies": {
+      "items": {
+        "$ref": "#/$defs/Geography",
+      },
+      "type": "array",
+    },
+    "joins": {
+      "items": {
+        "$ref": "#/$defs/Join",
+      },
+      "type": "array",
+    },
+    "mapTypes": {
+      "items": {
+        "$ref": "#/$defs/MapTypeCatalogEntry",
+      },
+      "type": "array",
+    },
+    "metrics": {
+      "items": {
+        "$ref": "#/$defs/Metric",
+      },
+      "type": "array",
+    },
+    "permissions": {
+      "type": "object",
+    },
+    "version": {
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "required": [
+    "version",
+    "datasets",
+    "metrics",
+    "geographies",
+    "joins",
+    "mapTypes",
+    "filters",
+  ],
+  "title": "Catalog",
+  "type": "object",
+}
+`;

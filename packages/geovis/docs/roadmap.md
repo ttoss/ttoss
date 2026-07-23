@@ -20,7 +20,7 @@ graph LR
 
 ## Where we are
 
-`@ttoss/geovis` renders validated specs (choropleth, dot density, proportional circles) with MapLibre, patches them incrementally, and enforces one cartography policy. R1 (structured result taxonomy, enforced `CapabilitySet`) and R2 (semantic action `dispatch()`, context packet) are implemented. `@ttoss/geovis-workspace` hoists `GeoVisProvider` above its layout and derives every default panel (legend, warnings/repair surface, inspector, metadata, layer list) from the runtime through named slots — R3a is implemented. Still to build: R3b (workspace controls converging on R2's semantic actions instead of `onSelectionChange`), and R4/R5 — catalog, intent, resolution, and evals ([GeoVis ADRs 0001–0004](https://github.com/ttoss/ttoss/tree/main/packages/geovis/docs/adr), [workspace ADRs 0001–0004](https://github.com/ttoss/ttoss/tree/main/packages/geovis-workspace/docs/adr), [research](./research/)) are designed but not built.
+`@ttoss/geovis` renders validated specs (choropleth, dot density, proportional circles) with MapLibre, patches them incrementally, and enforces one cartography policy. R1 (structured result taxonomy, enforced `CapabilitySet`) and R2 (semantic action `dispatch()`, context packet) are implemented. `@ttoss/geovis-workspace` hoists `GeoVisProvider` above its layout and derives every default panel (legend, warnings/repair surface, inspector, metadata, layer list) from the runtime through named slots — R3a is implemented. `@ttoss/geovis-catalog` now exists with the R4 catalog contract (`validateCatalog`, `getCatalogIntrospection`, `getCatalogJSONSchema`) implemented. Still to build: R3b (workspace controls converging on R2's semantic actions instead of `onSelectionChange`), R4's constrained intent schema and deterministic resolver, and R5 evals ([GeoVis ADRs 0001–0004](https://github.com/ttoss/ttoss/tree/main/packages/geovis/docs/adr), [workspace ADRs 0001–0004](https://github.com/ttoss/ttoss/tree/main/packages/geovis-workspace/docs/adr), [research](./research/)) are designed but not built.
 
 ## R1 — Reliable Core
 
@@ -76,11 +76,11 @@ Exit criteria — R3a: an application embeds the workspace without rebuilding co
 
 Natural language becomes a validated map through catalog and deterministic resolution. This layer is new — it lands in existing packages (`@ttoss/geovis-catalog`).
 
-| Deliverable                                                 | Package               | Basis         |
-| ----------------------------------------------------------- | --------------------- | ------------- |
-| Catalog contract (metrics, geographies, joins, permissions) | @ttoss/geovis-catalog | Strategy §5.2 |
-| Constrained intent schema                                   | @ttoss/geovis-catalog | Strategy §5.1 |
-| Deterministic resolver: intent → validated spec             | @ttoss/geovis-catalog | Strategy §5.3 |
+| Deliverable                                                               | Package               | Basis         |
+| ------------------------------------------------------------------------- | --------------------- | ------------- |
+| Catalog contract (metrics, geographies, joins, permissions) — implemented | @ttoss/geovis-catalog | Strategy §5.2 |
+| Constrained intent schema                                                 | @ttoss/geovis-catalog | Strategy §5.1 |
+| Deterministic resolver: intent → validated spec                           | @ttoss/geovis-catalog | Strategy §5.3 |
 
 Exit criteria: an AI can only reference catalog entries; the resolver produces a valid map or a structured failure — never a guess.
 
