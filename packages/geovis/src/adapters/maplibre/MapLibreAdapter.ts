@@ -75,6 +75,15 @@ const syncZoom = (
   map.setZoom(next.zoom);
 };
 
+const syncMaxZoom = (
+  map: maplibregl.Map,
+  prev: VisualizationSpec['view'],
+  next: VisualizationSpec['view']
+): void => {
+  if (prev?.maxZoomIn === next?.maxZoomIn) return;
+  map.setMaxZoom(next?.maxZoomIn ?? null);
+};
+
 /** Syncs map camera (center, zoom, pitch, bearing) to `next`, skipping values unchanged from `prev`. */
 const syncMapView = (
   map: maplibregl.Map,
@@ -84,6 +93,7 @@ const syncMapView = (
   if (!next) return;
   const p = prev ?? {};
   syncCenter(map, prev, next);
+  syncMaxZoom(map, prev, next);
   syncZoom(map, prev, next);
   const pp = p.pitch ?? 0;
   const np = next.pitch ?? 0;
@@ -114,6 +124,7 @@ const createMap = (
     style,
     center: (view?.center ?? [0, 0]) as maplibregl.LngLatLike,
     zoom: view?.zoom ?? 1,
+    maxZoom: view?.maxZoomIn,
     pitch: view?.pitch ?? 0,
     bearing: view?.bearing ?? 0,
   });

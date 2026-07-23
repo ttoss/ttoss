@@ -209,7 +209,9 @@ export const useMapClick = ({
       .map((layer) => {
         const needsSelectedState =
           layer.selectedPaint != null || layer.clickAnchor?.iconImage != null;
-        return `${layer.id}${TRACKED_FIELD_SEP}${layer.sourceId}${TRACKED_FIELD_SEP}${needsSelectedState ? '1' : '0'}`;
+        const latKey = layer.clickAnchor?.latKey ?? '';
+        const lngKey = layer.clickAnchor?.lngKey ?? '';
+        return `${layer.id}${TRACKED_FIELD_SEP}${layer.sourceId}${TRACKED_FIELD_SEP}${needsSelectedState ? '1' : '0'}${TRACKED_FIELD_SEP}${latKey}${TRACKED_FIELD_SEP}${lngKey}`;
       })
       .join(TRACKED_RECORD_SEP);
   }, [spec.layers]);
@@ -229,7 +231,7 @@ export const useMapClick = ({
     };
     dismissImplRef.current = dismissSelection;
 
-    const handlers = tracked.map(({ layerId }) => {
+    const handlers = tracked.map(({ layerId, latKey, lngKey }) => {
       return {
         layerId,
         handleClick: buildHandleClick({
@@ -238,6 +240,8 @@ export const useMapClick = ({
           sourceByLayerId,
           setClick,
           runtime,
+          latKey,
+          lngKey,
         }),
       };
     });
@@ -354,7 +358,7 @@ export const useClickAnchor = ({
       if (cancelled) return;
 
       marker = new maplibregl.Marker(buildMarkerOptions(anchor))
-        .setLngLat(click.lngLat)
+        .setLngLat(click.featureLngLat ?? click.lngLat)
         .addTo(map);
     })();
 

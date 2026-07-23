@@ -125,6 +125,12 @@ export interface MapClickInfo {
   value: number | string | null;
   /** Geographic coordinates `[lng, lat]` of the click. */
   lngLat: [number, number];
+  /**
+   * Geographic coordinates `[lng, lat]` of the feature's geometry centroid or
+   * property-based position. `undefined` for lines/polygons. Prefer
+   * `featureLngLat ?? lngLat` when anchoring a marker to the feature.
+   */
+  featureLngLat?: [number, number];
   /** Canvas-relative pixel coordinates of the click. */
   point: { x: number; y: number };
 }

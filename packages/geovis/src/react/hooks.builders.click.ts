@@ -1,5 +1,6 @@
 import type {
   Map as MapLibreMap,
+  MapGeoJSONFeature,
   MapLayerMouseEvent,
   MapMouseEvent,
 } from 'maplibre-gl';
@@ -17,6 +18,10 @@ export type TrackedClickEntry = {
   layerId: string;
   sourceId: string;
   hasSelectedPaint: boolean;
+  /** Feature property key holding the latitude (from `clickAnchor.latKey`). */
+  latKey?: string;
+  /** Feature property key holding the longitude (from `clickAnchor.lngKey`). */
+  lngKey?: string;
 };
 
 /**
@@ -26,9 +31,15 @@ export type TrackedClickEntry = {
  */
 export const decodeClickTrackedKey = (key: string): TrackedClickEntry[] => {
   return key.split(TRACKED_RECORD_SEP).map((entry) => {
-    const [layerId, sourceId, hasSelectedPaint] =
+    const [layerId, sourceId, hasSelectedPaint, latKey, lngKey] =
       entry.split(TRACKED_FIELD_SEP);
-    return { layerId, sourceId, hasSelectedPaint: hasSelectedPaint === '1' };
+    return {
+      layerId,
+      sourceId,
+      hasSelectedPaint: hasSelectedPaint === '1',
+      latKey: latKey || undefined,
+      lngKey: lngKey || undefined,
+    };
   });
 };
 
@@ -97,7 +108,58 @@ export interface BuildHandleClickParams {
   sourceByLayerId: Map<string, string>;
   setClick: React.Dispatch<React.SetStateAction<MapClickInfo | null>>;
   runtime: GeoVisRuntime;
+  /** Feature property key holding the latitude, paired with `lngKey`. */
+  latKey?: string;
+  /** Feature property key holding the longitude, paired with `latKey`. */
+  lngKey?: string;
 }
+
+/** Coerces a raw feature-property value to a number (parses numeric strings). */
+const parseCoord = (raw: unknown): number => {
+  return typeof raw === 'number' ? raw : parseFloat(String(raw ?? ''));
+};
+
+/** Reads `[lng, lat]` from the feature's `latKey`/`lngKey` properties. */
+const lngLatFromProps = (
+  feature: MapGeoJSONFeature,
+  latKey: string,
+  lngKey: string
+): [number, number] | undefined => {
+  const props = feature.properties;
+  const lat = parseCoord(props?.[latKey]);
+  const lng = parseCoord(props?.[lngKey]);
+  return Number.isFinite(lat) && Number.isFinite(lng) ? [lng, lat] : undefined;
+};
+
+/** Reads `[lng, lat]` from the feature's geometry when it is a `Point`. */
+const lngLatFromGeometry = (
+  feature: MapGeoJSONFeature
+): [number, number] | undefined => {
+  const geom = feature.geometry;
+  return geom?.type === 'Point' && geom.coordinates.length >= 2
+    ? [geom.coordinates[0], geom.coordinates[1]]
+    : undefined;
+};
+
+/**
+ * Resolves the feature's own geographic position for anchoring a marker: from
+ * the `latKey`/`lngKey` feature properties when both are provided (avoids
+ * high-zoom drift), otherwise from the geometry when it is a `Point`. Returns
+ * `undefined` for lines/polygons with no property-based position.
+ */
+const resolveFeatureLngLat = ({
+  feature,
+  latKey,
+  lngKey,
+}: {
+  feature: MapGeoJSONFeature;
+  latKey?: string;
+  lngKey?: string;
+}): [number, number] | undefined => {
+  return latKey && lngKey
+    ? lngLatFromProps(feature, latKey, lngKey)
+    : lngLatFromGeometry(feature);
+};
 
 /**
  * Builds the per-layer click handler that reads the clicked feature's
@@ -116,6 +178,8 @@ export const buildHandleClick = ({
   sourceByLayerId,
   setClick,
   runtime,
+  latKey,
+  lngKey,
 }: BuildHandleClickParams) => {
   return (event: MapLayerMouseEvent) => {
     const feature = event.features?.[0];
@@ -143,12 +207,15 @@ export const buildHandleClick = ({
       id: feature.id,
     }) as { value?: unknown };
 
+    const featureLngLat = resolveFeatureLngLat({ feature, latKey, lngKey });
+
     setClick({
       layerId: resolvedLayerId,
       sourceId,
       featureId: feature.id,
       value: coerceFeatureStateValue(state.value),
       lngLat: [event.lngLat.lng, event.lngLat.lat],
+      featureLngLat,
       point: { x: event.point.x, y: event.point.y },
     });
   };

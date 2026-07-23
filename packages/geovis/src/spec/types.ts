@@ -95,6 +95,13 @@ export type MapType = 'choropleth' | 'dotDensity' | 'proportionalCircles';
 export interface ViewState {
   center?: LngLat;
   zoom?: number;
+  /**
+   * Highest zoom level the user can reach by zooming in. Acts as a camera
+   * ceiling: interactive zoom, `setView`, and programmatic `zoom` are all
+   * clamped to this value. Higher numbers mean closer to the ground. When
+   * omitted, MapLibre's default maximum (`22`) applies.
+   */
+  maxZoomIn?: number;
   pitch?: number;
   bearing?: number;
   projection?: 'mercator' | 'vertical-perspective';
@@ -313,6 +320,14 @@ export interface VisualizationLayer {
     color?: string;
     /** Pixel offset `[x, y]` applied to the DOM marker. */
     offset?: [number, number];
+    /**
+     * Feature property key holding the latitude. Paired with `lngKey`, geovis
+     * reads the pin position from `feature.properties` instead of the tile
+     * geometry to avoid drift at high zoom.
+     */
+    latKey?: string;
+    /** Feature property key holding the longitude. Must be paired with `latKey`. */
+    lngKey?: string;
   };
   /**
    * Spec-driven hover tooltip. When present, `<GeoVisProvider>` automatically
