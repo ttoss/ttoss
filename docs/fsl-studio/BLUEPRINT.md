@@ -153,16 +153,42 @@ the Studio's own product route and do not block fsl-ui v1.0 (ROADMAP §gate).
 
 **S1 — fsl Storybook** · status: ☐
 
-Dedicated instance at `docs/fsl-storybook`, fsl only (D-001).
+Dedicated instance at `docs/fsl-storybook`, fsl only (D-001). Stack decisions
+from the 2026-07-23 Storybook 10.5 study:
 
-- ThemeProvider decorator; toolbar switchers for mode (light/dark) and theme
+- Builder: `@storybook/react-vite` — fresh ESM stack; the general ttoss
+  Storybook stays on its webpack5 setup, untouched.
+- ThemeProvider decorator (the provider's `themeId` prop exists for exactly
+  this — runtime theme swap); toolbar globals for mode (light/dark) and theme
   (`baseTheme`/`bruttal`).
 - Every component exported from `packages/fsl-ui/src/index.ts` gets a default
   story plus meaningful variant stories with `tags: ['autodocs']` (JSDoc is
   already mandatory on all fsl-ui components, so autodocs is free).
-- Deployed as a static app like the Studio.
-- **AC:** every public component browsable in both modes and both themes; zero
-  fsl stories in the general Storybook.
+- `@storybook/addon-a11y`: axe per story in the toolbar — the jest-axe
+  discipline made visible.
+- **AI surface** (the study's main finding — Storybook 10.5 ships first-party
+  agent infrastructure that plugs straight into the FSL thesis):
+  - `features.componentsManifest`: the static build emits
+    `manifests/components.json`, a machine-readable component catalog derived
+    from stories + JSDoc. Ship it with the deploy — it complements fsl-ui's
+    hand-authored `llms.txt` (contract vs. examples catalog) and is the input
+    `@storybook/mcp` consumes.
+  - `@storybook/addon-mcp` (dev server only): exposes an MCP endpoint at
+    `/mcp` so coding agents write and verify stories tool-assisted — our own
+    implementation sessions are the first consumers.
+  - Self-hosting `@storybook/mcp` needs a serverless function — that is a
+    D-008(a) trigger, parked. Static manifests deliver most of the value
+    meanwhile: any consumer can run the MCP package locally against the
+    deployed manifests.
+  - llms.txt extraction from the built Storybook (the
+    `storybook-llms-extractor` pattern the general ttoss instance already
+    runs).
+  - Maturity note: both MCP packages are 0.x — adopt as dev/experimental
+    surface, never as a gate dependency.
+- Deployed as a static app like the Studio was.
+- **AC:** every public component browsable in both modes and both themes;
+  manifests + llms.txt present in the build output; zero fsl stories in the
+  general Storybook.
 
 **S2 — the Studio becomes the product** · status: ☐
 
@@ -253,7 +279,10 @@ corpus: the existing blocks. Exits: copy the code; file a prefilled
 `ttoss/ttoss` issue carrying the prompt, the generated code, and the usage
 context — the evidence rule operationalized: every user becomes a friction
 logger, and built-in decisions aggregate from real demand. Governance stays
-human: the studio produces candidates, never library entries.
+human: the studio produces candidates, never library entries. Candidate
+knowledge infra: the S1 component manifests + `@storybook/mcp`, so the
+generator and fsl-bench (D-011) query the same component knowledge agents in
+the wild would.
 
 ### Parking lot (Studio-local)
 
