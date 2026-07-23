@@ -5,7 +5,7 @@ title: PRD-003 · Human Workspace Foundation
 
 # PRD-003: Human Workspace Foundation
 
-Status: draft · Priority: **P3** (roadmap R3a — runs in parallel with PRD-002) · Capability: strategy §5.5 · Package: `@ttoss/geovis-workspace`
+Status: implemented ([plan](../plans/plan-prd-003-human-workspace.md)) · Priority: **P3** (roadmap R3a — runs in parallel with PRD-002) · Capability: strategy §5.5 · Package: `@ttoss/geovis-workspace`
 
 ## Problem
 
@@ -43,5 +43,5 @@ PRD-001 only (the taxonomy to display). Deliberately **not** PRD-002: foundation
 
 ## Open questions
 
-- Which panels are v1 vs. later (inspector vs. metadata vs. layer list).
-- Whether the accessibility policy (strategy-planned) gates this PRD or follows it.
+- ~~Which panels are v1 vs. later.~~ Resolved (plan D4): map, legend, warnings, inspector shipped as Must; metadata and layer-list control as Should.
+- ~~Whether the accessibility policy gates this PRD or follows it.~~ Resolved (plan D5): keyboard operability is a continuous acceptance criterion on every phase, not a separate gate.

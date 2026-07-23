@@ -4,7 +4,7 @@ title: PRD-004 · Trusted Catalog
 
 # PRD-004: Trusted Catalog
 
-Status: draft · Priority: **P5** (roadmap R4) · Capability: strategy §5.2 · Package: new layer (location decided here)
+Status: implemented ([plan](../plans/plan-prd-004-trusted-catalog.md)) · Priority: **P5** (roadmap R4) · Capability: strategy §5.2 · Package: @ttoss/geovis-catalog
 
 ## Problem
 
@@ -29,7 +29,7 @@ AI can only reference mappable reality.
 
 ### Should
 
-- Helpers to assemble a catalog from warehouse metadata (input: [AI integration research](../research/ai-integration-readiness.md)).
+- Helpers to assemble a catalog from warehouse metadata (input: [AI integration research](../research/ai-integration-readiness.md)). Not built — the Must items (contract, validation, introspection) are the entry gate for PRD-005/006 and shipped first; this helper has no dependent and is left for a later pass.
 
 ### Won't (non-goals)
 
@@ -41,4 +41,4 @@ PRD-001 (taxonomy for catalog-mismatch reporting). Feeds PRD-005 and PRD-006.
 
 ## Open questions
 
-- Catalog governance: who approves entries, and how permissions integrate with application auth.
+- ~~Catalog governance: who approves entries, and how permissions integrate with application auth.~~ Resolved as out of scope: `permissions` is an opaque, schema-reserved slot; the application enforces its own authorization logic. Governance process itself is an org/product question, not a package concern.
