@@ -151,10 +151,20 @@ the Studio's own product route and do not block fsl-ui v1.0 (ROADMAP §gate).
 
 ### v1 — the workbench
 
-**S1 — fsl Storybook** · status: ☐
+**S1 — fsl Storybook** · status: ✅ shipped 2026-07-23
 
-Dedicated instance at `docs/fsl-storybook`, fsl only (D-001). Stack decisions
-from the 2026-07-23 Storybook 10.5 study:
+Delivered at `docs/fsl-storybook`: 47 story families (every public fsl-ui
+export) organized by FSL entity, mode + theme toolbar switchers, a11y addon,
+`manifests/components.json` (47 components with docgen + stories + imports),
+`llms.txt` extraction, and the dev-server `/mcp` endpoint (verified: addon-mcp
+0.7 works without its optional `addon-vitest` peer; the components-manifest
+tools register). Note: aligning the monorepo's `@storybook/*` resolutions to
+10.5.3 was required — core 10.4.1 + react-vite 10.5.3 silently produced no
+manifests. Deploy alias: `fsl-storybook.ttoss.dev` (rides merge to main).
+
+Original slice definition (kept for the record) — dedicated instance at
+`docs/fsl-storybook`, fsl only (D-001). Stack decisions from the 2026-07-23
+Storybook 10.5 study:
 
 - Builder: `@storybook/react-vite` — fresh ESM stack; the general ttoss
   Storybook stays on its webpack5 setup, untouched.

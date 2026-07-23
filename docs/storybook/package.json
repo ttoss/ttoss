@@ -37,17 +37,17 @@
   "devDependencies": {
     "@babel/core": "^7.29.7",
     "@fluentui/storybook-llms-extractor": "^0.0.4",
-    "@storybook/addon-a11y": "^10.4.1",
-    "@storybook/addon-docs": "^10.4.1",
-    "@storybook/addon-links": "^10.4.1",
+    "@storybook/addon-a11y": "^10.5.3",
+    "@storybook/addon-docs": "^10.5.3",
+    "@storybook/addon-links": "^10.5.3",
     "@storybook/addon-webpack5-compiler-babel": "^4.0.1",
-    "@storybook/react-webpack5": "^10.4.1",
+    "@storybook/react-webpack5": "^10.5.3",
     "@ttoss/config": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "babel-loader": "^10.1.1",
     "eslint-plugin-storybook": "10.4.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "storybook": "^10.4.1"
+    "storybook": "^10.5.3"
   }
 }
