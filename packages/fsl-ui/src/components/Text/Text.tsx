@@ -21,8 +21,14 @@ export const textMeta = {
   structure: 'root',
 } as const satisfies ComponentMeta<'Structure'>;
 
-/** A step of the body/label type scale (`{family}-{step}`). */
+/**
+ * A step of the body/label type scale (`{family}-{step}`). `display-sm` is
+ * the stat step: display-scale figures that are *data*, not document
+ * headings (KPI values, prices) — admitted on the Dashboard/Pricing blocks'
+ * evidence (friction F-014).
+ */
 export type TextVariant =
+  | 'display-sm'
   | 'body-lg'
   | 'body-md'
   | 'body-sm'
@@ -44,6 +50,7 @@ export type TextAs = 'p' | 'span' | 'div';
 
 /** Typography token per variant — the scale reaches the DOM only here. */
 const TYPE_BY_VARIANT: Record<TextVariant, object> = {
+  'display-sm': vars.text.display.sm,
   'body-lg': vars.text.body.lg,
   'body-md': vars.text.body.md,
   'body-sm': vars.text.body.sm,

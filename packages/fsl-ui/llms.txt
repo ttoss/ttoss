@@ -98,7 +98,8 @@ Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              panels, sheets instead of a hand-rolled div),
              Heading (h1-h6 bound to the type scale: level=1..6 sets the
              element, size overrides the visual step — never a raw font-size),
-             Text (body/label copy: variant=body|label-lg|md|sm, tone=muted for
+             Text (copy + stat figures: variant=display-sm (stat step for KPI
+             values/prices — data, not headings)|body|label-lg|md|sm, tone=muted for
              secondary hierarchy, as=p|span|div — never a raw font-size),
              Stack (layout rhythm: direction=vertical|horizontal picks the
              gap.stack|gap.inline family, gap=xs..xl, align, justify, wrap —

@@ -254,7 +254,7 @@ export const DashboardBlock = () => {
                     {kpi.label}
                   </Text>
                   <Stack direction="horizontal" gap="sm" align="center">
-                    <Text as="span" variant="body-lg" numeric="tabular">
+                    <Text as="span" variant="display-sm" numeric="tabular">
                       {kpi.value}
                     </Text>
                     <Badge evaluation={kpi.evaluation} numeric="tabular">

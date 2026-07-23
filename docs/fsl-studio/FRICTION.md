@@ -26,9 +26,9 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 
 ### F-003 — `Tab` selected indicator is block-end even in vertical orientation
 
-- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` `Tab` · **Severity:** paper-cut · **Status:** open
+- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` `Tab` · **Severity:** paper-cut · **Status:** ✅ fixed (P3 polish pass)
 - The selected-tab indicator is positioned `insetBlockEnd: 0` unconditionally, so in `orientation="vertical"` (sidebar use) it underlines each item instead of marking the start edge — the conventional affordance for vertical navigation.
-- **Backlog:** make the indicator edge-aware by orientation (`Tab` needs the group's orientation — likely a context from `Tabs` or a `data-orientation` attribute).
+- **Action:** `Tabs` now provides its orientation through a context; `Tab` renders the indicator on the inline-start edge when vertical (block-end underline stays for horizontal). Regression tests cover both edges.
 
 ### F-004 — no named width threshold for a narrow centered card
 
@@ -95,10 +95,9 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 
 ### F-014 — no display-scale Text variant for stat values
 
-- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` `Text` vocabulary · **Severity:** gap · **Status:** open
+- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` `Text` vocabulary · **Severity:** gap · **Status:** ✅ fixed (P3 polish pass)
 - KPI tiles want a large numeral, but `Text` caps at `body-lg` and the display/headline type steps are reachable only through `Heading` (h1–h6 document semantics — a stat value is not a heading). The dashboard's numbers render at body scale, visibly under-weighted for the pattern.
-- **Workaround:** `Text variant="body-lg" numeric="tabular"` — correct, but not the conventional stat-tile scale.
-- **Backlog:** a non-heading display text step (e.g. `Text variant="display-sm"` or a `Stat` pattern) via governance.
+- **Action:** `Text` gained `variant="display-sm"` — the display type step without heading semantics, documented as the stat step. The dashboard KPIs and pricing amounts now use it with `numeric="tabular"`.
 
 ### F-015 — feature-list glyphs demanded a public Icon
 

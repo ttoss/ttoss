@@ -1,3 +1,7 @@
+// Inter Variable — the base theme's first-choice family; self-hosted via
+// Fontsource (no external font CDN).
+import '@fontsource-variable/inter';
+
 import { createRoot } from 'react-dom/client';
 
 import { App } from './App';

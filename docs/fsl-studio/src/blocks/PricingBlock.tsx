@@ -80,7 +80,7 @@ const TierCard = ({ tier }: { tier: Tier }) => {
           {tier.popular && <Badge evaluation="positive">Most popular</Badge>}
         </Stack>
         <Stack direction="horizontal" gap="xs" align="end">
-          <Text as="span" variant="body-lg" numeric="tabular">
+          <Text as="span" variant="display-sm" numeric="tabular">
             {tier.price}
           </Text>
           <Text as="span" variant="body-sm" tone="muted">

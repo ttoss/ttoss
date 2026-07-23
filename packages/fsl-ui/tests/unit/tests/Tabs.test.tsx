@@ -87,4 +87,35 @@ describe('Tabs', () => {
     expect(list.style.borderInlineEndWidth).toBe(vars.border.divider.width);
     expect(list.style.borderBlockEndWidth).toBe('');
   });
+
+  test('the vertical selected-tab indicator sits on the inline-start edge', () => {
+    render(
+      <Tabs orientation="vertical">
+        <TabList aria-label="Sections">
+          <Tab id="a">Overview</Tab>
+          <Tab id="b">Details</Tab>
+        </TabList>
+        <TabPanel id="a">Overview content</TabPanel>
+        <TabPanel id="b">Details content</TabPanel>
+      </Tabs>
+    );
+    const indicator = document.querySelector(
+      '[data-scope="tabs"][data-part="indicator"]'
+    ) as HTMLElement;
+    expect(indicator.style.borderInlineStartWidth).toBe(
+      vars.border.outline.selected.width
+    );
+    expect(indicator.style.borderBlockEndWidth).toBe('');
+  });
+
+  test('the horizontal selected-tab indicator stays a block-end underline', () => {
+    renderTabs();
+    const indicator = document.querySelector(
+      '[data-scope="tabs"][data-part="indicator"]'
+    ) as HTMLElement;
+    expect(indicator.style.borderBlockEndWidth).toBe(
+      vars.border.outline.selected.width
+    );
+    expect(indicator.style.borderInlineStartWidth).toBe('');
+  });
 });

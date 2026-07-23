@@ -65,6 +65,7 @@ representative friction.
   - Structured design review of `baseTheme` against 2–3 reference-grade systems (side-by-side screenshots of the same screens, light + dark): typography rhythm, elevation depth (ADR-018 tonal), radii/border character, motion feel, empty/hover/focus states.
   - Findings land as core-value tuning in `baseTheme.ts` (data-only per ADR-008; contrast guarantees per ADR-015 must hold) + the composition "taste layer" doc.
   - The frozen Studio deploy doubles as the visual proving ground — it already renders the catalog; no new Studio features allowed for this.
+  - ✅ **Slice 1 landed 2026-07-23 — brand-neutral retune** (owner brief: "o mais neutro possível de branding; simples porém sofisticado"). Neutral ramp slate→zinc (hue-free grays, dark canvas loses the navy cast); font stack leads with Inter Variable (Studio self-hosts via Fontsource); navigation and selection become monochrome (brand stays only in `focused`, `accent`, and Feedback valences); `Text` gains the `display-sm` stat step (F-014) and the vertical Tab indicator moves to the inline-start edge (F-003). All contrast/distinguishability guarantees hold (suite green).
 - **v1.0 criteria (all of):** adoption gate met (Studio v2 deployed, four blocks, friction log at zero blockers) · P0 both remaining items done · P2 items the adoption demanded shipped · P3 bar applied per block (ritual above) · CHANGELOG migration notes honest. **v1.x milestone:** first screen in an external business app.
 
 ### Anti-scope-creep rules (binding)
