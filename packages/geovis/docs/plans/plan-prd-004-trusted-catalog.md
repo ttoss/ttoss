@@ -42,8 +42,7 @@ export type CatalogIssueCode =
   | 'duplicate-dataset-id'
   | 'duplicate-geography-id'
   | 'unknown-join-dataset' // mismatch: join references a dataset id not in catalog.datasets
-  | 'unknown-join-geography' // mismatch: join references a geography id not in catalog.geographies
-  | 'unresolvable-join-field'; // mismatch: join.on references a field the dataset/geography doesn't declare
+  | 'unknown-join-geography'; // mismatch: join references a geography id not in catalog.geographies
 
 export interface CatalogIssue {
   code: CatalogIssueCode;
@@ -80,7 +79,10 @@ Seeded directly from PRD-004's own field enumeration (metrics, datasets, geograp
     "filters"
   ],
   "properties": {
-    "version": { "type": "string" },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[a-zA-Z0-9.]+)?$"
+    },
     "domain": { "type": "string" },
     "datasets": { "type": "array", "items": { "$ref": "#/$defs/Dataset" } },
     "metrics": { "type": "array", "items": { "$ref": "#/$defs/Metric" } },
@@ -134,6 +136,7 @@ Seeded directly from PRD-004's own field enumeration (metrics, datasets, geograp
         "label": { "type": "string" },
         "description": { "type": "string" },
         "geometry": { "type": "string", "enum": ["point", "polygon", "line"] },
+        "aliases": { "type": "array", "items": { "type": "string" } },
         "geographyIds": { "type": "array", "items": { "type": "string" } },
         "metricIds": { "type": "array", "items": { "type": "string" } },
         "source": { "type": "string" },
@@ -142,8 +145,8 @@ Seeded directly from PRD-004's own field enumeration (metrics, datasets, geograp
           "additionalProperties": false,
           "required": ["start", "end"],
           "properties": {
-            "start": { "type": "string" },
-            "end": { "type": "string" }
+            "start": { "type": "string", "format": "date" },
+            "end": { "type": "string", "format": "date" }
           }
         }
       }
@@ -183,7 +186,7 @@ Seeded directly from PRD-004's own field enumeration (metrics, datasets, geograp
             "right": { "type": "string" }
           }
         },
-        "cardinality": { "type": "string", "enum": ["1:1", "1:m"] }
+        "cardinality": { "type": "string", "enum": ["1:1", "1:m", "m:1"] }
       }
     },
     "FilterField": {
@@ -236,46 +239,50 @@ export type MetricKind =
   | 'density' // e.g. "population per km²"
   | 'distance';
 
-/**
-
- */
 export interface Metric {
+  /** Unique identifier for the metric, referenced by Dataset.metricIds */
   id: string;
+  /** Human-readable name */
   label: string;
+  /** Detailed description of what the metric measures and how it is calculated */
   description: string;
+  /** Alternative names for search/discovery */
   aliases?: string[];
-  /** e.g. 'km', 'm²', 'USD' — free-form, not an enum as new units are added. */
+  /** Measurement unit — free-form string (km, USD, hab/km²), not an enum */
   unit?: string;
-  /**
-   * Permits new comparations when analyzing data.
-   */
+  /** Semantic category: count, rate, ratio, index, density, or distance */
   kind: MetricKind;
-  /**
-   * Output visualization formatting hint for the metric, e.g. "percent" for a 0–1 ratio, "currency" for a monetary value, "compact" for large numbers (1,000,000 → 1M). Optional: if absent, the consuming app chooses a default formatter based on the unit or kind.
-   */
+  /** Hint for how to format values in the UI */
   formatter?: 'number' | 'percent' | 'currency' | 'compact';
-  /** How to treat nulls in the dataset when visualizing this metric. Optional: if absent, the consuming app chooses a default null policy based on the kind. 'explain' means show a textual explanation. */
+  /** How null values should be treated when rendering */
   nullPolicy: 'hide' | 'zero' | 'explain';
 }
 
 export interface Dataset {
+  /** Unique identifier for the dataset, referenced by Join.from */
   id: string;
+  /** Human-readable name */
   label: string;
+  /** Detailed description of the data, its collection methodology, and any caveats */
   description: string;
+  /** Alternative names for search/discovery */
   aliases?: string[];
-  /** Current geometry of the dataset  */
+  /** Primary geometry type of the dataset features */
   geometry: 'point' | 'polygon' | 'line';
   /** IDs of geographies this dataset can be joined to */
   geographyIds: string[];
   /** IDs of metrics this dataset carries */
   metricIds: string[];
-  /** Provenance/attribution, e.g. 'ibge' | 'ipea' | 'sicar' — free-form. */
+  /** Provenance/attribution — free-form, e.g. 'ibge', 'ipea', 'sicar' */
   source?: string;
-  /** Optional temporal interval of the dataset, e.g. for a census extract. */
+  /** Temporal coverage interval (ISO 8601 dates) */
   temporal?: { start: string; end: string };
 }
 
-/** How a geography's features are structured (D7). Absent ⇒ 'administrative'. */
+/**
+ * How a geography's features are structured (D7).
+ * Absent ⇒ treated as 'administrative' (the commonest case).
+ */
 export type GeographyKind = 'administrative' | 'grid' | 'poi' | 'custom';
 
 /**
@@ -287,57 +294,78 @@ export type GeographyKind = 'administrative' | 'grid' | 'poi' | 'custom';
  */
 
 export interface Geography {
+  /** Unique identifier for the geography, referenced by Dataset.geographyIds and Join.to */
   id: string;
+  /** Human-readable name */
   label: string;
+  /** Description of the geographic coverage and the boundary source */
   description: string;
-  /** Optional alternative names for the geography, e.g. 'município' for 'municipality'. */
+  /** Alternative names for search/discovery, e.g. 'município' for 'municipality' */
   aliases?: string[];
-  /** Discriminates admin boundary vs. spatial-index grid vs. POI collection vs. custom parcel. */
+  /** Discriminates admin boundary vs. spatial-index grid vs. POI collection vs. custom parcel */
   kind?: GeographyKind;
-  /** Ordinal depth in a nesting hierarchy — lower is coarser. Example: 0 for country, 1 for state, 2 for city. */
+  /** Ordinal depth in a nesting hierarchy — lower is coarser (0 = country, 1 = state, 2 = city) */
   level?: number;
-  /** Geography id one level up that contains this one, enabling roll-up/drill-down. */
+  /** Geography id one level up that contains this one, enabling roll-up/drill-down */
   parentId?: string;
-  /** External code system feature ids follow, e.g. 'ibge:municipio', 'sicar:imovel', 'h3'. */
+  /** External code system feature ids follow, e.g. 'ibge:municipio', 'sicar:imovel', 'h3' */
   codeScheme?: string;
-  /** Tessellation resolution for `kind: 'grid'`, e.g. 'h3:8', '1km'. */
+  /** Tessellation resolution for `kind: 'grid'`, e.g. 'h3:8', '1km' */
   resolution?: string;
 }
 
 /**
  * A join between a dataset and a geography, with the field names to join on and the cardinality.
  * The `from` dataset must declare the `left` field, and the `to` geography must declare the `right` field.
- * Cardinality is either 1:1 or 1:m (dataset row to geography feature).
+ * Cardinality: 1:1 (one-to-one), 1:m (one dataset row → many geography features), m:1 (many dataset rows → one geography feature).
  */
 export interface Join {
-  from: string; // dataset id
-  to: string; // geography id
+  /** Dataset id that is the source of the join */
+  from: string;
+  /** Geography id that is the target of the join */
+  to: string;
+  /** Field mapping: left = field in dataset, right = field in geography */
   on: { left: string; right: string };
-  cardinality: '1:1' | '1:m';
+  /** Cardinality: 1:1 (one-to-one), 1:m (one dataset row → many geography features), m:1 (many dataset rows → one geography feature) */
+  cardinality: '1:1' | '1:m' | 'm:1';
 }
 
 export interface FilterField {
+  /** Field name to filter on */
   field: string;
+  /** Data type of the filter field — determines how the domain is interpreted */
   kind: 'categorical' | 'numeric' | 'temporal';
+  /** Allowed domain values: string[] for categorical, { min; max } for numeric/temporal. Interpreted based on `kind`. */
   domain?: unknown;
 }
 
 export interface MapTypeCatalogEntry {
+  /** Map type name */
   name: 'choropleth' | 'dotDensity' | 'proportionalCircles';
+  /** Geometry types this map type supports */
   supportedGeometries: Array<'point' | 'polygon' | 'line'>;
+  /** Metric kinds that can be visualized with this map type */
   metricKinds: MetricKind[];
 }
 
 export interface Catalog {
+  /** Schema version (semver) */
   version: string;
-  /** Unique domain/namespace of the catalog, e.g. 'br' for Brazil. */
+  /** Unique domain/namespace of the catalog, e.g. 'br' for Brazil */
   domain?: string;
+  /** Data collections available in this catalog */
   datasets: Dataset[];
+  /** Metrics (measures/indicators) available across datasets */
   metrics: Metric[];
+  /** Geographic boundaries/indexes available for joining */
   geographies: Geography[];
+  /** Declared join paths between datasets and geographies */
   joins: Join[];
+  /** Map types supported by this catalog, with their geometry and metric constraints */
   mapTypes: MapTypeCatalogEntry[];
+  /** User-facing filter controls for exploring the catalog */
   filters: FilterField[];
+  /** Authz metadata — opaque to the schema, consumed by the application layer */
   permissions?: Record<string, unknown>;
 }
 ```
@@ -346,7 +374,7 @@ A schema/type parity test (Phase 2) asserts every `Catalog` field the TypeScript
 
 ### D5 — Integrity validation scope
 
-`validateCatalog(input: unknown): CatalogResult` runs, in order, mirroring `validateSpec.ts`'s own structure: (1) `Ajv2020.compile(catalogSchema)` run against `input` → `invalid-catalog-schema`, mapping each Ajv error the same way `validateSpec.ts` already does (`e.instancePath || '(root)'` → `subject.path`, `${path} ${e.message}` → `message`); (2) id-uniqueness checks per collection → `duplicate-*-id`; (3) referential checks — every `join.from`/`join.to` resolves to a known dataset/geography id, every `join.on.left`/`right` names a field the referenced dataset/geography actually declares (datasets/geographies carry no explicit field list in D4's shape beyond `metricIds`/`geographyIds`, so `unresolvable-join-field` is scoped to what's checkable: the join's endpoints exist and the cardinality is one of the two allowed values — full column-level validation against a live warehouse is explicitly the Should-item helper's job, not this Must). No `repair` is computed for `invalid-catalog-schema` (the fix is "correct the input", not a suggerable value); `duplicate-*-id` and `unknown-join-*` issues attach `repair: [{ kind: 'allowed-values', path: ..., values: <the known ids> }]` since the correct set is already in hand — mirroring ADR-0001's own rule that repair values are never invented.
+`validateCatalog(input: unknown): CatalogResult` runs, in order, mirroring `validateSpec.ts`'s own structure: (1) `Ajv2020.compile(catalogSchema)` run against `input` → `invalid-catalog-schema`, mapping each Ajv error the same way `validateSpec.ts` already does (`e.instancePath || '(root)'` → `subject.path`, `${path} ${e.message}` → `message`); (2) id-uniqueness checks per collection → `duplicate-*-id`; (3) referential checks — every `join.from`/`join.to` resolves to a known dataset/geography id, and `join.cardinality` is one of the three allowed values (`'1:1' | '1:m' | 'm:1'`). No `repair` is computed for `invalid-catalog-schema` (the fix is "correct the input", not a suggerable value); `duplicate-*-id` and `unknown-join-*` issues attach `repair: [{ kind: 'allowed-values', path: ..., values: <the known ids> }]` since the correct set is already in hand — mirroring ADR-0001's own rule that repair values are never invented.
 
 ### D6 — Introspection surface
 
