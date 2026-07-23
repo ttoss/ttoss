@@ -20,7 +20,7 @@ This is the first of three plans (PRD-004 → PRD-005 → PRD-006) that all land
 
 Since the source of truth is JSON Schema from the start, `getCatalogJSONSchema()` (D6) returns the imported document directly — no derivation step needed. PRD-005's and PRD-006's plans adopt the same approach for consistency across the same package.
 
-`package.json` dependencies: `ajv@^8.18.0` (same version as `@ttoss/geovis`) and `@ttoss/geovis` (for `RepairOption` reuse now, and `VisualizationSpec`/`resolveSpecFromMapType` reuse in PRD-006's plan).
+`package.json` dependencies: `ajv@^8.18.0` (same version as `@ttoss/geovis`), `ajv-formats@^3.0.1` (`@ttoss/geovis` uses no `format` keyword in its own schema and has no need for this plugin; `@ttoss/geovis-catalog` does — `Dataset.temporal.start`/`end` use `format: "date"`, and Ajv silently ignores unknown formats without it, confirmed by running the bare `Ajv2020({ strict: false })` `@ttoss/geovis` already depends on against a `format: 'date'` schema: it validates `'not-a-date'` as passing), and `@ttoss/geovis` (for `RepairOption` reuse now, and `VisualizationSpec`/`resolveSpecFromMapType` reuse in PRD-006's plan).
 
 ### D2 — Package bootstrap
 
@@ -42,7 +42,11 @@ export type CatalogIssueCode =
   | 'duplicate-dataset-id'
   | 'duplicate-geography-id'
   | 'unknown-join-dataset' // mismatch: join references a dataset id not in catalog.datasets
-  | 'unknown-join-geography'; // mismatch: join references a geography id not in catalog.geographies
+  | 'unknown-join-geography' // mismatch: join references a geography id not in catalog.geographies
+  | 'unknown-dataset-geography' // mismatch: Dataset.geographyIds[] references a geography id not in catalog.geographies
+  | 'unknown-dataset-metric' // mismatch: Dataset.metricIds[] references a metric id not in catalog.metrics
+  | 'unknown-parent-geography' // mismatch: Geography.parentId references a geography id not in catalog.geographies
+  | 'cyclic-geography-hierarchy'; // mismatch: a Geography.parentId chain loops back on itself
 
 export interface CatalogIssue {
   code: CatalogIssueCode;
@@ -79,10 +83,7 @@ Seeded directly from PRD-004's own field enumeration (metrics, datasets, geograp
     "filters"
   ],
   "properties": {
-    "version": {
-      "type": "string",
-      "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[a-zA-Z0-9.]+)?$"
-    },
+    "version": { "type": "string", "minLength": 1 },
     "domain": { "type": "string" },
     "datasets": { "type": "array", "items": { "$ref": "#/$defs/Dataset" } },
     "metrics": { "type": "array", "items": { "$ref": "#/$defs/Metric" } },
@@ -349,7 +350,14 @@ export interface MapTypeCatalogEntry {
 }
 
 export interface Catalog {
-  /** Schema version (semver) */
+  /**
+   * Opaque version identifier for this catalog instance — not the package's
+   * schema version. Free-form, non-empty string: an organization may version
+   * its own catalog by semver, a date/quarter ('2026-Q3'), or an incrementing
+   * integer as a string. PRD-005's `IntentResult` records the `Catalog.version`
+   * an intent was validated against, so this only needs to be stable and
+   * comparable within one organization's catalog history, not globally.
+   */
   version: string;
   /** Unique domain/namespace of the catalog, e.g. 'br' for Brazil */
   domain?: string;
@@ -374,7 +382,17 @@ A schema/type parity test (Phase 2) asserts every `Catalog` field the TypeScript
 
 ### D5 — Integrity validation scope
 
-`validateCatalog(input: unknown): CatalogResult` runs, in order, mirroring `validateSpec.ts`'s own structure: (1) `Ajv2020.compile(catalogSchema)` run against `input` → `invalid-catalog-schema`, mapping each Ajv error the same way `validateSpec.ts` already does (`e.instancePath || '(root)'` → `subject.path`, `${path} ${e.message}` → `message`); (2) id-uniqueness checks per collection → `duplicate-*-id`; (3) referential checks — every `join.from`/`join.to` resolves to a known dataset/geography id, and `join.cardinality` is one of the three allowed values (`'1:1' | '1:m' | 'm:1'`). No `repair` is computed for `invalid-catalog-schema` (the fix is "correct the input", not a suggerable value); `duplicate-*-id` and `unknown-join-*` issues attach `repair: [{ kind: 'allowed-values', path: ..., values: <the known ids> }]` since the correct set is already in hand — mirroring ADR-0001's own rule that repair values are never invented.
+`validateCatalog(input: unknown): CatalogResult` runs, in order, mirroring `validateSpec.ts`'s own structure:
+
+1. `Ajv2020.compile(catalogSchema)` run against `input` → `invalid-catalog-schema`, mapping each Ajv error the same way `validateSpec.ts` already does (`e.instancePath || '(root)'` → `subject.path`, `${path} ${e.message}` → `message`).
+2. id-uniqueness checks per collection → `duplicate-*-id`.
+3. Cross-reference checks — every id one object declares as pointing at another collection must resolve there:
+   - `join.from`/`join.to` → known dataset/geography id (`unknown-join-dataset`/`unknown-join-geography`); `join.cardinality` is one of the three allowed values (`'1:1' | '1:m' | 'm:1'`).
+   - Every `Dataset.geographyIds[]` entry → known geography id (`unknown-dataset-geography`); every `Dataset.metricIds[]` entry → known metric id (`unknown-dataset-metric`). This closes a gap the original D5 draft left open: without it, a dataset could declare a `metricIds`/`geographyIds` entry that names nothing in the catalog and pass validation, directly contradicting PRD-004's own Outcome ("the catalog validates its own referential integrity").
+   - Every `Geography.parentId`, when present, → a known geography id (`unknown-parent-geography`).
+4. Hierarchy integrity — walk each geography's `parentId` chain to its root; a chain that revisits a geography already seen is `cyclic-geography-hierarchy` (`subject.id` names the geography where the cycle was detected). Cheap to check (bounded by catalog size, each geography visited once per its own chain) and worth doing at catalog-authoring time rather than only when a future consumer traverses the hierarchy and loops forever.
+
+No `repair` is computed for `invalid-catalog-schema` (the fix is "correct the input", not a suggerable value) or `cyclic-geography-hierarchy` (the fix is "break the cycle", not a single suggerable value). `duplicate-*-id`, `unknown-join-*`, `unknown-dataset-*`, and `unknown-parent-geography` issues attach `repair: [{ kind: 'allowed-values', path: ..., values: <the known ids> }]` since the correct set is already in hand — mirroring ADR-0001's own rule that repair values are never invented.
 
 ### D6 — Introspection surface
 
@@ -412,7 +430,7 @@ So of the eight domains named, only three forced a genuinely new field (`kind`, 
 
 ### Phase 1 — Package bootstrap
 
-Create `packages/geovis-catalog` with the scaffold in D2: `package.json` (with the `ajv`/`@ttoss/geovis` dependencies from D1), `tsdown.config.ts`, `tsconfig.json`, `tests/tsconfig.json`, `tests/unit/jest.config.ts`, empty `src/index.ts`, `README.md` stub, `CHANGELOG.md`. Add the package to root `pnpm-workspace.yaml` coverage (already matched by the `packages/*` glob — no change needed there) and confirm `pnpm install` links it. Confirm a trivial `.json` import builds cleanly through `tsdown` before Phase 2 needs it for real (D2's caveat).
+Create `packages/geovis-catalog` with the scaffold in D2: `package.json` (with the `ajv`/`ajv-formats`/`@ttoss/geovis` dependencies from D1), `tsdown.config.ts`, `tsconfig.json`, `tests/tsconfig.json`, `tests/unit/jest.config.ts`, empty `src/index.ts`, `README.md` stub, `CHANGELOG.md`. Add the package to root `pnpm-workspace.yaml` coverage (already matched by the `packages/*` glob — no change needed there) and confirm `pnpm install` links it. Confirm a trivial `.json` import builds cleanly through `tsdown` before Phase 2 needs it for real (D2's caveat).
 
 **Demo:** `pnpm turbo run build --filter=@ttoss/geovis-catalog` and `pnpm turbo run test --filter=@ttoss/geovis-catalog` both succeed against an empty package.
 **Acceptance:** package builds, tests run (zero tests, zero failures), `pnpm run -w lint` passes with the new package present.
@@ -428,8 +446,8 @@ Implement `catalog.schema.json` and the `Catalog`/`Metric`/`Dataset`/`Geography`
 
 Implement `CatalogResult`/`CatalogIssue`/`CatalogIssueCode` (D3) and `validateCatalog` (D5) in `src/validateCatalog.ts`.
 
-**Demo:** the sample fixture validates to `{ status: 'valid' }`; a fixture with a duplicate metric id returns `{ status: 'invalid', issues: [{ code: 'duplicate-metric-id', repair: [...] }] }`; a fixture whose join references a non-existent geography returns `{ status: 'mismatch', issues: [{ code: 'unknown-join-geography', repair: [{ kind: 'allowed-values', values: [...] }] }] }`.
-**Acceptance:** one fixture and one test per `CatalogIssueCode`; `resolveOverallStatus`-equivalent precedence (`invalid` over `mismatch` when both present) tested; no `repair` computed for `invalid-catalog-schema`.
+**Demo:** the sample fixture validates to `{ status: 'valid' }`; a fixture with a duplicate metric id returns `{ status: 'invalid', issues: [{ code: 'duplicate-metric-id', repair: [...] }] }`; a fixture whose join references a non-existent geography returns `{ status: 'mismatch', issues: [{ code: 'unknown-join-geography', repair: [{ kind: 'allowed-values', values: [...] }] }] }`; a fixture whose `Dataset.metricIds` names a metric not in `catalog.metrics` returns `unknown-dataset-metric`; a fixture with `geoA.parentId = 'geoB'` and `geoB.parentId = 'geoA'` returns `{ status: 'mismatch', issues: [{ code: 'cyclic-geography-hierarchy' }] }` with no `repair`.
+**Acceptance:** one fixture and one test per `CatalogIssueCode`, including the four added in this decision (`unknown-dataset-geography`, `unknown-dataset-metric`, `unknown-parent-geography`, `cyclic-geography-hierarchy`); `resolveOverallStatus`-equivalent precedence (`invalid` over `mismatch` when both present) tested; no `repair` computed for `invalid-catalog-schema` or `cyclic-geography-hierarchy`; a 3-deep valid `parentId` chain (no cycle) is confirmed to validate cleanly, so the cycle check doesn't false-positive on legitimate hierarchy depth.
 
 ### Phase 4 — Introspection surface and JSON Schema export
 
@@ -457,7 +475,16 @@ This plan's package (`@ttoss/geovis-catalog`) and its exports (`Catalog`, `catal
 - **`codeScheme` as a controlled vocabulary** (D7): v1 leaves `codeScheme`/`Dataset.source` as free-form strings for maximum compatibility. Whether a later version ships a registry of well-known values (`ibge:municipio`, `sicar:imovel`, …) with validation/repair — so a typo like `ibge:municipios` becomes an `allowed-values` repair — is deferred; the string field is forward-compatible with that addition.
 - **Cross-`codeScheme` join validation** (D7): declaring `codeScheme` opens a future integrity check ("a join between two geographies of incompatible code schemes is a `mismatch`"). D5's join check stays id/field-level in v1; this is a Should-item extension, not a Must.
 
-## Verification against current codebase (2026-07-22)
+## Decisions resolved in this revision (2026-07-23)
+
+A codebase review before implementation surfaced four points the plan had left implicit; each is now folded into D1/D3/D4/D5 above rather than left open:
+
+- **Referential scope (D5):** `Dataset.geographyIds[]`/`metricIds[]` and `Geography.parentId` were not checked against declared collections — only `Join.from`/`to` were. Resolved: extend `validateCatalog` to check all of them (`unknown-dataset-geography`, `unknown-dataset-metric`, `unknown-parent-geography`), since PRD-004's Outcome names general referential integrity, not just joins.
+- **`parentId` cycles (D5):** nothing prevented `A.parentId = B, B.parentId = A`. Resolved: check for cycles in v1 (`cyclic-geography-hierarchy`) rather than deferring to whenever a future consumer traverses the hierarchy and loops.
+- **Date format enforcement (D1):** confirmed by running `@ttoss/geovis`'s own `Ajv2020({ strict: false })` against a `format: 'date'` schema that Ajv silently ignores unknown formats without a plugin — `Dataset.temporal.start`/`end` would accept any string. Resolved: add `ajv-formats` as a dependency.
+- **`Catalog.version` shape (D4):** a strict semver `pattern` had been added in an earlier revision, but PRD-005 uses `Catalog.version` as an opaque per-organization identifier recorded on `IntentResult`, not the package's own schema version. Resolved: loosen to a non-empty free-form string.
+
+## Verification against current codebase (2026-07-23)
 
 - No `packages/geovis-catalog` directory exists yet — this plan starts from nothing, unlike PRD-001/002/003 whose plans re-derived against partially-built code.
 - `packages/geovis/src/spec/validateSpec.ts` and `packages/geovis/src/spec/schema.json` confirm the established pattern in this product family: Ajv + hand-authored JSON Schema. `ajv@^8.18.0` (`Ajv2020` from `ajv/dist/2020`) is a plain `dependencies` entry in `packages/geovis/package.json` — `@ttoss/geovis-catalog` matches that by depending on `ajv` at runtime too.
