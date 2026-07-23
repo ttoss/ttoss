@@ -16,7 +16,8 @@
   "license": "MIT",
   "author": "ttoss",
   "contributors": [
-    "Rener Cardoso <rener_cardoso@hotmail.com>"
+    "Rener Cardoso <rener_cardoso@hotmail.com>",
+    "Ricardo Atakiama <atakiama@outlook.com.br>"
   ],
   "sideEffects": false,
   "type": "module",

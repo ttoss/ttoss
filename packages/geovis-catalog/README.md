@@ -70,6 +70,8 @@ if (result.status === 'valid') {
 
 ## `getCatalogIntrospection` / `getCatalogJSONSchema`
 
+The catalog introspection is a curated, permissions-stripped view of the catalog suitable for handing to an LLM. Use it via `getCatalogIntrospection(catalog)` to obtain this view when needed (e.g., for prompting an LLM, for generating summaries, or for answering queries).
+
 ```ts
 import {
   getCatalogIntrospection,

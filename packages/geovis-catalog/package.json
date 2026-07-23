@@ -14,6 +14,9 @@
   },
   "license": "MIT",
   "author": "ttoss",
+  "contributors": [
+    "Ricardo Atakiama <atakiama@outlook.com.br>"
+  ],
   "sideEffects": false,
   "type": "module",
   "exports": {
