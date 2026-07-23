@@ -1,5 +1,4 @@
 import Ajv2020 from 'ajv/dist/2020';
-import addFormats from 'ajv-formats';
 
 import type { CatalogIssue, CatalogResult } from './catalogResult';
 import { resolveCatalogOverallStatus } from './catalogResult';
@@ -7,7 +6,6 @@ import catalogSchema from './schema/catalog.schema.json';
 import type { Catalog } from './schema/types';
 
 const ajv = new Ajv2020({ strict: false });
-addFormats(ajv);
 const _validate = ajv.compile(catalogSchema);
 
 /** Indexes of items whose `id` repeats one already seen earlier in `items`. */

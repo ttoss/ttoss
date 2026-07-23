@@ -20,7 +20,7 @@ This is the first of three plans (PRD-004 → PRD-005 → PRD-006) that all land
 
 Since the source of truth is JSON Schema from the start, `getCatalogJSONSchema()` (D6) returns the imported document directly — no derivation step needed. PRD-005's and PRD-006's plans adopt the same approach for consistency across the same package.
 
-`package.json` dependencies: `ajv@^8.18.0` (same version as `@ttoss/geovis`), `ajv-formats@^3.0.1` (`@ttoss/geovis` uses no `format` keyword in its own schema and has no need for this plugin; `@ttoss/geovis-catalog` does — `Dataset.temporal.start`/`end` use `format: "date"`, and Ajv silently ignores unknown formats without it, confirmed by running the bare `Ajv2020({ strict: false })` `@ttoss/geovis` already depends on against a `format: 'date'` schema: it validates `'not-a-date'` as passing), and `@ttoss/geovis` (for `RepairOption` reuse now, and `VisualizationSpec`/`resolveSpecFromMapType` reuse in PRD-006's plan).
+`package.json` dependencies: `ajv@^8.18.0` (same version as `@ttoss/geovis`) and `@ttoss/geovis` (for `RepairOption` reuse now, and `VisualizationSpec`/`resolveSpecFromMapType` reuse in PRD-006's plan). No `ajv-formats`: confirmed by running the bare `Ajv2020({ strict: false })` `@ttoss/geovis` already depends on against a `format: 'date'` schema that Ajv silently ignores unknown formats without that plugin (`'not-a-date'` still validates) — adding the dependency to enforce it was considered and declined by the user, since `@ttoss/geovis` itself uses no `format` keyword anywhere; `Dataset.temporal.start`/`end` (D4) stay plain `type: "string"`.
 
 ### D2 — Package bootstrap
 
@@ -146,8 +146,8 @@ Seeded directly from PRD-004's own field enumeration (metrics, datasets, geograp
           "additionalProperties": false,
           "required": ["start", "end"],
           "properties": {
-            "start": { "type": "string", "format": "date" },
-            "end": { "type": "string", "format": "date" }
+            "start": { "type": "string" },
+            "end": { "type": "string" }
           }
         }
       }
@@ -430,7 +430,7 @@ So of the eight domains named, only three forced a genuinely new field (`kind`, 
 
 ### Phase 1 — Package bootstrap
 
-Create `packages/geovis-catalog` with the scaffold in D2: `package.json` (with the `ajv`/`ajv-formats`/`@ttoss/geovis` dependencies from D1), `tsdown.config.ts`, `tsconfig.json`, `tests/tsconfig.json`, `tests/unit/jest.config.ts`, empty `src/index.ts`, `README.md` stub, `CHANGELOG.md`. Add the package to root `pnpm-workspace.yaml` coverage (already matched by the `packages/*` glob — no change needed there) and confirm `pnpm install` links it. Confirm a trivial `.json` import builds cleanly through `tsdown` before Phase 2 needs it for real (D2's caveat).
+Create `packages/geovis-catalog` with the scaffold in D2: `package.json` (with the `ajv`/`@ttoss/geovis` dependencies from D1), `tsdown.config.ts`, `tsconfig.json`, `tests/tsconfig.json`, `tests/unit/jest.config.ts`, empty `src/index.ts`, `README.md` stub, `CHANGELOG.md`. Add the package to root `pnpm-workspace.yaml` coverage (already matched by the `packages/*` glob — no change needed there) and confirm `pnpm install` links it. Confirm a trivial `.json` import builds cleanly through `tsdown` before Phase 2 needs it for real (D2's caveat).
 
 **Demo:** `pnpm turbo run build --filter=@ttoss/geovis-catalog` and `pnpm turbo run test --filter=@ttoss/geovis-catalog` both succeed against an empty package.
 **Acceptance:** package builds, tests run (zero tests, zero failures), `pnpm run -w lint` passes with the new package present.
@@ -474,15 +474,16 @@ This plan's package (`@ttoss/geovis-catalog`) and its exports (`Catalog`, `catal
 - **Catalog governance** (PRD-004's own open question): who approves catalog entries and how `permissions` integrates with application auth is explicitly out of scope — the application is responsible for enforcing its own authorization logic.
 - **`codeScheme` as a controlled vocabulary** (D7): v1 leaves `codeScheme`/`Dataset.source` as free-form strings for maximum compatibility. Whether a later version ships a registry of well-known values (`ibge:municipio`, `sicar:imovel`, …) with validation/repair — so a typo like `ibge:municipios` becomes an `allowed-values` repair — is deferred; the string field is forward-compatible with that addition.
 - **Cross-`codeScheme` join validation** (D7): declaring `codeScheme` opens a future integrity check ("a join between two geographies of incompatible code schemes is a `mismatch`"). D5's join check stays id/field-level in v1; this is a Should-item extension, not a Must.
+- **`Dataset.temporal.start`/`end` date-format enforcement**: `type: "string"` only, no `format: "date"` — see "Decisions confirmed" below. Deferred, not a schema-shape blocker; `ajv-formats` can be added later without a breaking change if enforcement becomes worth the dependency.
 
-## Decisions resolved in this revision (2026-07-23)
+## Decisions confirmed with the user (2026-07-23)
 
-A codebase review before implementation surfaced four points the plan had left implicit; each is now folded into D1/D3/D4/D5 above rather than left open:
+A codebase review before implementation surfaced four points the plan had left implicit. Each was put to the user directly as a question — not assumed — before implementation started:
 
-- **Referential scope (D5):** `Dataset.geographyIds[]`/`metricIds[]` and `Geography.parentId` were not checked against declared collections — only `Join.from`/`to` were. Resolved: extend `validateCatalog` to check all of them (`unknown-dataset-geography`, `unknown-dataset-metric`, `unknown-parent-geography`), since PRD-004's Outcome names general referential integrity, not just joins.
-- **`parentId` cycles (D5):** nothing prevented `A.parentId = B, B.parentId = A`. Resolved: check for cycles in v1 (`cyclic-geography-hierarchy`) rather than deferring to whenever a future consumer traverses the hierarchy and loops.
-- **Date format enforcement (D1):** confirmed by running `@ttoss/geovis`'s own `Ajv2020({ strict: false })` against a `format: 'date'` schema that Ajv silently ignores unknown formats without a plugin — `Dataset.temporal.start`/`end` would accept any string. Resolved: add `ajv-formats` as a dependency.
-- **`Catalog.version` shape (D4):** a strict semver `pattern` had been added in an earlier revision, but PRD-005 uses `Catalog.version` as an opaque per-organization identifier recorded on `IntentResult`, not the package's own schema version. Resolved: loosen to a non-empty free-form string.
+- **Referential scope (D5):** confirmed — extend `validateCatalog` to check `Dataset.geographyIds[]`/`metricIds[]` and `Geography.parentId` against declared collections (`unknown-dataset-geography`, `unknown-dataset-metric`, `unknown-parent-geography`), not just `Join.from`/`to`, since PRD-004's Outcome names general referential integrity.
+- **`parentId` cycles (D5):** confirmed — check for cycles in v1 (`cyclic-geography-hierarchy`) rather than deferring to whenever a future consumer traverses the hierarchy and loops.
+- **Date format enforcement:** declined — no `ajv-formats` dependency. Confirmed by running `@ttoss/geovis`'s own `Ajv2020({ strict: false })` against a `format: 'date'` schema that Ajv silently ignores unknown formats without that plugin (`'not-a-date'` still validates); `@ttoss/geovis` itself uses no `format` keyword anywhere, and the user chose not to add a dependency neither this package's closest sibling needs. `Dataset.temporal.start`/`end` (D4) stay plain `type: "string"`.
+- **`Catalog.version` shape (D4):** confirmed — a non-empty free-form string, not a strict semver `pattern`, since PRD-005 uses `Catalog.version` as an opaque per-organization identifier recorded on `IntentResult`, not the package's own schema version.
 
 ## Verification against current codebase (2026-07-23)
 

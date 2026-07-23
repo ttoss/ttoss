@@ -48,11 +48,9 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
           "additionalProperties": false,
           "properties": {
             "end": {
-              "format": "date",
               "type": "string",
             },
             "start": {
-              "format": "date",
               "type": "string",
             },
           },

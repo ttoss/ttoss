@@ -77,8 +77,8 @@
           "additionalProperties": false,
           "required": ["start", "end"],
           "properties": {
-            "start": { "type": "string", "format": "date" },
-            "end": { "type": "string", "format": "date" }
+            "start": { "type": "string" },
+            "end": { "type": "string" }
           }
         }
       }

@@ -1,11 +1,9 @@
 import Ajv2020 from 'ajv/dist/2020';
-import addFormats from 'ajv-formats';
 import catalogSchema from 'src/schema/catalog.schema.json';
 
 import { sampleCatalog } from '../fixtures/sampleCatalog';
 
 const ajv = new Ajv2020({ strict: false });
-addFormats(ajv);
 const validate = ajv.compile(catalogSchema);
 
 /**
