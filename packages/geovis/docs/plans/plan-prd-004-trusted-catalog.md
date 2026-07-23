@@ -230,20 +230,31 @@ Seeded directly from PRD-004's own field enumeration (metrics, datasets, geograp
 ```ts
 export type MetricKind =
   | 'count'
-  | 'rate'
-  | 'ratio'
-  | 'index'
-  | 'density'
+  | 'rate' // e.g. "per capita" or "per household"
+  | 'ratio' // e.g. "male/female" or "urban/rural"
+  | 'index' // e.g. "HDI" or "Gini"
+  | 'density' // e.g. "population per km²"
   | 'distance';
 
+/**
+
+ */
 export interface Metric {
   id: string;
   label: string;
   description: string;
   aliases?: string[];
+  /** e.g. 'km', 'm²', 'USD' — free-form, not an enum as new units are added. */
   unit?: string;
+  /**
+   * Permits new comparations when analyzing data.
+   */
   kind: MetricKind;
+  /**
+   * Output visualization formatting hint for the metric, e.g. "percent" for a 0–1 ratio, "currency" for a monetary value, "compact" for large numbers (1,000,000 → 1M). Optional: if absent, the consuming app chooses a default formatter based on the unit or kind.
+   */
   formatter?: 'number' | 'percent' | 'currency' | 'compact';
+  /** How to treat nulls in the dataset when visualizing this metric. Optional: if absent, the consuming app chooses a default null policy based on the kind. 'explain' means show a textual explanation. */
   nullPolicy: 'hide' | 'zero' | 'explain';
 }
 
@@ -251,34 +262,53 @@ export interface Dataset {
   id: string;
   label: string;
   description: string;
+  aliases?: string[];
+  /** Current geometry of the dataset  */
   geometry: 'point' | 'polygon' | 'line';
+  /** IDs of geographies this dataset can be joined to */
   geographyIds: string[];
+  /** IDs of metrics this dataset carries */
   metricIds: string[];
-  /** Provenance/attribution, e.g. 'ibge' | 'ipea' | 'sicar' (D7) — free-form. */
+  /** Provenance/attribution, e.g. 'ibge' | 'ipea' | 'sicar' — free-form. */
   source?: string;
+  /** Optional temporal interval of the dataset, e.g. for a census extract. */
   temporal?: { start: string; end: string };
 }
 
 /** How a geography's features are structured (D7). Absent ⇒ 'administrative'. */
 export type GeographyKind = 'administrative' | 'grid' | 'poi' | 'custom';
 
+/**
+ * How a geography is defined (D7) and how it can be joined to datasets. The four kinds are:
+ * administrative boundary (IBGE malha territorial), spatial-index grid (H3/S2/geohash, IBGE grade estatística), point-of-interest collection, or custom parcel (SICAR rural property)
+ * grid resolution (H3/S2/geohash cell size, IBGE grade)
+ * poi collection (e.g. IBGE malha de equipamentos urbanos).
+ * custom parcel (SICAR rural property, arbitrary polygon, not part of any official hierarchy).
+ */
+
 export interface Geography {
   id: string;
   label: string;
   description: string;
+  /** Optional alternative names for the geography, e.g. 'município' for 'municipality'. */
   aliases?: string[];
-  /** Discriminates admin boundary vs. spatial-index grid vs. POI collection vs. custom parcel (D7). */
+  /** Discriminates admin boundary vs. spatial-index grid vs. POI collection vs. custom parcel. */
   kind?: GeographyKind;
-  /** Ordinal depth in a nesting hierarchy — lower is coarser (D7). */
+  /** Ordinal depth in a nesting hierarchy — lower is coarser. Example: 0 for country, 1 for state, 2 for city. */
   level?: number;
-  /** Geography id one level up that contains this one, enabling roll-up/drill-down (D7). */
+  /** Geography id one level up that contains this one, enabling roll-up/drill-down. */
   parentId?: string;
-  /** External code system feature ids follow, e.g. 'ibge:municipio', 'sicar:imovel', 'h3' (D7). */
+  /** External code system feature ids follow, e.g. 'ibge:municipio', 'sicar:imovel', 'h3'. */
   codeScheme?: string;
-  /** Tessellation resolution for `kind: 'grid'`, e.g. 'h3:8', '1km' (D7). */
+  /** Tessellation resolution for `kind: 'grid'`, e.g. 'h3:8', '1km'. */
   resolution?: string;
 }
 
+/**
+ * A join between a dataset and a geography, with the field names to join on and the cardinality.
+ * The `from` dataset must declare the `left` field, and the `to` geography must declare the `right` field.
+ * Cardinality is either 1:1 or 1:m (dataset row to geography feature).
+ */
 export interface Join {
   from: string; // dataset id
   to: string; // geography id
@@ -300,6 +330,7 @@ export interface MapTypeCatalogEntry {
 
 export interface Catalog {
   version: string;
+  /** Unique domain/namespace of the catalog, e.g. 'br' for Brazil. */
   domain?: string;
   datasets: Dataset[];
   metrics: Metric[];
