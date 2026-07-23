@@ -166,20 +166,30 @@ Dedicated instance at `docs/fsl-storybook`, fsl only (D-001).
 
 **S2 — the Studio becomes the product** · status: ☐
 
-Kill the showcase IA; the blocks are promoted to real pages of a named
-fictional SaaS (the workspace/deploys narrative the blocks already sketch —
-name it in-slice).
+> **Reset 2026-07-23 (owner decision).** The v2 app was deleted wholesale —
+> src, tests, configs, package — before any v3 work started. S2 begins from an
+> empty directory with a **new visual identity, design, and UX, deliberately
+> unbiased by v2** (whose design was judged below the bar). What carries over
+> is knowledge, not code: the FRICTION.md lessons, the P3 base theme, and this
+> blueprint. The v2 flows exist only in git history; the deployed v2 stays
+> live at studio.ttoss.dev until S2 deploys over it.
+
+Build a named fictional SaaS (the workspace/deploys narrative — name it
+in-slice) as a real application, from scratch:
 
 - Login is the real entry: any credentials pass after client-side validation
   succeeds, so the validation pipeline stays demonstrable.
 - Real routes with product navigation, not a gallery: Dashboard, Team
-  (settings), Billing (pricing).
-- `ComponentsPage` and `ThemePage` are deleted — **S1 must be deployed
-  first** (no browse-capability regression). The `catalog.ts` Meta-derivation
-  survives: the Inspector (S4) reuses it as the identity registry.
+  (settings), Billing (pricing) — four complete flows (the gate requirement).
+- No catalog or theme-lab surfaces (D-001) — component browsing is S1's job,
+  which ships before S2.
+- Patterns worth re-deriving from v2, recorded here so no code archaeology is
+  needed: component identity derives from the fsl-ui `*Meta` exports (the
+  Inspector reuses that derivation in S4); hash routing was sufficient;
+  `@fontsource-variable/inter` self-hosts the base theme's first-choice font.
 - **AC:** entering and navigating feels like an application, not an exhibit;
-  zero catalog remnants; the quality ritual (side-by-side against
-  reference-grade products, light + dark screenshots) applied.
+  the quality ritual (side-by-side against reference-grade products, light +
+  dark screenshots) applied.
 
 **S3 — Token Panel v0** · status: ☐
 

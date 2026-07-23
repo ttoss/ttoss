@@ -1,11 +1,10 @@
 # FSL Studio
 
-The adoption vehicle and theme workbench for [`@ttoss/fsl-theme`](../../packages/fsl-theme) and [`@ttoss/fsl-ui`](../../packages/fsl-ui). Deployed at [studio.ttoss.dev](https://studio.ttoss.dev).
+The adoption vehicle and theme workbench for [`@ttoss/fsl-theme`](../../packages/fsl-theme) and [`@ttoss/fsl-ui`](../../packages/fsl-ui).
 
-The Studio is a fictional SaaS product built **exclusively** with fsl-ui on the base theme — zero hand-rolled layout CSS — wrapped by a workbench that edits any fsl-theme token live against the whole product (Panel) and inspects any on-page component's identity, anatomy, and tokenization (Inspector). The product definition, binding decisions, and slice route live in [`BLUEPRINT.md`](./BLUEPRINT.md) — read it before working here. Every gap found while building lands in [`FRICTION.md`](./FRICTION.md), which is the fsl-ui backlog. Component-level browsing is deliberately not this app's job — that is the dedicated fsl Storybook (BLUEPRINT S1).
+**Status: reset (2026-07-23, owner decision).** The v2 showcase app was deleted wholesale so the v3 Studio starts from zero — new identity, new design, new UX, deliberately unbiased by v2 (recorded in [`BLUEPRINT.md`](./BLUEPRINT.md) §Route S2). Until slice S2 scaffolds the new application, this directory holds only the Studio's documentation:
 
-```bash
-pnpm dev      # local dev server
-pnpm test     # jest (100% coverage enforced)
-pnpm build    # tsc + vite build
-```
+- [`BLUEPRINT.md`](./BLUEPRINT.md) — the product definition, binding decisions, and slice route. Read it before any Studio work.
+- [`FRICTION.md`](./FRICTION.md) — the append-only evidence log; still the fsl-ui backlog.
+
+The deploy at [studio.ttoss.dev](https://studio.ttoss.dev) keeps serving the retired v2 until S2 deploys over it.
