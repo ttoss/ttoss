@@ -1,0 +1,42 @@
+{
+  "name": "@docs/fsl-storybook",
+  "version": "0.1.0",
+  "private": true,
+  "description": "FSL Storybook — the dedicated component catalog for @ttoss/fsl-ui and @ttoss/fsl-theme: every public component with variant stories, organized by FSL entity, browsable in both modes and themes, with a machine-readable AI surface (component manifests + llms.txt).",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "docs/fsl-storybook"
+  },
+  "license": "MIT",
+  "author": "Ennio Lopes <enniolopes@gmail.com>",
+  "type": "module",
+  "scripts": {
+    "build": "storybook build --quiet && pnpm run generate-llms",
+    "deploy": "carlin deploy static-app",
+    "dev": "storybook dev -p 6007",
+    "generate-llms": "storybook-llms-extractor --config llms.config.mjs",
+    "start": "storybook dev -p 6007",
+    "storybook": "storybook dev -p 6007"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@ttoss/fsl-theme": "workspace:^",
+    "@ttoss/fsl-ui": "workspace:^",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
+  },
+  "devDependencies": {
+    "@fluentui/storybook-llms-extractor": "^0.0.4",
+    "@storybook/addon-a11y": "^10.5.3",
+    "@storybook/addon-docs": "^10.5.3",
+    "@storybook/addon-mcp": "^0.7.0",
+    "@storybook/react-vite": "^10.5.3",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.0.2",
+    "eslint-plugin-storybook": "10.4.1",
+    "storybook": "^10.5.3",
+    "typescript": "~6.0.3",
+    "vite": "^8.0.16"
+  }
+}

@@ -5,7 +5,7 @@ title: Icon
 # Icon
 
 :::caution Status: specification — partially implemented (internal)
-`@ttoss/fsl-ui` ships an **internal** Icon layer (`src/components/Icon/`) that implements a **subset** of this contract: Iconify is the official glyph provider (default set: Lucide), consumed via intents (`icon.{family}.{intent}`) registered offline. It is not yet a public component or a standalone `@ttoss/fsl-icon` package, and it covers only the intents shipped components use today — the full canonical registry below is the target, not the current surface. See `@ttoss/fsl-ui` CONTRIBUTING ADR-005. This document also predates the shipped Component Semantics Projection vocabulary: read **Responsibility** as **Entity**, and the **Host** tables as authoring guidance — the shipped data model has no `Host` level (parent disambiguation happens in the DOM via `data-scope`/`data-part`; see [Component Model](/docs/design/design-system/components/component-model)). Enforcement described as "compile time / build time" is the intended shape, not shipped behaviour.
+`@ttoss/fsl-ui` ships an **internal** Icon layer (`src/components/Icon/`) that implements a **subset** of this contract: Iconify is the official glyph provider (default set: Lucide), consumed via intents (`icon.{family}.{intent}`) registered offline. It is not yet a public component or a standalone `@ttoss/fsl-icon` package, and it covers only the intents shipped components use today — the full canonical registry below is the target, not the current surface. See `@ttoss/fsl-ui` CONTRIBUTING ADR-005. Enforcement described as "compile time / build time" is the intended shape, not shipped behaviour.
 :::
 
 **Entity: Structure**
@@ -34,7 +34,7 @@ Icon occupies the same architectural position as Button, Checkbox, or any other 
 
 | Dimension            | Value                                     |
 | :------------------- | :---------------------------------------- |
-| **Responsibility**   | Structure                                 |
+| **Entity**           | Structure                                 |
 | **Behavioral class** | static                                    |
 | **Renders**          | SVG glyph (`<svg>` with `currentColor`)   |
 | **Interactive**      | No — Icon is never interactive on its own |
@@ -153,7 +153,7 @@ Icon is a component that **consumes** design tokens. It does not produce them.
 
 Icon renders with `currentColor`. It inherits color from its parent context via CSS. No color prop, no color token on the Icon itself.
 
-When an Icon plays `ItemFrame.supportingVisual`, its color comes from the resolved color token of that composition role (e.g. `informational.muted.text.default`). When it plays inside a `Feedback` component, it inherits the feedback color. **The context owns the color, not the Icon.**
+When an Icon renders inside a host component's part (e.g. a menu item's supporting visual), its color comes from the color token the host part resolves (e.g. `informational.muted.text.default`). When it renders inside a `Feedback` component, it inherits the feedback color. **The context owns the color, not the Icon.**
 
 ### Sizing
 
@@ -175,21 +175,21 @@ Icon does not define motion. If an Icon needs animated behavior (e.g. a spinner 
 
 ## Composition
 
-Icon participates in composition through the standard Component Model.
+Icon participates in composition through the standard [Component Model](/docs/design/design-system/components/component-model): the host component owns the part the Icon renders in (exposed in the DOM via `data-scope`/`data-part`), and that part resolves the tokens the Icon inherits.
 
-| Host           | Role                | Typical use                   |
-| :------------- | :------------------ | :---------------------------- |
-| `FieldFrame`   | `leadingAdornment`  | Search icon before an input   |
-| `FieldFrame`   | `trailingAdornment` | Clear icon after an input     |
-| `ItemFrame`    | `supportingVisual`  | Icon beside a menu item label |
-| `SurfaceFrame` | `status`            | Status icon in a banner       |
+| Host component part               | Typical use                   |
+| :-------------------------------- | :---------------------------- |
+| Input field `leadingAdornment`    | Search icon before an input   |
+| Input field `trailingAdornment`   | Clear icon after an input     |
+| Collection item supporting visual | Icon beside a menu item label |
+| Feedback surface status           | Status icon in a banner       |
 
-When Icon has no Host context, it resolves tokens from its Responsibility default (`Structure`):
+When Icon renders outside any host part, it resolves tokens from its Entity default (`Structure`):
 
 - color: `informational.primary.text.default`
 - sizing: `sizing.icon.md`
 
-Composition overrides refine these defaults. For example, `ItemFrame.supportingVisual` resolves to `informational.muted.text.default` + `sizing.icon.md`.
+Host parts refine these defaults. For example, a collection item's supporting visual resolves to `informational.muted.text.default` + `sizing.icon.md`.
 
 ---
 

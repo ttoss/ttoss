@@ -26,7 +26,7 @@
  *   ────────────┼─────────────────┼───────────────────────────────────────────
  *   ux          │ Entity Kind     │ projection-scoped subset + renaming (§17.1)
  *   role        │ Evaluation      │ projection-scoped name for FSL Evaluation
- *   dimension   │ Structural Role │ subset: background | border | text
+ *   dimension   │ — (projection)  │ background | border | text — projection-defined, not FSL Structural Role terms (model.md)
  *   state       │ State           │ values identical, no renaming
  *
  * Token naming grammar: {ux}.{role}.{dimension}.{state}
@@ -213,10 +213,7 @@ export interface ThemeBrief {
   accessibilityTarget: 'AA' | 'AA+' | 'AAA-like';
   /** Color-mode support strategy. */
   colorModeStrategy?:
-    | 'light-only'
-    | 'dark-supported'
-    | 'dark-first'
-    | 'adaptive';
+    'light-only' | 'dark-supported' | 'dark-first' | 'adaptive';
   /** Primary platform the theme is tuned for. */
   platformBias?: 'web' | 'mobile' | 'desktop' | 'cross-platform';
 }

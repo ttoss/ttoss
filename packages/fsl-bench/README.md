@@ -1,9 +1,13 @@
 # @ttoss/fsl-bench
 
+> **Status: ⏸ parked (2026-07-22).** The benchmark is an optional evidence
+> instrument, not a release gate — see `packages/fsl-ui/INTERNAL/ROADMAP.md`
+> §Program. No further investment until fsl-ui's adoption gate is met.
+
 AI-executability benchmark harness for [`@ttoss/fsl-ui`](../fsl-ui) — the
-execution of **ROADMAP §D1** (STRATEGIC_EVAL criterion 6). It measures
-whether an LLM, given a library and its docs, produces **correct UI code on
-the first pass** — the falsifiable half of fsl-ui's "AI-first" thesis.
+execution of **ROADMAP §D1** (methodology: `../fsl-ui/INTERNAL/BENCHMARK_EVAL.md`).
+It measures whether an LLM, given a library and its docs, produces **correct
+UI code on the first pass** — the falsifiable half of fsl-ui's "AI-first" thesis.
 
 Private, never published. Lives beside `fsl-ui` (not inside it) so the
 benchmark consumes the library exactly as an external app would and its

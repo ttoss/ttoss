@@ -317,6 +317,7 @@ Examples of expected lexical values:
 - pressed
 - checked
 - indeterminate
+- invalid
 - expanded
 - current
 - visited

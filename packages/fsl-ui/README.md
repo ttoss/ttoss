@@ -59,7 +59,7 @@ Composites accept no `style`/`className`. Geometry the host legitimately owns is
 
 The registered knobs and the full policy live in `src/tokens/CONTRACT.md` §7.
 
-Icons are internal: components render glyphs through a semantic layer over the [Iconify](https://iconify.design/) provider (default set: Lucide), registered offline (no runtime network fetch). There is no public `Icon` export yet — see CONTRIBUTING ADR-005.
+Icons are semantic: `Icon` (public since ADR-010) is named by intent (`<Icon intent="status.success" />`), never by glyph. The theme maps intents to [Iconify](https://iconify.design/) glyphs (default set: Lucide), registered offline (no runtime network fetch); color inherits via `currentColor` and size comes from `vars.sizing.icon.*`.
 
 ## AI-first surface
 

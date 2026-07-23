@@ -122,23 +122,10 @@ A style reference that only describes visual taste is incomplete. A style refere
 
 ## Current references
 
-The initial set in this library covers styles that are historically significant, operationally distinct, or especially relevant to modern token-based theming:
-
-**Structural references:**
-
 - [Skeuomorphic](./skeuomorphic.md)
 - [Flat 2.0](./flat2.md)
-- [Minimalist](./minimalist.md)
 
-**Specialized references:**
-
-- [Material](./material.md)
-- [Glass](./glass.md)
-- [Neobrutalism](./neobrutalism.md)
-- [Neumorphism](./neumorphism.md)
-- [90s](./90s.md)
-
-These references are not expected to be symmetrical in recommendation level. Some are strong sources for production archetypes. Others are valuable because they clarify limits, tradeoffs, or cautionary boundaries.
+Further references (minimalist, material, glass, neobrutalism, neumorphism, 90s) are planned and will be added as they are authored against the inclusion criteria above. References are not expected to be symmetrical in recommendation level: some are strong sources for production archetypes, others clarify limits, tradeoffs, or cautionary boundaries.
 
 ## Principle
 

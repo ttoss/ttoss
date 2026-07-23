@@ -31,6 +31,7 @@ import {
   treeRadio,
   treeSearchField,
   treeSelect,
+  treeTable,
   treeTabs,
   treeTagGroup,
   treeTextArea,
@@ -196,6 +197,11 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
   TabList: { scope: 'tabs', element: treeTabs },
   Tab: { scope: 'tabs', element: treeTabs },
   TabPanel: { scope: 'tabs', element: treeTabs },
+  // ── Table (container Collection; rows Selection — ADR-007) ────────
+  Table: { scope: 'table', element: treeTable },
+  TableColumn: { scope: 'table', element: treeTable },
+  TableRow: { scope: 'table', element: treeTable },
+  TableCell: { scope: 'table', element: treeTable },
   Separator: {
     scope: 'separator',
     element: () => {
@@ -339,6 +345,13 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
           <pkg.FormSubmit>Save</pkg.FormSubmit>
         </pkg.Form>
       );
+    },
+  },
+  // ── Icon (public since ADR-010) ───────────────────────────────────
+  Icon: {
+    scope: 'icon',
+    element: () => {
+      return <pkg.Icon intent="status.success" label="Included" />;
     },
   },
   // ── GridList / GridListItem ───────────────────────────────────────
