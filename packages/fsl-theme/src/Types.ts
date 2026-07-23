@@ -213,10 +213,7 @@ export interface ThemeBrief {
   accessibilityTarget: 'AA' | 'AA+' | 'AAA-like';
   /** Color-mode support strategy. */
   colorModeStrategy?:
-    | 'light-only'
-    | 'dark-supported'
-    | 'dark-first'
-    | 'adaptive';
+    'light-only' | 'dark-supported' | 'dark-first' | 'adaptive';
   /** Primary platform the theme is tuned for. */
   platformBias?: 'web' | 'mobile' | 'desktop' | 'cross-platform';
 }
