@@ -22,13 +22,13 @@ in production use — not feature-complete on paper.**
 The program is two packages and one docs section. Everything else is support
 tooling, admitted only when it serves the adoption gate.
 
-| Surface                    | Ruling                                                                                                                                                                                                                                                                                                                                                                                                         |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packages/fsl-theme`       | ✅ **Done** (v2.x): full token model, ~99% enforced coverage, 20 ADRs, professional base theme. Maintenance + additive polish only (P3 aesthetic pass may tune values; no new families without a consumer — evidence rule).                                                                                                                                                                                    |
-| `packages/fsl-ui`          | 🔥 **Active** — the route below is the plan.                                                                                                                                                                                                                                                                                                                                                                   |
-| `docs/website/docs/design` | 🔥 **Active** — consolidation only (P0); no new doc families.                                                                                                                                                                                                                                                                                                                                                  |
-| `packages/fsl-bench`       | ⏸ **Parked.** Real, working evidence instrument — but a benchmark victory is not a release gate (the 2026-07-16 gemini-only run showing fsl-ui behind Radix on first-pass is a signal to iterate `llms.txt` via adoption, not a wall). Re-run after v1 as marketing evidence, on demand.                                                                                                                       |
-| `docs/fsl-studio`          | 🔥 **Active — the P1 adoption vehicle** (ruling revised 2026-07-22, owner decision). Rebuilt **from scratch with zero reuse** of v1 code. v1 (Tazuna-UX-framed tool) is deleted; PRD v2 is dead. The v2 product frame: a deliberately conventional showcase app — shell + blocks gallery + component catalog + theme lab — that exists to generate the adoption friction log and the aesthetic proving ground. |
+| Surface                    | Ruling                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/fsl-theme`       | ✅ **Done** (v2.x): full token model, ~99% enforced coverage, 20 ADRs, professional base theme. Maintenance + additive polish only (P3 aesthetic pass may tune values; no new families without a consumer — evidence rule).                                                                                                                                                                                                                                                                                                                               |
+| `packages/fsl-ui`          | 🔥 **Active** — the route below is the plan.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `docs/website/docs/design` | 🔥 **Active** — consolidation only (P0); no new doc families.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `packages/fsl-bench`       | ⏸ **Parked.** Real, working evidence instrument — but a benchmark victory is not a release gate (the 2026-07-16 gemini-only run showing fsl-ui behind Radix on first-pass is a signal to iterate `llms.txt` via adoption, not a wall). Re-run after v1 as marketing evidence, on demand.                                                                                                                                                                                                                                                                  |
+| `docs/fsl-studio`          | 🔥 **Active — the P1 adoption vehicle and, beyond the gate, the FSL theme workbench** (frame revised 2026-07-23, owner decision). The v2 showcase IA (blocks gallery + catalog + theme lab) is superseded by the v3 frame: a real fictional-product application (Stage) wrapped by a live token editor (Panel) and a semantic inspector — component browsing moves to a dedicated fsl Storybook. The Studio's implementation source of truth is `docs/fsl-studio/BLUEPRINT.md` (problem, surfaces, binding decisions D-001…D-011, slices, v2 AI horizon). |
 
 ### The gate (replaces D1 → D2; revised 2026-07-22)
 
@@ -44,6 +44,13 @@ milestone that follows**, not a v1.0 blocker. The AI-executability benchmark
 runs blocks forever; the Studio gate is reachable, in-repo, and generates
 representative friction.
 
+**Amendment 2026-07-23:** the gate's artifact is the Studio in its v3
+real-app frame (BLUEPRINT slice S2 — the four flows as product pages behind a
+real login entry) plus the dedicated fsl Storybook (S1) replacing the catalog
+surface. The gate's substance is unchanged: deployed + four flows + friction
+log at zero blockers. The workbench slices (S3–S5) and the v2 AI horizon do
+**not** gate fsl-ui v1.0.
+
 ### Route
 
 - **P0 — Docs consolidation** _(started 2026-07-22; first pass landed)_
@@ -58,6 +65,8 @@ representative friction.
   - **Hard budget:** zero hand-rolled _layout_ CSS. Bespoke CSS only for a widget no primitive covers, one justification comment per rule — a gap found this way is a logged friction item, not a silent workaround.
   - **Quality ritual per block:** a block merges only with (a) its friction-log entries filed and (b) a side-by-side comparison against 2–3 reference-grade products, light **and** dark. This runs P3's aesthetic bar per delivery instead of as an end phase.
   - **Friction log:** `docs/fsl-studio/FRICTION.md` (the Wave-1/2 discipline): every hand-rolled style, missing component, confusing API, or `llms.txt`/CONTRACT gap is a logged item — that log **is** the v1 backlog. Doc fixes land immediately (this is what the bench was trying to measure, obtained for free).
+  - **Frame revision 2026-07-23 (owner decision):** the showcase IA above is superseded by the v3 frame — a real application plus theme workbench — defined in `docs/fsl-studio/BLUEPRINT.md`. The ①–⑥ record stands as history; the catalog and theme-lab surfaces retire once the dedicated fsl Storybook (BLUEPRINT S1) ships, and the blocks are promoted to product pages (S2). The BLUEPRINT is the Studio's implementation source of truth; this roadmap keeps only the program-level rulings.
+- **Studio program (beyond the gate):** the workbench slices (S3 Token Panel, S4 Inspector, S5 live guarantees) and the v2 AI horizon (theme-by-prompt, on-system playground, component studio) proceed per the BLUEPRINT route under the same friction ritual; they never gate fsl-ui v1.0.
 - **P2 — Evidence-driven gaps** _(only what P1 demands, in demand order)_
   - Wave 3 trimmed: ✅ **Table** shipped 2026-07-22 (F-007 mandate; Settings retrofitted). **ComboBox** next (F-008 mandate, open). Tree only on demand. Date/time suite (Phase 3) and Color/DnD (Phase 4) stay deferred until an app asks.
   - ✅ Public `Icon` export shipped 2026-07-22 (ADR-010; F-015 mandate from the Pricing block). `@ttoss/fsl-icon` package stays parked — trigger: a consumer wanting icons without fsl-ui.
@@ -81,7 +90,9 @@ representative friction.
 - Studio blast-radius/impact band (the dead PRD v2 idea) — only if post-v1 demand appears.
 - More built-in themes beyond `baseTheme`/`bruttal` (the Enterprise Neutral profile is the first candidate) — after P3 defines the quality bar.
 - Density projection (reverted ADR-019) — only when a real app demands a switchable-density surface.
-- Storybook wiring for fsl-ui — deliberately out of scope; the Studio deploy serves the browse need.
+- ~~Storybook wiring for fsl-ui~~ — **unparked 2026-07-23** (owner decision): a dedicated fsl-only Storybook is BLUEPRINT slice S1; the general ttoss Storybook stays untouched.
+- `fsl-devtools` package (Panel/Inspector/audit runtime extracted for reuse) — extraction triggers named in BLUEPRINT D-008.
+- fsl-bench as the AI-capability regression harness — unparks at Studio v2.x per BLUEPRINT D-011.
 
 ---
 

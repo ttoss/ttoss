@@ -1,8 +1,9 @@
 # Friction log — FSL Studio (P1 adoption)
 
-> The Program P1 evidence channel (see `packages/fsl-ui/INTERNAL/ROADMAP.md`
-> §Program). Every hand-rolled style, missing component, confusing API, or
-> `llms.txt`/CONTRACT gap found while building the Studio is filed here.
+> The Studio evidence channel — Program P1 and every `BLUEPRINT.md` slice
+> after it (see `packages/fsl-ui/INTERNAL/ROADMAP.md` §Program). Every
+> hand-rolled style, missing component, confusing API, or `llms.txt`/CONTRACT
+> gap found while building the Studio is filed here.
 > **This log is the fsl-ui v1 backlog.** Doc gaps are fixed immediately;
 > package gaps stay open until shipped. One entry per finding — append only.
 

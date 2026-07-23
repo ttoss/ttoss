@@ -1,10 +1,8 @@
 # FSL Studio
 
-The adoption proving ground for [`@ttoss/fsl-theme`](../../packages/fsl-theme) and [`@ttoss/fsl-ui`](../../packages/fsl-ui) — Program P1 in [`packages/fsl-ui/INTERNAL/ROADMAP.md`](../../packages/fsl-ui/INTERNAL/ROADMAP.md). Deployed at [studio.ttoss.dev](https://studio.ttoss.dev).
+The adoption vehicle and theme workbench for [`@ttoss/fsl-theme`](../../packages/fsl-theme) and [`@ttoss/fsl-ui`](../../packages/fsl-ui). Deployed at [studio.ttoss.dev](https://studio.ttoss.dev).
 
-The Studio is built **exclusively** with fsl-ui components on the unmodified base theme — zero hand-rolled layout CSS (there is no stylesheet in `src/`). Its purpose is evidence: every real flow it hosts (the **blocks** — Login, Settings/CRUD, Dashboard, Pricing) stresses the packages the way a business app would, and every gap lands in [`FRICTION.md`](./FRICTION.md), which is the fsl-ui v1 backlog.
-
-This is v2, rebuilt from scratch (2026-07-22) with zero reuse of v1 — the recorded lesson in ROADMAP §Program P1: the adoption vehicle must be deliberately conventional, not a UX experiment.
+The Studio is a fictional SaaS product built **exclusively** with fsl-ui on the base theme — zero hand-rolled layout CSS — wrapped by a workbench that edits any fsl-theme token live against the whole product (Panel) and inspects any on-page component's identity, anatomy, and tokenization (Inspector). The product definition, binding decisions, and slice route live in [`BLUEPRINT.md`](./BLUEPRINT.md) — read it before working here. Every gap found while building lands in [`FRICTION.md`](./FRICTION.md), which is the fsl-ui backlog. Component-level browsing is deliberately not this app's job — that is the dedicated fsl Storybook (BLUEPRINT S1).
 
 ```bash
 pnpm dev      # local dev server
