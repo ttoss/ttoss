@@ -1,6 +1,6 @@
 {
   "name": "@docs/fsl-storybook",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "FSL Storybook — the dedicated component catalog for @ttoss/fsl-ui and @ttoss/fsl-theme: every public component with variant stories, organized by FSL entity, browsable in both modes and themes, with a machine-readable AI surface (component manifests + llms.txt).",
   "repository": {
