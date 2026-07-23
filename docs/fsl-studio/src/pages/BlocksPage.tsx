@@ -10,6 +10,7 @@ import {
 
 import { DashboardBlock } from '../blocks/DashboardBlock';
 import { LoginBlock } from '../blocks/LoginBlock';
+import { PricingBlock } from '../blocks/PricingBlock';
 import { SettingsBlock } from '../blocks/SettingsBlock';
 
 /**
@@ -112,9 +113,31 @@ export const BlocksPage = () => {
             </Surface>
           </Box>
         </Stack>
-        <Text variant="body-sm" tone="muted">
-          Next block: Pricing (marketing composition).
-        </Text>
+        <Stack gap="md">
+          <Heading level={3} size="title-md">
+            Pricing
+          </Heading>
+          <PricingBlock />
+          <Box maxWidth="reading">
+            <Surface level="flat" padding="lg">
+              <Stack gap="sm">
+                <Heading level={4} size="title-sm">
+                  What this block proves
+                </Heading>
+                <Text variant="body-sm" tone="muted">
+                  Marketing composition: centered rhythm, tier hierarchy from
+                  elevation + border emphasis (no bespoke card styling), and the
+                  first consumer of the public Icon (ADR-010) — the feature-list
+                  checkmarks are intent-named glyphs, not hand-authored SVG.
+                </Text>
+                <Text variant="body-sm" tone="muted">
+                  With this block the gate&apos;s four flows are complete:
+                  Login, Settings, Dashboard, and Pricing.
+                </Text>
+              </Stack>
+            </Surface>
+          </Box>
+        </Stack>
       </Stack>
     </Container>
   );

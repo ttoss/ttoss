@@ -99,3 +99,15 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 - KPI tiles want a large numeral, but `Text` caps at `body-lg` and the display/headline type steps are reachable only through `Heading` (h1–h6 document semantics — a stat value is not a heading). The dashboard's numbers render at body scale, visibly under-weighted for the pattern.
 - **Workaround:** `Text variant="body-lg" numeric="tabular"` — correct, but not the conventional stat-tile scale.
 - **Backlog:** a non-heading display text step (e.g. `Text variant="display-sm"` or a `Stat` pattern) via governance.
+
+### F-015 — feature-list glyphs demanded a public Icon
+
+- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` Icon (ADR-005 internal-only clause) · **Severity:** gap · **Status:** ✅ fixed (same day — ADR-010)
+- The Pricing block's feature lists need checkmark glyphs outside any shipped component — the exact promotion trigger ADR-005 left open. Without a public `Icon`, blocks would hand-author SVG (the drift ADR-005 exists to prevent).
+- **Action:** `Icon` promoted to a public export (ADR-010) with `iconMeta`, intent types, and the curated `ICON_INTENTS` registry; `status.success` intent added (circled check, distinct from `selection.checked`). The standalone `@ttoss/fsl-icon` package stays parked — its named trigger is a consumer that wants icons without fsl-ui.
+
+### F-016 — no semantic list primitive for content lists
+
+- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` catalog (Pricing block) · **Severity:** paper-cut · **Status:** open
+- Marketing feature lists want `ul`/`li` semantics, but `Stack` renders a div and `Text` renders only p/span/div. The block hand-applies `role="list"`/`role="listitem"` on Stacks — accessible, but every content list will repeat this.
+- **Backlog:** a `List`/`ListItem` Structure primitive, or an `as`/role affordance on `Stack`, via governance.
