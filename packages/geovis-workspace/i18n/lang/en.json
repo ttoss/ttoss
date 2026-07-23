@@ -1,15 +1,103 @@
 {
+  "+cy6i0": {
+    "defaultMessage": "Two map data entries declare the same dimension for the same source.",
+    "description": "Warnings panel: mapData color/size dimension collides."
+  },
+  "/NbUv5": {
+    "defaultMessage": "This view feature is not supported.",
+    "description": "Warnings panel: a view-level feature is not implemented by the engine adapter."
+  },
+  "0tNse0": {
+    "defaultMessage": "Dismiss selection",
+    "description": "Accessible label for the button that clears the inspector panel selection."
+  },
+  "26nzWk": {
+    "defaultMessage": "Map could not be shown",
+    "description": "Title shown in the map area on first mount when the spec fails before anything has ever resolved."
+  },
+  "2a5j+J": {
+    "defaultMessage": "This map violates the cartography policy.",
+    "description": "Warnings panel: spec.metadata flags a policy violation."
+  },
   "35Dt1p": {
     "defaultMessage": "Details",
     "description": "Default title shown in the right sidebar when none is set."
+  },
+  "4Kaze0": {
+    "defaultMessage": "A layer references a source that does not exist.",
+    "description": "Warnings panel: layer.sourceId has no matching source."
+  },
+  "6Rj6DM": {
+    "defaultMessage": "No value",
+    "description": "Shown in the inspector panel when the selected feature has no bound value."
+  },
+  "AVBgd7": {
+    "defaultMessage": "Two sources conflict with each other.",
+    "description": "Warnings panel: two sources declare overlapping scope."
   },
   "IU+fm9": {
     "defaultMessage": "Open details",
     "description": "Accessible label for the button that opens the right sidebar."
   },
+  "IUwKDh": {
+    "defaultMessage": "This field cannot be updated without a full spec update.",
+    "description": "Warnings panel: an applyPatch call targeted a field outside SpecPatchTarget."
+  },
+  "KAQU1v": {
+    "defaultMessage": "A layer references a map data id that does not exist.",
+    "description": "Warnings panel: layer.mapDataId has no matching mapData entry."
+  },
+  "KHJV+u": {
+    "defaultMessage": "A legend threshold value is invalid.",
+    "description": "Warnings panel: a colorBy.thresholds entry is not a finite number."
+  },
+  "KTW4ts": {
+    "defaultMessage": "This data feature is not supported.",
+    "description": "Warnings panel: a data-level feature is not implemented by the engine adapter."
+  },
+  "Ng1Mep": {
+    "defaultMessage": "This map engine is not supported.",
+    "description": "Warnings panel: spec.engine has no matching adapter."
+  },
+  "OlaRV/": {
+    "defaultMessage": "Two map data entries collide on the same feature-state key.",
+    "description": "Warnings panel: resolved stateKey collides across mapData entries."
+  },
+  "SypGjh": {
+    "defaultMessage": "Two map data entries share the same id.",
+    "description": "Warnings panel: mapData ids collide."
+  },
+  "TzOKEV": {
+    "defaultMessage": "Legend thresholds must be in ascending order.",
+    "description": "Warnings panel: colorBy.thresholds are not sorted."
+  },
+  "V3z2n/": {
+    "defaultMessage": "The size mode configuration is invalid.",
+    "description": "Warnings panel: sizeBy.mode is malformed."
+  },
+  "Z+sHcw": {
+    "defaultMessage": "{count, plural, one {# source} other {# sources}}",
+    "description": "Metadata panel: number of data sources in the current spec."
+  },
+  "ZBWmDx": {
+    "defaultMessage": "The visualization spec does not match the expected schema.",
+    "description": "Warnings panel: spec fails JSON schema validation."
+  },
+  "cDAeJo": {
+    "defaultMessage": "This source type is not supported.",
+    "description": "Warnings panel: source.type is not implemented by the engine adapter."
+  },
   "cculTE": {
     "defaultMessage": "Select an item to view details.",
     "description": "Message shown in the right sidebar when nothing is selected."
+  },
+  "cmGJ47": {
+    "defaultMessage": "The size range for proportional circles is invalid.",
+    "description": "Warnings panel: sizeBy.range is malformed."
+  },
+  "e0csSw": {
+    "defaultMessage": "Toggle visibility of layer {layer_id}",
+    "description": "Accessible label for the checkbox that toggles a layer in the layer-list controls variant."
   },
   "ebJRt+": {
     "defaultMessage": "Open menu",
@@ -19,8 +107,24 @@
     "defaultMessage": "Close details",
     "description": "Accessible label for the button that closes the right sidebar."
   },
+  "n6ryYu": {
+    "defaultMessage": "{message}",
+    "description": "Warnings panel: untranslated issue message, used for a code with no catalog entry yet."
+  },
   "ncOMIu": {
     "defaultMessage": "Close menu",
     "description": "Accessible label for the button that closes the left sidebar."
+  },
+  "s0Ww26": {
+    "defaultMessage": "Map type: {map_type}",
+    "description": "Metadata panel: the spec's mapType, when set."
+  },
+  "uzIIpa": {
+    "defaultMessage": "This layer type is not supported.",
+    "description": "Warnings panel: layer.geometry is not implemented by the engine adapter."
+  },
+  "yb6iwx": {
+    "defaultMessage": "The visualization spec targets an unsupported schema version.",
+    "description": "Warnings panel: spec.schemaVersion is not supported."
   }
 }

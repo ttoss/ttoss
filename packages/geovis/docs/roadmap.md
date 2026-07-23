@@ -1,4 +1,5 @@
 ---
+sidebar_position: 3
 title: Roadmap
 ---
 
@@ -19,7 +20,7 @@ graph LR
 
 ## Where we are
 
-`@ttoss/geovis` renders validated specs (choropleth, dot density, proportional circles) with MapLibre, patches them incrementally, and enforces one cartography policy. **R1 is built**: `validateSpec`/`runtime.update`/`runtime.applyPatch` return the typed `GeoVisResult` taxonomy (ADR-0001), `CapabilitySet` is a structured, declared-means-tested tree consumed by validation (ADR-0002), and specs carry a `schemaVersion`. **R2 is built**: `runtime.dispatch()` exposes the full v1 action vocabulary — `toggle-layer`, `select-feature`, `set-map-data`, `set-filter`, `set-view-preset` (ADR-0003) — and `runtime.getContextPacket()` returns a versioned, metadata-only summary with allowed actions and the last structured error (ADR-0004); the click hook converges on `dispatch()`, undo/redo and `useBoundaryToggle` convergence remain open (see [PRD-002](./prds/prd-002-ai-operation-surface.md)'s Should items). `@ttoss/geovis-workspace` provides the layout shell (sidebars, provider, context). Everything else AI-facing — catalog, intent, resolution, evals — is designed ([GeoVis ADRs 0001–0004](https://github.com/ttoss/ttoss/tree/main/packages/geovis/docs/adr), [workspace ADRs 0001–0004](https://github.com/ttoss/ttoss/tree/main/packages/geovis-workspace/docs/adr), [research](./research/)) but not built.
+`@ttoss/geovis` renders validated specs (choropleth, dot density, proportional circles) with MapLibre, patches them incrementally, and enforces one cartography policy. `@ttoss/geovis-workspace` provides the layout shell (sidebars, provider, context). Everything AI-facing — structured errors, enforced capabilities, semantic actions, context packet, catalog, intent, resolution, evals — is designed ([GeoVis ADRs 0001–0004](https://github.com/ttoss/ttoss/tree/main/packages/geovis/docs/adr), [workspace ADRs 0001–0004](https://github.com/ttoss/ttoss/tree/main/packages/geovis-workspace/docs/adr), [research](./research/)) but not built.
 
 ## R1 — Reliable Core
 

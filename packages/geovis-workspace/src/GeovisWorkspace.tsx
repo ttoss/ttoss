@@ -1,97 +1,90 @@
-import type { VisualizationSpec } from '@ttoss/geovis';
-import { GeoVisCanvas, GeoVisProvider, useGeoVisClick } from '@ttoss/geovis';
+import type { RepairOption, VisualizationSpec } from '@ttoss/geovis';
+import { GeoVisProvider } from '@ttoss/geovis';
 import { Box } from '@ttoss/ui';
-import * as React from 'react';
 
 import { Layout } from './components/Layout';
 import {
   type GeovisWorkspaceConfig,
   type GeovisWorkspaceSelection,
 } from './context/GeovisWorkspaceContext';
-import { GeovisWorkspaceProvider } from './GeovisWorkspaceProvider';
-import { useGeovisWorkspace } from './hooks/useGeovisWorkspace';
+import {
+  GeovisWorkspaceProvider,
+  type GeovisWorkspaceProviderProps,
+} from './GeovisWorkspaceProvider';
+import { useHasResolvedOnce } from './hooks/useHasResolvedOnce';
+
+/**
+ * Reads whether the GeoVis runtime has ever resolved and forwards it into
+ * `GeovisWorkspaceProvider`. Kept as a separate component (rather than
+ * inlined in `GeovisWorkspaceProvider`) since that provider is also usable
+ * standalone, without a GeoVis runtime — `useGeoVis()` is only safe to call
+ * here, inside `GeoVisProvider`.
+ */
+const GeovisWorkspaceProviderWithRuntime = ({
+  children,
+  ...providerProps
+}: GeovisWorkspaceProviderProps) => {
+  const hasResolvedOnce = useHasResolvedOnce();
+
+  return (
+    <GeovisWorkspaceProvider
+      {...providerProps}
+      hasResolvedOnce={hasResolvedOnce}
+    >
+      {children}
+    </GeovisWorkspaceProvider>
+  );
+};
 
 export interface GeovisWorkspaceProps {
   config: GeovisWorkspaceConfig;
   visualizationSpec: VisualizationSpec;
   variables?: GeovisWorkspaceSelection;
   onVariableChange?: (variables: GeovisWorkspaceSelection) => void;
+  /**
+   * Called with the chosen `RepairOption` when a repair button is pressed in
+   * the `warnings` slot's default panel. Omit to render repair buttons
+   * disabled rather than absent.
+   */
+  onRepair?: (repair: RepairOption) => void;
+  /**
+   * Called with a layer's id and its next `visible` value when the
+   * `LayerListControls` `controls` slot variant toggles it. Rebuild
+   * `visualizationSpec` with that layer's `visible` field updated.
+   */
+  onLayerVisibilityChange?: (layerId: string, visible: boolean) => void;
 }
 
 /**
- * Renders the GeoVis map for the workspace inside the main content area. Kept
- * as an internal component so the map fills the layout's main slot and mounts
- * inside the provider tree.
+ * Renders the workspace's sidebars and map, all wired to the same GeoVis
+ * runtime via `GeoVisProvider` hoisted above this tree.
  */
-/**
- * Bridges GeoVis map clicks to the workspace: reads the persistent click
- * selection and forwards it to `selectFeature`, which runs the configured
- * `onFeatureSelect` and opens the right sidebar. Renders nothing. Lives inside
- * `<GeoVisProvider>` so it can read `useGeoVisClick()`.
- */
-const FeatureClickBridge = () => {
-  const clicked = useGeoVisClick();
-
-  const { selectFeature } = useGeovisWorkspace();
-
-  const selectFeatureRef = React.useRef(selectFeature);
-  React.useEffect(() => {
-    selectFeatureRef.current = selectFeature;
-  }, [selectFeature]);
-
-  // Fire only when the clicked feature itself changes — not when `selectFeature`
-  // is recreated — so recreating `config` never retriggers the fetch.
-  const featureKey = clicked
-    ? `${clicked.layerId}:${String(clicked.featureId)}`
-    : null;
-
-  React.useEffect(() => {
-    selectFeatureRef.current(clicked);
-    // `clicked` is intentionally omitted: `featureKey` derives from it and is
-    // the value we want to react to.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [featureKey]);
-
-  return null;
-};
-
-const GeovisWorkspaceMap = ({
-  visualizationSpec,
-}: {
-  visualizationSpec: VisualizationSpec;
-}) => {
-  return (
-    <Box
-      sx={{
-        position: 'relative',
-        flex: 1,
-        display: 'flex',
-        minHeight: '440px',
-      }}
-    >
-      <GeoVisProvider spec={visualizationSpec}>
-        <GeoVisCanvas style={{ width: '100%', height: '100%' }} />
-        <FeatureClickBridge />
-      </GeoVisProvider>
-    </Box>
-  );
-};
-
 export const GeovisWorkspace = ({
   config,
   visualizationSpec,
   variables,
   onVariableChange,
+  onRepair,
+  onLayerVisibilityChange,
 }: GeovisWorkspaceProps) => {
   return (
-    <GeovisWorkspaceProvider
-      config={config}
-      selection={variables}
-      onSelectionChange={onVariableChange}
-    >
-      <Layout>
-        <GeovisWorkspaceMap visualizationSpec={visualizationSpec} />
-      </Layout>
-    </GeovisWorkspaceProvider>
+    <GeoVisProvider spec={visualizationSpec}>
+      {/* `GeoVisProvider` auto-mounts any spec legend that declares a
+          `position` as an absolutely-positioned overlay, anchored to the
+          nearest positioned ancestor. This Box is that ancestor, so those
+          overlays stay confined to the workspace instead of escaping into
+          whatever container the host application renders it in. */}
+      <Box sx={{ position: 'relative' }}>
+        <GeovisWorkspaceProviderWithRuntime
+          config={config}
+          selection={variables}
+          onSelectionChange={onVariableChange}
+          onRepair={onRepair}
+          onLayerVisibilityChange={onLayerVisibilityChange}
+        >
+          <Layout />
+        </GeovisWorkspaceProviderWithRuntime>
+      </Box>
+    </GeoVisProvider>
   );
 };

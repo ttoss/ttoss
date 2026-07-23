@@ -1,6 +1,5 @@
 import type {
   Map as MapLibreMap,
-  MapMouseEvent,
   Marker as MapLibreMarker,
   MarkerOptions as MapLibreMarkerOptions,
 } from 'maplibre-gl';
@@ -11,8 +10,6 @@ import type { VisualizationSpec } from '../spec/types';
 import type { MapClickInfo, MapHoverInfo } from './contexts';
 import { useGeoVis } from './contexts';
 import {
-  buildClickTracking,
-  buildHandleClick,
   buildHandleGlobalCursor,
   buildHandleMove,
   buildHandleWindowFocus,
@@ -21,11 +18,16 @@ import {
   buildPointerLayerIds,
   clearHover,
   type DecodedHoverTracking,
-  dispatchClearSelection,
   type PrevFeatureState,
   TRACKED_FIELD_SEP,
   TRACKED_RECORD_SEP,
 } from './hooks.builders';
+import {
+  attachClickDismissListeners,
+  buildClickTracking,
+  buildHandleClick,
+  dispatchClearSelection,
+} from './hooks.builders.click';
 
 export type { MapClickInfo, MapHoverInfo } from './contexts';
 
@@ -148,7 +150,6 @@ export const useMapHover = ({
         map.off('mousemove', layerId, handleMove);
         map.off('mouseleave', layerId, handleLeave);
       }
-      map.off('mousemove', handleGlobalCursor);
       window.removeEventListener('focus', handleWindowFocus);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       lastPointRef.current = null;
@@ -164,30 +165,45 @@ interface UseMapClickParams {
   spec: VisualizationSpec;
 }
 
+export interface UseMapClickResult {
+  /** The last clicked {@link MapClickInfo}, or `null` when no feature is selected. */
+  click: MapClickInfo | null;
+  /**
+   * Clears the click selection the same way Escape/outside-click already do
+   * (feature-state included) — a stable reference across renders, safe to
+   * call even before the effect below has attached (a no-op then).
+   */
+  dismiss: () => void;
+}
+
+const noopDismiss = () => {};
+
 /**
  * Tracks the last clicked feature on every layer (any geometry type) that has
  * an `activeLegendId` declared. Supports point, line, polygon, symbol, and
  * heatmap geometries — the geometry filter is intentionally absent so
  * consumers can wire click-to-center (or any click reaction) on any layer.
- *
- * @returns The last clicked {@link MapClickInfo}, or `null` when no feature
- * is selected.
  */
 export const useMapClick = ({
   runtime,
   spec,
-}: UseMapClickParams): MapClickInfo | null => {
+}: UseMapClickParams): UseMapClickResult => {
   const [click, setClick] = React.useState<MapClickInfo | null>(null);
+  // Holds the effect's own dismiss closure so the returned `dismiss` can stay
+  // a stable reference across renders while still reaching the current map
+  // instance and prevSelectedState — updated on every effect run, read only
+  // from the `dismiss` callback below (an event handler, not render).
+  const dismissImplRef = React.useRef<() => void>(noopDismiss);
 
   const trackedKey = React.useMemo(() => {
     return spec.layers
       .filter((layer) => {
         return (
-          // All geometry types are supported for click interactions, so we only check for the presence of `activeLegendId`, `selectedPaint`, `clickAnchor`, or a spec-driven `click` reaction to determine whether the layer should be tracked.
+          // All geometry types are supported for click interactions, so we only check for the presence of `activeLegendId`, `selectedPaint`, or `click.onSelect` to determine whether the layer should be tracked.
           layer.activeLegendId != null ||
           layer.selectedPaint != null ||
           layer.clickAnchor != null ||
-          layer.click != null
+          layer.click?.onSelect != null
         );
       })
       .map((layer) => {
@@ -206,6 +222,12 @@ export const useMapClick = ({
     if (!map) return;
 
     const { tracked, sourceByLayerId } = buildClickTracking(trackedKey);
+
+    const dismissSelection = () => {
+      dispatchClearSelection(runtime);
+      setClick(null);
+    };
+    dismissImplRef.current = dismissSelection;
 
     const handlers = tracked.map(({ layerId }) => {
       return {
@@ -232,37 +254,27 @@ export const useMapClick = ({
     const trackedLayerIds = tracked.map((t) => {
       return t.layerId;
     });
-    const handleOutsideClick = (event: MapMouseEvent) => {
-      const hits = map.queryRenderedFeatures(event.point, {
-        layers: trackedLayerIds,
-      });
-      if (!hits || hits.length === 0) {
-        dispatchClearSelection(runtime);
-        setClick(null);
-      }
-    };
-    map.on('click', handleOutsideClick);
-
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        dispatchClearSelection(runtime);
-        setClick(null);
-      }
-    };
-    window.addEventListener('keydown', handleEscape);
+    const detachDismissListeners = attachClickDismissListeners({
+      map,
+      trackedLayerIds,
+      dismissSelection,
+    });
 
     return () => {
       for (const { layerId, handleClick } of handlers) {
         map.off('click', layerId, handleClick);
       }
-      map.off('click', handleOutsideClick);
-      window.removeEventListener('keydown', handleEscape);
-      dispatchClearSelection(runtime);
-      setClick(null);
+      detachDismissListeners();
+      dismissImplRef.current = noopDismiss;
+      dismissSelection();
     };
   }, [runtime, trackedKey]);
 
-  return click;
+  const dismiss = React.useCallback(() => {
+    dismissImplRef.current();
+  }, []);
+
+  return { click, dismiss };
 };
 
 export interface UseMapDataResult {
@@ -312,16 +324,6 @@ const buildMarkerOptions = (anchor: ClickAnchorSpec): MapLibreMarkerOptions => {
   return opts;
 };
 
-const darkenHex = (hex: string, amount: number): string => {
-  const clean = hex.replace('#', '');
-  if (clean.length !== 6) return hex;
-  const num = parseInt(clean, 16);
-  const r = Math.max(0, Math.round(((num >> 16) & 0xff) * (1 - amount)));
-  const g = Math.max(0, Math.round(((num >> 8) & 0xff) * (1 - amount)));
-  const b = Math.max(0, Math.round((num & 0xff) * (1 - amount)));
-  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-};
-
 export const useClickAnchor = ({
   runtime,
   spec,
@@ -354,24 +356,6 @@ export const useClickAnchor = ({
       marker = new maplibregl.Marker(buildMarkerOptions(anchor))
         .setLngLat(click.lngLat)
         .addTo(map);
-
-      const STYLE_ID = 'geovis-pin-drop-keyframes';
-      if (!document.getElementById(STYLE_ID)) {
-        const style = document.createElement('style');
-        style.id = STYLE_ID;
-        style.textContent = `@keyframes geovis-pin-drop{0%{transform:translateY(-24px) scale(.7);opacity:0}70%{transform:translateY(4px) scale(1.05);opacity:1}85%{transform:translateY(-3px) scale(.98)}100%{transform:translateY(0) scale(1);opacity:1}}`;
-        document.head.appendChild(style);
-      }
-      const svg = marker.getElement().firstElementChild as SVGElement | null;
-      if (svg) {
-        if (anchor.color) {
-          const darkerColor = darkenHex(anchor.color, 0.3);
-          const whiteFillGroup = svg.querySelector('g[fill="#FFFFFF"]');
-          whiteFillGroup?.setAttribute('fill', darkerColor);
-        }
-        (svg as unknown as HTMLElement).style.animation =
-          'geovis-pin-drop 0.35s cubic-bezier(0.34,1.56,0.64,1)';
-      }
     })();
 
     return () => {
@@ -406,7 +390,6 @@ export const useClickSelect = ({ spec, click }: UseClickSelectParams): void => {
   const lastLayerIdRef = React.useRef<string | null>(null);
 
   React.useEffect(() => {
-    // Only react when the selection itself changes, not on other spec updates.
     if (click === lastNotifiedRef.current) return;
     lastNotifiedRef.current = click;
 
@@ -419,7 +402,6 @@ export const useClickSelect = ({ spec, click }: UseClickSelectParams): void => {
       return;
     }
 
-    // Cleared: notify the layer that last held a selection, exactly once.
     const lastLayerId = lastLayerIdRef.current;
     if (lastLayerId === null) return;
     lastLayerIdRef.current = null;

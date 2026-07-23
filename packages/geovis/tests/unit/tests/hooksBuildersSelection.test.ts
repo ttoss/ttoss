@@ -2,7 +2,7 @@ import type { Map as MapLibreMap, MapLayerMouseEvent } from 'maplibre-gl';
 import {
   buildHandleClick,
   dispatchClearSelection,
-} from 'src/react/hooks.builders';
+} from 'src/react/hooks.builders.click';
 import type { GeoVisRuntime } from 'src/runtime/createRuntime';
 
 const makeRuntime = (
