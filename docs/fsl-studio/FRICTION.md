@@ -85,3 +85,17 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 - Two stacked silent failures, found only by checking a real browser (the Table sort arrow was missing — then so was every other glyph: Select chevron, Toast close, Checkbox check): (1) camelCase intents produced Iconify-invalid registry names (`fsl-ui:action-sortAscending` — Iconify allows only lowercase `[a-z0-9-]`); (2) far worse, Node-mode CJS interop in Vite/Rolldown bundles wraps the per-icon lucide modules so `addIcon` received `{ __esModule, default: data }` instead of the icon data — **every registration since B1 was silently rejected in production builds** and every icon fell back to a (blocked) Iconify API fetch. Jest never saw it: Babel interop unwraps `.default`, and jsdom asserts attributes, not rendered glyphs.
 - **Action:** `iconifyName` kebab-cases camelCase humps; `unwrapGlyph` normalizes both interop shapes; `ensureIconGlyphs` now **throws** when `addIcon` returns false (registration failure is a hard bug, never silent); regression tests for name validity. Verified in the built Studio: glyph status `rendered`, sort arrow visible.
 - **Lesson for the gate:** DOM-level suites cannot see this class of failure — the per-block visual check in a real browser is load-bearing, not cosmetic.
+
+### F-013 — dataviz extension ships no typed vars mirror
+
+- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-theme/dataviz` · **Severity:** gap · **Status:** open
+- The foundation ships `vars` (typed CSS-var mirror), but the first-party dataviz extension does not — chart code must hand-roll the README's `buildVarsMap` recipe, including an `as CssVarsMap<Extended>` cast (the documented direct assignment does not type-check against the widened shape). Every dataviz consumer will repeat this boilerplate.
+- **Workaround:** `src/theme.ts` builds `studioVars` with the cast.
+- **Backlog:** ship a typed `datavizVars` (or a `varsWith<T>()` factory) from `@ttoss/fsl-theme/dataviz`.
+
+### F-014 — no display-scale Text variant for stat values
+
+- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` `Text` vocabulary · **Severity:** gap · **Status:** open
+- KPI tiles want a large numeral, but `Text` caps at `body-lg` and the display/headline type steps are reachable only through `Heading` (h1–h6 document semantics — a stat value is not a heading). The dashboard's numbers render at body scale, visibly under-weighted for the pattern.
+- **Workaround:** `Text variant="body-lg" numeric="tabular"` — correct, but not the conventional stat-tile scale.
+- **Backlog:** a non-heading display text step (e.g. `Text variant="display-sm"` or a `Stat` pattern) via governance.

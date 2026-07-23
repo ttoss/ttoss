@@ -8,6 +8,7 @@ import {
   Text,
 } from '@ttoss/fsl-ui';
 
+import { DashboardBlock } from '../blocks/DashboardBlock';
 import { LoginBlock } from '../blocks/LoginBlock';
 import { SettingsBlock } from '../blocks/SettingsBlock';
 
@@ -84,9 +85,35 @@ export const BlocksPage = () => {
             </Surface>
           </Box>
         </Stack>
+        <Stack gap="md">
+          <Heading level={3} size="title-md">
+            Dashboard
+          </Heading>
+          <DashboardBlock />
+          <Box maxWidth="reading">
+            <Surface level="flat" padding="lg">
+              <Stack gap="sm">
+                <Heading level={4} size="title-sm">
+                  What this block proves
+                </Heading>
+                <Text variant="body-sm" tone="muted">
+                  The first real consumer of the dataviz token extension:
+                  categorical series colors, the dashed reference/target
+                  encoding, and foundation-reuse grid lines drive a plain SVG
+                  chart — no chart library, no hardcoded colors. KPI deltas
+                  exercise Badge valences and tabular numerals; capacity uses
+                  Meter with meaning-mapped evaluations.
+                </Text>
+                <Text variant="body-sm" tone="muted">
+                  Toggle dark mode: the chart, tiles, and meters re-theme from
+                  tokens alone.
+                </Text>
+              </Stack>
+            </Surface>
+          </Box>
+        </Stack>
         <Text variant="body-sm" tone="muted">
-          Next blocks, in order: Dashboard (dataviz tokens), Pricing (marketing
-          composition).
+          Next block: Pricing (marketing composition).
         </Text>
       </Stack>
     </Container>
