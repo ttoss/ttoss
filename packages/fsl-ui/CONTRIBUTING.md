@@ -431,3 +431,19 @@ Re-litigation answers:
 - "Doesn't an escape hatch break 'no arbitrary values in consumers'?" → no — Box accepts only token keys and layout keywords; there is no channel for a raw hex/px. The principle is preserved; only "no style prop at all" is superseded.
 - "Why is `columns={3}` allowed but `width: 300px` is not?" → a track _count_ is structural (like flex order), not a length; `300px` is an arbitrary length. Box exposes the former and forbids the latter.
 - "When should I use Box vs Surface vs Stack vs Grid?" → Stack = 1D flex rhythm; Grid = 2D; Container = centered page shell; Surface = depth-bearing card; Box = everything else (a plain padded/sized/grouped region).
+
+### ADR-010: `Icon` is a public export; the standalone package stays deferred
+
+Status: accepted (2026-07-22) — narrows ADR-005's "internal-only" clause
+Tags: icons, public-api, evidence, governance
+
+Decision: `Icon` (+ `iconMeta`, `IconProps`, `IconSize`, `IconIntent`, `ICON_INTENTS`) is exported from `src/index.ts`. The evidence rule fired: the Studio Pricing block needed glyphs outside shipped components (feature-list checkmarks — friction F-015), which is exactly the promotion trigger ADR-005 left open. The intent registry stays curated and grows one consumer-demanded intent at a time (`status.success` landed with this ADR); `ensureIconGlyphs`/`iconifyName` remain internal plumbing.
+Rejected: extracting `@ttoss/fsl-icon` now — its trigger is a consumer that wants icons _without_ fsl-ui, which does not exist; keeping Icon internal and letting blocks hand-author SVG — recreates the exact drift ADR-005 eliminated; exporting the whole glyph/registry plumbing — consumers need the component and the intent vocabulary, not the provider wiring.
+Cost: the intent vocabulary becomes public API — renames/removals now follow the deprecation rules; the curated-registry discipline ("grows slowly and shrinks never", icon-system.md) is load-bearing against icon sprawl.
+Anchors: `src/components/Icon/`, `src/index.ts`, `docs/design/design-system/components/icon-system.md`, `docs/fsl-studio/FRICTION.md` F-015.
+
+Re-litigation answers:
+
+- "ADR-005 says Icon is internal" → that clause is narrowed here, on the named trigger (real external-to-components demand); the rest of ADR-005 (provider, offline registration, intent contract) stands.
+- "Why not ship `@ttoss/fsl-icon` while we're at it?" → no consumer wants icons without fsl-ui; the module boundary is already package-shaped (`intents.ts` is dependency-free), so extraction later costs the same as extraction now.
+- "Can an app add its own intents?" → not through this package — app-specific intents are icon-system.md extensions in app space; this registry only admits intents a shipped component or block demands.

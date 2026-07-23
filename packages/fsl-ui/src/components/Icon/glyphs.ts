@@ -16,6 +16,7 @@
 import arrowDownWideNarrowGlyph from '@iconify/icons-lucide/arrow-down-wide-narrow';
 import arrowUpNarrowWideGlyph from '@iconify/icons-lucide/arrow-up-narrow-wide';
 import checkGlyph from '@iconify/icons-lucide/check';
+import checkCircleGlyph from '@iconify/icons-lucide/check-circle-2';
 import chevronDownGlyph from '@iconify/icons-lucide/chevron-down';
 import chevronRightGlyph from '@iconify/icons-lucide/chevron-right';
 import minusGlyph from '@iconify/icons-lucide/minus';
@@ -58,6 +59,9 @@ const INTENT_GLYPHS = {
   'action.decrement': unwrapGlyph(minusGlyph),
   'action.sortAscending': unwrapGlyph(arrowUpNarrowWideGlyph),
   'action.sortDescending': unwrapGlyph(arrowDownWideNarrowGlyph),
+  // Circled check (distinct from selection.checked's bare check — the
+  // opposition-adjacent "two intents, one glyph" warning stays moot).
+  'status.success': unwrapGlyph(checkCircleGlyph),
 } satisfies Record<IconIntent, GlyphData>;
 
 /**

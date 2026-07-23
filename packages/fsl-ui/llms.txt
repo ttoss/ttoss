@@ -120,11 +120,16 @@ Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              Code (code text: block=true scrollable <pre> surface, block=false
              inline <code> run)
 
-Icons: INTERNAL only (not exported). Components render glyphs through an
-internal semantic Icon layer (`src/components/Icon/`) that maps `icon.{family}.{intent}`
-intents to Lucide glyphs via the Iconify provider (`@iconify-icon/react`),
-registered offline (no runtime API fetch). Future standalone `@ttoss/fsl-icon`.
-See CONTRIBUTING ADR-005.
+Icons: Icon is a PUBLIC export (ADR-010): a semantic glyph named by intent
+(`icon.{family}.{intent}`), never by picture — e.g.
+<Icon intent="status.success" />, <Icon intent="action.close" size="sm" />.
+Decorative by default (aria-hidden); pass `label` (caller-localized) only
+when the icon is the sole carrier of meaning. Color inherits (currentColor);
+size = sm|md|lg → vars.sizing.icon.*. Intents are a curated registry
+(ICON_INTENTS): disclosure.expand/collapse, selection.checked/indeterminate,
+action.close/search/increment/decrement/sortAscending/sortDescending,
+status.success — it grows only on component/block demand. Glyphs map to
+Lucide via the Iconify provider, registered offline (no runtime API fetch).
 
 ## Entity → token map (a component reads ONLY its row)
 

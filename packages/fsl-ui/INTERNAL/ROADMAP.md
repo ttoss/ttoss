@@ -59,8 +59,8 @@ representative friction.
   - **Quality ritual per block:** a block merges only with (a) its friction-log entries filed and (b) a side-by-side comparison against 2–3 reference-grade products, light **and** dark. This runs P3's aesthetic bar per delivery instead of as an end phase.
   - **Friction log:** `docs/fsl-studio/FRICTION.md` (the Wave-1/2 discipline): every hand-rolled style, missing component, confusing API, or `llms.txt`/CONTRACT gap is a logged item — that log **is** the v1 backlog. Doc fixes land immediately (this is what the bench was trying to measure, obtained for free).
 - **P2 — Evidence-driven gaps** _(only what P1 demands, in demand order)_
-  - Wave 3 trimmed: **ComboBox** and **Table** are the likely first asks; Tree only on demand. Date/time suite (Phase 3) and Color/DnD (Phase 4) stay deferred until an app asks.
-  - Public `Icon` export decision (ADR-005 follow-up) when an app needs glyphs outside shipped components.
+  - Wave 3 trimmed: ✅ **Table** shipped 2026-07-22 (F-007 mandate; Settings retrofitted). **ComboBox** next (F-008 mandate, open). Tree only on demand. Date/time suite (Phase 3) and Color/DnD (Phase 4) stay deferred until an app asks.
+  - ✅ Public `Icon` export shipped 2026-07-22 (ADR-010; F-015 mandate from the Pricing block). `@ttoss/fsl-icon` package stays parked — trigger: a consumer wanting icons without fsl-ui.
 - **P3 — Aesthetic excellence pass** _(the "game changer" bar — base theme as flagship)_
   - Structured design review of `baseTheme` against 2–3 reference-grade systems (side-by-side screenshots of the same screens, light + dark): typography rhythm, elevation depth (ADR-018 tonal), radii/border character, motion feel, empty/hover/focus states.
   - Findings land as core-value tuning in `baseTheme.ts` (data-only per ADR-008; contrast guarantees per ADR-015 must hold) + the composition "taste layer" doc.

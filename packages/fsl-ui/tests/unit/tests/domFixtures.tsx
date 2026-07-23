@@ -347,6 +347,13 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       );
     },
   },
+  // ── Icon (public since ADR-010) ───────────────────────────────────
+  Icon: {
+    scope: 'icon',
+    element: () => {
+      return <pkg.Icon intent="status.success" label="Included" />;
+    },
+  },
   // ── GridList / GridListItem ───────────────────────────────────────
   GridList: { scope: 'grid-list', element: treeGridList },
   GridListItem: { scope: 'grid-list', element: treeGridList },

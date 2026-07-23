@@ -78,6 +78,8 @@ export type {
   HeadingSize,
 } from './components/Heading/Heading';
 export { Heading, headingMeta } from './components/Heading/Heading';
+export type { IconIntent, IconProps, IconSize } from './components/Icon';
+export { Icon, ICON_INTENTS, iconMeta } from './components/Icon';
 export type { LinkProps } from './components/Link/Link';
 export { Link, linkMeta } from './components/Link/Link';
 export type {

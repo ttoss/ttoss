@@ -40,6 +40,8 @@ export const ICON_INTENTS = [
   // action — column sort direction. Opposition rule: ascending ≠ descending.
   'action.sortAscending',
   'action.sortDescending',
+  // status — foundation status indicators (affirmation, inclusion).
+  'status.success',
 ] as const;
 
 /** A semantic icon intent — the public "name" of an icon. */

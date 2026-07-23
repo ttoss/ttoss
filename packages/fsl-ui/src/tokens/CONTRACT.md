@@ -490,15 +490,14 @@ export const Button = ({ evaluation = 'primary', ...props }: ButtonProps) => {
 
 ---
 
-## §9 — Icons (internal glyph layer)
+## §9 — Icons (semantic glyph layer; public since ADR-010)
 
 When a component needs a glyph (chevron, check, close, …), do **not** hardcode
-a unicode character or hand-author SVG. Use the internal `Icon`
-(`src/components/Icon/`) — a semantic layer over the Iconify provider
-(ADR-005):
+a unicode character or hand-author SVG. Use `Icon` — a semantic layer over
+the Iconify provider (ADR-005; public export per ADR-010):
 
 ```typescript
-import { Icon } from '../Icon'; // from src/components/*; '../../components/Icon' from composites
+import { Icon } from '@ttoss/fsl-ui'; // inside this package: '../Icon' from src/components/*
 
 <Icon intent="disclosure.expand" />          // named by meaning, not glyph
 <Icon intent="action.close" size="sm" />     // sm | md (default) | lg → vars.sizing.icon.*
