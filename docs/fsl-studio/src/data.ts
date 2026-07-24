@@ -125,7 +125,7 @@ export interface Kpi {
 export const KPIS: Kpi[] = [
   {
     id: 'deploys',
-    label: 'Deploys this week',
+    label: 'Deploys',
     value: '90',
     delta: '+12%',
     deltaTone: 'positive',

@@ -89,10 +89,10 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 
 ### F-013 — dataviz extension ships no typed vars mirror
 
-- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-theme/dataviz` · **Severity:** gap · **Status:** open
+- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-theme/dataviz` · **Severity:** gap · **Status:** ✅ fixed (2026-07-24 — `datavizVars` shipped)
 - The foundation ships `vars` (typed CSS-var mirror), but the first-party dataviz extension does not — chart code must hand-roll the README's `buildVarsMap` recipe, including an `as CssVarsMap<Extended>` cast (the documented direct assignment does not type-check against the widened shape). Every dataviz consumer will repeat this boilerplate.
 - **Workaround:** `src/theme.ts` builds `studioVars` with the cast.
-- **Backlog:** ship a typed `datavizVars` (or a `varsWith<T>()` factory) from `@ttoss/fsl-theme/dataviz`.
+- **Action:** `datavizVars` shipped from `@ttoss/fsl-theme/dataviz` — a typed `var(--tt-dataviz-*)` mirror of the dataviz semantic subtree (names derive from paths, so it is theme-independent). The Studio chart consumes it; the cast recipe stays documented for third-party extensions.
 
 ### F-014 — no display-scale Text variant for stat values
 
@@ -121,8 +121,8 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 
 ### F-018 — the container-fluid engine has no container: `cqi` resolves against the viewport everywhere
 
-- **Date:** 2026-07-24 · **Surface:** `@ttoss/fsl-theme` fluid scales + `@ttoss/fsl-ui` layout primitives · **Severity:** gap · **Status:** open — proposed as an ADR (containment at layout primitives)
+- **Date:** 2026-07-24 · **Surface:** `@ttoss/fsl-theme` fluid scales + `@ttoss/fsl-ui` layout primitives · **Severity:** gap · **Status:** ✅ fixed (same day — fsl-ui ADR-011)
 - The theme's type/spacing ramps are declared **container-fluid** (`families/typography.ts`: "container query units (cqi) as the preferred fluid step"; ADR-019/020: "layout adapts to _container_ (cqi)") — but no `container-type` is ever established: not by `ThemeProvider`/preflight, not by `Surface`/`Grid`/`Container`/`AppShell`, and no doc instructs the host to create one. Per the CSS spec, `cqi` without an ancestor container resolves against the viewport, so the engine is viewport-fluid in practice.
 - **Observed failure (Dashboard KPI tiles):** `display.3 = clamp(28px, calc(1.6cqi + 20px), 40px)` rendered 36.384px inside a 220px grid track at a 1024px viewport (1.6% × 1024 + 20) — type and inset sized for the page, not the tile; the value+delta row (196px min-content) overflowed the card by 11px. Had the tile been the container, the clamp would have bottomed out at 28px and the content would fit. The whole class "oversized internals in narrow containers" (grid tiles, sidebars, asides) follows.
 - **Workaround (Studio):** the delta badge moved to the label row (`justify="between"`, `wrap`) and the KPI grid floor rose to `minColumnWidth="sm"` — floors must currently be picked against content min-width at the **viewport-resolved** clamp values, which is guesswork.
-- **Backlog:** realize the declared contract — establish `container-type: inline-size` where item widths are definite (`Grid` items first: track width is definite, no shrink-to-fit hazard; then `AppShell` sidebar/aside, `Container`); `Surface` cannot be a container blindly (content-sized in horizontal Stacks — inline-size containment would collapse it). Ship with an executable guarantee (resolved type inside a narrow container < page-level) and state the containment contract in README/llms.txt. Needs an ADR (control geometry rulings in ADR-019/020 are unaffected — they are rem-anchored by design).
+- **Action:** fsl-ui **ADR-011** — definite-width layout primitives establish `container-type: inline-size`: `Grid` hosts each child in a `data-part="item"` size container, `AppShell` marks its four regions, `Container` marks its root; `Surface` is explicitly rejected (content-sized in horizontal Stacks — containment would collapse it). Verified in a real browser: tile internals now scale to the track (the KPI grid returned to the `xs` floor, four-across, no overflow at 800–1920px). The containment contract is stated in fsl-ui `llms.txt`; the full resolved-type guarantee (browser-measured) is noted in ADR-011 as jsdom cannot compute container queries.

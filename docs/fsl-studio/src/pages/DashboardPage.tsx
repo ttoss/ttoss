@@ -1,3 +1,4 @@
+import { datavizVars } from '@ttoss/fsl-theme/dataviz';
 import { vars } from '@ttoss/fsl-theme/vars';
 import type { SortDescriptor } from '@ttoss/fsl-ui';
 import {
@@ -19,7 +20,6 @@ import * as React from 'react';
 
 import type { Deploy, DeployStatus } from '../data';
 import { DEPLOYS, KPIS, WEEKLY_DEPLOYS } from '../data';
-import { studioVars } from '../theme';
 
 const STATUS_BADGE: Record<
   DeployStatus,
@@ -95,7 +95,7 @@ const DeployActivityChart = () => {
                 inlineSize: '100%',
                 blockSize: `${Math.round((entry.count / max) * 100)}%`,
                 minBlockSize: '2px',
-                backgroundColor: studioVars.dataviz.color.series[1],
+                backgroundColor: datavizVars.color.series[1],
                 borderRadius: vars.radii.control,
               }}
             />
@@ -114,7 +114,7 @@ const DeployActivityChart = () => {
 
 const KpiTiles = () => {
   return (
-    <Grid minColumnWidth="sm" gap="md">
+    <Grid minColumnWidth="xs" gap="md">
       {KPIS.map((kpi) => {
         return (
           <Surface key={kpi.id} level="raised" padding="md">
@@ -122,9 +122,9 @@ const KpiTiles = () => {
               {/*
                * Delta badge rides the label row (justify between, wrap as
                * safety) so the display-scale value never competes for inline
-               * space — the theme's fluid type resolves against the viewport,
-               * not the tile (FRICTION F-018), so a value+badge row overflows
-               * narrow grid tracks.
+               * space in narrow tracks. Grid items are size containers
+               * (fsl-ui ADR-011, from FRICTION F-018), so the tile's type and
+               * inset scale to the track.
                */}
               <Stack
                 direction="horizontal"
