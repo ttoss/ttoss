@@ -23,6 +23,7 @@ import {
   treeAccordion,
   treeBreadcrumbs,
   treeCheckboxGroup,
+  treeComboBox,
   treeDialog,
   treeDisclosure,
   treeGridList,
@@ -99,6 +100,23 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
     scope: 'code',
     element: () => {
       return <pkg.Code>npm i</pkg.Code>;
+    },
+  },
+  ComboBox: {
+    scope: 'combo-box',
+    element: () => {
+      return treeComboBox();
+    },
+  },
+  ComboBoxItem: {
+    scope: 'combo-box',
+    element: () => {
+      return treeComboBox();
+    },
+    open: () => {
+      return fireEvent.click(
+        screen.getByRole('button', { name: /Show suggestions/ })
+      );
     },
   },
   Container: {

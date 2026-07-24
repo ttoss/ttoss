@@ -40,6 +40,68 @@ describe('TeamPage', () => {
     expect(screen.getByText('joao@northline.dev')).toBeInTheDocument();
   });
 
+  test('the timezone ComboBox filters by typing and stores the picked zone', async () => {
+    const user = userEvent.setup();
+    render(<TeamPage />);
+
+    await user.click(screen.getByRole('button', { name: 'Invite member' }));
+    const dialog = await screen.findByRole('dialog', {
+      name: 'Invite member',
+    });
+
+    await user.type(
+      within(dialog).getByLabelText('Email'),
+      'ana@northline.dev'
+    );
+
+    // The F-008 behaviour: 35 zones narrow to the typed match.
+    const timezone = within(dialog).getByRole('combobox', {
+      name: 'Timezone',
+    });
+    await user.clear(timezone);
+    await user.type(timezone, 'Toky');
+    await user.click(await screen.findByRole('option', { name: 'Tokyo' }));
+
+    await user.click(
+      within(dialog).getByRole('button', { name: 'Send invite' })
+    );
+
+    expect(await screen.findByText('6 members')).toBeInTheDocument();
+    const row = screen
+      .getByText('ana@northline.dev')
+      .closest('[role="row"]') as HTMLElement;
+    expect(within(row).getByText('Tokyo')).toBeInTheDocument();
+  });
+
+  test('clearing the timezone falls back to the workspace default', async () => {
+    const user = userEvent.setup();
+    render(<TeamPage />);
+
+    await user.click(screen.getByRole('button', { name: 'Invite member' }));
+    const dialog = await screen.findByRole('dialog', {
+      name: 'Invite member',
+    });
+
+    await user.type(
+      within(dialog).getByLabelText('Email'),
+      'bea@northline.dev'
+    );
+    await user.clear(
+      within(dialog).getByRole('combobox', { name: 'Timezone' })
+    );
+    // Clearing reopens the list; Escape dismisses it without restoring a zone.
+    await user.keyboard('{Escape}');
+    await user.click(
+      within(dialog).getByRole('button', { name: 'Send invite' })
+    );
+
+    expect(await screen.findByText('6 members')).toBeInTheDocument();
+    const row = screen
+      .getByText('bea@northline.dev')
+      .closest('[role="row"]') as HTMLElement;
+    expect(within(row).getByText('Lisbon')).toBeInTheDocument();
+  });
+
   test('an invalid invite email blocks submission', async () => {
     const user = userEvent.setup();
     render(<TeamPage />);

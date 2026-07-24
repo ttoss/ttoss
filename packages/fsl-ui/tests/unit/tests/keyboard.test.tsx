@@ -13,6 +13,8 @@ import {
   AccordionPanel,
   AccordionTrigger,
   Button,
+  ComboBox,
+  ComboBoxItem,
   Dialog,
   DialogActions,
   DialogHeading,
@@ -189,6 +191,48 @@ describe('keyboard: Select', () => {
       expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
     });
     expect(screen.getByRole('button', { name: /Choose/ })).toBeInTheDocument();
+  });
+});
+
+describe('keyboard: ComboBox', () => {
+  const renderComboBox = () => {
+    return render(
+      <ComboBox label="Timezone">
+        <ComboBoxItem id="America/Sao_Paulo">São Paulo</ComboBoxItem>
+        <ComboBoxItem id="Europe/Lisbon">Lisbon</ComboBoxItem>
+        <ComboBoxItem id="Europe/Berlin">Berlin</ComboBoxItem>
+      </ComboBox>
+    );
+  };
+
+  test('typing filters, arrows move, Enter commits the option', async () => {
+    const user = userEvent.setup();
+    renderComboBox();
+    await user.tab();
+    // React Aria filters on the option's visible text, not its id.
+    await user.keyboard('Ber');
+    expect(await screen.findByRole('listbox')).toBeInTheDocument();
+    expect(screen.getAllByRole('option')).toHaveLength(1);
+    await user.keyboard('{ArrowDown}{Enter}');
+    await waitFor(() => {
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    });
+    expect(screen.getByRole('combobox', { name: 'Timezone' })).toHaveValue(
+      'Berlin'
+    );
+  });
+
+  test('Escape closes the list and reverts the typed query', async () => {
+    const user = userEvent.setup();
+    renderComboBox();
+    await user.tab();
+    await user.keyboard('Lis');
+    expect(await screen.findByRole('listbox')).toBeInTheDocument();
+    await user.keyboard('{Escape}');
+    await waitFor(() => {
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    });
+    expect(screen.getByRole('combobox', { name: 'Timezone' })).toHaveValue('');
   });
 });
 

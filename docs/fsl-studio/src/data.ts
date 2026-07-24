@@ -155,11 +155,73 @@ export const KPIS: Kpi[] = [
 
 export type Role = 'Admin' | 'Developer' | 'Viewer';
 
+export interface Timezone {
+  /** IANA zone id — the stored value. */
+  id: string;
+  /** City label the member scans and types against. */
+  label: string;
+}
+
+/**
+ * The option set that motivated `ComboBox` (friction F-008): long enough that
+ * a `Select` popover is scan-only, so the field needs typeahead to be usable.
+ */
+export const TIMEZONES: Timezone[] = [
+  { id: 'Pacific/Auckland', label: 'Auckland' },
+  { id: 'Australia/Sydney', label: 'Sydney' },
+  { id: 'Asia/Tokyo', label: 'Tokyo' },
+  { id: 'Asia/Seoul', label: 'Seoul' },
+  { id: 'Asia/Shanghai', label: 'Shanghai' },
+  { id: 'Asia/Singapore', label: 'Singapore' },
+  { id: 'Asia/Jakarta', label: 'Jakarta' },
+  { id: 'Asia/Kolkata', label: 'Kolkata' },
+  { id: 'Asia/Dubai', label: 'Dubai' },
+  { id: 'Europe/Moscow', label: 'Moscow' },
+  { id: 'Africa/Nairobi', label: 'Nairobi' },
+  { id: 'Europe/Istanbul', label: 'Istanbul' },
+  { id: 'Europe/Athens', label: 'Athens' },
+  { id: 'Africa/Johannesburg', label: 'Johannesburg' },
+  { id: 'Europe/Berlin', label: 'Berlin' },
+  { id: 'Europe/Madrid', label: 'Madrid' },
+  { id: 'Europe/Paris', label: 'Paris' },
+  { id: 'Europe/Amsterdam', label: 'Amsterdam' },
+  { id: 'Europe/Stockholm', label: 'Stockholm' },
+  { id: 'Africa/Lagos', label: 'Lagos' },
+  { id: 'Europe/Lisbon', label: 'Lisbon' },
+  { id: 'Europe/London', label: 'London' },
+  { id: 'Atlantic/Reykjavik', label: 'Reykjavik' },
+  { id: 'America/Sao_Paulo', label: 'São Paulo' },
+  { id: 'America/Argentina/Buenos_Aires', label: 'Buenos Aires' },
+  { id: 'America/Santiago', label: 'Santiago' },
+  { id: 'America/New_York', label: 'New York' },
+  { id: 'America/Toronto', label: 'Toronto' },
+  { id: 'America/Bogota', label: 'Bogotá' },
+  { id: 'America/Mexico_City', label: 'Mexico City' },
+  { id: 'America/Chicago', label: 'Chicago' },
+  { id: 'America/Denver', label: 'Denver' },
+  { id: 'America/Los_Angeles', label: 'Los Angeles' },
+  { id: 'America/Anchorage', label: 'Anchorage' },
+  { id: 'Pacific/Honolulu', label: 'Honolulu' },
+];
+
+const TIMEZONE_LABELS = new Map(
+  TIMEZONES.map((zone) => {
+    return [zone.id, zone.label];
+  })
+);
+
+/** City label for a stored zone id, falling back to the id itself. */
+export const timezoneLabel = (id: string): string => {
+  return TIMEZONE_LABELS.get(id) ?? id;
+};
+
 export interface Member {
   id: string;
   name: string;
   email: string;
   role: Role;
+  /** IANA zone id — see `TIMEZONES`. */
+  timezone: string;
   joined: string;
 }
 
@@ -169,6 +231,7 @@ export const INITIAL_MEMBERS: Member[] = [
     name: 'Marina Costa',
     email: 'marina@northline.dev',
     role: 'Admin',
+    timezone: 'Europe/Lisbon',
     joined: 'Jan 2024',
   },
   {
@@ -176,6 +239,7 @@ export const INITIAL_MEMBERS: Member[] = [
     name: 'Rafael Lima',
     email: 'rafael@northline.dev',
     role: 'Developer',
+    timezone: 'America/Sao_Paulo',
     joined: 'Mar 2024',
   },
   {
@@ -183,6 +247,7 @@ export const INITIAL_MEMBERS: Member[] = [
     name: 'Sofia Almeida',
     email: 'sofia@northline.dev',
     role: 'Developer',
+    timezone: 'Europe/Madrid',
     joined: 'Jun 2024',
   },
   {
@@ -190,6 +255,7 @@ export const INITIAL_MEMBERS: Member[] = [
     name: 'Tiago Ferreira',
     email: 'tiago@northline.dev',
     role: 'Developer',
+    timezone: 'America/Sao_Paulo',
     joined: 'Nov 2024',
   },
   {
@@ -197,6 +263,7 @@ export const INITIAL_MEMBERS: Member[] = [
     name: 'Helena Duarte',
     email: 'helena@northline.dev',
     role: 'Viewer',
+    timezone: 'Europe/London',
     joined: 'Feb 2025',
   },
 ];
