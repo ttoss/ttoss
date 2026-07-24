@@ -53,7 +53,8 @@ export { buildVarsMap } from './roots/toVars';
  * `vars` reflects the semantic token shape of the **default theme**. If your
  * project extends `SemanticTokens` with custom token families (e.g. a
  * `dataviz` palette, project-specific component tokens), those extra leaves
- * won't appear on this export.
+ * won't appear on this export. The first-party dataviz extension ships its
+ * own mirror — `datavizVars` from `@ttoss/fsl-theme/dataviz`.
  *
  * ### Typed extension recipe
  *

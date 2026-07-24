@@ -290,6 +290,8 @@ export const myVars: CssVarsMap<MySemanticTokens> = buildVarsMap(
 
 For one-off custom keys, use `toCssVarName` from `@ttoss/fsl-theme/css` directly — no extended type required.
 
+The first-party dataviz extension ships its own mirror — import `datavizVars` from `@ttoss/fsl-theme/dataviz` instead of hand-rolling this recipe (e.g. `datavizVars.color.series[1]` → `'var(--tt-dataviz-color-series-1)'`).
+
 ## Next.js (SSR)
 
 ### React 19 App Router (recommended)

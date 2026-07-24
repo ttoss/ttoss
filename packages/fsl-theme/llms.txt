@@ -323,7 +323,7 @@ Never both. Never neither.
 
 **§8 — Optional families have fallback rules:**
 - `elevation.tonal` absent → fall back to `elevation.surface` alone.
-- `dataviz` absent → the consumer's app does not opt in to dataviz; do not generate dataviz components.
+- `dataviz` absent → the consumer's app does not opt in to dataviz; do not generate dataviz components. When present, reference its tokens via `datavizVars` from `@ttoss/fsl-theme/dataviz` (typed `var(--tt-dataviz-*)` mirror).
 - Optional state (e.g. `hover`) absent on a leaf → fall back to `default`.
 
 ## Disambiguation — confusable picks

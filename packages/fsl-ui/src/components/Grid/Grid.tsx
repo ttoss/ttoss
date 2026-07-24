@@ -1,5 +1,5 @@
 import { vars } from '@ttoss/fsl-theme/vars';
-import type * as React from 'react';
+import * as React from 'react';
 
 import type { ComponentMeta } from '../../semantics';
 
@@ -116,6 +116,11 @@ export interface GridProps extends Omit<
  * named scale, so grid rhythm stays consistent across a product. For a single
  * axis of flow, reach for `Stack` instead.
  *
+ * Each child is hosted in a `data-part="item"` wrapper that establishes
+ * `container-type: inline-size` (ADR-011): the theme's container-fluid
+ * scales (`cqi` clamps) resolve against the item's track width, so type and
+ * spacing inside a narrow tile scale down instead of overflowing.
+ *
  * @example
  * ```tsx
  * // Fixed columns
@@ -155,7 +160,28 @@ export const Grid = ({
         } as React.CSSProperties
       }
     >
-      {children}
+      {React.Children.map(children, (child) => {
+        if (child === null || child === undefined) {
+          return child;
+        }
+        return (
+          <div
+            data-scope="grid"
+            data-part="item"
+            style={
+              {
+                // The item is the size container for the theme's cqi scales
+                // (ADR-011); its own grid display keeps the child stretching
+                // to the track exactly as it did without the wrapper.
+                display: 'grid',
+                containerType: 'inline-size',
+              } as React.CSSProperties
+            }
+          >
+            {child}
+          </div>
+        );
+      })}
     </div>
   );
 };

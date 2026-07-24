@@ -132,7 +132,14 @@ export const AppShell = ({
         <header
           data-scope="app-shell"
           data-part="header"
-          style={{ borderBlockEnd: HAIRLINE } as React.CSSProperties}
+          style={
+            {
+              borderBlockEnd: HAIRLINE,
+              // Regions have definite widths (grid tracks), so each is a
+              // size container for the theme's cqi scales (ADR-011).
+              containerType: 'inline-size',
+            } as React.CSSProperties
+          }
         >
           {header}
         </header>
@@ -162,6 +169,7 @@ export const AppShell = ({
               {
                 overflowY: 'auto',
                 borderInlineEnd: HAIRLINE,
+                containerType: 'inline-size',
               } as React.CSSProperties
             }
           >
@@ -171,7 +179,13 @@ export const AppShell = ({
         <main
           data-scope="app-shell"
           data-part="main"
-          style={{ overflow: 'auto', minInlineSize: 0 } as React.CSSProperties}
+          style={
+            {
+              overflow: 'auto',
+              minInlineSize: 0,
+              containerType: 'inline-size',
+            } as React.CSSProperties
+          }
         >
           {children}
         </main>
@@ -184,6 +198,7 @@ export const AppShell = ({
               {
                 overflowY: 'auto',
                 borderInlineStart: HAIRLINE,
+                containerType: 'inline-size',
               } as React.CSSProperties
             }
           >

@@ -447,3 +447,19 @@ Re-litigation answers:
 - "ADR-005 says Icon is internal" → that clause is narrowed here, on the named trigger (real external-to-components demand); the rest of ADR-005 (provider, offline registration, intent contract) stands.
 - "Why not ship `@ttoss/fsl-icon` while we're at it?" → no consumer wants icons without fsl-ui; the module boundary is already package-shaped (`intents.ts` is dependency-free), so extraction later costs the same as extraction now.
 - "Can an app add its own intents?" → not through this package — app-specific intents are icon-system.md extensions in app space; this registry only admits intents a shipped component or block demands.
+
+### ADR-011: Definite-width layout primitives establish size containment
+
+Status: accepted (2026-07-24)
+Tags: layout, container-queries, fluid-scales, fsl-theme-interop
+
+Decision: layout primitives whose inline size is **definite** establish `container-type: inline-size` — `Grid` wraps each child in a `data-part="item"` container (track width is definite), `AppShell` marks its four regions (named-scale/track widths), and `Container` marks its root (stretch + max-width) — so fsl-theme's container-fluid scales (`cqi` clamps, fsl-theme ADR-019/020) finally resolve against a real container instead of silently falling back to the viewport (friction F-018: type/inset inside a 220px grid tile rendered at page scale and overflowed).
+Rejected: `Surface` as a container — it is content-sized in horizontal Stacks, and `inline-size` containment would collapse it (containment only where width is definite by construction); a `container` prop consumers opt into — the fluid engine is the theme's declared default, not a per-use choice; telling hosts to add containers in app CSS — recreates the hand-rolled-CSS drift this package exists to prevent.
+Cost: theme `cqi` scales now resolve locally — type/spacing inside narrow grid tracks, sidebars, and asides render at the clamp's lower range (the declared behavior, but a visible change for existing consumers); `Grid` children gain a wrapper element (fragments-as-children become a single item; per-child DOM selectors cross one more level).
+Anchors: `src/components/Grid/Grid.tsx`, `src/components/AppShell/AppShell.tsx`, `src/components/Container/Container.tsx`, `packages/fsl-theme/CONTRIBUTING.md` ADR-019/ADR-020, `docs/fsl-studio/FRICTION.md` F-018.
+
+Re-litigation answers:
+
+- "Why not put the container on the Grid root?" → `cqi` would resolve to the whole grid's width (≈ the page), not the tile — the per-item container is the entire point.
+- "Doesn't ADR-019 forbid container-fluidity?" → no — it forbids it for **control geometry** (rem-anchored `hit`/inset, unaffected here); layout/type fluidity by container is exactly what ADR-019/020 declare.
+- "Why does Stack not establish containment?" → a Stack's items size by content on the main axis (no definite width), the same reason Surface is rejected; containment is added only where the box's inline size is definite by construction.

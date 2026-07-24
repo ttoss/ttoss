@@ -111,13 +111,17 @@ Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              never a free style/className),
              Grid (2D layout: columns=N or minColumnWidth=xs|sm|md|lg for
              responsive auto-fit, rows, gap=xs..xl, align, justify — never a
-             raw track template),
+             raw track template; each child gets a data-part="item" wrapper
+             that is a size container, so theme cqi scales resolve to the
+             track width),
              Container (centered page column: size=surface|reading,
-             gutter=page|section|none — instead of max-width + margin auto),
+             gutter=page|section|none — instead of max-width + margin auto;
+             the column is a size container for theme cqi scales),
              AppShell (full-viewport app frame: header?, sidebar?, aside?,
              sidebarWidth/asideWidth=sm|md|lg, sidebarLabel/asideLabel for the
              landmark names; main content as children — instead of a
-             hand-rolled viewport grid),
+             hand-rolled viewport grid; every region is a size container for
+             theme cqi scales),
              Code (code text: block=true scrollable <pre> surface, block=false
              inline <code> run)
 

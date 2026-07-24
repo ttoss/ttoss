@@ -46,6 +46,11 @@ describe('Container', () => {
     expect(root()?.style.paddingInline).toBe(css);
   });
 
+  test('the content column is a size container for the theme cqi scales (ADR-011)', () => {
+    render(<Container />);
+    expect(root()?.style.containerType).toBe('inline-size');
+  });
+
   test('forwards pass-through props to the root', () => {
     render(<Container id="page" aria-label="Page" role="main" />);
     const el = root();
