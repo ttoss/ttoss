@@ -114,17 +114,27 @@ const DeployActivityChart = () => {
 
 const KpiTiles = () => {
   return (
-    <Grid minColumnWidth="xs" gap="md">
+    <Grid minColumnWidth="sm" gap="md">
       {KPIS.map((kpi) => {
         return (
           <Surface key={kpi.id} level="raised" padding="md">
             <Stack gap="sm">
-              <Text variant="label-sm" tone="muted">
-                {kpi.label}
-              </Text>
-              <Stack direction="horizontal" align="center" gap="sm">
-                <Text variant="display-sm" numeric="tabular">
-                  {kpi.value}
+              {/*
+               * Delta badge rides the label row (justify between, wrap as
+               * safety) so the display-scale value never competes for inline
+               * space — the theme's fluid type resolves against the viewport,
+               * not the tile (FRICTION F-018), so a value+badge row overflows
+               * narrow grid tracks.
+               */}
+              <Stack
+                direction="horizontal"
+                align="center"
+                justify="between"
+                gap="sm"
+                wrap
+              >
+                <Text variant="label-sm" tone="muted">
+                  {kpi.label}
                 </Text>
                 <Badge
                   evaluation={
@@ -135,6 +145,9 @@ const KpiTiles = () => {
                   {kpi.delta}
                 </Badge>
               </Stack>
+              <Text variant="display-sm" numeric="tabular">
+                {kpi.value}
+              </Text>
             </Stack>
           </Surface>
         );
