@@ -78,17 +78,10 @@ export interface GeoJSONFeatureCollection {
 }
 
 export type GeoJSONObject =
-  | GeoJSONGeometry
-  | GeoJSONFeature
-  | GeoJSONFeatureCollection;
+  GeoJSONGeometry | GeoJSONFeature | GeoJSONFeatureCollection;
 
 export type GeoVisGeometryType =
-  | 'point'
-  | 'line'
-  | 'polygon'
-  | 'raster'
-  | 'symbol'
-  | 'heatmap';
+  'point' | 'line' | 'polygon' | 'raster' | 'symbol' | 'heatmap';
 
 export type MapType = 'choropleth' | 'dotDensity' | 'proportionalCircles';
 
@@ -377,14 +370,7 @@ export interface VisualizationLayer {
 
 /** Comparison used by a `LayerFilter` — a closed set mapped to native engine filter expressions. */
 export type LayerFilterOperator =
-  | 'eq'
-  | 'neq'
-  | 'gt'
-  | 'gte'
-  | 'lt'
-  | 'lte'
-  | 'in'
-  | 'not-in';
+  'eq' | 'neq' | 'gt' | 'gte' | 'lt' | 'lte' | 'in' | 'not-in';
 
 /**
  * Declarative, engine-agnostic filter predicate on one `VisualizationLayer`.

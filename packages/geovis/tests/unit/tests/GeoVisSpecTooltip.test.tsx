@@ -126,8 +126,7 @@ const triggerMove = (
   features?: ReadonlyArray<{ id?: string | number; layer?: { id: string } }>
 ) => {
   const handler = map.__handlers.get(`mousemove:${layerId}`) as
-    | MapMouseHandler
-    | undefined;
+    MapMouseHandler | undefined;
   if (!handler) throw new Error(`mousemove handler missing for ${layerId}`);
   act(() => {
     handler({ point, features });
@@ -284,8 +283,7 @@ describe('spec-driven hover tooltip (layer.hoverTooltip)', () => {
     );
 
     const globalHandler = mockCurrentMap.__handlers.get('mousemove:*') as
-      | MapMouseHandler
-      | undefined;
+      MapMouseHandler | undefined;
     if (!globalHandler) throw new Error('global mousemove handler missing');
     act(() => {
       globalHandler({ point: { x: 10, y: 10 } });
