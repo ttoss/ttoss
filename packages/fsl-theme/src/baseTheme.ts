@@ -57,21 +57,21 @@ export const baseTheme: ThemeTokens = {
 
       neutral: {
         0: '#ffffff',
-        50: '#f8fafc',
-        100: '#f1f5f9',
-        200: '#e2e8f0',
-        300: '#cbd5e1',
-        400: '#94a3b8',
-        500: '#64748b',
-        600: '#475569',
-        700: '#334155',
+        50: '#fafafa',
+        100: '#f4f4f5',
+        200: '#e4e4e7',
+        300: '#d4d4d8',
+        400: '#a1a1aa',
+        500: '#71717a',
+        600: '#52525b',
+        700: '#3f3f46',
         // 800 fills the 700→900 gap so dark surfaces can stratify in fine
         // steps (canvas 900 → raised 800 → overlay 700) — depth in dark comes
         // from surfaces lightening as they rise, not from near-invisible
         // shadows. @see elevation.md — "Surface + Shadow".
-        800: '#1e293b',
-        900: '#0f172a',
-        1000: '#020617',
+        800: '#27272a',
+        900: '#18181b',
+        1000: '#09090b',
       },
 
       red: {
@@ -156,7 +156,7 @@ export const baseTheme: ThemeTokens = {
     // -- Font Primitives ----------------------------------------------------
     font: {
       family: {
-        sans: 'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji"',
+        sans: '"Inter Variable", Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji"',
         serif: 'ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
         mono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
       },
@@ -456,7 +456,7 @@ export const baseTheme: ThemeTokens = {
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.200}',
             pressed: '{core.colors.neutral.400}',
-            expanded: '{core.colors.brand.500}',
+            expanded: '{core.colors.neutral.500}',
           },
           text: {
             default: '{core.colors.neutral.900}',
@@ -539,7 +539,7 @@ export const baseTheme: ThemeTokens = {
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.200}',
             pressed: '{core.colors.neutral.300}',
-            expanded: '{core.colors.brand.500}',
+            expanded: '{core.colors.neutral.500}',
           },
           text: {
             default: '{core.colors.neutral.700}',
@@ -560,10 +560,10 @@ export const baseTheme: ThemeTokens = {
             hover: '{core.colors.neutral.50}',
             active: '{core.colors.neutral.50}',
             disabled: '{core.colors.neutral.100}',
-            selected: '{core.colors.brand.50}',
+            selected: '{core.colors.neutral.100}',
             droptarget: '{core.colors.neutral.50}',
-            checked: '{core.colors.brand.500}',
-            indeterminate: '{core.colors.brand.300}',
+            checked: '{core.colors.neutral.1000}',
+            indeterminate: '{core.colors.neutral.1000}',
             pressed: '{core.colors.neutral.100}',
             expanded: '{core.colors.neutral.50}',
             // invalid: field stays readable — the red signal lives on the border
@@ -573,14 +573,14 @@ export const baseTheme: ThemeTokens = {
           border: {
             default: '{core.colors.neutral.300}',
             hover: '{core.colors.neutral.500}',
-            active: '{core.colors.brand.500}',
+            active: '{core.colors.neutral.500}',
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.200}',
-            selected: '{core.colors.brand.500}',
-            checked: '{core.colors.brand.500}',
-            indeterminate: '{core.colors.brand.300}',
+            selected: '{core.colors.neutral.1000}',
+            checked: '{core.colors.neutral.1000}',
+            indeterminate: '{core.colors.neutral.1000}',
             pressed: '{core.colors.neutral.500}',
-            expanded: '{core.colors.brand.500}',
+            expanded: '{core.colors.neutral.500}',
             // red.600 on neutral.0: 4.83:1 — clears the 3:1 non-text floor
             invalid: '{core.colors.red.600}',
           },
@@ -591,8 +591,8 @@ export const baseTheme: ThemeTokens = {
             // invalid: value stays readable in the control; valence text lives
             // on the validationMessage via input.negative.text.*
             invalid: '{core.colors.neutral.900}',
-            // brand.300 (indeterminate bg) is light — use dark text for contrast
-            indeterminate: '{core.colors.neutral.900}',
+            // indeterminate bg is neutral.1000 — light text for contrast
+            indeterminate: '{core.colors.neutral.0}',
             // hover/active/focused/selected: all neutral.900 — omitted
           },
         },
@@ -605,30 +605,30 @@ export const baseTheme: ThemeTokens = {
             hover: '{core.colors.neutral.50}',
             active: '{core.colors.neutral.100}',
             disabled: '{core.colors.neutral.100}',
-            selected: '{core.colors.brand.50}',
+            selected: '{core.colors.neutral.100}',
             droptarget: '{core.colors.neutral.50}',
-            checked: '{core.colors.brand.500}',
-            indeterminate: '{core.colors.brand.300}',
+            checked: '{core.colors.neutral.1000}',
+            indeterminate: '{core.colors.neutral.1000}',
             pressed: '{core.colors.neutral.100}',
             expanded: '{core.colors.neutral.50}',
           },
           border: {
             default: '{core.colors.neutral.200}',
             hover: '{core.colors.neutral.300}',
-            active: '{core.colors.brand.500}',
+            active: '{core.colors.neutral.500}',
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.200}',
-            selected: '{core.colors.brand.500}',
-            checked: '{core.colors.brand.500}',
-            indeterminate: '{core.colors.brand.300}',
+            selected: '{core.colors.neutral.1000}',
+            checked: '{core.colors.neutral.1000}',
+            indeterminate: '{core.colors.neutral.1000}',
             pressed: '{core.colors.neutral.300}',
-            expanded: '{core.colors.brand.500}',
+            expanded: '{core.colors.neutral.500}',
           },
           text: {
             default: '{core.colors.neutral.900}',
             disabled: '{core.colors.neutral.500}',
             checked: '{core.colors.neutral.0}',
-            indeterminate: '{core.colors.neutral.900}',
+            indeterminate: '{core.colors.neutral.0}',
           },
         },
         negative: {
@@ -718,7 +718,7 @@ export const baseTheme: ThemeTokens = {
             checked: '{core.colors.neutral.500}',
             indeterminate: '{core.colors.neutral.300}',
             pressed: '{core.colors.neutral.500}',
-            expanded: '{core.colors.brand.500}',
+            expanded: '{core.colors.neutral.500}',
           },
           text: {
             default: '{core.colors.neutral.700}',
@@ -735,8 +735,8 @@ export const baseTheme: ThemeTokens = {
             hover: '{core.colors.neutral.50}',
             active: '{core.colors.neutral.100}',
             disabled: '{core.colors.neutral.100}',
-            selected: '{core.colors.brand.50}',
-            droptarget: '{core.colors.brand.50}',
+            selected: '{core.colors.neutral.100}',
+            droptarget: '{core.colors.neutral.100}',
             visited: '{core.colors.neutral.50}',
           },
           border: {
@@ -745,8 +745,8 @@ export const baseTheme: ThemeTokens = {
             active: '{core.colors.neutral.300}',
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.100}',
-            selected: '{core.colors.brand.300}',
-            droptarget: '{core.colors.brand.300}',
+            selected: '{core.colors.neutral.400}',
+            droptarget: '{core.colors.neutral.400}',
           },
           text: {
             default: '{core.colors.neutral.900}',
@@ -760,7 +760,7 @@ export const baseTheme: ThemeTokens = {
             hover: '{core.colors.neutral.100}',
             active: '{core.colors.neutral.200}',
             disabled: '{core.colors.neutral.100}',
-            selected: '{core.colors.brand.50}',
+            selected: '{core.colors.neutral.100}',
             droptarget: '{core.colors.neutral.100}',
             visited: '{core.colors.neutral.100}',
           },
@@ -770,7 +770,7 @@ export const baseTheme: ThemeTokens = {
             active: '{core.colors.neutral.300}',
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.100}',
-            selected: '{core.colors.brand.300}',
+            selected: '{core.colors.neutral.400}',
           },
           text: {
             default: '{core.colors.neutral.700}',
@@ -956,8 +956,9 @@ export const baseTheme: ThemeTokens = {
 
       navigation: {
         primary: {
-          // Inline link on light surfaces: transparent bg, brand text underline.
-          // Contrast: brand.700 (#034da6) on neutral.0 (#ffffff) → ~9.5:1 ✓
+          // Inline link on light surfaces: transparent bg, monochrome text +
+          // underline (the underline carries the affordance — no hue needed).
+          // Contrast: neutral.800 (#27272a) on neutral.0 (#ffffff) → ~16:1 ✓
           background: {
             default: '{core.colors.neutral.0}',
             hover: '{core.colors.neutral.50}',
@@ -970,15 +971,18 @@ export const baseTheme: ThemeTokens = {
           border: {
             default: '{core.colors.neutral.0}',
             focused: '{core.colors.brand.500}',
+            // selected/current carry the tab indicator line — monochrome
+            selected: '{core.colors.neutral.1000}',
+            current: '{core.colors.neutral.1000}',
           },
           text: {
-            default: '{core.colors.brand.700}',
-            hover: '{core.colors.brand.900}',
-            active: '{core.colors.brand.900}',
+            default: '{core.colors.neutral.800}',
+            hover: '{core.colors.neutral.1000}',
+            active: '{core.colors.neutral.1000}',
             disabled: '{core.colors.neutral.500}',
-            current: '{core.colors.brand.900}',
+            current: '{core.colors.neutral.1000}',
             visited: '{core.colors.neutral.500}',
-            expanded: '{core.colors.brand.900}',
+            expanded: '{core.colors.neutral.1000}',
           },
         },
         secondary: {
@@ -988,9 +992,9 @@ export const baseTheme: ThemeTokens = {
             hover: '{core.colors.neutral.100}',
             active: '{core.colors.neutral.200}',
             disabled: '{core.colors.neutral.100}',
-            selected: '{core.colors.brand.50}',
+            selected: '{core.colors.neutral.100}',
             droptarget: '{core.colors.neutral.100}',
-            current: '{core.colors.brand.100}',
+            current: '{core.colors.neutral.200}',
             visited: '{core.colors.neutral.100}',
             expanded: '{core.colors.neutral.100}',
           },
@@ -1000,15 +1004,15 @@ export const baseTheme: ThemeTokens = {
             active: '{core.colors.neutral.300}',
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.200}',
-            selected: '{core.colors.brand.400}',
-            current: '{core.colors.brand.500}',
+            selected: '{core.colors.neutral.1000}',
+            current: '{core.colors.neutral.1000}',
           },
           text: {
             default: '{core.colors.neutral.700}',
             hover: '{core.colors.neutral.900}',
             disabled: '{core.colors.neutral.500}',
-            selected: '{core.colors.brand.700}',
-            current: '{core.colors.brand.700}',
+            selected: '{core.colors.neutral.1000}',
+            current: '{core.colors.neutral.1000}',
             visited: '{core.colors.neutral.700}',
             expanded: '{core.colors.neutral.900}',
           },
@@ -1575,26 +1579,33 @@ export const darkAlternate: ModeOverride = {
             hover: '{core.colors.neutral.500}',
             active: '{core.colors.neutral.500}', // neutral.50 is near-white on dark
             disabled: '{core.colors.neutral.900}',
-            selected: '{core.colors.brand.700}', // brand.50 is near-white on dark
+            selected: '{core.colors.neutral.800}', // monochrome selected tint on dark
             droptarget: '{core.colors.neutral.700}', // neutral.50 is near-white on dark
             pressed: '{core.colors.neutral.500}', // neutral.100 is near-white on dark
             expanded: '{core.colors.neutral.500}', // neutral.50 is near-white on dark
             invalid: '{core.colors.neutral.700}', // base neutral.0 would flash white on dark
+            // inverted mono: base checked bg (neutral.1000) vanishes on dark
+            checked: '{core.colors.neutral.0}',
+            indeterminate: '{core.colors.neutral.0}',
           },
           border: {
             default: '{core.colors.neutral.500}',
             hover: '{core.colors.neutral.300}',
+            active: '{core.colors.neutral.300}', // base neutral.500 == dark default
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.700}',
             invalid: '{core.colors.red.300}', // red.600 is too dark against neutral.700
+            selected: '{core.colors.neutral.300}', // base neutral.1000 vanishes on dark
+            checked: '{core.colors.neutral.0}',
+            indeterminate: '{core.colors.neutral.0}',
           },
           text: {
             default: '{core.colors.neutral.0}',
             disabled: '{core.colors.neutral.500}',
             invalid: '{core.colors.neutral.0}', // base neutral.900 would vanish on dark
-
-            // text.indeterminate pairs with bg.indeterminate = brand.300 (inherited from base)
-            // brand.300 is light — neutral.900 (dark) gives ~6.6:1 ✓; do NOT override here
+            // inverted mono box (neutral.0 bg) needs dark glyphs in dark mode
+            checked: '{core.colors.neutral.900}',
+            indeterminate: '{core.colors.neutral.900}',
           },
         },
         // input.secondary: lower-emphasis field, matches primary dark values since both
@@ -1605,27 +1616,31 @@ export const darkAlternate: ModeOverride = {
             hover: '{core.colors.neutral.500}',
             active: '{core.colors.neutral.500}',
             disabled: '{core.colors.neutral.900}',
-            selected: '{core.colors.brand.700}',
+            selected: '{core.colors.neutral.800}',
             droptarget: '{core.colors.neutral.700}',
             pressed: '{core.colors.neutral.500}',
             expanded: '{core.colors.neutral.500}',
+            // inverted mono: base checked bg (neutral.1000) vanishes on dark
+            checked: '{core.colors.neutral.0}',
+            indeterminate: '{core.colors.neutral.0}',
           },
           border: {
             default: '{core.colors.neutral.500}',
             hover: '{core.colors.neutral.300}',
-            active: '{core.colors.brand.500}',
+            active: '{core.colors.neutral.300}',
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.700}',
-            selected: '{core.colors.brand.500}',
-            checked: '{core.colors.brand.500}',
-            indeterminate: '{core.colors.brand.300}',
+            selected: '{core.colors.neutral.300}',
+            checked: '{core.colors.neutral.0}',
+            indeterminate: '{core.colors.neutral.0}',
             pressed: '{core.colors.neutral.300}',
-            expanded: '{core.colors.brand.500}',
+            expanded: '{core.colors.neutral.300}',
           },
           text: {
             default: '{core.colors.neutral.0}',
             disabled: '{core.colors.neutral.500}',
-            checked: '{core.colors.neutral.0}',
+            checked: '{core.colors.neutral.900}', // inverted mono box (neutral.0 bg)
+            indeterminate: '{core.colors.neutral.900}',
           },
         },
         negative: {
@@ -1673,7 +1688,7 @@ export const darkAlternate: ModeOverride = {
             hover: '{core.colors.neutral.700}', // neutral.50 is near-white on dark
             active: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
             disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
-            selected: '{core.colors.brand.900}', // brand.50 is near-white on dark
+            selected: '{core.colors.neutral.700}', // monochrome selected tint on dark
             droptarget: '{core.colors.neutral.700}', // brand.50 is near-white on dark
             visited: '{core.colors.neutral.700}', // neutral.50 is near-white on dark
           },
@@ -1690,7 +1705,7 @@ export const darkAlternate: ModeOverride = {
             hover: '{core.colors.neutral.500}', // neutral.100 is near-white on dark
             active: '{core.colors.neutral.500}', // neutral.200 is near-white on dark
             disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
-            selected: '{core.colors.brand.900}', // brand.50 is near-white on dark
+            selected: '{core.colors.neutral.500}', // monochrome selected tint on dark
             droptarget: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
             visited: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
           },
@@ -1800,8 +1815,8 @@ export const darkAlternate: ModeOverride = {
         // neutral.700 so a nav item reads as a distinct affordance against the
         // page surface even with no elevation of its own.
         primary: {
-          // Inline link on dark surfaces: transparent bg, brand.300 text.
-          // Contrast: brand.300 (#60a5fa) on neutral.900 (#0f172a) → ~6.8:1 ✓
+          // Inline link on dark surfaces: transparent bg, monochrome text +
+          // underline. Contrast: neutral.200 on neutral.900 → ~12:1 ✓
           background: {
             default: '{core.colors.neutral.900}',
             hover: '{core.colors.neutral.700}',
@@ -1814,15 +1829,18 @@ export const darkAlternate: ModeOverride = {
           border: {
             default: '{core.colors.neutral.900}',
             focused: '{core.colors.brand.400}',
+            // selected/current tab indicator line — monochrome (light on dark)
+            selected: '{core.colors.neutral.0}',
+            current: '{core.colors.neutral.0}',
           },
           text: {
-            default: '{core.colors.brand.300}',
-            hover: '{core.colors.brand.100}',
-            active: '{core.colors.brand.100}',
+            default: '{core.colors.neutral.200}',
+            hover: '{core.colors.neutral.0}',
+            active: '{core.colors.neutral.0}',
             disabled: '{core.colors.neutral.500}',
-            current: '{core.colors.brand.100}',
+            current: '{core.colors.neutral.0}',
             visited: '{core.colors.neutral.300}',
-            expanded: '{core.colors.brand.100}',
+            expanded: '{core.colors.neutral.0}',
           },
         },
         secondary: {
@@ -1830,8 +1848,8 @@ export const darkAlternate: ModeOverride = {
             default: '{core.colors.neutral.900}',
             hover: '{core.colors.neutral.700}',
             active: '{core.colors.neutral.700}',
-            selected: '{core.colors.brand.900}',
-            current: '{core.colors.brand.900}',
+            selected: '{core.colors.neutral.700}',
+            current: '{core.colors.neutral.700}',
             visited: '{core.colors.neutral.900}',
             expanded: '{core.colors.neutral.700}',
             disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
@@ -1842,15 +1860,15 @@ export const darkAlternate: ModeOverride = {
             hover: '{core.colors.neutral.500}',
             active: '{core.colors.neutral.500}',
             focused: '{core.colors.brand.400}',
-            selected: '{core.colors.brand.500}',
-            current: '{core.colors.brand.500}',
+            selected: '{core.colors.neutral.300}',
+            current: '{core.colors.neutral.300}',
           },
           text: {
             default: '{core.colors.neutral.300}',
             hover: '{core.colors.neutral.0}',
             disabled: '{core.colors.neutral.500}',
-            selected: '{core.colors.brand.300}',
-            current: '{core.colors.brand.300}',
+            selected: '{core.colors.neutral.0}',
+            current: '{core.colors.neutral.0}',
             visited: '{core.colors.neutral.300}',
             expanded: '{core.colors.neutral.50}',
           },

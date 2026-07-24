@@ -78,6 +78,8 @@ export type {
   HeadingSize,
 } from './components/Heading/Heading';
 export { Heading, headingMeta } from './components/Heading/Heading';
+export type { IconIntent, IconProps, IconSize } from './components/Icon';
+export { Icon, ICON_INTENTS, iconMeta } from './components/Icon';
 export type { LinkProps } from './components/Link/Link';
 export { Link, linkMeta } from './components/Link/Link';
 export type {
@@ -139,6 +141,28 @@ export type {
 export { Surface, surfaceMeta } from './components/Surface/Surface';
 export type { SwitchProps } from './components/Switch/Switch';
 export { Switch, switchMeta } from './components/Switch/Switch';
+export type {
+  SortDescriptor,
+  SortDirection,
+  TableBodyProps,
+  TableCellProps,
+  TableColumnProps,
+  TableHeaderProps,
+  TableProps,
+  TableRowProps,
+} from './components/Table/Table';
+export {
+  Table,
+  TableBody,
+  TableCell,
+  tableCellMeta,
+  TableColumn,
+  tableColumnMeta,
+  TableHeader,
+  tableMeta,
+  TableRow,
+  tableRowMeta,
+} from './components/Table/Table';
 export type {
   TabListProps,
   TabPanelProps,

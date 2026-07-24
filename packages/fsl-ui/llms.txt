@@ -69,6 +69,14 @@ Collection:  ListBox/ListBoxItem, GridList/GridListItem (+ Menu/MenuItem,
              ITEMS are Selection (input chrome, `selected` State) — one
              composite, two entities. GridListItem also has a selectionControl
              (per-row checkbox).
+             Table/TableHeader/TableColumn/TableBody/TableRow/TableCell —
+             data table with columnheaders, same ADR-007 split (Table =
+             Collection surface, TableRow = Selection). Sorting: controlled
+             sortDescriptor/onSortChange + allowsSorting on TableColumn
+             (aria-sort + direction arrow rendered for you); set isRowHeader
+             on the naming column. Selection: selectionMode single|multiple,
+             row click toggles (no checkbox column yet). Use for column-
+             aligned data; GridList is for single-column rows.
 Input:       TextField, TextArea (each + Label/Control/Description/Error),
              SearchField (+ Label/Control; leading search + clear glyphs),
              NumberField (label/description/errorMessage props + −/+ steppers),
@@ -78,7 +86,9 @@ Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
              Popover, PopoverTrigger, Tooltip, TooltipTrigger
 Feedback:    ProgressBar, Meter, Toast, ToastRegion, createToastQueue
              (Meter = static quantity in a range e.g. battery/disk;
-             ProgressBar = a task in flight. Pick by "state" vs "progressing")
+             ProgressBar = a task in flight. Pick by "state" vs "progressing"),
+             Badge (status pill: evaluation=primary|positive|caution|negative,
+             numeric=tabular for counts — never a hand-rolled colored span)
 Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              WizardNavigation, Separator, Group (labelled role=group frame),
              Toolbar (role=toolbar, arrow-key roving nav over its controls),
@@ -88,17 +98,39 @@ Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              panels, sheets instead of a hand-rolled div),
              Heading (h1-h6 bound to the type scale: level=1..6 sets the
              element, size overrides the visual step — never a raw font-size),
-             Text (body/label copy: variant=body|label-lg|md|sm, tone=muted for
+             Text (copy + stat figures: variant=display-sm (stat step for KPI
+             values/prices — data, not headings)|body|label-lg|md|sm, tone=muted for
              secondary hierarchy, as=p|span|div — never a raw font-size),
              Stack (layout rhythm: direction=vertical|horizontal picks the
              gap.stack|gap.inline family, gap=xs..xl, align, justify, wrap —
-             never a raw gap; use instead of a hand-rolled flex div)
+             never a raw gap; use instead of a hand-rolled flex div),
+             Box (token-constrained escape hatch, ADR-009: padding/
+             paddingBlock/paddingInline=none|sm|md|lg, background=none|primary|
+             muted, radius=none|control|surface|round, border=none|muted|
+             strong, width=auto|full|fit, maxWidth=none|surface|reading —
+             never a free style/className),
+             Grid (2D layout: columns=N or minColumnWidth=xs|sm|md|lg for
+             responsive auto-fit, rows, gap=xs..xl, align, justify — never a
+             raw track template),
+             Container (centered page column: size=surface|reading,
+             gutter=page|section|none — instead of max-width + margin auto),
+             AppShell (full-viewport app frame: header?, sidebar?, aside?,
+             sidebarWidth/asideWidth=sm|md|lg, sidebarLabel/asideLabel for the
+             landmark names; main content as children — instead of a
+             hand-rolled viewport grid),
+             Code (code text: block=true scrollable <pre> surface, block=false
+             inline <code> run)
 
-Icons: INTERNAL only (not exported). Components render glyphs through an
-internal semantic Icon layer (`src/components/Icon/`) that maps `icon.{family}.{intent}`
-intents to Lucide glyphs via the Iconify provider (`@iconify-icon/react`),
-registered offline (no runtime API fetch). Future standalone `@ttoss/fsl-icon`.
-See CONTRIBUTING ADR-005.
+Icons: Icon is a PUBLIC export (ADR-010): a semantic glyph named by intent
+(`icon.{family}.{intent}`), never by picture — e.g.
+<Icon intent="status.success" />, <Icon intent="action.close" size="sm" />.
+Decorative by default (aria-hidden); pass `label` (caller-localized) only
+when the icon is the sole carrier of meaning. Color inherits (currentColor);
+size = sm|md|lg → vars.sizing.icon.*. Intents are a curated registry
+(ICON_INTENTS): disclosure.expand/collapse, selection.checked/indeterminate,
+action.close/search/increment/decrement/sortAscending/sortDescending,
+status.success — it grows only on component/block demand. Glyphs map to
+Lucide via the Iconify provider, registered offline (no runtime API fetch).
 
 ## Entity → token map (a component reads ONLY its row)
 

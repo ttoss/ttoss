@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/fsl-theme",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "ttoss theme provider for UI.",
   "keywords": [
     "css-variables",

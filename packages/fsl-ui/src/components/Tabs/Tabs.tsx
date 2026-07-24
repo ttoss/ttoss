@@ -1,5 +1,5 @@
 import { vars } from '@ttoss/fsl-theme/vars';
-import type * as React from 'react';
+import * as React from 'react';
 import {
   Tab as RACTab,
   TabList as RACTabList,
@@ -88,22 +88,33 @@ export type TabsProps = Omit<RACTabsProps, 'style'>;
  * </Tabs>
  * ```
  */
+/**
+ * Orientation reaches `Tab` through this context — RAC exposes it in
+ * `TabList`'s render props but not in `Tab`'s, and the selected-tab
+ * indicator must switch edges with the orientation (friction F-003).
+ */
+const TabsOrientationContext = React.createContext<'horizontal' | 'vertical'>(
+  'horizontal'
+);
+
 export const Tabs = ({ orientation = 'horizontal', ...props }: TabsProps) => {
   return (
-    <RACTabs
-      {...props}
-      orientation={orientation}
-      data-scope="tabs"
-      data-part="root"
-      style={
-        {
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: orientation === 'vertical' ? 'row' : 'column',
-          gap: vars.spacing.gap.stack.sm,
-        } as React.CSSProperties
-      }
-    />
+    <TabsOrientationContext.Provider value={orientation}>
+      <RACTabs
+        {...props}
+        orientation={orientation}
+        data-scope="tabs"
+        data-part="root"
+        style={
+          {
+            boxSizing: 'border-box',
+            display: 'flex',
+            flexDirection: orientation === 'vertical' ? 'row' : 'column',
+            gap: vars.spacing.gap.stack.sm,
+          } as React.CSSProperties
+        }
+      />
+    </TabsOrientationContext.Provider>
   );
 };
 Tabs.displayName = tabsMeta.displayName;
@@ -124,17 +135,35 @@ export const TabList = <T extends object = object>(props: TabListProps<T>) => {
       {...props}
       data-scope="tabs"
       data-part="control"
-      style={
-        {
+      style={({ orientation }) => {
+        const isVertical = orientation === 'vertical';
+        return {
           boxSizing: 'border-box',
           display: 'flex',
-          gap: vars.spacing.gap.inline.sm,
-          borderBlockEndWidth: vars.border.divider.width,
-          borderBlockEndStyle: vars.border.divider.style,
-          borderBlockEndColor:
-            vars.colors.navigation.muted?.border?.default ?? 'transparent',
-        } as React.CSSProperties
-      }
+          flexDirection: isVertical ? 'column' : 'row',
+          gap: isVertical
+            ? vars.spacing.gap.stack.sm
+            : vars.spacing.gap.inline.sm,
+          // The divider sits between the list and its panels, so it tracks
+          // the reading axis: block-end when horizontal, inline-end when
+          // vertical.
+          ...(isVertical
+            ? {
+                borderInlineEndWidth: vars.border.divider.width,
+                borderInlineEndStyle: vars.border.divider.style,
+                borderInlineEndColor:
+                  vars.colors.navigation.muted?.border?.default ??
+                  'transparent',
+              }
+            : {
+                borderBlockEndWidth: vars.border.divider.width,
+                borderBlockEndStyle: vars.border.divider.style,
+                borderBlockEndColor:
+                  vars.colors.navigation.muted?.border?.default ??
+                  'transparent',
+              }),
+        } as React.CSSProperties;
+      }}
     />
   );
 };
@@ -144,11 +173,50 @@ TabList.displayName = tabListMeta.displayName;
 export type TabProps = Omit<RACTabProps, 'style'>;
 
 /**
+ * Style for the decorative active-tab indicator line — block-end underline
+ * when horizontal, inline-start bar when vertical (F-003).
+ */
+const tabIndicatorStyle = (
+  orientation: 'horizontal' | 'vertical'
+): React.CSSProperties => {
+  const color =
+    vars.colors.navigation.primary?.border?.current ??
+    vars.colors.navigation.primary?.border?.default;
+  // csstype's longhand border-style unions have no `string` escape hatch
+  // (unlike the shorthand borderStyle), so the var() reference needs an
+  // explicit cast.
+  const style = vars.border.outline.control.style;
+
+  if (orientation === 'vertical') {
+    return {
+      position: 'absolute',
+      insetBlockStart: 0,
+      insetBlockEnd: 0,
+      insetInlineStart: 0,
+      borderInlineStartWidth: vars.border.outline.selected.width,
+      borderInlineStartStyle:
+        style as React.CSSProperties['borderInlineStartStyle'],
+      borderInlineStartColor: color,
+    };
+  }
+  return {
+    position: 'absolute',
+    insetInlineStart: 0,
+    insetInlineEnd: 0,
+    insetBlockEnd: 0,
+    borderBlockEndWidth: vars.border.outline.selected.width,
+    borderBlockEndStyle: style as React.CSSProperties['borderBlockEndStyle'],
+    borderBlockEndColor: color,
+  };
+};
+
+/**
  * A single selectable tab. The selected tab reads the navigation `current`
  * color and shows an underline indicator; others use hover/default.
  */
 export const Tab = (props: TabProps) => {
   const colors = vars.colors.navigation.primary;
+  const orientation = React.useContext(TabsOrientationContext);
 
   return (
     <RACTab
@@ -190,27 +258,12 @@ export const Tab = (props: TabProps) => {
         return (
           <>
             {props.children as React.ReactNode}
-            {/* Decorative active-tab underline. */}
             {isSelected && (
               <span
                 data-scope="tabs"
                 data-part="indicator"
                 aria-hidden
-                style={{
-                  position: 'absolute',
-                  insetInlineStart: 0,
-                  insetInlineEnd: 0,
-                  insetBlockEnd: 0,
-                  borderBlockEndWidth: vars.border.outline.selected.width,
-                  // csstype's borderBlockEndStyle union has no `string`
-                  // escape hatch (unlike the shorthand borderStyle), so the
-                  // var() reference needs an explicit cast.
-                  borderBlockEndStyle: vars.border.outline.control
-                    .style as React.CSSProperties['borderBlockEndStyle'],
-                  borderBlockEndColor:
-                    vars.colors.navigation.primary?.border?.current ??
-                    vars.colors.navigation.primary?.border?.default,
-                }}
+                style={tabIndicatorStyle(orientation)}
               />
             )}
           </>

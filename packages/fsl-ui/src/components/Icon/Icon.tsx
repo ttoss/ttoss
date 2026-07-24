@@ -15,9 +15,10 @@ import type { IconIntent } from './intents';
 // only its size comes from a token (`vars.sizing.icon.*`). `structure: 'icon'`
 // is legal for Structure in ENTITY_STRUCTURE.
 //
-// INTERNAL (ROADMAP B1): this component is deliberately NOT exported from
-// `src/index.ts`. It is consumed only by other components in this package.
-// Public promotion is the future `@ttoss/fsl-icon` package (ADR-005).
+// PUBLIC since ADR-010 (2026-07-22): promoted from internal on the first
+// real consumer demand (Studio Pricing block feature lists, friction F-015).
+// A standalone `@ttoss/fsl-icon` package remains a separate, governed step —
+// its trigger is a consumer that wants icons *without* fsl-ui.
 // ---------------------------------------------------------------------------
 
 /** Formal semantic identity — Icon (Structure entity, static glyph). */
@@ -35,7 +36,7 @@ export const iconMeta = {
  */
 export type IconSize = 'sm' | 'md' | 'lg';
 
-/** Props for the internal Icon component. */
+/** Props for the Icon component. */
 export interface IconProps {
   /**
    * Semantic intent — what the icon *means* (`icon.{family}.{intent}`), not

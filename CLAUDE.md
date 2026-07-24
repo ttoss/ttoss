@@ -171,6 +171,10 @@ Before proposing architectural changes, consult `packages/fsl-theme/CONTRIBUTING
 
 Documentation artifacts are orthogonal: JSDoc answers "how do I use this right now?"; `README.md` answers "how do I integrate it?"; `CONTRIBUTING.md` answers "how do I modify it safely?"; `CHANGELOG.md` answers "what changed?".
 
+## FSL Studio (`docs/fsl-studio`)
+
+The Studio's product definition, binding decisions, and slice route live in `docs/fsl-studio/BLUEPRINT.md` — read it before any Studio work, and work one slice at a time. Binding rules: consume tokens via component props first, `vars` second, never the resolved theme object for styling; zero hand-rolled layout CSS; log every gap in `docs/fsl-studio/FRICTION.md`; visually verify every delivery in a real browser, light and dark.
+
 ## `@ttoss/carlin`
 
 - Source: `packages/carlin/src/` — Tests: `packages/carlin/tests/` (never in `src/`)

@@ -43,7 +43,7 @@ One entry per semantic family. Use `vars.*` for typed CSS variable references; u
 |           | `semantic.spacing.separation.interactive.min`                    | CSS length              |
 | text      | `semantic.text.{display,headline,title,body,label}.{lg,md,sm}`   | TextStyle object        |
 |           | `semantic.text.code.{md,sm}`                                     | TextStyle object        |
-| sizing    | `semantic.sizing.hit.{min,base,prominent}`                       | CSS length              |
+| sizing    | `semantic.sizing.hit`                                            | CSS length              |
 |           | `semantic.sizing.icon.{sm,md,lg}`                                | CSS length              |
 |           | `semantic.sizing.identity.{sm,md,lg,xl}`                         | CSS length              |
 |           | `semantic.sizing.measure.reading`                                | CSS `ch` / `clamp()`    |
@@ -106,7 +106,7 @@ Find the CSS property you are setting, then follow the branch to the leaf.
 
 **`width` / `height` / `min-width` / `min-height`** → `sizing`
 
-- Interactive area (hit target) → `sizing.hit.{min|base|prominent}`
+- Interactive area (hit target) → `sizing.hit` — a single ergonomic floor, applied via `min-width`/`min-height` (ADR-020)
 - Icon glyph dimension → `sizing.icon.{sm|md|lg}`
 - Avatar / identity object → `sizing.identity.{sm|md|lg|xl}`
 - Reading line length (`max-width` in `ch`) → `sizing.measure.reading`
