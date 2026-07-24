@@ -200,7 +200,19 @@ Storybook 10.5 study:
   manifests + llms.txt present in the build output; zero fsl stories in the
   general Storybook.
 
-**S2 — the Studio becomes the product** · status: ☐
+**S2 — the Studio becomes the product** · status: ✅ shipped 2026-07-24
+
+Delivered: **Meridian**, a fictional deploy platform for the `northline`
+workspace — real login gate (client-side validation, any valid credentials),
+hash-routed Dashboard (KPI tiles, `vars`-only deploy-activity chart per
+D-002, sortable deploys table), Team (sortable roster, invite dialog with
+validated form, destructive-arming removal), and Billing (usage meters, plan
+ladder, committing plan switch) — fsl-ui only, base theme, dark/light,
+self-hosted Inter. 52 unit tests incl. jest-axe; visual ritual run in real
+Chromium, light + dark. Friction: F-017 filed (Tabs-as-nav ARIA + layout);
+F-004's standalone-auth-page gap confirmed (two justified bespoke rules on
+the login centering). Deploy rides the merge to main (same `FslStudio`
+stack, `studio.ttoss.dev` replaces the retired v2).
 
 > **Reset 2026-07-23 (owner decision).** The v2 app was deleted wholesale —
 > src, tests, configs, package — before any v3 work started. S2 begins from an

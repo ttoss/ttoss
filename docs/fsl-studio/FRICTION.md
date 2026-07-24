@@ -111,3 +111,10 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 - **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` catalog (Pricing block) · **Severity:** paper-cut · **Status:** open
 - Marketing feature lists want `ul`/`li` semantics, but `Stack` renders a div and `Text` renders only p/span/div. The block hand-applies `role="list"`/`role="listitem"` on Stacks — accessible, but every content list will repeat this.
 - **Backlog:** a `List`/`ListItem` Structure primitive, or an `as`/role affordance on `Stack`, via governance.
+
+### F-017 — Tabs-as-navigation demands panel co-location and a width workaround
+
+- **Date:** 2026-07-24 · **Surface:** `@ttoss/fsl-ui` `Tabs` (S2 shell) · **Severity:** gap · **Status:** open — evidence for the F-002 backlog
+- Two stacked findings while wiring the S2 sidebar navigation with the recorded F-002 workaround (vertical `Tabs` as primary nav): (1) a `TabList` with **no TabPanels** emits `aria-controls` pointing at a nonexistent panel — axe fails with `aria-valid-attr-value`, so the nav-only usage v2 shipped was silently invalid ARIA; (2) fixing it by spanning one `Tabs` scope across the app frame (TabList in the AppShell sidebar, TabPanel in the main region — RAC context supports the separation) collides with the `Tabs` root's co-located layout: it imposes `display: flex; flex-direction: row`, which shrinks an `AppShell` child to content width.
+- **Workaround:** the whole frame lives inside one `Tabs`; a `Box width="full"` wrapper restores the AppShell width; each route's page renders inside its real `TabPanel`, so tab semantics are genuine (selection = client-side routing) and axe passes.
+- **Backlog:** strengthens F-002 — primary navigation wants a real affordance (Link `current` state or a Navigation-entity nav list), not tab semantics contorted around an app frame.
