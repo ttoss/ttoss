@@ -51,6 +51,16 @@ surface. The gate's substance is unchanged: deployed + four flows + friction
 log at zero blockers. The workbench slices (S3–S5) and the v2 AI horizon do
 **not** gate fsl-ui v1.0.
 
+**✅ Gate met (2026-07-24).** BLUEPRINT S2 shipped and merged (#1161,
+`49e649a`) with the four flows (login, dashboard, team, billing) live at
+`studio.ttoss.dev`; S1 (fsl Storybook) shipped 2026-07-23. The friction log's
+only `blocker` items — F-006 (`TabList` vertical orientation) and F-012
+(icons silently failing in production builds) — are both fixed. Remaining
+`FRICTION.md` entries are `gap`/`paper-cut`, none `blocker`. **This satisfies
+the gate, not full v1.0** — the v1.0 criteria below still need P0's two
+remaining items, the P2 items adoption demanded (`ComboBox`), and the P3 bar
+applied.
+
 ### Route
 
 - **P0 — Docs consolidation** _(started 2026-07-22; first pass landed)_
@@ -61,7 +71,7 @@ log at zero blockers. The workbench slices (S3–S5) and the v2 AI horizon do
 - **P1 — Studio v2 as the adoption app (THE gate)** _(revised 2026-07-22; owner picked the Studio)_
   - **Zero reuse of v1.** The v1 app is deleted (src, tests, PRD, `studio.css`). Recorded lesson: v1 used the adoption app as a UX experiment (Tazuna-UX-driven navigation/layout) and shipped unusable — the design system's job is to make the _conventional_ excellent; experimental IA does not belong in the adoption vehicle.
   - **Product frame (fixed, small):** conventional shell (sidebar + content, `AppShell` + fsl-ui primitives only) hosting three surfaces — **Blocks gallery** (the adoption engine), **Component catalog**, **Theme lab**. Nothing from PRD v2 (blast-radius/AI bands) enters.
-  - **Slices — ALL COMPLETE (2026-07-22):** ✅ ① shell + navigation + mode toggle → ✅ ② Login block → ✅ ③ Settings/CRUD block (pulled `Table` as predicted, F-007) → ✅ ④ Dashboard block (first dataviz consumer) → ✅ ⑤ Pricing block (pulled the public `Icon`, F-015) → ✅ ⑥ catalog (derived live from the `*Meta` exports, grouped by Entity, rendered with `Table`) + theme lab v0 (live color-grammar swatches + type scale). **Gate remainder:** deploy rides the merge to `main` (CI); friction-log triage to zero blockers (open items are gaps/paper-cuts — see FRICTION.md).
+  - **Slices — ALL COMPLETE (2026-07-22):** ✅ ① shell + navigation + mode toggle → ✅ ② Login block → ✅ ③ Settings/CRUD block (pulled `Table` as predicted, F-007) → ✅ ④ Dashboard block (first dataviz consumer) → ✅ ⑤ Pricing block (pulled the public `Icon`, F-015) → ✅ ⑥ catalog (derived live from the `*Meta` exports, grouped by Entity, rendered with `Table`) + theme lab v0 (live color-grammar swatches + type scale). **Gate remainder — ✅ done 2026-07-24:** BLUEPRINT S2 deployed via the merge to `main` (#1161); friction log triaged to zero blockers (open items are gaps/paper-cuts — see FRICTION.md).
   - **Hard budget:** zero hand-rolled _layout_ CSS. Bespoke CSS only for a widget no primitive covers, one justification comment per rule — a gap found this way is a logged friction item, not a silent workaround.
   - **Quality ritual per block:** a block merges only with (a) its friction-log entries filed and (b) a side-by-side comparison against 2–3 reference-grade products, light **and** dark. This runs P3's aesthetic bar per delivery instead of as an end phase.
   - **Friction log:** `docs/fsl-studio/FRICTION.md` (the Wave-1/2 discipline): every hand-rolled style, missing component, confusing API, or `llms.txt`/CONTRACT gap is a logged item — that log **is** the v1 backlog. Doc fixes land immediately (this is what the bench was trying to measure, obtained for free).
