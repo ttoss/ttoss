@@ -328,6 +328,16 @@ const buildMarkerOptions = (anchor: ClickAnchorSpec): MapLibreMarkerOptions => {
   return opts;
 };
 
+const darkenHex = (hex: string, amount: number): string => {
+  const clean = hex.replace('#', '');
+  if (clean.length !== 6) return hex;
+  const num = parseInt(clean, 16);
+  const r = Math.max(0, Math.round(((num >> 16) & 0xff) * (1 - amount)));
+  const g = Math.max(0, Math.round(((num >> 8) & 0xff) * (1 - amount)));
+  const b = Math.max(0, Math.round((num & 0xff) * (1 - amount)));
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+};
+
 export const useClickAnchor = ({
   runtime,
   spec,
@@ -360,6 +370,24 @@ export const useClickAnchor = ({
       marker = new maplibregl.Marker(buildMarkerOptions(anchor))
         .setLngLat(click.featureLngLat ?? click.lngLat)
         .addTo(map);
+
+      const STYLE_ID = 'geovis-pin-drop-keyframes';
+      if (!document.getElementById(STYLE_ID)) {
+        const style = document.createElement('style');
+        style.id = STYLE_ID;
+        style.textContent = `@keyframes geovis-pin-drop{0%{transform:translateY(-24px) scale(.7);opacity:0}70%{transform:translateY(4px) scale(1.05);opacity:1}85%{transform:translateY(-3px) scale(.98)}100%{transform:translateY(0) scale(1);opacity:1}}`;
+        document.head.appendChild(style);
+      }
+      const svg = marker.getElement().firstElementChild as SVGElement | null;
+      if (svg) {
+        if (anchor.color) {
+          const darkerColor = darkenHex(anchor.color, 0.3);
+          const whiteFillGroup = svg.querySelector('g[fill="#FFFFFF"]');
+          whiteFillGroup?.setAttribute('fill', darkerColor);
+        }
+        (svg as unknown as HTMLElement).style.animation =
+          'geovis-pin-drop 0.35s cubic-bezier(0.34,1.56,0.64,1)';
+      }
     })();
 
     return () => {

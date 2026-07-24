@@ -71,6 +71,7 @@ Top-level spec object passed to `GeoVisProvider`.
 | `mapData`       | `MapData[]`               |          | Attribute datasets joined to GeoJSON sources for choropleth coloring and tooltips.                                                                                                                                                   |
 | `metadata`      | `Record<string, unknown>` |          | Arbitrary consumer metadata; not read by the runtime.                                                                                                                                                                                |
 | `viewPresets`   | `ViewPreset[]`            |          | Named camera positions (`{ id, label?, view }`) `dispatch({ type: 'set-view-preset' })` can target by `id`. See [AI Action Surface](#ai-action-surface-dispatch).                                                                    |
+| `control`       | `LayerControl`            |          | A floating layer-toggle panel, auto-mounted on the map. See [Layer Control](#layer-control).                                                                                                                                         |
 
 ### `LegendSpec`
 
@@ -864,6 +865,81 @@ React.useEffect(() => {
 > **Note:** `useBoundaryToggle` tracks visibility by the group's source ID
 > (`getBoundaryGroupId`), not by object reference. Groups can be recreated
 > (e.g. when paint overrides change) while preserving their visibility state.
+
+## Layer Control
+
+Setting `spec.control` declares a floating panel of layer-visibility toggles.
+`GeoVisProvider` auto-mounts a `<GeoVisLayerControl>` for it — you never place
+the component yourself, exactly like the positioned-legend and hover-tooltip
+overlays. The panel renders a collapsed trigger anchored to a map corner;
+expanding it (on hover or click) reveals one button per item, and clicking a
+button flips the visibility of that item's layers via
+`dispatch({ type: 'toggle-layer' })` (validated, no source remount, no flicker).
+
+```typescript
+const spec: VisualizationSpec = {
+  engine: 'maplibre',
+  sources: [
+    /* ... */
+  ],
+  layers: [
+    { id: 'states-line', sourceId: 'states', geometry: 'line' },
+    { id: 'kitchens-pts', sourceId: 'kitchens', geometry: 'point' },
+  ],
+  control: {
+    id: 'layers',
+    label: 'Camadas', // trigger text; defaults to 'Layers'
+    position: 'bottom-left', // reuses the legend corner vocabulary; default 'bottom-left'
+    trigger: 'hover', // or 'click'; default 'hover'
+    items: [
+      { id: 'kitchens', label: 'Kitchen locations', layers: ['kitchens-pts'] },
+      { id: 'states', label: 'State lines', layers: ['states-line'] },
+    ],
+  },
+};
+```
+
+### `LayerControl` fields
+
+| Field      | Type                 | Required | Description                                                                        |
+| ---------- | -------------------- | -------- | ---------------------------------------------------------------------------------- |
+| `id`       | `string`             | ✓        | Unique identifier for the panel.                                                   |
+| `items`    | `LayerControlItem[]` | ✓        | The toggle buttons revealed when the panel is expanded.                            |
+| `position` | `LegendPosition`     |          | Corner the panel is anchored to. Defaults to `'bottom-left'`.                      |
+| `label`    | `string`             |          | Text on the collapsed trigger. Defaults to `'Layers'`.                             |
+| `trigger`  | `'hover' \| 'click'` |          | How the panel expands. `'hover'` (default) also opens on click, for touch devices. |
+
+### `LayerControlItem` fields
+
+| Field           | Type       | Required | Description                                                                           |
+| --------------- | ---------- | -------- | ------------------------------------------------------------------------------------- |
+| `id`            | `string`   | ✓        | Stable identity. The on/off state is remembered by this id (see persistence below).   |
+| `label`         | `string`   | ✓        | Text on the toggle button.                                                            |
+| `layers`        | `string[]` | ✓        | Ids of `spec.layers` toggled together when the button is clicked.                     |
+| `defaultActive` | `boolean`  |          | Whether the layers start visible the first time the item is seen. Defaults to `true`. |
+
+### Three item states
+
+Each button reflects one of three states: **active** (its layers are shown),
+**inactive** (its layers are hidden), and **disabled** (none of its `layers`
+exist in the current spec — the button is greyed and non-interactive). Layer
+ids are matched leniently: unknown ids are ignored rather than rejected, so a
+single `control` can be reused across spec variations where a layer is only
+present in some of them.
+
+### Persistence across spec rebuilds
+
+The on/off choice is keyed by `item.id`, not by layer id, and re-applied
+whenever the spec changes. So when an application rebuilds the spec (for
+example, switching between map "modes"), a layer you hid stays hidden — even
+when the concept maps to a different layer id in the new spec (e.g. a `point`
+layer in one mode and a proportional-`circle` layer in another). The control
+must remain present across the rebuilds for this to hold; because unknown
+layers only disable an item (never reject the spec), keeping one `control`
+declared in every mode is the intended pattern. When a fresh spec starts a
+layer visible that the remembered choice says should be hidden, reconciliation
+hides it on the next frame — a brief flash is possible but the source is never
+remounted.
 
 ## Spec Validation
 

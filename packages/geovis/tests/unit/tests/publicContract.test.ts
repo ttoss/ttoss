@@ -7,6 +7,7 @@ import type {
   GeoVisIssueCode,
   GeoVisResult,
   LabelFormatSpec,
+  LayerControl,
   LayerFilter,
   LegendSpec,
   NormalizationSpec,
@@ -26,6 +27,7 @@ test('package exports expected public symbols', () => {
   expect(typeof geovis.useDismissGeoVisClick).toBe('function');
   expect(typeof geovis.validateSpec).toBe('function');
   expect(typeof geovis.useMapData).toBe('function');
+  expect(typeof geovis.GeoVisLayerControl).toBe('function');
   // Boundary group factory and helpers
   expect(typeof geovis.createBoundaryGroup).toBe('function');
   expect(typeof geovis.appendBoundaryGroup).toBe('function');
@@ -79,6 +81,25 @@ test('SelectFeatureAction and GeoVisSelection are part of the public contract', 
   };
   expect(selectAction.type).toBe('select-feature');
   expect(clearAction.type).toBe('select-feature');
+});
+
+test('LayerControl is part of the public contract', () => {
+  const control: LayerControl = {
+    id: 'layer-toggles',
+    position: 'bottom-left',
+    label: 'Layers',
+    trigger: 'hover',
+    items: [
+      { id: 'kitchens', label: 'Kitchen locations', layers: ['kitchens-pts'] },
+    ],
+  };
+  const spec: VisualizationSpec = {
+    engine: 'maplibre',
+    sources: [],
+    layers: [],
+    control,
+  };
+  expect(spec.control?.items[0].layers).toEqual(['kitchens-pts']);
 });
 
 test('SetMapDataAction is part of the public contract', () => {
