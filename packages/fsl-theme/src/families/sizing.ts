@@ -79,6 +79,15 @@ export interface SemanticSizing {
    * gate the hit target that wraps it (that is `hit.*`).
    */
   icon: {
+    /**
+     * Glyph that accompanies text on the same line — a button's leading icon,
+     * a picker's chevron beside its value. Relative (`1em`), not a ramp step:
+     * it resolves to the accompanying text's own size, which puts the glyph's
+     * drawn ink exactly inside the cap-height band (cap line to baseline). A
+     * fixed step cannot do this — it overshoots the baseline at some text
+     * sizes and floats above it at others, which reads as a misaligned icon.
+     */
+    text: CoreSizingRef;
     /** Compact glyph — dense UI, inline indicators, list-row icons. */
     sm: CoreSizingRef;
     /** Default glyph — pick this when no other step applies. */

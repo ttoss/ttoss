@@ -234,7 +234,7 @@ export const Select = <T extends object = object>({
                 aria-hidden
                 style={ICON_SLOT_STYLE}
               >
-                <Icon intent="disclosure.expand" size="sm" />
+                <Icon intent="disclosure.expand" size="text" />
               </span>
             </RACButton>
 

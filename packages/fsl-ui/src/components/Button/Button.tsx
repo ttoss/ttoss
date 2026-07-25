@@ -81,9 +81,10 @@ export interface ButtonOwnProps extends Omit<
    */
   composition?: CompositionsFor<(typeof buttonMeta)['entity']>;
   /**
-   * An `<Icon>` element naming the glyph by intent. Button forces the `sm`
-   * size step so the glyph reads as a companion to the label, never as the
-   * subject — pass the intent, let the button own the scale.
+   * An `<Icon>` element naming the glyph by intent. Button forces the `text`
+   * size step, so the glyph tracks the label's own size and its ink lands
+   * inside the cap-height band — pass the intent, let the button own the
+   * scale.
    *
    * Omit `children` to render an **icon-only** button: the control collapses
    * to a square at the `hit` floor and `aria-label` becomes required.
@@ -252,7 +253,7 @@ const ButtonContent = ({
       aria-hidden
       style={ICON_SLOT_STYLE}
     >
-      {React.cloneElement(icon, { size: 'sm' })}
+      {React.cloneElement(icon, { size: 'text' })}
     </span>
   ) : null;
 

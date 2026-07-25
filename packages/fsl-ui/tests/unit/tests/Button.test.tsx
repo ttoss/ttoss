@@ -170,3 +170,20 @@ describe('Button — behavior is unchanged by the icon anatomy', () => {
     expect(onPress).not.toHaveBeenCalled();
   });
 });
+
+describe('Button — glyph optical alignment', () => {
+  test('the button forces the text size step on the caller’s icon', () => {
+    render(
+      <Button icon={<Icon intent="action.search" size="lg" />}>Search</Button>
+    );
+
+    // `text` resolves to 1em, so the glyph tracks the label and its ink lands
+    // inside the cap-height band (F-022). A caller-supplied step is ignored:
+    // the button owns the scale of its own anatomy.
+    const glyph = screen
+      .getByRole('button')
+      .querySelector('[data-scope="icon"]') as HTMLElement;
+
+    expect(glyph.style.fontSize).toBe('var(--tt-sizing-icon-text)');
+  });
+});

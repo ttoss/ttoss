@@ -1391,6 +1391,9 @@ export const baseTheme: ThemeTokens = {
     sizing: {
       hit: '{core.sizing.hit.fine}',
       icon: {
+        // Tracks the accompanying text (1em) so the glyph's ink lands inside
+        // the cap-height band — the optical-alignment step, not a ramp step.
+        text: '{core.sizing.relative.em}',
         sm: '{core.sizing.ramp.ui.2}',
         md: '{core.sizing.ramp.ui.3}',
         lg: '{core.sizing.ramp.ui.4}',

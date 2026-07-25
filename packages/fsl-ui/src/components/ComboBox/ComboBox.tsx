@@ -309,7 +309,7 @@ export const ComboBox = <T extends object = object>({
           }}
         >
           {/* Decorative — the button owns the accessible name (CONTRACT §9.4). */}
-          <Icon intent="disclosure.expand" size="sm" />
+          <Icon intent="disclosure.expand" size="text" />
         </RACButton>
       </RACGroup>
 
