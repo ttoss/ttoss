@@ -49,8 +49,9 @@ are undefined and components render unstyled.
 ## Component catalog (all exports also ship a `*Meta` identity object)
 
 Action:      Button (icon={<Icon intent="…"/>} + iconPlacement=leading|trailing;
-             omit children for the icon-only square — aria-label then REQUIRED
-             by the type system; anatomy data-part root|icon|label),
+             omit children for the icon-only square (same height as a labelled
+             CTA; aria-label then REQUIRED by the type system);
+             anatomy data-part root|icon|label),
              ToggleButton, FileTrigger (opens OS file picker),
              MenuItem (inside Menu), FormSubmit (inside Form)
 Navigation:  Link, Breadcrumbs/Breadcrumb, Tabs/TabList/Tab

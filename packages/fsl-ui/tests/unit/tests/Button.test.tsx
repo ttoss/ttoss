@@ -115,7 +115,7 @@ describe('Button — geometry contract', () => {
     );
   });
 
-  test('a labelled button keeps its inline inset; icon-only drops it', () => {
+  test('a labelled button breathes wider inline; icon-only mirrors its block inset', () => {
     const { unmount } = render(
       <Button icon={<Icon intent="action.search" />}>Search</Button>
     );
@@ -125,10 +125,37 @@ describe('Button — geometry contract', () => {
     );
     unmount();
 
+    // Icon-only pads equally on both axes; paired with a square glyph slot
+    // that makes the box square by arithmetic (same padding, same content
+    // extent) rather than by an imposed aspect-ratio.
     render(
       <Button icon={<Icon intent="action.search" />} aria-label="Search" />
     );
-    expect(screen.getByRole('button').style.paddingInline).toBe('');
+    expect(screen.getByRole('button').style.paddingInline).toBe(
+      'var(--tt-spacing-inset-action-block)'
+    );
+  });
+
+  test('icon-only squares its glyph slot; a labelled button does not', () => {
+    const { unmount } = render(
+      <Button icon={<Icon intent="action.close" />} aria-label="Dismiss" />
+    );
+
+    const iconOnlySlot = screen
+      .getByRole('button')
+      .querySelector('[data-part="icon"]') as HTMLElement;
+
+    expect(iconOnlySlot.style.blockSize).toBe('1lh');
+    expect(iconOnlySlot.style.inlineSize).toBe('1lh');
+    unmount();
+
+    render(<Button icon={<Icon intent="action.close" />}>Dismiss</Button>);
+    const labelledSlot = screen
+      .getByRole('button')
+      .querySelector('[data-part="icon"]') as HTMLElement;
+
+    expect(labelledSlot.style.blockSize).toBe('1lh');
+    expect(labelledSlot.style.inlineSize).toBe('');
   });
 
   test('the glyph-to-label gap only applies when an icon is present', () => {

@@ -86,8 +86,12 @@ export interface ButtonOwnProps extends Omit<
    * inside the cap-height band — pass the intent, let the button own the
    * scale.
    *
-   * Omit `children` to render an **icon-only** button: the control collapses
-   * to a square at the `hit` floor and `aria-label` becomes required.
+   * Omit `children` to render an **icon-only** button: the control becomes a
+   * square — the block inset is mirrored on the inline axis and the glyph slot
+   * squares to one line, so both axes carry the same padding and the same
+   * content extent — and `aria-label` becomes required. The square resolves to
+   * the same height as a labelled CTA, so a toolbar mixing the two keeps one
+   * baseline.
    *
    * @example
    * ```tsx
@@ -191,8 +195,8 @@ const buildRootStyle = ({
     borderStyle: vars.border.outline.control.style,
     minHeight: vars.sizing.hit,
     // The `hit` floor doubles as a square minimum on the inline axis, so a
-    // one-glyph or one-character button stays balanced instead of collapsing
-    // to its content width (the icon-only form is exactly this square).
+    // one-character button stays balanced instead of collapsing to its
+    // content width.
     minWidth: vars.sizing.hit,
     // Block padding comes from the command-specific `inset.action.block`
     // (bounded 8–9px): at the desktop bound the button resolves to 40px —
@@ -203,7 +207,14 @@ const buildRootStyle = ({
     // horizontal breathing; icon-only drops it, since the square already
     // supplies the room and padding would push the glyph off-centre.
     paddingBlock: vars.spacing.inset.action.block,
-    paddingInline: isIconOnly ? undefined : vars.spacing.inset.control.lg,
+    // Icon-only mirrors the block inset on the inline axis and pairs it with a
+    // square glyph slot, so the box comes out square *by arithmetic* — same
+    // padding, same content extent on both axes. Deriving it from
+    // `aspect-ratio` instead would let the width win and squeeze the vertical
+    // inset, which also broke height parity with a labelled CTA.
+    paddingInline: isIconOnly
+      ? vars.spacing.inset.action.block
+      : vars.spacing.inset.control.lg,
     ...(vars.text.action.md as React.CSSProperties),
     transitionDuration: vars.motion.feedback.duration,
     transitionTimingFunction: vars.motion.feedback.easing,
@@ -249,12 +260,26 @@ const ButtonContent = ({
   iconPlacement: ButtonIconPlacement;
   children?: React.ReactNode;
 }) => {
+  const isIconOnly = icon !== undefined && children === undefined;
+
+  // One line tall (`1lh`), so the glyph occupies exactly the box a label line
+  // would: that is what gives the icon-only form the same height as a labelled
+  // CTA, keeping a single baseline in a toolbar that mixes both. Icon-only
+  // squares the slot as well, so the button's two axes have identical content
+  // extent. Where `lh` is unsupported the slot falls back to the glyph's own
+  // size — still square, just a few px smaller.
+  const glyphSlotStyle: React.CSSProperties = {
+    ...ICON_SLOT_STYLE,
+    blockSize: '1lh',
+    ...(isIconOnly ? { inlineSize: '1lh' } : {}),
+  };
+
   const glyph = icon ? (
     <span
       data-scope={dataScope}
       data-part="icon"
       aria-hidden
-      style={ICON_SLOT_STYLE}
+      style={glyphSlotStyle}
     >
       {React.cloneElement(icon, { size: 'text' })}
     </span>
