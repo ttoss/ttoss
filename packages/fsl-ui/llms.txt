@@ -48,12 +48,20 @@ are undefined and components render unstyled.
 
 ## Component catalog (all exports also ship a `*Meta` identity object)
 
-Action:      Button (icon={<Icon intent="…"/>} + iconPlacement=leading|trailing;
-             omit children for the icon-only square (same height as a labelled
-             CTA; aria-label then REQUIRED by the type system);
-             anatomy data-part root|icon|label),
-             ToggleButton, FileTrigger (opens OS file picker),
-             MenuItem (inside Menu), FormSubmit (inside Form)
+Action:      Button = COMMAND silhouette (commit: submit/confirm/primary action
+             of a surface; pill radius, semibold, ~40px desktop).
+             ActionButton = UTILITY silhouette (ambient operation ON content:
+             toolbar, row action, overflow trigger; control radius, label type,
+             ~32px). Pick by the weight of the commitment — there is no size
+             prop, the pair IS the distinction.
+             Both: icon={<Icon intent="…"/>} + iconPlacement=leading|trailing;
+             omit children for the icon-only square (same height as the
+             labelled form; aria-label then REQUIRED by the type system);
+             anatomy data-part root|icon|label.
+             ToggleButton = utility silhouette + persistent `pressed` state
+             (aria-pressed; strong inverted fill when engaged).
+             FileTrigger (opens OS file picker), MenuItem (inside Menu),
+             FormSubmit (inside Form)
 Navigation:  Link, Breadcrumbs/Breadcrumb, Tabs/TabList/Tab
              (TabPanel is Structure — the content revealed by the tabs)
 Disclosure:  Accordion, AccordionItem, AccordionTrigger, AccordionPanel,

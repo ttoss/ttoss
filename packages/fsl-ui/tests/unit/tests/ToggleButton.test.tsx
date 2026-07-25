@@ -9,7 +9,7 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vars } from '@ttoss/fsl-theme/vars';
-import { ToggleButton } from 'src/index';
+import { Icon, ToggleButton } from 'src/index';
 
 const getRoot = (): HTMLElement => {
   const el = document.querySelector<HTMLElement>(
@@ -23,7 +23,9 @@ describe('ToggleButton', () => {
   test('exposes identity attributes and aria-pressed', () => {
     render(<ToggleButton>Bold</ToggleButton>);
     const root = getRoot();
-    expect(root).toHaveAttribute('data-evaluation', 'primary');
+    // `secondary` is the default: a toolbar toggle is ambient chrome, not a
+    // command (the utility silhouette it shares with `ActionButton`).
+    expect(root).toHaveAttribute('data-evaluation', 'secondary');
     expect(root).toHaveAttribute('aria-pressed', 'false');
   });
 
@@ -34,17 +36,17 @@ describe('ToggleButton', () => {
     const root = getRoot();
     expect(root).toHaveAttribute('aria-pressed', 'true');
     expect(root.style.backgroundColor).toBe(
-      vars.colors.action.primary.background?.pressed
+      vars.colors.action.secondary.background?.pressed
     );
     expect(root.style.backgroundColor).not.toBe(
-      vars.colors.action.primary.background?.active
+      vars.colors.action.secondary.background?.active
     );
   });
 
   test('the resting state renders the default color', () => {
     render(<ToggleButton>Bold</ToggleButton>);
     expect(getRoot().style.backgroundColor).toBe(
-      vars.colors.action.primary.background?.default
+      vars.colors.action.secondary.background?.default
     );
   });
 
@@ -70,5 +72,34 @@ describe('ToggleButton', () => {
   test('accepts the muted evaluation', () => {
     render(<ToggleButton evaluation="muted">x</ToggleButton>);
     expect(getRoot()).toHaveAttribute('data-evaluation', 'muted');
+  });
+
+  test('wears the utility silhouette, not the command one', () => {
+    render(<ToggleButton>Bold</ToggleButton>);
+    const { style } = getRoot();
+
+    // Control radius + label type + tight control inset — a toggle must not
+    // read as a CTA (queue item ②).
+    expect(style.borderRadius).toBe(vars.radii.control);
+    expect(style.paddingBlock).toBe(vars.spacing.inset.control.sm);
+    expect(style.paddingInline).toBe(vars.spacing.inset.control.md);
+  });
+
+  test('supports the icon-only square, the common toolbar shape', () => {
+    render(
+      <ToggleButton
+        icon={<Icon intent="action.search" />}
+        aria-label="Find in page"
+      />
+    );
+    const root = getRoot();
+
+    expect(root).toHaveAttribute('aria-label', 'Find in page');
+    expect(root.querySelector('[data-part="label"]')).not.toBeInTheDocument();
+    const slot = root.querySelector('[data-part="icon"]') as HTMLElement;
+    expect(slot.style.blockSize).toBe('1lh');
+    expect(slot.style.inlineSize).toBe('1lh');
+    // Square by arithmetic: the block inset is mirrored inline.
+    expect(root.style.paddingInline).toBe(vars.spacing.inset.control.sm);
   });
 });

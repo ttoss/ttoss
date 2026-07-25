@@ -6,14 +6,24 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
-import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
+import {
+  type ActionIconPlacement,
+  type ActionLabellingProps,
+  ActionTriggerContent,
+  buildActionTriggerStyle,
+  UTILITY_SILHOUETTE,
+} from '../ActionTrigger/anatomy';
+import type { IconProps } from '../Icon';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
 //
-// Entity = Action → CONTRACT.md §1 row (colors `action`, radii `control`,
-// border `outline.control`, sizing `hit`, spacing `inset.control`,
-// typography `label.md`, motion `feedback`).
+// Entity = Action → CONTRACT.md §1 row (colors `action`, border
+// `outline.control`, sizing `hit`, motion `feedback`), in the **utility**
+// silhouette it shares with `ActionButton` (radii `control`, typography
+// `label.md`, spacing `inset.control`): a toolbar toggle is an ambient
+// operation on content, not a command the user commits to, so it must not
+// wear the command silhouette `Button` uses.
 //
 // FRICTION LOG (ROADMAP B2 "proof case for `pressed` ≠ `active`):
 // ToggleButton is the component that proves the Action token tree needs BOTH
@@ -91,14 +101,41 @@ const resolveToggleBorder = (
   return border.default;
 };
 
-/** Props for the ToggleButton component. */
-export interface ToggleButtonProps extends Omit<RACToggleButtonProps, 'style'> {
+/** Where the icon sits relative to the label. @see ActionIconPlacement */
+export type ToggleButtonIconPlacement = ActionIconPlacement;
+
+/** ToggleButton props *except* the labelling contract. */
+export interface ToggleButtonOwnProps extends Omit<
+  RACToggleButtonProps,
+  'style' | 'children' | 'aria-label'
+> {
   /**
-   * Semantic emphasis.
-   * @default 'primary'
+   * Semantic emphasis. `secondary` is the default — a toolbar toggle is
+   * ambient chrome; `muted` gives the quiet posture (no fill until hovered).
+   * @default 'secondary'
    */
   evaluation?: EvaluationsFor<(typeof toggleButtonMeta)['entity']>;
+  /**
+   * An `<Icon>` element naming the glyph by intent. Omit `children` for the
+   * **icon-only** form — the dominant shape for a toolbar toggle ("Bold",
+   * "Grid view"): the button becomes a square and `aria-label` becomes
+   * required by the type system.
+   */
+  icon?: React.ReactElement<IconProps>;
+  /**
+   * Which side of the label the `icon` sits on.
+   * @default 'leading'
+   */
+  iconPlacement?: ToggleButtonIconPlacement;
+  /**
+   * Data scope identifier.
+   * @default 'toggle-button'
+   */
+  'data-scope'?: string;
 }
+
+/** @see ToggleButtonOwnProps */
+export type ToggleButtonProps = ToggleButtonOwnProps & ActionLabellingProps;
 
 /**
  * A two-state toggle button (Action entity). Unlike `Button`, its selection
@@ -106,27 +143,40 @@ export interface ToggleButtonProps extends Omit<RACToggleButtonProps, 'style'> {
  * transient `active`), and React Aria exposes it via `aria-pressed`.
  *
  * Use for toolbar toggles ("Bold", "Italic") and single on/off controls that
- * read as buttons. For a set of mutually-related toggles, wrap them in
+ * read as buttons. It wears the **utility** silhouette it shares with
+ * `ActionButton` — a toggle operates on content, it is not a command the user
+ * commits to. For a set of mutually-related toggles, wrap them in
  * `ToggleButtonGroup`.
+ *
+ * Anatomy (`data-part`): `root` · `icon` · `label`. Omit `children` for the
+ * icon-only square, which is the common toolbar shape.
  *
  * @example
  * ```tsx
  * <ToggleButton>Bold</ToggleButton>
  * <ToggleButton defaultSelected>Grid view</ToggleButton>
+ * <ToggleButton icon={<Icon intent="action.search" />} aria-label={label} />
  * ```
  */
 export const ToggleButton = ({
-  evaluation = 'primary',
+  evaluation = 'secondary',
+  icon,
+  iconPlacement = 'leading',
+  children,
+  'data-scope': dataScope = 'toggle-button',
   ...props
 }: ToggleButtonProps) => {
   const colors = vars.colors.action[evaluation];
+  const hasIcon = icon !== undefined;
+  const isIconOnly = hasIcon && children === undefined;
 
   return (
     <RACToggleButton
       {...props}
-      data-scope="toggle-button"
+      data-scope={dataScope}
       data-part="root"
       data-evaluation={evaluation}
+      data-icon-placement={hasIcon ? iconPlacement : undefined}
       style={({
         isHovered,
         isPressed,
@@ -135,40 +185,38 @@ export const ToggleButton = ({
         isFocusVisible,
       }) => {
         const flags = { isHovered, isPressed, isSelected, isDisabled };
-        return {
-          boxSizing: 'border-box',
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: isDisabled ? 'not-allowed' : 'pointer',
-          borderRadius: vars.radii.action,
-          borderWidth: vars.border.outline.control.width,
-          borderStyle: vars.border.outline.control.style,
-          minHeight: vars.sizing.hit,
-          paddingBlock: vars.spacing.inset.control.sm,
-          paddingInline: vars.spacing.inset.control.lg,
-          ...(vars.text.action.md as React.CSSProperties),
-          transitionDuration: vars.motion.feedback.duration,
-          transitionTimingFunction: vars.motion.feedback.easing,
-          transitionProperty: 'background-color, border-color, color',
-          backgroundColor: colors?.background
-            ? resolveToggleBackground(colors.background, flags)
-            : undefined,
-          borderColor: colors?.border
-            ? resolveToggleBorder(colors.border, {
-                isFocusVisible,
-                isDisabled,
-                isSelected,
-              })
-            : undefined,
-          color: colors?.text
-            ? resolveToggleText(colors.text, flags)
-            : undefined,
-          outline: focusRingOutline(isFocusVisible),
-          outlineOffset: FOCUS_RING_OFFSET,
-        } as React.CSSProperties;
+        return buildActionTriggerStyle({
+          silhouette: UTILITY_SILHOUETTE,
+          hasIcon,
+          isIconOnly,
+          isDisabled,
+          isFocusVisible,
+          colors: {
+            background: colors?.background
+              ? resolveToggleBackground(colors.background, flags)
+              : undefined,
+            border: colors?.border
+              ? resolveToggleBorder(colors.border, {
+                  isFocusVisible,
+                  isDisabled,
+                  isSelected,
+                })
+              : undefined,
+            text: colors?.text
+              ? resolveToggleText(colors.text, flags)
+              : undefined,
+          },
+        });
       }}
-    />
+    >
+      <ActionTriggerContent
+        dataScope={dataScope}
+        icon={icon}
+        iconPlacement={iconPlacement}
+      >
+        {children}
+      </ActionTriggerContent>
+    </RACToggleButton>
   );
 };
 ToggleButton.displayName = toggleButtonMeta.displayName;

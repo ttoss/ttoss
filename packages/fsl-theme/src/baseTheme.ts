@@ -463,7 +463,14 @@ export const baseTheme: ThemeTokens = {
             active: '{core.colors.neutral.400}',
             disabled: '{core.colors.neutral.100}',
             droptarget: '{core.colors.neutral.50}',
-            pressed: '{core.colors.neutral.400}',
+            // `pressed` is the *persistent* engaged state of a toggle (the
+            // only consumer of this state — ToggleButton). A quiet toolbar
+            // toggle must read unambiguously ON, so it inverts to a strong
+            // neutral fill instead of the mid-grey that reads as another
+            // hover. neutral.0 text on neutral.700 → 10.9:1 ✓. Keeping it
+            // distinct from `active` (neutral.400) also restores press
+            // feedback on an already-engaged toggle.
+            pressed: '{core.colors.neutral.700}',
             expanded: '{core.colors.neutral.200}',
           },
           border: {
@@ -472,12 +479,14 @@ export const baseTheme: ThemeTokens = {
             active: '{core.colors.neutral.400}',
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.200}',
-            pressed: '{core.colors.neutral.400}',
+            pressed: '{core.colors.neutral.700}',
             expanded: '{core.colors.neutral.500}',
           },
           text: {
             default: '{core.colors.neutral.900}',
             disabled: '{core.colors.neutral.500}',
+            // The engaged fill is dark — its label inverts with it.
+            pressed: '{core.colors.neutral.0}',
             // hover/active/focused: all neutral.900 — omitted
           },
         },
@@ -1577,6 +1586,10 @@ export const darkAlternate: ModeOverride = {
             disabled: '{core.colors.neutral.700}',
             droptarget: '{core.colors.neutral.700}', // neutral.50 is near-white on dark
             expanded: '{core.colors.neutral.500}', // neutral.200 is near-white on dark
+            // The engaged toggle inverts the other way here: the base's dark
+            // fill equals dark mode's resting surface, so ON must be the
+            // light one. neutral.900 text on neutral.300 → 12:1 ✓.
+            pressed: '{core.colors.neutral.300}',
           },
           border: {
             default: '{core.colors.neutral.500}',
@@ -1584,10 +1597,12 @@ export const darkAlternate: ModeOverride = {
             active: '{core.colors.neutral.100}',
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.700}',
+            pressed: '{core.colors.neutral.300}',
           },
           text: {
             default: '{core.colors.neutral.50}',
             disabled: '{core.colors.neutral.500}',
+            pressed: '{core.colors.neutral.900}',
           },
         },
         muted: {

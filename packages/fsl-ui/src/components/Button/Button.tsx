@@ -1,5 +1,5 @@
 import { vars } from '@ttoss/fsl-theme/vars';
-import * as React from 'react';
+import type * as React from 'react';
 import {
   Button as RACButton,
   type ButtonProps as RACButtonProps,
@@ -11,14 +11,14 @@ import type {
   ConsequencesFor,
   EvaluationsFor,
 } from '../../semantics';
-import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
-import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
-// Type-only import: Button must never pull the Icon implementation (and with
-// it the whole glyph registry) into a consumer that only ever renders text —
-// the package's tree-shaking guarantee (README, ADR-006) depends on it. The
-// caller passes a real `<Icon>` element; the type keeps the intent vocabulary
-// enforced (anything without an `intent` prop fails to compile).
+import {
+  type ActionIconPlacement,
+  type ActionLabellingProps,
+  ActionTriggerContent,
+  buildActionTriggerStyle,
+  COMMAND_SILHOUETTE,
+} from '../ActionTrigger/anatomy';
 import type { IconProps } from '../Icon';
 
 /**
@@ -30,17 +30,8 @@ export const buttonMeta = {
   structure: 'root',
 } as const satisfies ComponentMeta<'Action'>;
 
-/**
- * Where the icon sits relative to the label. Both placements are legal
- * `icon` structural roles on Action — the choice is semantic, not decorative:
- *
- * - `leading` (default) — the glyph *reinforces* the command ("Delete" with a
- *   trash glyph). This is the common case.
- * - `trailing` — the glyph *announces what follows* the press: a disclosure
- *   chevron, an external-link arrow, a "next step" direction. Reach for it
- *   only when the glyph describes the consequence, not the action itself.
- */
-export type ButtonIconPlacement = 'leading' | 'trailing';
+/** Where the icon sits relative to the label. @see ActionIconPlacement */
+export type ButtonIconPlacement = ActionIconPlacement;
 
 /**
  * Button props *except* the labelling contract — the reusable half.
@@ -87,11 +78,10 @@ export interface ButtonOwnProps extends Omit<
    * scale.
    *
    * Omit `children` to render an **icon-only** button: the control becomes a
-   * square — the block inset is mirrored on the inline axis and the glyph slot
-   * squares to one line, so both axes carry the same padding and the same
-   * content extent — and `aria-label` becomes required. The square resolves to
-   * the same height as a labelled CTA, so a toolbar mixing the two keeps one
-   * baseline.
+   * square (the block inset is mirrored on the inline axis and the glyph slot
+   * squares to one line) and `aria-label` becomes required. The square
+   * resolves to the same height as a labelled CTA, so a toolbar mixing the two
+   * keeps one baseline.
    *
    * @example
    * ```tsx
@@ -112,191 +102,27 @@ export interface ButtonOwnProps extends Omit<
 }
 
 /**
- * Labelling contract. A button must be nameable: either it renders a visible
- * label (`children`) or — in the icon-only form — it supplies `aria-label`.
- * The union makes `tsc` enforce it, the same mechanism `ConfirmationDialog`
- * uses for its flow-critical labels (ADR-001).
- */
-type ButtonLabellingProps =
-  | {
-      /** Visible label. */
-      children: React.ReactNode;
-      /** Accessible name override — optional when a visible label exists. */
-      'aria-label'?: string;
-    }
-  | {
-      /** Icon-only button — no visible label. */
-      children?: undefined;
-      /**
-       * Accessible name, required when there is no visible label. Supply it
-       * already localized (fsl-ui never depends on an i18n runtime — ADR-001).
-       */
-      'aria-label': string;
-    };
-
-/**
- * Displays a semantic action trigger (entity: Action).
+ * Displays a semantic action trigger (entity: Action) in the **command**
+ * silhouette — the assertive posture, for actions the user commits to:
+ * submitting a form, confirming a dialog, the primary action of a surface.
+ *
+ * For ambient operations *on* content — toolbar controls, row actions, the
+ * trigger of an overflow menu — reach for `ActionButton`, which wears the
+ * quieter utility silhouette. Both are Action/root; what separates them is the
+ * weight of the commitment, the same way `Meter` and `ProgressBar` are both
+ * Feedback/root separated by meaning.
  *
  * Entity = Action → colors: `action`, radii: `action`, border: `outline.control`,
- * sizing: `hit` (ergonomic floor — drives both height and the square
- * minimum width), spacing: `inset.action.block` (block) + `inset.control.lg`
- * (inline) plus
- * `gap.inline.xs` between glyph and label, typography: `action.md`,
+ * sizing: `hit` (ergonomic floor — drives both height and the square minimum
+ * width), spacing: `inset.action.block` (block) + `inset.control.lg` (inline)
+ * plus `gap.inline.xs` between glyph and label, typography: `action.md`,
  * motion: `feedback`.
  *
- * Anatomy (`data-part`): `root` · `icon` · `label` — both sub-parts are
- * lawful `icon` / `label` structural roles for Action, so the glyph and the
- * text are observable identities rather than anonymous spans.
+ * Anatomy (`data-part`): `root` · `icon` · `label` — the sub-parts are lawful
+ * `icon` / `label` structural roles for Action, so the glyph and the text are
+ * observable identities rather than anonymous spans.
  */
-export type ButtonProps = ButtonOwnProps & ButtonLabellingProps;
-
-/** The evaluation's color subtree — one row of `vars.colors.action`. */
-type ActionColors = (typeof vars.colors.action)[EvaluationsFor<
-  (typeof buttonMeta)['entity']
->];
-
-/** React Aria's state flags for a button render callback. */
-interface ButtonRenderState {
-  isHovered?: boolean;
-  isPressed?: boolean;
-  isDisabled?: boolean;
-  isFocusVisible?: boolean;
-}
-
-/**
- * Root style — hoisted out of the render callback so the state cascade stays
- * readable (and so the callback keeps a single responsibility: pass state in).
- */
-const buildRootStyle = ({
-  colors,
-  hasIcon,
-  isIconOnly,
-  state,
-}: {
-  colors: ActionColors;
-  hasIcon: boolean;
-  isIconOnly: boolean;
-  state: ButtonRenderState;
-}): React.CSSProperties => {
-  const { isHovered, isPressed, isDisabled, isFocusVisible } = state;
-
-  return {
-    boxSizing: 'border-box',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: hasIcon ? vars.spacing.gap.inline.xs : undefined,
-    cursor: isDisabled ? 'not-allowed' : 'pointer',
-    // Command silhouette: `radii.action` (pill in the base theme) and
-    // `text.action` (semibold) — CTAs read assertive while fields and
-    // choice controls stay at the quieter `control`/`label` pair.
-    borderRadius: vars.radii.action,
-    borderWidth: vars.border.outline.control.width,
-    borderStyle: vars.border.outline.control.style,
-    minHeight: vars.sizing.hit,
-    // The `hit` floor doubles as a square minimum on the inline axis, so a
-    // one-character button stays balanced instead of collapsing to its
-    // content width.
-    minWidth: vars.sizing.hit,
-    // Block padding comes from the command-specific `inset.action.block`
-    // (bounded 8–9px): at the desktop bound the button resolves to 40px —
-    // 9 + 20 (label line) + 9 + 2 (border) — the comfortable CTA height,
-    // while a generic control stays at the ~32px the tighter `inset.control`
-    // produces. The `hit` floor still guarantees the minimum (and takes over
-    // entirely on a coarse pointer). A wider inline inset (`lg`) gives
-    // horizontal breathing; icon-only drops it, since the square already
-    // supplies the room and padding would push the glyph off-centre.
-    paddingBlock: vars.spacing.inset.action.block,
-    // Icon-only mirrors the block inset on the inline axis and pairs it with a
-    // square glyph slot, so the box comes out square *by arithmetic* — same
-    // padding, same content extent on both axes. Deriving it from
-    // `aspect-ratio` instead would let the width win and squeeze the vertical
-    // inset, which also broke height parity with a labelled CTA.
-    paddingInline: isIconOnly
-      ? vars.spacing.inset.action.block
-      : vars.spacing.inset.control.lg,
-    ...(vars.text.action.md as React.CSSProperties),
-    transitionDuration: vars.motion.feedback.duration,
-    transitionTimingFunction: vars.motion.feedback.easing,
-    transitionProperty: 'background-color, border-color, color',
-    backgroundColor: resolveInteractiveStyle(colors?.background, {
-      isHovered,
-      isPressed,
-      isDisabled,
-    }),
-    borderColor: resolveInteractiveStyle(colors?.border, {
-      isDisabled,
-      isFocusVisible,
-    }),
-    color:
-      resolveInteractiveStyle(colors?.text, {
-        isHovered,
-        isPressed,
-        isDisabled,
-      }) ?? colors?.text?.default,
-    outline: focusRingOutline(isFocusVisible),
-    outlineOffset: FOCUS_RING_OFFSET,
-  } as React.CSSProperties;
-};
-
-/**
- * Ordered content of the button: the glyph on its declared side, the label
- * when there is one. Internal (not exported) — its whole job is to keep the
- * placement branching out of `Button` itself.
- *
- * The button owns the glyph scale (`sm`); everything else the caller set on
- * the element — intent, and `label` when the glyph carries meaning — is
- * preserved. The wrapper carries the host scope so the glyph reads as
- * Button's `icon` part (the Select precedent) rather than a nested scope.
- */
-const ButtonContent = ({
-  dataScope,
-  icon,
-  iconPlacement,
-  children,
-}: {
-  dataScope: string;
-  icon?: React.ReactElement<IconProps>;
-  iconPlacement: ButtonIconPlacement;
-  children?: React.ReactNode;
-}) => {
-  const isIconOnly = icon !== undefined && children === undefined;
-
-  // One line tall (`1lh`), so the glyph occupies exactly the box a label line
-  // would: that is what gives the icon-only form the same height as a labelled
-  // CTA, keeping a single baseline in a toolbar that mixes both. Icon-only
-  // squares the slot as well, so the button's two axes have identical content
-  // extent. Where `lh` is unsupported the slot falls back to the glyph's own
-  // size — still square, just a few px smaller.
-  const glyphSlotStyle: React.CSSProperties = {
-    ...ICON_SLOT_STYLE,
-    blockSize: '1lh',
-    ...(isIconOnly ? { inlineSize: '1lh' } : {}),
-  };
-
-  const glyph = icon ? (
-    <span
-      data-scope={dataScope}
-      data-part="icon"
-      aria-hidden
-      style={glyphSlotStyle}
-    >
-      {React.cloneElement(icon, { size: 'text' })}
-    </span>
-  ) : null;
-
-  return (
-    <>
-      {iconPlacement === 'leading' && glyph}
-      {children !== undefined && (
-        <span data-scope={dataScope} data-part="label">
-          {children}
-        </span>
-      )}
-      {iconPlacement === 'trailing' && glyph}
-    </>
-  );
-};
+export type ButtonProps = ButtonOwnProps & ActionLabellingProps;
 
 /**
  * A semantic action button built on React Aria.
@@ -334,22 +160,40 @@ export const Button = ({
       data-consequence={consequence}
       data-composition={composition}
       data-icon-placement={hasIcon ? iconPlacement : undefined}
-      style={(state) => {
-        return buildRootStyle({
-          colors,
+      style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => {
+        return buildActionTriggerStyle({
+          silhouette: COMMAND_SILHOUETTE,
           hasIcon,
           isIconOnly,
-          state,
+          isDisabled,
+          isFocusVisible,
+          colors: {
+            background: resolveInteractiveStyle(colors?.background, {
+              isHovered,
+              isPressed,
+              isDisabled,
+            }),
+            border: resolveInteractiveStyle(colors?.border, {
+              isDisabled,
+              isFocusVisible,
+            }),
+            text:
+              resolveInteractiveStyle(colors?.text, {
+                isHovered,
+                isPressed,
+                isDisabled,
+              }) ?? colors?.text?.default,
+          },
         });
       }}
     >
-      <ButtonContent
+      <ActionTriggerContent
         dataScope={dataScope}
         icon={icon}
         iconPlacement={iconPlacement}
       >
         {children}
-      </ButtonContent>
+      </ActionTriggerContent>
     </RACButton>
   );
 };

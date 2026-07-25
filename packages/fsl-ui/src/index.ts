@@ -4,6 +4,15 @@
 // is a client module (Next.js App Router). The `./semantics` entry stays
 // directive-free: taxonomy data is server-safe.
 export type {
+  ActionButtonIconPlacement,
+  ActionButtonOwnProps,
+  ActionButtonProps,
+} from './components/ActionButton/ActionButton';
+export {
+  ActionButton,
+  actionButtonMeta,
+} from './components/ActionButton/ActionButton';
+export type {
   AppShellProps,
   AppShellSidebarWidth,
 } from './components/AppShell/AppShell';
@@ -30,7 +39,11 @@ export {
   Breadcrumbs,
   breadcrumbsMeta,
 } from './components/Breadcrumbs/Breadcrumbs';
-export type { ButtonProps } from './components/Button/Button';
+export type {
+  ButtonIconPlacement,
+  ButtonOwnProps,
+  ButtonProps,
+} from './components/Button/Button';
 export { Button, buttonMeta } from './components/Button/Button';
 export type { CheckboxProps } from './components/Checkbox/Checkbox';
 export { Checkbox, checkboxMeta } from './components/Checkbox/Checkbox';
@@ -211,7 +224,11 @@ export {
   ToastRegion,
   toastRegionMeta,
 } from './components/Toast/Toast';
-export type { ToggleButtonProps } from './components/ToggleButton/ToggleButton';
+export type {
+  ToggleButtonIconPlacement,
+  ToggleButtonOwnProps,
+  ToggleButtonProps,
+} from './components/ToggleButton/ToggleButton';
 export {
   ToggleButton,
   toggleButtonMeta,

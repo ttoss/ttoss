@@ -1,3 +1,8 @@
+/* eslint-disable max-lines */
+// A fixture registry, not logic: one canonical render per component, read by
+// the contract, axe and glyph-host suites. It grows by one entry per
+// component by design — line count is coverage here, not complexity (same
+// rationale as `baseTheme.ts`).
 /**
  * Canonical DOM fixtures — the minimal accessible render of every component
  * in the package, keyed by component export name.
@@ -88,6 +93,24 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
     scope: 'box',
     element: () => {
       return <pkg.Box>content</pkg.Box>;
+    },
+  },
+  ActionButton: {
+    scope: 'action-button',
+    element: () => {
+      return <pkg.ActionButton>x</pkg.ActionButton>;
+    },
+  },
+  // Icon-only ActionButton: the toolbar shape — square, named by aria-label.
+  ActionButtonIconOnly: {
+    scope: 'action-button',
+    element: () => {
+      return (
+        <pkg.ActionButton
+          icon={<pkg.Icon intent="action.close" />}
+          aria-label="Close"
+        />
+      );
     },
   },
   Button: {

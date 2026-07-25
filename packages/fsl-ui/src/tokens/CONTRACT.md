@@ -429,6 +429,17 @@ Registered knobs:
 `entity: 'Action'` → §1 row: colors=`action`, radii=`action`, border=`outline.control`,
 sizing=`hit`, spacing=`inset.control.md`, typography=`action.md`, motion=`feedback`, elevation=`flat`.
 
+**Two silhouettes inside the Action row.** The row above lists the _command_
+tokens (`radii.action`, `text.action`, `inset.action.block`) that `Button`
+reads. `ActionButton` and `ToggleButton` read the **utility** set from the same
+row — `radii.control`, `text.label.md`, `inset.control.{sm,md}` — because an
+ambient operation on content must recede beside a commitment. Both silhouettes
+are declared once in `components/ActionTrigger/anatomy.tsx`
+(`COMMAND_SILHOUETTE` / `UTILITY_SILHOUETTE`) and every Action trigger takes
+its geometry from that module: the anatomy, the `hit` floor on both axes and
+the icon-only square are shared code, not conventions each component
+re-implements.
+
 Anatomy: `root` · `icon` · `label` — all three are lawful Action structural
 roles (`ENTITY_STRUCTURE.Action`), so a Button with a glyph declares real
 identities instead of anonymous spans. `sizing.hit` binds **both** axes: it
