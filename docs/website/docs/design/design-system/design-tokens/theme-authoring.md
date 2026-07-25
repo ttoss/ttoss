@@ -38,6 +38,8 @@ This document answers a different question:
 
 > How should a theme be designed before values are chosen?
 
+It owns two formal artifacts, and is the single source for both: the **Theme brief** (what a theme should feel like) and the **Formal Style Profile** (what it may and may not do, family by family). Style references, theme archetypes, and built-in themes publish profiles in that format and link back here for its definition.
+
 ---
 
 ## Core thesis
@@ -167,6 +169,62 @@ theme:
 The base theme should feel practical, calm, modern, trustworthy, and easy to extend.
 
 It should not feel flashy, ornamental, cramped, fragile, or overly branded.
+
+---
+
+## Formal Style Profile
+
+A Theme brief says what a theme should _feel_ like. A **Formal Style Profile** says what it may and may not _do_, family by family. It is the second formal artifact of theme authoring, and the shared format for every document that constrains token values: [style references](/docs/design/style-references) propose a profile, theme archetypes adopt one, and built-in themes implement one.
+
+This section is the canonical definition of that format. A document that publishes a profile conforms to the schema below and links here rather than restating it.
+
+### Axis: one section per token family
+
+A profile is indexed by **token family** — the same families the [Token Model](./model.md) defines and the `families/` specs document. Not by mood, not by ad-hoc "posture" names: a family is the unit a theme actually sets values for, which is what makes a profile checkable against a real theme.
+
+Cross-family concerns (contrast, depth, material feel) are expressed as constraints on the families that carry them — contrast under `colors`, depth under `elevation`, and so on — plus, where a rule genuinely spans families, a **Cross-family rules** section after the per-family ones.
+
+Omit a family the profile does not constrain. Silence means "the base doctrine in this document applies unchanged", which is more useful than a row saying nothing.
+
+### Levels
+
+Every constraint carries exactly one of five levels. These are the only legal levels, and they mean:
+
+| Level           | Meaning                                                                                                         | Conformance effect                                             |
+| --------------- | --------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| **Required**    | Must hold. A theme that violates it does not implement this profile, whatever else it does.                     | Violation = not conformant.                                    |
+| **Preferred**   | The characteristic choice — what the profile looks like when followed with no competing pressure.               | Departure needs a recorded reason.                             |
+| **Tolerated**   | Permitted without being characteristic. Available when product pressure justifies it; never the starting point. | Allowed; does not weaken conformance.                          |
+| **Discouraged** | Works, but fights the profile's intent. Usually a symptom that the wrong profile was chosen.                    | Allowed under protest; accumulating these invalidates the fit. |
+| **Forbidden**   | Must not appear. Unlike Discouraged, this is a semantic or accessibility breach, not a matter of taste.         | Violation = not conformant.                                    |
+
+`Required` and `Forbidden` are the conformance boundary — they are the two levels a reviewer or an agent can decide mechanically. `Preferred`, `Tolerated`, and `Discouraged` describe the gradient inside that boundary and always need judgement. Write a rule at the strongest level you can actually defend: a profile where everything is `Required` is a straitjacket, and one where everything is `Preferred` decides nothing.
+
+### Shape
+
+```md
+### {n}. {Family}
+
+**Posture:** one line — what this family is doing in service of the profile.
+
+#### Required
+
+- constraint
+
+#### Preferred
+
+- constraint
+
+#### Forbidden
+
+- constraint
+```
+
+### Conformance
+
+A profile is only worth publishing if a theme can be checked against it. Every rule should be phrased so that a reviewer reading a theme's token values can answer yes or no. "Neutrals must dominate the general interface" is checkable; "the theme should feel refined" is not — that belongs in the brief.
+
+Profiles do not create tokens. A profile constrains **core values, semantic mapping posture, allowed ranges, and mode tuning** — never token names. The prohibition on appearance-based public vocabulary ([Token Model](./model.md), invariant 5) holds inside every profile.
 
 ---
 

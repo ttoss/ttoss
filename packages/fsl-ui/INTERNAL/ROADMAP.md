@@ -57,17 +57,17 @@ log at zero blockers. The workbench slices (S3–S5) and the v2 AI horizon do
 only `blocker` items — F-006 (`TabList` vertical orientation) and F-012
 (icons silently failing in production builds) — are both fixed. Remaining
 `FRICTION.md` entries are `gap`/`paper-cut`, none `blocker`. **This satisfies
-the gate, not full v1.0** — the v1.0 criteria below still need P0's two
-remaining items and the P3 bar applied. P2's last adoption-demanded component
-(`ComboBox`) shipped 2026-07-24, closing F-008.
+the gate, not full v1.0** — of the v1.0 criteria below, **only the P3 bar
+remains**: P0 closed 2026-07-24 (both consolidation items), and P2's last
+adoption-demanded component (`ComboBox`) shipped the same day, closing F-008.
 
 ### Route
 
 - **P0 — Docs consolidation** _(started 2026-07-22; first pass landed)_
   - [x] Fix doc↔code contradictions: `sizing.hit` ramp in fsl-theme README (ADR-020), `dimension` axis in `Types.ts` header (model.md), missing `invalid` State in fsl-structural-language §5.7 (ADR-017), dataviz `foundation`/"v2" framing, theme-authoring self-reference.
   - [x] Remove dead surface: 6 style-reference stubs deleted; `getting-started` written (was "Under Construction"); `built-in-themes/default.md` → `enterprise-neutral.md` reframed as a draft Formal Style Profile (shipped themes: `baseTheme` + `bruttal`); `icon-system.md` migrated off the retired `Responsibility`/`Host`/`*Frame` vocabulary; ui2-era INTERNAL drafts deleted.
-  - [ ] Merge the three per-family theme-shaping formats (`theme-authoring.md` × `enterprise-neutral.md` × style-reference profiles) into one canonical layer with the other two linking, not restating.
-  - [ ] Single-source the color grammar and the intent→token cheatsheet: design docs canonical, package READMEs keep only the npm-facing quickstart + a link.
+  - [x] Merge the three per-family theme-shaping formats into one canonical layer _(2026-07-24)_: **Formal Style Profile** is now defined once in `theme-authoring.md`, alongside the Theme brief — axis = token family, plus the five constraint levels (`Required`/`Preferred`/`Tolerated`/`Discouraged`/`Forbidden`) that the three docs had been using **without any of them ever defining the words**, with mismatched membership (`Required` vs `Tolerated`) and two different axes. `enterprise-neutral.md` and the style-reference profiles (`flat2.md`, `skeuomorphic.md` — converted from their ad-hoc "posture" axis) now conform and link for the definition instead of restating it.
+  - [x] Single-source the color grammar and the intent→token cheatsheet _(2026-07-24)_: the fsl-theme README's 95-line "Pick a token in 60s" cheatsheet and its restated colors-axes block are gone (405 → 311 lines), replaced by links to `quick-reference.md` (canonical cheatsheet) and `model.md` §Semantic Color Grammar (canonical grammar); family links repointed from raw GitHub markdown to the published docs so an npm reader can actually follow them. The one surviving duplicate is deliberate and now stated as such: `llms.txt` ships the mapping inside the tarball for offline agents.
 - **P1 — Studio v2 as the adoption app (THE gate)** _(revised 2026-07-22; owner picked the Studio)_
   - **Zero reuse of v1.** The v1 app is deleted (src, tests, PRD, `studio.css`). Recorded lesson: v1 used the adoption app as a UX experiment (Tazuna-UX-driven navigation/layout) and shipped unusable — the design system's job is to make the _conventional_ excellent; experimental IA does not belong in the adoption vehicle.
   - **Product frame (fixed, small):** conventional shell (sidebar + content, `AppShell` + fsl-ui primitives only) hosting three surfaces — **Blocks gallery** (the adoption engine), **Component catalog**, **Theme lab**. Nothing from PRD v2 (blast-radius/AI bands) enters.
@@ -85,7 +85,7 @@ remaining items and the P3 bar applied. P2's last adoption-demanded component
   - Findings land as core-value tuning in `baseTheme.ts` (data-only per ADR-008; contrast guarantees per ADR-015 must hold) + the composition "taste layer" doc.
   - The frozen Studio deploy doubles as the visual proving ground — it already renders the catalog; no new Studio features allowed for this.
   - ✅ **Slice 1 landed 2026-07-23 — brand-neutral retune** (owner brief: "o mais neutro possível de branding; simples porém sofisticado"). Neutral ramp slate→zinc (hue-free grays, dark canvas loses the navy cast); font stack leads with Inter Variable (Studio self-hosts via Fontsource); navigation and selection become monochrome (brand stays only in `focused`, `accent`, and Feedback valences); `Text` gains the `display-sm` stat step (F-014) and the vertical Tab indicator moves to the inline-start edge (F-003). All contrast/distinguishability guarantees hold (suite green).
-- **v1.0 criteria (all of):** adoption gate met (Studio v2 deployed, four blocks, friction log at zero blockers) · P0 both remaining items done · P2 items the adoption demanded shipped · P3 bar applied per block (ritual above) · CHANGELOG migration notes honest. **v1.x milestone:** first screen in an external business app.
+- **v1.0 criteria (all of):** ✅ adoption gate met (Studio deployed, four flows, friction log at zero blockers — 2026-07-24) · ✅ P0 both remaining items done (2026-07-24) · ✅ P2 items the adoption demanded shipped (`Table`, `Icon`, `ComboBox`) · ☐ P3 bar applied per block (ritual above) · ☐ CHANGELOG migration notes honest. **Only P3 and the CHANGELOG pass stand between here and v1.0.** **v1.x milestone:** first screen in an external business app.
 
 ### Anti-scope-creep rules (binding)
 

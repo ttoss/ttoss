@@ -132,66 +132,157 @@ Some traits require both token and recipe support:
 
 ## Formal Style Profile
 
-This is the operational translation of Flat 2.0 into ttoss terms.
+The operational translation of Flat 2.0 into ttoss terms, in the canonical
+[Formal Style Profile](/docs/design/design-system/design-tokens/theme-authoring#formal-style-profile)
+format: indexed by token family, using the five constraint levels defined there. Families this reference does not constrain (sizing, z-index, breakpoints) are omitted — the base authoring doctrine applies to them unchanged.
 
-### Color posture
+### 1. Colors
 
-- **Preferred:** clear neutral foundation, disciplined accent palette, slightly richer tonal steps than strict Flat, explicit role contrast
-- **Tolerated:** mild gradients or tonal transitions that reinforce hierarchy without becoming decorative
-- **Discouraged:** broad atmospheric gradients used only as mood
-- **Forbidden:** color treatment that blurs interaction, hierarchy, or semantic role boundaries
+**Posture:** disciplined palette with explicit role and state contrast, carrying more tonal nuance than strict Flat.
 
-### Contrast posture
+#### Preferred
 
-- **Preferred:** strong interactive contrast, explicit state distinction, clear separation between surface layers
-- **Discouraged:** subtle low-contrast layering that only designers notice
-- **Forbidden:** relying on tone-only nuance where focus, selected, or current states need stronger differentiation
+- clear neutral foundation, disciplined accent palette, slightly richer tonal steps than strict Flat, explicit role contrast
+- strong interactive contrast, explicit state distinction, clear separation between surface layers
 
-### Depth posture
+#### Tolerated
 
-- **Preferred:** shallow and bounded
-- **Tolerated:** moderate surface lift for overlays, cards, and modals
-- **Discouraged:** ornamental depth or many competing elevations
-- **Forbidden:** realism-heavy or unlimited shadow systems
+- mild gradients or tonal transitions that reinforce hierarchy without becoming decorative
 
-### Line posture
+#### Discouraged
 
-- **Preferred:** restrained, structural, complementary to depth rather than replacing it entirely
-- **Tolerated:** stronger outlines in technical or dense products
-- **Discouraged:** border removal where depth remains too weak to replace it
-- **Forbidden:** collapsing surface and control boundaries into a single indistinct plane
+- broad atmospheric gradients used only as mood
+- subtle low-contrast layering that only designers notice
 
-### Radius posture
+#### Forbidden
 
-- **Preferred:** restrained to moderate
-- **Tolerated:** softer curvature in consumer or brand-forward themes
-- **Discouraged:** overly angular systems if depth cues are also weak
-- **Forbidden:** ornamental radius variation without structural purpose
+- color treatment that blurs interaction, hierarchy, or semantic role boundaries
+- relying on tone-only nuance where focus, selected, or current states need stronger differentiation
 
-### Density posture
+### 2. Typography
 
-- **Preferred:** balanced
-- **Tolerated:** compact if hierarchy cues remain strong
-- **Discouraged:** dense surfaces with shallow cues and weak spacing
-- **Forbidden:** compressed layouts where shallow layering cannot be read quickly
+**Posture:** carries hierarchy strongly, but no longer alone — restored layer cues share the load.
 
-### Type posture
+#### Preferred
 
-- **Preferred:** clean sans-serif, strong hierarchy, less typographic burden than strict Flat
-- **Tolerated:** more expressive display use in premium themes
-- **Discouraged:** typography overcompensating for weak structural cues
-- **Forbidden:** decorative type carrying interaction meaning by itself
+- clean sans-serif, strong hierarchy, less typographic burden than strict Flat
 
-### Motion posture
+#### Tolerated
 
-- **Preferred:** restrained but meaningful
-- **Tolerated:** motion that reinforces shallow spatial logic and state transitions
-- **Discouraged:** decorative motion detached from hierarchy or state
-- **Forbidden:** theatrical motion that conflicts with low-material visual language
+- more expressive display use in premium themes
 
-### Material posture
+#### Discouraged
 
-- **Preferred:** low-material, shallow-layered
+- typography overcompensating for weak structural cues
+
+#### Forbidden
+
+- decorative type carrying interaction meaning by itself
+
+### 3. Spacing
+
+**Posture:** disciplined rhythm keeping layered-but-restrained surfaces readable.
+
+#### Preferred
+
+- balanced density
+
+#### Tolerated
+
+- compact density if hierarchy cues remain strong
+
+#### Discouraged
+
+- dense surfaces with shallow cues and weak spacing
+
+#### Forbidden
+
+- compressed layouts where shallow layering cannot be read quickly
+
+### 4. Radii
+
+**Posture:** curvature as a product-posture signal, not ornament.
+
+#### Preferred
+
+- restrained to moderate
+
+#### Tolerated
+
+- softer curvature in consumer or brand-forward themes
+
+#### Discouraged
+
+- overly angular systems if depth cues are also weak
+
+#### Forbidden
+
+- ornamental radius variation without structural purpose
+
+### 5. Borders
+
+**Posture:** structural line work complementing restrained depth instead of replacing it.
+
+#### Preferred
+
+- restrained, structural, complementary to depth rather than replacing it entirely
+
+#### Tolerated
+
+- stronger outlines in technical or dense products
+
+#### Discouraged
+
+- border removal where depth remains too weak to replace it
+
+#### Forbidden
+
+- collapsing surface and control boundaries into a single indistinct plane
+
+### 6. Elevation
+
+**Posture:** shallow and bounded — depth returns as a real cue, but a disciplined one.
+
+#### Preferred
+
+- shallow and bounded
+
+#### Tolerated
+
+- moderate surface lift for overlays, cards, and modals
+
+#### Discouraged
+
+- ornamental depth or many competing elevations
+
+#### Forbidden
+
+- realism-heavy or unlimited shadow systems
+
+### 7. Motion
+
+**Posture:** reinforces the shallow spatial model; never performs on its own.
+
+#### Preferred
+
+- restrained but meaningful
+
+#### Tolerated
+
+- motion that reinforces shallow spatial logic and state transitions
+
+#### Discouraged
+
+- decorative motion detached from hierarchy or state
+
+#### Forbidden
+
+- theatrical motion that conflicts with low-material visual language
+
+### Cross-family rules
+
+**Material posture.** The defining constraint of Flat 2.0, spanning elevation, colors, and opacity: the language stays low-material and shallow-layered.
+
 - **Tolerated:** restrained translucency or surface softness
 - **Discouraged:** literalized material simulation
 - **Forbidden:** full skeuomorphic texture, gloss, or tactile illusion as a dominant language
