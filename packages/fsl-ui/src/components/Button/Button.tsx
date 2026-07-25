@@ -18,6 +18,7 @@ import {
   ActionTriggerContent,
   buildActionTriggerStyle,
   COMMAND_SILHOUETTE,
+  useIsGroupedActionTrigger,
 } from '../ActionTrigger/anatomy';
 import type { IconProps } from '../Icon';
 
@@ -150,6 +151,7 @@ export const Button = ({
   const colors = vars.colors.action[evaluation];
   const hasIcon = icon !== undefined;
   const isIconOnly = hasIcon && children === undefined;
+  const isGrouped = useIsGroupedActionTrigger();
 
   return (
     <RACButton
@@ -167,6 +169,7 @@ export const Button = ({
           isIconOnly,
           isDisabled,
           isFocusVisible,
+          isGrouped,
           colors: {
             background: resolveInteractiveStyle(colors?.background, {
               isHovered,

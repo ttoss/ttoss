@@ -11,6 +11,7 @@ import {
   type ActionLabellingProps,
   ActionTriggerContent,
   buildActionTriggerStyle,
+  useIsGroupedActionTrigger,
   UTILITY_SILHOUETTE,
 } from '../ActionTrigger/anatomy';
 import type { IconProps } from '../Icon';
@@ -169,6 +170,7 @@ export const ToggleButton = ({
   const colors = vars.colors.action[evaluation];
   const hasIcon = icon !== undefined;
   const isIconOnly = hasIcon && children === undefined;
+  const isGrouped = useIsGroupedActionTrigger();
 
   return (
     <RACToggleButton
@@ -191,6 +193,7 @@ export const ToggleButton = ({
           isIconOnly,
           isDisabled,
           isFocusVisible,
+          isGrouped,
           colors: {
             background: colors?.background
               ? resolveToggleBackground(colors.background, flags)

@@ -132,6 +132,19 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       );
     },
   },
+  // The action row: two commands, so the overflow measurement has siblings to
+  // compare (jsdom reports zero-sized boxes, so it always resolves to a row).
+  ButtonGroup: {
+    scope: 'button-group',
+    element: () => {
+      return (
+        <pkg.ButtonGroup align="end">
+          <pkg.Button evaluation="secondary">Cancel</pkg.Button>
+          <pkg.Button>Save</pkg.Button>
+        </pkg.ButtonGroup>
+      );
+    },
+  },
   Code: {
     scope: 'code',
     element: () => {

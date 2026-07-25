@@ -122,6 +122,41 @@ export const UTILITY_SILHOUETTE: ActionSilhouette = {
   insetInline: vars.spacing.inset.control.md,
 };
 
+// ---------------------------------------------------------------------------
+// Grouped triggers
+//
+// The one thing a parent is allowed to impose on a trigger: whether it may
+// shrink. A flex item shrinks by default, and a trigger sets an explicit
+// `min-width` (the `hit` floor), which *overrides* the automatic minimum size
+// — so inside a tight flex row a trigger squashes below its label instead of
+// overflowing. `ButtonGroup` needs the opposite: children that hold their
+// natural width, so the row's overflow is observable and it can columnise.
+//
+// Expressed as context rather than injected style because that is this
+// ecosystem's pattern (packages consume context; they do not take style props),
+// and because it survives wrapping — a trigger inside a `Tooltip` or a
+// `DialogTrigger` inside the group still resolves it, which a
+// `cloneElement`-over-children approach could not.
+//
+// The reference system draws the same line: its ActionButton declares
+// `flexShrink: { default: 1, isInGroup: 0 }`. Shrinking is disabled *by the
+// group*, never globally — a lone trigger in a narrow container should still
+// give way rather than overflow the page.
+// ---------------------------------------------------------------------------
+
+const ActionTriggerGroupContext = React.createContext(false);
+
+/**
+ * Marks its subtree as living inside an Action-trigger group. Internal — only
+ * group components (`ButtonGroup`, and the ActionGroup ahead) provide it.
+ */
+export const ActionTriggerGroupProvider = ActionTriggerGroupContext.Provider;
+
+/** Whether the calling trigger is rendered inside an Action-trigger group. */
+export const useIsGroupedActionTrigger = (): boolean => {
+  return React.useContext(ActionTriggerGroupContext);
+};
+
 /** Resolved colour leaves a trigger paints, whatever cascade produced them. */
 export interface ActionTriggerColors {
   background?: string;
@@ -141,6 +176,7 @@ export const buildActionTriggerStyle = ({
   isIconOnly,
   isDisabled,
   isFocusVisible,
+  isGrouped,
 }: {
   silhouette: ActionSilhouette;
   colors: ActionTriggerColors;
@@ -148,6 +184,8 @@ export const buildActionTriggerStyle = ({
   isIconOnly: boolean;
   isDisabled?: boolean;
   isFocusVisible?: boolean;
+  /** @see useIsGroupedActionTrigger */
+  isGrouped?: boolean;
 }): React.CSSProperties => {
   return {
     boxSizing: 'border-box',
@@ -155,6 +193,9 @@ export const buildActionTriggerStyle = ({
     alignItems: 'center',
     justifyContent: 'center',
     gap: hasIcon ? vars.spacing.gap.inline.xs : undefined,
+    // Inside a group the trigger holds its natural width; on its own it stays
+    // a normal flex item.
+    flexShrink: isGrouped ? 0 : undefined,
     cursor: isDisabled ? 'not-allowed' : 'pointer',
     borderRadius: silhouette.radius,
     borderWidth: vars.border.outline.control.width,

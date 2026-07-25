@@ -128,6 +128,20 @@ Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              Stack (layout rhythm: direction=vertical|horizontal picks the
              gap.stack|gap.inline family, gap=xs..xl, align, justify, wrap —
              never a raw gap; use instead of a hand-rolled flex div),
+             ButtonGroup (the ACTION ROW: orientation=horizontal|vertical,
+             align=start|center|end. Deliberately has NO gap prop — the
+             separation between sibling actions is one product-wide decision, so
+             every action row shares a rhythm; a Stack with a caller-picked gap
+             is what it exists to replace. horizontal is ADAPTIVE: it measures
+             and lays the actions out in a column when the row does not fit,
+             publishing the rendered axis as data-orientation and marking a
+             forced column data-collapsed="true"; orientation=vertical pins the
+             column and skips the measurement. Grouped triggers stop shrinking
+             (context, so it survives a Tooltip/DialogTrigger wrapper) — that is
+             what makes the overflow measurable. Every action keeps its own tab
+             stop: reach for Toolbar when the set should be ONE stop with
+             arrow-key nav, DialogActions inside a Dialog (it reorders by
+             composition per platform)),
              Box (token-constrained escape hatch, ADR-009: padding/
              paddingBlock/paddingInline=none|sm|md|lg, background=none|primary|
              muted, radius=none|control|surface|round, border=none|muted|
