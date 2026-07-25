@@ -194,8 +194,7 @@ interface ConfirmationDialogNonDestructiveProps extends ConfirmationDialogBasePr
  * forbid it. The type system enforces what the arming mechanism needs.
  */
 export type ConfirmationDialogProps =
-  | ConfirmationDialogDestructiveProps
-  | ConfirmationDialogNonDestructiveProps;
+  ConfirmationDialogDestructiveProps | ConfirmationDialogNonDestructiveProps;
 
 /**
  * A Dialog composite that demands confirmation before invoking a side effect.
@@ -299,7 +298,12 @@ export const ConfirmationDialog = ({
                   <Button
                     slot="close"
                     composition="dismissAction"
-                    evaluation="muted"
+                    // `secondary`, not `muted`: cancelling is a first-class
+                    // alternative in a decision, so it needs a visible
+                    // affordance. `muted` is now the ladder's quiet rung (no
+                    // edge at rest) — right for ambient chrome, too recessive
+                    // for the escape hatch of a confirmation.
+                    evaluation="secondary"
                     onPress={() => {
                       return reset();
                     }}

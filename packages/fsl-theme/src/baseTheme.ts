@@ -548,7 +548,14 @@ export const baseTheme: ThemeTokens = {
           },
         },
         muted: {
-          // neutral.0 background, neutral.200 border, neutral.700 text
+          // The quietest rung of the Action emphasis ladder: the fill *is* the
+          // surface it sits on and the border matches it, so the control has no
+          // visible edge at rest and materialises on hover. This is the
+          // system's idiom for "no fill" — an opaque surface-coloured value,
+          // never `transparent`, so every pairing stays contrast-auditable
+          // (ADR-015). Giving it a visible border instead made it read as the
+          // classic outlined *secondary* of other systems and inverted the
+          // perceived order of the ladder.
           background: {
             default: '{core.colors.neutral.0}',
             hover: '{core.colors.neutral.50}',
@@ -559,13 +566,16 @@ export const baseTheme: ThemeTokens = {
             expanded: '{core.colors.neutral.50}',
           },
           border: {
-            default: '{core.colors.neutral.200}',
-            hover: '{core.colors.neutral.300}',
-            active: '{core.colors.neutral.300}',
+            // Every state mirrors its background: the edge never appears, the
+            // fill carries the whole affordance. `focused` is the exception —
+            // it is the one state that must be visible on any surface.
+            default: '{core.colors.neutral.0}',
+            hover: '{core.colors.neutral.50}',
+            active: '{core.colors.neutral.100}',
             focused: '{core.colors.brand.500}',
-            disabled: '{core.colors.neutral.200}',
-            pressed: '{core.colors.neutral.300}',
-            expanded: '{core.colors.neutral.500}',
+            disabled: '{core.colors.neutral.100}',
+            pressed: '{core.colors.neutral.100}',
+            expanded: '{core.colors.neutral.50}',
           },
           text: {
             default: '{core.colors.neutral.700}',
@@ -1606,22 +1616,35 @@ export const darkAlternate: ModeOverride = {
           },
         },
         muted: {
+          // Dark mode's quiet rung sits ON the canvas (neutral.900), not one
+          // stratum above it: at neutral.700 it resolved to the exact same
+          // triple as `secondary` — two emphasis levels rendering the same
+          // pixels. The fill still appears on hover, one tonal step at a time
+          // (ADR-018: dark depth is carried by surface colour).
           background: {
-            default: '{core.colors.neutral.700}',
-            hover: '{core.colors.neutral.500}',
+            default: '{core.colors.neutral.900}',
+            hover: '{core.colors.neutral.700}',
             active: '{core.colors.neutral.500}', // neutral.300 fails AA with neutral.0 text (1.6:1); neutral.500 gives 5.5:1
-            disabled: '{core.colors.neutral.700}',
+            disabled: '{core.colors.neutral.900}',
             droptarget: '{core.colors.neutral.700}', // neutral.50 is near-white on dark
             pressed: '{core.colors.neutral.700}', // neutral.300 fails AA; darker = "depressed" feel, white text gives 8.6:1
             expanded: '{core.colors.neutral.500}', // neutral.50 is near-white on dark
           },
           border: {
-            default: '{core.colors.neutral.500}',
+            // Mirrors the background — no edge at rest, same as light mode.
+            default: '{core.colors.neutral.900}',
+            hover: '{core.colors.neutral.700}',
+            active: '{core.colors.neutral.500}',
             focused: '{core.colors.brand.500}',
-            disabled: '{core.colors.neutral.700}',
+            disabled: '{core.colors.neutral.900}',
+            pressed: '{core.colors.neutral.700}',
+            expanded: '{core.colors.neutral.500}',
           },
           text: {
-            default: '{core.colors.neutral.50}',
+            // Dimmer than `secondary`'s neutral.50: the quiet rung is quiet in
+            // ink as well as in fill. neutral.300 on the neutral.900 canvas →
+            // 13.6:1 ✓, and it brightens to neutral.0 once a fill appears.
+            default: '{core.colors.neutral.300}',
             disabled: '{core.colors.neutral.500}',
             // neutral.900 text on neutral.700 dark bg → ~3:1 — fails WCAG AA
             hover: '{core.colors.neutral.0}',
@@ -1697,8 +1720,13 @@ export const darkAlternate: ModeOverride = {
             indeterminate: '{core.colors.neutral.900}',
           },
         },
-        // input.secondary: lower-emphasis field, matches primary dark values since both
-        // render on a dark page. base neutral.0 default fails on dark — full override.
+        // input.secondary: lower-emphasis field. It shares primary's dark fill
+        // (both render on a dark page, and base's neutral.0 default fails
+        // there), but it must NOT share primary's edge: in light mode
+        // secondary recedes via a lighter border (neutral.200 vs primary's
+        // neutral.300), and the dark override used to drop that distinction
+        // entirely — leaving the two roles byte-identical at rest. Here the
+        // border matches its own fill, so the field recedes until hovered.
         secondary: {
           background: {
             default: '{core.colors.neutral.700}',
@@ -1714,7 +1742,8 @@ export const darkAlternate: ModeOverride = {
             indeterminate: '{core.colors.neutral.0}',
           },
           border: {
-            default: '{core.colors.neutral.500}',
+            // Mirrors its own fill: the edge appears on hover, not at rest.
+            default: '{core.colors.neutral.700}',
             hover: '{core.colors.neutral.300}',
             active: '{core.colors.neutral.300}',
             focused: '{core.colors.brand.500}',

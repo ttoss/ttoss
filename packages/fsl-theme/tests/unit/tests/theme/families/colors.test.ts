@@ -109,9 +109,14 @@ const KNOWN_BORDER_CONTRAST_VIOLATIONS: ReadonlySet<string> = new Set([
   'action.accent.focused',
   'action.accent.hover',
   'action.accent.pressed',
+  // `action.muted` is the ladder's quiet rung: its border mirrors its
+  // background in every state, so the edge never appears (pattern (a) —
+  // border == background by design). `focused` is the deliberate exception and
+  // is therefore absent from this list.
   'action.muted.active',
   'action.muted.default',
   'action.muted.disabled',
+  'action.muted.expanded',
   'action.muted.hover',
   'action.muted.pressed',
   'action.negative.active',
@@ -664,3 +669,67 @@ describe('Semantic color grammar — overlay absent from semantic.colors', () =>
 // false positives for intentional shared tones. Validate through design
 // review rather than automated testing.
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Error #5 (role collapse): two roles in the same ux context must not resolve
+// to the same visual contract
+//
+// The distinguishability suite above compares *states within a role*. Nothing
+// compared *roles within a context* — which is how `action.secondary` and
+// `action.muted` shipped byte-identical in dark mode (both
+// neutral.700 / neutral.500 / neutral.50): two documented emphasis levels
+// rendering the same pixels, invisible to every existing test.
+//
+// The rule is minimal on purpose: it asserts only that the resting
+// `(background, border, text)` triple differs somewhere. It makes no claim
+// about *how much* it differs — that is a design judgement — but a role whose
+// entire contract duplicates another's is a defect in any theme.
+// ---------------------------------------------------------------------------
+
+const restingTriple = (
+  tokens: Record<string, string | number>,
+  ux: string,
+  role: string
+): string => {
+  return (['background', 'border', 'text'] as const)
+    .map((dim) => {
+      return String(tokens[`semantic.colors.${ux}.${role}.${dim}.default`]);
+    })
+    .join('|');
+};
+
+describe('Semantic color grammar — roles within a context are distinguishable', () => {
+  for (const { label, base, alt } of bundleEntries) {
+    describe(label, () => {
+      for (const [ux, roles] of Object.entries(ALLOWED_ROLES)) {
+        for (const [mode, tokens] of [
+          ['base', base],
+          ['alt', alt],
+        ] as const) {
+          if (!tokens) continue;
+
+          test(`${mode}: every ${ux} role has its own resting contract`, () => {
+            const seen = new Map<string, string>();
+            const collisions: string[] = [];
+
+            for (const role of roles) {
+              const triple = restingTriple(tokens, ux, role);
+              // A role that defines none of the three dimensions is not a
+              // collapse — it simply is not painted in this theme.
+              if (triple === 'undefined|undefined|undefined') continue;
+
+              const previous = seen.get(triple);
+              if (previous) {
+                collisions.push(`${ux}.${role} === ${ux}.${previous}`);
+              } else {
+                seen.set(triple, role);
+              }
+            }
+
+            expect(collisions).toEqual([]);
+          });
+        }
+      }
+    });
+  }
+});
