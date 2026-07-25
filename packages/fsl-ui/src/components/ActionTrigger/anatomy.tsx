@@ -11,11 +11,11 @@ import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
 import type { IconProps } from '../Icon';
 
 // ---------------------------------------------------------------------------
-// Shared anatomy of an Action trigger — internal, never exported from the
-// package.
+// Shared anatomy of an Action trigger and of the containers that group them —
+// internal, never exported from the package.
 //
 // Every Action-entity trigger (`Button`, `ActionButton`, `ToggleButton`, and
-// the ActionMenu/ActionGroup triggers that follow) has the *same* anatomy:
+// the ActionMenu trigger that follows) has the *same* anatomy:
 //   root ▸ icon? ▸ label?    (`icon` and `label` are lawful Action roles)
 // and the same geometry rules — centred flex row, `hit` floor on both axes,
 // square when icon-only, focus ring floated off the edge.
@@ -155,6 +155,64 @@ export const ActionTriggerGroupProvider = ActionTriggerGroupContext.Provider;
 /** Whether the calling trigger is rendered inside an Action-trigger group. */
 export const useIsGroupedActionTrigger = (): boolean => {
   return React.useContext(ActionTriggerGroupContext);
+};
+
+// ---------------------------------------------------------------------------
+// Shared anatomy of a *group* of Action triggers
+//
+// `ButtonGroup` (command row), `Toolbar` (utility cluster, arrow-key region) and
+// `ToggleButtonGroup` (selectable set) are three different identities, but their
+// arrangement is one decision, made here: the separation between sibling actions
+// (`gap.inline.sm`), the axis, and where the set sits along the axis that has
+// free space. Copying that into each container is how the same three lines drift
+// apart — the lesson ADR-013 recorded for the triggers themselves.
+//
+// Chrome is deliberately absent: none of the three paints. A cluster that needs
+// a bar composes one (`Surface` + the group), because whether a toolbar has
+// chrome depends on the surface it sits on, not on the toolbar. `Toolbar` used to
+// paint its own `informational` bar and it measured 80px tall around 34px
+// controls — a card wrapping controls that then read as bare text (ADR-014).
+// ---------------------------------------------------------------------------
+
+/** Where a group's actions sit along the axis that has free space. */
+export type ActionGroupAlign = 'start' | 'center' | 'end';
+
+const GROUP_ALIGN: Record<ActionGroupAlign, string> = {
+  start: 'flex-start',
+  center: 'center',
+  end: 'flex-end',
+};
+
+/**
+ * Arrangement shared by every container of Action triggers.
+ *
+ * `align` acts on whichever axis has free space — the main axis in a row
+ * (`justify-content`), the cross axis in a column (`align-items`) — so the prop
+ * means the same thing in both orientations.
+ *
+ * `isInline` is the one genuine difference between the containers: a command row
+ * and a toolbar are **bands** across their container (block-level, so `align`
+ * has space to distribute), while a segmented control is an **inline object**
+ * sized by its content.
+ */
+export const buildActionGroupStyle = ({
+  isColumn,
+  align,
+  isInline,
+}: {
+  isColumn: boolean;
+  align: ActionGroupAlign;
+  isInline?: boolean;
+}): React.CSSProperties => {
+  return {
+    boxSizing: 'border-box',
+    display: isInline ? 'inline-flex' : 'flex',
+    flexDirection: isColumn ? 'column' : 'row',
+    gap: vars.spacing.gap.inline.sm,
+    alignItems: isColumn ? GROUP_ALIGN[align] : 'center',
+    justifyContent: isColumn ? 'flex-start' : GROUP_ALIGN[align],
+    flexWrap: 'nowrap',
+  } as React.CSSProperties;
 };
 
 /** Resolved colour leaves a trigger paints, whatever cascade produced them. */

@@ -1,8 +1,11 @@
-import { vars } from '@ttoss/fsl-theme/vars';
 import * as React from 'react';
 
 import type { ComponentMeta } from '../../semantics';
-import { ActionTriggerGroupProvider } from '../ActionTrigger/anatomy';
+import {
+  type ActionGroupAlign,
+  ActionTriggerGroupProvider,
+  buildActionGroupStyle,
+} from '../ActionTrigger/anatomy';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -17,9 +20,9 @@ import { ActionTriggerGroupProvider } from '../ActionTrigger/anatomy';
 // Why it exists next to `Stack`, `Toolbar` and `DialogActions`:
 //   - `Stack` is the generic rhythm primitive — the caller picks the gap, so
 //     every action row in a product can pick a different one.
-//   - `Toolbar` is `role="toolbar"` with roving focus: one tab stop for the
-//     whole bar. Correct for a formatting bar, wrong for a Save/Cancel pair,
-//     where each command must be its own tab stop.
+//   - `Toolbar` is a named `role="toolbar"` region with arrow-key navigation.
+//     Correct for a formatting bar; wrong for a Save/Cancel pair, which is not
+//     a set of operations on content and needs no region of its own.
 //   - `DialogActions` is dialog-scoped and reorders by `composition` per
 //     platform; it throws outside a `<Dialog>`.
 // What is left over — the action row of a form, a page header, a card, a wizard
@@ -38,13 +41,7 @@ export const buttonGroupMeta = {
 export type ButtonGroupOrientation = 'horizontal' | 'vertical';
 
 /** Where the actions sit along the axis that has free space. */
-export type ButtonGroupAlign = 'start' | 'center' | 'end';
-
-const ALIGN: Record<ButtonGroupAlign, string> = {
-  start: 'flex-start',
-  center: 'center',
-  end: 'flex-end',
-};
+export type ButtonGroupAlign = ActionGroupAlign;
 
 /**
  * Whether any child sticks out of the group's own box.
@@ -113,53 +110,6 @@ export interface ButtonGroupProps extends Omit<
   children?: React.ReactNode;
 }
 
-/**
- * Lays out a set of related actions with one rhythm, and collapses the row to a
- * column when it no longer fits.
- *
- * Entity = Structure → spacing: `gap.inline.sm` between siblings. It paints
- * nothing and takes no colour: the actions carry the emphasis, the group
- * carries only the arrangement.
- *
- * **The gap is not a prop, deliberately.** `Stack` already offers a caller-picked
- * gap; if this component took one too it would be a Stack preset. Its reason to
- * exist is that the separation between sibling actions is *one* decision for the
- * whole product, made by the theme — so every action row in every surface shares
- * a rhythm. Both axes read the same token: a row that columnised because space
- * ran out is still the same set of actions, not a new stacking rhythm, so the
- * spacing does not change with the axis (this is the one place a Structure
- * component deliberately does not follow `Stack`'s inline/stack split).
- *
- * **What the group imposes on its children.** Exactly one thing: grouped
- * triggers stop shrinking. A trigger sets an explicit `min-width` (the `hit`
- * floor), which overrides a flex item's automatic minimum size, so in a tight
- * row it would squash below its own label. Holding the natural width is what
- * makes the overflow real and therefore measurable. Delivered by context, so it
- * reaches a `Button` wrapped in a `Tooltip` or a `DialogTrigger` too.
- *
- * **Keyboard.** Every action stays its own tab stop. Reach for `Toolbar` when
- * the set *should* behave as one stop with arrow-key navigation (a formatting
- * bar); reach for this when each action is an independent commitment.
- *
- * No `role` is emitted: an unnamed `role="group"` adds screen-reader noise
- * without adding meaning. Pass `role`/`aria-label` yourself when the cluster is
- * genuinely a named region, or use `Group` for a labelled, painted frame.
- *
- * @example
- * ```tsx
- * // Form footer: the pair pushes to the end, columnises when space runs out
- * <ButtonGroup align="end">
- *   <Button evaluation="secondary">Cancel</Button>
- *   <Button evaluation="primary">Save changes</Button>
- * </ButtonGroup>
- *
- * // Fixed column — no measurement
- * <ButtonGroup orientation="vertical">
- *   <Button>Duplicate</Button>
- *   <Button evaluation="negative" consequence="destructive">Delete</Button>
- * </ButtonGroup>
- * ```
- */
 /** No verdict yet — distinct from any possible `children` value. */
 const UNMEASURED = Symbol('unmeasured');
 
@@ -236,6 +186,53 @@ const useAdaptiveColumn = ({
   return isAdaptive && isSettled && verdict.isColumn;
 };
 
+/**
+ * Lays out a set of related actions with one rhythm, and collapses the row to a
+ * column when it no longer fits.
+ *
+ * Entity = Structure → spacing: `gap.inline.sm` between siblings. It paints
+ * nothing and takes no colour: the actions carry the emphasis, the group
+ * carries only the arrangement.
+ *
+ * **The gap is not a prop, deliberately.** `Stack` already offers a caller-picked
+ * gap; if this component took one too it would be a Stack preset. Its reason to
+ * exist is that the separation between sibling actions is *one* decision for the
+ * whole product, made by the theme — so every action row in every surface shares
+ * a rhythm. Both axes read the same token: a row that columnised because space
+ * ran out is still the same set of actions, not a new stacking rhythm, so the
+ * spacing does not change with the axis (this is the one place a Structure
+ * component deliberately does not follow `Stack`'s inline/stack split).
+ *
+ * **What the group imposes on its children.** Exactly one thing: grouped
+ * triggers stop shrinking. A trigger sets an explicit `min-width` (the `hit`
+ * floor), which overrides a flex item's automatic minimum size, so in a tight
+ * row it would squash below its own label. Holding the natural width is what
+ * makes the overflow real and therefore measurable. Delivered by context, so it
+ * reaches a `Button` wrapped in a `Tooltip` or a `DialogTrigger` too.
+ *
+ * **Keyboard.** Plain tab order, no arrow-key layer: independent commitments
+ * should not be walked like a strip of tools. Reach for `Toolbar` when the set
+ * *is* a strip of tools operating on content.
+ *
+ * No `role` is emitted: an unnamed `role="group"` adds screen-reader noise
+ * without adding meaning. Pass `role`/`aria-label` yourself when the cluster is
+ * genuinely a named region, or use `Group` for a labelled, painted frame.
+ *
+ * @example
+ * ```tsx
+ * // Form footer: the pair pushes to the end, columnises when space runs out
+ * <ButtonGroup align="end">
+ *   <Button evaluation="secondary">Cancel</Button>
+ *   <Button evaluation="primary">Save changes</Button>
+ * </ButtonGroup>
+ *
+ * // Fixed column — no measurement
+ * <ButtonGroup orientation="vertical">
+ *   <Button>Duplicate</Button>
+ *   <Button evaluation="negative" consequence="destructive">Delete</Button>
+ * </ButtonGroup>
+ * ```
+ */
 export const ButtonGroup = ({
   orientation = 'horizontal',
   align = 'start',
@@ -260,19 +257,13 @@ export const ButtonGroup = ({
       data-collapsed={hasCollapsed ? 'true' : undefined}
       style={
         {
-          boxSizing: 'border-box',
-          // Block-level: an action row is a band across its container, which is
-          // what gives `align` free space to work with. `position: relative`
-          // makes the group its children's offset parent — the measurement
-          // depends on it.
-          display: 'flex',
+          ...buildActionGroupStyle({ isColumn, align }),
+          // `position: relative` makes the group its children's offset parent —
+          // the measurement depends on it. `max-inline-size` keeps a row that
+          // overflows from widening the group past its container, which is what
+          // makes the overflow detectable.
           position: 'relative',
           maxInlineSize: '100%',
-          flexDirection: isColumn ? 'column' : 'row',
-          gap: vars.spacing.gap.inline.sm,
-          alignItems: isColumn ? ALIGN[align] : 'center',
-          justifyContent: isColumn ? 'flex-start' : ALIGN[align],
-          flexWrap: 'nowrap',
         } as React.CSSProperties
       }
     >
