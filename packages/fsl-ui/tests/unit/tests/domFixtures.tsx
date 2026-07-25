@@ -96,6 +96,19 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       return <pkg.Button>x</pkg.Button>;
     },
   },
+  // Icon-only Button: a distinct DOM shape (square, no label part, name from
+  // aria-label) — its own fixture so the contract + axe suites cover it.
+  ButtonIconOnly: {
+    scope: 'button',
+    element: () => {
+      return (
+        <pkg.Button
+          icon={<pkg.Icon intent="action.close" />}
+          aria-label="Close"
+        />
+      );
+    },
+  },
   Code: {
     scope: 'code',
     element: () => {

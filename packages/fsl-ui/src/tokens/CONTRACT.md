@@ -429,6 +429,16 @@ Registered knobs:
 `entity: 'Action'` → §1 row: colors=`action`, radii=`action`, border=`outline.control`,
 sizing=`hit`, spacing=`inset.control.md`, typography=`action.md`, motion=`feedback`, elevation=`flat`.
 
+Anatomy: `root` · `icon` · `label` — all three are lawful Action structural
+roles (`ENTITY_STRUCTURE.Action`), so a Button with a glyph declares real
+identities instead of anonymous spans. `sizing.hit` binds **both** axes: it
+drives the height and supplies a square minimum width, which is what makes the
+icon-only form a square (and, under `radii.action` = pill, a circle) without a
+second token. The glyph arrives as a caller-supplied `<Icon>` **element**, not
+an intent string: a component that renders a caller's glyph imports
+`IconProps` as a _type only_, so it never pulls the glyph registry into a
+consumer that renders text alone (the tree-shaking guarantee — ADR-006).
+
 ```typescript
 import { vars } from '@ttoss/fsl-theme/vars';
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
