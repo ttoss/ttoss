@@ -914,14 +914,22 @@ export const baseTheme: ThemeTokens = {
         // Feedback is informational — surfaces show state, not interactions.
         // Legal states: default | focused (close button or focusable wrapper) | disabled.
         // hover, active, selected, pressed, expanded are absent: FSL §7.
+        //
+        // Filled language (P3 Slice 3, Spectrum-derived): status surfaces are
+        // deep saturated fills with neutral.0 text — confident, mode-stable
+        // (the valences hold the same fill in dark; only `primary`/`muted`
+        // remap). Every fill clears AA Normal with neutral.0: neutral.800
+        // 15.1:1 · green.700 5.0:1 · yellow.700 4.9:1 · red.600 4.8:1.
+        // `muted` stays a tinted neutral surface — the quiet chip and the
+        // rail/track color for Feedback fills (ProgressBar, Meter).
         primary: {
-          background: { default: '{core.colors.neutral.50}' },
+          background: { default: '{core.colors.neutral.800}' },
           border: {
-            default: '{core.colors.neutral.300}',
+            default: '{core.colors.neutral.800}',
             focused: '{core.colors.brand.500}',
           },
           text: {
-            default: '{core.colors.neutral.900}',
+            default: '{core.colors.neutral.0}',
             disabled: '{core.colors.neutral.500}',
           },
         },
@@ -937,35 +945,50 @@ export const baseTheme: ThemeTokens = {
           },
         },
         positive: {
-          background: { default: '{core.colors.green.100}' },
+          background: { default: '{core.colors.green.700}' },
           border: {
-            default: '{core.colors.green.500}',
-            focused: '{core.colors.green.700}',
+            default: '{core.colors.green.700}',
+            focused: '{core.colors.green.900}',
           },
           text: {
-            default: '{core.colors.green.900}',
+            default: '{core.colors.neutral.0}',
             disabled: '{core.colors.neutral.500}',
           },
         },
         caution: {
-          background: { default: '{core.colors.yellow.100}' },
+          background: { default: '{core.colors.yellow.700}' },
           border: {
-            default: '{core.colors.yellow.500}',
-            focused: '{core.colors.yellow.700}',
+            default: '{core.colors.yellow.700}',
+            focused: '{core.colors.yellow.900}',
           },
           text: {
-            default: '{core.colors.yellow.900}',
+            default: '{core.colors.neutral.0}',
             disabled: '{core.colors.neutral.500}',
           },
         },
         negative: {
-          background: { default: '{core.colors.red.100}' },
+          background: { default: '{core.colors.red.600}' },
           border: {
-            default: '{core.colors.red.500}',
-            focused: '{core.colors.red.700}',
+            default: '{core.colors.red.600}',
+            focused: '{core.colors.red.900}',
           },
           text: {
-            default: '{core.colors.red.900}',
+            default: '{core.colors.neutral.0}',
+            disabled: '{core.colors.neutral.500}',
+          },
+        },
+        // Informative valence (P3 Slice 3): status that is noteworthy but
+        // carries no judgement — "in progress", "new", "info". The brand
+        // fill is mode-stable (like action.accent); this is the canonical
+        // fill for ProgressBar/Meter activity.
+        accent: {
+          background: { default: '{core.colors.brand.500}' },
+          border: {
+            default: '{core.colors.brand.500}',
+            focused: '{core.colors.brand.700}',
+          },
+          text: {
+            default: '{core.colors.neutral.0}',
             disabled: '{core.colors.neutral.500}',
           },
         },
@@ -1241,7 +1264,7 @@ export const baseTheme: ThemeTokens = {
         lg: {
           fontFamily: '{core.font.family.sans}',
           fontSize: '{core.font.scale.text.3}',
-          fontWeight: '{core.font.weight.medium}',
+          fontWeight: '{core.font.weight.regular}',
           lineHeight: '{core.font.leading.snug}',
           letterSpacing: '{core.font.tracking.normal}',
           fontOpticalSizing: '{core.font.optical.auto}',
@@ -1249,7 +1272,7 @@ export const baseTheme: ThemeTokens = {
         md: {
           fontFamily: '{core.font.family.sans}',
           fontSize: '{core.font.scale.text.2}',
-          fontWeight: '{core.font.weight.medium}',
+          fontWeight: '{core.font.weight.regular}',
           lineHeight: '{core.font.leading.snug}',
           letterSpacing: '{core.font.tracking.normal}',
           fontOpticalSizing: '{core.font.optical.auto}',
@@ -1257,9 +1280,23 @@ export const baseTheme: ThemeTokens = {
         sm: {
           fontFamily: '{core.font.family.sans}',
           fontSize: '{core.font.scale.text.1}',
-          fontWeight: '{core.font.weight.medium}',
+          fontWeight: '{core.font.weight.regular}',
           lineHeight: '{core.font.leading.snug}',
           letterSpacing: '{core.font.tracking.wide}',
+          fontOpticalSizing: '{core.font.optical.auto}',
+        },
+      },
+
+      // Command-trigger text (P3 Slice 3): CTAs carry semibold while `label`
+      // sits at regular — the weight-contrast rhythm of reference-grade
+      // systems (controls quiet, commands assertive).
+      action: {
+        md: {
+          fontFamily: '{core.font.family.sans}',
+          fontSize: '{core.font.scale.text.2}',
+          fontWeight: '{core.font.weight.semibold}',
+          lineHeight: '{core.font.leading.snug}',
+          letterSpacing: '{core.font.tracking.normal}',
           fontOpticalSizing: '{core.font.optical.auto}',
         },
       },
@@ -1382,6 +1419,10 @@ export const baseTheme: ThemeTokens = {
 
     // -- Radii --------------------------------------------------------------
     radii: {
+      // Pill CTAs (P3 Slice 3, Spectrum-derived): command triggers take the
+      // full-round silhouette while fields/choice controls stay at `control`
+      // — the "press me" vs "fill me in" distinction.
+      action: '{core.radii.full}',
       control: '{core.radii.md}',
       surface: '{core.radii.lg}',
       round: '{core.radii.full}',
@@ -1798,8 +1839,16 @@ export const darkAlternate: ModeOverride = {
         },
       },
       feedback: {
+        // Valence fills (positive/caution/negative) are mode-stable — the
+        // deep filled surfaces from the base read correctly on the dark
+        // canvas (same mechanism as action.negative), so only the neutral
+        // roles remap: primary lightens one stratum to stay a visible chip
+        // on the neutral.900 canvas; muted follows the dark neutral surface.
         primary: {
-          background: { default: '{core.colors.neutral.700}' },
+          // neutral.500 (not 700): the filled neutral chip must stand off the
+          // dark strata it sits on (canvas 900 / raised 800 / overlay 700) —
+          // 700 camouflages against a raised card. neutral.0 text: 5.0:1 ✓.
+          background: { default: '{core.colors.neutral.500}' },
           border: { default: '{core.colors.neutral.500}' },
           text: { default: '{core.colors.neutral.0}' },
         },
@@ -1807,21 +1856,6 @@ export const darkAlternate: ModeOverride = {
           background: { default: '{core.colors.neutral.700}' },
           border: { default: '{core.colors.neutral.500}' },
           text: { default: '{core.colors.neutral.300}' },
-        },
-        positive: {
-          background: { default: '{core.colors.neutral.900}' },
-          border: { default: '{core.colors.green.500}' },
-          text: { default: '{core.colors.green.300}' },
-        },
-        caution: {
-          background: { default: '{core.colors.neutral.900}' },
-          border: { default: '{core.colors.yellow.500}' },
-          text: { default: '{core.colors.yellow.300}' },
-        },
-        negative: {
-          background: { default: '{core.colors.neutral.900}' },
-          border: { default: '{core.colors.red.500}' },
-          text: { default: '{core.colors.red.300}' },
         },
       },
       navigation: {

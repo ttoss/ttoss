@@ -26,9 +26,9 @@ export const buttonMeta = {
 /**
  * Displays a semantic action trigger (entity: Action).
  *
- * Entity = Action → colors: `action`, radii: `control`, border: `outline.control`,
+ * Entity = Action → colors: `action`, radii: `action`, border: `outline.control`,
  * sizing: `hit` (ergonomic floor, drives height), spacing: `inset.control`
- * (`sm` block / `lg` inline), typography: `label.md`, motion: `feedback`.
+ * (`sm` block / `lg` inline), typography: `action.md`, motion: `feedback`.
  */
 export interface ButtonProps extends Omit<RACButtonProps, 'style'> {
   /**
@@ -92,7 +92,10 @@ export const Button = ({
           alignItems: 'center',
           justifyContent: 'center',
           cursor: isDisabled ? 'not-allowed' : 'pointer',
-          borderRadius: vars.radii.control,
+          // Command silhouette: `radii.action` (pill in the base theme) and
+          // `text.action` (semibold) — CTAs read assertive while fields and
+          // choice controls stay at the quieter `control`/`label` pair.
+          borderRadius: vars.radii.action,
           borderWidth: vars.border.outline.control.width,
           borderStyle: vars.border.outline.control.style,
           minHeight: vars.sizing.hit,
@@ -102,7 +105,7 @@ export const Button = ({
           // (matches MUI/Bootstrap/Tailwind ~1:3 vertical:horizontal ratio).
           paddingBlock: vars.spacing.inset.control.sm,
           paddingInline: vars.spacing.inset.control.lg,
-          ...(vars.text.label.md as React.CSSProperties),
+          ...(vars.text.action.md as React.CSSProperties),
           transitionDuration: vars.motion.feedback.duration,
           transitionTimingFunction: vars.motion.feedback.easing,
           transitionProperty: 'background-color, border-color, color',

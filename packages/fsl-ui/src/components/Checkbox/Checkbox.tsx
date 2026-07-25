@@ -46,7 +46,10 @@ const BOX_STYLE_STATIC = {
   justifyContent: 'center',
   width: '1.125rem',
   height: '1.125rem',
-  borderRadius: vars.radii.control,
+  // Half the control radius: at box scale (18px) the full `control` radius
+  // reads as a circle and the checkbox becomes visually ambiguous with a
+  // Radio. Halving keeps the curvature theme-driven (P3 slice 3).
+  borderRadius: `calc(${vars.radii.control} / 2)`,
   borderStyle: vars.border.outline.control.style,
   transitionProperty: 'background-color, border-color, border-width',
   transitionDuration: vars.motion.feedback.duration,

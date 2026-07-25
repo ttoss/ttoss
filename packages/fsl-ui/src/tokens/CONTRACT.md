@@ -65,17 +65,17 @@ the current combination of React Aria state booleans.
 
 A component MUST use ONLY tokens from its Entity row.
 
-| Entity         | Colors          | Radii     | Border                        | Sizing | Spacing         | Typography               | Motion       | Elevation        |
-| -------------- | --------------- | --------- | ----------------------------- | ------ | --------------- | ------------------------ | ------------ | ---------------- |
-| **Action**     | `action`        | `control` | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Input**      | `input`         | `control` | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Selection**  | `input`         | `control` | `outline.control`, `selected` | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Navigation** | `navigation`    | `control` | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Disclosure** | `navigation`    | `control` | `outline.control`             | `hit`  | `inset.control` | `label`                  | `transition` | `flat`           |
-| **Overlay**    | `informational` | `surface` | `outline.surface`             | —      | `inset.surface` | `title`, `body`, `label` | `transition` | `overlay`        |
-| **Feedback**   | `feedback`      | `surface` | `outline.surface`             | —      | `inset.surface` | `body`, `label`          | `feedback`   | `raised`         |
-| **Collection** | `informational` | `surface` | `outline.surface`, `divider`  | —      | `inset.surface` | `body`, `label`          | —            | `flat`, `raised` |
-| **Structure**  | `informational` | `surface` | `outline.surface`, `divider`  | —      | `inset.surface` | `title`, `body`, `label` | —            | `flat`, `raised` |
+| Entity         | Colors          | Radii                      | Border                        | Sizing | Spacing         | Typography               | Motion       | Elevation        |
+| -------------- | --------------- | -------------------------- | ----------------------------- | ------ | --------------- | ------------------------ | ------------ | ---------------- |
+| **Action**     | `action`        | `action`                   | `outline.control`             | `hit`  | `inset.control` | `action`                 | `feedback`   | `flat`           |
+| **Input**      | `input`         | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
+| **Selection**  | `input`         | `control`                  | `outline.control`, `selected` | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
+| **Navigation** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
+| **Disclosure** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `transition` | `flat`           |
+| **Overlay**    | `informational` | `surface`                  | `outline.surface`             | —      | `inset.surface` | `title`, `body`, `label` | `transition` | `overlay`        |
+| **Feedback**   | `feedback`      | `surface`, `round` (rails) | `outline.surface`             | —      | `inset.surface` | `body`, `label`          | `feedback`   | `raised`         |
+| **Collection** | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `body`, `label`          | —            | `flat`, `raised` |
+| **Structure**  | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `title`, `body`, `label` | —            | `flat`, `raised` |
 
 **Cross-cutting** (apply to ALL interactive entities — not in the table because they are entity-agnostic):
 
@@ -426,8 +426,8 @@ Registered knobs:
 
 ## §8 — Full Example: Button (Entity = Action)
 
-`entity: 'Action'` → §1 row: colors=`action`, radii=`control`, border=`outline.control`,
-sizing=`hit`, spacing=`inset.control.md`, typography=`label.md`, motion=`feedback`, elevation=`flat`.
+`entity: 'Action'` → §1 row: colors=`action`, radii=`action`, border=`outline.control`,
+sizing=`hit`, spacing=`inset.control.md`, typography=`action.md`, motion=`feedback`, elevation=`flat`.
 
 ```typescript
 import { vars } from '@ttoss/fsl-theme/vars';
@@ -457,7 +457,7 @@ export const Button = ({ evaluation = 'primary', ...props }: ButtonProps) => {
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: vars.radii.control,
+        borderRadius: vars.radii.action,
         borderWidth: vars.border.outline.control.width,
         borderStyle: vars.border.outline.control.style,
         minHeight: vars.sizing.hit,

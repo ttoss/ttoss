@@ -96,7 +96,7 @@ Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
 Feedback:    ProgressBar, Meter, Toast, ToastRegion, createToastQueue
              (Meter = static quantity in a range e.g. battery/disk;
              ProgressBar = a task in flight. Pick by "state" vs "progressing"),
-             Badge (status pill: evaluation=primary|positive|caution|negative,
+             Badge (status chip, filled: evaluation=primary|positive|caution|negative|accent,
              numeric=tabular for counts — never a hand-rolled colored span)
 Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              WizardNavigation, Separator, Group (labelled role=group frame),
@@ -147,13 +147,13 @@ Lucide via the Iconify provider, registered offline (no runtime API fetch).
 
 ## Entity → token map (a component reads ONLY its row)
 
-Action      → colors.action,        radii.control, motion.feedback
+Action      → colors.action,        radii.action (pill in base), text.action (semibold), motion.feedback
 Input       → colors.input,         radii.control, motion.feedback
 Selection   → colors.input,         radii.control, motion.feedback
 Navigation  → colors.navigation,    radii.control, motion.feedback
 Disclosure  → colors.navigation,    radii.control, motion.transition
 Overlay     → colors.informational, radii.surface, motion.transition, elevation.overlay
-Feedback    → colors.feedback,      radii.surface, elevation.raised
+Feedback    → colors.feedback,      radii.surface (chips) / radii.round (rails), elevation.raised
 Collection  → colors.informational, radii.surface
 Structure   → colors.informational, radii.surface
 

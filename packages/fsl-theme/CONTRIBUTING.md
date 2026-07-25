@@ -577,3 +577,22 @@ Re-litigation answers:
 - "Doesn't a single value lose expressiveness for CTAs vs dense list rows?" → no evidence it was used — `hit.prominent`/`hit.min` shipped with zero consumers. Emphasis is carried by colour, type, and inset, not by a larger hit floor. If a genuine need appears, reintroduce a scale then (evidence rule), not speculatively.
 - "Does this reopen ADR-019?" → ADR-019's density projection was later **reverted (2026-07-19)** for lack of a consumer, but its "control geometry not container-fluid" ruling is unaffected and is now carried entirely here: ADR-020 refines the _shape_ of the `hit` token (scale → scalar) and fixes the inset tuning that was the real oversized-control cause; the vertical axis is genuinely non-fluid because the rem-anchored `hit` binds the height.
 - "Why keep `inset.control` on the `cqi` spacing engine instead of a rem scale?" → the tight steps (`core.spacing.1|2`) drift only ±2px and never bind (the `hit` floor drives height), so the ergonomic guarantee is already met; moving inset onto a separate rem scale is a larger migration (it would break the `MUST_ALIAS` core-spacing invariant and its tests) deferred until evidence shows the ±2px horizontal drift matters.
+
+### ADR-021: Action gets its own silhouette (`radii.action`, `text.action`); feedback valences are filled; `feedback.accent` is the informative valence
+
+Status: accepted (2026-07-25)
+Tags: radii, typography, colors, feedback, aesthetics, P3
+
+Decision: three coupled additions from the P3 Slice 3 component-level review against the owner-chosen reference system (Adobe Spectrum 2, measured from `@react-spectrum/s2` rendered in-browser and `@adobe/spectrum-tokens` values):
+(1) **`semantic.radii.action`** — command triggers (Button/ToggleButton) take their own radius, pill (`{core.radii.full}`) in the base theme, so CTAs read "press me" while fields/choice controls stay at `control` ("fill me in"); bruttal overrides it to `none` (sharp identity preserved).
+(2) **`semantic.text.action`** (single `md` step, semibold) — CTA text splits from `label`, and `label.*` drops from `medium` to `regular`: the weight-contrast rhythm (controls quiet, commands assertive) replaces the flat 500-everywhere texture.
+(3) **feedback valences become filled surfaces** — `positive`/`caution`/`negative` move from tinted (100-bg + 500-border + 900-text) to deep fills (`green.700`/`yellow.700`/`red.600`) with `neutral.0` text, mode-stable (no dark remap); `primary` becomes the filled neutral chip (`neutral.800` light / `neutral.500` dark — 700 camouflages against the raised stratum); and a new **`accent`** role joins the feedback context as the _informative_ valence ("in progress", "new") — `brand.500` filled, the canonical fill for ProgressBar/Meter over the `muted` rail.
+Rejected: keeping one shared `control` radius (a per-component literal in fsl-ui would take the choice away from themes — bruttal must stay sharp); bolding `label` globally (S2's texture keeps controls at regular; only commands carry weight); tinted valences (read as outlined "traffic lights" next to reference systems — the filled language is what makes status chips look finished); adding `informative` as a sixth _valence_ name (the existing `accent` emphasis vocabulary already carries "noteworthy, judgement-free" — one word, not two).
+Cost: two type additions (`SemanticRadii.action`, `SemanticText.action`, `FeedbackColorRoles.accent`); the border-contrast inventory gains the filled-feedback pattern (a) entries; `feedback.*.text.default` on the valences is now only valid **on the fill** — text about an outcome placed on a page surface must use `informational.{valence}.text` instead.
+Anchors: `src/families/radii.ts`, `src/families/typography.ts`, `src/families/colors.ts` › `FeedbackColorRoles`, `src/baseTheme.ts` › `semantic.radii` / `semantic.text.action` / `semantic.colors.feedback`, `src/themes/bruttal.ts` › `radii.action`, `packages/fsl-ui/src/semantics/taxonomy.ts` › `ENTITY_EVALUATION.Feedback`, `packages/fsl-ui/src/tokens/CONTRACT.md` §1.
+
+Re-litigation answers:
+
+- "Why not a `size`/`shape` prop on Button instead of a token?" → shape is a theme decision, not an author decision — same doctrine as every other visual axis (CONTRACT §4).
+- "Doesn't a pill CTA clash with 8px fields?" → that contrast is the point (and the reference system's signature): silhouette encodes role.
+- "Why is the ProgressBar default `accent` and not `primary`?" → an activity indicator is informative by definition; `primary` remains the explicit monochrome variant.

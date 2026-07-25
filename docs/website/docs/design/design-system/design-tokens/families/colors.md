@@ -160,7 +160,7 @@ A valence implies its own emphasis. Intensity within a valence is expressed by `
 | :------- | :---------- | :------: | :-----: | :----------: | :--------: | :-------------: |
 | Emphasis | `primary`   |    ✓     |    ✓    |      ✓       |     ✓      |        ✓        |
 | Emphasis | `secondary` |    ✓     |    ✓    |      ✓       |     —      |        ✓        |
-| Emphasis | `accent`    |    ✓     |    —    |      ✓       |     —      |        ✓        |
+| Emphasis | `accent`    |    ✓     |    —    |      ✓       |     ✓      |        ✓        |
 | Emphasis | `muted`     |    ✓     |    ✓    |      ✓       |     ✓      |        ✓        |
 | Valence  | `positive`  |    —     |    ✓    |      —       |     ✓      |        ✓        |
 | Valence  | `caution`   |    —     |    ✓    |      —       |     ✓      |        ✓        |
@@ -170,7 +170,7 @@ A valence implies its own emphasis. Intensity within a valence is expressed by `
 
 - `action.positive / action.caution` — Outcome and risk live in `feedback.*`; an Action's own colour expresses only `negative` evaluation (FSL §5). Destructive consequence (FSL §6) is a frequent driver of that choice, but the two dimensions are distinct — `negative` may also encode adverse-but-non-destructive intent (cancel paid subscription).
 - `navigation.*` valences — Navigation communicates location (`current`, `visited`), not health state.
-- `feedback.secondary / accent` — Feedback is direct: `primary` and `muted` cover its emphasis range.
+- `feedback.secondary` — Feedback is direct: `primary`, `muted`, and `accent` cover its emphasis range. `feedback.accent` is the **informative** status ("in progress", "new", "info") — noteworthy but judgement-free, and the canonical fill for activity indicators (ProgressBar, Meter).
 - `input.accent` — Inputs use `primary` for the brand-influenced active state; `accent` creates hierarchy ambiguity.
 
 ### Picking a role
