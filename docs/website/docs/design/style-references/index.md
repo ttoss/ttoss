@@ -18,7 +18,7 @@ That architecture separates concerns that are often conflated:
 
 - **Semantic Contract** — stable meaning, naming, governance, validation
 - **Visual Language Reference** — technical reference for a recurring visual language
-- **Formal Style Profile** — operational style constraints derived from a reference
+- **Formal Style Profile** — operational style constraints derived from a reference, published in the canonical format defined by [Theme Authoring](/docs/design/design-system/design-tokens/theme-authoring#formal-style-profile)
 - **Theme Archetype** — product-facing visual posture
 - **Built-in Theme** — concrete token implementation
 - **Interaction Posture** — attentional and behavioral stance
@@ -115,7 +115,7 @@ Each style reference in this directory is expected to:
 5. document its risks and failure modes
 6. map its impact across ttoss token families
 7. distinguish token-layer fit from recipe-layer fit
-8. propose an initial formal style profile
+8. propose an initial formal style profile, indexed by token family and using the five constraint levels, exactly as [Theme Authoring](/docs/design/design-system/design-tokens/theme-authoring#formal-style-profile) defines them — a reference does not invent its own format or level vocabulary
 9. identify likely archetype affinity
 
 A style reference that only describes visual taste is incomplete. A style reference becomes useful only when it makes the style technically legible.

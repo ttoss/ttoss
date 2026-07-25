@@ -13,7 +13,7 @@ supports-dark-mode: yes
 # Enterprise Neutral
 
 :::caution Status: draft — formal style profile, not a shipped theme
-This document is a [Formal Style Profile](/docs/design/style-references) for a planned enterprise archetype. The built-in themes that actually ship with `@ttoss/fsl-theme` today are the default `baseTheme` (exported by `createTheme()`) and `bruttal` — see the [package README](https://github.com/ttoss/ttoss/blob/main/packages/fsl-theme/README.md).
+This document is a [Formal Style Profile](/docs/design/design-system/design-tokens/theme-authoring#formal-style-profile) for a planned enterprise archetype. The built-in themes that actually ship with `@ttoss/fsl-theme` today are the default `baseTheme` (exported by `createTheme()`) and `bruttal` — see the [package README](https://github.com/ttoss/ttoss/blob/main/packages/fsl-theme/README.md).
 :::
 
 ## Purpose
@@ -106,6 +106,8 @@ It must implement visual posture entirely through:
 Semantic token names remain stable. Core values and mappings may vary. That boundary is non-negotiable.
 
 ## Family constraints
+
+Indexed by token family, using the five constraint levels defined by [Theme Authoring](/docs/design/design-system/design-tokens/theme-authoring#formal-style-profile) — read there for what `Required`, `Preferred`, `Discouraged`, and `Forbidden` commit a theme to. This archetype declares no `Tolerated` constraints.
 
 ### 1. Colors
 

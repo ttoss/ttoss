@@ -132,69 +132,158 @@ Some traits require both token and recipe support:
 
 ## Formal Style Profile
 
-This is the operational translation of Skeuomorphic into ttoss terms.
+The operational translation of Skeuomorphic into ttoss terms, in the canonical
+[Formal Style Profile](/docs/design/design-system/design-tokens/theme-authoring#formal-style-profile)
+format: indexed by token family, using the five constraint levels defined there. Families this reference does not constrain (sizing, z-index, breakpoints) are omitted — the base authoring doctrine applies to them unchanged.
 
-### Color posture
+### 1. Colors
 
-- **Preferred:** warmer, more material-coded, reference-aware palettes when the metaphor requires them
-- **Tolerated:** neutral systems with selective metaphor-supporting accents
-- **Discouraged:** purely abstract palette logic if the interface is trying to preserve strong physical analogy
-- **Forbidden:** arbitrary material coloration disconnected from metaphor or role clarity.
+**Posture:** material-coded and reference-aware, with contrast strong enough that tactility never costs readability.
 
-### Contrast posture
+#### Preferred
 
-- **Preferred:** clear contrast where tactile cues support action recognition
-- **Tolerated:** richer tonal range than flat systems
-- **Discouraged:** low-contrast realism that prioritizes atmosphere over usability
-- **Forbidden:** realism that weakens readability or state distinction.
+- warmer, more material-coded, reference-aware palettes when the metaphor requires them
+- clear contrast where tactile cues support action recognition
 
-### Depth posture
+#### Tolerated
 
-- **Preferred:** explicit and meaningful, tied to perceived substance or interaction
-- **Tolerated:** stronger depth than Flat or Flat 2
-- **Discouraged:** decorative dimensionality without semantic purpose
-- **Forbidden:** uncontrolled multi-layer visual noise.
+- neutral systems with selective metaphor-supporting accents
+- richer tonal range than flat systems
 
-### Line posture
+#### Discouraged
 
-- **Preferred:** tactile or object-supporting, structurally meaningful
-- **Tolerated:** more detailed boundary language than flatter systems
-- **Discouraged:** excessive ornament in every edge and stroke
-- **Forbidden:** line treatment that simulates craft while obscuring interaction intent.
+- purely abstract palette logic if the interface is trying to preserve strong physical analogy
+- low-contrast realism that prioritizes atmosphere over usability
 
-### Radius posture
+#### Forbidden
 
-- **Preferred:** metaphor-dependent and purposeful
-- **Tolerated:** stronger curvature when it supports familiar object logic
-- **Discouraged:** expressive curvature unrelated to object metaphor
-- **Forbidden:** ornamental corner variation without functional or referential meaning.
+- arbitrary material coloration disconnected from metaphor or role clarity
+- realism that weakens readability or state distinction
 
-### Density posture
+### 2. Typography
 
-- **Preferred:** moderate, with room for metaphor readability
-- **Tolerated:** denser specialized control surfaces when the audience is already familiar with the physical analogue
-- **Discouraged:** dense skeuomorphic UIs for general audiences without strong reason
-- **Forbidden:** high-density literalism that turns the interface into a noisy replica.
+**Posture:** supportive of the metaphor, never competing with it.
 
-### Type posture
+#### Preferred
 
-- **Preferred:** supportive rather than dominant; typography should reinforce the metaphor without becoming decorative clutter
-- **Discouraged:** typography that competes with the object metaphor
-- **Forbidden:** decorative type that harms legibility or makes the interface feel theatrical rather than usable.
+- supportive rather than dominant; typography should reinforce the metaphor without becoming decorative clutter
 
-### Motion posture
+#### Discouraged
 
-- **Preferred:** motion that reinforces object continuity or familiar manipulation
-- **Tolerated:** richer transitions than flat systems
-- **Discouraged:** cinematic motion added only for spectacle
-- **Forbidden:** physical simulation that slows down primary workflows.
+- typography that competes with the object metaphor
 
-### Material posture
+#### Forbidden
+
+- decorative type that harms legibility or makes the interface feel theatrical rather than usable
+
+### 3. Spacing
+
+**Posture:** moderate density, leaving the metaphor room to be read.
+
+#### Preferred
+
+- moderate, with room for metaphor readability
+
+#### Tolerated
+
+- denser specialized control surfaces when the audience is already familiar with the physical analogue
+
+#### Discouraged
+
+- dense skeuomorphic UIs for general audiences without strong reason
+
+#### Forbidden
+
+- high-density literalism that turns the interface into a noisy replica
+
+### 4. Radii
+
+**Posture:** curvature answers to object logic, not to taste.
+
+#### Preferred
+
+- metaphor-dependent and purposeful
+
+#### Tolerated
+
+- stronger curvature when it supports familiar object logic
+
+#### Discouraged
+
+- expressive curvature unrelated to object metaphor
+
+#### Forbidden
+
+- ornamental corner variation without functional or referential meaning
+
+### 5. Borders
+
+**Posture:** tactile, object-supporting line work that still reads as structure.
+
+#### Preferred
+
+- tactile or object-supporting, structurally meaningful
+
+#### Tolerated
+
+- more detailed boundary language than flatter systems
+
+#### Discouraged
+
+- excessive ornament in every edge and stroke
+
+#### Forbidden
+
+- line treatment that simulates craft while obscuring interaction intent
+
+### 6. Elevation
+
+**Posture:** depth is explicit and carries meaning — it stands for substance, not decoration.
+
+#### Preferred
+
+- explicit and meaningful, tied to perceived substance or interaction
+
+#### Tolerated
+
+- stronger depth than Flat or Flat 2.0
+
+#### Discouraged
+
+- decorative dimensionality without semantic purpose
+
+#### Forbidden
+
+- uncontrolled multi-layer visual noise
+
+### 7. Motion
+
+**Posture:** reinforces object continuity and familiar manipulation.
+
+#### Preferred
+
+- motion that reinforces object continuity or familiar manipulation
+
+#### Tolerated
+
+- richer transitions than flat systems
+
+#### Discouraged
+
+- cinematic motion added only for spectacle
+
+#### Forbidden
+
+- physical simulation that slows down primary workflows
+
+### Cross-family rules
+
+**Material posture.** The defining constraint of the reference, spanning elevation, colors, borders, and opacity: realism is earned by comprehension, never assumed.
 
 - **Preferred:** explicit when the metaphor truly serves comprehension or comfort
 - **Tolerated:** partial or selective realism
 - **Discouraged:** total realism as a default system language
-- **Forbidden:** heavy faux-material treatment when no learning or signification benefit exists.
+- **Forbidden:** heavy faux-material treatment when no learning or signification benefit exists
 
 ## Archetype Affinity
 

@@ -461,5 +461,26 @@ Anchors: `src/components/Grid/Grid.tsx`, `src/components/AppShell/AppShell.tsx`,
 Re-litigation answers:
 
 - "Why not put the container on the Grid root?" → `cqi` would resolve to the whole grid's width (≈ the page), not the tile — the per-item container is the entire point.
+
+### ADR-012: A freeform channel makes a picker `Input`, not `Selection`
+
+Status: accepted (2026-07-24)
+Tags: entity, input, selection, combobox, governance
+
+Context: the ROADMAP called `ComboBox` "the accordion-vs-select of ambiguity cases" — it is a text field and an option list at once, and `Select` (the neighbouring component) is `Selection`. Both entities project to the same `input` ux context, so the choice changes no colour; it changes what the component _claims to be_, which is what every later picker (`Autocomplete`, `DatePicker`, `SearchField`-with-suggestions) will copy.
+
+Decision: **the discriminant is whether a freeform channel exists.** A control the user can type an arbitrary value into is `Input`, even when it also offers a list; a control whose only act is picking from a closed set is `Selection`. `ComboBox` is therefore `Input`/`root`: the text field is the control and the filtered list is an affordance that narrows what the user types (with `allowsCustomValue` it can commit a value the set does not contain — something no `Selection` can do). `Select` stays `Selection`. The options themselves are `Selection`/`item` under the ADR-007 per-part split, identical to `SelectItem`/`ListBoxItem`, because option-selection semantics do not change with the host.
+
+Rejected: `Selection` for the whole composite — it would make `allowsCustomValue` incoherent (a "selection" that selects nothing in the set) and would misfile the part the user actually operates; a new `Combo`/`Hybrid` entity — nominal growth with nothing dispatching on it, the dead weight that killed the `Interaction` dimension; declaring the chevron an `Action` identity — `trigger` is not a legal `Input` role and a second entity in the file would buy nothing, so it ships as an internal data-part exactly as NumberField's steppers and Slider's track do (ADR-008).
+
+Cost: two sibling components with near-identical DOM carry different root entities, so "which entity is my picker?" is a judgement call at authoring time rather than a lookup — this ADR is that lookup.
+
+Anchors: `src/components/ComboBox/ComboBox.tsx` (header block), ROADMAP ComboBox row, `docs/fsl-studio/FRICTION.md` F-008.
+
+Re-litigation answers:
+
+- "Select and ComboBox look the same — why differ?" → they read the same tokens; only the claimed identity differs, and it differs because one accepts typed input and the other cannot.
+- "Is `SearchField` then also a picker?" → no — it has the freeform channel but no option set, so it stays a plain `Input` with adornments.
+- "What about `Autocomplete` (deferred)?" → same rule: it has a freeform channel, so it is `Input`. This ADR is the learning the ROADMAP said to wait for.
 - "Doesn't ADR-019 forbid container-fluidity?" → no — it forbids it for **control geometry** (rem-anchored `hit`/inset, unaffected here); layout/type fluidity by container is exactly what ADR-019/020 declare.
 - "Why does Stack not establish containment?" → a Stack's items size by content on the main axis (no definite width), the same reason Surface is rejected; containment is added only where the box's inline size is definite by construction.

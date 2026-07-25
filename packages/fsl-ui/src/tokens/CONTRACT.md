@@ -412,14 +412,15 @@ Rules (enforced by the contract tests):
 
 Registered knobs:
 
-| Knob                      | Component     | Fallback           |
-| ------------------------- | ------------- | ------------------ |
-| `--fsl-dialog-max-width`  | `DialogModal` | `min(500px, 90vw)` |
-| `--fsl-dialog-max-height` | `DialogModal` | `90vh`             |
-| `--fsl-menu-min-width`    | `Menu`        | `12rem`            |
-| `--fsl-menu-max-width`    | `Menu`        | `min(320px, 90vw)` |
-| `--fsl-popover-max-width` | `Popover`     | `min(320px, 90vw)` |
-| `--fsl-tooltip-max-width` | `Tooltip`     | `min(280px, 90vw)` |
+| Knob                         | Component     | Fallback           |
+| ---------------------------- | ------------- | ------------------ |
+| `--fsl-combo-box-max-height` | `ComboBox`    | `min(20rem, 60vh)` |
+| `--fsl-dialog-max-width`     | `DialogModal` | `min(500px, 90vw)` |
+| `--fsl-dialog-max-height`    | `DialogModal` | `90vh`             |
+| `--fsl-menu-min-width`       | `Menu`        | `12rem`            |
+| `--fsl-menu-max-width`       | `Menu`        | `min(320px, 90vw)` |
+| `--fsl-popover-max-width`    | `Popover`     | `min(320px, 90vw)` |
+| `--fsl-tooltip-max-width`    | `Tooltip`     | `min(280px, 90vw)` |
 
 ---
 

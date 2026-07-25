@@ -42,6 +42,16 @@ export {
 export type { CodeProps, CodeSize } from './components/Code/Code';
 export { Code, codeMeta } from './components/Code/Code';
 export type {
+  ComboBoxItemProps,
+  ComboBoxProps,
+} from './components/ComboBox/ComboBox';
+export {
+  ComboBox,
+  ComboBoxItem,
+  comboBoxItemMeta,
+  comboBoxMeta,
+} from './components/ComboBox/ComboBox';
+export type {
   ContainerGutter,
   ContainerProps,
   ContainerSize,

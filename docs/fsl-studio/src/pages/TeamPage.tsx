@@ -2,6 +2,8 @@ import type { SortDescriptor } from '@ttoss/fsl-ui';
 import {
   Badge,
   Button,
+  ComboBox,
+  ComboBoxItem,
   ConfirmationDialog,
   Dialog,
   DialogActions,
@@ -30,9 +32,13 @@ import {
 import * as React from 'react';
 
 import type { Member, Role } from '../data';
+import { timezoneLabel, TIMEZONES } from '../data';
 import { inviteMember, removeMember, useWorkspace } from '../store';
 import { toasts } from '../toasts';
 import { validateEmail } from './LoginPage';
+
+/** Where northline is headquartered — the invite form's starting zone. */
+const DEFAULT_TIMEZONE = 'Europe/Lisbon';
 
 const InviteDialog = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -42,7 +48,9 @@ const InviteDialog = () => {
     const data = new FormData(event.currentTarget);
     const email = String(data.get('email') ?? '');
     const role = String(data.get('role') ?? 'Developer') as Role;
-    inviteMember({ email, role });
+    // Empty when the member clears the ComboBox without picking a zone.
+    const timezone = String(data.get('timezone') || DEFAULT_TIMEZONE);
+    inviteMember({ email, role, timezone });
     setIsOpen(false);
     toasts.add({ title: `Invitation sent to ${email}` }, { timeout: 4000 });
   };
@@ -66,6 +74,26 @@ const InviteDialog = () => {
                   <SelectItem id="Developer">Developer</SelectItem>
                   <SelectItem id="Viewer">Viewer</SelectItem>
                 </Select>
+                {/*
+                 * The field F-008 recorded as dropped: 35 zones are scan-only
+                 * in a Select popover, so it waited for ComboBox's typeahead.
+                 * Role stays a Select — three options is its correct scale.
+                 */}
+                <ComboBox
+                  label="Timezone"
+                  name="timezone"
+                  defaultSelectedKey={DEFAULT_TIMEZONE}
+                  description="Deploy timestamps are shown in this zone."
+                  placeholder="Type a city"
+                >
+                  {TIMEZONES.map((zone) => {
+                    return (
+                      <ComboBoxItem key={zone.id} id={zone.id}>
+                        {zone.label}
+                      </ComboBoxItem>
+                    );
+                  })}
+                </ComboBox>
               </Stack>
             </DialogBody>
             <DialogActions>
@@ -144,6 +172,7 @@ const MembersTable = ({ members }: { members: Member[] }) => {
         <TableColumn id="role" allowsSorting>
           Role
         </TableColumn>
+        <TableColumn id="timezone">Timezone</TableColumn>
         <TableColumn id="joined">Joined</TableColumn>
         <TableColumn id="actions">Actions</TableColumn>
       </TableHeader>
@@ -164,6 +193,11 @@ const MembersTable = ({ members }: { members: Member[] }) => {
                  * Tag primitive exists.
                  */}
                 <Badge>{member.role}</Badge>
+              </TableCell>
+              <TableCell>
+                <Text variant="body-sm" tone="muted">
+                  {timezoneLabel(member.timezone)}
+                </Text>
               </TableCell>
               <TableCell>{member.joined}</TableCell>
               <TableCell>

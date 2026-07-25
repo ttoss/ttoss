@@ -80,7 +80,16 @@ Collection:  ListBox/ListBoxItem, GridList/GridListItem (+ Menu/MenuItem,
 Input:       TextField, TextArea (each + Label/Control/Description/Error),
              SearchField (+ Label/Control; leading search + clear glyphs),
              NumberField (label/description/errorMessage props + −/+ steppers),
-             Slider (label + value output; single value or [min,max] range)
+             Slider (label + value output; single value or [min,max] range),
+             ComboBox/ComboBoxItem (text input + typeahead-filtered list;
+             label/description/errorMessage/placeholder/triggerLabel props).
+             Pick ComboBox over Select when the option set is too long to scan
+             (~10+) or the user may type a value that is not in it
+             (allowsCustomValue). ComboBox is Input — the user TYPES and the
+             list narrows; Select is Selection — picking from a closed set is
+             the only act. Filtering matches the option's visible TEXT, not its
+             id. Items are Selection/item (ADR-007 split, same as SelectItem).
+             Unlike Select it ships a validationMessage part.
 Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
              DialogActions, Menu, MenuTrigger, ConfirmationDialog,
              Popover, PopoverTrigger, Tooltip, TooltipTrigger

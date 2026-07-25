@@ -33,9 +33,11 @@ let invitedCount = 0;
 export const inviteMember = ({
   email,
   role,
+  timezone,
 }: {
   email: string;
   role: Role;
+  timezone: string;
 }) => {
   invitedCount += 1;
   const localPart = email.split('@')[0];
@@ -51,6 +53,7 @@ export const inviteMember = ({
     name: name || email,
     email,
     role,
+    timezone,
     joined: 'Invited',
   };
   setState({ ...state, members: [...state.members, member] });

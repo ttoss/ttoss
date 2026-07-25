@@ -61,113 +61,19 @@ One entry per semantic family. Use `vars.*` for typed CSS variable references; u
 |           | `semantic.motion.transition.{enter,exit}`                        | `{duration, easing}`    |
 | zIndex    | `semantic.zIndex.layer.{base,sticky,overlay,blocking,transient}` | integer                 |
 
-**Colors axes** (`semantic.colors.{ux}.{role}.{dimension}.{state}`):
+The colors axes (`{ux}`, `{role}`, `{dimension}`, `{state}`) are a formal FSL projection with a normative mapping — including which Entity Kinds collapse into which `ux` value, and which states are legal per `ux`. That grammar is defined once, in [Semantic Color Grammar](https://ttoss.dev/docs/design/design-system/design-tokens/model#semantic-color-grammar--fsl-projection) and the [colors family spec](https://ttoss.dev/docs/design/design-system/design-tokens/families/colors).
 
-- `ux` — FSL Entity Kind: `action` · `input` · `navigation` · `feedback` · `informational`
-- `role` — Evaluation: `primary` · `secondary` · `accent` · `muted` · `positive` · `caution` · `negative`
-- `dimension` — `background` · `border` · `text`
-- `state` — `default` · `hover` · `active` · `focused` · `disabled` · `selected` · `pressed` · `expanded` · `checked` · `indeterminate` · `current` · `visited` · `droptarget` · `invalid` (legality varies per `ux` — see the colors family spec)
+## Pick a token
 
-## Pick a token in 60s
+The intent → token cheatsheet — "I want a primary button / a card padding / a focus ring" mapped to the exact token path, for every family — lives in the design docs and is maintained there as the single source: **[Quick Reference](https://ttoss.dev/docs/design/design-system/design-tokens/quick-reference)**.
 
-Find the CSS property you are setting, then follow the branch to the leaf.
-
-**`color` / `background` / `border-color` / `fill`** → `colors`
-
-1. What does the element _do_? → `{ux}`: `action` (button, link, CTA) · `input` (field, toggle, checkbox) · `navigation` (tab, menu item, breadcrumb) · `feedback` (alert, banner, toast, progress) · `informational` (card, badge, chip, stat)
-2. What is its _emphasis_? → `{role}`: `primary` (default for the context) · `secondary` (supporting) · `accent` (brand pop) · `muted` (subdued) · `positive` / `caution` / `negative` (outcome valence)
-3. What is being colored? → `background` · `border` · `text`
-4. What is the interaction state? → `default` · `hover` · `active` · `focused` · `disabled` · `selected` · `pressed`
-
-**`padding`** → `spacing.inset`
-
-- Element is interactive (button, input, toggle) → `spacing.inset.control.{sm|md|lg}`
-- Element is a container (card, panel, dialog, section) → `spacing.inset.surface.{sm|md|lg}`
-- Default step at any level → `md`
-
-**`gap`** → `spacing.gap`
-
-- Siblings flow vertically (list, form fields, stacked sections) → `spacing.gap.stack.{xs|sm|md|lg|xl}`
-- Siblings flow horizontally (icon + label, toolbar, chip row) → `spacing.gap.inline.{xs|sm|md|lg|xl}`
-- Adjacent independently focusable targets → `spacing.separation.interactive.min`
-
-**`padding` on a page or section wrapper** → `spacing.gutter.{page|section}`
-
-**`font-size` / `font-family` / `font-weight` / `line-height`** → `text`
-
-| Element's text function               | Token                      |
-| ------------------------------------- | -------------------------- |
-| Hero / landing emphasis               | `text.display.{lg,md,sm}`  |
-| Page or section heading               | `text.headline.{lg,md,sm}` |
-| Surface heading (card, panel, dialog) | `text.title.{lg,md,sm}`    |
-| Reading prose / description           | `text.body.{lg,md,sm}`     |
-| UI label / button text / badge        | `text.label.{lg,md,sm}`    |
-| Code / identifiers / monospace        | `text.code.{md,sm}`        |
-
-**`width` / `height` / `min-width` / `min-height`** → `sizing`
-
-- Interactive area (hit target) → `sizing.hit` — a single ergonomic floor, applied via `min-width`/`min-height` (ADR-020)
-- Icon glyph dimension → `sizing.icon.{sm|md|lg}`
-- Avatar / identity object → `sizing.identity.{sm|md|lg|xl}`
-- Reading line length (`max-width` in `ch`) → `sizing.measure.reading`
-- Surface max-width (page shell, card, dialog) → `sizing.surface.maxWidth`
-- Full viewport dimension → `sizing.viewport.{height|width}.full`
-
-**`border-radius`** → `radii`
-
-- Interactive control (button, input, toggle) → `radii.control`
-- Containing surface (card, panel, dialog, menu) → `radii.surface`
-- Pill, capsule, or avatar → `radii.round`
-
-**`border-width` / `border-style`** → `border` (pair with a `colors` token for the color)
-
-- Separator between content groups → `border.divider`
-- Enclosing edge of a surface → `border.outline.surface`
-- Enclosing edge of an interactive control → `border.outline.control`
-- Selection / current-item line weight → `border.outline.selected`
-
-**`outline` (keyboard focus)** → `focus`
-
-- Component has a clear FSL Entity Kind → `{ux}.{role}.border.focused` (from `colors`)
-- No clear Entity Kind (focusable card, custom widget) → `focus.ring`
-
-**`box-shadow`** → `elevation.surface`
-
-- Flush with page → `elevation.surface.flat`
-- Card or panel → `elevation.surface.raised`
-- Dropdown, popover → `elevation.surface.overlay`
-- Dialog, sheet → `elevation.surface.blocking`
-
-**`z-index`** → `zIndex.layer`
-
-- Normal page content → `zIndex.layer.base`
-- Sticky header / nav → `zIndex.layer.sticky`
-- Dropdown, popover → `zIndex.layer.overlay`
-- Dialog with scrim → `zIndex.layer.blocking`
-- Toast / transient notification → `zIndex.layer.transient`
-
-**`opacity` (whole element)** → `opacity`
-
-- Modal backdrop dimming → `opacity.scrim`
-- Content visible during async work → `opacity.loading`
-- Disabled visual asset (image, avatar) → `opacity.disabled`
-- _For disabled controls or text: use `{ux}.{role}.{dimension}.disabled` from `colors` — opacity cannot carry contrast guarantees._
-
-**`transition` / `animation`** → `motion`
-
-- User input response on a single element → `motion.feedback`
-- Element entering the layout → `motion.transition.enter`
-- Element leaving the layout → `motion.transition.exit`
-- Must-notice in-place change → `motion.emphasis`
-- Ambient / decorative loop → `motion.decorative`
-
-**Modal backdrop color** → `overlay.scrim`
+Agents consuming this package offline get the same mapping from `llms.txt`, shipped in the tarball.
 
 ## Per-family specs
 
-Full grammar rules, decision matrices, and anti-patterns live in the family specs. Each file follows the pattern `families/{family}.md`:
+Full grammar rules, decision matrices, and anti-patterns live in the family specs:
 
-[colors](https://github.com/ttoss/ttoss/blob/main/docs/website/docs/design/design-system/design-tokens/families/colors.md) · [spacing](https://github.com/ttoss/ttoss/blob/main/docs/website/docs/design/design-system/design-tokens/families/spacing.md) · [typography](https://github.com/ttoss/ttoss/blob/main/docs/website/docs/design/design-system/design-tokens/families/typography.md) · [sizing](https://github.com/ttoss/ttoss/blob/main/docs/website/docs/design/design-system/design-tokens/families/sizing.md) · [radii](https://github.com/ttoss/ttoss/blob/main/docs/website/docs/design/design-system/design-tokens/families/radii.md) · [borders](https://github.com/ttoss/ttoss/blob/main/docs/website/docs/design/design-system/design-tokens/families/borders.md) · [elevation](https://github.com/ttoss/ttoss/blob/main/docs/website/docs/design/design-system/design-tokens/families/elevation.md) · [opacity](https://github.com/ttoss/ttoss/blob/main/docs/website/docs/design/design-system/design-tokens/families/opacity.md) · [motion](https://github.com/ttoss/ttoss/blob/main/docs/website/docs/design/design-system/design-tokens/families/motion.md) · [z-index](https://github.com/ttoss/ttoss/blob/main/docs/website/docs/design/design-system/design-tokens/families/z-index.md) · [breakpoints](https://github.com/ttoss/ttoss/blob/main/docs/website/docs/design/design-system/design-tokens/families/breakpoints.md)
+[colors](https://ttoss.dev/docs/design/design-system/design-tokens/families/colors) · [spacing](https://ttoss.dev/docs/design/design-system/design-tokens/families/spacing) · [typography](https://ttoss.dev/docs/design/design-system/design-tokens/families/typography) · [sizing](https://ttoss.dev/docs/design/design-system/design-tokens/families/sizing) · [radii](https://ttoss.dev/docs/design/design-system/design-tokens/families/radii) · [borders](https://ttoss.dev/docs/design/design-system/design-tokens/families/borders) · [elevation](https://ttoss.dev/docs/design/design-system/design-tokens/families/elevation) · [opacity](https://ttoss.dev/docs/design/design-system/design-tokens/families/opacity) · [motion](https://ttoss.dev/docs/design/design-system/design-tokens/families/motion) · [z-index](https://ttoss.dev/docs/design/design-system/design-tokens/families/z-index) · [breakpoints](https://ttoss.dev/docs/design/design-system/design-tokens/families/breakpoints)
 
 ## createTheme
 
