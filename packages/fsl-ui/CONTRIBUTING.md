@@ -530,3 +530,27 @@ Re-litigation answers:
 - "A toolbar with no background looks unfinished." → measure it against the page it sits on. The chrome that read as "finished" was a card, and the controls inside it lost their own edges to it. Compose `Surface` when the bar genuinely floats.
 - "Why does `ToggleButtonGroup` stay `inline-flex` when the other two are block-level?" → a segmented control is an object sized by its options; a command row and a toolbar are bands across their container. That is the one parameter `buildActionGroupStyle` takes.
 - "Should `Toolbar` collapse like `ButtonGroup`?" → no. Its overflow answer is an overflow menu, not a second axis.
+
+### ADR-015: `ActionMenu` ships as a composite (the overflow affordance is a convention); a menu row's resting rung is `muted`
+
+Status: accepted (2026-07-25)
+Tags: action, overlay, menu, icon, a11y, i18n, P3
+
+Context: P3 Slice 4 ⑤. The overflow menu — a row's trailing "…", a card's corner menu, the tail of a toolbar that ran out of room — was expressible by composing `MenuTrigger` + an icon-only `ActionButton` + `Menu`, and every call site would have had to pick the glyph, remember the icon-only square, and supply an accessible name. The reference system ships it as a component for the same reason.
+
+Decision: **`ActionMenu` is a composite with a narrow surface** — the open-state props of `MenuTrigger`, the item props of `Menu`, and the trigger's `evaluation`/`isDisabled`. Its single `*Meta` is the **trigger** (Action/root, `data-scope="action-menu"` via `ActionButton`'s documented scope override), because the surface it opens keeps `Menu`'s Overlay identity — it composes two identities instead of inventing a third. Three choices inside it are the point of the component: the glyph is the new **`action.more`** intent (the icon registry grows only when a component needs it — icon-system.md's change rule), the trigger is the utility silhouette's icon-only square, and **`aria-label` is a required prop**. The reference defaults that label to a translated "More actions", which it can because it ships an i18n runtime; ours cannot, and a hardcoded English default would ship untranslated copy into every product — so the type system asks (ADR-001). The trigger defaults to `evaluation="secondary"`, matching the reference's non-quiet default, which also means the shipped default is correct on every surface and does not wait on F-024.
+
+Second decision, forced by looking at an open menu for the first time since the P3 retune: **`MenuItem`'s default evaluation moves `primary` → `muted`.** With `primary` it painted every row a solid `neutral.1000` chip in light and a solid white one in dark — a menu that read as a stack of buttons, shipped in the Studio's own user menu without anyone noticing. `muted` is not merely quieter, it is _correct_: its resting background resolves to exactly the popover's colour in both modes (`neutral.0` / `neutral.900`), so the row borrows the surface and materialises on hover. Contrast holds (ink `#3d3d3d` on white ≈ 10.4:1, `#d0d0d0` on `#161616` ≈ 13.6:1).
+
+Rejected: documenting the composition instead of shipping the component (the glyph, the square and the name would drift per call site — the same argument that gives `ButtonGroup` a fixed rhythm); an `icon` prop on `ActionMenu` (the overflow glyph _is_ the convention; a caller who wants a different trigger composes `MenuTrigger` + `ActionButton` directly, which this is shorthand for and never a replacement of); a default `aria-label` in English (ADR-001); `evaluation="negative"` for a destructive row (it fills the row red — the missing rung is "negative ink on a surface", logged as F-029 rather than papered over).
+
+Cost: one intent added to the registry (`action.more` → Lucide `more-horizontal`); `MenuItem`'s visual default changed, which is a **breaking visual change** for any consumer that relied on filled rows (in-repo: the Studio's user menu, which was the bug); the destructive row currently has no colour of its own.
+
+Anchors: `src/composites/ActionMenu/ActionMenu.tsx`, `src/composites/Menu/Menu.tsx` (`MenuItem` default), `src/components/Icon/intents.ts` + `glyphs.ts`, `docs/fsl-studio/FRICTION.md` F-024 / F-029, ROADMAP P3 Slice 4 ⑤.
+
+Re-litigation answers:
+
+- "Why is the meta the trigger and not the whole thing?" → the composite renders no wrapper of its own; `MenuTrigger` is an orchestrator with no DOM. The button is the only root there is, and the popover already has an identity.
+- "Why does a menu row default to the _quiet_ rung — isn't a menu item a normal action?" → its container is the emphasis. A row inside an overlay surface is already prominent; painting it again makes a button of it.
+- "Then how do I make one row louder?" → pass `evaluation` explicitly (a primary "Create…" at the top of a menu). The default is the common case, not the only one.
+- "Why not add `action.more` speculatively along with a few other glyphs?" → icon-system.md: the registry grows slowly and shrinks never; add an intent when a component needs it.

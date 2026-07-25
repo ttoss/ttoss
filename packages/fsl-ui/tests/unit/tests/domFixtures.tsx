@@ -113,6 +113,19 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       );
     },
   },
+  // The overflow trigger: an icon-only ActionButton re-scoped to `action-menu`,
+  // so the fixture's root is the button (the surface it opens is Menu's own
+  // identity). Left closed — the trigger is what this meta describes.
+  ActionMenu: {
+    scope: 'action-menu',
+    element: () => {
+      return (
+        <pkg.ActionMenu aria-label="More actions">
+          <pkg.MenuItem>Duplicate</pkg.MenuItem>
+        </pkg.ActionMenu>
+      );
+    },
+  },
   Button: {
     scope: 'button',
     element: () => {

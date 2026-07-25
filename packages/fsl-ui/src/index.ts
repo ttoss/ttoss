@@ -272,6 +272,8 @@ export {
   AccordionTrigger,
   accordionTriggerMeta,
 } from './composites/Accordion/Accordion';
+export type { ActionMenuProps } from './composites/ActionMenu/ActionMenu';
+export { ActionMenu, actionMenuMeta } from './composites/ActionMenu/ActionMenu';
 export type { ConfirmationDialogProps } from './composites/ConfirmationDialog/ConfirmationDialog';
 export {
   ConfirmationDialog,
