@@ -10,6 +10,49 @@
 Severity: `blocker` (cannot express the flow inside the system) ·
 `gap` (expressible only with a workaround) · `paper-cut` (works, reads wrong).
 
+## Open items (derived — the entry below is always the source of truth)
+
+Sixteen open, grouped by the _kind of decision_ each one needs rather than by
+severity, because that is what makes a review round plannable. Regenerate by
+grepping `Status:** open`; do not edit an entry through this list.
+
+**Needs an owner decision on the colour/type model** — measured, options written, nothing to build until one is picked:
+
+| #     | What                                                                                                                                                                                                                                           | Where the evidence is                                                  |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| F-024 | How the action tree expresses "borrow the surface, paint nothing". Recommended answer: **omit** `action.muted.background.default` rather than add a `transparent` primitive; the named cost is the audit that proves the quiet ink is legible. | `Overlay/ActionMenu` → `Emphasis`, dark: `#161616` on a `#262626` card |
+| F-029 | Same question for a valence: a destructive menu row has no "negative **ink** on a surface" rung, so it either looks like every other row or fills red. Four candidate shapes written.                                                          | `Overlay/ActionMenu`, any mode                                         |
+| F-027 | The border-vs-background contrast inventory audits the **light** bundle only; the dark alternate has ~90 undecided sub-threshold contexts, which is the hole that let a dark-mode collapse in.                                                 | `colors.test.ts` reads `entry.base`, never `entry.alt`                 |
+| F-021 | Control **type** is container-fluid, so it shrinks in narrow containers while the hit target grows for touch. ADR-019 settled this for control _geometry_ and never extended the ruling to type.                                               | measured 14–16px across the range                                      |
+
+**Component gaps — something to build, scope already understood:**
+
+| #     | What                                                                                                                                                                                           |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F-002 | `Link` cannot mark `aria-current`: the theme ships `navigation.*.text.current` and nothing reads it. (F-017 is its evidence: the Studio uses vertical `Tabs` as navigation to work around it.) |
+| F-004 | No named narrow width step (an auth card, ~20–26rem) between `reading` and `surface`.                                                                                                          |
+| F-009 | `Select` has no validation-message part, unlike `TextField`/`ComboBox`.                                                                                                                        |
+| F-010 | No neutral tag primitive for descriptive (non-status) labels.                                                                                                                                  |
+| F-016 | No semantic list primitive for content lists.                                                                                                                                                  |
+| F-019 | Anchored popovers size to content, not to their trigger — needs the `--trigger-width` namespace decision.                                                                                      |
+| F-023 | `AppShell` has no narrow-container behaviour: the shell overflows at 390px (442px scroll width). The owner deferred the IA decision — drawer vs off-canvas vs stacking.                        |
+
+**Contract / a11y debt — the component works but its published promise does not hold:**
+
+| #     | What                                                                                                                                                                                               |
+| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F-026 | `SearchField` names `data-part="control"` on two nested elements, so its anatomy is not addressable. Fix the class, not the instance: assert `(scope, part)` uniqueness per subtree.               |
+| F-028 | `Toolbar` claims `role="toolbar"` but is not a single tab stop — `useToolbar` cannot manage arbitrary children's `tabindex`. Either upstream fixes it or we own a roving model for _all_ children. |
+
+**Ecosystem / token vocabulary:**
+
+| #     | What                                                                                |
+| ----- | ----------------------------------------------------------------------------------- |
+| F-005 | The ADR-004 forms recipe drags the legacy field suite into a consumer.              |
+| F-020 | The focus-ring gap is a component literal (`FOCUS_RING_OFFSET`), not a theme token. |
+
+---
+
 ## Entries
 
 ### F-001 — `llms.txt` catalog missing the composition layer
