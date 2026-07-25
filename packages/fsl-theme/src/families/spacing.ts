@@ -83,6 +83,22 @@ export interface SemanticSpacing {
      * for the inner controls themselves — those are `inset.control`.
      */
     surface: InsetSteps;
+    /**
+     * Block padding inside a **command trigger** (Button, ToggleButton) —
+     * the one axis where a CTA is deliberately more generous than a generic
+     * control, so it resolves to a taller silhouette (~40px on the desktop)
+     * while fields and choice controls stay at the ~32px control height.
+     *
+     * A **bounded range**, not a step: the design decision here is the range
+     * itself, and the engine's unit steps straddle it (one step is too tight,
+     * two overshoot). Same contract shape as `separation.interactive.min`.
+     * Only the block axis is owned here — a command's inline padding stays
+     * `inset.control.lg`, which needs no command-specific value.
+     */
+    action: {
+      /** Block (vertical) padding of a command trigger. */
+      block: RawValue;
+    };
   };
   /**
    * Distance *between* siblings (CSS `gap` on Flex/Grid containers).

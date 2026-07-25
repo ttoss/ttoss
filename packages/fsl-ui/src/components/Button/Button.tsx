@@ -135,7 +135,8 @@ type ButtonLabellingProps =
  *
  * Entity = Action → colors: `action`, radii: `action`, border: `outline.control`,
  * sizing: `hit` (ergonomic floor — drives both height and the square
- * minimum width), spacing: `inset.control` (`sm` block / `lg` inline) plus
+ * minimum width), spacing: `inset.action.block` (block) + `inset.control.lg`
+ * (inline) plus
  * `gap.inline.xs` between glyph and label, typography: `action.md`,
  * motion: `feedback`.
  *
@@ -193,13 +194,15 @@ const buildRootStyle = ({
     // one-glyph or one-character button stays balanced instead of collapsing
     // to its content width (the icon-only form is exactly this square).
     minWidth: vars.sizing.hit,
-    // Block padding is intentionally tight (`inset.control.sm`) so the
-    // rem-anchored `hit` floor binds and drives height (~32–36px on the
-    // desktop); a wider inline inset (`lg`) gives visual breathing (matches
-    // MUI/Bootstrap/Tailwind ~1:3 vertical:horizontal ratio). Icon-only drops
-    // the inline inset: the square already supplies the breathing room, and
-    // padding would push the glyph off-centre.
-    paddingBlock: vars.spacing.inset.control.sm,
+    // Block padding comes from the command-specific `inset.action.block`
+    // (bounded 8–9px): at the desktop bound the button resolves to 40px —
+    // 9 + 20 (label line) + 9 + 2 (border) — the comfortable CTA height,
+    // while a generic control stays at the ~32px the tighter `inset.control`
+    // produces. The `hit` floor still guarantees the minimum (and takes over
+    // entirely on a coarse pointer). A wider inline inset (`lg`) gives
+    // horizontal breathing; icon-only drops it, since the square already
+    // supplies the room and padding would push the glyph off-centre.
+    paddingBlock: vars.spacing.inset.action.block,
     paddingInline: isIconOnly ? undefined : vars.spacing.inset.control.lg,
     ...(vars.text.action.md as React.CSSProperties),
     transitionDuration: vars.motion.feedback.duration,

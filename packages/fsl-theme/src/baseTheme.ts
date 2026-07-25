@@ -1355,6 +1355,17 @@ export const baseTheme: ThemeTokens = {
           md: '{core.spacing.6}',
           lg: '{core.spacing.8}',
         },
+        // Command triggers breathe a little more on the block axis than a
+        // generic control: at the desktop bound the button resolves to
+        // 9 + 20 (label line) + 9 + 2 (border) = 40px — the reference
+        // systems' comfortable CTA height — while a phone stays at 8px and
+        // the coarse-pointer `hit` floor (48px) takes over there anyway.
+        // Bounded rather than stepped: one engine step (≈5.6px) is too tight
+        // and two (≈11px) overshoot 40px. RawValue rationale mirrors
+        // `separation.interactive.min` — see model.md §8.
+        action: {
+          block: 'clamp(8px, {core.spacing.2}, 9px)',
+        },
       },
 
       gap: {

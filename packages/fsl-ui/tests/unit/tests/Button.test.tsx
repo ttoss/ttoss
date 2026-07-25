@@ -104,6 +104,17 @@ describe('Button — geometry contract', () => {
     expect(minWidth).toBe('var(--tt-sizing-hit)');
   });
 
+  test('block padding comes from the command-specific action inset', () => {
+    render(<Button>Save</Button>);
+
+    // `inset.action.block` is bounded 8–9px, so the CTA resolves ~40px on the
+    // desktop while a generic control stays at the ~32px `inset.control`
+    // produces (ADR-021 addendum).
+    expect(screen.getByRole('button').style.paddingBlock).toBe(
+      'var(--tt-spacing-inset-action-block)'
+    );
+  });
+
   test('a labelled button keeps its inline inset; icon-only drops it', () => {
     const { unmount } = render(
       <Button icon={<Icon intent="action.search" />}>Search</Button>

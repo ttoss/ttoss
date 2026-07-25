@@ -150,7 +150,9 @@ Lucide via the Iconify provider, registered offline (no runtime API fetch).
 
 ## Entity → token map (a component reads ONLY its row)
 
-Action      → colors.action,        radii.action (pill in base), text.action (semibold), motion.feedback
+Action      → colors.action,        radii.action (pill in base), text.action (semibold),
+            spacing.inset.action.block (block, 8-9px -> ~40px CTA) +
+            spacing.inset.control.lg (inline), motion.feedback
 Input       → colors.input,         radii.control, motion.feedback
 Selection   → colors.input,         radii.control, motion.feedback
 Navigation  → colors.navigation,    radii.control, motion.feedback
