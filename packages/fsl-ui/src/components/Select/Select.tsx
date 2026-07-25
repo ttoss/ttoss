@@ -15,6 +15,7 @@ import {
 
 import type { ComponentMeta } from '../../semantics';
 import { focusRingOutline } from '../../tokens/focusRing';
+import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import { Icon } from '../Icon';
 
@@ -231,7 +232,7 @@ export const Select = <T extends object = object>({
                 data-scope="select"
                 data-part="icon"
                 aria-hidden
-                style={{ flexShrink: 0 }}
+                style={ICON_SLOT_STYLE}
               >
                 <Icon intent="disclosure.expand" size="sm" />
               </span>

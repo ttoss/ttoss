@@ -12,6 +12,7 @@ import {
 import { Icon } from '../../components/Icon';
 import type { ComponentMeta } from '../../semantics';
 import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
+import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import { createCompositeScope } from '../scope';
 
@@ -186,9 +187,9 @@ export const SearchFieldControl = (props: SearchFieldControlProps) => {
         data-part="leadingAdornment"
         aria-hidden
         style={{
+          ...ICON_SLOT_STYLE,
           position: 'absolute',
           insetInlineStart: vars.spacing.inset.control.md,
-          display: 'inline-flex',
           color: colors?.text?.default,
           pointerEvents: 'none',
         }}

@@ -7,6 +7,7 @@ import {
 
 import type { ComponentMeta } from '../../semantics';
 import { focusRingOutline } from '../../tokens/focusRing';
+import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import { Icon } from '../Icon';
 
@@ -218,8 +219,8 @@ export const Checkbox = ({ children, ...props }: CheckboxProps) => {
                   data-part="indicator"
                   aria-hidden
                   style={{
+                    ...ICON_SLOT_STYLE,
                     color: resolveIndicatorColor({ text, isIndeterminate }),
-                    lineHeight: 1,
                     userSelect: 'none',
                   }}
                 >

@@ -499,3 +499,41 @@ describe('contract: DOM data-attributes', () => {
     }
   );
 });
+
+// ---------------------------------------------------------------------------
+// Invariant #9: every glyph host centres its glyph as a box, not as text
+//
+// `iconify-icon` is inline-level, so in a non-flex host it aligns to the
+// host's text baseline and the font's descender space pushes the glyph
+// visually high (measured −2px in Button/Select/Disclosure/Accordion and −1px
+// in Checkbox before ICON_SLOT_STYLE existed). jsdom cannot lay this out, but
+// it can assert the declaration that prevents it — so the fix stays enforced
+// for every future glyph-bearing component.
+// ---------------------------------------------------------------------------
+
+describe('contract: glyph hosts centre their glyph (ICON_SLOT_STYLE)', () => {
+  test.each(Object.entries(DOM_FIXTURES))(
+    '%s: every element wrapping an icon is a centring flex box',
+    (_componentName, fixture) => {
+      render(fixture.element());
+      fixture.open?.();
+
+      const hosts = [...document.querySelectorAll('iconify-icon')]
+        .map((glyph) => {
+          return glyph.parentElement;
+        })
+        .filter((host): host is HTMLElement => {
+          // Only hosts that exist to *hold* the glyph — a control that also
+          // lays out other children (a stepper button, a trigger) already
+          // centres via its own flex row.
+          return host !== null && host.tagName === 'SPAN';
+        });
+
+      for (const host of hosts) {
+        expect(host.style.display).toMatch(/flex$/);
+        expect(host.style.alignItems).toBe('center');
+        expect(host.style.justifyContent).toBe('center');
+      }
+    }
+  );
+});

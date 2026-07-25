@@ -12,6 +12,7 @@ import type {
   EvaluationsFor,
 } from '../../semantics';
 import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
+import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 // Type-only import: Button must never pull the Icon implementation (and with
 // it the whole glyph registry) into a consumer that only ever renders text —
@@ -245,7 +246,12 @@ const ButtonContent = ({
   children?: React.ReactNode;
 }) => {
   const glyph = icon ? (
-    <span data-scope={dataScope} data-part="icon" aria-hidden>
+    <span
+      data-scope={dataScope}
+      data-part="icon"
+      aria-hidden
+      style={ICON_SLOT_STYLE}
+    >
       {React.cloneElement(icon, { size: 'sm' })}
     </span>
   ) : null;
