@@ -136,3 +136,10 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 - **Cause:** React Aria publishes the measured trigger width to the popover as `--trigger-width`, but CONTRACT §7 / the contract test ban reading any CSS variable outside the `--tt-`/`--fsl-` namespaces, so no component may consume it. The ban is right in the general case (it stops arbitrary vars leaking into consumers) and simply has no carve-out for vars the underlying primitive itself publishes.
 - **Not worked around:** consuming `var(--trigger-width)` would need a contract change, and inventing an `--fsl-combo-box-min-width` knob would only paper over it with a number nobody can pick correctly. Filed instead of patched.
 - **Backlog:** decide via governance whether the namespace rule admits a named allowlist of RAC-published positioning vars (`--trigger-width`, `--trigger-anchor-point`). One ADR would unblock both `ComboBox` and `Select`.
+
+### F-020 — focus-ring gap is not a theme token
+
+- **Date:** 2026-07-25 · **Surface:** `@ttoss/fsl-theme` `semantic.focus.ring` / `@ttoss/fsl-ui` `tokens/focusRing.ts` · **Severity:** paper-cut · **Status:** open
+- Found in the P3 Slice 2 review: the reference system treats the gap between a control's edge and its focus ring as a first-class token (Spectrum: 2px ring + 2px gap), but `semantic.focus.ring` carries only `width`/`style`/`color` — the offset had no home, so components applied it ad hoc (11 of the ring's call sites were flush while `Select`/`Checkbox`/`Switch` floated at 2px — an inconsistency invisible to DOM-level tests).
+- **Workaround (shipped with Slice 2):** `FOCUS_RING_OFFSET = '2px'` as a named constant in fsl-ui `tokens/focusRing.ts` (the ring's single owner), applied to all flush call sites; clipped-container insets (menu items, table rows) stay bespoke by design.
+- **Backlog:** promote the gap to `semantic.focus.ring.offset` via governance so themes can retune it (a compact theme may want 1px, a playful one 3px). Type-level change to `ThemeTokens` — beyond a P3 value tune.

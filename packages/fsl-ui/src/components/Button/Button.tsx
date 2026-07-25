@@ -11,7 +11,7 @@ import type {
   ConsequencesFor,
   EvaluationsFor,
 } from '../../semantics';
-import { focusRingOutline } from '../../tokens/focusRing';
+import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 
 /**
@@ -122,6 +122,7 @@ export const Button = ({
               isDisabled,
             }) ?? colors?.text?.default,
           outline: focusRingOutline(isFocusVisible),
+          outlineOffset: FOCUS_RING_OFFSET,
         } as React.CSSProperties;
       }}
     />

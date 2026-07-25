@@ -43,35 +43,46 @@ export const baseTheme: ThemeTokens = {
     // Core colors are intent-free primitives. Scale positions only.
     colors: {
       brand: {
-        50: '#eff6ff',
-        100: '#dbeafe',
-        200: '#bfdbfe',
-        300: '#60a5fa',
-        400: '#2b87f5',
-        500: '#0469e3',
-        600: '#035fca',
-        700: '#034da6',
-        800: '#023d85',
-        900: '#022e63',
+        // Vivid blue — P3 Slice 2, tuned against Adobe Spectrum 2's accent
+        // family: one saturated, slightly indigo-leaning blue does all the
+        // talking while every neutral stays silent. 500 is the filled-accent
+        // surface (4.8:1 with neutral.0 text — AA Normal); 700 doubles as the
+        // light-mode focus ring; 300 carries accent text/focus on dark.
+        50: '#f5f9ff',
+        100: '#e5f0fe',
+        200: '#cbe2fe',
+        300: '#8eb9fc',
+        400: '#5d89ff',
+        500: '#3b63fb',
+        600: '#274dea',
+        700: '#1d3ecf',
+        800: '#1532ad',
+        900: '#10288c',
       },
 
       neutral: {
+        // Hue-free ramp (R=G=B at every step) — P3 Slice 2, tuned against
+        // Adobe Spectrum 2's gray structure: surface steps sit close together
+        // (0–300) so layers whisper, then a deliberate legibility gap before
+        // the content steps (400+) so text speaks. The zinc ramp this
+        // replaces carried a cool cast that read as a navy tint on dark
+        // surfaces; pure grays keep every layered surface color-silent.
         0: '#ffffff',
-        50: '#fafafa',
-        100: '#f4f4f5',
-        200: '#e4e4e7',
-        300: '#d4d4d8',
-        400: '#a1a1aa',
-        500: '#71717a',
-        600: '#52525b',
-        700: '#3f3f46',
+        50: '#f8f8f8',
+        100: '#f0f0f0',
+        200: '#e1e1e1',
+        300: '#d0d0d0',
+        400: '#9d9d9d',
+        500: '#6f6f6f',
+        600: '#525252',
+        700: '#3d3d3d',
         // 800 fills the 700→900 gap so dark surfaces can stratify in fine
         // steps (canvas 900 → raised 800 → overlay 700) — depth in dark comes
         // from surfaces lightening as they rise, not from near-invisible
         // shadows. @see elevation.md — "Surface + Shadow".
-        800: '#27272a',
-        900: '#18181b',
-        1000: '#09090b',
+        800: '#262626',
+        900: '#161616',
+        1000: '#0a0a0a',
       },
 
       red: {
@@ -135,21 +146,27 @@ export const baseTheme: ThemeTokens = {
     },
 
     // -- Elevation ----------------------------------------------------------
+    // Three-layer recipes (P3 Slice 2, Spectrum-derived): a wide low-opacity
+    // ambient layer + a soft transition layer + a tight "key" line that keeps
+    // the surface edge defined where the ambient blur fades. Softer and more
+    // physical than the two-layer stacks they replace.
     elevation: {
       level: {
         0: 'none',
-        1: '0 1px 2px rgba(0,0,0,0.06), 0 1px 1px rgba(0,0,0,0.04)',
-        2: '0 4px 8px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.06)',
-        3: '0 8px 16px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.08)',
-        4: '0 16px 32px rgba(0,0,0,0.14), 0 8px 16px rgba(0,0,0,0.10)',
+        1: '0 1px 4px rgba(0,0,0,0.06), 0 0 1px rgba(0,0,0,0.10)',
+        2: '0 2px 8px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04), 0 0 1px rgba(0,0,0,0.08)',
+        3: '0 4px 12px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04), 0 0 2px rgba(0,0,0,0.12)',
+        4: '0 12px 24px rgba(0,0,0,0.12), 0 6px 12px rgba(0,0,0,0.06), 0 0 4px rgba(0,0,0,0.12)',
       },
-      // High-opacity recipes — stronger depth contrast for dark or heavily-colored surfaces
+      // High-opacity recipes — stronger depth contrast for dark or
+      // heavily-colored surfaces (~3× the base opacities, the same ratio
+      // Spectrum applies to its dark drop shadows).
       emphatic: {
         0: 'none',
-        1: '0 1px 2px rgba(0,0,0,0.20), 0 1px 1px rgba(0,0,0,0.14)',
-        2: '0 4px 8px rgba(0,0,0,0.24), 0 2px 4px rgba(0,0,0,0.18)',
-        3: '0 8px 16px rgba(0,0,0,0.28), 0 4px 8px rgba(0,0,0,0.22)',
-        4: '0 16px 32px rgba(0,0,0,0.34), 0 8px 16px rgba(0,0,0,0.28)',
+        1: '0 1px 4px rgba(0,0,0,0.18), 0 0 1px rgba(0,0,0,0.30)',
+        2: '0 2px 8px rgba(0,0,0,0.24), 0 1px 4px rgba(0,0,0,0.12), 0 0 1px rgba(0,0,0,0.24)',
+        3: '0 4px 12px rgba(0,0,0,0.24), 0 2px 6px rgba(0,0,0,0.12), 0 0 2px rgba(0,0,0,0.36)',
+        4: '0 12px 24px rgba(0,0,0,0.36), 0 6px 12px rgba(0,0,0,0.18), 0 0 4px rgba(0,0,0,0.36)',
       },
     },
 
@@ -410,7 +427,7 @@ export const baseTheme: ThemeTokens = {
       action: {
         primary: {
           // neutral.1000 (black) background — authoritative, neutral primary action.
-          // Contrast: neutral.0 text on neutral.1000 → ~20:1 ✓ ; neutral.700 hover → ~12:1 ✓
+          // Contrast: neutral.0 text on neutral.1000 → ~19.8:1 ✓ ; neutral.900 hover → ~18:1 ✓
           background: {
             default: '{core.colors.neutral.1000}',
             hover: '{core.colors.neutral.900}',
@@ -466,7 +483,7 @@ export const baseTheme: ThemeTokens = {
         },
         accent: {
           // brand.500 background — vivid blue that draws attention in the UI.
-          // Contrast: neutral.0 text on brand.500 (#0469e3) → ~5.7:1 ✓ AA
+          // Contrast: neutral.0 text on brand.500 (#3b63fb) → ~4.8:1 ✓ AA
           // All interactive states darken further → neutral.0 text remains valid.
           background: {
             default: '{core.colors.brand.500}',
@@ -958,7 +975,7 @@ export const baseTheme: ThemeTokens = {
         primary: {
           // Inline link on light surfaces: transparent bg, monochrome text +
           // underline (the underline carries the affordance — no hue needed).
-          // Contrast: neutral.800 (#27272a) on neutral.0 (#ffffff) → ~16:1 ✓
+          // Contrast: neutral.800 (#262626) on neutral.0 (#ffffff) → ~15:1 ✓
           background: {
             default: '{core.colors.neutral.0}',
             hover: '{core.colors.neutral.50}',
@@ -1068,7 +1085,9 @@ export const baseTheme: ThemeTokens = {
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.200}',
             selected: '{core.colors.neutral.500}',
-            current: '{core.colors.brand.400}',
+            // brand.500 (not 400): the current-page indicator must clear the
+            // 3:1 non-text floor against the neutral.100 current background.
+            current: '{core.colors.brand.500}',
           },
           text: {
             default: '{core.colors.neutral.500}',

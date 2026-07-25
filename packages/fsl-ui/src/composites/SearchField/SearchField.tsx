@@ -11,7 +11,7 @@ import {
 
 import { Icon } from '../../components/Icon';
 import type { ComponentMeta } from '../../semantics';
-import { focusRingOutline } from '../../tokens/focusRing';
+import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import { createCompositeScope } from '../scope';
 
@@ -232,6 +232,7 @@ export const SearchFieldControl = (props: SearchFieldControlProps) => {
                 isInvalid,
               }) ?? colors?.text?.default,
             outline: focusRingOutline(isFocusVisible),
+            outlineOffset: FOCUS_RING_OFFSET,
             ...(vars.text.label.md as React.CSSProperties),
           } as React.CSSProperties;
         }}

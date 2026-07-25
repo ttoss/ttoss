@@ -6,7 +6,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
-import { focusRingOutline } from '../../tokens/focusRing';
+import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -165,6 +165,7 @@ export const ToggleButton = ({
             ? resolveToggleText(colors.text, flags)
             : undefined,
           outline: focusRingOutline(isFocusVisible),
+          outlineOffset: FOCUS_RING_OFFSET,
         } as React.CSSProperties;
       }}
     />

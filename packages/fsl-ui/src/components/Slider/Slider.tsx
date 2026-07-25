@@ -10,7 +10,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
-import { focusRingOutline } from '../../tokens/focusRing';
+import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -110,6 +110,7 @@ const buildThumbStyle = ({
     borderColor: border?.[key],
     backgroundColor: background?.[key],
     outline: focusRingOutline(isFocusVisible),
+    outlineOffset: FOCUS_RING_OFFSET,
   };
 };
 

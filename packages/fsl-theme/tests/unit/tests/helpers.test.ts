@@ -211,9 +211,9 @@ describe('flattenAndResolve', () => {
     });
 
     const flat = toFlatTokens(theme);
-    // core.border.width.selected = '2px', core.colors.brand.500 = '#0469e3'
+    // core.border.width.selected = '2px', core.colors.brand.500 = '#3b63fb'
     expect(flat['semantic.elevation.surface.flat']).toBe(
-      'inset 0 0 2px #0469e3'
+      'inset 0 0 2px #3b63fb'
     );
   });
 

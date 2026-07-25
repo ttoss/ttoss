@@ -12,7 +12,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
-import { focusRingOutline } from '../../tokens/focusRing';
+import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 
 // ---------------------------------------------------------------------------
@@ -251,6 +251,7 @@ export const Tab = (props: TabProps) => {
                 isDisabled,
               }),
           outline: focusRingOutline(isFocusVisible),
+          outlineOffset: FOCUS_RING_OFFSET,
         } as React.CSSProperties;
       }}
     >
@@ -293,6 +294,7 @@ export const TabPanel = (props: TabPanelProps) => {
           ...(vars.text.body.md as React.CSSProperties),
           color: vars.colors.informational.primary?.text?.default,
           outline: focusRingOutline(isFocusVisible),
+          outlineOffset: FOCUS_RING_OFFSET,
         } as React.CSSProperties;
       }}
     />
