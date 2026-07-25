@@ -110,10 +110,17 @@ export interface ActionButtonOwnProps extends Omit<
  *
  * - **Command** (`Button`) — "commit to this": submit, confirm, the primary
  *   action of a surface. Wears the theme's command radius, semibold type and
- *   the generous command inset (~40px on the desktop).
+ *   the generous command inset (40px on the desktop).
  * - **Utility** (`ActionButton`) — "operate on that": ambient, repeatable,
  *   often icon-only. Wears the control radius, plain label type and the tight
- *   control inset (~32px), so it recedes beside a command.
+ *   control inset (34px on the desktop), so it recedes beside a command.
+ *
+ * Those 34px are the **field row**: identical to `TextField`, `Select` and
+ * every other control, because a utility trigger's job is to stand beside a
+ * field. That is also why its type is not a step smaller — only its *weight*
+ * is (regular against the command's semibold). Dropping the size as well would
+ * desynchronise it from the fields it aligns with; a caller who genuinely needs
+ * smaller trigger text asks for it at the call site.
  *
  * Entity = Action → colors: `action`, radii: `control`, border:
  * `outline.control`, sizing: `hit` (floor on both axes), spacing:

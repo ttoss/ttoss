@@ -85,7 +85,13 @@ export interface ActionSilhouette {
 /**
  * **Command** silhouette — `Button`. The assertive posture: the theme's
  * command radius (a pill in the base theme), semibold command type, and the
- * command-specific block inset that resolves the CTA to ~40px on the desktop.
+ * command-specific block inset that resolves the CTA to 40px on the desktop.
+ *
+ * It is the deliberate exception to the field row (see `UTILITY_SILHOUETTE`):
+ * a command earns its extra 6px and its heavier weight. What it does *not*
+ * change is the type size — `text.action.md` and `text.label.md` resolve to the
+ * same size and differ in weight alone, so a CTA next to a toolbar control
+ * reads as more assertive without the type visibly stepping.
  */
 export const COMMAND_SILHOUETTE: ActionSilhouette = {
   radius: vars.radii.action,
@@ -96,10 +102,18 @@ export const COMMAND_SILHOUETTE: ActionSilhouette = {
 
 /**
  * **Utility** silhouette — `ActionButton`, `ToggleButton`. The ambient
- * posture: the generic control radius, plain label type, and the tight
- * control inset, so the trigger resolves to the ~32px control height and
- * recedes next to a command. This is the distinction reference-grade systems
- * draw between "commit to this" and "operate on that".
+ * posture: the generic control radius, plain label type, and the tight control
+ * inset. This is the distinction reference-grade systems draw between "commit
+ * to this" and "operate on that".
+ *
+ * Its dimensions are not tuned per component — they are the **field row's**.
+ * `sizing.hit` + `inset.control` + `text.label.md` is exactly what `TextField`,
+ * `Select` and every other control declare, so a utility trigger lands at the
+ * same 34px (desktop, base theme) as the field it stands beside in a toolbar or
+ * filter bar. Shrinking the utility type on its own would break that alignment;
+ * the contrast against a command is carried by height, weight, inset and
+ * radius instead. Enforced by the "utility triggers share the field row"
+ * contract test.
  */
 export const UTILITY_SILHOUETTE: ActionSilhouette = {
   radius: vars.radii.control,

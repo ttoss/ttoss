@@ -1602,12 +1602,23 @@ export const darkAlternate: ModeOverride = {
             pressed: '{core.colors.neutral.300}',
           },
           border: {
-            default: '{core.colors.neutral.500}',
-            hover: '{core.colors.neutral.300}',
-            active: '{core.colors.neutral.100}',
+            // Mirrors the background, exactly as light mode does. Carrying an
+            // edge here (neutral.500 over a neutral.700 fill) made a secondary
+            // action resolve to the *identical* triple as a text input in dark
+            // — same fill, same edge, same ink — so a button and a field became
+            // indistinguishable in one mode and clearly distinct in the other.
+            // A mode may change tonal depth (ADR-018); it may not change the
+            // vocabulary. `focused` and `expanded` keep their visible edge, the
+            // same two exceptions light mode makes.
+            default: '{core.colors.neutral.700}',
+            hover: '{core.colors.neutral.500}',
+            active: '{core.colors.neutral.300}',
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.700}',
             pressed: '{core.colors.neutral.300}',
+            // Lighter than the expanded fill (neutral.500) so the open trigger
+            // still shows an edge — light mode's neutral.500-over-neutral.200.
+            expanded: '{core.colors.neutral.300}',
           },
           text: {
             default: '{core.colors.neutral.50}',

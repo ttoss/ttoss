@@ -169,9 +169,10 @@ export const Select = <T extends object = object>({
                   justifyContent: 'space-between',
                   gap: vars.spacing.gap.inline.sm,
                   minHeight: vars.sizing.hit,
-                  // Tight block padding + small chevron keep the trigger at
-                  // the same ~32px resolved height as TextField/Button — a
-                  // field row with mixed controls must align (P3 slice 3).
+                  // Tight block padding + small chevron keep the trigger on the
+                  // field row — the same 34px (desktop) as TextField and
+                  // ActionButton, because a row with mixed controls must align
+                  // (P3 slice 3).
                   paddingBlock: vars.spacing.inset.control.sm,
                   paddingInline: vars.spacing.inset.control.md,
                   borderRadius: vars.radii.control,

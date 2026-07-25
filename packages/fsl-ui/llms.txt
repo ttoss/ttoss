@@ -49,11 +49,14 @@ are undefined and components render unstyled.
 ## Component catalog (all exports also ship a `*Meta` identity object)
 
 Action:      Button = COMMAND silhouette (commit: submit/confirm/primary action
-             of a surface; pill radius, semibold, ~40px desktop).
+             of a surface; pill radius, semibold, 40px desktop).
              ActionButton = UTILITY silhouette (ambient operation ON content:
              toolbar, row action, overflow trigger; control radius, label type,
-             ~32px). Pick by the weight of the commitment — there is no size
-             prop, the pair IS the distinction.
+             34px = the FIELD ROW, identical to TextField/Select). Pick by the
+             weight of the commitment — there is no size prop, the pair IS the
+             distinction. The two type contracts share one font SIZE and differ
+             in WEIGHT only; a utility trigger is never independently smaller,
+             or it desynchronises from the fields beside it.
              Both: icon={<Icon intent="…"/>} + iconPlacement=leading|trailing;
              omit children for the icon-only square (same height as the
              labelled form; aria-label then REQUIRED by the type system);
