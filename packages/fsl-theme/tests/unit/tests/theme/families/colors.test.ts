@@ -58,14 +58,19 @@ const WCAG = { AA_NORMAL: 4.5, AA_LARGE: 3.0 } as const;
 // Canonical grammar constraints — Legal Combinations from colors.md
 // ---------------------------------------------------------------------------
 
-// Editing this map is a **published-surface change**, not a test tweak: a role
-// added or removed here accompanies a required member added or removed on the
+// This map is the **sensor** for a published-surface change, not a test tweak: a
+// role added or removed here accompanies a required member added or removed on the
 // matching `*ColorRoles` interface in `src/families/colors.ts`, which every theme
-// authored via `base: ThemeTokens` must satisfy. `@lerna-lite/version` derives the
-// released version from commit markers and from nothing else, so the commit that
-// edits this map carries `!` and a `BREAKING CHANGE:` footer naming the new
-// members. (The `overrides`/`extends` authoring paths take `DeepPartial`, so they
-// are unaffected — which is why the break is invisible until someone supplies a
+// authored via `base: ThemeTokens` must satisfy.
+//
+// `@lerna-lite/version` derives the released version from commit markers, and
+// `lerna.json` sets `ignoreChanges: ["**/tests/**"]` — so this file cannot trigger
+// a release on its own. The `!` and the `BREAKING CHANGE:` footer belong on the
+// commit that changes `src/families/colors.ts`, which in practice is this same
+// commit: a member added there fails this test until the map follows.
+//
+// (The `overrides`/`extends` authoring paths take `DeepPartial`, so they are
+// unaffected — which is why the break is invisible until someone supplies a
 // complete base.)
 const ALLOWED_ROLES: Readonly<Record<string, ReadonlyArray<string>>> = {
   action: ['primary', 'secondary', 'accent', 'muted', 'negative'],
