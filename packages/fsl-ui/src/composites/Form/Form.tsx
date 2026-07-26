@@ -1,11 +1,15 @@
 import { vars } from '@ttoss/fsl-theme/vars';
-import type * as React from 'react';
+import * as React from 'react';
 import {
   Form as RACForm,
   type FormProps as RACFormProps,
 } from 'react-aria-components';
 
 import { Button, type ButtonOwnProps } from '../../components/Button/Button';
+import {
+  FieldLayoutProvider,
+  type FieldNecessityIndicator,
+} from '../../components/Field/anatomy';
 import type {
   ComponentMeta,
   CompositionsFor,
@@ -69,6 +73,20 @@ export interface FormProps extends Omit<RACFormProps, 'style' | 'className'> {
    * composites plus a {@link FormActions} row at the end.
    */
   children?: React.ReactNode;
+  /**
+   * How the fields inside mark the ones the user must fill. One decision for
+   * the whole form: a form where one field marks required and the next does not
+   * is a form nobody proofread.
+   *
+   * `icon` (default) puts an asterisk beside each required label, following the
+   * reference system and the web's convention of marking the required fields
+   * rather than the optional ones. `none` drops the marker; screen readers still
+   * hear the requirement, because the control carries the native `required`
+   * attribute either way.
+   *
+   * @default 'icon'
+   */
+  necessityIndicator?: FieldNecessityIndicator;
 }
 
 /**
@@ -98,25 +116,38 @@ export interface FormProps extends Omit<RACFormProps, 'style' | 'className'> {
  * </Form>
  * ```
  */
-export const Form = ({ children, ...props }: FormProps) => {
+export const Form = ({
+  children,
+  necessityIndicator = 'icon',
+  ...props
+}: FormProps) => {
+  // Memoised because this context is read by every field: a fresh object each
+  // render would re-render all of them. The value is static configuration by
+  // design — validation state stays on each field, where React Aria tracks it.
+  const layout = React.useMemo(() => {
+    return { necessityIndicator };
+  }, [necessityIndicator]);
+
   return (
     <formScope.Provider>
-      <RACForm
-        {...props}
-        data-scope="form"
-        data-part="root"
-        style={
-          {
-            boxSizing: 'border-box',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: vars.spacing.gap.stack.md,
-            ...(vars.text.label.md as React.CSSProperties),
-          } as React.CSSProperties
-        }
-      >
-        {children}
-      </RACForm>
+      <FieldLayoutProvider value={layout}>
+        <RACForm
+          {...props}
+          data-scope="form"
+          data-part="root"
+          style={
+            {
+              boxSizing: 'border-box',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: vars.spacing.gap.stack.md,
+              ...(vars.text.label.md as React.CSSProperties),
+            } as React.CSSProperties
+          }
+        >
+          {children}
+        </RACForm>
+      </FieldLayoutProvider>
     </formScope.Provider>
   );
 };

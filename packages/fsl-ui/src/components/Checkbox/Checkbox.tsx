@@ -10,7 +10,10 @@ import type { ComponentMeta } from '../../semantics';
 import { focusRingOutline } from '../../tokens/focusRing';
 import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
-import { buildFieldTextPartStyle } from '../Field/anatomy';
+import {
+  buildFieldTextPartStyle,
+  FieldNecessityMarker,
+} from '../Field/anatomy';
 import { Icon } from '../Icon';
 
 // ---------------------------------------------------------------------------
@@ -203,6 +206,7 @@ const CheckboxSupportingCopy = ({
   description,
   errorMessage,
   isInvalid,
+  isRequired,
   labelColor,
   children,
 }: {
@@ -212,6 +216,7 @@ const CheckboxSupportingCopy = ({
   description?: React.ReactNode;
   errorMessage?: React.ReactNode;
   isInvalid?: boolean;
+  isRequired?: boolean;
   labelColor?: string;
   children?: React.ReactNode;
 }) => {
@@ -230,6 +235,7 @@ const CheckboxSupportingCopy = ({
         style={{ color: labelColor }}
       >
         {children}
+        <FieldNecessityMarker isRequired={isRequired} />
       </span>
       {/*
         A column, because both parts render inline `<span>`s and ran together on
@@ -326,6 +332,7 @@ export const Checkbox = ({
         isSelected,
         isIndeterminate,
         isInvalid,
+        isRequired,
       }) => {
         const text = c?.text;
         const showIndicator = isSelected || isIndeterminate;
@@ -380,6 +387,7 @@ export const Checkbox = ({
                 description={description}
                 errorMessage={errorMessage}
                 isInvalid={isInvalid}
+                isRequired={isRequired}
                 labelColor={resolveLabelColor({ text, isInvalid, isDisabled })}
               >
                 {children}
@@ -394,6 +402,7 @@ export const Checkbox = ({
                   }}
                 >
                   {children}
+                  <FieldNecessityMarker isRequired={isRequired} />
                 </span>
               )
             )}

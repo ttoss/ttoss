@@ -17,15 +17,21 @@ import {
   buildFieldRootStyle,
   buildFieldTextPartStyle,
   type FieldAuthoring,
+  FieldNecessityMarker,
 } from '../../components/Field/anatomy';
 import type { ComponentMeta } from '../../semantics';
-import { createPresenceScope } from '../scope';
+import { createCompositeScope } from '../scope';
 
 // ---------------------------------------------------------------------------
 // Composite scope — presence-only host guard (same contract as TextField).
 // ---------------------------------------------------------------------------
 
-const textAreaScope = createPresenceScope('TextArea');
+// Stateful rather than presence-only: the host now has something its parts
+// need. The label cannot know the field is required — React Aria does not tell
+// it — and the necessity marker belongs beside the label text, so the root
+// publishes the flag from its own render props (the authoritative value, not the
+// prop). `scope.ts`'s authoring rule: share state when there is state to share.
+const textAreaScope = createCompositeScope<{ isRequired: boolean }>('TextArea');
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -89,8 +95,8 @@ export type TextAreaProps = Omit<
 export type TextAreaLabelProps = Omit<RACLabelProps, 'style' | 'className'>;
 
 /** The label slot of a TextArea. */
-export const TextAreaLabel = (props: TextAreaLabelProps) => {
-  textAreaScope.use(textAreaLabelMeta.displayName);
+export const TextAreaLabel = ({ children, ...props }: TextAreaLabelProps) => {
+  const { isRequired } = textAreaScope.use(textAreaLabelMeta.displayName);
   const colors = vars.colors.input.primary;
 
   return (
@@ -99,7 +105,10 @@ export const TextAreaLabel = (props: TextAreaLabelProps) => {
       data-scope="text-area"
       data-part="label"
       style={buildFieldTextPartStyle({ colors, step: 'md' })}
-    />
+    >
+      {children}
+      <FieldNecessityMarker isRequired={isRequired} />
+    </RACLabel>
   );
 };
 TextAreaLabel.displayName = textAreaLabelMeta.displayName;
@@ -219,7 +228,7 @@ export const TextArea = ({
     >
       {(values) => {
         return (
-          <textAreaScope.Provider>
+          <textAreaScope.Provider value={{ isRequired: values.isRequired }}>
             {children === undefined ? (
               <>
                 {label !== undefined && <TextAreaLabel>{label}</TextAreaLabel>}

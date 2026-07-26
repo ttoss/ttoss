@@ -194,18 +194,24 @@ both modes → commit.
   terms-and-conditions checkbox. Closes the `Checkbox` half of F-033. _Studio:_
   the invite dialog gained a required acknowledgement, which broke three flow
   tests until they passed the new gate — the right kind of failure.
-- **B. `Form` becomes the layout authority.** Static field-layout context
-  (`labelPosition`, `labelAlign`, `necessityIndicator`, `isDisabled`), with
-  `labelPosition="side"` implemented as a CSS grid with named lines so labels
-  and controls align across rows — the Form owns the grid, consumers write no
-  CSS. Default each field's `validationBehavior` from Form presence — `native`
-  inside, `aria` outside — so a standalone field validates as the user edits
-  without the caller naming the prop (§2b). Guard the inherited
-  focus-first-invalid behaviour. Add `FormErrorSummary`. **The context carries static configuration only:** ours is
-  plain React context, so per-keystroke state in it would re-render every field
-  (TanStack can do that because its context holds static class instances with
-  reactive properties — we cannot). A guard pins it. → ADR-025.
-  _Studio:_ the invite form gets side labels and required markers.
+- **B1. ✅ Form publishes field layout; a required field marks itself
+  (2026-07-26).** A dedicated context in the anatomy — not `formScope`, which
+  throws without its host — read with a default so a standalone field still
+  works. Static configuration only, held by two tests: a keystroke in one field
+  does not re-render its siblings, and the value survives a Form re-render by
+  identity. First consumer is `necessityIndicator: 'icon' | 'none'` (default
+  `icon`, marking the required fields as the reference does); the `'label'`
+  variant is rejected until a consumer supplies its localized copy (ADR-001).
+  Wired into `TextField`, `TextArea` and `Checkbox`. → ADR-025. _Studio:_ the
+  invite dialog's email (composed authoring) and acknowledgement checkbox both
+  mark themselves; four `getByLabelText` queries moved to `getByRole` because a
+  required label's text content now contains the asterisk.
+- **B2. `labelPosition="side"`.** `labelPosition` + `labelAlign` join the
+  context, implemented as a CSS grid with named lines so labels and controls
+  align across rows — the Form owns the grid, consumers write no CSS.
+- **B3. The error summary + the focus guard.** `FormErrorSummary`, and a test
+  pinning the focus-first-invalid behaviour §1 measured as already inherited.
+- **B4. `contextualHelp`.** A slot beside the label, in S2's prop shape.
 - **C. `Select` + `ComboBox`.** Geometry onto the anatomy; F-009 closed by the
   envelope; F-019 via a named allowlist of RAC-published positioning vars
   (→ ADR-023) so the popover sizes to the frame; the flush focus ring; the

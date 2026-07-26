@@ -29,7 +29,7 @@ describe('TeamPage', () => {
       name: 'Invite member',
     });
     await user.type(
-      within(dialog).getByLabelText('Email'),
+      within(dialog).getByRole('textbox', { name: 'Email' }),
       'joao@northline.dev'
     );
     await user.click(
@@ -55,7 +55,7 @@ describe('TeamPage', () => {
     });
 
     await user.type(
-      within(dialog).getByLabelText('Email'),
+      within(dialog).getByRole('textbox', { name: 'Email' }),
       'ana@northline.dev'
     );
 
@@ -93,7 +93,7 @@ describe('TeamPage', () => {
     });
 
     await user.type(
-      within(dialog).getByLabelText('Email'),
+      within(dialog).getByRole('textbox', { name: 'Email' }),
       'bea@northline.dev'
     );
     await user.clear(
@@ -125,7 +125,10 @@ describe('TeamPage', () => {
     const dialog = await screen.findByRole('dialog', {
       name: 'Invite member',
     });
-    await user.type(within(dialog).getByLabelText('Email'), 'not-an-email');
+    await user.type(
+      within(dialog).getByRole('textbox', { name: 'Email' }),
+      'not-an-email'
+    );
     await user.click(
       within(dialog).getByRole('checkbox', {
         name: /grants deploy access/,

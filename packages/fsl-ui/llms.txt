@@ -143,6 +143,26 @@ Feedback:    ProgressBar, Meter, Toast, ToastRegion, createToastQueue
              ProgressBar = a task in flight. Pick by "state" vs "progressing"),
              Badge (status chip, filled: evaluation=primary|positive|caution|negative|accent,
              numeric=tabular for counts — never a hand-rolled colored span)
+Forms:       Form publishes field layout to every field inside it as STATIC
+             context — necessityIndicator='icon'|'none' (default 'icon': an
+             asterisk marks the REQUIRED fields, following the reference; 'none'
+             drops it). Fields read it with a default, so a field outside any
+             Form still marks itself required. Never put per-keystroke state in
+             that context: every field reads it.
+             The marker is aria-hidden — the control carries the native
+             `required` attribute and no aria-required, so AT already announces
+             it. CONSEQUENCE for tests: a required field's label textContent
+             grows the asterisk, so getByLabelText('Email') with an exact string
+             stops matching. Use getByRole('textbox', { name: 'Email' }) — it
+             follows the accessible-name algorithm, which excludes the marker.
+             Validation: React Aria's `native` default is right everywhere and
+             needs no prop. Standalone, a `validate` callback and a malformed
+             value each surface on blur; only `isRequired` waits for a submit,
+             so a lone field needing a required check belongs in a Form (Form is
+             the validation scope, not a synonym for a big form). Never pass
+             validationBehavior="aria": it REMOVES native constraints.
+             React Aria already focuses the first invalid field on submit.
+
 Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              WizardNavigation, Separator, Group (labelled role=group frame),
              Toolbar (THE ACTION FAMILY'S UTILITY GROUP — the reference

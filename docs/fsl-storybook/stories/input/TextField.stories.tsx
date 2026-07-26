@@ -132,3 +132,20 @@ export const PlatformValidationCopy: Story = {
     );
   },
 };
+
+/**
+ * A required field marks itself with an asterisk. The marker is `aria-hidden` —
+ * the control carries the native `required` attribute, which assistive tech
+ * announces on its own, so a second announcement would be noise.
+ *
+ * A `Form` sets the convention once for every field inside it
+ * (`necessityIndicator="none"` drops the marker without making the field
+ * optional); a field on its own marks itself, because the marker states a fact
+ * about the field rather than a preference about the form.
+ */
+export const Required: Story = {
+  tags: ['autodocs'],
+  render: () => {
+    return <TextField label="Email" name="email" type="email" isRequired />;
+  },
+};

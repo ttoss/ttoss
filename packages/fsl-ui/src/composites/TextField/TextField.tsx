@@ -17,9 +17,10 @@ import {
   buildFieldRootStyle,
   buildFieldTextPartStyle,
   type FieldAuthoring,
+  FieldNecessityMarker,
 } from '../../components/Field/anatomy';
 import type { ComponentMeta } from '../../semantics';
-import { createPresenceScope } from '../scope';
+import { createCompositeScope } from '../scope';
 
 // ---------------------------------------------------------------------------
 // Composite scope — presence-only host guard.
@@ -31,7 +32,14 @@ import { createPresenceScope } from '../scope';
 // any field's a11y tree.
 // ---------------------------------------------------------------------------
 
-const textFieldScope = createPresenceScope('TextField');
+// Stateful rather than presence-only: the host now has something its parts
+// need. The label cannot know the field is required — React Aria does not tell
+// it — and the necessity marker belongs beside the label text, so the root
+// publishes the flag from its own render props (the authoritative value, not the
+// prop). `scope.ts`'s authoring rule: share state when there is state to share.
+const textFieldScope = createCompositeScope<{ isRequired: boolean }>(
+  'TextField'
+);
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -99,8 +107,8 @@ export const textFieldErrorMeta = {
 export type TextFieldLabelProps = Omit<RACLabelProps, 'style' | 'className'>;
 
 /** The label slot of a TextField. Wired to React Aria for a11y linkage. */
-export const TextFieldLabel = (props: TextFieldLabelProps) => {
-  textFieldScope.use(textFieldLabelMeta.displayName);
+export const TextFieldLabel = ({ children, ...props }: TextFieldLabelProps) => {
+  const { isRequired } = textFieldScope.use(textFieldLabelMeta.displayName);
   const colors = vars.colors.input.primary;
 
   return (
@@ -109,7 +117,10 @@ export const TextFieldLabel = (props: TextFieldLabelProps) => {
       data-scope="text-field"
       data-part="label"
       style={buildFieldTextPartStyle({ colors, step: 'md' })}
-    />
+    >
+      {children}
+      <FieldNecessityMarker isRequired={isRequired} />
+    </RACLabel>
   );
 };
 TextFieldLabel.displayName = textFieldLabelMeta.displayName;
@@ -282,7 +293,7 @@ export const TextField = ({
     >
       {(values) => {
         return (
-          <textFieldScope.Provider>
+          <textFieldScope.Provider value={{ isRequired: values.isRequired }}>
             {children === undefined ? (
               <>
                 {label !== undefined && (

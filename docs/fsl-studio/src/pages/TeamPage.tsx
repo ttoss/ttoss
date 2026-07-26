@@ -65,7 +65,17 @@ const InviteDialog = () => {
           <Form onSubmit={handleSubmit}>
             <DialogBody>
               <Stack gap="md">
-                <TextField name="email" type="email" validate={validateEmail}>
+                {/*
+                  Left in slot form on purpose: the necessity marker has to look
+                  identical whichever way a field is authored, and this is the
+                  composed side of that pair standing in a real flow.
+                */}
+                <TextField
+                  name="email"
+                  type="email"
+                  isRequired
+                  validate={validateEmail}
+                >
                   <TextFieldLabel>Email</TextFieldLabel>
                   <TextFieldControl />
                   <TextFieldError />

@@ -1,5 +1,5 @@
 import { vars } from '@ttoss/fsl-theme/vars';
-import type * as React from 'react';
+import * as React from 'react';
 
 import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
@@ -297,3 +297,100 @@ export interface FieldCopyProps {
 export type FieldAuthoring<TChildren> =
   | ({ children: TChildren } & { [K in keyof FieldCopyProps]?: never })
   | (FieldCopyProps & { children?: undefined });
+
+// ---------------------------------------------------------------------------
+// Field layout — published by the Form, read by the fields
+//
+// Label layout and the necessity convention are one product decision, not a
+// per-field one: a form where some labels sit above and others beside, or where
+// one field marks required and the next does not, is a form nobody proofread.
+// So the `Form` publishes it and every field reads it — the ecosystem's pattern
+// (apps configure at the root, packages consume context, never a style prop),
+// and the same shape `ActionTriggerGroupProvider` uses for the one thing a group
+// imposes on its triggers.
+//
+// Read with a **default** rather than through the Form's presence scope, because
+// a field outside any Form is a first-class case (a lone age input, a
+// confirmation checkbox in a modal) and must not throw. `formScope.use()` still
+// throws for the parts that genuinely require the host — `FormActions`,
+// `FormSubmit`.
+//
+// **Static configuration only.** This is a plain React context, so a value that
+// changed per keystroke would re-render every field in the form. (TanStack Form
+// can keep field state in context because its values are static class instances
+// with reactive properties; ours are not, and the difference is load-bearing.)
+// Validation state stays on each field, where React Aria already tracks it.
+// ---------------------------------------------------------------------------
+
+/**
+ * How a form marks the fields the user must fill.
+ *
+ * - `icon` — an asterisk beside the label. The reference system's default, and
+ *   the web's convention: it marks the *required* fields, not the optional ones.
+ * - `none` — no visual marker. Screen readers still hear the requirement: React
+ *   Aria marks the control with the **native `required` attribute** (verified —
+ *   `required=""`, and it sets no `aria-required`), which AT announces on its own.
+ *
+ * A `label` variant (the words "(required)") is deliberately absent: it is copy,
+ * and copy is caller-supplied (ADR-001) — we cannot ship a translated string.
+ * Readmission criterion: a consumer that needs it, plus a prop to carry its
+ * localized text.
+ */
+export type FieldNecessityIndicator = 'icon' | 'none';
+
+/** Layout decisions a Form makes once on behalf of its fields. */
+export interface FieldLayout {
+  /** How required fields are marked. */
+  necessityIndicator: FieldNecessityIndicator;
+}
+
+/**
+ * What a field assumes when nothing published a layout — a field standing on
+ * its own still marks itself required, because the marker belongs to the field's
+ * meaning rather than to the form's chrome.
+ */
+const FIELD_LAYOUT_DEFAULT: FieldLayout = {
+  necessityIndicator: 'icon',
+};
+
+const FieldLayoutContext =
+  React.createContext<FieldLayout>(FIELD_LAYOUT_DEFAULT);
+FieldLayoutContext.displayName = 'FieldLayoutContext';
+
+/** Publishes a Form's layout decisions to the fields inside it. */
+export const FieldLayoutProvider = FieldLayoutContext.Provider;
+
+/** The active layout, or the standalone default when no Form published one. */
+export const useFieldLayout = (): FieldLayout => {
+  return React.useContext(FieldLayoutContext);
+};
+
+/**
+ * The necessity marker, or nothing.
+ *
+ * `aria-hidden`, because the control already carries the native `required`
+ * attribute — announcing it twice is noise, and an asterisk absorbed into the
+ * accessible name is worse than no asterisk at all.
+ * Rendered as text rather than as an `Icon` so the glyph registry does not grow
+ * for a character every font already has, and so it inherits the label's size
+ * and weight for free.
+ */
+export const FieldNecessityMarker = ({
+  isRequired,
+}: {
+  isRequired?: boolean;
+}) => {
+  const { necessityIndicator } = useFieldLayout();
+
+  if (isRequired !== true || necessityIndicator === 'none') return null;
+
+  return (
+    <span
+      aria-hidden
+      data-part="necessityMarker"
+      style={{ marginInlineStart: vars.spacing.gap.inline.xs }}
+    >
+      *
+    </span>
+  );
+};
