@@ -108,31 +108,36 @@ Every field works on its own; a `Form` is an amplifier, not a prerequisite. What
 differs is **who triggers validation**, and this was probed rather than assumed
 (2026-07-26):
 
-| Setting                                                                        | Result                                                                                                               |
-| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| Inside `<Form>`, native constraints (`isRequired`, `type="email"`, `minValue`) | ✅ validates on submit, blocks it, focuses the first invalid field, shows the platform's localized copy              |
-| Standalone + `validate` callback + `validationBehavior="aria"`                 | ✅ measured `aria-invalid="true"` and the message rendered, with no form element involved                            |
-| Standalone + native constraint only                                            | ❌ inert — a native constraint needs a real submit to fire, and `aria` mode disables native validation by definition |
+| Setting                                                            | Result (all measured, 2026-07-26)                                                                       |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| Inside `<Form>`, native constraints (`isRequired`, `type="email"`) | ✅ validates on submit, blocks it, focuses the first invalid field, shows the platform's localized copy |
+| Standalone + a `validate` callback, **no prop set**                | ✅ surfaces on blur and clears when fixed                                                               |
+| Standalone + a malformed value (`type="email"`), **no prop set**   | ✅ surfaces on blur                                                                                     |
+| Standalone + `isRequired` only                                     | ⏳ waits for a submit                                                                                   |
+| `validationBehavior="aria"`                                        | ⚠️ **removes** native constraints — `validity.valid` reads `true` on a required field                   |
 
-The third row is a platform fact, not our choice, so it gets documented rather
-than worked around. Two consequences for the plan:
+**React Aria's `native` default is already correct in both contexts, so nothing
+here needs a prop.** The one row that waits — `isRequired` with no submit — is
+right rather than broken: a field should not scold someone for not having filled
+it yet, and where there is something to confirm there is a button to confirm it,
+which is the submit. So a lone field that needs a required check belongs in a
+`Form` — `Form` is the validation scope, not a synonym for "a big form".
+
+Two consequences for the plan:
 
 - **Do not touch `validationBehavior`.** An earlier revision of this plan wanted
-  to default it from Form presence — that would have been a **regression**, and
+  to default it from Form presence. That would have been a **regression**, and
   measurement caught it before a line was written: `aria` mode does not merely
-  stop _displaying_ native constraints, it **removes** them (`validity.valid`
-  reads `true` on a required field). React Aria's `native` default is already
-  right in both contexts. Standalone, it surfaces a malformed value on blur and a
-  `validate` callback on blur, clearing when fixed — measured, with no prop set.
+  stop _displaying_ native constraints, it **removes** them (last row above).
 - **✅ `Checkbox` got the message part** (A2). **`Switch` still needs it** —
   folded into E.
   `Slider` stays without one: React Aria gives it no `FieldErrorContext`, because
   a slider always holds an in-range value — a boundary, not a gap.
 
-For the common "confirm before continuing" modal there are two correct shapes and
-the library should support both: gate the action on app state (the confirm button
-is disabled until the box is checked — no validation message needed), or let the
-field state the rule (needs F-033's message part).
+For the common "confirm before continuing" modal both correct shapes now work:
+gate the action on app state (the confirm button is disabled until the box is
+checked — no message needed), or let the field state the rule (`Checkbox` with
+`isRequired` + `errorMessage` inside a `Form`, shipped in A2).
 
 ## 3. Constraint that shapes everything
 
@@ -143,12 +148,29 @@ them. All three come from `TextField`, `Select`, `ComboBox`, `NumberField`,
 `RadioGroup`, `SearchField` and `CheckboxGroup` — nine of our eleven components,
 since our `TextArea` uses `RACTextField` as its root. `Slider` supplies
 `LabelContext` alone; a single `Checkbox`/`Switch` carries its label as inline
-children.
+children, which is why those two needed the A2 treatment rather than the
+envelope. (Both _do_ import `TextContext`/`FieldErrorContext` — an earlier
+revision of this file claimed otherwise for `Switch` and was wrong — but on a
+lone `Checkbox` that error context stays quiet even while the input is
+`aria-invalid` and the form refuses to submit, so `FieldError` is unusable there
+and the message gates on the render-prop flag instead.)
 
-So the envelope is **the RAC root each composite already renders**, plus generic
-parts mounted inside it, plus one shared geometry source. That is why one
-`FieldLabel` can serve nine components with no a11y risk, and why "one label
-over two controls" is a `role="group"` rather than a relabelled field.
+So the envelope is **the RAC root each composite already renders**, plus the
+parts mounted inside it, plus one shared geometry source. It is also why "one
+label over two controls" is a `role="group"` rather than a relabelled field.
+
+**Those parts stay per-component, and that was decided rather than assumed** (A).
+A single exported `FieldLabel` reusable inside any field would need its own
+`data-scope`, and re-scoping the existing per-component parts is a breaking
+change to published attributes bought for nothing: the unification a caller
+feels is the prop form, and the style duplication was already removed in the
+anatomy. So `TextFieldLabel` and its siblings remain, sharing one style source.
+
+One further limit, measured in A2: a part cannot simply be placed _inside_ a
+control whose root is its own `<label>`. On `Checkbox` that absorbed the copy
+into the accessible **name** — `"Accept termsYou agree to the terms."`, with a
+name query for the label alone no longer matching. Where that happens the name
+is pinned with `aria-labelledby` and the copy linked with `aria-describedby`.
 
 ## 4. Items, in dependency order
 
