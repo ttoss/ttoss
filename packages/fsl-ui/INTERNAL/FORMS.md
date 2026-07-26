@@ -102,6 +102,37 @@ union makes them mutually exclusive at compile time (the ADR-001 mechanism,
 already used by `ActionLabellingProps`). Every existing per-component slot
 export stays as a thin alias — **no break**.
 
+## 2b. Standalone fields — a field is not a form
+
+Every field works on its own; a `Form` is an amplifier, not a prerequisite. What
+differs is **who triggers validation**, and this was probed rather than assumed
+(2026-07-26):
+
+| Setting                                                                        | Result                                                                                                               |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| Inside `<Form>`, native constraints (`isRequired`, `type="email"`, `minValue`) | ✅ validates on submit, blocks it, focuses the first invalid field, shows the platform's localized copy              |
+| Standalone + `validate` callback + `validationBehavior="aria"`                 | ✅ measured `aria-invalid="true"` and the message rendered, with no form element involved                            |
+| Standalone + native constraint only                                            | ❌ inert — a native constraint needs a real submit to fire, and `aria` mode disables native validation by definition |
+
+The third row is a platform fact, not our choice, so it gets documented rather
+than worked around. Two consequences for the plan:
+
+- **B should default `validationBehavior` from Form presence.** The Form context
+  arrives in B anyway, so a field can tell whether it is inside one: inside →
+  `native` (the platform does the work), outside → `aria` (validate as the user
+  edits). Then a lone field with a `validate` callback behaves correctly without
+  the caller ever naming the prop.
+- **`Checkbox` and `Switch` need the message part** — measured, they render only
+  `root, selectionControl, label`, so a required confirmation checkbox turns red
+  and never states the rule (F-033). Folded into E, which already touches both.
+  `Slider` stays without one: React Aria gives it no `FieldErrorContext`, because
+  a slider always holds an in-range value — a boundary, not a gap.
+
+For the common "confirm before continuing" modal there are two correct shapes and
+the library should support both: gate the action on app state (the confirm button
+is disabled until the box is checked — no validation message needed), or let the
+field state the rule (needs F-033's message part).
+
 ## 3. Constraint that shapes everything
 
 A generic `<Field>` wrapper around an arbitrary control **cannot work**. Read in
@@ -139,8 +170,10 @@ both modes → commit.
   (`labelPosition`, `labelAlign`, `necessityIndicator`, `isDisabled`), with
   `labelPosition="side"` implemented as a CSS grid with named lines so labels
   and controls align across rows — the Form owns the grid, consumers write no
-  CSS. Guard the inherited focus-first-invalid behaviour. Add
-  `FormErrorSummary`. **The context carries static configuration only:** ours is
+  CSS. Default each field's `validationBehavior` from Form presence — `native`
+  inside, `aria` outside — so a standalone field validates as the user edits
+  without the caller naming the prop (§2b). Guard the inherited
+  focus-first-invalid behaviour. Add `FormErrorSummary`. **The context carries static configuration only:** ours is
   plain React context, so per-keystroke state in it would re-render every field
   (TanStack can do that because its context holds static class instances with
   reactive properties — we cannot). A guard pins it. → ADR-025.
@@ -153,7 +186,9 @@ both modes → commit.
 - **D. `SearchField` + `NumberField`.** Adornment parts and the
   `EMBEDDED_TRIGGER` silhouette, so the measured 20 / 25.33 / 32 px triggers
   become one number; the frame/value split closes the last two #12 violations.
-- **E. `Checkbox` / `CheckboxGroup` / `RadioGroup` / `Switch` / `Slider`.** The
+- **E. `Checkbox` / `CheckboxGroup` / `RadioGroup` / `Switch` / `Slider`.**
+  `description` and `validationMessage` parts for `Checkbox`/`Switch` (F-033 —
+  today a required one turns red and cannot say why); the
   32 → 34 px row inset, one shared glyph scale (three hard-coded `1.125rem` and
   a Switch track that exceeds S2's extra-large), focus-offset literals → the
   constant, group layout single-sourced, Slider's unread `sizing: hit` claim.

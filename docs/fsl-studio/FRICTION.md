@@ -12,7 +12,7 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 
 ## Open items (derived — the entry below is always the source of truth)
 
-Nineteen open, grouped by the _kind of decision_ each one needs rather than by
+Twenty open, grouped by the _kind of decision_ each one needs rather than by
 severity, because that is what makes a review round plannable. Regenerate by
 grepping `Status:** open`; do not edit an entry through this list.
 
@@ -45,6 +45,7 @@ grepping `Status:** open`; do not edit an entry through this list.
 | F-030 | A composite sub-part that is its own root collides with its host's root: `menu/root` addresses the popover **and** every row. §5's scope-reuse convention vs `MenuItem.structure`.                                                                                 |
 | F-028 | `Toolbar` claims `role="toolbar"` but is not a single tab stop — `useToolbar` cannot manage arbitrary children's `tabindex`. Either upstream fixes it or we own a roving model for _all_ children.                                                                 |
 
+| F-033 | A standalone/required `Checkbox` or `Switch` turns invalid (measured `aria-invalid`) but has **no message part** — parts are `root, selectionControl, label`. F-009's shape, one family over. |
 | F-032 | The validation message is the same ink as the label (measured light **and** dark), so the invalid state rests on border colour alone. Second half of F-009, on a component whose message part exists. |
 | F-031 | `invalid` outranks `focused`/`active`/`hover` in `STATE_PRIORITY`, so an invalid field goes dead to hover and press. S2 keeps a full cascade inside its negative valence (six tokens). |
 
@@ -299,3 +300,12 @@ grepping `Status:** open`; do not edit an entry through this list.
 - **Not a bug in the component.** `input.primary.text.invalid` is _deliberately_ the control's readable-value colour — the theme's own comment says the value stays readable and the valence lives on the border. The gap is that the envelope has no ink for error copy, so `TextFieldError` reads the only `invalid` text token there is and gets neutral ink.
 - **Consequence beyond aesthetics:** with the message unstyled, the invalid state is signalled by border colour alone, which is the WCAG 1.4.1 shape (colour as the only carrier) that the in-control validation glyph is meant to answer.
 - **Backlog:** part of the validation-language decision (ADR-024, P3 Slice 5 ④) — a `negative` tone for envelope copy, alongside the in-control glyph. `buildFieldTextPartStyle` already takes the `tone` parameter, so the component side is a one-line change once the token exists; today `negative` resolves to the same ink as `neutral`, which its JSDoc states with the measurement above.
+
+### F-033 — a standalone `Checkbox`/`Switch` can turn invalid but cannot say why
+
+- **Date:** 2026-07-26 · **Surface:** `@ttoss/fsl-ui` `Checkbox`, `Switch` · **Severity:** gap · **Status:** open
+- Found answering "can we use the form components individually — say a modal with a confirmation checkbox, or one age input, with field validation?" Probed rather than assumed, and the probe split into a working case and a broken one.
+- **Measured.** A required `Checkbox` inside a `Form`, after a failed submit: `aria-invalid="true"` on the input, and its rendered parts are exactly `root, selectionControl, label` — **there is no `validationMessage`**. So the box turns red and the submit is blocked, and nothing on screen states the rule. `Switch` has the same three parts and the same hole. (`Slider` also has no message part, but that is a **boundary rather than a gap**: React Aria gives Slider no `FieldErrorContext`, because a slider always holds a value in range.)
+- **Same shape as F-009**, one family over: there, `Select` had nowhere to render a message while its siblings did; here it is the selectables. The single `Checkbox`/`Switch` carry their label as inline children rather than through `LabelContext`, which is why they were never given the envelope in the first place.
+- **The other half of the probe, which does work:** a field outside any `Form` validates through a `validate` callback with `validationBehavior="aria"` — measured `aria-invalid="true"` and the message rendered, no form element involved. What does **not** work standalone is a _native_ constraint (`isRequired`, `minValue`, `type="email"`): those need a real submit to fire, and `validationBehavior="aria"` disables them by definition. That is a platform fact, not our choice, and it is worth documenting rather than working around.
+- **Backlog:** give `Checkbox` and `Switch` the envelope's message part (and a `description`), folded into P3 Slice 5 item E, which already touches both. Pairs with B's decision to default `validationBehavior` from Form presence, so a lone field shows its `validate` message as the user edits without the caller naming the prop.
