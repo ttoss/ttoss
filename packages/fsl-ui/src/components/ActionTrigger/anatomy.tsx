@@ -11,11 +11,13 @@ import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
 import type { IconProps } from '../Icon';
 
 // ---------------------------------------------------------------------------
-// Shared anatomy of an Action trigger and of the containers that group them —
-// internal, never exported from the package.
+// Shared anatomy of an Action trigger and of the containers that group them.
+// No value here is exported from the package; `ActionGroupAlign` is, re-exported
+// under the per-component names the package uses for prop types
+// (`ButtonGroupAlign`, `ToolbarAlign` — the convention `StackAlign`/`GridAlign`
+// already follow), so renaming it is a public-API change.
 //
-// Every Action-entity trigger (`Button`, `ActionButton`, `ToggleButton`, and
-// the ActionMenu trigger that follows) has the *same* anatomy:
+// Every Action-entity trigger has the *same* anatomy:
 //   root ▸ icon? ▸ label?    (`icon` and `label` are lawful Action roles)
 // and the same geometry rules — centred flex row, `hit` floor on both axes,
 // square when icon-only, focus ring floated off the edge.
@@ -41,11 +43,14 @@ import type { IconProps } from '../Icon';
 export type ActionIconPlacement = 'leading' | 'trailing';
 
 /**
- * Labelling contract shared by every Action trigger. A trigger must be
- * nameable: either it renders a visible label (`children`) or — in the
- * icon-only form — it supplies `aria-label`. The union makes `tsc` enforce it,
- * the same mechanism `ConfirmationDialog` uses for its flow-critical labels
- * (ADR-001).
+ * Labelling contract for a trigger that can appear *either* labelled or
+ * icon-only: it renders a visible label (`children`) or supplies `aria-label`.
+ * The union makes `tsc` enforce that — the same mechanism `ConfirmationDialog`
+ * uses for its flow-critical labels (ADR-001).
+ *
+ * A trigger with only one of those forms declares its own label prop instead:
+ * `ActionMenu` requires `aria-label` outright, because an overflow trigger has no
+ * labelled variant for the union to discriminate.
  */
 export type ActionLabellingProps =
   | {
@@ -107,13 +112,13 @@ export const COMMAND_SILHOUETTE: ActionSilhouette = {
  * to this" and "operate on that".
  *
  * Its dimensions are not tuned per component — they are the **field row's**.
- * `sizing.hit` + `inset.control` + `text.label.md` is exactly what `TextField`,
- * `Select` and every other control declare, so a utility trigger lands at the
- * same 34px (desktop, base theme) as the field it stands beside in a toolbar or
- * filter bar. Shrinking the utility type on its own would break that alignment;
- * the contrast against a command is carried by height, weight, inset and
- * radius instead. Enforced by the "utility triggers share the field row"
- * contract test.
+ * `sizing.hit` + `inset.control` + `text.label.md` is exactly what `TextField`
+ * and `Select` declare, so a utility trigger lands at the same 34px (desktop,
+ * base theme) as the field it stands beside in a toolbar or filter bar.
+ * Shrinking the utility type on its own would break that alignment; the contrast
+ * against a command is carried by height, weight, inset and radius instead. The
+ * equality is asserted by the "utility triggers share the field row" contract
+ * test — which is the authority, not this comment.
  */
 export const UTILITY_SILHOUETTE: ActionSilhouette = {
   radius: vars.radii.control,
@@ -147,8 +152,10 @@ export const UTILITY_SILHOUETTE: ActionSilhouette = {
 const ActionTriggerGroupContext = React.createContext(false);
 
 /**
- * Marks its subtree as living inside an Action-trigger group. Internal — only
- * group components (`ButtonGroup`, and the ActionGroup ahead) provide it.
+ * Marks its subtree as living inside an Action-trigger group. Internal, and
+ * provided by any container that groups triggers — deliberately not a list here:
+ * membership changed twice while this file was being written, so the authority is
+ * `grep -rl ActionTriggerGroupProvider src/`, never a comment.
  */
 export const ActionTriggerGroupProvider = ActionTriggerGroupContext.Provider;
 
@@ -184,7 +191,11 @@ const GROUP_ALIGN: Record<ActionGroupAlign, string> = {
 };
 
 /**
- * Arrangement shared by every container of Action triggers.
+ * Arrangement shared by the group containers that opt into it. `DialogActions`
+ * is the standing exception: it predates this builder, reorders its children by
+ * `composition` per platform, and uses the wider `gap.inline.md` — so the action
+ * row currently has two rhythms, which is a real inconsistency and not a bug in
+ * either place.
  *
  * `align` acts on whichever axis has free space — the main axis in a row
  * (`justify-content`), the cross axis in a column (`align-items`) — so the prop
