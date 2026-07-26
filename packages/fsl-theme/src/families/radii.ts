@@ -38,10 +38,13 @@ export interface CoreRadii {
  */
 export interface SemanticRadii {
   /**
-   * Radius for command triggers (Button, ToggleButton). Split from `control`
-   * so a theme can give CTAs their own silhouette (e.g. pill) while fields
-   * and choice controls keep the standard control radius — the distinction
-   * reference-grade systems draw between "press me" and "fill me in".
+   * Radius for the **command** silhouette. Split from `control` so a theme can
+   * give commitments their own shape (e.g. pill) while fields, choice controls
+   * and ambient/utility triggers keep the standard control radius — the
+   * distinction reference-grade systems draw between "press me" and "fill me
+   * in". Which components wear which silhouette is a consumer's decision and is
+   * declared there (fsl-ui `tokens/CONTRACT.md` §1), never named here: this
+   * package has no dependency on its consumers and cannot track a reassignment.
    */
   action: CoreRadiiRef;
   /** Radius for interactive controls and touchable UI elements. */

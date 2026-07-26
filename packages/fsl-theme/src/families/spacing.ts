@@ -84,10 +84,13 @@ export interface SemanticSpacing {
      */
     surface: InsetSteps;
     /**
-     * Block padding inside a **command trigger** (Button, ToggleButton) —
-     * the one axis where a CTA is deliberately more generous than a generic
-     * control, so it resolves to a taller silhouette (~40px on the desktop)
-     * while fields and choice controls stay at the ~32px control height.
+     * Block padding of the **command** silhouette — the one axis where a
+     * commitment is deliberately more generous than a generic control, so it
+     * resolves to a taller box: 40px at 1920×1080 in the base theme, against the
+     * 34px the same viewport gives a field. Both figures ride the container-fluid
+     * engine, so they shrink together in a narrow container (both measured at
+     * 32px in a 700px-wide one) — the *difference* is the contract, not either
+     * number. See `radii.action` for why no component is named here.
      *
      * A **bounded range**, not a step: the design decision here is the range
      * itself, and the engine's unit steps straddle it (one step is too tight,

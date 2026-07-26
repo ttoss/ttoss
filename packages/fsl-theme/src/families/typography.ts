@@ -208,8 +208,9 @@ export interface SemanticText {
    */
   label: TextStyleLgMdSm;
   /**
-   * Command-trigger text — Button and ToggleButton labels.
-   * Split from `label` so CTAs carry more typographic weight than the
+   * Text for the **command** silhouette — see `radii.action` for why the
+   * component mapping is not named here.
+   * Split from `label` so commands carry more typographic weight than the
    * chrome around them (the weight-contrast rhythm of reference-grade
    * systems: controls quiet, commands assertive). Do not use for field
    * labels or metadata — those are `label`.
