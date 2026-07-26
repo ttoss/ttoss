@@ -86,11 +86,13 @@ export interface SemanticSpacing {
     /**
      * Block padding of the **command** silhouette — the one axis where a
      * commitment is deliberately more generous than a generic control, so it
-     * resolves to a taller box: 40px at 1920×1080 in the base theme, against the
-     * 34px the same viewport gives a field. Both figures ride the container-fluid
-     * engine, so they shrink together in a narrow container (both measured at
-     * 32px in a 700px-wide one) — the *difference* is the contract, not either
-     * number. See `radii.action` for why no component is named here.
+     * resolves to a taller box. Measured in the base theme: 40px against a
+     * field's 34px at 1920×1080, and 40px against 32.5px in a 900px-wide
+     * container. The command barely moves because this value is clamped to a
+     * 1px range, while `inset.control.sm` is a raw engine step that rides the
+     * container-fluid scale — so the *gap widens* as the container narrows, and
+     * the difference is the contract rather than either number.
+     * See `radii.action` for why no component is named here.
      *
      * A **bounded range**, not a step: the design decision here is the range
      * itself, and the engine's unit steps straddle it (one step is too tight,
