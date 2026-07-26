@@ -83,6 +83,27 @@ export interface SemanticSpacing {
      * for the inner controls themselves — those are `inset.control`.
      */
     surface: InsetSteps;
+    /**
+     * Block padding of the **command** silhouette — the one axis where a
+     * commitment is deliberately more generous than a generic control, so it
+     * resolves to a taller box. Measured in the base theme: 40px against a
+     * field's 34px at 1920×1080, and 40px against 32.5px in a 900px-wide
+     * container. The command barely moves because this value is clamped to a
+     * 1px range, while `inset.control.sm` is a raw engine step that rides the
+     * container-fluid scale — so the *gap widens* as the container narrows, and
+     * the difference is the contract rather than either number.
+     * See `radii.action` for why no component is named here.
+     *
+     * A **bounded range**, not a step: the design decision here is the range
+     * itself, and the engine's unit steps straddle it (one step is too tight,
+     * two overshoot). Same contract shape as `separation.interactive.min`.
+     * Only the block axis is owned here — a command's inline padding stays
+     * `inset.control.lg`, which needs no command-specific value.
+     */
+    action: {
+      /** Block (vertical) padding of a command trigger. */
+      block: RawValue;
+    };
   };
   /**
    * Distance *between* siblings (CSS `gap` on Flex/Grid containers).

@@ -5,7 +5,7 @@ import {
   type FormProps as RACFormProps,
 } from 'react-aria-components';
 
-import { Button, type ButtonProps } from '../../components/Button/Button';
+import { Button, type ButtonOwnProps } from '../../components/Button/Button';
 import type {
   ComponentMeta,
   CompositionsFor,
@@ -234,7 +234,12 @@ export const formSubmitMeta = {
  * and `isPending` are surfaced explicitly because their defaults differ
  * from Button's.
  */
-export interface FormSubmitProps extends Omit<ButtonProps, 'type'> {
+export interface FormSubmitProps extends Omit<ButtonOwnProps, 'type'> {
+  /**
+   * Visible submit label — required: a submit control is never icon-only
+   * (the commitment it performs must be named in words).
+   */
+  children: React.ReactNode;
   /**
    * Effect on state. Emitted as `data-consequence`; not used for coloring
    * (visual distinction, if any, is a theme / host-CSS concern — same

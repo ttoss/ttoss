@@ -1,11 +1,13 @@
-import { vars } from '@ttoss/fsl-theme/vars';
-import type * as React from 'react';
 import {
   ToggleButtonGroup as RACToggleButtonGroup,
   type ToggleButtonGroupProps as RACToggleButtonGroupProps,
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
+import {
+  ActionTriggerGroupProvider,
+  buildActionGroupStyle,
+} from '../ActionTrigger/anatomy';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -55,6 +57,7 @@ export interface ToggleButtonGroupProps extends Omit<
  */
 export const ToggleButtonGroup = ({
   orientation = 'horizontal',
+  children,
   ...props
 }: ToggleButtonGroupProps) => {
   return (
@@ -63,15 +66,32 @@ export const ToggleButtonGroup = ({
       orientation={orientation}
       data-scope="toggle-button-group"
       data-part="root"
-      style={
-        {
-          boxSizing: 'border-box',
-          display: 'inline-flex',
-          flexDirection: orientation === 'vertical' ? 'column' : 'row',
-          gap: vars.spacing.gap.inline.sm,
-        } as React.CSSProperties
-      }
-    />
+      // Shares the family's arrangement (`buildActionGroupStyle`) so the three
+      // group containers cannot drift apart, but stays **inline**: a segmented
+      // control is an object sized by its options, not a band across the
+      // container the way a command row or a toolbar is.
+      style={buildActionGroupStyle({
+        isColumn: orientation === 'vertical',
+        align: 'start',
+        isInline: true,
+      })}
+    >
+      {/* Toggles hold their natural width, same as any grouped trigger: a
+          segmented control whose options squash below their labels stops being
+          readable, and the set's widths are what make it read as one control.
+
+          Rendered through a function so React Aria's render-prop form keeps
+          working — a caller may want the group's selection state to build its
+          own children, and wrapping them in the provider must not take that
+          away. */}
+      {(renderProps) => {
+        return (
+          <ActionTriggerGroupProvider value>
+            {typeof children === 'function' ? children(renderProps) : children}
+          </ActionTriggerGroupProvider>
+        );
+      }}
+    </RACToggleButtonGroup>
   );
 };
 ToggleButtonGroup.displayName = toggleButtonGroupMeta.displayName;

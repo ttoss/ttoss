@@ -160,7 +160,7 @@ A valence implies its own emphasis. Intensity within a valence is expressed by `
 | :------- | :---------- | :------: | :-----: | :----------: | :--------: | :-------------: |
 | Emphasis | `primary`   |    ✓     |    ✓    |      ✓       |     ✓      |        ✓        |
 | Emphasis | `secondary` |    ✓     |    ✓    |      ✓       |     —      |        ✓        |
-| Emphasis | `accent`    |    ✓     |    —    |      ✓       |     —      |        ✓        |
+| Emphasis | `accent`    |    ✓     |    —    |      ✓       |     ✓      |        ✓        |
 | Emphasis | `muted`     |    ✓     |    ✓    |      ✓       |     ✓      |        ✓        |
 | Valence  | `positive`  |    —     |    ✓    |      —       |     ✓      |        ✓        |
 | Valence  | `caution`   |    —     |    ✓    |      —       |     ✓      |        ✓        |
@@ -170,8 +170,30 @@ A valence implies its own emphasis. Intensity within a valence is expressed by `
 
 - `action.positive / action.caution` — Outcome and risk live in `feedback.*`; an Action's own colour expresses only `negative` evaluation (FSL §5). Destructive consequence (FSL §6) is a frequent driver of that choice, but the two dimensions are distinct — `negative` may also encode adverse-but-non-destructive intent (cancel paid subscription).
 - `navigation.*` valences — Navigation communicates location (`current`, `visited`), not health state.
-- `feedback.secondary / accent` — Feedback is direct: `primary` and `muted` cover its emphasis range.
+- `feedback.secondary` — Feedback is direct: `primary`, `muted`, and `accent` cover its emphasis range. `feedback.accent` is the **informative** status ("in progress", "new", "info") — noteworthy but judgement-free, and the canonical fill for activity indicators (ProgressBar, Meter).
 - `input.accent` — Inputs use `primary` for the brand-influenced active state; `accent` creates hierarchy ambiguity.
+
+#### The Action emphasis ladder is one mechanism, not three
+
+Within `action`, the three neutral rungs differ by **how much fill they carry**,
+never by switching to a different device:
+
+| Rung        | Resting appearance                                                                                |
+| :---------- | :------------------------------------------------------------------------------------------------ |
+| `primary`   | Solid fill at the ramp's extreme (near-black in light, near-white in dark)                        |
+| `secondary` | A light fill — visibly present, clearly below primary                                             |
+| `muted`     | The **surface's own colour**, border included: no visible edge at rest, the fill appears on hover |
+
+`muted` is the system's idiom for "no fill", and it is deliberately an opaque
+surface-coloured token rather than `transparent`: every semantic background
+stays a verifiable value, which is what lets the contrast guarantees
+(ADR-015) be computed at all. Giving `muted` a visible border instead made it
+read as the _outlined secondary_ of other design systems and inverted the
+ladder's perceived order — the mistake the 2026-07-25 review corrected.
+
+A role whose resting `(background, border, text)` triple duplicates another
+role in the same context is a defect in any theme, and is enforced as such
+(`colors.test.ts` → "roles within a context are distinguishable").
 
 ### Picking a role
 

@@ -578,8 +578,7 @@ interface WizardNavigationRenderProps extends WizardNavigationCommonProps {
  * caller-supplied labels, or a render-prop that owns the whole row.
  */
 export type WizardNavigationProps =
-  | WizardNavigationLabelProps
-  | WizardNavigationRenderProps;
+  WizardNavigationLabelProps | WizardNavigationRenderProps;
 
 /**
  * Default navigation row for a {@link Wizard}. Reads wizard state from
@@ -603,7 +602,9 @@ const WizardNavigationBase = ({
   ) : (
     <>
       <Button
-        evaluation="muted"
+        // `secondary`: going back is a real navigational choice, not ambient
+        // chrome — it must stay visible next to the forward command.
+        evaluation="secondary"
         onPress={ctx.goPrev}
         isDisabled={ctx.isFirst || ctx.isComplete}
       >

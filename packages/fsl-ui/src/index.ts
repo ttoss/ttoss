@@ -1,8 +1,24 @@
 'use client';
 
+/* eslint-disable max-lines */
+// The public barrel: two lines per component (its types, then its value +
+// meta), sorted. Line count is the package's inventory, not complexity —
+// there is nothing to decompose and splitting it would only hide the single
+// place that answers "what does this package export?" (same rationale as
+// `baseTheme.ts` and `tests/unit/tests/domFixtures.tsx`).
+
 // Components are React Aria wrappers with hooks — the whole component entry
 // is a client module (Next.js App Router). The `./semantics` entry stays
 // directive-free: taxonomy data is server-safe.
+export type {
+  ActionButtonIconPlacement,
+  ActionButtonOwnProps,
+  ActionButtonProps,
+} from './components/ActionButton/ActionButton';
+export {
+  ActionButton,
+  actionButtonMeta,
+} from './components/ActionButton/ActionButton';
 export type {
   AppShellProps,
   AppShellSidebarWidth,
@@ -30,8 +46,21 @@ export {
   Breadcrumbs,
   breadcrumbsMeta,
 } from './components/Breadcrumbs/Breadcrumbs';
-export type { ButtonProps } from './components/Button/Button';
+export type {
+  ButtonIconPlacement,
+  ButtonOwnProps,
+  ButtonProps,
+} from './components/Button/Button';
 export { Button, buttonMeta } from './components/Button/Button';
+export type {
+  ButtonGroupAlign,
+  ButtonGroupOrientation,
+  ButtonGroupProps,
+} from './components/ButtonGroup/ButtonGroup';
+export {
+  ButtonGroup,
+  buttonGroupMeta,
+} from './components/ButtonGroup/ButtonGroup';
 export type { CheckboxProps } from './components/Checkbox/Checkbox';
 export { Checkbox, checkboxMeta } from './components/Checkbox/Checkbox';
 export type { CheckboxGroupProps } from './components/CheckboxGroup/CheckboxGroup';
@@ -211,7 +240,11 @@ export {
   ToastRegion,
   toastRegionMeta,
 } from './components/Toast/Toast';
-export type { ToggleButtonProps } from './components/ToggleButton/ToggleButton';
+export type {
+  ToggleButtonIconPlacement,
+  ToggleButtonOwnProps,
+  ToggleButtonProps,
+} from './components/ToggleButton/ToggleButton';
 export {
   ToggleButton,
   toggleButtonMeta,
@@ -221,7 +254,7 @@ export {
   ToggleButtonGroup,
   toggleButtonGroupMeta,
 } from './components/ToggleButtonGroup/ToggleButtonGroup';
-export type { ToolbarProps } from './components/Toolbar/Toolbar';
+export type { ToolbarAlign, ToolbarProps } from './components/Toolbar/Toolbar';
 export { Toolbar, toolbarMeta } from './components/Toolbar/Toolbar';
 export type {
   AccordionItemProps,
@@ -239,6 +272,8 @@ export {
   AccordionTrigger,
   accordionTriggerMeta,
 } from './composites/Accordion/Accordion';
+export type { ActionMenuProps } from './composites/ActionMenu/ActionMenu';
+export { ActionMenu, actionMenuMeta } from './composites/ActionMenu/ActionMenu';
 export type { ConfirmationDialogProps } from './composites/ConfirmationDialog/ConfirmationDialog';
 export {
   ConfirmationDialog,

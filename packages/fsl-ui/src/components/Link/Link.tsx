@@ -6,7 +6,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
-import { focusRingOutline } from '../../tokens/focusRing';
+import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 
 /**
@@ -63,6 +63,7 @@ export const Link = ({ evaluation = 'primary', ...props }: LinkProps) => {
             isDisabled,
           }),
           outline: focusRingOutline(isFocusVisible),
+          outlineOffset: FOCUS_RING_OFFSET,
         } as React.CSSProperties;
       }}
     />

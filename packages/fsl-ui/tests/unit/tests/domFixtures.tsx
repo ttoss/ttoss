@@ -1,3 +1,8 @@
+/* eslint-disable max-lines */
+// A fixture registry, not logic: one canonical render per component, read by
+// the contract, axe and glyph-host suites. It grows by one entry per
+// component by design — line count is coverage here, not complexity (same
+// rationale as `baseTheme.ts`).
 /**
  * Canonical DOM fixtures — the minimal accessible render of every component
  * in the package, keyed by component export name.
@@ -90,10 +95,67 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       return <pkg.Box>content</pkg.Box>;
     },
   },
+  ActionButton: {
+    scope: 'action-button',
+    element: () => {
+      return <pkg.ActionButton>x</pkg.ActionButton>;
+    },
+  },
+  // Icon-only ActionButton: the toolbar shape — square, named by aria-label.
+  ActionButtonIconOnly: {
+    scope: 'action-button',
+    element: () => {
+      return (
+        <pkg.ActionButton
+          icon={<pkg.Icon intent="action.close" />}
+          aria-label="Close"
+        />
+      );
+    },
+  },
+  // The overflow trigger: an icon-only ActionButton re-scoped to `action-menu`,
+  // so the fixture's root is the button (the surface it opens is Menu's own
+  // identity). Left closed — the trigger is what this meta describes.
+  ActionMenu: {
+    scope: 'action-menu',
+    element: () => {
+      return (
+        <pkg.ActionMenu aria-label="More actions">
+          <pkg.MenuItem>Duplicate</pkg.MenuItem>
+        </pkg.ActionMenu>
+      );
+    },
+  },
   Button: {
     scope: 'button',
     element: () => {
       return <pkg.Button>x</pkg.Button>;
+    },
+  },
+  // Icon-only Button: a distinct DOM shape (square, no label part, name from
+  // aria-label) — its own fixture so the contract + axe suites cover it.
+  ButtonIconOnly: {
+    scope: 'button',
+    element: () => {
+      return (
+        <pkg.Button
+          icon={<pkg.Icon intent="action.close" />}
+          aria-label="Close"
+        />
+      );
+    },
+  },
+  // The action row: two commands, so the overflow measurement has siblings to
+  // compare (jsdom reports zero-sized boxes, so it always resolves to a row).
+  ButtonGroup: {
+    scope: 'button-group',
+    element: () => {
+      return (
+        <pkg.ButtonGroup align="end">
+          <pkg.Button evaluation="secondary">Cancel</pkg.Button>
+          <pkg.Button>Save</pkg.Button>
+        </pkg.ButtonGroup>
+      );
     },
   },
   Code: {

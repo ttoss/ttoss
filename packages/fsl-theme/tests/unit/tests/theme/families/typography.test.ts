@@ -166,3 +166,34 @@ for (const { label, tokens } of bundleEntries) {
     });
   });
 }
+
+// ---------------------------------------------------------------------------
+// Trigger text — command vs utility contrast is weight, not size
+//
+// `text.action.md` dresses a command trigger (Button) and `text.label.md` a
+// utility one (ActionButton, ToggleButton) — and every field control on the
+// same row. The two must resolve to the *same font size* and differ in weight
+// alone: that is what lets a CTA sit beside a toolbar control without the type
+// visibly stepping, while still reading as more assertive (ADR-021).
+//
+// Making the utility step smaller instead is the tempting "obvious" move; it
+// would desynchronise a utility trigger from the TextField/Select it was
+// designed to align with. Consumers who need genuinely smaller trigger text
+// have `label.sm`, chosen at the call site — not baked into the silhouette.
+// ---------------------------------------------------------------------------
+
+for (const { label, tokens } of bundleEntries) {
+  describe(`Semantic text — trigger contrast (${label})`, () => {
+    test('action.md and label.md resolve to the same font size', () => {
+      expect(tokens['semantic.text.action.md.fontSize']).toBe(
+        tokens['semantic.text.label.md.fontSize']
+      );
+    });
+
+    test('action.md is heavier than label.md', () => {
+      expect(
+        Number(tokens['semantic.text.action.md.fontWeight'])
+      ).toBeGreaterThan(Number(tokens['semantic.text.label.md.fontWeight']));
+    });
+  });
+}

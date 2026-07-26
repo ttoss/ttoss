@@ -150,6 +150,15 @@ interface TextStyleMdSm {
 }
 
 /**
+ * Single-step family — one canonical contract, no size hierarchy.
+ * @see TextStyleLgMdSm — for the rationale of step semantics.
+ */
+interface TextStyleMd {
+  /** The single canonical step of this family. */
+  md: TextStyle;
+}
+
+/**
  * Semantic text styles — the only typography API consumed by components.
  *
  * Family is the typographic *role* (where in the interface this text sits);
@@ -192,11 +201,21 @@ export interface SemanticText {
    */
   body: TextStyleLgMdSm;
   /**
-   * Short UI strings — field labels, button text, badges, metadata, captions.
+   * Short UI strings — field labels, badges, metadata, captions.
    * Use for compact, scan-only text that names or describes adjacent UI.
-   * Do not use for prose the user must read in sequence — that is `body`.
+   * Do not use for prose the user must read in sequence — that is `body`,
+   * nor for command-trigger text — that is `action`.
    */
   label: TextStyleLgMdSm;
+  /**
+   * Text for the **command** silhouette — see `radii.action` for why the
+   * component mapping is not named here.
+   * Split from `label` so commands carry more typographic weight than the
+   * chrome around them (the weight-contrast rhythm of reference-grade
+   * systems: controls quiet, commands assertive). Do not use for field
+   * labels or metadata — those are `label`.
+   */
+  action: TextStyleMd;
   /**
    * Monospaced text for code snippets, logs, identifiers, or technical data.
    * Use whenever the text must align by character cell or distinguish similar

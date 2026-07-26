@@ -12,7 +12,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
-import { focusRingOutline } from '../../tokens/focusRing';
+import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import { Icon } from '../Icon';
 
@@ -90,6 +90,7 @@ const buildControlBoxStyle = ({
       isFocusVisible,
     }),
     outline: focusRingOutline(isFocusVisible),
+    outlineOffset: FOCUS_RING_OFFSET,
   };
 };
 

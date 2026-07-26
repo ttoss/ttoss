@@ -1,6 +1,12 @@
 # Claude Code session state
 .claude/
 
+# Installed agent skills. `skills-lock.json` is the tracked source of truth —
+# the skill contents are fetched from it, never committed. Current installer
+# layout puts them here and symlinks .claude/skills at them, so ignoring
+# .claude/ alone is no longer enough.
+.agents/
+
 # Logs
 logs
 *.log

@@ -1,34 +1,44 @@
-import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
 import {
   Toolbar as RACToolbar,
   type ToolbarProps as RACToolbarProps,
 } from 'react-aria-components';
 
-import type { ComponentMeta, EvaluationsFor } from '../../semantics';
+import type { ComponentMeta } from '../../semantics';
+import {
+  type ActionGroupAlign,
+  ActionTriggerGroupProvider,
+  buildActionGroupStyle,
+} from '../ActionTrigger/anatomy';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
 //
-// Entity = Structure → CONTRACT.md §1 row: colors `informational`, radii
-// `surface`, border `outline.surface`, spacing `inset.surface`, elevation
-// `flat`. Toolbar is a non-interactive organizational frame that lays out a
-// set of related controls (buttons, toggles, menus) as a `role="toolbar"`
-// region with arrow-key roving navigation between them (React Aria owns the
-// keyboard model). The toolbar itself paints a surface (its "actions" bar);
-// the interactive behavior lives entirely in the controls it hosts.
+// Entity = Structure → CONTRACT.md §1 row: spacing `gap`. Toolbar is the
+// **utility cluster**: a named `role="toolbar"` region whose controls are also
+// reachable with the arrow keys (React Aria's `useToolbar` owns that).
+// Like `ButtonGroup` and `ToggleButtonGroup` it is a frame-only Structure host
+// in the sense §1 "legal vs required" describes — it composes and arranges, it
+// paints nothing, so it lawfully reads no `vars.colors.*` and therefore takes no
+// `evaluation` prop (§2.3 evidence rule: a prop must be read at runtime to earn
+// its place).
 //
-// Structure carries Evaluation `{primary|muted}`: the bar's surface + border
-// consume `vars.colors.informational[evaluation]`, so the prop earns its
-// place per the §2.3 evidence rule (a runtime reads the evaluated token).
+// This is the reference system's "ActionGroup" (its `ActionButtonGroup`, built on
+// the same React Aria `Toolbar`) under the name of the role it actually renders.
+// Its chrome was removed in ADR-014: painting an `informational` bar made the
+// component measure 80px around 34px controls — a card wrapping controls, which
+// then read as bare text inside it.
 // ---------------------------------------------------------------------------
 
-/** Formal semantic identity — Toolbar root (Structure entity, actions bar). */
+/** Formal semantic identity — Toolbar root (Structure entity, utility cluster). */
 export const toolbarMeta = {
   displayName: 'Toolbar',
   entity: 'Structure',
   structure: 'root',
 } as const satisfies ComponentMeta<'Structure'>;
+
+/** Where the controls sit along the axis that has free space. */
+export type ToolbarAlign = ActionGroupAlign;
 
 /** Props for the Toolbar component. */
 export interface ToolbarProps extends Omit<
@@ -36,74 +46,95 @@ export interface ToolbarProps extends Omit<
   'style' | 'className' | 'children'
 > {
   /**
-   * Layout + roving-focus axis. `horizontal` uses Left/Right arrows;
-   * `vertical` uses Up/Down.
+   * Layout **and** arrow-key axis — the two are one decision here, which is why
+   * the prop drives behaviour and not just looks: `horizontal` navigates with
+   * Left/Right, `vertical` with Up/Down.
+   *
+   * Unlike `ButtonGroup`, a toolbar does **not** collapse to a column when it
+   * runs out of room: a toolbar that overflows moves its tail into an overflow
+   * menu (`ActionMenu`), it does not restack. Columnising a formatting bar would
+   * turn a compact strip into a wall.
+   *
    * @default 'horizontal'
    */
   orientation?: RACToolbarProps['orientation'];
   /**
-   * Authorial emphasis of the bar surface. `primary` is the standard toolbar
-   * chrome; `muted` is a subdued variant for dense or secondary bars.
-   * @default 'primary'
+   * Where the controls sit along whichever axis has free space: the main axis in
+   * a row (`justify-content`), the cross axis in a column (`align-items`). A bar
+   * pinned to the end of a header wants `end`.
+   *
+   * @default 'start'
    */
-  evaluation?: EvaluationsFor<(typeof toolbarMeta)['entity']>;
-  /** The interactive controls to lay out in the bar. */
+  align?: ToolbarAlign;
+  /** The controls to cluster. */
   children?: React.ReactNode;
 }
 
 /**
- * A semantic toolbar built on React Aria's `Toolbar` (`role="toolbar"`).
+ * Groups controls that operate on content into a named region with arrow-key
+ * navigation — the utility group of the Action family (`role="toolbar"`).
  *
- * Entity = Structure → reads `vars.colors.informational.{primary|muted}` for
- * the bar surface and border, `vars.radii.surface` for the corner, and
- * `vars.spacing.inset.surface` for padding. Groups related actions (a text
- * formatting bar, a view-mode switch, a set of table controls) under one
- * region with arrow-key navigation. Non-interactive itself — hover/press
- * chrome belongs to the `Button` / `ToggleButton` children.
+ * Entity = Structure → spacing: `gap.inline.sm`, the same rhythm every group in
+ * the family reads. It paints nothing.
+ *
+ * **Pick by what the set means:**
+ *
+ * - `Toolbar` — ambient operations *on* content (formatting, view controls,
+ *   table actions). Announced as a named region, and the arrow keys walk it, so a
+ *   long strip is quick to traverse.
+ * - `ButtonGroup` — independent commitments (submit, cancel, delete). No region,
+ *   no arrow keys, and the row collapses to a column when space runs out.
+ * - `ToggleButtonGroup` — a selectable set (one/many of), where the engaged state
+ *   *is* the value.
+ *
+ * Keyboard, precisely: React Aria adds the arrow keys, and every control remains
+ * its own tab stop. APG's toolbar pattern asks for a *single* tab stop, which
+ * `useToolbar` does not implement — it cannot manage the tabindex of arbitrary
+ * children. Tracked as F-028; do not read this component as a single stop.
+ *
+ * Mixed controls are welcome: a `Select` for the font, `ToggleButton`s for the
+ * styles, a `Separator` between clusters. What makes it a toolbar is the region
+ * and its keyboard model, not the kind of control inside.
+ *
+ * **Chrome is composed, not built in.** Whether a bar has a background depends on
+ * the surface it sits on — a bar on the page needs none, a floating one does —
+ * so wrap it in a `Surface` when you want chrome (ADR-014).
+ *
+ * Give it an accessible name: an unnamed region is announced without telling the
+ * user what it operates on.
  *
  * @example
  * ```tsx
- * <Toolbar aria-label="Text formatting">
- *   <ToggleButton aria-label="Bold">B</ToggleButton>
- *   <ToggleButton aria-label="Italic">I</ToggleButton>
+ * <Toolbar aria-label={formattingLabel}>
+ *   <ToggleButton icon={<Icon intent="action.edit" />} aria-label={boldLabel} />
  *   <Separator orientation="vertical" />
- *   <Button aria-label="Link">Link</Button>
+ *   <ActionButton icon={<Icon intent="action.search" />} aria-label={findLabel} />
  * </Toolbar>
+ *
+ * // With chrome, for a bar that floats above content
+ * <Surface level="overlay" padding="sm">
+ *   <Toolbar aria-label={formattingLabel}>…</Toolbar>
+ * </Surface>
  * ```
  */
 export const Toolbar = ({
   orientation = 'horizontal',
-  evaluation = 'primary',
+  align = 'start',
   children,
   ...props
 }: ToolbarProps) => {
-  const c = vars.colors.informational[evaluation];
-  const isVertical = orientation === 'vertical';
-
   return (
     <RACToolbar
       {...props}
       orientation={orientation}
       data-scope="toolbar"
       data-part="root"
-      data-evaluation={evaluation}
-      style={
-        {
-          boxSizing: 'border-box',
-          display: 'inline-flex',
-          flexDirection: isVertical ? 'column' : 'row',
-          alignItems: 'center',
-          gap: vars.spacing.gap.inline.sm,
-          padding: vars.spacing.inset.surface.sm,
-          borderRadius: vars.radii.surface,
-          borderWidth: vars.border.outline.surface.width,
-          borderStyle: vars.border.outline.surface.style,
-          borderColor: c?.border?.default ?? 'transparent',
-          backgroundColor: c?.background?.default,
-        } as React.CSSProperties
-      }
+      style={buildActionGroupStyle({
+        isColumn: orientation === 'vertical',
+        align,
+      })}
     >
-      {children}
+      <ActionTriggerGroupProvider value>{children}</ActionTriggerGroupProvider>
     </RACToolbar>
   );
 };

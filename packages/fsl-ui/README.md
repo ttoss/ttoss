@@ -10,7 +10,7 @@ Components are not visual variants of widgets — they are executable expression
 pnpm add @ttoss/fsl-ui @ttoss/fsl-theme react-aria-components
 ```
 
-Peer dependencies: `react >= 18`, `react-dom >= 18`. The package is ESM-only, ships `sideEffects: false`, and tree-shakes: a Button-only import costs ≈ 1.8 KB minified before shared dependencies (React Aria Components is the dominant cost and is shared across every component you use).
+Peer dependencies: `react >= 18`, `react-dom >= 18`. The package is ESM-only, ships `sideEffects: false`, and tree-shakes: a Button-only import costs ≈ 2.3 KB minified before shared dependencies (React Aria Components is the dominant cost and is shared across every component you use).
 
 ## Quickstart
 
@@ -19,7 +19,7 @@ Components read CSS-variable tokens, so the theme must be mounted once at the ro
 ```tsx
 import { createTheme } from '@ttoss/fsl-theme';
 import { ThemeProvider } from '@ttoss/fsl-theme/react';
-import { Button } from '@ttoss/fsl-ui';
+import { Button, Icon } from '@ttoss/fsl-ui';
 
 const theme = createTheme(); // base theme + dark alternate
 
@@ -28,6 +28,7 @@ export const App = () => {
     <ThemeProvider theme={theme} defaultMode="system">
       <Button
         evaluation="primary"
+        icon={<Icon intent="status.success" />}
         onPress={() => {
           console.log('pressed');
         }}
@@ -38,6 +39,12 @@ export const App = () => {
   );
 };
 ```
+
+`icon` takes an `<Icon>` element — a glyph named by _intent_, never by file —
+and Button owns its scale. `leading` (default) reinforces the command;
+`iconPlacement="trailing"` announces what follows the press. Dropping
+`children` gives the icon-only form: a square at the ergonomic `hit` floor,
+with `aria-label` then required by the type system.
 
 Three props carry the semantic model everywhere:
 
