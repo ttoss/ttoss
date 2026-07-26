@@ -153,9 +153,10 @@ const ActionTriggerGroupContext = React.createContext(false);
 
 /**
  * Marks its subtree as living inside an Action-trigger group. Internal, and
- * provided by any container that groups triggers — deliberately not a list here:
- * membership changed twice while this file was being written, so the authority is
- * `grep -rl ActionTriggerGroupProvider src/`, never a comment.
+ * provided by any container that groups triggers — deliberately not a list here,
+ * because membership grew while this file was being written and a comment cannot
+ * be told when it grows again. The authority is
+ * `grep -rl ActionTriggerGroupProvider src/`.
  */
 export const ActionTriggerGroupProvider = ActionTriggerGroupContext.Provider;
 
