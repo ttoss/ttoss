@@ -133,12 +133,6 @@ Exceptions: single-param functions, standard callbacks (`.map((item, index) => .
 
 **JSDoc on React components** — every exported React component must have a JSDoc comment describing what it does; every prop in the interface must have a `/** ... */` doc comment. Storybook's `autodocs` reads these automatically. Internal helper components (not exported from the package's public API) do not need JSDoc.
 
-**What a comment may assert** — a comment has no oracle: nothing fails when it goes stale. So:
-
-- A fact some check already reports — a coverage percentage, a bundle size, a generated list — belongs in the check, not copied beside it. Name the command that prints it (`git log -p` keeps the historical snapshot).
-- A fact nothing reports — a measured design relationship, a deliberate exception — belongs in the comment, stated with the conditions that produced it (viewport, theme, container width).
-- Never enumerate membership ("only `X` and `Y` do this", "changed twice"). Name the axis, or the grep that answers it: the list is stale the moment membership moves, and a count buys nothing the reason does not already say.
-
 ## Forms
 
 Use **Zod** for all new form validation schemas. Only maintain existing Yup schemas — do not create new ones with Yup.
