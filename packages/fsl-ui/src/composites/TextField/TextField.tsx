@@ -16,6 +16,7 @@ import {
   buildFieldControlStyle,
   buildFieldRootStyle,
   buildFieldTextPartStyle,
+  type FieldAuthoring,
 } from '../../components/Field/anatomy';
 import type { ComponentMeta } from '../../semantics';
 import { createPresenceScope } from '../scope';
@@ -89,59 +90,6 @@ export const textFieldErrorMeta = {
   structure: 'validationMessage',
   composition: 'status',
 } as const satisfies ComponentMeta<'Input'>;
-
-// ---------------------------------------------------------------------------
-// TextField — root (orchestrator + container)
-// ---------------------------------------------------------------------------
-
-/**
- * Props for the TextField root.
- *
- * The composite owns its layout; pass `style`/`className` on a wrapping
- * element rather than on the composite root. See CONTRIBUTING §4.
- */
-export type TextFieldProps = Omit<RACTextFieldProps, 'style' | 'className'>;
-
-/**
- * A semantic text input composite built on React Aria's `TextField`.
- *
- * Composes four slots: `TextFieldLabel`, `TextFieldControl`,
- * `TextFieldDescription`, and `TextFieldError`. Each sub-part carries its
- * own `ComponentMeta` with a `composition` role per FSL §4.
- *
- * Validation feedback is driven by React Aria's `isInvalid` prop or
- * `validate` callback and surfaces on the control, label, and validation
- * message via the `invalid` token State.
- *
- * @example
- * ```tsx
- * <TextField isRequired>
- *   <TextFieldLabel>Email</TextFieldLabel>
- *   <TextFieldControl type="email" />
- *   <TextFieldDescription>We never share your email.</TextFieldDescription>
- *   <TextFieldError />
- * </TextField>
- * ```
- */
-export const TextField = ({ children, ...props }: TextFieldProps) => {
-  return (
-    <RACTextField
-      {...props}
-      data-scope="text-field"
-      data-part="root"
-      style={buildFieldRootStyle()}
-    >
-      {(values) => {
-        return (
-          <textFieldScope.Provider>
-            {typeof children === 'function' ? children(values) : children}
-          </textFieldScope.Provider>
-        );
-      }}
-    </RACTextField>
-  );
-};
-TextField.displayName = textFieldMeta.displayName;
 
 // ---------------------------------------------------------------------------
 // TextFieldLabel — label slot
@@ -261,3 +209,100 @@ export const TextFieldError = (props: TextFieldErrorProps) => {
   );
 };
 TextFieldError.displayName = textFieldErrorMeta.displayName;
+
+// ---------------------------------------------------------------------------
+// TextField — root (orchestrator + container)
+// ---------------------------------------------------------------------------
+
+/**
+ * Props for the TextField root.
+ *
+ * The composite owns its layout; pass `style`/`className` on a wrapping
+ * element rather than on the composite root. See CONTRIBUTING §4.
+ *
+ * Authoring is a union: supply `label`/`description`/`errorMessage` for the
+ * one-line form, **or** compose the slots as `children`. Mixing them is a type
+ * error rather than a precedence rule.
+ */
+export type TextFieldProps = Omit<
+  RACTextFieldProps,
+  'style' | 'className' | 'children'
+> &
+  FieldAuthoring<RACTextFieldProps['children']>;
+
+/**
+ * A semantic text input composite built on React Aria's `TextField`.
+ *
+ * Validation feedback is driven by React Aria's `isInvalid` prop or `validate`
+ * callback and surfaces on the control, the label and the validation message
+ * via the `invalid` token State (ADR-017).
+ *
+ * Two ways to author it, and the type system allows exactly one at a time:
+ *
+ * @example One line — the common field.
+ * ```tsx
+ * <TextField
+ *   label="Email"
+ *   name="email"
+ *   type="email"
+ *   isRequired
+ *   description="We never share your email."
+ * />
+ * ```
+ *
+ * @example Composed — when the arrangement is unusual.
+ * ```tsx
+ * <TextField isRequired>
+ *   <TextFieldLabel>Email</TextFieldLabel>
+ *   <TextFieldControl type="email" />
+ *   <TextFieldDescription>We never share your email.</TextFieldDescription>
+ *   <TextFieldError />
+ * </TextField>
+ * ```
+ *
+ * In the one-line form the validation message is always mounted, so a field
+ * with no `errorMessage` still shows the browser's own constraint message —
+ * which is the better copy for `isRequired` and `type="email"`, and is already
+ * localized by the platform.
+ */
+export const TextField = ({
+  children,
+  label,
+  description,
+  errorMessage,
+  placeholder,
+  ...props
+}: TextFieldProps) => {
+  return (
+    <RACTextField
+      {...props}
+      data-scope="text-field"
+      data-part="root"
+      style={buildFieldRootStyle()}
+    >
+      {(values) => {
+        return (
+          <textFieldScope.Provider>
+            {children === undefined ? (
+              <>
+                {label !== undefined && (
+                  <TextFieldLabel>{label}</TextFieldLabel>
+                )}
+                <TextFieldControl placeholder={placeholder} />
+                {description !== undefined && (
+                  <TextFieldDescription>{description}</TextFieldDescription>
+                )}
+                <TextFieldError>{errorMessage}</TextFieldError>
+              </>
+            ) : typeof children === 'function' ? (
+              children(values)
+            ) : (
+              children
+            )}
+          </textFieldScope.Provider>
+        );
+      }}
+    </RACTextField>
+  );
+};
+TextField.displayName = textFieldMeta.displayName;

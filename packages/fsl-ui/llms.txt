@@ -92,7 +92,15 @@ Collection:  ListBox/ListBoxItem, GridList/GridListItem (+ Menu/MenuItem,
              on the naming column. Selection: selectionMode single|multiple,
              row click toggles (no checkbox column yet). Use for column-
              aligned data; GridList is for single-column rows.
-Input:       TextField, TextArea (each + Label/Control/Description/Error),
+Input:       TextField, TextArea — each authored EITHER one-line
+             (label/description/errorMessage/placeholder props) OR by composing
+             its slots (Label/Control/Description/Error). The two are mutually
+             exclusive by type: passing copy props AND children is a compile
+             error, not a precedence rule. Prefer one-line; reach for slots when
+             the arrangement is unusual. In the one-line form the message slot
+             is always mounted, so a field with no errorMessage still shows the
+             platform's own constraint copy (already localized) — which is the
+             better default for isRequired and type="email".
              SearchField (+ Label/Control; leading search + clear glyphs),
              NumberField (label/description/errorMessage props + −/+ steppers),
              Slider (label + value output; single value or [min,max] range),

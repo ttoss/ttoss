@@ -7,9 +7,6 @@ import {
   Surface,
   Text,
   TextField,
-  TextFieldControl,
-  TextFieldError,
-  TextFieldLabel,
 } from '@ttoss/fsl-ui';
 import type * as React from 'react';
 
@@ -77,27 +74,28 @@ export const LoginPage = () => {
               <Heading level={1} size="title-md">
                 Sign in to northline
               </Heading>
+              {/*
+                The one-line field form: `label` and the validation message are
+                props, so each field is one element instead of four. Slot
+                composition remains available and is what the Billing page's
+                unusual arrangement uses — the two are mutually exclusive per
+                field by type, not by convention.
+              */}
               <Form onSubmit={handleSubmit}>
                 <TextField
+                  label="Email"
                   name="email"
                   type="email"
                   autoComplete="email"
                   validate={validateEmail}
-                >
-                  <TextFieldLabel>Email</TextFieldLabel>
-                  <TextFieldControl />
-                  <TextFieldError />
-                </TextField>
+                />
                 <TextField
+                  label="Password"
                   name="password"
                   type="password"
                   autoComplete="current-password"
                   validate={validatePassword}
-                >
-                  <TextFieldLabel>Password</TextFieldLabel>
-                  <TextFieldControl />
-                  <TextFieldError />
-                </TextField>
+                />
                 <FormActions>
                   <FormSubmit>Sign in</FormSubmit>
                 </FormActions>

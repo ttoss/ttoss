@@ -10,6 +10,7 @@ import {
 const meta: Meta<typeof TextField> = {
   title: 'Input/TextField',
   component: TextField,
+  tags: ['autodocs'],
   subcomponents: {
     TextFieldLabel,
     TextFieldControl,
@@ -66,6 +67,68 @@ export const Disabled: Story = {
         <TextFieldLabel>Workspace</TextFieldLabel>
         <TextFieldControl />
       </TextField>
+    );
+  },
+};
+
+/**
+ * The one-line form: `label`, `description` and `errorMessage` as props. This is
+ * the shape to reach for — one element per field, with the label association and
+ * the `aria-describedby` wiring done for you.
+ */
+export const OneLine: Story = {
+  tags: ['autodocs'],
+  render: () => {
+    return (
+      <TextField
+        label="Email"
+        name="email"
+        type="email"
+        description="We never share your email."
+        placeholder="you@example.com"
+      />
+    );
+  },
+};
+
+/**
+ * The same field composed from slots. Use it when the arrangement is unusual —
+ * something between the label and the control, or a description that is not
+ * plain text. Copy props and `children` are mutually exclusive by type, so the
+ * two forms cannot be mixed on one field.
+ */
+export const Composed: Story = {
+  tags: ['autodocs'],
+  render: () => {
+    return (
+      <TextField name="email" type="email">
+        <TextFieldLabel>Email</TextFieldLabel>
+        <TextFieldControl placeholder="you@example.com" />
+        <TextFieldDescription>We never share your email.</TextFieldDescription>
+        <TextFieldError />
+      </TextField>
+    );
+  },
+};
+
+/**
+ * With no `errorMessage`, the platform supplies the copy: the message slot is
+ * always mounted in the one-line form, so a `isRequired` field reports the
+ * browser's own constraint message — already localized, and better copy than
+ * anything the package could ship untranslated (ADR-001).
+ */
+export const PlatformValidationCopy: Story = {
+  tags: ['autodocs'],
+  render: () => {
+    return (
+      <TextField
+        label="Email"
+        name="email"
+        type="email"
+        isRequired
+        isInvalid
+        errorMessage="Enter a valid email address."
+      />
     );
   },
 };

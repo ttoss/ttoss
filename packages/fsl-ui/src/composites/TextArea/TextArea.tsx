@@ -16,6 +16,7 @@ import {
   buildFieldControlStyle,
   buildFieldRootStyle,
   buildFieldTextPartStyle,
+  type FieldAuthoring,
 } from '../../components/Field/anatomy';
 import type { ComponentMeta } from '../../semantics';
 import { createPresenceScope } from '../scope';
@@ -78,42 +79,11 @@ export const textAreaErrorMeta = {
 } as const satisfies ComponentMeta<'Input'>;
 
 /** Props for the TextArea root. */
-export type TextAreaProps = Omit<RACTextFieldProps, 'style' | 'className'>;
-
-/**
- * A multiline text input composite (Input entity) — the multiline sibling of
- * `TextField`. Composes `TextAreaLabel`, `TextAreaControl`,
- * `TextAreaDescription`, and `TextAreaError`. Validation is driven by React
- * Aria's `isInvalid` / `validate`.
- *
- * @example
- * ```tsx
- * <TextArea isRequired>
- *   <TextAreaLabel>Notes</TextAreaLabel>
- *   <TextAreaControl rows={4} />
- *   <TextAreaError />
- * </TextArea>
- * ```
- */
-export const TextArea = ({ children, ...props }: TextAreaProps) => {
-  return (
-    <RACTextField
-      {...props}
-      data-scope="text-area"
-      data-part="root"
-      style={buildFieldRootStyle()}
-    >
-      {(values) => {
-        return (
-          <textAreaScope.Provider>
-            {typeof children === 'function' ? children(values) : children}
-          </textAreaScope.Provider>
-        );
-      }}
-    </RACTextField>
-  );
-};
-TextArea.displayName = textAreaMeta.displayName;
+export type TextAreaProps = Omit<
+  RACTextFieldProps,
+  'style' | 'className' | 'children'
+> &
+  FieldAuthoring<RACTextFieldProps['children']>;
 
 /** Props for the TextArea label. */
 export type TextAreaLabelProps = Omit<RACLabelProps, 'style' | 'className'>;
@@ -216,3 +186,58 @@ export const TextAreaError = (props: TextAreaErrorProps) => {
   );
 };
 TextAreaError.displayName = textAreaErrorMeta.displayName;
+
+/**
+ * A multiline text input composite (Input entity) — the multiline sibling of
+ * `TextField`. Composes `TextAreaLabel`, `TextAreaControl`,
+ * `TextAreaDescription`, and `TextAreaError`. Validation is driven by React
+ * Aria's `isInvalid` / `validate`.
+ *
+ * @example
+ * ```tsx
+ * <TextArea isRequired>
+ *   <TextAreaLabel>Notes</TextAreaLabel>
+ *   <TextAreaControl rows={4} />
+ *   <TextAreaError />
+ * </TextArea>
+ * ```
+ */
+export const TextArea = ({
+  children,
+  label,
+  description,
+  errorMessage,
+  placeholder,
+  ...props
+}: TextAreaProps) => {
+  return (
+    <RACTextField
+      {...props}
+      data-scope="text-area"
+      data-part="root"
+      style={buildFieldRootStyle()}
+    >
+      {(values) => {
+        return (
+          <textAreaScope.Provider>
+            {children === undefined ? (
+              <>
+                {label !== undefined && <TextAreaLabel>{label}</TextAreaLabel>}
+                <TextAreaControl placeholder={placeholder} />
+                {description !== undefined && (
+                  <TextAreaDescription>{description}</TextAreaDescription>
+                )}
+                <TextAreaError>{errorMessage}</TextAreaError>
+              </>
+            ) : typeof children === 'function' ? (
+              children(values)
+            ) : (
+              children
+            )}
+          </textAreaScope.Provider>
+        );
+      }}
+    </RACTextField>
+  );
+};
+TextArea.displayName = textAreaMeta.displayName;

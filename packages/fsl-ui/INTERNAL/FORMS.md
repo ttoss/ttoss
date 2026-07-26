@@ -123,12 +123,18 @@ over two controls" is a `role="group"` rather than a relabelled field.
 Each item: capability → Studio consumer → guard → docs → measured in browser,
 both modes → commit.
 
-- **A. Envelope parts + Level-1 props.** Generic `FieldLabel`,
-  `FieldDescription`, `FieldMessage` (tone-aware) and the props↔slots union,
-  with `TextField`/`TextArea` as first consumers (already on the anatomy).
-  Adds `contextualHelp`, `prefix`, `suffix` in S2's prop shape — arbitrary
-  content, not icon-only, which is what covers a `R$` prefix or an avatar.
-  _Studio:_ the login form moves to Level-1 props.
+- **A. ✅ Level-1 props (2026-07-26).** The props↔slots union, with
+  `TextField`/`TextArea` as first consumers (already on the anatomy).
+  Landed as the `FieldAuthoring` union on `TextField`/`TextArea` (ADR-022
+  addendum), with the Studio's login form converted — each field one element
+  instead of four, geometry and validation re-measured unchanged in both modes.
+  **Generic exported parts were rejected:** a `FieldLabel` usable in any field
+  would need its own `data-scope`, and changing the scope of the existing
+  per-component parts is a breaking change to published attributes for no gain —
+  the unification callers actually feel is the prop form, and the style dedup
+  already happened in the anatomy. `contextualHelp` and the necessity indicator
+  move to **B** (they share the label row); `prefix`/`suffix` move to **D**
+  (they need the adornment anatomy).
 - **B. `Form` becomes the layout authority.** Static field-layout context
   (`labelPosition`, `labelAlign`, `necessityIndicator`, `isDisabled`), with
   `labelPosition="side"` implemented as a CSS grid with named lines so labels

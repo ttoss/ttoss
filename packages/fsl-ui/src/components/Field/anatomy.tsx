@@ -254,3 +254,46 @@ export const buildFieldTextPartStyle = ({
       : vars.text.label.sm) as React.CSSProperties),
   } as React.CSSProperties;
 };
+
+// ---------------------------------------------------------------------------
+// The two ways to author a field
+//
+// The family had three shapes for one idea: `TextField`/`TextArea`/`SearchField`
+// composed by slots, `Select`/`ComboBox`/`NumberField` took props, and `Select`
+// had nowhere to render a message at all (F-009). Both shapes are legitimate —
+// one line for the common field, slots when the arrangement is unusual — so the
+// fix is not to pick one but to make every field support both, from one code
+// path, with the combination that has no meaning rejected at compile time.
+// ---------------------------------------------------------------------------
+
+/**
+ * Copy the envelope renders in a field's **one-line** form. Everything here is
+ * caller-supplied (ADR-001): the package ships no default label, hint or
+ * message copy in any language.
+ */
+export interface FieldCopyProps {
+  /** Visible label naming the control. */
+  label?: React.ReactNode;
+  /** Hint text — what to enter, or a constraint worth stating up front. */
+  description?: React.ReactNode;
+  /**
+   * Validation message. Rendered only while the field is invalid (React Aria's
+   * `FieldError` behaviour). Omit it and the browser's own constraint message
+   * is shown instead, which is usually the better default for `isRequired`
+   * and `type="email"`.
+   */
+  errorMessage?: React.ReactNode;
+  /** Placeholder on the control. Never a substitute for `label`. */
+  placeholder?: string;
+}
+
+/**
+ * A field is authored **either** in its one-line form (copy as props) **or** by
+ * composing its slots — never both, because there would be no answer to which
+ * label wins. Expressed as a discriminated union so `tsc` rejects the mix
+ * instead of a runtime precedence rule deciding it silently (the ADR-001
+ * mechanism, as used by `ActionLabellingProps`).
+ */
+export type FieldAuthoring<TChildren> =
+  | ({ children: TChildren } & { [K in keyof FieldCopyProps]?: never })
+  | (FieldCopyProps & { children?: undefined });
