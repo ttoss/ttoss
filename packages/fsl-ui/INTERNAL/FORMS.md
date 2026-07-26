@@ -206,11 +206,52 @@ both modes → commit.
   invite dialog's email (composed authoring) and acknowledgement checkbox both
   mark themselves; four `getByLabelText` queries moved to `getByRole` because a
   required label's text content now contains the asterisk.
-- **B2. `labelPosition="side"`.** `labelPosition` + `labelAlign` join the
-  context, implemented as a CSS grid with named lines so labels and controls
-  align across rows — the Form owns the grid, consumers write no CSS.
-- **B3. The error summary + the focus guard.** `FormErrorSummary`, and a test
-  pinning the focus-first-invalid behaviour §1 measured as already inherited.
+- **B2. ⏸ `labelPosition="side"` — deferred, no consumer (2026-07-26).** The
+  evidence rule applies to this plan too: no Meridian surface wants side labels.
+  The two forms that exist are a narrow login card and a ~300px invite modal,
+  where side labels would be wrong, and the Billing page's only `label` belongs
+  to a `Meter`. Creating a consumer is not available either — the ROADMAP freezes
+  new Studio features for P3. Building it now would be reserved API, which is what
+  §2.3 forbids and what B1 already refused twice (the `'label'` necessity variant,
+  and `labelPosition` in the context).
+  **Readmission criterion:** a surface with a wide, multi-row form — a settings or
+  profile page — which is also when the alignment is worth having.
+  **Mechanism already verified, so the future work is cheap:** the layout must be
+  `grid-template-columns: subgrid` on each field root inside a Form-owned grid,
+  because each field is its own component and would otherwise size its label
+  column alone, leaving the controls ragged — which is the entire point of side
+  labels. Probed in the target Chromium: `CSS.supports('grid-template-columns',
+'subgrid')` is `true`, and two rows with labels "Email" and "Confirm password"
+  put both controls at the same x (127px). Per-field grids without subgrid do not
+  align and are not an acceptable fallback.
+- **B3a. ✅ The focus guard (2026-07-26).** Five assertions pinning what §1
+  measured as inherited rather than owed: a failed submit is blocked, focus lands
+  on the first invalid field and moves to the next once that is fixed, each
+  invalid field is reported exactly once with the **control** as the event target,
+  a required `Checkbox` blocks like any other field, and a field with no
+  `errorMessage` still reports the platform's own copy. Worth pinning because it
+  is load-bearing and invisible: it is the thing a headless form library
+  structurally cannot offer, and it would vanish silently under an upstream change
+  or a stray `validationBehavior="aria"`.
+- **B3b. ⏸ `FormErrorSummary` — deferred, no consumer (2026-07-26).** Same
+  discipline as B2. A summary earns its place on a form long enough that the first
+  invalid field can be scrolled out of view; the Studio's forms are two and four
+  fields, React Aria already focuses the first invalid field, and each field
+  already states its own error — so a summary would add a second voice saying the
+  same thing. The Studio freeze forbids building a longer form to justify it.
+  **Readmission criterion:** a form tall enough that the first invalid field can
+  be off-screen.
+  **Two things already established, so the future work is cheap.** The data is
+  reachable: `onInvalid` fires **once per invalid field** with `event.target` being
+  the control, carrying `name`, `aria-labelledby` (so the label text resolves) and
+  `validationMessage` — asserted in the focus guard, which is also the payoff of
+  invariant #12's addressability. And the appearance is decided: as `Feedback`/root
+  with `evaluation="negative"` it would read `feedback.negative`, which Slice 3
+  made a **filled** rung (`red.600` on `neutral.0`) — the `Toast` precedent. S2's
+  own InlineAlert is _tinted_ instead, and the tinted rung lives in
+  `informational.negative`, which CONTRACT §1 forbids a Feedback component from
+  reading. That is the F-024 / F-029 axis a third time: the tree has no quiet
+  in-context rung. Decide it there, not by having one component reach across.
 - **B4. `contextualHelp`.** A slot beside the label, in S2's prop shape.
 - **C. `Select` + `ComboBox`.** Geometry onto the anatomy; F-009 closed by the
   envelope; F-019 via a named allowlist of RAC-published positioning vars
