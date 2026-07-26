@@ -12,7 +12,7 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 
 ## Open items (derived — the entry below is always the source of truth)
 
-Sixteen open, grouped by the _kind of decision_ each one needs rather than by
+Nineteen open, grouped by the _kind of decision_ each one needs rather than by
 severity, because that is what makes a review round plannable. Regenerate by
 grepping `Status:** open`; do not edit an entry through this list.
 
@@ -39,10 +39,14 @@ grepping `Status:** open`; do not edit an entry through this list.
 
 **Contract / a11y debt — the component works but its published promise does not hold:**
 
-| #     | What                                                                                                                                                                                               |
-| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| F-026 | `SearchField` names `data-part="control"` on two nested elements, so its anatomy is not addressable. Fix the class, not the instance: assert `(scope, part)` uniqueness per subtree.               |
-| F-028 | `Toolbar` claims `role="toolbar"` but is not a single tab stop — `useToolbar` cannot manage arbitrary children's `tabindex`. Either upstream fixes it or we own a roving model for _all_ children. |
+| #     | What                                                                                                                                                                                                                                                               |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| F-026 | `data-part="control"` on two nested elements — measured in three components, not one (`SearchField`, `NumberField`, `ComboBox`). The class guard now exists (invariant #12, P3 Slice 5 ⓠ); the three instances are named known violations and fall per queue item. |
+| F-030 | A composite sub-part that is its own root collides with its host's root: `menu/root` addresses the popover **and** every row. §5's scope-reuse convention vs `MenuItem.structure`.                                                                                 |
+| F-028 | `Toolbar` claims `role="toolbar"` but is not a single tab stop — `useToolbar` cannot manage arbitrary children's `tabindex`. Either upstream fixes it or we own a roving model for _all_ children.                                                                 |
+
+| F-032 | The validation message is the same ink as the label (measured light **and** dark), so the invalid state rests on border colour alone. Second half of F-009, on a component whose message part exists. |
+| F-031 | `invalid` outranks `focused`/`active`/`hover` in `STATE_PRIORITY`, so an invalid field goes dead to hover and press. S2 keeps a full cascade inside its negative valence (six tokens). |
 
 **Ecosystem / token vocabulary:**
 
@@ -268,3 +272,30 @@ grepping `Status:** open`; do not edit an entry through this list.
 - **Workaround shipped:** the destructive row uses `consequence="destructive"` alone and looks like its siblings. Honest, and the confirm mechanism still fires; it just does not warn visually.
 - **Why not fixed here:** every fix touches the colour model. (a) A new evaluation (`negativeQuiet`) grows the taxonomy for one component and reads as a variant axis we do not have. (b) Making `action.negative` ink-based breaks the destructive `Button`, which must stay a filled red command. (c) Letting Action read `informational.negative.text` punches a hole in §1's one-row rule. (d) Adding a `text`-only sibling role (e.g. `action.negative.textOnSurface`) is probably the least-bad shape, and it is exactly the kind of vocabulary addition the ADR workflow exists for.
 - **Backlog:** pick between (a)–(d) with the owner. Worth pairing with F-024: both are the same underlying question — how the action tree expresses "this control borrows its surface instead of painting one".
+
+### F-030 — a composite sub-part that is itself a root collides with its host's root
+
+- **Date:** 2026-07-26 · **Surface:** `@ttoss/fsl-ui` `Menu` / `MenuItem` vs `CONTRACT.md` §5 · **Severity:** gap · **Status:** open
+- Found by contract invariant #12 the moment it was written (P3 Slice 5 ⓠ), **not** by the browser audit that preceded it — that audit only probed the field stories, so a defect one family over went unseen. `[data-scope="menu"][data-part="root"]` resolves **both** the popover and every row: §5 has composite sub-parts reuse the host's `data-scope`, while `MenuItem` also declares `structure: 'root'` because it is its own component root. Nothing is mislabelled; the convention and the meta are each correct alone.
+- **Why it matters where F-026 matters:** the pair is the package's addressing scheme. A host stylesheet targeting the popover also hits every row, and an agent told to activate a menu item cannot resolve one.
+- **Not the same cause as F-026.** There, one component names two nested elements `control` by hand; here, two independently correct declarations collide through the scope-reuse convention. So the fix is a §5 rule, not a component edit — which is why it is filed rather than patched inside a Slice-5 field item.
+- **Recorded, not hidden:** it is a named entry in invariant #12's known-violations list, and a companion test asserts every listed violation still reproduces, so it cannot rot into a permanent exemption.
+- **Backlog:** decide whether a sub-part that is its own root takes a distinguishing `data-scope` (`menu-item`) or whether §5 gains a rule for the collision. Touches the addressing convention, so it is governance — and it should be settled with F-026's fix so the family ends up with one story.
+
+### F-031 — `invalid` is a dead end in the state cascade: an invalid field stops responding to hover and press
+
+- **Date:** 2026-07-26 · **Surface:** `@ttoss/fsl-theme` `semantic.colors.input.primary.*` + `fsl-ui` `STATE_PRIORITY` / `resolveInteractiveStyle` · **Severity:** paper-cut · **Status:** open
+- Found while checking whether Spectrum thickens a field's border on invalid (it does not — see the ROADMAP's Slice 5 correction). S2 ships **six** negative border colours — `negative-border-color-{default,hover,down,focus,focus-hover,key-focus}` — i.e. the negative valence keeps its own full interaction cascade, including a distinct colour for _invalid **and** focused_ and for _invalid **and** hovered_.
+- **Ours is flat.** `input.primary.border` offers `default / hover / focused / disabled / checked / pressed / invalid` as siblings, and `STATE_PRIORITY` places `isInvalid` **above** `focused`, `active` and `hover`. So `resolveInteractiveStyle` returns `invalid` and the other three never resolve: an invalid field gives no hover feedback, no press feedback, and shows the same red on focus as at rest. The control reads as inert exactly when the user is trying to fix it.
+- **Why not fixed in P3 Slice 5:** it is not a value tune. Expressing "invalid **and** hovered" needs either combination states in the token model (a `invalid.hover` sub-tree, which no family has today) or a cascade that composes rather than short-circuits — and `STATE_PRIORITY` is the single source both `CONTRACT.md` §3 and the helper derive from, so changing its semantics changes every entity at once.
+- **Not a contrast risk either way:** the resting `invalid` border already passes; this is about missing feedback, not legibility.
+- **Backlog:** decide between (a) combination states for the valences that need them, (b) a composing cascade where a valence narrows the palette instead of replacing the value, or (c) accepting the flat model and documenting that validation outranks interaction. Governance-sized — it is a change to §3's cascade contract.
+
+### F-032 — the validation message carries no valence: only the border is red
+
+- **Date:** 2026-07-26 · **Surface:** `@ttoss/fsl-ui` `TextField`/`TextArea` `validationMessage` + `@ttoss/fsl-theme` `input.primary.text.invalid` · **Severity:** gap · **Status:** open
+- Measures the second half of what **F-009** predicted ("`Text` has no negative/danger tone, so the message cannot even be tinted in-system"), on a component where the message part _does_ exist. Found while screenshotting the `Invalid` story during P3 Slice 5 ⓠ.
+- **Measured** on `Input/TextField` › `Invalid` at 1280px: the validation message resolves `rgb(22,22,22)` in light and `rgb(255,255,255)` in dark — **byte-identical to the label beside it** — while the control's border carries `rgb(220,38,38)` / `rgb(252,165,165)`. So the error copy is typographically indistinguishable from the hint copy, and the whole valence rests on one border.
+- **Not a bug in the component.** `input.primary.text.invalid` is _deliberately_ the control's readable-value colour — the theme's own comment says the value stays readable and the valence lives on the border. The gap is that the envelope has no ink for error copy, so `TextFieldError` reads the only `invalid` text token there is and gets neutral ink.
+- **Consequence beyond aesthetics:** with the message unstyled, the invalid state is signalled by border colour alone, which is the WCAG 1.4.1 shape (colour as the only carrier) that the in-control validation glyph is meant to answer.
+- **Backlog:** part of the validation-language decision (ADR-024, P3 Slice 5 ④) — a `negative` tone for envelope copy, alongside the in-control glyph. `buildFieldTextPartStyle` already takes the `tone` parameter, so the component side is a one-line change once the token exists; today `negative` resolves to the same ink as `neutral`, which its JSDoc states with the measurement above.

@@ -23,6 +23,8 @@ import { join, resolve } from 'node:path';
 
 import { render } from '@testing-library/react';
 import { toCssVarName } from '@ttoss/fsl-theme/css';
+import { vars } from '@ttoss/fsl-theme/vars';
+import { FIELD_ROW } from 'src/components/Field/anatomy';
 import * as pkg from 'src/index';
 import {
   ENTITIES,
@@ -32,6 +34,7 @@ import {
   ENTITY_STRUCTURE,
   STRUCTURAL_ROLES,
 } from 'src/semantics/taxonomy';
+import { FOCUS_RING_OFFSET } from 'src/tokens/focusRing';
 import { ENTITY_TOKEN_MAPPING } from 'src/tokens/projection';
 
 import { DOM_FIXTURES } from './domFixtures';
@@ -621,5 +624,144 @@ describe('contract: utility triggers share the field row', () => {
     // jsdom cannot resolve `var()`, so it is asserted in fsl-theme's
     // `typography.test.ts`.
     expect(command.minHeight).toBe(field.minHeight);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Invariant #11: the field family reads one row, from one source
+//
+// Invariant #10 asserts that a *utility trigger* matches the field row. It
+// proves that by comparing a trigger against `TextField`, which is fine for
+// the two Action members it names — but it cannot be widened to the field
+// family as written, because it compares inline-style *strings*: a sibling
+// that declared `minBlockSize` instead of `minHeight` computed exactly the
+// same box and still failed the comparison.
+//
+// So this invariant asserts against the shared source (`FIELD_ROW` +
+// `sizing.hit`) rather than against a peer. A member drifts the moment it
+// stops reading the anatomy — which is the only way it *can* drift now.
+//
+// The list grows by one entry per component migrated onto the anatomy; it is
+// the authority on who is on the row, which is why it is a list and not a
+// glob over the fixtures.
+// ---------------------------------------------------------------------------
+
+describe('contract: the field family reads one row', () => {
+  const ROW_MEMBERS: ReadonlyArray<readonly [string, string, string]> = [
+    ['TextFieldControl', 'TextFieldControl', 'text-field'],
+    ['TextAreaControl', 'TextAreaControl', 'text-area'],
+  ];
+
+  test.each(ROW_MEMBERS)(
+    '%s resolves the row from FIELD_ROW',
+    (_label, fixtureName, scope) => {
+      const { unmount } = render(DOM_FIXTURES[fixtureName].element());
+      const el = document.querySelector<HTMLElement>(
+        `[data-scope="${scope}"][data-part="control"]`
+      );
+
+      expect(el).not.toBeNull();
+
+      const style = (el as HTMLElement).style;
+
+      expect(style.minHeight).toBe(vars.sizing.hit);
+      expect(style.paddingBlock).toBe(FIELD_ROW.insetBlock);
+      expect(style.paddingInline).toBe(FIELD_ROW.insetInline);
+      expect(style.borderRadius).toBe(FIELD_ROW.radius);
+      // The reading edge is declared, never inherited: the host element's UA
+      // default decides it otherwise, and `<input>` and `<button>` disagree.
+      expect(style.textAlign).toBe('start');
+      // The focus ring floats off the edge on every member (S2's 2px gap).
+      expect(style.outlineOffset).toBe(FOCUS_RING_OFFSET);
+
+      unmount();
+    }
+  );
+});
+
+// ---------------------------------------------------------------------------
+// Invariant #12: `(data-scope, data-part)` is unique per subtree
+//
+// The pair is the package's addressing scheme: a test, a host stylesheet or an
+// agent resolves a part by it. Sibling repeats are legitimate and common — two
+// radios in a group, two steppers in a NumberField, two glyph hosts — so the
+// defect is not "the pair appears twice in the document". It is an element
+// that *contains a descendant carrying the same pair*, because then no
+// selector can address either one unambiguously.
+//
+// Measured in a real browser before being written down: three components wrap
+// an `<input>` in a painted `<div>` and name both `control`. They are listed
+// as known violations rather than silently excluded, so the list can only
+// shrink — each entry names the queue item that removes it.
+// ---------------------------------------------------------------------------
+
+describe('contract: (scope, part) is unique per subtree', () => {
+  // Each entry names what removes it. Do not add to this list: for a field, a
+  // new violation means the anatomy was bypassed.
+  const KNOWN_NESTED_PAIRS: ReadonlySet<string> = new Set([
+    'search-field/control', // P3 Slice 5 ③ — adornment anatomy
+    'number-field/control', // P3 Slice 5 ④ — frame/value split
+    'combo-box/control', //   P3 Slice 5 ② — frame/value split
+    // Found by this invariant, not by the browser audit that preceded it: the
+    // popover and every row both resolve `menu/root`, because §5 has sub-parts
+    // reuse the host's scope while `MenuItem` also declares `structure: 'root'`.
+    // A different family and a different cause from the three above — F-030.
+    'menu/root',
+  ]);
+
+  const nestedPairs = (root: ParentNode): string[] => {
+    const found: string[] = [];
+    for (const el of root.querySelectorAll<HTMLElement>(
+      '[data-scope][data-part]'
+    )) {
+      const { scope, part } = el.dataset;
+      if (
+        el.querySelector(`[data-scope="${scope}"][data-part="${part}"]`) !==
+        null
+      ) {
+        found.push(`${scope}/${part}`);
+      }
+    }
+    return found;
+  };
+
+  test.each(Object.entries(DOM_FIXTURES))(
+    '%s nests no repeated (scope, part)',
+    (_name, fixture) => {
+      const { unmount } = render(fixture.element());
+
+      fixture.open?.();
+
+      const offending = [...new Set(nestedPairs(document.body))].filter(
+        (pair) => {
+          return !KNOWN_NESTED_PAIRS.has(pair);
+        }
+      );
+
+      expect(offending).toEqual([]);
+
+      unmount();
+    }
+  );
+
+  test('every known violation is still real (the list cannot go stale)', () => {
+    const seen = new Set<string>();
+
+    for (const fixture of Object.values(DOM_FIXTURES)) {
+      const { unmount } = render(fixture.element());
+      fixture.open?.();
+      for (const pair of nestedPairs(document.body)) {
+        seen.add(pair);
+      }
+      unmount();
+    }
+
+    // A fixed violation must be deleted from the list, not left behind as a
+    // permanent exemption for a defect that no longer exists.
+    expect(
+      [...KNOWN_NESTED_PAIRS].filter((p) => {
+        return !seen.has(p);
+      })
+    ).toEqual([]);
   });
 });

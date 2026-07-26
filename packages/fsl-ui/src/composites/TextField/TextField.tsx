@@ -1,5 +1,4 @@
 import { vars } from '@ttoss/fsl-theme/vars';
-import type * as React from 'react';
 import {
   FieldError as RACFieldError,
   type FieldErrorProps as RACFieldErrorProps,
@@ -13,9 +12,12 @@ import {
   type TextProps as RACTextProps,
 } from 'react-aria-components';
 
+import {
+  buildFieldControlStyle,
+  buildFieldRootStyle,
+  buildFieldTextPartStyle,
+} from '../../components/Field/anatomy';
 import type { ComponentMeta } from '../../semantics';
-import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
-import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import { createPresenceScope } from '../scope';
 
 // ---------------------------------------------------------------------------
@@ -127,14 +129,7 @@ export const TextField = ({ children, ...props }: TextFieldProps) => {
       {...props}
       data-scope="text-field"
       data-part="root"
-      style={
-        {
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: vars.spacing.gap.stack.xs,
-        } as React.CSSProperties
-      }
+      style={buildFieldRootStyle()}
     >
       {(values) => {
         return (
@@ -165,12 +160,7 @@ export const TextFieldLabel = (props: TextFieldLabelProps) => {
       {...props}
       data-scope="text-field"
       data-part="label"
-      style={
-        {
-          color: colors?.text?.default,
-          ...(vars.text.label.md as React.CSSProperties),
-        } as React.CSSProperties
-      }
+      style={buildFieldTextPartStyle({ colors, step: 'md' })}
     />
   );
 };
@@ -198,37 +188,13 @@ export const TextFieldControl = (props: TextFieldControlProps) => {
       data-scope="text-field"
       data-part="control"
       style={({ isHovered, isDisabled, isFocusVisible, isInvalid }) => {
-        return {
-          boxSizing: 'border-box',
-          minHeight: vars.sizing.hit,
-          paddingBlock: vars.spacing.inset.control.sm,
-          paddingInline: vars.spacing.inset.control.md,
-          borderRadius: vars.radii.control,
-          borderWidth: vars.border.outline.control.width,
-          borderStyle: vars.border.outline.control.style,
-          transitionDuration: vars.motion.feedback.duration,
-          transitionTimingFunction: vars.motion.feedback.easing,
-          transitionProperty: 'background-color, border-color, color',
-          backgroundColor: resolveInteractiveStyle(colors?.background, {
-            isHovered,
-            isDisabled,
-            isInvalid,
-          }),
-          borderColor: resolveInteractiveStyle(colors?.border, {
-            isDisabled,
-            isInvalid,
-            isFocusVisible,
-          }),
-          color:
-            resolveInteractiveStyle(colors?.text, {
-              isHovered,
-              isDisabled,
-              isInvalid,
-            }) ?? colors?.text?.default,
-          outline: focusRingOutline(isFocusVisible),
-          outlineOffset: FOCUS_RING_OFFSET,
-          ...(vars.text.label.md as React.CSSProperties),
-        } as React.CSSProperties;
+        return buildFieldControlStyle({
+          colors,
+          isHovered,
+          isDisabled,
+          isFocusVisible,
+          isInvalid,
+        });
       }}
     />
   );
@@ -256,12 +222,7 @@ export const TextFieldDescription = (props: TextFieldDescriptionProps) => {
       {...props}
       data-scope="text-field"
       data-part="description"
-      style={
-        {
-          color: colors?.text?.default,
-          ...(vars.text.label.sm as React.CSSProperties),
-        } as React.CSSProperties
-      }
+      style={buildFieldTextPartStyle({ colors, step: 'sm' })}
     />
   );
 };
@@ -291,12 +252,11 @@ export const TextFieldError = (props: TextFieldErrorProps) => {
       {...props}
       data-scope="text-field"
       data-part="validationMessage"
-      style={
-        {
-          color: colors?.text?.invalid ?? colors?.text?.default,
-          ...(vars.text.label.sm as React.CSSProperties),
-        } as React.CSSProperties
-      }
+      style={buildFieldTextPartStyle({
+        colors,
+        step: 'sm',
+        tone: 'negative',
+      })}
     />
   );
 };

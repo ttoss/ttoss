@@ -335,6 +335,28 @@ Every component root MUST carry the identity attributes (`data-scope`, `data-par
 <button data-scope="button" data-part="root" data-composition="primaryAction">…</button>
 ```
 
+**Uniqueness — `(data-scope, data-part)` addresses one element per subtree.** The pair is the
+package's addressing scheme: a test, a host stylesheet and an AI agent all resolve a part by
+it. So **no element may contain a descendant carrying the same pair.** Sibling repeats are
+legitimate and common — two radios in a group, two steppers in a NumberField, two glyph hosts
+— because the defect is ambiguity _within_ a subtree, not repetition in a document. Asserted
+by contract invariant #12, which ships with a list of named known violations, each annotated
+with what removes it; a companion test asserts every listed violation still reproduces, so a
+fixed one must be deleted rather than left as a standing exemption.
+
+**Declared parts vs internal parts.** `data-part` equals `meta.structure` for every part that
+declares a `ComponentMeta`, and those are checked against the entity's legal roles. A component
+may also emit **internal** parts — elements with no meta, whose names need not be in the
+entity's role vocabulary (`Slider`'s `track`/`fill`/`labelRow`, `ComboBox`'s
+`positioner`/`surface`, a field's `frame`). Internal parts exist so that structure the entity
+has no role for stays addressable without growing the taxonomy nominally (ADR-008). They are
+still bound by the uniqueness rule above.
+
+Where a control's painted box and its operated element are different nodes, **`control` names
+the element the user operates** — the one that takes focus and holds the value — and the
+painted box is an internal `frame`. Reversing that would make `[data-part="control"]` resolve a
+`<div>` nobody can type into (ADR-022; ADR-008 draws the same line for Slider's thumb).
+
 The contract test [`components.contract.test.tsx`](../../tests/unit/tests/components.contract.test.tsx) auto-discovers every `*Meta` and asserts each attribute value is legal per the matrices in `taxonomy.ts`.
 
 ---
