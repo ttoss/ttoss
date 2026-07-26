@@ -1,13 +1,12 @@
 import { jestUnitConfig } from '@ttoss/config';
 
 export default jestUnitConfig({
-  // The floor is the ratchet, maintained by hand — the band and the
-  // never-decrease rule live in CLAUDE.md § Package Development Workflow.
-  // Measured 2026-07-25: 98.7402 / 95.9016 / 99.1379 / 98.84 (statements /
-  // branches / functions / lines). Recording the actuals is what lets the next
-  // reader see at a glance whether the floor has fallen behind — before this
-  // pass, branches sat 1.1 points below actual and a full point of regression
-  // could have landed without a single check failing.
+  // The floor is the ratchet, maintained by hand: keep it 0.01–0.1 below actual
+  // and never lower it (CLAUDE.md § Package Development Workflow). Read actual
+  // from the summary `pnpm run test` prints on every run — deliberately not
+  // copied here, because a pasted percentage has no oracle and drifts silently
+  // while the printed one cannot. `git log -p` on this file carries the measured
+  // snapshot behind each change.
   coverageThreshold: {
     global: {
       statements: 98.7,
