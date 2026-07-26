@@ -2,6 +2,7 @@ import type { SortDescriptor } from '@ttoss/fsl-ui';
 import {
   Badge,
   Button,
+  Checkbox,
   ComboBox,
   ComboBoxItem,
   ConfirmationDialog,
@@ -79,6 +80,19 @@ const InviteDialog = () => {
                  * in a Select popover, so it waited for ComboBox's typeahead.
                  * Role stays a Select — three options is its correct scale.
                  */}
+                {/*
+                  The confirmation-checkbox shape: a required box that can state
+                  its own rule. Before the Checkbox envelope it could only turn
+                  red (F-033), which is why the dialog had no such gate.
+                */}
+                <Checkbox
+                  name="acknowledge"
+                  isRequired
+                  description="Members can deploy to production immediately after accepting."
+                  errorMessage="Confirm you understand the access this grants."
+                >
+                  I understand this grants deploy access
+                </Checkbox>
                 <ComboBox
                   label="Timezone"
                   name="timezone"

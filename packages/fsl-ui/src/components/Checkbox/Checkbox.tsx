@@ -1,14 +1,16 @@
 import { vars } from '@ttoss/fsl-theme/vars';
-import type * as React from 'react';
+import * as React from 'react';
 import {
   Checkbox as RACCheckbox,
   type CheckboxProps as RACCheckboxProps,
+  Text as RACText,
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
 import { focusRingOutline } from '../../tokens/focusRing';
 import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import { buildFieldTextPartStyle } from '../Field/anatomy';
 import { Icon } from '../Icon';
 
 // ---------------------------------------------------------------------------
@@ -103,6 +105,37 @@ const buildBoxStyle = ({
   };
 };
 
+/**
+ * The row the box and its copy sit in. Supporting copy turns it into a
+ * two-column grid: the box holds its column, the copy stacks in the next one,
+ * and `start` alignment keeps the box on the label's first line instead of
+ * floating to the middle of a two-line description.
+ */
+const buildCheckboxRowStyle = ({
+  c,
+  isDisabled,
+  hasSupport,
+}: {
+  c: InputColors;
+  isDisabled?: boolean;
+  hasSupport: boolean;
+}): React.CSSProperties => {
+  const text = c?.text;
+
+  return {
+    boxSizing: 'border-box',
+    display: hasSupport ? 'grid' : 'inline-flex',
+    gridTemplateColumns: hasSupport ? 'auto 1fr' : undefined,
+    alignItems: hasSupport ? 'start' : 'center',
+    gap: vars.spacing.gap.inline.sm,
+    minHeight: vars.sizing.hit,
+    cursor: isDisabled ? 'not-allowed' : 'pointer',
+    opacity: isDisabled ? vars.opacity.disabled : undefined,
+    ...(vars.text.label.md as React.CSSProperties),
+    color: isDisabled ? text?.disabled : text?.default,
+  } as React.CSSProperties;
+};
+
 /** Indicator glyph color — a theme may omit the dimension; degrade to undefined. */
 const resolveIndicatorColor = ({
   text,
@@ -143,7 +176,102 @@ export interface CheckboxProps extends Omit<
    * Rendered inside a `data-part="label"` span.
    */
   children?: React.ReactNode;
+  /**
+   * Supporting hint under the label — a constraint, or what checking this
+   * actually commits the user to.
+   */
+  description?: React.ReactNode;
+  /**
+   * Validation message, shown only while the checkbox is invalid. Supply the
+   * copy: a checkbox's rule is domain-specific ("confirm you have read the
+   * terms"), which is not something the platform can phrase (ADR-001).
+   */
+  errorMessage?: React.ReactNode;
 }
+
+/**
+ * The label plus the copy it names, stacked beside the box.
+ *
+ * Internal, and separate for a reason the linter surfaced: folded into the
+ * root's render callback it pushed that function past its line and complexity
+ * budgets, which is the honest signal that the row had grown a second job.
+ */
+const CheckboxSupportingCopy = ({
+  c,
+  labelId,
+  supportId,
+  description,
+  errorMessage,
+  isInvalid,
+  labelColor,
+  children,
+}: {
+  c: InputColors;
+  labelId: string;
+  supportId: string;
+  description?: React.ReactNode;
+  errorMessage?: React.ReactNode;
+  isInvalid?: boolean;
+  labelColor?: string;
+  children?: React.ReactNode;
+}) => {
+  const stack: React.CSSProperties = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: vars.spacing.gap.stack.xs,
+  };
+
+  return (
+    <span style={stack}>
+      <span
+        id={labelId}
+        data-scope="checkbox"
+        data-part="label"
+        style={{ color: labelColor }}
+      >
+        {children}
+      </span>
+      {/*
+        A column, because both parts render inline `<span>`s and ran together on
+        one line otherwise — "…after accepting.Confirm you…" in the Studio's
+        invite dialog, caught by looking at it.
+      */}
+      <span id={supportId} style={stack}>
+        {description !== undefined && (
+          <RACText
+            slot="description"
+            data-scope="checkbox"
+            data-part="description"
+            style={buildFieldTextPartStyle({ colors: c, step: 'sm' })}
+          >
+            {description}
+          </RACText>
+        )}
+        {/*
+          Gated on the render-prop `isInvalid` — the same flag that tints the
+          label — rather than on React Aria's `FieldError`. Measured:
+          `FieldError` returns null unless its context reports invalid, and on a
+          lone Checkbox that context stays quiet even when the input carries
+          `aria-invalid="true"` and the form refuses to submit. The flag is the
+          state we can see, so it is the state we render from.
+        */}
+        {isInvalid === true && errorMessage !== undefined && (
+          <span
+            data-scope="checkbox"
+            data-part="validationMessage"
+            style={buildFieldTextPartStyle({
+              colors: c,
+              step: 'sm',
+              tone: 'negative',
+            })}
+          >
+            {errorMessage}
+          </span>
+        )}
+      </span>
+    </span>
+  );
+};
 
 /**
  * A semantic selection checkbox built on React Aria.
@@ -160,26 +288,34 @@ export interface CheckboxProps extends Omit<
  * <Checkbox isIndeterminate>Partially selected</Checkbox>
  * ```
  */
-export const Checkbox = ({ children, ...props }: CheckboxProps) => {
+export const Checkbox = ({
+  children,
+  description,
+  errorMessage,
+  ...props
+}: CheckboxProps) => {
   const c = vars.colors.input.primary;
+  // Supporting copy turns the row into a two-column grid, and it also has to
+  // stop contributing to the control's accessible NAME. Measured: with a
+  // description inside the label, the name became "Accept termsYou agree to the
+  // terms." and a name query for the label alone stopped matching — React Aria
+  // computes the name from the label's content, and the label is the row. So
+  // the name is pinned to the label span and the supporting parts are linked as
+  // a description instead.
+  const ids = React.useId();
+  const hasSupport = description !== undefined || errorMessage !== undefined;
+  const labelId = `${ids}-label`;
+  const describedBy = hasSupport ? `${ids}-support` : undefined;
 
   return (
     <RACCheckbox
       {...props}
+      aria-labelledby={hasSupport ? labelId : props['aria-labelledby']}
+      aria-describedby={describedBy ?? props['aria-describedby']}
       data-scope="checkbox"
       data-part="root"
       style={({ isDisabled }) => {
-        return {
-          boxSizing: 'border-box',
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: vars.spacing.gap.inline.sm,
-          minHeight: vars.sizing.hit,
-          cursor: isDisabled ? 'not-allowed' : 'pointer',
-          opacity: isDisabled ? vars.opacity.disabled : undefined,
-          ...(vars.text.label.md as React.CSSProperties),
-          color: isDisabled ? c?.text?.disabled : c?.text?.default,
-        } as React.CSSProperties;
+        return buildCheckboxRowStyle({ c, isDisabled, hasSupport });
       }}
     >
       {({
@@ -236,17 +372,30 @@ export const Checkbox = ({ children, ...props }: CheckboxProps) => {
               )}
             </span>
 
-            {/* label */}
-            {children != null && (
-              <span
-                data-scope="checkbox"
-                data-part="label"
-                style={{
-                  color: resolveLabelColor({ text, isInvalid, isDisabled }),
-                }}
+            {hasSupport ? (
+              <CheckboxSupportingCopy
+                c={c}
+                labelId={labelId}
+                supportId={describedBy as string}
+                description={description}
+                errorMessage={errorMessage}
+                isInvalid={isInvalid}
+                labelColor={resolveLabelColor({ text, isInvalid, isDisabled })}
               >
                 {children}
-              </span>
+              </CheckboxSupportingCopy>
+            ) : (
+              children != null && (
+                <span
+                  data-scope="checkbox"
+                  data-part="label"
+                  style={{
+                    color: resolveLabelColor({ text, isInvalid, isDisabled }),
+                  }}
+                >
+                  {children}
+                </span>
+              )
             )}
           </>
         );

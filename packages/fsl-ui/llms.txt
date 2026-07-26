@@ -72,7 +72,14 @@ Disclosure:  Accordion, AccordionItem, AccordionTrigger, AccordionPanel,
              section — Accordion is the DisclosureGroup)
 Selection:   Checkbox, CheckboxGroup, RadioGroup/Radio, Switch,
              Select/SelectItem, ToggleButtonGroup, TagGroup/Tag
-             (CheckboxGroup group-level isInvalid propagates to child Checkboxes;
+             (Checkbox takes description + errorMessage for the confirmation
+             shape ("I have read the terms"): the row becomes a 2-column grid,
+             the accessible NAME stays the label alone (pinned via
+             aria-labelledby — supporting copy placed in the row otherwise gets
+             absorbed into the name), and the message shows only while invalid.
+             A lone required Checkbox in a Form blocks submit; Switch has no
+             message part yet (F-033).
+             CheckboxGroup group-level isInvalid propagates to child Checkboxes;
              its label part is Selection/label, but description + validationMessage
              are internal parts — Selection has no such structural roles.
              TagGroup/Tag: a chosen tag uses the `selected` State, NOT `pressed`

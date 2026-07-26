@@ -33,6 +33,11 @@ describe('TeamPage', () => {
       'joao@northline.dev'
     );
     await user.click(
+      within(dialog).getByRole('checkbox', {
+        name: /grants deploy access/,
+      })
+    );
+    await user.click(
       within(dialog).getByRole('button', { name: 'Send invite' })
     );
 
@@ -63,6 +68,11 @@ describe('TeamPage', () => {
     await user.click(await screen.findByRole('option', { name: 'Tokyo' }));
 
     await user.click(
+      within(dialog).getByRole('checkbox', {
+        name: /grants deploy access/,
+      })
+    );
+    await user.click(
       within(dialog).getByRole('button', { name: 'Send invite' })
     );
 
@@ -92,6 +102,11 @@ describe('TeamPage', () => {
     // Clearing reopens the list; Escape dismisses it without restoring a zone.
     await user.keyboard('{Escape}');
     await user.click(
+      within(dialog).getByRole('checkbox', {
+        name: /grants deploy access/,
+      })
+    );
+    await user.click(
       within(dialog).getByRole('button', { name: 'Send invite' })
     );
 
@@ -111,6 +126,11 @@ describe('TeamPage', () => {
       name: 'Invite member',
     });
     await user.type(within(dialog).getByLabelText('Email'), 'not-an-email');
+    await user.click(
+      within(dialog).getByRole('checkbox', {
+        name: /grants deploy access/,
+      })
+    );
     await user.click(
       within(dialog).getByRole('button', { name: 'Send invite' })
     );

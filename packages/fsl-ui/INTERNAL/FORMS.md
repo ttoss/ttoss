@@ -117,14 +117,15 @@ differs is **who triggers validation**, and this was probed rather than assumed
 The third row is a platform fact, not our choice, so it gets documented rather
 than worked around. Two consequences for the plan:
 
-- **B should default `validationBehavior` from Form presence.** The Form context
-  arrives in B anyway, so a field can tell whether it is inside one: inside →
-  `native` (the platform does the work), outside → `aria` (validate as the user
-  edits). Then a lone field with a `validate` callback behaves correctly without
-  the caller ever naming the prop.
-- **`Checkbox` and `Switch` need the message part** — measured, they render only
-  `root, selectionControl, label`, so a required confirmation checkbox turns red
-  and never states the rule (F-033). Folded into E, which already touches both.
+- **Do not touch `validationBehavior`.** An earlier revision of this plan wanted
+  to default it from Form presence — that would have been a **regression**, and
+  measurement caught it before a line was written: `aria` mode does not merely
+  stop _displaying_ native constraints, it **removes** them (`validity.valid`
+  reads `true` on a required field). React Aria's `native` default is already
+  right in both contexts. Standalone, it surfaces a malformed value on blur and a
+  `validate` callback on blur, clearing when fixed — measured, with no prop set.
+- **✅ `Checkbox` got the message part** (A2). **`Switch` still needs it** —
+  folded into E.
   `Slider` stays without one: React Aria gives it no `FieldErrorContext`, because
   a slider always holds an in-range value — a boundary, not a gap.
 
@@ -166,6 +167,11 @@ both modes → commit.
   already happened in the anatomy. `contextualHelp` and the necessity indicator
   move to **B** (they share the label row); `prefix`/`suffix` move to **D**
   (they need the adornment anatomy).
+- **A2. ✅ The Checkbox envelope (2026-07-26).** `description` + `errorMessage`
+  on `Checkbox`, in S2's vocabulary — whose documented example is exactly the
+  terms-and-conditions checkbox. Closes the `Checkbox` half of F-033. _Studio:_
+  the invite dialog gained a required acknowledgement, which broke three flow
+  tests until they passed the new gate — the right kind of failure.
 - **B. `Form` becomes the layout authority.** Static field-layout context
   (`labelPosition`, `labelAlign`, `necessityIndicator`, `isDisabled`), with
   `labelPosition="side"` implemented as a CSS grid with named lines so labels
