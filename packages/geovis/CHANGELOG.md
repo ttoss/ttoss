@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.14.1](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.14.0...@ttoss/geovis@0.14.1) (2026-07-27)
+
+**Note:** Version bump only for package @ttoss/geovis
+
 # [0.14.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.13.0...@ttoss/geovis@0.14.0) (2026-07-22)
 
 - Feat geovis prd 002 ai operation surface (#1140) ([f6fd35a](https://github.com/ttoss/ttoss/commit/f6fd35a7014887eaf0fad549f23bd2b9b7f0ca6e)), closes [#1140](https://github.com/ttoss/ttoss/issues/1140)
