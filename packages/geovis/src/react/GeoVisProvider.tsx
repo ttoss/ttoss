@@ -12,6 +12,7 @@ import { resolveSpecFromMapType } from '../spec/mapTypeDefaults';
 import type { GeoVisIssue, GeoVisResult } from '../spec/result';
 import type { VisualizationSpec } from '../spec/types';
 import { GeoVisHoverTooltip } from '../ui/GeoVisHoverTooltip';
+import { GeoVisLayerControl } from '../ui/GeoVisLayerControl';
 import { GeoVisLegend } from '../ui/GeoVisLegend';
 import {
   buildContainerStyle,
@@ -206,6 +207,24 @@ const HoverProvider = ({
 };
 
 /**
+ * Surface validation failures on the console. A rejected spec renders
+ * nothing (ADR-0001): the map silently blanks and the only trace otherwise
+ * lives in `useGeoVis().result.issues`. Warning here makes schema/reference
+ * errors visible in the browser console instead of disappearing with the map.
+ */
+const useSpecRejectionWarning = (result: GeoVisResult) => {
+  React.useEffect(() => {
+    if (result.status === 'resolved') return;
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[GeoVis] Spec rejected (status: ${result.status}) — the map will not ` +
+        `render. Fix the following issue(s):`,
+      result.issues
+    );
+  }, [result]);
+};
+
+/**
  * Provides a GeoVis runtime context for child components.
  * Resolves the appropriate engine adapter based on the spec's engine field,
  * initializes the runtime, and keeps it in sync with spec updates.
@@ -358,6 +377,8 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
     [runtime, spec, committed.result]
   );
 
+  useSpecRejectionWarning(committed.result);
+
   if (adapterError) throw adapterError;
 
   // Memoize the context value so that high-frequency hover updates inside
@@ -402,6 +423,10 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
           </div>
         );
       })}
+      {/* Spec-driven layer-toggle panel: mounted automatically when the spec
+          declares `control`, exactly like the legend/tooltip overlays. The
+          component itself no-ops when `control` is absent. */}
+      {committed.spec.control && <GeoVisLayerControl />}
     </GeoVisContext.Provider>
   );
 };

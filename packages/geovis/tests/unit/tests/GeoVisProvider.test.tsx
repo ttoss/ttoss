@@ -510,3 +510,37 @@ describe('GeoVisProvider adapter error', () => {
     expect(queryByText('Map loaded')).toBeNull();
   });
 });
+
+describe('GeoVisProvider validation warning', () => {
+  test('warns on the console when the committed result is not resolved', async () => {
+    const failure: GeoVisResult = {
+      status: 'invalid',
+      issues: [
+        {
+          code: 'invalid-schema',
+          subject: { path: '(root)' },
+          message: '(root) must NOT have additional properties',
+        },
+      ],
+    };
+    mockRuntimeUpdate.mockImplementation(() => {
+      return failure;
+    });
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await act(async () => {
+      render(
+        <GeoVisProvider spec={baseSpec}>
+          <div />
+        </GeoVisProvider>
+      );
+    });
+
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('Spec rejected'),
+      failure.status === 'resolved' ? [] : failure.issues
+    );
+
+    warn.mockRestore();
+  });
+});

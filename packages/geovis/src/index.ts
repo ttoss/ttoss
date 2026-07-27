@@ -16,6 +16,7 @@ export * from './spec/result';
 export * from './spec/types';
 export * from './spec/validateSpec';
 export * from './ui/GeoVisHoverTooltip';
+export * from './ui/GeoVisLayerControl';
 export * from './ui/GeoVisLegend';
 export { formatCompactNumber } from './ui/GeoVisLegend.formatters';
 export * from './ui/GeoVisMarker';

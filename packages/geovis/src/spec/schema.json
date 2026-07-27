@@ -39,6 +39,10 @@
         "visible": {
           "type": "boolean",
           "description": "When false, basemap tiles are hidden. GeoJSON layers remain interactive."
+        },
+        "labels": {
+          "type": "boolean",
+          "description": "When false, every basemap symbol layer (place names, road names, POI icons) is hidden. Defaults to true."
         }
       }
     },
@@ -353,6 +357,12 @@
                 },
                 "minItems": 2,
                 "maxItems": 2
+              },
+              "latKey": {
+                "type": "string"
+              },
+              "lngKey": {
+                "type": "string"
               }
             }
           },
@@ -483,6 +493,10 @@
       "type": "boolean",
       "description": "Controls whether auto-generated legends are produced for the resolved mapType. Defaults to true."
     },
+    "__resolved": {
+      "type": "boolean",
+      "description": "Internal marker set by resolveSpecFromMapType to prevent double-resolution. Consumers should not set this field directly."
+    },
     "mapData": {
       "type": "array",
       "items": {
@@ -573,6 +587,60 @@
           }
         }
       }
+    },
+    "control": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "items"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "position": {
+          "type": "string",
+          "enum": ["top-left", "top-right", "bottom-left", "bottom-right"]
+        },
+        "offset": {
+          "type": "number",
+          "description": "Distance in pixels from the two anchored map edges. Defaults to 40."
+        },
+        "label": {
+          "type": "string"
+        },
+        "trigger": {
+          "type": "string",
+          "enum": ["hover", "click"]
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "label", "layers"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "layers": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "defaultActive": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "$defs": {
@@ -589,6 +657,9 @@
           "maxItems": 2
         },
         "zoom": {
+          "type": "number"
+        },
+        "maxZoomIn": {
           "type": "number"
         },
         "pitch": {

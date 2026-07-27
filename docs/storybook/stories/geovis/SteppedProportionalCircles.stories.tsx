@@ -88,7 +88,6 @@ const CITIES_GEOJSON: GeoJSON.FeatureCollection = {
 };
 
 const spec: VisualizationSpec = {
-  id: 'stepped-proportional-circles',
   title: 'Stepped Proportional Circles',
   description:
     'Cities sized by population using stepped mode. Each bin gets a fixed radius — no interpolation between thresholds.',

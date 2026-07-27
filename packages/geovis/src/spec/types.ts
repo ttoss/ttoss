@@ -1,6 +1,6 @@
 import type { LayerClickConfig } from '../react/click';
 import type { HoverTooltipConfig } from '../react/tooltip';
-import type { LegendSpec } from './types.legend';
+import type { LegendPosition, LegendSpec } from './types.legend';
 
 export * from './types.legend';
 
@@ -78,23 +78,23 @@ export interface GeoJSONFeatureCollection {
 }
 
 export type GeoJSONObject =
-  | GeoJSONGeometry
-  | GeoJSONFeature
-  | GeoJSONFeatureCollection;
+  GeoJSONGeometry | GeoJSONFeature | GeoJSONFeatureCollection;
 
 export type GeoVisGeometryType =
-  | 'point'
-  | 'line'
-  | 'polygon'
-  | 'raster'
-  | 'symbol'
-  | 'heatmap';
+  'point' | 'line' | 'polygon' | 'raster' | 'symbol' | 'heatmap';
 
 export type MapType = 'choropleth' | 'dotDensity' | 'proportionalCircles';
 
 export interface ViewState {
   center?: LngLat;
   zoom?: number;
+  /**
+   * Highest zoom level the user can reach by zooming in. Acts as a camera
+   * ceiling: interactive zoom, `setView`, and programmatic `zoom` are all
+   * clamped to this value. Higher numbers mean closer to the ground. When
+   * omitted, MapLibre's default maximum (`22`) applies.
+   */
+  maxZoomIn?: number;
   pitch?: number;
   bearing?: number;
   projection?: 'mercator' | 'vertical-perspective';
@@ -313,6 +313,14 @@ export interface VisualizationLayer {
     color?: string;
     /** Pixel offset `[x, y]` applied to the DOM marker. */
     offset?: [number, number];
+    /**
+     * Feature property key holding the latitude. Paired with `lngKey`, geovis
+     * reads the pin position from `feature.properties` instead of the tile
+     * geometry to avoid drift at high zoom.
+     */
+    latKey?: string;
+    /** Feature property key holding the longitude. Must be paired with `latKey`. */
+    lngKey?: string;
   };
   /**
    * Spec-driven hover tooltip. When present, `<GeoVisProvider>` automatically
@@ -362,14 +370,7 @@ export interface VisualizationLayer {
 
 /** Comparison used by a `LayerFilter` — a closed set mapped to native engine filter expressions. */
 export type LayerFilterOperator =
-  | 'eq'
-  | 'neq'
-  | 'gt'
-  | 'gte'
-  | 'lt'
-  | 'lte'
-  | 'in'
-  | 'not-in';
+  'eq' | 'neq' | 'gt' | 'gte' | 'lt' | 'lte' | 'in' | 'not-in';
 
 /**
  * Declarative, engine-agnostic filter predicate on one `VisualizationLayer`.
@@ -540,6 +541,14 @@ export interface VisualizationSpec {
    * an AI would otherwise have to invent.
    */
   viewPresets?: ViewPreset[];
+
+  /**
+   * A single floating panel of layer-visibility toggles, overlaid on the map.
+   * When present, `<GeoVisProvider>` auto-mounts a `<GeoVisLayerControl>` for
+   * it — the consumer does not place the component. Each item toggles a set of
+   * layers by id via `dispatch({ type: 'toggle-layer' })`.
+   */
+  control?: LayerControl;
 }
 
 export type GeovisSpec = VisualizationSpec;
@@ -550,4 +559,63 @@ export interface ViewPreset {
   /** Human-readable label, e.g. for a UI picker. */
   label?: string;
   view: ViewState;
+}
+
+/**
+ * A floating panel that expands to reveal one toggle button per
+ * {@link LayerControlItem}. Rendered by `<GeoVisLayerControl>`, which
+ * `<GeoVisProvider>` auto-mounts when `spec.control` is set.
+ */
+export interface LayerControl {
+  /** Unique identifier for the panel. */
+  id: string;
+  /**
+   * Corner the panel is anchored to (absolute overlay), reusing the legend
+   * position vocabulary. Defaults to `'bottom-left'`.
+   */
+  position?: LegendPosition;
+  /**
+   * Distance in pixels from the two anchored map edges. Defaults to `40`.
+   * Increase it to clear map chrome (e.g. MapLibre's attribution) or app UI.
+   */
+  offset?: number;
+  /** Text shown on the collapsed trigger button. Defaults to `'Layers'`. */
+  label?: string;
+  /**
+   * How the panel expands to reveal its items. `'hover'` (default) expands on
+   * pointer/focus enter; `'click'` toggles on trigger click. Both triggers
+   * still respond to a click so touch devices can open a hover panel.
+   */
+  trigger?: 'hover' | 'click';
+  /** The toggle buttons revealed when the panel is expanded. */
+  items: LayerControlItem[];
+}
+
+/**
+ * One toggle button inside a {@link LayerControl}. Clicking it flips the
+ * visibility of every referenced layer that exists in the current spec.
+ *
+ * @remarks
+ * `layers` are matched leniently: ids that do not exist in the active spec are
+ * ignored, and when **none** of them exist the button renders disabled
+ * (greyed, non-interactive) instead of rejecting the spec. This lets a single
+ * `control` be reused across spec variations where a given layer is only
+ * present in some of them.
+ */
+export interface LayerControlItem {
+  /**
+   * Stable identity for the item. Its toggled on/off state is remembered by
+   * this id, so it persists across spec rebuilds (e.g. switching map modes)
+   * even when the underlying layer ids differ between them.
+   */
+  id: string;
+  /** Text shown on the toggle button. */
+  label: string;
+  /** Ids of `spec.layers` toggled together when the button is clicked. */
+  layers: string[];
+  /**
+   * Whether the referenced layers start visible the first time this item is
+   * seen (before the user has toggled it). Defaults to `true`.
+   */
+  defaultActive?: boolean;
 }

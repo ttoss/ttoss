@@ -109,7 +109,6 @@ const buildChoroplethSpec = ({
   metadata?: VisualizationSpec['metadata'];
 }): VisualizationSpec => {
   return {
-    id: `invalid-raw-count-${mapDataId}`,
     engine: 'maplibre',
     mapType: 'choropleth',
     basemap: fixture.basemap,

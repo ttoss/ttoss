@@ -73,6 +73,7 @@ const makeMapMock = () => {
     setStyle: jest.fn(),
     setCenter: jest.fn(),
     setZoom: jest.fn(),
+    setMaxZoom: jest.fn(),
     setPitch: jest.fn(),
     setBearing: jest.fn(),
   };
@@ -591,6 +592,19 @@ describe('update() — view state sync', () => {
     const { adapter, map, spec } = mountAdapter();
     adapter.update({ ...spec, view: { ...spec.view, zoom: 15 } });
     expect(map.setZoom).toHaveBeenCalledWith(15);
+  });
+
+  test('changing maxZoomIn calls map.setMaxZoom', () => {
+    const { adapter, map, spec } = mountAdapter();
+    adapter.update({ ...spec, view: { ...spec.view, maxZoomIn: 16 } });
+    expect(map.setMaxZoom).toHaveBeenCalledWith(16);
+  });
+
+  test('clearing maxZoomIn resets map.setMaxZoom to null', () => {
+    const { adapter, map, spec } = mountAdapter();
+    adapter.update({ ...spec, view: { ...spec.view, maxZoomIn: 16 } });
+    adapter.update({ ...spec, view: { ...spec.view, maxZoomIn: undefined } });
+    expect(map.setMaxZoom).toHaveBeenLastCalledWith(null);
   });
 
   test('changing pitch calls map.setPitch', () => {

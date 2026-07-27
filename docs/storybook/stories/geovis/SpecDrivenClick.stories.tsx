@@ -75,7 +75,6 @@ const buildSpec = (
   onSelect: (info: MapClickInfo | null) => void
 ): VisualizationSpec => {
   return {
-    id: 'spec-driven-click',
     title: 'Spec-driven click',
     description:
       'Click a district: the badge is driven entirely by `layer.click.onSelect` ' +

@@ -8,7 +8,6 @@ import type {
 import { GeoVisLegend, GeoVisProvider } from '@ttoss/geovis';
 
 const baseSpec: VisualizationSpec = {
-  id: 'legend-visual-test',
   engine: 'maplibre',
   view: { center: [0, 0], zoom: 1 },
   sources: [

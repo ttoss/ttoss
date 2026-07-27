@@ -562,7 +562,6 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
     });
 
     return {
-      id: 'municipal-district-mapdata',
       engine: 'maplibre',
       basemap: {
         visible: basemapVisible,
