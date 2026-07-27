@@ -232,8 +232,24 @@ export interface MenuItemProps extends Omit<
   'style' | 'children' | 'className'
 > {
   /**
-   * Semantic emphasis for the item.
-   * @default 'primary'
+   * Semantic emphasis for the item. `muted` is the default and the only rung
+   * that makes sense at rest: a menu row must show **no fill** until it is
+   * hovered, and the quiet rung's resting background resolves to exactly the
+   * popover's own colour in both modes (`neutral.0` / `neutral.900`), so the row
+   * borrows the surface and materialises on hover.
+   *
+   * It used to default to `primary`, which after the P3 retune painted every row
+   * as a solid `neutral.1000` chip in light and a solid white one in dark — a
+   * menu that read as a stack of buttons. The default was never inspected with an
+   * open menu.
+   *
+   * Reach for another rung only to make one row *louder* than its siblings (a
+   * primary "Create…" at the top of a menu). Note that `negative` fills the row
+   * red rather than tinting its ink — see F-029 before using it to mark a
+   * destructive row; `consequence="destructive"` is the semantic marker and
+   * carries no colour.
+   *
+   * @default 'muted'
    */
   evaluation?: EvaluationsFor<(typeof menuItemMeta)['entity']>;
   /**
@@ -267,7 +283,7 @@ export interface MenuItemProps extends Omit<
  * `vars.spacing.inset.control.sm`, `vars.text.label.md`, `vars.motion.feedback`.
  */
 export const MenuItem = ({
-  evaluation = 'primary',
+  evaluation = 'muted',
   consequence = 'neutral',
   composition,
   children,

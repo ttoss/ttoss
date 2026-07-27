@@ -12,15 +12,15 @@ import { ANIMATION_NAMES, ensureKeyframes } from '../../tokens/keyframes';
 // Semantic identity — Layer 1
 //
 // Entity = Feedback → CONTRACT.md §1 row:
-//   colors: `feedback.{primary|positive|caution|negative}` (uxContext = feedback),
-//   radii: `control` (track), border: `outline.surface` (track outline),
-//   sizing: `hit` is not used (non-interactive), spacing: `inset.control`,
-//   typography: `label.md` (label + value), elevation: `flat`
+//   colors: `feedback.{accent|primary|positive|caution|negative}` for the
+//   fill (uxContext = feedback) with the `muted` surface as the neutral rail,
+//   radii: `round` (thin pill track), sizing: `hit` is not used
+//   (non-interactive), spacing: `gap.stack.xs` (label→track),
+//   typography: `label.md` (label + value), elevation: `flat`,
 //   motion: `transition.enter` (value easing; ProgressBar has no dismissal).
 //
 // Feedback carries no interactive States; the only State surface is `default`
-// and `disabled`. Evaluations `primary|positive|caution|negative` rotate the
-// color tree — no muted (not in ENTITY_EVALUATION for Feedback).
+// and `disabled`. Evaluations rotate the fill color tree.
 // ---------------------------------------------------------------------------
 
 /** Formal semantic identity — ProgressBar root (Feedback entity). */
@@ -38,23 +38,28 @@ type FeedbackColors = (typeof vars.colors.feedback)[EvaluationsFor<'Feedback'>];
 // enough to read as "working", fast enough to read as "alive").
 const INDETERMINATE_FILL_WIDTH = '40%';
 const INDETERMINATE_CYCLE_DURATION = '1.2s';
+// Track thickness: a thin rail is the reference-grade activity silhouette
+// (P3 slice 3 review measured 6px in Spectrum 2); the label row above the
+// bar, not the rail, carries the reading size.
+const TRACK_THICKNESS = '6px';
 
-/** Track (body) style — the empty rail the fill animates across. */
-const buildTrackStyle = (c: FeedbackColors): React.CSSProperties => {
+/** Track (body) style — the neutral rail the fill animates across. Reads the
+ * `muted` evaluation (the Feedback entity's quiet surface) so the rail stays
+ * neutral while the selected evaluation drives the fill. */
+const buildTrackStyle = (): React.CSSProperties => {
   return {
     position: 'relative',
     overflow: 'hidden',
     width: '100%',
-    height: vars.spacing.gap.stack.sm,
-    backgroundColor: c?.background?.default,
-    borderRadius: vars.radii.control,
-    borderWidth: vars.border.outline.surface.width,
-    borderStyle: vars.border.outline.surface.style,
-    borderColor: c?.border?.default,
+    height: TRACK_THICKNESS,
+    backgroundColor: vars.colors.feedback.muted.border?.default,
+    borderRadius: vars.radii.round,
   };
 };
 
-/** Fill (content) style — width tracks percentage; indeterminate animates. */
+/** Fill (content) style — width tracks percentage; indeterminate animates.
+ * The fill is the evaluation's filled surface (`background.default`) — deep
+ * valence fills and the informative `accent` brand fill. */
 const buildFillStyle = ({
   c,
   percentage,
@@ -67,7 +72,7 @@ const buildFillStyle = ({
   return {
     height: '100%',
     width: isIndeterminate ? INDETERMINATE_FILL_WIDTH : `${percentage ?? 0}%`,
-    backgroundColor: c?.border?.default,
+    backgroundColor: c?.background?.default,
     borderRadius: 'inherit',
     transitionProperty: 'width',
     transitionDuration: vars.motion.transition.enter.duration,
@@ -92,9 +97,10 @@ export interface ProgressBarProps extends Omit<
   /**
    * Authorial emphasis. Choose the evaluation that matches the *meaning* of
    * the progress: `positive` for completing a desirable task, `caution` for
-   * an approaching limit, `negative` for a failing operation. `primary` is
-   * the default neutral chrome.
-   * @default 'primary'
+   * an approaching limit, `negative` for a failing operation. `accent` is
+   * the default — informative activity with the brand fill; `primary` is the
+   * monochrome variant.
+   * @default 'accent'
    */
   evaluation?: EvaluationsFor<'Feedback'>;
   /** Visible label shown above the bar. */
@@ -109,9 +115,9 @@ export interface ProgressBarProps extends Omit<
 /**
  * A semantic progress bar built on React Aria's `ProgressBar`.
  *
- * Reads from `vars.colors.feedback.{primary|positive|caution|negative}` and
- * uses `vars.radii.control` for the track. Supports both determinate
- * (0–100%) and indeterminate modes — pass `isIndeterminate`.
+ * The fill reads the evaluation's filled surface from `vars.colors.feedback`
+ * over the `muted` neutral rail (`vars.radii.round`, thin pill). Supports
+ * both determinate (0–100%) and indeterminate modes — pass `isIndeterminate`.
  *
  * @example
  * ```tsx
@@ -120,7 +126,7 @@ export interface ProgressBarProps extends Omit<
  * ```
  */
 export const ProgressBar = ({
-  evaluation = 'primary',
+  evaluation = 'accent',
   label,
   showValueLabel = true,
   ...props
@@ -160,7 +166,10 @@ export const ProgressBar = ({
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'baseline',
-                    color: c?.text?.default,
+                    // The label row sits on the page surface, not on the
+                    // fill — filled evaluations carry neutral.0 text that
+                    // would vanish here; the entity's quiet text is correct.
+                    color: vars.colors.feedback.muted.text?.default,
                     ...(vars.text.label.md as React.CSSProperties),
                   } as React.CSSProperties
                 }
@@ -184,7 +193,7 @@ export const ProgressBar = ({
             <div
               data-scope="progress-bar"
               data-part="body"
-              style={buildTrackStyle(c)}
+              style={buildTrackStyle()}
             >
               {/* Fill */}
               <div

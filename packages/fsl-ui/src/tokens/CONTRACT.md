@@ -65,17 +65,17 @@ the current combination of React Aria state booleans.
 
 A component MUST use ONLY tokens from its Entity row.
 
-| Entity         | Colors          | Radii     | Border                        | Sizing | Spacing         | Typography               | Motion       | Elevation        |
-| -------------- | --------------- | --------- | ----------------------------- | ------ | --------------- | ------------------------ | ------------ | ---------------- |
-| **Action**     | `action`        | `control` | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Input**      | `input`         | `control` | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Selection**  | `input`         | `control` | `outline.control`, `selected` | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Navigation** | `navigation`    | `control` | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Disclosure** | `navigation`    | `control` | `outline.control`             | `hit`  | `inset.control` | `label`                  | `transition` | `flat`           |
-| **Overlay**    | `informational` | `surface` | `outline.surface`             | —      | `inset.surface` | `title`, `body`, `label` | `transition` | `overlay`        |
-| **Feedback**   | `feedback`      | `surface` | `outline.surface`             | —      | `inset.surface` | `body`, `label`          | `feedback`   | `raised`         |
-| **Collection** | `informational` | `surface` | `outline.surface`, `divider`  | —      | `inset.surface` | `body`, `label`          | —            | `flat`, `raised` |
-| **Structure**  | `informational` | `surface` | `outline.surface`, `divider`  | —      | `inset.surface` | `title`, `body`, `label` | —            | `flat`, `raised` |
+| Entity         | Colors          | Radii                      | Border                        | Sizing | Spacing         | Typography               | Motion       | Elevation        |
+| -------------- | --------------- | -------------------------- | ----------------------------- | ------ | --------------- | ------------------------ | ------------ | ---------------- |
+| **Action**     | `action`        | `action`                   | `outline.control`             | `hit`  | `inset.control` | `action`                 | `feedback`   | `flat`           |
+| **Input**      | `input`         | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
+| **Selection**  | `input`         | `control`                  | `outline.control`, `selected` | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
+| **Navigation** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
+| **Disclosure** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `transition` | `flat`           |
+| **Overlay**    | `informational` | `surface`                  | `outline.surface`             | —      | `inset.surface` | `title`, `body`, `label` | `transition` | `overlay`        |
+| **Feedback**   | `feedback`      | `surface`, `round` (rails) | `outline.surface`             | —      | `inset.surface` | `body`, `label`          | `feedback`   | `raised`         |
+| **Collection** | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `body`, `label`          | —            | `flat`, `raised` |
+| **Structure**  | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `title`, `body`, `label` | —            | `flat`, `raised` |
 
 **Cross-cutting** (apply to ALL interactive entities — not in the table because they are entity-agnostic):
 
@@ -315,16 +315,18 @@ Is it a toolbar action? A chip? A compact selection control? Name it, give it an
 
 Every component root MUST carry the identity attributes (`data-scope`, `data-part`); other attributes are emitted only when the dimension applies.
 
-| Attribute          | Where                                       | Type / value                                                        | When emitted                                                                                                                                          |
-| ------------------ | ------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `data-scope`       | every element                               | `kebab-case(meta.displayName)` — e.g. `"button"`, `"dialog"`        | Always.                                                                                                                                               |
-| `data-part`        | every element                               | `meta.structure` — e.g. `"root"`, `"label"`, `"control"`            | Always.                                                                                                                                               |
-| `data-evaluation`  | parts that consume evaluation tokens        | `EvaluationsFor<E>` — e.g. `"primary"`, `"negative"`                | When the part renders evaluation-dependent colors.                                                                                                    |
-| `data-consequence` | leaf Action elements that declare an effect | `ConsequencesFor<E>` — `"neutral" \| "committing" \| "destructive"` | When the component accepts a `consequence` prop (`Button`, `MenuItem`, `FormSubmit`).                                                                 |
-| `data-composition` | leaves that play a parent slot              | `CompositionsFor<E>` — e.g. `"primaryAction"`                       | When the component accepts a `composition` prop. Read at runtime by composites (e.g. `DialogActions` reorders by it).                                 |
-| `data-platform`    | `DialogActions` only                        | `"ios" \| "windows"`                                                | Always on `DialogActions`. Reflects the active ordering convention.                                                                                   |
-| `data-pending`     | `FormSubmit` only                           | `"true"` (omitted otherwise)                                        | While `isPending` is `true`. Lets host CSS/tests show spinner without re-wiring the disabled path.                                                    |
-| `data-arming`      | `ConfirmationDialog` confirm button only    | `"true"` (omitted otherwise)                                        | While a `destructive` confirmation is awaiting its second click. Selected at runtime from `consequence` — the proof that Consequence drives behavior. |
+| Attribute          | Where                                           | Type / value                                                        | When emitted                                                                                                                                                                                                                                                                                                             |
+| ------------------ | ----------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `data-scope`       | every element                                   | `kebab-case(meta.displayName)` — e.g. `"button"`, `"dialog"`        | Always.                                                                                                                                                                                                                                                                                                                  |
+| `data-part`        | every element                                   | `meta.structure` — e.g. `"root"`, `"label"`, `"control"`            | Always.                                                                                                                                                                                                                                                                                                                  |
+| `data-evaluation`  | parts that consume evaluation tokens            | `EvaluationsFor<E>` — e.g. `"primary"`, `"negative"`                | When the part renders evaluation-dependent colors.                                                                                                                                                                                                                                                                       |
+| `data-consequence` | leaf Action elements that declare an effect     | `ConsequencesFor<E>` — `"neutral" \| "committing" \| "destructive"` | When the component accepts a `consequence` prop (`Button`, `MenuItem`, `FormSubmit`).                                                                                                                                                                                                                                    |
+| `data-composition` | leaves that play a parent slot                  | `CompositionsFor<E>` — e.g. `"primaryAction"`                       | When the component accepts a `composition` prop. Read at runtime by composites (e.g. `DialogActions` reorders by it).                                                                                                                                                                                                    |
+| `data-platform`    | `DialogActions` only                            | `"ios" \| "windows"`                                                | Always on `DialogActions`. Reflects the active ordering convention.                                                                                                                                                                                                                                                      |
+| `data-pending`     | `FormSubmit` only                               | `"true"` (omitted otherwise)                                        | While `isPending` is `true`. Lets host CSS/tests show spinner without re-wiring the disabled path.                                                                                                                                                                                                                       |
+| `data-arming`      | `ConfirmationDialog` confirm button only        | `"true"` (omitted otherwise)                                        | While a `destructive` confirmation is awaiting its second click. Selected at runtime from `consequence` — the proof that Consequence drives behavior.                                                                                                                                                                    |
+| `data-orientation` | Action-family groups (`ButtonGroup`, `Toolbar`) | `"horizontal" \| "vertical"`                                        | Always. On `ButtonGroup` it reflects the axis **actually rendered**, so it reads `vertical` when a horizontal row had to collapse — assert the rendered state, not the authored prop. On `Toolbar` (emitted by React Aria) it is the authored axis, which is also the arrow-key axis; a toolbar never re-orients itself. |
+| `data-collapsed`   | `ButtonGroup` only                              | `"true"` (omitted otherwise)                                        | When a `horizontal` request gave way because the row did not fit. Separates "the author asked for a column" from "the row ran out of room" for host CSS and tests.                                                                                                                                                       |
 
 **Sub-part identity convention** — composites reuse the host's `data-scope` and pin the per-part `data-part`:
 
@@ -412,21 +414,48 @@ Rules (enforced by the contract tests):
 
 Registered knobs:
 
-| Knob                      | Component     | Fallback           |
-| ------------------------- | ------------- | ------------------ |
-| `--fsl-dialog-max-width`  | `DialogModal` | `min(500px, 90vw)` |
-| `--fsl-dialog-max-height` | `DialogModal` | `90vh`             |
-| `--fsl-menu-min-width`    | `Menu`        | `12rem`            |
-| `--fsl-menu-max-width`    | `Menu`        | `min(320px, 90vw)` |
-| `--fsl-popover-max-width` | `Popover`     | `min(320px, 90vw)` |
-| `--fsl-tooltip-max-width` | `Tooltip`     | `min(280px, 90vw)` |
+| Knob                         | Component     | Fallback           |
+| ---------------------------- | ------------- | ------------------ |
+| `--fsl-combo-box-max-height` | `ComboBox`    | `min(20rem, 60vh)` |
+| `--fsl-dialog-max-width`     | `DialogModal` | `min(500px, 90vw)` |
+| `--fsl-dialog-max-height`    | `DialogModal` | `90vh`             |
+| `--fsl-menu-min-width`       | `Menu`        | `12rem`            |
+| `--fsl-menu-max-width`       | `Menu`        | `min(320px, 90vw)` |
+| `--fsl-popover-max-width`    | `Popover`     | `min(320px, 90vw)` |
+| `--fsl-tooltip-max-width`    | `Tooltip`     | `min(280px, 90vw)` |
 
 ---
 
 ## §8 — Full Example: Button (Entity = Action)
 
-`entity: 'Action'` → §1 row: colors=`action`, radii=`control`, border=`outline.control`,
-sizing=`hit`, spacing=`inset.control.md`, typography=`label.md`, motion=`feedback`, elevation=`flat`.
+`entity: 'Action'` → §1 row: colors=`action`, radii=`action`, border=`outline.control`,
+sizing=`hit`, spacing=`inset.control.md`, typography=`action.md`, motion=`feedback`, elevation=`flat`.
+
+**Two silhouettes inside the Action row.** The row above lists the _command_
+tokens (`radii.action`, `text.action`, `inset.action.block`) that `Button`
+reads. `ActionButton` and `ToggleButton` read the **utility** set from the same
+row — `radii.control`, `text.label.md`, `inset.control.{sm,md}` — because an
+ambient operation on content must recede beside a commitment. Both silhouettes
+are declared once in `components/ActionTrigger/anatomy.tsx`
+(`COMMAND_SILHOUETTE` / `UTILITY_SILHOUETTE`) and every Action trigger takes
+its geometry from that module: the anatomy, the `hit` floor on both axes and
+the icon-only square are shared code, not conventions each component
+re-implements.
+
+Anatomy: `root` · `icon` · `label` — all three are lawful Action structural
+roles (`ENTITY_STRUCTURE.Action`), so a Button with a glyph declares real
+identities instead of anonymous spans. `sizing.hit` binds **both** axes: it
+drives the height and supplies a square minimum width, which is what makes the
+icon-only form's _floor_. The square itself is arithmetic, not an imposed
+`aspect-ratio`: the icon-only form mirrors its block inset on the inline axis
+and squares its glyph slot to one line (`1lh`), so both axes carry identical
+padding and identical content extent — which also makes the square resolve to
+the same height as a labelled CTA (40px at the desktop bound). Deriving it from
+`aspect-ratio` was tried and rejected: the shrink-to-fit width won, squeezing
+the vertical inset and breaking that height parity. The glyph arrives as a caller-supplied `<Icon>` **element**, not
+an intent string: a component that renders a caller's glyph imports
+`IconProps` as a _type only_, so it never pulls the glyph registry into a
+consumer that renders text alone (the tree-shaking guarantee — ADR-006).
 
 ```typescript
 import { vars } from '@ttoss/fsl-theme/vars';
@@ -456,7 +485,7 @@ export const Button = ({ evaluation = 'primary', ...props }: ButtonProps) => {
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: vars.radii.control,
+        borderRadius: vars.radii.action,
         borderWidth: vars.border.outline.control.width,
         borderStyle: vars.border.outline.control.style,
         minHeight: vars.sizing.hit,

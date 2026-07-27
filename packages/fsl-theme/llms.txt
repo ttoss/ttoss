@@ -122,7 +122,7 @@ Legal `{ux, role}` and `{ux, state}` combinations are enforced by the TypeScript
 | `action` | `primary` · `secondary` · `accent` · `muted` · `negative` |
 | `input` | `primary` · `secondary` · `muted` · `positive` · `caution` · `negative` |
 | `navigation` | `primary` · `secondary` · `accent` · `muted` |
-| `feedback` | `primary` · `muted` · `positive` · `caution` · `negative` (`feedback.primary` carries no valence — it's neutral feedback) |
+| `feedback` | `primary` · `muted` · `positive` · `caution` · `negative` · `accent` (`primary` = neutral chip; `accent` = informative — in progress / new / info; valences and `accent` are deep filled surfaces with `neutral.0` text, mode-stable) |
 | `informational` | `primary` · `secondary` · `accent` · `muted` · `positive` · `caution` · `negative` |
 
 Valid `{ux, state}` combinations: see [Color state legality](#color-state-legality-per-ux) below.
@@ -323,7 +323,7 @@ Never both. Never neither.
 
 **§8 — Optional families have fallback rules:**
 - `elevation.tonal` absent → fall back to `elevation.surface` alone.
-- `dataviz` absent → the consumer's app does not opt in to dataviz; do not generate dataviz components.
+- `dataviz` absent → the consumer's app does not opt in to dataviz; do not generate dataviz components. When present, reference its tokens via `datavizVars` from `@ttoss/fsl-theme/dataviz` (typed `var(--tt-dataviz-*)` mirror).
 - Optional state (e.g. `hover`) absent on a leaf → fall back to `default`.
 
 ## Disambiguation — confusable picks

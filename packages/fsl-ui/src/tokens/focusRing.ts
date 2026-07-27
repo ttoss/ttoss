@@ -15,9 +15,20 @@
 import { vars } from '@ttoss/fsl-theme/vars';
 
 /**
+ * Standard gap between a control's edge and its focus ring (P3 Slice 2,
+ * Spectrum-derived: 2px ring + 2px gap). Floating the ring off the edge
+ * keeps it legible against the control's own fill — a flush ring drowns on
+ * filled buttons and checked controls. Components that draw the ring
+ * *inside* a clipped container (menu items, table rows) keep their negative
+ * insets and do not use this constant.
+ */
+export const FOCUS_RING_OFFSET = '2px';
+
+/**
  * Returns the `outline` CSS value for the current focus-visible state.
- * Pair with `outlineOffset` at the call site when the component floats the
- * ring off its edge.
+ * Pair with `outlineOffset` at the call site — `FOCUS_RING_OFFSET` for the
+ * standard floated ring, or a bespoke inset where the ring must stay inside
+ * a clipped ancestor.
  */
 export const focusRingOutline = (
   isFocusVisible: boolean | undefined

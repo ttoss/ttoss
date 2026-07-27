@@ -1,0 +1,6 @@
+environments:
+  Production:
+    aliases:
+      - studio.ttoss.dev
+    cloudfront: true
+    stackName: FslStudio

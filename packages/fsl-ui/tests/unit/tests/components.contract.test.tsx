@@ -499,3 +499,127 @@ describe('contract: DOM data-attributes', () => {
     }
   );
 });
+
+// ---------------------------------------------------------------------------
+// Invariant #9: every glyph host centres its glyph as a box, not as text
+//
+// `iconify-icon` is inline-level, so in a non-flex host it aligns to the
+// host's text baseline and the font's descender space pushes the glyph
+// visually high (measured −2px in Button/Select/Disclosure/Accordion and −1px
+// in Checkbox before ICON_SLOT_STYLE existed). jsdom cannot lay this out, but
+// it can assert the declaration that prevents it — so the fix stays enforced
+// for every future glyph-bearing component.
+// ---------------------------------------------------------------------------
+
+describe('contract: glyph hosts centre their glyph (ICON_SLOT_STYLE)', () => {
+  test.each(Object.entries(DOM_FIXTURES))(
+    '%s: every element wrapping an icon is a centring flex box',
+    (_componentName, fixture) => {
+      render(fixture.element());
+      fixture.open?.();
+
+      const hosts = [...document.querySelectorAll('iconify-icon')]
+        .map((glyph) => {
+          return glyph.parentElement;
+        })
+        .filter((host): host is HTMLElement => {
+          // Only hosts that exist to *hold* the glyph — a control that also
+          // lays out other children (a stepper button, a trigger) already
+          // centres via its own flex row.
+          return host !== null && host.tagName === 'SPAN';
+        });
+
+      for (const host of hosts) {
+        expect(host.style.display).toMatch(/flex$/);
+        expect(host.style.alignItems).toBe('center');
+        expect(host.style.justifyContent).toBe('center');
+      }
+    }
+  );
+});
+
+// ---------------------------------------------------------------------------
+// Invariant #10: the utility silhouette sits on the *field row*
+//
+// A utility trigger's job is to stand beside a field — a toolbar's search
+// input, a filter bar's select, a table's inline editor. So its height and its
+// type are not free parameters to tune per component: they are the field row's,
+// and the row is defined by `sizing.hit` + `inset.control` + `text.label.md`
+// (34px at 1920×1080 in the base theme). A command trigger is the deliberate
+// exception — it leaves the row for the CTA height (40px) via
+// `inset.action.block` and `text.action.md` (ADR-021 addendum).
+//
+// This is the invariant that answers "should ActionButton be smaller?": it may
+// not be *independently* smaller. Shrinking its type alone would break the
+// alignment with the fields it was designed to sit next to. The utility/command
+// contrast is carried by height, weight, inset and radius — never by a size
+// step nobody else on the row took.
+// ---------------------------------------------------------------------------
+
+describe('contract: utility triggers share the field row', () => {
+  const rowGeometry = (el: HTMLElement) => {
+    return {
+      minHeight: el.style.minHeight,
+      paddingBlock: el.style.paddingBlock,
+      paddingInline: el.style.paddingInline,
+      fontSize: el.style.fontSize,
+      fontWeight: el.style.fontWeight,
+    };
+  };
+
+  const renderRoot = (fixtureName: string, selector: string) => {
+    const { unmount } = render(DOM_FIXTURES[fixtureName].element());
+    const el = document.querySelector<HTMLElement>(selector);
+
+    expect(el).not.toBeNull();
+
+    const geometry = rowGeometry(el as HTMLElement);
+
+    unmount();
+
+    return geometry;
+  };
+
+  test('ActionButton and ToggleButton match the TextField control exactly', () => {
+    const field = renderRoot(
+      'TextFieldControl',
+      '[data-scope="text-field"][data-part="control"]'
+    );
+
+    expect(
+      renderRoot(
+        'ActionButton',
+        '[data-scope="action-button"][data-part="root"]'
+      )
+    ).toEqual(field);
+    expect(
+      renderRoot(
+        'ToggleButton',
+        '[data-scope="toggle-button"][data-part="root"]'
+      )
+    ).toEqual(field);
+  });
+
+  test('Button leaves the row on inset and type, keeping the same floor', () => {
+    const field = renderRoot(
+      'TextFieldControl',
+      '[data-scope="text-field"][data-part="control"]'
+    );
+    const command = renderRoot(
+      'Button',
+      '[data-scope="button"][data-part="root"]'
+    );
+
+    // Taller, wider, heavier — that is the command posture.
+    expect(command.paddingBlock).not.toBe(field.paddingBlock);
+    expect(command.paddingInline).not.toBe(field.paddingInline);
+    expect(command.fontWeight).not.toBe(field.fontWeight);
+
+    // Same ergonomic floor, so a CTA dropped into a toolbar never falls below
+    // the row it shares. That the two type contracts also resolve to the *same
+    // font size* (they differ in weight alone) is a theme-level invariant —
+    // jsdom cannot resolve `var()`, so it is asserted in fsl-theme's
+    // `typography.test.ts`.
+    expect(command.minHeight).toBe(field.minHeight);
+  });
+});

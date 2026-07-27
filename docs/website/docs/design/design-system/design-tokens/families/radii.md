@@ -93,11 +93,12 @@ radii.{contract}
 
 ### Semantic contracts
 
-| `contract` | meaning                                                               |
-| :--------- | :-------------------------------------------------------------------- |
-| `control`  | Radius for interactive controls and touchable UI elements             |
-| `surface`  | Radius for surfaces that contain or group content                     |
-| `round`    | Full-round shape intent for pills, capsules, and circular affordances |
+| `contract` | meaning                                                                                         |
+| :--------- | :---------------------------------------------------------------------------------------------- |
+| `action`   | Radius for command triggers (Button, ToggleButton) — the CTA silhouette; pill in the base theme |
+| `control`  | Radius for interactive controls and touchable UI elements                                       |
+| `surface`  | Radius for surfaces that contain or group content                                               |
+| `round`    | Full-round shape intent for pills, capsules, and circular affordances                           |
 
 ### Canonical semantic set
 

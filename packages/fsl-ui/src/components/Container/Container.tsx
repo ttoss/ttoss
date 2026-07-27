@@ -97,6 +97,9 @@ export const Container = ({
           width: '100%',
           maxWidth: MAX_WIDTH[size],
           paddingInline: GUTTER[gutter],
+          // Definite width (stretch + max-width) → the content column is a
+          // size container for the theme's cqi scales (ADR-011).
+          containerType: 'inline-size',
         } as React.CSSProperties
       }
     >

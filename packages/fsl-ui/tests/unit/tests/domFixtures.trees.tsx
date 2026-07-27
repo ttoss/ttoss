@@ -23,6 +23,16 @@ export const treeRadio = (): React.ReactElement => {
   );
 };
 
+// React Aria's ComboBox ignores `defaultOpen` (unlike Select) — the list is
+// opened by the trigger, so the item fixture drives it through `open` instead.
+export const treeComboBox = (): React.ReactElement => {
+  return (
+    <pkg.ComboBox label="Choice">
+      <pkg.ComboBoxItem id="a">A</pkg.ComboBoxItem>
+    </pkg.ComboBox>
+  );
+};
+
 export const treeSelect = (defaultOpen?: boolean): React.ReactElement => {
   return (
     <pkg.Select label="Choice" defaultOpen={defaultOpen}>

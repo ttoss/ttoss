@@ -58,11 +58,25 @@ const WCAG = { AA_NORMAL: 4.5, AA_LARGE: 3.0 } as const;
 // Canonical grammar constraints — Legal Combinations from colors.md
 // ---------------------------------------------------------------------------
 
+// This map is the **sensor** for a published-surface change, not a test tweak: a
+// role added or removed here accompanies a required member added or removed on the
+// matching `*ColorRoles` interface in `src/families/colors.ts`, which every theme
+// authored via `base: ThemeTokens` must satisfy.
+//
+// `@lerna-lite/version` derives the released version from commit markers, and
+// `lerna.json` sets `ignoreChanges: ["**/tests/**"]` — so this file cannot trigger
+// a release on its own. The `!` and the `BREAKING CHANGE:` footer belong on the
+// commit that changes `src/families/colors.ts`, which in practice is this same
+// commit: a member added there fails this test until the map follows.
+//
+// (The `overrides`/`extends` authoring paths take `DeepPartial`, so they are
+// unaffected — which is why the break is invisible until someone supplies a
+// complete base.)
 const ALLOWED_ROLES: Readonly<Record<string, ReadonlyArray<string>>> = {
   action: ['primary', 'secondary', 'accent', 'muted', 'negative'],
   input: ['primary', 'secondary', 'muted', 'positive', 'caution', 'negative'],
   navigation: ['primary', 'secondary', 'accent', 'muted'],
-  feedback: ['primary', 'muted', 'positive', 'caution', 'negative'],
+  feedback: ['primary', 'muted', 'positive', 'caution', 'negative', 'accent'],
   informational: [
     'primary',
     'secondary',
@@ -98,6 +112,118 @@ const CONTEXT_EXTRA_STATES: Readonly<Record<string, ReadonlyArray<string>>> = {
   informational: ['visited', 'expanded'],
 };
 
+/** Known `{ux}.{role}.{state}` contexts whose border falls below AA Large against
+ *  its adjacent background by design. Sorted alphabetically for diff stability. */
+const KNOWN_BORDER_CONTRAST_VIOLATIONS: ReadonlySet<string> = new Set([
+  // action — solid and subtle variants
+  'action.accent.active',
+  'action.accent.default',
+  'action.accent.disabled',
+  'action.accent.expanded',
+  'action.accent.focused',
+  'action.accent.hover',
+  'action.accent.pressed',
+  // `action.muted` is the ladder's quiet rung: its border mirrors its
+  // background in every state, so the edge never appears (pattern (a) —
+  // border == background by design). `focused` is the deliberate exception and
+  // is therefore absent from this list.
+  'action.muted.active',
+  'action.muted.default',
+  'action.muted.disabled',
+  'action.muted.expanded',
+  'action.muted.hover',
+  'action.muted.pressed',
+  'action.negative.active',
+  'action.negative.default',
+  'action.negative.disabled',
+  'action.negative.expanded',
+  'action.negative.focused',
+  'action.negative.hover',
+  'action.negative.pressed',
+  'action.primary.active',
+  'action.primary.default',
+  'action.primary.disabled',
+  'action.primary.expanded',
+  'action.primary.hover',
+  'action.primary.pressed',
+  'action.secondary.active',
+  'action.secondary.default',
+  'action.secondary.disabled',
+  'action.secondary.hover',
+  'action.secondary.pressed',
+  // feedback — filled status surfaces (P3 slice 3): border == background by
+  // design (pattern (a)); the focused border sits on the surface's own deep
+  // fill — focus indication is carried by the component-level outline ring.
+  'feedback.accent.default',
+  'feedback.accent.focused',
+  'feedback.caution.default',
+  'feedback.caution.focused',
+  'feedback.muted.default',
+  'feedback.negative.default',
+  'feedback.negative.focused',
+  'feedback.positive.default',
+  'feedback.positive.focused',
+  'feedback.primary.default',
+  // informational — content-surface separators
+  'informational.accent.disabled',
+  'informational.accent.selected',
+  'informational.caution.default',
+  'informational.caution.disabled',
+  'informational.muted.default',
+  'informational.muted.hover',
+  'informational.negative.disabled',
+  'informational.positive.default',
+  'informational.positive.disabled',
+  'informational.primary.active',
+  'informational.primary.default',
+  'informational.primary.disabled',
+  'informational.primary.droptarget',
+  'informational.primary.hover',
+  'informational.primary.selected',
+  'informational.secondary.active',
+  'informational.secondary.default',
+  'informational.secondary.disabled',
+  'informational.secondary.hover',
+  'informational.secondary.selected',
+  // input — soft resting/disabled borders
+  'input.caution.default',
+  'input.caution.disabled',
+  'input.caution.indeterminate',
+  'input.muted.checked',
+  'input.muted.default',
+  'input.muted.disabled',
+  'input.muted.hover',
+  'input.muted.indeterminate',
+  'input.negative.disabled',
+  'input.negative.indeterminate',
+  'input.positive.default',
+  'input.positive.disabled',
+  'input.positive.indeterminate',
+  'input.primary.checked',
+  'input.primary.default',
+  'input.primary.disabled',
+  'input.primary.indeterminate',
+  'input.secondary.checked',
+  'input.secondary.default',
+  'input.secondary.disabled',
+  'input.secondary.hover',
+  'input.secondary.indeterminate',
+  'input.secondary.pressed',
+  // navigation — subtle nav borders
+  'navigation.accent.current',
+  'navigation.accent.disabled',
+  'navigation.accent.selected',
+  'navigation.muted.active',
+  'navigation.muted.default',
+  'navigation.muted.disabled',
+  'navigation.muted.hover',
+  'navigation.primary.default',
+  'navigation.secondary.active',
+  'navigation.secondary.default',
+  'navigation.secondary.disabled',
+  'navigation.secondary.hover',
+]);
+
 // ---------------------------------------------------------------------------
 // Test bundles — extend this array when new theme bundles are added
 // ---------------------------------------------------------------------------
@@ -114,7 +240,18 @@ const bundleEntries: ReadonlyArray<{
   knownBorderViolations?: ReadonlySet<string>;
 }> = [
   { label: 'default', base: themeFlatToTest, alt: themeAltFlatToTest },
-  { label: 'bruttal', base: bruttalFixtures.base, alt: bruttalFixtures.alt },
+  {
+    label: 'bruttal',
+    base: bruttalFixtures.base,
+    alt: bruttalFixtures.alt,
+    // Bruttal's brown brand.500 (#6D5D4F) sits below 3:1 against the filled
+    // feedback.primary surface (neutral.800) — one extra entry over the
+    // default inventory, same pattern (a) rationale.
+    knownBorderViolations: new Set([
+      ...KNOWN_BORDER_CONTRAST_VIOLATIONS,
+      'feedback.primary.focused',
+    ]),
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -393,105 +530,6 @@ describe('Color contrast — text vs background', () => {
 //   (d) Input / navigation resting states with intentionally soft borders.
 // ---------------------------------------------------------------------------
 
-/** Known `{ux}.{role}.{state}` contexts whose border falls below AA Large against
- *  its adjacent background by design. Sorted alphabetically for diff stability. */
-const KNOWN_BORDER_CONTRAST_VIOLATIONS: ReadonlySet<string> = new Set([
-  // action — solid and subtle variants
-  'action.accent.active',
-  'action.accent.default',
-  'action.accent.disabled',
-  'action.accent.expanded',
-  'action.accent.focused',
-  'action.accent.hover',
-  'action.accent.pressed',
-  'action.muted.active',
-  'action.muted.default',
-  'action.muted.disabled',
-  'action.muted.hover',
-  'action.muted.pressed',
-  'action.negative.active',
-  'action.negative.default',
-  'action.negative.disabled',
-  'action.negative.expanded',
-  'action.negative.focused',
-  'action.negative.hover',
-  'action.negative.pressed',
-  'action.primary.active',
-  'action.primary.default',
-  'action.primary.disabled',
-  'action.primary.expanded',
-  'action.primary.hover',
-  'action.primary.pressed',
-  'action.secondary.active',
-  'action.secondary.default',
-  'action.secondary.disabled',
-  'action.secondary.hover',
-  'action.secondary.pressed',
-  // feedback — decorative separators
-  'feedback.caution.default',
-  'feedback.muted.default',
-  'feedback.positive.default',
-  'feedback.primary.default',
-  // informational — content-surface separators
-  'informational.accent.disabled',
-  'informational.accent.selected',
-  'informational.caution.default',
-  'informational.caution.disabled',
-  'informational.muted.default',
-  'informational.muted.hover',
-  'informational.negative.disabled',
-  'informational.positive.default',
-  'informational.positive.disabled',
-  'informational.primary.active',
-  'informational.primary.default',
-  'informational.primary.disabled',
-  'informational.primary.droptarget',
-  'informational.primary.hover',
-  'informational.primary.selected',
-  'informational.secondary.active',
-  'informational.secondary.default',
-  'informational.secondary.disabled',
-  'informational.secondary.hover',
-  'informational.secondary.selected',
-  // input — soft resting/disabled borders
-  'input.caution.default',
-  'input.caution.disabled',
-  'input.caution.indeterminate',
-  'input.muted.checked',
-  'input.muted.default',
-  'input.muted.disabled',
-  'input.muted.hover',
-  'input.muted.indeterminate',
-  'input.negative.disabled',
-  'input.negative.indeterminate',
-  'input.positive.default',
-  'input.positive.disabled',
-  'input.positive.indeterminate',
-  'input.primary.checked',
-  'input.primary.default',
-  'input.primary.disabled',
-  'input.primary.indeterminate',
-  'input.secondary.checked',
-  'input.secondary.default',
-  'input.secondary.disabled',
-  'input.secondary.hover',
-  'input.secondary.indeterminate',
-  'input.secondary.pressed',
-  // navigation — subtle nav borders
-  'navigation.accent.current',
-  'navigation.accent.disabled',
-  'navigation.accent.selected',
-  'navigation.muted.active',
-  'navigation.muted.default',
-  'navigation.muted.disabled',
-  'navigation.muted.hover',
-  'navigation.primary.default',
-  'navigation.secondary.active',
-  'navigation.secondary.default',
-  'navigation.secondary.disabled',
-  'navigation.secondary.hover',
-]);
-
 describe('Color contrast — border vs background', () => {
   for (const entry of bundleEntries) {
     const { label, base } = entry;
@@ -645,3 +683,67 @@ describe('Semantic color grammar — overlay absent from semantic.colors', () =>
 // false positives for intentional shared tones. Validate through design
 // review rather than automated testing.
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Error #5 (role collapse): two roles in the same ux context must not resolve
+// to the same visual contract
+//
+// The distinguishability suite above compares *states within a role*. Nothing
+// compared *roles within a context* — which is how `action.secondary` and
+// `action.muted` shipped byte-identical in dark mode (both
+// neutral.700 / neutral.500 / neutral.50): two documented emphasis levels
+// rendering the same pixels, invisible to every existing test.
+//
+// The rule is minimal on purpose: it asserts only that the resting
+// `(background, border, text)` triple differs somewhere. It makes no claim
+// about *how much* it differs — that is a design judgement — but a role whose
+// entire contract duplicates another's is a defect in any theme.
+// ---------------------------------------------------------------------------
+
+const restingTriple = (
+  tokens: Record<string, string | number>,
+  ux: string,
+  role: string
+): string => {
+  return (['background', 'border', 'text'] as const)
+    .map((dim) => {
+      return String(tokens[`semantic.colors.${ux}.${role}.${dim}.default`]);
+    })
+    .join('|');
+};
+
+describe('Semantic color grammar — roles within a context are distinguishable', () => {
+  for (const { label, base, alt } of bundleEntries) {
+    describe(label, () => {
+      for (const [ux, roles] of Object.entries(ALLOWED_ROLES)) {
+        for (const [mode, tokens] of [
+          ['base', base],
+          ['alt', alt],
+        ] as const) {
+          if (!tokens) continue;
+
+          test(`${mode}: every ${ux} role has its own resting contract`, () => {
+            const seen = new Map<string, string>();
+            const collisions: string[] = [];
+
+            for (const role of roles) {
+              const triple = restingTriple(tokens, ux, role);
+              // A role that defines none of the three dimensions is not a
+              // collapse — it simply is not painted in this theme.
+              if (triple === 'undefined|undefined|undefined') continue;
+
+              const previous = seen.get(triple);
+              if (previous) {
+                collisions.push(`${ux}.${role} === ${ux}.${previous}`);
+              } else {
+                seen.set(triple, role);
+              }
+            }
+
+            expect(collisions).toEqual([]);
+          });
+        }
+      }
+    });
+  }
+});

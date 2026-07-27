@@ -15,6 +15,7 @@ import {
 
 import type { ComponentMeta } from '../../semantics';
 import { focusRingOutline } from '../../tokens/focusRing';
+import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import { Icon } from '../Icon';
 
@@ -168,7 +169,11 @@ export const Select = <T extends object = object>({
                   justifyContent: 'space-between',
                   gap: vars.spacing.gap.inline.sm,
                   minHeight: vars.sizing.hit,
-                  paddingBlock: vars.spacing.inset.control.md,
+                  // Tight block padding + small chevron keep the trigger on the
+                  // field row — the same 34px (desktop) as TextField and
+                  // ActionButton, because a row with mixed controls must align
+                  // (P3 slice 3).
+                  paddingBlock: vars.spacing.inset.control.sm,
                   paddingInline: vars.spacing.inset.control.md,
                   borderRadius: vars.radii.control,
                   borderWidth: vars.border.outline.control.width,
@@ -228,9 +233,9 @@ export const Select = <T extends object = object>({
                 data-scope="select"
                 data-part="icon"
                 aria-hidden
-                style={{ flexShrink: 0 }}
+                style={ICON_SLOT_STYLE}
               >
-                <Icon intent="disclosure.expand" />
+                <Icon intent="disclosure.expand" size="text" />
               </span>
             </RACButton>
 

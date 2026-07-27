@@ -48,8 +48,23 @@ are undefined and components render unstyled.
 
 ## Component catalog (all exports also ship a `*Meta` identity object)
 
-Action:      Button, ToggleButton, FileTrigger (opens OS file picker),
-             MenuItem (inside Menu), FormSubmit (inside Form)
+Action:      Button = COMMAND silhouette (commit: submit/confirm/primary action
+             of a surface; pill radius, semibold, 40px desktop).
+             ActionButton = UTILITY silhouette (ambient operation ON content:
+             toolbar, row action, overflow trigger; control radius, label type,
+             34px = the FIELD ROW, identical to TextField/Select). Pick by the
+             weight of the commitment — there is no size prop, the pair IS the
+             distinction. The two type contracts share one font SIZE and differ
+             in WEIGHT only; a utility trigger is never independently smaller,
+             or it desynchronises from the fields beside it.
+             Both: icon={<Icon intent="…"/>} + iconPlacement=leading|trailing;
+             omit children for the icon-only square (same height as the
+             labelled form; aria-label then REQUIRED by the type system);
+             anatomy data-part root|icon|label.
+             ToggleButton = utility silhouette + persistent `pressed` state
+             (aria-pressed; strong inverted fill when engaged).
+             FileTrigger (opens OS file picker), MenuItem (inside Menu),
+             FormSubmit (inside Form)
 Navigation:  Link, Breadcrumbs/Breadcrumb, Tabs/TabList/Tab
              (TabPanel is Structure — the content revealed by the tabs)
 Disclosure:  Accordion, AccordionItem, AccordionTrigger, AccordionPanel,
@@ -80,18 +95,53 @@ Collection:  ListBox/ListBoxItem, GridList/GridListItem (+ Menu/MenuItem,
 Input:       TextField, TextArea (each + Label/Control/Description/Error),
              SearchField (+ Label/Control; leading search + clear glyphs),
              NumberField (label/description/errorMessage props + −/+ steppers),
-             Slider (label + value output; single value or [min,max] range)
+             Slider (label + value output; single value or [min,max] range),
+             ComboBox/ComboBoxItem (text input + typeahead-filtered list;
+             label/description/errorMessage/placeholder/triggerLabel props).
+             Pick ComboBox over Select when the option set is too long to scan
+             (~10+) or the user may type a value that is not in it
+             (allowsCustomValue). ComboBox is Input — the user TYPES and the
+             list narrows; Select is Selection — picking from a closed set is
+             the only act. Filtering matches the option's visible TEXT, not its
+             id. Items are Selection/item (ADR-007 split, same as SelectItem).
+             Unlike Select it ships a validationMessage part.
 Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
              DialogActions, Menu, MenuTrigger, ConfirmationDialog,
              Popover, PopoverTrigger, Tooltip, TooltipTrigger
+             ActionMenu = THE OVERFLOW MENU (a row's trailing "…", a card's
+             corner menu, the tail of a toolbar that ran out of room): composes
+             MenuTrigger + icon-only ActionButton + Menu. aria-label is
+             REQUIRED (no i18n runtime to default it — ADR-001); glyph is fixed
+             to intent action.more; trigger evaluation defaults to secondary;
+             forwards isOpen/defaultOpen/onOpenChange + children/items/
+             disabledKeys/onAction/placement/offset/shouldFlip. Its meta is the
+             TRIGGER (Action/root, data-scope="action-menu") — the surface keeps
+             Menu's identity. This is a TOOLBAR's overflow answer; ButtonGroup's
+             answer is collapsing its row to a column.
+             MenuItem defaults to evaluation="muted" — a row shows NO fill until
+             hovered (the quiet rung resolves to the popover's own colour). Pass
+             another rung only to make one row louder. A destructive row uses
+             consequence="destructive" (semantic marker, no colour);
+             evaluation="negative" would fill the row red (F-029).
 Feedback:    ProgressBar, Meter, Toast, ToastRegion, createToastQueue
              (Meter = static quantity in a range e.g. battery/disk;
              ProgressBar = a task in flight. Pick by "state" vs "progressing"),
-             Badge (status pill: evaluation=primary|positive|caution|negative,
+             Badge (status chip, filled: evaluation=primary|positive|caution|negative|accent,
              numeric=tabular for counts — never a hand-rolled colored span)
 Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              WizardNavigation, Separator, Group (labelled role=group frame),
-             Toolbar (role=toolbar, arrow-key roving nav over its controls),
+             Toolbar (THE ACTION FAMILY'S UTILITY GROUP — the reference
+             system's "ActionGroup"/ActionButtonGroup under the role's own name:
+             role=toolbar, named region, arrow keys walk the controls.
+             orientation=horizontal|vertical drives BOTH layout and the arrow-key
+             axis; align=start|center|end. Hosts mixed controls (Select,
+             ToggleButton, Separator) — the region and its keyboard model make it
+             a toolbar, not the kind of control inside. Paints NOTHING: chrome is
+             composed (Surface level=overlay + Toolbar for a floating bar), so
+             there is no evaluation prop. Does NOT collapse like ButtonGroup — a
+             toolbar that overflows moves its tail into an ActionMenu. Caveat: it
+             is NOT a single tab stop, though APG's pattern asks for one —
+             useToolbar cannot manage arbitrary children's tabindex (F-028)),
              Surface (depth container: level=flat|raised|overlay|blocking,
              padding=none|sm|md|lg; pairs the elevation shadow with the tonal
              surface colour so depth reads in light AND dark — use for cards,
@@ -104,6 +154,20 @@ Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              Stack (layout rhythm: direction=vertical|horizontal picks the
              gap.stack|gap.inline family, gap=xs..xl, align, justify, wrap —
              never a raw gap; use instead of a hand-rolled flex div),
+             ButtonGroup (the ACTION ROW: orientation=horizontal|vertical,
+             align=start|center|end. Deliberately has NO gap prop — the
+             separation between sibling actions is one product-wide decision, so
+             every action row shares a rhythm; a Stack with a caller-picked gap
+             is what it exists to replace. horizontal is ADAPTIVE: it measures
+             and lays the actions out in a column when the row does not fit,
+             publishing the rendered axis as data-orientation and marking a
+             forced column data-collapsed="true"; orientation=vertical pins the
+             column and skips the measurement. Grouped triggers stop shrinking
+             (context, so it survives a Tooltip/DialogTrigger wrapper) — that is
+             what makes the overflow measurable. Every action keeps its own tab
+             stop: reach for Toolbar when the set should be ONE stop with
+             arrow-key nav, DialogActions inside a Dialog (it reorders by
+             composition per platform)),
              Box (token-constrained escape hatch, ADR-009: padding/
              paddingBlock/paddingInline=none|sm|md|lg, background=none|primary|
              muted, radius=none|control|surface|round, border=none|muted|
@@ -111,13 +175,17 @@ Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              never a free style/className),
              Grid (2D layout: columns=N or minColumnWidth=xs|sm|md|lg for
              responsive auto-fit, rows, gap=xs..xl, align, justify — never a
-             raw track template),
+             raw track template; each child gets a data-part="item" wrapper
+             that is a size container, so theme cqi scales resolve to the
+             track width),
              Container (centered page column: size=surface|reading,
-             gutter=page|section|none — instead of max-width + margin auto),
+             gutter=page|section|none — instead of max-width + margin auto;
+             the column is a size container for theme cqi scales),
              AppShell (full-viewport app frame: header?, sidebar?, aside?,
              sidebarWidth/asideWidth=sm|md|lg, sidebarLabel/asideLabel for the
              landmark names; main content as children — instead of a
-             hand-rolled viewport grid),
+             hand-rolled viewport grid; every region is a size container for
+             theme cqi scales),
              Code (code text: block=true scrollable <pre> surface, block=false
              inline <code> run)
 
@@ -134,13 +202,15 @@ Lucide via the Iconify provider, registered offline (no runtime API fetch).
 
 ## Entity → token map (a component reads ONLY its row)
 
-Action      → colors.action,        radii.control, motion.feedback
+Action      → colors.action,        radii.action (pill in base), text.action (semibold),
+            spacing.inset.action.block (block, 8-9px -> ~40px CTA) +
+            spacing.inset.control.lg (inline), motion.feedback
 Input       → colors.input,         radii.control, motion.feedback
 Selection   → colors.input,         radii.control, motion.feedback
 Navigation  → colors.navigation,    radii.control, motion.feedback
 Disclosure  → colors.navigation,    radii.control, motion.transition
 Overlay     → colors.informational, radii.surface, motion.transition, elevation.overlay
-Feedback    → colors.feedback,      radii.surface, elevation.raised
+Feedback    → colors.feedback,      radii.surface (chips) / radii.round (rails), elevation.raised
 Collection  → colors.informational, radii.surface
 Structure   → colors.informational, radii.surface
 

@@ -40,6 +40,10 @@ export const ICON_INTENTS = [
   // action — column sort direction. Opposition rule: ascending ≠ descending.
   'action.sortAscending',
   'action.sortDescending',
+  // action — additional actions behind a trigger (the overflow affordance).
+  // Named for what the user is offered ("more actions"), not for the layout
+  // reason it exists; no opposition pair — there is no "fewer".
+  'action.more',
   // status — foundation status indicators (affirmation, inclusion).
   'status.success',
 ] as const;

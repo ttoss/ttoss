@@ -205,5 +205,6 @@ Detailed guidelines live in `.github/instructions/`:
 | `forms.instructions.md`                       | `**/*.ts`, `**/*.tsx` — Zod vs Yup                          |
 | `chakra-ui.instructions.md`                   | `packages/ui/src/chakra/**` — recipe token rules            |
 | `fsl-theme.instructions.md`                   | `packages/fsl-theme/**` — ADR workflow, divergence protocol |
+| `fsl-tests.instructions.md`                   | `packages/fsl-theme/**/*.test.*` — test decision framework  |
 | `carlin.instructions.md`                      | `packages/carlin/**` — CLI testing, docs requirement        |
 | `docs.instructions.md`                        | `**/*.md`, `**/*.mdx` — documentation standards             |

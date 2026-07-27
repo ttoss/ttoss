@@ -1,0 +1,95 @@
+import * as React from 'react';
+
+import type { Member, Plan, Role } from './data';
+import { INITIAL_MEMBERS } from './data';
+
+/**
+ * Workspace store — in-memory state the flows mutate (team roster, active
+ * plan). Session-scoped by design: reloading resets the fiction to its
+ * initial state.
+ */
+
+interface WorkspaceState {
+  members: Member[];
+  planId: Plan['id'];
+}
+
+let state: WorkspaceState = {
+  members: INITIAL_MEMBERS,
+  planId: 'pro',
+};
+
+const listeners = new Set<() => void>();
+
+const setState = (next: WorkspaceState) => {
+  state = next;
+  for (const listener of listeners) {
+    listener();
+  }
+};
+
+let invitedCount = 0;
+
+export const inviteMember = ({
+  email,
+  role,
+  timezone,
+}: {
+  email: string;
+  role: Role;
+  timezone: string;
+}) => {
+  invitedCount += 1;
+  const localPart = email.split('@')[0];
+  const name = localPart
+    .split(/[._-]/)
+    .filter(Boolean)
+    .map((part) => {
+      return part.charAt(0).toUpperCase() + part.slice(1);
+    })
+    .join(' ');
+  const member: Member = {
+    id: `mem_invited_${invitedCount}`,
+    name: name || email,
+    email,
+    role,
+    timezone,
+    joined: 'Invited',
+  };
+  setState({ ...state, members: [...state.members, member] });
+};
+
+export const removeMember = ({ id }: { id: string }) => {
+  setState({
+    ...state,
+    members: state.members.filter((member) => {
+      return member.id !== id;
+    }),
+  });
+};
+
+export const setPlan = ({ planId }: { planId: Plan['id'] }) => {
+  setState({ ...state, planId });
+};
+
+/** Test-only: restore the initial fiction between tests. */
+export const resetWorkspace = () => {
+  invitedCount = 0;
+  setState({ members: INITIAL_MEMBERS, planId: 'pro' });
+};
+
+const subscribe = (listener: () => void) => {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+};
+
+const getSnapshot = () => {
+  return state;
+};
+
+/** Reactive workspace state — re-renders on roster/plan changes. */
+export const useWorkspace = (): WorkspaceState => {
+  return React.useSyncExternalStore(subscribe, getSnapshot);
+};

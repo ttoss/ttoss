@@ -16,6 +16,7 @@ import {
 import { Icon } from '../../components/Icon';
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { focusRingOutline } from '../../tokens/focusRing';
+import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import { createCompositeScope } from '../scope';
 
@@ -343,8 +344,7 @@ export const AccordionTrigger = ({
           aria-hidden
           style={
             {
-              flexShrink: 0,
-              display: 'inline-block',
+              ...ICON_SLOT_STYLE,
               transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
               transitionProperty: 'transform',
               transitionDuration: isExpanded

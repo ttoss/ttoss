@@ -264,8 +264,7 @@ export type InteractiveFlag = (typeof STATE_PRIORITY)[number]['flag'];
 
 /** Token-state keys the cascade maps flags into (plus `default` fallback). */
 export type InteractiveStateKey =
-  | (typeof STATE_PRIORITY)[number]['state']
-  | 'default';
+  (typeof STATE_PRIORITY)[number]['state'] | 'default';
 
 // ---------------------------------------------------------------------------
 // Legality Matrices
@@ -371,7 +370,9 @@ export const ENTITY_EVALUATION = {
   Overlay: ['primary', 'secondary', 'accent', 'muted', 'negative'],
   Navigation: ['primary', 'secondary', 'accent', 'muted'],
   Disclosure: ['primary', 'muted'],
-  Feedback: ['primary', 'positive', 'caution', 'negative'],
+  // `accent` = informative valence (in progress / new / info) — the fill for
+  // activity indicators; added with the filled-feedback language (P3 slice 3).
+  Feedback: ['primary', 'positive', 'caution', 'negative', 'accent'],
   Structure: ['primary', 'muted'],
 } as const satisfies Record<Entity, ReadonlyArray<Evaluation>>;
 

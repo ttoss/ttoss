@@ -39,6 +39,9 @@ const bundle = createTheme({
     },
     semantic: {
       radii: {
+        // Sharp everywhere — the brutalist identity overrides the base's
+        // pill CTAs too: commands and controls are equally square here.
+        action: '{core.radii.none}',
         control: '{core.radii.none}',
         surface: '{core.radii.none}',
       },

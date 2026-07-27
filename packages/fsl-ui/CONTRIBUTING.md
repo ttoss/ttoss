@@ -447,3 +447,110 @@ Re-litigation answers:
 - "ADR-005 says Icon is internal" → that clause is narrowed here, on the named trigger (real external-to-components demand); the rest of ADR-005 (provider, offline registration, intent contract) stands.
 - "Why not ship `@ttoss/fsl-icon` while we're at it?" → no consumer wants icons without fsl-ui; the module boundary is already package-shaped (`intents.ts` is dependency-free), so extraction later costs the same as extraction now.
 - "Can an app add its own intents?" → not through this package — app-specific intents are icon-system.md extensions in app space; this registry only admits intents a shipped component or block demands.
+
+### ADR-011: Definite-width layout primitives establish size containment
+
+Status: accepted (2026-07-24)
+Tags: layout, container-queries, fluid-scales, fsl-theme-interop
+
+Decision: layout primitives whose inline size is **definite** establish `container-type: inline-size` — `Grid` wraps each child in a `data-part="item"` container (track width is definite), `AppShell` marks its four regions (named-scale/track widths), and `Container` marks its root (stretch + max-width) — so fsl-theme's container-fluid scales (`cqi` clamps, fsl-theme ADR-019/020) finally resolve against a real container instead of silently falling back to the viewport (friction F-018: type/inset inside a 220px grid tile rendered at page scale and overflowed).
+Rejected: `Surface` as a container — it is content-sized in horizontal Stacks, and `inline-size` containment would collapse it (containment only where width is definite by construction); a `container` prop consumers opt into — the fluid engine is the theme's declared default, not a per-use choice; telling hosts to add containers in app CSS — recreates the hand-rolled-CSS drift this package exists to prevent.
+Cost: theme `cqi` scales now resolve locally — type/spacing inside narrow grid tracks, sidebars, and asides render at the clamp's lower range (the declared behavior, but a visible change for existing consumers); `Grid` children gain a wrapper element (fragments-as-children become a single item; per-child DOM selectors cross one more level).
+Anchors: `src/components/Grid/Grid.tsx`, `src/components/AppShell/AppShell.tsx`, `src/components/Container/Container.tsx`, `packages/fsl-theme/CONTRIBUTING.md` ADR-019/ADR-020, `docs/fsl-studio/FRICTION.md` F-018.
+
+Re-litigation answers:
+
+- "Why not put the container on the Grid root?" → `cqi` would resolve to the whole grid's width (≈ the page), not the tile — the per-item container is the entire point.
+
+### ADR-012: A freeform channel makes a picker `Input`, not `Selection`
+
+Status: accepted (2026-07-24)
+Tags: entity, input, selection, combobox, governance
+
+Context: the ROADMAP called `ComboBox` "the accordion-vs-select of ambiguity cases" — it is a text field and an option list at once, and `Select` (the neighbouring component) is `Selection`. Both entities project to the same `input` ux context, so the choice changes no colour; it changes what the component _claims to be_, which is what every later picker (`Autocomplete`, `DatePicker`, `SearchField`-with-suggestions) will copy.
+
+Decision: **the discriminant is whether a freeform channel exists.** A control the user can type an arbitrary value into is `Input`, even when it also offers a list; a control whose only act is picking from a closed set is `Selection`. `ComboBox` is therefore `Input`/`root`: the text field is the control and the filtered list is an affordance that narrows what the user types (with `allowsCustomValue` it can commit a value the set does not contain — something no `Selection` can do). `Select` stays `Selection`. The options themselves are `Selection`/`item` under the ADR-007 per-part split, identical to `SelectItem`/`ListBoxItem`, because option-selection semantics do not change with the host.
+
+Rejected: `Selection` for the whole composite — it would make `allowsCustomValue` incoherent (a "selection" that selects nothing in the set) and would misfile the part the user actually operates; a new `Combo`/`Hybrid` entity — nominal growth with nothing dispatching on it, the dead weight that killed the `Interaction` dimension; declaring the chevron an `Action` identity — `trigger` is not a legal `Input` role and a second entity in the file would buy nothing, so it ships as an internal data-part exactly as NumberField's steppers and Slider's track do (ADR-008).
+
+Cost: two sibling components with near-identical DOM carry different root entities, so "which entity is my picker?" is a judgement call at authoring time rather than a lookup — this ADR is that lookup.
+
+Anchors: `src/components/ComboBox/ComboBox.tsx` (header block), ROADMAP ComboBox row, `docs/fsl-studio/FRICTION.md` F-008.
+
+Re-litigation answers:
+
+- "Select and ComboBox look the same — why differ?" → they read the same tokens; only the claimed identity differs, and it differs because one accepts typed input and the other cannot.
+- "Is `SearchField` then also a picker?" → no — it has the freeform channel but no option set, so it stays a plain `Input` with adornments.
+- "What about `Autocomplete` (deferred)?" → same rule: it has a freeform channel, so it is `Input`. This ADR is the learning the ROADMAP said to wait for.
+- "Doesn't ADR-019 forbid container-fluidity?" → no — it forbids it for **control geometry** (rem-anchored `hit`/inset, unaffected here); layout/type fluidity by container is exactly what ADR-019/020 declare.
+- "Why does Stack not establish containment?" → a Stack's items size by content on the main axis (no definite width), the same reason Surface is rejected; containment is added only where the box's inline size is definite by construction.
+
+### ADR-013: `ButtonGroup` owns the action row — fixed rhythm, adaptive axis, and the first measured layout in the package
+
+Status: accepted (2026-07-25)
+Tags: structure, layout, action, overflow, measurement, P3
+
+Context: P3 Slice 4 ③. The action row — a form footer, a page header's cluster, a card's controls — had no component. `Stack direction="horizontal"` covers the arrangement but takes the gap from the caller, so every action row in a product can pick a different rhythm; `Toolbar` is a named `role="toolbar"` region with arrow-key navigation, which is not what a Save/Cancel pair is (see ADR-014); `DialogActions` reorders by `composition` per platform and throws outside a `<Dialog>`; `Group` paints a labelled boundary. The reference system ships `ButtonGroup` as its own component, and the behaviour that justifies it there is not layout but **overflow**: a row that does not fit becomes a column.
+
+Decision: `ButtonGroup` is `Structure`/`root` with exactly two props — `orientation` (`horizontal` default, `vertical`) and `align` (`start` default, `center`, `end`) — and **no `gap` prop**. The separation between sibling actions is one product-wide decision made by the theme (`gap.inline.sm`), which is the component's reason to exist over a Stack preset; both axes read that same token, because a row that columnised for space is the same set of actions and not a new stacking rhythm (the one place a Structure component deliberately does not follow `Stack`'s inline/stack split). `horizontal` is adaptive: the group measures its children against its own box and lays them out in a column when any child sticks out, publishing the rendered axis as `data-orientation` and marking a forced column `data-collapsed="true"`; `vertical` pins the column and skips the measurement entirely, which is also the escape hatch. Because the measurement needs children that hold their natural width, the group turns off shrinking on grouped triggers — via **context** (`ActionTriggerGroupProvider` in the shared trigger anatomy), the ecosystem's pattern, so it survives a `Tooltip` or `DialogTrigger` wrapper that `cloneElement` over children could not reach. `flexShrink: 0` is imposed _by the group_, never globally: a lone trigger in a narrow container should still give way rather than overflow the page — the same line the reference draws with `flexShrink: { default: 1, isInGroup: 0 }`.
+
+Rejected: a CSS-only `flex-wrap: wrap` (wrapping mid-row reads as a mistake where a column reads as a decision, and wrapping cannot right-align the remainder); a container query (the threshold depends on the buttons' own content width, which CSS cannot know); `role="group"` by default (an unnamed group is screen-reader noise — pass `role`/`aria-label` yourself, or use `Group`); `inline-flex` as the reference uses (it makes `align` inert in a row, since a content-sized box has no free space to distribute — ours is block-level so `align` works where authors expect it); propagating `isDisabled` to children (no consumer yet — §2.3 evidence rule; readmission criterion: a real "disable the whole footer while submitting" case, which `FormSubmit`'s `isPending` may produce); `align="stretch"` for full-width stacked CTAs (same rule — no consumer yet).
+
+Cost: the first component in the package that reads layout, so it carries a `ResizeObserver` on its container and a `useLayoutEffect` (degraded to `useEffect` on the server, where there is no layout to read and hydration re-measures). A collapse costs two renders — one row-shaped pass to measure, one to settle. jsdom reports every box as zero, so the unit suite stubs `offsetWidth`/`offsetLeft` and drives the observer callback directly: the _decision_ is unit-tested, the _measurement_ is verified in a real browser (collapse at 260px, recovery at 700px, both modes). Three trigger components gained a `useIsGroupedActionTrigger()` call.
+
+Implementation note that is easy to get wrong: the measurement state must be a **monotonic pass counter**, not an `isMeasuring` boolean. With a boolean, a request arriving in the same flush as the previous settle sets the atom `false` then `true`, React sees no net change, skips the re-render, and the machine sticks in "measuring" forever — the group then never collapses. A counter cannot cancel itself out.
+
+Anchors: `src/components/ButtonGroup/ButtonGroup.tsx`, `src/components/ActionTrigger/anatomy.tsx` (group context + `flexShrink`), `src/tokens/CONTRACT.md` §5, `packages/fsl-ui/INTERNAL/ROADMAP.md` P3 Slice 4 ③.
+
+Re-litigation answers:
+
+- "Why no `gap` prop when ADR-009 sanctions token-key props on Structure?" → sanctioned is not required. A gap prop would make this a Stack preset; the fixed rhythm _is_ the deliverable.
+- "Why does the vertical form not use the `gap.stack` family?" → because it is not a stack. It is the same action row with no horizontal room.
+- "Isn't measuring layout against the package's grain?" → the grain is _no hand-rolled visual CSS_; behaviour has always been allowed (`DialogActions` reorders children, `Wizard` tracks steps). What CSS cannot express, a component may.
+- "Why watch the container instead of the group?" → the group's own width does not change when the space around it does; in a collapsed column its width is the widest child, which says nothing about what is available.
+
+### ADR-014: `Toolbar` _is_ the Action family's group of utility actions; it paints nothing, and chrome is composed
+
+Status: accepted (2026-07-25)
+Tags: structure, action, toolbar, grouping, chrome, P3
+
+Context: P3 Slice 4 ④ asked for "ActionGroup — a group of ActionButtons". Reading the reference system's source settled what that component is there: its `ActionButtonGroup` is built on React Aria's `Toolbar`, carries **no selection**, and paints **no chrome** (its props are `density`, `isJustified`, `isQuiet`, `orientation`); selection lives in a separate `ToggleButtonGroup` that shares the same style recipe. It also ships a `Toolbar` that is a bare pass-through with zero styling. So the reference's split is: unstyled ARIA container · styled action cluster · styled selectable set.
+
+Decision: **we do not add a component.** `Toolbar` already is that cluster — same entity, same `role="toolbar"`, same keyboard affordance — so a second Structure component on the same role, differing only in whether it painted, would be the duplicate this package's doctrine rejects. The name stays `Toolbar` because that is the role it renders and the word a reader searches for; the queue's "ActionGroup" maps onto it. What changed is the component: (1) **the chrome is gone.** It painted an `informational` bar — background, 1px border, `radii.surface`, `inset.surface` — and measured **80px tall around 34px controls** in the browser: a card wrapping controls, which then read as bare text inside it (the buttons in a bar are `muted`, and ADR-021's ladder gives `muted` no resting edge). Whether a bar has a background depends on the surface it sits on, not on the bar, so chrome is now composed: `Surface level="overlay"` + `Toolbar` for a floating bar, nothing for a bar on the page. (2) Painting nothing means no colour is evaluated, so the `evaluation` prop is gone (§2.3 evidence rule). (3) It gained `align` — the same vocabulary `ButtonGroup` uses — and became block-level so `align` has free space to act on. (4) The three group containers (`ButtonGroup`, `Toolbar`, `ToggleButtonGroup`) now take their arrangement from one shared source, `buildActionGroupStyle` in the trigger anatomy: one gap token, one align mapping, one axis rule, plus the no-shrink context, so the family cannot drift apart the way the triggers did before ADR-013.
+
+Rejected: a new `ActionGroup`/`ActionButtonGroup` component (two identities, one role — and it would have to forbid the mixed controls a real bar carries: a `Select` for a filter, a `Separator` between clusters); keeping the painted bar behind a `variant`/`hasChrome` prop (a visual axis as an author decision, which CONTRACT §4 gives to the theme, and the composition already exists); `density`/`isJustified` from the reference (real patterns, no consumer yet — readmission criterion: a segmented view-switch that needs its options nearly touching, or a mobile bar whose controls must divide the width); the adaptive column `ButtonGroup` has (a toolbar that overflows moves its tail into an overflow menu — `ActionMenu`, queue item ⑤ — it does not restack; columnising a formatting strip turns a bar into a wall).
+
+Cost: a **breaking change** for anything that passed `evaluation` to `Toolbar` or relied on its bar (pre-1.0, no consumers in the repo; the Studio never used it). A bar that wants chrome now needs one more element. And the realignment exposed that the component does not implement the APG toolbar's single-tab-stop requirement — `useToolbar` supplies the arrow keys but cannot manage arbitrary children's `tabindex` — which was silently claimed in three places and is now documented and asserted instead (F-028).
+
+Anchors: `src/components/Toolbar/Toolbar.tsx`, `src/components/ActionTrigger/anatomy.tsx` (`buildActionGroupStyle`), `src/components/ToggleButtonGroup/ToggleButtonGroup.tsx`, `docs/fsl-studio/FRICTION.md` F-028, ROADMAP P3 Slice 4 ④.
+
+Re-litigation answers:
+
+- "Where is ActionGroup, then?" → it is `Toolbar`. The reference's `ActionButtonGroup` is a styled React Aria `Toolbar`; ours is the same thing under the role's own name.
+- "A toolbar with no background looks unfinished." → measure it against the page it sits on. The chrome that read as "finished" was a card, and the controls inside it lost their own edges to it. Compose `Surface` when the bar genuinely floats.
+- "Why does `ToggleButtonGroup` stay `inline-flex` when the other two are block-level?" → a segmented control is an object sized by its options; a command row and a toolbar are bands across their container. That is the one parameter `buildActionGroupStyle` takes.
+- "Should `Toolbar` collapse like `ButtonGroup`?" → no. Its overflow answer is an overflow menu, not a second axis.
+
+### ADR-015: `ActionMenu` ships as a composite (the overflow affordance is a convention); a menu row's resting rung is `muted`
+
+Status: accepted (2026-07-25)
+Tags: action, overlay, menu, icon, a11y, i18n, P3
+
+Context: P3 Slice 4 ⑤. The overflow menu — a row's trailing "…", a card's corner menu, the tail of a toolbar that ran out of room — was expressible by composing `MenuTrigger` + an icon-only `ActionButton` + `Menu`, and every call site would have had to pick the glyph, remember the icon-only square, and supply an accessible name. The reference system ships it as a component for the same reason.
+
+Decision: **`ActionMenu` is a composite with a narrow surface** — the open-state props of `MenuTrigger`, the item props of `Menu`, and the trigger's `evaluation`/`isDisabled`. Its single `*Meta` is the **trigger** (Action/root, `data-scope="action-menu"` via `ActionButton`'s documented scope override), because the surface it opens keeps `Menu`'s Overlay identity — it composes two identities instead of inventing a third. Three choices inside it are the point of the component: the glyph is the new **`action.more`** intent (the icon registry grows only when a component needs it — icon-system.md's change rule), the trigger is the utility silhouette's icon-only square, and **`aria-label` is a required prop**. The reference defaults that label to a translated "More actions", which it can because it ships an i18n runtime; ours cannot, and a hardcoded English default would ship untranslated copy into every product — so the type system asks (ADR-001). The trigger defaults to `evaluation="secondary"`, matching the reference's non-quiet default, which also means the shipped default is correct on every surface and does not wait on F-024.
+
+Second decision, forced by looking at an open menu for the first time since the P3 retune: **`MenuItem`'s default evaluation moves `primary` → `muted`.** With `primary` it painted every row a solid `neutral.1000` chip in light and a solid white one in dark — a menu that read as a stack of buttons, shipped in the Studio's own user menu without anyone noticing. `muted` is not merely quieter, it is _correct_: its resting background resolves to exactly the popover's colour in both modes (`neutral.0` / `neutral.900`), so the row borrows the surface and materialises on hover. Contrast holds (ink `#3d3d3d` on white ≈ 10.4:1, `#d0d0d0` on `#161616` ≈ 13.6:1).
+
+Rejected: documenting the composition instead of shipping the component (the glyph, the square and the name would drift per call site — the same argument that gives `ButtonGroup` a fixed rhythm); an `icon` prop on `ActionMenu` (the overflow glyph _is_ the convention; a caller who wants a different trigger composes `MenuTrigger` + `ActionButton` directly, which this is shorthand for and never a replacement of); a default `aria-label` in English (ADR-001); `evaluation="negative"` for a destructive row (it fills the row red — the missing rung is "negative ink on a surface", logged as F-029 rather than papered over).
+
+Cost: one intent added to the registry (`action.more` → Lucide `more-horizontal`); `MenuItem`'s visual default changed, which is a **breaking visual change** for any consumer that relied on filled rows (in-repo: the Studio's user menu, which was the bug); the destructive row currently has no colour of its own.
+
+Anchors: `src/composites/ActionMenu/ActionMenu.tsx`, `src/composites/Menu/Menu.tsx` (`MenuItem` default), `src/components/Icon/intents.ts` + `glyphs.ts`, `docs/fsl-studio/FRICTION.md` F-024 / F-029, ROADMAP P3 Slice 4 ⑤.
+
+Re-litigation answers:
+
+- "Why is the meta the trigger and not the whole thing?" → the composite renders no wrapper of its own; `MenuTrigger` is an orchestrator with no DOM. The button is the only root there is, and the popover already has an identity.
+- "Why does a menu row default to the _quiet_ rung — isn't a menu item a normal action?" → its container is the emphasis. A row inside an overlay surface is already prominent; painting it again makes a button of it.
+- "Then how do I make one row louder?" → pass `evaluation` explicitly (a primary "Create…" at the top of a menu). The default is the common case, not the only one.
+- "Why not add `action.more` speculatively along with a few other glyphs?" → icon-system.md: the registry grows slowly and shrinks never; add an intent when a component needs it.
