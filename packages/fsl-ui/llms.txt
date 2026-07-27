@@ -113,6 +113,10 @@ Input:       TextField, TextArea — each authored EITHER one-line
              Slider (label + value output; single value or [min,max] range),
              ComboBox/ComboBoxItem (text input + typeahead-filtered list;
              label/description/errorMessage/placeholder/triggerLabel props).
+             ComboBox is a SPLIT control: data-part="frame" paints the box and
+             hosts the chevron, data-part="control" is the <input> you type into.
+             `control` always names the operated element, so a test or an agent
+             told to type into a field can (ADR-022).
              Pick ComboBox over Select when the option set is too long to scan
              (~10+) or the user may type a value that is not in it
              (allowsCustomValue). ComboBox is Input — the user TYPES and the

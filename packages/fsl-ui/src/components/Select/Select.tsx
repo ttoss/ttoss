@@ -14,9 +14,10 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
-import { focusRingOutline } from '../../tokens/focusRing';
+import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import { buildFieldControlStyle, buildFieldRootStyle } from '../Field/anatomy';
 import { Icon } from '../Icon';
 
 // ---------------------------------------------------------------------------
@@ -133,12 +134,7 @@ export const Select = <T extends object = object>({
       {...props}
       data-scope="select"
       data-part="root"
-      style={{
-        boxSizing: 'border-box',
-        display: 'inline-flex',
-        flexDirection: 'column',
-        gap: vars.spacing.gap.stack.xs,
-      }}
+      style={buildFieldRootStyle()}
     >
       {({ isInvalid }) => {
         return (
@@ -161,48 +157,30 @@ export const Select = <T extends object = object>({
             <RACButton
               data-scope="select"
               data-part="trigger"
-              style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => {
+              style={({ isHovered, isDisabled, isFocusVisible }) => {
                 return {
-                  boxSizing: 'border-box',
+                  // The row, the floated focus ring and the declared reading
+                  // edge all come from the shared anatomy. Before it, this
+                  // trigger drew the ring flush at 0px where the rest of the
+                  // family floats it at 2px, and its value inherited
+                  // `text-align: center` from the `<button>` it is — so a
+                  // selected value sat centred one row above a start-aligned
+                  // input (visible in the Studio's invite dialog).
+                  ...buildFieldControlStyle({
+                    colors: c,
+                    isHovered,
+                    isDisabled,
+                    isFocusVisible,
+                    isInvalid,
+                  }),
+                  // What is the trigger's own: a row that pushes the chevron to
+                  // the far edge, and the pointer affordance.
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   gap: vars.spacing.gap.inline.sm,
-                  minHeight: vars.sizing.hit,
-                  // Tight block padding + small chevron keep the trigger on the
-                  // field row — the same 34px (desktop) as TextField and
-                  // ActionButton, because a row with mixed controls must align
-                  // (P3 slice 3).
-                  paddingBlock: vars.spacing.inset.control.sm,
-                  paddingInline: vars.spacing.inset.control.md,
-                  borderRadius: vars.radii.control,
-                  borderWidth: vars.border.outline.control.width,
-                  borderStyle: vars.border.outline.control.style,
-                  ...(vars.text.label.md as React.CSSProperties),
                   cursor: isDisabled ? 'not-allowed' : 'pointer',
                   opacity: isDisabled ? vars.opacity.disabled : undefined,
-                  backgroundColor: resolveInteractiveStyle(c?.background, {
-                    isDisabled,
-                    isInvalid,
-                    isHovered,
-                    isPressed,
-                  }),
-                  borderColor: resolveInteractiveStyle(c?.border, {
-                    isDisabled,
-                    isInvalid,
-                    isFocusVisible,
-                  }),
-                  color:
-                    resolveInteractiveStyle(c?.text, {
-                      isDisabled,
-                      isInvalid,
-                      isHovered,
-                      isPressed,
-                    }) ?? c?.text?.default,
-                  transitionProperty: 'background-color, border-color, color',
-                  transitionDuration: vars.motion.feedback.duration,
-                  transitionTimingFunction: vars.motion.feedback.easing,
-                  outline: focusRingOutline(isFocusVisible),
                 } as React.CSSProperties;
               }}
             >
@@ -326,7 +304,7 @@ export const SelectItem = ({ children, ...props }: SelectItemProps) => {
               isHovered,
             }) ?? c?.text?.default,
           outline: focusRingOutline(isFocusVisible),
-          outlineOffset: '2px',
+          outlineOffset: FOCUS_RING_OFFSET,
           transitionProperty: 'background-color, color',
           transitionDuration: vars.motion.feedback.duration,
           transitionTimingFunction: vars.motion.feedback.easing,

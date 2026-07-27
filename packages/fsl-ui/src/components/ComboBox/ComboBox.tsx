@@ -19,6 +19,11 @@ import type { ComponentMeta } from '../../semantics';
 import { fslVar } from '../../tokens/escapeHatch';
 import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import {
+  buildFieldFrameStyle,
+  buildFieldRootStyle,
+  buildFieldValueStyle,
+} from '../Field/anatomy';
 import { Icon } from '../Icon';
 
 // ---------------------------------------------------------------------------
@@ -85,58 +90,6 @@ type InputColors = typeof vars.colors.input.primary;
  * short viewports. Host-overridable per CONTRACT.md §7.
  */
 const LIST_MAX_HEIGHT = 'min(20rem, 60vh)';
-
-/** Control box (the `Group`) chrome — the framed field around input + trigger. */
-const buildControlBoxStyle = ({
-  c,
-  isDisabled,
-  isInvalid,
-  isFocusVisible,
-}: {
-  c: InputColors;
-  isDisabled?: boolean;
-  isInvalid?: boolean;
-  isFocusVisible?: boolean;
-}): React.CSSProperties => {
-  return {
-    boxSizing: 'border-box',
-    display: 'inline-flex',
-    alignItems: 'center',
-    minHeight: vars.sizing.hit,
-    borderRadius: vars.radii.control,
-    borderWidth: vars.border.outline.control.width,
-    borderStyle: vars.border.outline.control.style,
-    transitionProperty: 'background-color, border-color',
-    transitionDuration: vars.motion.feedback.duration,
-    transitionTimingFunction: vars.motion.feedback.easing,
-    backgroundColor: resolveInteractiveStyle(c?.background, {
-      isDisabled,
-      isInvalid,
-    }),
-    borderColor: resolveInteractiveStyle(c?.border, {
-      isDisabled,
-      isInvalid,
-      isFocusVisible,
-    }),
-    outline: focusRingOutline(isFocusVisible),
-  };
-};
-
-/** The `<input>` itself — borderless; the surrounding `Group` owns the frame. */
-const buildInputStyle = (c: InputColors): React.CSSProperties => {
-  return {
-    boxSizing: 'border-box',
-    flex: 1,
-    minWidth: 0,
-    border: 0,
-    background: 'transparent',
-    outline: 'none',
-    paddingBlock: vars.spacing.inset.control.sm,
-    paddingInline: vars.spacing.inset.control.md,
-    color: c?.text?.default,
-    ...(vars.text.label.md as React.CSSProperties),
-  };
-};
 
 /** Chevron button chrome — borderless Action-pattern control in Input chrome. */
 const buildTriggerStyle = ({
@@ -261,12 +214,7 @@ export const ComboBox = <T extends object = object>({
       {...props}
       data-scope="combo-box"
       data-part="root"
-      style={{
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: vars.spacing.gap.stack.xs,
-      }}
+      style={buildFieldRootStyle()}
     >
       {label != null && (
         <RACLabel
@@ -281,12 +229,17 @@ export const ComboBox = <T extends object = object>({
         </RACLabel>
       )}
 
+      {/*
+        The frame paints and hosts the trigger; `control` stays on the `<input>`
+        the user operates, so `[data-part="control"]` resolves something you can
+        type into (ADR-022, invariant #12).
+      */}
       <RACGroup
         data-scope="combo-box"
-        data-part="control"
+        data-part="frame"
         style={({ isDisabled, isInvalid, isFocusVisible }) => {
-          return buildControlBoxStyle({
-            c,
+          return buildFieldFrameStyle({
+            colors: c,
             isDisabled,
             isInvalid,
             isFocusVisible,
@@ -297,7 +250,7 @@ export const ComboBox = <T extends object = object>({
           data-scope="combo-box"
           data-part="control"
           placeholder={placeholder}
-          style={buildInputStyle(c)}
+          style={buildFieldValueStyle({ colors: c })}
         />
 
         <RACButton

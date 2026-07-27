@@ -647,22 +647,36 @@ describe('contract: utility triggers share the field row', () => {
 // ---------------------------------------------------------------------------
 
 describe('contract: the field family reads one row', () => {
-  const ROW_MEMBERS: ReadonlyArray<readonly [string, string, string]> = [
+  // A *self-painted* member resolves the whole row on one element. A *split*
+  // member spreads it across two: the frame owns the floor, the radius, the
+  // border and the ring, while the value owns the insets and the reading edge —
+  // a frame that also padded would double the gap on the reading edge. So the
+  // invariant asks each shape for the half it is responsible for; asking both
+  // for all six is what would make a correct split control look broken.
+  const SELF_PAINTED: ReadonlyArray<readonly [string, string, string]> = [
     ['TextFieldControl', 'TextFieldControl', 'text-field'],
     ['TextAreaControl', 'TextAreaControl', 'text-area'],
+    ['Select trigger', 'Select', 'select'],
   ];
 
-  test.each(ROW_MEMBERS)(
-    '%s resolves the row from FIELD_ROW',
+  const SPLIT: ReadonlyArray<readonly [string, string, string]> = [
+    ['ComboBox', 'ComboBox', 'combo-box'],
+  ];
+
+  const styleOf = (selector: string): CSSStyleDeclaration => {
+    const el = document.querySelector<HTMLElement>(selector);
+
+    expect(el).not.toBeNull();
+
+    return (el as HTMLElement).style;
+  };
+
+  test.each(SELF_PAINTED)(
+    '%s resolves the whole row from FIELD_ROW',
     (_label, fixtureName, scope) => {
       const { unmount } = render(DOM_FIXTURES[fixtureName].element());
-      const el = document.querySelector<HTMLElement>(
-        `[data-scope="${scope}"][data-part="control"]`
-      );
-
-      expect(el).not.toBeNull();
-
-      const style = (el as HTMLElement).style;
+      const part = scope === 'select' ? 'trigger' : 'control';
+      const style = styleOf(`[data-scope="${scope}"][data-part="${part}"]`);
 
       expect(style.minHeight).toBe(vars.sizing.hit);
       expect(style.paddingBlock).toBe(FIELD_ROW.insetBlock);
@@ -671,8 +685,27 @@ describe('contract: the field family reads one row', () => {
       // The reading edge is declared, never inherited: the host element's UA
       // default decides it otherwise, and `<input>` and `<button>` disagree.
       expect(style.textAlign).toBe('start');
-      // The focus ring floats off the edge on every member (S2's 2px gap).
       expect(style.outlineOffset).toBe(FOCUS_RING_OFFSET);
+
+      unmount();
+    }
+  );
+
+  test.each(SPLIT)(
+    '%s spreads the row across its frame and its value',
+    (_label, fixtureName, scope) => {
+      const { unmount } = render(DOM_FIXTURES[fixtureName].element());
+
+      const frame = styleOf(`[data-scope="${scope}"][data-part="frame"]`);
+      const value = styleOf(`[data-scope="${scope}"][data-part="control"]`);
+
+      expect(frame.minHeight).toBe(vars.sizing.hit);
+      expect(frame.borderRadius).toBe(FIELD_ROW.radius);
+      expect(frame.outlineOffset).toBe(FOCUS_RING_OFFSET);
+
+      expect(value.paddingBlock).toBe(FIELD_ROW.insetBlock);
+      expect(value.paddingInline).toBe(FIELD_ROW.insetInline);
+      expect(value.textAlign).toBe('start');
 
       unmount();
     }
@@ -701,7 +734,6 @@ describe('contract: (scope, part) is unique per subtree', () => {
   const KNOWN_NESTED_PAIRS: ReadonlySet<string> = new Set([
     'search-field/control', // P3 Slice 5 ③ — adornment anatomy
     'number-field/control', // P3 Slice 5 ④ — frame/value split
-    'combo-box/control', //   P3 Slice 5 ② — frame/value split
     // Found by this invariant, not by the browser audit that preceded it: the
     // popover and every row both resolve `menu/root`, because §5 has sub-parts
     // reuse the host's scope while `MenuItem` also declares `structure: 'root'`.

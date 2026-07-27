@@ -253,11 +253,27 @@ both modes → commit.
   reading. That is the F-024 / F-029 axis a third time: the tree has no quiet
   in-context rung. Decide it there, not by having one component reach across.
 - **B4. `contextualHelp`.** A slot beside the label, in S2's prop shape.
-- **C. `Select` + `ComboBox`.** Geometry onto the anatomy; F-009 closed by the
-  envelope; F-019 via a named allowlist of RAC-published positioning vars
-  (→ ADR-023) so the popover sizes to the frame; the flush focus ring; the
-  centred value; option-row height against S2. Closes `combo-box/control` in
-  invariant #12.
+- **C1. ✅ `Select` + `ComboBox` onto the anatomy (2026-07-26).** One refactor,
+  five measured defects closed: `Select`'s root was `inline-flex` so it alone
+  never filled its column (97.98px against its siblings' 1200px); its trigger drew
+  the focus ring **flush at 0px** where the family floats it at 2px, as did
+  `ComboBox`'s frame; its value inherited `text-align: center` from the `<button>`
+  it is, so a selected value sat centred one row above a start-aligned input —
+  live in the Studio's invite dialog; and `combo-box/control` named both the frame
+  and the inner input, the last of invariant #12's field violations to fall.
+  Invariant #11 grew to cover both control shapes: a self-painted member resolves
+  the whole row on one element, a split member spreads it across frame and value,
+  because a frame that also padded would double the gap on the reading edge.
+- **C2. `Select` gains `description` + `errorMessage` (F-009).** The envelope
+  closes it; `ComboBox` already has both.
+- **C3. F-019 — the popover sizes to the frame.** Needs the named allowlist of
+  RAC-published positioning vars (→ ADR-023). Measured: **158.69px of popover
+  under a 305.63px field** in the Studio, where it also overlays the description;
+  **142.88px against 1200px** in Storybook.
+- **C4. Option row height + the quiet-fill revisit.** Rows measure **44px**
+  against the field row's 34px. Slice 3 deferred S2's quiet-fill Picker surface
+  with "revisit with ComboBox" — this is that revisit; if it resurfaces F-024 /
+  F-029, it is an owner stop.
 - **D. `SearchField` + `NumberField`.** Adornment parts and the
   `EMBEDDED_TRIGGER` silhouette, so the measured 20 / 25.33 / 32 px triggers
   become one number; the frame/value split closes the last two #12 violations.
