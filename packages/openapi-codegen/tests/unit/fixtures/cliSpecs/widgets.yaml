@@ -1,0 +1,42 @@
+openapi: 3.0.3
+tags:
+  - name: Widgets
+paths:
+  /projects/{project_id}/widgets:
+    parameters:
+      - name: project_id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: listWidgets
+      tags: [Widgets]
+      summary: List widgets
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: ok
+    post:
+      operationId: createWidget
+      tags: [Widgets]
+      description: Create a new widget
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  description: Widget name
+                color:
+                  type: string
+                  description: Widget color
+components: {}
