@@ -6,7 +6,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
-import { focusRingOutline } from '../../tokens/focusRing';
+import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 
 // ---------------------------------------------------------------------------
@@ -55,7 +55,7 @@ const TRACK_STYLE_STATIC = {
   transitionProperty: 'background-color, border-color',
   transitionDuration: vars.motion.feedback.duration,
   transitionTimingFunction: vars.motion.feedback.easing,
-  outlineOffset: '2px',
+  outlineOffset: FOCUS_RING_OFFSET,
 } satisfies React.CSSProperties;
 
 /** Sliding-track style (state-dependent background/border + focus ring). */

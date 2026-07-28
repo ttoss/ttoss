@@ -12,7 +12,7 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 
 ## Open items (derived — the entry below is always the source of truth)
 
-Twenty open, grouped by the _kind of decision_ each one needs rather than by
+Nineteen open, grouped by the _kind of decision_ each one needs rather than by
 severity, because that is what makes a review round plannable. Regenerate with
 `grep -c '^- .*Status:\*\* open' FRICTION.md`, which counts entry lines only —
 **not** by grepping the bare phrase, because that also matches the sentence
@@ -44,7 +44,6 @@ Do not edit an entry through this list.
 | #     | What                                                                                                                                                                                                                                                                                                         |
 | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | F-026 | `data-part="control"` on two nested elements — measured in three components, not one. The class guard exists (invariant #12, P3 Slice 5 ⓠ). **`ComboBox` fixed** (forms C1: the frame is `data-part="frame"`, `control` stays on the operated input); `SearchField` and `NumberField` remain, and fall in D. |
-| F-030 | A composite sub-part that is its own root collides with its host's root: `menu/root` addresses the popover **and** every row. §5's scope-reuse convention vs `MenuItem.structure`.                                                                                                                           |
 | F-028 | `Toolbar` claims `role="toolbar"` but is not a single tab stop — `useToolbar` cannot manage arbitrary children's `tabindex`. Either upstream fixes it or we own a roving model for _all_ children.                                                                                                           |
 
 | F-033 | A standalone/required `Checkbox` or `Switch` turns invalid (measured `aria-invalid`) but has **no message part** — parts are `root, selectionControl, label`. F-009's shape, one family over. |
@@ -286,7 +285,8 @@ Do not edit an entry through this list.
 
 ### F-030 — a composite sub-part that is itself a root collides with its host's root
 
-- **Date:** 2026-07-26 · **Surface:** `@ttoss/fsl-ui` `Menu` / `MenuItem` vs `CONTRACT.md` §5 · **Severity:** gap · **Status:** open
+- **Date:** 2026-07-26 · **Surface:** `@ttoss/fsl-ui` `Menu` / `MenuItem` vs `CONTRACT.md` §5 · **Severity:** gap · **Status:** ✅ fixed (2026-07-28 — forms round R3)
+- **Action (round R3):** `MenuItem.structure` moves `root` → **`control`**, and its `data-part` with it. No taxonomy change was needed: `control` is already legal on Action, and it is the more accurate word besides — ADR-022 settled that `control` names the element the user operates, and a menu row is exactly that. Verified in the browser: three rows resolve `[data-scope="menu"][data-part="control"]`, exactly one element resolves `menu/root` (the popover), and no root nests a root. It **is** a change to a published attribute, taken because the attribute it replaces is the ambiguous one; the alternative — admitting `item` to `ENTITY_STRUCTURE.Action` — grows the vocabulary for one component and is the weaker answer. Invariant #12's known-violations list is down to the two `SearchField`/`NumberField` cases item D removes.
 - Found by contract invariant #12 the moment it was written (P3 Slice 5 ⓠ), **not** by the browser audit that preceded it — that audit only probed the field stories, so a defect one family over went unseen. `[data-scope="menu"][data-part="root"]` resolves **both** the popover and every row: §5 has composite sub-parts reuse the host's `data-scope`, while `MenuItem` also declares `structure: 'root'` because it is its own component root. Nothing is mislabelled; the convention and the meta are each correct alone.
 - **Why it matters where F-026 matters:** the pair is the package's addressing scheme. A host stylesheet targeting the popover also hits every row, and an agent told to activate a menu item cannot resolve one.
 - **Not the same cause as F-026.** There, one component names two nested elements `control` by hand; here, two independently correct declarations collide through the scope-reuse convention. So the fix is a §5 rule, not a component edit — which is why it is filed rather than patched inside a Slice-5 field item.

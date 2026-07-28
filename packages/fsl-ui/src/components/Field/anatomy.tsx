@@ -55,6 +55,19 @@ type InputColors = typeof vars.colors.input.primary;
  * The field row. Every field control resolves its box from exactly these four
  * tokens, so the row is one decision — and a utility Action trigger reads the
  * same set from `UTILITY_SILHOUETTE`.
+ *
+ * **The row is these tokens, not a pixel height.** Its visible height is fluid,
+ * because `inset.control.sm` is container-fluid
+ * (`clamp(4px, 0.25cqi + 3px, 6px)`) while `sizing.hit` is rem-anchored: measured
+ * at 390 / 900 / 1280 / 1920, a field comes out **32 / 32.5 / 34 / 34px**. The
+ * "34px field row" quoted around this package is the top of that ramp, true above
+ * roughly 1200px and nowhere else (F-035 — whether the inset should be fluid at
+ * all is ADR-019's ruling not reaching far enough, and is decided with F-021).
+ *
+ * That is why every contract invariant on this row — #10, #11, #13 — asserts
+ * **token identity** and never a measured pixel. jsdom has no layout, so it could
+ * not assert pixels anyway; the point is that it should not, because the pixel is
+ * derived and the tokens are the decision.
  */
 export const FIELD_ROW = {
   /** Corner radius of the painted box. */

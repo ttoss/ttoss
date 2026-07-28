@@ -7,7 +7,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
-import { focusRingOutline } from '../../tokens/focusRing';
+import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import {
@@ -60,7 +60,7 @@ const BOX_STYLE_STATIC = {
   transitionProperty: 'background-color, border-color, border-width',
   transitionDuration: vars.motion.feedback.duration,
   transitionTimingFunction: vars.motion.feedback.easing,
-  outlineOffset: '2px',
+  outlineOffset: FOCUS_RING_OFFSET,
 } satisfies React.CSSProperties;
 
 /** Box (selectionControl) style — the visual checkbox square. */

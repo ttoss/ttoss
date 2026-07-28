@@ -216,13 +216,24 @@ Menu.displayName = menuMeta.displayName;
 /**
  * Formal semantic identity — a single menu action (Layer 1).
  *
- * Entity = Action. Structure is `root` — a MenuItem is the root of its own
- * Action identity, nested inside the menu's `data-scope="menu"`.
+ * Entity = Action, structure `control` — **not** `root`, and the reason is
+ * F-030. A composite sub-part reuses its host's `data-scope` (CONTRACT §5), so
+ * a `MenuItem` declaring `root` made `[data-scope="menu"][data-part="root"]`
+ * resolve the popover **and** every row: no selector could address either one.
+ * Nothing was mislabelled — the convention and the meta were each defensible
+ * alone — but the pair produced an unaddressable anatomy, which invariant #12
+ * exists to forbid.
+ *
+ * `control` is legal on Action and is the more accurate word besides: ADR-022
+ * settled that `control` names the element the user operates, and a menu row is
+ * exactly that. So the fix needed no taxonomy change. It **is** a change to a
+ * published attribute, taken because the attribute it replaces is the ambiguous
+ * one.
  */
 export const menuItemMeta = {
   displayName: 'MenuItem',
   entity: 'Action',
-  structure: 'root',
+  structure: 'control',
 } as const satisfies ComponentMeta<'Action'>;
 
 /**
@@ -297,7 +308,7 @@ export const MenuItem = ({
     <RACMenuItem
       {...props}
       data-scope="menu"
-      data-part="root"
+      data-part="control"
       data-evaluation={evaluation}
       data-consequence={consequence}
       data-composition={composition}

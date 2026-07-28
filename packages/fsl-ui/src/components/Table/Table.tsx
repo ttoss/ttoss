@@ -16,7 +16,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
-import { focusRingOutline } from '../../tokens/focusRing';
+import { FOCUS_RING_INSET, focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import { Icon } from '../Icon';
 
@@ -196,7 +196,7 @@ export const TableColumn = ({ children, ...props }: TableColumnProps) => {
             .style as React.CSSProperties['borderBlockEndStyle'],
           borderBlockEndColor: colors?.border?.default ?? 'transparent',
           outline: focusRingOutline(isFocusVisible),
-          outlineOffset: '-2px',
+          outlineOffset: FOCUS_RING_INSET,
         };
       }}
     >
@@ -292,7 +292,7 @@ export const TableRow = <T extends object = object>(
             isSelected,
           }),
           outline: focusRingOutline(isFocusVisible),
-          outlineOffset: '-2px',
+          outlineOffset: FOCUS_RING_INSET,
         };
       }}
     />
@@ -326,7 +326,7 @@ export const TableCell = (props: TableCellProps) => {
             .style as React.CSSProperties['borderBlockEndStyle'],
           borderBlockEndColor: colors?.border?.default ?? 'transparent',
           outline: focusRingOutline(isFocusVisible),
-          outlineOffset: '-2px',
+          outlineOffset: FOCUS_RING_INSET,
         };
       }}
     />

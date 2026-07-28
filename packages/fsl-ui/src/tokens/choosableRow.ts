@@ -32,9 +32,12 @@ import { FOCUS_RING_INSET } from './focusRing';
  * `menu-item-top-to-selected-icon-medium` + a 10px `checkmark-icon-size-100` +
  * 11px = **32px desktop**, and 13 + 14 + 13 = **40px mobile**, the same ramp a
  * field's height comes from. So an option row is the field row's content box:
- * the field adds a 1px border on each edge and comes out at 34px, the row draws
- * no border and comes out at 32px, and both resolve from the same inset and the
- * same type.
+ * the field adds a 1px border on each edge, the row draws none, and both resolve
+ * from the same inset and the same type. The pixels in the table above are
+ * measured at 1280px and are the **top of a ramp** — the control inset is
+ * container-fluid, so the pair reads 32/34 there and collapses to 32/32 at 390px
+ * where both meet the `hit` floor (F-035). The rule is the tokens; the numbers
+ * are what they produced on the day the class was measured.
  *
  * The floor matters for the same reason it matters on a field: `hit` is the
  * ergonomic minimum, so a row whose content is shorter than a line of text is

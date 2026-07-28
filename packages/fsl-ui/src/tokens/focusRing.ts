@@ -26,18 +26,31 @@ import { vars } from '@ttoss/fsl-theme/vars';
 export const FOCUS_RING_OFFSET = '2px';
 
 /**
- * Offset for a ring that must stay **inside** its own box — a row in a
- * scrolling or clipped surface (a picker option, a menu row, a list row).
+ * Offset for a ring that must stay **inside** its own box, because outside the
+ * box there is nowhere for it to go.
  *
  * Derived from the ring's own thickness rather than written as a literal,
  * because the arithmetic is the guarantee: a ring needs `offset + width` px of
- * room outside the box, so at `offset = -width` it needs **none** and cannot be
- * clipped at any scroll position. A hand-picked inset does not carry that
- * property, and this is not theoretical — measured in the `ComboBox` list with
- * the options scrolled, the focused row sits **0.11px** from the viewport edge
- * against a 4px ring extent, so the floated `+2px` ring was cut off; `-1px`,
- * the other inset in use, still needs 1px and still clips there. Only the
- * negated width is safe, and it stays safe if the theme changes the width.
+ * room outside the box, so at `offset = -width` it needs **none**. A hand-picked
+ * inset does not carry that property — which is why the package had two of them,
+ * one of which was too small.
+ *
+ * Three mechanisms leave a ring with no room, and every one was measured rather
+ * than assumed:
+ *
+ *   *scrolling* — the focused option in a scrolled `ComboBox` list sits
+ *   **0.11px** from the viewport edge, so the floated `+2px` ring (4px of extent)
+ *   was cut off, and `-1px` (1px of extent) still would be.
+ *
+ *   *clipped* — `Accordion` and `Disclosure` set `overflow: hidden` on their
+ *   root, so a trigger's ring is trimmed at the item's edge.
+ *
+ *   *flush* — a `Table` row spans its table and sits **1px** from its edge
+ *   (`overflow: visible`, `border-radius: 12px`), so a floated ring would be
+ *   drawn over the table's own border and outside its rounded corner.
+ *
+ * Only the negated width survives all three, and it keeps surviving if the theme
+ * changes the ring's thickness.
  */
 export const FOCUS_RING_INSET = `calc(-1 * ${vars.focus.ring.width})`;
 

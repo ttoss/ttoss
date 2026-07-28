@@ -417,6 +417,33 @@ describe('contract: escape hatches (§7)', () => {
     }
   );
 
+  // The focus ring's two offsets are constants, and a literal beside them is how
+  // the package ended up with four different row insets — `2px` via the constant,
+  // `2px` twice hand-written, `-1px`, `-2px` — one of which was measured clipping.
+  // The values are identical today, which is exactly why nothing caught it: a
+  // literal that happens to match is indistinguishable from one that tracks, until
+  // the theme changes the ring's thickness and only the derived one follows.
+  const OUTLINE_OFFSET_LITERAL = /outlineOffset:\s*['"`]/;
+
+  test.each(componentSources)(
+    '%s reads focus-ring offsets from the constants, never a literal',
+    (_path, source) => {
+      expect(stripComments(source)).not.toMatch(OUTLINE_OFFSET_LITERAL);
+    }
+  );
+
+  test('the two offsets are distinct, and the inset is derived from the ring width', async () => {
+    const { FOCUS_RING_INSET: inset, FOCUS_RING_OFFSET: offset } =
+      await import('src/tokens/focusRing');
+
+    // A ring needs `offset + width` px of room outside its box. The floated one
+    // asks for room; the inset one asks for none, by construction rather than by
+    // a chosen number — so it holds if the theme changes the thickness.
+    expect(inset).toBe(`calc(-1 * ${vars.focus.ring.width})`);
+    expect(inset).not.toBe(offset);
+    expect(offset).not.toMatch(/calc/);
+  });
+
   test('fslVar output always contains the fallback', async () => {
     const { fslVar } = await import('src/tokens/escapeHatch');
     expect(fslVar('--fsl-dialog-max-width', 'min(500px, 90vw)')).toBe(
@@ -845,9 +872,9 @@ describe('contract: the field family reads one row', () => {
 // ---------------------------------------------------------------------------
 
 describe('contract: the choosable row is one decision', () => {
-  // `[scope, fixture, selector]`. Menu's row is selected by role because
-  // `MenuItem` publishes `data-part="root"` — the same pair as its popover,
-  // which is F-030; the guard reads through it rather than around it.
+  // `[scope, fixture, selector]`. Menu's row was selected by role while
+  // `MenuItem` published `data-part="root"` — the same pair as its popover
+  // (F-030). That is fixed, so it is addressed like every other row.
   const ROWS: ReadonlyArray<readonly [string, string, string]> = [
     ['SelectItem', 'SelectItem', '[data-scope="select"][data-part="item"]'],
     [
@@ -861,7 +888,7 @@ describe('contract: the choosable row is one decision', () => {
       'GridListItem',
       '[data-scope="grid-list"][data-part="item"]',
     ],
-    ['MenuItem', 'MenuItem', '[role="menuitem"]'],
+    ['MenuItem', 'MenuItem', '[data-scope="menu"][data-part="control"]'],
   ];
 
   test.each(ROWS)(
@@ -933,11 +960,6 @@ describe('contract: (scope, part) is unique per subtree', () => {
   const KNOWN_NESTED_PAIRS: ReadonlySet<string> = new Set([
     'search-field/control', // P3 Slice 5 ③ — adornment anatomy
     'number-field/control', // P3 Slice 5 ④ — frame/value split
-    // Found by this invariant, not by the browser audit that preceded it: the
-    // popover and every row both resolve `menu/root`, because §5 has sub-parts
-    // reuse the host's scope while `MenuItem` also declares `structure: 'root'`.
-    // A different family and a different cause from the three above — F-030.
-    'menu/root',
   ]);
 
   const nestedPairs = (root: ParentNode): string[] => {

@@ -457,7 +457,7 @@ flat would invite exactly the build the discipline exists to prevent.
 
 ### R — actionable now: no consumer, no decision, real defects
 
-- **R1. The field row's height is fluid, and the docs state it as a fixed 34px.**
+- **R1. ✅ The field row's height is fluid, and the docs stated it as a fixed 34px.**
   Measured in Chromium at 390 / 900 / 1280 / 1920:
   `--tt-spacing-inset-control-sm` is `calc(1 * clamp(4px, 0.25cqi + 3px, 6px))`,
   so it resolves **4px / 5.25px / 6px / 6px**, while `--tt-sizing-hit` is
@@ -476,7 +476,7 @@ flat would invite exactly the build the discipline exists to prevent.
   container-fluid at all. ADR-019 ruled control _geometry_ non-fluid and the inset
   escaped the ruling, which is F-021's shape one property over → filed as **F-035**
   and packaged with the owner set below.
-- **R2. `outlineOffset` literals: nine left, and they are how C4's four-way split
+- **R2. ✅ `outlineOffset` literals: nine left, and they are how C4's four-way split
   happened.** `Switch`, `Toast`, `RadioGroup`, `Checkbox` write `'2px'`;
   `Disclosure`, `Accordion` and `Table` (×3) write `'-2px'`. Each duplicates one of
   the two constants — and `'-2px'` only equals `FOCUS_RING_INSET` while the theme's
@@ -486,7 +486,7 @@ flat would invite exactly the build the discipline exists to prevent.
   **no component source may write an `outlineOffset` literal**, so the next one
   cannot enter. Without that guard this list regrows, which is the whole history of
   the two constants.
-- **R3. F-030 — `menu/root` addresses the popover _and_ every row.** Guarded by
+- **R3. ✅ F-030 — `menu/root` addressed the popover _and_ every row.** Guarded by
   invariant #12 as a named violation since Slice 5 ⓠ. It is resolvable **without a
   taxonomy change**: `MenuItem` is `Action`/`root`, and `control` is already legal
   on Action, so moving its structure to `control` both removes the collision and
@@ -497,7 +497,7 @@ flat would invite exactly the build the discipline exists to prevent.
   invariant #12's anti-stale companion will force the entry out of the list the
   moment it is fixed. _Alternative:_ admit `item` to `ENTITY_STRUCTURE.Action`,
   which grows the vocabulary for one component and is the weaker answer.
-- **R4. A doc correction of my own.** The C2 ROADMAP entry cites **F-027** for
+- **R4. ✅ A doc correction of my own.** The C2 ROADMAP entry cited **F-027** for
   "Storybook does not follow `prefers-color-scheme`". F-027 is the theme's
   border-contrast inventory auditing only the light bundle — a different fact.
   _Fix:_ drop the citation and record the harness fact where the other harness
@@ -505,12 +505,33 @@ flat would invite exactly the build the discipline exists to prevent.
   root attribute, so `colorScheme` on a Playwright context is **not** enough to
   measure the dark bundle; set `data-tt-mode` explicitly. Every dark measurement in
   C2's first pass was taken before this was understood and had to be retaken.
-- **R5. The FRICTION index count is self-matching.** Line 17 tells a reader to
+- **R5. ✅ The FRICTION index count was self-matching.** Line 17 told a reader to
   regenerate the count by grepping `Status:** open` — and that instruction line
   matches its own grep, so the count is always one high. It has been wrong twice
   in this queue for that reason (there are **19** open entries, not twenty).
   _Fix:_ count `### F-` headers whose entry is open, or word the instruction so it
   does not match itself.
+
+**Round R landed 2026-07-28.** All five in one commit, with no behaviour change
+outside R3's published attribute. Three things the round itself produced:
+
+- The `-2px` insets turned out to have **three** distinct mechanisms behind them,
+  not one, and each was measured rather than assumed: _scrolling_ (a `ComboBox`
+  option 0.11px from a scrolled viewport edge), _clipped_ (`Accordion` and
+  `Disclosure` set `overflow: hidden` on their root), and _flush_ (a `Table` row
+  sits 1px from a table edge with a 12px radius and `overflow: visible`, so a
+  floated ring would be drawn over the border and outside the corner).
+  `FOCUS_RING_INSET`'s doc names all three, because "clipped or scrolling" — what
+  it said after C4 — would have been wrong for the Table.
+- **R3 cost nothing in the taxonomy and its two test consumers survived
+  untouched**, because both query the _popover_. That is the check that made the
+  break safe to take: the only readers of `menu/root` wanted the element that
+  keeps it.
+- The offset guard is the durable half of R2. The nine literals were
+  byte-identical to the constants, verified in the browser at every site — which
+  is precisely why nothing had caught them: a literal that happens to match is
+  indistinguishable from one that tracks until the theme changes the ring's
+  thickness, and only the derived one follows.
 
 ### C — deferred: the fix is a consumer, not code. Do not build these in the round
 
@@ -620,3 +641,13 @@ Playwright resolves only from the repo root and uses
 its `storybook-llms-extractor` post-step wants `chrome-headless-shell` version
 `-1223` while the container ships `-1194`; verified identical on a clean tree,
 and `playwright install` must never be run.
+
+**Storybook does not follow `prefers-color-scheme`.** Its preview reads the
+theme's own root attribute, so a Playwright context's `colorScheme` is not enough
+to measure the dark bundle — set `data-tt-mode` on `document.documentElement`
+explicitly, and the same applies to the Studio, which owns its mode through a
+toggle. Every "verified in both modes" claim taken with `colorScheme` alone
+measured the light bundle twice; C2's first pass did exactly that and was retaken.
+This is a harness fact and **not** F-027, which is the theme's border-contrast
+inventory auditing only the light bundle — a different thing that the C2 entry
+originally cited here by mistake.

@@ -15,7 +15,7 @@ import {
 
 import { Icon } from '../../components/Icon';
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
-import { focusRingOutline } from '../../tokens/focusRing';
+import { FOCUS_RING_INSET, focusRingOutline } from '../../tokens/focusRing';
 import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import { createCompositeScope } from '../scope';
@@ -328,7 +328,7 @@ export const AccordionTrigger = ({
             transitionDuration: vars.motion.transition.enter.duration,
             transitionTimingFunction: vars.motion.transition.enter.easing,
             outline: focusRingOutline(isFocusVisible),
-            outlineOffset: '-2px',
+            outlineOffset: FOCUS_RING_INSET,
           } as React.CSSProperties;
         }}
       >

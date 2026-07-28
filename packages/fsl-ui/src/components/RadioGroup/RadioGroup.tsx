@@ -8,7 +8,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
-import { focusRingOutline } from '../../tokens/focusRing';
+import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import {
   FieldDescriptionPart,
@@ -162,7 +162,7 @@ const RADIO_BOX_STATIC = {
   transitionProperty: 'background-color, border-color, border-width',
   transitionDuration: vars.motion.feedback.duration,
   transitionTimingFunction: vars.motion.feedback.easing,
-  outlineOffset: '2px',
+  outlineOffset: FOCUS_RING_OFFSET,
 } satisfies React.CSSProperties;
 
 /** Circular radio-indicator style (state-dependent chrome + focus ring). */

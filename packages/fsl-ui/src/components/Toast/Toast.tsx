@@ -12,7 +12,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
-import { focusRingOutline } from '../../tokens/focusRing';
+import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import { Icon } from '../Icon';
 
@@ -100,7 +100,7 @@ const buildCloseTriggerStyle = ({
     cursor: isDisabled ? 'not-allowed' : 'pointer',
     opacity: isDisabled ? vars.opacity.disabled : undefined,
     outline: focusRingOutline(isFocusVisible),
-    outlineOffset: '2px',
+    outlineOffset: FOCUS_RING_OFFSET,
   };
 };
 
