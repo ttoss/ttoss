@@ -23,7 +23,7 @@ const packagesDir = path.resolve(websiteDir, '../../packages');
  * Packages excluded from API doc generation (documented manually or without a
  * public API surface worth generating).
  */
-const excludedPackages = ['eslint-config'];
+const excludedPackages = ['eslint-config', 'fsl-bench'];
 
 /**
  * Returns the list of package directory names that should have API docs
