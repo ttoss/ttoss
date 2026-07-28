@@ -134,7 +134,8 @@ export const RightSidebar = () => {
         position: 'relative',
         flexDirection: 'column',
         gap: '4',
-        width: '256px',
+        // Fills the full-width overlay on mobile; fixed panel on larger screens.
+        width: ['100%', '256px'],
         height: '100%',
         flexShrink: 0,
         paddingX: '4',

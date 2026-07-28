@@ -69,7 +69,8 @@ export const LeftSidebar = () => {
         position: 'relative',
         flexDirection: 'column',
         gap: '5',
-        width: '300px',
+        // Fills the full-width overlay on mobile; fixed panel on larger screens.
+        width: ['100%', '300px'],
         height: '100%',
         flexShrink: 0,
         paddingX: '4',
