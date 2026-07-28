@@ -13,8 +13,11 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 ## Open items (derived — the entry below is always the source of truth)
 
 Twenty open, grouped by the _kind of decision_ each one needs rather than by
-severity, because that is what makes a review round plannable. Regenerate by
-grepping `Status:** open`; do not edit an entry through this list.
+severity, because that is what makes a review round plannable. Regenerate with
+`grep -c '^- .*Status:\*\* open' FRICTION.md`, which counts entry lines only —
+**not** by grepping the bare phrase, because that also matches the sentence
+telling you to grep it, which made this count one too high twice.
+Do not edit an entry through this list.
 
 **Needs an owner decision on the colour/type model** — measured, options written, nothing to build until one is picked:
 
@@ -24,6 +27,7 @@ grepping `Status:** open`; do not edit an entry through this list.
 | F-029 | Same question for a valence: a destructive menu row has no "negative **ink** on a surface" rung, so it either looks like every other row or fills red. Four candidate shapes written.                                                          | `Overlay/ActionMenu`, any mode                                         |
 | F-027 | The border-vs-background contrast inventory audits the **light** bundle only; the dark alternate has ~90 undecided sub-threshold contexts, which is the hole that let a dark-mode collapse in.                                                 | `colors.test.ts` reads `entry.base`, never `entry.alt`                 |
 | F-021 | Control **type** is container-fluid, so it shrinks in narrow containers while the hit target grows for touch. ADR-019 settled this for control _geometry_ and never extended the ruling to type.                                               | measured 14–16px across the range                                      |
+| F-035 | Control **inset** is container-fluid too, so the field row's height is fluid (32 / 32.5 / 34) although its floor is rem-anchored. Same ruling, one property over — decide with F-021.                                                          | measured at 390 / 900 / 1280 / 1920                                    |
 
 **Component gaps — something to build, scope already understood:**
 
@@ -326,3 +330,12 @@ grepping `Status:** open`; do not edit an entry through this list.
 - **What the reference does differently:** Spectrum's token set has **no** ring for a menu row. It has `menu-item-background-color-keyboard-focus` alongside `-hover`, `-down` and `-default`, plus `menu-item-background-opacity: 0` — so a focused row is marked by its **fill**, in the same dimension as hover, and the ring is reserved for controls that stand on their own. That is a coherent model: inside a list, focus and hover are the same kind of signal (which row am I on), and a ring drawn inside a 32px row competes with the row's own rounded box.
 - **Why not changed here:** it is a change to the focus _language_, not to a row's geometry, and it applies to every row-bearing component at once. It also needs a decision our colour model does not currently have: a `focused` background rung distinct from `hover` in the `input` subtree, so that focus and hover are distinguishable when both are true. `resolveInteractiveStyle` already resolves `focusVisible` for `border`, never for `background`.
 - **Backlog:** decide whether a row's focus signal moves from ring to fill, which needs `input.*.background.focused` (or an explicit ruling that hover's value is reused). Related to F-031 — both are questions about which state wins in the cascade rather than about a component.
+
+### F-035 — the control inset is container-fluid, so the field row's height is fluid although its floor is not
+
+- **Date:** 2026-07-28 · **Surface:** `@ttoss/fsl-theme` `spacing.inset.control.*` vs ADR-019's non-fluid ruling · **Severity:** paper-cut · **Status:** open
+- Found while dismissing a suspected regression in forms C4: a `Select` trigger measured 32.5px at a 900px viewport where every doc says the field row is 34px. It was not a regression — `TextField` measured identically — but the number in the docs is not the number on screen at most widths.
+- **Measured** at 390 / 900 / 1280 / 1920: `--tt-spacing-inset-control-sm` is `calc(1 * clamp(4px, 0.25cqi + 3px, 6px))` and resolves **4px / 5.25px / 6px / 6px**, while `--tt-sizing-hit` is `clamp(32px, 2rem, 36px)` and resolves **32px throughout**. So the field row measures **32 / 32.5 / 34 / 34**: its ergonomic floor is rem-anchored exactly as ADR-019 ruled, and its visible height rides a container-fluid inset.
+- **This is F-021's shape one property over.** ADR-019/020 ruled that control _geometry_ is not container-fluid; F-021 records that the ruling was never extended to control _type_. The **inset** is geometry by any reading, and it escaped the ruling too — so "control geometry is not fluid" is currently true of the floor and false of the box.
+- **Consequence beyond documentation:** a row and a field are meant to differ by exactly the 1px border per edge the field draws (32 vs 34). That holds where content clears the floor and collapses to a 0px difference at 390px, where both bottom out at `hit`. Any invariant phrased in pixels rather than in tokens is therefore viewport-conditional — which is why contract invariants #10, #11 and #13 all assert **token identity** and never a pixel, and that choice is now load-bearing rather than stylistic.
+- **Backlog:** fold into F-021's ADR (extending ADR-019 from control geometry to the properties that actually determine a control's box). Either the control inset becomes rem-anchored like `hit`, or the ruling is narrowed in writing to "the floor is not fluid" and the docs stop quoting a fixed pixel height. Until then, the doc fix is to state the ramp — tracked as R1 in `INTERNAL/FORMS.md` §4b.

@@ -443,6 +443,131 @@ both modes → commit.
 - **I. The Studio's complete form.** A Meridian flow exercising every capability
   end to end — the proving ground and the regression surface.
 
+## 4b. The round before D — everything open, sorted by what unblocks it
+
+Written 2026-07-28 after C closed, at the owner's request: one pass over
+everything this queue deferred or newly found, so the remainder is decided before
+item D starts rather than during it.
+
+**The sort is the point.** These are not one backlog. Three rows need nothing but
+work; several need a _consumer_ and building them without one is the reserved API
+§2.3 forbids and this plan has already refused four times; the rest need a
+decision only the owner can make about the colour and type model. Presenting them
+flat would invite exactly the build the discipline exists to prevent.
+
+### R — actionable now: no consumer, no decision, real defects
+
+- **R1. The field row's height is fluid, and the docs state it as a fixed 34px.**
+  Measured in Chromium at 390 / 900 / 1280 / 1920:
+  `--tt-spacing-inset-control-sm` is `calc(1 * clamp(4px, 0.25cqi + 3px, 6px))`,
+  so it resolves **4px / 5.25px / 6px / 6px**, while `--tt-sizing-hit` is
+  `clamp(32px, 2rem, 36px)` and resolves **32px throughout** — rem-anchored,
+  exactly as ADR-019 ruled. The row therefore measures **32 / 32.5 / 34 / 34**.
+  Every "34px = the field row" claim is true only above ~1200px: `llms.txt`'s
+  Action entry, `CONTRACT.md` §5's choosable-row paragraph, ADR-021's
+  re-litigation answer, the ROADMAP's Slice 4 ② entry. The same paragraph's
+  "the row is the field minus its border" holds only where content clears the
+  floor — at 390 both bottom out at 32 and the difference is 0. _Fix:_ state the
+  ramp wherever the number is claimed, and say which part of it is invariant (the
+  floor and the tokens) versus derived (the pixel height). This surfaced twice
+  during C4 as a suspected regression that had to be re-measured to dismiss, which
+  is the cost of a number written as if fixed.
+  _Second half, not actionable here:_ whether the control **inset** should be
+  container-fluid at all. ADR-019 ruled control _geometry_ non-fluid and the inset
+  escaped the ruling, which is F-021's shape one property over → filed as **F-035**
+  and packaged with the owner set below.
+- **R2. `outlineOffset` literals: nine left, and they are how C4's four-way split
+  happened.** `Switch`, `Toast`, `RadioGroup`, `Checkbox` write `'2px'`;
+  `Disclosure`, `Accordion` and `Table` (×3) write `'-2px'`. Each duplicates one of
+  the two constants — and `'-2px'` only equals `FOCUS_RING_INSET` while the theme's
+  ring width is 2px, so it is a literal that happens to match rather than one that
+  tracks. _Fix:_ replace all nine (zero visual delta, both constants resolve to the
+  same values today) and add the class guard the `--fsl-` namespace already has:
+  **no component source may write an `outlineOffset` literal**, so the next one
+  cannot enter. Without that guard this list regrows, which is the whole history of
+  the two constants.
+- **R3. F-030 — `menu/root` addresses the popover _and_ every row.** Guarded by
+  invariant #12 as a named violation since Slice 5 ⓠ. It is resolvable **without a
+  taxonomy change**: `MenuItem` is `Action`/`root`, and `control` is already legal
+  on Action, so moving its structure to `control` both removes the collision and
+  states the truth ADR-022 settled — `control` names the element the user operates,
+  and a menu row is exactly that. _Named cost:_ it changes a published attribute
+  for menu rows (`menu/root` → `menu/control`), which is a real break; unlike the
+  break item A refused, the attribute being replaced is the _ambiguous_ one, and
+  invariant #12's anti-stale companion will force the entry out of the list the
+  moment it is fixed. _Alternative:_ admit `item` to `ENTITY_STRUCTURE.Action`,
+  which grows the vocabulary for one component and is the weaker answer.
+- **R4. A doc correction of my own.** The C2 ROADMAP entry cites **F-027** for
+  "Storybook does not follow `prefers-color-scheme`". F-027 is the theme's
+  border-contrast inventory auditing only the light bundle — a different fact.
+  _Fix:_ drop the citation and record the harness fact where the other harness
+  facts live (§7's environment note): Storybook's preview reads the theme's own
+  root attribute, so `colorScheme` on a Playwright context is **not** enough to
+  measure the dark bundle; set `data-tt-mode` explicitly. Every dark measurement in
+  C2's first pass was taken before this was understood and had to be retaken.
+- **R5. The FRICTION index count is self-matching.** Line 17 tells a reader to
+  regenerate the count by grepping `Status:** open` — and that instruction line
+  matches its own grep, so the count is always one high. It has been wrong twice
+  in this queue for that reason (there are **19** open entries, not twenty).
+  _Fix:_ count `### F-` headers whose entry is open, or word the instruction so it
+  does not match itself.
+
+### C — deferred: the fix is a consumer, not code. Do not build these in the round
+
+Each already carries a verified mechanism, so the future work is cheap; what none
+of them has is a surface that wants it. Building any of them now produces reserved
+API, which §2.3 forbids and B1 refused twice inside its own item.
+
+| Item                          | Readmission criterion                                                                                                                                                                                                                                                                             |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **B2** `labelPosition="side"` | A wide, multi-row form — settings or profile. Mechanism verified: `grid-template-columns: subgrid` on each field root inside a Form-owned grid; per-field grids do not align.                                                                                                                     |
+| **B3b** `FormErrorSummary`    | A form tall enough that the first invalid field can scroll off-screen. Data reachable (`onInvalid` fires per field with the control as target); appearance blocked on the same F-024/F-029 axis.                                                                                                  |
+| **C4's quiet field posture**  | A picker inside dense content — a table cell, a toolbar — which is also where a boxed field starts to read as noise. S2 exposes `isQuiet` on `Picker` only; its tokens make the posture an inset collapse (`field-edge-to-*-quiet: 0px`, label tightened `-8px`). The colour half lands on F-024. |
+
+### O — owner decisions on the colour and type model
+
+Measured, options written, nothing to build until one is picked. **F-032 blocks
+item F**; the rest shape it. F-021 was already scheduled to reach the owner as a
+packet in item E — R1's second half joins it as F-035, since both are ADR-019's
+ruling not reaching far enough.
+
+| #     | The decision                                                                                                                                                                            |
+| ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F-021 | Control **type** is container-fluid, so it shrinks in narrow containers while the hit target grows for touch.                                                                           |
+| F-035 | Control **inset** is container-fluid too, so the row's height is fluid although its floor is not (32 / 32.5 / 34). Same ruling, one property over.                                      |
+| F-024 | The Action tree has no "borrow the surface, paint nothing" rung. Recommended: **omit** `action.muted.background.default`; named cost is the audit that proves the quiet ink is legible. |
+| F-029 | No "negative ink on a surface" rung, so a destructive menu row either looks like every other row or fills red.                                                                          |
+| F-031 | `invalid` outranks `focused`/`hover`/`pressed`, so an invalid field goes dead to interaction.                                                                                           |
+| F-032 | The validation message is the same ink as the label in both modes — the invalid state rests on border colour alone.                                                                     |
+| F-034 | A focused row is marked with a ring; the reference marks it with a **background**, which needs `input.*.background.focused`.                                                            |
+| F-027 | The border-contrast inventory audits the light bundle only, so any of the above lands unverified in dark.                                                                               |
+
+### Q — the queue, unchanged
+
+**B4** `contextualHelp` · **D** `SearchField` + `NumberField` · **E** the selection
+family · **F** the validation language · **G** `FieldGroup` + `Wizard` · **H** field
+formats · **I** the Studio's complete form. Items **D** and **E** each already
+carry findings this queue handed them (D: the embedded trigger's UA font-size, and
+`SearchField` having no one-line form at all; E: React Aria omitting validation
+from `SwitchProps` entirely, so F-033's Switch half is about adopting `SwitchField`).
+
+### N — decided no-changes from this queue, not to be reopened
+
+Recorded with the same rigidity as the changes, per §7.
+
+- **The picker popover overlays the description below the field** (ADR-023). React
+  Aria anchors it to the trigger, so it covers what is beneath — which is what an
+  overlay is, and what both reference implementations do.
+- **`Checkbox` does not use the shared envelope parts** (C2). Its root _is_ a
+  `<label>`, so copy placed inside is absorbed into the accessible name — measured
+  in A2. It shares what it can: the text-part style and the necessity marker.
+- **`Menu` and `Popover` do not take their trigger's width** (ADR-023). A menu
+  shows things to do, not a field's value space; both authorities exclude it.
+- **A `Select` trigger's accessible name is value-then-label** ("Choose a role
+  Role"). React Aria's own `aria-labelledby` order; announcing the value and then
+  what it names is correct, and the name excludes the necessity marker as intended.
+  Consequence worth knowing rather than fixing: a name query must not be exact.
+
 ## 5. Deliberately out of scope, with readmission criteria
 
 - **Array / repeatable fields** — no Studio flow needs them yet.
