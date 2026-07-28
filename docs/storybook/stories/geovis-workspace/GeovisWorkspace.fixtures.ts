@@ -51,19 +51,22 @@ const REGIONS: RegionDef[] = [
  */
 const VARIABLES: Record<
   string,
-  { max: number; thresholds: number[]; colors: string[] }
+  { title: string; max: number; thresholds: number[]; colors: string[] }
 > = {
   'cumulative-rate': {
+    title: 'Taxa cumulativa (% do total)',
     max: 28,
     thresholds: [5, 10, 15, 20],
     colors: ['#eff3ff', '#bdd7e7', '#6baed6', '#3182bd', '#08519c'],
   },
   'cumulative-proportion': {
+    title: 'Proporção cumulativa (% da pop 65+)',
     max: 58,
     thresholds: [10, 20, 30, 45],
     colors: ['#edf8e9', '#bae4b3', '#74c476', '#31a354', '#006d2c'],
   },
   range: {
+    title: 'Faixa (% da pop 65+)',
     max: 96,
     thresholds: [20, 40, 60, 80],
     colors: ['#feedde', '#fdbe85', '#fd8d3c', '#e6550d', '#a63603'],
@@ -124,6 +127,13 @@ export const buildSpec = ({
     legends: Object.entries(VARIABLES).map(([id, config]) => {
       return {
         id,
+        // Only the active legend gets a `position`, so `GeoVisProvider` mounts
+        // exactly one on-map legend overlay (the corner box) instead of
+        // stacking every legend in the registry. Overlaying it lets us verify
+        // the workspace sidebars render above the map's own legend.
+        ...(id === variable
+          ? { title: config.title, position: 'bottom-right' as const }
+          : {}),
         colorBy: {
           type: 'quantitative' as const,
           property: 'value',
