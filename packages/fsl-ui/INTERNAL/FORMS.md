@@ -319,10 +319,40 @@ both modes → commit.
   until D), or deliberately without it (`Checkbox`, whose root is a `<label>` so
   copy inside it is absorbed into the accessible name; `Switch`; `Slider`). An
   upstream change now fails the test instead of silently ageing the comment.
-- **C3. F-019 — the popover sizes to the frame.** Needs the named allowlist of
-  RAC-published positioning vars (→ ADR-023). Measured: **158.69px of popover
-  under a 305.63px field** in the Studio, where it also overlays the description;
-  **142.88px against 1200px** in Storybook.
+- **C3. ✅ The picker popover takes the field row's width (F-019, 2026-07-28).**
+  The governance question turned out narrower than the plan assumed, because
+  `--trigger-width` is **documented public API**: it appears in React Aria's
+  Popover docs in a "CSS Variables" table as "The width of the popover trigger
+  element", and RAC's own `Select`/`ComboBox` examples read it. So the namespace
+  ban gains a **named allowlist** (`UpstreamCssVar` + `upstreamVar`), not a hole,
+  and `--trigger-anchor-point` was _not_ admitted — nothing needs it. → ADR-023.
+  **Both authorities draw the same line, and it is picker-vs-menu.** S2 documents
+  `menuWidth` on `Picker`/`ComboBox` as "By default, matches width of the trigger.
+  Note that the minimum width of the dropdown is always equal to the trigger's
+  width" and has no such prop on `Menu`; RAC styles the two picker popovers and
+  not the menu. Those are two rules, so they became two declarations: `min-width`
+  is the unconditional floor, `width` is the knob-overridable default. Our `Menu`
+  keeps `--fsl-menu-min-width` (measured 192px against a 108.88px trigger —
+  correct) and `Popover` keeps its max-width.
+  Measured before: **102.11px of Select popover under a 1200px trigger** and
+  79.61px under 310px; ComboBox 142.88px and 115.27px. After: equal at every
+  combination, and **426px against a 426px field** in the Studio's invite dialog,
+  both modes. Stress case at a 140px trigger — a long option wraps to three lines
+  with no overflow either way.
+  **The enforcement lesson is the part worth carrying forward.** The pre-existing
+  ban was a source-text regex over `src/components/**`; composing the read in a
+  `src/tokens/` helper slipped past it and the suite stayed green through exactly
+  the change the rule existed to catch. The binding guard is now over the rendered
+  inline styles of every fixture, plus a source check that nothing _writes_ an
+  allowlisted name — RAC stops observing the trigger the moment `--trigger-width`
+  is supplied. All three were verified to fail on an injected violation.
+  Third instance of the same duplication class in this family: the two picker
+  popover builders were byte-identical, like the field row and the envelope before
+  them, so the popover and its list now come from the anatomy too.
+  _Deliberate no-change:_ the open popover overlays the description below the
+  field. RAC anchors it to the trigger (`placement: 'bottom start'`), so it covers
+  what is beneath — which is what an overlay is. F-019 mentioned the overlap
+  beside the width; only the width was a defect.
 - **C4. Option row height + the quiet-fill revisit.** Rows measure **44px**
   against the field row's 34px. Slice 3 deferred S2's quiet-fill Picker surface
   with "revisit with ComboBox" — this is that revisit; if it resurfaces F-024 /
@@ -403,7 +433,7 @@ it is a class · ADR when the decision is architectural · FRICTION append per g
 suites green · coverage held at 100 · treeshake within budget · lint · ROADMAP
 entry in the Slice 4 voice.
 
-**Baselines to detect regression:** fsl-ui 2121 tests, fsl-theme 1006, Studio 58;
+**Baselines to detect regression:** fsl-ui 2215 tests, fsl-theme 1006, Studio 58;
 treeshake 3212 bytes of 16000.
 
 **Environment (facts, not assumptions):** Node 24 is `/opt/node24/bin`;

@@ -20,6 +20,8 @@ import {
   buildFieldFrameStyle,
   buildFieldRootStyle,
   buildFieldValueStyle,
+  buildPickerListStyle,
+  buildPickerPopoverStyle,
   FieldDescriptionPart,
   FieldLabelPart,
   FieldValidationMessagePart,
@@ -112,19 +114,6 @@ const buildTriggerStyle = ({
     paddingBlock: vars.spacing.inset.control.sm,
     paddingInline: vars.spacing.inset.control.sm,
     color: c?.text?.default,
-  };
-};
-
-/** Options popover surface — Input-entity chrome, matching the control frame. */
-const buildPopoverStyle = (c: InputColors): React.CSSProperties => {
-  return {
-    boxSizing: 'border-box',
-    borderRadius: vars.radii.control,
-    borderWidth: vars.border.outline.control.width,
-    borderStyle: vars.border.outline.control.style,
-    borderColor: c?.border?.default,
-    backgroundColor: c?.background?.default,
-    overflow: 'hidden',
   };
 };
 
@@ -261,23 +250,24 @@ export const ComboBox = <T extends object = object>({
         {errorMessage}
       </FieldValidationMessagePart>
 
+      {/*
+        Same row-width rule as `Select` (F-019, ADR-023): measured 142.88px under
+        a 1200px frame before it read `--trigger-width`.
+      */}
       <RACPopover
         data-scope="combo-box"
         data-part="positioner"
-        style={buildPopoverStyle(c)}
+        style={buildPickerPopoverStyle({
+          colors: c,
+          widthKnob: '--fsl-combo-box-popover-width',
+        })}
       >
         <RACListBox
           data-scope="combo-box"
           data-part="surface"
-          style={{
-            outline: 'none',
-            display: 'flex',
-            flexDirection: 'column',
-            padding: vars.spacing.inset.control.md,
-            gap: vars.spacing.gap.stack.xs,
+          style={buildPickerListStyle({
             maxHeight: fslVar('--fsl-combo-box-max-height', LIST_MAX_HEIGHT),
-            overflowY: 'auto',
-          }}
+          })}
         >
           {children}
         </RACListBox>

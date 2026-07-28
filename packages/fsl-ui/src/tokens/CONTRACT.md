@@ -445,15 +445,44 @@ Rules (enforced by the contract tests):
 
 Registered knobs:
 
-| Knob                         | Component     | Fallback           |
-| ---------------------------- | ------------- | ------------------ |
-| `--fsl-combo-box-max-height` | `ComboBox`    | `min(20rem, 60vh)` |
-| `--fsl-dialog-max-width`     | `DialogModal` | `min(500px, 90vw)` |
-| `--fsl-dialog-max-height`    | `DialogModal` | `90vh`             |
-| `--fsl-menu-min-width`       | `Menu`        | `12rem`            |
-| `--fsl-menu-max-width`       | `Menu`        | `min(320px, 90vw)` |
-| `--fsl-popover-max-width`    | `Popover`     | `min(320px, 90vw)` |
-| `--fsl-tooltip-max-width`    | `Tooltip`     | `min(280px, 90vw)` |
+| Knob                            | Component     | Fallback               |
+| ------------------------------- | ------------- | ---------------------- |
+| `--fsl-combo-box-max-height`    | `ComboBox`    | `min(20rem, 60vh)`     |
+| `--fsl-combo-box-popover-width` | `ComboBox`    | `var(--trigger-width)` |
+| `--fsl-dialog-max-width`        | `DialogModal` | `min(500px, 90vw)`     |
+| `--fsl-dialog-max-height`       | `DialogModal` | `90vh`                 |
+| `--fsl-menu-min-width`          | `Menu`        | `12rem`                |
+| `--fsl-menu-max-width`          | `Menu`        | `min(320px, 90vw)`     |
+| `--fsl-popover-max-width`       | `Popover`     | `min(320px, 90vw)`     |
+| `--fsl-select-popover-width`    | `Select`      | `var(--trigger-width)` |
+| `--fsl-tooltip-max-width`       | `Tooltip`     | `min(280px, 90vw)`     |
+
+### Upstream custom properties — a named allowlist (ADR-023)
+
+Rule 2 above reserves `--fsl-` for host knobs and bans a third namespace, because
+an unnamed one is an unreviewable styling side channel. One narrow class is
+exempt: a custom property **published as documented API by a direct dependency**,
+where the value is something only the dependency can compute.
+
+The exemption is an allowlist, not a hole. Names live in the `UpstreamCssVar`
+union and are read through `upstreamVar(name, fallback)` — same fallback
+requirement as `fslVar`, though it means something different: not "the host did
+not customise this" but "the dependency did not publish it".
+
+| Property          | Published by         | Read by              | Fallback |
+| ----------------- | -------------------- | -------------------- | -------- |
+| `--trigger-width` | React Aria `Popover` | `Select`, `ComboBox` | `auto`   |
+
+**Reads only.** React Aria resolves `--trigger-width` as
+`props.style['--trigger-width'] || measured`, and supplying our own value also
+switches off the `ResizeObserver` that keeps it current — so writing it would
+freeze a popover at its trigger's first-paint width.
+
+Both halves are enforced, and the source-text rule alone is **not** sufficient:
+it scans `src/components/**`, so a helper composing the string elsewhere slips
+past it (which is exactly what happened when `upstreamVar` was added). The
+binding check is over the **rendered** inline styles of every DOM fixture, plus a
+source check that nothing assigns an allowlisted name.
 
 ---
 

@@ -252,13 +252,21 @@ describe('contract: token hygiene', () => {
     }
   );
 
-  // Raw `var(--…)` reads outside the two sanctioned namespaces (`--tt-`
-  // theme tokens emitted by `vars.*`, `--fsl-` host knobs via `fslVar`)
-  // would create an unreviewable styling side channel.
-  const FOREIGN_VAR = /\bvar\(\s*--(?!tt-|fsl-)/;
+  // Raw `var(--…)` reads outside the sanctioned namespaces (`--tt-` theme
+  // tokens emitted by `vars.*`, `--fsl-` host knobs via `fslVar`) would create
+  // an unreviewable styling side channel. One narrow exception exists and it is
+  // an allowlist, not a hole: a property published as documented API by a direct
+  // dependency, read through `upstreamVar` (ADR-023).
+  //
+  // This is the source-text half of the rule, and on its own it is **not
+  // sufficient** — a helper living outside `src/components/**` composes the
+  // string somewhere this regex never looks, which is exactly what happened when
+  // `upstreamVar` was introduced and this test stayed green. The runtime half is
+  // below, over the rendered fixtures, and it is the one that actually binds.
+  const FOREIGN_VAR = /\bvar\(\s*--(?!tt-|fsl-|trigger-width\b)/;
 
   test.each(componentSources)(
-    '%s reads no CSS variables outside the --tt-/--fsl- namespaces',
+    '%s reads no CSS variables outside the sanctioned namespaces',
     (_path, source) => {
       expect(stripComments(source)).not.toMatch(FOREIGN_VAR);
     }
@@ -296,6 +304,103 @@ describe('contract: token hygiene', () => {
 //     `var(--fsl-…)`), which guarantees the fallback argument exists;
 //   - no `var(--fsl-…)` without a fallback anywhere in a component source.
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// 4b. Foreign custom properties — the allowlist, enforced at runtime (ADR-023)
+//
+// The source-text rule in §4 catches a hand-written `var(--x)` in a component.
+// It does not catch one composed by a helper elsewhere — proven, not supposed:
+// `upstreamVar` was added in `src/tokens/`, both pickers started reading
+// `--trigger-width`, and the source scan stayed green because it only reads
+// `src/components/**`.
+//
+// So the binding rule is over the **rendered** styles: whatever produced the
+// value, it lands in an inline style, and every `var()` read there must be a
+// theme token, a host knob, or an allowlisted upstream property. A helper cannot
+// launder a foreign namespace past this.
+// ---------------------------------------------------------------------------
+
+describe('contract: foreign CSS variables come from a named allowlist', () => {
+  /**
+   * Published as documented API by a dependency we already depend on. One entry
+   * per name; growing this list is an ADR-023 amendment, not a refactor.
+   *
+   * Kept as literals rather than imported from `UpstreamCssVar` on purpose: a
+   * test that imports the thing it polices would pass by construction the day
+   * someone widens the type.
+   */
+  const ALLOWED_UPSTREAM: ReadonlySet<string> = new Set(['--trigger-width']);
+
+  const varReadsIn = (): Set<string> => {
+    const names = new Set<string>();
+
+    for (const el of document.querySelectorAll<HTMLElement>('[style]')) {
+      const style = el.getAttribute('style') ?? '';
+      // Reads only. A *declaration* (`--trigger-width: 1200px`) is React Aria
+      // publishing the value, which is the whole point — see the write guard.
+      for (const match of style.matchAll(/var\(\s*(--[a-z0-9-]+)/gi)) {
+        names.add(match[1]);
+      }
+    }
+
+    return names;
+  };
+
+  const assertAllowed = (names: Set<string>) => {
+    const foreign = [...names].filter((name) => {
+      return (
+        !name.startsWith('--tt-') &&
+        !name.startsWith('--fsl-') &&
+        !ALLOWED_UPSTREAM.has(name)
+      );
+    });
+
+    expect(foreign).toEqual([]);
+  };
+
+  test.each(Object.entries(DOM_FIXTURES))(
+    '%s reads only theme tokens, host knobs and allowlisted properties',
+    (_name, fixture) => {
+      const { unmount } = render(fixture.element());
+      fixture.open?.();
+
+      assertAllowed(varReadsIn());
+
+      unmount();
+    }
+  );
+
+  test('an open picker popover reads the allowlisted property, not a foreign one', () => {
+    // The fixture registry renders a ComboBox closed, so its popover — the one
+    // element that reads `--trigger-width` — never mounts there. Opened
+    // explicitly, because a guard that cannot see the subject is not a guard.
+    const { unmount } = render(
+      <pkg.Select label="Choice" defaultOpen>
+        <pkg.SelectItem id="a">A</pkg.SelectItem>
+      </pkg.Select>
+    );
+
+    const reads = varReadsIn();
+
+    expect(reads.has('--trigger-width')).toBe(true);
+    assertAllowed(reads);
+
+    unmount();
+  });
+
+  test('no component writes an allowlisted property', () => {
+    // React Aria resolves `--trigger-width` as `props.style[…] || measured`, and
+    // supplying our own also switches off the ResizeObserver keeping it current —
+    // so writing it would freeze the popover at the trigger's first-paint width.
+    // Read-only is a mechanism, not a convention.
+    const WRITES = /['"`]--trigger-width['"`]\s*:/;
+
+    for (const [path, source] of componentSources) {
+      expect(stripComments(source)).not.toMatch(WRITES);
+      expect(path).toBeTruthy();
+    }
+  });
+});
 
 describe('contract: escape hatches (§7)', () => {
   const RAW_FSL_VAR = /\bvar\(\s*--fsl-/;

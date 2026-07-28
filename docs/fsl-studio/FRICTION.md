@@ -12,7 +12,7 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 
 ## Open items (derived — the entry below is always the source of truth)
 
-Twenty open, grouped by the _kind of decision_ each one needs rather than by
+Nineteen open, grouped by the _kind of decision_ each one needs rather than by
 severity, because that is what makes a review round plannable. Regenerate by
 grepping `Status:** open`; do not edit an entry through this list.
 
@@ -33,7 +33,6 @@ grepping `Status:** open`; do not edit an entry through this list.
 | F-004 | No named narrow width step (an auth card, ~20–26rem) between `reading` and `surface`.                                                                                                          |
 | F-010 | No neutral tag primitive for descriptive (non-status) labels.                                                                                                                                  |
 | F-016 | No semantic list primitive for content lists.                                                                                                                                                  |
-| F-019 | Anchored popovers size to content, not to their trigger — needs the `--trigger-width` namespace decision.                                                                                      |
 | F-023 | `AppShell` has no narrow-container behaviour: the shell overflows at 390px (442px scroll width). The owner deferred the IA decision — drawer vs off-canvas vs stacking.                        |
 
 **Contract / a11y debt — the component works but its published promise does not hold:**
@@ -181,11 +180,15 @@ grepping `Status:** open`; do not edit an entry through this list.
 
 ### F-019 — anchored popovers size to content, not to their trigger
 
-- **Date:** 2026-07-24 · **Surface:** `@ttoss/fsl-ui` `ComboBox` / `Select` popovers vs the CONTRACT var-namespace ban · **Severity:** paper-cut · **Status:** open
+- **Date:** 2026-07-24 · **Surface:** `@ttoss/fsl-ui` `ComboBox` / `Select` popovers vs the CONTRACT var-namespace ban · **Severity:** paper-cut · **Status:** ✅ fixed (2026-07-28 — forms C3, ADR-023)
 - Found in the mandatory browser check of the S2 invite dialog: the timezone `ComboBox` popover renders **158px wide against a 307px input** (126px in dark, where the filtered set is one short label). Every reference-grade combobox matches the list width to the field — a list visibly narrower than the control it belongs to reads as unfinished. `Select` has the same behaviour, so this is a shared trait of the anchored-surface pattern, not a ComboBox regression.
 - **Cause:** React Aria publishes the measured trigger width to the popover as `--trigger-width`, but CONTRACT §7 / the contract test ban reading any CSS variable outside the `--tt-`/`--fsl-` namespaces, so no component may consume it. The ban is right in the general case (it stops arbitrary vars leaking into consumers) and simply has no carve-out for vars the underlying primitive itself publishes.
 - **Not worked around:** consuming `var(--trigger-width)` would need a contract change, and inventing an `--fsl-combo-box-min-width` knob would only paper over it with a number nobody can pick correctly. Filed instead of patched.
-- **Backlog:** decide via governance whether the namespace rule admits a named allowlist of RAC-published positioning vars (`--trigger-width`, `--trigger-anchor-point`). One ADR would unblock both `ComboBox` and `Select`.
+- **Action (ADR-023):** the namespace rule admits a **named allowlist** of custom properties published as documented API by a direct dependency, read through `upstreamVar(name, fallback)`. `--trigger-width` is the only entry, and `--trigger-anchor-point` was **not** admitted — nothing needs it, and an allowlist that grows by anticipation is not an allowlist. A picker's popover now declares `min-width` (S2's unconditional floor) plus a knob-overridable `width` (its default), so a host can widen the list and never narrow it below the row.
+- **Both authorities settled the behaviour, and they draw the same line:** React Aria's own `Select`/`ComboBox` examples style their popovers `width: var(--trigger-width)` and its `Menu` example sets none; S2 documents `menuWidth` on `Picker`/`ComboBox` as "By default, matches width of the trigger. Note that the minimum width of the dropdown is always equal to the trigger's width" and has no such prop on `Menu`. **A menu is not a picker** — a picker shows the field's value space, a menu shows things to do — so our `Menu` keeps its own `--fsl-menu-min-width` (measured 192px against a 108.88px trigger: correct, unchanged) and `Popover` keeps its max-width.
+- **Measured after, all four combinations:** popover width now equals trigger width exactly — Select 1200/1200 and 310/310, ComboBox the same; in the Studio's invite dialog both the Role dropdown and the Timezone list report **426px against a 426px field**. Stress case at a 140px trigger: the option "Administrator with billing access" wraps to three lines with no overflow in either direction.
+- **The enforcement lesson outlived the fix.** The pre-existing ban was a source-text regex over `src/components/**`; routing the read through a helper in `src/tokens/` slipped past it and the suite stayed green through exactly the change the rule existed to catch. The binding check is now over the **rendered** inline styles of every DOM fixture, plus a source check that nothing _writes_ an allowlisted name — React Aria stops observing the trigger the moment `--trigger-width` is supplied, so a write would freeze the popover at its first-paint width. All three guards were verified to fail on an injected violation before being trusted.
+- **Deliberate no-change:** the open popover overlays the description below the field. React Aria anchors it to the trigger (`placement: 'bottom start'`), so it covers what is beneath — which is what an overlay is, and what both reference implementations do. This entry mentioned the overlap alongside the width; only the width was a defect.
 
 ### F-020 — focus-ring gap is not a theme token
 

@@ -103,3 +103,23 @@ export const PlatformValidationCopy: Story = {
     );
   },
 };
+
+/**
+ * The dropdown takes the field's width (F-019). This is the case that tests the
+ * rule rather than demonstrating it: options longer than a narrow trigger. The
+ * list cannot shrink below the row, and the knob is how a host lets it grow.
+ */
+export const OptionsLongerThanTheField: Story = {
+  render: () => {
+    return (
+      <div style={{ display: 'flex', gap: '2rem', alignItems: 'start' }}>
+        <div style={{ width: '140px' }}>
+          <Select label="Access" defaultOpen placeholder="Pick">
+            <SelectItem id="a">Administrator with billing access</SelectItem>
+            <SelectItem id="b">Read-only auditor</SelectItem>
+          </Select>
+        </div>
+      </div>
+    );
+  },
+};

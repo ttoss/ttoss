@@ -140,6 +140,13 @@ Input:       TextField, TextArea — each authored EITHER one-line
              hosts the chevron, data-part="control" is the <input> you type into.
              `control` always names the operated element, so a test or an agent
              told to type into a field can (ADR-022).
+             A PICKER'S POPOVER TAKES THE FIELD'S WIDTH (Select + ComboBox,
+             ADR-023): min-width is the trigger's width unconditionally, width
+             defaults to it and is widenable per host via
+             --fsl-select-popover-width / --fsl-combo-box-popover-width. Options
+             longer than the field WRAP; they do not widen the list. A MENU IS
+             NOT A PICKER — Menu and Popover size to their own content and keep
+             --fsl-menu-min-width / --fsl-popover-max-width.
              Pick ComboBox over Select when the option set is too long to scan
              (~10+) or the user may type a value that is not in it
              (allowsCustomValue). ComboBox is Input — the user TYPES and the

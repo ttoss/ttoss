@@ -9,6 +9,7 @@ import {
   type TextProps as RACTextProps,
 } from 'react-aria-components';
 
+import { type FslKnob, fslVar, upstreamVar } from '../../tokens/escapeHatch';
 import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 
@@ -550,4 +551,96 @@ export const FieldValidationMessagePart = ({
       style={buildFieldTextPartStyle({ colors, step: 'sm', tone: 'negative' })}
     />
   );
+};
+
+// ---------------------------------------------------------------------------
+// The picker popover — the list a field opens, sized to the field row
+//
+// A picker's popover is part of the field's geometry, not a free-floating
+// overlay: it is the same value the row displays, shown as a list. So it takes
+// the row's width, and both authorities say so in the same words. React Aria's
+// own `Select` and `ComboBox` examples style their popovers
+// `width: var(--trigger-width)`; Spectrum 2's `Picker` and `ComboBox` document
+// `menuWidth` as "By default, matches width of the trigger. Note that the
+// minimum width of the dropdown is always equal to the trigger's width."
+//
+// Both draw the same line at the same place, and it is worth stating because it
+// is the reason this is not simply "make overlays match their triggers":
+// **a menu is not a picker.** React Aria's `Menu` example sets no width, S2's
+// `Menu` has no `menuWidth`, and neither should — a menu is a list of actions
+// that sizes to its own content, so ours keeps its `--fsl-menu-min-width`. The
+// distinction is what the popover shows: a picker shows the field's value space,
+// a menu shows things to do.
+//
+// Measured before this existed, in Chromium at 1280 and 390, light and dark:
+// `Select`'s popover came out 102.11px under a 1200px trigger and 79.61px under
+// 310px, `ComboBox`'s 142.88px and 115.27px — while `--trigger-width` was
+// published on the popover the whole time and read by nobody (F-019). `Menu`
+// measured 192px from its own knob against a 108.88px trigger, which is correct
+// and stays.
+// ---------------------------------------------------------------------------
+
+/** Chrome of a picker's popover surface. */
+const pickerPopoverChrome = (colors: InputColors): React.CSSProperties => {
+  return {
+    boxSizing: 'border-box',
+    borderRadius: vars.radii.control,
+    borderWidth: vars.border.outline.control.width,
+    borderStyle: vars.border.outline.control.style,
+    borderColor: colors?.border?.default,
+    backgroundColor: colors?.background?.default,
+    overflow: 'hidden',
+  };
+};
+
+/**
+ * The popover a picker opens: the field's chrome, at the field's width.
+ *
+ * `minWidth` is the floor S2 states as unconditional, so the knob can widen the
+ * list for long options but can never make it narrower than the row it belongs
+ * to — a dropdown narrower than its own trigger reads as a rendering fault.
+ * Neither read may be inverted into a write: React Aria stops observing the
+ * trigger the moment `--trigger-width` is supplied (ADR-023).
+ *
+ * @param widthKnob - host knob that may widen the list past the row.
+ */
+export const buildPickerPopoverStyle = ({
+  colors,
+  widthKnob,
+}: {
+  colors: InputColors;
+  widthKnob: FslKnob;
+}): React.CSSProperties => {
+  // `auto` is the pre-F-019 behaviour — sizing to content — so a popover that
+  // somehow renders without the property degrades instead of collapsing.
+  const triggerWidth = upstreamVar('--trigger-width', 'auto');
+
+  return {
+    ...pickerPopoverChrome(colors),
+    minWidth: triggerWidth,
+    width: fslVar(widthKnob, triggerWidth),
+  };
+};
+
+/**
+ * The scrolling list inside a picker's popover.
+ *
+ * @param maxHeightKnob - present when the option set can outgrow the viewport;
+ *   omitted where the set is short enough to render whole.
+ */
+export const buildPickerListStyle = ({
+  maxHeight,
+}: {
+  maxHeight?: string;
+} = {}): React.CSSProperties => {
+  return {
+    outline: 'none',
+    display: 'flex',
+    flexDirection: 'column',
+    padding: vars.spacing.inset.control.md,
+    gap: vars.spacing.gap.stack.xs,
+    ...(maxHeight === undefined
+      ? {}
+      : { maxHeight, overflowY: 'auto' as const }),
+  };
 };

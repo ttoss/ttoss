@@ -19,6 +19,8 @@ import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import {
   buildFieldControlStyle,
   buildFieldRootStyle,
+  buildPickerListStyle,
+  buildPickerPopoverStyle,
   FieldDescriptionPart,
   FieldLabelPart,
   FieldValidationMessagePart,
@@ -68,21 +70,6 @@ export const selectItemMeta = {
   structure: 'item',
   composition: 'selection',
 } as const satisfies ComponentMeta<'Selection'>;
-
-type InputColors = typeof vars.colors.input.primary;
-
-/** Dropdown popover surface style — Selection-entity chrome. */
-const buildPopoverStyle = (c: InputColors): React.CSSProperties => {
-  return {
-    boxSizing: 'border-box',
-    borderRadius: vars.radii.control,
-    borderWidth: vars.border.outline.control.width,
-    borderStyle: vars.border.outline.control.style,
-    borderColor: c?.border?.default,
-    backgroundColor: c?.background?.default,
-    overflow: 'hidden',
-  };
-};
 
 // ---------------------------------------------------------------------------
 // Select — root orchestrator
@@ -265,23 +252,24 @@ export const Select = <T extends object = object>({
               {errorMessage}
             </FieldValidationMessagePart>
 
-            {/* dropdown popover */}
+            {/*
+              The dropdown takes the field row's width, which is the whole of
+              F-019: it measured 102.11px under a 1200px trigger. The knob widens
+              it for options longer than the row; it can never be narrower
+              (ADR-023).
+            */}
             <RACPopover
               data-scope="select"
               data-part="positioner"
-              // Surface within the Select composite — uses Selection entity tokens.
-              style={buildPopoverStyle(c)}
+              style={buildPickerPopoverStyle({
+                colors: c,
+                widthKnob: '--fsl-select-popover-width',
+              })}
             >
               <RACListBox
                 data-scope="select"
                 data-part="surface"
-                style={{
-                  outline: 'none',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  padding: vars.spacing.inset.control.md,
-                  gap: vars.spacing.gap.stack.xs,
-                }}
+                style={buildPickerListStyle()}
               >
                 {children}
               </RACListBox>

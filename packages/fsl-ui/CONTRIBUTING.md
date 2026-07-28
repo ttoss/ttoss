@@ -623,12 +623,46 @@ reference uses — it tints the message and the chrome, never the name of the fi
 
 Anchors: `src/components/Field/anatomy.tsx`, `tests/unit/tests/fieldEnvelope.test.tsx`, `docs/fsl-studio/FRICTION.md` F-009 / F-032, `INTERNAL/FORMS.md` §3 and C2.
 
+### ADR-023: A picker's popover takes the field row's width, read from a named allowlist of upstream custom properties
+
+Status: accepted (2026-07-28)
+Tags: input, field, overlay, escape-hatch, governance, P3, forms
+
+Context: forms item C3 / F-019. Measured in Chromium at 1280 and 390, light and dark: `Select`'s dropdown came out **102.11px under a 1200px trigger** and 79.61px under 310px; `ComboBox`'s 142.88px and 115.27px. In the Studio's invite dialog the Role dropdown was a small detached box under a 426px field. All four cases had `--trigger-width` published **on the popover element itself** the whole time, correct and live, and read by nobody.
+
+Two questions, and only the second is governance. What should the width be, and may the package read a custom property from a namespace it does not own?
+
+Decision, part one: **a picker's popover takes the field row's width, and a menu's does not.** Both authorities draw that line in the same place, which is why it is the line. React Aria's own `Select` and `ComboBox` examples style their popovers `width: var(--trigger-width)`; its `Menu` example sets no width. Spectrum 2's `Picker` and `ComboBox` document `menuWidth` as "By default, matches width of the trigger. Note that the minimum width of the dropdown is always equal to the trigger's width"; its `Menu` has no such prop. The discriminant is what the popover shows: a picker shows the field's **value space**, so it belongs to the field's geometry; a menu shows **things to do**, so it sizes to its own content. Our `Menu` keeps `--fsl-menu-min-width` (measured 192px against a 108.88px trigger — correct, and unchanged), and `Popover` keeps its own max-width.
+
+S2's two sentences are two different rules, so they become two declarations: `min-width` is the unconditional floor, `width` is the default and is knob-overridable (`--fsl-select-popover-width`, `--fsl-combo-box-popover-width`). A host can therefore widen the list for long options but can never make it narrower than the row it hangs from — a dropdown narrower than its own trigger reads as a rendering fault.
+
+Decision, part two: **reading a custom property published as documented API by a direct dependency is legal, from a named allowlist.** `CONTRACT.md` §7 rule 2 reserves `--fsl-` and bans a third namespace because an unnamed one is an unreviewable side channel. That reasoning does not reach `--trigger-width`, which is not a side channel but the sanctioned way to read a value **only the dependency can compute** — a layout measurement of a different subtree, unavailable to CSS by any other means. It appears in React Aria's Popover documentation in a "CSS Variables" table, described as "The width of the popover trigger element". So the rule gains an exemption shaped as an allowlist: a fixed union (`UpstreamCssVar`), read through `upstreamVar(name, fallback)`, one row per name in §7 with the documentation that publishes it.
+
+The fallback is mandatory as it is for `fslVar`, but it means something else: not "the host did not customise this" but "the dependency did not publish it". For `--trigger-width` it is `auto`, which is the behaviour the package had before F-019 — degradation is a step back, not a break.
+
+**These properties are read-only, and that is a mechanism rather than a convention.** React Aria resolves `--trigger-width` as `props.style['--trigger-width'] || measured`, and supplying our own value _also_ switches off the `ResizeObserver` keeping it current — so writing it would silently freeze the popover at the trigger's first-paint width.
+
+Rejected: `min-width` alone with the popover still sizing to content (satisfies S2's floor sentence and contradicts its default sentence — and leaves the measured defect in place for any list narrower than its field); `width` alone with no floor (a host knob could then produce a dropdown narrower than its trigger); forwarding a `menuWidth`-style prop instead of a knob (geometry the host owns goes through §7's channel, and a prop would be a visual prop on a composite, which §4 forbids); reading the property without an allowlist (that is the unnamed namespace §7 rule 2 exists to prevent); putting the two-line style in each picker (third instance of the same duplication class in this family — the field row and the envelope were the first two, and both drifted).
+
+Cost: one entry in a governance allowlist, which must be argued each time it grows. The **enforcement** cost is where the real lesson is: the pre-existing rule was a source-text regex over `src/components/**`, and routing the read through a helper in `src/tokens/` slipped past it silently — the suite stayed green through a change the rule was written to catch. So the binding check is now over the **rendered** inline styles of every DOM fixture, where a value lands regardless of what composed it, plus a source check that nothing assigns an allowlisted name. All three guards were verified to fail on an injected violation before being trusted.
+
+Deliberate no-change: **the open popover overlays the description below the field, and stays that way.** React Aria anchors it to the trigger (`placement: 'bottom start'`, `triggerRef: buttonRef`, read in `Select.mjs`), so an overlay covers what is beneath the trigger — which is what an overlay is, and what both reference implementations do. F-019's original note mentioned the overlap alongside the width defect; only the width was a defect.
+
+Anchors: `src/components/Field/anatomy.tsx` (`buildPickerPopoverStyle`), `src/tokens/escapeHatch.ts` (`upstreamVar`, `UpstreamCssVar`), `src/tokens/CONTRACT.md` §7, `tests/unit/tests/components.contract.test.tsx` (§4b), `docs/fsl-studio/FRICTION.md` F-019, `INTERNAL/FORMS.md` C3.
+
+Re-litigation answers:
+
+- "Why not just always match trigger width for every anchored overlay?" → because a menu is not a picker. Both authorities exclude `Menu` explicitly, and the measurement agrees: our Menu's 192px floor against an 108.88px trigger is right, and forcing it to 108.88px would make every action label wrap.
+- "A long option now wraps instead of widening the list — is that a regression?" → it is the rule working, and it was measured: at a 140px trigger the option "Administrator with billing access" wraps to three lines with no overflow in either direction (`scrollWidth === clientWidth` on both the list and the item). A host that prefers a wider list has the knob. S2 behaves the same way.
+- "Does this make the Storybook Select dropdown absurdly wide at 1200px?" → the story canvas is full-bleed, so yes, and that is the field's own width — in a real layout (the Studio's 426px field) it is exactly right. Sizing the dropdown to content is what made the field look broken.
+- "Why not import `UpstreamCssVar` into the contract test instead of repeating the names?" → a test that imports the thing it polices passes by construction the day someone widens the type.
+
 ### ADR-025: The `Form` publishes field layout as static context; a required field marks itself
 
 Status: accepted (2026-07-26)
 Tags: input, field, form, context, a11y, i18n, P3, forms
 
-> ADR-023 (RAC positioning-var allowlist) and ADR-024 (the validation language) are reserved for forms items C and F. Numbers are allocated when a decision is planned, not when it lands.
+> ADR-024 (the validation language) is reserved for forms item F. Numbers are allocated when a decision is planned, not when it lands.
 
 Context: forms item B1. Label layout and the necessity convention are one product decision, not a per-field one — a form where some labels sit above and others beside, or where one field marks required and the next does not, is a form nobody proofread. The reference system puts exactly these on its `<Form>` (`labelPosition`, `labelAlign`, `necessityIndicator`, `size`) and has each field inherit them, which is also this ecosystem's own pattern: applications configure once at the root, packages consume context, and no visual prop travels down a tree.
 
