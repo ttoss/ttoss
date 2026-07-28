@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/openapi-codegen",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Generate an SDK-ready merged OpenAPI document and a CLI route manifest from per-module OpenAPI spec files",
   "keywords": [
     "cli",
