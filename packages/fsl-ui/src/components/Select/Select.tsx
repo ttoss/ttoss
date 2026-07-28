@@ -13,7 +13,8 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
-import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
+import { buildChoosableRowStyle } from '../../tokens/choosableRow';
+import { focusRingOutline } from '../../tokens/focusRing';
 import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import {
@@ -318,15 +319,9 @@ export const SelectItem = ({ children, ...props }: SelectItemProps) => {
         isSelected,
       }) => {
         return {
-          boxSizing: 'border-box',
-          display: 'flex',
-          alignItems: 'center',
-          paddingBlock: vars.spacing.inset.control.md,
-          paddingInline: vars.spacing.inset.control.md,
-          borderRadius: vars.radii.control,
+          ...buildChoosableRowStyle(),
           cursor: isDisabled ? 'not-allowed' : 'pointer',
           opacity: isDisabled ? vars.opacity.disabled : undefined,
-          ...(vars.text.label.md as React.CSSProperties),
           backgroundColor: resolveInteractiveStyle(c?.background, {
             isDisabled,
             isSelected,
@@ -340,7 +335,6 @@ export const SelectItem = ({ children, ...props }: SelectItemProps) => {
               isHovered,
             }) ?? c?.text?.default,
           outline: focusRingOutline(isFocusVisible),
-          outlineOffset: FOCUS_RING_OFFSET,
           transitionProperty: 'background-color, color',
           transitionDuration: vars.motion.feedback.duration,
           transitionTimingFunction: vars.motion.feedback.easing,

@@ -17,6 +17,7 @@ import type {
   ConsequencesFor,
   EvaluationsFor,
 } from '../../semantics';
+import { buildChoosableRowStyle } from '../../tokens/choosableRow';
 import { fslVar } from '../../tokens/escapeHatch';
 import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
@@ -302,15 +303,8 @@ export const MenuItem = ({
       data-composition={composition}
       style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => {
         return {
-          boxSizing: 'border-box',
-          display: 'flex',
-          alignItems: 'center',
+          ...buildChoosableRowStyle(),
           cursor: isDisabled ? 'not-allowed' : 'pointer',
-          borderRadius: vars.radii.control,
-          minHeight: vars.sizing.hit,
-          paddingBlock: vars.spacing.inset.control.sm,
-          paddingInline: vars.spacing.inset.control.md,
-          ...(vars.text.label.md as React.CSSProperties),
           transitionDuration: vars.motion.feedback.duration,
           transitionTimingFunction: vars.motion.feedback.easing,
           transitionProperty: 'background-color, color',
@@ -326,7 +320,6 @@ export const MenuItem = ({
               isDisabled,
             }) ?? colors?.text?.default,
           outline: focusRingOutline(isFocusVisible),
-          outlineOffset: '-1px',
         } as React.CSSProperties;
       }}
     >

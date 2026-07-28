@@ -34,6 +34,7 @@ import {
   ENTITY_STRUCTURE,
   STRUCTURAL_ROLES,
 } from 'src/semantics/taxonomy';
+import { CHOOSABLE_ROW } from 'src/tokens/choosableRow';
 import { FOCUS_RING_OFFSET } from 'src/tokens/focusRing';
 import { ENTITY_TOKEN_MAPPING } from 'src/tokens/projection';
 
@@ -821,6 +822,93 @@ describe('contract: the field family reads one row', () => {
       unmount();
     }
   );
+});
+
+// ---------------------------------------------------------------------------
+// Invariant #13: the choosable row is one decision
+//
+// Five components render a row the user picks from — a Select option, a ComboBox
+// option, a MenuItem, a ListBoxItem, a GridListItem — across three entities. The
+// row is the same physical thing everywhere, so it comes from one source
+// (`CHOOSABLE_ROW`), and this asserts against that source rather than against a
+// peer, for the same reason invariant #11 does.
+//
+// The measurement that made it necessary: three of the five were 44px tall
+// against the other two at 32px, because they wrote `inset.control.md` on the
+// block axis where the others wrote `sm`, and three had **no ergonomic floor at
+// all**. 32px is also what the reference derives for a medium menu row
+// (`component-height-100`) — the field row's content box.
+//
+// The ring is part of the row, not a footnote: four different offsets were in
+// use, two of them hand-written literals duplicating the constant, and the
+// floated `+2px` was measured **clipping** at a scrolled list's edge.
+// ---------------------------------------------------------------------------
+
+describe('contract: the choosable row is one decision', () => {
+  // `[scope, fixture, selector]`. Menu's row is selected by role because
+  // `MenuItem` publishes `data-part="root"` — the same pair as its popover,
+  // which is F-030; the guard reads through it rather than around it.
+  const ROWS: ReadonlyArray<readonly [string, string, string]> = [
+    ['SelectItem', 'SelectItem', '[data-scope="select"][data-part="item"]'],
+    [
+      'ComboBoxItem',
+      'ComboBoxItem',
+      '[data-scope="combo-box"][data-part="item"]',
+    ],
+    ['ListBoxItem', 'ListBoxItem', '[data-scope="list-box"][data-part="item"]'],
+    [
+      'GridListItem',
+      'GridListItem',
+      '[data-scope="grid-list"][data-part="item"]',
+    ],
+    ['MenuItem', 'MenuItem', '[role="menuitem"]'],
+  ];
+
+  test.each(ROWS)(
+    '%s resolves its box from CHOOSABLE_ROW',
+    (_label, fixtureName, selector) => {
+      const fixture = DOM_FIXTURES[fixtureName];
+      const { unmount } = render(fixture.element());
+      fixture.open?.();
+
+      const el = document.querySelector<HTMLElement>(selector);
+
+      expect(el).not.toBeNull();
+
+      const style = (el as HTMLElement).style;
+
+      expect(style.minHeight).toBe(CHOOSABLE_ROW.minHeight);
+      expect(style.paddingBlock).toBe(CHOOSABLE_ROW.insetBlock);
+      expect(style.paddingInline).toBe(CHOOSABLE_ROW.insetInline);
+      expect(style.borderRadius).toBe(CHOOSABLE_ROW.radius);
+      expect(style.outlineOffset).toBe(CHOOSABLE_ROW.focusOffset);
+
+      unmount();
+    }
+  );
+
+  test('the row reads the field row apart from the border the field adds', () => {
+    // Both come from `inset.control.sm` on the block axis and `label.md` for the
+    // type, which is why a 32px option sits under a 34px field without looking
+    // like a different scale. Asserted against the two sources so a change to
+    // either has to be a deliberate change to both.
+    expect(CHOOSABLE_ROW.insetBlock).toBe(FIELD_ROW.insetBlock);
+    expect(CHOOSABLE_ROW.insetInline).toBe(FIELD_ROW.insetInline);
+    expect(CHOOSABLE_ROW.radius).toBe(FIELD_ROW.radius);
+    expect(CHOOSABLE_ROW.text.fontSize).toBe(FIELD_ROW.text.fontSize);
+  });
+
+  test('the row insets its ring by exactly the ring width', () => {
+    // The arithmetic is the guarantee: a ring needs `offset + width` px of room
+    // outside the box, so at `offset = -width` it needs none and cannot clip at
+    // any scroll position. Measured before this held: the focused option in a
+    // scrolled ComboBox list sat 0.11px from the viewport edge against a 4px
+    // ring extent. A literal would not carry the property.
+    expect(CHOOSABLE_ROW.focusOffset).toBe(
+      `calc(-1 * ${vars.focus.ring.width})`
+    );
+    expect(CHOOSABLE_ROW.focusOffset).not.toBe(FOCUS_RING_OFFSET);
+  });
 });
 
 // ---------------------------------------------------------------------------

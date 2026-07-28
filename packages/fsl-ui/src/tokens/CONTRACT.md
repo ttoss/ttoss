@@ -361,6 +361,16 @@ Admitting the roles to `ENTITY_STRUCTURE.Selection` stays available as an FSL go
 decision; three components reaching the same answer is evidence for the internal-part
 treatment, not against it.
 
+**The choosable row.** A row the user picks from — a `Select` option, a `ComboBox` option, a
+`MenuItem`, a `ListBoxItem`, a `GridListItem` — resolves its box from `CHOOSABLE_ROW`
+(`src/tokens/choosableRow.ts`), not from its own component. The five span three entities, and the
+entity decides a row's **colours**, never its geometry: they read the same block inset, inline
+inset, radius and type as the field row, so an option sits under a field at the same rhythm (32px
+row, 34px field — the difference is the border the field draws and the row does not). Its focus ring
+is **inset by exactly the ring width**, because every one of these rows lives in a clipped or
+scrolling surface and a ring needing room outside the box gets cut off at a scroll edge. Asserted by
+contract invariant #13.
+
 Where a control's painted box and its operated element are different nodes, **`control` names
 the element the user operates** — the one that takes focus and holds the value — and the
 painted box is an internal `frame`. Reversing that would make `[data-part="control"]` resolve a

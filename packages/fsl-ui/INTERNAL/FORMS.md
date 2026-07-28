@@ -353,10 +353,59 @@ both modes → commit.
   field. RAC anchors it to the trigger (`placement: 'bottom start'`), so it covers
   what is beneath — which is what an overlay is. F-019 mentioned the overlap
   beside the width; only the width was a defect.
-- **C4. Option row height + the quiet-fill revisit.** Rows measure **44px**
-  against the field row's 34px. Slice 3 deferred S2's quiet-fill Picker surface
-  with "revisit with ComboBox" — this is that revisit; if it resurfaces F-024 /
-  F-029, it is an owner stop.
+- **C4. ✅ The choosable row is one decision; the quiet posture deferred
+  (2026-07-28).** Measuring the whole class first is what shaped it: the family
+  was already **split down the middle**. `MenuItem`, the `ActionMenu` rows and
+  `GridListItem` measured 32px with `inset.control.sm` on the block axis and a
+  `hit` floor; `SelectItem`, `ComboBoxItem` and `ListBoxItem` measured **44px**
+  with `inset.control.md` and **no floor at all**. So three members were right,
+  by hand, and three were 12px taller.
+  32px is also exactly what the reference specifies, derived from its own tokens
+  rather than eyeballed: a medium menu row is
+  `menu-item-top-to-selected-icon-medium` (11px) + `checkmark-icon-size-100`
+  (10px) + 11px = **32px desktop**, and 13 + 14 + 13 = **40px mobile** — the same
+  `component-height-100` ramp a field's height comes from. An option row _is_ the
+  field row's content box: the field adds a 1px border per edge and comes out at
+  34px, the row draws none and comes out at 32px, both from one inset and one
+  type. So `CHOOSABLE_ROW` + `buildChoosableRowStyle` live in the cross-cutting
+  token layer beside `ICON_SLOT_STYLE`, because the five rows span three entities
+  and the entity decides a row's _colours_, never its box. Asserted by contract
+  invariant **#13**, including that the row and the field read the same inset,
+  radius and type size — so changing one has to be a deliberate change to both.
+  **The ring came with it, and it was a real defect rather than untidiness.** Four
+  offsets were in use across the five rows (the constant's `2px`, `2px` twice as a
+  hand-written literal, `-1px`, `-2px`), and measurement settled it: in a scrolled
+  `ComboBox` list the focused option sits **0.11px** from the viewport edge, so a
+  ring needing `offset + width` px of room outside the box is **clipped** — at
+  `+2px` (4px needed) and still at `-1px` (1px needed). Only the negated ring
+  width needs none, so `FOCUS_RING_INSET` is derived from
+  `vars.focus.ring.width` instead of written as a literal, and the property
+  survives a theme that changes the thickness. **C1 had standardised the wrong
+  value here:** it replaced `SelectItem`'s `'2px'` literal with the constant,
+  fixing the hygiene and preserving a value this measurement shows is wrong for a
+  row inside a clipped surface.
+  **The quiet posture is deferred, and it is not the owner stop this plan
+  predicted.** Slice 3's note was accurate: S2 exposes `isQuiet` on `Picker`
+  **only** — not on `TextField`, `NumberField`, `ComboBox`, `Switch` or
+  `Checkbox`. Its tokens describe the posture as an inset collapse
+  (`field-edge-to-border-quiet`, `-text-quiet`, `-visual-quiet` all `0px`,
+  `picker-end-edge-to-disclosure-icon-quiet: 0px`) with the label tightened by
+  `-8px` — an edge-to-edge field rather than a box. Deferred on the evidence rule,
+  for the fourth time in this plan: no Meridian surface wants it (both Studio
+  pickers sit in dialogs, where the boxed field is what makes the target obvious),
+  our default already matches S2's default, and the Studio freeze forbids
+  inventing a consumer. **Readmission criterion:** a surface where a picker sits
+  inside dense content — a table cell, a toolbar — which is also where the boxed
+  field starts to read as noise. It _does_ touch the F-024 axis when it arrives
+  (a quiet field needs a transparent resting fill, the same "borrow the surface,
+  paint nothing" shape, one tree over), so the colour half is the owner's the day
+  a consumer exists; there is nothing to decide until then.
+  **New gap, filed not fixed (F-034):** every row marks keyboard focus with a
+  ring, while the reference marks it with a **background** —
+  `menu-item-background-color-keyboard-focus` sits beside `-hover` and `-down`,
+  and there is no row ring in its token set. Changing that is the focus
+  _language_, and it needs a `focused` background rung the input subtree does not
+  have (`resolveInteractiveStyle` resolves `focusVisible` for `border` only).
 - **D. `SearchField` + `NumberField`.** Adornment parts and the
   `EMBEDDED_TRIGGER` silhouette, so the measured 20 / 25.33 / 32 px triggers
   become one number; the frame/value split closes the last two #12 violations.
@@ -433,8 +482,10 @@ it is a class · ADR when the decision is architectural · FRICTION append per g
 suites green · coverage held at 100 · treeshake within budget · lint · ROADMAP
 entry in the Slice 4 voice.
 
-**Baselines to detect regression:** fsl-ui 2215 tests, fsl-theme 1006, Studio 58;
-treeshake 3212 bytes of 16000.
+**Baselines to detect regression:** fsl-ui 2222 tests, fsl-theme 1006, Studio 58;
+treeshake 3249 bytes of 16000 — up 37 from C4's `FOCUS_RING_INSET`, which lives in a
+module `Button` already imports; `choosableRow.ts` itself shakes out of a
+Button-only bundle, verified by its absence from the output.
 
 **Environment (facts, not assumptions):** Node 24 is `/opt/node24/bin`;
 Playwright resolves only from the repo root and uses

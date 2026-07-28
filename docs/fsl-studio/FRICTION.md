@@ -12,7 +12,7 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 
 ## Open items (derived — the entry below is always the source of truth)
 
-Nineteen open, grouped by the _kind of decision_ each one needs rather than by
+Twenty open, grouped by the _kind of decision_ each one needs rather than by
 severity, because that is what makes a review round plannable. Regenerate by
 grepping `Status:** open`; do not edit an entry through this list.
 
@@ -46,6 +46,7 @@ grepping `Status:** open`; do not edit an entry through this list.
 | F-033 | A standalone/required `Checkbox` or `Switch` turns invalid (measured `aria-invalid`) but has **no message part** — parts are `root, selectionControl, label`. F-009's shape, one family over. |
 | F-032 | The validation message is the same ink as the label (measured light **and** dark), so the invalid state rests on border colour alone. Second half of F-009, on a component whose message part exists. |
 | F-031 | `invalid` outranks `focused`/`active`/`hover` in `STATE_PRIORITY`, so an invalid field goes dead to hover and press. S2 keeps a full cascade inside its negative valence (six tokens). |
+| F-034 | A focused row is marked with an inset ring; the reference marks it with a **background** (`menu-item-background-color-keyboard-focus`), which needs a `focused` background rung the input subtree does not have. |
 
 **Ecosystem / token vocabulary:**
 
@@ -317,3 +318,11 @@ grepping `Status:** open`; do not edit an entry through this list.
 - **◐ `Checkbox` fixed 2026-07-26** (forms item A2): it takes `description` and `errorMessage`, matching S2's own vocabulary — whose documented example is this exact terms-and-conditions checkbox. Three things the work established. (a) The supporting copy cannot simply be placed inside the row: **measured**, the accessible name became `"Accept termsYou agree to the terms."` and a name query for the label alone stopped matching, because React Aria computes the name from the label's content and the label _is_ the row. Pinning the name with `aria-labelledby` and linking the copy with `aria-describedby` fixes it, verified in the Studio where the name is now the label alone. (b) React Aria's `FieldError` **cannot** be used here: it returns `null` unless its context reports invalid, and on a lone `Checkbox` that context stays quiet even while the input carries `aria-invalid="true"` and the form refuses to submit — so the message is gated on the render-prop `isInvalid`, the same flag that already tints the label. (c) The parts are **internal** (no meta), following `CheckboxGroup`, which already emits `description`/`validationMessage` that way — so `Selection` did not have to grow a role.
 - **Still open for `Switch`.** An earlier revision of this entry said React Aria gives `Switch` no description/error contexts; that was wrong — it imports both. Whether it _provides_ them was not verified, so the Switch half stays open and the verification is part of the work.
 - **The `validationBehavior` half of this entry is withdrawn.** It proposed defaulting the prop from Form presence; measurement showed that would be a regression, because `aria` mode does not merely stop displaying native constraints, it **removes** them (`validity.valid` reads `true` on a required field). React Aria's `native` default is already correct in both contexts — see FORMS.md §2b for the five measured cases.
+
+### F-034 — a focused row is marked with a ring; the reference marks it with a background
+
+- **Date:** 2026-07-28 · **Surface:** `@ttoss/fsl-ui` `SelectItem` / `ComboBoxItem` / `MenuItem` / `ListBoxItem` / `GridListItem` · **Severity:** paper-cut · **Status:** open
+- Found while unifying the choosable row in forms C4. Every row we ship marks keyboard focus with an `outline` ring, which C4 made consistent and safe — it is now inset by exactly the ring width, so it cannot be clipped at a scrolled list's edge (measured: the focused option in a scrolled `ComboBox` list sits **0.11px** from the viewport edge, and the previous `+2px` ring was cut off; `-1px`, the other inset in use, still clipped there).
+- **What the reference does differently:** Spectrum's token set has **no** ring for a menu row. It has `menu-item-background-color-keyboard-focus` alongside `-hover`, `-down` and `-default`, plus `menu-item-background-opacity: 0` — so a focused row is marked by its **fill**, in the same dimension as hover, and the ring is reserved for controls that stand on their own. That is a coherent model: inside a list, focus and hover are the same kind of signal (which row am I on), and a ring drawn inside a 32px row competes with the row's own rounded box.
+- **Why not changed here:** it is a change to the focus _language_, not to a row's geometry, and it applies to every row-bearing component at once. It also needs a decision our colour model does not currently have: a `focused` background rung distinct from `hover` in the `input` subtree, so that focus and hover are distinguishable when both are true. `resolveInteractiveStyle` already resolves `focusVisible` for `border`, never for `background`.
+- **Backlog:** decide whether a row's focus signal moves from ring to fill, which needs `input.*.background.focused` (or an explicit ruling that hover's value is reused). Related to F-031 — both are questions about which state wins in the cascade rather than about a component.

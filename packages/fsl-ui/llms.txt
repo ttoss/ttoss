@@ -147,6 +147,12 @@ Input:       TextField, TextArea — each authored EITHER one-line
              longer than the field WRAP; they do not widen the list. A MENU IS
              NOT A PICKER — Menu and Popover size to their own content and keep
              --fsl-menu-min-width / --fsl-popover-max-width.
+             THE CHOOSABLE ROW IS ONE DECISION (Select/ComboBox options, MenuItem,
+             ListBoxItem, GridListItem): 32px = the field row's content box, the
+             same insets/radius/type as the field, `hit` as the ergonomic floor,
+             and the focus ring INSET by the ring's own width because every such
+             row sits in a clipped or scrolling surface. Never tune a row per
+             component — it comes from CHOOSABLE_ROW.
              Pick ComboBox over Select when the option set is too long to scan
              (~10+) or the user may type a value that is not in it
              (allowsCustomValue). ComboBox is Input — the user TYPES and the
