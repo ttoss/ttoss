@@ -1,0 +1,11 @@
+openapi: 3.0.3
+tags:
+  - name: Conflicting
+paths: {}
+components:
+  schemas:
+    Widget:
+      type: object
+      properties:
+        conflictingField:
+          type: string

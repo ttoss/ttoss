@@ -1,0 +1,50 @@
+{
+  "name": "@ttoss/openapi-codegen",
+  "version": "0.1.0",
+  "description": "Generate an SDK-ready merged OpenAPI document and a CLI route manifest from per-module OpenAPI spec files",
+  "keywords": [
+    "cli",
+    "codegen",
+    "openapi",
+    "sdk"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/openapi-codegen"
+  },
+  "license": "MIT",
+  "author": "ttoss",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "jest --projects tests/unit"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.1"
+  },
+  "devDependencies": {
+    "@ttoss/config": "workspace:^",
+    "@types/jest": "^30.0.0",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^24.12.0",
+    "jest": "^30.4.2",
+    "tsdown": "^0.22.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/index.mjs",
+        "types": "./dist/index.d.mts"
+      }
+    },
+    "provenance": true
+  }
+}
