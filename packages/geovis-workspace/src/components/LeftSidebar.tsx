@@ -3,6 +3,7 @@ import { Box, Flex, IconButton, Text } from '@ttoss/ui';
 import type * as React from 'react';
 
 import { useGeovisWorkspace } from '../hooks/useGeovisWorkspace';
+import { resolveMenus } from '../menus';
 import { messages } from '../messages';
 import { MenuButton } from './MenuButton';
 
@@ -10,7 +11,7 @@ import { MenuButton } from './MenuButton';
 const DefaultControlsPanel = () => {
   const { config, selection, setSelection } = useGeovisWorkspace();
 
-  const menus = config.controls?.menus ?? [];
+  const menus = resolveMenus(config);
 
   return (
     <>

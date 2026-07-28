@@ -156,6 +156,33 @@ all clear the same selection via `useDismissGeoVisClick()`, so the panel and
 the map's selection highlight always stay in sync. The panel renders nothing
 when no feature is selected.
 
+For a richer, data-bound detail view, configure the imperative detail API on
+`rightSidebar` instead of overriding the slot. When `onFeatureSelect` (and/or
+`renderDetails`) is set, an accepted click opens the right sidebar, runs
+`onFeatureSelect` for the clicked feature, and hands its `loading`/`error`/
+`data` state to `renderDetails`. `shouldOpen` gates which clicks are accepted —
+return `false` to ignore a click, keeping the current detail and open state.
+The workspace never fetches or caches: `onFeatureSelect` owns the request.
+
+```tsx
+<GeovisWorkspace
+  config={{
+    rightSidebar: {
+      title: 'Details',
+      shouldOpen: (info) => info.layerId === 'kitchens',
+      onFeatureSelect: (info) =>
+        fetch(`/api/kitchens/${info.featureId}`).then((r) => r.json()),
+      renderDetails: ({ loading, error, data }) => {
+        if (loading) return <Spinner />;
+        if (error || !data) return null;
+        return <KitchenDetail kitchen={data as Kitchen} />;
+      },
+    },
+  }}
+  visualizationSpec={visualizationSpec}
+/>
+```
+
 ## Metadata
 
 The `metadata` slot's default panel needs no config: it reads the current
@@ -209,13 +236,13 @@ import { GeovisWorkspace, LayerListControls } from '@ttoss/geovis-workspace';
 
 ### `GeovisWorkspaceConfig`
 
-| Property       | Type                                                                  | Description                                            |
-| -------------- | --------------------------------------------------------------------- | ------------------------------------------------------ |
-| `slots`        | `Partial<Record<GeovisWorkspaceSlotName, GeovisWorkspaceSlotConfig>>` | Per-slot override/hide. Omit an entry for the default. |
-| `controls`     | `GeovisWorkspaceControls`                                             | Content for the `controls` slot's default panel.       |
-| `legend`       | `GeovisWorkspaceLegendConfig`                                         | Content for the `legend` slot's default panel.         |
-| `leftSidebar`  | `GeovisWorkspaceSidebarState`                                         | Left sidebar open/closed state.                        |
-| `rightSidebar` | `GeovisWorkspaceRightSidebarState`                                    | Right sidebar title and open/closed state.             |
+| Property       | Type                                                                  | Description                                             |
+| -------------- | --------------------------------------------------------------------- | ------------------------------------------------------- |
+| `slots`        | `Partial<Record<GeovisWorkspaceSlotName, GeovisWorkspaceSlotConfig>>` | Per-slot override/hide. Omit an entry for the default.  |
+| `controls`     | `GeovisWorkspaceControls`                                             | Content for the `controls` slot's default panel.        |
+| `legend`       | `GeovisWorkspaceLegendConfig`                                         | Content for the `legend` slot's default panel.          |
+| `leftSidebar`  | `GeovisWorkspaceLeftSidebarState`                                     | Left sidebar menus and open/closed state.               |
+| `rightSidebar` | `GeovisWorkspaceRightSidebarState`                                    | Right sidebar title, open/closed state, and detail API. |
 
 ### `GeovisWorkspaceSlotName`
 
@@ -245,12 +272,16 @@ breaking.
 | `items`        | `{ value: string; label: string }[]` | Selectable items.                      |
 | `defaultValue` | `string`                             | Item selected by default in the group. |
 
-### `GeovisWorkspaceSidebarState` / `GeovisWorkspaceRightSidebarState`
+### `GeovisWorkspaceSidebarState` / `GeovisWorkspaceLeftSidebarState` / `GeovisWorkspaceRightSidebarState`
 
-| Property       | Type                 | Description                                              |
-| -------------- | -------------------- | -------------------------------------------------------- |
-| `initialState` | `'open' \| 'closed'` | Whether the sidebar starts open. Defaults to `'closed'`. |
-| `title`        | `string`             | Right sidebar only: title shown at the top.              |
+| Property          | Type                                                     | Description                                                                                     |
+| ----------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `initialState`    | `'open' \| 'closed'`                                     | Whether the sidebar starts open. Defaults to `'closed'`.                                        |
+| `menus`           | `GeovisWorkspaceMenu[]`                                  | Left sidebar only: alias for `controls.menus`. `controls.menus` wins when both are set.         |
+| `title`           | `string`                                                 | Right sidebar only: title shown at the top.                                                     |
+| `shouldOpen`      | `(info: MapClickInfo) => boolean`                        | Right sidebar only: gate deciding whether a click drives the inspector. Defaults to accepting.  |
+| `onFeatureSelect` | `(info: MapClickInfo) => Promise<unknown>`               | Right sidebar only: fetches the clicked feature's detail; its promise drives `renderDetails`.   |
+| `renderDetails`   | `(state: GeovisWorkspaceDetailState) => React.ReactNode` | Right sidebar only: renders the `inspector` slot from the `loading`/`error`/`data` fetch state. |
 
 ### `GeovisWorkspaceLegendConfig`
 

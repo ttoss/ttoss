@@ -3,6 +3,8 @@ import { useI18n } from '@ttoss/react-i18n';
 import { Flex, IconButton, Text } from '@ttoss/ui';
 import type * as React from 'react';
 
+import { useFeatureDetail } from '../hooks/useFeatureDetail';
+import { useGeovisWorkspace } from '../hooks/useGeovisWorkspace';
 import { messages } from '../messages';
 
 /**
@@ -72,5 +74,38 @@ export const InspectorPanel = () => {
         {String(click.featureId)}
       </Text>
     </Flex>
+  );
+};
+
+/**
+ * `inspector` slot content for the imperative detail API: renders
+ * `rightSidebar.renderDetails` from the current fetch state (see
+ * {@link useFeatureDetail}). Calling the hook also opens the sidebar and runs
+ * `onFeatureSelect` on accepted clicks, so it stays mounted even while it has
+ * nothing to render yet. Renders nothing until an accepted click produces state.
+ */
+export const DetailPanel = () => {
+  const { config } = useGeovisWorkspace();
+  const detail = useFeatureDetail();
+
+  const renderDetails = config.rightSidebar?.renderDetails;
+  if (!renderDetails || !detail) return null;
+
+  return <>{renderDetails(detail)}</>;
+};
+
+/**
+ * Default `inspector` slot component: the imperative {@link DetailPanel} when
+ * the right sidebar configures `onFeatureSelect`/`renderDetails`, otherwise the
+ * built-in {@link InspectorPanel}.
+ */
+export const InspectorSlot = () => {
+  const { config } = useGeovisWorkspace();
+  const rightSidebar = config.rightSidebar;
+
+  return rightSidebar?.onFeatureSelect || rightSidebar?.renderDetails ? (
+    <DetailPanel />
+  ) : (
+    <InspectorPanel />
   );
 };

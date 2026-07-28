@@ -7,10 +7,10 @@ export default jestUnitConfig({
   transformIgnorePatterns: getTransformIgnorePatterns(),
   coverageThreshold: {
     global: {
-      statements: 99.05,
-      branches: 97.15,
-      functions: 98.45,
-      lines: 99.45,
+      statements: 99.2,
+      branches: 97.75,
+      functions: 98.7,
+      lines: 99.55,
     },
   },
 });
