@@ -627,6 +627,10 @@
                 "type": "string",
                 "minLength": 1
               },
+              "thumbnail": {
+                "type": "string",
+                "minLength": 1
+              },
               "layers": {
                 "type": "array",
                 "items": {
@@ -660,6 +664,9 @@
           "type": "number"
         },
         "maxZoomIn": {
+          "type": "number"
+        },
+        "maxZoomOut": {
           "type": "number"
         },
         "pitch": {
