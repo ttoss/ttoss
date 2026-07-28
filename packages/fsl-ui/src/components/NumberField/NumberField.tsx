@@ -2,18 +2,20 @@ import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
 import {
   Button as RACButton,
-  FieldError as RACFieldError,
   Group as RACGroup,
   Input as RACInput,
-  Label as RACLabel,
   NumberField as RACNumberField,
   type NumberFieldProps as RACNumberFieldProps,
-  Text as RACText,
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
 import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import {
+  FieldDescriptionPart,
+  FieldLabelPart,
+  FieldValidationMessagePart,
+} from '../Field/anatomy';
 import { Icon } from '../Icon';
 
 // ---------------------------------------------------------------------------
@@ -118,18 +120,6 @@ const buildStepperStyle = ({
   };
 };
 
-/**
- * Resolve the field's text colors once (default for label/description/input,
- * invalid for the validation message). Hoisted out of the render so the
- * optional-chain reads keep the component's cyclomatic complexity low.
- */
-const resolveFieldTextColors = (
-  c: InputColors
-): { base: string | undefined; invalid: string | undefined } => {
-  const text = c?.text;
-  return { base: text?.default, invalid: text?.invalid ?? text?.default };
-};
-
 /** The `<input>` itself — borderless; the surrounding `Group` owns the frame. */
 const buildInputStyle = (c: InputColors): React.CSSProperties => {
   return {
@@ -203,7 +193,6 @@ export const NumberField = ({
   ...props
 }: NumberFieldProps) => {
   const c = vars.colors.input.primary;
-  const { base, invalid } = resolveFieldTextColors(c);
 
   return (
     <RACNumberField
@@ -218,16 +207,13 @@ export const NumberField = ({
       }}
     >
       {label != null && (
-        <RACLabel
-          data-scope="number-field"
-          data-part="label"
-          style={{
-            ...(vars.text.label.md as React.CSSProperties),
-            color: base,
-          }}
+        <FieldLabelPart
+          scope="number-field"
+          colors={c}
+          isRequired={props.isRequired}
         >
           {label}
-        </RACLabel>
+        </FieldLabelPart>
       )}
 
       <RACGroup
@@ -272,29 +258,14 @@ export const NumberField = ({
       </RACGroup>
 
       {description != null && (
-        <RACText
-          slot="description"
-          data-scope="number-field"
-          data-part="description"
-          style={{
-            ...(vars.text.label.sm as React.CSSProperties),
-            color: base,
-          }}
-        >
+        <FieldDescriptionPart scope="number-field" colors={c}>
           {description}
-        </RACText>
+        </FieldDescriptionPart>
       )}
 
-      <RACFieldError
-        data-scope="number-field"
-        data-part="validationMessage"
-        style={{
-          ...(vars.text.label.sm as React.CSSProperties),
-          color: invalid,
-        }}
-      >
+      <FieldValidationMessagePart scope="number-field" colors={c}>
         {errorMessage}
-      </RACFieldError>
+      </FieldValidationMessagePart>
     </RACNumberField>
   );
 };

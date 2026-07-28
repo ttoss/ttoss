@@ -80,7 +80,20 @@ const InviteDialog = () => {
                   <TextFieldControl />
                   <TextFieldError />
                 </TextField>
-                <Select label="Role" name="role" defaultSelectedKey="Developer">
+                {/*
+                  The role is now chosen rather than defaulted. It used to
+                  default to Developer, which meant an invite could silently
+                  grant deploy access to someone nobody picked a role for — and
+                  the field had no way to insist, because until F-009 closed a
+                  Select could only turn red without saying why.
+                */}
+                <Select
+                  label="Role"
+                  name="role"
+                  isRequired
+                  placeholder="Choose a role"
+                  description="Admins manage billing and members; Viewers are read-only."
+                >
                   <SelectItem id="Admin">Admin</SelectItem>
                   <SelectItem id="Developer">Developer</SelectItem>
                   <SelectItem id="Viewer">Viewer</SelectItem>

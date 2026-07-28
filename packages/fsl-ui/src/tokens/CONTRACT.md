@@ -352,6 +352,15 @@ entity's role vocabulary (`Slider`'s `track`/`fill`/`labelRow`, `ComboBox`'s
 has no role for stays addressable without growing the taxonomy nominally (ADR-008). They are
 still bound by the uniqueness rule above.
 
+The clearest case is the field envelope on a **`Selection`** root. `Select`, `CheckboxGroup`
+and `RadioGroup` each render `description` and `validationMessage`, and neither is a legal
+`Selection` structural role — the roles are root/control/label/indicator/selectionControl/item,
+and those two belong to `Input`. All three ship them as internal parts, so no illegal role is
+ever claimed and the vocabulary does not grow for three components that borrow one shape.
+Admitting the roles to `ENTITY_STRUCTURE.Selection` stays available as an FSL governance
+decision; three components reaching the same answer is evidence for the internal-part
+treatment, not against it.
+
 Where a control's painted box and its operated element are different nodes, **`control` names
 the element the user operates** — the one that takes focus and holds the value — and the
 painted box is an internal `frame`. Reversing that would make `[data-part="control"]` resolve a

@@ -3,12 +3,12 @@ import type * as React from 'react';
 import {
   Button as RACButton,
   Input as RACInput,
-  Label as RACLabel,
   type LabelProps as RACLabelProps,
   SearchField as RACSearchField,
   type SearchFieldProps as RACSearchFieldProps,
 } from 'react-aria-components';
 
+import { FieldLabelPart } from '../../components/Field/anatomy';
 import { Icon } from '../../components/Icon';
 import type { ComponentMeta } from '../../semantics';
 import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
@@ -18,13 +18,18 @@ import { createCompositeScope } from '../scope';
 
 // ---------------------------------------------------------------------------
 // Composite scope — shares the (required, caller-localized) clear-button label
-// from the root down to the control that renders the button. Doubles as the
-// presence guard for the sub-parts.
+// from the root down to the control that renders the button, and the field's
+// `isRequired` flag down to the label, which cannot otherwise know: React Aria
+// tells a label nothing about its field, and the necessity marker belongs beside
+// the label's own text. The flag is taken from the root's render props rather
+// than its prop, because that is the authoritative value.
+// Doubles as the presence guard for the sub-parts.
 // ---------------------------------------------------------------------------
 
-const searchFieldScope = createCompositeScope<{ clearLabel: string }>(
-  'SearchField'
-);
+const searchFieldScope = createCompositeScope<{
+  clearLabel: string;
+  isRequired: boolean;
+}>('SearchField');
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -116,9 +121,13 @@ export const SearchField = ({
         } as React.CSSProperties
       }
     >
-      <searchFieldScope.Provider value={{ clearLabel }}>
-        {children}
-      </searchFieldScope.Provider>
+      {({ isRequired }) => {
+        return (
+          <searchFieldScope.Provider value={{ clearLabel, isRequired }}>
+            {children}
+          </searchFieldScope.Provider>
+        );
+      }}
     </RACSearchField>
   );
 };
@@ -129,20 +138,14 @@ export type SearchFieldLabelProps = Omit<RACLabelProps, 'style' | 'className'>;
 
 /** The label slot of a SearchField. */
 export const SearchFieldLabel = (props: SearchFieldLabelProps) => {
-  searchFieldScope.use(searchFieldLabelMeta.displayName);
-  const colors = vars.colors.input.primary;
+  const { isRequired } = searchFieldScope.use(searchFieldLabelMeta.displayName);
 
   return (
-    <RACLabel
+    <FieldLabelPart
       {...props}
-      data-scope="search-field"
-      data-part="label"
-      style={
-        {
-          color: colors?.text?.default,
-          ...(vars.text.label.md as React.CSSProperties),
-        } as React.CSSProperties
-      }
+      scope="search-field"
+      colors={vars.colors.input.primary}
+      isRequired={isRequired}
     />
   );
 };

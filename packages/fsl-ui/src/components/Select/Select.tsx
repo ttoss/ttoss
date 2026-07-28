@@ -2,7 +2,6 @@ import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
 import {
   Button as RACButton,
-  Label as RACLabel,
   ListBox as RACListBox,
   ListBoxItem as RACListBoxItem,
   type ListBoxItemProps as RACListBoxItemProps,
@@ -17,7 +16,13 @@ import type { ComponentMeta } from '../../semantics';
 import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
-import { buildFieldControlStyle, buildFieldRootStyle } from '../Field/anatomy';
+import {
+  buildFieldControlStyle,
+  buildFieldRootStyle,
+  FieldDescriptionPart,
+  FieldLabelPart,
+  FieldValidationMessagePart,
+} from '../Field/anatomy';
 import { Icon } from '../Icon';
 
 // ---------------------------------------------------------------------------
@@ -32,6 +37,21 @@ import { Icon } from '../Icon';
 //
 // Validation feedback is driven by React Aria's `isInvalid` (or `validate`
 // callback) and surfaces via the `invalid` token State on the trigger.
+//
+// FRICTION LOG (F-009, closed here). `Select` had nowhere to render a message:
+// it could turn its trigger red and no more, so the Studio's invite form
+// hand-assembled a live region under it. The parts land the same way
+// `CheckboxGroup`'s did — the Selection entity's structural roles are
+// root/control/label/indicator/selectionControl/item, with **no** `description`
+// or `validationMessage` (those are Input's), so both ship as INTERNAL
+// data-parts carrying no `*Meta` and therefore claiming no legality. React Aria
+// makes them work regardless: `Select` provides `TextContext` with
+// `description`/`errorMessage` slots and a `FieldErrorContext` holding its real
+// validation state (read in `Select.mjs`), which is why `FieldError` renders
+// here while on a lone `Checkbox` it could not. Widening
+// `ENTITY_STRUCTURE.Selection` stays a governance decision for the day a
+// component needs these as *declared* identities; today the evidence does not
+// justify it, and this is the second component to reach that same answer.
 // ---------------------------------------------------------------------------
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -50,18 +70,6 @@ export const selectItemMeta = {
 } as const satisfies ComponentMeta<'Selection'>;
 
 type InputColors = typeof vars.colors.input.primary;
-
-/** Trigger label color — invalid dominates default (Selection has no evaluation). */
-const resolveSelectLabelColor = ({
-  c,
-  isInvalid,
-}: {
-  c: InputColors;
-  isInvalid?: boolean;
-}): string | undefined => {
-  const text = c?.text;
-  return isInvalid ? text?.invalid : text?.default;
-};
 
 /** Dropdown popover surface style — Selection-entity chrome. */
 const buildPopoverStyle = (c: InputColors): React.CSSProperties => {
@@ -89,6 +97,15 @@ export interface SelectProps<T extends object = object> extends Omit<
 > {
   /** Label displayed above the trigger button. */
   label?: React.ReactNode;
+  /** Supplementary helper text linked to the field via `aria-describedby`. */
+  description?: React.ReactNode;
+  /**
+   * Validation message shown when the field is invalid. Supply
+   * caller-localized copy (i18n rule / §6). Leave it out and the platform's own
+   * constraint message is shown instead — already localized, and the better
+   * copy for a required field.
+   */
+  errorMessage?: React.ReactNode;
   /**
    * Placeholder shown in the trigger when no value is selected.
    *
@@ -110,11 +127,24 @@ export interface SelectProps<T extends object = object> extends Omit<
  *
  * Entity = Selection, interaction = `select.single`. Validation feedback is
  * driven by React Aria's `isInvalid` and surfaces on the trigger via the
- * `invalid` token State.
+ * `invalid` token State — and, since F-009 closed, in a `validationMessage`
+ * part, so an invalid choice can state why inside the system.
+ *
+ * A required `Select` blocks its `Form`'s submit and focus returns to the
+ * **trigger**: React Aria submits the value through a visually hidden
+ * `<select required>` and forwards its focus to the trigger button (read in
+ * `HiddenSelect.mjs`). That hidden element is what `onInvalid` reports as its
+ * target, so a `Select` is the one field whose event target is not the part
+ * carrying `data-part="control"`.
  *
  * @example
  * ```tsx
- * <Select label="Framework" placeholder="Choose a framework">
+ * <Select
+ *   label="Framework"
+ *   placeholder="Choose a framework"
+ *   description="Only the runtime changes; your data stays."
+ *   isRequired
+ * >
  *   <SelectItem id="react">React</SelectItem>
  *   <SelectItem id="vue">Vue</SelectItem>
  *   <SelectItem id="angular">Angular</SelectItem>
@@ -123,6 +153,8 @@ export interface SelectProps<T extends object = object> extends Omit<
  */
 export const Select = <T extends object = object>({
   label,
+  description,
+  errorMessage,
   placeholder = 'Select…',
   children,
   ...props
@@ -136,21 +168,22 @@ export const Select = <T extends object = object>({
       data-part="root"
       style={buildFieldRootStyle()}
     >
-      {({ isInvalid }) => {
+      {({ isInvalid, isRequired }) => {
         return (
           <>
-            {/* label */}
-            {label && (
-              <RACLabel
-                data-scope="select"
-                data-part="label"
-                style={{
-                  ...(vars.text.label.md as React.CSSProperties),
-                  color: resolveSelectLabelColor({ c, isInvalid }),
-                }}
-              >
+            {/*
+              The label reads the family's neutral ink. It alone used to tint
+              itself `text.invalid` when the field was invalid — a divergence
+              that stayed invisible because F-032 measured that token as the same
+              ink as `text.default` in both modes. It is dropped rather than
+              spread: when F-032 lands a real negative ink, a whole label turning
+              red is not the language (the reference tints the message and the
+              chrome, never the name of the field).
+            */}
+            {label != null && (
+              <FieldLabelPart scope="select" colors={c} isRequired={isRequired}>
                 {label}
-              </RACLabel>
+              </FieldLabelPart>
             )}
 
             {/* trigger — the button that opens the dropdown */}
@@ -216,6 +249,21 @@ export const Select = <T extends object = object>({
                 <Icon intent="disclosure.expand" size="text" />
               </span>
             </RACButton>
+
+            {description != null && (
+              <FieldDescriptionPart scope="select" colors={c}>
+                {description}
+              </FieldDescriptionPart>
+            )}
+
+            {/*
+              Always mounted: with no `errorMessage` React Aria falls back to the
+              platform's own constraint copy, which is the localized message we
+              could not ship ourselves (ADR-001).
+            */}
+            <FieldValidationMessagePart scope="select" colors={c}>
+              {errorMessage}
+            </FieldValidationMessagePart>
 
             {/* dropdown popover */}
             <RACPopover

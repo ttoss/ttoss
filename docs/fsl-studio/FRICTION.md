@@ -31,7 +31,6 @@ grepping `Status:** open`; do not edit an entry through this list.
 | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | F-002 | `Link` cannot mark `aria-current`: the theme ships `navigation.*.text.current` and nothing reads it. (F-017 is its evidence: the Studio uses vertical `Tabs` as navigation to work around it.) |
 | F-004 | No named narrow width step (an auth card, ~20–26rem) between `reading` and `surface`.                                                                                                          |
-| F-009 | `Select` has no validation-message part, unlike `TextField`/`ComboBox`.                                                                                                                        |
 | F-010 | No neutral tag primitive for descriptive (non-status) labels.                                                                                                                                  |
 | F-016 | No semantic list primitive for content lists.                                                                                                                                                  |
 | F-019 | Anchored popovers size to content, not to their trigger — needs the `--trigger-width` namespace decision.                                                                                      |
@@ -114,9 +113,12 @@ grepping `Status:** open`; do not edit an entry through this list.
 
 ### F-009 — `Select` has no validation-message part
 
-- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` `Select` (+ `Text` tones) · **Severity:** gap · **Status:** open
-- `TextField` composes `TextFieldError`; `Select` only tints its trigger via the `invalid` State — there is nowhere to render the message. The invite form hand-assembles a live-region `Text` under the Select, and `Text` has no negative/danger tone, so the message cannot even be tinted in-system.
-- **Backlog:** a `SelectError` part (mirroring `TextFieldError`), and/or a negative tone in the `Text` vocabulary for error copy.
+- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` `Select` (+ `Text` tones) · **Severity:** gap · **Status:** ✅ fixed (2026-07-28 — forms C2)
+- `TextField` composes `TextFieldError`; `Select` only tinted its trigger via the `invalid` State — there was nowhere to render the message. The invite form hand-assembled a live-region `Text` under the Select, and `Text` has no negative/danger tone, so the message could not even be tinted in-system.
+- **Action:** `Select` takes `description` + `errorMessage`, rendering React Aria's `Text slot="description"` and `FieldError` — which work here although they are dead on a lone `Checkbox`, because `Select` supplies a `FieldErrorContext` holding its real validation state (read in `Select.mjs`). Both are INTERNAL data-parts, the resolution `CheckboxGroup` already reached: the Selection entity has no `description`/`validationMessage` structural role and the evidence still does not justify widening the vocabulary.
+- **The gap was a class, not an instance, and measuring it is what showed that.** Probed across all nine field roots before writing anything: the necessity marker B1 shipped reached **three** of them, `RadioGroup` had F-009's exact shape one family over, and three files carried a private helper computing colours the anatomy already computed. So the fix is one shared envelope (`FieldLabelPart` / `FieldDescriptionPart` / `FieldValidationMessagePart` in `Field/anatomy.tsx`), taking `scope` as a prop so no published attribute changes, with a table-driven guard over the family and a named exception list for `Switch` and `Slider`.
+- **Found while measuring it, and fixed in the same pass:** a split control's **frame** declared no type, so the same `ComboBox` resolved `16px` in Storybook and `18px` inside the Studio's invite dialog — an undeclared frame inherits the host's paragraph size and hands it to every adornment in it. The row's type now sits on the frame too, asserted by invariant #11 for both control shapes.
+- **What is still open here** is the second half, tracked as F-032: the message renders in the same ink as the label. Re-measured on `Select`'s new part in both modes — `rgb(22,22,22)` light, `rgb(255,255,255)` dark — while its trigger border carries `rgb(220,38,38)` / `rgb(252,165,165)`, byte-identical to `TextField`'s invalid border.
 
 ### F-010 — no neutral tag primitive for descriptive labels
 
@@ -294,11 +296,12 @@ grepping `Status:** open`; do not edit an entry through this list.
 
 ### F-032 — the validation message carries no valence: only the border is red
 
-- **Date:** 2026-07-26 · **Surface:** `@ttoss/fsl-ui` `TextField`/`TextArea` `validationMessage` + `@ttoss/fsl-theme` `input.primary.text.invalid` · **Severity:** gap · **Status:** open
+- **Date:** 2026-07-26 · **Surface:** every field's `validationMessage` + `@ttoss/fsl-theme` `input.primary.text.invalid` · **Severity:** gap · **Status:** open
 - Measures the second half of what **F-009** predicted ("`Text` has no negative/danger tone, so the message cannot even be tinted in-system"), on a component where the message part _does_ exist. Found while screenshotting the `Invalid` story during P3 Slice 5 ⓠ.
 - **Measured** on `Input/TextField` › `Invalid` at 1280px: the validation message resolves `rgb(22,22,22)` in light and `rgb(255,255,255)` in dark — **byte-identical to the label beside it** — while the control's border carries `rgb(220,38,38)` / `rgb(252,165,165)`. So the error copy is typographically indistinguishable from the hint copy, and the whole valence rests on one border.
 - **Not a bug in the component.** `input.primary.text.invalid` is _deliberately_ the control's readable-value colour — the theme's own comment says the value stays readable and the valence lives on the border. The gap is that the envelope has no ink for error copy, so `TextFieldError` reads the only `invalid` text token there is and gets neutral ink.
 - **Consequence beyond aesthetics:** with the message unstyled, the invalid state is signalled by border colour alone, which is the WCAG 1.4.1 shape (colour as the only carrier) that the in-control validation glyph is meant to answer.
+- **Widened, not re-found (2026-07-28, forms C2):** the same measurement on `Select`'s new message part, in both modes — `rgb(22,22,22)` light, `rgb(255,255,255)` dark, with the trigger border at `rgb(220,38,38)` / `rgb(252,165,165)` byte-identical to `TextField`'s. It is one token's absence reaching every field, which is why the fix is a token and not a component.
 - **Backlog:** part of the validation-language decision (ADR-024, P3 Slice 5 ④) — a `negative` tone for envelope copy, alongside the in-control glyph. `buildFieldTextPartStyle` already takes the `tone` parameter, so the component side is a one-line change once the token exists; today `negative` resolves to the same ink as `neutral`, which its JSDoc states with the measurement above.
 
 ### F-033 — a standalone `Checkbox`/`Switch` can turn invalid but cannot say why

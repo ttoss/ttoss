@@ -79,9 +79,19 @@ Selection:   Checkbox, CheckboxGroup, RadioGroup/Radio, Switch,
              absorbed into the name), and the message shows only while invalid.
              A lone required Checkbox in a Form blocks submit; Switch has no
              message part yet (F-033).
-             CheckboxGroup group-level isInvalid propagates to child Checkboxes;
-             its label part is Selection/label, but description + validationMessage
-             are internal parts — Selection has no such structural roles.
+             CheckboxGroup group-level isInvalid propagates to child Checkboxes.
+             Select, CheckboxGroup and RadioGroup all take label/description/
+             errorMessage: their label part is Selection/label, but description
+             and validationMessage are INTERNAL parts — Selection has no such
+             structural roles (they belong to Input), so they carry no meta and
+             claim no legality. All three are addressable as
+             [data-scope=…][data-part=validationMessage] regardless.
+             Select also takes placeholder (shown until something is picked).
+             A required Select blocks its Form's submit and focus returns to the
+             TRIGGER: RAC submits the value through a visually hidden
+             <select required>, which is also what onInvalid reports as its
+             target — the one field whose event target is not the element
+             carrying data-part="control".
              TagGroup/Tag: a chosen tag uses the `selected` State, NOT `pressed`
              — a tag is set membership, not a toggle; remove button is an
              internal closeTrigger part (not a Selection role))
@@ -99,6 +109,19 @@ Collection:  ListBox/ListBoxItem, GridList/GridListItem (+ Menu/MenuItem,
              on the naming column. Selection: selectionMode single|multiple,
              row click toggles (no checkbox column yet). Use for column-
              aligned data; GridList is for single-column rows.
+THE FIELD ENVELOPE — one rule for every field, Input and Selection alike:
+             root ▸ label ▸ control ▸ description ▸ validationMessage. The label
+             carries the necessity marker when the field isRequired: an
+             aria-hidden asterisk, because the control already carries the native
+             `required` attribute and a second announcement is noise. Turn it off
+             for a whole form with <Form necessityIndicator="none"> — the field
+             stays required either way. The message part is always mounted, so
+             omitting errorMessage shows the platform's own localized constraint
+             copy. Two exceptions, each with its mechanism: a lone Checkbox or
+             Switch renders its copy inline inside its own <label> (which is why
+             the accessible name is pinned via aria-labelledby), and Switch has no
+             validation props at all in RAC (F-033); Slider gets no
+             FieldErrorContext, because a slider always holds an in-range value.
 Input:       TextField, TextArea — each authored EITHER one-line
              (label/description/errorMessage/placeholder props) OR by composing
              its slots (Label/Control/Description/Error). The two are mutually
@@ -123,7 +146,6 @@ Input:       TextField, TextArea — each authored EITHER one-line
              list narrows; Select is Selection — picking from a closed set is
              the only act. Filtering matches the option's visible TEXT, not its
              id. Items are Selection/item (ADR-007 split, same as SelectItem).
-             Unlike Select it ships a validationMessage part.
 Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
              DialogActions, Menu, MenuTrigger, ConfirmationDialog,
              Popover, PopoverTrigger, Tooltip, TooltipTrigger

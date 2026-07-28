@@ -686,6 +686,7 @@ describe('contract: the field family reads one row', () => {
       // default decides it otherwise, and `<input>` and `<button>` disagree.
       expect(style.textAlign).toBe('start');
       expect(style.outlineOffset).toBe(FOCUS_RING_OFFSET);
+      expect(style.fontSize).toBe(FIELD_ROW.text.fontSize);
 
       unmount();
     }
@@ -702,6 +703,11 @@ describe('contract: the field family reads one row', () => {
       expect(frame.minHeight).toBe(vars.sizing.hit);
       expect(frame.borderRadius).toBe(FIELD_ROW.radius);
       expect(frame.outlineOffset).toBe(FOCUS_RING_OFFSET);
+      // The frame declares the row's type although it renders no text: measured
+      // at 16px in Storybook and 18px in the Studio's dialog before it did,
+      // because an undeclared frame inherits the host's paragraph size and
+      // hands it to every adornment placed inside it.
+      expect(frame.fontSize).toBe(FIELD_ROW.text.fontSize);
 
       expect(value.paddingBlock).toBe(FIELD_ROW.insetBlock);
       expect(value.paddingInline).toBe(FIELD_ROW.insetInline);

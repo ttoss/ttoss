@@ -8,6 +8,23 @@ beforeEach(() => {
   resetWorkspace();
 });
 
+/**
+ * Pick the role. It is required and starts unselected on purpose — an invite
+ * that silently granted Developer was the behaviour F-009's fix let the form
+ * refuse.
+ */
+const pickRole = async (
+  user: ReturnType<typeof userEvent.setup>,
+  dialog: HTMLElement,
+  role: string
+) => {
+  // The trigger's name is value-then-label ("Choose a role Role"), React Aria's
+  // own `aria-labelledby` order — and the necessity marker is absent from it,
+  // which is the point of hiding the asterisk from assistive tech.
+  await user.click(within(dialog).getByRole('button', { name: /Role$/ }));
+  await user.click(await screen.findByRole('option', { name: role }));
+};
+
 describe('TeamPage', () => {
   test('renders the full roster', () => {
     render(<TeamPage />);
@@ -32,6 +49,7 @@ describe('TeamPage', () => {
       within(dialog).getByRole('textbox', { name: 'Email' }),
       'joao@northline.dev'
     );
+    await pickRole(user, dialog, 'Developer');
     await user.click(
       within(dialog).getByRole('checkbox', {
         name: /grants deploy access/,
@@ -67,6 +85,7 @@ describe('TeamPage', () => {
     await user.type(timezone, 'Toky');
     await user.click(await screen.findByRole('option', { name: 'Tokyo' }));
 
+    await pickRole(user, dialog, 'Developer');
     await user.click(
       within(dialog).getByRole('checkbox', {
         name: /grants deploy access/,
@@ -101,6 +120,7 @@ describe('TeamPage', () => {
     );
     // Clearing reopens the list; Escape dismisses it without restoring a zone.
     await user.keyboard('{Escape}');
+    await pickRole(user, dialog, 'Developer');
     await user.click(
       within(dialog).getByRole('checkbox', {
         name: /grants deploy access/,
@@ -129,6 +149,7 @@ describe('TeamPage', () => {
       within(dialog).getByRole('textbox', { name: 'Email' }),
       'not-an-email'
     );
+    await pickRole(user, dialog, 'Developer');
     await user.click(
       within(dialog).getByRole('checkbox', {
         name: /grants deploy access/,
@@ -141,6 +162,40 @@ describe('TeamPage', () => {
     expect(
       await within(dialog).findByText('Enter a valid email address.')
     ).toBeInTheDocument();
+    expect(screen.getByText('5 members')).toBeInTheDocument();
+  });
+
+  test('an invite with no role is blocked, and the Select says so', async () => {
+    const user = userEvent.setup();
+    render(<TeamPage />);
+
+    await user.click(screen.getByRole('button', { name: 'Invite member' }));
+    const dialog = await screen.findByRole('dialog', {
+      name: 'Invite member',
+    });
+
+    await user.type(
+      within(dialog).getByRole('textbox', { name: 'Email' }),
+      'caio@northline.dev'
+    );
+    await user.click(
+      within(dialog).getByRole('checkbox', {
+        name: /grants deploy access/,
+      })
+    );
+    await user.click(
+      within(dialog).getByRole('button', { name: 'Send invite' })
+    );
+
+    // F-009's payoff in a real flow: before the Select had a message part it
+    // could only turn red, so this gate could not exist. Queried through the
+    // published anatomy — the contract a consumer is allowed to rely on. The
+    // copy is the platform's own, already localized, which is why the form
+    // ships none.
+    const message = dialog.querySelector(
+      '[data-scope="select"][data-part="validationMessage"]'
+    );
+    expect(message).toHaveTextContent(/\S/);
     expect(screen.getByText('5 members')).toBeInTheDocument();
   });
 

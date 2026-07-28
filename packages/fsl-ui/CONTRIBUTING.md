@@ -586,6 +586,43 @@ Re-litigation answers:
 
 Two details that are decisions, not incidents. `placeholder` is forwarded to the control rather than spread onto the root, because React Aria deliberately **omits** `placeholder` (and `label`, `description`, `errorMessage`) from `TextFieldProps` — they belong to the parts, and the one-line form is what puts them back. And the one-line form **always mounts the message slot**, even with no `errorMessage`: React Aria's `FieldError` renders only while invalid, so mounting it costs nothing and buys the platform's own constraint copy for `isRequired`/`type="email"` — already localized, which is copy we could never ship ourselves (ADR-001). Asserted by `fieldAuthoring.test.tsx` against a real failed submit, because a controlled `isInvalid` alone produces no message and would have made a weaker test pass.
 
+**Addendum 2026-07-28 — the envelope parts (forms item C2).** Item A rejected an
+**exported** generic `FieldLabel`, on the grounds that it would need its own
+`data-scope` and re-scoping the published per-component parts is a break bought
+for nothing. That holds. What it did not settle is whether the parts may share an
+_implementation_, and measuring the family answered that they must: probing all
+nine field roots showed the necessity marker reaching **three** of them, `Select`
+and `RadioGroup` with nowhere to render a message (F-009 and its sibling shape),
+and three files carrying a private helper computing the colours
+`buildFieldTextPartStyle` already computes.
+
+So the anatomy gains three **internal** parts — `FieldLabelPart`,
+`FieldDescriptionPart`, `FieldValidationMessagePart` — which take `scope` as a
+**prop** rather than owning one. That is the whole difference from what A
+rejected: `text-field/label` is still `text-field/label`, so every attribute a
+test, a stylesheet or an agent can address is byte-identical either side of the
+refactor, while the nine copies become one. The per-component slot exports remain
+the composable surface and now render through these.
+
+The guard is a class guard, `fieldEnvelope.test.tsx`, driven by a table whose axis
+is _every field root whose React Aria root supplies `TextContext` and
+`FieldErrorContext`_ — with `Switch` and `Slider` named as exceptions plus the
+mechanism excluding each, so the list can only shrink. A per-component test cannot
+catch this class of defect, because each component passes on its own.
+
+Two measured details that are decisions. A split control's **frame** now declares
+the row's type although it renders no text: without it the same `ComboBox`
+resolved `16px` in Storybook and `18px` inside the Studio's invite dialog, because
+an undeclared frame inherits the host's paragraph size and hands it to every
+adornment placed in it — invariant #11 now asserts the type on both control
+shapes. And `Select`'s label stopped tinting itself `text.invalid`: it was the
+only label in the family that did, the divergence was invisible because F-032
+measures that token as the same ink as `text.default` in both modes, and when
+F-032 lands a real negative ink a whole label turning red is not the language the
+reference uses — it tints the message and the chrome, never the name of the field.
+
+Anchors: `src/components/Field/anatomy.tsx`, `tests/unit/tests/fieldEnvelope.test.tsx`, `docs/fsl-studio/FRICTION.md` F-009 / F-032, `INTERNAL/FORMS.md` §3 and C2.
+
 ### ADR-025: The `Form` publishes field layout as static context; a required field marks itself
 
 Status: accepted (2026-07-26)

@@ -1,12 +1,9 @@
 import { vars } from '@ttoss/fsl-theme/vars';
 import {
-  FieldError as RACFieldError,
   type FieldErrorProps as RACFieldErrorProps,
   Input as RACInput,
   type InputProps as RACInputProps,
-  Label as RACLabel,
   type LabelProps as RACLabelProps,
-  Text as RACText,
   TextField as RACTextField,
   type TextFieldProps as RACTextFieldProps,
   type TextProps as RACTextProps,
@@ -15,9 +12,10 @@ import {
 import {
   buildFieldControlStyle,
   buildFieldRootStyle,
-  buildFieldTextPartStyle,
   type FieldAuthoring,
-  FieldNecessityMarker,
+  FieldDescriptionPart,
+  FieldLabelPart,
+  FieldValidationMessagePart,
 } from '../../components/Field/anatomy';
 import type { ComponentMeta } from '../../semantics';
 import { createCompositeScope } from '../scope';
@@ -112,15 +110,14 @@ export const TextFieldLabel = ({ children, ...props }: TextFieldLabelProps) => {
   const colors = vars.colors.input.primary;
 
   return (
-    <RACLabel
+    <FieldLabelPart
       {...props}
-      data-scope="text-field"
-      data-part="label"
-      style={buildFieldTextPartStyle({ colors, step: 'md' })}
+      scope="text-field"
+      colors={colors}
+      isRequired={isRequired}
     >
       {children}
-      <FieldNecessityMarker isRequired={isRequired} />
-    </RACLabel>
+    </FieldLabelPart>
   );
 };
 TextFieldLabel.displayName = textFieldLabelMeta.displayName;
@@ -175,15 +172,7 @@ export const TextFieldDescription = (props: TextFieldDescriptionProps) => {
   textFieldScope.use(textFieldDescriptionMeta.displayName);
   const colors = vars.colors.input.primary;
 
-  return (
-    <RACText
-      slot="description"
-      {...props}
-      data-scope="text-field"
-      data-part="description"
-      style={buildFieldTextPartStyle({ colors, step: 'sm' })}
-    />
-  );
+  return <FieldDescriptionPart {...props} scope="text-field" colors={colors} />;
 };
 TextFieldDescription.displayName = textFieldDescriptionMeta.displayName;
 
@@ -207,16 +196,7 @@ export const TextFieldError = (props: TextFieldErrorProps) => {
   const colors = vars.colors.input.primary;
 
   return (
-    <RACFieldError
-      {...props}
-      data-scope="text-field"
-      data-part="validationMessage"
-      style={buildFieldTextPartStyle({
-        colors,
-        step: 'sm',
-        tone: 'negative',
-      })}
-    />
+    <FieldValidationMessagePart {...props} scope="text-field" colors={colors} />
   );
 };
 TextFieldError.displayName = textFieldErrorMeta.displayName;

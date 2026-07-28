@@ -129,8 +129,11 @@ Two consequences for the plan:
   to default it from Form presence. That would have been a **regression**, and
   measurement caught it before a line was written: `aria` mode does not merely
   stop _displaying_ native constraints, it **removes** them (last row above).
-- **✅ `Checkbox` got the message part** (A2). **`Switch` still needs it** —
-  folded into E.
+- **✅ `Checkbox` got the message part** (A2); `RadioGroup` and `CheckboxGroup`
+  got the whole envelope (C2). **`Switch` is not the same job:** React Aria's
+  `SwitchProps` omits `isRequired`/`isInvalid`/`validate`/`validationBehavior`
+  entirely, so a `Switch` cannot be invalid — the question is whether to adopt
+  RAC's separate `SwitchField` root, which is F-033's half in E.
   `Slider` stays without one: React Aria gives it no `FieldErrorContext`, because
   a slider always holds an in-range value — a boundary, not a gap.
 
@@ -165,6 +168,15 @@ A single exported `FieldLabel` reusable inside any field would need its own
 change to published attributes bought for nothing: the unification a caller
 feels is the prop form, and the style duplication was already removed in the
 anatomy. So `TextFieldLabel` and its siblings remain, sharing one style source.
+
+**Sharing the implementation is a different question from sharing the identity,
+and C2 answered it the other way.** The envelope parts are now internal and take
+`scope` as a **prop** (`FieldLabelPart`, `FieldDescriptionPart`,
+`FieldValidationMessagePart`), so every published pair is unchanged —
+`text-field/label` is still `text-field/label` — while the nine hand-written
+copies collapse to one. What A rejected was an _exported_ part that owned a scope;
+what would have kept the drift is refusing to share the code behind them, and the
+drift is measured: see C2.
 
 One further limit, measured in A2: a part cannot simply be placed _inside_ a
 control whose root is its own `<label>`. On `Checkbox` that absorbed the copy
@@ -264,8 +276,41 @@ both modes → commit.
   Invariant #11 grew to cover both control shapes: a self-painted member resolves
   the whole row on one element, a split member spreads it across frame and value,
   because a frame that also padded would double the gap on the reading edge.
-- **C2. `Select` gains `description` + `errorMessage` (F-009).** The envelope
-  closes it; `ComboBox` already has both.
+- **C2. ✅ The field envelope, closing F-009 (2026-07-28).** Scoped as
+  "`Select` gains `description` + `errorMessage`" and measured first, which
+  changed the scope: probed across all nine field roots, the necessity marker B1
+  shipped reached **three** of them, `RadioGroup` carried F-009's exact shape one
+  family over, and three files held a private `resolveFieldTextColors` computing
+  what `buildFieldTextPartStyle` already computes. So the deliverable is one
+  envelope — `FieldLabelPart` / `FieldDescriptionPart` /
+  `FieldValidationMessagePart` in the anatomy — used by `Select`, `ComboBox`,
+  `NumberField`, `RadioGroup`, `CheckboxGroup`, `SearchField`'s label and the
+  `TextField`/`TextArea` slot exports.
+  **This does not reopen A's rejection**, it draws the line A was actually
+  drawing: A refused an _exported_ generic `FieldLabel` because it would need its
+  own `data-scope`, and re-scoping published parts is a break bought for nothing.
+  These are internal and take `scope` as a prop, so `text-field/label` is still
+  `text-field/label` — every addressable attribute is byte-identical either side
+  of the refactor. → ADR-022 addendum.
+  Two things fell out of measuring rather than reading. A split control's
+  **frame** declared no type, so the same `ComboBox` resolved `16px` in Storybook
+  and `18px` in the Studio's invite dialog — a frame that declares nothing
+  inherits the host's paragraph size and hands it to every adornment in it; the
+  row's type now sits on the frame, asserted by invariant #11 for both shapes.
+  And `Select`'s label alone tinted itself `text.invalid` when invalid — invisible
+  drift, because F-032 measures that token as the same ink as `text.default`;
+  dropped rather than spread, since a whole label turning red is not the language
+  the reference uses.
+  _Studio:_ the invite dialog's Role is now **chosen rather than defaulted** — it
+  defaulted to Developer, so an invite could silently grant deploy access to
+  someone nobody picked a role for, and the field had no way to insist. Three
+  flow tests had to start picking a role; a fourth asserts the refusal through the
+  published `[data-part="validationMessage"]`.
+  _Verified in Chromium, both modes:_ in the Studio the email control, the Role
+  trigger and the Timezone frame all report `x=427 w=426 h=34`, Role's envelope
+  copy sits at 14px against the label's 16px, focus after a refused submit lands
+  on `select/trigger`, and the trigger's invalid border reads `rgb(220,38,38)` /
+  `rgb(252,165,165)` — byte-identical to `TextField`'s.
 - **C3. F-019 — the popover sizes to the frame.** Needs the named allowlist of
   RAC-published positioning vars (→ ADR-023). Measured: **158.69px of popover
   under a 305.63px field** in the Studio, where it also overlays the description;
@@ -277,9 +322,23 @@ both modes → commit.
 - **D. `SearchField` + `NumberField`.** Adornment parts and the
   `EMBEDDED_TRIGGER` silhouette, so the measured 20 / 25.33 / 32 px triggers
   become one number; the frame/value split closes the last two #12 violations.
+  **C2 found the cause of that spread, so D need not re-derive it:** an embedded
+  trigger declares no type of its own, so its glyph is sized by the UA `<button>`
+  font-size — `ComboBox`'s chevron button measures `13.3333px` and a 25.33px box
+  while the field around it is 16px. `Icon size="text"` is relative, so the glyph
+  inherits the mistake. `SearchField` also has **no one-line form at all** (props
+  render nothing but the root) — the authoring union A gave `TextField`/`TextArea`
+  stops there, which is why the envelope reached only its label in C2.
 - **E. `Checkbox` / `CheckboxGroup` / `RadioGroup` / `Switch` / `Slider`.**
-  `description` and `validationMessage` parts for `Checkbox`/`Switch` (F-033 —
-  today a required one turns red and cannot say why); the
+  The `validationMessage` part for `Switch` (F-033's remaining half — `Checkbox`
+  landed in A2, and `RadioGroup`/`CheckboxGroup`'s envelope landed in C2). **Read
+  in `Switch.d.ts` during C2, and it changes the shape of the work:** React Aria's
+  `SwitchProps` **omits** `isRequired`, `isInvalid`, `validate` and
+  `validationBehavior` outright, so there is no validation state to render — a
+  `Switch` cannot be invalid today. What exists instead is a separate
+  `SwitchField` root (`SwitchFieldProps`, `SwitchFieldContext`, and an
+  `isRequired` on `SwitchRenderProps`), so F-033's Switch half is a question about
+  adopting that root, not about adding a part. Also: the
   32 → 34 px row inset, one shared glyph scale (three hard-coded `1.125rem` and
   a Switch track that exceeds S2's extra-large), focus-offset literals → the
   constant, group layout single-sourced, Slider's unread `sizing: hit` claim.
@@ -336,7 +395,7 @@ it is a class · ADR when the decision is architectural · FRICTION append per g
 suites green · coverage held at 100 · treeshake within budget · lint · ROADMAP
 entry in the Slice 4 voice.
 
-**Baselines to detect regression:** fsl-ui 2052 tests, fsl-theme 1006, Studio 57;
+**Baselines to detect regression:** fsl-ui 2120 tests, fsl-theme 1006, Studio 58;
 treeshake 3212 bytes of 16000.
 
 **Environment (facts, not assumptions):** Node 24 is `/opt/node24/bin`;

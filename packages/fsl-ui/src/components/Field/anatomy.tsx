@@ -1,5 +1,13 @@
 import { vars } from '@ttoss/fsl-theme/vars';
 import * as React from 'react';
+import {
+  FieldError as RACFieldError,
+  type FieldErrorProps as RACFieldErrorProps,
+  Label as RACLabel,
+  type LabelProps as RACLabelProps,
+  Text as RACText,
+  type TextProps as RACTextProps,
+} from 'react-aria-components';
 
 import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
@@ -158,6 +166,14 @@ export const buildFieldControlStyle = ({
  * It carries no inset of its own — the inner value and the adornments own the
  * inline space, so a frame that also padded would double the gap on the
  * reading edge.
+ *
+ * It *does* carry the row's type, though it renders no text itself. Measured:
+ * without it the same `ComboBox` frame resolved `16px` in Storybook and `18px`
+ * inside the Studio's invite dialog, because a frame that declares nothing
+ * inherits the host's paragraph size — and anything placed inside it inherits
+ * that in turn. A self-painted control never had the problem: the row's type is
+ * part of the box it declares. The frame is the shape that could drift, so the
+ * declaration belongs here rather than in the components.
  */
 export const buildFieldFrameStyle = ({
   colors,
@@ -168,6 +184,7 @@ export const buildFieldFrameStyle = ({
     display: 'inline-flex',
     alignItems: 'center',
     minHeight: vars.sizing.hit,
+    ...FIELD_ROW.text,
   } as React.CSSProperties;
 };
 
@@ -392,5 +409,145 @@ export const FieldNecessityMarker = ({
     >
       *
     </span>
+  );
+};
+
+// ---------------------------------------------------------------------------
+// The envelope parts — one implementation, each component's own scope
+//
+// A field's label, description and validation message are the same three
+// elements everywhere: a RAC context consumer, the published `(data-scope,
+// data-part)` pair, and a text step from `buildFieldTextPartStyle`. Nine
+// components had written that out by hand, and the drift it produced was
+// measured before this existed: the necessity marker reached **three** of the
+// nine roots that accept `isRequired`, two roots had nowhere to render a message
+// at all (F-009 on `Select`, the same shape on `RadioGroup`), and three files
+// carried a private `resolveFieldTextColors` helper computing what the anatomy
+// already computes.
+//
+// These take `scope` as a prop rather than owning one, which is the difference
+// between them and the generic exported `FieldLabel` that item A **rejected**:
+// nothing a caller can address changes. `text-field/label` is still
+// `text-field/label`, so the published attributes — the contract a test or an
+// agent queries — are byte-identical either side of this refactor. What
+// collapses is the copy behind them. They are internal, like every other part
+// of this module: the composable surface stays the per-component slot exports
+// (`TextFieldLabel` and its siblings), which now render through these.
+//
+// Emptiness stays the caller's decision, not the part's. A description that is
+// absent renders nothing at the call site; a validation message is **always
+// mounted**, because React Aria's `FieldError` with no children is what shows
+// the platform's own localized constraint copy — the better message for
+// `isRequired` and `type="email"`, and copy ADR-001 forbids us to ship.
+// ---------------------------------------------------------------------------
+
+/** What every envelope part needs: the host's identity and its colour set. */
+interface FieldEnvelopePart {
+  /**
+   * The host component's published `data-scope`. Passed in rather than owned so
+   * this refactor changes no addressable attribute (see the note above).
+   */
+  scope: string;
+  /** The field's colour set — `input.primary` for every field today. */
+  colors: InputColors;
+}
+
+/** Props for the shared label part. */
+export type FieldLabelPartProps = Omit<
+  RACLabelProps,
+  'style' | 'className' | 'slot'
+> &
+  FieldEnvelopePart & {
+    /**
+     * Whether the field must be filled — drives the necessity marker.
+     *
+     * Hosts that already render through React Aria's render props pass the
+     * value from there; the rest pass their own prop. The two are the same
+     * value: RAC derives the render-prop flag as `props.isRequired || false`
+     * (read in `Select.mjs`), and the envelope guard asserts the marker from the
+     * prop on every member of the family.
+     */
+    isRequired?: boolean;
+  };
+
+/**
+ * The label of a field, with the necessity marker beside its text.
+ *
+ * The marker is inside the label because it must sit with the words it
+ * qualifies, and it is `aria-hidden` for the reason recorded on
+ * `FieldNecessityMarker`.
+ */
+export const FieldLabelPart = ({
+  scope,
+  colors,
+  isRequired,
+  children,
+  ...props
+}: FieldLabelPartProps) => {
+  return (
+    <RACLabel
+      {...props}
+      data-scope={scope}
+      data-part="label"
+      style={buildFieldTextPartStyle({ colors, step: 'md' })}
+    >
+      {children}
+      <FieldNecessityMarker isRequired={isRequired} />
+    </RACLabel>
+  );
+};
+
+/** Props for the shared description part. */
+export type FieldDescriptionPartProps = Omit<
+  RACTextProps,
+  'style' | 'className' | 'slot'
+> &
+  FieldEnvelopePart;
+
+/**
+ * Hint text under the control, linked to it by React Aria's `description` slot
+ * (which is what puts it in `aria-describedby`).
+ */
+export const FieldDescriptionPart = ({
+  scope,
+  colors,
+  ...props
+}: FieldDescriptionPartProps) => {
+  return (
+    <RACText
+      slot="description"
+      {...props}
+      data-scope={scope}
+      data-part="description"
+      style={buildFieldTextPartStyle({ colors, step: 'sm' })}
+    />
+  );
+};
+
+/** Props for the shared validation-message part. */
+export type FieldValidationMessagePartProps = Omit<
+  RACFieldErrorProps,
+  'style' | 'className'
+> &
+  FieldEnvelopePart;
+
+/**
+ * The validation message. React Aria renders it only while the field is
+ * invalid, and falls back to the platform's own constraint copy when given no
+ * children — so mount it unconditionally and pass the caller's `errorMessage`
+ * straight through.
+ */
+export const FieldValidationMessagePart = ({
+  scope,
+  colors,
+  ...props
+}: FieldValidationMessagePartProps) => {
+  return (
+    <RACFieldError
+      {...props}
+      data-scope={scope}
+      data-part="validationMessage"
+      style={buildFieldTextPartStyle({ colors, step: 'sm', tone: 'negative' })}
+    />
   );
 };

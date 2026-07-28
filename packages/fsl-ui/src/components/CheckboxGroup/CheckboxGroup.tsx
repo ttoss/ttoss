@@ -3,12 +3,14 @@ import type * as React from 'react';
 import {
   CheckboxGroup as RACCheckboxGroup,
   type CheckboxGroupProps as RACCheckboxGroupProps,
-  FieldError as RACFieldError,
-  Label as RACLabel,
-  Text as RACText,
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
+import {
+  FieldDescriptionPart,
+  FieldLabelPart,
+  FieldValidationMessagePart,
+} from '../Field/anatomy';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -44,20 +46,6 @@ export const checkboxGroupMeta = {
   entity: 'Selection',
   structure: 'root',
 } as const satisfies ComponentMeta<'Selection'>;
-
-type InputColors = typeof vars.colors.input.primary;
-
-/**
- * Resolve the group's text colors once (default for label/description, invalid
- * for the validation message). Hoisted out of the render so the optional-chain
- * reads live here and keep the component's cyclomatic complexity low.
- */
-const resolveGroupTextColors = (
-  c: InputColors
-): { base: string | undefined; invalid: string | undefined } => {
-  const text = c?.text;
-  return { base: text?.default, invalid: text?.invalid ?? text?.default };
-};
 
 /** Props for the CheckboxGroup component. */
 export interface CheckboxGroupProps extends Omit<
@@ -103,7 +91,7 @@ export const CheckboxGroup = ({
   children,
   ...props
 }: CheckboxGroupProps) => {
-  const { base, invalid } = resolveGroupTextColors(vars.colors.input.primary);
+  const c = vars.colors.input.primary;
 
   return (
     <RACCheckboxGroup
@@ -118,41 +106,23 @@ export const CheckboxGroup = ({
       }}
     >
       {label != null && (
-        <RACLabel
-          data-scope="checkbox-group"
-          data-part="label"
-          style={{
-            ...(vars.text.label.md as React.CSSProperties),
-            color: base,
-          }}
+        <FieldLabelPart
+          scope="checkbox-group"
+          colors={c}
+          isRequired={props.isRequired}
         >
           {label}
-        </RACLabel>
+        </FieldLabelPart>
       )}
       {children}
       {description != null && (
-        <RACText
-          slot="description"
-          data-scope="checkbox-group"
-          data-part="description"
-          style={{
-            ...(vars.text.label.sm as React.CSSProperties),
-            color: base,
-          }}
-        >
+        <FieldDescriptionPart scope="checkbox-group" colors={c}>
           {description}
-        </RACText>
+        </FieldDescriptionPart>
       )}
-      <RACFieldError
-        data-scope="checkbox-group"
-        data-part="validationMessage"
-        style={{
-          ...(vars.text.label.sm as React.CSSProperties),
-          color: invalid,
-        }}
-      >
+      <FieldValidationMessagePart scope="checkbox-group" colors={c}>
         {errorMessage}
-      </RACFieldError>
+      </FieldValidationMessagePart>
     </RACCheckboxGroup>
   );
 };

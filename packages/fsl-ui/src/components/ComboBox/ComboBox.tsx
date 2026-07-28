@@ -4,15 +4,12 @@ import {
   Button as RACButton,
   ComboBox as RACComboBox,
   type ComboBoxProps as RACComboBoxProps,
-  FieldError as RACFieldError,
   Group as RACGroup,
   Input as RACInput,
-  Label as RACLabel,
   ListBox as RACListBox,
   ListBoxItem as RACListBoxItem,
   type ListBoxItemProps as RACListBoxItemProps,
   Popover as RACPopover,
-  Text as RACText,
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
@@ -23,6 +20,9 @@ import {
   buildFieldFrameStyle,
   buildFieldRootStyle,
   buildFieldValueStyle,
+  FieldDescriptionPart,
+  FieldLabelPart,
+  FieldValidationMessagePart,
 } from '../Field/anatomy';
 import { Icon } from '../Icon';
 
@@ -128,18 +128,6 @@ const buildPopoverStyle = (c: InputColors): React.CSSProperties => {
   };
 };
 
-/**
- * Resolve the field's text colors once (default for label/description/input,
- * invalid for the validation message). Hoisted out of the render so the
- * optional-chain reads keep the component's cyclomatic complexity low.
- */
-const resolveFieldTextColors = (
-  c: InputColors
-): { base: string | undefined; invalid: string | undefined } => {
-  const text = c?.text;
-  return { base: text?.default, invalid: text?.invalid ?? text?.default };
-};
-
 /** Props for the ComboBox component. */
 export interface ComboBoxProps<T extends object = object> extends Omit<
   RACComboBoxProps<T>,
@@ -183,9 +171,10 @@ export interface ComboBoxProps<T extends object = object> extends Omit<
  * type (see the Entity rationale in this file's header). Options are
  * `ComboBoxItem`.
  *
- * Unlike `Select`, this composite ships a `validationMessage` part, so an
- * invalid choice can state why inside the system. Validation is the `invalid`
- * State (via `isInvalid`/`validate`), never an `evaluation` variant.
+ * Validation is the `invalid` State (via `isInvalid`/`validate`), never an
+ * `evaluation` variant, and it surfaces in a `validationMessage` part — which
+ * `Select` now carries too (F-009 closed in forms C2; this doc claimed the
+ * distinction while it lasted).
  *
  * Host geometry knob: `--fsl-combo-box-max-height` caps the scrolling list.
  *
@@ -207,7 +196,6 @@ export const ComboBox = <T extends object = object>({
   ...props
 }: ComboBoxProps<T>) => {
   const c = vars.colors.input.primary;
-  const { base, invalid } = resolveFieldTextColors(c);
 
   return (
     <RACComboBox
@@ -217,16 +205,13 @@ export const ComboBox = <T extends object = object>({
       style={buildFieldRootStyle()}
     >
       {label != null && (
-        <RACLabel
-          data-scope="combo-box"
-          data-part="label"
-          style={{
-            ...(vars.text.label.md as React.CSSProperties),
-            color: base,
-          }}
+        <FieldLabelPart
+          scope="combo-box"
+          colors={c}
+          isRequired={props.isRequired}
         >
           {label}
-        </RACLabel>
+        </FieldLabelPart>
       )}
 
       {/*
@@ -267,29 +252,14 @@ export const ComboBox = <T extends object = object>({
       </RACGroup>
 
       {description != null && (
-        <RACText
-          slot="description"
-          data-scope="combo-box"
-          data-part="description"
-          style={{
-            ...(vars.text.label.sm as React.CSSProperties),
-            color: base,
-          }}
-        >
+        <FieldDescriptionPart scope="combo-box" colors={c}>
           {description}
-        </RACText>
+        </FieldDescriptionPart>
       )}
 
-      <RACFieldError
-        data-scope="combo-box"
-        data-part="validationMessage"
-        style={{
-          ...(vars.text.label.sm as React.CSSProperties),
-          color: invalid,
-        }}
-      >
+      <FieldValidationMessagePart scope="combo-box" colors={c}>
         {errorMessage}
-      </RACFieldError>
+      </FieldValidationMessagePart>
 
       <RACPopover
         data-scope="combo-box"
