@@ -54,6 +54,32 @@ Three props carry the semantic model everywhere:
 
 Flow-critical labels are required props with no English defaults — `ConfirmationDialog` and `WizardNavigation` force the caller to supply localized copy (see `CONTRIBUTING.md` §6).
 
+### Fields
+
+Every field is one line, and every field is the same five parts — root, label,
+control, description, validation message:
+
+```tsx
+<Form onSubmit={save}>
+  <TextField label="Email" name="email" type="email" isRequired />
+  <Select label="Role" name="role" isRequired placeholder="Choose a role">
+    <SelectItem id="admin">Admin</SelectItem>
+  </Select>
+  <FormSubmit>Save</FormSubmit>
+</Form>
+```
+
+A required field marks its own label; turn the marker off for a whole form with
+`<Form necessityIndicator="none">` and the field stays required either way. Omit
+`errorMessage` and the browser's own constraint message is shown instead —
+already localized, and usually the better copy. A field works on its own too,
+but `Form` is the validation scope: that is what turns a required field's empty
+value into a blocked submit, with focus landing on the first field that failed.
+
+Reach for the slot form (`TextFieldLabel`, `TextFieldControl`, …) when the
+arrangement is unusual. The two are mutually exclusive by type, so passing copy
+props _and_ children is a compile error rather than a precedence rule.
+
 ## Customization
 
 Composites accept no `style`/`className`. Geometry the host legitimately owns is exposed as `--fsl-*` CSS custom properties with built-in fallbacks:

@@ -311,6 +311,14 @@ both modes → commit.
   copy sits at 14px against the label's 16px, focus after a refused submit lands
   on `select/trigger`, and the trigger's invalid border reads `rgb(220,38,38)` /
   `rgb(252,165,165)` — byte-identical to `TextField`'s.
+  **The guard's axis is executed, not remembered.** A self-audit of this item found
+  the first version naming an axis and then quietly omitting two of its members, so
+  the axis is now a test: it greps the RAC dist for the roots that supply both
+  contexts and asserts the membership, and every member is placed in one of three
+  groups — carries the whole envelope, label only (`SearchField`, no one-line form
+  until D), or deliberately without it (`Checkbox`, whose root is a `<label>` so
+  copy inside it is absorbed into the accessible name; `Switch`; `Slider`). An
+  upstream change now fails the test instead of silently ageing the comment.
 - **C3. F-019 — the popover sizes to the frame.** Needs the named allowlist of
   RAC-published positioning vars (→ ADR-023). Measured: **158.69px of popover
   under a 305.63px field** in the Studio, where it also overlays the description;
@@ -395,7 +403,7 @@ it is a class · ADR when the decision is architectural · FRICTION append per g
 suites green · coverage held at 100 · treeshake within budget · lint · ROADMAP
 entry in the Slice 4 voice.
 
-**Baselines to detect regression:** fsl-ui 2120 tests, fsl-theme 1006, Studio 58;
+**Baselines to detect regression:** fsl-ui 2121 tests, fsl-theme 1006, Studio 58;
 treeshake 3212 bytes of 16000.
 
 **Environment (facts, not assumptions):** Node 24 is `/opt/node24/bin`;

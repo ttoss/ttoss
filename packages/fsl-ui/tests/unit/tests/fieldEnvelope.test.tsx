@@ -9,12 +9,28 @@
  * private helper computing the colours the anatomy already computes.
  *
  * A per-component test cannot catch that — each one passes on its own. So the
- * assertions here are driven by a table, and the table is the axis: **every
- * field root whose React Aria root supplies `TextContext` and
- * `FieldErrorContext`**. Two members are deliberately absent and named, with an
- * anti-stale companion test so the exception list has to shrink the day either
- * one changes.
+ * assertions here are driven by tables, and the axis is reproducible rather than
+ * remembered. Run it to regenerate the membership:
+ *
+ * ```sh
+ * cd node_modules/react-aria-components/dist/private
+ * grep -l TextContext *.mjs | xargs grep -l FieldErrorContext
+ * ```
+ *
+ * In `react-aria-components@1.19.0` that returns eleven roots. Eight of them are
+ * ours (`Checkbox.mjs` covers `CheckboxGroup` too, `TextField.mjs` covers our
+ * `TextArea`); `ColorField`, `DateField` and `DatePicker` we do not ship — the
+ * last is deferred with a readmission criterion in `INTERNAL/FORMS.md` §5.
+ *
+ * Every one of those eight is accounted for below, in one of three groups, and
+ * the point of splitting them is that the reason a member is not in the first
+ * group is a *mechanism* and not a preference. `Slider` appears too, in the
+ * exception group, although the grep does not return it — which is precisely why
+ * it is excluded.
  */
+import fs from 'node:fs';
+import path from 'node:path';
+
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type * as React from 'react';
@@ -39,6 +55,58 @@ import {
   TextField,
 } from 'src/index';
 
+/**
+ * The axis, executed rather than remembered.
+ *
+ * A field root can only host the envelope if React Aria supplies the contexts the
+ * parts consume, so membership is a fact about the dependency and not a list we
+ * maintain. Reading it here means an upstream change — a context added to
+ * `Switch`, a new field root — fails this test and forces the tables below to
+ * account for it, instead of the tables quietly describing an older version.
+ */
+const axisMembers = (): string[] => {
+  const dist = path.join(
+    path.dirname(require.resolve('react-aria-components/package.json')),
+    'dist',
+    'private'
+  );
+
+  return fs
+    .readdirSync(dist)
+    .filter((file) => {
+      if (!file.endsWith('.mjs')) return false;
+      const source = fs.readFileSync(path.join(dist, file), 'utf8');
+      return (
+        source.includes('TextContext') && source.includes('FieldErrorContext')
+      );
+    })
+    .map((file) => {
+      return file.replace(/\.mjs$/, '');
+    })
+    .sort();
+};
+
+describe('the axis this file is driven by', () => {
+  test('is exactly the React Aria roots that supply both field contexts', () => {
+    // Change this list only together with the tables below. Each name is either
+    // covered by a group here or is a root we do not ship — and the ones we do
+    // not ship are named, because "we do not ship it" is the reason it is absent.
+    expect(axisMembers()).toEqual([
+      'Checkbox', // + CheckboxGroup — group 1 and group 3
+      'ColorField', // not shipped
+      'ComboBox', // group 1
+      'DateField', // not shipped
+      'DatePicker', // not shipped — FORMS.md §5, with a readmission criterion
+      'NumberField', // group 1
+      'RadioGroup', // group 1
+      'SearchField', // group 2 — label only, no one-line form until item D
+      'Select', // group 1
+      'Switch', // group 3 — no validation props at all
+      'TextField', // + our TextArea — group 1
+    ]);
+  });
+});
+
 const COPY = {
   label: 'Role',
   description: 'Helper copy.',
@@ -46,9 +114,9 @@ const COPY = {
 } as const;
 
 /**
- * Each field root, authored in its one-line form with the whole envelope.
- * `isInvalid` is set so the message part is not merely mounted but rendered —
- * React Aria's `FieldError` returns null while the field is valid.
+ * Group 1 — the axis members that carry the whole envelope, authored in their
+ * one-line form. `isInvalid` is set so the message part is not merely mounted but
+ * rendered: React Aria's `FieldError` returns null while the field is valid.
  */
 const ROOTS: Array<[scope: string, field: () => React.ReactElement]> = [
   [
@@ -170,6 +238,15 @@ describe.each(ROOTS)('%s', (scope, field) => {
   });
 });
 
+/**
+ * Group 2 — on the axis, but only its label is in the envelope.
+ *
+ * `SearchField` has **no one-line form**: the authoring union item A gave
+ * `TextField`/`TextArea` stops there, so props render nothing but the root and
+ * the envelope reaches only the slot label. Closing that is item D, where the
+ * adornment anatomy lands. Asserted rather than assumed, because "it has no
+ * one-line form" is the kind of claim that silently stops being true.
+ */
 describe('the composed authoring form marks required identically', () => {
   test('SearchField, whose label is a slot rather than a prop', () => {
     render(
@@ -189,18 +266,32 @@ describe('the composed authoring form marks required identically', () => {
   });
 });
 
+/**
+ * Group 3 — on the axis, and deliberately without the envelope.
+ *
+ * `Checkbox` is the third axis member and the one that cannot use these parts at
+ * all: its root **is** a `<label>`, so copy placed inside it gets absorbed into
+ * the accessible name — measured in A2 as `"Accept termsYou agree to the
+ * terms."`, with a name query for the label alone no longer matching. It renders
+ * its envelope inline instead, with the name pinned via `aria-labelledby`, and it
+ * has its own guard (`checkboxEnvelope.test.tsx`). It shares what it can: the
+ * text-part style source and the necessity marker. Named here so the axis has no
+ * silent member.
+ *
+ * The two below have no message part at all, each for a mechanism rather than a
+ * preference. Both are item `E` in `INTERNAL/FORMS.md`.
+ */
 describe('the members that deliberately have no message part', () => {
   /**
-   * Named, with the mechanism that excludes each — not a membership list to be
-   * maintained by hand. Both are `E` in `INTERNAL/FORMS.md`.
-   *
    * - `Switch`: React Aria's `SwitchProps` **omits** `isRequired`, `isInvalid`,
    *   `validate` and `validationBehavior` outright (read in `Switch.d.ts`), so
-   *   there is no validation state to render. `SwitchRenderProps` does expose
-   *   `isRequired`, and RAC 1.19 ships a separate `SwitchField` root that owns
-   *   it — which is the shape F-033's Switch half has to decide on.
-   * - `Slider`: gets no `FieldErrorContext` at all, because a slider always
-   *   holds an in-range value — a boundary, not a gap.
+   *   there is no validation state to render — a `Switch` cannot be invalid.
+   *   `SwitchRenderProps` does expose `isRequired`, and RAC 1.19 ships a separate
+   *   `SwitchField` root that owns it, which is the shape F-033's Switch half has
+   *   to decide on.
+   * - `Slider`: does not appear in the axis grep at all — it gets no
+   *   `FieldErrorContext`, because a slider always holds an in-range value: a
+   *   boundary, not a gap.
    */
   const WITHOUT_MESSAGE: Array<
     [scope: string, field: () => React.ReactElement]
