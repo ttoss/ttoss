@@ -106,3 +106,20 @@ Re-litigation answers:
 - "Why does a wrong code look up by email rather than by its hash?" → so the failure can be charged to the outstanding record; a hash lookup of a wrong guess finds nothing and can count nothing.
 - "Why destroy the code at `maxAttempts` instead of just refusing?" → refusing while the record lives lets an attacker keep guessing until expiry; destroying it forces a fresh code with a fresh keyspace.
 - "Why a different default TTL for `numeric`?" → the smaller keyspace makes a long window a guessing window; 24 hours is safe for 32 random bytes and not for 6 digits.
+
+### ADR-004: The send cap counts requests, not deliveries
+
+Status: accepted (2026-07-29)
+Tags: email-auth, rate-limit, enumeration, mail-bombing
+
+Decision: `requestRateLimit` gates the "mail me something" handlers before the user lookup and records every request that passes validation, whether or not a message followed.
+Rejected: recording only actual sends — an unknown address would never accumulate records and so never hit the limit, making `429` vs `200` a reliable account-existence oracle and undoing the enumeration safety the same handlers are built around; silently dropping over-limit requests and still answering `200` — indistinguishable from success, so a legitimate user who resends twice gets no explanation and no retry signal; limiting by IP instead of address — the abuse this prevents is aimed at one victim's mailbox and an attacker rotates IPs more easily than the victim changes address.
+Cost: requests that send nothing still consume a record and a store write, so a hostile caller can exhaust a stranger's allowance and briefly deny them a code they never asked for — a far cheaper failure than mailing them repeatedly, but a real one.
+Anchors: `src/emailAuthTypes.ts` (`RequestRateLimit`, `RequestRateLimitStore`), `src/emailAuthRuntime.ts` (`createCheckRequestRate`), `src/emailAuthLink.ts` (`createSendHandler`), `src/emailAuthCode.ts` (`sendEmailCode`).
+
+Re-litigation answers:
+
+- "Why is the limiter optional if it matters this much?" → it needs a store the engine cannot supply, and a package that has no I/O cannot invent shared state; the README and the option's JSDoc both say to configure it.
+- "Why not reuse the `emailCode` attempt ceiling?" → that bounds guesses against one issued code; this bounds how many codes get mailed at all. Different resource, different attacker.
+- "Why gate before the lookup rather than after?" → after the lookup the verdict depends on whether the account exists, which is exactly the leak.
+- "Why a `429` rather than a silent 200?" → the response is uniform across known and unknown addresses, so it leaks nothing, and the caller learns to wait instead of retrying immediately.

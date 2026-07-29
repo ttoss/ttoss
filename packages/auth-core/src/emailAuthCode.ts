@@ -103,6 +103,19 @@ export const createEmailCodeHandlers = (
       return error(400, 'invalid_request', 'A valid email is required.');
     }
 
+    /**
+     * Before the lookup, so the verdict depends only on the address — see
+     * `createCheckRequestRate`.
+     */
+    const limited = await runtime.checkRequestRate({
+      email,
+      purpose: 'emailCode',
+    });
+
+    if (limited) {
+      return limited;
+    }
+
     const user = await userStore.findByEmail(email);
 
     if (user || createUserOnVerify) {

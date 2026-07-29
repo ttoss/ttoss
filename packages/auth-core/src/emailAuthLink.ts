@@ -32,6 +32,20 @@ const createSendHandler = (args: {
       return error(400, 'invalid_request', 'A valid email is required.');
     }
 
+    /**
+     * Before the lookup, so the verdict cannot depend on whether an account
+     * exists — a limiter that only counted real sends would answer `429` for a
+     * registered address and `200` for an unknown one.
+     */
+    const limited = await args.runtime.checkRequestRate({
+      email,
+      purpose: args.purpose,
+    });
+
+    if (limited) {
+      return limited;
+    }
+
     const user = await args.runtime.options.userStore.findByEmail(email);
 
     if (user) {

@@ -53,6 +53,12 @@ const DEFAULT_CODE_DIGITS = 6;
 
 const DEFAULT_MAX_ATTEMPTS = 5;
 
+const DEFAULT_COOLDOWN_SECONDS = 60;
+
+const DEFAULT_MAX_PER_WINDOW = 10;
+
+const DEFAULT_WINDOW_SECONDS = 60 * 60 * 24;
+
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /** Purposes whose token travels inside a link rather than as a typed code. */
@@ -69,6 +75,7 @@ export const emailAuthErrorCodes = [
   'invalid_token',
   'expired_token',
   'too_many_attempts',
+  'too_many_requests',
   'email_not_verified',
   'password_too_weak',
 ] as const;
@@ -155,6 +162,19 @@ export const compareAgainstDecoy = async (
 export type RedeemedToken =
   { response: AuthHttpResponse } | { user: EmailAuthUser; email: string };
 
+/**
+ * Applies the send cap for one address, recording the request as it goes.
+ *
+ * Returns a response to hand straight back when the address is over its limit,
+ * or `null` to proceed. Every request is recorded, including the ones that go on
+ * to send nothing, so the verdict depends only on the address and never on
+ * whether an account exists behind it.
+ */
+export type CheckRequestRate = (args: {
+  email: string;
+  purpose: OneTimeTokenPurpose;
+}) => Promise<AuthHttpResponse | null>;
+
 export type EmailAuthRuntime = {
   options: EmailAuthOptions;
   paths: Required<EmailAuthPaths>;
@@ -176,6 +196,8 @@ export type EmailAuthRuntime = {
     request: AuthHttpRequest;
     purpose: LinkPurpose;
   }) => Promise<RedeemedToken>;
+  /** Applies the send cap. Resolves `null` when the request may proceed. */
+  checkRequestRate: CheckRequestRate;
 };
 
 const validateOptions = (options: EmailAuthOptions): void => {
@@ -275,6 +297,49 @@ const createIssueToken = (args: {
     };
 
     await options.sendEmail(delivery);
+  };
+};
+
+const TOO_MANY_REQUESTS =
+  'Too many requests for this address. Wait a moment and try again.';
+
+const createCheckRequestRate = (
+  options: EmailAuthOptions
+): CheckRequestRate => {
+  const limit = options.requestRateLimit;
+
+  if (!limit) {
+    return () => {
+      return Promise.resolve(null);
+    };
+  }
+
+  const cooldownMs = (limit.cooldownSeconds ?? DEFAULT_COOLDOWN_SECONDS) * 1000;
+  const windowMs = (limit.windowSeconds ?? DEFAULT_WINDOW_SECONDS) * 1000;
+  const maxPerWindow = limit.maxPerWindow ?? DEFAULT_MAX_PER_WINDOW;
+
+  return async ({ email, purpose }) => {
+    const now = Date.now();
+    const since = new Date(now - windowMs);
+    const recent = await limit.store.recent({ email, purpose, since });
+
+    const withinWindow = recent.filter((at) => {
+      return at.getTime() >= since.getTime();
+    });
+
+    const newest = withinWindow.reduce((max, at) => {
+      return at.getTime() > max ? at.getTime() : max;
+    }, 0);
+
+    const tooSoon = newest > 0 && now - newest < cooldownMs;
+
+    if (tooSoon || withinWindow.length >= maxPerWindow) {
+      return error(429, 'too_many_requests', TOO_MANY_REQUESTS);
+    }
+
+    await limit.store.record({ email, purpose, requestedAt: new Date(now) });
+
+    return null;
   };
 };
 
@@ -408,5 +473,6 @@ export const createEmailAuthRuntime = (
     }),
     buildSession: createBuildSession(options),
     redeemLinkToken: createRedeemLinkToken(options),
+    checkRequestRate: createCheckRequestRate(options),
   };
 };

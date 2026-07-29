@@ -2,6 +2,7 @@ import type {
   EmailAuthUser,
   EmailAuthUserStore,
   OneTimeTokenStore,
+  RequestRateLimitStore,
   StoredOneTimeToken,
 } from './emailAuthTypes';
 import type {
@@ -227,6 +228,41 @@ export const createMemoryOneTimeTokenStore = (): OneTimeTokenStore => {
       if (token) {
         tokens.set(entry, { ...token, attempts: (token.attempts ?? 0) + 1 });
       }
+    },
+  };
+};
+
+/**
+ * In-memory reference {@link RequestRateLimitStore}, keyed by address and
+ * purpose. Records are pruned on read, so the map does not grow without bound.
+ *
+ * For tests and local development. A production deployment wants this shared
+ * across instances — a table with an index on `(email, purpose, requested_at)`,
+ * or a Redis counter — because a per-process limiter caps each replica
+ * separately and so lets the fleet send N times the intended rate.
+ */
+export const createMemoryRequestRateLimitStore = (): RequestRateLimitStore => {
+  const requests = new Map<string, Date[]>();
+
+  const key = (args: { email: string; purpose: string }): string => {
+    return `${args.purpose}:${args.email}`;
+  };
+
+  return {
+    recent: ({ email, purpose, since }) => {
+      const entry = key({ email, purpose });
+
+      const kept = (requests.get(entry) ?? []).filter((at) => {
+        return at.getTime() >= since.getTime();
+      });
+
+      requests.set(entry, kept);
+
+      return kept;
+    },
+    record: ({ email, purpose, requestedAt }) => {
+      const entry = key({ email, purpose });
+      requests.set(entry, [...(requests.get(entry) ?? []), requestedAt]);
     },
   };
 };

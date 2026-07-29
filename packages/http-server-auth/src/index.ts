@@ -20,6 +20,8 @@ export {
   type OneTimeTokenPurpose,
   type OneTimeTokenStore,
   type PasswordOptions,
+  type RequestRateLimit,
+  type RequestRateLimitStore,
   type StoredOneTimeToken,
 } from './emailAuth';
 export {
