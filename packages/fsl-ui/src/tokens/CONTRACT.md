@@ -284,6 +284,34 @@ color:           resolveInteractiveStyle(c?.text,       { isHovered, isPressed, 
                ?? c?.text?.default,
 ```
 
+### §3.2 — Validation: the one part that reads another role
+
+`invalid` is a State, `negative` is an Evaluation, and FSL Lexicon §10.15 keeps
+them apart in a way that splits a failed field across **two token lines**:
+
+- **The control** keeps the role it was authored with and flips that role's
+  `invalid` State. A `muted` field that fails validation is still `muted`.
+  Re-voicing it (`evaluation: 'negative'`) is the category mistake §10.15 names —
+  state lives in the user's data, evaluation lives in the author's pen.
+- **The `validationMessage`** is the adjacent display part _reporting_ the
+  outcome, so it lawfully carries the valence and reads
+  `input.negative.text.*` — regardless of the control's role. It is the only
+  part in the family that reads a role other than its component's, which is
+  why it goes through `buildFieldTextPartStyle`'s `tone` rather than being
+  hand-written per component.
+
+The theme states the same split from its side: `input.primary.text.invalid` is
+the control's ordinary reading ink on purpose, because a value the user must
+re-read is not where the signal is spent. The valence on the control is the
+border alone.
+
+**Hover does not apply while invalid** (owner ruling, 2026-07-29). No mechanism
+was needed for it — `invalid` already outranks `hovered` in the cascade above,
+and `border` passes no `isHovered` at all. It is recorded here because it is now
+a product decision rather than a side effect of the tuple's order, and
+`tests/unit/tests/fieldEnvelope.test.tsx` fails if a call site stops passing
+`isInvalid` and lets hover win.
+
 ---
 
 ## §4 — Standard Step Rule

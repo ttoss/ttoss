@@ -33,6 +33,7 @@ import path from 'node:path';
 
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
 import {
   Checkbox,
@@ -393,5 +394,95 @@ describe('a required Select behaves like any other field', () => {
     // carries no part — the limit any form-level error summary has to handle,
     // and the reason this is asserted rather than assumed.
     expect(targets).toEqual([null]);
+  });
+});
+
+/**
+ * The validation language — which role each part of an invalid field reads.
+ *
+ * FSL Lexicon §10.15 splits one thing that looks like two: a control becomes
+ * `invalid` from the user's data, so it keeps its authored role and flips that
+ * role's `invalid` State; the *adjacent display part reporting the outcome* is
+ * what lawfully carries `negative` valence. Both halves are asserted here
+ * because the family shipped with only the first, and the second silently
+ * resolved the control's readable-value ink — which made a failed field's
+ * message byte-identical to the label above it.
+ */
+describe('an invalid field speaks valence on the message, not on the value', () => {
+  test.each(ROOTS)('%s reads the negative role on its message', (scope) => {
+    render(
+      ROOTS.find(([name]) => {
+        return name === scope;
+      })![1]()
+    );
+
+    const message = part(scope, 'validationMessage');
+
+    // The role, not the control's `invalid` State: the message is negative
+    // about a `primary`, `secondary` or `muted` field alike, so it cannot be
+    // derived from the colours the control was given.
+    //
+    // Token identity is the whole assertion available here, and deliberately so.
+    // The defect being closed was that the message and the label *resolved* to
+    // the same colour — `rgb(22,22,22)` in light, `rgb(255,255,255)` in dark,
+    // measured on the `Invalid` story at 1280px — but jsdom computes no custom
+    // properties, so both are `var(…)` strings that differ by name whether or
+    // not they differ by value. A test comparing the two would have passed with
+    // the defect present; it was written, seen to pass under injection, and
+    // deleted. The resolved-colour half belongs to the browser check.
+    expect(message?.style.color).toBe(vars.colors.input.negative.text?.default);
+  });
+
+  test('the value itself stays readable rather than turning red', () => {
+    render(<TextField {...COPY} isInvalid />);
+
+    // The other half of §10.15, and deliberate in the theme: the control's
+    // `invalid` ink is its normal reading ink, because a value the user must
+    // re-read is not the place to spend the signal.
+    expect(part('text-field', 'control')?.style.color).toBe(
+      vars.colors.input.primary.text?.invalid
+    );
+  });
+});
+
+/**
+ * Hover while invalid — the owner's ruling, made executable.
+ *
+ * Ruled 2026-07-29: **hover does not apply while invalid.** The cascade already
+ * ordered `isInvalid` above `isHovered`, so this passed the day it was written;
+ * it is here because nothing failed if that ordering moved, and the ruling is
+ * now a product decision rather than an implementation detail. `STATE_PRIORITY`
+ * is the mechanism, and `resolveInteractiveStyle.test.ts` guards the order in
+ * isolation — this guards it through a real field, which is where a call site
+ * that forgets to pass `isInvalid` would otherwise let hover win.
+ */
+describe('hover does not apply while invalid', () => {
+  test('an invalid field keeps its invalid border and fill under the pointer', async () => {
+    const user = userEvent.setup();
+    render(<TextField {...COPY} isInvalid />);
+
+    const control = part('text-field', 'control')!;
+    await user.hover(control);
+
+    expect(control.style.borderColor).toBe(
+      vars.colors.input.primary.border?.invalid
+    );
+    expect(control.style.backgroundColor).toBe(
+      vars.colors.input.primary.background?.invalid
+    );
+  });
+
+  test('the same field does respond to the pointer while valid', async () => {
+    const user = userEvent.setup();
+    render(<TextField {...COPY} />);
+
+    const control = part('text-field', 'control')!;
+    await user.hover(control);
+
+    // The counterpart that makes the assertion above mean something: without
+    // it, a field that never reacted to hover at all would pass too.
+    expect(control.style.backgroundColor).toBe(
+      vars.colors.input.primary.background?.hover
+    );
   });
 });

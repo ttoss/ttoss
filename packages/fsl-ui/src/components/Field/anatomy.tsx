@@ -305,15 +305,26 @@ export const buildFieldRootStyle = ({
  * `negative` is what the `invalid` State looks like on copy (ADR-017). The
  * label reads `md` because it names the control; supporting copy reads `sm`.
  *
- * **`negative` currently resolves to the same ink as `neutral`, and that is not
- * an oversight here.** `input.primary.text.invalid` is deliberately the
- * *control's* readable-value colour, so the valence lives on the border alone:
- * measured on the `Invalid` story at 1280px, the message resolves
- * `rgb(22,22,22)` in light and `rgb(255,255,255)` in dark — byte-identical to
- * the label beside it — while the border carries `rgb(220,38,38)` /
- * `rgb(252,165,165)`. The parameter is the shape the validation language needs
- * (F-032, and the second half of F-009); the token it should read arrives with
- * that decision, and this signature is why it will be a one-line change.
+ * **`negative` reads a different role from the control it belongs to, and that
+ * is the doctrine rather than an exception.** FSL Lexicon §10.15 splits the two:
+ * a control becomes `invalid` because of what the user entered, so it keeps its
+ * authored role and flips that role's `invalid` State — re-voicing the control
+ * as `evaluation: negative` is the category mistake the Lexicon names. What
+ * lawfully carries `negative` valence is the *adjacent display part reporting
+ * the outcome*, which is exactly this one. The theme states the same split from
+ * its side: `input.primary.text.invalid` is commented "value stays readable in
+ * the control; valence text lives on the validationMessage via
+ * `input.negative.text.*`".
+ *
+ * So `neutral` follows the control's role and `negative` does not follow it at
+ * all — the message is negative about a `primary`, `secondary` or `muted` field
+ * alike. That is why this branch ignores `colors`.
+ *
+ * Before this read the role, `negative` resolved `input.primary.text.invalid`,
+ * which is the control's readable-value ink: measured on the `Invalid` story at
+ * 1280px the message came out `rgb(22,22,22)` in light and `rgb(255,255,255)` in
+ * dark — byte-identical to the label beside it — while the border alone carried
+ * the valence. Closes F-032 and the second half of F-009.
  */
 export const buildFieldTextPartStyle = ({
   colors,
@@ -328,7 +339,9 @@ export const buildFieldTextPartStyle = ({
 
   return {
     color:
-      tone === 'negative' ? (text?.invalid ?? text?.default) : text?.default,
+      tone === 'negative'
+        ? vars.colors.input.negative.text?.default
+        : text?.default,
     ...((step === 'md'
       ? vars.text.label.md
       : vars.text.label.sm) as React.CSSProperties),

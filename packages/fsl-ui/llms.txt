@@ -113,7 +113,18 @@ Collection:  ListBox/ListBoxItem, GridList/GridListItem (+ Menu/MenuItem,
              row click toggles (no checkbox column yet). Use for column-
              aligned data; GridList is for single-column rows.
 THE FIELD ENVELOPE — one rule for every field, Input and Selection alike:
-             root ▸ label ▸ control ▸ description ▸ validationMessage. The label
+             root ▸ label ▸ control ▸ description ▸ validationMessage. An invalid
+             field spans TWO token lines and this is the one place a part reads a
+             role other than its component's: the CONTROL keeps the role it was
+             authored with and flips that role's `invalid` state (a `muted` field
+             that fails is still `muted` — re-voicing it as evaluation="negative"
+             is the category mistake FSL Lexicon §10.15 names), while the
+             VALIDATION MESSAGE reads input.negative.text.* because it is the part
+             *reporting* the outcome. The control's `invalid` ink is its ordinary
+             reading ink on purpose; the valence on the control is the border
+             alone. HOVER DOES NOT APPLY WHILE INVALID (owner ruling) — `invalid`
+             outranks `hover` in the cascade and `border` never reads hover at
+             all; focus is unaffected because the ring is a separate declaration. The label
              carries the necessity marker when the field isRequired: an
              aria-hidden asterisk, because the control already carries the native
              `required` attribute and a second announcement is noise. Turn it off

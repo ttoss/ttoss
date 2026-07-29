@@ -450,16 +450,41 @@ both modes → commit.
   a Switch track that exceeds S2's extra-large), focus-offset literals → the
   constant, group layout single-sourced, Slider's unread `sizing: hit` claim.
   F-021 packet for the owner.
-- **F. The validation language.** Colour + in-control glyph + toned message,
-  all from the `invalid` State → ADR-024. Needs the negative ink token F-032
-  measured as missing. F-031 (the flat cascade that makes an invalid field go
-  dead to hover and press) is governance-sized — options to the owner.
+- **F. ✅ The validation language (2026-07-29).** Two of the three things this
+  item was written to build turned out not to need building, and the third was
+  one branch. **What shipped:** `buildFieldTextPartStyle`'s `negative` tone now
+  reads `input.negative.text.*` instead of the control's readable-value ink,
+  reaching all seven field roots and `Checkbox` through the shared envelope;
+  `CONTRACT.md` gains §3.2 stating the two token lines an invalid field spans;
+  eight guards in `fieldEnvelope.test.tsx`, each verified to fail on injection.
+  Measured in the Studio at 1280px, resolved: message `rgb(185,28,28)` light /
+  `rgb(252,165,165)` dark, **6.47:1 / 7.97:1** against its surface, both AA;
+  control unchanged at 4.83:1 border-on-fill.
+  **What was written here and turned out wrong:** "needs the negative ink token
+  F-032 measured as missing" — it was not missing (`input.negative.text.default`
+  = `red.700`/`red.300`, shipped, unread). And F-031's flat cascade was not
+  governance-sized: the owner ruled hover does not apply while invalid, and
+  measurement showed focus was never lost — it rides the ring, which the colour
+  cascade never touches. F-031 is withdrawn, not deferred.
+  **The in-control glyph is not here and is not silently dropped:** it depends
+  on the icon slot work, and nothing about it was blocked by the token question
+  this item was really about. It moves to H alongside the format registry.
+  **New finding, filed rather than folded in:** F-036 — the theme's contrast
+  suite pairs text against its own role's background, so the ink-on-page-surface
+  pairing this item introduced is measured by hand and guarded by nothing.
 - **G. `FieldGroup` + `Wizard`.** `role="group"` with `aria-labelledby`;
   per-step validation for the multistep flow.
-- **H. Field formats.** A `format` registry on the `Icon`-intent pattern:
-  named, locale-scoped format data resolving mask + `inputMode` +
-  `autoComplete`. Never a `type` prop explosion. The Brazil set (CEP, CPF,
-  CNPJ, phone, currency) is the first consumer. Own ADR.
+- **H. Field formats, and the in-control validation glyph.** A `format` registry
+  on the `Icon`-intent pattern: named, locale-scoped format data resolving mask +
+  `inputMode` + `autoComplete`. Never a `type` prop explosion. The Brazil set
+  (CEP, CPF, CNPJ, phone, currency) is the first consumer. Own ADR.
+  **The glyph arrived here from F**, which is where it belongs: it is an
+  adornment inside the field box, so it shares the icon slot and the split
+  control's frame anatomy with everything else in this item, and it shared
+  nothing with the token question F was actually about. It is the remaining
+  answer to F-032's WCAG 1.4.1 note — with the message now carrying valence in
+  ink as well as words, colour is no longer the sole carrier, so the glyph is
+  reinforcement rather than the fix.
 - **I. The Studio's complete form.** A Meridian flow exercising every capability
   end to end — the proving ground and the regression surface.
 
@@ -575,11 +600,11 @@ writing** — with the tokens already shipped. One entry (F-032) had been filed
 claiming a token was missing that exists. The reading rule that failure earned is
 binding in the ROADMAP under "Before deciding anything".
 
-| Question                                                                      | Status after reading the authorities                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **1. Can a component paint nothing?** (F-024, F-029, the quiet field posture) | **Narrowed to one shape.** `colors.md` rules out `transparent` explicitly (`muted` is _deliberately_ opaque-surface-coloured so contrast stays computable), and its §Stacking makes a raised surface's colour a **composite** — background + `elevation.tonal.*` — that no colour token can name. Measured: in dark, `action.muted.background.default` and `informational.primary.background.default` are both `neutral.900`, and `tonal.raised` is `neutral.800`. So **omitting** the background is the only shape that keeps both written rules. What is left for the owner is whether to pay its verified cost: both contrast extractors `continue` on an absent counterpart, so deleting a background silently drops its pairs and needs an explicit "quiet ink vs stratum" replacement.                                                                                                                                      |
-| **2. Is `invalid` a colour or a valence?** (F-031, F-032, F-034)              | **✅ Decided — it was never open.** `colors.md` → "Picking a role": _"Valence dominates emphasis: if the token communicates outcome or **validity** … pick the valence first."_ The theme already ships `input.negative` with all three dimensions and a border cascade (`default / active / focused / disabled / indeterminate / pressed / expanded`), and `input.negative.text.default` is the negative ink F-032 claimed was missing (`red.700` / `red.300`). Our `invalid`-state-on-`input.primary` is the deviation, and it is _why_ the cascade dies: a state is one value by construction. **Owner ruling 2026-07-29: hover does not apply while invalid** — so no combination state is needed, and F-031's three candidate mechanisms are withdrawn. **This unblocks item F**; what remains is mechanical (switch role, add the `background` rungs the role lacks, with the pairings Validation requires, in both modes). |
-| **3. Fixed ramp or `cqi`?** (F-021, F-035)                                    | **Narrowed; the mechanism already exists.** `sizing.md` rules ergonomics by **pointer profile**, fixed px, "never fluid" — and `hit` obeys (`fine: clamp(32px, 2rem, 36px)` / `coarse: 48px`). Spacing is fluid from one engine by design, **but bounding is the sanctioned opt-out and is used twice**: `inset.action.block` = `clamp(8px, {core.spacing.2}, 9px)` and `separation.interactive.min` = `clamp(8px, {core.spacing.3}, 16px)`. `inset.control.sm` is unbounded, which is the drift. The action inset's own justification asserts a stable ~32px control height that the unbounded control inset does not deliver. Cheapest consistent move: bound `inset.control.*`. Separable second question: whether mobile should additionally _grow_ by pointer — the type ramp has no `coarse` hook today.                                                                                                                    |
+| Question                                                                      | Status after reading the authorities                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **1. Can a component paint nothing?** (F-024, F-029, the quiet field posture) | **Narrowed to one shape.** `colors.md` rules out `transparent` explicitly (`muted` is _deliberately_ opaque-surface-coloured so contrast stays computable), and its §Stacking makes a raised surface's colour a **composite** — background + `elevation.tonal.*` — that no colour token can name. Measured: in dark, `action.muted.background.default` and `informational.primary.background.default` are both `neutral.900`, and `tonal.raised` is `neutral.800`. So **omitting** the background is the only shape that keeps both written rules. What is left for the owner is whether to pay its verified cost: both contrast extractors `continue` on an absent counterpart, so deleting a background silently drops its pairs and needs an explicit "quiet ink vs stratum" replacement.                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **2. Is `invalid` a colour or a valence?** (F-031, F-032, F-034)              | **✅ Closed 2026-07-29 — and the row that stood here got the answer half wrong, which is worth keeping.** It read `colors.md` → "Picking a role" (_"valence dominates emphasis … if the token communicates outcome or **validity**"_) and concluded that "our `invalid`-state-on-`input.primary` is the deviation" — i.e. that the **control** should switch role. The Lexicon forbids exactly that: §10.15 calls re-voicing a control for a runtime outcome a category mistake, and §7's State table says `invalid` is "never an authorial valence choice". `model.md` §11 puts the Lexicon above the family doc, and `colors.md`'s rule is scoped to _a token that communicates validity_ — which the message's ink is and the control's chrome is not. **It is both: a State on the control, a valence on the part that reports it**, and the theme had already written that in a comment beside the token. The owner ruling (hover does not apply while invalid) removed the last thing that looked like it needed a mechanism; measurement removed the other (focus rides the ring, not the border). Shipped: one branch in `buildFieldTextPartStyle`, `CONTRACT.md` §3.2, eight guards, contrast measured in both modes. |
+| **3. Fixed ramp or `cqi`?** (F-021, F-035)                                    | **Narrowed; the mechanism already exists.** `sizing.md` rules ergonomics by **pointer profile**, fixed px, "never fluid" — and `hit` obeys (`fine: clamp(32px, 2rem, 36px)` / `coarse: 48px`). Spacing is fluid from one engine by design, **but bounding is the sanctioned opt-out and is used twice**: `inset.action.block` = `clamp(8px, {core.spacing.2}, 9px)` and `separation.interactive.min` = `clamp(8px, {core.spacing.3}, 16px)`. `inset.control.sm` is unbounded, which is the drift. The action inset's own justification asserts a stable ~32px control height that the unbounded control inset does not deliver. Cheapest consistent move: bound `inset.control.*`. Separable second question: whether mobile should additionally _grow_ by pointer — the type ramp has no `coarse` hook today.                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 **Not a decision — a prerequisite.** F-027: the border-contrast inventory audits
 the light bundle only (~90 undecided dark contexts). Whichever of the above lands,
@@ -588,8 +613,18 @@ it lands unverified in dark until that audit exists.
 ### Q — the queue, unchanged
 
 **B4** `contextualHelp` · **D** `SearchField` + `NumberField` · **E** the selection
-family · **F** the validation language · **G** `FieldGroup` + `Wizard` · **H** field
-formats · **I** the Studio's complete form. Items **D** and **E** each already
+family · ~~**F** the validation language~~ (**done 2026-07-29**) · **G** `FieldGroup` +
+`Wizard` · **H** field formats · **I** the Studio's complete form.
+
+**F came in far smaller than this plan sized it**, and the reason is the lesson
+rather than the schedule. It was queued as a token-model change — switch the field
+family's role, add missing `background` rungs, verify new pairings in both modes.
+Reading the Lexicon first collapsed it to a single branch in one function plus
+docs and guards: the control was already correct and deliberately so, the ink the
+message needed already shipped, and the cascade already ordered `invalid` above
+`hover`. Two of the three things F was going to build did not need building. What
+it did surface is genuinely new — F-036, that the contrast suite cannot see a
+cross-role pairing — which is the sort of thing only shipping the change finds. Items **D** and **E** each already
 carry findings this queue handed them (D: the embedded trigger's UA font-size, and
 `SearchField` having no one-line form at all; E: React Aria omitting validation
 from `SwitchProps` entirely, so F-033's Switch half is about adopting `SwitchField`).
