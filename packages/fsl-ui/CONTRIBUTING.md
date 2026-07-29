@@ -1,7 +1,18 @@
 # Contributing to `@ttoss/fsl-ui`
 
-> **To author a component you need exactly two files: this file + `src/tokens/CONTRACT.md`.
-> FSL docs are reference philosophy — you do not need them.**
+> **To author a component you need exactly two files: this file + `src/tokens/CONTRACT.md`.**
+> That covers _mechanics_ — which `vars.*` path a part reads, which matrices must
+> cover a new Entity, which attributes it publishes.
+>
+> It does **not** cover _decisions_. The moment a question is "should this be a
+> colour or a valence", "may a component paint nothing", "does size come from a
+> fixed ramp", you are outside these two files and inside
+> `docs/website/docs/design/design-system/design-tokens/`, which is already
+> opinionated on all three. `INTERNAL/ROADMAP.md` →
+> "Before deciding anything — read the authorities first" maps each recurring
+> question to the document that answers it. Read it before escalating anything as
+> an owner decision; that section exists because two questions were escalated that
+> the docs had already settled.
 
 Two source-of-truth files drive every change:
 

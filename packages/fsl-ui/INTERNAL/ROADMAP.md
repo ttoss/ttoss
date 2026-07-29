@@ -141,6 +141,44 @@ adoption-demanded component (`ComboBox`) shipped the same day, closing F-008.
 > the Program section above (P1 gate); the `private: true` flip follows the
 > revised D2.
 
+## Before deciding anything — read the authorities first (binding)
+
+Added 2026-07-29 because it was earned the hard way. Three "owner decisions"
+were escalated during forms C, and reading the design documentation afterwards
+showed that **two of the three were already decided in writing** and the theme
+already carried the tokens. One friction entry (F-032) was filed claiming a token
+was missing that exists. The failure was not analysis — it was not looking.
+
+**The rule: a question about colour, geometry, responsiveness or token grammar is
+answered by the design docs before it is reasoned about, and certainly before it
+is escalated.** If the docs and a measurement disagree, that is a finding worth
+writing down — but the docs are the starting position, not the fallback.
+
+`model.md` §11 already fixes the order when artefacts disagree, and it applies
+here too: **FSL Lexicon / Structural Language** (identity and vocabulary) →
+**`Types.ts`** (what exists and in what shape) → **family docs** (how to pick in a
+real case). Identity beats enforcement beats guidance when the argument is about
+meaning; enforcement beats guidance when it is about what exists.
+
+### Where the answer already lives
+
+| The question                                               | Authority                                                                       | What it already decides                                                                                                                                                                                                                                                                                                                             |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Can a component paint nothing? Is there a `transparent`?   | `families/colors.md` → "The Action emphasis ladder is one mechanism, not three" | **Decided.** `muted` is the idiom for "no fill" and is _deliberately_ an opaque surface-coloured token rather than `transparent`, "because every semantic background stays a verifiable value, which is what lets the contrast guarantees be computed at all". `model.md` §5 adds that names express meaning, not appearance.                       |
+| Why do two stacked surfaces share a background token?      | `families/colors.md` → "Stacking informational surfaces"                        | **Decided.** Page and contained surfaces resolve from the **same** background token; the visual step is `elevation.tonal.*`, a surface-colour overlay — never a second colour role, because Rule of Engagement #4 forbids colour modelling depth.                                                                                                   |
+| How is an invalid / erroring input coloured?               | `families/colors.md` → "Picking a role"                                         | **Decided.** "Valence dominates emphasis: if the token communicates outcome or **validity** … pick the valence first." So an invalid input is the `input.negative` **role**, not an `invalid` state on the neutral role — and the same doc already prescribes `input.negative.border.focused` by name.                                              |
+| Should a control's size follow the container?              | `families/sizing.md` → core groups                                              | **Decided for ergonomics.** `hit` is "one value per pointer profile, not a scale"; `hit.coarse` is "always fixed px — **never fluid**". Ergonomics is answered by pointer type, not by container width.                                                                                                                                             |
+| Where does fluidity come from, and how do I opt out of it? | `families/spacing.md` → core groups + the token table                           | **Decided.** One engine (`core.spacing.engine.unit`) drives the whole scale, kept as a single override surface. Opting out is **bounding**, not escaping: `inset.action.block` is `clamp(8px, {core.spacing.2}, 9px)` precisely so a CTA resolves a stable height, and `separation.interactive.min` bounds the same way for an ergonomic guarantee. |
+| May I add a token for this?                                | `governance.md` + `model.md` §6, §8                                             | **Gated.** Only if no existing semantic token expresses it, it is reusable, and the name fits the taxonomy. A cross-cutting token (a system default no `{ux}` owns) needs technical necessity + JSDoc + registration; `focus.ring.color` and `overlay.scrim` are the only precedents.                                                               |
+| Which pairings must hold if I touch a colour?              | `families/colors.md` → Validation                                               | **Specified.** Text ≥ 4.5:1 (large-text floor only for `*.muted.*`), border vs adjacent background ≥ 3:1, focus and selected against both the adjacent background and the prior state — in **every** supported mode.                                                                                                                                |
+
+### Two traps this list exists to prevent
+
+- **"The theme lacks a token for X."** Check the theme before filing it. `input.negative.text.default` (`red.700` light / `red.300` dark) exists and is unread; F-032 was filed as a missing token and was really a component reading the wrong role.
+- **"The contrast suite will catch it."** It will not, in one direction. `extractTextBackgroundPairs` and `extractBorderBackgroundPairs` both iterate over what exists and `continue` when the counterpart is absent — so **removing** a background silently drops its pairs and the suite stays green. Any change that deletes a colour token owes an explicit replacement assertion.
+
+---
+
 ## Scope guard (binding for every executor of this plan)
 
 Writable surfaces — **only**:
