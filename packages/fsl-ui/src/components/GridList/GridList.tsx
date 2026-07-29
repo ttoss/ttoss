@@ -9,6 +9,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
+import { buildChoosableRowStyle } from '../../tokens/choosableRow';
 import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import { Icon } from '../Icon';
@@ -61,17 +62,13 @@ const buildRowStyle = ({
   isDisabled?: boolean;
 }): React.CSSProperties => {
   return {
-    boxSizing: 'border-box',
-    display: 'flex',
-    alignItems: 'center',
+    ...buildChoosableRowStyle(),
+    // A GridList row holds a selection control beside its content, so it is the
+    // one member that also needs an inline gap. The row's box is still the
+    // shared one — only the extra child is local.
     gap: vars.spacing.gap.inline.sm,
-    minHeight: vars.sizing.hit,
-    paddingBlock: vars.spacing.inset.control.sm,
-    paddingInline: vars.spacing.inset.control.md,
-    borderRadius: vars.radii.control,
     cursor: isDisabled ? 'not-allowed' : 'pointer',
     opacity: isDisabled ? vars.opacity.disabled : undefined,
-    ...(vars.text.label.md as React.CSSProperties),
     transitionProperty: 'background-color, color',
     transitionDuration: vars.motion.feedback.duration,
     transitionTimingFunction: vars.motion.feedback.easing,
@@ -84,7 +81,6 @@ const buildRowStyle = ({
       resolveInteractiveStyle(c?.text, { isDisabled, isSelected, isHovered }) ??
       c?.text?.default,
     outline: focusRingOutline(isFocusVisible),
-    outlineOffset: '-2px',
   };
 };
 

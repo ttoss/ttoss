@@ -284,6 +284,34 @@ color:           resolveInteractiveStyle(c?.text,       { isHovered, isPressed, 
                ?? c?.text?.default,
 ```
 
+### §3.2 — Validation: the one part that reads another role
+
+`invalid` is a State, `negative` is an Evaluation, and FSL Lexicon §10.15 keeps
+them apart in a way that splits a failed field across **two token lines**:
+
+- **The control** keeps the role it was authored with and flips that role's
+  `invalid` State. A `muted` field that fails validation is still `muted`.
+  Re-voicing it (`evaluation: 'negative'`) is the category mistake §10.15 names —
+  state lives in the user's data, evaluation lives in the author's pen.
+- **The `validationMessage`** is the adjacent display part _reporting_ the
+  outcome, so it lawfully carries the valence and reads
+  `input.negative.text.*` — regardless of the control's role. It is the only
+  part in the family that reads a role other than its component's, which is
+  why it goes through `buildFieldTextPartStyle`'s `tone` rather than being
+  hand-written per component.
+
+The theme states the same split from its side: `input.primary.text.invalid` is
+the control's ordinary reading ink on purpose, because a value the user must
+re-read is not where the signal is spent. The valence on the control is the
+border alone.
+
+**Hover does not apply while invalid** (owner ruling, 2026-07-29). No mechanism
+was needed for it — `invalid` already outranks `hovered` in the cascade above,
+and `border` passes no `isHovered` at all. It is recorded here because it is now
+a product decision rather than a side effect of the tuple's order, and
+`tests/unit/tests/fieldEnvelope.test.tsx` fails if a call site stops passing
+`isInvalid` and lets hover win.
+
 ---
 
 ## §4 — Standard Step Rule
@@ -334,6 +362,68 @@ Every component root MUST carry the identity attributes (`data-scope`, `data-par
 <div data-scope="dialog" data-part="actions">…</div>
 <button data-scope="button" data-part="root" data-composition="primaryAction">…</button>
 ```
+
+**Uniqueness — `(data-scope, data-part)` addresses one element per subtree.** The pair is the
+package's addressing scheme: a test, a host stylesheet and an AI agent all resolve a part by
+it. So **no element may contain a descendant carrying the same pair.** Sibling repeats are
+legitimate and common — two radios in a group, two steppers in a NumberField, two glyph hosts
+— because the defect is ambiguity _within_ a subtree, not repetition in a document. Asserted
+by contract invariant #12, which ships with a list of named known violations, each annotated
+with what removes it; a companion test asserts every listed violation still reproduces, so a
+fixed one must be deleted rather than left as a standing exemption.
+
+**Declared parts vs internal parts.** `data-part` equals `meta.structure` for every part that
+declares a `ComponentMeta`, and those are checked against the entity's legal roles. A component
+may also emit **internal** parts — elements with no meta, whose names need not be in the
+entity's role vocabulary (`Slider`'s `track`/`fill`/`labelRow`, `ComboBox`'s
+`positioner`/`surface`, a field's `frame`). Internal parts exist so that structure the entity
+has no role for stays addressable without growing the taxonomy nominally (ADR-008). They are
+still bound by the uniqueness rule above.
+
+The clearest case is the field envelope on a **`Selection`** root. `Select`, `CheckboxGroup`
+and `RadioGroup` each render `description` and `validationMessage`, and neither is a legal
+`Selection` structural role — the roles are root/control/label/indicator/selectionControl/item,
+and those two belong to `Input`. All three ship them as internal parts, so no illegal role is
+ever claimed and the vocabulary does not grow for three components that borrow one shape.
+Admitting the roles to `ENTITY_STRUCTURE.Selection` stays available as an FSL governance
+decision; three components reaching the same answer is evidence for the internal-part
+treatment, not against it.
+
+**The embedded trigger.** An Action that lives _inside_ a field's box — a
+`SearchField`'s clear button, a `NumberField`'s two steppers, a `ComboBox`'s
+chevron — resolves its box from `EMBEDDED_TRIGGER` (`src/tokens/embeddedTrigger.ts`),
+never from its host. The reference system names the same primitive
+(`in-field-button`, with its own layout token set), so this is a third posture
+beside the command and utility silhouettes in `ActionTrigger/anatomy.tsx` rather
+than a convenience. Contract invariant **#14** asserts it.
+
+Two rules an author will otherwise get wrong. **It declares the field row's type
+although it renders no text:** a `<button>` with no type of its own inherits the
+UA's `13.3333px`, so anything font-relative inside it — an `Icon` asked for
+`size="text"` — silently shrinks. That is what made three triggers measure 32,
+25.33 and 20px. **Its colours come from its host and not from `action.*`:** the
+"entity → ux-context alignment" test binds a file's colour reads to the entities
+that file declares, and these hosts declare `Input` only. It costs nothing —
+`input.primary.background` resolves the same first two rungs as `action.muted`, so
+the trigger is invisible against its field until the pointer arrives.
+
+**The choosable row.** A row the user picks from — a `Select` option, a `ComboBox` option, a
+`MenuItem`, a `ListBoxItem`, a `GridListItem` — resolves its box from `CHOOSABLE_ROW`
+(`src/tokens/choosableRow.ts`), not from its own component. The five span three entities, and the
+entity decides a row's **colours**, never its geometry: they read the same block inset, inline
+inset, radius and type as the field row, so an option sits under a field at the same rhythm — the
+row is the field's content box, and the field is that plus the 1px border per edge it draws. Stated
+in tokens rather than pixels on purpose: both are fluid (F-035), so at a 1280px viewport it reads
+32px row / 34px field and at 390px both bottom out on `sizing.hit` and the difference is 0. Its
+focus ring
+is **inset by exactly the ring width**, because every one of these rows lives in a clipped or
+scrolling surface and a ring needing room outside the box gets cut off at a scroll edge. Asserted by
+contract invariant #13.
+
+Where a control's painted box and its operated element are different nodes, **`control` names
+the element the user operates** — the one that takes focus and holds the value — and the
+painted box is an internal `frame`. Reversing that would make `[data-part="control"]` resolve a
+`<div>` nobody can type into (ADR-022; ADR-008 draws the same line for Slider's thumb).
 
 The contract test [`components.contract.test.tsx`](../../tests/unit/tests/components.contract.test.tsx) auto-discovers every `*Meta` and asserts each attribute value is legal per the matrices in `taxonomy.ts`.
 
@@ -414,15 +504,45 @@ Rules (enforced by the contract tests):
 
 Registered knobs:
 
-| Knob                         | Component     | Fallback           |
-| ---------------------------- | ------------- | ------------------ |
-| `--fsl-combo-box-max-height` | `ComboBox`    | `min(20rem, 60vh)` |
-| `--fsl-dialog-max-width`     | `DialogModal` | `min(500px, 90vw)` |
-| `--fsl-dialog-max-height`    | `DialogModal` | `90vh`             |
-| `--fsl-menu-min-width`       | `Menu`        | `12rem`            |
-| `--fsl-menu-max-width`       | `Menu`        | `min(320px, 90vw)` |
-| `--fsl-popover-max-width`    | `Popover`     | `min(320px, 90vw)` |
-| `--fsl-tooltip-max-width`    | `Tooltip`     | `min(280px, 90vw)` |
+| Knob                            | Component     | Fallback               |
+| ------------------------------- | ------------- | ---------------------- |
+| `--fsl-combo-box-max-height`    | `ComboBox`    | `min(20rem, 60vh)`     |
+| `--fsl-combo-box-popover-width` | `ComboBox`    | `var(--trigger-width)` |
+| `--fsl-form-label-width`        | `Form`        | `max-content`          |
+| `--fsl-dialog-max-width`        | `DialogModal` | `min(500px, 90vw)`     |
+| `--fsl-dialog-max-height`       | `DialogModal` | `90vh`                 |
+| `--fsl-menu-min-width`          | `Menu`        | `12rem`                |
+| `--fsl-menu-max-width`          | `Menu`        | `min(320px, 90vw)`     |
+| `--fsl-popover-max-width`       | `Popover`     | `min(320px, 90vw)`     |
+| `--fsl-select-popover-width`    | `Select`      | `var(--trigger-width)` |
+| `--fsl-tooltip-max-width`       | `Tooltip`     | `min(280px, 90vw)`     |
+
+### Upstream custom properties — a named allowlist (ADR-023)
+
+Rule 2 above reserves `--fsl-` for host knobs and bans a third namespace, because
+an unnamed one is an unreviewable styling side channel. One narrow class is
+exempt: a custom property **published as documented API by a direct dependency**,
+where the value is something only the dependency can compute.
+
+The exemption is an allowlist, not a hole. Names live in the `UpstreamCssVar`
+union and are read through `upstreamVar(name, fallback)` — same fallback
+requirement as `fslVar`, though it means something different: not "the host did
+not customise this" but "the dependency did not publish it".
+
+| Property          | Published by         | Read by              | Fallback |
+| ----------------- | -------------------- | -------------------- | -------- |
+| `--trigger-width` | React Aria `Popover` | `Select`, `ComboBox` | `auto`   |
+
+**Reads only.** React Aria resolves `--trigger-width` as
+`props.style['--trigger-width'] || measured`, and supplying our own value also
+switches off the `ResizeObserver` that keeps it current — so writing it would
+freeze a popover at its trigger's first-paint width.
+
+Both halves are enforced, and the source-text rule alone is **not** sufficient:
+it scans `src/components/**`, so a helper composing the string elsewhere slips
+past it (which is exactly what happened when `upstreamVar` was added). The
+binding check is over the **rendered** inline styles of every DOM fixture, plus a
+source check that nothing assigns an allowlisted name.
 
 ---
 

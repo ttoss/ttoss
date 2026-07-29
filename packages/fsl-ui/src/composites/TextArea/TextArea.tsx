@@ -1,11 +1,7 @@
 import { vars } from '@ttoss/fsl-theme/vars';
-import type * as React from 'react';
 import {
-  FieldError as RACFieldError,
   type FieldErrorProps as RACFieldErrorProps,
-  Label as RACLabel,
   type LabelProps as RACLabelProps,
-  Text as RACText,
   TextArea as RACTextArea,
   type TextAreaProps as RACTextAreaProps,
   TextField as RACTextField,
@@ -13,16 +9,28 @@ import {
   type TextProps as RACTextProps,
 } from 'react-aria-components';
 
+import {
+  buildFieldControlStyle,
+  buildFieldRootStyle,
+  type FieldAuthoring,
+  FieldDescriptionPart,
+  FieldLabelPart,
+  FieldValidationMessagePart,
+  useFieldLayout,
+} from '../../components/Field/anatomy';
 import type { ComponentMeta } from '../../semantics';
-import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
-import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
-import { createPresenceScope } from '../scope';
+import { createCompositeScope } from '../scope';
 
 // ---------------------------------------------------------------------------
 // Composite scope — presence-only host guard (same contract as TextField).
 // ---------------------------------------------------------------------------
 
-const textAreaScope = createPresenceScope('TextArea');
+// Stateful rather than presence-only: the host now has something its parts
+// need. The label cannot know the field is required — React Aria does not tell
+// it — and the necessity marker belongs beside the label text, so the root
+// publishes the flag from its own render props (the authoritative value, not the
+// prop). `scope.ts`'s authoring rule: share state when there is state to share.
+const textAreaScope = createCompositeScope<{ isRequired: boolean }>('TextArea');
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -75,71 +83,37 @@ export const textAreaErrorMeta = {
   composition: 'status',
 } as const satisfies ComponentMeta<'Input'>;
 
-/** Props for the TextArea root. */
-export type TextAreaProps = Omit<RACTextFieldProps, 'style' | 'className'>;
-
 /**
- * A multiline text input composite (Input entity) — the multiline sibling of
- * `TextField`. Composes `TextAreaLabel`, `TextAreaControl`,
- * `TextAreaDescription`, and `TextAreaError`. Validation is driven by React
- * Aria's `isInvalid` / `validate`.
+ * Props for the TextArea root.
  *
- * @example
- * ```tsx
- * <TextArea isRequired>
- *   <TextAreaLabel>Notes</TextAreaLabel>
- *   <TextAreaControl rows={4} />
- *   <TextAreaError />
- * </TextArea>
- * ```
+ * `rows` is one-line-only, the same shape `placeholder` has: React Aria puts it
+ * on the `<textarea>` and the composed form passes it to `TextAreaControl`
+ * directly, so the props form is where it would otherwise be unreachable — which
+ * it was until the Studio's settings form asked for a three-row description.
  */
-export const TextArea = ({ children, ...props }: TextAreaProps) => {
-  return (
-    <RACTextField
-      {...props}
-      data-scope="text-area"
-      data-part="root"
-      style={
-        {
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: vars.spacing.gap.stack.xs,
-        } as React.CSSProperties
-      }
-    >
-      {(values) => {
-        return (
-          <textAreaScope.Provider>
-            {typeof children === 'function' ? children(values) : children}
-          </textAreaScope.Provider>
-        );
-      }}
-    </RACTextField>
-  );
-};
-TextArea.displayName = textAreaMeta.displayName;
+export type TextAreaProps = Omit<
+  RACTextFieldProps,
+  'style' | 'className' | 'children'
+> &
+  FieldAuthoring<RACTextFieldProps['children'], { rows?: number }>;
 
 /** Props for the TextArea label. */
 export type TextAreaLabelProps = Omit<RACLabelProps, 'style' | 'className'>;
 
 /** The label slot of a TextArea. */
-export const TextAreaLabel = (props: TextAreaLabelProps) => {
-  textAreaScope.use(textAreaLabelMeta.displayName);
+export const TextAreaLabel = ({ children, ...props }: TextAreaLabelProps) => {
+  const { isRequired } = textAreaScope.use(textAreaLabelMeta.displayName);
   const colors = vars.colors.input.primary;
 
   return (
-    <RACLabel
+    <FieldLabelPart
       {...props}
-      data-scope="text-area"
-      data-part="label"
-      style={
-        {
-          color: colors?.text?.default,
-          ...(vars.text.label.md as React.CSSProperties),
-        } as React.CSSProperties
-      }
-    />
+      scope="text-area"
+      colors={colors}
+      isRequired={isRequired}
+    >
+      {children}
+    </FieldLabelPart>
   );
 };
 TextAreaLabel.displayName = textAreaLabelMeta.displayName;
@@ -157,6 +131,7 @@ export type TextAreaControlProps = Omit<
 export const TextAreaControl = (props: TextAreaControlProps) => {
   textAreaScope.use(textAreaControlMeta.displayName);
   const colors = vars.colors.input.primary;
+  const { labelPosition } = useFieldLayout();
 
   return (
     <RACTextArea
@@ -164,38 +139,15 @@ export const TextAreaControl = (props: TextAreaControlProps) => {
       data-scope="text-area"
       data-part="control"
       style={({ isHovered, isDisabled, isFocusVisible, isInvalid }) => {
-        return {
-          boxSizing: 'border-box',
-          resize: 'vertical',
-          minBlockSize: vars.sizing.hit,
-          paddingBlock: vars.spacing.inset.control.sm,
-          paddingInline: vars.spacing.inset.control.md,
-          borderRadius: vars.radii.control,
-          borderWidth: vars.border.outline.control.width,
-          borderStyle: vars.border.outline.control.style,
-          transitionDuration: vars.motion.feedback.duration,
-          transitionTimingFunction: vars.motion.feedback.easing,
-          transitionProperty: 'background-color, border-color, color',
-          backgroundColor: resolveInteractiveStyle(colors?.background, {
-            isHovered,
-            isDisabled,
-            isInvalid,
-          }),
-          borderColor: resolveInteractiveStyle(colors?.border, {
-            isDisabled,
-            isInvalid,
-            isFocusVisible,
-          }),
-          color:
-            resolveInteractiveStyle(colors?.text, {
-              isHovered,
-              isDisabled,
-              isInvalid,
-            }) ?? colors?.text?.default,
-          outline: focusRingOutline(isFocusVisible),
-          outlineOffset: FOCUS_RING_OFFSET,
-          ...(vars.text.label.md as React.CSSProperties),
-        } as React.CSSProperties;
+        return buildFieldControlStyle({
+          colors,
+          labelPosition,
+          multiline: true,
+          isHovered,
+          isDisabled,
+          isFocusVisible,
+          isInvalid,
+        });
       }}
     />
   );
@@ -213,20 +165,7 @@ export const TextAreaDescription = (props: TextAreaDescriptionProps) => {
   textAreaScope.use(textAreaDescriptionMeta.displayName);
   const colors = vars.colors.input.primary;
 
-  return (
-    <RACText
-      slot="description"
-      {...props}
-      data-scope="text-area"
-      data-part="description"
-      style={
-        {
-          color: colors?.text?.default,
-          ...(vars.text.label.sm as React.CSSProperties),
-        } as React.CSSProperties
-      }
-    />
-  );
+  return <FieldDescriptionPart {...props} scope="text-area" colors={colors} />;
 };
 TextAreaDescription.displayName = textAreaDescriptionMeta.displayName;
 
@@ -242,17 +181,65 @@ export const TextAreaError = (props: TextAreaErrorProps) => {
   const colors = vars.colors.input.primary;
 
   return (
-    <RACFieldError
-      {...props}
-      data-scope="text-area"
-      data-part="validationMessage"
-      style={
-        {
-          color: colors?.text?.invalid ?? colors?.text?.default,
-          ...(vars.text.label.sm as React.CSSProperties),
-        } as React.CSSProperties
-      }
-    />
+    <FieldValidationMessagePart {...props} scope="text-area" colors={colors} />
   );
 };
 TextAreaError.displayName = textAreaErrorMeta.displayName;
+
+/**
+ * A multiline text input composite (Input entity) — the multiline sibling of
+ * `TextField`. Composes `TextAreaLabel`, `TextAreaControl`,
+ * `TextAreaDescription`, and `TextAreaError`. Validation is driven by React
+ * Aria's `isInvalid` / `validate`.
+ *
+ * @example
+ * ```tsx
+ * <TextArea isRequired>
+ *   <TextAreaLabel>Notes</TextAreaLabel>
+ *   <TextAreaControl rows={4} />
+ *   <TextAreaError />
+ * </TextArea>
+ * ```
+ */
+export const TextArea = ({
+  children,
+  label,
+  description,
+  errorMessage,
+  placeholder,
+  rows,
+  ...props
+}: TextAreaProps) => {
+  const { labelPosition } = useFieldLayout();
+
+  return (
+    <RACTextField
+      {...props}
+      data-scope="text-area"
+      data-part="root"
+      style={buildFieldRootStyle({ labelPosition })}
+    >
+      {(values) => {
+        return (
+          <textAreaScope.Provider value={{ isRequired: values.isRequired }}>
+            {children === undefined ? (
+              <>
+                {label !== undefined && <TextAreaLabel>{label}</TextAreaLabel>}
+                <TextAreaControl placeholder={placeholder} rows={rows} />
+                {description !== undefined && (
+                  <TextAreaDescription>{description}</TextAreaDescription>
+                )}
+                <TextAreaError>{errorMessage}</TextAreaError>
+              </>
+            ) : typeof children === 'function' ? (
+              children(values)
+            ) : (
+              children
+            )}
+          </textAreaScope.Provider>
+        );
+      }}
+    </RACTextField>
+  );
+};
+TextArea.displayName = textAreaMeta.displayName;

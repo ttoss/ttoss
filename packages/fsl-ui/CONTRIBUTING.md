@@ -1,7 +1,18 @@
 # Contributing to `@ttoss/fsl-ui`
 
-> **To author a component you need exactly two files: this file + `src/tokens/CONTRACT.md`.
-> FSL docs are reference philosophy — you do not need them.**
+> **To author a component you need exactly two files: this file + `src/tokens/CONTRACT.md`.**
+> That covers _mechanics_ — which `vars.*` path a part reads, which matrices must
+> cover a new Entity, which attributes it publishes.
+>
+> It does **not** cover _decisions_. The moment a question is "should this be a
+> colour or a valence", "may a component paint nothing", "does size come from a
+> fixed ramp", you are outside these two files and inside
+> `docs/website/docs/design/design-system/design-tokens/`, which is already
+> opinionated on all three. `INTERNAL/ROADMAP.md` →
+> "Before deciding anything — read the authorities first" maps each recurring
+> question to the document that answers it. Read it before escalating anything as
+> an owner decision; that section exists because two questions were escalated that
+> the docs had already settled.
 
 Two source-of-truth files drive every change:
 
@@ -554,3 +565,136 @@ Re-litigation answers:
 - "Why does a menu row default to the _quiet_ rung — isn't a menu item a normal action?" → its container is the emphasis. A row inside an overlay surface is already prominent; painting it again makes a button of it.
 - "Then how do I make one row louder?" → pass `evaluation` explicitly (a primary "Create…" at the top of a menu). The default is the common case, not the only one.
 - "Why not add `action.more` speculatively along with a few other glyphs?" → icon-system.md: the registry grows slowly and shrinks never; add an intent when a component needs it.
+
+### ADR-022: A field's geometry comes from one shared anatomy; `control` names the element the user operates
+
+Status: accepted (2026-07-26)
+Tags: input, field, anatomy, geometry, a11y, addressability, P3
+
+Context: P3 Slice 5 ⓠ+①. The Input family had grown to eleven components, each declaring the field row for itself, and measuring it in Chromium (light + dark, 1920 / 900 / 390) turned up five class-level defects that no per-component fix would have stopped. Four are geometry drift: a control that declared `minBlockSize` where its siblings declared `minHeight` (computing the same box, invisible to the row guard); a focus ring floated 2px on four members and flush 0px on two; two host-element UA defaults nobody had declared (a `<button>` centring its value, an `<input>` keeping its 2px inline padding); and three in-field triggers at 20 / 25.33 / 32px. The fifth is addressability: three components wrap an `<input>` in a painted `<div>` and name **both** `data-part="control"`, so the anatomy the package publishes cannot address either one (F-026).
+
+Decision: **one shared anatomy module owns field geometry** — `components/Field/anatomy.tsx`, the counterpart of `ActionTrigger/anatomy.tsx` for the Action family. It exports `FIELD_ROW` (the four tokens that _are_ the row) plus builders for the two shapes a field control takes: _self-painted_, where one element is both the painted box and the operated element, and _split_, where a frame paints and hosts adornments while a borderless inner input carries the value. The row is asserted against that source by contract invariant **#11**, not against a peer component — which is what lets it widen past the two members invariant #10 could reach.
+
+Second decision, which the addressability defect forces: **`data-part="control"` names the element the user operates** — the one that takes focus and holds the value. A test, a host stylesheet or an agent told "type into the email field" resolves `[data-part="control"]`, and a `<div>` frame there would break that. The frame becomes an **internal part** (`data-part="frame"`), the treatment Slider's `track`/`fill` already get under ADR-008; the contract test checks `data-part` legality only for declared metas, so an internal part is free to use a name outside the entity's role vocabulary. Contract invariant **#12** then states the general rule: no element may contain a descendant carrying the same `(data-scope, data-part)`. Sibling repeats stay legal — two radios, two steppers, two glyph hosts — because the defect is ambiguity within a subtree, not repetition in a document.
+
+`textAlign` is declared rather than inherited, which is the whole fix for the UA-default class: a field displays a value at the reading edge, and when nothing states it the host element decides — `<input>` starts its text, `<button>` centres it.
+
+Rejected: keeping the row as a per-component declaration with a lint rule (the drift was in _which property_ was used, not in the values, so a value lint cannot see it); making the frame `control` and the input a `value` internal part (it inverts addressability — the operated element is what callers and agents reach for, and ADR-008 already pins `control` to Slider's thumb rather than its track); a `(scope, part)` uniqueness rule scoped per document (sibling repeats are the normal case and would have to be exempted one by one, which is the same as having no rule); standardising the floor on `minBlockSize` rather than `minHeight` (the logical-property rule the contract enforces governs _directional_ placement, which breaks RTL — sizing has no such failure mode, and `minHeight` is what the Action anatomy and five of six field members already read; the choice now lives in one place, so reversing it is a one-line change).
+
+Cost: an internal module with no public export, so the package's surface is unchanged and existing call sites keep compiling — but every future field must go through it or invariant #11 fails, which is the intent. Invariant #12 shipped with four **named** known violations rather than a silent exemption list: the three field cases above, each annotated with the queue item that removes it, plus `menu/root`, which this invariant found and the browser audit had missed — the Menu popover and every `MenuItem` both resolved `[data-scope="menu"][data-part="root"]`, because §5 has sub-parts reuse the host's scope while `MenuItem` also declared `structure: 'root'` (a different family and a different cause — F-030). A companion test asserts every listed violation is still real, so a fixed one must be deleted rather than left as a permanent exemption, and the list has since shrunk to **two**: `combo-box/control` fell in forms C1 and `menu/root` in forms round R3, where `MenuItem` moved to `structure: 'control'` — legal on Action already, and the word ADR-022 itself defines as the element the user operates.
+
+Anchors: `src/components/Field/anatomy.tsx`, `src/composites/TextField/TextField.tsx`, `src/composites/TextArea/TextArea.tsx`, `tests/unit/tests/components.contract.test.tsx` (invariants #11 and #12), `src/tokens/CONTRACT.md` §5, `docs/fsl-studio/FRICTION.md` F-026 / F-030, ROADMAP P3 Slice 5.
+
+Re-litigation answers:
+
+- "Why not one `Field` component wrapping any control, the way the design drafts model it?" → because React Aria wires label to control to description to error through context supplied by **the field root itself**. Read in `react-aria-components@1.19.0`: `LabelContext`, `TextContext` and `FieldErrorContext` are context-generic consumers, and all three are provided by `TextField`, `Select`, `ComboBox`, `NumberField`, `RadioGroup`, `SearchField` and `CheckboxGroup`. A wrapper outside that root cannot participate, so the envelope is the root each composite already renders plus parts mounted inside it.
+- "Then how does one label cover two controls?" → that is a `role="group"` with `aria-labelledby`, not a field. It is the only shape the context model allows, and it is also the correct ARIA.
+- "Does invariant #11 replace #10?" → no. #10 asserts the _Action_ side of the row (a utility trigger matches a field); #11 asserts the _field_ side against the shared source. They meet on the same tokens from opposite directions.
+- "Why does the row assert token strings instead of computed pixels?" → jsdom has no layout. The pixel check is the browser measurement that gates each queue item; the unit invariant guards the declaration, which is what actually drifts.
+- "Slider only provides `LabelContext` — is that a bug?" → no, it is the boundary. Slider has no validation in React Aria, so it takes a label and nothing else from the envelope.
+
+**Addendum 2026-07-26 — the authoring surface (forms item A).** The family had three shapes for one idea: `TextField`/`TextArea`/`SearchField` composed by slots, `Select`/`ComboBox`/`NumberField` took props, and `Select` had nowhere to render a message at all (F-009). Both shapes are legitimate — one line for the common field, slots when the arrangement is unusual — so the decision is **not to pick one** but to make every field support both from one code path, with the meaningless combination rejected at compile time. `FieldAuthoring<TChildren>` in the anatomy is a discriminated union: the `children` branch forbids `label`/`description`/`errorMessage`/`placeholder` and the copy branch forbids `children`, so "I passed both, which wins?" is a type error rather than a runtime precedence rule nobody can see. Existing per-component slot exports are unchanged and stay exported, so the surface only grows.
+
+Two details that are decisions, not incidents. `placeholder` is forwarded to the control rather than spread onto the root, because React Aria deliberately **omits** `placeholder` (and `label`, `description`, `errorMessage`) from `TextFieldProps` — they belong to the parts, and the one-line form is what puts them back. And the one-line form **always mounts the message slot**, even with no `errorMessage`: React Aria's `FieldError` renders only while invalid, so mounting it costs nothing and buys the platform's own constraint copy for `isRequired`/`type="email"` — already localized, which is copy we could never ship ourselves (ADR-001). Asserted by `fieldAuthoring.test.tsx` against a real failed submit, because a controlled `isInvalid` alone produces no message and would have made a weaker test pass.
+
+**Addendum 2026-07-28 — the envelope parts (forms item C2).** Item A rejected an
+**exported** generic `FieldLabel`, on the grounds that it would need its own
+`data-scope` and re-scoping the published per-component parts is a break bought
+for nothing. That holds. What it did not settle is whether the parts may share an
+_implementation_, and measuring the family answered that they must: probing all
+nine field roots showed the necessity marker reaching **three** of them, `Select`
+and `RadioGroup` with nowhere to render a message (F-009 and its sibling shape),
+and three files carrying a private helper computing the colours
+`buildFieldTextPartStyle` already computes.
+
+So the anatomy gains three **internal** parts — `FieldLabelPart`,
+`FieldDescriptionPart`, `FieldValidationMessagePart` — which take `scope` as a
+**prop** rather than owning one. That is the whole difference from what A
+rejected: `text-field/label` is still `text-field/label`, so every attribute a
+test, a stylesheet or an agent can address is byte-identical either side of the
+refactor, while the nine copies become one. The per-component slot exports remain
+the composable surface and now render through these.
+
+The guard is a class guard, `fieldEnvelope.test.tsx`, driven by a table whose axis
+is _every field root whose React Aria root supplies `TextContext` and
+`FieldErrorContext`_ — with `Switch` and `Slider` named as exceptions plus the
+mechanism excluding each, so the list can only shrink. A per-component test cannot
+catch this class of defect, because each component passes on its own.
+
+Two measured details that are decisions. A split control's **frame** now declares
+the row's type although it renders no text: without it the same `ComboBox`
+resolved `16px` in Storybook and `18px` inside the Studio's invite dialog, because
+an undeclared frame inherits the host's paragraph size and hands it to every
+adornment placed in it — invariant #11 now asserts the type on both control
+shapes. And `Select`'s label stopped tinting itself `text.invalid`: it was the
+only label in the family that did, the divergence was invisible because F-032
+measures that token as the same ink as `text.default` in both modes, and when
+F-032 lands a real negative ink a whole label turning red is not the language the
+reference uses — it tints the message and the chrome, never the name of the field.
+
+Anchors: `src/components/Field/anatomy.tsx`, `tests/unit/tests/fieldEnvelope.test.tsx`, `docs/fsl-studio/FRICTION.md` F-009 / F-032, `INTERNAL/FORMS.md` §3 and C2.
+
+### ADR-023: A picker's popover takes the field row's width, read from a named allowlist of upstream custom properties
+
+Status: accepted (2026-07-28)
+Tags: input, field, overlay, escape-hatch, governance, P3, forms
+
+Context: forms item C3 / F-019. Measured in Chromium at 1280 and 390, light and dark: `Select`'s dropdown came out **102.11px under a 1200px trigger** and 79.61px under 310px; `ComboBox`'s 142.88px and 115.27px. In the Studio's invite dialog the Role dropdown was a small detached box under a 426px field. All four cases had `--trigger-width` published **on the popover element itself** the whole time, correct and live, and read by nobody.
+
+Two questions, and only the second is governance. What should the width be, and may the package read a custom property from a namespace it does not own?
+
+Decision, part one: **a picker's popover takes the field row's width, and a menu's does not.** Both authorities draw that line in the same place, which is why it is the line. React Aria's own `Select` and `ComboBox` examples style their popovers `width: var(--trigger-width)`; its `Menu` example sets no width. Spectrum 2's `Picker` and `ComboBox` document `menuWidth` as "By default, matches width of the trigger. Note that the minimum width of the dropdown is always equal to the trigger's width"; its `Menu` has no such prop. The discriminant is what the popover shows: a picker shows the field's **value space**, so it belongs to the field's geometry; a menu shows **things to do**, so it sizes to its own content. Our `Menu` keeps `--fsl-menu-min-width` (measured 192px against a 108.88px trigger — correct, and unchanged), and `Popover` keeps its own max-width.
+
+S2's two sentences are two different rules, so they become two declarations: `min-width` is the unconditional floor, `width` is the default and is knob-overridable (`--fsl-select-popover-width`, `--fsl-combo-box-popover-width`). A host can therefore widen the list for long options but can never make it narrower than the row it hangs from — a dropdown narrower than its own trigger reads as a rendering fault.
+
+Decision, part two: **reading a custom property published as documented API by a direct dependency is legal, from a named allowlist.** `CONTRACT.md` §7 rule 2 reserves `--fsl-` and bans a third namespace because an unnamed one is an unreviewable side channel. That reasoning does not reach `--trigger-width`, which is not a side channel but the sanctioned way to read a value **only the dependency can compute** — a layout measurement of a different subtree, unavailable to CSS by any other means. It appears in React Aria's Popover documentation in a "CSS Variables" table, described as "The width of the popover trigger element". So the rule gains an exemption shaped as an allowlist: a fixed union (`UpstreamCssVar`), read through `upstreamVar(name, fallback)`, one row per name in §7 with the documentation that publishes it.
+
+The fallback is mandatory as it is for `fslVar`, but it means something else: not "the host did not customise this" but "the dependency did not publish it". For `--trigger-width` it is `auto`, which is the behaviour the package had before F-019 — degradation is a step back, not a break.
+
+**These properties are read-only, and that is a mechanism rather than a convention.** React Aria resolves `--trigger-width` as `props.style['--trigger-width'] || measured`, and supplying our own value _also_ switches off the `ResizeObserver` keeping it current — so writing it would silently freeze the popover at the trigger's first-paint width.
+
+Rejected: `min-width` alone with the popover still sizing to content (satisfies S2's floor sentence and contradicts its default sentence — and leaves the measured defect in place for any list narrower than its field); `width` alone with no floor (a host knob could then produce a dropdown narrower than its trigger); forwarding a `menuWidth`-style prop instead of a knob (geometry the host owns goes through §7's channel, and a prop would be a visual prop on a composite, which §4 forbids); reading the property without an allowlist (that is the unnamed namespace §7 rule 2 exists to prevent); putting the two-line style in each picker (third instance of the same duplication class in this family — the field row and the envelope were the first two, and both drifted).
+
+Cost: one entry in a governance allowlist, which must be argued each time it grows. The **enforcement** cost is where the real lesson is: the pre-existing rule was a source-text regex over `src/components/**`, and routing the read through a helper in `src/tokens/` slipped past it silently — the suite stayed green through a change the rule was written to catch. So the binding check is now over the **rendered** inline styles of every DOM fixture, where a value lands regardless of what composed it, plus a source check that nothing assigns an allowlisted name. All three guards were verified to fail on an injected violation before being trusted.
+
+Deliberate no-change: **the open popover overlays the description below the field, and stays that way.** React Aria anchors it to the trigger (`placement: 'bottom start'`, `triggerRef: buttonRef`, read in `Select.mjs`), so an overlay covers what is beneath the trigger — which is what an overlay is, and what both reference implementations do. F-019's original note mentioned the overlap alongside the width defect; only the width was a defect.
+
+Anchors: `src/components/Field/anatomy.tsx` (`buildPickerPopoverStyle`), `src/tokens/escapeHatch.ts` (`upstreamVar`, `UpstreamCssVar`), `src/tokens/CONTRACT.md` §7, `tests/unit/tests/components.contract.test.tsx` (§4b), `docs/fsl-studio/FRICTION.md` F-019, `INTERNAL/FORMS.md` C3.
+
+Re-litigation answers:
+
+- "Why not just always match trigger width for every anchored overlay?" → because a menu is not a picker. Both authorities exclude `Menu` explicitly, and the measurement agrees: our Menu's 192px floor against an 108.88px trigger is right, and forcing it to 108.88px would make every action label wrap.
+- "A long option now wraps instead of widening the list — is that a regression?" → it is the rule working, and it was measured: at a 140px trigger the option "Administrator with billing access" wraps to three lines with no overflow in either direction (`scrollWidth === clientWidth` on both the list and the item). A host that prefers a wider list has the knob. S2 behaves the same way.
+- "Does this make the Storybook Select dropdown absurdly wide at 1200px?" → the story canvas is full-bleed, so yes, and that is the field's own width — in a real layout (the Studio's 426px field) it is exactly right. Sizing the dropdown to content is what made the field look broken.
+- "Why not import `UpstreamCssVar` into the contract test instead of repeating the names?" → a test that imports the thing it polices passes by construction the day someone widens the type.
+
+### ADR-025: The `Form` publishes field layout as static context; a required field marks itself
+
+Status: accepted (2026-07-26)
+Tags: input, field, form, context, a11y, i18n, P3, forms
+
+> ADR-024 (the validation language) is reserved for forms item F. Numbers are allocated when a decision is planned, not when it lands.
+
+Context: forms item B1. Label layout and the necessity convention are one product decision, not a per-field one — a form where some labels sit above and others beside, or where one field marks required and the next does not, is a form nobody proofread. The reference system puts exactly these on its `<Form>` (`labelPosition`, `labelAlign`, `necessityIndicator`, `size`) and has each field inherit them, which is also this ecosystem's own pattern: applications configure once at the root, packages consume context, and no visual prop travels down a tree.
+
+Decision: **`Form` publishes a field-layout context and every field reads it — with a default, so a field outside any `Form` still works.** The read goes through a dedicated context in `Field/anatomy.tsx` rather than through `formScope`, because `formScope.use()` throws when its host is absent — correct for `FormActions`/`FormSubmit`, wrong for a field: a lone age input or a confirmation checkbox in a modal is a first-class case (FORMS.md §2b). The standalone default is that a required field still marks itself, because the marker states a fact about the field rather than a preference about the form. The shape is `ActionTriggerGroupProvider`/`useIsGroupedActionTrigger` from the Action anatomy — a container publishes, a member reads with a fallback.
+
+**The context carries static configuration only, and that is load-bearing rather than stylistic.** Every field in the form reads it, so a value whose identity changed per render would re-render all of them. The provider value is memoised on its inputs, and two tests hold the line: a keystroke in one field does not re-render its siblings, and the value survives a Form re-render by identity. TanStack Form can afford field _state_ in context because its values are static class instances with reactive properties; plain React context is not that, and validation state stays where React Aria already tracks it — on each field.
+
+First consumer, so the context is not reserved API: **`necessityIndicator: 'icon' | 'none'`, default `'icon'`.** The reference marks the _required_ fields rather than the optional ones, and so do we. The marker is a text asterisk rather than an `Icon`: the glyph registry does not grow for a character every font already has, and text inherits the label's size and weight for free. It is `aria-hidden`, because — **measured** — React Aria marks the control with the **native `required` attribute** and sets no `aria-required`; the native attribute is announced by assistive technology on its own, a second announcement is noise, and an asterisk absorbed into the accessible name is worse than no asterisk.
+
+Rejected: a `'label'` variant rendering the words "(required)" — that is copy, and copy is caller-supplied (ADR-001), so a translated string is not ours to ship. Readmission criterion: a consumer that needs it, plus a prop carrying its localized text. Also rejected: putting `labelPosition`/`labelAlign` in the context now — the grid that makes side labels work is item B2, and a context key with no consumer is reserved API (§2.3).
+
+Cost, and it is real: the marker lives **inside** the label element, so the label's text content grows an asterisk. The accessible name is unaffected — `aria-hidden` nodes are excluded from name computation, verified by a role query for the bare label still matching — but `getByLabelText('Email')` with an exact string stops matching for **required** fields. Four such queries in the Studio's own suite moved to `getByRole('textbox', { name: 'Email' })`, which follows the accessible-name algorithm and is the robust query regardless. Consumers marking a field required meet the same edge; a product that wants none of it sets `necessityIndicator="none"` on its `Form`.
+
+To carry the flag to the label, `TextField`'s and `TextArea`'s scopes moved from `createPresenceScope` to `createCompositeScope<{ isRequired: boolean }>` — the host now has something its parts need, which is the authoring rule in `composites/scope.ts` verbatim. The root publishes `isRequired` from its **render props** rather than from its prop, so the value is the one React Aria resolved. `Checkbox` needed separate wiring because its label is inline children rather than a `Label` part; it reads `isRequired` from its own render props.
+
+Anchors: `src/components/Field/anatomy.tsx` (`FieldLayoutProvider`, `useFieldLayout`, `FieldNecessityMarker`), `src/composites/Form/Form.tsx`, `src/composites/TextField/TextField.tsx`, `src/composites/TextArea/TextArea.tsx`, `src/components/Checkbox/Checkbox.tsx`, `tests/unit/tests/fieldLayout.test.tsx`, `INTERNAL/FORMS.md` items B1–B4.
+
+Re-litigation answers:
+
+- "Why not read the Form through `formScope`?" → it throws without the host, and a field without a Form is a supported case. The parts that genuinely require the host still use it.
+- "Why does a standalone field mark required at all — nobody configured it?" → the marker states a fact about the field. A field that is required and does not say so is the defect.
+- "Then why offer `none`?" → some products carry the convention in prose above the form, or mark the optional fields instead. That is a product call, made once, in the place that makes it once.
+- "Why is the asterisk not an `Icon`?" → the registry grows when a component needs a _glyph_; this needs a character, and text also keeps the marker on the label's own type scale.
+- "Why did `Checkbox` need wiring separately?" → its label is inline children, so it does not pass through the composite scope. `Switch` follows when it gets the envelope (F-033).

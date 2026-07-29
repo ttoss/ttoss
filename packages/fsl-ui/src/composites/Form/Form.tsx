@@ -1,16 +1,24 @@
 import { vars } from '@ttoss/fsl-theme/vars';
-import type * as React from 'react';
+import * as React from 'react';
 import {
   Form as RACForm,
   type FormProps as RACFormProps,
 } from 'react-aria-components';
 
 import { Button, type ButtonOwnProps } from '../../components/Button/Button';
+import {
+  type FieldLabelPosition,
+  FieldLayoutProvider,
+  type FieldNecessityIndicator,
+  fieldSideColumn,
+  useFieldLayout,
+} from '../../components/Field/anatomy';
 import type {
   ComponentMeta,
   CompositionsFor,
   ConsequencesFor,
 } from '../../semantics';
+import { fslVar } from '../../tokens/escapeHatch';
 import { createPresenceScope } from '../scope';
 
 // ---------------------------------------------------------------------------
@@ -69,6 +77,36 @@ export interface FormProps extends Omit<RACFormProps, 'style' | 'className'> {
    * composites plus a {@link FormActions} row at the end.
    */
   children?: React.ReactNode;
+  /**
+   * How the fields inside mark the ones the user must fill. One decision for
+   * the whole form: a form where one field marks required and the next does not
+   * is a form nobody proofread.
+   *
+   * `icon` (default) puts an asterisk beside each required label, following the
+   * reference system and the web's convention of marking the required fields
+   * rather than the optional ones. `none` drops the marker; screen readers still
+   * hear the requirement, because the control carries the native `required`
+   * attribute either way.
+   *
+   * @default 'icon'
+   */
+  necessityIndicator?: FieldNecessityIndicator;
+  /**
+   * Where every field's label sits relative to its control.
+   *
+   * `top` (default) stacks them, which is right for a narrow column — a login
+   * card, a dialog, anything one field wide. `side` puts the labels in a column
+   * beside the controls and **shares that column across the whole form**, which is
+   * the only reason side labels are worth having: per-field label columns leave
+   * the controls ragged. That is also why this lives on the Form and not on a
+   * field.
+   *
+   * Fields whose label is their row — `Checkbox`, `Switch` — ignore it, because
+   * their label already sits beside the control and there is nothing to move.
+   *
+   * @default 'top'
+   */
+  labelPosition?: FieldLabelPosition;
 }
 
 /**
@@ -98,25 +136,68 @@ export interface FormProps extends Omit<RACFormProps, 'style' | 'className'> {
  * </Form>
  * ```
  */
-export const Form = ({ children, ...props }: FormProps) => {
+/**
+ * Width of the shared label column when `labelPosition="side"`.
+ *
+ * `max-content` is the answer subgrid exists for: the column is as wide as the
+ * widest label in the form and every control starts at the same x, with nobody
+ * measuring or hard-coding a width. Host-overridable per CONTRACT §7 for the case
+ * where a form wants a fixed column across pages.
+ */
+const LABEL_COLUMN_DEFAULT = 'max-content';
+
+/** The form's own box. A `side` label turns it into the grid the fields row into. */
+const buildFormStyle = (
+  labelPosition: FieldLabelPosition
+): React.CSSProperties => {
+  const type = vars.text.label.md as React.CSSProperties;
+
+  if (labelPosition === 'side') {
+    return {
+      boxSizing: 'border-box',
+      display: 'grid',
+      gridTemplateColumns: `${fslVar('--fsl-form-label-width', LABEL_COLUMN_DEFAULT)} minmax(0, 1fr)`,
+      rowGap: vars.spacing.gap.stack.md,
+      columnGap: vars.spacing.gap.inline.md,
+      ...type,
+    };
+  }
+
+  return {
+    boxSizing: 'border-box',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: vars.spacing.gap.stack.md,
+    ...type,
+  };
+};
+
+export const Form = ({
+  children,
+  necessityIndicator = 'icon',
+  labelPosition = 'top',
+  ...props
+}: FormProps) => {
+  // Memoised because this context is read by every field: a fresh object each
+  // render would re-render all of them. The value is static configuration by
+  // design — validation state stays on each field, where React Aria tracks it.
+  const layout = React.useMemo(() => {
+    return { necessityIndicator, labelPosition };
+  }, [necessityIndicator, labelPosition]);
+
   return (
     <formScope.Provider>
-      <RACForm
-        {...props}
-        data-scope="form"
-        data-part="root"
-        style={
-          {
-            boxSizing: 'border-box',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: vars.spacing.gap.stack.md,
-            ...(vars.text.label.md as React.CSSProperties),
-          } as React.CSSProperties
-        }
-      >
-        {children}
-      </RACForm>
+      <FieldLayoutProvider value={layout}>
+        <RACForm
+          {...props}
+          data-scope="form"
+          data-part="root"
+          data-label-position={labelPosition}
+          style={buildFormStyle(labelPosition)}
+        >
+          {children}
+        </RACForm>
+      </FieldLayoutProvider>
     </formScope.Provider>
   );
 };
@@ -182,6 +263,8 @@ export const FormActions = ({
   ...props
 }: FormActionsProps) => {
   formScope.use(formActionsMeta.displayName);
+  const { labelPosition } = useFieldLayout();
+
   return (
     <div
       {...props}
@@ -197,6 +280,10 @@ export const FormActions = ({
           justifyContent: justifyMap[align],
           gap: vars.spacing.gap.inline.md,
           marginBlockStart: vars.spacing.gap.stack.sm,
+          // In a side-label form the row belongs under the controls, not under
+          // the label column — the buttons act on the values, and an action row
+          // starting at the label's edge reads as a third column nobody asked for.
+          ...fieldSideColumn(labelPosition, 'control'),
         } as React.CSSProperties
       }
     >

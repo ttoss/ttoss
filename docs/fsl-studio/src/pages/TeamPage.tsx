@@ -2,6 +2,7 @@ import type { SortDescriptor } from '@ttoss/fsl-ui';
 import {
   Badge,
   Button,
+  Checkbox,
   ComboBox,
   ComboBoxItem,
   ConfirmationDialog,
@@ -64,12 +65,35 @@ const InviteDialog = () => {
           <Form onSubmit={handleSubmit}>
             <DialogBody>
               <Stack gap="md">
-                <TextField name="email" type="email" validate={validateEmail}>
+                {/*
+                  Left in slot form on purpose: the necessity marker has to look
+                  identical whichever way a field is authored, and this is the
+                  composed side of that pair standing in a real flow.
+                */}
+                <TextField
+                  name="email"
+                  type="email"
+                  isRequired
+                  validate={validateEmail}
+                >
                   <TextFieldLabel>Email</TextFieldLabel>
                   <TextFieldControl />
                   <TextFieldError />
                 </TextField>
-                <Select label="Role" name="role" defaultSelectedKey="Developer">
+                {/*
+                  The role is now chosen rather than defaulted. It used to
+                  default to Developer, which meant an invite could silently
+                  grant deploy access to someone nobody picked a role for — and
+                  the field had no way to insist, because until F-009 closed a
+                  Select could only turn red without saying why.
+                */}
+                <Select
+                  label="Role"
+                  name="role"
+                  isRequired
+                  placeholder="Choose a role"
+                  description="Admins manage billing and members; Viewers are read-only."
+                >
                   <SelectItem id="Admin">Admin</SelectItem>
                   <SelectItem id="Developer">Developer</SelectItem>
                   <SelectItem id="Viewer">Viewer</SelectItem>
@@ -79,6 +103,19 @@ const InviteDialog = () => {
                  * in a Select popover, so it waited for ComboBox's typeahead.
                  * Role stays a Select — three options is its correct scale.
                  */}
+                {/*
+                  The confirmation-checkbox shape: a required box that can state
+                  its own rule. Before the Checkbox envelope it could only turn
+                  red (F-033), which is why the dialog had no such gate.
+                */}
+                <Checkbox
+                  name="acknowledge"
+                  isRequired
+                  description="Members can deploy to production immediately after accepting."
+                  errorMessage="Confirm you understand the access this grants."
+                >
+                  I understand this grants deploy access
+                </Checkbox>
                 <ComboBox
                   label="Timezone"
                   name="timezone"

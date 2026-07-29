@@ -52,7 +52,10 @@ Action:      Button = COMMAND silhouette (commit: submit/confirm/primary action
              of a surface; pill radius, semibold, 40px desktop).
              ActionButton = UTILITY silhouette (ambient operation ON content:
              toolbar, row action, overflow trigger; control radius, label type,
-             34px = the FIELD ROW, identical to TextField/Select). Pick by the
+             THE FIELD ROW — the same tokens TextField/Select resolve, not a
+             pixel: the row's height is fluid because inset.control is
+             container-fluid while sizing.hit is rem-anchored, measured
+             32/32.5/34/34px at 390/900/1280/1920 (F-035). Pick by the
              weight of the commitment — there is no size prop, the pair IS the
              distinction. The two type contracts share one font SIZE and differ
              in WEIGHT only; a utility trigger is never independently smaller,
@@ -72,9 +75,26 @@ Disclosure:  Accordion, AccordionItem, AccordionTrigger, AccordionPanel,
              section — Accordion is the DisclosureGroup)
 Selection:   Checkbox, CheckboxGroup, RadioGroup/Radio, Switch,
              Select/SelectItem, ToggleButtonGroup, TagGroup/Tag
-             (CheckboxGroup group-level isInvalid propagates to child Checkboxes;
-             its label part is Selection/label, but description + validationMessage
-             are internal parts — Selection has no such structural roles.
+             (Checkbox takes description + errorMessage for the confirmation
+             shape ("I have read the terms"): the row becomes a 2-column grid,
+             the accessible NAME stays the label alone (pinned via
+             aria-labelledby — supporting copy placed in the row otherwise gets
+             absorbed into the name), and the message shows only while invalid.
+             A lone required Checkbox in a Form blocks submit; Switch has no
+             message part yet (F-033).
+             CheckboxGroup group-level isInvalid propagates to child Checkboxes.
+             Select, CheckboxGroup and RadioGroup all take label/description/
+             errorMessage: their label part is Selection/label, but description
+             and validationMessage are INTERNAL parts — Selection has no such
+             structural roles (they belong to Input), so they carry no meta and
+             claim no legality. All three are addressable as
+             [data-scope=…][data-part=validationMessage] regardless.
+             Select also takes placeholder (shown until something is picked).
+             A required Select blocks its Form's submit and focus returns to the
+             TRIGGER: RAC submits the value through a visually hidden
+             <select required>, which is also what onInvalid reports as its
+             target — the one field whose event target is not the element
+             carrying data-part="control".
              TagGroup/Tag: a chosen tag uses the `selected` State, NOT `pressed`
              — a tag is set membership, not a toggle; remove button is an
              internal closeTrigger part (not a Selection role))
@@ -92,19 +112,99 @@ Collection:  ListBox/ListBoxItem, GridList/GridListItem (+ Menu/MenuItem,
              on the naming column. Selection: selectionMode single|multiple,
              row click toggles (no checkbox column yet). Use for column-
              aligned data; GridList is for single-column rows.
-Input:       TextField, TextArea (each + Label/Control/Description/Error),
-             SearchField (+ Label/Control; leading search + clear glyphs),
+THE FIELD ENVELOPE — one rule for every field, Input and Selection alike:
+             root ▸ label ▸ control ▸ description ▸ validationMessage. An invalid
+             field spans TWO token lines and this is the one place a part reads a
+             role other than its component's: the CONTROL keeps the role it was
+             authored with and flips that role's `invalid` state (a `muted` field
+             that fails is still `muted` — re-voicing it as evaluation="negative"
+             is the category mistake FSL Lexicon §10.15 names), while the
+             VALIDATION MESSAGE reads input.negative.text.* because it is the part
+             *reporting* the outcome. The control's `invalid` ink is its ordinary
+             reading ink on purpose; the valence on the control is the border
+             alone. HOVER DOES NOT APPLY WHILE INVALID (owner ruling) — `invalid`
+             outranks `hover` in the cascade and `border` never reads hover at
+             all; focus is unaffected because the ring is a separate declaration. The label
+             carries the necessity marker when the field isRequired: an
+             aria-hidden asterisk, because the control already carries the native
+             `required` attribute and a second announcement is noise. Turn it off
+             for a whole form with <Form necessityIndicator="none"> — the field
+             stays required either way. LABEL PLACEMENT is the same kind of
+             decision: <Form labelPosition="side"> puts every label in ONE column
+             shared by the whole form (grid subgrid), so all controls start at the
+             same x — which is why it is a Form prop and not a field prop, and why
+             it only pays off on a wide multi-row form. Checkbox and Switch keep
+             their inline label but still take the control column.
+             Host knob: --fsl-form-label-width (default max-content).
+             The message part is always mounted, so
+             omitting errorMessage shows the platform's own localized constraint
+             copy. Two exceptions, each with its mechanism: a lone Checkbox or
+             Switch renders its copy inline inside its own <label> (which is why
+             the accessible name is pinned via aria-labelledby), and Switch has no
+             validation props at all in RAC (F-033); Slider gets no
+             FieldErrorContext, because a slider always holds an in-range value.
+Input:       TextField, TextArea — each authored EITHER one-line
+             (label/description/errorMessage/placeholder props) OR by composing
+             its slots (Label/Control/Description/Error). The two are mutually
+             exclusive by type: passing copy props AND children is a compile
+             error, not a precedence rule. Prefer one-line; reach for slots when
+             the arrangement is unusual. In the one-line form the message slot
+             is always mounted, so a field with no errorMessage still shows the
+             platform's own constraint copy (already localized) — which is the
+             better default for isRequired and type="email".
+             SearchField (label/description/errorMessage/placeholder props OR
+             + Label/Control slots; leading search + clear glyphs; clearLabel is
+             required and caller-localized),
              NumberField (label/description/errorMessage props + −/+ steppers),
              Slider (label + value output; single value or [min,max] range),
              ComboBox/ComboBoxItem (text input + typeahead-filtered list;
              label/description/errorMessage/placeholder/triggerLabel props).
+             THREE SPLIT CONTROLS — ComboBox, NumberField, SearchField:
+             data-part="frame" paints the box and hosts the adornments,
+             data-part="control" is the <input> you operate. `control` ALWAYS
+             names the operated element, so a test or an agent told to type into
+             a field can (ADR-022). SearchField and NumberField used to name both
+             `control` (F-026, closed in forms item D) — querySelector returned
+             the wrapper, which reported none of the field's chrome.
+             AN EMBEDDED TRIGGER — the clear button, the steppers, the chevron —
+             is one silhouette (EMBEDDED_TRIGGER, contract invariant #14): a
+             `hit`-square box with `inset.control.sm` around a `sizing.icon.sm`
+             glyph. Two traps it exists for: it must DECLARE the row's type,
+             because a <button> with no type inherits the UA's 13.3333px and any
+             font-relative glyph inside it shrinks (`Icon size="text"` did — the
+             chevron came out 25.33px while its siblings were 32 and 20); and its
+             colours come from the HOST, not from action.*, because the
+             entity→ux-context test binds colour reads to a file's declared
+             entities. Its box is `hit` and not the glyph's 20px because WCAG
+             2.5.8 wants 24px targets and adjacent steppers cannot use the
+             spacing exception.
+             SearchField's clear button renders ONLY when there is a value. React
+             Aria publishes emptiness as data-empty for CSS and this package ships
+             none, so it is gated on the root's isEmpty render prop.
+             ALL THREE embedded triggers are tabindex="-1" (measured) — React Aria
+             keeps them out of the tab order, because the input is the tab stop
+             and owns the keys (arrows step a NumberField; Escape clears a
+             SearchField). Do not write a test that Tabs to a stepper or a clear
+             button; click it, or drive the input.
+             A PICKER'S POPOVER TAKES THE FIELD'S WIDTH (Select + ComboBox,
+             ADR-023): min-width is the trigger's width unconditionally, width
+             defaults to it and is widenable per host via
+             --fsl-select-popover-width / --fsl-combo-box-popover-width. Options
+             longer than the field WRAP; they do not widen the list. A MENU IS
+             NOT A PICKER — Menu and Popover size to their own content and keep
+             --fsl-menu-min-width / --fsl-popover-max-width.
+             THE CHOOSABLE ROW IS ONE DECISION (Select/ComboBox options, MenuItem,
+             ListBoxItem, GridListItem): 32px = the field row's content box, the
+             same insets/radius/type as the field, `hit` as the ergonomic floor,
+             and the focus ring INSET by the ring's own width because every such
+             row sits in a clipped or scrolling surface. Never tune a row per
+             component — it comes from CHOOSABLE_ROW.
              Pick ComboBox over Select when the option set is too long to scan
              (~10+) or the user may type a value that is not in it
              (allowsCustomValue). ComboBox is Input — the user TYPES and the
              list narrows; Select is Selection — picking from a closed set is
              the only act. Filtering matches the option's visible TEXT, not its
              id. Items are Selection/item (ADR-007 split, same as SelectItem).
-             Unlike Select it ships a validationMessage part.
 Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
              DialogActions, Menu, MenuTrigger, ConfirmationDialog,
              Popover, PopoverTrigger, Tooltip, TooltipTrigger
@@ -128,6 +228,26 @@ Feedback:    ProgressBar, Meter, Toast, ToastRegion, createToastQueue
              ProgressBar = a task in flight. Pick by "state" vs "progressing"),
              Badge (status chip, filled: evaluation=primary|positive|caution|negative|accent,
              numeric=tabular for counts — never a hand-rolled colored span)
+Forms:       Form publishes field layout to every field inside it as STATIC
+             context — necessityIndicator='icon'|'none' (default 'icon': an
+             asterisk marks the REQUIRED fields, following the reference; 'none'
+             drops it). Fields read it with a default, so a field outside any
+             Form still marks itself required. Never put per-keystroke state in
+             that context: every field reads it.
+             The marker is aria-hidden — the control carries the native
+             `required` attribute and no aria-required, so AT already announces
+             it. CONSEQUENCE for tests: a required field's label textContent
+             grows the asterisk, so getByLabelText('Email') with an exact string
+             stops matching. Use getByRole('textbox', { name: 'Email' }) — it
+             follows the accessible-name algorithm, which excludes the marker.
+             Validation: React Aria's `native` default is right everywhere and
+             needs no prop. Standalone, a `validate` callback and a malformed
+             value each surface on blur; only `isRequired` waits for a submit,
+             so a lone field needing a required check belongs in a Form (Form is
+             the validation scope, not a synonym for a big form). Never pass
+             validationBehavior="aria": it REMOVES native constraints.
+             React Aria already focuses the first invalid field on submit.
+
 Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              WizardNavigation, Separator, Group (labelled role=group frame),
              Toolbar (THE ACTION FAMILY'S UTILITY GROUP — the reference

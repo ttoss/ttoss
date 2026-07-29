@@ -1,7 +1,6 @@
 import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
 import {
-  Label as RACLabel,
   Radio as RACRadio,
   RadioGroup as RACRadioGroup,
   type RadioGroupProps as RACRadioGroupProps,
@@ -9,8 +8,13 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
-import { focusRingOutline } from '../../tokens/focusRing';
+import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import {
+  FieldDescriptionPart,
+  FieldLabelPart,
+  FieldValidationMessagePart,
+} from '../Field/anatomy';
 
 // ---------------------------------------------------------------------------
 // Semantic identities — Layer 1
@@ -25,7 +29,15 @@ import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 //
 // Validation feedback flows from React Aria's `isInvalid` prop on the group
 // (or `validate`/`validationBehavior`) into the `invalid` token state via the
-// `isInvalid` render-prop on each Radio child.
+// `isInvalid` render-prop on each Radio child — and, since forms C2, into a
+// `validationMessage` part, so an invalid group can say why.
+//
+// FRICTION LOG (F-009's shape, one family over). Like `Select` and
+// `CheckboxGroup`, the group's `description` and `validationMessage` ship as
+// INTERNAL data-parts carrying no `*Meta`: the Selection entity's structural
+// roles are root/control/label/indicator/selectionControl/item, and neither of
+// those two is among them (they belong to Input). Third component to reach the
+// same answer without widening the vocabulary.
 // ---------------------------------------------------------------------------
 
 /** Formal semantic identity — RadioGroup root (Selection entity, single-choice). */
@@ -56,6 +68,14 @@ export interface RadioGroupProps extends Omit<
 > {
   /** Group label displayed above the radio options. */
   label?: React.ReactNode;
+  /** Supplementary helper text linked to the group via `aria-describedby`. */
+  description?: React.ReactNode;
+  /**
+   * Validation message shown when the group is invalid (`isInvalid` /
+   * `validate`). Supply caller-localized copy (i18n rule / §6); omit it and the
+   * platform's own constraint message is shown instead.
+   */
+  errorMessage?: React.ReactNode;
   /** Radio option children — must be `Radio` components. */
   children?: React.ReactNode;
 }
@@ -78,7 +98,13 @@ export interface RadioGroupProps extends Omit<
  * </RadioGroup>
  * ```
  */
-export const RadioGroup = ({ label, children, ...props }: RadioGroupProps) => {
+export const RadioGroup = ({
+  label,
+  description,
+  errorMessage,
+  children,
+  ...props
+}: RadioGroupProps) => {
   const c = vars.colors.input.primary;
 
   return (
@@ -93,19 +119,24 @@ export const RadioGroup = ({ label, children, ...props }: RadioGroupProps) => {
         gap: vars.spacing.gap.stack.sm,
       }}
     >
-      {label && (
-        <RACLabel
-          data-scope="radio-group"
-          data-part="label"
-          style={{
-            ...(vars.text.label.md as React.CSSProperties),
-            color: c?.text?.default,
-          }}
+      {label != null && (
+        <FieldLabelPart
+          scope="radio-group"
+          colors={c}
+          isRequired={props.isRequired}
         >
           {label}
-        </RACLabel>
+        </FieldLabelPart>
       )}
       {children}
+      {description != null && (
+        <FieldDescriptionPart scope="radio-group" colors={c}>
+          {description}
+        </FieldDescriptionPart>
+      )}
+      <FieldValidationMessagePart scope="radio-group" colors={c}>
+        {errorMessage}
+      </FieldValidationMessagePart>
     </RACRadioGroup>
   );
 };
@@ -131,7 +162,7 @@ const RADIO_BOX_STATIC = {
   transitionProperty: 'background-color, border-color, border-width',
   transitionDuration: vars.motion.feedback.duration,
   transitionTimingFunction: vars.motion.feedback.easing,
-  outlineOffset: '2px',
+  outlineOffset: FOCUS_RING_OFFSET,
 } satisfies React.CSSProperties;
 
 /** Circular radio-indicator style (state-dependent chrome + focus ring). */
