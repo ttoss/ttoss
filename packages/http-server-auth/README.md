@@ -125,6 +125,51 @@ type AuthenticatedUser = {
 
 Both `apiToken.lookup` and `jwt.mapPayload` receive the Koa `ctx` as a second argument, enabling request-scoped work (e.g. reading a per-request connection off `ctx.db` or updating `lastUsedAt`). The single-argument signatures keep working — `ctx` is purely additive.
 
+## Email and password flows
+
+`emailAuth()` mounts the credential flows — password sign-up and sign-in, magic
+links, mailed numeric codes, address confirmation and password reset — as a Koa
+`Router`. It is a thin adapter over `createEmailAuthHandlers` from
+[`@ttoss/auth-core`](https://ttoss.dev/docs/modules/packages/auth-core), which
+owns the mechanics; this package only maps `ctx` to and from it.
+
+`modes` decides which routes exist, so an app that signs users in with a mailed
+code alone never exposes a password endpoint.
+
+```ts
+import { App, bodyParser } from '@ttoss/http-server';
+import { authMiddleware, emailAuth } from '@ttoss/http-server-auth';
+
+const app = new App();
+app.use(bodyParser());
+
+app.use(
+  emailAuth({
+    modes: ['emailCode'],
+    prefix: '/v1',
+    userStore,
+    oneTimeTokenStore,
+    issueSession: (user) => issueSession(user),
+    sendEmail: async ({ to, token }) => {
+      await ses.send(buildCodeEmail({ to, code: token }));
+    },
+  }).routes()
+);
+
+// Mount after, so the sign-in routes stay reachable without a token.
+app.use(authMiddleware({ strategies: ['jwt'], jwt: { secret } }));
+```
+
+Every route is a `POST`, link redemptions included: the token arrives in the body
+from the page the user landed on, which keeps it out of server logs and out of
+the `Referer` header. The engine also reads a token from the query string, so a
+`GET` redemption is available to an app that wants one.
+
+Mount it before `authMiddleware` (or exempt its paths) — a client calls these
+routes precisely because it has no token yet. `prefix` applies to every mounted
+path when the app versions its API; individual paths are overridable through
+`paths`.
+
 ## OAuth authorization server
 
 The package also ships `oauthServer()` — a Koa `Router` that issues tokens (`/authorize`, `/token`, `/register`, discovery), a thin adapter over `createOAuthHandlers` from [`@ttoss/auth-core`](https://ttoss.dev/docs/modules/packages/auth-core). Pair it with the `oauth` verification strategy above when one deployment both issues and verifies. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline.

@@ -6,6 +6,16 @@
 // translates its own request/response objects to and from these plain shapes.
 // ---------------------------------------------------------------------------
 
+/**
+ * Neutral aliases for the two shapes below. They predate the email/password
+ * flows in `./emailAuth`, which reuse them verbatim, so the `OAuth`-prefixed
+ * names are kept as the originals and these read correctly at the newer call
+ * sites.
+ */
+export type AuthHttpRequest = OAuthRequest;
+
+export type AuthHttpResponse = OAuthResponse;
+
 /** A normalized inbound HTTP request, framework-agnostic. */
 export interface OAuthRequest {
   /** Query-string parameters (e.g. from `/authorize?client_id=...`). */
@@ -323,8 +333,7 @@ export interface OnRefreshTokenArgs {
 
 /** Result of validating a refresh token. Return `undefined` to reject. */
 export type OnRefreshTokenResult =
-  | { subject: string; scopes: string[] }
-  | undefined;
+  { subject: string; scopes: string[] } | undefined;
 
 /** Configuration for {@link createOAuthHandlers}. */
 export interface OAuthServerOptions {
