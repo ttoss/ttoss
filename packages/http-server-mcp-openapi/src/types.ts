@@ -1,22 +1,31 @@
 import type { JsonObjectSchema } from '@ttoss/http-server-mcp';
 
+/** The JSON Schema primitive types this generator can derive from an OpenAPI `type`. */
+export type JsonSchemaPrimitiveType =
+  'string' | 'number' | 'boolean' | 'array' | 'integer' | 'object' | 'null';
+
 /**
  * A single JSON Schema property descriptor as emitted for a tool's
  * `inputSchema`. Only the subset of JSON Schema the generator produces is
  * modelled here; the value is forwarded verbatim over the MCP wire protocol.
+ *
+ * A property with OpenAPI `oneOf`/`anyOf` is forwarded as-is (no `type`) so a
+ * client-side validator enforces the same alternatives the REST API does,
+ * rather than collapsing to a single guessed primitive. `type` may be an
+ * array of two entries (e.g. `['string', 'null']`) to represent an OpenAPI
+ * `nullable: true` property without losing its declared type.
  */
-export interface JsonSchemaProperty {
-  type:
-    | 'string'
-    | 'number'
-    | 'boolean'
-    | 'array'
-    | 'integer'
-    | 'object'
-    | 'null';
-  description?: string;
-  items?: unknown;
-}
+export type JsonSchemaProperty =
+  | {
+      type: JsonSchemaPrimitiveType | JsonSchemaPrimitiveType[];
+      description?: string;
+      items?: unknown;
+    }
+  | {
+      oneOf?: unknown[];
+      anyOf?: unknown[];
+      description?: string;
+    };
 
 /**
  * A REST-backed MCP tool derived from a single OpenAPI operation.

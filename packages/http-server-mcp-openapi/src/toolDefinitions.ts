@@ -52,6 +52,48 @@ const sanitizeDescription = (description: string | undefined): string => {
   return (description || '').replace(/'/g, "\\'").replace(/\n/g, ' ').trim();
 };
 
+/**
+ * Builds a single body/query property's `JsonSchemaProperty`. Split out of
+ * {@link buildInputSchema} to keep that function's size and branching down.
+ */
+const buildTypedProperty = (param: {
+  type: string;
+  description: string;
+  items?: unknown;
+  nullable?: boolean;
+  oneOf?: unknown[];
+  anyOf?: unknown[];
+}): JsonSchemaProperty => {
+  const description = sanitizeDescription(param.description);
+
+  // A property with `oneOf`/`anyOf` (e.g. a string-or-object union) is
+  // forwarded verbatim rather than collapsed to a single guessed primitive —
+  // collapsing would reject every alternative shape except whichever one the
+  // collapse happened to guess.
+  if (param.oneOf && param.oneOf.length > 0) {
+    return { oneOf: param.oneOf, description };
+  }
+  if (param.anyOf && param.anyOf.length > 0) {
+    return { anyOf: param.anyOf, description };
+  }
+
+  const jsonType = getJsonSchemaType(param.type);
+  // OpenAPI `nullable: true` has no direct JSON Schema draft-07 equivalent;
+  // representing it as a two-entry `type` array (accepted by the 2020-12
+  // dialect the MCP SDK validates against) lets a property stay its declared
+  // type while still accepting an explicit `null` — the OpenAPI-documented
+  // way to clear a field.
+  const finalType =
+    param.nullable === true ? [jsonType, 'null' as const] : jsonType;
+
+  if (param.type === 'array') {
+    const itemsSchema = param.items ? param.items : { type: 'string' as const };
+    return { type: finalType, items: itemsSchema, description };
+  }
+
+  return { type: finalType, description };
+};
+
 export const buildInputSchema = (
   pathParams: Array<{ name: string; camelName: string }>,
   queryParams: Array<{
@@ -68,6 +110,9 @@ export const buildInputSchema = (
     required: boolean;
     type: string;
     items?: unknown;
+    nullable?: boolean;
+    oneOf?: unknown[];
+    anyOf?: unknown[];
   }>
 ): JsonObjectSchema => {
   const allParams = [...pathParams, ...queryParams, ...bodyProps];
@@ -100,32 +145,10 @@ export const buildInputSchema = (
 
   const properties: Record<string, JsonSchemaProperty> = {};
   for (const param of allParams) {
-    if ('type' in param) {
-      const jsonType = getJsonSchemaType(param.type);
-      const description = sanitizeDescription(param.description);
-      if (param.type === 'array') {
-        const itemsSchema =
-          'items' in param && param.items
-            ? param.items
-            : { type: 'string' as const };
-        properties[param.camelName] = {
-          type: 'array',
-          items: itemsSchema,
-          description,
-        };
-      } else {
-        properties[param.camelName] = {
-          type: jsonType,
-          description,
-        };
-      }
-    } else {
-      // path param
-      properties[param.camelName] = {
-        type: 'string',
-        description: '',
-      };
-    }
+    properties[param.camelName] =
+      'type' in param
+        ? buildTypedProperty(param)
+        : { type: 'string', description: '' }; // path param
   }
 
   return {
@@ -229,6 +252,9 @@ export const extractBodyProps = (args: {
   required: boolean;
   type: string;
   items?: unknown;
+  nullable: boolean;
+  oneOf?: unknown[];
+  anyOf?: unknown[];
 }> => {
   const bodySchema = resolveBodySchema(args);
   if (!bodySchema?.properties) return [];
@@ -243,6 +269,9 @@ export const extractBodyProps = (args: {
       description?: unknown;
       type?: unknown;
       items?: unknown;
+      nullable?: unknown;
+      oneOf?: unknown;
+      anyOf?: unknown;
     };
     return {
       snakeName: key,
@@ -251,6 +280,9 @@ export const extractBodyProps = (args: {
       required: (bodySchema.required || []).includes(key),
       type: typeof val.type === 'string' ? val.type : 'string',
       items: val.items,
+      nullable: val.nullable === true,
+      oneOf: Array.isArray(val.oneOf) ? val.oneOf : undefined,
+      anyOf: Array.isArray(val.anyOf) ? val.anyOf : undefined,
     };
   });
 };

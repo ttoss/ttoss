@@ -97,3 +97,5 @@ BREAKING CHANGE: this is a breaking change
 ```
 
 In a GitHub pull request, you can add the message to the commit message before merging it.
+
+This is only the mechanics of declaring a break. Before declaring one, read the [Breaking Changes guideline](https://ttoss.dev/docs/engineering/guidelines/breaking-changes) — most breaks are incidental to how a change was implemented rather than required by it, and are avoidable.
