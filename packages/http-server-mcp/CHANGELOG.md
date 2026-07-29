@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.24.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.23.1...@ttoss/http-server-mcp@0.24.0) (2026-07-29)
+
+### Features
+
+- **http-server-mcp:** serve the MCP 2026-07-28 revision alongside 2025-era traffic ([#1171](https://github.com/ttoss/ttoss/issues/1171)) ([b9fcc16](https://github.com/ttoss/ttoss/commit/b9fcc16e66c4c1df8277af956d0301e695f6ea4b))
+
 ## [0.23.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.23.0...@ttoss/http-server-mcp@0.23.1) (2026-07-29)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp
