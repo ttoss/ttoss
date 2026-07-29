@@ -391,6 +391,117 @@ describe('auth — verifyToken', () => {
   });
 });
 
+describe('auth — resourceIndicator (RFC 8707)', () => {
+  const buildApp = (payload: unknown, resourceIndicator: string | string[]) => {
+    const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+    mcpServer.registerTool(
+      'whoami',
+      { description: 'Returns identity', inputSchema: {} },
+      async () => {
+        return { content: [{ type: 'text', text: 'ok' }] };
+      }
+    );
+
+    const app = new App();
+    app.use(bodyParser());
+    app.use(
+      createMcpRouter(mcpServer, {
+        auth: {
+          verifyToken: () => {
+            return Promise.resolve(payload);
+          },
+          resourceIndicator,
+        },
+      }).routes()
+    );
+    return app;
+  };
+
+  const callTool = (app: ReturnType<typeof buildApp>) => {
+    return request(app.callback())
+      .post('/mcp')
+      .send(makeMcpRequest('tools/call', { name: 'whoami', arguments: {} }, 1))
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT)
+      .set('Authorization', 'Bearer tok');
+  };
+
+  test('allows a token whose string aud matches the expected resource indicator', async () => {
+    const app = buildApp(
+      { sub: 'u1', aud: 'https://mcp.example.com' },
+      'https://mcp.example.com'
+    );
+
+    const res = await callTool(app);
+    expect(res.status).toBe(200);
+  });
+
+  test('allows a token whose aud array includes the expected resource indicator', async () => {
+    const app = buildApp(
+      {
+        sub: 'u1',
+        aud: ['https://other.example.com', 'https://mcp.example.com'],
+      },
+      'https://mcp.example.com'
+    );
+
+    const res = await callTool(app);
+    expect(res.status).toBe(200);
+  });
+
+  test('allows a token when resourceIndicator is any of a list of accepted values', async () => {
+    const app = buildApp({ sub: 'u1', aud: 'https://mcp-eu.example.com' }, [
+      'https://mcp.example.com',
+      'https://mcp-eu.example.com',
+    ]);
+
+    const res = await callTool(app);
+    expect(res.status).toBe(200);
+  });
+
+  test('rejects with 401 when aud does not include the expected resource indicator', async () => {
+    const app = buildApp(
+      { sub: 'u1', aud: 'https://a-different-resource.example.com' },
+      'https://mcp.example.com'
+    );
+
+    const res = await callTool(app);
+    expect(res.status).toBe(401);
+  });
+
+  test('rejects with 401 when the token has no aud claim at all', async () => {
+    const app = buildApp({ sub: 'u1' }, 'https://mcp.example.com');
+
+    const res = await callTool(app);
+    expect(res.status).toBe(401);
+  });
+
+  test('requests pass through unchanged when resourceIndicator is not configured', async () => {
+    const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+    mcpServer.registerTool(
+      'whoami',
+      { description: 'Returns identity', inputSchema: {} },
+      async () => {
+        return { content: [{ type: 'text', text: 'ok' }] };
+      }
+    );
+    const app = new App();
+    app.use(bodyParser());
+    app.use(
+      createMcpRouter(mcpServer, {
+        auth: {
+          verifyToken: () => {
+            return Promise.resolve({ sub: 'u1' }); // no aud claim
+          },
+        },
+      }).routes()
+    );
+
+    const res = await callTool(app);
+    expect(res.status).toBe(200);
+  });
+});
+
 describe('auth — public methods and RFC 9728 discovery', () => {
   const buildApp = (authOverrides: {
     publicMethods?: string[];

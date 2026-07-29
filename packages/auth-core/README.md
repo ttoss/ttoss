@@ -1,7 +1,8 @@
 # @ttoss/auth-core
 
 Framework-agnostic authentication primitives for Node.js, with zero
-dependencies beyond `node:crypto` (Amazon Cognito verification excepted).
+dependencies beyond `node:crypto` (Amazon Cognito verification and generic
+OIDC verification excepted).
 
 ## Installation
 
@@ -49,6 +50,48 @@ const payload = verifyJwt({ token, secret: process.env.JWT_SECRET });
 
 For Amazon Cognito tokens, use `@ttoss/auth-core/amazon-cognito`, which
 re-exports [`aws-jwt-verify`](https://github.com/awslabs/aws-jwt-verify).
+
+For any other standards-compliant OIDC provider (Entra ID, Okta, Auth0,
+Google, …), use `@ttoss/auth-core/oidc` — see [OIDC](#oidc) below.
+
+## OIDC
+
+`createOidcVerifier` builds a token verifier for any OIDC provider with no
+manual JWKS wiring: it fetches the provider's `/.well-known/openid-configuration`
+document to discover its signing keys, caches them, handles key rotation
+transparently, and verifies the token's signature, issuer, and expiry.
+
+```ts
+import { createOidcVerifier } from '@ttoss/auth-core/oidc';
+
+const verifyToken = createOidcVerifier({
+  issuer: 'https://login.microsoftonline.com/<tenant>/v2.0',
+});
+
+const payload = await verifyToken(bearerToken);
+```
+
+Audience / resource-indicator validation is intentionally left to the
+caller — the expected audience is a property of the resource server, not the
+identity provider. When wiring this into `@ttoss/http-server-mcp`, pass
+`resourceIndicator` alongside `verifyToken`:
+
+```ts
+import { createOidcVerifier } from '@ttoss/auth-core/oidc';
+import { createMcpRouter } from '@ttoss/http-server-mcp';
+
+const mcpRouter = createMcpRouter(mcpServer, {
+  auth: {
+    verifyToken: createOidcVerifier({
+      issuer: 'https://login.microsoftonline.com/<tenant>/v2.0',
+    }),
+    resourceIndicator: 'https://mcp.example.com',
+  },
+});
+```
+
+Create one verifier at startup and reuse it across requests — discovery and
+the JWKS cache are scoped to the verifier instance, not the process.
 
 ## One-time tokens
 
