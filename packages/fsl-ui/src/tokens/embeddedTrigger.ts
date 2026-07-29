@@ -63,9 +63,10 @@ import { resolveInteractiveStyle } from './resolveInteractiveStyle';
  * **pointer-only** controls, and pointer target size is precisely what 2.5.8
  * governs, so the floor is the operative constraint and not a cautious reading.
  *
- * The numbers above are measured at 1280px and are the **top of a ramp**:
- * `inset.control.sm` is container-fluid, so a trigger reads 32px there and
- * collapses toward its `hit` floor on a phone (F-035). The rule is the tokens.
+ * The numbers above are measured at 1280px and, since fsl-theme ADR-022 fixed
+ * the control inset, no longer ride an inset ramp (F-035, closed) — the only
+ * residual variation is the fluid type meeting the `hit` floor at the narrow
+ * end. The rule is the tokens.
  */
 export const EMBEDDED_TRIGGER = {
   /** Ergonomic floor on both axes — the trigger is at least a hit target. */

@@ -87,6 +87,9 @@ describe.each(bundleEntries)(
     // in source instead of a token ref, bypassing the symbolic indirection layer
     // Documented raw exceptions:
     //   - sizing.hit, sizing.measure: dynamic/viewport values not expressible as core refs
+    //   - spacing.inset.control: outcome-bearing FIXED px (ADR-022) — a constant
+    //     cannot be a TokenRef because every core.spacing step is fluid by design;
+    //     the fixed shape is itself validated (spacing Error #17)
     //   - var() and clamp() expressions: CSS-layer constructs resolved at render time
     // Tested against base source only — alternates only overlay semantic tokens
     test('all semantic tokens are refs or documented exceptions', () => {
@@ -98,7 +101,9 @@ describe.each(bundleEntries)(
         if (typeof value !== 'string') continue;
         const isRef = isTokenRef(value);
         const isRawSizing =
-          path.includes('sizing.hit') || path.includes('sizing.measure');
+          path.includes('sizing.hit') ||
+          path.includes('sizing.measure') ||
+          path.includes('spacing.inset.control');
         // CSS function expressions (clamp, var, rgba, rgb, hsl, hsla, color,
         // calc, min, max) are valid containers for embedded refs — they are
         // resolved at render time by the CSS layer.

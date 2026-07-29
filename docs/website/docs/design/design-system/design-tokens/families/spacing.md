@@ -116,9 +116,9 @@ Semantic spacing is anchored in **layout physics**, not UX categories.
 
 | token                        | use when you are building…                                                                                                   | contract (must be true)                  | default mapping (base theme)                              |
 | :--------------------------- | :--------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------- | :-------------------------------------------------------- |
-| `inset.control.sm`           | compact controls                                                                                                             | internal padding                         | `core.spacing.1`                                          |
-| `inset.control.md`           | default controls                                                                                                             | internal padding                         | `core.spacing.2`                                          |
-| `inset.control.lg`           | large/prominent controls                                                                                                     | internal padding                         | `core.spacing.4`                                          |
+| `inset.control.sm`           | compact controls                                                                                                             | fixed px — outcome-bearing (ADR-022)     | `6px`                                                     |
+| `inset.control.md`           | default controls                                                                                                             | fixed px — outcome-bearing (ADR-022)     | `12px`                                                    |
+| `inset.control.lg`           | large/prominent controls                                                                                                     | fixed px — outcome-bearing (ADR-022)     | `24px`                                                    |
 | `inset.surface.sm`           | tight surfaces                                                                                                               | `inset.surface ≥ inset.control` per step | `core.spacing.4`                                          |
 | `inset.action.block`         | Block padding of a command trigger — bounded 8–9px, so a CTA resolves ~40px on the desktop while generic controls stay ~32px |
 | `inset.surface.md`           | default surfaces                                                                                                             | `inset.surface ≥ inset.control` per step | `core.spacing.6`                                          |
@@ -145,12 +145,13 @@ Semantic spacing is anchored in **layout physics**, not UX categories.
 const spacing = {
   inset: {
     control: {
-      // Deliberately tight (ADR-020): block padding stays under the `hit`
-      // floor so the rem-anchored floor — not the fluid inset — drives a
-      // control's height on most of the range.
-      sm: 'core.spacing.1',
-      md: 'core.spacing.2',
-      lg: 'core.spacing.4',
+      // Fixed px, not engine refs (ADR-022): a control's box is its inset +
+      // type over the `hit` floor, so the inset is outcome-bearing — a fluid
+      // inset makes the box container-fluid, against ADR-019/020. The values
+      // are the engine's own desktop bound, so wide surfaces are unchanged.
+      sm: '6px',
+      md: '12px',
+      lg: '24px',
     },
     surface: {
       sm: 'core.spacing.4',
@@ -287,10 +288,17 @@ This is **not default**. Use it only in layout primitives/surfaces explicitly de
   - `inset.surface.sm > inset.surface.md`
   - `inset.surface.md > inset.surface.lg`
 
-- a surface inset step is tighter than the corresponding control inset step:
+- a surface inset step is tighter than the corresponding control inset step
+  (compared in resolved px at the engine's floor, since the two sides have
+  different shapes):
   - `inset.surface.sm < inset.control.sm`
   - `inset.surface.md < inset.control.md`
   - `inset.surface.lg < inset.control.lg`
+
+- a control inset rides the fluid engine (or any formula) instead of resolving
+  to a fixed px — the control inset is outcome-bearing (ADR-022): a control's
+  box is its inset + type over the `hit` floor, so a fluid inset makes the box
+  container-fluid, against ADR-019/020
 
 - any `gap.stack.*` token resolves to anything other than a `core.spacing.*` step alias
 

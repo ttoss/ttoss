@@ -35,6 +35,24 @@ interface InsetSteps {
   lg: CoreSpacingRef;
 }
 
+/**
+ * The control inset is **outcome-bearing and therefore fixed** (ADR-022):
+ * a control's box is its inset + type with `hit` as the floor, so an inset
+ * riding the fluid engine makes the box container-fluid — the thing
+ * ADR-019/020 rule against, and ADR-020's "the residual never binds" premise
+ * was measured false above ~900px (F-035). `RawValue` because a constant
+ * cannot be a `TokenRef` — every `core.spacing` step is fluid by design.
+ * Validation enforces the fixed-px shape (spacing Error #17).
+ */
+interface ControlInsetSteps {
+  /** Compact step — the field family's block inset. */
+  sm: RawValue;
+  /** Default step — the field family's inline inset. */
+  md: RawValue;
+  /** Roomy step — a command trigger's inline inset. */
+  lg: RawValue;
+}
+
 interface GapStackSteps {
   /** Tight vertical rhythm — micro-clusters within a single field. */
   xs: CoreSpacingRef;
@@ -74,7 +92,7 @@ export interface SemanticSpacing {
      * Pair with `inset.surface` on the containing surface; do not use for
      * containing surfaces — those are `inset.surface`.
      */
-    control: InsetSteps;
+    control: ControlInsetSteps;
     /**
      * Padding inside a containing surface (card, panel, dialog, menu, section).
      * Use on elements that *contain* other content blocks and need a margin
@@ -87,11 +105,10 @@ export interface SemanticSpacing {
      * Block padding of the **command** silhouette — the one axis where a
      * commitment is deliberately more generous than a generic control, so it
      * resolves to a taller box. Measured in the base theme: 40px against a
-     * field's 34px at 1920×1080, and 40px against 32.5px in a 900px-wide
-     * container. The command barely moves because this value is clamped to a
-     * 1px range, while `inset.control.sm` is a raw engine step that rides the
-     * container-fluid scale — so the *gap widens* as the container narrows, and
-     * the difference is the contract rather than either number.
+     * field's 34px at 1920×1080. Since ADR-022 fixed `inset.control.*`, both
+     * boxes are stable on the fine-pointer range and the 6px difference *is*
+     * the contract; this value keeps its 1px clamp band (8px at the phone end,
+     * where the coarse `hit` floor takes over anyway).
      * See `radii.action` for why no component is named here.
      *
      * A **bounded range**, not a step: the design decision here is the range

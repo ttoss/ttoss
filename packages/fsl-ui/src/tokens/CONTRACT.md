@@ -413,8 +413,10 @@ the trigger is invisible against its field until the pointer arrives.
 entity decides a row's **colours**, never its geometry: they read the same block inset, inline
 inset, radius and type as the field row, so an option sits under a field at the same rhythm — the
 row is the field's content box, and the field is that plus the 1px border per edge it draws. Stated
-in tokens rather than pixels on purpose: both are fluid (F-035), so at a 1280px viewport it reads
-32px row / 34px field and at 390px both bottom out on `sizing.hit` and the difference is 0. Its
+in tokens rather than pixels on purpose — a theme may retune them — and since fsl-theme ADR-022 the
+control inset is a fixed-px contract: the pair reads 32px row / 34px field wherever the fluid type
+is at its 16px top (~900px and up), and both meet the 32px `hit` floor below that — the inset ramp
+itself is gone (F-035, closed; 900px used to read 32.5). Its
 focus ring
 is **inset by exactly the ring width**, because every one of these rows lives in a clipped or
 scrolling surface and a ring needing room outside the box gets cut off at a scroll edge. Asserted by

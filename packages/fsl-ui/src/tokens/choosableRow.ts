@@ -33,11 +33,11 @@ import { FOCUS_RING_INSET } from './focusRing';
  * 11px = **32px desktop**, and 13 + 14 + 13 = **40px mobile**, the same ramp a
  * field's height comes from. So an option row is the field row's content box:
  * the field adds a 1px border on each edge, the row draws none, and both resolve
- * from the same inset and the same type. The pixels in the table above are
- * measured at 1280px and are the **top of a ramp** — the control inset is
- * container-fluid, so the pair reads 32/34 there and collapses to 32/32 at 390px
- * where both meet the `hit` floor (F-035). The rule is the tokens; the numbers
- * are what they produced on the day the class was measured.
+ * from the same inset and the same type. Since fsl-theme ADR-022 the control
+ * inset is a fixed-px contract, so the pair reads 32/34 wherever the fluid
+ * type is at its 16px top (~900px and up; below that both meet the `hit`
+ * floor — the inset ramp itself is gone: F-035, closed). The rule is still
+ * the tokens; the pixels are what the base theme's values produce.
  *
  * The floor matters for the same reason it matters on a field: `hit` is the
  * ergonomic minimum, so a row whose content is shorter than a line of text is

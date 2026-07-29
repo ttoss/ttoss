@@ -57,6 +57,31 @@ const parseClampArgs = (str: string): [string, string, string] | null => {
   return [parts[0], parts[1], parts[2]];
 };
 
+/**
+ * Resolves a spacing value to px at the engine's floor — the narrowest
+ * container. `calc(N * unit)` engine steps resolve N × the unit's clamp
+ * minimum; fixed px values resolve themselves. Comparisons that cross the two
+ * shapes (a fluid surface inset vs a fixed control inset, ADR-022) must
+ * happen here rather than on `parseSpaceValue`'s bare multiplier, which is
+ * not a length.
+ */
+const resolveMinPx = (
+  value: string | number,
+  tokens: Record<string, string | number | undefined>
+): number => {
+  const str = String(value).trim();
+  if (/^\d+(\.\d+)?px$/.test(str)) return parseFloat(str);
+  const calcMatch = str.match(/calc\((\d+)\s*\*/);
+  if (calcMatch) {
+    const unit = String(tokens['core.spacing.engine.unit'] ?? '');
+    const unitMin = parseFloat(
+      parseClampArgs(unit)?.[0] ?? (unit.endsWith('px') ? unit : 'NaN')
+    );
+    return parseFloat(calcMatch[1]) * unitMin;
+  }
+  return NaN;
+};
+
 /** Returns true when the value is a valid core.spacing.* step alias: `0px` or `calc(N * var(--tt-core-spacing-engine-unit))`. */
 const isCoreSpaceAlias = (value: string | number): boolean => {
   const str = String(value).trim();
@@ -112,12 +137,19 @@ for (const { label, tokens } of bundleEntries) {
     test.each(['sm', 'md', 'lg'] as const)(
       'inset.surface.%s ≥ inset.control.%s',
       (step) => {
-        // Error #5: a surface inset step is tighter than the corresponding control inset step
-        const surface = parseSpaceValue(
-          tokens[`semantic.spacing.inset.surface.${step}`]!
+        // Error #5: a surface inset step is tighter than the corresponding
+        // control inset step. The two sides have different shapes since
+        // ADR-022 — surface rides the fluid engine (`calc(N * unit)`), control
+        // is a fixed px — so the comparison happens in resolved px at the
+        // engine's FLOOR, the width where a fluid surface inset is tightest.
+        // Holding there holds everywhere.
+        const surface = resolveMinPx(
+          tokens[`semantic.spacing.inset.surface.${step}`]!,
+          tokens
         );
-        const control = parseSpaceValue(
-          tokens[`semantic.spacing.inset.control.${step}`]!
+        const control = resolveMinPx(
+          tokens[`semantic.spacing.inset.control.${step}`]!,
+          tokens
         );
 
         expect(surface).not.toBeNaN();
@@ -187,9 +219,6 @@ for (const { label, tokens } of bundleEntries) {
 // ---------------------------------------------------------------------------
 
 const MUST_ALIAS_KEYS = [
-  'semantic.spacing.inset.control.sm',
-  'semantic.spacing.inset.control.md',
-  'semantic.spacing.inset.control.lg',
   'semantic.spacing.inset.surface.sm',
   'semantic.spacing.inset.surface.md',
   'semantic.spacing.inset.surface.lg',
@@ -214,6 +243,33 @@ for (const { label, tokens } of bundleEntries) {
       expect(value).toBeDefined();
       expect(isCoreSpaceAlias(value!)).toBe(true);
     });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Control inset — a FIXED contract, not an engine alias (ADR-022)
+//
+// A control's box is its inset + type with `hit` as the floor, so a fluid
+// inset makes the box container-fluid — the thing ADR-019/020 rule against.
+// ADR-020's premise that the fluid residual "never binds" was measured false
+// (F-035), so the guarantee is now carried by mechanism: the control inset
+// resolves to a fixed px at every container width. Fixed px is also the
+// RawValue rationale — every `core.spacing` step is fluid by design, so no
+// TokenRef can express a constant (model.md §8 inventory).
+// ---------------------------------------------------------------------------
+
+for (const { label, tokens } of bundleEntries) {
+  describe(`Semantic spacing — control inset fixed contract (${label})`, () => {
+    test.each(['sm', 'md', 'lg'] as const)(
+      'inset.control.%s is a fixed px value',
+      (step) => {
+        // Error #17: a control inset rides the fluid engine (or any formula),
+        //            making the control box container-fluid against ADR-019/020
+        const value = String(tokens[`semantic.spacing.inset.control.${step}`]);
+
+        expect(value).toMatch(/^\d+(\.\d+)?px$/);
+      }
+    );
   });
 }
 

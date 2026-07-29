@@ -1361,10 +1361,22 @@ export const baseTheme: ThemeTokens = {
     // driven by the rem-anchored `hit` floor, not the inset).
     spacing: {
       inset: {
+        // Control insets are OUTCOME-BEARING and therefore fixed (ADR-022,
+        // owner ruling 2026-07-29): a control's box is its inset + type with
+        // `hit` as the floor, so a fluid inset makes the box fluid — which is
+        // exactly what ADR-019/020 rule against, and ADR-020's own premise
+        // ("the ±2px residual never binds") was measured false above ~900px
+        // (F-035: the field row read 32 / 32.5 / 34 across the range). The
+        // values are the engine's own top step (`core.spacing.{1|2|4}` at the
+        // desktop bound), so nothing changes visually at ≥1200px; the residual
+        // narrow-end step is the fluid type meeting the `hit` floor, which is
+        // the floor's job (ADR-020), not an inset ramp.
+        // RawValue rationale: a fixed px cannot be a TokenRef — every
+        // `core.spacing` step is fluid by design (model.md §8 inventory).
         control: {
-          sm: '{core.spacing.1}',
-          md: '{core.spacing.2}',
-          lg: '{core.spacing.4}',
+          sm: '6px',
+          md: '12px',
+          lg: '24px',
         },
         // inset.surface ≥ inset.control (validation invariant) and sits
         // above gap.stack at the default step so containers visibly enclose

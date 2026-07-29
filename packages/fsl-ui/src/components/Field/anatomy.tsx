@@ -56,13 +56,14 @@ type InputColors = typeof vars.colors.input.primary;
  * tokens, so the row is one decision — and a utility Action trigger reads the
  * same set from `UTILITY_SILHOUETTE`.
  *
- * **The row is these tokens, not a pixel height.** Its visible height is fluid,
- * because `inset.control.sm` is container-fluid
- * (`clamp(4px, 0.25cqi + 3px, 6px)`) while `sizing.hit` is rem-anchored: measured
- * at 390 / 900 / 1280 / 1920, a field comes out **32 / 32.5 / 34 / 34px**. The
- * "34px field row" quoted around this package is the top of that ramp, true above
- * roughly 1200px and nowhere else (F-035 — whether the inset should be fluid at
- * all is ADR-019's ruling not reaching far enough, and is decided with F-021).
+ * **The row is these tokens, and since fsl-theme ADR-022 the inset is a
+ * fixed-px contract** (outcome-bearing — a control's box is its inset + type
+ * over the `hit` floor). Measured at 390/900/1280/1920: a field reads
+ * **32 / 34 / 34 / 34** — the fractional mid-range drift F-035 measured
+ * (32.5 at 900px, twice masquerading as a regression) is gone, and the one
+ * step left at the narrow end is the fluid *type* (kept fluid by the same
+ * ruling) meeting the 32px floor: ADR-020's floor doing its job, not an
+ * inset drift. On a coarse pointer the 48px `hit` floor dominates, as before.
  *
  * That is why every contract invariant on this row — #10, #11, #13 — asserts
  * **token identity** and never a measured pixel. jsdom has no layout, so it could
@@ -272,7 +273,8 @@ export const buildFieldValueStyle = ({
  * label's text on the control's text rather than on its box: the control's own
  * inset would otherwise push its value below a top-aligned label, and a magic
  * offset to compensate would be a number that stops being right the moment the
- * inset changes (and the inset is fluid — F-035).
+ * inset changes — which a theme may do (`inset.control` is theme-tunable even
+ * as a fixed contract, ADR-022).
  */
 export const buildFieldRootStyle = ({
   labelPosition = 'top',

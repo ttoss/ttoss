@@ -194,13 +194,15 @@ Approval criteria — a semantic `RawValue` must satisfy all three:
 
 **Approved RawValue inventory** (complete list as of this writing):
 
-| Token path                                    | Reason                                                                                                                        |
-| :-------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------- |
-| `semantic.spacing.gutter.page`                | `clamp()` expression embedding multiple token refs — no single `TokenRef` can express responsive fluid gutters                |
-| `semantic.spacing.gutter.section`             | same as above                                                                                                                 |
-| `semantic.spacing.separation.interactive.min` | `clamp()` with mixed units (`px` + token ref) — minimum touch-target separation cannot be expressed as a pure token reference |
-| `semantic.sizing.measure.reading`             | `ch` units — character-based measure has no core token equivalent                                                             |
-| `semantic.overlay.scrim`                      | `rgba()` composing `{semantic.opacity.scrim}` — no single `TokenRef` can express a partial-opacity overlay color              |
+| Token path                                    | Reason                                                                                                                                                                                                                                     |
+| :-------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `semantic.spacing.gutter.page`                | `clamp()` expression embedding multiple token refs — no single `TokenRef` can express responsive fluid gutters                                                                                                                             |
+| `semantic.spacing.gutter.section`             | same as above                                                                                                                                                                                                                              |
+| `semantic.spacing.separation.interactive.min` | `clamp()` with mixed units (`px` + token ref) — minimum touch-target separation cannot be expressed as a pure token reference                                                                                                              |
+| `semantic.spacing.inset.action.block`         | `clamp()` with mixed units — the command trigger's block padding is a bounded 8–9px range the engine's unit steps straddle (ADR-021 addendum; this entry was added late — the token shipped unregistered, against this section's own rule) |
+| `semantic.spacing.inset.control.{sm,md,lg}`   | Fixed px — outcome-bearing (ADR-022): a control's box is inset + type over the `hit` floor, and a constant cannot be a `TokenRef` because every `core.spacing` step is fluid by design. The fixed shape is validated (spacing Error #17)   |
+| `semantic.sizing.measure.reading`             | `ch` units — character-based measure has no core token equivalent                                                                                                                                                                          |
+| `semantic.overlay.scrim`                      | `rgba()` composing `{semantic.opacity.scrim}` — no single `TokenRef` can express a partial-opacity overlay color                                                                                                                           |
 
 Any new `RawValue` in the semantic layer requires an entry in this table before merging.
 

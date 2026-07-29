@@ -253,7 +253,8 @@ describe('a side-label Form', () => {
       expect(root.gridColumn).toBe('1 / -1');
       // Baseline, not start: the control's own inset would otherwise push its value
       // below a top-aligned label, and an offset to compensate is a number that
-      // stops being right when the inset changes — and the inset is fluid (F-035).
+      // stops being right when the inset changes — which a theme may do (the
+      // inset is a fixed contract since ADR-022, but still theme-tunable).
       expect(root.alignItems).toBe('baseline');
 
       expect(
