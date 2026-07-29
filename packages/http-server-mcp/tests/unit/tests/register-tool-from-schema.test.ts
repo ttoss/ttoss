@@ -14,12 +14,11 @@ const sendMcpRequest = async (
   app: ReturnType<typeof App.prototype.callback>,
   body: Record<string, unknown>
 ) => {
-  const res = await request(app)
+  return request(app)
     .post('/mcp')
     .send(body)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json, text/event-stream');
-  return res;
 };
 
 describe('registerToolFromSchema', () => {
@@ -121,7 +120,7 @@ describe('registerToolFromSchema', () => {
     expect(res.status).toBe(200);
 
     const tools: Array<{ name: string; inputSchema: unknown }> =
-      res.body?.result?.tools ?? [];
+      res.body.result?.tools ?? [];
 
     const tool = tools.find((t) => {
       return t.name === 'get-project';
@@ -156,7 +155,7 @@ describe('registerToolFromSchema', () => {
     });
 
     const tools: Array<{ name: string; inputSchema: unknown }> =
-      res.body?.result?.tools ?? [];
+      res.body.result?.tools ?? [];
 
     const tool = tools.find((t) => {
       return t.name === 'list-all';
@@ -205,7 +204,7 @@ describe('registerToolFromSchema', () => {
     });
 
     const tools: Array<{ name: string; inputSchema: unknown }> =
-      res.body?.result?.tools ?? [];
+      res.body.result?.tools ?? [];
 
     const zodTool = tools.find((t) => {
       return t.name === 'zod-tool';
@@ -259,7 +258,7 @@ describe('registerToolFromSchema', () => {
 
     expect(res.status).toBe(200);
 
-    const content = res.body?.result?.content ?? [];
+    const content = res.body.result?.content ?? [];
     expect(content).toContainEqual({ type: 'text', text: 'Hello, World!' });
   });
 
@@ -304,6 +303,163 @@ describe('registerToolFromSchema', () => {
     expect(capturedArgs[0]).toEqual({ id: 'abc', options: { limit: 10 } });
   });
 
+  describe('tools/call argument validation', () => {
+    const buildApp = (
+      inputSchema: Record<string, unknown>,
+      validateArguments?: boolean
+    ) => {
+      const server = new McpServer({ name: 'test', version: '1.0.0' });
+      registerToolFromSchema(server, {
+        name: 'validated',
+        description: 'Validated tool',
+        inputSchema: inputSchema as never,
+        validateArguments,
+        handler: async (args) => {
+          return { content: [{ type: 'text', text: JSON.stringify(args) }] };
+        },
+      });
+      const app = new App();
+      app.use(bodyParser());
+      app.use(createMcpRouter(server).routes());
+      return app.callback();
+    };
+
+    const callWith = (
+      app: ReturnType<typeof App.prototype.callback>,
+      args: Record<string, unknown>
+    ) => {
+      return sendMcpRequest(app, {
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'tools/call',
+        params: { name: 'validated', arguments: args },
+      });
+    };
+
+    const stringSchema = {
+      type: 'object',
+      properties: { value: { type: 'string' } },
+    };
+
+    describe('by default (validateArguments omitted)', () => {
+      // Arguments are forwarded to the handler unchecked, so a schema that
+      // describes its input incompletely — the usual shape of one generated
+      // from an OpenAPI document — never rejects a call the underlying API
+      // would have accepted.
+
+      test('a null reaches the handler even though the schema says string', async () => {
+        const res = await callWith(buildApp(stringSchema), { value: null });
+
+        expect(res.body.result?.isError).toBeFalsy();
+        expect(res.body.result?.content?.[0]?.text).toBe('{"value":null}');
+      });
+
+      test('a value of the wrong type reaches the handler', async () => {
+        const res = await callWith(buildApp(stringSchema), { value: 42 });
+
+        expect(res.body.result?.isError).toBeFalsy();
+        expect(res.body.result?.content?.[0]?.text).toBe('{"value":42}');
+      });
+
+      test('the schema is still advertised verbatim over tools/list', async () => {
+        const res = await sendMcpRequest(buildApp(stringSchema), {
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tools/list',
+        });
+
+        expect(res.body.result?.tools?.[0]?.inputSchema).toEqual(stringSchema);
+      });
+    });
+
+    describe('with validateArguments: true', () => {
+      test('a schema without `nullable` rejects an explicit null for that field', async () => {
+        const res = await callWith(buildApp(stringSchema, true), {
+          value: null,
+        });
+
+        expect(res.body.result?.isError).toBe(true);
+        expect(res.body.result?.content?.[0]?.text).toContain(
+          'Invalid arguments'
+        );
+      });
+
+      test('a `[type, "null"]` schema accepts both the declared type and null', async () => {
+        const app = buildApp(
+          {
+            type: 'object',
+            properties: { value: { type: ['string', 'null'] } },
+          },
+          true
+        );
+
+        const withValue = await callWith(app, { value: 'hi' });
+        expect(withValue.body.result?.isError).toBeFalsy();
+
+        const withNull = await callWith(app, { value: null });
+        expect(withNull.body.result?.isError).toBeFalsy();
+      });
+
+      test('a value of the wrong type is rejected', async () => {
+        const res = await callWith(buildApp(stringSchema, true), { value: 42 });
+
+        expect(res.body.result?.isError).toBe(true);
+      });
+
+      test('a property-level oneOf accepts either alternative', async () => {
+        const app = buildApp(
+          {
+            type: 'object',
+            properties: {
+              toolChoice: {
+                oneOf: [
+                  { type: 'string', enum: ['auto', 'required'] },
+                  {
+                    type: 'object',
+                    properties: {
+                      type: { type: 'string' },
+                      name: { type: 'string' },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          true
+        );
+
+        const withString = await callWith(app, { toolChoice: 'auto' });
+        expect(withString.body.result?.isError).toBeFalsy();
+
+        const withObject = await callWith(app, {
+          toolChoice: { type: 'tool', name: 'get_weather' },
+        });
+        expect(withObject.body.result?.isError).toBeFalsy();
+      });
+
+      test('required: undefined is treated the same as omitting required', async () => {
+        const app = buildApp(
+          {
+            type: 'object',
+            properties: { id: { type: 'string' } },
+            required: undefined,
+          },
+          true
+        );
+
+        const res = await callWith(app, {});
+
+        expect(res.body.result?.isError).toBeFalsy();
+      });
+
+      test('a zero-arg schema ({ type: "object" }, no properties) accepts an empty call', async () => {
+        const res = await callWith(buildApp({ type: 'object' }, true), {});
+
+        expect(res.body.result?.isError).toBeFalsy();
+      });
+    });
+  });
+
   test('works together with createMcpRouter', () => {
     const server = new McpServer({ name: 'test', version: '1.0.0' });
 
@@ -317,44 +473,5 @@ describe('registerToolFromSchema', () => {
     const router = createMcpRouter(server);
     expect(router).toBeDefined();
     expect(typeof router.routes).toBe('function');
-  });
-
-  test('emits a dev-time warning when the tools/list handler cannot be patched', () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const origEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'test';
-
-    try {
-      // Use a fresh server and delete the tools/list handler after the SDK installs
-      // it (via a normal registerTool call), to simulate the "origHandler undefined"
-      // branch inside registerToolFromSchema's patching logic.
-      const server = new McpServer({ name: 'server-warn', version: '1.0.0' });
-
-      server.registerTool(
-        'seed',
-        { description: 'seed', inputSchema: { x: z.string() } },
-        async ({ x }) => {
-          return { content: [{ type: 'text', text: x }] };
-        }
-      );
-
-      // Remove the tools/list handler so origHandler will be undefined
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (server as any).server?._requestHandlers?.delete('tools/list');
-
-      registerToolFromSchema(server, {
-        name: 'my-tool',
-        handler: async () => {
-          return { content: [{ type: 'text', text: 'hi' }] };
-        },
-      });
-
-      expect(warnSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Could not patch tools/list')
-      );
-    } finally {
-      process.env.NODE_ENV = origEnv;
-      warnSpy.mockRestore();
-    }
   });
 });

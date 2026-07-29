@@ -1,6 +1,11 @@
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-import { z } from 'zod';
+import type {
+  CallToolResult,
+  JsonSchemaType,
+  McpServer,
+  StandardSchemaWithJSON,
+} from '@modelcontextprotocol/server';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports -- value import required; fromJsonSchema is called at runtime
+import { fromJsonSchema } from '@modelcontextprotocol/server';
 
 /**
  * A plain JSON Schema object (draft-07 compatible) describing the shape of a
@@ -31,42 +36,85 @@ export interface RegisterToolFromSchemaParams {
    */
   inputSchema?: JsonObjectSchema;
   /**
+   * Whether `tools/call` arguments are validated against `inputSchema` before
+   * the handler runs, rejecting a mismatch with an MCP error.
+   *
+   * Defaults to `false`, which forwards arguments to the handler unchecked —
+   * the behavior this helper has always had. `inputSchema` is still advertised
+   * verbatim over `tools/list` either way; this only controls enforcement.
+   *
+   * Enable it once you know `inputSchema` describes every value the tool
+   * genuinely accepts. Schemas generated from an OpenAPI document are a common
+   * source of *incomplete* ones — a field a client may send as `null` to clear
+   * it, or one accepting several shapes, is easy to emit as a bare
+   * `{ type: 'string' }`. Validating against a schema like that rejects calls
+   * the underlying API would have accepted.
+   *
+   * @default false
+   */
+  validateArguments?: boolean;
+  /**
    * Tool handler invoked when the AI client calls the tool.
-   * Receives the raw request arguments as a plain object (no Zod validation is
-   * applied, so the shape matches whatever the client sends).
+   * Receives the request arguments, validated against `inputSchema` only when
+   * `validateArguments` is enabled.
    */
   handler: (
     args: Record<string, unknown>
   ) => CallToolResult | Promise<CallToolResult>;
 }
 
-// Module-level WeakMaps so they survive across calls but are GC-friendly.
-const rawSchemaRegistryMap = new WeakMap<
-  McpServer,
-  Map<string, JsonObjectSchema>
->();
-const patchedServerSet = new WeakSet<McpServer>();
+/**
+ * Converts a plain JSON Schema into the Standard Schema `registerTool` accepts.
+ *
+ * A Standard Schema keeps advertisement and enforcement in separate fields:
+ * `~standard.jsonSchema` is what `tools/list` publishes, `~standard.validate`
+ * is what `tools/call` runs. Replacing only `validate` therefore keeps the
+ * schema fully visible to clients while leaving arguments unchecked.
+ */
+const toStandardSchema = ({
+  inputSchema,
+  validateArguments,
+}: {
+  inputSchema: JsonObjectSchema;
+  validateArguments: boolean;
+}): StandardSchemaWithJSON => {
+  // `JsonObjectSchema` deliberately keeps `properties` as `Record<string,
+  // unknown>` for a simple public API; `fromJsonSchema` wants the SDK's
+  // recursive `JsonSchemaType`. The runtime shape is the same JSON Schema
+  // object either way — only the static type is looser here.
+  const schema = fromJsonSchema(inputSchema as JsonSchemaType);
+
+  if (validateArguments) {
+    return schema;
+  }
+
+  return {
+    '~standard': {
+      ...schema['~standard'],
+      validate: (value: unknown) => {
+        return { value };
+      },
+    },
+  } as StandardSchemaWithJSON;
+};
 
 /**
  * Registers a tool on an MCP server using a **plain JSON Schema** object for
  * `inputSchema` instead of a Zod shape.
  *
- * This is useful when tool definitions are shared between the MCP server and an
- * AI SDK agent (e.g. Vercel AI SDK's `tool()` helper), because both consume a
- * plain JSON Schema at runtime. Using this helper eliminates the lossy
+ * This is useful when tool definitions are shared between the MCP server and
+ * an AI SDK agent (e.g. Vercel AI SDK's `tool()` helper), because both consume
+ * a plain JSON Schema at runtime. Using this helper eliminates the lossy
  * JSON-Schema→Zod conversion that would otherwise be required.
  *
- * Internally the helper:
- * 1. Registers the tool via the standard `McpServer.registerTool` API using a
- *    Zod `z.record(z.unknown())` pass-through schema so that the existing MCP
- *    `tools/call` handler correctly routes requests and delivers raw args to
- *    your handler.
- * 2. Stores the original JSON Schema and patches the `tools/list` response
- *    handler so clients receive the verbatim JSON Schema over the wire.
+ * Thin wrapper over `@modelcontextprotocol/server`'s `fromJsonSchema`, which
+ * converts a JSON Schema into a Standard Schema that `registerTool` accepts
+ * directly, so the schema round-trips verbatim over `tools/list`. Arguments
+ * reach the handler unchecked unless `validateArguments` is enabled.
  *
  * @param server - The `McpServer` instance to register the tool on.
  * @param params - Tool configuration including name, description, inputSchema,
- *   and handler.
+ *   validateArguments, and handler.
  *
  * @example
  * ```typescript
@@ -96,88 +144,18 @@ export const registerToolFromSchema = (
     name,
     description,
     inputSchema = { type: 'object', properties: {} },
+    validateArguments = false,
     handler,
   } = params;
 
-  // Ensure we have a schema registry for this server.
-  if (!rawSchemaRegistryMap.has(server)) {
-    rawSchemaRegistryMap.set(server, new Map());
-  }
-
-  const registry = rawSchemaRegistryMap.get(server)!;
-  registry.set(name, inputSchema);
-
-  // Register the tool with a Zod record schema so that:
-  //  - `tools/call` validation always passes for any object input.
-  //  - The handler receives the raw args object from the request.
   server.registerTool(
     name,
     {
       description,
-      inputSchema: z.record(z.string(), z.unknown()),
+      inputSchema: toStandardSchema({ inputSchema, validateArguments }),
     },
     async (args) => {
       return handler(args as Record<string, unknown>);
     }
   );
-
-  // Patch the `tools/list` response handler once per server so that the
-  // verbatim JSON Schema is returned instead of the Zod-derived one.
-  if (!patchedServerSet.has(server)) {
-    patchedServerSet.add(server);
-
-    // Access the underlying `Server` instance and its internal request-handler
-    // map. This relies on McpServer exposing a `server` property (documented in
-    // the SDK's public API) and Protocol storing handlers in `_requestHandlers`
-    // (an internal implementation detail). If the MCP SDK refactors its
-    // internals, the patching is simply skipped and tools remain functional —
-    // the only degradation is that the Zod-derived schema is shown instead of
-    // the verbatim JSON Schema in `tools/list`.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const rawServer = (server as any).server;
-    const origHandler = rawServer?._requestHandlers?.get('tools/list') as
-      | ((req: unknown, extra: unknown) => Promise<{ tools: unknown[] }>)
-      | undefined;
-
-    if (!origHandler && process.env.NODE_ENV !== 'production') {
-      // eslint-disable-next-line no-console
-      console.warn(
-        '[registerToolFromSchema] Could not patch tools/list — ' +
-          'internal MCP SDK structure may have changed. ' +
-          'The tool will still be callable, but tools/list may return ' +
-          'a Zod-derived schema instead of the verbatim JSON Schema.'
-      );
-    }
-
-    if (origHandler) {
-      rawServer._requestHandlers.set(
-        'tools/list',
-        async (rawRequest: unknown, extra: unknown) => {
-          const result = await origHandler(rawRequest, extra);
-
-          const schemas = rawSchemaRegistryMap.get(server);
-          if (!schemas) {
-            return result;
-          }
-
-          return {
-            ...result,
-            tools: (
-              result.tools as Array<{
-                name: string;
-                inputSchema: unknown;
-                [key: string]: unknown;
-              }>
-            ).map((tool) => {
-              const raw = schemas.get(tool.name);
-              if (raw !== undefined) {
-                return { ...tool, inputSchema: raw };
-              }
-              return tool;
-            }),
-          };
-        }
-      );
-    }
-  }
 };

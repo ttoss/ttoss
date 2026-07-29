@@ -593,9 +593,16 @@ Use this when tool definitions are shared between the MCP server and an AI SDK a
 - `params.name` (`string`) — Unique tool name
 - `params.description` (`string`, optional) — Human-readable description
 - `params.inputSchema` (`JsonObjectSchema`, optional) — Plain JSON Schema object (defaults to `{ type: 'object', properties: {} }`)
+- `params.validateArguments` (`boolean`, optional) — Enforce `inputSchema` on `tools/call` (default: `false`); see [Argument validation](#argument-validation)
 - `params.handler` (`(args: Record<string, unknown>) => CallToolResult | Promise<CallToolResult>`) — Tool handler receiving the raw request arguments
 
 **Returns:** `void`
+
+#### Argument validation
+
+By default, `inputSchema` is **advertised but not enforced**: it round-trips verbatim over `tools/list` so clients know what to send, while arguments reach your handler unchecked. Pass `validateArguments: true` to reject mismatched calls with an MCP error before the handler runs.
+
+Enable it once you're confident `inputSchema` describes every value the tool genuinely accepts. Schemas derived from an OpenAPI document are a common source of _incomplete_ ones — a field a client may send as `null` to clear it, or one that accepts several shapes, is easily emitted as a bare `{ type: 'string' }`. Validating against a schema like that rejects calls the underlying API would have accepted. To describe those cases accurately, use `{ type: ['string', 'null'] }` for a nullable field and forward `oneOf`/`anyOf` verbatim rather than collapsing to one type.
 
 ## Examples
 
@@ -787,7 +794,9 @@ app.listen(3000);
 
 ## Protocol Details
 
-This package implements the [Model Context Protocol](https://spec.modelcontextprotocol.io/) over HTTP using JSON responses (no SSE streaming). It uses the `StreamableHTTPServerTransport` from the MCP SDK with `enableJsonResponse: true` and adapts Koa's context-based middleware to work with the MCP SDK's Node.js request/response expectations.
+This package implements the [Model Context Protocol](https://spec.modelcontextprotocol.io/) over HTTP using JSON responses (no SSE streaming), and serves each request over the protocol revision it actually speaks.
+
+Requests are classified once at the boundary. Traffic from today's MCP clients is served over `NodeStreamableHTTPServerTransport` with `enableJsonResponse: true`, adapting Koa's context-based middleware to the SDK's Node.js request/response expectations. Requests carrying the `2026-07-28` revision's per-request envelope are served by that revision's stateless core (`createMcpHandler`) instead. Both paths are served from the same `McpServer` instance and the same registered tools, so supporting the newer revision requires no configuration.
 
 **Supported HTTP methods:**
 
@@ -811,6 +820,8 @@ If you authenticate with `auth.verifyToken`, you do not need `sessionIdGenerator
 | ------------------------------- | --------------------------------------------- | ------------------------------------- |
 | Stateless (default)             | Bearer/API tokens, serverless, multi-instance | DB/verify hit per request             |
 | Stateful (`sessionIdGenerator`) | SSE events, context-preserving streams        | Needs session affinity / shared state |
+
+The `2026-07-28` revision has no session concept in its core, so requests speaking that revision are always served statelessly regardless of `sessionIdGenerator`.
 
 ## Testing an MCP server
 
@@ -864,7 +875,7 @@ Use the default when token auth is handled outside the OAuth flow (Cognito, API 
 
 The default **stateless** mode (see [Stateless vs stateful mode](#stateless-vs-stateful-mode)) is built for serverless: a fresh transport is created per request, nothing is kept in memory between invocations, and responses are plain JSON (no SSE) — exactly the request/response shape API Gateway and Lambda Function URLs expect.
 
-Use [`@ttoss/http-server-serverless`](https://github.com/ttoss/ttoss/tree/main/packages/http-server-serverless) as the Lambda adapter. It wraps `serverless-http` and additionally populates `req.rawHeaders` from the API Gateway event before the request reaches Koa. Without this step, `@hono/node-server` — used internally by the MCP transport — drops all headers (including `Accept`) and every `initialize` request returns HTTP 406.
+Use [`@ttoss/http-server-serverless`](https://github.com/ttoss/ttoss/tree/main/packages/http-server-serverless) as the Lambda adapter. It wraps `serverless-http` and additionally populates `req.rawHeaders` from the API Gateway event before the request reaches Koa. Without this step, the adapter sitting between Koa and the MCP transport can drop all headers (including `Accept`), making every `initialize` request return HTTP 406.
 
 ```mermaid
 flowchart LR
@@ -913,7 +924,8 @@ Keep the following in mind:
 
 - [@ttoss/http-server](https://ttoss.dev/docs/modules/packages/http-server) - HTTP server foundation
 - [@ttoss/http-server-serverless](https://github.com/ttoss/ttoss/tree/main/packages/http-server-serverless) - AWS Lambda adapter (required for MCP on Lambda)
-- [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/sdk) - MCP SDK
+- [@modelcontextprotocol/server](https://github.com/modelcontextprotocol/typescript-sdk) - MCP server SDK (2026-07-28 core)
+- [@modelcontextprotocol/node](https://github.com/modelcontextprotocol/typescript-sdk) - Node.js request/response bridge for the SDK's fetch-based handler
 
 ## Resources
 
