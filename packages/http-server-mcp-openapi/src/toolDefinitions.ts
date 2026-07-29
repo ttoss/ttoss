@@ -151,10 +151,14 @@ export const buildInputSchema = (
         : { type: 'string', description: '' }; // path param
   }
 
+  // `required` is omitted rather than set to `undefined`: JSON has no
+  // `undefined`, so the key was never visible to clients anyway, and leaving an
+  // explicit `undefined` on the in-memory schema only risks tripping the
+  // validator that compiles it when the tool is registered.
   return {
     type: 'object',
     properties,
-    required: requiredFields.length > 0 ? requiredFields : undefined,
+    ...(requiredFields.length > 0 ? { required: requiredFields } : {}),
   };
 };
 

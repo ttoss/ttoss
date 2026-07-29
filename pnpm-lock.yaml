@@ -1610,6 +1610,9 @@ importers:
         specifier: workspace:^
         version: link:../http-server-mcp
     devDependencies:
+      '@modelcontextprotocol/server':
+        specifier: ^2.0.0
+        version: 2.0.0
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config

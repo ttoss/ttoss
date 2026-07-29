@@ -38,6 +38,7 @@
     "@ttoss/http-server-mcp": "workspace:^"
   },
   "devDependencies": {
+    "@modelcontextprotocol/server": "^2.0.0",
     "@ttoss/config": "workspace:^",
     "@ttoss/http-server": "workspace:^",
     "jest": "^30.4.2",

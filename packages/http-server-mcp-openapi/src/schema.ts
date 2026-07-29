@@ -79,6 +79,14 @@ const dereferenceValue = (args: {
       // recursing and return an empty schema rather than looping forever.
       if (seenRefs.has(refName)) return {};
       const resolved = spec.components?.schemas?.[refName];
+      // A ref with no target in this document — most often one pointing into
+      // another file, e.g. `./tools.yaml#/components/schemas/X`. Resolve it the
+      // same way as a circular ref: an empty schema, which accepts any value.
+      // Returning `undefined` instead would put an undefined value inside
+      // `properties`, and while JSON serialisation silently drops it, the
+      // in-memory schema is what a JSON Schema validator compiles — and it
+      // throws on `Object.keys(undefined)` while walking `properties`.
+      if (resolved === undefined) return {};
       return dereferenceValue({
         value: resolved,
         spec,
