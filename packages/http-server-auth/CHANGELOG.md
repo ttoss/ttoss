@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-auth@0.5.0...@ttoss/http-server-auth@0.6.0) (2026-07-29)
+
+### Features
+
+- **auth-core:** cap how often one address can be mailed ([#1175](https://github.com/ttoss/ttoss/issues/1175)) ([ef5ea08](https://github.com/ttoss/ttoss/commit/ef5ea08b9e3fce60b9c1861df4ac0c5a3ab88cc7))
+
 # [0.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-auth@0.4.0...@ttoss/http-server-auth@0.5.0) (2026-07-29)
 
 ### Features
