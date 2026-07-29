@@ -116,9 +116,9 @@ Semantic spacing is anchored in **layout physics**, not UX categories.
 
 | token                        | use when you are building…                                                                                                   | contract (must be true)                  | default mapping (base theme)                              |
 | :--------------------------- | :--------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------- | :-------------------------------------------------------- |
-| `inset.control.sm`           | compact controls                                                                                                             | internal padding                         | `core.spacing.3`                                          |
-| `inset.control.md`           | default controls                                                                                                             | internal padding                         | `core.spacing.4`                                          |
-| `inset.control.lg`           | large/prominent controls                                                                                                     | internal padding                         | `core.spacing.6`                                          |
+| `inset.control.sm`           | compact controls                                                                                                             | internal padding                         | `core.spacing.1`                                          |
+| `inset.control.md`           | default controls                                                                                                             | internal padding                         | `core.spacing.2`                                          |
+| `inset.control.lg`           | large/prominent controls                                                                                                     | internal padding                         | `core.spacing.4`                                          |
 | `inset.surface.sm`           | tight surfaces                                                                                                               | `inset.surface ≥ inset.control` per step | `core.spacing.4`                                          |
 | `inset.action.block`         | Block padding of a command trigger — bounded 8–9px, so a CTA resolves ~40px on the desktop while generic controls stay ~32px |
 | `inset.surface.md`           | default surfaces                                                                                                             | `inset.surface ≥ inset.control` per step | `core.spacing.6`                                          |
@@ -145,9 +145,12 @@ Semantic spacing is anchored in **layout physics**, not UX categories.
 const spacing = {
   inset: {
     control: {
-      sm: 'core.spacing.3',
-      md: 'core.spacing.4',
-      lg: 'core.spacing.6',
+      // Deliberately tight (ADR-020): block padding stays under the `hit`
+      // floor so the rem-anchored floor — not the fluid inset — drives a
+      // control's height on most of the range.
+      sm: 'core.spacing.1',
+      md: 'core.spacing.2',
+      lg: 'core.spacing.4',
     },
     surface: {
       sm: 'core.spacing.4',
