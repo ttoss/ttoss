@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.2.0...@ttoss/http-server-mcp-openapi@0.2.1) (2026-07-29)
+
+### Bug Fixes
+
+- **http-server-mcp-openapi:** resolve unresolvable $refs to an empty schema ([#1174](https://github.com/ttoss/ttoss/issues/1174)) ([f29f140](https://github.com/ttoss/ttoss/commit/f29f140a8edb50c92437deacde50533a5892e175))
+
 # [0.2.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.1.3...@ttoss/http-server-mcp-openapi@0.2.0) (2026-07-29)
 
 ### Features
