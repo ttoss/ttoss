@@ -26,7 +26,9 @@
  * the point of splitting them is that the reason a member is not in the first
  * group is a *mechanism* and not a preference. `Slider` appears too, in the
  * exception group, although the grep does not return it — which is precisely why
- * it is excluded.
+ * it is excluded. (`Switch.mjs` is on the axis through the `SwitchField` root it
+ * ships beside the deprecated plain `Switch`; forms item E moved our component
+ * onto that root, which is what moved it from group 3 to group 1.)
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -102,7 +104,7 @@ describe('the axis this file is driven by', () => {
       'RadioGroup', // group 1
       'SearchField', // group 1 (and group 2, which keeps the slot form)
       'Select', // group 1
-      'Switch', // group 3 — no validation props at all
+      'Switch', // group 1 — via RAC's SwitchField root (forms item E)
       'TextField', // + our TextArea — group 1
     ]);
   });
@@ -187,6 +189,25 @@ const ROOTS: Array<[scope: string, field: () => React.ReactElement]> = [
     () => {
       return (
         <SearchField {...COPY} clearLabel="Clear search" isRequired isInvalid />
+      );
+    },
+  ],
+  [
+    // Joined group 1 in forms item E, rebuilt on RAC's `SwitchField` +
+    // `SwitchButton` (plain `Switch` is deprecated upstream). Its label is
+    // its children rather than a `label` prop — the row IS the label — so
+    // the entry adapts the copy; everything else is the shared envelope.
+    'switch',
+    () => {
+      return (
+        <Switch
+          description={COPY.description}
+          errorMessage={COPY.errorMessage}
+          isRequired
+          isInvalid
+        >
+          {COPY.label}
+        </Switch>
       );
     },
   ],
@@ -297,30 +318,24 @@ describe('the composed authoring form marks required identically', () => {
  * text-part style source and the necessity marker. Named here so the axis has no
  * silent member.
  *
- * The two below have no message part at all, each for a mechanism rather than a
- * preference. Both are item `E` in `INTERNAL/FORMS.md`.
+ * `Slider` below has no message part at all, for a mechanism rather than a
+ * preference.
  */
 describe('the members that deliberately have no message part', () => {
   /**
-   * - `Switch`: React Aria's `SwitchProps` **omits** `isRequired`, `isInvalid`,
-   *   `validate` and `validationBehavior` outright (read in `Switch.d.ts`), so
-   *   there is no validation state to render — a `Switch` cannot be invalid.
-   *   `SwitchRenderProps` does expose `isRequired`, and RAC 1.19 ships a separate
-   *   `SwitchField` root that owns it, which is the shape F-033's Switch half has
-   *   to decide on.
    * - `Slider`: does not appear in the axis grep at all — it gets no
    *   `FieldErrorContext`, because a slider always holds an in-range value: a
    *   boundary, not a gap.
+   *
+   * `Switch` stood here until forms item E, excluded because plain
+   * `SwitchProps` omits validation outright. RAC 1.19 deprecates that root and
+   * ships `SwitchField`, which owns the validation props and supplies both
+   * contexts — so the component moved onto it and into group 1, exactly the
+   * removal this table's test name asks for.
    */
   const WITHOUT_MESSAGE: Array<
     [scope: string, field: () => React.ReactElement]
   > = [
-    [
-      'switch',
-      () => {
-        return <Switch>Notify me</Switch>;
-      },
-    ],
     [
       'slider',
       () => {

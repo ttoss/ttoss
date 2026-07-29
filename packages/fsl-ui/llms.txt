@@ -80,8 +80,13 @@ Selection:   Checkbox, CheckboxGroup, RadioGroup/Radio, Switch,
              the accessible NAME stays the label alone (pinned via
              aria-labelledby — supporting copy placed in the row otherwise gets
              absorbed into the name), and the message shows only while invalid.
-             A lone required Checkbox in a Form blocks submit; Switch has no
-             message part yet (F-033).
+             A lone required Checkbox in a Form blocks submit.
+             Switch carries the full envelope (description + errorMessage +
+             isRequired/isInvalid/validate) via RAC's SwitchField root — a
+             required switch blocks the submit and reports why; with no
+             errorMessage the platform's own constraint copy shows. Its copy is
+             a sibling of the label row, so the accessible name stays the label
+             alone with no aria-labelledby pinning needed.
              CheckboxGroup group-level isInvalid propagates to child Checkboxes.
              Select, CheckboxGroup and RadioGroup all take label/description/
              errorMessage: their label part is Selection/label, but description
@@ -138,11 +143,14 @@ THE FIELD ENVELOPE — one rule for every field, Input and Selection alike:
              Host knob: --fsl-form-label-width (default max-content).
              The message part is always mounted, so
              omitting errorMessage shows the platform's own localized constraint
-             copy. Two exceptions, each with its mechanism: a lone Checkbox or
-             Switch renders its copy inline inside its own <label> (which is why
-             the accessible name is pinned via aria-labelledby), and Switch has no
-             validation props at all in RAC (F-033); Slider gets no
-             FieldErrorContext, because a slider always holds an in-range value.
+             copy. Two exceptions, each with its mechanism: a lone Checkbox
+             renders its copy inline beside its own <label> row (which is why
+             its accessible name is pinned via aria-labelledby, and why its
+             message needs an explicit errorMessage — RAC's FieldError stays
+             quiet on a lone Checkbox); Slider gets no FieldErrorContext,
+             because a slider always holds an in-range value. Switch left this
+             list in forms item E: its SwitchField root supplies the contexts,
+             so it behaves like any group-1 field.
 Input:       TextField, TextArea — each authored EITHER one-line
              (label/description/errorMessage/placeholder props) OR by composing
              its slots (Label/Control/Description/Error). The two are mutually

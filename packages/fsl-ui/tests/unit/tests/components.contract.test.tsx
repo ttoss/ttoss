@@ -37,6 +37,7 @@ import {
 import { CHOOSABLE_ROW } from 'src/tokens/choosableRow';
 import { FOCUS_RING_OFFSET } from 'src/tokens/focusRing';
 import { ENTITY_TOKEN_MAPPING } from 'src/tokens/projection';
+import { SELECTION_CONTROL } from 'src/tokens/selectionControl';
 
 import { DOM_FIXTURES } from './domFixtures';
 
@@ -1119,5 +1120,126 @@ describe('contract: embedded triggers share one silhouette', () => {
     expect(shape.fontSize).toBe(
       (vars.text.label.md as { fontSize?: string }).fontSize
     );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Contract invariant #15 — selection controls share one scale
+//
+// The mark the user toggles — a `Checkbox`'s square, a `Radio`'s circle, a
+// `GridList` row's selection box, a `Switch`'s track, a `Slider`'s handle — is
+// one scale, stated once in `SELECTION_CONTROL` (S2's large step: 18px box,
+// 12px glyph).
+//
+// This exists because the class had drifted the way every unshared constant
+// does: `1.125rem` was hand-written in five files, `Switch`'s track had grown
+// to 2.5rem × 1.5rem (larger than the reference's extra-large), `GridList`'s
+// box had kept the full `control` radius that P3 slice 3 halved on `Checkbox`
+// (the reads-as-a-Radio defect, fixed in one copy and kept in the other), and
+// the indicator glyph was `size="sm"` — a container-fluid step measured at
+// 20×20 inside its own fixed 18×18 box.
+//
+// Two complementary halves, like #14's: the equality tests catch one component
+// diverging from the shared source, the value test catches the shared source
+// itself drifting. Token identity and rem literals, never a measured pixel.
+// ---------------------------------------------------------------------------
+
+describe('contract: selection controls share one scale', () => {
+  /** The boxed marks: square/circle the user checks. */
+  const boxedMark = (): Array<[string, HTMLElement]> => {
+    const marks: Array<[string, HTMLElement]> = [];
+
+    render(DOM_FIXTURES.Checkbox.element());
+    render(DOM_FIXTURES.RadioGroup.element());
+    render(DOM_FIXTURES.GridList.element());
+
+    const checkbox = document.querySelector<HTMLElement>(
+      '[data-scope="checkbox"] [data-part="selectionControl"]'
+    );
+    const radio = document.querySelector<HTMLElement>(
+      '[data-scope="radio"] [data-part="selectionControl"]'
+    );
+    // GridList's addressable part is the RAC checkbox wrapper; the painted box
+    // is the `aria-hidden` span inside it (the first child is RAC's
+    // visually-hidden input wrapper, a 1px box).
+    const gridListBox = document.querySelector<HTMLElement>(
+      '[data-scope="grid-list"][data-part="selectionControl"] > span[aria-hidden="true"]'
+    );
+
+    if (checkbox) marks.push(['checkbox', checkbox]);
+    if (radio) marks.push(['radio', radio]);
+    if (gridListBox) marks.push(['grid-list', gridListBox]);
+
+    return marks;
+  };
+
+  test('every boxed mark resolves the same box and glyph scale', () => {
+    const marks = boxedMark();
+
+    expect(marks.length).toBe(3);
+    for (const [, el] of marks) {
+      expect(el.style.width).toBe(SELECTION_CONTROL.size);
+      expect(el.style.height).toBe(SELECTION_CONTROL.size);
+      // The load-bearing one: anything font-relative inside the box — the
+      // `Icon` asked for `size="text"` — resolves against this, never against
+      // a fluid ramp step or the paragraph the control happens to sit in.
+      expect(el.style.fontSize).toBe(SELECTION_CONTROL.glyph);
+    }
+  });
+
+  test('checkbox-shaped marks share the halved radius; the radio is round', () => {
+    const marks = new Map(boxedMark());
+
+    // Halved because the full `control` radius reads as a circle at 18px —
+    // GridList's second copy of the box had kept the full radius after
+    // Checkbox was fixed, which is the drift this line retires.
+    expect(marks.get('checkbox')?.style.borderRadius).toBe(
+      SELECTION_CONTROL.checkboxRadius
+    );
+    expect(marks.get('grid-list')?.style.borderRadius).toBe(
+      SELECTION_CONTROL.checkboxRadius
+    );
+    expect(marks.get('radio')?.style.borderRadius).toBe(vars.radii.round);
+  });
+
+  test('the switch track and the slider handle read the same scale', () => {
+    render(DOM_FIXTURES.Switch.element());
+    render(DOM_FIXTURES.Slider.element());
+
+    const track = document.querySelector<HTMLElement>(
+      '[data-scope="switch"] [data-part="control"]'
+    );
+    const handle = document.querySelector<HTMLElement>(
+      '[data-scope="slider"] [data-part="handle"]'
+    );
+
+    // The track's height IS the control scale — that is what aligns a switch
+    // with the checkbox and radio beside it (S2 large: 30×18).
+    expect(track?.style.height).toBe(SELECTION_CONTROL.size);
+    expect(handle?.style.inlineSize).toBe(SELECTION_CONTROL.size);
+    expect(handle?.style.blockSize).toBe(SELECTION_CONTROL.size);
+  });
+
+  test('the slider thumb is an ergonomic target, not its visible handle', () => {
+    render(DOM_FIXTURES.Slider.element());
+
+    const thumb = document.querySelector<HTMLElement>(
+      '[data-scope="slider"] [data-part="control"]'
+    );
+
+    // WCAG 2.5.8 (AA, 24×24): the interactive box takes `hit`, the visible
+    // handle inside it is the fill — the same split EMBEDDED_TRIGGER records.
+    // A range slider's two thumbs are adjacent, so the spacing exception
+    // cannot rescue an undersized handle.
+    expect(thumb?.style.inlineSize).toBe(vars.sizing.hit);
+    expect(thumb?.style.blockSize).toBe(vars.sizing.hit);
+  });
+
+  test('the shared source states the reference scale (value half)', () => {
+    // The equality tests above go vacuous if the shared source itself moves —
+    // this is the half that pins it. S2 large step: `checkbox-control-size-
+    // large` 18px, `checkmark-icon-size-200` 12px.
+    expect(SELECTION_CONTROL.size).toBe('1.125rem');
+    expect(SELECTION_CONTROL.glyph).toBe('0.75rem');
   });
 });

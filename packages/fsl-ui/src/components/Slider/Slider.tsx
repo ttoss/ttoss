@@ -11,6 +11,7 @@ import {
 
 import type { ComponentMeta } from '../../semantics';
 import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
+import { SELECTION_CONTROL } from '../../tokens/selectionControl';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -27,10 +28,12 @@ import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 // validationMessage — it has NO `surface` or `status`. Rather than widen the
 // vocabulary via FSL §17 (rejected: nominal, unevidenced growth — no runtime
 // dispatches on a track/output identity), Slider declares only the root meta
-// and renders label/track/fill/thumb/output as INTERNAL data-parts (the
-// ProgressBar/Meter/NumberField precedent). The thumb's `data-part="control"`
-// uses a legal Input role, so promoting it to a declared meta later is
-// non-breaking. See ADR-008.
+// and renders label/track/fill/thumb/handle/output as INTERNAL data-parts
+// (the ProgressBar/Meter/NumberField precedent). The thumb's
+// `data-part="control"` uses a legal Input role, so promoting it to a
+// declared meta later is non-breaking. See ADR-008. `sizing: hit` above is
+// read by the track and by the thumb's interactive box (it was a written
+// claim nothing read until forms item E).
 // ---------------------------------------------------------------------------
 
 /** Formal semantic identity — Slider root (Input entity). */
@@ -40,11 +43,13 @@ export const sliderMeta = {
   structure: 'root',
 } as const satisfies ComponentMeta<'Input'>;
 
-// Track thickness + thumb diameter (CONTRIBUTING §4 layout-literal rule):
-// geometry of the rail and handle, not semantic tokens. The thumb is larger
-// than the rail so it reads as a grabbable handle sitting on the track.
+// Rail thickness (CONTRIBUTING §4 layout-literal rule): geometry of the rail,
+// not a semantic token — 6px, matching the pill rails `ProgressBar` and
+// `Meter` adopted in P3 slice 3 (deliberately kept over S2's 4px: the three
+// rails are one internal decision). The visible handle takes the shared
+// selection-control scale (18px) so it reads as a grabbable knob on the rail;
+// its *interactive* box is `sizing.hit` — see the thumb below.
 const TRACK_THICKNESS = '0.375rem';
-const THUMB_SIZE = '1.125rem';
 
 type InputColors = typeof vars.colors.input.primary;
 
@@ -87,8 +92,35 @@ const buildFillStyle = ({
   };
 };
 
-/** The grabbable handle. */
-const buildThumbStyle = ({
+/**
+ * The **interactive** thumb box — `sizing.hit` on both axes, which is what
+ * makes the header's `sizing: hit` claim true (it was written and read by
+ * nothing) and what clears WCAG 2.5.8 Target Size (AA, 24×24): the previous
+ * thumb was its own 18px visual, a pointer target below the floor, and 2.5.8's
+ * spacing exception cannot rescue a range slider's two adjacent thumbs. The
+ * same fill-vs-target split `EMBEDDED_TRIGGER` records: the box is the target,
+ * the visible handle inside it is the fill. On a coarse pointer `hit` steps to
+ * 48px, which is also the direction the reference moves (handle 20 → 24px on
+ * mobile).
+ *
+ * `insetBlockStart: 50%` pins the box's centre to the rail's centre — React
+ * Aria positions the thumb with `left: n%` + `translate(-50%, -50%)` and
+ * leaves the block axis to the caller (its own examples write `top: 50%`).
+ */
+const buildThumbStyle = (): React.CSSProperties => {
+  return {
+    boxSizing: 'border-box',
+    insetBlockStart: '50%',
+    inlineSize: vars.sizing.hit,
+    blockSize: vars.sizing.hit,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  };
+};
+
+/** The visible handle — the fill inside the interactive box. */
+const buildHandleStyle = ({
   c,
   isFocusVisible,
   isDisabled,
@@ -102,13 +134,16 @@ const buildThumbStyle = ({
   const key = isDisabled ? 'disabled' : 'default';
   return {
     boxSizing: 'border-box',
-    inlineSize: THUMB_SIZE,
-    blockSize: THUMB_SIZE,
+    flexShrink: 0,
+    inlineSize: SELECTION_CONTROL.size,
+    blockSize: SELECTION_CONTROL.size,
     borderRadius: vars.radii.round,
     borderWidth: vars.border.outline.control.width,
     borderStyle: vars.border.outline.control.style,
     borderColor: border?.[key],
     backgroundColor: background?.[key],
+    // The ring wraps the visible handle, not the invisible target — a ring
+    // around a transparent 32px box floats detached from what it marks.
     outline: focusRingOutline(isFocusVisible),
     outlineOffset: FOCUS_RING_OFFSET,
   };
@@ -191,7 +226,9 @@ export const Slider = <T extends number | number[] = number>({
           boxSizing: 'border-box',
           display: 'flex',
           alignItems: 'center',
-          blockSize: THUMB_SIZE,
+          // The row's ergonomic floor: tall enough to host the hit-sized
+          // thumb, and the same block size a field control clears.
+          blockSize: vars.sizing.hit,
           inlineSize: '100%',
         }}
       >
@@ -211,10 +248,23 @@ export const Slider = <T extends number | number[] = number>({
                     index={index}
                     data-scope="slider"
                     data-part="control"
-                    style={({ isFocusVisible, isDisabled }) => {
-                      return buildThumbStyle({ c, isFocusVisible, isDisabled });
+                    style={buildThumbStyle()}
+                  >
+                    {({ isFocusVisible, isDisabled }) => {
+                      return (
+                        <span
+                          data-scope="slider"
+                          data-part="handle"
+                          aria-hidden
+                          style={buildHandleStyle({
+                            c,
+                            isFocusVisible,
+                            isDisabled,
+                          })}
+                        />
+                      );
                     }}
-                  />
+                  </RACSliderThumb>
                 );
               })}
             </div>

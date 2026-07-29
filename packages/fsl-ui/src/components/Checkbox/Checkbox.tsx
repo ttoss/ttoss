@@ -7,9 +7,13 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
-import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
+import { focusRingOutline } from '../../tokens/focusRing';
 import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import {
+  SELECTION_BOX_BASE,
+  SELECTION_CONTROL,
+} from '../../tokens/selectionControl';
 import {
   buildFieldTextPartStyle,
   type FieldLabelPosition,
@@ -46,24 +50,12 @@ export const checkboxMeta = {
 type InputColors = typeof vars.colors.input.primary;
 
 // Static box chrome — flag-independent, hoisted so the render callback only
-// computes the state-dependent leaves.
+// computes the state-dependent leaves. Size, glyph scale and the halved
+// radius come from the shared selection-control source (`SELECTION_CONTROL`),
+// so the mark cannot drift from `Radio`, `Switch` and `GridList`'s.
 const BOX_STYLE_STATIC = {
-  boxSizing: 'border-box',
-  flexShrink: 0,
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '1.125rem',
-  height: '1.125rem',
-  // Half the control radius: at box scale (18px) the full `control` radius
-  // reads as a circle and the checkbox becomes visually ambiguous with a
-  // Radio. Halving keeps the curvature theme-driven (P3 slice 3).
-  borderRadius: `calc(${vars.radii.control} / 2)`,
-  borderStyle: vars.border.outline.control.style,
-  transitionProperty: 'background-color, border-color, border-width',
-  transitionDuration: vars.motion.feedback.duration,
-  transitionTimingFunction: vars.motion.feedback.easing,
-  outlineOffset: FOCUS_RING_OFFSET,
+  ...SELECTION_BOX_BASE,
+  borderRadius: SELECTION_CONTROL.checkboxRadius,
 } satisfies React.CSSProperties;
 
 /** Box (selectionControl) style — the visual checkbox square. */
@@ -386,13 +378,17 @@ export const Checkbox = ({
                     userSelect: 'none',
                   }}
                 >
+                  {/* `text` (1em) resolves against the box's own glyph scale
+                      (`SELECTION_BOX_BASE.fontSize`), never against a fluid
+                      ramp step: measured, `size="sm"` rendered 20×20 inside
+                      this 18×18 box on any wide surface. */}
                   <Icon
                     intent={
                       isIndeterminate
                         ? 'selection.indeterminate'
                         : 'selection.checked'
                     }
-                    size="sm"
+                    size="text"
                   />
                 </span>
               )}

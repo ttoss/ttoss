@@ -17,6 +17,7 @@ export interface WorkspaceSettings {
   timezone: string;
   description: string;
   requireReview: boolean;
+  enforceTwoFactor: boolean;
 }
 
 interface WorkspaceState {
@@ -32,6 +33,7 @@ const INITIAL_SETTINGS: WorkspaceSettings = {
   timezone: 'Europe/Lisbon',
   description: 'Deploys for the northline product team.',
   requireReview: true,
+  enforceTwoFactor: false,
 };
 
 let state: WorkspaceState = {

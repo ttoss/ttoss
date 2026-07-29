@@ -465,20 +465,72 @@ both modes → commit.
   source drifting. It also caught itself: gating the clear button removed the
   element it measured, so the fixture had to give the field a value.
 
-- **E. `Checkbox` / `CheckboxGroup` / `RadioGroup` / `Switch` / `Slider`.**
-  The `validationMessage` part for `Switch` (F-033's remaining half — `Checkbox`
-  landed in A2, and `RadioGroup`/`CheckboxGroup`'s envelope landed in C2). **Read
-  in `Switch.d.ts` during C2, and it changes the shape of the work:** React Aria's
-  `SwitchProps` **omits** `isRequired`, `isInvalid`, `validate` and
-  `validationBehavior` outright, so there is no validation state to render — a
-  `Switch` cannot be invalid today. What exists instead is a separate
-  `SwitchField` root (`SwitchFieldProps`, `SwitchFieldContext`, and an
-  `isRequired` on `SwitchRenderProps`), so F-033's Switch half is a question about
-  adopting that root, not about adding a part. Also: the
-  32 → 34 px row inset, one shared glyph scale (three hard-coded `1.125rem` and
-  a Switch track that exceeds S2's extra-large), focus-offset literals → the
-  constant, group layout single-sourced, Slider's unread `sizing: hit` claim.
-  F-021 packet for the owner.
+- **E. ✅ The selection family (2026-07-29).** Queued as "adopt `SwitchField`?"
+  plus a list of geometry drifts, and reading the RAC **source** — not the types
+  alone — collapsed the question before any design work: RAC 1.19 marks plain
+  `Switch` `@deprecated: Use SwitchField + SwitchButton instead`, and
+  `SwitchField` supplies **both** envelope contexts (`TextContext` with the
+  description/errorMessage slots, `FieldErrorContext` with the full triple),
+  owns `isRequired`/`isInvalid`/`validate`, and reads the Form's
+  `validationBehavior` with the `native` default. So the F-033 Switch half was
+  not "add a part" but "move onto the root upstream built for this hole" — and
+  the new structure (a `<div>` root, the clickable `<label>` row as internal
+  `data-part="button"`) is what dodges A2's name-absorption trap by
+  construction: the copy is a _sibling_ of the label, so the shared envelope
+  parts work as designed (aria-describedby via the slot, platform constraint
+  copy from the always-mounted `FieldError`) instead of `Checkbox`'s gated
+  re-implementation. The wrapper is gated on `hasSupport || isInvalid` because
+  an empty span would still claim the root's flex gap and grow a bare switch.
+  The envelope class guard moved `Switch` from group 3 to group 1 — the removal
+  its own test name asked for.
+  **Geometry: one shared scale, and measurement found a defect nobody listed.**
+  `1.125rem` was hand-written in five files (Checkbox, Radio, GridList, Switch
+  thumb, Slider thumb); `SELECTION_CONTROL` in the cross-cutting token layer now
+  states it once (S2's **large** step, derived: our label text is 16px = S2
+  large, whose `checkbox-control-size-large` is exactly 18px). The unlisted
+  defect: the indicator glyph was `Icon size="sm"` — a **container-fluid** step
+  (`clamp(14px, 0.8cqi + 11px, 20px)`) inside a fixed box, measured rendering
+  **20×20 inside its own 18×18 box** at 1280px. F-021's shape one property over.
+  Glyph hosts now declare `SELECTION_CONTROL.glyph` (12px — S2's large
+  checkmark, `checkmark-icon-size-200`) as `fontSize` with `size="text"`.
+  `GridList`'s second copy of the box had also kept the full `control` radius
+  that P3 slice 3 halved on `Checkbox` (the reads-as-a-Radio defect, fixed in
+  one copy, kept in the other) — single-sourcing `checkboxRadius` retires the
+  class. **Switch track 40×24 → 30×18** (S2 large `switch-control-width-large`;
+  the old track exceeded S2's extra-large 34×20), with the S2 signature the old
+  one lacked: the handle **grows when ON** (10 → 12px), both states centred on
+  the track's content box — the old thumb sat 1px low, an offset computed
+  against the border box. The track's height IS the shared scale, which is what
+  aligns a switch with the checkbox and radio beside it.
+  **Slider: the `sizing: hit` claim is now read, and it was a WCAG hole.** The
+  thumb was its own 18px visual — a pointer target below 2.5.8's 24×24 AA
+  floor, and the spacing exception cannot rescue a range slider's two adjacent
+  thumbs. The interactive box now takes `hit` (32px fine / 48px coarse, the
+  direction S2's own mobile ramp moves) with the 18px handle inside it as the
+  fill — the same target-vs-fill split `EMBEDDED_TRIGGER` records — and the
+  ring stays on the visible handle, because a ring around a transparent box
+  floats detached. The track reads `hit` too, so the header's token row stopped
+  lying. Group layout single-sourced (`SELECTION_GROUP_STYLE`;
+  `RadioGroup`/`CheckboxGroup` were byte-identical). Focus-offset literals were
+  already gone (R2) — verified, no work.
+  **Deliberate no-changes, recorded:** Radio stays 18px against S2's 16 (S2
+  draws its radio 2px smaller at every step; one shared scale is the point of
+  this item, the distinction carries no semantics for us, and the shape
+  disambiguates). The Slider rail stays 6px against S2's 4 (the pill rails of
+  `ProgressBar`/`Meter` from Slice 3 — three rails, one internal decision).
+  The row inset (selectables 32px vs fields 34px above ~1200px) is **not**
+  patched here: S2's own selectable rows are the field row's content box, ours
+  already are, and the fluid-inset question underneath is F-035, owner packet.
+  **Guard:** contract invariant **#15**, four equality tests + a value half,
+  each verified to fail on injection (a diverging component size, the shared
+  source drifting, GridList regrowing the full radius, the thumb losing its
+  floor). _Studio consumer:_ Settings' "Enforce two-factor authentication"
+  Switch, its consequence as a linked description — beside the Checkbox on
+  purpose, the two selection shapes in one form. Verified in Chromium at
+  1280px, both modes: box 18 / glyph 12 / track 30×18 / handle 10→12 centred at
+  56 in both states / slider target 32×32 with rail, handle and target centres
+  byte-equal at 88; message ink `rgb(185,28,28)` / `rgb(252,165,165)` —
+  byte-identical to item F's family measurement. Suites: fsl-ui 2321, Studio 74.
 - **F. ✅ The validation language (2026-07-29).** Two of the three things this
   item was written to build turned out not to need building, and the third was
   one branch. **What shipped:** `buildFieldTextPartStyle`'s `negative` tone now
@@ -642,9 +694,9 @@ it lands unverified in dark until that audit exists.
 ### Q — the queue, unchanged
 
 **B4** `contextualHelp` · ~~**D** `SearchField` + `NumberField`~~ (**done
-2026-07-29**) · **E** the selection family · ~~**F** the validation language~~
-(**done 2026-07-29**) · **G** `FieldGroup` + `Wizard` · **H** field formats ·
-**I** the Studio's complete form.
+2026-07-29**) · ~~**E** the selection family~~ (**done 2026-07-29**) · **G**
+`FieldGroup` + `Wizard` · **H** field formats · **I** the Studio's complete
+form.
 
 **F came in far smaller than this plan sized it**, and the reason is the lesson
 rather than the schedule. It was queued as a token-model change — switch the field
@@ -654,11 +706,12 @@ docs and guards: the control was already correct and deliberately so, the ink th
 message needed already shipped, and the cascade already ordered `invalid` above
 `hover`. Two of the three things F was going to build did not need building. What
 it did surface is genuinely new — F-036, that the contrast suite cannot see a
-cross-role pairing — which is the sort of thing only shipping the change finds. Item **E** still carries the finding this queue handed it: React Aria omits
-validation from `SwitchProps` entirely, so F-033's `Switch` half is about adopting
-`SwitchField`. Both findings handed to **D** — the embedded trigger's UA
-font-size and `SearchField` having no one-line form — were confirmed by
-measurement and closed with it.
+cross-role pairing — which is the sort of thing only shipping the change finds.
+Item **E** confirmed the finding this queue handed it — and sharpened it: plain
+`SwitchProps` omits validation because plain `Switch` is **deprecated**, and the
+`SwitchField` root it pointed to carried everything the envelope needs. Both
+findings handed to **D** — the embedded trigger's UA font-size and `SearchField`
+having no one-line form — were confirmed by measurement and closed with it.
 
 ### N — decided no-changes from this queue, not to be reopened
 
@@ -716,7 +769,7 @@ it is a class · ADR when the decision is architectural · FRICTION append per g
 suites green · coverage held at 100 · treeshake within budget · lint · ROADMAP
 entry in the Slice 4 voice.
 
-**Baselines to detect regression:** fsl-ui 2286 tests, fsl-theme 1006, Studio 73;
+**Baselines to detect regression:** fsl-ui 2321 tests, fsl-theme 1006, Studio 74;
 treeshake 3249 bytes of 16000 — up 37 from C4's `FOCUS_RING_INSET`, which lives in a
 module `Button` already imports; `choosableRow.ts` itself shakes out of a
 Button-only bundle, verified by its absence from the output.

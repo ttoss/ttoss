@@ -6,6 +6,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
+import { SELECTION_GROUP_STYLE } from '../../tokens/selectionControl';
 import {
   FieldDescriptionPart,
   FieldLabelPart,
@@ -98,12 +99,7 @@ export const CheckboxGroup = ({
       {...props}
       data-scope="checkbox-group"
       data-part="root"
-      style={{
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: vars.spacing.gap.stack.sm,
-      }}
+      style={SELECTION_GROUP_STYLE}
     >
       {label != null && (
         <FieldLabelPart

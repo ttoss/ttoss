@@ -420,6 +420,20 @@ is **inset by exactly the ring width**, because every one of these rows lives in
 scrolling surface and a ring needing room outside the box gets cut off at a scroll edge. Asserted by
 contract invariant #13.
 
+**The selection control.** The mark the user toggles — a `Checkbox`'s square, a `Radio`'s
+circle, a `Switch`'s track, a `GridList` row's selection box, a `Slider`'s visible handle —
+resolves its scale from `SELECTION_CONTROL` (`src/tokens/selectionControl.ts`), never from its
+own component. One scale (S2's large step: 18px box, 12px glyph, derived from the family's 16px
+label text), five consumers across three entities; the host decides the mark's colours and its
+shape (`round` vs the halved checkbox radius), never its size. Two rules an author will
+otherwise get wrong: **the glyph inside a fixed mark is fixed too** — `Icon size="sm"` is a
+container-fluid step and was measured rendering 20×20 inside its own 18×18 box, so indicator
+hosts declare `SELECTION_CONTROL.glyph` as their `fontSize` and ask the `Icon` for
+`size="text"` (1em); and **the interactive box is not the visible mark** — a `Slider` thumb's
+target takes `sizing.hit` (WCAG 2.5.8; a range slider's two thumbs are adjacent, so the spacing
+exception cannot save an undersized handle) while the 18px handle inside it is the fill, the
+same split `EMBEDDED_TRIGGER` records. Asserted by contract invariant **#15**.
+
 Where a control's painted box and its operated element are different nodes, **`control` names
 the element the user operates** — the one that takes focus and holds the value — and the
 painted box is an internal `frame`. Reversing that would make `[data-part="control"]` resolve a
