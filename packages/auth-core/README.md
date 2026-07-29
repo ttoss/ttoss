@@ -193,6 +193,31 @@ same acknowledgement whether or not the address is on file, so the response
 cannot be used to enumerate accounts; and sign-in runs a decoy PBKDF2 compare
 for an unknown address, so response time cannot either.
 
+### Capping how often an address is mailed
+
+Pass `requestRateLimit` and the send endpoints stop being a way to mail a
+stranger repeatedly. Without it they will send as fast as they are called —
+issuing a new token invalidates the previous one, which limits how many tokens
+are _redeemable_ rather than how many messages go out.
+
+```ts
+requestRateLimit: {
+  store: myRateLimitStore, // { recent, record }
+  cooldownSeconds: 60,     // default
+  maxPerWindow: 10,        // default
+  windowSeconds: 60 * 60 * 24, // default
+}
+```
+
+The cap is applied to the request, before the engine looks the address up, and
+**every** request is recorded whether or not mail followed. Counting only the
+requests that produced mail would make a `429` mean "this address has an
+account" — reintroducing the enumeration oracle the rest of the flow avoids.
+
+`createMemoryRequestRateLimitStore` is a reference implementation. Back it with
+something shared in production: a per-process limiter caps each replica
+separately, so a fleet of N sends N times the intended rate.
+
 ## API tokens
 
 Personal access tokens in the form `<prefix>_<hex>`, recognizable in logs and

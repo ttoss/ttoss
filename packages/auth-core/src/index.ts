@@ -31,6 +31,8 @@ export type {
   OneTimeTokenPurpose,
   OneTimeTokenStore,
   PasswordOptions,
+  RequestRateLimit,
+  RequestRateLimitStore,
   StoredOneTimeToken,
 } from './emailAuthTypes';
 export { decode, encode } from './encodeDecode';
@@ -47,6 +49,7 @@ export {
   createMemoryClientStore,
   createMemoryOneTimeTokenStore,
   createMemoryRefreshTokenStore,
+  createMemoryRequestRateLimitStore,
   createMemoryUserStore,
 } from './memoryStores';
 export {

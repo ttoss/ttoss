@@ -7,6 +7,7 @@ import type {
 import { hashPassword } from 'src/hash';
 import {
   createMemoryOneTimeTokenStore,
+  createMemoryRequestRateLimitStore,
   createMemoryUserStore,
 } from 'src/memoryStores';
 import type { AuthHttpRequest } from 'src/oauthServerTypes';
@@ -1209,4 +1210,178 @@ test('it should propagate a delivery failure rather than swallowing it', async (
   await expect(
     handlers.sendMagicLink?.(request({ email: 'user@example.com' }))
   ).rejects.toThrow('SES is down');
+});
+
+// ---------------------------------------------------------------------------
+// request rate limiting
+// ---------------------------------------------------------------------------
+
+describe('request rate limiting', () => {
+  const limited = (overrides: Partial<EmailAuthOptions> = {}) => {
+    return setup({
+      modes: ['emailCode'],
+      requestRateLimit: {
+        store: createMemoryRequestRateLimitStore(),
+        cooldownSeconds: 60,
+        maxPerWindow: 3,
+      },
+      ...overrides,
+    });
+  };
+
+  test('it should refuse a second request inside the cooldown', async () => {
+    const { handlers, sent } = limited();
+
+    const first = await handlers.sendEmailCode?.(
+      request({ email: 'user@example.com' })
+    );
+    const second = await handlers.sendEmailCode?.(
+      request({ email: 'user@example.com' })
+    );
+
+    expect(first?.status).toBe(200);
+    expect(second?.status).toBe(429);
+    expect(second?.body).toMatchObject({
+      error: { code: 'too_many_requests' },
+    });
+    // The refused request must not have sent anything.
+    expect(sent).toHaveLength(1);
+  });
+
+  test('it should limit each address independently', async () => {
+    const { handlers, sent } = limited();
+
+    await handlers.sendEmailCode?.(request({ email: 'one@example.com' }));
+    const other = await handlers.sendEmailCode?.(
+      request({ email: 'two@example.com' })
+    );
+
+    expect(other?.status).toBe(200);
+    expect(sent).toHaveLength(2);
+  });
+
+  test('it should allow another request once the cooldown has passed', async () => {
+    const { handlers } = limited({
+      requestRateLimit: {
+        store: createMemoryRequestRateLimitStore(),
+        cooldownSeconds: 0,
+        maxPerWindow: 3,
+      },
+    });
+
+    expect(
+      await handlers.sendEmailCode?.(request({ email: 'user@example.com' }))
+    ).toMatchObject({ status: 200 });
+    expect(
+      await handlers.sendEmailCode?.(request({ email: 'user@example.com' }))
+    ).toMatchObject({ status: 200 });
+  });
+
+  test('it should enforce the window ceiling even with no cooldown', async () => {
+    const { handlers, sent } = limited({
+      requestRateLimit: {
+        store: createMemoryRequestRateLimitStore(),
+        cooldownSeconds: 0,
+        maxPerWindow: 3,
+      },
+    });
+
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      expect(
+        await handlers.sendEmailCode?.(request({ email: 'user@example.com' }))
+      ).toMatchObject({ status: 200 });
+    }
+
+    expect(
+      await handlers.sendEmailCode?.(request({ email: 'user@example.com' }))
+    ).toMatchObject({ status: 429 });
+    expect(sent).toHaveLength(3);
+  });
+
+  test('it should drop requests that fall outside the window', async () => {
+    const store = createMemoryRequestRateLimitStore();
+
+    await store.record({
+      email: 'user@example.com',
+      purpose: 'emailCode',
+      // Older than the window below, so it must not count.
+      requestedAt: new Date(Date.now() - 10_000),
+    });
+
+    const { handlers } = setup({
+      modes: ['emailCode'],
+      requestRateLimit: {
+        store,
+        cooldownSeconds: 0,
+        maxPerWindow: 1,
+        windowSeconds: 1,
+      },
+    });
+
+    expect(
+      await handlers.sendEmailCode?.(request({ email: 'user@example.com' }))
+    ).toMatchObject({ status: 200 });
+  });
+
+  /**
+   * The whole point of counting requests rather than sends: an unknown address
+   * and a registered one must be rate-limited identically, or `429` becomes an
+   * account-existence oracle.
+   */
+  test('it should limit an unknown address exactly like a registered one', async () => {
+    const { handlers } = setup({
+      modes: ['magicLink'],
+      users: [{ email: 'known@example.com' }],
+      requestRateLimit: {
+        store: createMemoryRequestRateLimitStore(),
+        cooldownSeconds: 60,
+        maxPerWindow: 3,
+      },
+    });
+
+    const knownFirst = await handlers.sendMagicLink?.(
+      request({ email: 'known@example.com' })
+    );
+    const knownSecond = await handlers.sendMagicLink?.(
+      request({ email: 'known@example.com' })
+    );
+    const unknownFirst = await handlers.sendMagicLink?.(
+      request({ email: 'nobody@example.com' })
+    );
+    const unknownSecond = await handlers.sendMagicLink?.(
+      request({ email: 'nobody@example.com' })
+    );
+
+    expect(knownFirst).toEqual(unknownFirst);
+    expect(knownSecond).toEqual(unknownSecond);
+    expect(knownSecond?.status).toBe(429);
+  });
+
+  test('it should apply sensible defaults when only a store is given', async () => {
+    const { handlers, sent } = setup({
+      modes: ['emailCode'],
+      requestRateLimit: { store: createMemoryRequestRateLimitStore() },
+    });
+
+    expect(
+      await handlers.sendEmailCode?.(request({ email: 'user@example.com' }))
+    ).toMatchObject({ status: 200 });
+    // The default cooldown is a minute, so an immediate retry is refused.
+    expect(
+      await handlers.sendEmailCode?.(request({ email: 'user@example.com' }))
+    ).toMatchObject({ status: 429 });
+    expect(sent).toHaveLength(1);
+  });
+
+  test('it should not limit anything when no limiter is configured', async () => {
+    const { handlers, sent } = setup({ modes: ['emailCode'] });
+
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      expect(
+        await handlers.sendEmailCode?.(request({ email: 'user@example.com' }))
+      ).toMatchObject({ status: 200 });
+    }
+
+    expect(sent).toHaveLength(4);
+  });
 });

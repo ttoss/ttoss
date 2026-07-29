@@ -146,6 +146,49 @@ export type OneTimeTokenStore = {
 };
 
 // ---------------------------------------------------------------------------
+// Send rate limiting
+// ---------------------------------------------------------------------------
+
+/**
+ * App-provided record of how often each address has asked for mail.
+ *
+ * Without this, anyone can point the "mail me something" endpoints at a
+ * stranger's address and make the application send to it repeatedly. Capping how
+ * many codes are *valid* does not help — that limits redemptions, not messages.
+ */
+export type RequestRateLimitStore = {
+  /**
+   * Timestamps of the requests recorded for this address and purpose at or
+   * after `since`, in any order.
+   */
+  recent: (args: {
+    email: string;
+    purpose: OneTimeTokenPurpose;
+    since: Date;
+  }) => Promise<Date[]> | Date[];
+  /** Record one request. */
+  record: (args: {
+    email: string;
+    purpose: OneTimeTokenPurpose;
+    requestedAt: Date;
+  }) => Promise<void> | void;
+};
+
+export type RequestRateLimit = {
+  store: RequestRateLimitStore;
+  /**
+   * Minimum seconds between two requests for the same address and purpose.
+   * Defaults to 60 — long enough to stop a hammering loop, short enough that a
+   * user who mistypes their address is not stuck waiting.
+   */
+  cooldownSeconds?: number;
+  /** Requests allowed per address per window. Defaults to 10. */
+  maxPerWindow?: number;
+  /** Window the ceiling applies over. Defaults to 24 hours. */
+  windowSeconds?: number;
+};
+
+// ---------------------------------------------------------------------------
 // Delivery and session contracts
 // ---------------------------------------------------------------------------
 
@@ -299,6 +342,17 @@ export type EmailAuthOptions = {
   password?: PasswordOptions;
   paths?: EmailAuthPaths;
   hooks?: EmailAuthHooks;
+  /**
+   * Caps how often one address can be mailed. Strongly recommended: without it
+   * the send endpoints will mail any address as fast as they are called.
+   *
+   * The cap is applied to the request, before the engine looks the address up,
+   * and every request is recorded whether or not mail followed. That is
+   * deliberate — counting only the requests that produced mail would make a
+   * `429` mean "this address has an account", turning the limiter into the
+   * enumeration oracle the rest of the flow is careful to avoid.
+   */
+  requestRateLimit?: RequestRateLimit;
 };
 
 // ---------------------------------------------------------------------------
