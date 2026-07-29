@@ -178,7 +178,8 @@ const handlers = createEmailAuthHandlers({
 
 Each handler takes a normalized request and resolves to a status and a body, so
 it is mountable on any runner. For Koa, `emailAuth()` from
-[`@ttoss/http-server-auth`](../http-server-auth) does it for you.
+[`@ttoss/http-server-auth`](https://ttoss.dev/docs/modules/packages/http-server-auth)
+does it for you.
 
 Every handler returns expected outcomes as responses — `invalid_credentials`,
 `invalid_token`, `expired_token`, `too_many_attempts` and friends, under a
