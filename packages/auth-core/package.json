@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/auth-core",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "description": "Core authentication library for ttoss",
   "keywords": [
     "auth",
@@ -22,7 +22,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./amazon-cognito": "./src/AmazonCognito/index.ts"
+    "./amazon-cognito": "./src/AmazonCognito/index.ts",
+    "./oidc": "./src/Oidc/index.ts"
   },
   "files": [
     "dist"
@@ -32,7 +33,8 @@
     "test": "jest --projects tests/unit"
   },
   "dependencies": {
-    "aws-jwt-verify": "^4.0.1"
+    "aws-jwt-verify": "^4.0.1",
+    "jose": "^6.0.0"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",
@@ -51,6 +53,11 @@
         "import": "./dist/AmazonCognito/index.mjs",
         "require": "./dist/AmazonCognito/index.cjs",
         "types": "./dist/AmazonCognito/index.d.mts"
+      },
+      "./oidc": {
+        "import": "./dist/Oidc/index.mjs",
+        "require": "./dist/Oidc/index.cjs",
+        "types": "./dist/Oidc/index.d.mts"
       }
     },
     "provenance": true

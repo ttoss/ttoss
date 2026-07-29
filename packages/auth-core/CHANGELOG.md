@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.11.0 (2026-07-29)
+
+### Features
+
+- **http-server-mcp-openapi:** generate MCP tools from OpenAPI specs ([#1157](https://github.com/ttoss/ttoss/issues/1157)) ([1de1203](https://github.com/ttoss/ttoss/commit/1de1203d19065e095a2ff10090b48465fc2c4300))
+- **http-server-mcp,auth-core:** add resource indicator and OIDC verifier ([#1170](https://github.com/ttoss/ttoss/issues/1170)) ([7646b7c](https://github.com/ttoss/ttoss/commit/7646b7ca55844a2d087587865cb9e218b392141b))
+
 # [0.10.0](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.9.0...@ttoss/auth-core@0.10.0) (2026-06-28)
 
 ### Features

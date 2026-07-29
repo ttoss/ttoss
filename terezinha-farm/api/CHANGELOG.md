@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.20.0 (2026-07-29)
+
+### Features
+
+- **http-server-mcp-openapi:** generate MCP tools from OpenAPI specs ([#1157](https://github.com/ttoss/ttoss/issues/1157)) ([1de1203](https://github.com/ttoss/ttoss/commit/1de1203d19065e095a2ff10090b48465fc2c4300))
+
 ## [0.19.77](https://github.com/ttoss/ttoss/compare/@terezinha-farm/api@0.19.76...@terezinha-farm/api@0.19.77) (2026-07-03)
 
 **Note:** Version bump only for package @terezinha-farm/api
