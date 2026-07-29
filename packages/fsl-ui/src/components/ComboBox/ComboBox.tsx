@@ -14,6 +14,7 @@ import {
 
 import type { ComponentMeta } from '../../semantics';
 import { buildChoosableRowStyle } from '../../tokens/choosableRow';
+import { buildEmbeddedTriggerStyle } from '../../tokens/embeddedTrigger';
 import { fslVar } from '../../tokens/escapeHatch';
 import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
@@ -84,8 +85,6 @@ export const comboBoxItemMeta = {
   composition: 'selection',
 } as const satisfies ComponentMeta<'Selection'>;
 
-type InputColors = typeof vars.colors.input.primary;
-
 /**
  * Scroll cap for the options popover. A ComboBox exists because the option set
  * is too long to scan (friction F-008: 30+ timezones), so the list must scroll
@@ -94,30 +93,6 @@ type InputColors = typeof vars.colors.input.primary;
  * short viewports. Host-overridable per CONTRACT.md §7.
  */
 const LIST_MAX_HEIGHT = 'min(20rem, 60vh)';
-
-/** Chevron button chrome — borderless Action-pattern control in Input chrome. */
-const buildTriggerStyle = ({
-  c,
-  isDisabled,
-}: {
-  c: InputColors;
-  isDisabled?: boolean;
-}): React.CSSProperties => {
-  return {
-    boxSizing: 'border-box',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-    border: 0,
-    background: 'transparent',
-    cursor: isDisabled ? 'not-allowed' : 'pointer',
-    opacity: isDisabled ? vars.opacity.disabled : undefined,
-    paddingBlock: vars.spacing.inset.control.sm,
-    paddingInline: vars.spacing.inset.control.sm,
-    color: c?.text?.default,
-  };
-};
 
 /** Props for the ComboBox component. */
 export interface ComboBoxProps<T extends object = object> extends Omit<
@@ -235,12 +210,23 @@ export const ComboBox = <T extends object = object>({
           aria-label={triggerLabel}
           data-scope="combo-box"
           data-part="trigger"
-          style={({ isDisabled }) => {
-            return buildTriggerStyle({ c, isDisabled });
+          style={({ isHovered, isDisabled, isFocusVisible }) => {
+            return buildEmbeddedTriggerStyle({
+              colors: c,
+              isHovered,
+              isDisabled,
+              isFocusVisible,
+            });
           }}
         >
-          {/* Decorative — the button owns the accessible name (CONTRACT §9.4). */}
-          <Icon intent="disclosure.expand" size="text" />
+          {/*
+            Decorative — the button owns the accessible name (CONTRACT §9.4).
+            `size="sm"` and not `size="text"`: a font-relative glyph inside a
+            `<button>` that declares no type of its own resolves against the UA's
+            13.3333px, which is what made this chevron 25.33px in a family whose
+            other triggers were 32 and 20 (see EMBEDDED_TRIGGER).
+          */}
+          <Icon intent="disclosure.expand" size="sm" />
         </RACButton>
       </RACGroup>
 

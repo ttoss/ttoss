@@ -80,6 +80,12 @@ Reach for the slot form (`TextFieldLabel`, `TextFieldControl`, …) when the
 arrangement is unusual. The two are mutually exclusive by type, so passing copy
 props _and_ children is a compile error rather than a precedence rule.
 
+Fields that share their box with something else — `SearchField`'s glyph and clear
+button, `NumberField`'s steppers, `ComboBox`'s chevron — split it in two:
+`data-part="frame"` paints and holds the adornments, and `data-part="control"` is
+the element you operate. `control` names the operated element on every field, so
+a selector that types into one always resolves something typeable.
+
 ## Customization
 
 Composites accept no `style`/`className`. Geometry the host legitimately owns is exposed as `--fsl-*` CSS custom properties with built-in fallbacks:

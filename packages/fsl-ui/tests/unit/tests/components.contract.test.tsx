@@ -957,10 +957,13 @@ describe('contract: the choosable row is one decision', () => {
 describe('contract: (scope, part) is unique per subtree', () => {
   // Each entry names what removes it. Do not add to this list: for a field, a
   // new violation means the anatomy was bypassed.
-  const KNOWN_NESTED_PAIRS: ReadonlySet<string> = new Set([
-    'search-field/control', // P3 Slice 5 ③ — adornment anatomy
-    'number-field/control', // P3 Slice 5 ④ — frame/value split
-  ]);
+  // Empty, and it should stay that way. Both entries that lived here —
+  // `search-field/control` and `number-field/control` — were closed by forms
+  // item D: each wrapper became `data-part="frame"` and `control` stayed on the
+  // element a caller operates, the precedent C1 set on `ComboBox`. F-026 is the
+  // finding; the anti-stale companion below is what forced this list to shrink
+  // rather than sit here as a standing exemption.
+  const KNOWN_NESTED_PAIRS: ReadonlySet<string> = new Set([]);
 
   const nestedPairs = (root: ParentNode): string[] => {
     const found: string[] = [];
@@ -1016,5 +1019,105 @@ describe('contract: (scope, part) is unique per subtree', () => {
         return !seen.has(p);
       })
     ).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Contract invariant #14 — embedded triggers share one silhouette
+//
+// An Action that lives *inside* a field's box — a `SearchField`'s clear button,
+// a `NumberField`'s two steppers, a `ComboBox`'s chevron — is one physical
+// thing, so it is one decision. The reference system agrees: it names the
+// primitive `in-field-button` and gives it its own layout token set.
+//
+// This exists because the class had drifted into three different boxes, measured
+// in Chromium at 1280px before `EMBEDDED_TRIGGER`: the steppers at 32×32, the
+// chevron at 25.33, the clear button at 20×20. Two independent causes — a
+// font-relative glyph inside a `<button>` that inherits the UA's 13.3333px, and
+// paddings that disagreed — which is why it was three numbers and not two.
+//
+// Like #10 and #13, this asserts **token identity** and never a pixel: the
+// trigger's inset is container-fluid, so every measured number above is the top
+// of a ramp, and jsdom has no layout to measure with anyway.
+// ---------------------------------------------------------------------------
+
+describe('contract: embedded triggers share one silhouette', () => {
+  const TRIGGERS: ReadonlyArray<readonly [string, string]> = [
+    ['search-field', 'trailingAdornment'],
+    ['number-field', 'trigger'],
+    ['combo-box', 'trigger'],
+  ];
+
+  const silhouette = (el: HTMLElement) => {
+    return {
+      minInlineSize: el.style.minInlineSize,
+      minBlockSize: el.style.minBlockSize,
+      padding: el.style.padding,
+      borderRadius: el.style.borderRadius,
+      fontSize: el.style.fontSize,
+      outlineOffset: el.style.outlineOffset,
+    };
+  };
+
+  const rendered = (scope: string, part: string) => {
+    // `SearchField` is authored here rather than taken from `DOM_FIXTURES`
+    // because its clear button only exists once there is something to clear —
+    // this guard caught that itself when the button gained its `isEmpty` gate.
+    const { unmount } = render(
+      scope === 'search-field' ? (
+        <pkg.SearchField clearLabel="Clear search" defaultValue="ada" />
+      ) : (
+        DOM_FIXTURES[
+          scope === 'number-field' ? 'NumberField' : 'ComboBox'
+        ].element()
+      )
+    );
+
+    const els = [
+      ...document.querySelectorAll<HTMLElement>(
+        `[data-scope="${scope}"][data-part="${part}"]`
+      ),
+    ];
+
+    expect(els.length).toBeGreaterThan(0);
+
+    const shapes = els.map(silhouette);
+
+    unmount();
+
+    return shapes;
+  };
+
+  test('every embedded trigger in the family resolves the same box', () => {
+    const shapes = TRIGGERS.flatMap(([scope, part]) => {
+      return rendered(scope, part);
+    });
+
+    // Includes both of NumberField's steppers, which is the cheapest place for
+    // an asymmetry between increment and decrement to show up.
+    expect(shapes.length).toBeGreaterThanOrEqual(4);
+    for (const shape of shapes) expect(shape).toEqual(shapes[0]);
+  });
+
+  test('the shared box is the ergonomic floor, not a hand-written size', () => {
+    const [shape] = rendered('number-field', 'trigger');
+
+    // `hit` on both axes is what keeps the trigger above WCAG 2.5.8's 24px
+    // target minimum — the clear button used to be 20×20, and 2.5.8's spacing
+    // exception cannot rescue the steppers because they are adjacent.
+    expect(shape.minInlineSize).toBe(vars.sizing.hit);
+    expect(shape.minBlockSize).toBe(vars.sizing.hit);
+    expect(shape.padding).toBe(vars.spacing.inset.control.sm);
+  });
+
+  test('it declares the field row type, so no glyph is font-relative', () => {
+    const [shape] = rendered('combo-box', 'trigger');
+
+    // The load-bearing one. A `<button>` with no type of its own inherits the
+    // UA's 13.3333px, and this chevron's glyph was `size="text"` — so the box
+    // came out 13.33 + 6 + 6 = 25.33 while its siblings were 32.
+    expect(shape.fontSize).toBe(
+      (vars.text.label.md as { fontSize?: string }).fontSize
+    );
   });
 });

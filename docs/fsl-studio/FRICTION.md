@@ -12,7 +12,7 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 
 ## Open items (derived — the entry below is always the source of truth)
 
-Eighteen open, grouped by the _kind of decision_ each one needs rather than by
+Seventeen open, grouped by the _kind of decision_ each one needs rather than by
 severity, because that is what makes a review round plannable. Regenerate with
 `grep -c '^- .*Status:\*\* open' FRICTION.md`, which counts entry lines only —
 **not** by grepping the bare phrase, because that also matches the sentence
@@ -41,10 +41,10 @@ Do not edit an entry through this list.
 
 **Contract / a11y debt — the component works but its published promise does not hold:**
 
-| #     | What                                                                                                                                                                                                                                                                                                         |
-| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| F-026 | `data-part="control"` on two nested elements — measured in three components, not one. The class guard exists (invariant #12, P3 Slice 5 ⓠ). **`ComboBox` fixed** (forms C1: the frame is `data-part="frame"`, `control` stays on the operated input); `SearchField` and `NumberField` remain, and fall in D. |
-| F-028 | `Toolbar` claims `role="toolbar"` but is not a single tab stop — `useToolbar` cannot manage arbitrary children's `tabindex`. Either upstream fixes it or we own a roving model for _all_ children.                                                                                                           |
+| #         | What                                                                                                                                                                                               |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ~~F-026~~ | **Resolved 2026-07-29** (forms item D). All three components take `data-part="frame"` on the wrapper with `control` on the operated element; `KNOWN_NESTED_PAIRS` in invariant #12 is empty.       |
+| F-028     | `Toolbar` claims `role="toolbar"` but is not a single tab stop — `useToolbar` cannot manage arbitrary children's `tabindex`. Either upstream fixes it or we own a roving model for _all_ children. |
 
 | F-033 | A standalone/required `Checkbox` or `Switch` turns invalid (measured `aria-invalid`) but has **no message part** — parts are `root, selectionControl, label`. F-009's shape, one family over. |
 | ~~F-032~~ | **Resolved 2026-07-29** (forms item F). The message read the control's readable-value ink; it now reads `input.negative.text.*`, the role Lexicon §10.15 puts on the reporting part. Two corrections were spent over-reaching to the control first. |
@@ -253,11 +253,13 @@ Do not edit an entry through this list.
 
 ### F-026 — `SearchField` names the same `data-part` twice, so its anatomy is ambiguous
 
-- **Date:** 2026-07-25 · **Surface:** `@ttoss/fsl-ui` `SearchFieldControl` · **Severity:** paper-cut · **Status:** open
+- **Date:** 2026-07-25 · **Surface:** `@ttoss/fsl-ui` `SearchFieldControl` · **Severity:** paper-cut · **Status:** resolved 2026-07-29 (forms item D)
 - Found while measuring `ActionButton` against the field row: `[data-scope="search-field"][data-part="control"]` matched **two** nested elements — the positioning wrapper and the `<input>` inside it. `querySelector` returned the wrapper, which reports `padding: 0` and `border-radius: 0` (the frame lives on the input), so the measurement read as a defect until the DOM was inspected. The resolved geometry is in fact correct: the input lands on the same 34px field row as `TextField` and `Select`.
 - **Why it matters beyond the paper cut:** `data-part` is the published anatomy (CONTRACT §2) — the handle host CSS, tests, and Studio inspection all bind to. A duplicated name makes the contract non-addressable: a host that styles the "control" cannot say which box it means, and every future measurement hits the same trap.
 - **Not fixed here:** naming the wrapper is a contract change (`frame`? `adornmentLayer`? or hoist the frame onto the wrapper and leave the input unstyled), it needs the same treatment for any other composite that wraps a field in a positioning layer, and it belongs with the field-row work rather than mid-way through the Action queue.
-- **Backlog:** audit every composite for duplicated `data-part` within one scope, pick the name, then add a contract invariant asserting `(scope, part)` is unique per rendered subtree — the class of defect, not the instance.
+- **Resolved 2026-07-29 (forms item D).** The name is `frame`, the precedent C1 set on `ComboBox`: the wrapper paints and `control` stays on the element a caller operates. Both remaining offenders — `SearchField` and `NumberField` — took it, and `KNOWN_NESTED_PAIRS` in invariant #12 is now **empty**. The backlog's own ordering is what closed it: the class guard shipped first, so the two instances could not be quietly left as standing exemptions, and the anti-stale companion forced the list to shrink rather than rot.
+- **It was never only a naming fix, which is why it waited for the field-row work.** Both components were hand-rolling the field chrome — `SearchField` declared its own border, radius, motion, state cascade and focus ring, and reserved adornment room with a `calc(icon.md + inset.control.md * 2)` inline padding (48px each side, measured) while absolutely positioning the glyph and button over it. Taking the anatomy's frame/value split deleted all of that: the frame is a flex row, so adornments occupy space by being in it. `NumberField` lost three private style helpers the same way.
+- **Two defects fell out of the rewrite, neither of them in this entry.** The clear button rendered on an **empty** field, because React Aria publishes emptiness as `data-empty` for CSS and this package ships none — while a comment asserted "the clear button is managed by React Aria (hidden while empty)", and a test pinned the wrong behaviour by counting two glyphs. And the trailing 48px stayed reserved whether or not the button was there.
 
 ### F-027 — the border-contrast inventory audits the light bundle only; the dark alternate is unguarded
 

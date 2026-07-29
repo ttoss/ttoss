@@ -9,12 +9,15 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
-import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
-import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import { buildEmbeddedTriggerStyle } from '../../tokens/embeddedTrigger';
 import {
+  buildFieldFrameStyle,
+  buildFieldRootStyle,
+  buildFieldValueStyle,
   FieldDescriptionPart,
   FieldLabelPart,
   FieldValidationMessagePart,
+  useFieldLayout,
 } from '../Field/anatomy';
 import { Icon } from '../Icon';
 
@@ -56,85 +59,6 @@ export const numberFieldMeta = {
   entity: 'Input',
   structure: 'root',
 } as const satisfies ComponentMeta<'Input'>;
-
-type InputColors = typeof vars.colors.input.primary;
-
-/** Control box (the `Group`) chrome — the framed field around input + steppers. */
-const buildControlBoxStyle = ({
-  c,
-  isDisabled,
-  isInvalid,
-  isFocusVisible,
-}: {
-  c: InputColors;
-  isDisabled?: boolean;
-  isInvalid?: boolean;
-  isFocusVisible?: boolean;
-}): React.CSSProperties => {
-  return {
-    boxSizing: 'border-box',
-    display: 'inline-flex',
-    alignItems: 'center',
-    minHeight: vars.sizing.hit,
-    borderRadius: vars.radii.control,
-    borderWidth: vars.border.outline.control.width,
-    borderStyle: vars.border.outline.control.style,
-    transitionProperty: 'background-color, border-color',
-    transitionDuration: vars.motion.feedback.duration,
-    transitionTimingFunction: vars.motion.feedback.easing,
-    backgroundColor: resolveInteractiveStyle(c?.background, {
-      isDisabled,
-      isInvalid,
-    }),
-    borderColor: resolveInteractiveStyle(c?.border, {
-      isDisabled,
-      isInvalid,
-      isFocusVisible,
-    }),
-    outline: focusRingOutline(isFocusVisible),
-    outlineOffset: FOCUS_RING_OFFSET,
-  };
-};
-
-/** Stepper button chrome — borderless Action-pattern control in Input chrome. */
-const buildStepperStyle = ({
-  c,
-  isDisabled,
-}: {
-  c: InputColors;
-  isDisabled?: boolean;
-}): React.CSSProperties => {
-  return {
-    boxSizing: 'border-box',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-    border: 0,
-    background: 'transparent',
-    cursor: isDisabled ? 'not-allowed' : 'pointer',
-    opacity: isDisabled ? vars.opacity.disabled : undefined,
-    paddingBlock: vars.spacing.inset.control.sm,
-    paddingInline: vars.spacing.inset.control.sm,
-    color: c?.text?.default,
-  };
-};
-
-/** The `<input>` itself — borderless; the surrounding `Group` owns the frame. */
-const buildInputStyle = (c: InputColors): React.CSSProperties => {
-  return {
-    boxSizing: 'border-box',
-    flex: 1,
-    minWidth: 0,
-    border: 0,
-    background: 'transparent',
-    outline: 'none',
-    textAlign: 'center',
-    paddingBlock: vars.spacing.inset.control.sm,
-    color: c?.text?.default,
-    ...(vars.text.label.md as React.CSSProperties),
-  };
-};
 
 /** Props for the NumberField component. */
 export interface NumberFieldProps extends Omit<
@@ -193,18 +117,14 @@ export const NumberField = ({
   ...props
 }: NumberFieldProps) => {
   const c = vars.colors.input.primary;
+  const { labelPosition } = useFieldLayout();
 
   return (
     <RACNumberField
       {...props}
       data-scope="number-field"
       data-part="root"
-      style={{
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: vars.spacing.gap.stack.xs,
-      }}
+      style={buildFieldRootStyle({ labelPosition })}
     >
       {label != null && (
         <FieldLabelPart
@@ -216,12 +136,20 @@ export const NumberField = ({
         </FieldLabelPart>
       )}
 
+      {/*
+        The frame paints; the `<input>` keeps `data-part="control"` because it is
+        the element a caller types into (F-026, and the precedent C1 set on
+        `ComboBox`). Both used to be named `control`, which made the published
+        anatomy unaddressable — `querySelector` returned the wrapper, whose box
+        reports none of the field's chrome.
+      */}
       <RACGroup
         data-scope="number-field"
-        data-part="control"
+        data-part="frame"
         style={({ isDisabled, isInvalid, isFocusVisible }) => {
-          return buildControlBoxStyle({
-            c,
+          return buildFieldFrameStyle({
+            colors: c,
+            labelPosition,
             isDisabled,
             isInvalid,
             isFocusVisible,
@@ -232,8 +160,13 @@ export const NumberField = ({
           slot="decrement"
           data-scope="number-field"
           data-part="trigger"
-          style={({ isDisabled }) => {
-            return buildStepperStyle({ c, isDisabled });
+          style={({ isHovered, isDisabled, isFocusVisible }) => {
+            return buildEmbeddedTriggerStyle({
+              colors: c,
+              isHovered,
+              isDisabled,
+              isFocusVisible,
+            });
           }}
         >
           <Icon intent="action.decrement" size="sm" label={decrementLabel} />
@@ -242,15 +175,20 @@ export const NumberField = ({
         <RACInput
           data-scope="number-field"
           data-part="control"
-          style={buildInputStyle(c)}
+          style={buildFieldValueStyle({ colors: c, textAlign: 'center' })}
         />
 
         <RACButton
           slot="increment"
           data-scope="number-field"
           data-part="trigger"
-          style={({ isDisabled }) => {
-            return buildStepperStyle({ c, isDisabled });
+          style={({ isHovered, isDisabled, isFocusVisible }) => {
+            return buildEmbeddedTriggerStyle({
+              colors: c,
+              isHovered,
+              isDisabled,
+              isFocusVisible,
+            });
           }}
         >
           <Icon intent="action.increment" size="sm" label={incrementLabel} />

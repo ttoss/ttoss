@@ -152,15 +152,40 @@ Input:       TextField, TextArea — each authored EITHER one-line
              is always mounted, so a field with no errorMessage still shows the
              platform's own constraint copy (already localized) — which is the
              better default for isRequired and type="email".
-             SearchField (+ Label/Control; leading search + clear glyphs),
+             SearchField (label/description/errorMessage/placeholder props OR
+             + Label/Control slots; leading search + clear glyphs; clearLabel is
+             required and caller-localized),
              NumberField (label/description/errorMessage props + −/+ steppers),
              Slider (label + value output; single value or [min,max] range),
              ComboBox/ComboBoxItem (text input + typeahead-filtered list;
              label/description/errorMessage/placeholder/triggerLabel props).
-             ComboBox is a SPLIT control: data-part="frame" paints the box and
-             hosts the chevron, data-part="control" is the <input> you type into.
-             `control` always names the operated element, so a test or an agent
-             told to type into a field can (ADR-022).
+             THREE SPLIT CONTROLS — ComboBox, NumberField, SearchField:
+             data-part="frame" paints the box and hosts the adornments,
+             data-part="control" is the <input> you operate. `control` ALWAYS
+             names the operated element, so a test or an agent told to type into
+             a field can (ADR-022). SearchField and NumberField used to name both
+             `control` (F-026, closed in forms item D) — querySelector returned
+             the wrapper, which reported none of the field's chrome.
+             AN EMBEDDED TRIGGER — the clear button, the steppers, the chevron —
+             is one silhouette (EMBEDDED_TRIGGER, contract invariant #14): a
+             `hit`-square box with `inset.control.sm` around a `sizing.icon.sm`
+             glyph. Two traps it exists for: it must DECLARE the row's type,
+             because a <button> with no type inherits the UA's 13.3333px and any
+             font-relative glyph inside it shrinks (`Icon size="text"` did — the
+             chevron came out 25.33px while its siblings were 32 and 20); and its
+             colours come from the HOST, not from action.*, because the
+             entity→ux-context test binds colour reads to a file's declared
+             entities. Its box is `hit` and not the glyph's 20px because WCAG
+             2.5.8 wants 24px targets and adjacent steppers cannot use the
+             spacing exception.
+             SearchField's clear button renders ONLY when there is a value. React
+             Aria publishes emptiness as data-empty for CSS and this package ships
+             none, so it is gated on the root's isEmpty render prop.
+             ALL THREE embedded triggers are tabindex="-1" (measured) — React Aria
+             keeps them out of the tab order, because the input is the tab stop
+             and owns the keys (arrows step a NumberField; Escape clears a
+             SearchField). Do not write a test that Tabs to a stepper or a clear
+             button; click it, or drive the input.
              A PICKER'S POPOVER TAKES THE FIELD'S WIDTH (Select + ComboBox,
              ADR-023): min-width is the trigger's width unconditionally, width
              defaults to it and is widenable per host via

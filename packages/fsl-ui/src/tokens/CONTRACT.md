@@ -389,6 +389,24 @@ Admitting the roles to `ENTITY_STRUCTURE.Selection` stays available as an FSL go
 decision; three components reaching the same answer is evidence for the internal-part
 treatment, not against it.
 
+**The embedded trigger.** An Action that lives _inside_ a field's box — a
+`SearchField`'s clear button, a `NumberField`'s two steppers, a `ComboBox`'s
+chevron — resolves its box from `EMBEDDED_TRIGGER` (`src/tokens/embeddedTrigger.ts`),
+never from its host. The reference system names the same primitive
+(`in-field-button`, with its own layout token set), so this is a third posture
+beside the command and utility silhouettes in `ActionTrigger/anatomy.tsx` rather
+than a convenience. Contract invariant **#14** asserts it.
+
+Two rules an author will otherwise get wrong. **It declares the field row's type
+although it renders no text:** a `<button>` with no type of its own inherits the
+UA's `13.3333px`, so anything font-relative inside it — an `Icon` asked for
+`size="text"` — silently shrinks. That is what made three triggers measure 32,
+25.33 and 20px. **Its colours come from its host and not from `action.*`:** the
+"entity → ux-context alignment" test binds a file's colour reads to the entities
+that file declares, and these hosts declare `Input` only. It costs nothing —
+`input.primary.background` resolves the same first two rungs as `action.muted`, so
+the trigger is invisible against its field until the pointer arrives.
+
 **The choosable row.** A row the user picks from — a `Select` option, a `ComboBox` option, a
 `MenuItem`, a `ListBoxItem`, a `GridListItem` — resolves its box from `CHOOSABLE_ROW`
 (`src/tokens/choosableRow.ts`), not from its own component. The five span three entities, and the

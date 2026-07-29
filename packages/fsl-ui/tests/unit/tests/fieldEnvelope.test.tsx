@@ -100,7 +100,7 @@ describe('the axis this file is driven by', () => {
       'DatePicker', // not shipped — FORMS.md §5, with a readmission criterion
       'NumberField', // group 1
       'RadioGroup', // group 1
-      'SearchField', // group 2 — label only, no one-line form until item D
+      'SearchField', // group 1 (and group 2, which keeps the slot form)
       'Select', // group 1
       'Switch', // group 3 — no validation props at all
       'TextField', // + our TextArea — group 1
@@ -178,6 +178,18 @@ const ROOTS: Array<[scope: string, field: () => React.ReactElement]> = [
       );
     },
   ],
+  [
+    // Joined group 1 in forms item D. It was in group 2 below — "on the axis,
+    // but only its label is in the envelope" — because props rendered nothing
+    // but the root. That comment warned the claim would silently stop being
+    // true; moving the entry is what keeps it from doing so.
+    'search-field',
+    () => {
+      return (
+        <SearchField {...COPY} clearLabel="Clear search" isRequired isInvalid />
+      );
+    },
+  ],
 ];
 
 const part = (scope: string, name: string) => {
@@ -240,13 +252,19 @@ describe.each(ROOTS)('%s', (scope, field) => {
 });
 
 /**
- * Group 2 — on the axis, but only its label is in the envelope.
+ * Group 2 — the slot form, which every member keeps once it has the prop form.
  *
- * `SearchField` has **no one-line form**: the authoring union item A gave
- * `TextField`/`TextArea` stops there, so props render nothing but the root and
- * the envelope reaches only the slot label. Closing that is item D, where the
- * adornment anatomy lands. Asserted rather than assumed, because "it has no
- * one-line form" is the kind of claim that silently stops being true.
+ * This group used to exist because `SearchField` had **no one-line form at all**:
+ * the authoring union item A gave `TextField`/`TextArea` stopped there, so props
+ * rendered nothing but the root. Item D closed that, and `SearchField` is in
+ * group 1 above now.
+ *
+ * What is left here is worth keeping rather than deleting: the composed form has
+ * a mechanism the one-line form does not, and it is the reason the composite
+ * carries a scope at all. A slot label cannot read the root's `isRequired` prop —
+ * React Aria tells a label nothing about its field — so the flag travels through
+ * the composite scope, taken from the root's render props. Group 1's assertion
+ * passes through a different path and would not catch that one breaking.
  */
 describe('the composed authoring form marks required identically', () => {
   test('SearchField, whose label is a slot rather than a prop', () => {

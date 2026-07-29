@@ -426,16 +426,45 @@ both modes → commit.
   and there is no row ring in its token set. Changing that is the focus
   _language_, and it needs a `focused` background rung the input subtree does not
   have (`resolveInteractiveStyle` resolves `focusVisible` for `border` only).
-- **D. `SearchField` + `NumberField`.** Adornment parts and the
-  `EMBEDDED_TRIGGER` silhouette, so the measured 20 / 25.33 / 32 px triggers
-  become one number; the frame/value split closes the last two #12 violations.
-  **C2 found the cause of that spread, so D need not re-derive it:** an embedded
-  trigger declares no type of its own, so its glyph is sized by the UA `<button>`
-  font-size — `ComboBox`'s chevron button measures `13.3333px` and a 25.33px box
-  while the field around it is 16px. `Icon size="text"` is relative, so the glyph
-  inherits the mistake. `SearchField` also has **no one-line form at all** (props
-  render nothing but the root) — the authoring union A gave `TextField`/`TextArea`
-  stops there, which is why the envelope reached only its label in C2.
+- **D. ✅ `SearchField` + `NumberField` (2026-07-29).** The adornment anatomy, the
+  `EMBEDDED_TRIGGER` silhouette, and the last two `#12` violations.
+  **Measured first, and the premise held exactly:** the three embedded triggers
+  came out **32 / 25.33 / 20px**, all three rendering at `13.3333px` inside
+  fields that are 16px. Two independent causes, which is why it was three numbers
+  and not two — `ComboBox` asked for a font-relative `Icon size="text"` inside a
+  `<button>` that declares no type, so its glyph inherited the UA size; and
+  `SearchField` had no padding at all. `NumberField` was already right, so
+  `EMBEDDED_TRIGGER` states its geometry rather than inventing a fourth number.
+  Verified after: **32×32 at 16px** for all four triggers, both modes.
+  **The reference validates the primitive rather than just the fix:** it names
+  `in-field-button` as its own component with its own layout tokens
+  (`in-field-button-edge-to-fill-medium` is `6px` — our `inset.control.sm`), so
+  this is a third posture beside command and utility, not a convenience.
+  **An accessibility floor decided the size.** Reading `edge-to-fill` as the
+  _target_ gives a 20×20 clear button, which fails WCAG 2.5.8 (AA, 24×24) — and
+  2.5.8's spacing exception cannot rescue the steppers, which are adjacent. So the
+  interactive box is `hit` and the 6px is the glyph's breathing room. Fill and
+  target are separate questions; the reference's naming is evidence for the split.
+  **F-026 closed, and it was never only a rename:** both components were
+  hand-rolling the field chrome. `SearchField` declared its own border, radius,
+  motion, cascade and ring, and reserved 48px of inline padding on each side for
+  adornments it then positioned absolutely over the value; the anatomy's
+  frame/value split deleted all of it, and `NumberField` lost three private
+  helpers. `KNOWN_NESTED_PAIRS` is now **empty**.
+  **`SearchField` gained the one-line form**, so the family has no member left
+  without one, and it moved from group 2 to group 1 of the envelope guard — which
+  is exactly what that group's comment warned would silently stop being true.
+  **Two defects found by rewriting rather than by looking:** the clear button
+  rendered on an empty field (React Aria publishes `data-empty` for CSS; this
+  package ships none, while a comment claimed React Aria handled it and a test
+  pinned the wrong behaviour by counting two glyphs), and the trailing 48px stayed
+  reserved whether or not the button existed. Both fixed; the button is gated on
+  the root's `isEmpty` render prop.
+  **Guard:** contract invariant **#14**, with both halves injection-verified — the
+  equality test catches one component diverging, the value test catches the shared
+  source drifting. It also caught itself: gating the clear button removed the
+  element it measured, so the fixture had to give the field a value.
+
 - **E. `Checkbox` / `CheckboxGroup` / `RadioGroup` / `Switch` / `Slider`.**
   The `validationMessage` part for `Switch` (F-033's remaining half — `Checkbox`
   landed in A2, and `RadioGroup`/`CheckboxGroup`'s envelope landed in C2). **Read
@@ -612,9 +641,10 @@ it lands unverified in dark until that audit exists.
 
 ### Q — the queue, unchanged
 
-**B4** `contextualHelp` · **D** `SearchField` + `NumberField` · **E** the selection
-family · ~~**F** the validation language~~ (**done 2026-07-29**) · **G** `FieldGroup` +
-`Wizard` · **H** field formats · **I** the Studio's complete form.
+**B4** `contextualHelp` · ~~**D** `SearchField` + `NumberField`~~ (**done
+2026-07-29**) · **E** the selection family · ~~**F** the validation language~~
+(**done 2026-07-29**) · **G** `FieldGroup` + `Wizard` · **H** field formats ·
+**I** the Studio's complete form.
 
 **F came in far smaller than this plan sized it**, and the reason is the lesson
 rather than the schedule. It was queued as a token-model change — switch the field
@@ -624,10 +654,11 @@ docs and guards: the control was already correct and deliberately so, the ink th
 message needed already shipped, and the cascade already ordered `invalid` above
 `hover`. Two of the three things F was going to build did not need building. What
 it did surface is genuinely new — F-036, that the contrast suite cannot see a
-cross-role pairing — which is the sort of thing only shipping the change finds. Items **D** and **E** each already
-carry findings this queue handed them (D: the embedded trigger's UA font-size, and
-`SearchField` having no one-line form at all; E: React Aria omitting validation
-from `SwitchProps` entirely, so F-033's Switch half is about adopting `SwitchField`).
+cross-role pairing — which is the sort of thing only shipping the change finds. Item **E** still carries the finding this queue handed it: React Aria omits
+validation from `SwitchProps` entirely, so F-033's `Switch` half is about adopting
+`SwitchField`. Both findings handed to **D** — the embedded trigger's UA
+font-size and `SearchField` having no one-line form — were confirmed by
+measurement and closed with it.
 
 ### N — decided no-changes from this queue, not to be reopened
 
