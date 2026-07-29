@@ -266,6 +266,41 @@ mcpServer.registerTool(
 
 Cognito encodes scopes as a space-separated string in `payload.scope` (e.g. `"openid mcp:access admin"`).
 
+### Resource indicator validation (RFC 8707)
+
+`requiredScopes` checks _what_ a token can do; `resourceIndicator` checks that the token was minted _for this server_ in the first place. Without it, a token issued by your authorization server for a different resource (another API, another MCP server) would still pass verification here as long as the signature checks out — the classic confused-deputy risk RFC 8707 exists to close.
+
+```typescript
+createMcpRouter(mcpServer, {
+  auth: {
+    cognitoUserPool: { userPoolId: '...', clientId: '...' },
+    resourceIndicator: 'https://mcp.example.com',
+  },
+});
+```
+
+The verified token's `aud` claim must include at least one of the configured values (a single string or an array of strings, for servers reachable under multiple hostnames), or the request receives `401 Unauthorized`. This applies uniformly regardless of the verification method — `cognitoUserPool`, a custom `verifyToken`, or `@ttoss/auth-core/oidc`'s `createOidcVerifier` below.
+
+### OIDC providers (Entra ID, Okta, Auth0, …)
+
+For any standards-compliant OIDC provider beyond Cognito, use `createOidcVerifier` from `@ttoss/auth-core/oidc`. It discovers the provider's signing keys from its `/.well-known/openid-configuration` document — no manual JWKS URL, no hand-rolled discovery:
+
+```typescript
+import { createOidcVerifier } from '@ttoss/auth-core/oidc';
+import { createMcpRouter } from '@ttoss/http-server-mcp';
+
+const mcpRouter = createMcpRouter(mcpServer, {
+  auth: {
+    verifyToken: createOidcVerifier({
+      issuer: 'https://login.microsoftonline.com/<tenant>/v2.0',
+    }),
+    resourceIndicator: 'https://mcp.example.com',
+  },
+});
+```
+
+`createOidcVerifier` deliberately does not validate `aud` itself — pass `resourceIndicator` alongside it, as shown, so audience validation stays consistent across every auth method this router supports. See the [`@ttoss/auth-core` README](https://ttoss.dev/docs/modules/packages/auth-core) for details on key caching and rotation.
+
 ### OAuth Protected Resource Metadata
 
 MCP clients (Claude, Cursor, etc.) fetch `/.well-known/oauth-protected-resource` to discover which authorization server issues tokens for your MCP server. The endpoint must be **unauthenticated** — MCP clients call it before they have a token.
@@ -460,6 +495,7 @@ Creates a Koa router configured to handle MCP protocol requests.
     - `auth.resourceServerUrl` + `auth.authorizationServerUrl` — Enable `/.well-known/oauth-protected-resource`; the metadata `resource` is set to `resourceServerUrl + path` so clients following `resource` land on the actual MCP endpoint
     - `auth.publicMethods` — JSON-RPC methods that bypass verification (default `['initialize', 'tools/list']`)
     - `auth.resourceMetadataUrl` — Emit RFC 9728 `WWW-Authenticate: Bearer resource_metadata="…"` on 401
+    - `auth.resourceIndicator` — Expected `aud` value(s) (RFC 8707); rejects tokens minted for a different resource. See [Resource indicator validation](#resource-indicator-validation-rfc-8707)
 
 **Returns:** `Router` — Koa router instance
 
