@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-auth@0.4.0...@ttoss/http-server-auth@0.5.0) (2026-07-29)
+
+### Features
+
+- **auth-core:** add configurable email and password auth flows ([#1172](https://github.com/ttoss/ttoss/issues/1172)) ([5e75701](https://github.com/ttoss/ttoss/commit/5e7570145fdeafea947c3a78dbb00132b8f3744c))
+
 # 0.4.0 (2026-07-29)
 
 ### Features

@@ -1,6 +1,6 @@
 {
   "name": "@ttoss-challenge/api-graphql-with-dynamodb",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": true,
   "scripts": {
     "build-schema": "ttoss-graphql-api build-schema",

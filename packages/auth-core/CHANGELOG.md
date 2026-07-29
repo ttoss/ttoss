@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.12.0](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.11.0...@ttoss/auth-core@0.12.0) (2026-07-29)
+
+### Bug Fixes
+
+- **auth-core:** use absolute docs URL for the http-server-auth cross-link ([#1173](https://github.com/ttoss/ttoss/issues/1173)) ([a59a316](https://github.com/ttoss/ttoss/commit/a59a31676a15c3e947016b84eae451ca0b6d307d))
+
+### Features
+
+- **auth-core:** add configurable email and password auth flows ([#1172](https://github.com/ttoss/ttoss/issues/1172)) ([5e75701](https://github.com/ttoss/ttoss/commit/5e7570145fdeafea947c3a78dbb00132b8f3744c))
+
 # 0.11.0 (2026-07-29)
 
 ### Features
