@@ -80,6 +80,23 @@ export const FIELD_ROW = {
   insetInline: vars.spacing.inset.control.md,
 } as const;
 
+/**
+ * Which subgrid column a part occupies once the label sits beside the control.
+ *
+ * Only two columns exist and only the label is in the first, so everything else —
+ * control, description, message, and a Form's action row — lands in the second.
+ * Returning `{}` for `top` keeps the stacked layout free of grid properties that
+ * would do nothing there.
+ */
+export const fieldSideColumn = (
+  labelPosition: FieldLabelPosition,
+  part: 'label' | 'control'
+): React.CSSProperties => {
+  if (labelPosition !== 'side') return {};
+
+  return { gridColumn: part === 'label' ? 1 : 2 };
+};
+
 /** Render-prop flags a field's chrome resolves colour from. */
 export interface FieldChromeFlags {
   isHovered?: boolean;
@@ -153,13 +170,16 @@ const fieldBoxChrome = (
 export const buildFieldControlStyle = ({
   colors,
   multiline,
+  labelPosition = 'top',
   ...flags
 }: FieldChromeFlags & {
   colors: InputColors;
   multiline?: boolean;
+  labelPosition?: FieldLabelPosition;
 }): React.CSSProperties => {
   return {
     ...fieldBoxChrome(colors, flags),
+    ...fieldSideColumn(labelPosition, 'control'),
     // `hit` is the ergonomic floor, never the visible height: the box comes
     // out of inset + type, with `hit` guaranteeing the minimum (ADR-020).
     // Declared through `minHeight` on every member — a sibling that wrote
@@ -191,10 +211,15 @@ export const buildFieldControlStyle = ({
  */
 export const buildFieldFrameStyle = ({
   colors,
+  labelPosition = 'top',
   ...flags
-}: FieldChromeFlags & { colors: InputColors }): React.CSSProperties => {
+}: FieldChromeFlags & {
+  colors: InputColors;
+  labelPosition?: FieldLabelPosition;
+}): React.CSSProperties => {
   return {
     ...fieldBoxChrome(colors, flags),
+    ...fieldSideColumn(labelPosition, 'control'),
     display: 'inline-flex',
     alignItems: 'center',
     minHeight: vars.sizing.hit,
@@ -235,11 +260,35 @@ export const buildFieldValueStyle = ({
 };
 
 /**
- * The envelope: label, control, description and validation message stacked in
- * one column. Block-level, so a field fills the column it is placed in —
- * a field that sized to its content would leave a form row ragged.
+ * The envelope: label, control, description and validation message.
+ *
+ * With a `top` label they stack in one column. Block-level, so a field fills the
+ * column it is placed in — a field that sized to its content would leave a form
+ * row ragged.
+ *
+ * With a `side` label the field becomes a **row of the Form's grid** and inherits
+ * its columns through `subgrid`, so every label in the form shares one column
+ * without anybody measuring anything. `baseline` alignment is what puts the
+ * label's text on the control's text rather than on its box: the control's own
+ * inset would otherwise push its value below a top-aligned label, and a magic
+ * offset to compensate would be a number that stops being right the moment the
+ * inset changes (and the inset is fluid — F-035).
  */
-export const buildFieldRootStyle = (): React.CSSProperties => {
+export const buildFieldRootStyle = ({
+  labelPosition = 'top',
+}: { labelPosition?: FieldLabelPosition } = {}): React.CSSProperties => {
+  if (labelPosition === 'side') {
+    return {
+      boxSizing: 'border-box',
+      display: 'grid',
+      gridTemplateColumns: 'subgrid',
+      gridColumn: '1 / -1',
+      alignItems: 'baseline',
+      rowGap: vars.spacing.gap.stack.xs,
+      columnGap: vars.spacing.gap.inline.md,
+    };
+  }
+
   return {
     boxSizing: 'border-box',
     display: 'flex',
@@ -324,10 +373,19 @@ export interface FieldCopyProps {
  * label wins. Expressed as a discriminated union so `tsc` rejects the mix
  * instead of a runtime precedence rule deciding it silently (the ADR-001
  * mechanism, as used by `ActionLabellingProps`).
+ *
+ * @typeParam TOneLine - props that exist **only** in the one-line form, because
+ *   the slot form passes them to the part directly. `TextArea`'s `rows` is the
+ *   first: it belongs to the control, and in the composed form a caller writes
+ *   `<TextAreaControl rows={3} />`. Threading them through the union rather than
+ *   adding them alongside it keeps the exclusivity the union exists for — a prop
+ *   that does nothing in the branch you chose is a type error, not a silent no-op.
  */
-export type FieldAuthoring<TChildren> =
-  | ({ children: TChildren } & { [K in keyof FieldCopyProps]?: never })
-  | (FieldCopyProps & { children?: undefined });
+export type FieldAuthoring<TChildren, TOneLine = unknown> =
+  | ({ children: TChildren } & {
+      [K in keyof (FieldCopyProps & TOneLine)]?: never;
+    })
+  | (FieldCopyProps & TOneLine & { children?: undefined });
 
 // ---------------------------------------------------------------------------
 // Field layout — published by the Form, read by the fields
@@ -369,10 +427,30 @@ export type FieldAuthoring<TChildren> =
  */
 export type FieldNecessityIndicator = 'icon' | 'none';
 
+/**
+ * Where a field's label sits relative to its control.
+ *
+ * - `top` — the label stacks above the control. The default, and right for a
+ *   narrow column: a login card, a dialog, anything one field wide.
+ * - `side` — the label sits beside the control, and **every field in the form
+ *   shares one label column**. That last part is the whole point and the reason
+ *   this cannot be a per-field prop: side labels that each sized their own column
+ *   would leave the controls ragged, which is the opposite of what they are for.
+ *
+ * Implemented with `grid-template-columns: subgrid` — each field root is a row of
+ * the Form's grid and inherits its columns, so the alignment is the browser's job
+ * rather than a measured width passed down. Verified available in the target
+ * Chromium before this was built (`CSS.supports('grid-template-columns',
+ * 'subgrid')`).
+ */
+export type FieldLabelPosition = 'top' | 'side';
+
 /** Layout decisions a Form makes once on behalf of its fields. */
 export interface FieldLayout {
   /** How required fields are marked. */
   necessityIndicator: FieldNecessityIndicator;
+  /** Where the label sits relative to the control. */
+  labelPosition: FieldLabelPosition;
 }
 
 /**
@@ -382,6 +460,7 @@ export interface FieldLayout {
  */
 const FIELD_LAYOUT_DEFAULT: FieldLayout = {
   necessityIndicator: 'icon',
+  labelPosition: 'top',
 };
 
 const FieldLayoutContext =
@@ -498,12 +577,17 @@ export const FieldLabelPart = ({
   children,
   ...props
 }: FieldLabelPartProps) => {
+  const { labelPosition } = useFieldLayout();
+
   return (
     <RACLabel
       {...props}
       data-scope={scope}
       data-part="label"
-      style={buildFieldTextPartStyle({ colors, step: 'md' })}
+      style={{
+        ...buildFieldTextPartStyle({ colors, step: 'md' }),
+        ...fieldSideColumn(labelPosition, 'label'),
+      }}
     >
       {children}
       <FieldNecessityMarker isRequired={isRequired} />
@@ -527,13 +611,18 @@ export const FieldDescriptionPart = ({
   colors,
   ...props
 }: FieldDescriptionPartProps) => {
+  const { labelPosition } = useFieldLayout();
+
   return (
     <RACText
       slot="description"
       {...props}
       data-scope={scope}
       data-part="description"
-      style={buildFieldTextPartStyle({ colors, step: 'sm' })}
+      style={{
+        ...buildFieldTextPartStyle({ colors, step: 'sm' }),
+        ...fieldSideColumn(labelPosition, 'control'),
+      }}
     />
   );
 };
@@ -556,12 +645,17 @@ export const FieldValidationMessagePart = ({
   colors,
   ...props
 }: FieldValidationMessagePartProps) => {
+  const { labelPosition } = useFieldLayout();
+
   return (
     <RACFieldError
       {...props}
       data-scope={scope}
       data-part="validationMessage"
-      style={buildFieldTextPartStyle({ colors, step: 'sm', tone: 'negative' })}
+      style={{
+        ...buildFieldTextPartStyle({ colors, step: 'sm', tone: 'negative' }),
+        ...fieldSideColumn(labelPosition, 'control'),
+      }}
     />
   );
 };

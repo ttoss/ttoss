@@ -218,24 +218,44 @@ both modes → commit.
   invite dialog's email (composed authoring) and acknowledgement checkbox both
   mark themselves; four `getByLabelText` queries moved to `getByRole` because a
   required label's text content now contains the asterisk.
-- **B2. ⏸ `labelPosition="side"` — deferred, no consumer (2026-07-26).** The
-  evidence rule applies to this plan too: no Meridian surface wants side labels.
-  The two forms that exist are a narrow login card and a ~300px invite modal,
-  where side labels would be wrong, and the Billing page's only `label` belongs
-  to a `Meter`. Creating a consumer is not available either — the ROADMAP freezes
-  new Studio features for P3. Building it now would be reserved API, which is what
-  §2.3 forbids and what B1 already refused twice (the `'label'` necessity variant,
-  and `labelPosition` in the context).
-  **Readmission criterion:** a surface with a wide, multi-row form — a settings or
-  profile page — which is also when the alignment is worth having.
-  **Mechanism already verified, so the future work is cheap:** the layout must be
-  `grid-template-columns: subgrid` on each field root inside a Form-owned grid,
-  because each field is its own component and would otherwise size its label
-  column alone, leaving the controls ragged — which is the entire point of side
-  labels. Probed in the target Chromium: `CSS.supports('grid-template-columns',
-'subgrid')` is `true`, and two rows with labels "Email" and "Confirm password"
-  put both controls at the same x (127px). Per-field grids without subgrid do not
-  align and are not an acceptable fallback.
+- **B2. ✅ `labelPosition="side"` (2026-07-29).** Deferred twice for want of a
+  consumer; built when the owner lifted the Studio freeze and named the Studio as
+  the consumer. The readmission criterion this file wrote — "a wide, multi-row form
+  — a settings or profile page" — is exactly what landed: a **Settings** page
+  editing the workspace's own properties.
+  The mechanism is the one probed back when it was deferred:
+  `grid-template-columns: subgrid`. The Form declares two columns and each field
+  root becomes a row that inherits them, so the alignment is the browser's rather
+  than a width measured and threaded down — and that sharing is the whole reason
+  side labels exist, which is why this is a Form decision and not a field prop.
+  Measured in the Studio at 1280px, both modes: **five labels at x=400.97** and
+  **four controls at x=806.77 with w=280.27** — one column each, which per-field
+  grids cannot do. `alignItems: baseline` rather than `start`, because the control's
+  own inset would otherwise drop its value below a top-aligned label and any offset
+  to compensate is a number that stops being right when the inset changes — and the
+  inset is fluid (F-035).
+  **Looking at it caught what the guard had pinned wrong.** The first version
+  asserted `gridColumn: ''` for `Checkbox`/`Switch` — reasoned, not observed —
+  and the browser showed the result: the checkbox row landed in the **label**
+  column and shared a grid line with Save changes, reading as its caption. Their
+  _label_ does ignore `labelPosition` (it is the row; there was never a label above
+  a control to move), but their _placement_ cannot: the box is the control, so the
+  row takes the control column. Fixing it also shrank the label column from 391px
+  to ~92px, because `max-content` had been sizing column 1 to the checkbox — so the
+  controls went from 280px to 585px. Only measurement shows that.
+  **One gap found by building the consumer:** `TextArea` had no way to set `rows`
+  in its one-line form — the multiline field's most obvious knob was reachable only
+  by composing slots. `FieldAuthoring` now takes a second type parameter for
+  props that exist only in the one-line form, so `rows` joins it without losing the
+  compile-time exclusivity the union exists for. D and H will want the same channel.
+  _Guards:_ ten assertions in `fieldLayout.test.tsx` (the form declares the two
+  columns; each of the four field kinds becomes a subgrid row with its label in
+  column 1 and its control in column 2; supporting copy and the action row sit
+  under the controls; the stacked default declares **no** grid properties at all;
+  a field outside any Form still stacks; the context is still static now that it
+  carries two keys), plus six on the Studio page. Studio coverage rose to 98.79 /
+  90.41 and the threshold moved with it — the two uncovered fallbacks were replaced
+  by one tested `formText` helper rather than by tests faking the unreachable.
 - **B3a. ✅ The focus guard (2026-07-26).** Five assertions pinning what §1
   measured as inherited rather than owed: a failed submit is blocked, focus lands
   on the first invalid field and moves to the next once that is fixed, each
@@ -539,11 +559,11 @@ Each already carries a verified mechanism, so the future work is cheap; what non
 of them has is a surface that wants it. Building any of them now produces reserved
 API, which §2.3 forbids and B1 refused twice inside its own item.
 
-| Item                          | Readmission criterion                                                                                                                                                                                                                                                                             |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **B2** `labelPosition="side"` | A wide, multi-row form — settings or profile. Mechanism verified: `grid-template-columns: subgrid` on each field root inside a Form-owned grid; per-field grids do not align.                                                                                                                     |
-| **B3b** `FormErrorSummary`    | A form tall enough that the first invalid field can scroll off-screen. Data reachable (`onInvalid` fires per field with the control as target); appearance blocked on the same F-024/F-029 axis.                                                                                                  |
-| **C4's quiet field posture**  | A picker inside dense content — a table cell, a toolbar — which is also where a boxed field starts to read as noise. S2 exposes `isQuiet` on `Picker` only; its tokens make the posture an inset collapse (`field-edge-to-*-quiet: 0px`, label tightened `-8px`). The colour half lands on F-024. |
+| Item                              | Readmission criterion                                                                                                                                                                                                                                                                             |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ~~**B2** `labelPosition="side"`~~ | ✅ **Built 2026-07-29** — the owner lifted the Studio freeze and named the Studio as the consumer, and the criterion was met exactly: a Settings page.                                                                                                                                            |
+| **B3b** `FormErrorSummary`        | A form tall enough that the first invalid field can scroll off-screen. Data reachable (`onInvalid` fires per field with the control as target); appearance blocked on the same F-024/F-029 axis.                                                                                                  |
+| **C4's quiet field posture**      | A picker inside dense content — a table cell, a toolbar — which is also where a boxed field starts to read as noise. S2 exposes `isQuiet` on `Picker` only; its tokens make the posture an inset collapse (`field-edge-to-*-quiet: 0px`, label tightened `-8px`). The colour half lands on F-024. |
 
 ### O — owner decisions on the colour and type model
 
@@ -628,7 +648,7 @@ it is a class · ADR when the decision is architectural · FRICTION append per g
 suites green · coverage held at 100 · treeshake within budget · lint · ROADMAP
 entry in the Slice 4 voice.
 
-**Baselines to detect regression:** fsl-ui 2222 tests, fsl-theme 1006, Studio 58;
+**Baselines to detect regression:** fsl-ui 2286 tests, fsl-theme 1006, Studio 73;
 treeshake 3249 bytes of 16000 — up 37 from C4's `FOCUS_RING_INSET`, which lives in a
 module `Button` already imports; `choosableRow.ts` itself shakes out of a
 Button-only bundle, verified by its absence from the output.

@@ -6,12 +6,13 @@ import * as React from 'react';
  * keeps the four product routes bookmarkable.
  */
 
-export type Route = 'dashboard' | 'team' | 'billing';
+export type Route = 'dashboard' | 'team' | 'billing' | 'settings';
 
 export const ROUTES: Record<Route, { hash: string; label: string }> = {
   dashboard: { hash: '#/', label: 'Overview' },
   team: { hash: '#/team', label: 'Team' },
   billing: { hash: '#/billing', label: 'Billing' },
+  settings: { hash: '#/settings', label: 'Settings' },
 };
 
 export const parseHash = (hash: string): Route => {
@@ -20,6 +21,8 @@ export const parseHash = (hash: string): Route => {
       return 'team';
     case '#/billing':
       return 'billing';
+    case '#/settings':
+      return 'settings';
     default:
       return 'dashboard';
   }

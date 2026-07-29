@@ -9,14 +9,35 @@ import { INITIAL_MEMBERS } from './data';
  * initial state.
  */
 
+/** Workspace-wide settings the Settings page edits. */
+export interface WorkspaceSettings {
+  name: string;
+  slug: string;
+  region: string;
+  timezone: string;
+  description: string;
+  requireReview: boolean;
+}
+
 interface WorkspaceState {
   members: Member[];
   planId: Plan['id'];
+  settings: WorkspaceSettings;
 }
+
+const INITIAL_SETTINGS: WorkspaceSettings = {
+  name: 'northline',
+  slug: 'northline',
+  region: 'eu-west',
+  timezone: 'Europe/Lisbon',
+  description: 'Deploys for the northline product team.',
+  requireReview: true,
+};
 
 let state: WorkspaceState = {
   members: INITIAL_MEMBERS,
   planId: 'pro',
+  settings: INITIAL_SETTINGS,
 };
 
 const listeners = new Set<() => void>();
@@ -72,10 +93,18 @@ export const setPlan = ({ planId }: { planId: Plan['id'] }) => {
   setState({ ...state, planId });
 };
 
+export const saveSettings = (settings: WorkspaceSettings) => {
+  setState({ ...state, settings });
+};
+
 /** Test-only: restore the initial fiction between tests. */
 export const resetWorkspace = () => {
   invitedCount = 0;
-  setState({ members: INITIAL_MEMBERS, planId: 'pro' });
+  setState({
+    members: INITIAL_MEMBERS,
+    planId: 'pro',
+    settings: INITIAL_SETTINGS,
+  });
 };
 
 const subscribe = (listener: () => void) => {

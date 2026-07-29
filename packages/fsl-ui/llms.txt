@@ -118,7 +118,14 @@ THE FIELD ENVELOPE — one rule for every field, Input and Selection alike:
              aria-hidden asterisk, because the control already carries the native
              `required` attribute and a second announcement is noise. Turn it off
              for a whole form with <Form necessityIndicator="none"> — the field
-             stays required either way. The message part is always mounted, so
+             stays required either way. LABEL PLACEMENT is the same kind of
+             decision: <Form labelPosition="side"> puts every label in ONE column
+             shared by the whole form (grid subgrid), so all controls start at the
+             same x — which is why it is a Form prop and not a field prop, and why
+             it only pays off on a wide multi-row form. Checkbox and Switch keep
+             their inline label but still take the control column.
+             Host knob: --fsl-form-label-width (default max-content).
+             The message part is always mounted, so
              omitting errorMessage shows the platform's own localized constraint
              copy. Two exceptions, each with its mechanism: a lone Checkbox or
              Switch renders its copy inline inside its own <label> (which is why

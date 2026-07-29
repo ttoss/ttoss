@@ -5,6 +5,7 @@ describe('parseHash', () => {
     ['#/', 'dashboard'],
     ['#/team', 'team'],
     ['#/billing', 'billing'],
+    ['#/settings', 'settings'],
     ['', 'dashboard'],
     ['#/unknown', 'dashboard'],
   ])('%s → %s', (hash, route) => {

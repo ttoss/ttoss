@@ -16,6 +16,7 @@ import {
   FieldDescriptionPart,
   FieldLabelPart,
   FieldValidationMessagePart,
+  useFieldLayout,
 } from '../../components/Field/anatomy';
 import type { ComponentMeta } from '../../semantics';
 import { createCompositeScope } from '../scope';
@@ -137,6 +138,7 @@ export type TextFieldControlProps = Omit<RACInputProps, 'style' | 'className'>;
 export const TextFieldControl = (props: TextFieldControlProps) => {
   textFieldScope.use(textFieldControlMeta.displayName);
   const colors = vars.colors.input.primary;
+  const { labelPosition } = useFieldLayout();
 
   return (
     <RACInput
@@ -146,6 +148,7 @@ export const TextFieldControl = (props: TextFieldControlProps) => {
       style={({ isHovered, isDisabled, isFocusVisible, isInvalid }) => {
         return buildFieldControlStyle({
           colors,
+          labelPosition,
           isHovered,
           isDisabled,
           isFocusVisible,
@@ -264,12 +267,14 @@ export const TextField = ({
   placeholder,
   ...props
 }: TextFieldProps) => {
+  const { labelPosition } = useFieldLayout();
+
   return (
     <RACTextField
       {...props}
       data-scope="text-field"
       data-part="root"
-      style={buildFieldRootStyle()}
+      style={buildFieldRootStyle({ labelPosition })}
     >
       {(values) => {
         return (

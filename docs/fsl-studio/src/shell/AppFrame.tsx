@@ -21,6 +21,7 @@ import type * as React from 'react';
 
 import { BillingPage } from '../pages/BillingPage';
 import { DashboardPage } from '../pages/DashboardPage';
+import { SettingsPage } from '../pages/SettingsPage';
 import { TeamPage } from '../pages/TeamPage';
 import type { Route } from '../router';
 import { navigate, ROUTES } from '../router';
@@ -31,6 +32,7 @@ const PAGES: Record<Route, React.ReactNode> = {
   dashboard: <DashboardPage />,
   team: <TeamPage />,
   billing: <BillingPage />,
+  settings: <SettingsPage />,
 };
 
 const HeaderBar = ({ session }: { session: Session }) => {

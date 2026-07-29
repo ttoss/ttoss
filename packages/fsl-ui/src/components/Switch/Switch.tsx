@@ -8,6 +8,7 @@ import {
 import type { ComponentMeta } from '../../semantics';
 import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import { fieldSideColumn, useFieldLayout } from '../Field/anatomy';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -147,6 +148,7 @@ export interface SwitchProps extends Omit<
  * ```
  */
 export const Switch = ({ children, ...props }: SwitchProps) => {
+  const { labelPosition } = useFieldLayout();
   const c = vars.colors.input.primary;
 
   return (
@@ -156,6 +158,10 @@ export const Switch = ({ children, ...props }: SwitchProps) => {
       data-part="root"
       style={({ isDisabled }) => {
         return {
+          // Same as `Checkbox`: the label is the row, so `labelPosition` moves
+          // nothing — but the row still needs a column inside a side-label Form,
+          // and it is the control's, because the track IS the control.
+          ...fieldSideColumn(labelPosition, 'control'),
           boxSizing: 'border-box',
           display: 'inline-flex',
           alignItems: 'center',

@@ -26,6 +26,7 @@ import {
   FieldDescriptionPart,
   FieldLabelPart,
   FieldValidationMessagePart,
+  useFieldLayout,
 } from '../Field/anatomy';
 import { Icon } from '../Icon';
 
@@ -186,13 +187,14 @@ export const ComboBox = <T extends object = object>({
   ...props
 }: ComboBoxProps<T>) => {
   const c = vars.colors.input.primary;
+  const { labelPosition } = useFieldLayout();
 
   return (
     <RACComboBox
       {...props}
       data-scope="combo-box"
       data-part="root"
-      style={buildFieldRootStyle()}
+      style={buildFieldRootStyle({ labelPosition })}
     >
       {label != null && (
         <FieldLabelPart
@@ -215,6 +217,7 @@ export const ComboBox = <T extends object = object>({
         style={({ isDisabled, isInvalid, isFocusVisible }) => {
           return buildFieldFrameStyle({
             colors: c,
+            labelPosition,
             isDisabled,
             isInvalid,
             isFocusVisible,

@@ -25,6 +25,7 @@ import {
   FieldDescriptionPart,
   FieldLabelPart,
   FieldValidationMessagePart,
+  useFieldLayout,
 } from '../Field/anatomy';
 import { Icon } from '../Icon';
 
@@ -148,13 +149,14 @@ export const Select = <T extends object = object>({
   ...props
 }: SelectProps<T>) => {
   const c = vars.colors.input.primary;
+  const { labelPosition } = useFieldLayout();
 
   return (
     <RACSelect
       {...props}
       data-scope="select"
       data-part="root"
-      style={buildFieldRootStyle()}
+      style={buildFieldRootStyle({ labelPosition })}
     >
       {({ isInvalid, isRequired }) => {
         return (
@@ -189,6 +191,7 @@ export const Select = <T extends object = object>({
                   // input (visible in the Studio's invite dialog).
                   ...buildFieldControlStyle({
                     colors: c,
+                    labelPosition,
                     isHovered,
                     isDisabled,
                     isFocusVisible,

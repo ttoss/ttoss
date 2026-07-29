@@ -12,7 +12,10 @@ import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import {
   buildFieldTextPartStyle,
+  type FieldLabelPosition,
   FieldNecessityMarker,
+  fieldSideColumn,
+  useFieldLayout,
 } from '../Field/anatomy';
 import { Icon } from '../Icon';
 
@@ -118,14 +121,24 @@ const buildCheckboxRowStyle = ({
   c,
   isDisabled,
   hasSupport,
+  labelPosition,
 }: {
   c: InputColors;
   isDisabled?: boolean;
   hasSupport: boolean;
+  labelPosition: FieldLabelPosition;
 }): React.CSSProperties => {
   const text = c?.text;
 
   return {
+    // A Checkbox ignores `labelPosition` for its *label* — that label is the row,
+    // and a side label exists to pull a label out of the stack above a control,
+    // which this never had. It does not ignore the **placement**: inside a
+    // side-label Form the row still has to land somewhere, and it belongs in the
+    // control column, because the box IS the control. Left in the label column it
+    // read as a caption for whatever shared its grid row — measured in the
+    // Studio's settings form, where it sat beside the Save button.
+    ...fieldSideColumn(labelPosition, 'control'),
     boxSizing: 'border-box',
     display: hasSupport ? 'grid' : 'inline-flex',
     gridTemplateColumns: hasSupport ? 'auto 1fr' : undefined,
@@ -301,6 +314,7 @@ export const Checkbox = ({
   ...props
 }: CheckboxProps) => {
   const c = vars.colors.input.primary;
+  const { labelPosition } = useFieldLayout();
   // Supporting copy turns the row into a two-column grid, and it also has to
   // stop contributing to the control's accessible NAME. Measured: with a
   // description inside the label, the name became "Accept termsYou agree to the
@@ -321,7 +335,12 @@ export const Checkbox = ({
       data-scope="checkbox"
       data-part="root"
       style={({ isDisabled }) => {
-        return buildCheckboxRowStyle({ c, isDisabled, hasSupport });
+        return buildCheckboxRowStyle({
+          c,
+          isDisabled,
+          hasSupport,
+          labelPosition,
+        });
       }}
     >
       {({

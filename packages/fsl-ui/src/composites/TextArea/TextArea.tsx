@@ -16,6 +16,7 @@ import {
   FieldDescriptionPart,
   FieldLabelPart,
   FieldValidationMessagePart,
+  useFieldLayout,
 } from '../../components/Field/anatomy';
 import type { ComponentMeta } from '../../semantics';
 import { createCompositeScope } from '../scope';
@@ -82,12 +83,19 @@ export const textAreaErrorMeta = {
   composition: 'status',
 } as const satisfies ComponentMeta<'Input'>;
 
-/** Props for the TextArea root. */
+/**
+ * Props for the TextArea root.
+ *
+ * `rows` is one-line-only, the same shape `placeholder` has: React Aria puts it
+ * on the `<textarea>` and the composed form passes it to `TextAreaControl`
+ * directly, so the props form is where it would otherwise be unreachable — which
+ * it was until the Studio's settings form asked for a three-row description.
+ */
 export type TextAreaProps = Omit<
   RACTextFieldProps,
   'style' | 'className' | 'children'
 > &
-  FieldAuthoring<RACTextFieldProps['children']>;
+  FieldAuthoring<RACTextFieldProps['children'], { rows?: number }>;
 
 /** Props for the TextArea label. */
 export type TextAreaLabelProps = Omit<RACLabelProps, 'style' | 'className'>;
@@ -123,6 +131,7 @@ export type TextAreaControlProps = Omit<
 export const TextAreaControl = (props: TextAreaControlProps) => {
   textAreaScope.use(textAreaControlMeta.displayName);
   const colors = vars.colors.input.primary;
+  const { labelPosition } = useFieldLayout();
 
   return (
     <RACTextArea
@@ -132,6 +141,7 @@ export const TextAreaControl = (props: TextAreaControlProps) => {
       style={({ isHovered, isDisabled, isFocusVisible, isInvalid }) => {
         return buildFieldControlStyle({
           colors,
+          labelPosition,
           multiline: true,
           isHovered,
           isDisabled,
@@ -197,14 +207,17 @@ export const TextArea = ({
   description,
   errorMessage,
   placeholder,
+  rows,
   ...props
 }: TextAreaProps) => {
+  const { labelPosition } = useFieldLayout();
+
   return (
     <RACTextField
       {...props}
       data-scope="text-area"
       data-part="root"
-      style={buildFieldRootStyle()}
+      style={buildFieldRootStyle({ labelPosition })}
     >
       {(values) => {
         return (
@@ -212,7 +225,7 @@ export const TextArea = ({
             {children === undefined ? (
               <>
                 {label !== undefined && <TextAreaLabel>{label}</TextAreaLabel>}
-                <TextAreaControl placeholder={placeholder} />
+                <TextAreaControl placeholder={placeholder} rows={rows} />
                 {description !== undefined && (
                   <TextAreaDescription>{description}</TextAreaDescription>
                 )}

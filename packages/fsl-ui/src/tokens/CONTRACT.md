@@ -462,6 +462,7 @@ Registered knobs:
 | ------------------------------- | ------------- | ---------------------- |
 | `--fsl-combo-box-max-height`    | `ComboBox`    | `min(20rem, 60vh)`     |
 | `--fsl-combo-box-popover-width` | `ComboBox`    | `var(--trigger-width)` |
+| `--fsl-form-label-width`        | `Form`        | `max-content`          |
 | `--fsl-dialog-max-width`        | `DialogModal` | `min(500px, 90vw)`     |
 | `--fsl-dialog-max-height`       | `DialogModal` | `90vh`                 |
 | `--fsl-menu-min-width`          | `Menu`        | `12rem`                |
