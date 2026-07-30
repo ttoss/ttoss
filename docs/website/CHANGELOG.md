@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.3](https://github.com/ttoss/ttoss/compare/@docs/website@3.2.2...@docs/website@3.2.3) (2026-07-30)
+
+**Note:** Version bump only for package @docs/website
+
 ## [3.2.2](https://github.com/ttoss/ttoss/compare/@docs/website@3.2.1...@docs/website@3.2.2) (2026-07-30)
 
 ### Bug Fixes
