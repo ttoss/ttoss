@@ -62,6 +62,69 @@ export const generateAuthorizationCode = (): GeneratedAuthorizationCode => {
 };
 
 // ---------------------------------------------------------------------------
+// Client secrets (RFC 6749 §2.3.1) — hashed at rest, compared by hash
+// ---------------------------------------------------------------------------
+
+/**
+ * Compares two secrets without leaking their contents through timing. Length is
+ * still observable, as it is everywhere else in this package.
+ *
+ * Internal: not re-exported from the package entry point.
+ */
+export const timingSafeStringEqual = (
+  expected: string,
+  presented: string | undefined
+): boolean => {
+  if (!presented) {
+    return false;
+  }
+  const a = Buffer.from(expected, 'utf8');
+  const b = Buffer.from(presented, 'utf8');
+  if (a.length !== b.length) {
+    return false;
+  }
+  return crypto.timingSafeEqual(a, b);
+};
+
+/**
+ * Hashes a `client_secret` with SHA-256 (hex output).
+ *
+ * Plain SHA-256 is the right primitive here, not `hashPassword`'s PBKDF2: a
+ * secret issued by `handleRegister` is 32 random bytes, so there is no
+ * low-entropy guess space for a key-derivation function to slow down.
+ */
+export const hashClientSecret = (args: { clientSecret: string }): string => {
+  return crypto.createHash('sha256').update(args.clientSecret).digest('hex');
+};
+
+/**
+ * Verifies a presented `client_secret` against a stored SHA-256 hash in
+ * constant time.
+ *
+ * Returns `false` for an absent or empty presented secret, so a confidential
+ * client can never authenticate by omitting the credential.
+ */
+export const verifyClientSecret = (args: {
+  /** The secret presented at the token endpoint. */
+  clientSecret: string | undefined;
+  /** The stored SHA-256 hex hash to compare against. */
+  clientSecretHash: string;
+}): boolean => {
+  if (!args.clientSecret) {
+    return false;
+  }
+  const a = Buffer.from(
+    hashClientSecret({ clientSecret: args.clientSecret }),
+    'hex'
+  );
+  const b = Buffer.from(args.clientSecretHash, 'hex');
+  if (a.length !== b.length) {
+    return false;
+  }
+  return crypto.timingSafeEqual(a, b);
+};
+
+// ---------------------------------------------------------------------------
 // Redirect URI validation (RFC 6749 §4.1.2.1) — exact match, no wildcards
 // ---------------------------------------------------------------------------
 

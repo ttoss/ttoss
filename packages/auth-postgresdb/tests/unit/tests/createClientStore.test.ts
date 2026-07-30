@@ -1,3 +1,4 @@
+import { hashClientSecret } from '@ttoss/auth-core';
 import type { OAuthClient } from 'src/models/OAuthClient';
 import { createClientStore } from 'src/stores/createClientStore';
 
@@ -22,7 +23,7 @@ const setup = () => {
 const row = (overrides: Partial<Record<string, unknown>> = {}) => {
   return {
     clientId: 'client-1',
-    clientSecret: 'secret',
+    clientSecretHash: hashClientSecret({ clientSecret: 'secret' }),
     clientName: 'Claude',
     redirectUris: ['https://claude.ai/callback'],
     grantTypes: ['authorization_code', 'refresh_token'],
@@ -45,7 +46,6 @@ test('rebuilds the registration document from its columns', async () => {
 
   await expect(store.get('client-1')).resolves.toEqual({
     client_id: 'client-1',
-    client_secret: 'secret',
     client_name: 'Claude',
     redirect_uris: ['https://claude.ai/callback'],
     grant_types: ['authorization_code', 'refresh_token'],
@@ -62,7 +62,7 @@ test('omits absent optional fields instead of reporting them as null', async () 
   const { model, store } = setup();
   model.findByPk.mockResolvedValue(
     row({
-      clientSecret: null,
+      clientSecretHash: null,
       clientName: null,
       grantTypes: null,
       responseTypes: null,
@@ -106,7 +106,7 @@ test('registers a public client without a secret', async () => {
 
   expect(upsertedBy(model)).toEqual({
     clientId: 'client-2',
-    clientSecret: null,
+    clientSecretHash: null,
     clientName: null,
     redirectUris: ['https://cursor.sh/callback'],
     grantTypes: null,
@@ -134,4 +134,87 @@ test('keeps unregistered metadata fields verbatim', async () => {
     software_id: 'abc',
   });
   expect(upsertedBy(model).clientName).toBe('Example');
+});
+
+test('stores the client secret hashed, never in plaintext', async () => {
+  const { model, store } = setup();
+
+  await store.register({
+    client_id: 'client-4',
+    client_secret: 'super-secret',
+    redirect_uris: ['https://example.com/callback'],
+  });
+
+  const upserted = upsertedBy(model);
+
+  expect(upserted.clientSecretHash).toBe(
+    hashClientSecret({ clientSecret: 'super-secret' })
+  );
+  expect(JSON.stringify(upserted)).not.toContain('super-secret');
+});
+
+test('omits client_secret from the document it reads back', async () => {
+  const { model, store } = setup();
+  model.findByPk.mockResolvedValue(row());
+
+  const client = await store.get('client-1');
+
+  expect(client).not.toHaveProperty('client_secret');
+});
+
+test('accepts a confidential client presenting the matching secret', async () => {
+  const { model, store } = setup();
+  model.findByPk.mockResolvedValue(row());
+
+  await expect(
+    store.verifyClientSecret?.({
+      clientId: 'client-1',
+      clientSecret: 'secret',
+    })
+  ).resolves.toBe(true);
+});
+
+test('rejects a confidential client presenting the wrong secret', async () => {
+  const { model, store } = setup();
+  model.findByPk.mockResolvedValue(row());
+
+  await expect(
+    store.verifyClientSecret?.({
+      clientId: 'client-1',
+      clientSecret: 'wrong',
+    })
+  ).resolves.toBe(false);
+});
+
+test('rejects a confidential client presenting no secret at all', async () => {
+  const { model, store } = setup();
+  model.findByPk.mockResolvedValue(row());
+
+  await expect(
+    store.verifyClientSecret?.({
+      clientId: 'client-1',
+      clientSecret: undefined,
+    })
+  ).resolves.toBe(false);
+});
+
+test('accepts a public client, which has no secret to present', async () => {
+  const { model, store } = setup();
+  model.findByPk.mockResolvedValue(row({ clientSecretHash: null }));
+
+  await expect(
+    store.verifyClientSecret?.({
+      clientId: 'client-1',
+      clientSecret: undefined,
+    })
+  ).resolves.toBe(true);
+});
+
+test('rejects an unknown client', async () => {
+  const { model, store } = setup();
+  model.findByPk.mockResolvedValue(null);
+
+  await expect(
+    store.verifyClientSecret?.({ clientId: 'nope', clientSecret: 'secret' })
+  ).resolves.toBe(false);
 });

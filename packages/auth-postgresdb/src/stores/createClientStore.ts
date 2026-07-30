@@ -2,12 +2,16 @@ import type {
   ClientStore,
   OAuthClient as OAuthClientRecord,
 } from '@ttoss/auth-core';
+import { hashClientSecret, verifyClientSecret } from '@ttoss/auth-core';
 
 import type { OAuthClient } from '../models/OAuthClient';
 
 /**
  * Registration fields that have their own column. Everything else a client
  * submits goes to `metadata`, so the document round-trips unchanged.
+ *
+ * `client_secret` is listed here even though no column holds it verbatim: it
+ * must never fall through to the `metadata` JSONB, which would defeat hashing.
  */
 const COLUMN_FIELDS = [
   'client_id',
@@ -26,7 +30,6 @@ const toRecord = (row: OAuthClient): OAuthClientRecord => {
     ...row.metadata,
     client_id: row.clientId,
     redirect_uris: row.redirectUris,
-    ...(row.clientSecret !== null && { client_secret: row.clientSecret }),
     ...(row.clientName !== null && { client_name: row.clientName }),
     ...(row.grantTypes !== null && { grant_types: row.grantTypes }),
     ...(row.responseTypes !== null && { response_types: row.responseTypes }),
@@ -53,7 +56,14 @@ const toMetadata = (client: OAuthClientRecord): Record<string, unknown> => {
 };
 
 /**
- * Creates a {@link ClientStore} backed by the `oauth_clients` table.
+ * Creates a {@link ClientStore} backed by the `oauth_clients` table, storing
+ * client secrets by SHA-256 hash.
+ *
+ * Because the secret is not recoverable, `get` omits `client_secret` and client
+ * authentication goes through `verifyClientSecret`, which compares the
+ * presented value against the stored hash. The engine only ever needs that
+ * comparison — the registration response echoes the secret from the document it
+ * just generated, never from a read — so nothing is lost by not keeping it.
  *
  * `register` upserts, so re-registering an existing `client_id` replaces the
  * stored document rather than failing on the primary key.
@@ -71,10 +81,30 @@ export const createClientStore = ({
       return row ? toRecord(row) : undefined;
     },
 
+    verifyClientSecret: async ({ clientId, clientSecret }) => {
+      const row = await model.findByPk(clientId);
+
+      if (!row) {
+        return false;
+      }
+
+      // A public client has no secret to present.
+      if (row.clientSecretHash === null) {
+        return true;
+      }
+
+      return verifyClientSecret({
+        clientSecret,
+        clientSecretHash: row.clientSecretHash,
+      });
+    },
+
     register: async (client) => {
       await model.upsert({
         clientId: client.client_id,
-        clientSecret: client.client_secret ?? null,
+        clientSecretHash: client.client_secret
+          ? hashClientSecret({ clientSecret: client.client_secret })
+          : null,
         clientName: client.client_name ?? null,
         redirectUris: client.redirect_uris,
         grantTypes: client.grant_types ?? null,

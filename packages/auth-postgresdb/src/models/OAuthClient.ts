@@ -21,14 +21,18 @@ export class OAuthClient extends Model {
   declare clientId: string;
 
   /**
-   * Client secret for confidential clients, `null` for public clients
-   * (`token_endpoint_auth_method: 'none'`).
+   * SHA-256 hash (hex) of the client secret for confidential clients, `null`
+   * for public clients (`token_endpoint_auth_method: 'none'`).
+   *
+   * The secret itself is never stored: the token endpoint only ever compares a
+   * presented value, so a hash is enough and a database dump yields nothing
+   * replayable.
    */
   @Column({
     type: DataType.STRING,
     allowNull: true,
   })
-  declare clientSecret: string | null;
+  declare clientSecretHash: string | null;
 
   /** Human-readable client name shown on consent screens. */
   @Column({

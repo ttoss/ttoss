@@ -35,13 +35,20 @@ test.each([
   expect(model.primaryKeyAttributes).toEqual([primaryKey]);
 });
 
-test('stores hashes, never plaintext codes or tokens', () => {
+test('stores hashes, never plaintext codes, tokens, or secrets', () => {
   expect(Object.keys(oauthModels.OAuthAuthCode.getAttributes())).not.toContain(
     'code'
   );
   expect(
     Object.keys(oauthModels.OAuthRefreshToken.getAttributes())
   ).not.toContain('token');
+
+  const clientAttributes = Object.keys(oauthModels.OAuthClient.getAttributes());
+  expect(clientAttributes).not.toContain('clientSecret');
+  expect(clientAttributes).toContain('clientSecretHash');
+  expect(oauthModels.OAuthClient.getAttributes().clientSecretHash?.field).toBe(
+    'client_secret_hash'
+  );
 });
 
 test('underscores column names so the schema is snake_case', () => {

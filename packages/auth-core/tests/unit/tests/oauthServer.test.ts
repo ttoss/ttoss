@@ -5,9 +5,11 @@ import {
   type ClientStore,
   createOAuthHandlers,
   getWwwAuthenticateHeader,
+  hashClientSecret,
   type OAuthClient,
   type OAuthServerOptions,
   type StoredAuthorizationCode,
+  verifyClientSecret,
 } from '../../../src/index';
 
 const base64Url = (buffer: Buffer): string => {
@@ -447,6 +449,116 @@ describe('createOAuthHandlers — token (authorization_code)', () => {
       redirect_uri: 'https://app.example.com/callback',
       client_id: 'client-abc',
       client_secret: 'wrong',
+      code_verifier: CODE_VERIFIER,
+    });
+    expect(res.status).toBe(401);
+    expect((res.body as { error: string }).error).toBe('invalid_client');
+  });
+
+  /**
+   * A store that keeps secrets hashed at rest: it cannot return
+   * `client_secret`, so it owns the comparison via `verifyClientSecret`.
+   */
+  const createHashingClientStore = (): ClientStore => {
+    const hashes = new Map<string, string | null>([
+      ['client-abc', hashClientSecret({ clientSecret: 'secret-xyz' })],
+      ['public-client', null],
+    ]);
+    return {
+      get: (clientId) => {
+        if (!hashes.has(clientId)) {
+          return undefined;
+        }
+        return clientId === 'public-client'
+          ? publicClient
+          : { ...confidentialClient, client_secret: undefined };
+      },
+      register: (client) => {
+        hashes.set(
+          client.client_id,
+          client.client_secret
+            ? hashClientSecret({ clientSecret: client.client_secret })
+            : null
+        );
+      },
+      verifyClientSecret: ({ clientId, clientSecret }) => {
+        const clientSecretHash = hashes.get(clientId);
+        if (clientSecretHash === undefined) {
+          return false;
+        }
+        return (
+          clientSecretHash === null ||
+          verifyClientSecret({ clientSecret, clientSecretHash })
+        );
+      },
+    };
+  };
+
+  test('delegates to verifyClientSecret when the store hashes secrets', async () => {
+    const server = setup({ clientStore: createHashingClientStore() });
+    const code = await obtainCode(server);
+    const res = await token(server, {
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: 'https://app.example.com/callback',
+      client_id: 'client-abc',
+      client_secret: 'secret-xyz',
+      code_verifier: CODE_VERIFIER,
+    });
+    expect(res.status).toBe(200);
+  });
+
+  test('401 invalid_client when a hashing store rejects the secret', async () => {
+    const server = setup({ clientStore: createHashingClientStore() });
+    const code = await obtainCode(server);
+    const res = await token(server, {
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: 'https://app.example.com/callback',
+      client_id: 'client-abc',
+      client_secret: 'secret-abc',
+      code_verifier: CODE_VERIFIER,
+    });
+    expect(res.status).toBe(401);
+    expect((res.body as { error: string }).error).toBe('invalid_client');
+  });
+
+  test('a hashing store still admits a public client with no secret', async () => {
+    const server = setup({ clientStore: createHashingClientStore() });
+    const code = await obtainCode(server, 'public-client');
+    const res = await token(server, {
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: 'https://app.example.com/callback',
+      client_id: 'public-client',
+      code_verifier: CODE_VERIFIER,
+    });
+    expect(res.status).toBe(200);
+  });
+
+  test('401 invalid_client when a same-length secret is wrong', async () => {
+    const server = setup();
+    const code = await obtainCode(server);
+    const res = await token(server, {
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: 'https://app.example.com/callback',
+      client_id: 'client-abc',
+      client_secret: 'secret-abc',
+      code_verifier: CODE_VERIFIER,
+    });
+    expect(res.status).toBe(401);
+    expect((res.body as { error: string }).error).toBe('invalid_client');
+  });
+
+  test('401 invalid_client when a confidential client sends no secret', async () => {
+    const server = setup();
+    const code = await obtainCode(server);
+    const res = await token(server, {
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: 'https://app.example.com/callback',
+      client_id: 'client-abc',
       code_verifier: CODE_VERIFIER,
     });
     expect(res.status).toBe(401);
