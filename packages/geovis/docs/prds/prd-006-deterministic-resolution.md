@@ -25,6 +25,9 @@ Intent becomes a valid map or a structured failure — never a guess.
 - Deterministic resolver deciding data binding, join, map type, legend, tooltip semantics, missing-data policy, and warnings.
 - All failure paths through the PRD-001 taxonomy, including `needs-clarification` for ambiguous intents.
 - Reuse `resolveSpecFromMapType` defaults as the encoding seed — the resolver extends existing judgment, not replaces it.
+- Compile `FilterField` to `VisualizationLayer.filter`, refusing when the target source type is absent from `CapabilitySet.dataFeatures.filter` or the declared domain is runtime-only.
+- Intersect the catalog's `mapTypes` (data adequacy) with the adapter's `CapabilitySet` (technical support). A map type that passes one gate and fails the other is a structured failure, never a silent fallback.
+- Derive `viewPresets` from `Geography.cameraFraming`, so `set-view-preset` (PRD-002) targets positions the catalog declared rather than coordinates a model invents.
 
 ### Should
 

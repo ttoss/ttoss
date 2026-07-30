@@ -26,6 +26,10 @@ AI can only reference mappable reality.
 - Integrity validation reporting through the PRD-001 taxonomy.
 - Introspection surface for AI tools and builders (curated metadata, never raw data).
 - Package location: `@ttoss/geovis-catalog`.
+- Nominal metrics: `kind: 'nominal'` with a closed `categories[]` (id, label, order, optional theme colour token). The spec's `CategoricalColorBy` has no catalog counterpart today, so a categorical choropleth cannot be expressed at all.
+- `Geography.cameraFraming` (bbox, centre, zoom) as **resolver input, never a preset** — PRD-006 derives `viewPresets` from it, keeping `set-view-preset` bounded to declared positions instead of coordinates a model invents.
+- `FilterField` is the single filter model: it declares the target property and the allowed `LayerFilterOperator`s, and compiles 1:1 to `VisualizationLayer.filter`.
+- `mapTypes` documents **data adequacy** — which metric kinds make sense in which map type — not adapter support. `CapabilitySet` covers source types, layer geometries and data features but never map types, so `validateCatalog` accepts an optional `CapabilitySet` and reports the intersection.
 
 ### Should
 
@@ -42,3 +46,5 @@ PRD-001 (taxonomy for catalog-mismatch reporting). Feeds PRD-005 and PRD-006.
 ## Open questions
 
 - ~~Catalog governance: who approves entries, and how permissions integrate with application auth.~~ Resolved as out of scope: `permissions` is an opaque, schema-reserved slot; the application enforces its own authorization logic. Governance process itself is an org/product question, not a package concern.
+- Field-level metadata (`Dataset.fields[]` carrying `role` and `display`) is confirmed for the catalog, since the workspace inspector and tooltip need to know which fields to show. Whether the same entry carries `sensitive` depends on a disclosure-policy decision that is not yet made — in both pilot applications the gateway, not the catalog, is the disclosure frontier.
+- Schema source of truth: the plan's D1 fixes Ajv plus a hand-authored JSON Schema, while the monorepo standardises on Zod for new schemas and `z.toJSONSchema()` would keep `getCatalogJSONSchema()` intact.
