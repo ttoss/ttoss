@@ -147,7 +147,7 @@ The store persists only token hashes — plaintext tokens never touch your datab
 
 `@ttoss/auth-core` ships `createMemoryClientStore`, `createMemoryAuthCodeStore`, and `createMemoryRefreshTokenStore` — `Map`-backed implementations of the three store contracts. They are for tests, local development, and examples (state is lost on restart); production swaps in a durable backend behind the same interfaces.
 
-For Postgres that backend is `@ttoss/auth-postgresdb`: register its `oauthModels` alongside your own so `ttoss-postgresdb sync` manages the tables, then build every store from the `db` handle.
+For Postgres that backend is [`@ttoss/auth-postgresdb`](/docs/modules/packages/auth-postgresdb): register its `oauthModels` alongside your own so `ttoss-postgresdb sync` manages the tables, then build every store from the `db` handle.
 
 ```typescript
 import {
