@@ -26,7 +26,9 @@
  * the point of splitting them is that the reason a member is not in the first
  * group is a *mechanism* and not a preference. `Slider` appears too, in the
  * exception group, although the grep does not return it — which is precisely why
- * it is excluded.
+ * it is excluded. (`Switch.mjs` is on the axis through the `SwitchField` root it
+ * ships beside the deprecated plain `Switch`; forms item E moved our component
+ * onto that root, which is what moved it from group 3 to group 1.)
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -34,12 +36,13 @@ import path from 'node:path';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vars } from '@ttoss/fsl-theme/vars';
-import type * as React from 'react';
+import * as React from 'react';
 import {
   Checkbox,
   CheckboxGroup,
   ComboBox,
   ComboBoxItem,
+  ContextualHelp,
   Form,
   FormSubmit,
   NumberField,
@@ -102,7 +105,7 @@ describe('the axis this file is driven by', () => {
       'RadioGroup', // group 1
       'SearchField', // group 1 (and group 2, which keeps the slot form)
       'Select', // group 1
-      'Switch', // group 3 — no validation props at all
+      'Switch', // group 1 — via RAC's SwitchField root (forms item E)
       'TextField', // + our TextArea — group 1
     ]);
   });
@@ -187,6 +190,25 @@ const ROOTS: Array<[scope: string, field: () => React.ReactElement]> = [
     () => {
       return (
         <SearchField {...COPY} clearLabel="Clear search" isRequired isInvalid />
+      );
+    },
+  ],
+  [
+    // Joined group 1 in forms item E, rebuilt on RAC's `SwitchField` +
+    // `SwitchButton` (plain `Switch` is deprecated upstream). Its label is
+    // its children rather than a `label` prop — the row IS the label — so
+    // the entry adapts the copy; everything else is the shared envelope.
+    'switch',
+    () => {
+      return (
+        <Switch
+          description={COPY.description}
+          errorMessage={COPY.errorMessage}
+          isRequired
+          isInvalid
+        >
+          {COPY.label}
+        </Switch>
       );
     },
   ],
@@ -297,30 +319,24 @@ describe('the composed authoring form marks required identically', () => {
  * text-part style source and the necessity marker. Named here so the axis has no
  * silent member.
  *
- * The two below have no message part at all, each for a mechanism rather than a
- * preference. Both are item `E` in `INTERNAL/FORMS.md`.
+ * `Slider` below has no message part at all, for a mechanism rather than a
+ * preference.
  */
 describe('the members that deliberately have no message part', () => {
   /**
-   * - `Switch`: React Aria's `SwitchProps` **omits** `isRequired`, `isInvalid`,
-   *   `validate` and `validationBehavior` outright (read in `Switch.d.ts`), so
-   *   there is no validation state to render — a `Switch` cannot be invalid.
-   *   `SwitchRenderProps` does expose `isRequired`, and RAC 1.19 ships a separate
-   *   `SwitchField` root that owns it, which is the shape F-033's Switch half has
-   *   to decide on.
    * - `Slider`: does not appear in the axis grep at all — it gets no
    *   `FieldErrorContext`, because a slider always holds an in-range value: a
    *   boundary, not a gap.
+   *
+   * `Switch` stood here until forms item E, excluded because plain
+   * `SwitchProps` omits validation outright. RAC 1.19 deprecates that root and
+   * ships `SwitchField`, which owns the validation props and supplies both
+   * contexts — so the component moved onto it and into group 1, exactly the
+   * removal this table's test name asks for.
    */
   const WITHOUT_MESSAGE: Array<
     [scope: string, field: () => React.ReactElement]
   > = [
-    [
-      'switch',
-      () => {
-        return <Switch>Notify me</Switch>;
-      },
-    ],
     [
       'slider',
       () => {
@@ -337,6 +353,100 @@ describe('the members that deliberately have no message part', () => {
       expect(part(scope, 'validationMessage')).toBeNull();
     }
   );
+});
+
+/**
+ * The contextualHelp slot (forms item B4) — a class property: every group-1
+ * root that renders a label can host a `<ContextualHelp>` beside it, in a
+ * `labelRow` wrapper, with the trigger outside the `<label>` element so it is
+ * never absorbed into the field's accessible name. Driven by the same ROOTS
+ * table so a new family member cannot ship without the slot.
+ */
+describe.each(ROOTS)('%s hosts contextualHelp beside its label', (scope) => {
+  const HELP = (
+    <ContextualHelp aria-label="About this field">Because.</ContextualHelp>
+  );
+
+  const FIELDS: Record<string, () => React.ReactElement> = {
+    'text-field': () => {
+      return <TextField label={COPY.label} contextualHelp={HELP} />;
+    },
+    'text-area': () => {
+      return <TextArea label={COPY.label} contextualHelp={HELP} />;
+    },
+    select: () => {
+      return (
+        <Select label={COPY.label} contextualHelp={HELP}>
+          <SelectItem id="a">A</SelectItem>
+        </Select>
+      );
+    },
+    'combo-box': () => {
+      return (
+        <ComboBox label={COPY.label} contextualHelp={HELP}>
+          <ComboBoxItem id="a">A</ComboBoxItem>
+        </ComboBox>
+      );
+    },
+    'number-field': () => {
+      return <NumberField label={COPY.label} contextualHelp={HELP} />;
+    },
+    'radio-group': () => {
+      return (
+        <RadioGroup label={COPY.label} contextualHelp={HELP}>
+          <Radio value="a">A</Radio>
+        </RadioGroup>
+      );
+    },
+    'checkbox-group': () => {
+      return (
+        <CheckboxGroup label={COPY.label} contextualHelp={HELP}>
+          <Checkbox value="a">A</Checkbox>
+        </CheckboxGroup>
+      );
+    },
+    'search-field': () => {
+      return (
+        <SearchField
+          label={COPY.label}
+          contextualHelp={HELP}
+          clearLabel="Clear"
+        />
+      );
+    },
+    switch: () => {
+      // Switch's label is the row itself, not an envelope label part — the
+      // slot does not apply; asserted as such below.
+      return <Switch description={COPY.description}>{COPY.label}</Switch>;
+    },
+  };
+
+  test('the trigger renders in a labelRow, outside the <label>', () => {
+    if (scope === 'switch') {
+      // No labelRow exists on Switch — its label is inline children of the
+      // clickable row, so there is no envelope label to sit beside.
+      render(FIELDS[scope]());
+      expect(part(scope, 'labelRow')).toBeNull();
+      return;
+    }
+
+    render(FIELDS[scope]());
+
+    const row = part(scope, 'labelRow');
+    const label = part(scope, 'label');
+    const trigger = document.querySelector<HTMLElement>(
+      '[data-scope="contextual-help"]'
+    );
+
+    expect(row).not.toBeNull();
+    expect(trigger).not.toBeNull();
+    // Sibling, never a child: inside the <label> the trigger's words join the
+    // field's accessible NAME (measured in A2) and the label's click-to-focus
+    // swallows the trigger's click.
+    expect(label?.contains(trigger as HTMLElement)).toBe(false);
+    expect(row?.contains(label as HTMLElement)).toBe(true);
+    expect(row?.contains(trigger as HTMLElement)).toBe(true);
+  });
 });
 
 describe('a required Select behaves like any other field', () => {
@@ -464,6 +574,64 @@ describe('an invalid field speaks valence on the message, not on the value', () 
 });
 
 /**
+ * The in-control validation glyph (forms item H) — a class property: every
+ * member with a field BOX marks it while invalid, from one shared source
+ * (`FieldInvalidGlyph`). The three members without a box — the two groups and
+ * `Switch`, whose "control" is the mark itself — are named exceptions: their
+ * message carries the valence and a glyph has no box to sit in.
+ */
+describe('the in-control validation glyph', () => {
+  const BOXED = [
+    'text-field',
+    'text-area',
+    'select',
+    'combo-box',
+    'number-field',
+    'search-field',
+  ] as const;
+  const BOXLESS = ['radio-group', 'checkbox-group', 'switch'] as const;
+
+  const fieldFor = (scope: string) => {
+    return ROOTS.find(([s]) => {
+      return s === scope;
+    })![1];
+  };
+
+  test.each(BOXED)('%s marks its box while invalid', (scope) => {
+    render(fieldFor(scope)());
+
+    const glyph = part(scope, 'validationGlyph');
+
+    expect(glyph).not.toBeNull();
+    // Reinforcement, not the semantics: aria-invalid on the control and the
+    // message's words already carry it twice (WCAG 1.4.1 — the F-032 note).
+    expect(glyph).toHaveAttribute('aria-hidden', 'true');
+    // The reporting valence — the same §3.2 split the message follows: a part
+    // that reports the outcome, not the control re-voiced.
+    expect(glyph?.style.color).toBe(vars.colors.input.negative.text?.default);
+  });
+
+  test.each(BOXED)('%s carries no glyph while valid', (scope) => {
+    // Strip the validity props from the group-1 fixture.
+    const element = fieldFor(scope)() as React.ReactElement<{
+      isInvalid?: boolean;
+      isRequired?: boolean;
+    }>;
+    render(
+      React.cloneElement(element, { isInvalid: undefined, isRequired: true })
+    );
+
+    expect(part(scope, 'validationGlyph')).toBeNull();
+  });
+
+  test.each(BOXLESS)('%s has no box to mark — named exception', (scope) => {
+    render(fieldFor(scope)());
+
+    expect(part(scope, 'validationGlyph')).toBeNull();
+  });
+});
+
+/**
  * Hover while invalid — the owner's ruling, made executable.
  *
  * Ruled 2026-07-29: **hover does not apply while invalid.** The cascade already
@@ -479,13 +647,15 @@ describe('hover does not apply while invalid', () => {
     const user = userEvent.setup();
     render(<TextField {...COPY} isInvalid />);
 
-    const control = part('text-field', 'control')!;
-    await user.hover(control);
+    // The FRAME is the painted box since the split conversion (forms item H);
+    // the value inside it paints nothing.
+    const frame = part('text-field', 'frame')!;
+    await user.hover(frame);
 
-    expect(control.style.borderColor).toBe(
+    expect(frame.style.borderColor).toBe(
       vars.colors.input.primary.border?.invalid
     );
-    expect(control.style.backgroundColor).toBe(
+    expect(frame.style.backgroundColor).toBe(
       vars.colors.input.primary.background?.invalid
     );
   });
@@ -494,12 +664,12 @@ describe('hover does not apply while invalid', () => {
     const user = userEvent.setup();
     render(<TextField {...COPY} />);
 
-    const control = part('text-field', 'control')!;
-    await user.hover(control);
+    const frame = part('text-field', 'frame')!;
+    await user.hover(frame);
 
     // The counterpart that makes the assertion above mean something: without
     // it, a field that never reacted to hover at all would pass too.
-    expect(control.style.backgroundColor).toBe(
+    expect(frame.style.backgroundColor).toBe(
       vars.colors.input.primary.background?.hover
     );
   });

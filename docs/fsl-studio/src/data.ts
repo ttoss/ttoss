@@ -347,3 +347,42 @@ export const USAGE: UsageItem[] = [
     detail: '5 of 6 seats',
   },
 ];
+
+export type EnvironmentType = 'production' | 'staging' | 'preview';
+
+/** A deploy notification the workspace can subscribe an environment to. */
+export type DeployEvent = 'started' | 'succeeded' | 'failed' | 'rolled-back';
+
+export interface Environment {
+  id: string;
+  name: string;
+  type: EnvironmentType;
+  branch: string;
+  /** Instances the environment scales between (fixed count for now). */
+  instances: number;
+  /** CPU utilisation fraction that triggers a scale-up (0–1). */
+  cpuTarget: number;
+  /** Deploy events the workspace is notified about. */
+  notifications: DeployEvent[];
+}
+
+export const INITIAL_ENVIRONMENTS: Environment[] = [
+  {
+    id: 'env_prod',
+    name: 'production',
+    type: 'production',
+    branch: 'main',
+    instances: 4,
+    cpuTarget: 0.7,
+    notifications: ['failed', 'rolled-back'],
+  },
+  {
+    id: 'env_staging',
+    name: 'staging',
+    type: 'staging',
+    branch: 'main',
+    instances: 2,
+    cpuTarget: 0.8,
+    notifications: ['failed'],
+  },
+];

@@ -113,6 +113,16 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       );
     },
   },
+  // Composite like ActionMenu below: the meta describes the trigger; the
+  // surface it opens keeps Popover's identity. Left closed.
+  ContextualHelp: {
+    scope: 'contextual-help',
+    element: () => {
+      return (
+        <pkg.ContextualHelp aria-label="About">Explains.</pkg.ContextualHelp>
+      );
+    },
+  },
   // The overflow trigger: an icon-only ActionButton re-scoped to `action-menu`,
   // so the fixture's root is the button (the surface it opens is Menu's own
   // identity). Left closed — the trigger is what this meta describes.
@@ -205,6 +215,17 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
     },
   },
   CheckboxGroup: { scope: 'checkbox-group', element: treeCheckboxGroup },
+  FieldGroup: {
+    scope: 'field-group',
+    element: () => {
+      return (
+        <pkg.FieldGroup label="Expiry">
+          <pkg.TextField aria-label="Expiry month" />
+          <pkg.TextField aria-label="Expiry year" />
+        </pkg.FieldGroup>
+      );
+    },
+  },
   FileTrigger: {
     scope: 'file-trigger',
     element: () => {

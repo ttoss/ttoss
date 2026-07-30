@@ -2,6 +2,7 @@ import {
   Checkbox,
   ComboBox,
   ComboBoxItem,
+  ContextualHelp,
   Form,
   FormActions,
   FormSubmit,
@@ -11,6 +12,7 @@ import {
   Separator,
   Stack,
   Surface,
+  Switch,
   Text,
   TextArea,
   TextField,
@@ -77,6 +79,7 @@ const WorkspaceForm = () => {
       timezone: formText(data, 'timezone') || settings.timezone,
       description: formText(data, 'description'),
       requireReview: data.get('requireReview') !== null,
+      enforceTwoFactor: data.get('enforceTwoFactor') !== null,
     });
     toasts.add({ title: 'Workspace settings saved' }, { timeout: 4000 });
   };
@@ -103,6 +106,21 @@ const WorkspaceForm = () => {
           label="Region"
           name="region"
           defaultSelectedKey={settings.region}
+          // The explanation is too long for a description line and matters
+          // too rarely to spend the space permanently — the contextualHelp
+          // criterion (forms B4).
+          contextualHelp={
+            <ContextualHelp aria-label="About regions">
+              <Heading level={2} size="title-sm">
+                Choosing a region
+              </Heading>
+              <Text>
+                Deploys run in this region. Changing it schedules a data
+                migration on the next deploy — in-flight deploys finish where
+                they started.
+              </Text>
+            </ContextualHelp>
+          }
         >
           {REGIONS.map(([id, label]) => {
             return (
@@ -143,6 +161,20 @@ const WorkspaceForm = () => {
         <Checkbox name="requireReview" defaultSelected={settings.requireReview}>
           Require a review before deploying to production
         </Checkbox>
+        {/*
+          A Switch beside a Checkbox on purpose: the checkbox states a rule the
+          workspace opts into, the switch flips a live enforcement — and this
+          one carries the field envelope its SwitchField root restored (forms
+          item E): the description is real supporting copy, linked via
+          aria-describedby, not a second label.
+        */}
+        <Switch
+          name="enforceTwoFactor"
+          defaultSelected={settings.enforceTwoFactor}
+          description="Members without a second factor are signed out at the next deploy."
+        >
+          Enforce two-factor authentication
+        </Switch>
         <FormActions>
           <FormSubmit>Save changes</FormSubmit>
         </FormActions>

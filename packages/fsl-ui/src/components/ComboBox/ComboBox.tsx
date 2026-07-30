@@ -25,6 +25,7 @@ import {
   buildPickerListStyle,
   buildPickerPopoverStyle,
   FieldDescriptionPart,
+  FieldInvalidGlyph,
   FieldLabelPart,
   FieldValidationMessagePart,
   useFieldLayout,
@@ -101,6 +102,11 @@ export interface ComboBoxProps<T extends object = object> extends Omit<
 > {
   /** Visible label displayed above the field. */
   label?: React.ReactNode;
+  /**
+   * A `<ContextualHelp>` element rendered beside the label (the reference
+   * system's prop shape) — for the explanation too long for `description`.
+   */
+  contextualHelp?: React.ReactNode;
   /** Supplementary helper text linked to the field via `aria-describedby`. */
   description?: React.ReactNode;
   /**
@@ -154,6 +160,7 @@ export interface ComboBoxProps<T extends object = object> extends Omit<
  */
 export const ComboBox = <T extends object = object>({
   label,
+  contextualHelp,
   description,
   errorMessage,
   placeholder = 'Search…',
@@ -174,6 +181,7 @@ export const ComboBox = <T extends object = object>({
       {label != null && (
         <FieldLabelPart
           scope="combo-box"
+          contextualHelp={contextualHelp}
           colors={c}
           isRequired={props.isRequired}
         >
@@ -199,35 +207,50 @@ export const ComboBox = <T extends object = object>({
           });
         }}
       >
-        <RACInput
-          data-scope="combo-box"
-          data-part="control"
-          placeholder={placeholder}
-          style={buildFieldValueStyle({ colors: c })}
-        />
+        {({ isInvalid }) => {
+          return (
+            <>
+              <RACInput
+                data-scope="combo-box"
+                data-part="control"
+                placeholder={placeholder}
+                style={({ isHovered, isDisabled, isInvalid }) => {
+                  return buildFieldValueStyle({
+                    colors: c,
+                    isHovered,
+                    isDisabled,
+                    isInvalid,
+                  });
+                }}
+              />
 
-        <RACButton
-          aria-label={triggerLabel}
-          data-scope="combo-box"
-          data-part="trigger"
-          style={({ isHovered, isDisabled, isFocusVisible }) => {
-            return buildEmbeddedTriggerStyle({
-              colors: c,
-              isHovered,
-              isDisabled,
-              isFocusVisible,
-            });
-          }}
-        >
-          {/*
+              <FieldInvalidGlyph scope="combo-box" isInvalid={isInvalid} />
+
+              <RACButton
+                aria-label={triggerLabel}
+                data-scope="combo-box"
+                data-part="trigger"
+                style={({ isHovered, isDisabled, isFocusVisible }) => {
+                  return buildEmbeddedTriggerStyle({
+                    colors: c,
+                    isHovered,
+                    isDisabled,
+                    isFocusVisible,
+                  });
+                }}
+              >
+                {/*
             Decorative — the button owns the accessible name (CONTRACT §9.4).
             `size="sm"` and not `size="text"`: a font-relative glyph inside a
             `<button>` that declares no type of its own resolves against the UA's
             13.3333px, which is what made this chevron 25.33px in a family whose
             other triggers were 32 and 20 (see EMBEDDED_TRIGGER).
           */}
-          <Icon intent="disclosure.expand" size="sm" />
-        </RACButton>
+                <Icon intent="disclosure.expand" size="sm" />
+              </RACButton>
+            </>
+          );
+        }}
       </RACGroup>
 
       {description != null && (

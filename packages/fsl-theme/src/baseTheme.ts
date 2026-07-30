@@ -257,6 +257,24 @@ export const baseTheme: ThemeTokens = {
         unit: 'clamp(4px, 0.25cqi + 3px, 6px)',
       },
 
+      // The NON-FLUID counterpart of the steps below — plain values, because
+      // core is the layer whose job is raw values (model.md §1). It exists so
+      // that a semantic token whose *resolved outcome* is the guarantee
+      // (`inset.control.*`, ADR-022) has a core step to reference instead of
+      // inlining a literal into the semantic layer, which would break "semantic
+      // references core only" (§2) and would not satisfy §8's necessity test —
+      // a bare constant is always expressible as a `TokenRef` once core holds
+      // it. Keys mirror the fluid steps' multipliers and the base theme sets
+      // them to the engine's own desktop bound (6px), so a control resolves
+      // identically at ≥1200px to the fluid scale it left. A theme may retune
+      // them freely; what validation guarantees is the ordering and the fixed
+      // shape, never these numbers.
+      fixed: {
+        1: '6px',
+        2: '12px',
+        4: '24px',
+      },
+
       0: '0px',
       1: 'calc(1 * var(--tt-core-spacing-engine-unit))',
       2: 'calc(2 * var(--tt-core-spacing-engine-unit))',
@@ -1361,10 +1379,24 @@ export const baseTheme: ThemeTokens = {
     // driven by the rem-anchored `hit` floor, not the inset).
     spacing: {
       inset: {
+        // Control insets are OUTCOME-BEARING and therefore fixed (ADR-022,
+        // owner ruling 2026-07-29): a control's box is its inset + type with
+        // `hit` as the floor, so a fluid inset makes the box fluid — which is
+        // exactly what ADR-019/020 rule against, and ADR-020's own premise
+        // ("the ±2px residual never binds") was measured false above ~900px
+        // (F-035: the field row read 32 / 32.5 / 34 across the range). The
+        // values are the engine's own top step (`core.spacing.{1|2|4}` at the
+        // desktop bound), so nothing changes visually at ≥1200px; the residual
+        // narrow-end step is the fluid type meeting the `hit` floor, which is
+        // the floor's job (ADR-020), not an inset ramp.
+        // The fixed values live in core (`core.spacing.fixed.*`, the non-fluid
+        // step scale) and are referenced here like every other semantic
+        // spacing token: ADR-022 rules the *outcome* fixed, and a literal in
+        // this layer was the wrong mechanism for it (ADR-023).
         control: {
-          sm: '{core.spacing.1}',
-          md: '{core.spacing.2}',
-          lg: '{core.spacing.4}',
+          sm: '{core.spacing.fixed.1}',
+          md: '{core.spacing.fixed.2}',
+          lg: '{core.spacing.fixed.4}',
         },
         // inset.surface ≥ inset.control (validation invariant) and sits
         // above gap.stack at the default step so containers visibly enclose

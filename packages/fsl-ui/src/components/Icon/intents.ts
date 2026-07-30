@@ -44,8 +44,15 @@ export const ICON_INTENTS = [
   // Named for what the user is offered ("more actions"), not for the layout
   // reason it exists; no opposition pair — there is no "fewer".
   'action.more',
-  // status — foundation status indicators (affirmation, inclusion).
+  // action — explanatory content behind a trigger (the contextual-help
+  // affordance). Named for what the user is offered ("help about this"), not
+  // for the glyph that renders it; no opposition pair.
+  'action.help',
+  // status — foundation status indicators. Opposition rule: success ≠ alert.
   'status.success',
+  // The invalid-field mark (the field family's validation glyph) and any
+  // "needs attention" indicator.
+  'status.alert',
 ] as const;
 
 /** A semantic icon intent — the public "name" of an icon. */

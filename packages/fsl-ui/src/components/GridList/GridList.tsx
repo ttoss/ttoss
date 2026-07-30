@@ -12,6 +12,10 @@ import type { ComponentMeta } from '../../semantics';
 import { buildChoosableRowStyle } from '../../tokens/choosableRow';
 import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import {
+  SELECTION_BOX_BASE,
+  SELECTION_CONTROL,
+} from '../../tokens/selectionControl';
 import { Icon } from '../Icon';
 
 // ---------------------------------------------------------------------------
@@ -84,22 +88,17 @@ const buildRowStyle = ({
   };
 };
 
-// Selection box size — matches Checkbox's box (a named layout literal per
-// CONTRIBUTING §4; the selection control shares the checkbox visual size).
-const SELECTION_BOX_SIZE = '1.125rem';
-
-/** Static box chrome for the row's selection checkbox. */
+/**
+ * Static box chrome for the row's selection checkbox — the shared
+ * selection-control source, with the checkbox-shaped radius. This box had
+ * kept the full `control` radius, which at 18px reads as a circle — the
+ * ambiguity-with-Radio defect P3 slice 3 fixed on `Checkbox` and this second
+ * copy silently kept.
+ */
 const SELECTION_BOX_STYLE = {
-  boxSizing: 'border-box',
-  flexShrink: 0,
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: SELECTION_BOX_SIZE,
-  height: SELECTION_BOX_SIZE,
-  borderRadius: vars.radii.control,
+  ...SELECTION_BOX_BASE,
   borderWidth: vars.border.outline.control.width,
-  borderStyle: vars.border.outline.control.style,
+  borderRadius: SELECTION_CONTROL.checkboxRadius,
 } satisfies React.CSSProperties;
 
 /**
@@ -141,6 +140,9 @@ const RowSelectionControl = () => {
         const on = isSelected || isIndeterminate;
         return (
           <span aria-hidden style={buildSelectionBoxStyle({ c, on })}>
+            {/* `text` (1em) resolves against the box's own glyph scale —
+                `size="sm"` is container-fluid and overflowed the fixed box
+                (measured on Checkbox, same mark). */}
             {on && (
               <Icon
                 intent={
@@ -148,7 +150,7 @@ const RowSelectionControl = () => {
                     ? 'selection.indeterminate'
                     : 'selection.checked'
                 }
-                size="sm"
+                size="text"
               />
             )}
           </span>

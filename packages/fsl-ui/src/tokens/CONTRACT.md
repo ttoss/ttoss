@@ -413,12 +413,28 @@ the trigger is invisible against its field until the pointer arrives.
 entity decides a row's **colours**, never its geometry: they read the same block inset, inline
 inset, radius and type as the field row, so an option sits under a field at the same rhythm — the
 row is the field's content box, and the field is that plus the 1px border per edge it draws. Stated
-in tokens rather than pixels on purpose: both are fluid (F-035), so at a 1280px viewport it reads
-32px row / 34px field and at 390px both bottom out on `sizing.hit` and the difference is 0. Its
+in tokens rather than pixels on purpose — a theme may retune them — and since fsl-theme ADR-022 the
+control inset is a fixed-px contract: the pair reads 32px row / 34px field wherever the fluid type
+is at its 16px top (~900px and up), and both meet the 32px `hit` floor below that — the inset ramp
+itself is gone (F-035, closed; 900px used to read 32.5). Its
 focus ring
 is **inset by exactly the ring width**, because every one of these rows lives in a clipped or
 scrolling surface and a ring needing room outside the box gets cut off at a scroll edge. Asserted by
 contract invariant #13.
+
+**The selection control.** The mark the user toggles — a `Checkbox`'s square, a `Radio`'s
+circle, a `Switch`'s track, a `GridList` row's selection box, a `Slider`'s visible handle —
+resolves its scale from `SELECTION_CONTROL` (`src/tokens/selectionControl.ts`), never from its
+own component. One scale (S2's large step: 18px box, 12px glyph, derived from the family's 16px
+label text), five consumers across three entities; the host decides the mark's colours and its
+shape (`round` vs the halved checkbox radius), never its size. Two rules an author will
+otherwise get wrong: **the glyph inside a fixed mark is fixed too** — `Icon size="sm"` is a
+container-fluid step and was measured rendering 20×20 inside its own 18×18 box, so indicator
+hosts declare `SELECTION_CONTROL.glyph` as their `fontSize` and ask the `Icon` for
+`size="text"` (1em); and **the interactive box is not the visible mark** — a `Slider` thumb's
+target takes `sizing.hit` (WCAG 2.5.8; a range slider's two thumbs are adjacent, so the spacing
+exception cannot save an undersized handle) while the 18px handle inside it is the fill, the
+same split `EMBEDDED_TRIGGER` records. Asserted by contract invariant **#15**.
 
 Where a control's painted box and its operated element are different nodes, **`control` names
 the element the user operates** — the one that takes focus and holds the value — and the

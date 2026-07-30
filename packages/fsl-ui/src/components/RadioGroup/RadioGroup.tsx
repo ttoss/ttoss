@@ -8,8 +8,12 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
-import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
+import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import {
+  SELECTION_BOX_BASE,
+  SELECTION_GROUP_STYLE,
+} from '../../tokens/selectionControl';
 import {
   FieldDescriptionPart,
   FieldLabelPart,
@@ -68,6 +72,11 @@ export interface RadioGroupProps extends Omit<
 > {
   /** Group label displayed above the radio options. */
   label?: React.ReactNode;
+  /**
+   * A `<ContextualHelp>` element rendered beside the label (the reference
+   * system's prop shape) — for the explanation too long for `description`.
+   */
+  contextualHelp?: React.ReactNode;
   /** Supplementary helper text linked to the group via `aria-describedby`. */
   description?: React.ReactNode;
   /**
@@ -100,6 +109,7 @@ export interface RadioGroupProps extends Omit<
  */
 export const RadioGroup = ({
   label,
+  contextualHelp,
   description,
   errorMessage,
   children,
@@ -112,16 +122,12 @@ export const RadioGroup = ({
       {...props}
       data-scope="radio-group"
       data-part="root"
-      style={{
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: vars.spacing.gap.stack.sm,
-      }}
+      style={SELECTION_GROUP_STYLE}
     >
       {label != null && (
         <FieldLabelPart
           scope="radio-group"
+          contextualHelp={contextualHelp}
           colors={c}
           isRequired={props.isRequired}
         >
@@ -148,21 +154,13 @@ RadioGroup.displayName = radioGroupMeta.displayName;
 
 type InputColors = typeof vars.colors.input.primary;
 
+// Size and glyph scale come from the shared selection-control source; the
+// circle is the one axis a radio differs on (`round` vs the halved control
+// radius of a checkbox-shaped mark).
 const RADIO_BOX_STATIC = {
-  boxSizing: 'border-box',
-  flexShrink: 0,
+  ...SELECTION_BOX_BASE,
   position: 'relative',
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '1.125rem',
-  height: '1.125rem',
   borderRadius: vars.radii.round,
-  borderStyle: vars.border.outline.control.style,
-  transitionProperty: 'background-color, border-color, border-width',
-  transitionDuration: vars.motion.feedback.duration,
-  transitionTimingFunction: vars.motion.feedback.easing,
-  outlineOffset: FOCUS_RING_OFFSET,
 } satisfies React.CSSProperties;
 
 /** Circular radio-indicator style (state-dependent chrome + focus ring). */

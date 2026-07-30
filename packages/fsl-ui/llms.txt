@@ -52,10 +52,12 @@ Action:      Button = COMMAND silhouette (commit: submit/confirm/primary action
              of a surface; pill radius, semibold, 40px desktop).
              ActionButton = UTILITY silhouette (ambient operation ON content:
              toolbar, row action, overflow trigger; control radius, label type,
-             THE FIELD ROW — the same tokens TextField/Select resolve, not a
-             pixel: the row's height is fluid because inset.control is
-             container-fluid while sizing.hit is rem-anchored, measured
-             32/32.5/34/34px at 390/900/1280/1920 (F-035). Pick by the
+             THE FIELD ROW — the same tokens TextField/Select resolve: since
+             fsl-theme ADR-022 inset.control is a fixed-px contract (6/12px),
+             so a field measures 34px (a choosable row 32px) wherever the
+             fluid type is at its 16px top (~900px+); below that both meet
+             the 32px hit floor, and the coarse-pointer floor is 48px.
+             Pick by the
              weight of the commitment — there is no size prop, the pair IS the
              distinction. The two type contracts share one font SIZE and differ
              in WEIGHT only; a utility trigger is never independently smaller,
@@ -80,8 +82,13 @@ Selection:   Checkbox, CheckboxGroup, RadioGroup/Radio, Switch,
              the accessible NAME stays the label alone (pinned via
              aria-labelledby — supporting copy placed in the row otherwise gets
              absorbed into the name), and the message shows only while invalid.
-             A lone required Checkbox in a Form blocks submit; Switch has no
-             message part yet (F-033).
+             A lone required Checkbox in a Form blocks submit.
+             Switch carries the full envelope (description + errorMessage +
+             isRequired/isInvalid/validate) via RAC's SwitchField root — a
+             required switch blocks the submit and reports why; with no
+             errorMessage the platform's own constraint copy shows. Its copy is
+             a sibling of the label row, so the accessible name stays the label
+             alone with no aria-labelledby pinning needed.
              CheckboxGroup group-level isInvalid propagates to child Checkboxes.
              Select, CheckboxGroup and RadioGroup all take label/description/
              errorMessage: their label part is Selection/label, but description
@@ -124,7 +131,14 @@ THE FIELD ENVELOPE — one rule for every field, Input and Selection alike:
              reading ink on purpose; the valence on the control is the border
              alone. HOVER DOES NOT APPLY WHILE INVALID (owner ruling) — `invalid`
              outranks `hover` in the cascade and `border` never reads hover at
-             all; focus is unaffected because the ring is a separate declaration. The label
+             all; focus is unaffected because the ring is a separate declaration.
+             AN INVALID BOXED FIELD ALSO CARRIES AN IN-BOX GLYPH (forms item H):
+             data-part="validationGlyph", status.alert intent in the shared icon
+             slot, input.negative.text ink (the message's line — it REPORTS),
+             aria-hidden because the message already tells AT; WCAG 1.4.1
+             reinforcement so colour is not the sole carrier. All six boxed
+             members mark; radio-group/checkbox-group/switch have no box and
+             carry none. The label
              carries the necessity marker when the field isRequired: an
              aria-hidden asterisk, because the control already carries the native
              `required` attribute and a second announcement is noise. Turn it off
@@ -138,11 +152,14 @@ THE FIELD ENVELOPE — one rule for every field, Input and Selection alike:
              Host knob: --fsl-form-label-width (default max-content).
              The message part is always mounted, so
              omitting errorMessage shows the platform's own localized constraint
-             copy. Two exceptions, each with its mechanism: a lone Checkbox or
-             Switch renders its copy inline inside its own <label> (which is why
-             the accessible name is pinned via aria-labelledby), and Switch has no
-             validation props at all in RAC (F-033); Slider gets no
-             FieldErrorContext, because a slider always holds an in-range value.
+             copy. Two exceptions, each with its mechanism: a lone Checkbox
+             renders its copy inline beside its own <label> row (which is why
+             its accessible name is pinned via aria-labelledby, and why its
+             message needs an explicit errorMessage — RAC's FieldError stays
+             quiet on a lone Checkbox); Slider gets no FieldErrorContext,
+             because a slider always holds an in-range value. Switch left this
+             list in forms item E: its SwitchField root supplies the contexts,
+             so it behaves like any group-1 field.
 Input:       TextField, TextArea — each authored EITHER one-line
              (label/description/errorMessage/placeholder props) OR by composing
              its slots (Label/Control/Description/Error). The two are mutually
@@ -152,6 +169,17 @@ Input:       TextField, TextArea — each authored EITHER one-line
              is always mounted, so a field with no errorMessage still shows the
              platform's own constraint copy (already localized) — which is the
              better default for isRequired and type="email".
+             FIELD FORMATS (ADR-026): TextField takes format="br.cep" |
+             "br.cpf" | "br.cnpj" | "br.phone" — one name resolves mask +
+             inputMode + autoComplete together (FieldFormat union; an unknown
+             name fails the typecheck). The MASKED value is the SUBMITTED
+             value; the caret restores by digit count; backspace over a mask
+             literal deletes the digit before it. br.phone switches mask at
+             the 11th digit. The registry ships NO validation — a CPF checksum
+             message is user copy (ADR-001), so pass your own `validate`.
+             Currency is NOT a format: grouping moves as digits are typed,
+             which is Intl's job — use NumberField
+             formatOptions={{ style: 'currency', currency: 'BRL' }}.
              SearchField (label/description/errorMessage/placeholder props OR
              + Label/Control slots; leading search + clear glyphs; clearLabel is
              required and caller-localized),
@@ -159,7 +187,9 @@ Input:       TextField, TextArea — each authored EITHER one-line
              Slider (label + value output; single value or [min,max] range),
              ComboBox/ComboBoxItem (text input + typeahead-filtered list;
              label/description/errorMessage/placeholder/triggerLabel props).
-             THREE SPLIT CONTROLS — ComboBox, NumberField, SearchField:
+             FIVE SPLIT CONTROLS — TextField, TextArea, ComboBox, NumberField,
+             SearchField (the text pair joined in forms item H, verified
+             byte-identical — only Select's trigger stays self-painted):
              data-part="frame" paints the box and hosts the adornments,
              data-part="control" is the <input> you operate. `control` ALWAYS
              names the operated element, so a test or an agent told to type into
@@ -223,6 +253,16 @@ Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
              another rung only to make one row louder. A destructive row uses
              consequence="destructive" (semantic marker, no colour);
              evaluation="negative" would fill the row red (F-029).
+             ContextualHelp = the ⓘ beside a field's label: composes
+             PopoverTrigger + icon-only ActionButton + Popover wrapping a bare
+             dialog. aria-label REQUIRED (ADR-001); glyph fixed to
+             action.help; trigger defaults to muted (ambient). Use through the
+             contextualHelp prop every envelope field takes —
+             contextualHelp={<ContextualHelp aria-label=…>…</ContextualHelp>}
+             — which renders it in a labelRow BESIDE the <label> (inside it
+             the words would join the field's accessible name). For the
+             explanation too long for `description` and too rare to spend
+             permanent space on. Standalone composition also works.
 Feedback:    ProgressBar, Meter, Toast, ToastRegion, createToastQueue
              (Meter = static quantity in a range e.g. battery/disk;
              ProgressBar = a task in flight. Pick by "state" vs "progressing"),
@@ -247,9 +287,37 @@ Forms:       Form publishes field layout to every field inside it as STATIC
              the validation scope, not a synonym for a big form). Never pass
              validationBehavior="aria": it REMOVES native constraints.
              React Aria already focuses the first invalid field on submit.
+             ASYNC SUBMIT: <FormSubmit isPending> while the request is in
+             flight. Pending is aria-disabled, NEVER disabled — the button
+             stays focusable (no dropping the keyboard user mid-submit),
+             press is blocked, its type rides as "button" (no implicit
+             re-submission through it), data-pending for host CSS. One hole
+             stays open by design: the form's own implicit submission (Enter
+             in a lone text input) fires on the <form>, so a host that owns
+             the lifecycle re-entry-guards its handler.
+             SERVER ERRORS: <Form validationErrors={{fieldName: 'msg'}}> —
+             the refusal only a server can issue routes to the field by
+             `name`, shows in its message slot, flags it invalid, and a
+             corrected value withdraws it on commit (blur).
 
 Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              WizardNavigation, Separator, Group (labelled role=group frame),
+             PER-STEP WIZARD VALIDATION is a composition, not a prop: each
+             step's content is its own <Form id="step-N">, and the navigation
+             render-prop's forward button is
+             <Button type="submit" form={`step-${state.currentStep}`}> — the
+             HTML form attribute binds it to the ACTIVE step's form, so native
+             validation gates the advance and the step's own fields report
+             the refusal. No Wizard API exists for this; the composition is
+             the mechanism (guarded in Wizard.test.tsx).
+             FieldGroup = ONE LABEL OVER SEVERAL CONTROLS (an expiry's
+             month/year pair): role=group named by aria-labelledby, the
+             label a span (no single labelable control), each inner control
+             MUST keep its own aria-label. It IS a field — envelope label
+             step, form rhythm, a subgrid row under labelPosition="side" —
+             where Group is a labelled SURFACE frame for content regions.
+             Controls split the row equally. Validation stays with the inner
+             fields (RAC contexts are per field root; a cluster has none).
              Toolbar (THE ACTION FAMILY'S UTILITY GROUP — the reference
              system's "ActionGroup"/ActionButtonGroup under the role's own name:
              role=toolbar, named region, arrow keys walk the controls.

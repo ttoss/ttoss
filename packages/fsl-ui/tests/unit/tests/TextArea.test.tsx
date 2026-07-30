@@ -48,8 +48,12 @@ describe('TextArea', () => {
         <TextAreaError>Required</TextAreaError>
       </TextArea>
     );
-    const control = screen.getByRole('textbox', { name: 'Notes' });
-    expect(control.style.borderColor).toBe(
+    // The FRAME paints the box since the split conversion (forms item H);
+    // the value inside it draws no border of its own.
+    const frame = document.querySelector<HTMLElement>(
+      '[data-scope="text-area"][data-part="frame"]'
+    );
+    expect(frame?.style.borderColor).toBe(
       vars.colors.input.primary.border?.invalid
     );
   });

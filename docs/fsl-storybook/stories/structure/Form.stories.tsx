@@ -108,3 +108,57 @@ export const SideLabelsFixedColumn: Story = {
     );
   },
 };
+
+/**
+ * A submit that is genuinely async rides `isPending`. Pending is
+ * `aria-disabled`, never `disabled` — the button stays focusable so the
+ * keyboard user is not dropped mid-submit — and React Aria blocks the press,
+ * swaps the button's `type` to `button` (stopping implicit re-submission
+ * through it) and announces the change to AT. `data-pending` is the host-CSS
+ * hook. One hole stays open by design: the form's own implicit submission
+ * (Enter in a lone text input) fires on the `<form>`, out of any button's
+ * reach — a host that owns the submission lifecycle re-entry-guards its
+ * handler.
+ */
+export const PendingSubmit: Story = {
+  render: () => {
+    return (
+      <Form
+        onSubmit={(event) => {
+          event.preventDefault();
+        }}
+      >
+        <TextField label="Email" name="email" type="email" isRequired />
+        <FormActions>
+          <FormSubmit isPending>Sending…</FormSubmit>
+        </FormActions>
+      </Form>
+    );
+  },
+};
+
+/**
+ * A refusal only the server can issue — a taken name, an already-invited
+ * address — lands on the field that caused it: `validationErrors` routes the
+ * message by field `name` through React Aria, the field flags invalid and
+ * shows the message in its own slot, and a corrected value withdraws it on
+ * commit (blur). Client validation cannot know what already exists; this is
+ * the channel for the errors that come back with the response.
+ */
+export const ServerErrors: Story = {
+  render: () => {
+    return (
+      <Form
+        validationErrors={{ email: 'That address is already invited.' }}
+        onSubmit={(event) => {
+          event.preventDefault();
+        }}
+      >
+        <TextField label="Email" name="email" type="email" isRequired />
+        <FormActions>
+          <FormSubmit>Invite</FormSubmit>
+        </FormActions>
+      </Form>
+    );
+  },
+};

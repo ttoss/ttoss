@@ -237,8 +237,11 @@ describe('a side-label Form', () => {
   });
 
   test.each([
-    ['text-field', 'control'],
-    ['text-area', 'control'],
+    // The split members' FRAME takes the control column (the value has no
+    // grid identity of its own) — text-field and text-area joined the split
+    // shape in forms item H.
+    ['text-field', 'frame'],
+    ['text-area', 'frame'],
     ['select', 'trigger'],
     ['combo-box', 'frame'],
   ])(
@@ -253,7 +256,8 @@ describe('a side-label Form', () => {
       expect(root.gridColumn).toBe('1 / -1');
       // Baseline, not start: the control's own inset would otherwise push its value
       // below a top-aligned label, and an offset to compensate is a number that
-      // stops being right when the inset changes — and the inset is fluid (F-035).
+      // stops being right when the inset changes — which a theme may do (the
+      // inset is a fixed contract since ADR-022, but still theme-tunable).
       expect(root.alignItems).toBe('baseline');
 
       expect(

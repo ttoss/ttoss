@@ -6,6 +6,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
+import { SELECTION_GROUP_STYLE } from '../../tokens/selectionControl';
 import {
   FieldDescriptionPart,
   FieldLabelPart,
@@ -54,6 +55,11 @@ export interface CheckboxGroupProps extends Omit<
 > {
   /** Group label displayed above the checkboxes. */
   label?: React.ReactNode;
+  /**
+   * A `<ContextualHelp>` element rendered beside the label (the reference
+   * system's prop shape) — for the explanation too long for `description`.
+   */
+  contextualHelp?: React.ReactNode;
   /** Supplementary helper text linked to the group via `aria-describedby`. */
   description?: React.ReactNode;
   /**
@@ -86,6 +92,7 @@ export interface CheckboxGroupProps extends Omit<
  */
 export const CheckboxGroup = ({
   label,
+  contextualHelp,
   description,
   errorMessage,
   children,
@@ -98,16 +105,12 @@ export const CheckboxGroup = ({
       {...props}
       data-scope="checkbox-group"
       data-part="root"
-      style={{
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: vars.spacing.gap.stack.sm,
-      }}
+      style={SELECTION_GROUP_STYLE}
     >
       {label != null && (
         <FieldLabelPart
           scope="checkbox-group"
+          contextualHelp={contextualHelp}
           colors={c}
           isRequired={props.isRequired}
         >

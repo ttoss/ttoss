@@ -284,7 +284,39 @@ both modes → commit.
   `informational.negative`, which CONTRACT §1 forbids a Feedback component from
   reading. That is the F-024 / F-029 axis a third time: the tree has no quiet
   in-context rung. Decide it there, not by having one component reach across.
-- **B4. `contextualHelp`.** A slot beside the label, in S2's prop shape.
+- **B4. ✅ `contextualHelp` (2026-07-29).** S2's prop shape verbatim: every
+  envelope root takes `contextualHelp={<ContextualHelp aria-label=…>…}`, and
+  the new composite is `PopoverTrigger` + an icon-only `ActionButton` + a
+  `Popover` wrapping a bare dialog — the `ActionMenu` recipe, one affordance
+  over (one meta on the trigger; the surface keeps Popover's Overlay identity;
+  `aria-label` type-required because S2's translated "Help" default needs the
+  i18n runtime we refuse, ADR-001). The icon registry grew by exactly one
+  intent (`action.help`, mapped to the ⓘ — S2's own default variant; the
+  question-mark variant waits for a consumer). **The placement is two
+  mechanisms, not a preference:** the trigger renders in an internal
+  `labelRow` wrapper (the `Slider` part-name precedent) as a **sibling** of
+  the `<label>` — inside it the trigger's words join the field's accessible
+  NAME (the A2 measurement) and the label's click-to-focus swallows the
+  trigger's click. Without the prop no wrapper enters the tree: the DOM is
+  byte-identical to before the slot existed, asserted. The wrapper's gap is
+  `gap.inline.sm`, not `xs` — `xs` is contractually visual-only and the
+  trigger is an interactive target (spacing.md's own rule). The popover
+  content states S2's `contextual-help-minimum-width` (268px) so a sentence
+  wraps as a paragraph, not a ribbon. **The class guard caught a real defect
+  before it shipped:** rendered inside `NumberField`, RAC's ambient
+  `ButtonContext` demands a slot ("increment" or "decrement") from every RAC
+  Button in the subtree and threw on the help trigger — `slot={null}` is the
+  documented refusal, and only a table driven over every root would have hit
+  it. The trigger defaults to `muted` (ambient by definition), carrying
+  F-024's ruled caveat in its JSDoc. Measured in Chromium, both modes:
+  labelRow 34px with the label centred, trigger 34×34 (≥ 2.5.8's 24px, and
+  this one IS a tab stop), resting fill byte-equal to the page surface,
+  content at exactly 268px. _Studio consumer:_ Settings' Region field —
+  migration consequences are too long for a description line and too rare to
+  spend the space permanently, which is the criterion. Guards: the envelope
+  class table (every root hosts the slot outside its label; `Switch` asserted
+  as the exception — its label is the row) plus the composite's own suite.
+  Suites: fsl-ui 2358, Studio 75.
 - **C1. ✅ `Select` + `ComboBox` onto the anatomy (2026-07-26).** One refactor,
   five measured defects closed: `Select`'s root was `inline-flex` so it alone
   never filled its column (97.98px against its siblings' 1200px); its trigger drew
@@ -465,20 +497,72 @@ both modes → commit.
   source drifting. It also caught itself: gating the clear button removed the
   element it measured, so the fixture had to give the field a value.
 
-- **E. `Checkbox` / `CheckboxGroup` / `RadioGroup` / `Switch` / `Slider`.**
-  The `validationMessage` part for `Switch` (F-033's remaining half — `Checkbox`
-  landed in A2, and `RadioGroup`/`CheckboxGroup`'s envelope landed in C2). **Read
-  in `Switch.d.ts` during C2, and it changes the shape of the work:** React Aria's
-  `SwitchProps` **omits** `isRequired`, `isInvalid`, `validate` and
-  `validationBehavior` outright, so there is no validation state to render — a
-  `Switch` cannot be invalid today. What exists instead is a separate
-  `SwitchField` root (`SwitchFieldProps`, `SwitchFieldContext`, and an
-  `isRequired` on `SwitchRenderProps`), so F-033's Switch half is a question about
-  adopting that root, not about adding a part. Also: the
-  32 → 34 px row inset, one shared glyph scale (three hard-coded `1.125rem` and
-  a Switch track that exceeds S2's extra-large), focus-offset literals → the
-  constant, group layout single-sourced, Slider's unread `sizing: hit` claim.
-  F-021 packet for the owner.
+- **E. ✅ The selection family (2026-07-29).** Queued as "adopt `SwitchField`?"
+  plus a list of geometry drifts, and reading the RAC **source** — not the types
+  alone — collapsed the question before any design work: RAC 1.19 marks plain
+  `Switch` `@deprecated: Use SwitchField + SwitchButton instead`, and
+  `SwitchField` supplies **both** envelope contexts (`TextContext` with the
+  description/errorMessage slots, `FieldErrorContext` with the full triple),
+  owns `isRequired`/`isInvalid`/`validate`, and reads the Form's
+  `validationBehavior` with the `native` default. So the F-033 Switch half was
+  not "add a part" but "move onto the root upstream built for this hole" — and
+  the new structure (a `<div>` root, the clickable `<label>` row as internal
+  `data-part="button"`) is what dodges A2's name-absorption trap by
+  construction: the copy is a _sibling_ of the label, so the shared envelope
+  parts work as designed (aria-describedby via the slot, platform constraint
+  copy from the always-mounted `FieldError`) instead of `Checkbox`'s gated
+  re-implementation. The wrapper is gated on `hasSupport || isInvalid` because
+  an empty span would still claim the root's flex gap and grow a bare switch.
+  The envelope class guard moved `Switch` from group 3 to group 1 — the removal
+  its own test name asked for.
+  **Geometry: one shared scale, and measurement found a defect nobody listed.**
+  `1.125rem` was hand-written in five files (Checkbox, Radio, GridList, Switch
+  thumb, Slider thumb); `SELECTION_CONTROL` in the cross-cutting token layer now
+  states it once (S2's **large** step, derived: our label text is 16px = S2
+  large, whose `checkbox-control-size-large` is exactly 18px). The unlisted
+  defect: the indicator glyph was `Icon size="sm"` — a **container-fluid** step
+  (`clamp(14px, 0.8cqi + 11px, 20px)`) inside a fixed box, measured rendering
+  **20×20 inside its own 18×18 box** at 1280px. F-021's shape one property over.
+  Glyph hosts now declare `SELECTION_CONTROL.glyph` (12px — S2's large
+  checkmark, `checkmark-icon-size-200`) as `fontSize` with `size="text"`.
+  `GridList`'s second copy of the box had also kept the full `control` radius
+  that P3 slice 3 halved on `Checkbox` (the reads-as-a-Radio defect, fixed in
+  one copy, kept in the other) — single-sourcing `checkboxRadius` retires the
+  class. **Switch track 40×24 → 30×18** (S2 large `switch-control-width-large`;
+  the old track exceeded S2's extra-large 34×20), with the S2 signature the old
+  one lacked: the handle **grows when ON** (10 → 12px), both states centred on
+  the track's content box — the old thumb sat 1px low, an offset computed
+  against the border box. The track's height IS the shared scale, which is what
+  aligns a switch with the checkbox and radio beside it.
+  **Slider: the `sizing: hit` claim is now read, and it was a WCAG hole.** The
+  thumb was its own 18px visual — a pointer target below 2.5.8's 24×24 AA
+  floor, and the spacing exception cannot rescue a range slider's two adjacent
+  thumbs. The interactive box now takes `hit` (32px fine / 48px coarse, the
+  direction S2's own mobile ramp moves) with the 18px handle inside it as the
+  fill — the same target-vs-fill split `EMBEDDED_TRIGGER` records — and the
+  ring stays on the visible handle, because a ring around a transparent box
+  floats detached. The track reads `hit` too, so the header's token row stopped
+  lying. Group layout single-sourced (`SELECTION_GROUP_STYLE`;
+  `RadioGroup`/`CheckboxGroup` were byte-identical). Focus-offset literals were
+  already gone (R2) — verified, no work.
+  **Deliberate no-changes, recorded:** Radio stays 18px against S2's 16 (S2
+  draws its radio 2px smaller at every step; one shared scale is the point of
+  this item, the distinction carries no semantics for us, and the shape
+  disambiguates). The Slider rail stays 6px against S2's 4 (the pill rails of
+  `ProgressBar`/`Meter` from Slice 3 — three rails, one internal decision).
+  The row inset (selectables 32px vs fields 34px above ~1200px) is **not**
+  patched here: S2's own selectable rows are the field row's content box, ours
+  already are, and the fluid-inset question underneath is F-035, owner packet.
+  **Guard:** contract invariant **#15**, four equality tests + a value half,
+  each verified to fail on injection (a diverging component size, the shared
+  source drifting, GridList regrowing the full radius, the thumb losing its
+  floor). _Studio consumer:_ Settings' "Enforce two-factor authentication"
+  Switch, its consequence as a linked description — beside the Checkbox on
+  purpose, the two selection shapes in one form. Verified in Chromium at
+  1280px, both modes: box 18 / glyph 12 / track 30×18 / handle 10→12 centred at
+  56 in both states / slider target 32×32 with rail, handle and target centres
+  byte-equal at 88; message ink `rgb(185,28,28)` / `rgb(252,165,165)` —
+  byte-identical to item F's family measurement. Suites: fsl-ui 2321, Studio 74.
 - **F. ✅ The validation language (2026-07-29).** Two of the three things this
   item was written to build turned out not to need building, and the third was
   one branch. **What shipped:** `buildFieldTextPartStyle`'s `negative` tone now
@@ -501,21 +585,140 @@ both modes → commit.
   **New finding, filed rather than folded in:** F-036 — the theme's contrast
   suite pairs text against its own role's background, so the ink-on-page-surface
   pairing this item introduced is measured by hand and guarded by nothing.
-- **G. `FieldGroup` + `Wizard`.** `role="group"` with `aria-labelledby`;
-  per-step validation for the multistep flow.
-- **H. Field formats, and the in-control validation glyph.** A `format` registry
-  on the `Icon`-intent pattern: named, locale-scoped format data resolving mask +
-  `inputMode` + `autoComplete`. Never a `type` prop explosion. The Brazil set
-  (CEP, CPF, CNPJ, phone, currency) is the first consumer. Own ADR.
-  **The glyph arrived here from F**, which is where it belongs: it is an
-  adornment inside the field box, so it shares the icon slot and the split
-  control's frame anatomy with everything else in this item, and it shared
-  nothing with the token question F was actually about. It is the remaining
-  answer to F-032's WCAG 1.4.1 note — with the message now carrying valence in
-  ink as well as words, colour is no longer the sole carrier, so the glyph is
-  reinforcement rather than the fix.
-- **I. The Studio's complete form.** A Meridian flow exercising every capability
-  end to end — the proving ground and the regression surface.
+- **G. ✅ `FieldGroup` + `Wizard` (2026-07-29).** The audit came first and cut
+  the item in half. **The Wizard half was already built and its validation
+  half was inherited:** the `Wizard` composite ships steps/summary/navigation
+  with a render-prop whose JSDoc had promised "validation gating" — probed in
+  jsdom before anything was written, and the composition works with **zero new
+  API**: each step's content is its own `Form`, the forward button is a
+  submit bound to the _active_ step's form via the HTML `form` attribute
+  (`Button` forwards `type`/`form`), and native validation gates `goNext`
+  while the step's own fields report the refusal. The deliverable is the B3a
+  shape — a guard (two assertions in `Wizard.test.tsx`, invalid-blocks and
+  valid-advances-with-rebinding) plus the story and llms.txt documenting the
+  composition, because it would vanish silently under a Button that stopped
+  forwarding the attributes.
+  **The FieldGroup half was the build**, and the ADR-014 duplicate test is
+  what needed answering: `Group` already ships `role="group"` +
+  `aria-labelledby`, so a second component on the same role had to differ by
+  more than paint. It does — `Group` is a labelled _surface_ frame
+  (`inset.surface`, `radii.surface`, `title.sm` label: a bordered region of
+  content) while `FieldGroup` **is a field** whose control happens to be a
+  cluster: Input/root, the envelope's label step via
+  `buildFieldTextPartStyle`, the form's stack rhythm, and a subgrid row under
+  `labelPosition="side"` exactly like every other field (measured: its label
+  shares the column with the fields around it at x=40). The label is a `span`
+  wired by `aria-labelledby`, **not** a `<label>` — there is no single
+  labelable control to point at — and each inner control keeps its own
+  `aria-label`, because the group names the cluster and AT still needs each
+  member named. Controls split the row equally (`grid-auto-columns: 1fr`,
+  measured 594/594). Validation stays with the inner fields: a group has no
+  validation state of its own, per FORMS §3's constraint (RAC's contexts are
+  supplied per field root).
+  _Studio consumer, both halves at once:_ Billing's **Add payment method**
+  wizard — step 1 (card number with a `validate`, the Expiry `FieldGroup` as
+  the month/year pair §2 named) gates step 2 (billing address) through native
+  validation; saving writes the card's last4 to the store and the Billing
+  page shows "Card ending 4242". Verified in Chromium both modes: the blocked
+  step shows the field's own message plus the platform copy on both Selects,
+  the pair splits the row equally, and the flow completes. Suites: fsl-ui
+  2387, Studio 83 (coverage threshold moved up to 98.9/90.5).
+- **H. ✅ Field formats, and the in-control validation glyph (2026-07-29,
+  ADR-026).** The registry shipped as written: `format="br.cep"` on `TextField`
+  resolves mask + `inputMode` + `autoComplete` from one name, on the
+  `Icon`-intent pattern (`{locale}.{format}`, a `FieldFormat` union that fails
+  the typecheck on an unknown name). The Brazil set is **four**, not the five
+  §4 listed: CEP, CPF, CNPJ, phone (multi-pattern — the mask switches at the
+  11th digit). **Currency was cut from the registry on inspection**, not
+  deferred: grouping separators move as digits are typed, which digit-slot
+  masking cannot express and `Intl.NumberFormat` already owns —
+  `NumberField formatOptions={{ style: 'currency' }}` is the shipped answer,
+  and the ADR names it so the gap is not refiled. Checksum validation (CPF's
+  check digits) stays with the caller's `validate` because a validate message
+  is user-facing copy the package cannot ship (ADR-001). The masked value is
+  the submitted value — what the user sees is what `FormData` carries — and
+  the caret restores by digit count, so typing into the middle of a masked
+  value does not throw the cursor to the end. Backspace over a literal deletes
+  the digit before it, because deleting a hyphen the user never typed and
+  watching it come back is the classic mask defect.
+  **The glyph forced the split conversion, and the conversion surfaced a
+  latent drift.** `TextField`/`TextArea` were self-painted, so an in-box
+  adornment had nowhere to sit; both moved to the frame + borderless-value
+  shape the other split members already had, verified **byte-identical** in
+  Chromium before/after (frame 34px/1px border/8px radius, value at the same
+  reading edge, both modes). Converting exposed that the split members'
+  value ink had silently stopped reading `text.invalid` — `buildFieldValueStyle`
+  is now flag-aware, the same cascade the self-painted shape already had.
+  `FieldInvalidGlyph` is a field-level primitive in the envelope: `status.alert`
+  intent in the shared icon slot, `input.negative.text` ink (reporting valence,
+  Lexicon §10.15/§3.2 — the same line the message reads), `aria-hidden` because
+  the message already tells AT, at `inset.control.md` from the field edge (12px
+  — S2's `field-edge-to-alert-icon`, and it lands on our own token exactly).
+  All six **boxed** members carry it (`text-field`, `text-area`, `select`,
+  `combo-box`, `number-field`, `search-field`); the boxless three
+  (`radio-group`, `checkbox-group`, `switch`) are named exceptions in the class
+  guard — no box, no in-box glyph. Measured in Chromium both modes: glyph
+  20×20 at 13px from the edge (12 inset + 1 border), ink `rgb(185,28,28)` /
+  `rgb(252,165,165)` — byte-identical to item F's message measurement, WCAG
+  1.4.1 reinforcement closed as F promised.
+  _Guards:_ 15 format tests (registry data, paste, overflow, phone mask
+  switch, backspace-over-literal, caret, masked `FormData`, attrs, controlled
+  value, caller `validate`) + the glyph class guard in `fieldEnvelope.test.tsx`
+  (every boxed member marks while invalid, carries none while valid),
+  injection-verified. Contract invariants #10/#11 re-baselined for the split
+  move. _Studio consumer:_ Billing's payment wizard address step collects CEP
+  and CNPJ through the registry — the Brazilian-entity invoicing fields §2
+  motivated. Suites: fsl-ui 2425, Studio 83.
+- **I. ✅ The Studio's complete form (2026-07-29).** Not a kitchen sink on one
+  page: the audit came first and mapped every capability to its Studio
+  consumer, and what the queue's eight items had left unconsumed was exactly
+  seven things — `RadioGroup`, `CheckboxGroup`, `NumberField`, `Slider`,
+  `SearchField`, and the two §1 inherited claims nothing had exercised:
+  `FormSubmit isPending` and `Form validationErrors`. **What shipped is the
+  Environments flow**: a new Meridian route whose list is filtered by a
+  `SearchField` (a filter, which is what a search field _is_ — not a form
+  value) and whose **New environment** form is the complete form — name
+  (TextField, `validate`), type (required RadioGroup with `contextualHelp`),
+  branch, instances (NumberField, 1–16), scale-up CPU (Slider, percent
+  `formatOptions`, the one control with no native form participation —
+  component state by design), notifications (CheckboxGroup) — submitted
+  **async** against the fictional backend, with the pending window on the
+  button and a duplicate name refused by the **server** and routed to the
+  field by `name`.
+  **The first consumer found a defect two items of JSDoc had promised away
+  (F-037):** `FormSubmit` hand-wrote `data-pending`/`data-composition` and
+  converted pending into `disabled` — the DOM carried neither attribute
+  (React Aria clobbers both after the passthrough spread) and the disable
+  dropped keyboard focus mid-submit. The fix subtracted code: RAC Button's
+  native `isPending` does the whole job strictly better — `aria-disabled`
+  (stays focusable), press blocked, `type` rides as `button` while pending
+  (no implicit re-submission through it), AT announced, `data-pending`
+  emitted. Measured while writing the guard: the form's own implicit
+  submission (Enter in a lone text input) still fires on the `<form>`, out
+  of any button's reach — so the host that owns the lifecycle re-entry-guards
+  its handler, and the Studio's does, with a test dispatching a raw submit
+  during the pending window. Also read at the source rather than assumed:
+  server errors clear on **commit** (blur), not per keystroke —
+  `useFormValidationState`'s `commitValidation` is what clears them.
+  _Guards:_ `formValidationBehaviour.test.tsx` gains the first
+  `isPending` and `validationErrors` assertions (pending
+  marks/names/stays-focusable; press blocked; server error routed by `name`,
+  withdrawn on commit); two Form stories (PendingSubmit, ServerErrors);
+  llms.txt states both capabilities. _Verified in Chromium both modes:_
+  filter narrows and clears, pending probe
+  `{data-pending: true, aria-disabled: true, disabled: false, type: button}`,
+  the server refusal renders the full item-F/H language on the name field
+  (border + message + glyph `rgb(185,28,28)`), slider steps 70%→65% by
+  keyboard, and the created row reads
+  `preview-eu · preview · main · 3 · Failed, Rolled back`. Suites: fsl-ui
+  2428, Studio 100 (coverage threshold up to 99.1/92.5/99).
+  **The map, for the record — where each capability lives in the Studio:**
+  one-line authoring everywhere · composed slots (Team invite) · side labels
+  - `Switch` envelope + `contextualHelp` (Settings) · wizard per-step
+    validation + `FieldGroup` + formats (Billing) · confirm `Checkbox` (Team)
+    · first-invalid focus (Login) · selection family, steppers, slider,
+    search, groups, async submit, server errors (Environments). Every field
+    kind and every form capability now stands in a real flow.
 
 ## 4b. The round before D — everything open, sorted by what unblocks it
 
@@ -630,10 +833,10 @@ claiming a token was missing that exists. The reading rule that failure earned i
 binding in the ROADMAP under "Before deciding anything".
 
 | Question                                                                      | Status after reading the authorities                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **1. Can a component paint nothing?** (F-024, F-029, the quiet field posture) | **Narrowed to one shape.** `colors.md` rules out `transparent` explicitly (`muted` is _deliberately_ opaque-surface-coloured so contrast stays computable), and its §Stacking makes a raised surface's colour a **composite** — background + `elevation.tonal.*` — that no colour token can name. Measured: in dark, `action.muted.background.default` and `informational.primary.background.default` are both `neutral.900`, and `tonal.raised` is `neutral.800`. So **omitting** the background is the only shape that keeps both written rules. What is left for the owner is whether to pay its verified cost: both contrast extractors `continue` on an absent counterpart, so deleting a background silently drops its pairs and needs an explicit "quiet ink vs stratum" replacement.                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1. Can a component paint nothing?** (F-024, F-029, the quiet field posture) | **✅ Ruled 2026-07-29 — no, a component always paints.** The owner closed it against this row's earlier recommendation: `colors.md` is followed to the letter — no `transparent` primitive **and no omitted background**; every semantic background stays a declared, auditable value and the contrast pairs stay in the suite. Cost accepted and named in F-024: the quiet rung mismatches a raised dark surface (`#161616` on `#262626`), and the lawful future fix inside the ruling is a stratum-aware **opaque** value (after F-027's dark audit), on evidence. Consequences: F-029's missing "negative ink on a surface" rung, when a consumer demands it, is an opaque rung; C4's deferred quiet field takes an opaque resting fill when its consumer arrives, not a transparent one.                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | **2. Is `invalid` a colour or a valence?** (F-031, F-032, F-034)              | **✅ Closed 2026-07-29 — and the row that stood here got the answer half wrong, which is worth keeping.** It read `colors.md` → "Picking a role" (_"valence dominates emphasis … if the token communicates outcome or **validity**"_) and concluded that "our `invalid`-state-on-`input.primary` is the deviation" — i.e. that the **control** should switch role. The Lexicon forbids exactly that: §10.15 calls re-voicing a control for a runtime outcome a category mistake, and §7's State table says `invalid` is "never an authorial valence choice". `model.md` §11 puts the Lexicon above the family doc, and `colors.md`'s rule is scoped to _a token that communicates validity_ — which the message's ink is and the control's chrome is not. **It is both: a State on the control, a valence on the part that reports it**, and the theme had already written that in a comment beside the token. The owner ruling (hover does not apply while invalid) removed the last thing that looked like it needed a mechanism; measurement removed the other (focus rides the ring, not the border). Shipped: one branch in `buildFieldTextPartStyle`, `CONTRACT.md` §3.2, eight guards, contrast measured in both modes. |
-| **3. Fixed ramp or `cqi`?** (F-021, F-035)                                    | **Narrowed; the mechanism already exists.** `sizing.md` rules ergonomics by **pointer profile**, fixed px, "never fluid" — and `hit` obeys (`fine: clamp(32px, 2rem, 36px)` / `coarse: 48px`). Spacing is fluid from one engine by design, **but bounding is the sanctioned opt-out and is used twice**: `inset.action.block` = `clamp(8px, {core.spacing.2}, 9px)` and `separation.interactive.min` = `clamp(8px, {core.spacing.3}, 16px)`. `inset.control.sm` is unbounded, which is the drift. The action inset's own justification asserts a stable ~32px control height that the unbounded control inset does not deliver. Cheapest consistent move: bound `inset.control.*`. Separable second question: whether mobile should additionally _grow_ by pointer — the type ramp has no `coarse` hook today.                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **3. Fixed ramp or `cqi`?** (F-021, F-035)                                    | **✅ Ruled 2026-07-29 (owner) — both halves, opposite directions, one ADR (fsl-theme ADR-022).** The **inset** is outcome-bearing: `inset.control.{sm                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | md  | lg}` is now a fixed-px contract (`6px`/`12px`/`24px`, the engine's own desktop values), validated by spacing Error #17 and registered in model.md §8 — measured 32/34/34/34 at 390–1920 — the mid-range drift F-035 measured is gone (900px read 32.5, reads 34 now) and the 390px step is the fluid type meeting the `hit` floor, which closes F-035 and makes ADR-019/020's ruling true by mechanism (its "never binds" premise had been measured false). A bounded band was rejected with arithmetic: the unit tops out only at cqi ≥ 1200, so any band containing its range preserves the 900px drift. The **type** stays fluid: that is the system's own identity (`typography.md`), S2 is reference not authority — F-021 closes as working-as-designed with readmission on measured illegibility or a coarse-pointer consumer. |
 
 **Not a decision — a prerequisite.** F-027: the border-contrast inventory audits
 the light bundle only (~90 undecided dark contexts). Whichever of the above lands,
@@ -641,10 +844,11 @@ it lands unverified in dark until that audit exists.
 
 ### Q — the queue, unchanged
 
-**B4** `contextualHelp` · ~~**D** `SearchField` + `NumberField`~~ (**done
-2026-07-29**) · **E** the selection family · ~~**F** the validation language~~
-(**done 2026-07-29**) · **G** `FieldGroup` + `Wizard` · **H** field formats ·
-**I** the Studio's complete form.
+~~**B4** `contextualHelp`~~ (**done 2026-07-29**) · ~~**D** `SearchField` +
+`NumberField`~~ (**done 2026-07-29**) · ~~**E** the selection family~~ (**done
+2026-07-29**) · ~~**G** `FieldGroup` + `Wizard`~~ (**done 2026-07-29**) ·
+~~**H** field formats~~ (**done 2026-07-29**) · ~~**I** the Studio's complete
+form~~ (**done 2026-07-29**). **The queue is complete.**
 
 **F came in far smaller than this plan sized it**, and the reason is the lesson
 rather than the schedule. It was queued as a token-model change — switch the field
@@ -654,11 +858,12 @@ docs and guards: the control was already correct and deliberately so, the ink th
 message needed already shipped, and the cascade already ordered `invalid` above
 `hover`. Two of the three things F was going to build did not need building. What
 it did surface is genuinely new — F-036, that the contrast suite cannot see a
-cross-role pairing — which is the sort of thing only shipping the change finds. Item **E** still carries the finding this queue handed it: React Aria omits
-validation from `SwitchProps` entirely, so F-033's `Switch` half is about adopting
-`SwitchField`. Both findings handed to **D** — the embedded trigger's UA
-font-size and `SearchField` having no one-line form — were confirmed by
-measurement and closed with it.
+cross-role pairing — which is the sort of thing only shipping the change finds.
+Item **E** confirmed the finding this queue handed it — and sharpened it: plain
+`SwitchProps` omits validation because plain `Switch` is **deprecated**, and the
+`SwitchField` root it pointed to carried everything the envelope needs. Both
+findings handed to **D** — the embedded trigger's UA font-size and `SearchField`
+having no one-line form — were confirmed by measurement and closed with it.
 
 ### N — decided no-changes from this queue, not to be reopened
 
@@ -716,7 +921,7 @@ it is a class · ADR when the decision is architectural · FRICTION append per g
 suites green · coverage held at 100 · treeshake within budget · lint · ROADMAP
 entry in the Slice 4 voice.
 
-**Baselines to detect regression:** fsl-ui 2286 tests, fsl-theme 1006, Studio 73;
+**Baselines to detect regression:** fsl-ui 2321 tests, fsl-theme 1006, Studio 74;
 treeshake 3249 bytes of 16000 — up 37 from C4's `FOCUS_RING_INSET`, which lives in a
 module `Button` already imports; `choosableRow.ts` itself shakes out of a
 Button-only bundle, verified by its absence from the output.

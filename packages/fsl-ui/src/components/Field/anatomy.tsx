@@ -30,11 +30,12 @@ import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 // Two shapes of control exist, and the difference is not cosmetic:
 //
 //   *self-painted* — one element is both the painted box and the thing the
-//   user operates (`TextField`'s `<input>`, `TextArea`'s `<textarea>`,
-//   `Select`'s trigger). Use `buildFieldControlStyle`.
+//   user operates (`Select`'s trigger). Use `buildFieldControlStyle`.
 //
 //   *split* — a frame paints and hosts adornments while a borderless inner
-//   input carries the value (`NumberField`, `ComboBox`, `SearchField`). Use
+//   input carries the value (`TextField`, `TextArea`, `NumberField`,
+//   `ComboBox`, `SearchField` — the text pair joined in forms item H so the
+//   validation glyph has a box to sit in, verified byte-identical). Use
 //   `buildFieldFrameStyle` + `buildFieldValueStyle`. `data-part="control"`
 //   stays on the **operated** element (the input), because that is what makes
 //   the anatomy addressable — a test or an agent told to type into a field
@@ -56,13 +57,22 @@ type InputColors = typeof vars.colors.input.primary;
  * tokens, so the row is one decision — and a utility Action trigger reads the
  * same set from `UTILITY_SILHOUETTE`.
  *
- * **The row is these tokens, not a pixel height.** Its visible height is fluid,
- * because `inset.control.sm` is container-fluid
- * (`clamp(4px, 0.25cqi + 3px, 6px)`) while `sizing.hit` is rem-anchored: measured
- * at 390 / 900 / 1280 / 1920, a field comes out **32 / 32.5 / 34 / 34px**. The
- * "34px field row" quoted around this package is the top of that ramp, true above
- * roughly 1200px and nowhere else (F-035 — whether the inset should be fluid at
- * all is ADR-019's ruling not reaching far enough, and is decided with F-021).
+ * **The row is these tokens, and since fsl-theme ADR-022 the inset is a
+ * fixed-px contract** (outcome-bearing — a control's box is its inset + type
+ * over the `hit` floor; ADR-023 moved the fixed values into
+ * `core.spacing.fixed.*` without changing one of them).
+ *
+ * What is fixed is the **inset**: it resolves 6/12/24px at every container
+ * width, which is the guarantee and the thing to assert. The **row** is not
+ * fixed, because control type stayed fluid by the same ruling — so a measured
+ * row height is meaningless without the container that produced it. Two real
+ * measurements, both current: a Storybook story at a 1200px canvas reads
+ * 32 / 34 / 34 / 34 at viewport 390/900/1280/1920, while the Studio's
+ * Environments form (a narrower column inside a padded Surface) reads
+ * 32 / 32.67 / 34 / 34 at the same viewports. Neither is the number; the
+ * fractional mid-range value is the fluid *type*, not the inset drift F-035
+ * measured, and at the narrow end the 32px `hit` floor binds — ADR-020 doing
+ * its job. On a coarse pointer the 48px floor dominates, as before.
  *
  * That is why every contract invariant on this row — #10, #11, #13 — asserts
  * **token identity** and never a measured pixel. jsdom has no layout, so it could
@@ -212,16 +222,23 @@ export const buildFieldControlStyle = ({
 export const buildFieldFrameStyle = ({
   colors,
   labelPosition = 'top',
+  multiline,
   ...flags
 }: FieldChromeFlags & {
   colors: InputColors;
   labelPosition?: FieldLabelPosition;
+  /**
+   * A multiline frame stretches its value instead of centring it, and its
+   * adornments pin to the top edge (the reference's `field-top-to-alert-icon`
+   * placement) — a glyph centred on a five-line textarea marks nothing.
+   */
+  multiline?: boolean;
 }): React.CSSProperties => {
   return {
     ...fieldBoxChrome(colors, flags),
     ...fieldSideColumn(labelPosition, 'control'),
     display: 'inline-flex',
-    alignItems: 'center',
+    alignItems: multiline ? 'stretch' : 'center',
     minHeight: vars.sizing.hit,
     ...FIELD_ROW.text,
   } as React.CSSProperties;
@@ -236,7 +253,8 @@ export const buildFieldFrameStyle = ({
 export const buildFieldValueStyle = ({
   colors,
   textAlign = 'start',
-}: {
+  ...flags
+}: FieldChromeFlags & {
   colors: InputColors;
   /**
    * Reading edge of the value. `start` everywhere except where the value is a
@@ -254,7 +272,17 @@ export const buildFieldValueStyle = ({
     paddingBlock: FIELD_ROW.insetBlock,
     paddingInline: FIELD_ROW.insetInline,
     textAlign,
-    color: colors?.text?.default,
+    // Resolved through the cascade, not pinned to `default`: the family's
+    // `text.invalid` is the READABLE-invalid ink a theme may tune (F-032's
+    // annotation), and the split members had silently stopped reading it —
+    // a self-painted control resolved it, a static value did not. Found by
+    // the guard when TextField converted (forms item H).
+    color:
+      resolveInteractiveStyle(colors?.text, {
+        isHovered: flags.isHovered,
+        isDisabled: flags.isDisabled,
+        isInvalid: flags.isInvalid,
+      }) ?? colors?.text?.default,
     ...FIELD_ROW.text,
   } as React.CSSProperties;
 };
@@ -272,7 +300,8 @@ export const buildFieldValueStyle = ({
  * label's text on the control's text rather than on its box: the control's own
  * inset would otherwise push its value below a top-aligned label, and a magic
  * offset to compensate would be a number that stops being right the moment the
- * inset changes (and the inset is fluid — F-035).
+ * inset changes — which a theme may do (`inset.control` is theme-tunable even
+ * as a fixed contract, ADR-022).
  */
 export const buildFieldRootStyle = ({
   labelPosition = 'top',
@@ -348,6 +377,10 @@ export const buildFieldTextPartStyle = ({
   } as React.CSSProperties;
 };
 
+// The in-control validation glyph lives in its own module (forms item H) —
+// re-exported here because the envelope is where every member finds it.
+export { FieldInvalidGlyph } from './FieldInvalidGlyph';
+
 // ---------------------------------------------------------------------------
 // The two ways to author a field
 //
@@ -376,6 +409,13 @@ export interface FieldCopyProps {
    * and `type="email"`.
    */
   errorMessage?: React.ReactNode;
+  /**
+   * A `<ContextualHelp>` element rendered beside the label (the reference
+   * system's prop shape) — for the explanation that is too long for a
+   * `description` line and matters too rarely to spend the space permanently.
+   * Renders only when `label` renders: the help qualifies the label's words.
+   */
+  contextualHelp?: React.ReactNode;
   /** Placeholder on the control. Never a substitute for `label`. */
   placeholder?: string;
 }
@@ -574,6 +614,14 @@ export type FieldLabelPartProps = Omit<
      * prop on every member of the family.
      */
     isRequired?: boolean;
+    /**
+     * A `<ContextualHelp>` element rendered **beside** the label — a sibling,
+     * never a child. Two mechanisms force that placement: content inside a
+     * `<label>` is absorbed into the field's accessible NAME (the A2
+     * measurement), and a `<label>`'s click focuses the field, which would
+     * swallow the trigger's own click.
+     */
+    contextualHelp?: React.ReactNode;
   };
 
 /**
@@ -582,29 +630,58 @@ export type FieldLabelPartProps = Omit<
  * The marker is inside the label because it must sit with the words it
  * qualifies, and it is `aria-hidden` for the reason recorded on
  * `FieldNecessityMarker`.
+ *
+ * With `contextualHelp` the label gains a wrapping row (internal
+ * `data-part="labelRow"`, the `Slider` precedent) hosting the label and the
+ * trigger side by side; without it the DOM is byte-identical to what shipped
+ * before the slot existed — no wrapper enters the tree for fields that never
+ * asked for help.
  */
 export const FieldLabelPart = ({
   scope,
   colors,
   isRequired,
+  contextualHelp,
   children,
   ...props
 }: FieldLabelPartProps) => {
   const { labelPosition } = useFieldLayout();
 
-  return (
+  const label = (
     <RACLabel
       {...props}
       data-scope={scope}
       data-part="label"
       style={{
         ...buildFieldTextPartStyle({ colors, step: 'md' }),
-        ...fieldSideColumn(labelPosition, 'label'),
+        ...(contextualHelp === undefined
+          ? fieldSideColumn(labelPosition, 'label')
+          : {}),
       }}
     >
       {children}
       <FieldNecessityMarker isRequired={isRequired} />
     </RACLabel>
+  );
+
+  if (contextualHelp === undefined) return label;
+
+  return (
+    <span
+      data-scope={scope}
+      data-part="labelRow"
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        // `sm`, not `xs`: the trigger is an interactive target and
+        // `gap.inline.xs` is contractually visual-only (spacing.md).
+        gap: vars.spacing.gap.inline.sm,
+        ...fieldSideColumn(labelPosition, 'label'),
+      }}
+    >
+      {label}
+      {contextualHelp}
+    </span>
   );
 };
 

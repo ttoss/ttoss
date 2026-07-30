@@ -15,7 +15,9 @@ import {
   buildFieldValueStyle,
   type FieldAuthoring,
   FieldDescriptionPart,
+  FieldInvalidGlyph,
   FieldLabelPart,
+  type FieldLabelPartProps,
   FieldValidationMessagePart,
   useFieldLayout,
 } from '../../components/Field/anatomy';
@@ -105,7 +107,8 @@ export type SearchFieldProps = Omit<
 } & FieldAuthoring<React.ReactNode, { placeholder?: string }>;
 
 /** Props for the SearchField label. */
-export type SearchFieldLabelProps = Omit<RACLabelProps, 'style' | 'className'>;
+export type SearchFieldLabelProps = Omit<RACLabelProps, 'style' | 'className'> &
+  Pick<FieldLabelPartProps, 'contextualHelp'>;
 
 /** The label slot of a SearchField. */
 export const SearchFieldLabel = (props: SearchFieldLabelProps) => {
@@ -173,29 +176,41 @@ export const SearchFieldControl = (props: SearchFieldControlProps) => {
         });
       }}
     >
-      <span
-        data-scope="search-field"
-        data-part="leadingAdornment"
-        aria-hidden
-        style={{
-          ...ICON_SLOT_STYLE,
-          flex: 'none',
-          marginInlineStart: vars.spacing.inset.control.md,
-          color: colors?.text?.default,
-          pointerEvents: 'none',
-        }}
-      >
-        <Icon intent="action.search" size="sm" />
-      </span>
+      {({ isInvalid }) => {
+        return (
+          <>
+            <span
+              data-scope="search-field"
+              data-part="leadingAdornment"
+              aria-hidden
+              style={{
+                ...ICON_SLOT_STYLE,
+                flex: 'none',
+                marginInlineStart: vars.spacing.inset.control.md,
+                color: colors?.text?.default,
+                pointerEvents: 'none',
+              }}
+            >
+              <Icon intent="action.search" size="sm" />
+            </span>
 
-      <RACInput
-        {...props}
-        data-scope="search-field"
-        data-part="control"
-        style={buildFieldValueStyle({ colors })}
-      />
+            <RACInput
+              {...props}
+              data-scope="search-field"
+              data-part="control"
+              style={({ isHovered, isDisabled, isInvalid }) => {
+                return buildFieldValueStyle({
+                  colors,
+                  isHovered,
+                  isDisabled,
+                  isInvalid,
+                });
+              }}
+            />
 
-      {/*
+            <FieldInvalidGlyph scope="search-field" isInvalid={isInvalid} />
+
+            {/*
         Hidden while there is nothing to clear. React Aria publishes the fact as
         `data-empty` on the root, which is a hook for **CSS** — and this package
         ships none, so the attribute alone changed nothing and the button sat
@@ -204,23 +219,26 @@ export const SearchFieldControl = (props: SearchFieldControlProps) => {
         failed, because a comment has no oracle. The state is read from the
         root's render props and travels the same scope as `clearLabel`.
       */}
-      {!isEmpty && (
-        <RACButton
-          aria-label={clearLabel}
-          data-scope="search-field"
-          data-part="trailingAdornment"
-          style={({ isHovered, isDisabled, isFocusVisible }) => {
-            return buildEmbeddedTriggerStyle({
-              colors,
-              isHovered,
-              isDisabled,
-              isFocusVisible,
-            });
-          }}
-        >
-          <Icon intent="action.close" size="sm" />
-        </RACButton>
-      )}
+            {!isEmpty && (
+              <RACButton
+                aria-label={clearLabel}
+                data-scope="search-field"
+                data-part="trailingAdornment"
+                style={({ isHovered, isDisabled, isFocusVisible }) => {
+                  return buildEmbeddedTriggerStyle({
+                    colors,
+                    isHovered,
+                    isDisabled,
+                    isFocusVisible,
+                  });
+                }}
+              >
+                <Icon intent="action.close" size="sm" />
+              </RACButton>
+            )}
+          </>
+        );
+      }}
     </RACGroup>
   );
 };
@@ -243,6 +261,7 @@ export const SearchField = ({
   clearLabel,
   children,
   label,
+  contextualHelp,
   description,
   errorMessage,
   placeholder,
@@ -265,7 +284,11 @@ export const SearchField = ({
           >
             {children ?? (
               <>
-                {label != null && <SearchFieldLabel>{label}</SearchFieldLabel>}
+                {label != null && (
+                  <SearchFieldLabel contextualHelp={contextualHelp}>
+                    {label}
+                  </SearchFieldLabel>
+                )}
                 <SearchFieldControl placeholder={placeholder} />
                 {description != null && (
                   <FieldDescriptionPart scope="search-field" colors={colors}>

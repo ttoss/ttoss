@@ -3,6 +3,7 @@ import { navigate, parseHash, ROUTES } from 'src/router';
 describe('parseHash', () => {
   test.each([
     ['#/', 'dashboard'],
+    ['#/environments', 'environments'],
     ['#/team', 'team'],
     ['#/billing', 'billing'],
     ['#/settings', 'settings'],

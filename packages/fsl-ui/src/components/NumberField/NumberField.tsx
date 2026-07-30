@@ -15,6 +15,7 @@ import {
   buildFieldRootStyle,
   buildFieldValueStyle,
   FieldDescriptionPart,
+  FieldInvalidGlyph,
   FieldLabelPart,
   FieldValidationMessagePart,
   useFieldLayout,
@@ -67,6 +68,11 @@ export interface NumberFieldProps extends Omit<
 > {
   /** Visible label displayed above the field. */
   label?: React.ReactNode;
+  /**
+   * A `<ContextualHelp>` element rendered beside the label (the reference
+   * system's prop shape) — for the explanation too long for `description`.
+   */
+  contextualHelp?: React.ReactNode;
   /** Supplementary helper text linked to the field via `aria-describedby`. */
   description?: React.ReactNode;
   /**
@@ -110,6 +116,7 @@ export interface NumberFieldProps extends Omit<
  */
 export const NumberField = ({
   label,
+  contextualHelp,
   description,
   errorMessage,
   decrementLabel = 'Decrease',
@@ -129,6 +136,7 @@ export const NumberField = ({
       {label != null && (
         <FieldLabelPart
           scope="number-field"
+          contextualHelp={contextualHelp}
           colors={c}
           isRequired={props.isRequired}
         >
@@ -156,43 +164,67 @@ export const NumberField = ({
           });
         }}
       >
-        <RACButton
-          slot="decrement"
-          data-scope="number-field"
-          data-part="trigger"
-          style={({ isHovered, isDisabled, isFocusVisible }) => {
-            return buildEmbeddedTriggerStyle({
-              colors: c,
-              isHovered,
-              isDisabled,
-              isFocusVisible,
-            });
-          }}
-        >
-          <Icon intent="action.decrement" size="sm" label={decrementLabel} />
-        </RACButton>
+        {({ isInvalid }) => {
+          return (
+            <>
+              <RACButton
+                slot="decrement"
+                data-scope="number-field"
+                data-part="trigger"
+                style={({ isHovered, isDisabled, isFocusVisible }) => {
+                  return buildEmbeddedTriggerStyle({
+                    colors: c,
+                    isHovered,
+                    isDisabled,
+                    isFocusVisible,
+                  });
+                }}
+              >
+                <Icon
+                  intent="action.decrement"
+                  size="sm"
+                  label={decrementLabel}
+                />
+              </RACButton>
 
-        <RACInput
-          data-scope="number-field"
-          data-part="control"
-          style={buildFieldValueStyle({ colors: c, textAlign: 'center' })}
-        />
+              <RACInput
+                data-scope="number-field"
+                data-part="control"
+                style={({ isHovered, isDisabled, isInvalid }) => {
+                  return buildFieldValueStyle({
+                    colors: c,
+                    textAlign: 'center',
+                    isHovered,
+                    isDisabled,
+                    isInvalid,
+                  });
+                }}
+              />
 
-        <RACButton
-          slot="increment"
-          data-scope="number-field"
-          data-part="trigger"
-          style={({ isHovered, isDisabled, isFocusVisible }) => {
-            return buildEmbeddedTriggerStyle({
-              colors: c,
-              isHovered,
-              isDisabled,
-              isFocusVisible,
-            });
-          }}
-        >
-          <Icon intent="action.increment" size="sm" label={incrementLabel} />
-        </RACButton>
+              <FieldInvalidGlyph scope="number-field" isInvalid={isInvalid} />
+
+              <RACButton
+                slot="increment"
+                data-scope="number-field"
+                data-part="trigger"
+                style={({ isHovered, isDisabled, isFocusVisible }) => {
+                  return buildEmbeddedTriggerStyle({
+                    colors: c,
+                    isHovered,
+                    isDisabled,
+                    isFocusVisible,
+                  });
+                }}
+              >
+                <Icon
+                  intent="action.increment"
+                  size="sm"
+                  label={incrementLabel}
+                />
+              </RACButton>
+            </>
+          );
+        }}
       </RACGroup>
 
       {description != null && (

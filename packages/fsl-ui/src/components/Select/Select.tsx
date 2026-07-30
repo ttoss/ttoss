@@ -23,6 +23,7 @@ import {
   buildPickerListStyle,
   buildPickerPopoverStyle,
   FieldDescriptionPart,
+  FieldInvalidGlyph,
   FieldLabelPart,
   FieldValidationMessagePart,
   useFieldLayout,
@@ -86,6 +87,11 @@ export interface SelectProps<T extends object = object> extends Omit<
 > {
   /** Label displayed above the trigger button. */
   label?: React.ReactNode;
+  /**
+   * A `<ContextualHelp>` element rendered beside the label (the reference
+   * system's prop shape) — for the explanation too long for `description`.
+   */
+  contextualHelp?: React.ReactNode;
   /** Supplementary helper text linked to the field via `aria-describedby`. */
   description?: React.ReactNode;
   /**
@@ -142,6 +148,7 @@ export interface SelectProps<T extends object = object> extends Omit<
  */
 export const Select = <T extends object = object>({
   label,
+  contextualHelp,
   description,
   errorMessage,
   placeholder = 'Select…',
@@ -171,7 +178,12 @@ export const Select = <T extends object = object>({
               chrome, never the name of the field).
             */}
             {label != null && (
-              <FieldLabelPart scope="select" colors={c} isRequired={isRequired}>
+              <FieldLabelPart
+                contextualHelp={contextualHelp}
+                scope="select"
+                colors={c}
+                isRequired={isRequired}
+              >
                 {label}
               </FieldLabelPart>
             )}
@@ -229,6 +241,12 @@ export const Select = <T extends object = object>({
                   );
                 }}
               </SelectValue>
+
+              <FieldInvalidGlyph
+                scope="select"
+                isInvalid={isInvalid}
+                edgeInset={false}
+              />
 
               {/* chevron icon */}
               <span

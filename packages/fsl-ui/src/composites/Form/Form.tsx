@@ -341,10 +341,13 @@ export interface FormSubmitProps extends Omit<ButtonOwnProps, 'type'> {
    */
   composition?: CompositionsFor<(typeof formSubmitMeta)['entity']>;
   /**
-   * Whether the form is currently submitting. When true, the button is
-   * disabled to prevent double-submit and emits `data-pending` for host
-   * CSS (spinner, skeleton). Host-controlled — fsl-ui does not own the
-   * submission lifecycle.
+   * Whether the form is currently submitting. Host-controlled — fsl-ui does
+   * not own the submission lifecycle. Forwarded to React Aria's native
+   * pending state, which is deliberately **not** `disabled`: the button
+   * stays focusable (a control that vanishes from under the keyboard user
+   * mid-submit is the classic pending defect), announces the change to AT,
+   * blocks press and implicit re-submission (its `type` rides as `button`
+   * while pending), and emits `data-pending` for host CSS.
    */
   isPending?: boolean;
 }
@@ -368,19 +371,26 @@ export const FormSubmit = ({
   consequence = 'committing',
   composition = 'primaryAction',
   isPending = false,
-  isDisabled,
   ...props
 }: FormSubmitProps) => {
   formScope.use(formSubmitMeta.displayName);
+  // `isPending` and `composition` ride Button's own props. The first version
+  // of this component wrote `data-pending`/`data-composition` attributes by
+  // hand and converted pending into `isDisabled` — and its first consumer
+  // (the Studio's async create, forms item I) showed both attributes never
+  // reached the DOM: React Aria's Button computes `data-pending` from its own
+  // `isPending` after the passthrough spread, and Button re-emits
+  // `data-composition` from its `composition` prop the same way. The JSDoc
+  // had promised both for two items with nothing failing — a comment has no
+  // oracle; the guard lives in formsBridge.test.tsx now.
   return (
     <Button
       {...props}
       type="submit"
       data-scope="form-submit"
       consequence={consequence}
-      isDisabled={isDisabled ?? isPending}
-      data-composition={composition}
-      data-pending={isPending || undefined}
+      composition={composition}
+      isPending={isPending}
     />
   );
 };

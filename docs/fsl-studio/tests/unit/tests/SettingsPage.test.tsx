@@ -24,7 +24,11 @@ describe('SettingsPage', () => {
     const user = userEvent.setup();
     const Probe = () => {
       const { settings } = useWorkspace();
-      return <output>{`${settings.name}|${settings.requireReview}`}</output>;
+      return (
+        <output>
+          {`${settings.name}|${settings.requireReview}|${settings.enforceTwoFactor}`}
+        </output>
+      );
     };
 
     render(
@@ -39,9 +43,52 @@ describe('SettingsPage', () => {
     await user.click(
       screen.getByRole('checkbox', { name: /Require a review/ })
     );
+    await user.click(
+      screen.getByRole('switch', { name: /Enforce two-factor/ })
+    );
     await user.click(screen.getByRole('button', { name: 'Save changes' }));
 
-    expect(screen.getByRole('status')).toHaveTextContent('northline-eu|false');
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'northline-eu|false|true'
+    );
+  });
+
+  test('the Region label hosts contextual help without renaming the field', async () => {
+    const user = userEvent.setup();
+    render(<SettingsPage />);
+
+    // The help sits beside the label, outside the <label> element — so the
+    // field's accessible name gains nothing from it. (A Select's name is
+    // value-then-label by React Aria's own order, so never query it exactly.)
+    const trigger = document.querySelector<HTMLElement>(
+      '[data-scope="select"] [data-part="trigger"]'
+    );
+    expect(trigger).toHaveAccessibleName(/Region/);
+    expect(trigger).not.toHaveAccessibleName(/About regions/);
+
+    await user.click(screen.getByRole('button', { name: 'About regions' }));
+    expect(
+      screen.getByRole('dialog', { name: 'About regions' })
+    ).toHaveTextContent(/schedules a data migration/);
+  });
+
+  test('the enforcement switch carries its consequence as a description', () => {
+    render(<SettingsPage />);
+
+    // The envelope the SwitchField root restored (forms item E): the copy is
+    // supporting text linked via aria-describedby, not a second label — the
+    // switch's accessible name stays the label alone.
+    const input = screen.getByRole('switch', {
+      name: 'Enforce two-factor authentication',
+    });
+    const description = document.querySelector<HTMLElement>(
+      '[data-scope="switch"][data-part="description"]'
+    );
+
+    expect(description).toHaveTextContent(/signed out at the next deploy/);
+    expect(input.getAttribute('aria-describedby')).toContain(
+      description?.id as string
+    );
   });
 
   test('an invalid slug blocks the save and states the rule', async () => {
