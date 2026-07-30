@@ -428,6 +428,70 @@ One more field earns inclusion on trust grounds rather than domain-expressibilit
 
 So of the eight domains named, only three forced a genuinely new field (`kind`, `codeScheme`, `Metric.kind` extension); hierarchy (`level`/`parentId`), `resolution`, and `source` are the small supporting cast. Nothing here is a Brazil-specific field — `codeScheme` and `source` are free-form strings, so the same catalog shape serves US Census (`codeScheme: 'fips:county'`), Eurostat NUTS, etc.; the IBGE/IPEA/SICAR requirement is met by _values_, not by hard-coded Brazilian _fields_. This keeps the package domain-neutral while satisfying the concrete compatibility goal.
 
+## Durable decisions — catalog v1.1 (2026-07-30)
+
+Derived from walking the shipped contract against the two pilot applications (`cozsolidarias`, `imagemsp`). Each supersedes or extends a decision above; supersessions are listed at the end of this block.
+
+### D8 — Two artifacts, one shared dimension contract
+
+The data dictionary (`dataset_catalogue.json` — provenance, LGPD, checksums, column plumbing) and the visualization `Catalog` stay separate artifacts. `@ttoss/geovis-catalog` publishes the spatio-temporal dimension types (`Presence`, `Temporal`, `Spatial`, `Interval`, `CodedRef`, `TemporalGrain`, …) and both artifacts import them, so the pilots stop maintaining private copies: `cozsolidarias` reached `schema_version: 2.0.0` with the full dimension model while `imagemsp` is still on `1.0.0`, a divergence that opened within three weeks.
+
+Merging the two was rejected — it would move LGPD flags, checksums and download URLs into the artifact handed to a model.
+
+Exactly one field is re-bound at the seam. The dictionary types `spatial.grain` as `{ scheme, code, label? }` because it has no geography collection to point at; the visualization catalog re-binds it to a foreign key:
+
+```ts
+export type CatalogSpatialDescribed = Omit<SpatialDescribed, 'grain'> & {
+  grain: { geographyId: string; label?: string };
+};
+```
+
+`codeScheme`, `kind`, `level` and `resolution` therefore stay owned once, by `Geography` (D7). The seam is an explicit mapping function, never an inheritance rule.
+
+### D9 — Data binding: `artifact` and `columns`
+
+The shipped contract describes what exists but never says where the bytes are, nor which column carries a metric's values — `Join.on`, `spatial.field` and `temporal.field` name the join, spatial and time columns, and the measure column is named nowhere. No application can consume a catalog until both are closed:
+
+```ts
+/** Where the artifact lives. Named `artifact`, not `access` — the dictionary already uses `access` for its LGPD block. */
+artifact?: { url: string; format: 'csv' | 'json' | 'geojson' | 'parquet' };
+/** metricId → column carrying its values; keys validated against `metricIds`. */
+columns?: Record<string, string>;
+```
+
+Keeping them separate mirrors both dictionaries: one location per dataset, many columns.
+
+### D10 — Temporal and spatial dimensions
+
+Adopts the model already running in `cozsolidarias` 2.0.0. Each dimension declares `status` (`described` / `not_applicable` / `unknown`) before anything else, which resolves the ambiguous root `null` — a boundary mesh genuinely has no time, while an undocumented kitchen registry does, and the two must drive opposite resolver behaviour. Coverage is `extent`: `Interval[]` for time (open ends allowed, extra intervals for campaigns), `CodedRef[]` for space, so a dataset covering four states declares them as codes instead of a bounding box that would wrongly include their neighbours.
+
+`grain` is an ISO-8601 duration (`P1Y`, `P1M`, `P10Y`, `PT15M`) or one of `instant` / `irregular` / `continuous` / `unknown`, validated by regex. A calendar-unit enum was rejected: it cannot express decennial or sub-hourly resolution without a breaking change per case, it forces a non-ISO token for quarters, it has no room for non-durational grains, and naming a grain `monthly` invites exactly the confusion with update cadence that `frequency` exists to prevent — in production, two datasets share `P1M` with different frequencies.
+
+Selectable periods are **derived** from `extent` × `grain`; an explicit `periods[]` exists only to override gaps or carry per-period maturity.
+
+`History` is the five-value superset `snapshot | overwrite | append_only | revised | unknown`. Production's two values are preserved verbatim so the dictionary migrates without touching data, and `revised` is what tells the resolver that values may change under a pinned `Catalog.version`.
+
+`spatial` is required and absorbs `geometry`, whose enum gains `none` and `multipolygon` — the shipped `point | polygon | line` is factually wrong for eight of the eleven production datasets.
+
+### D11 — One catalog per language
+
+`Catalog.domain.language` already declares which language a catalog is written in. v1 keeps `label`/`description` as single strings and ships one catalog per language rather than turning every string into a locale map. The additive path stays open: a parallel optional field can carry locale maps later without breaking readers.
+
+### D12 — Field-level metadata, without sensitivity
+
+`Dataset.fields[]` carries `name`, `role` and `display`, so the workspace inspector and hover tooltip derive from the catalog instead of hand-written config. It deliberately does not carry `sensitive`: disclosure policy is unresolved, and in both pilots the gateway is the disclosure frontier — `cozsolidarias` marks eight fields sensitive yet intentionally exposes five of them through its detail endpoint, so a dataset-level flag would be wrong in both directions. `sensitive` is additive once that policy lands.
+
+### D13 — Collections replace free-form `source`
+
+`Dataset.source?: string` (D7) becomes `collectionId?: string`, a foreign key into `Catalog.collections[]`. Both pilots already key each dataset to a single `collection_id`, so this absorbs an existing validated structure rather than inventing one. It also makes attribution computable: the legend's source note composes from `Collection.organization`, `publicReferenceUrl` and `temporal.extent` instead of the string hard-coded in `cozsolidarias`' `geovisScoreScales.ts`.
+
+### Superseded by this block
+
+- D4's `Dataset.temporal: { start, end }` → D10's `Temporal`.
+- D7's `Dataset.geometry` → D10's `spatial.geometry`.
+- D7's `Dataset.source` → D13's `collectionId`.
+- The carried-forward question on `temporal.start`/`end` date-format enforcement — grain and period tokens are regex-validated by D10, so it no longer applies.
+
 ### Phase 1 — Package bootstrap
 
 Create `packages/geovis-catalog` with the scaffold in D2: `package.json` (with the `ajv`/`@ttoss/geovis` dependencies from D1), `tsdown.config.ts`, `tsconfig.json`, `tests/tsconfig.json`, `tests/unit/jest.config.ts`, empty `src/index.ts`, `README.md` stub, `CHANGELOG.md`. Add the package to root `pnpm-workspace.yaml` coverage (already matched by the `packages/*` glob — no change needed there) and confirm `pnpm install` links it. Confirm a trivial `.json` import builds cleanly through `tsdown` before Phase 2 needs it for real (D2's caveat).
@@ -474,7 +538,9 @@ This plan's package (`@ttoss/geovis-catalog`) and its exports (`Catalog`, `catal
 - **Catalog governance** (PRD-004's own open question): who approves catalog entries and how `permissions` integrates with application auth is explicitly out of scope — the application is responsible for enforcing its own authorization logic.
 - **`codeScheme` as a controlled vocabulary** (D7): v1 leaves `codeScheme`/`Dataset.source` as free-form strings for maximum compatibility. Whether a later version ships a registry of well-known values (`ibge:municipio`, `sicar:imovel`, …) with validation/repair — so a typo like `ibge:municipios` becomes an `allowed-values` repair — is deferred; the string field is forward-compatible with that addition.
 - **Cross-`codeScheme` join validation** (D7): declaring `codeScheme` opens a future integrity check ("a join between two geographies of incompatible code schemes is a `mismatch`"). D5's join check stays id/field-level in v1; this is a Should-item extension, not a Must.
-- **`Dataset.temporal.start`/`end` date-format enforcement**: `type: "string"` only, no `format: "date"` — see "Decisions confirmed" below. Deferred, not a schema-shape blocker; `ajv-formats` can be added later without a breaking change if enforcement becomes worth the dependency.
+- ~~**`Dataset.temporal.start`/`end` date-format enforcement**~~ — superseded by D10, which regex-validates grain and period tokens.
+- **Field-level sensitivity** (D12): `Dataset.fields[]` ships without `sensitive` because disclosure policy is undecided. Until it lands, a catalog derived from a restricted dataset must not be published to a model on the catalog's authority alone.
+- **Schema source of truth** (D1): the monorepo standardises on Zod for new schemas, and `z.toJSONSchema()` would keep `getCatalogJSONSchema()` intact while dropping the `ajv` dependency. D1's Ajv choice predates that standard and has not been revisited.
 
 ## Decisions confirmed with the user (2026-07-23)
 

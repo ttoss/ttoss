@@ -25,7 +25,8 @@ AI can only reference mappable reality.
 - Catalog contract covering metrics, datasets, geographies, joins, units, formatters, time ranges, filters, allowed map types, permissions, aliases, and descriptions (strategy §5.2) — typed and JSON-schema validated.
 - Integrity validation reporting through the PRD-001 taxonomy.
 - Introspection surface for AI tools and builders (curated metadata, never raw data).
-- Package location: `@ttoss/geovis-catalog`.
+- Package location: `@ttoss/geovis-catalog`, which also publishes the spatio-temporal dimension contract that the applications' own data dictionaries import, so the catalog and the dictionary cannot drift apart.
+- Data binding: `Dataset.artifact` (where the bytes are) and `Dataset.columns` (which column carries each metric). Without both, a valid catalog is still unconsumable — join, spatial and time columns are named, the measure column is not.
 - Nominal metrics: `kind: 'nominal'` with a closed `categories[]` (id, label, order, optional theme colour token). The spec's `CategoricalColorBy` has no catalog counterpart today, so a categorical choropleth cannot be expressed at all.
 - `Geography.cameraFraming` (bbox, centre, zoom) as **resolver input, never a preset** — PRD-006 derives `viewPresets` from it, keeping `set-view-preset` bounded to declared positions instead of coordinates a model invents.
 - `FilterField` is the single filter model: it declares the target property and the allowed `LayerFilterOperator`s, and compiles 1:1 to `VisualizationLayer.filter`.
