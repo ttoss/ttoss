@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.8.0 (2026-07-30)
+
+### Bug Fixes
+
+- **docs/website:** exclude fsl-bench from API doc generation ([#1166](https://github.com/ttoss/ttoss/issues/1166)) ([0fd372f](https://github.com/ttoss/ttoss/commit/0fd372f60fcd787e515d228bf70cc84c1352ce57))
+
+### Features
+
+- **http-server:** add toHttpError and applyHttpErrorHeaders ([#1178](https://github.com/ttoss/ttoss/issues/1178)) ([5cfb144](https://github.com/ttoss/ttoss/commit/5cfb144712ba40d0d16394d39393bc58ba41923c))
+
 ## [0.7.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server@0.7.0...@ttoss/http-server@0.7.1) (2026-06-14)
 
 **Note:** Version bump only for package @ttoss/http-server
