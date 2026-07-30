@@ -1,3 +1,5 @@
+import type { LayerFilterOperator } from '@ttoss/geovis';
+
 export type MetricKind =
   | 'count'
   | 'rate' // e.g. "per capita" or "per household"
@@ -89,13 +91,58 @@ export interface Join {
   cardinality: '1:1' | '1:m' | 'm:1';
 }
 
+/** Data type of a filter field — decides which domain modes and operators are legal. */
+export type FilterKind = 'categorical' | 'numeric' | 'temporal';
+
+/** One selectable value of a `values` domain, already labelled for display. */
+export interface FilterOption {
+  /** The value written into the emitted filter predicate. */
+  value: string | number;
+  /** Human-readable text for the control. */
+  label: string;
+  /** Number of features carrying this value, when known — lets a UI show counts or hide empty options. */
+  count?: number;
+}
+
+/**
+ * What a control may offer the user. The `mode` discriminant is what tells a
+ * UI which widget to build, so it is required — an absent domain used to mean
+ * "unknown", which no component could act on.
+ *
+ * `runtime` declares that the domain exists but is only knowable from the
+ * data: call `computeFilterDomain` with the rows to obtain a concrete one.
+ */
+export type FilterDomain =
+  | { mode: 'values'; values: FilterOption[] }
+  | { mode: 'range'; min: number; max: number; step?: number }
+  | { mode: 'interval'; start: string; end: string }
+  | { mode: 'runtime' };
+
 export interface FilterField {
-  /** Field name to filter on. */
-  field: string;
-  /** Data type of the filter field — determines how the domain is interpreted. */
-  kind: 'categorical' | 'numeric' | 'temporal';
-  /** Allowed domain values: string[] for categorical, { min; max } for numeric/temporal. Interpreted based on `kind`. */
-  domain?: unknown;
+  /** Unique identifier, referenced by intents and by dispatched filter actions. */
+  id: string;
+  /** Human-readable name for the control. */
+  label: string;
+  /** Help text explaining what the filter narrows. */
+  description?: string;
+  /** Alternative names for search/discovery. */
+  aliases?: string[];
+  /** Feature property the predicate reads — becomes `LayerFilter.property`. */
+  property: string;
+  /** Data type, which constrains both `domain.mode` and `operators`. */
+  kind: FilterKind;
+  /** Dataset carrying `property`. Mutually exclusive with `sourceGeographyId`; exactly one is required. */
+  sourceDatasetId?: string;
+  /** Geography carrying `property`. Mutually exclusive with `sourceDatasetId`; exactly one is required. */
+  sourceGeographyId?: string;
+  /** Metric this filter narrows, when it filters on a measure — supplies `unit` and `formatter` for display. */
+  metricId?: string;
+  /** Comparisons the control may emit. Each maps 1:1 to a `LayerFilter.operator`. */
+  operators: LayerFilterOperator[];
+  /** Whether more than one value may be selected at once. Only meaningful for a `values` domain. */
+  multiple?: boolean;
+  /** Values or bounds the control offers. */
+  domain: FilterDomain;
 }
 
 export interface MapTypeCatalogEntry {

@@ -19,6 +19,10 @@ export type CatalogIssueCode =
   | 'duplicate-metric-id' // invalid: two metrics share an id
   | 'duplicate-dataset-id'
   | 'duplicate-geography-id'
+  | 'duplicate-filter-id' // invalid: two filters share an id
+  | 'unknown-filter-dataset' // mismatch: FilterField.sourceDatasetId references a dataset id not in catalog.datasets
+  | 'unknown-filter-geography' // mismatch: FilterField.sourceGeographyId references a geography id not in catalog.geographies
+  | 'unknown-filter-metric' // mismatch: FilterField.metricId references a metric id not in catalog.metrics
   | 'unknown-join-dataset' // mismatch: join references a dataset id not in catalog.datasets
   | 'unknown-join-geography' // mismatch: join references a geography id not in catalog.geographies
   | 'unknown-dataset-geography' // mismatch: Dataset.geographyIds[] references a geography id not in catalog.geographies
@@ -38,6 +42,10 @@ export const CATALOG_ISSUE_CODE_STATUS: Record<
   'duplicate-metric-id': 'invalid',
   'duplicate-dataset-id': 'invalid',
   'duplicate-geography-id': 'invalid',
+  'duplicate-filter-id': 'invalid',
+  'unknown-filter-dataset': 'mismatch',
+  'unknown-filter-geography': 'mismatch',
+  'unknown-filter-metric': 'mismatch',
   'unknown-join-dataset': 'mismatch',
   'unknown-join-geography': 'mismatch',
   'unknown-dataset-geography': 'mismatch',

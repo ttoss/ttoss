@@ -80,11 +80,128 @@ export const joinSchema = z
   })
   .meta({ id: 'Join' });
 
+export const filterKindSchema = z.enum(['categorical', 'numeric', 'temporal']);
+
+export const layerFilterOperatorSchema = z.enum([
+  'eq',
+  'neq',
+  'gt',
+  'gte',
+  'lt',
+  'lte',
+  'in',
+  'not-in',
+]);
+
+export const filterOptionSchema = z.strictObject({
+  value: z.union([z.string(), z.number()]),
+  label: z.string(),
+  count: z.number().int().nonnegative().optional(),
+});
+
+export const filterDomainSchema = z.discriminatedUnion('mode', [
+  z.strictObject({
+    mode: z.literal('values'),
+    values: z.array(filterOptionSchema),
+  }),
+  z.strictObject({
+    mode: z.literal('range'),
+    min: z.number(),
+    max: z.number(),
+    step: z.number().positive().optional(),
+  }),
+  z.strictObject({
+    mode: z.literal('interval'),
+    start: z.string(),
+    end: z.string(),
+  }),
+  z.strictObject({ mode: z.literal('runtime') }),
+]);
+
+/** Domain modes each kind may declare, beyond the always-legal `runtime`. */
+const DOMAIN_MODES_BY_KIND = {
+  categorical: ['values'],
+  numeric: ['range'],
+  temporal: ['interval'],
+} as const;
+
+/** Operators that carry meaning for each kind. Ordering is irrelevant. */
+const OPERATORS_BY_KIND = {
+  categorical: ['eq', 'neq', 'in', 'not-in'],
+  numeric: ['eq', 'neq', 'gt', 'gte', 'lt', 'lte'],
+  temporal: ['eq', 'neq', 'gt', 'gte', 'lt', 'lte'],
+} as const;
+
 export const filterFieldSchema = z
   .strictObject({
-    field: z.string(),
-    kind: z.enum(['categorical', 'numeric', 'temporal']),
-    domain: z.unknown().optional(),
+    id: z.string(),
+    label: z.string(),
+    description: z.string().optional(),
+    aliases: z.array(z.string()).optional(),
+    property: z.string(),
+    kind: filterKindSchema,
+    sourceDatasetId: z.string().optional(),
+    sourceGeographyId: z.string().optional(),
+    metricId: z.string().optional(),
+    operators: z.array(layerFilterOperatorSchema).min(1),
+    multiple: z.boolean().optional(),
+    domain: filterDomainSchema,
+  })
+  .check((ctx) => {
+    const filter = ctx.value;
+
+    const declaredSources = [
+      filter.sourceDatasetId,
+      filter.sourceGeographyId,
+    ].filter((source) => {
+      return source !== undefined;
+    });
+
+    if (declaredSources.length !== 1) {
+      ctx.issues.push({
+        code: 'custom',
+        input: filter,
+        path: ['sourceDatasetId'],
+        message:
+          'declare exactly one of `sourceDatasetId` or `sourceGeographyId` — the property has to live somewhere, and it cannot live in two places',
+      });
+    }
+
+    const allowedModes: readonly string[] = DOMAIN_MODES_BY_KIND[filter.kind];
+
+    if (
+      filter.domain.mode !== 'runtime' &&
+      !allowedModes.includes(filter.domain.mode)
+    ) {
+      ctx.issues.push({
+        code: 'custom',
+        input: filter,
+        path: ['domain', 'mode'],
+        message: `a '${filter.kind}' filter takes domain mode '${allowedModes[0]}' or 'runtime', not '${filter.domain.mode}'`,
+      });
+    }
+
+    const allowedOperators: readonly string[] = OPERATORS_BY_KIND[filter.kind];
+
+    for (const [index, operator] of filter.operators.entries()) {
+      if (allowedOperators.includes(operator)) continue;
+      ctx.issues.push({
+        code: 'custom',
+        input: filter,
+        path: ['operators', index],
+        message: `operator '${operator}' is meaningless for a '${filter.kind}' filter; allowed: ${allowedOperators.join(', ')}`,
+      });
+    }
+
+    if (filter.multiple === true && filter.kind !== 'categorical') {
+      ctx.issues.push({
+        code: 'custom',
+        input: filter,
+        path: ['multiple'],
+        message:
+          '`multiple` only applies to a categorical filter, where several values can be selected at once',
+      });
+    }
   })
   .meta({ id: 'FilterField' });
 

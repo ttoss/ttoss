@@ -67,7 +67,20 @@ const GEOGRAPHY_KEYS = [
 
 const JOIN_KEYS = ['from', 'to', 'on', 'cardinality'].sort();
 
-const FILTER_FIELD_KEYS = ['field', 'kind', 'domain'].sort();
+const FILTER_FIELD_KEYS = [
+  'id',
+  'label',
+  'description',
+  'aliases',
+  'property',
+  'kind',
+  'sourceDatasetId',
+  'sourceGeographyId',
+  'metricId',
+  'operators',
+  'multiple',
+  'domain',
+].sort();
 
 const MAP_TYPE_CATALOG_ENTRY_KEYS = [
   'name',
@@ -187,6 +200,60 @@ describe('catalog schema validation', () => {
     expect(municipio?.parentId).toBe('geo-uf');
     expect(municipio?.codeScheme).toBe('ibge:municipio');
     expect(grid?.resolution).toBe('h3:8');
+  });
+
+  test('a filter declaring both sources, or neither, fails validation', () => {
+    const [filter] = sampleCatalog.filters;
+
+    expect(
+      filterFieldSchema.safeParse({
+        ...filter,
+        sourceDatasetId: 'dataset-demografia-municipio',
+      }).success
+    ).toBe(false);
+
+    expect(
+      filterFieldSchema.safeParse({ ...filter, sourceGeographyId: undefined })
+        .success
+    ).toBe(false);
+  });
+
+  test('a domain mode that contradicts the filter kind fails validation', () => {
+    const numeric = sampleCatalog.filters[2];
+    const parsed = filterFieldSchema.safeParse({
+      ...numeric,
+      domain: { mode: 'values', values: [{ value: 1, label: 'one' }] },
+    });
+
+    expect(parsed.success).toBe(false);
+    expect(parsed.error?.issues[0].message).toContain("domain mode 'range'");
+  });
+
+  test('an operator meaningless for the kind fails validation', () => {
+    const numeric = sampleCatalog.filters[2];
+    const parsed = filterFieldSchema.safeParse({
+      ...numeric,
+      operators: ['gte', 'in'],
+    });
+
+    expect(parsed.success).toBe(false);
+    expect(parsed.error?.issues[0].path).toEqual(['operators', 1]);
+  });
+
+  test('`multiple` outside a categorical filter fails validation', () => {
+    const numeric = sampleCatalog.filters[2];
+    expect(
+      filterFieldSchema.safeParse({ ...numeric, multiple: true }).success
+    ).toBe(false);
+  });
+
+  test('a runtime domain is legal for every kind', () => {
+    for (const filter of sampleCatalog.filters) {
+      expect(
+        filterFieldSchema.safeParse({ ...filter, domain: { mode: 'runtime' } })
+          .success
+      ).toBe(true);
+    }
   });
 
   test('permissions is optional — a catalog omitting it still validates', () => {

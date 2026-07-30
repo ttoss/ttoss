@@ -74,8 +74,124 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
     "FilterField": {
       "additionalProperties": false,
       "properties": {
-        "domain": {},
-        "field": {
+        "aliases": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "description": {
+          "type": "string",
+        },
+        "domain": {
+          "oneOf": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "mode": {
+                  "const": "values",
+                  "type": "string",
+                },
+                "values": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "count": {
+                        "maximum": 9007199254740991,
+                        "minimum": 0,
+                        "type": "integer",
+                      },
+                      "label": {
+                        "type": "string",
+                      },
+                      "value": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                          },
+                          {
+                            "type": "number",
+                          },
+                        ],
+                      },
+                    },
+                    "required": [
+                      "value",
+                      "label",
+                    ],
+                    "type": "object",
+                  },
+                  "type": "array",
+                },
+              },
+              "required": [
+                "mode",
+                "values",
+              ],
+              "type": "object",
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "max": {
+                  "type": "number",
+                },
+                "min": {
+                  "type": "number",
+                },
+                "mode": {
+                  "const": "range",
+                  "type": "string",
+                },
+                "step": {
+                  "exclusiveMinimum": 0,
+                  "type": "number",
+                },
+              },
+              "required": [
+                "mode",
+                "min",
+                "max",
+              ],
+              "type": "object",
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "end": {
+                  "type": "string",
+                },
+                "mode": {
+                  "const": "interval",
+                  "type": "string",
+                },
+                "start": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "mode",
+                "start",
+                "end",
+              ],
+              "type": "object",
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "mode": {
+                  "const": "runtime",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "mode",
+              ],
+              "type": "object",
+            },
+          ],
+        },
+        "id": {
           "type": "string",
         },
         "kind": {
@@ -86,10 +202,49 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
           ],
           "type": "string",
         },
+        "label": {
+          "type": "string",
+        },
+        "metricId": {
+          "type": "string",
+        },
+        "multiple": {
+          "type": "boolean",
+        },
+        "operators": {
+          "items": {
+            "enum": [
+              "eq",
+              "neq",
+              "gt",
+              "gte",
+              "lt",
+              "lte",
+              "in",
+              "not-in",
+            ],
+            "type": "string",
+          },
+          "minItems": 1,
+          "type": "array",
+        },
+        "property": {
+          "type": "string",
+        },
+        "sourceDatasetId": {
+          "type": "string",
+        },
+        "sourceGeographyId": {
+          "type": "string",
+        },
       },
       "required": [
-        "field",
+        "id",
+        "label",
+        "property",
         "kind",
+        "operators",
+        "domain",
       ],
       "type": "object",
     },

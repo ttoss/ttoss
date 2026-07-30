@@ -277,9 +277,83 @@ describe('validateCatalog', () => {
       joins: sampleCatalog.joins.filter((join) => {
         return join.to !== 'geo-uf' && join.to !== 'geo-municipio';
       }),
+      filters: sampleCatalog.filters.filter((filter) => {
+        return (
+          filter.sourceGeographyId !== 'geo-municipio' &&
+          filter.sourceDatasetId !== 'dataset-demografia-municipio'
+        );
+      }),
     };
     const result = validateCatalog(catalog);
     expect(result.status).toBe('valid');
+  });
+
+  test('duplicate-filter-id: two filters sharing an id fail with no repair', () => {
+    const catalog: Catalog = {
+      ...sampleCatalog,
+      filters: [...sampleCatalog.filters, sampleCatalog.filters[0]],
+    };
+    const result = validateCatalog(catalog);
+
+    expect(result.status).toBe('invalid');
+    if (result.status !== 'valid') {
+      const issue = result.issues.find((candidate) => {
+        return candidate.code === 'duplicate-filter-id';
+      });
+      expect(issue?.subject.id).toBe('filter-regiao');
+      expect(issue?.repair).toBeUndefined();
+    }
+  });
+
+  test('unknown-filter-dataset: a filter naming a non-existent dataset is a mismatch, repaired with the known ids', () => {
+    const catalog: Catalog = {
+      ...sampleCatalog,
+      filters: [
+        { ...sampleCatalog.filters[2], sourceDatasetId: 'does-not-exist' },
+      ],
+    };
+    const result = validateCatalog(catalog);
+
+    expect(result.status).toBe('mismatch');
+    if (result.status !== 'valid') {
+      expect(result.issues[0].code).toBe('unknown-filter-dataset');
+      expect(result.issues[0].repair?.[0]).toMatchObject({
+        kind: 'allowed-values',
+        values: expect.arrayContaining(['dataset-demografia-municipio']),
+      });
+    }
+  });
+
+  test('unknown-filter-geography: a filter naming a non-existent geography is a mismatch', () => {
+    const catalog: Catalog = {
+      ...sampleCatalog,
+      filters: [
+        { ...sampleCatalog.filters[0], sourceGeographyId: 'does-not-exist' },
+      ],
+    };
+    const result = validateCatalog(catalog);
+
+    expect(result.status).toBe('mismatch');
+    if (result.status !== 'valid') {
+      expect(result.issues[0].code).toBe('unknown-filter-geography');
+    }
+  });
+
+  test('unknown-filter-metric: a filter naming a non-existent metric is a mismatch', () => {
+    const catalog: Catalog = {
+      ...sampleCatalog,
+      filters: [{ ...sampleCatalog.filters[2], metricId: 'does-not-exist' }],
+    };
+    const result = validateCatalog(catalog);
+
+    expect(result.status).toBe('mismatch');
+    if (result.status !== 'valid') {
+      expect(result.issues[0].code).toBe('unknown-filter-metric');
+      expect(result.issues[0].repair?.[0]).toMatchObject({
+        kind: 'allowed-values',
+        values: expect.arrayContaining(['metric-populacao']),
+      });
+    }
   });
 
   test('invalid takes precedence over mismatch when both are present', () => {

@@ -66,6 +66,101 @@ const checkDuplicateIds = (catalog: Catalog): CatalogIssue[] => {
     });
   }
 
+  for (const index of findDuplicateIndexes(catalog.filters)) {
+    const id = catalog.filters[index].id;
+    issues.push({
+      code: 'duplicate-filter-id',
+      subject: { path: `filters[${index}].id`, id },
+      message: `filter id '${id}' is declared more than once`,
+    });
+  }
+
+  return issues;
+};
+
+/**
+ * `FilterField` referential integrity. The schema already guarantees exactly
+ * one of `sourceDatasetId`/`sourceGeographyId` is present and that the
+ * kind/domain/operator combination is coherent; what it cannot see is whether
+ * the ids resolve, which is what a UI needs before it can label a control.
+ */
+const checkFilterReferences = (catalog: Catalog): CatalogIssue[] => {
+  const issues: CatalogIssue[] = [];
+  const datasetIds = catalog.datasets.map((dataset) => {
+    return dataset.id;
+  });
+  const geographyIds = catalog.geographies.map((geography) => {
+    return geography.id;
+  });
+  const metricIds = catalog.metrics.map((metric) => {
+    return metric.id;
+  });
+  const datasetIdSet = new Set(datasetIds);
+  const geographyIdSet = new Set(geographyIds);
+  const metricIdSet = new Set(metricIds);
+
+  for (const [index, filter] of catalog.filters.entries()) {
+    if (
+      filter.sourceDatasetId !== undefined &&
+      !datasetIdSet.has(filter.sourceDatasetId)
+    ) {
+      issues.push({
+        code: 'unknown-filter-dataset',
+        subject: {
+          path: `filters[${index}].sourceDatasetId`,
+          id: filter.sourceDatasetId,
+        },
+        message: `filter '${filter.id}' references unknown dataset '${filter.sourceDatasetId}'`,
+        repair: [
+          {
+            kind: 'allowed-values',
+            path: `filters[${index}].sourceDatasetId`,
+            values: datasetIds,
+          },
+        ],
+      });
+    }
+
+    if (
+      filter.sourceGeographyId !== undefined &&
+      !geographyIdSet.has(filter.sourceGeographyId)
+    ) {
+      issues.push({
+        code: 'unknown-filter-geography',
+        subject: {
+          path: `filters[${index}].sourceGeographyId`,
+          id: filter.sourceGeographyId,
+        },
+        message: `filter '${filter.id}' references unknown geography '${filter.sourceGeographyId}'`,
+        repair: [
+          {
+            kind: 'allowed-values',
+            path: `filters[${index}].sourceGeographyId`,
+            values: geographyIds,
+          },
+        ],
+      });
+    }
+
+    if (filter.metricId !== undefined && !metricIdSet.has(filter.metricId)) {
+      issues.push({
+        code: 'unknown-filter-metric',
+        subject: {
+          path: `filters[${index}].metricId`,
+          id: filter.metricId,
+        },
+        message: `filter '${filter.id}' references unknown metric '${filter.metricId}'`,
+        repair: [
+          {
+            kind: 'allowed-values',
+            path: `filters[${index}].metricId`,
+            values: metricIds,
+          },
+        ],
+      });
+    }
+  }
+
   return issues;
 };
 
@@ -286,6 +381,7 @@ export const validateCatalog = (input: unknown): CatalogResult => {
     ...checkDuplicateIds(catalog),
     ...checkJoinReferences(catalog),
     ...checkDatasetReferences(catalog),
+    ...checkFilterReferences(catalog),
     ...checkGeographyHierarchy(catalog),
   ];
 

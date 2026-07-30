@@ -63,10 +63,10 @@ if (result.status === 'valid') {
 
 ### `CatalogResultStatus` and `CatalogIssueCode`
 
-| Status     | Codes                                                                                                                                                             |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `invalid`  | `invalid-catalog-schema`, `duplicate-metric-id`, `duplicate-dataset-id`, `duplicate-geography-id`                                                                 |
-| `mismatch` | `unknown-join-dataset`, `unknown-join-geography`, `unknown-dataset-geography`, `unknown-dataset-metric`, `unknown-parent-geography`, `cyclic-geography-hierarchy` |
+| Status     | Codes                                                                                                                                                                                                                                            |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `invalid`  | `invalid-catalog-schema`, `duplicate-metric-id`, `duplicate-dataset-id`, `duplicate-geography-id`, `duplicate-filter-id`                                                                                                                         |
+| `mismatch` | `unknown-join-dataset`, `unknown-join-geography`, `unknown-dataset-geography`, `unknown-dataset-metric`, `unknown-filter-dataset`, `unknown-filter-geography`, `unknown-filter-metric`, `unknown-parent-geography`, `cyclic-geography-hierarchy` |
 
 `invalid` takes precedence over `mismatch` when a catalog has issues in both categories. `repair` (an `allowed-values` suggestion of the known ids) is attached wherever the correct set is already in hand — never for schema failures, duplicate ids, or cycles, since none of those has a single suggestable value.
 
@@ -140,14 +140,69 @@ const schema = getCatalogJSONSchema();
 
 ### `FilterField` / `MapTypeCatalogEntry`
 
-| Field                                     | Type                                                    | Required | Description                                                      |
-| ----------------------------------------- | ------------------------------------------------------- | -------- | ---------------------------------------------------------------- |
-| `FilterField.field`                       | `string`                                                | ✓        | Field name to filter on.                                         |
-| `FilterField.kind`                        | `'categorical' \| 'numeric' \| 'temporal'`              | ✓        | Determines how `domain` is interpreted.                          |
-| `FilterField.domain`                      | `unknown`                                               |          | `string[]` for categorical, `{ min; max }` for numeric/temporal. |
-| `MapTypeCatalogEntry.name`                | `'choropleth' \| 'dotDensity' \| 'proportionalCircles'` | ✓        | Map type name.                                                   |
-| `MapTypeCatalogEntry.supportedGeometries` | `Array<'point' \| 'polygon' \| 'line'>`                 | ✓        | Geometries this map type supports.                               |
-| `MapTypeCatalogEntry.metricKinds`         | `MetricKind[]`                                          | ✓        | Metric kinds this map type can visualize.                        |
+| Field                                     | Type                                                    | Required | Description                                                        |
+| ----------------------------------------- | ------------------------------------------------------- | -------- | ------------------------------------------------------------------ |
+| `FilterField.id`                          | `string`                                                | ✓        | Unique identifier, referenced by intents and filter actions.       |
+| `FilterField.label`                       | `string`                                                | ✓        | Human-readable name for the control.                               |
+| `FilterField.description`                 | `string`                                                |          | Help text explaining what the filter narrows.                      |
+| `FilterField.aliases`                     | `string[]`                                              |          | Alternative names for search/discovery.                            |
+| `FilterField.property`                    | `string`                                                | ✓        | Feature property the predicate reads.                              |
+| `FilterField.kind`                        | `'categorical' \| 'numeric' \| 'temporal'`              | ✓        | Constrains both `domain.mode` and `operators`.                     |
+| `FilterField.sourceDatasetId`             | `string`                                                | ~        | Dataset carrying `property`. Exactly one source is required.       |
+| `FilterField.sourceGeographyId`           | `string`                                                | ~        | Geography carrying `property`. Exactly one source is required.     |
+| `FilterField.metricId`                    | `string`                                                |          | Measure being narrowed — supplies `unit` and `formatter`.          |
+| `FilterField.operators`                   | `LayerFilterOperator[]`                                 | ✓        | Comparisons the control may emit, each mapping to a `LayerFilter`. |
+| `FilterField.multiple`                    | `boolean`                                               |          | Whether several values may be selected. Categorical only.          |
+| `FilterField.domain`                      | `FilterDomain`                                          | ✓        | Values or bounds the control offers.                               |
+| `MapTypeCatalogEntry.name`                | `'choropleth' \| 'dotDensity' \| 'proportionalCircles'` | ✓        | Map type name.                                                     |
+| `MapTypeCatalogEntry.supportedGeometries` | `Array<'point' \| 'polygon' \| 'line'>`                 | ✓        | Geometries this map type supports.                                 |
+| `MapTypeCatalogEntry.metricKinds`         | `MetricKind[]`                                          | ✓        | Metric kinds this map type can visualize.                          |
+
+### Building filter UI
+
+`FilterDomain` is a discriminated union on `mode`, which is what tells a component which widget to build:
+
+| Mode         | Shape                                    | Applies to  |
+| ------------ | ---------------------------------------- | ----------- |
+| `'values'`   | `{ values: { value, label, count? }[] }` | categorical |
+| `'range'`    | `{ min, max, step? }`                    | numeric     |
+| `'interval'` | `{ start, end }`                         | temporal    |
+| `'runtime'`  | —                                        | any kind    |
+
+`getFilterControls(catalog)` projects `catalog.filters` into render-ready descriptors, resolving each filter's source and its metric's display hints so a component never has to walk the catalog itself:
+
+```tsx
+import { computeFilterDomain, getFilterControls } from '@ttoss/geovis-catalog';
+
+const controls = getFilterControls(catalog);
+// [{ id: 'filter-populacao', label: 'População', control: 'range-slider',
+//    source: { kind: 'dataset', id: '…', label: 'Demografia Municipal' },
+//    domain: { mode: 'range', min: 0, max: 12000000, step: 1000 },
+//    unit: 'habitantes', formatter: 'compact', requiresData: false }, …]
+
+const Filters = () => {
+  return controls.map((control) => {
+    switch (control.control) {
+      case 'multi-select':
+        return <MultiSelect key={control.id} {...control} />;
+      case 'range-slider':
+        return <RangeSlider key={control.id} {...control} />;
+      // 'select' | 'date-range'
+    }
+  });
+};
+```
+
+`requiresData` is `true` when the catalog declares `mode: 'runtime'` — the bounds or options exist but are only knowable from the data. Compute them from rows the application already holds:
+
+```ts
+const domain = computeFilterDomain({ filter, rows });
+// { mode: 'range', min: 0.4, max: 87.2 }
+```
+
+`computeFilterDomain` is pure: it reads the rows passed to it and fetches nothing, so data access stays on the application's side. Values that do not match the filter's `kind` are skipped rather than coerced — a numeric column holding `'12'` as text is a data problem, not something the catalog should silently parse.
+
+`operators` map 1:1 to `LayerFilter.operator` in `@ttoss/geovis`, and the schema rejects combinations that carry no meaning (`in` on a numeric filter, `multiple` outside a categorical one, a `values` domain on a numeric field), so a control never renders a predicate the runtime cannot compile.
 
 ### `Catalog`
 

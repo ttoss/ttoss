@@ -505,6 +505,18 @@ It also unblocks D10. Grain and period tokens need regex validation coupled acro
 
 The schemas are exported from the package index so PRD-005's intent schema and PRD-006's resolver compose them rather than re-declaring the shape.
 
+### D15 — `FilterField` carries what a filter UI needs
+
+The shipped `FilterField` was `{ field, kind, domain?: unknown }`. A component could learn a column name and a type from it, and nothing else: no label to render, no source to attribute it to, no options to offer, and an `unknown` domain no code could branch on. It described a filter without enabling one.
+
+The refactored shape adds identity (`id`, `label`, `description`, `aliases`), location (`property` plus exactly one of `sourceDatasetId`/`sourceGeographyId`), the emitted predicate (`operators`, mapping 1:1 to `LayerFilter.operator`), and a **required** `domain` discriminated on `mode` — `values` for categorical options with labels and counts, `range` for numeric bounds, `interval` for temporal bounds, and `runtime` for a domain that exists but is only knowable from the data. Optional `metricId` inherits `unit` and `formatter` so display hints are not restated.
+
+Coherence between kind, domain mode and operators is enforced in the schema rather than left to the resolver: `in` on a numeric filter, `multiple` outside a categorical one, and a `values` domain on a numeric field all fail validation. A control therefore cannot render a predicate `@ttoss/geovis` would refuse to compile — which is the F-item guarantee from the thick-boundary decision, moved from prose into the type.
+
+Two functions ship with it. `getFilterControls(catalog)` resolves each filter's source and metric into a render-ready descriptor, including the widget to use (`select`, `multi-select`, `range-slider`, `date-range`) and a `requiresData` flag. `computeFilterDomain({ filter, rows })` derives a concrete domain for `runtime` filters from rows the application already holds — pure, fetching nothing, so PRD-004's "no runtime data fetching" non-goal holds while the practical need behind it is met.
+
+Values that do not match a filter's `kind` are skipped rather than coerced, on the same principle as D5's refusal to invent repair values: a numeric column holding `'12'` as text is a data defect the catalog should surface, not hide.
+
 ### Superseded by this block
 
 - D4's `Dataset.temporal: { start, end }` → D10's `Temporal`.
