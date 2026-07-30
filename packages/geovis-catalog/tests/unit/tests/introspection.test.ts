@@ -28,7 +28,8 @@ describe('getCatalogJSONSchema', () => {
     expect(jsonSchema.required).toEqual(
       expect.arrayContaining(
         Object.keys(sampleCatalog).filter((key) => {
-          return key !== 'domain' && key !== 'permissions';
+          // domain, permissions, and series are optional fields
+          return key !== 'domain' && key !== 'permissions' && key !== 'series';
         })
       )
     );

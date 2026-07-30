@@ -108,17 +108,32 @@ export const sampleCatalog: Catalog = {
       id: 'dataset-demografia-municipio',
       label: 'Demografia Municipal',
       description: 'População e densidade populacional por município.',
-      geometry: 'polygon',
       geographyIds: ['geo-municipio'],
       metricIds: ['metric-populacao', 'metric-densidade-populacional'],
       source: 'ibge',
-      temporal: { start: '2022-01-01', end: '2022-12-31' },
+      spatial: {
+        status: 'described',
+        geometry: 'polygon',
+        extent: [
+          { code: '35', label: 'São Paulo' },
+          { code: '31', label: 'Minas Gerais' },
+        ],
+      },
+      temporal: {
+        status: 'described',
+        grain: 'P1Y',
+        extent: [{ start: '2010-01-01', end: '2022-12-31' }],
+        history: 'snapshot',
+      },
+      columns: {
+        'metric-populacao': 'populacao',
+        'metric-densidade-populacional': 'densidade',
+      },
     },
     {
       id: 'dataset-perfil-socioeconomico',
       label: 'Perfil Socioeconômico',
       description: 'Indicadores socioeconômicos por UF e município.',
-      geometry: 'polygon',
       geographyIds: ['geo-uf', 'geo-municipio'],
       metricIds: [
         'metric-idh',
@@ -126,34 +141,95 @@ export const sampleCatalog: Catalog = {
         'metric-taxa-alfabetizacao',
       ],
       source: 'ipea',
+      spatial: {
+        status: 'described',
+        geometry: 'polygon',
+      },
+      temporal: {
+        status: 'described',
+        grain: 'P1Y',
+        history: 'revised',
+      },
     },
     {
       id: 'dataset-infra-distancias',
       label: 'Distâncias a Equipamentos Urbanos',
       description:
         'Distância de cada ponto de interesse ao hospital mais próximo.',
-      geometry: 'point',
       geographyIds: ['geo-poi-equipamentos'],
       metricIds: ['metric-distancia-hospital'],
-      // `source` intentionally omitted — exercises the field's optionality.
+      spatial: {
+        status: 'described',
+        geometry: 'point',
+      },
+      temporal: {
+        status: 'unknown',
+      },
     },
     {
       id: 'dataset-uso-solo-h3',
       label: 'Uso do Solo (Grade H3)',
       description: 'População estimada por célula da malha H3.',
-      geometry: 'polygon',
       geographyIds: ['geo-h3-grid'],
       metricIds: ['metric-populacao'],
       source: 'ibge',
+      spatial: {
+        status: 'described',
+        geometry: 'polygon',
+      },
+      temporal: {
+        status: 'described',
+        grain: 'P1Y',
+      },
     },
     {
       id: 'dataset-imoveis-rurais',
       label: 'Imóveis Rurais (CAR)',
       description: 'Distância de cada imóvel rural ao hospital mais próximo.',
-      geometry: 'polygon',
       geographyIds: ['geo-sicar-imovel'],
       metricIds: ['metric-distancia-hospital'],
       source: 'sicar',
+      spatial: {
+        status: 'described',
+        geometry: 'polygon',
+      },
+      temporal: {
+        status: 'not_applicable',
+      },
+    },
+  ],
+  series: [
+    {
+      id: 'series-populacao-municipio-anual',
+      metricId: 'metric-populacao',
+      spatialGrain: {
+        geographyId: 'geo-municipio',
+        label: 'Município',
+      },
+      temporalGrain: 'P1Y',
+      dimensions: [
+        {
+          id: 'dim-sexo',
+          label: 'Sexo',
+          kind: 'categorical',
+          property: 'sexo',
+        },
+        {
+          id: 'dim-faixa-etaria',
+          label: 'Faixa Etária',
+          kind: 'categorical',
+          property: 'faixa_etaria',
+        },
+      ],
+    },
+    {
+      id: 'series-densidade-h3-anual',
+      metricId: 'metric-densidade-populacional',
+      spatialGrain: {
+        geographyId: 'geo-h3-grid',
+        label: 'Grade H3 (8)',
+      },
+      temporalGrain: 'P1Y',
     },
   ],
   joins: [

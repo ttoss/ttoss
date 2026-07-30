@@ -1,5 +1,122 @@
 import type { LayerFilterOperator } from '@ttoss/geovis';
 
+/** Presence indicator for spatio-temporal dimensions (D8, D10). */
+export type Presence = 'described' | 'not_applicable' | 'unknown';
+
+/** ISO-8601 duration or grain keyword for temporal data (D10). */
+export type TemporalGrain =
+  | 'instant'
+  | 'irregular'
+  | 'continuous'
+  | 'unknown'
+  | string; // ISO-8601 duration: P1Y, P1M, PT15M, P10Y, etc.
+
+/** Temporal interval with optional open ends (D10). */
+export interface Interval {
+  start?: string; // ISO-8601 date/datetime
+  end?: string; // ISO-8601 date/datetime
+}
+
+/** Reference to a coded geography value (D10). */
+export interface CodedRef {
+  /** External code value, e.g. IBGE municipality code '3304557' */
+  code: string;
+  /** Optional label for the code value */
+  label?: string;
+}
+
+/** History/update pattern for temporal data (D10). */
+export type TemporalHistory =
+  | 'snapshot' // entire dataset re-observed at each period
+  | 'overwrite' // values replace previous; no historic record
+  | 'append_only' // new records appended; never updated
+  | 'revised' // historical values may change under a pinned Catalog.version
+  | 'unknown';
+
+/** Temporal dimension — when/how a dataset is measured (D10). */
+export interface Temporal {
+  /** Whether temporal grain/coverage is documented */
+  status: Presence;
+  /** ISO-8601 durations or keywords (P1Y, PT15M, instant, continuous, unknown) */
+  grain?: TemporalGrain;
+  /** Time intervals the dataset covers; extents for time-bounded datasets */
+  extent?: Interval[];
+  /** Update pattern: snapshot, overwrite, append_only, revised, unknown */
+  history?: TemporalHistory;
+  /** Explicit periods, optional — overrides gaps or carries per-period metadata */
+  periods?: Array<{ start: string; end: string; label?: string }>;
+}
+
+/** Spatial geometry type extended with grid support (D10). */
+export type SpatialGeometry =
+  | 'point'
+  | 'polygon'
+  | 'line'
+  | 'multipolygon'
+  | 'none';
+
+/** Spatial grain as code scheme + code in data dictionary (D8 — seam binding). */
+export interface SpatialGrain {
+  /** Code system, e.g. 'ibge:municipio', 'sicar:imovel', 'h3' */
+  scheme: string;
+  /** Field name or code value in the dataset */
+  code: string;
+  /** Optional label for display */
+  label?: string;
+}
+
+/** Spatial grain reference as FK in visualization Catalog (D8 — seam binding). */
+export interface SpatialGrainRef {
+  /** Foreign key to catalog.geographies[].id */
+  geographyId: string;
+  /** Optional label for display */
+  label?: string;
+}
+
+/** Spatial dimension — where/how a dataset is located (D10). */
+export interface Spatial {
+  /** Whether spatial coverage is documented */
+  status: Presence;
+  /** Geometry type: point, polygon, line, multipolygon, or none (D10) */
+  geometry?: SpatialGeometry;
+  /** Geographic regions/codes covered by the dataset */
+  extent?: CodedRef[];
+  /** Grain: ISO-8601 token or spatial resolution */
+  grain?: TemporalGrain; // reuses same pattern as temporal for consistency
+  /** Dataset field name carrying spatial reference */
+  field?: string;
+}
+
+/** Dimension for metric slicing — distinct from spatial/temporal (D10). */
+export interface Dimension {
+  /** Unique identifier for this dimension */
+  id: string;
+  /** Human-readable name */
+  label: string;
+  /** Description of what the dimension slices */
+  description?: string;
+  /** Data type: categorical (enums), numeric (range), temporal (dates) */
+  kind: 'categorical' | 'numeric' | 'temporal';
+  /** Dataset field carrying the dimension values */
+  property: string;
+  /** Alternative names for search/discovery */
+  aliases?: string[];
+}
+
+/** Series: metric + dimensions + spatio-temporal grain combinations (D10). */
+export interface Series {
+  /** Unique identifier for this series */
+  id: string;
+  /** Metric id for the measure */
+  metricId: string;
+  /** Optional spatial grain binding (FK to geography) */
+  spatialGrain?: SpatialGrainRef;
+  /** Optional temporal grain resolution */
+  temporalGrain?: TemporalGrain;
+  /** Dimensions for metric slicing (e.g., by sex, age group) */
+  dimensions?: Dimension[];
+}
+
 export type MetricKind =
   | 'count'
   | 'rate' // e.g. "per capita" or "per household"
@@ -36,16 +153,20 @@ export interface Dataset {
   description: string;
   /** Alternative names for search/discovery. */
   aliases?: string[];
-  /** Primary geometry type of the dataset features. */
-  geometry: 'point' | 'polygon' | 'line';
   /** IDs of geographies this dataset can be joined to — validated by `validateCatalog`. */
   geographyIds: string[];
   /** IDs of metrics this dataset carries — validated by `validateCatalog`. */
   metricIds: string[];
   /** Provenance/attribution — free-form, e.g. 'ibge', 'ipea', 'sicar'. */
   source?: string;
-  /** Temporal coverage interval (ISO 8601 dates). */
-  temporal?: { start: string; end: string };
+  /** Temporal dimension: coverage, grain, history (D10, supersedes D4 temporal). */
+  temporal?: Temporal;
+  /** Spatial dimension: coverage, geometry, grain (D10, supersedes D7 geometry). */
+  spatial?: Spatial;
+  /** Where the data artifact is located and in what format (D9). */
+  artifact?: { url: string; format: 'csv' | 'json' | 'geojson' | 'parquet' };
+  /** Metric ID → dataset column carrying the metric's values (D9). */
+  columns?: Record<string, string>;
 }
 
 /**
@@ -174,6 +295,8 @@ export interface Catalog {
   geographies: Geography[];
   /** Declared join paths between datasets and geographies. */
   joins: Join[];
+  /** Metric + spatio-temporal grain + dimension combinations (D10). */
+  series?: Series[];
   /** Map types supported by this catalog, with their geometry and metric constraints. */
   mapTypes: MapTypeCatalogEntry[];
   /** User-facing filter controls for exploring the catalog. */

@@ -11,7 +11,7 @@ describe('Cozinhas Solidárias example catalog', () => {
           label: 'Cozinhas Solidárias (pontos)',
           description:
             'Cadastro de cozinhas solidárias com coordenadas geográficas',
-          geometry: 'point' as const,
+          spatial: { status: 'described' as const, geometry: 'point' as const },
           geographyIds: ['geo-cozinha', 'geo-municipio', 'geo-estado'],
           metricIds: ['pop-habitantes'],
           source: 'cozsolidarias',
@@ -20,7 +20,10 @@ describe('Cozinhas Solidárias example catalog', () => {
           id: 'municipios-contorno',
           label: 'Contornos de municípios',
           description: 'Malha municipal (polígonos) do Brasil',
-          geometry: 'polygon' as const,
+          spatial: {
+            status: 'described' as const,
+            geometry: 'polygon' as const,
+          },
           geographyIds: ['geo-municipio'],
           metricIds: ['pop-habitantes', 'cadunico-cadastrados'],
           source: 'ibge',

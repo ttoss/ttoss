@@ -25,6 +25,7 @@ const CATALOG_KEYS = [
   'metrics',
   'geographies',
   'joins',
+  'series',
   'mapTypes',
   'filters',
   'permissions',
@@ -46,11 +47,13 @@ const DATASET_KEYS = [
   'label',
   'description',
   'aliases',
-  'geometry',
   'geographyIds',
   'metricIds',
   'source',
   'temporal',
+  'spatial',
+  'artifact',
+  'columns',
 ].sort();
 
 const GEOGRAPHY_KEYS = [
@@ -273,12 +276,19 @@ describe('getCatalogJSONSchema', () => {
       'https://ttoss.dev/geovis-catalog/catalog.schema.json'
     );
     expect(Object.keys(jsonSchema.$defs as object).sort()).toEqual([
+      'CodedRef',
       'Dataset',
+      'Dimension',
       'FilterField',
       'Geography',
+      'Interval',
       'Join',
       'MapTypeCatalogEntry',
       'Metric',
+      'Series',
+      'Spatial',
+      'SpatialGrainRef',
+      'Temporal',
     ]);
     expect(jsonSchema.additionalProperties).toBe(false);
   });

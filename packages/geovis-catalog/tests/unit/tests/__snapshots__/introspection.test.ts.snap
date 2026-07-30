@@ -3,6 +3,21 @@
 exports[`getCatalogJSONSchema matches the committed schema shape (guards against accidental drift) 1`] = `
 {
   "$defs": {
+    "CodedRef": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string",
+        },
+        "label": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "code",
+      ],
+      "type": "object",
+    },
     "Dataset": {
       "additionalProperties": false,
       "properties": {
@@ -12,6 +27,37 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
           },
           "type": "array",
         },
+        "artifact": {
+          "additionalProperties": false,
+          "properties": {
+            "format": {
+              "enum": [
+                "csv",
+                "json",
+                "geojson",
+                "parquet",
+              ],
+              "type": "string",
+            },
+            "url": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "url",
+            "format",
+          ],
+          "type": "object",
+        },
+        "columns": {
+          "additionalProperties": {
+            "type": "string",
+          },
+          "propertyNames": {
+            "type": "string",
+          },
+          "type": "object",
+        },
         "description": {
           "type": "string",
         },
@@ -20,14 +66,6 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
             "type": "string",
           },
           "type": "array",
-        },
-        "geometry": {
-          "enum": [
-            "point",
-            "polygon",
-            "line",
-          ],
-          "type": "string",
         },
         "id": {
           "type": "string",
@@ -44,30 +82,57 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
         "source": {
           "type": "string",
         },
+        "spatial": {
+          "$ref": "#/$defs/Spatial",
+        },
         "temporal": {
-          "additionalProperties": false,
-          "properties": {
-            "end": {
-              "type": "string",
-            },
-            "start": {
-              "type": "string",
-            },
-          },
-          "required": [
-            "start",
-            "end",
-          ],
-          "type": "object",
+          "$ref": "#/$defs/Temporal",
         },
       },
       "required": [
         "id",
         "label",
         "description",
-        "geometry",
         "geographyIds",
         "metricIds",
+      ],
+      "type": "object",
+    },
+    "Dimension": {
+      "additionalProperties": false,
+      "properties": {
+        "aliases": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "description": {
+          "type": "string",
+        },
+        "id": {
+          "type": "string",
+        },
+        "kind": {
+          "enum": [
+            "categorical",
+            "numeric",
+            "temporal",
+          ],
+          "type": "string",
+        },
+        "label": {
+          "type": "string",
+        },
+        "property": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "id",
+        "label",
+        "kind",
+        "property",
       ],
       "type": "object",
     },
@@ -295,6 +360,18 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
       ],
       "type": "object",
     },
+    "Interval": {
+      "additionalProperties": false,
+      "properties": {
+        "end": {
+          "type": "string",
+        },
+        "start": {
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
     "Join": {
       "additionalProperties": false,
       "properties": {
@@ -440,6 +517,188 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
       ],
       "type": "object",
     },
+    "Series": {
+      "additionalProperties": false,
+      "properties": {
+        "dimensions": {
+          "items": {
+            "$ref": "#/$defs/Dimension",
+          },
+          "type": "array",
+        },
+        "id": {
+          "type": "string",
+        },
+        "metricId": {
+          "type": "string",
+        },
+        "spatialGrain": {
+          "$ref": "#/$defs/SpatialGrainRef",
+        },
+        "temporalGrain": {
+          "anyOf": [
+            {
+              "enum": [
+                "instant",
+                "irregular",
+                "continuous",
+                "unknown",
+              ],
+              "type": "string",
+            },
+            {
+              "pattern": "^P(?:\\d+Y)?(?:\\d+M)?(?:\\d+W)?(?:\\d+D)?(?:T(?:\\d+H)?(?:\\d+M)?(?:\\d+S)?)?$",
+              "type": "string",
+            },
+          ],
+        },
+      },
+      "required": [
+        "id",
+        "metricId",
+      ],
+      "type": "object",
+    },
+    "Spatial": {
+      "additionalProperties": false,
+      "properties": {
+        "extent": {
+          "items": {
+            "$ref": "#/$defs/CodedRef",
+          },
+          "type": "array",
+        },
+        "field": {
+          "type": "string",
+        },
+        "geometry": {
+          "enum": [
+            "point",
+            "polygon",
+            "line",
+            "multipolygon",
+            "none",
+          ],
+          "type": "string",
+        },
+        "grain": {
+          "anyOf": [
+            {
+              "enum": [
+                "instant",
+                "irregular",
+                "continuous",
+                "unknown",
+              ],
+              "type": "string",
+            },
+            {
+              "pattern": "^P(?:\\d+Y)?(?:\\d+M)?(?:\\d+W)?(?:\\d+D)?(?:T(?:\\d+H)?(?:\\d+M)?(?:\\d+S)?)?$",
+              "type": "string",
+            },
+          ],
+        },
+        "status": {
+          "enum": [
+            "described",
+            "not_applicable",
+            "unknown",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "status",
+      ],
+      "type": "object",
+    },
+    "SpatialGrainRef": {
+      "additionalProperties": false,
+      "properties": {
+        "geographyId": {
+          "type": "string",
+        },
+        "label": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "geographyId",
+      ],
+      "type": "object",
+    },
+    "Temporal": {
+      "additionalProperties": false,
+      "properties": {
+        "extent": {
+          "items": {
+            "$ref": "#/$defs/Interval",
+          },
+          "type": "array",
+        },
+        "grain": {
+          "anyOf": [
+            {
+              "enum": [
+                "instant",
+                "irregular",
+                "continuous",
+                "unknown",
+              ],
+              "type": "string",
+            },
+            {
+              "pattern": "^P(?:\\d+Y)?(?:\\d+M)?(?:\\d+W)?(?:\\d+D)?(?:T(?:\\d+H)?(?:\\d+M)?(?:\\d+S)?)?$",
+              "type": "string",
+            },
+          ],
+        },
+        "history": {
+          "enum": [
+            "snapshot",
+            "overwrite",
+            "append_only",
+            "revised",
+            "unknown",
+          ],
+          "type": "string",
+        },
+        "periods": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "end": {
+                "type": "string",
+              },
+              "label": {
+                "type": "string",
+              },
+              "start": {
+                "type": "string",
+              },
+            },
+            "required": [
+              "start",
+              "end",
+            ],
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "status": {
+          "enum": [
+            "described",
+            "not_applicable",
+            "unknown",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "status",
+      ],
+      "type": "object",
+    },
   },
   "$id": "https://ttoss.dev/geovis-catalog/catalog.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -490,6 +749,12 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
         "type": "string",
       },
       "type": "object",
+    },
+    "series": {
+      "items": {
+        "$ref": "#/$defs/Series",
+      },
+      "type": "array",
     },
     "version": {
       "minLength": 1,

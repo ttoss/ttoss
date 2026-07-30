@@ -24,10 +24,20 @@ const result = validateCatalog({
       id: 'dataset-demografia-municipio',
       label: 'Demografia Municipal',
       description: 'População e densidade populacional por município.',
-      geometry: 'polygon',
       geographyIds: ['geo-municipio'],
       metricIds: ['metric-populacao'],
       source: 'ibge',
+      spatial: {
+        status: 'described',
+        geometry: 'polygon',
+        extent: [{ code: '35', label: 'São Paulo' }],
+      },
+      temporal: {
+        status: 'described',
+        grain: 'P1Y',
+        extent: [{ start: '2010-01-01', end: '2022-12-31' }],
+        history: 'snapshot',
+      },
     },
   ],
   metrics: [
@@ -50,6 +60,7 @@ const result = validateCatalog({
     },
   ],
   joins: [],
+  series: [],
   mapTypes: [],
   filters: [],
 });
@@ -101,19 +112,41 @@ const schema = getCatalogJSONSchema();
 | `formatter`   | `'number' \| 'percent' \| 'currency' \| 'compact'`                   |          | Formatting hint.                                      |
 | `nullPolicy`  | `'hide' \| 'zero' \| 'explain'`                                      | ✓        | How nulls should be treated when rendering.           |
 
+### `Temporal`
+
+| Field     | Type                                                                   | Required | Description                                                                                 |
+| --------- | ---------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------- |
+| `status`  | `'described' \| 'not_applicable' \| 'unknown'`                         | ✓        | Whether temporal grain/coverage is documented.                                              |
+| `grain`   | ISO-8601 duration or keyword                                           |          | Time resolution: `P1Y`, `P1M`, `PT15M`, or `instant`, `irregular`, `continuous`, `unknown`. |
+| `extent`  | `{ start?: string; end?: string }[]`                                   |          | Time intervals covered (ISO-8601 dates). Multiple intervals for non-contiguous coverage.    |
+| `history` | `'snapshot' \| 'overwrite' \| 'append_only' \| 'revised' \| 'unknown'` |          | Update pattern: whether values change after collection.                                     |
+| `periods` | `{ start: string; end: string; label?: string }[]`                     |          | Explicit periods, optional — overrides gaps or carries per-period metadata.                 |
+
+### `Spatial`
+
+| Field      | Type                                                         | Required | Description                                                       |
+| ---------- | ------------------------------------------------------------ | -------- | ----------------------------------------------------------------- |
+| `status`   | `'described' \| 'not_applicable' \| 'unknown'`               | ✓        | Whether spatial coverage is documented.                           |
+| `geometry` | `'point' \| 'polygon' \| 'line' \| 'multipolygon' \| 'none'` |          | Primary geometry type of features.                                |
+| `extent`   | `{ code: string; label?: string }[]`                         |          | Geographic regions/codes covered (e.g., IBGE municipality codes). |
+| `grain`    | ISO-8601 duration or keyword                                 |          | Spatial resolution or grid tessellation.                          |
+| `field`    | `string`                                                     |          | Dataset field name carrying spatial reference.                    |
+
 ### `Dataset`
 
-| Field          | Type                             | Required | Description                                                                          |
-| -------------- | -------------------------------- | -------- | ------------------------------------------------------------------------------------ |
-| `id`           | `string`                         | ✓        | Unique identifier, referenced by `Join.from`.                                        |
-| `label`        | `string`                         | ✓        | Human-readable name.                                                                 |
-| `description`  | `string`                         | ✓        | Data, collection methodology, and caveats.                                           |
-| `aliases`      | `string[]`                       |          | Alternative names for search/discovery.                                              |
-| `geometry`     | `'point' \| 'polygon' \| 'line'` | ✓        | Primary geometry type of the dataset's features.                                     |
-| `geographyIds` | `string[]`                       | ✓        | Geographies this dataset can be joined to — validated against `catalog.geographies`. |
-| `metricIds`    | `string[]`                       | ✓        | Metrics this dataset carries — validated against `catalog.metrics`.                  |
-| `source`       | `string`                         |          | Provenance, e.g. `'ibge'`, `'ipea'`, `'sicar'`.                                      |
-| `temporal`     | `{ start: string; end: string }` |          | ISO 8601 temporal coverage.                                                          |
+| Field          | Type                                                                 | Required | Description                                                                          |
+| -------------- | -------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------ |
+| `id`           | `string`                                                             | ✓        | Unique identifier, referenced by `Join.from`.                                        |
+| `label`        | `string`                                                             | ✓        | Human-readable name.                                                                 |
+| `description`  | `string`                                                             | ✓        | Data, collection methodology, and caveats.                                           |
+| `aliases`      | `string[]`                                                           |          | Alternative names for search/discovery.                                              |
+| `geographyIds` | `string[]`                                                           | ✓        | Geographies this dataset can be joined to — validated against `catalog.geographies`. |
+| `metricIds`    | `string[]`                                                           | ✓        | Metrics this dataset carries — validated against `catalog.metrics`.                  |
+| `source`       | `string`                                                             |          | Provenance, e.g. `'ibge'`, `'ipea'`, `'sicar'`.                                      |
+| `spatial`      | `Spatial`                                                            |          | Spatial coverage, geometry, extent, and grain.                                       |
+| `temporal`     | `Temporal`                                                           |          | Temporal coverage, grain, history, and period metadata.                              |
+| `artifact`     | `{ url: string; format: 'csv' \| 'json' \| 'geojson' \| 'parquet' }` |          | Where the data lives and its format.                                                 |
+| `columns`      | `Record<string, string>`                                             |          | Metric ID → dataset column name mapping.                                             |
 
 ### `Geography`
 
@@ -137,6 +170,34 @@ const schema = getCatalogJSONSchema();
 | `to`          | `string`                          | ✓        | Geography id — target of the join.                              |
 | `on`          | `{ left: string; right: string }` | ✓        | Field mapping: `left` in the dataset, `right` in the geography. |
 | `cardinality` | `'1:1' \| '1:m' \| 'm:1'`         | ✓        | Join cardinality.                                               |
+
+### `Dimension`
+
+| Field         | Type                                       | Required | Description                                                |
+| ------------- | ------------------------------------------ | -------- | ---------------------------------------------------------- |
+| `id`          | `string`                                   | ✓        | Unique identifier, referenced by `Series.dimensions`.      |
+| `label`       | `string`                                   | ✓        | Human-readable name.                                       |
+| `description` | `string`                                   |          | What values of this dimension represent.                   |
+| `kind`        | `'categorical' \| 'numeric' \| 'temporal'` | ✓        | Type of dimension values.                                  |
+| `property`    | `string`                                   | ✓        | Dataset or geography field name carrying dimension values. |
+| `aliases`     | `string[]`                                 |          | Alternative names for search/discovery.                    |
+
+### `SpatialGrainRef`
+
+| Field         | Type     | Required | Description                                                                                |
+| ------------- | -------- | -------- | ------------------------------------------------------------------------------------------ |
+| `geographyId` | `string` | ✓        | Geography id this spatial grain binds to — validated against `catalog.geographies`.        |
+| `label`       | `string` |          | Human-readable name, overriding the geography's label when rendering this specific series. |
+
+### `Series`
+
+| Field           | Type              | Required | Description                                                                             |
+| --------------- | ----------------- | -------- | --------------------------------------------------------------------------------------- |
+| `id`            | `string`          | ✓        | Unique identifier.                                                                      |
+| `metricId`      | `string`          | ✓        | Metric this series measures — validated against `catalog.metrics`.                      |
+| `spatialGrain`  | `SpatialGrainRef` |          | Geography this series' data is aggregated to — validated against `catalog.geographies`. |
+| `temporalGrain` | `TemporalGrain`   |          | Time resolution of this series: ISO-8601 duration (e.g. `P1Y`, `P1M`) or keyword.       |
+| `dimensions`    | `Dimension[]`     |          | Optional slicing dimensions — metric broken down by region, age group, etc.             |
 
 ### `FilterField` / `MapTypeCatalogEntry`
 
@@ -214,6 +275,7 @@ const domain = computeFilterDomain({ filter, rows });
 | `metrics`     | `Metric[]`                | ✓        |                                                                                                                                                                        |
 | `geographies` | `Geography[]`             | ✓        |                                                                                                                                                                        |
 | `joins`       | `Join[]`                  | ✓        |                                                                                                                                                                        |
+| `series`      | `Series[]`                |          | Timeseries with explicit spatio-temporal grain and optional dimensions — aggregated metric slices.                                                                     |
 | `mapTypes`    | `MapTypeCatalogEntry[]`   | ✓        |                                                                                                                                                                        |
 | `filters`     | `FilterField[]`           | ✓        |                                                                                                                                                                        |
 | `permissions` | `Record<string, unknown>` |          | Opaque authz metadata, consumed by the application layer — stripped by `getCatalogIntrospection`.                                                                      |

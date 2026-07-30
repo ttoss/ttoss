@@ -12,6 +12,8 @@ import { z } from 'zod';
  * mistake, not something to silently strip.
  */
 
+// Enums and simple schemas
+
 export const metricKindSchema = z.enum([
   'count',
   'rate',
@@ -22,6 +24,65 @@ export const metricKindSchema = z.enum([
 ]);
 
 export const geometrySchema = z.enum(['point', 'polygon', 'line']);
+
+export const filterKindSchema = z.enum(['categorical', 'numeric', 'temporal']);
+
+export const layerFilterOperatorSchema = z.enum([
+  'eq',
+  'neq',
+  'gt',
+  'gte',
+  'lt',
+  'lte',
+  'in',
+  'not-in',
+]);
+
+export const geographyKindSchema = z.enum([
+  'administrative',
+  'grid',
+  'poi',
+  'custom',
+]);
+
+/** Presence indicator for spatio-temporal dimensions (D8, D10). */
+export const presenceSchema = z.enum([
+  'described',
+  'not_applicable',
+  'unknown',
+]);
+
+/** ISO-8601 duration or grain keyword for temporal data (D10). */
+export const temporalGrainSchema = z
+  .enum(['instant', 'irregular', 'continuous', 'unknown'])
+  .or(
+    z
+      .string()
+      .regex(
+        /^P(?:\d+Y)?(?:\d+M)?(?:\d+W)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+S)?)?$/,
+        'must be an ISO-8601 duration or keyword'
+      )
+  );
+
+/** History/update pattern for temporal data (D10). */
+export const temporalHistorySchema = z.enum([
+  'snapshot',
+  'overwrite',
+  'append_only',
+  'revised',
+  'unknown',
+]);
+
+/** Spatial geometry type extended with grid support (D10). */
+export const spatialGeometrySchema = z.enum([
+  'point',
+  'polygon',
+  'line',
+  'multipolygon',
+  'none',
+]);
+
+// Metric, Filter, and Geography schemas
 
 export const metricSchema = z
   .strictObject({
@@ -35,27 +96,6 @@ export const metricSchema = z
     nullPolicy: z.enum(['hide', 'zero', 'explain']),
   })
   .meta({ id: 'Metric' });
-
-export const datasetSchema = z
-  .strictObject({
-    id: z.string(),
-    label: z.string(),
-    description: z.string(),
-    aliases: z.array(z.string()).optional(),
-    geometry: geometrySchema,
-    geographyIds: z.array(z.string()),
-    metricIds: z.array(z.string()),
-    source: z.string().optional(),
-    temporal: z.strictObject({ start: z.string(), end: z.string() }).optional(),
-  })
-  .meta({ id: 'Dataset' });
-
-export const geographyKindSchema = z.enum([
-  'administrative',
-  'grid',
-  'poi',
-  'custom',
-]);
 
 export const geographySchema = z
   .strictObject({
@@ -80,18 +120,118 @@ export const joinSchema = z
   })
   .meta({ id: 'Join' });
 
-export const filterKindSchema = z.enum(['categorical', 'numeric', 'temporal']);
+// Spatio-temporal dimension schemas (D8, D10)
 
-export const layerFilterOperatorSchema = z.enum([
-  'eq',
-  'neq',
-  'gt',
-  'gte',
-  'lt',
-  'lte',
-  'in',
-  'not-in',
-]);
+/** Temporal interval with optional open ends (D10). */
+export const intervalSchema = z
+  .strictObject({
+    start: z.string().optional(),
+    end: z.string().optional(),
+  })
+  .meta({ id: 'Interval' });
+
+/** Reference to a coded geography value (D10). */
+export const codedRefSchema = z
+  .strictObject({
+    code: z.string(),
+    label: z.string().optional(),
+  })
+  .meta({ id: 'CodedRef' });
+
+/** Temporal dimension — when/how a dataset is measured (D10). */
+export const temporalSchema = z
+  .strictObject({
+    status: presenceSchema,
+    grain: temporalGrainSchema.optional(),
+    extent: z.array(intervalSchema).optional(),
+    history: temporalHistorySchema.optional(),
+    periods: z
+      .array(
+        z.strictObject({
+          start: z.string(),
+          end: z.string(),
+          label: z.string().optional(),
+        })
+      )
+      .optional(),
+  })
+  .meta({ id: 'Temporal' });
+
+/** Spatial grain as code scheme + code in data dictionary (D8 — seam binding). */
+export const spatialGrainSchema = z
+  .strictObject({
+    scheme: z.string(),
+    code: z.string(),
+    label: z.string().optional(),
+  })
+  .meta({ id: 'SpatialGrain' });
+
+/** Spatial grain reference as FK in visualization Catalog (D8 — seam binding). */
+export const spatialGrainRefSchema = z
+  .strictObject({
+    geographyId: z.string(),
+    label: z.string().optional(),
+  })
+  .meta({ id: 'SpatialGrainRef' });
+
+/** Spatial dimension — where/how a dataset is located (D10). */
+export const spatialSchema = z
+  .strictObject({
+    status: presenceSchema,
+    geometry: spatialGeometrySchema.optional(),
+    extent: z.array(codedRefSchema).optional(),
+    grain: temporalGrainSchema.optional(),
+    field: z.string().optional(),
+  })
+  .meta({ id: 'Spatial' });
+
+/** Dimension for metric slicing — distinct from spatial/temporal (D10). */
+export const dimensionSchema = z
+  .strictObject({
+    id: z.string(),
+    label: z.string(),
+    description: z.string().optional(),
+    kind: z.enum(['categorical', 'numeric', 'temporal']),
+    property: z.string(),
+    aliases: z.array(z.string()).optional(),
+  })
+  .meta({ id: 'Dimension' });
+
+/** Series: metric + dimensions + spatio-temporal grain combinations (D10). */
+export const seriesSchema = z
+  .strictObject({
+    id: z.string(),
+    metricId: z.string(),
+    spatialGrain: spatialGrainRefSchema.optional(),
+    temporalGrain: temporalGrainSchema.optional(),
+    dimensions: z.array(dimensionSchema).optional(),
+  })
+  .meta({ id: 'Series' });
+
+// Dataset schema (uses Temporal and Spatial)
+
+export const datasetSchema = z
+  .strictObject({
+    id: z.string(),
+    label: z.string(),
+    description: z.string(),
+    aliases: z.array(z.string()).optional(),
+    geographyIds: z.array(z.string()),
+    metricIds: z.array(z.string()),
+    source: z.string().optional(),
+    temporal: temporalSchema.optional(),
+    spatial: spatialSchema.optional(),
+    artifact: z
+      .strictObject({
+        url: z.string(),
+        format: z.enum(['csv', 'json', 'geojson', 'parquet']),
+      })
+      .optional(),
+    columns: z.record(z.string(), z.string()).optional(),
+  })
+  .meta({ id: 'Dataset' });
+
+// Filter schemas
 
 export const filterOptionSchema = z.strictObject({
   value: z.union([z.string(), z.number()]),
@@ -213,6 +353,8 @@ export const mapTypeCatalogEntrySchema = z
   })
   .meta({ id: 'MapTypeCatalogEntry' });
 
+// Catalog schema (composes all others)
+
 export const catalogSchema = z
   .strictObject({
     version: z.string().min(1),
@@ -221,6 +363,7 @@ export const catalogSchema = z
     metrics: z.array(metricSchema),
     geographies: z.array(geographySchema),
     joins: z.array(joinSchema),
+    series: z.array(seriesSchema).optional(),
     mapTypes: z.array(mapTypeCatalogEntrySchema),
     filters: z.array(filterFieldSchema),
     permissions: z.record(z.string(), z.unknown()).optional(),
