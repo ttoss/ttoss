@@ -284,7 +284,39 @@ both modes → commit.
   `informational.negative`, which CONTRACT §1 forbids a Feedback component from
   reading. That is the F-024 / F-029 axis a third time: the tree has no quiet
   in-context rung. Decide it there, not by having one component reach across.
-- **B4. `contextualHelp`.** A slot beside the label, in S2's prop shape.
+- **B4. ✅ `contextualHelp` (2026-07-29).** S2's prop shape verbatim: every
+  envelope root takes `contextualHelp={<ContextualHelp aria-label=…>…}`, and
+  the new composite is `PopoverTrigger` + an icon-only `ActionButton` + a
+  `Popover` wrapping a bare dialog — the `ActionMenu` recipe, one affordance
+  over (one meta on the trigger; the surface keeps Popover's Overlay identity;
+  `aria-label` type-required because S2's translated "Help" default needs the
+  i18n runtime we refuse, ADR-001). The icon registry grew by exactly one
+  intent (`action.help`, mapped to the ⓘ — S2's own default variant; the
+  question-mark variant waits for a consumer). **The placement is two
+  mechanisms, not a preference:** the trigger renders in an internal
+  `labelRow` wrapper (the `Slider` part-name precedent) as a **sibling** of
+  the `<label>` — inside it the trigger's words join the field's accessible
+  NAME (the A2 measurement) and the label's click-to-focus swallows the
+  trigger's click. Without the prop no wrapper enters the tree: the DOM is
+  byte-identical to before the slot existed, asserted. The wrapper's gap is
+  `gap.inline.sm`, not `xs` — `xs` is contractually visual-only and the
+  trigger is an interactive target (spacing.md's own rule). The popover
+  content states S2's `contextual-help-minimum-width` (268px) so a sentence
+  wraps as a paragraph, not a ribbon. **The class guard caught a real defect
+  before it shipped:** rendered inside `NumberField`, RAC's ambient
+  `ButtonContext` demands a slot ("increment" or "decrement") from every RAC
+  Button in the subtree and threw on the help trigger — `slot={null}` is the
+  documented refusal, and only a table driven over every root would have hit
+  it. The trigger defaults to `muted` (ambient by definition), carrying
+  F-024's ruled caveat in its JSDoc. Measured in Chromium, both modes:
+  labelRow 34px with the label centred, trigger 34×34 (≥ 2.5.8's 24px, and
+  this one IS a tab stop), resting fill byte-equal to the page surface,
+  content at exactly 268px. _Studio consumer:_ Settings' Region field —
+  migration consequences are too long for a description line and too rare to
+  spend the space permanently, which is the criterion. Guards: the envelope
+  class table (every root hosts the slot outside its label; `Switch` asserted
+  as the exception — its label is the row) plus the composite's own suite.
+  Suites: fsl-ui 2358, Studio 75.
 - **C1. ✅ `Select` + `ComboBox` onto the anatomy (2026-07-26).** One refactor,
   five measured defects closed: `Select`'s root was `inline-flex` so it alone
   never filled its column (97.98px against its siblings' 1200px); its trigger drew
@@ -693,10 +725,10 @@ it lands unverified in dark until that audit exists.
 
 ### Q — the queue, unchanged
 
-**B4** `contextualHelp` · ~~**D** `SearchField` + `NumberField`~~ (**done
-2026-07-29**) · ~~**E** the selection family~~ (**done 2026-07-29**) · **G**
-`FieldGroup` + `Wizard` · **H** field formats · **I** the Studio's complete
-form.
+~~**B4** `contextualHelp`~~ (**done 2026-07-29**) · ~~**D** `SearchField` +
+`NumberField`~~ (**done 2026-07-29**) · ~~**E** the selection family~~ (**done
+2026-07-29**) · **G** `FieldGroup` + `Wizard` · **H** field formats · **I**
+the Studio's complete form.
 
 **F came in far smaller than this plan sized it**, and the reason is the lesson
 rather than the schedule. It was queued as a token-model change — switch the field

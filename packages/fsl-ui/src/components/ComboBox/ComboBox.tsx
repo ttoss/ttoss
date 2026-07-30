@@ -101,6 +101,11 @@ export interface ComboBoxProps<T extends object = object> extends Omit<
 > {
   /** Visible label displayed above the field. */
   label?: React.ReactNode;
+  /**
+   * A `<ContextualHelp>` element rendered beside the label (the reference
+   * system's prop shape) — for the explanation too long for `description`.
+   */
+  contextualHelp?: React.ReactNode;
   /** Supplementary helper text linked to the field via `aria-describedby`. */
   description?: React.ReactNode;
   /**
@@ -154,6 +159,7 @@ export interface ComboBoxProps<T extends object = object> extends Omit<
  */
 export const ComboBox = <T extends object = object>({
   label,
+  contextualHelp,
   description,
   errorMessage,
   placeholder = 'Search…',
@@ -174,6 +180,7 @@ export const ComboBox = <T extends object = object>({
       {label != null && (
         <FieldLabelPart
           scope="combo-box"
+          contextualHelp={contextualHelp}
           colors={c}
           isRequired={props.isRequired}
         >

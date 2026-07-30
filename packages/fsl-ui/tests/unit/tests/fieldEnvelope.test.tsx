@@ -42,6 +42,7 @@ import {
   CheckboxGroup,
   ComboBox,
   ComboBoxItem,
+  ContextualHelp,
   Form,
   FormSubmit,
   NumberField,
@@ -352,6 +353,100 @@ describe('the members that deliberately have no message part', () => {
       expect(part(scope, 'validationMessage')).toBeNull();
     }
   );
+});
+
+/**
+ * The contextualHelp slot (forms item B4) — a class property: every group-1
+ * root that renders a label can host a `<ContextualHelp>` beside it, in a
+ * `labelRow` wrapper, with the trigger outside the `<label>` element so it is
+ * never absorbed into the field's accessible name. Driven by the same ROOTS
+ * table so a new family member cannot ship without the slot.
+ */
+describe.each(ROOTS)('%s hosts contextualHelp beside its label', (scope) => {
+  const HELP = (
+    <ContextualHelp aria-label="About this field">Because.</ContextualHelp>
+  );
+
+  const FIELDS: Record<string, () => React.ReactElement> = {
+    'text-field': () => {
+      return <TextField label={COPY.label} contextualHelp={HELP} />;
+    },
+    'text-area': () => {
+      return <TextArea label={COPY.label} contextualHelp={HELP} />;
+    },
+    select: () => {
+      return (
+        <Select label={COPY.label} contextualHelp={HELP}>
+          <SelectItem id="a">A</SelectItem>
+        </Select>
+      );
+    },
+    'combo-box': () => {
+      return (
+        <ComboBox label={COPY.label} contextualHelp={HELP}>
+          <ComboBoxItem id="a">A</ComboBoxItem>
+        </ComboBox>
+      );
+    },
+    'number-field': () => {
+      return <NumberField label={COPY.label} contextualHelp={HELP} />;
+    },
+    'radio-group': () => {
+      return (
+        <RadioGroup label={COPY.label} contextualHelp={HELP}>
+          <Radio value="a">A</Radio>
+        </RadioGroup>
+      );
+    },
+    'checkbox-group': () => {
+      return (
+        <CheckboxGroup label={COPY.label} contextualHelp={HELP}>
+          <Checkbox value="a">A</Checkbox>
+        </CheckboxGroup>
+      );
+    },
+    'search-field': () => {
+      return (
+        <SearchField
+          label={COPY.label}
+          contextualHelp={HELP}
+          clearLabel="Clear"
+        />
+      );
+    },
+    switch: () => {
+      // Switch's label is the row itself, not an envelope label part — the
+      // slot does not apply; asserted as such below.
+      return <Switch description={COPY.description}>{COPY.label}</Switch>;
+    },
+  };
+
+  test('the trigger renders in a labelRow, outside the <label>', () => {
+    if (scope === 'switch') {
+      // No labelRow exists on Switch — its label is inline children of the
+      // clickable row, so there is no envelope label to sit beside.
+      render(FIELDS[scope]());
+      expect(part(scope, 'labelRow')).toBeNull();
+      return;
+    }
+
+    render(FIELDS[scope]());
+
+    const row = part(scope, 'labelRow');
+    const label = part(scope, 'label');
+    const trigger = document.querySelector<HTMLElement>(
+      '[data-scope="contextual-help"]'
+    );
+
+    expect(row).not.toBeNull();
+    expect(trigger).not.toBeNull();
+    // Sibling, never a child: inside the <label> the trigger's words join the
+    // field's accessible NAME (measured in A2) and the label's click-to-focus
+    // swallows the trigger's click.
+    expect(label?.contains(trigger as HTMLElement)).toBe(false);
+    expect(row?.contains(label as HTMLElement)).toBe(true);
+    expect(row?.contains(trigger as HTMLElement)).toBe(true);
+  });
 });
 
 describe('a required Select behaves like any other field', () => {

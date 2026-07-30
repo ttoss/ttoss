@@ -378,6 +378,13 @@ export interface FieldCopyProps {
    * and `type="email"`.
    */
   errorMessage?: React.ReactNode;
+  /**
+   * A `<ContextualHelp>` element rendered beside the label (the reference
+   * system's prop shape) — for the explanation that is too long for a
+   * `description` line and matters too rarely to spend the space permanently.
+   * Renders only when `label` renders: the help qualifies the label's words.
+   */
+  contextualHelp?: React.ReactNode;
   /** Placeholder on the control. Never a substitute for `label`. */
   placeholder?: string;
 }
@@ -576,6 +583,14 @@ export type FieldLabelPartProps = Omit<
      * prop on every member of the family.
      */
     isRequired?: boolean;
+    /**
+     * A `<ContextualHelp>` element rendered **beside** the label — a sibling,
+     * never a child. Two mechanisms force that placement: content inside a
+     * `<label>` is absorbed into the field's accessible NAME (the A2
+     * measurement), and a `<label>`'s click focuses the field, which would
+     * swallow the trigger's own click.
+     */
+    contextualHelp?: React.ReactNode;
   };
 
 /**
@@ -584,29 +599,58 @@ export type FieldLabelPartProps = Omit<
  * The marker is inside the label because it must sit with the words it
  * qualifies, and it is `aria-hidden` for the reason recorded on
  * `FieldNecessityMarker`.
+ *
+ * With `contextualHelp` the label gains a wrapping row (internal
+ * `data-part="labelRow"`, the `Slider` precedent) hosting the label and the
+ * trigger side by side; without it the DOM is byte-identical to what shipped
+ * before the slot existed — no wrapper enters the tree for fields that never
+ * asked for help.
  */
 export const FieldLabelPart = ({
   scope,
   colors,
   isRequired,
+  contextualHelp,
   children,
   ...props
 }: FieldLabelPartProps) => {
   const { labelPosition } = useFieldLayout();
 
-  return (
+  const label = (
     <RACLabel
       {...props}
       data-scope={scope}
       data-part="label"
       style={{
         ...buildFieldTextPartStyle({ colors, step: 'md' }),
-        ...fieldSideColumn(labelPosition, 'label'),
+        ...(contextualHelp === undefined
+          ? fieldSideColumn(labelPosition, 'label')
+          : {}),
       }}
     >
       {children}
       <FieldNecessityMarker isRequired={isRequired} />
     </RACLabel>
+  );
+
+  if (contextualHelp === undefined) return label;
+
+  return (
+    <span
+      data-scope={scope}
+      data-part="labelRow"
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        // `sm`, not `xs`: the trigger is an interactive target and
+        // `gap.inline.xs` is contractually visual-only (spacing.md).
+        gap: vars.spacing.gap.inline.sm,
+        ...fieldSideColumn(labelPosition, 'label'),
+      }}
+    >
+      {label}
+      {contextualHelp}
+    </span>
   );
 };
 

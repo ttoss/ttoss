@@ -15,6 +15,7 @@ import {
   type FieldAuthoring,
   FieldDescriptionPart,
   FieldLabelPart,
+  type FieldLabelPartProps,
   FieldValidationMessagePart,
   useFieldLayout,
 } from '../../components/Field/anatomy';
@@ -98,7 +99,8 @@ export type TextAreaProps = Omit<
   FieldAuthoring<RACTextFieldProps['children'], { rows?: number }>;
 
 /** Props for the TextArea label. */
-export type TextAreaLabelProps = Omit<RACLabelProps, 'style' | 'className'>;
+export type TextAreaLabelProps = Omit<RACLabelProps, 'style' | 'className'> &
+  Pick<FieldLabelPartProps, 'contextualHelp'>;
 
 /** The label slot of a TextArea. */
 export const TextAreaLabel = ({ children, ...props }: TextAreaLabelProps) => {
@@ -204,6 +206,7 @@ TextAreaError.displayName = textAreaErrorMeta.displayName;
 export const TextArea = ({
   children,
   label,
+  contextualHelp,
   description,
   errorMessage,
   placeholder,
@@ -224,7 +227,11 @@ export const TextArea = ({
           <textAreaScope.Provider value={{ isRequired: values.isRequired }}>
             {children === undefined ? (
               <>
-                {label !== undefined && <TextAreaLabel>{label}</TextAreaLabel>}
+                {label !== undefined && (
+                  <TextAreaLabel contextualHelp={contextualHelp}>
+                    {label}
+                  </TextAreaLabel>
+                )}
                 <TextAreaControl placeholder={placeholder} rows={rows} />
                 {description !== undefined && (
                   <TextAreaDescription>{description}</TextAreaDescription>

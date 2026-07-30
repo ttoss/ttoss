@@ -72,6 +72,11 @@ export interface RadioGroupProps extends Omit<
 > {
   /** Group label displayed above the radio options. */
   label?: React.ReactNode;
+  /**
+   * A `<ContextualHelp>` element rendered beside the label (the reference
+   * system's prop shape) — for the explanation too long for `description`.
+   */
+  contextualHelp?: React.ReactNode;
   /** Supplementary helper text linked to the group via `aria-describedby`. */
   description?: React.ReactNode;
   /**
@@ -104,6 +109,7 @@ export interface RadioGroupProps extends Omit<
  */
 export const RadioGroup = ({
   label,
+  contextualHelp,
   description,
   errorMessage,
   children,
@@ -121,6 +127,7 @@ export const RadioGroup = ({
       {label != null && (
         <FieldLabelPart
           scope="radio-group"
+          contextualHelp={contextualHelp}
           colors={c}
           isRequired={props.isRequired}
         >

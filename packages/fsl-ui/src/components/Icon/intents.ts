@@ -44,6 +44,10 @@ export const ICON_INTENTS = [
   // Named for what the user is offered ("more actions"), not for the layout
   // reason it exists; no opposition pair — there is no "fewer".
   'action.more',
+  // action — explanatory content behind a trigger (the contextual-help
+  // affordance). Named for what the user is offered ("help about this"), not
+  // for the glyph that renders it; no opposition pair.
+  'action.help',
   // status — foundation status indicators (affirmation, inclusion).
   'status.success',
 ] as const;

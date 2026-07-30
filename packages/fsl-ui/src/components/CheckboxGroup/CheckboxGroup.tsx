@@ -55,6 +55,11 @@ export interface CheckboxGroupProps extends Omit<
 > {
   /** Group label displayed above the checkboxes. */
   label?: React.ReactNode;
+  /**
+   * A `<ContextualHelp>` element rendered beside the label (the reference
+   * system's prop shape) — for the explanation too long for `description`.
+   */
+  contextualHelp?: React.ReactNode;
   /** Supplementary helper text linked to the group via `aria-describedby`. */
   description?: React.ReactNode;
   /**
@@ -87,6 +92,7 @@ export interface CheckboxGroupProps extends Omit<
  */
 export const CheckboxGroup = ({
   label,
+  contextualHelp,
   description,
   errorMessage,
   children,
@@ -104,6 +110,7 @@ export const CheckboxGroup = ({
       {label != null && (
         <FieldLabelPart
           scope="checkbox-group"
+          contextualHelp={contextualHelp}
           colors={c}
           isRequired={props.isRequired}
         >

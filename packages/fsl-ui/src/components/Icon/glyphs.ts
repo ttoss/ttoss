@@ -19,6 +19,7 @@ import checkGlyph from '@iconify/icons-lucide/check';
 import checkCircleGlyph from '@iconify/icons-lucide/check-circle-2';
 import chevronDownGlyph from '@iconify/icons-lucide/chevron-down';
 import chevronRightGlyph from '@iconify/icons-lucide/chevron-right';
+import infoGlyph from '@iconify/icons-lucide/info';
 import minusGlyph from '@iconify/icons-lucide/minus';
 import moreHorizontalGlyph from '@iconify/icons-lucide/more-horizontal';
 import plusGlyph from '@iconify/icons-lucide/plus';
@@ -61,6 +62,10 @@ const INTENT_GLYPHS = {
   'action.sortAscending': unwrapGlyph(arrowUpNarrowWideGlyph),
   'action.sortDescending': unwrapGlyph(arrowDownWideNarrowGlyph),
   'action.more': unwrapGlyph(moreHorizontalGlyph),
+  // The ⓘ, not the ?: the reference's ContextualHelp defaults to its `info`
+  // variant, and a field's help is clarification rather than rescue. The
+  // intent stays glyph-agnostic (`help`); this mapping is the theme's choice.
+  'action.help': unwrapGlyph(infoGlyph),
   // Circled check (distinct from selection.checked's bare check — the
   // opposition-adjacent "two intents, one glyph" warning stays moot).
   'status.success': unwrapGlyph(checkCircleGlyph),

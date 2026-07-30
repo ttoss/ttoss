@@ -279,6 +279,11 @@ export {
   ConfirmationDialog,
   confirmationDialogMeta,
 } from './composites/ConfirmationDialog/ConfirmationDialog';
+export type { ContextualHelpProps } from './composites/ContextualHelp/ContextualHelp';
+export {
+  ContextualHelp,
+  contextualHelpMeta,
+} from './composites/ContextualHelp/ContextualHelp';
 export type {
   DialogActionsPlatform,
   DialogActionsProps,

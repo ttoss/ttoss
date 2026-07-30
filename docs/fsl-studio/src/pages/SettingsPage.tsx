@@ -2,6 +2,7 @@ import {
   Checkbox,
   ComboBox,
   ComboBoxItem,
+  ContextualHelp,
   Form,
   FormActions,
   FormSubmit,
@@ -105,6 +106,21 @@ const WorkspaceForm = () => {
           label="Region"
           name="region"
           defaultSelectedKey={settings.region}
+          // The explanation is too long for a description line and matters
+          // too rarely to spend the space permanently — the contextualHelp
+          // criterion (forms B4).
+          contextualHelp={
+            <ContextualHelp aria-label="About regions">
+              <Heading level={2} size="title-sm">
+                Choosing a region
+              </Heading>
+              <Text>
+                Deploys run in this region. Changing it schedules a data
+                migration on the next deploy — in-flight deploys finish where
+                they started.
+              </Text>
+            </ContextualHelp>
+          }
         >
           {REGIONS.map(([id, label]) => {
             return (

@@ -67,6 +67,11 @@ export interface NumberFieldProps extends Omit<
 > {
   /** Visible label displayed above the field. */
   label?: React.ReactNode;
+  /**
+   * A `<ContextualHelp>` element rendered beside the label (the reference
+   * system's prop shape) — for the explanation too long for `description`.
+   */
+  contextualHelp?: React.ReactNode;
   /** Supplementary helper text linked to the field via `aria-describedby`. */
   description?: React.ReactNode;
   /**
@@ -110,6 +115,7 @@ export interface NumberFieldProps extends Omit<
  */
 export const NumberField = ({
   label,
+  contextualHelp,
   description,
   errorMessage,
   decrementLabel = 'Decrease',
@@ -129,6 +135,7 @@ export const NumberField = ({
       {label != null && (
         <FieldLabelPart
           scope="number-field"
+          contextualHelp={contextualHelp}
           colors={c}
           isRequired={props.isRequired}
         >

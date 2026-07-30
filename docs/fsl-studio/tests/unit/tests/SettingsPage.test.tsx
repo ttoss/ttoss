@@ -53,6 +53,25 @@ describe('SettingsPage', () => {
     );
   });
 
+  test('the Region label hosts contextual help without renaming the field', async () => {
+    const user = userEvent.setup();
+    render(<SettingsPage />);
+
+    // The help sits beside the label, outside the <label> element — so the
+    // field's accessible name gains nothing from it. (A Select's name is
+    // value-then-label by React Aria's own order, so never query it exactly.)
+    const trigger = document.querySelector<HTMLElement>(
+      '[data-scope="select"] [data-part="trigger"]'
+    );
+    expect(trigger).toHaveAccessibleName(/Region/);
+    expect(trigger).not.toHaveAccessibleName(/About regions/);
+
+    await user.click(screen.getByRole('button', { name: 'About regions' }));
+    expect(
+      screen.getByRole('dialog', { name: 'About regions' })
+    ).toHaveTextContent(/schedules a data migration/);
+  });
+
   test('the enforcement switch carries its consequence as a description', () => {
     render(<SettingsPage />);
 

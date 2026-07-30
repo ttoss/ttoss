@@ -15,6 +15,7 @@ import {
   type FieldAuthoring,
   FieldDescriptionPart,
   FieldLabelPart,
+  type FieldLabelPartProps,
   FieldValidationMessagePart,
   useFieldLayout,
 } from '../../components/Field/anatomy';
@@ -103,7 +104,8 @@ export const textFieldErrorMeta = {
 // ---------------------------------------------------------------------------
 
 /** Props for the TextField label. */
-export type TextFieldLabelProps = Omit<RACLabelProps, 'style' | 'className'>;
+export type TextFieldLabelProps = Omit<RACLabelProps, 'style' | 'className'> &
+  Pick<FieldLabelPartProps, 'contextualHelp'>;
 
 /** The label slot of a TextField. Wired to React Aria for a11y linkage. */
 export const TextFieldLabel = ({ children, ...props }: TextFieldLabelProps) => {
@@ -262,6 +264,7 @@ export type TextFieldProps = Omit<
 export const TextField = ({
   children,
   label,
+  contextualHelp,
   description,
   errorMessage,
   placeholder,
@@ -282,7 +285,9 @@ export const TextField = ({
             {children === undefined ? (
               <>
                 {label !== undefined && (
-                  <TextFieldLabel>{label}</TextFieldLabel>
+                  <TextFieldLabel contextualHelp={contextualHelp}>
+                    {label}
+                  </TextFieldLabel>
                 )}
                 <TextFieldControl placeholder={placeholder} />
                 {description !== undefined && (

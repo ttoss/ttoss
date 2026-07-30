@@ -16,6 +16,7 @@ import {
   type FieldAuthoring,
   FieldDescriptionPart,
   FieldLabelPart,
+  type FieldLabelPartProps,
   FieldValidationMessagePart,
   useFieldLayout,
 } from '../../components/Field/anatomy';
@@ -105,7 +106,8 @@ export type SearchFieldProps = Omit<
 } & FieldAuthoring<React.ReactNode, { placeholder?: string }>;
 
 /** Props for the SearchField label. */
-export type SearchFieldLabelProps = Omit<RACLabelProps, 'style' | 'className'>;
+export type SearchFieldLabelProps = Omit<RACLabelProps, 'style' | 'className'> &
+  Pick<FieldLabelPartProps, 'contextualHelp'>;
 
 /** The label slot of a SearchField. */
 export const SearchFieldLabel = (props: SearchFieldLabelProps) => {
@@ -243,6 +245,7 @@ export const SearchField = ({
   clearLabel,
   children,
   label,
+  contextualHelp,
   description,
   errorMessage,
   placeholder,
@@ -265,7 +268,11 @@ export const SearchField = ({
           >
             {children ?? (
               <>
-                {label != null && <SearchFieldLabel>{label}</SearchFieldLabel>}
+                {label != null && (
+                  <SearchFieldLabel contextualHelp={contextualHelp}>
+                    {label}
+                  </SearchFieldLabel>
+                )}
                 <SearchFieldControl placeholder={placeholder} />
                 {description != null && (
                   <FieldDescriptionPart scope="search-field" colors={colors}>
