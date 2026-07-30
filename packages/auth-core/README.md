@@ -110,6 +110,114 @@ const { token, tokenHash, expires } = generateOneTimeToken({
 const isValid = verifyOneTimeToken({ token: received, tokenHash, expires });
 ```
 
+Pass `format: 'numeric'` for a short code the user retypes from their email
+instead of a link they click. Digits are drawn by rejection sampling so the
+keyspace stays uniform, and the lifetime defaults to 10 minutes rather than 24
+hours because ~20 bits of entropy makes a long window a guessing window.
+
+```ts
+const { token, tokenHash, expires } = generateOneTimeToken({
+  format: 'numeric',
+  digits: 6, // default; 4 to 12 supported
+});
+```
+
+A short code is only safe with a bounded attempt count, which
+`createEmailAuthHandlers` below enforces. Rolling your own means bounding the
+guesses yourself.
+
+## Email and password flows
+
+`createEmailAuthHandlers` composes the primitives above into the credential
+flows an application actually mounts — password sign-up and sign-in, magic
+links, mailed numeric codes, address confirmation, and password reset. It stays
+true to the package's contract: no database and no mail transport. Persistence
+arrives as stores, session minting as `issueSession`, and delivery as
+`sendEmail`, which receives the plaintext token exactly once and sends it with
+whichever provider the application already uses.
+
+`modes` decides which flows exist, so an application that only signs users in
+with a mailed code never exposes a password endpoint.
+
+```ts
+import { createEmailAuthHandlers } from '@ttoss/auth-core';
+
+const handlers = createEmailAuthHandlers({
+  modes: ['emailCode'],
+
+  userStore: {
+    findByEmail: (email) => db.User.findOne({ where: { email } }),
+    create: ({ email, passwordHash, emailVerified }) =>
+      db.User.create({ email, passwordHash, emailVerified }),
+    update: ({ id, ...changes }) => db.User.update(changes, { where: { id } }),
+  },
+
+  oneTimeTokenStore: {
+    /* save, find, findByEmail, delete, deleteFor, incrementAttempts */
+  },
+
+  issueSession: (user) => issueSession(user),
+
+  sendEmail: async ({ to, purpose, token, url, expires }) => {
+    await ses.send(buildAuthEmail({ to, purpose, token, url, expires }));
+  },
+
+  baseUrl: process.env.APP_URL,
+  ttl: { emailCode: 60 * 10 },
+  emailCode: { digits: 6, maxAttempts: 5 },
+
+  hooks: {
+    onUserCreated: (user) => createDefaultWorkspace(user),
+    enrichSession: ({ session, user }) => ({
+      ...session,
+      plan: planFor(user),
+    }),
+  },
+});
+```
+
+Each handler takes a normalized request and resolves to a status and a body, so
+it is mountable on any runner. For Koa, `emailAuth()` from
+[`@ttoss/http-server-auth`](https://ttoss.dev/docs/modules/packages/http-server-auth)
+does it for you.
+
+Every handler returns expected outcomes as responses — `invalid_credentials`,
+`invalid_token`, `expired_token`, `too_many_attempts` and friends, under a
+stable `error.code`. Only genuinely unexpected failures throw, `sendEmail`
+included, so a delivery outage reaches the application's error reporting rather
+than being folded into a 200.
+
+Two behaviours are deliberate and worth knowing before you diff them against
+your own implementation. The endpoints that mail something always return the
+same acknowledgement whether or not the address is on file, so the response
+cannot be used to enumerate accounts; and sign-in runs a decoy PBKDF2 compare
+for an unknown address, so response time cannot either.
+
+### Capping how often an address is mailed
+
+Pass `requestRateLimit` and the send endpoints stop being a way to mail a
+stranger repeatedly. Without it they will send as fast as they are called —
+issuing a new token invalidates the previous one, which limits how many tokens
+are _redeemable_ rather than how many messages go out.
+
+```ts
+requestRateLimit: {
+  store: myRateLimitStore, // { recent, record }
+  cooldownSeconds: 60,     // default
+  maxPerWindow: 10,        // default
+  windowSeconds: 60 * 60 * 24, // default
+}
+```
+
+The cap is applied to the request, before the engine looks the address up, and
+**every** request is recorded whether or not mail followed. Counting only the
+requests that produced mail would make a `429` mean "this address has an
+account" — reintroducing the enumeration oracle the rest of the flow avoids.
+
+`createMemoryRequestRateLimitStore` is a reference implementation. Back it with
+something shared in production: a per-process limiter caps each replica
+separately, so a fleet of N sends N times the intended rate.
+
 ## API tokens
 
 Personal access tokens in the form `<prefix>_<hex>`, recognizable in logs and
@@ -291,3 +399,5 @@ const onAuthorize = createRedirectConsentOnAuthorize({
 `createMemoryClientStore`, `createMemoryAuthCodeStore`, `createMemoryRefreshTokenStore`, and `createMemoryAccessTokenStore` are `Map`-backed implementations of the store contracts — for tests, local development, and examples. Production swaps in a durable backend behind the same interfaces.
 
 `createMemoryAccessTokenStore` implements `listBySubject` and round-trips `displayPrefix`/`createdAt` for tests and local development.
+
+`createMemoryUserStore` and `createMemoryOneTimeTokenStore` do the same for the email and password flows, including the attempt counting the `emailCode` mode requires — useful as a reference when implementing the contracts against a real database.

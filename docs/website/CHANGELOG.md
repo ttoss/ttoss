@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0](https://github.com/ttoss/ttoss/compare/@docs/website@3.1.8...@docs/website@3.2.0) (2026-07-29)
+
+### Features
+
+- **http-server-mcp:** serve the MCP 2026-07-28 revision alongside 2025-era traffic ([#1171](https://github.com/ttoss/ttoss/issues/1171)) ([b9fcc16](https://github.com/ttoss/ttoss/commit/b9fcc16e66c4c1df8277af956d0301e695f6ea4b))
+
 ## [3.1.8](https://github.com/ttoss/ttoss/compare/@docs/website@3.1.7...@docs/website@3.1.8) (2026-07-28)
 
 ### Bug Fixes

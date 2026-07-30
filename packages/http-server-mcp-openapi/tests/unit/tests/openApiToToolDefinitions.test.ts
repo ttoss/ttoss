@@ -29,6 +29,7 @@ describe('openApiToToolDefinitions', () => {
       'delete-agent',
       'get-agent',
       'list-agents',
+      'update-agent',
     ]);
   });
 
@@ -180,6 +181,49 @@ describe('openApiToToolDefinitions', () => {
       expect(Object.keys(props).sort()).toEqual(['agentId', 'chatId', 'name']);
       // `name` is required in both alternatives; agent_id/chat_id only in one.
       expect(tool.inputSchema.required).toEqual(['name']);
+    });
+  });
+
+  describe('nullable and property-level oneOf', () => {
+    const tool = byName(tools, 'update-agent');
+
+    test('nullable primitive keeps its declared type as a two-entry type array', () => {
+      const props = tool.inputSchema.properties as Record<string, unknown>;
+      expect(props.description).toEqual({
+        type: ['string', 'null'],
+        description: 'Agent description',
+      });
+    });
+
+    test('property-level oneOf is forwarded verbatim, not collapsed to a primitive', () => {
+      const props = tool.inputSchema.properties as Record<string, unknown>;
+      expect(props.toolChoice).toEqual({
+        oneOf: [
+          { type: 'string', enum: ['auto', 'required'] },
+          {
+            type: 'object',
+            properties: {
+              type: { type: 'string' },
+              name: { type: 'string' },
+            },
+          },
+        ],
+        description: 'Tool selection strategy',
+      });
+    });
+
+    test('property-level anyOf is forwarded verbatim, not collapsed to a primitive', () => {
+      const props = tool.inputSchema.properties as Record<string, unknown>;
+      expect(props.labels).toEqual({
+        anyOf: [{ type: 'array', items: { type: 'string' } }, { type: 'null' }],
+        description: 'Labels, or null to clear them',
+      });
+    });
+
+    test('neither nullable nor oneOf/anyOf fields are marked required', () => {
+      expect(tool.inputSchema.required).not.toContain('description');
+      expect(tool.inputSchema.required).not.toContain('toolChoice');
+      expect(tool.inputSchema.required).not.toContain('labels');
     });
   });
 
