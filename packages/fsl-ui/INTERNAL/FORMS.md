@@ -623,17 +623,52 @@ both modes → commit.
   step shows the field's own message plus the platform copy on both Selects,
   the pair splits the row equally, and the flow completes. Suites: fsl-ui
   2387, Studio 83 (coverage threshold moved up to 98.9/90.5).
-- **H. Field formats, and the in-control validation glyph.** A `format` registry
-  on the `Icon`-intent pattern: named, locale-scoped format data resolving mask +
-  `inputMode` + `autoComplete`. Never a `type` prop explosion. The Brazil set
-  (CEP, CPF, CNPJ, phone, currency) is the first consumer. Own ADR.
-  **The glyph arrived here from F**, which is where it belongs: it is an
-  adornment inside the field box, so it shares the icon slot and the split
-  control's frame anatomy with everything else in this item, and it shared
-  nothing with the token question F was actually about. It is the remaining
-  answer to F-032's WCAG 1.4.1 note — with the message now carrying valence in
-  ink as well as words, colour is no longer the sole carrier, so the glyph is
-  reinforcement rather than the fix.
+- **H. ✅ Field formats, and the in-control validation glyph (2026-07-29,
+  ADR-026).** The registry shipped as written: `format="br.cep"` on `TextField`
+  resolves mask + `inputMode` + `autoComplete` from one name, on the
+  `Icon`-intent pattern (`{locale}.{format}`, a `FieldFormat` union that fails
+  the typecheck on an unknown name). The Brazil set is **four**, not the five
+  §4 listed: CEP, CPF, CNPJ, phone (multi-pattern — the mask switches at the
+  11th digit). **Currency was cut from the registry on inspection**, not
+  deferred: grouping separators move as digits are typed, which digit-slot
+  masking cannot express and `Intl.NumberFormat` already owns —
+  `NumberField formatOptions={{ style: 'currency' }}` is the shipped answer,
+  and the ADR names it so the gap is not refiled. Checksum validation (CPF's
+  check digits) stays with the caller's `validate` because a validate message
+  is user-facing copy the package cannot ship (ADR-001). The masked value is
+  the submitted value — what the user sees is what `FormData` carries — and
+  the caret restores by digit count, so typing into the middle of a masked
+  value does not throw the cursor to the end. Backspace over a literal deletes
+  the digit before it, because deleting a hyphen the user never typed and
+  watching it come back is the classic mask defect.
+  **The glyph forced the split conversion, and the conversion surfaced a
+  latent drift.** `TextField`/`TextArea` were self-painted, so an in-box
+  adornment had nowhere to sit; both moved to the frame + borderless-value
+  shape the other split members already had, verified **byte-identical** in
+  Chromium before/after (frame 34px/1px border/8px radius, value at the same
+  reading edge, both modes). Converting exposed that the split members'
+  value ink had silently stopped reading `text.invalid` — `buildFieldValueStyle`
+  is now flag-aware, the same cascade the self-painted shape already had.
+  `FieldInvalidGlyph` is a field-level primitive in the envelope: `status.alert`
+  intent in the shared icon slot, `input.negative.text` ink (reporting valence,
+  Lexicon §10.15/§3.2 — the same line the message reads), `aria-hidden` because
+  the message already tells AT, at `inset.control.md` from the field edge (12px
+  — S2's `field-edge-to-alert-icon`, and it lands on our own token exactly).
+  All six **boxed** members carry it (`text-field`, `text-area`, `select`,
+  `combo-box`, `number-field`, `search-field`); the boxless three
+  (`radio-group`, `checkbox-group`, `switch`) are named exceptions in the class
+  guard — no box, no in-box glyph. Measured in Chromium both modes: glyph
+  20×20 at 13px from the edge (12 inset + 1 border), ink `rgb(185,28,28)` /
+  `rgb(252,165,165)` — byte-identical to item F's message measurement, WCAG
+  1.4.1 reinforcement closed as F promised.
+  _Guards:_ 15 format tests (registry data, paste, overflow, phone mask
+  switch, backspace-over-literal, caret, masked `FormData`, attrs, controlled
+  value, caller `validate`) + the glyph class guard in `fieldEnvelope.test.tsx`
+  (every boxed member marks while invalid, carries none while valid),
+  injection-verified. Contract invariants #10/#11 re-baselined for the split
+  move. _Studio consumer:_ Billing's payment wizard address step collects CEP
+  and CNPJ through the registry — the Brazilian-entity invoicing fields §2
+  motivated. Suites: fsl-ui 2425, Studio 83.
 - **I. The Studio's complete form.** A Meridian flow exercising every capability
   end to end — the proving ground and the regression surface.
 
@@ -764,7 +799,8 @@ it lands unverified in dark until that audit exists.
 ~~**B4** `contextualHelp`~~ (**done 2026-07-29**) · ~~**D** `SearchField` +
 `NumberField`~~ (**done 2026-07-29**) · ~~**E** the selection family~~ (**done
 2026-07-29**) · ~~**G** `FieldGroup` + `Wizard`~~ (**done 2026-07-29**) ·
-**H** field formats · **I** the Studio's complete form.
+~~**H** field formats~~ (**done 2026-07-29**) · **I** the Studio's complete
+form.
 
 **F came in far smaller than this plan sized it**, and the reason is the lesson
 rather than the schedule. It was queued as a token-model change — switch the field

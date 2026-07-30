@@ -160,6 +160,25 @@ const AddPaymentMethodDialog = () => {
                     autoComplete="street-address"
                     isRequired
                   />
+                  {/*
+                    Invoices issue through northline's Brazilian entity, so the
+                    billing step collects the local identifiers — the format
+                    registry's first consumers (forms item H): each resolves
+                    its mask, keyboard and autofill token from one name.
+                  */}
+                  <TextField
+                    label="CEP"
+                    name="cep"
+                    format="br.cep"
+                    isRequired
+                  />
+                  <TextField
+                    label="CNPJ"
+                    name="cnpj"
+                    format="br.cnpj"
+                    isRequired
+                    description="The tax ID invoices are issued to."
+                  />
                 </Stack>
               </Form>
             </WizardStep>

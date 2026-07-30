@@ -36,7 +36,7 @@ import path from 'node:path';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vars } from '@ttoss/fsl-theme/vars';
-import type * as React from 'react';
+import * as React from 'react';
 import {
   Checkbox,
   CheckboxGroup,
@@ -574,6 +574,64 @@ describe('an invalid field speaks valence on the message, not on the value', () 
 });
 
 /**
+ * The in-control validation glyph (forms item H) — a class property: every
+ * member with a field BOX marks it while invalid, from one shared source
+ * (`FieldInvalidGlyph`). The three members without a box — the two groups and
+ * `Switch`, whose "control" is the mark itself — are named exceptions: their
+ * message carries the valence and a glyph has no box to sit in.
+ */
+describe('the in-control validation glyph', () => {
+  const BOXED = [
+    'text-field',
+    'text-area',
+    'select',
+    'combo-box',
+    'number-field',
+    'search-field',
+  ] as const;
+  const BOXLESS = ['radio-group', 'checkbox-group', 'switch'] as const;
+
+  const fieldFor = (scope: string) => {
+    return ROOTS.find(([s]) => {
+      return s === scope;
+    })![1];
+  };
+
+  test.each(BOXED)('%s marks its box while invalid', (scope) => {
+    render(fieldFor(scope)());
+
+    const glyph = part(scope, 'validationGlyph');
+
+    expect(glyph).not.toBeNull();
+    // Reinforcement, not the semantics: aria-invalid on the control and the
+    // message's words already carry it twice (WCAG 1.4.1 — the F-032 note).
+    expect(glyph).toHaveAttribute('aria-hidden', 'true');
+    // The reporting valence — the same §3.2 split the message follows: a part
+    // that reports the outcome, not the control re-voiced.
+    expect(glyph?.style.color).toBe(vars.colors.input.negative.text?.default);
+  });
+
+  test.each(BOXED)('%s carries no glyph while valid', (scope) => {
+    // Strip the validity props from the group-1 fixture.
+    const element = fieldFor(scope)() as React.ReactElement<{
+      isInvalid?: boolean;
+      isRequired?: boolean;
+    }>;
+    render(
+      React.cloneElement(element, { isInvalid: undefined, isRequired: true })
+    );
+
+    expect(part(scope, 'validationGlyph')).toBeNull();
+  });
+
+  test.each(BOXLESS)('%s has no box to mark — named exception', (scope) => {
+    render(fieldFor(scope)());
+
+    expect(part(scope, 'validationGlyph')).toBeNull();
+  });
+});
+
+/**
  * Hover while invalid — the owner's ruling, made executable.
  *
  * Ruled 2026-07-29: **hover does not apply while invalid.** The cascade already
@@ -589,13 +647,15 @@ describe('hover does not apply while invalid', () => {
     const user = userEvent.setup();
     render(<TextField {...COPY} isInvalid />);
 
-    const control = part('text-field', 'control')!;
-    await user.hover(control);
+    // The FRAME is the painted box since the split conversion (forms item H);
+    // the value inside it paints nothing.
+    const frame = part('text-field', 'frame')!;
+    await user.hover(frame);
 
-    expect(control.style.borderColor).toBe(
+    expect(frame.style.borderColor).toBe(
       vars.colors.input.primary.border?.invalid
     );
-    expect(control.style.backgroundColor).toBe(
+    expect(frame.style.backgroundColor).toBe(
       vars.colors.input.primary.background?.invalid
     );
   });
@@ -604,12 +664,12 @@ describe('hover does not apply while invalid', () => {
     const user = userEvent.setup();
     render(<TextField {...COPY} />);
 
-    const control = part('text-field', 'control')!;
-    await user.hover(control);
+    const frame = part('text-field', 'frame')!;
+    await user.hover(frame);
 
     // The counterpart that makes the assertion above mean something: without
     // it, a field that never reacted to hover at all would pass too.
-    expect(control.style.backgroundColor).toBe(
+    expect(frame.style.backgroundColor).toBe(
       vars.colors.input.primary.background?.hover
     );
   });

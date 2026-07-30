@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import {
+  Stack,
   TextField,
   TextFieldControl,
   TextFieldDescription,
@@ -147,5 +148,27 @@ export const Required: Story = {
   tags: ['autodocs'],
   render: () => {
     return <TextField label="Email" name="email" type="email" isRequired />;
+  },
+};
+
+/**
+ * The format registry (forms item H): a named, locale-scoped format resolves
+ * the mask, the touch keyboard and the autofill token together. Validation
+ * (a CPF's checksum) stays with the caller's `validate` — a validate message
+ * is user-facing copy the package cannot ship (ADR-001). Currency is not a
+ * format: grouping moves as digits are typed, which is Intl's job —
+ * `NumberField formatOptions={{ style: 'currency', currency: 'BRL' }}`.
+ */
+export const Formats: Story = {
+  tags: ['autodocs'],
+  render: () => {
+    return (
+      <Stack gap="md">
+        <TextField label="CEP" name="cep" format="br.cep" />
+        <TextField label="CPF" name="cpf" format="br.cpf" />
+        <TextField label="CNPJ" name="cnpj" format="br.cnpj" />
+        <TextField label="Telefone" name="phone" format="br.phone" />
+      </Stack>
+    );
   },
 };

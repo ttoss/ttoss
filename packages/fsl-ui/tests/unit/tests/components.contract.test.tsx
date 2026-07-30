@@ -717,10 +717,14 @@ describe('contract: utility triggers share the field row', () => {
     return geometry;
   };
 
-  test('ActionButton and ToggleButton match the TextField control exactly', () => {
+  test('ActionButton and ToggleButton match the field row exactly', () => {
+    // Baseline: the Select trigger — the family's remaining SELF-PAINTED
+    // member, which resolves the whole row on one element. TextField was the
+    // baseline until forms item H split it (frame owns the floor, value owns
+    // the insets), which no longer offers all five properties on one node.
     const field = renderRoot(
-      'TextFieldControl',
-      '[data-scope="text-field"][data-part="control"]'
+      'Select',
+      '[data-scope="select"][data-part="trigger"]'
     );
 
     expect(
@@ -739,8 +743,8 @@ describe('contract: utility triggers share the field row', () => {
 
   test('Button leaves the row on inset and type, keeping the same floor', () => {
     const field = renderRoot(
-      'TextFieldControl',
-      '[data-scope="text-field"][data-part="control"]'
+      'Select',
+      '[data-scope="select"][data-part="trigger"]'
     );
     const command = renderRoot(
       'Button',
@@ -788,13 +792,17 @@ describe('contract: the field family reads one row', () => {
   // invariant asks each shape for the half it is responsible for; asking both
   // for all six is what would make a correct split control look broken.
   const SELF_PAINTED: ReadonlyArray<readonly [string, string, string]> = [
-    ['TextFieldControl', 'TextFieldControl', 'text-field'],
-    ['TextAreaControl', 'TextAreaControl', 'text-area'],
     ['Select trigger', 'Select', 'select'],
   ];
 
+  // TextField and TextArea joined the split shape in forms item H: the frame
+  // is the lawful home for in-box adornments (the validation glyph today,
+  // prefix/suffix when pulled), which is the reserved-padding hack item D
+  // deleted from SearchField.
   const SPLIT: ReadonlyArray<readonly [string, string, string]> = [
     ['ComboBox', 'ComboBox', 'combo-box'],
+    ['TextField', 'TextFieldControl', 'text-field'],
+    ['TextArea', 'TextAreaControl', 'text-area'],
   ];
 
   const styleOf = (selector: string): CSSStyleDeclaration => {

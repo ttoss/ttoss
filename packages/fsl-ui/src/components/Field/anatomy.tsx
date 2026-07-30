@@ -30,11 +30,12 @@ import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 // Two shapes of control exist, and the difference is not cosmetic:
 //
 //   *self-painted* — one element is both the painted box and the thing the
-//   user operates (`TextField`'s `<input>`, `TextArea`'s `<textarea>`,
-//   `Select`'s trigger). Use `buildFieldControlStyle`.
+//   user operates (`Select`'s trigger). Use `buildFieldControlStyle`.
 //
 //   *split* — a frame paints and hosts adornments while a borderless inner
-//   input carries the value (`NumberField`, `ComboBox`, `SearchField`). Use
+//   input carries the value (`TextField`, `TextArea`, `NumberField`,
+//   `ComboBox`, `SearchField` — the text pair joined in forms item H so the
+//   validation glyph has a box to sit in, verified byte-identical). Use
 //   `buildFieldFrameStyle` + `buildFieldValueStyle`. `data-part="control"`
 //   stays on the **operated** element (the input), because that is what makes
 //   the anatomy addressable — a test or an agent told to type into a field
@@ -213,16 +214,23 @@ export const buildFieldControlStyle = ({
 export const buildFieldFrameStyle = ({
   colors,
   labelPosition = 'top',
+  multiline,
   ...flags
 }: FieldChromeFlags & {
   colors: InputColors;
   labelPosition?: FieldLabelPosition;
+  /**
+   * A multiline frame stretches its value instead of centring it, and its
+   * adornments pin to the top edge (the reference's `field-top-to-alert-icon`
+   * placement) — a glyph centred on a five-line textarea marks nothing.
+   */
+  multiline?: boolean;
 }): React.CSSProperties => {
   return {
     ...fieldBoxChrome(colors, flags),
     ...fieldSideColumn(labelPosition, 'control'),
     display: 'inline-flex',
-    alignItems: 'center',
+    alignItems: multiline ? 'stretch' : 'center',
     minHeight: vars.sizing.hit,
     ...FIELD_ROW.text,
   } as React.CSSProperties;
@@ -237,7 +245,8 @@ export const buildFieldFrameStyle = ({
 export const buildFieldValueStyle = ({
   colors,
   textAlign = 'start',
-}: {
+  ...flags
+}: FieldChromeFlags & {
   colors: InputColors;
   /**
    * Reading edge of the value. `start` everywhere except where the value is a
@@ -255,7 +264,17 @@ export const buildFieldValueStyle = ({
     paddingBlock: FIELD_ROW.insetBlock,
     paddingInline: FIELD_ROW.insetInline,
     textAlign,
-    color: colors?.text?.default,
+    // Resolved through the cascade, not pinned to `default`: the family's
+    // `text.invalid` is the READABLE-invalid ink a theme may tune (F-032's
+    // annotation), and the split members had silently stopped reading it —
+    // a self-painted control resolved it, a static value did not. Found by
+    // the guard when TextField converted (forms item H).
+    color:
+      resolveInteractiveStyle(colors?.text, {
+        isHovered: flags.isHovered,
+        isDisabled: flags.isDisabled,
+        isInvalid: flags.isInvalid,
+      }) ?? colors?.text?.default,
     ...FIELD_ROW.text,
   } as React.CSSProperties;
 };
@@ -349,6 +368,10 @@ export const buildFieldTextPartStyle = ({
       : vars.text.label.sm) as React.CSSProperties),
   } as React.CSSProperties;
 };
+
+// The in-control validation glyph lives in its own module (forms item H) —
+// re-exported here because the envelope is where every member finds it.
+export { FieldInvalidGlyph } from './FieldInvalidGlyph';
 
 // ---------------------------------------------------------------------------
 // The two ways to author a field

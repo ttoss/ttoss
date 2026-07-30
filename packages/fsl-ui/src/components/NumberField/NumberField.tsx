@@ -15,6 +15,7 @@ import {
   buildFieldRootStyle,
   buildFieldValueStyle,
   FieldDescriptionPart,
+  FieldInvalidGlyph,
   FieldLabelPart,
   FieldValidationMessagePart,
   useFieldLayout,
@@ -163,43 +164,67 @@ export const NumberField = ({
           });
         }}
       >
-        <RACButton
-          slot="decrement"
-          data-scope="number-field"
-          data-part="trigger"
-          style={({ isHovered, isDisabled, isFocusVisible }) => {
-            return buildEmbeddedTriggerStyle({
-              colors: c,
-              isHovered,
-              isDisabled,
-              isFocusVisible,
-            });
-          }}
-        >
-          <Icon intent="action.decrement" size="sm" label={decrementLabel} />
-        </RACButton>
+        {({ isInvalid }) => {
+          return (
+            <>
+              <RACButton
+                slot="decrement"
+                data-scope="number-field"
+                data-part="trigger"
+                style={({ isHovered, isDisabled, isFocusVisible }) => {
+                  return buildEmbeddedTriggerStyle({
+                    colors: c,
+                    isHovered,
+                    isDisabled,
+                    isFocusVisible,
+                  });
+                }}
+              >
+                <Icon
+                  intent="action.decrement"
+                  size="sm"
+                  label={decrementLabel}
+                />
+              </RACButton>
 
-        <RACInput
-          data-scope="number-field"
-          data-part="control"
-          style={buildFieldValueStyle({ colors: c, textAlign: 'center' })}
-        />
+              <RACInput
+                data-scope="number-field"
+                data-part="control"
+                style={({ isHovered, isDisabled, isInvalid }) => {
+                  return buildFieldValueStyle({
+                    colors: c,
+                    textAlign: 'center',
+                    isHovered,
+                    isDisabled,
+                    isInvalid,
+                  });
+                }}
+              />
 
-        <RACButton
-          slot="increment"
-          data-scope="number-field"
-          data-part="trigger"
-          style={({ isHovered, isDisabled, isFocusVisible }) => {
-            return buildEmbeddedTriggerStyle({
-              colors: c,
-              isHovered,
-              isDisabled,
-              isFocusVisible,
-            });
-          }}
-        >
-          <Icon intent="action.increment" size="sm" label={incrementLabel} />
-        </RACButton>
+              <FieldInvalidGlyph scope="number-field" isInvalid={isInvalid} />
+
+              <RACButton
+                slot="increment"
+                data-scope="number-field"
+                data-part="trigger"
+                style={({ isHovered, isDisabled, isFocusVisible }) => {
+                  return buildEmbeddedTriggerStyle({
+                    colors: c,
+                    isHovered,
+                    isDisabled,
+                    isFocusVisible,
+                  });
+                }}
+              >
+                <Icon
+                  intent="action.increment"
+                  size="sm"
+                  label={incrementLabel}
+                />
+              </RACButton>
+            </>
+          );
+        }}
       </RACGroup>
 
       {description != null && (

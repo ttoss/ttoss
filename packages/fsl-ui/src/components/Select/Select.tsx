@@ -23,6 +23,7 @@ import {
   buildPickerListStyle,
   buildPickerPopoverStyle,
   FieldDescriptionPart,
+  FieldInvalidGlyph,
   FieldLabelPart,
   FieldValidationMessagePart,
   useFieldLayout,
@@ -240,6 +241,12 @@ export const Select = <T extends object = object>({
                   );
                 }}
               </SelectValue>
+
+              <FieldInvalidGlyph
+                scope="select"
+                isInvalid={isInvalid}
+                edgeInset={false}
+              />
 
               {/* chevron icon */}
               <span

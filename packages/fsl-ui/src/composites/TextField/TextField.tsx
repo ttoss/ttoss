@@ -1,4 +1,5 @@
 import { vars } from '@ttoss/fsl-theme/vars';
+import * as React from 'react';
 import {
   type FieldErrorProps as RACFieldErrorProps,
   Input as RACInput,
@@ -8,17 +9,26 @@ import {
   type TextFieldProps as RACTextFieldProps,
   type TextProps as RACTextProps,
 } from 'react-aria-components';
+import { Group as RACGroup } from 'react-aria-components';
 
 import {
-  buildFieldControlStyle,
+  buildFieldFrameStyle,
   buildFieldRootStyle,
+  buildFieldValueStyle,
   type FieldAuthoring,
   FieldDescriptionPart,
+  FieldInvalidGlyph,
   FieldLabelPart,
   type FieldLabelPartProps,
   FieldValidationMessagePart,
   useFieldLayout,
 } from '../../components/Field/anatomy';
+import {
+  applyFieldFormat,
+  type FieldFormat,
+  fieldFormatInputProps,
+  nextFieldFormatValue,
+} from '../../components/Field/formats';
 import type { ComponentMeta } from '../../semantics';
 import { createCompositeScope } from '../scope';
 
@@ -37,9 +47,11 @@ import { createCompositeScope } from '../scope';
 // it — and the necessity marker belongs beside the label text, so the root
 // publishes the flag from its own render props (the authoritative value, not the
 // prop). `scope.ts`'s authoring rule: share state when there is state to share.
-const textFieldScope = createCompositeScope<{ isRequired: boolean }>(
-  'TextField'
-);
+const textFieldScope = createCompositeScope<{
+  isRequired: boolean;
+  /** The active field format — the control resolves its input attributes from it. */
+  format?: FieldFormat;
+}>('TextField');
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -133,22 +145,31 @@ TextFieldLabel.displayName = textFieldLabelMeta.displayName;
 export type TextFieldControlProps = Omit<RACInputProps, 'style' | 'className'>;
 
 /**
- * The control slot of a TextField — the actual `<input>` element. Reads
- * `isInvalid` from React Aria's render-props and surfaces the `invalid`
- * State via `vars.colors.input.primary.*`.
+ * The control slot of a TextField — since forms item H, the **split** shape:
+ * a painted frame hosting a borderless input, the same anatomy the rest of
+ * the family (`SearchField`, `NumberField`, `ComboBox`) already had. The
+ * conversion is what gives the field a lawful home for in-box adornments —
+ * the validation glyph today, `prefix`/`suffix` when a consumer pulls them —
+ * instead of the reserved-padding-and-absolute-positioning hack item D
+ * deleted from `SearchField`. `data-part="control"` stays on the element the
+ * user types into (ADR-022).
  */
 export const TextFieldControl = (props: TextFieldControlProps) => {
-  textFieldScope.use(textFieldControlMeta.displayName);
+  const { format } = textFieldScope.use(textFieldControlMeta.displayName);
   const colors = vars.colors.input.primary;
   const { labelPosition } = useFieldLayout();
 
+  // A format resolves the keyboard and the autofill token together with its
+  // mask — declaring them separately at each call site is how they drift.
+  // Caller-supplied attributes still win.
+  const formatProps = format === undefined ? {} : fieldFormatInputProps(format);
+
   return (
-    <RACInput
-      {...props}
+    <RACGroup
       data-scope="text-field"
-      data-part="control"
+      data-part="frame"
       style={({ isHovered, isDisabled, isFocusVisible, isInvalid }) => {
-        return buildFieldControlStyle({
+        return buildFieldFrameStyle({
           colors,
           labelPosition,
           isHovered,
@@ -157,7 +178,29 @@ export const TextFieldControl = (props: TextFieldControlProps) => {
           isInvalid,
         });
       }}
-    />
+    >
+      {({ isInvalid }) => {
+        return (
+          <>
+            <RACInput
+              {...formatProps}
+              {...props}
+              data-scope="text-field"
+              data-part="control"
+              style={({ isHovered, isDisabled, isInvalid }) => {
+                return buildFieldValueStyle({
+                  colors,
+                  isHovered,
+                  isDisabled,
+                  isInvalid,
+                });
+              }}
+            />
+            <FieldInvalidGlyph scope="text-field" isInvalid={isInvalid} />
+          </>
+        );
+      }}
+    </RACGroup>
   );
 };
 TextFieldControl.displayName = textFieldControlMeta.displayName;
@@ -223,8 +266,18 @@ TextFieldError.displayName = textFieldErrorMeta.displayName;
 export type TextFieldProps = Omit<
   RACTextFieldProps,
   'style' | 'className' | 'children'
-> &
-  FieldAuthoring<RACTextFieldProps['children']>;
+> & {
+  /**
+   * A registered input format (`br.cpf`, `br.cep`, …) — resolves the mask,
+   * the touch keyboard (`inputMode`) and the autofill token together
+   * (ADR-026). The submitted value is the **masked** string; validation
+   * (a CPF's checksum, say) stays with the caller's `validate`, because a
+   * validate message is user-facing copy this package cannot ship (ADR-001).
+   * Available in both authoring forms — it shapes the control's behaviour,
+   * not the envelope's arrangement.
+   */
+  format?: FieldFormat;
+} & FieldAuthoring<RACTextFieldProps['children']>;
 
 /**
  * A semantic text input composite built on React Aria's `TextField`.
@@ -268,20 +321,79 @@ export const TextField = ({
   description,
   errorMessage,
   placeholder,
+  format,
   ...props
 }: TextFieldProps) => {
   const { labelPosition } = useFieldLayout();
+  const rootRef = React.useRef<HTMLDivElement | null>(null);
+
+  // --- format engine (ADR-026) -------------------------------------------
+  // With a format the field runs controlled internally: the mask is applied
+  // on every change and the caret restored by DIGIT position, so a literal
+  // the mask inserts to the caret's left cannot displace it. The caret is
+  // read from the control at event time and written back after commit —
+  // React resets a controlled input's caret when its value is replaced.
+  const [inner, setInner] = React.useState(() => {
+    return format === undefined
+      ? ''
+      : applyFieldFormat(format, props.defaultValue ?? '');
+  });
+  const pendingCaret = React.useRef<number | null>(null);
+  const controlOf = (node: HTMLElement | null) => {
+    return node?.querySelector<HTMLInputElement>('[data-part="control"]');
+  };
+
+  const masked =
+    format === undefined
+      ? undefined
+      : props.value !== undefined
+        ? applyFieldFormat(format, props.value)
+        : inner;
+
+  const handleChange = (next: string) => {
+    if (format === undefined) {
+      props.onChange?.(next);
+      return;
+    }
+    const input = controlOf(rootRef.current);
+    const { value, caret } = nextFieldFormatValue({
+      format,
+      raw: next,
+      rawCaret: input?.selectionStart ?? next.length,
+      previous: masked ?? '',
+    });
+    pendingCaret.current = caret;
+    if (props.value === undefined) setInner(value);
+    props.onChange?.(value);
+  };
+
+  React.useLayoutEffect(() => {
+    if (pendingCaret.current === null) return;
+    const input = controlOf(rootRef.current);
+    input?.setSelectionRange(pendingCaret.current, pendingCaret.current);
+    pendingCaret.current = null;
+  });
+
+  const formatProps =
+    format === undefined
+      ? {}
+      : { value: masked, defaultValue: undefined, onChange: handleChange };
+  // ------------------------------------------------------------------------
 
   return (
     <RACTextField
       {...props}
+      {...formatProps}
+      ref={rootRef}
       data-scope="text-field"
       data-part="root"
       style={buildFieldRootStyle({ labelPosition })}
     >
       {(values) => {
         return (
-          <textFieldScope.Provider value={{ isRequired: values.isRequired }}>
+          <textFieldScope.Provider
+            value={{ isRequired: values.isRequired, format }}
+          >
             {children === undefined ? (
               <>
                 {label !== undefined && (

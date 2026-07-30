@@ -137,6 +137,15 @@ describe('the payment wizard (forms item G consumer)', () => {
       within(dialog).getByRole('textbox', { name: /Billing address/ }),
       'Rua das Flores 100, Lisboa'
     );
+    // The format registry's first consumers: typing digits masks as it goes,
+    // and each field raised the right keyboard (inputmode) from one name.
+    const cep = within(dialog).getByRole('textbox', { name: /CEP/ });
+    await user.type(cep, '01310100');
+    expect(cep).toHaveValue('01310-100');
+    expect(cep).toHaveAttribute('inputmode', 'numeric');
+    const cnpj = within(dialog).getByRole('textbox', { name: /CNPJ/ });
+    await user.type(cnpj, '12345678000195');
+    expect(cnpj).toHaveValue('12.345.678/0001-95');
     await user.click(within(dialog).getByRole('button', { name: 'Save card' }));
 
     expect(await screen.findByText('Card ending 4242')).toBeInTheDocument();

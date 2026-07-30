@@ -48,8 +48,11 @@ export const ICON_INTENTS = [
   // affordance). Named for what the user is offered ("help about this"), not
   // for the glyph that renders it; no opposition pair.
   'action.help',
-  // status — foundation status indicators (affirmation, inclusion).
+  // status — foundation status indicators. Opposition rule: success ≠ alert.
   'status.success',
+  // The invalid-field mark (the field family's validation glyph) and any
+  // "needs attention" indicator.
+  'status.alert',
 ] as const;
 
 /** A semantic icon intent — the public "name" of an icon. */

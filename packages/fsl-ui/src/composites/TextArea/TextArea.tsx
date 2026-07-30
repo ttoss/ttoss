@@ -8,12 +8,15 @@ import {
   type TextFieldProps as RACTextFieldProps,
   type TextProps as RACTextProps,
 } from 'react-aria-components';
+import { Group as RACGroup } from 'react-aria-components';
 
 import {
-  buildFieldControlStyle,
+  buildFieldFrameStyle,
   buildFieldRootStyle,
+  buildFieldValueStyle,
   type FieldAuthoring,
   FieldDescriptionPart,
+  FieldInvalidGlyph,
   FieldLabelPart,
   type FieldLabelPartProps,
   FieldValidationMessagePart,
@@ -127,8 +130,13 @@ export type TextAreaControlProps = Omit<
 >;
 
 /**
- * The control slot — the actual `<textarea>`. Surfaces the `invalid` State
- * via `vars.colors.input.primary.*`; vertical resize is enabled.
+ * The control slot — since forms item H, the **split** shape: a painted frame
+ * hosting a borderless `<textarea>` (see `TextFieldControl` for the full
+ * rationale — the frame is the lawful home for in-box adornments). The frame
+ * is `multiline`: the value stretches instead of centring, vertical resize
+ * stays on the `<textarea>` (the frame grows with it), and the validation
+ * glyph pins to the top edge — centred on a five-line box it would mark
+ * nothing (the reference's `field-top-to-alert-icon` placement).
  */
 export const TextAreaControl = (props: TextAreaControlProps) => {
   textAreaScope.use(textAreaControlMeta.displayName);
@@ -136,12 +144,11 @@ export const TextAreaControl = (props: TextAreaControlProps) => {
   const { labelPosition } = useFieldLayout();
 
   return (
-    <RACTextArea
-      {...props}
+    <RACGroup
       data-scope="text-area"
-      data-part="control"
+      data-part="frame"
       style={({ isHovered, isDisabled, isFocusVisible, isInvalid }) => {
-        return buildFieldControlStyle({
+        return buildFieldFrameStyle({
           colors,
           labelPosition,
           multiline: true,
@@ -151,7 +158,35 @@ export const TextAreaControl = (props: TextAreaControlProps) => {
           isInvalid,
         });
       }}
-    />
+    >
+      {({ isInvalid }) => {
+        return (
+          <>
+            <RACTextArea
+              {...props}
+              data-scope="text-area"
+              data-part="control"
+              style={({ isHovered, isDisabled, isInvalid }) => {
+                return {
+                  ...buildFieldValueStyle({
+                    colors,
+                    isHovered,
+                    isDisabled,
+                    isInvalid,
+                  }),
+                  resize: 'vertical',
+                };
+              }}
+            />
+            <FieldInvalidGlyph
+              scope="text-area"
+              isInvalid={isInvalid}
+              multiline
+            />
+          </>
+        );
+      }}
+    </RACGroup>
   );
 };
 TextAreaControl.displayName = textAreaControlMeta.displayName;

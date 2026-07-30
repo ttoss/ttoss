@@ -131,7 +131,14 @@ THE FIELD ENVELOPE — one rule for every field, Input and Selection alike:
              reading ink on purpose; the valence on the control is the border
              alone. HOVER DOES NOT APPLY WHILE INVALID (owner ruling) — `invalid`
              outranks `hover` in the cascade and `border` never reads hover at
-             all; focus is unaffected because the ring is a separate declaration. The label
+             all; focus is unaffected because the ring is a separate declaration.
+             AN INVALID BOXED FIELD ALSO CARRIES AN IN-BOX GLYPH (forms item H):
+             data-part="validationGlyph", status.alert intent in the shared icon
+             slot, input.negative.text ink (the message's line — it REPORTS),
+             aria-hidden because the message already tells AT; WCAG 1.4.1
+             reinforcement so colour is not the sole carrier. All six boxed
+             members mark; radio-group/checkbox-group/switch have no box and
+             carry none. The label
              carries the necessity marker when the field isRequired: an
              aria-hidden asterisk, because the control already carries the native
              `required` attribute and a second announcement is noise. Turn it off
@@ -162,6 +169,17 @@ Input:       TextField, TextArea — each authored EITHER one-line
              is always mounted, so a field with no errorMessage still shows the
              platform's own constraint copy (already localized) — which is the
              better default for isRequired and type="email".
+             FIELD FORMATS (ADR-026): TextField takes format="br.cep" |
+             "br.cpf" | "br.cnpj" | "br.phone" — one name resolves mask +
+             inputMode + autoComplete together (FieldFormat union; an unknown
+             name fails the typecheck). The MASKED value is the SUBMITTED
+             value; the caret restores by digit count; backspace over a mask
+             literal deletes the digit before it. br.phone switches mask at
+             the 11th digit. The registry ships NO validation — a CPF checksum
+             message is user copy (ADR-001), so pass your own `validate`.
+             Currency is NOT a format: grouping moves as digits are typed,
+             which is Intl's job — use NumberField
+             formatOptions={{ style: 'currency', currency: 'BRL' }}.
              SearchField (label/description/errorMessage/placeholder props OR
              + Label/Control slots; leading search + clear glyphs; clearLabel is
              required and caller-localized),
@@ -169,7 +187,9 @@ Input:       TextField, TextArea — each authored EITHER one-line
              Slider (label + value output; single value or [min,max] range),
              ComboBox/ComboBoxItem (text input + typeahead-filtered list;
              label/description/errorMessage/placeholder/triggerLabel props).
-             THREE SPLIT CONTROLS — ComboBox, NumberField, SearchField:
+             FIVE SPLIT CONTROLS — TextField, TextArea, ComboBox, NumberField,
+             SearchField (the text pair joined in forms item H, verified
+             byte-identical — only Select's trigger stays self-painted):
              data-part="frame" paints the box and hosts the adornments,
              data-part="control" is the <input> you operate. `control` ALWAYS
              names the operated element, so a test or an agent told to type into

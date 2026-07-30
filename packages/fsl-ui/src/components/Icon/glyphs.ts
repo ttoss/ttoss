@@ -13,6 +13,7 @@
  * @see ./intents.ts — the intents these glyphs satisfy
  * @see ../../../CONTRIBUTING.md ADR-005
  */
+import alertTriangleGlyph from '@iconify/icons-lucide/alert-triangle';
 import arrowDownWideNarrowGlyph from '@iconify/icons-lucide/arrow-down-wide-narrow';
 import arrowUpNarrowWideGlyph from '@iconify/icons-lucide/arrow-up-narrow-wide';
 import checkGlyph from '@iconify/icons-lucide/check';
@@ -69,6 +70,7 @@ const INTENT_GLYPHS = {
   // Circled check (distinct from selection.checked's bare check — the
   // opposition-adjacent "two intents, one glyph" warning stays moot).
   'status.success': unwrapGlyph(checkCircleGlyph),
+  'status.alert': unwrapGlyph(alertTriangleGlyph),
 } satisfies Record<IconIntent, GlyphData>;
 
 /**

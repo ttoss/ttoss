@@ -237,8 +237,11 @@ describe('a side-label Form', () => {
   });
 
   test.each([
-    ['text-field', 'control'],
-    ['text-area', 'control'],
+    // The split members' FRAME takes the control column (the value has no
+    // grid identity of its own) — text-field and text-area joined the split
+    // shape in forms item H.
+    ['text-field', 'frame'],
+    ['text-area', 'frame'],
     ['select', 'trigger'],
     ['combo-box', 'frame'],
   ])(
