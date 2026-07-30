@@ -56,6 +56,25 @@ export const testSpec: OpenApiSpec = {
           },
         ],
       },
+      patch: {
+        operationId: 'updateAgent',
+        description: 'Update an agent',
+        parameters: [
+          {
+            name: 'agent_id',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+          },
+        ],
+        requestBody: {
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/UpdateAgentBody' },
+            },
+          },
+        },
+      },
       delete: {
         operationId: 'deleteAgent',
         description: 'Delete an agent',
@@ -156,6 +175,41 @@ export const testSpec: OpenApiSpec = {
         properties: {
           name: { type: 'string' },
           chat_id: { type: 'string' },
+        },
+      },
+      UpdateAgentBody: {
+        type: 'object',
+        properties: {
+          // Nullable primitive: must keep its declared type while also
+          // accepting `null` (the OpenAPI-documented way to clear a field).
+          description: {
+            type: 'string',
+            description: 'Agent description',
+            nullable: true,
+          },
+          // Property-level oneOf: must be forwarded verbatim, not collapsed
+          // to a single guessed primitive.
+          tool_choice: {
+            description: 'Tool selection strategy',
+            oneOf: [
+              { type: 'string', enum: ['auto', 'required'] },
+              {
+                type: 'object',
+                properties: {
+                  type: { type: 'string' },
+                  name: { type: 'string' },
+                },
+              },
+            ],
+          },
+          // Property-level anyOf: same requirement as oneOf above.
+          labels: {
+            description: 'Labels, or null to clear them',
+            anyOf: [
+              { type: 'array', items: { type: 'string' } },
+              { type: 'null' },
+            ],
+          },
         },
       },
     },

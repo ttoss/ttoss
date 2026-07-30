@@ -4,21 +4,32 @@ import {
   Button as RACButton,
   ComboBox as RACComboBox,
   type ComboBoxProps as RACComboBoxProps,
-  FieldError as RACFieldError,
   Group as RACGroup,
   Input as RACInput,
-  Label as RACLabel,
   ListBox as RACListBox,
   ListBoxItem as RACListBoxItem,
   type ListBoxItemProps as RACListBoxItemProps,
   Popover as RACPopover,
-  Text as RACText,
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
+import { buildChoosableRowStyle } from '../../tokens/choosableRow';
+import { buildEmbeddedTriggerStyle } from '../../tokens/embeddedTrigger';
 import { fslVar } from '../../tokens/escapeHatch';
 import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import {
+  buildFieldFrameStyle,
+  buildFieldRootStyle,
+  buildFieldValueStyle,
+  buildPickerListStyle,
+  buildPickerPopoverStyle,
+  FieldDescriptionPart,
+  FieldInvalidGlyph,
+  FieldLabelPart,
+  FieldValidationMessagePart,
+  useFieldLayout,
+} from '../Field/anatomy';
 import { Icon } from '../Icon';
 
 // ---------------------------------------------------------------------------
@@ -75,8 +86,6 @@ export const comboBoxItemMeta = {
   composition: 'selection',
 } as const satisfies ComponentMeta<'Selection'>;
 
-type InputColors = typeof vars.colors.input.primary;
-
 /**
  * Scroll cap for the options popover. A ComboBox exists because the option set
  * is too long to scan (friction F-008: 30+ timezones), so the list must scroll
@@ -86,107 +95,6 @@ type InputColors = typeof vars.colors.input.primary;
  */
 const LIST_MAX_HEIGHT = 'min(20rem, 60vh)';
 
-/** Control box (the `Group`) chrome — the framed field around input + trigger. */
-const buildControlBoxStyle = ({
-  c,
-  isDisabled,
-  isInvalid,
-  isFocusVisible,
-}: {
-  c: InputColors;
-  isDisabled?: boolean;
-  isInvalid?: boolean;
-  isFocusVisible?: boolean;
-}): React.CSSProperties => {
-  return {
-    boxSizing: 'border-box',
-    display: 'inline-flex',
-    alignItems: 'center',
-    minHeight: vars.sizing.hit,
-    borderRadius: vars.radii.control,
-    borderWidth: vars.border.outline.control.width,
-    borderStyle: vars.border.outline.control.style,
-    transitionProperty: 'background-color, border-color',
-    transitionDuration: vars.motion.feedback.duration,
-    transitionTimingFunction: vars.motion.feedback.easing,
-    backgroundColor: resolveInteractiveStyle(c?.background, {
-      isDisabled,
-      isInvalid,
-    }),
-    borderColor: resolveInteractiveStyle(c?.border, {
-      isDisabled,
-      isInvalid,
-      isFocusVisible,
-    }),
-    outline: focusRingOutline(isFocusVisible),
-  };
-};
-
-/** The `<input>` itself — borderless; the surrounding `Group` owns the frame. */
-const buildInputStyle = (c: InputColors): React.CSSProperties => {
-  return {
-    boxSizing: 'border-box',
-    flex: 1,
-    minWidth: 0,
-    border: 0,
-    background: 'transparent',
-    outline: 'none',
-    paddingBlock: vars.spacing.inset.control.sm,
-    paddingInline: vars.spacing.inset.control.md,
-    color: c?.text?.default,
-    ...(vars.text.label.md as React.CSSProperties),
-  };
-};
-
-/** Chevron button chrome — borderless Action-pattern control in Input chrome. */
-const buildTriggerStyle = ({
-  c,
-  isDisabled,
-}: {
-  c: InputColors;
-  isDisabled?: boolean;
-}): React.CSSProperties => {
-  return {
-    boxSizing: 'border-box',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-    border: 0,
-    background: 'transparent',
-    cursor: isDisabled ? 'not-allowed' : 'pointer',
-    opacity: isDisabled ? vars.opacity.disabled : undefined,
-    paddingBlock: vars.spacing.inset.control.sm,
-    paddingInline: vars.spacing.inset.control.sm,
-    color: c?.text?.default,
-  };
-};
-
-/** Options popover surface — Input-entity chrome, matching the control frame. */
-const buildPopoverStyle = (c: InputColors): React.CSSProperties => {
-  return {
-    boxSizing: 'border-box',
-    borderRadius: vars.radii.control,
-    borderWidth: vars.border.outline.control.width,
-    borderStyle: vars.border.outline.control.style,
-    borderColor: c?.border?.default,
-    backgroundColor: c?.background?.default,
-    overflow: 'hidden',
-  };
-};
-
-/**
- * Resolve the field's text colors once (default for label/description/input,
- * invalid for the validation message). Hoisted out of the render so the
- * optional-chain reads keep the component's cyclomatic complexity low.
- */
-const resolveFieldTextColors = (
-  c: InputColors
-): { base: string | undefined; invalid: string | undefined } => {
-  const text = c?.text;
-  return { base: text?.default, invalid: text?.invalid ?? text?.default };
-};
-
 /** Props for the ComboBox component. */
 export interface ComboBoxProps<T extends object = object> extends Omit<
   RACComboBoxProps<T>,
@@ -194,6 +102,11 @@ export interface ComboBoxProps<T extends object = object> extends Omit<
 > {
   /** Visible label displayed above the field. */
   label?: React.ReactNode;
+  /**
+   * A `<ContextualHelp>` element rendered beside the label (the reference
+   * system's prop shape) — for the explanation too long for `description`.
+   */
+  contextualHelp?: React.ReactNode;
   /** Supplementary helper text linked to the field via `aria-describedby`. */
   description?: React.ReactNode;
   /**
@@ -230,9 +143,10 @@ export interface ComboBoxProps<T extends object = object> extends Omit<
  * type (see the Entity rationale in this file's header). Options are
  * `ComboBoxItem`.
  *
- * Unlike `Select`, this composite ships a `validationMessage` part, so an
- * invalid choice can state why inside the system. Validation is the `invalid`
- * State (via `isInvalid`/`validate`), never an `evaluation` variant.
+ * Validation is the `invalid` State (via `isInvalid`/`validate`), never an
+ * `evaluation` variant, and it surfaces in a `validationMessage` part — which
+ * `Select` now carries too (F-009 closed in forms C2; this doc claimed the
+ * distinction while it lasted).
  *
  * Host geometry knob: `--fsl-combo-box-max-height` caps the scrolling list.
  *
@@ -246,6 +160,7 @@ export interface ComboBoxProps<T extends object = object> extends Omit<
  */
 export const ComboBox = <T extends object = object>({
   label,
+  contextualHelp,
   description,
   errorMessage,
   placeholder = 'Search…',
@@ -254,107 +169,118 @@ export const ComboBox = <T extends object = object>({
   ...props
 }: ComboBoxProps<T>) => {
   const c = vars.colors.input.primary;
-  const { base, invalid } = resolveFieldTextColors(c);
+  const { labelPosition } = useFieldLayout();
 
   return (
     <RACComboBox
       {...props}
       data-scope="combo-box"
       data-part="root"
-      style={{
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: vars.spacing.gap.stack.xs,
-      }}
+      style={buildFieldRootStyle({ labelPosition })}
     >
       {label != null && (
-        <RACLabel
-          data-scope="combo-box"
-          data-part="label"
-          style={{
-            ...(vars.text.label.md as React.CSSProperties),
-            color: base,
-          }}
+        <FieldLabelPart
+          scope="combo-box"
+          contextualHelp={contextualHelp}
+          colors={c}
+          isRequired={props.isRequired}
         >
           {label}
-        </RACLabel>
+        </FieldLabelPart>
       )}
 
+      {/*
+        The frame paints and hosts the trigger; `control` stays on the `<input>`
+        the user operates, so `[data-part="control"]` resolves something you can
+        type into (ADR-022, invariant #12).
+      */}
       <RACGroup
         data-scope="combo-box"
-        data-part="control"
+        data-part="frame"
         style={({ isDisabled, isInvalid, isFocusVisible }) => {
-          return buildControlBoxStyle({
-            c,
+          return buildFieldFrameStyle({
+            colors: c,
+            labelPosition,
             isDisabled,
             isInvalid,
             isFocusVisible,
           });
         }}
       >
-        <RACInput
-          data-scope="combo-box"
-          data-part="control"
-          placeholder={placeholder}
-          style={buildInputStyle(c)}
-        />
+        {({ isInvalid }) => {
+          return (
+            <>
+              <RACInput
+                data-scope="combo-box"
+                data-part="control"
+                placeholder={placeholder}
+                style={({ isHovered, isDisabled, isInvalid }) => {
+                  return buildFieldValueStyle({
+                    colors: c,
+                    isHovered,
+                    isDisabled,
+                    isInvalid,
+                  });
+                }}
+              />
 
-        <RACButton
-          aria-label={triggerLabel}
-          data-scope="combo-box"
-          data-part="trigger"
-          style={({ isDisabled }) => {
-            return buildTriggerStyle({ c, isDisabled });
-          }}
-        >
-          {/* Decorative — the button owns the accessible name (CONTRACT §9.4). */}
-          <Icon intent="disclosure.expand" size="text" />
-        </RACButton>
+              <FieldInvalidGlyph scope="combo-box" isInvalid={isInvalid} />
+
+              <RACButton
+                aria-label={triggerLabel}
+                data-scope="combo-box"
+                data-part="trigger"
+                style={({ isHovered, isDisabled, isFocusVisible }) => {
+                  return buildEmbeddedTriggerStyle({
+                    colors: c,
+                    isHovered,
+                    isDisabled,
+                    isFocusVisible,
+                  });
+                }}
+              >
+                {/*
+            Decorative — the button owns the accessible name (CONTRACT §9.4).
+            `size="sm"` and not `size="text"`: a font-relative glyph inside a
+            `<button>` that declares no type of its own resolves against the UA's
+            13.3333px, which is what made this chevron 25.33px in a family whose
+            other triggers were 32 and 20 (see EMBEDDED_TRIGGER).
+          */}
+                <Icon intent="disclosure.expand" size="sm" />
+              </RACButton>
+            </>
+          );
+        }}
       </RACGroup>
 
       {description != null && (
-        <RACText
-          slot="description"
-          data-scope="combo-box"
-          data-part="description"
-          style={{
-            ...(vars.text.label.sm as React.CSSProperties),
-            color: base,
-          }}
-        >
+        <FieldDescriptionPart scope="combo-box" colors={c}>
           {description}
-        </RACText>
+        </FieldDescriptionPart>
       )}
 
-      <RACFieldError
-        data-scope="combo-box"
-        data-part="validationMessage"
-        style={{
-          ...(vars.text.label.sm as React.CSSProperties),
-          color: invalid,
-        }}
-      >
+      <FieldValidationMessagePart scope="combo-box" colors={c}>
         {errorMessage}
-      </RACFieldError>
+      </FieldValidationMessagePart>
 
+      {/*
+        Same row-width rule as `Select` (F-019, ADR-023): measured 142.88px under
+        a 1200px frame before it read `--trigger-width`.
+      */}
       <RACPopover
         data-scope="combo-box"
         data-part="positioner"
-        style={buildPopoverStyle(c)}
+        style={buildPickerPopoverStyle({
+          colors: c,
+          widthKnob: '--fsl-combo-box-popover-width',
+        })}
       >
         <RACListBox
           data-scope="combo-box"
           data-part="surface"
-          style={{
-            outline: 'none',
-            display: 'flex',
-            flexDirection: 'column',
-            padding: vars.spacing.inset.control.md,
-            gap: vars.spacing.gap.stack.xs,
+          style={buildPickerListStyle({
             maxHeight: fslVar('--fsl-combo-box-max-height', LIST_MAX_HEIGHT),
-            overflowY: 'auto',
-          }}
+          })}
         >
           {children}
         </RACListBox>
@@ -395,15 +321,9 @@ export const ComboBoxItem = ({ children, ...props }: ComboBoxItemProps) => {
         isSelected,
       }) => {
         return {
-          boxSizing: 'border-box',
-          display: 'flex',
-          alignItems: 'center',
-          paddingBlock: vars.spacing.inset.control.md,
-          paddingInline: vars.spacing.inset.control.md,
-          borderRadius: vars.radii.control,
+          ...buildChoosableRowStyle(),
           cursor: isDisabled ? 'not-allowed' : 'pointer',
           opacity: isDisabled ? vars.opacity.disabled : undefined,
-          ...(vars.text.label.md as React.CSSProperties),
           backgroundColor: resolveInteractiveStyle(c?.background, {
             isDisabled,
             isSelected,
@@ -417,7 +337,6 @@ export const ComboBoxItem = ({ children, ...props }: ComboBoxItemProps) => {
               isHovered,
             }) ?? c?.text?.default,
           outline: focusRingOutline(isFocusVisible),
-          outlineOffset: '2px',
           transitionProperty: 'background-color, color',
           transitionDuration: vars.motion.feedback.duration,
           transitionTimingFunction: vars.motion.feedback.easing,

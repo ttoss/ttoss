@@ -1,12 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports -- value import required so declaration bundler emits `export { McpServer }` not `export type { McpServer }`
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import { McpServer } from '@modelcontextprotocol/server';
 import { CognitoJwtVerifier } from '@ttoss/auth-core/amazon-cognito';
 import { Router } from '@ttoss/http-server';
 import { authMiddleware } from '@ttoss/http-server-auth';
 import type Koa from 'koa';
 
 import { getIdentity, requestContextStore } from './context';
+import { createMcpRequestServer } from './serveMcpRequest';
 
 type Context = Koa.Context;
 
@@ -44,6 +44,10 @@ export interface McpAuthOptions {
   requiredScopes?: string[];
   /**
    * JSON-RPC methods (read from `body.method`) that bypass verification.
+   * Leaving this unset serves `tools/list` — the full tool catalogue —
+   * to unauthenticated callers, and logs a one-time warning explaining how
+   * to close it. Set explicitly (even to the same default) to silence the
+   * warning; set to `['initialize']` to require a token for `tools/list` too.
    * @default ['initialize', 'tools/list']
    */
   publicMethods?: string[];
@@ -356,6 +360,10 @@ export interface McpRouterOptions {
    * When provided, a single shared transport is created and sessions are tracked.
    * When undefined (default), the server operates in stateless mode where each
    * HTTP request uses its own transport instance.
+   *
+   * Applies to 2025-era traffic. The `2026-07-28` protocol revision has no
+   * session concept in its core, so requests speaking that revision are always
+   * served statelessly regardless of this option.
    */
   sessionIdGenerator?: () => string;
 
@@ -482,36 +490,15 @@ export const createMcpRouter = (
     getApiHeaders,
     auth,
   } = options;
-  const isStateful = sessionIdGenerator !== undefined;
   const needsContext =
     apiBaseUrl !== undefined ||
     getApiHeaders !== undefined ||
     auth !== undefined;
 
-  // Stateful mode: single shared transport connected once at startup
-  let sharedTransport: StreamableHTTPServerTransport | undefined;
-  if (isStateful) {
-    sharedTransport = new StreamableHTTPServerTransport({
-      sessionIdGenerator,
-      enableJsonResponse: true,
-    });
-    // Connect the shared transport to the MCP server
-    server.connect(sharedTransport);
-  }
-
-  // Stateless mode: SDK 1.x requires a fresh transport per request.
-  // Requests are serialised so only one stateless transport is connected at a time.
-  let statelessQueue: Promise<void> = Promise.resolve();
-
-  const enqueueStateless = (work: () => Promise<void>): Promise<void> => {
-    const result = statelessQueue.then(() => {
-      return work();
-    });
-    // Keep the queue alive even if this work rejects so subsequent
-    // requests are not blocked by a previous failure.
-    statelessQueue = result.catch(() => {});
-    return result;
-  };
+  // Serves each request over the protocol revision it actually speaks: the
+  // existing transport wiring for 2025-era traffic, the 2026-07-28 stateless
+  // core for requests carrying that revision's per-request envelope.
+  const serveRequest = createMcpRequestServer({ server, sessionIdGenerator });
 
   const router = new Router();
 
@@ -523,6 +510,27 @@ export const createMcpRouter = (
 
   if (auth) {
     const verifyToken = buildVerifyToken(auth);
+
+    if (auth.publicMethods === undefined) {
+      // `tools/list` exposing the full tool catalogue to unauthenticated
+      // callers is a surprising default for anyone who configured `auth`
+      // without considering `publicMethods`. Warn once so operators find out
+      // from their own logs rather than from an unauthenticated tool listing
+      // in production. This default is a candidate to tighten to
+      // `['initialize']` in a future major — see
+      // https://github.com/ttoss/ttoss/issues/1176.
+      // eslint-disable-next-line no-console -- one-time operator-facing warning
+      console.warn(
+        `[@ttoss/http-server-mcp] "auth" is configured but "publicMethods" was not set, ` +
+          `so it defaults to ${JSON.stringify(DEFAULT_PUBLIC_METHODS)}. This means ` +
+          `"tools/list" — the full tool catalogue, including names, descriptions, and ` +
+          `input schemas — is served to unauthenticated callers. ` +
+          `To require a token for "tools/list" too, set publicMethods: ['initialize']. ` +
+          `To keep the current behaviour and silence this warning, set ` +
+          `publicMethods: ${JSON.stringify(DEFAULT_PUBLIC_METHODS)} explicitly.`
+      );
+    }
+
     const publicMethods = new Set(auth.publicMethods ?? DEFAULT_PUBLIC_METHODS);
 
     const verify = authMiddleware({
@@ -570,55 +578,27 @@ export const createMcpRouter = (
     // `authMiddleware` stores the verified payload on `ctx.state.user`.
     const identity = (ctx.state as { user?: unknown }).user;
 
-    const runRequest = async (
-      transport: StreamableHTTPServerTransport
-    ): Promise<void> => {
-      await transport.handleRequest(ctx.req, ctx.res, body);
+    // Forward the already-verified identity as the SDK's pass-through
+    // `authInfo` (it reads `req.auth`, set by convention — the same field
+    // Express's `requireBearerAuth` populates). This is purely additive: tool
+    // code written against this package keeps reading identity via
+    // `getIdentity()` below.
+    (ctx.req as unknown as { auth?: unknown }).auth = identity;
+
+    const runRequest = async (): Promise<void> => {
+      await serveRequest(ctx, body);
       // Prevent Koa from sending its own response
       // The MCP SDK has already handled the response
       ctx.respond = false;
     };
 
-    if (isStateful && sharedTransport) {
-      // Stateful mode: reuse the shared transport
-      if (needsContext) {
-        await requestContextStore.run(
-          { apiBaseUrl, apiHeaders, identity },
-          () => {
-            return runRequest(sharedTransport!);
-          }
-        );
-      } else {
-        await runRequest(sharedTransport);
-      }
+    if (needsContext) {
+      await requestContextStore.run(
+        { apiBaseUrl, apiHeaders, identity },
+        runRequest
+      );
     } else {
-      // Stateless mode: SDK requires a fresh transport per request.
-      // Serialise so only one transport is connected at a time.
-      await enqueueStateless(async () => {
-        const transport = new StreamableHTTPServerTransport({
-          sessionIdGenerator: undefined,
-          enableJsonResponse: true,
-        });
-        // Connect and run inside try/finally so the transport is always closed,
-        // even if connect() throws — preventing server state corruption.
-        try {
-          await server.connect(transport);
-          if (needsContext) {
-            await requestContextStore.run(
-              { apiBaseUrl, apiHeaders, identity },
-              () => {
-                return runRequest(transport);
-              }
-            );
-          } else {
-            await runRequest(transport);
-          }
-        } finally {
-          // Close the transport to reset the server's internal transport reference,
-          // allowing the next request to connect a fresh transport.
-          await transport.close();
-        }
-      });
+      await runRequest();
     }
   };
 
@@ -676,7 +656,7 @@ export {
 /**
  * Re-export MCP SDK types and classes for convenience
  */
-export { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+export { McpServer } from '@modelcontextprotocol/server';
 
 /**
  * Re-export Zod for request/response schema definitions

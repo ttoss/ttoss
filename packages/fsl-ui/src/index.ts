@@ -86,6 +86,10 @@ export type {
   ContainerSize,
 } from './components/Container/Container';
 export { Container, containerMeta } from './components/Container/Container';
+export type { FieldFormat } from './components/Field/formats';
+export { applyFieldFormat, FIELD_FORMATS } from './components/Field/formats';
+export type { FieldGroupProps } from './components/FieldGroup/FieldGroup';
+export { FieldGroup, fieldGroupMeta } from './components/FieldGroup/FieldGroup';
 export type { FileTriggerProps } from './components/FileTrigger/FileTrigger';
 export {
   FileTrigger,
@@ -279,6 +283,11 @@ export {
   ConfirmationDialog,
   confirmationDialogMeta,
 } from './composites/ConfirmationDialog/ConfirmationDialog';
+export type { ContextualHelpProps } from './composites/ContextualHelp/ContextualHelp';
+export {
+  ContextualHelp,
+  contextualHelpMeta,
+} from './composites/ContextualHelp/ContextualHelp';
 export type {
   DialogActionsPlatform,
   DialogActionsProps,

@@ -5,9 +5,11 @@ import {
   buildProtectedResourceMetadata,
   generateAuthorizationCode,
   hashAuthorizationCode,
+  hashClientSecret,
   OAuthError,
   oauthErrorCodes,
   validateRedirectUri,
+  verifyClientSecret,
   verifyPkceChallenge,
 } from 'src/oauth';
 
@@ -289,5 +291,48 @@ describe('buildProtectedResourceMetadata', () => {
     });
     expect(meta.resource).toBe('https://mcp.example.com');
     expect(meta.authorization_servers).toEqual(['https://auth.example.com']);
+  });
+});
+
+describe('hashClientSecret / verifyClientSecret', () => {
+  const clientSecret = 'a'.repeat(64);
+  const clientSecretHash = hashClientSecret({ clientSecret });
+
+  test('hashes with SHA-256 hex, matching the reference digest', () => {
+    expect(clientSecretHash).toBe(
+      crypto.createHash('sha256').update(clientSecret).digest('hex')
+    );
+  });
+
+  test('is deterministic', () => {
+    expect(hashClientSecret({ clientSecret })).toBe(clientSecretHash);
+  });
+
+  test('accepts the matching secret', () => {
+    expect(verifyClientSecret({ clientSecret, clientSecretHash })).toBe(true);
+  });
+
+  test('rejects a different secret of the same length', () => {
+    expect(
+      verifyClientSecret({ clientSecret: 'b'.repeat(64), clientSecretHash })
+    ).toBe(false);
+  });
+
+  test('rejects an absent secret', () => {
+    expect(
+      verifyClientSecret({ clientSecret: undefined, clientSecretHash })
+    ).toBe(false);
+  });
+
+  test('rejects an empty secret', () => {
+    expect(verifyClientSecret({ clientSecret: '', clientSecretHash })).toBe(
+      false
+    );
+  });
+
+  test('rejects a malformed stored hash instead of throwing', () => {
+    expect(
+      verifyClientSecret({ clientSecret, clientSecretHash: 'not-a-hash' })
+    ).toBe(false);
   });
 });

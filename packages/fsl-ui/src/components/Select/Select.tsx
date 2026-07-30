@@ -2,7 +2,6 @@ import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
 import {
   Button as RACButton,
-  Label as RACLabel,
   ListBox as RACListBox,
   ListBoxItem as RACListBoxItem,
   type ListBoxItemProps as RACListBoxItemProps,
@@ -14,9 +13,21 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
+import { buildChoosableRowStyle } from '../../tokens/choosableRow';
 import { focusRingOutline } from '../../tokens/focusRing';
 import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import {
+  buildFieldControlStyle,
+  buildFieldRootStyle,
+  buildPickerListStyle,
+  buildPickerPopoverStyle,
+  FieldDescriptionPart,
+  FieldInvalidGlyph,
+  FieldLabelPart,
+  FieldValidationMessagePart,
+  useFieldLayout,
+} from '../Field/anatomy';
 import { Icon } from '../Icon';
 
 // ---------------------------------------------------------------------------
@@ -31,6 +42,21 @@ import { Icon } from '../Icon';
 //
 // Validation feedback is driven by React Aria's `isInvalid` (or `validate`
 // callback) and surfaces via the `invalid` token State on the trigger.
+//
+// FRICTION LOG (F-009, closed here). `Select` had nowhere to render a message:
+// it could turn its trigger red and no more, so the Studio's invite form
+// hand-assembled a live region under it. The parts land the same way
+// `CheckboxGroup`'s did — the Selection entity's structural roles are
+// root/control/label/indicator/selectionControl/item, with **no** `description`
+// or `validationMessage` (those are Input's), so both ship as INTERNAL
+// data-parts carrying no `*Meta` and therefore claiming no legality. React Aria
+// makes them work regardless: `Select` provides `TextContext` with
+// `description`/`errorMessage` slots and a `FieldErrorContext` holding its real
+// validation state (read in `Select.mjs`), which is why `FieldError` renders
+// here while on a lone `Checkbox` it could not. Widening
+// `ENTITY_STRUCTURE.Selection` stays a governance decision for the day a
+// component needs these as *declared* identities; today the evidence does not
+// justify it, and this is the second component to reach that same answer.
 // ---------------------------------------------------------------------------
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -48,33 +74,6 @@ export const selectItemMeta = {
   composition: 'selection',
 } as const satisfies ComponentMeta<'Selection'>;
 
-type InputColors = typeof vars.colors.input.primary;
-
-/** Trigger label color — invalid dominates default (Selection has no evaluation). */
-const resolveSelectLabelColor = ({
-  c,
-  isInvalid,
-}: {
-  c: InputColors;
-  isInvalid?: boolean;
-}): string | undefined => {
-  const text = c?.text;
-  return isInvalid ? text?.invalid : text?.default;
-};
-
-/** Dropdown popover surface style — Selection-entity chrome. */
-const buildPopoverStyle = (c: InputColors): React.CSSProperties => {
-  return {
-    boxSizing: 'border-box',
-    borderRadius: vars.radii.control,
-    borderWidth: vars.border.outline.control.width,
-    borderStyle: vars.border.outline.control.style,
-    borderColor: c?.border?.default,
-    backgroundColor: c?.background?.default,
-    overflow: 'hidden',
-  };
-};
-
 // ---------------------------------------------------------------------------
 // Select — root orchestrator
 // ---------------------------------------------------------------------------
@@ -88,6 +87,20 @@ export interface SelectProps<T extends object = object> extends Omit<
 > {
   /** Label displayed above the trigger button. */
   label?: React.ReactNode;
+  /**
+   * A `<ContextualHelp>` element rendered beside the label (the reference
+   * system's prop shape) — for the explanation too long for `description`.
+   */
+  contextualHelp?: React.ReactNode;
+  /** Supplementary helper text linked to the field via `aria-describedby`. */
+  description?: React.ReactNode;
+  /**
+   * Validation message shown when the field is invalid. Supply
+   * caller-localized copy (i18n rule / §6). Leave it out and the platform's own
+   * constraint message is shown instead — already localized, and the better
+   * copy for a required field.
+   */
+  errorMessage?: React.ReactNode;
   /**
    * Placeholder shown in the trigger when no value is selected.
    *
@@ -109,11 +122,24 @@ export interface SelectProps<T extends object = object> extends Omit<
  *
  * Entity = Selection, interaction = `select.single`. Validation feedback is
  * driven by React Aria's `isInvalid` and surfaces on the trigger via the
- * `invalid` token State.
+ * `invalid` token State — and, since F-009 closed, in a `validationMessage`
+ * part, so an invalid choice can state why inside the system.
+ *
+ * A required `Select` blocks its `Form`'s submit and focus returns to the
+ * **trigger**: React Aria submits the value through a visually hidden
+ * `<select required>` and forwards its focus to the trigger button (read in
+ * `HiddenSelect.mjs`). That hidden element is what `onInvalid` reports as its
+ * target, so a `Select` is the one field whose event target is not the part
+ * carrying `data-part="control"`.
  *
  * @example
  * ```tsx
- * <Select label="Framework" placeholder="Choose a framework">
+ * <Select
+ *   label="Framework"
+ *   placeholder="Choose a framework"
+ *   description="Only the runtime changes; your data stays."
+ *   isRequired
+ * >
  *   <SelectItem id="react">React</SelectItem>
  *   <SelectItem id="vue">Vue</SelectItem>
  *   <SelectItem id="angular">Angular</SelectItem>
@@ -122,87 +148,75 @@ export interface SelectProps<T extends object = object> extends Omit<
  */
 export const Select = <T extends object = object>({
   label,
+  contextualHelp,
+  description,
+  errorMessage,
   placeholder = 'Select…',
   children,
   ...props
 }: SelectProps<T>) => {
   const c = vars.colors.input.primary;
+  const { labelPosition } = useFieldLayout();
 
   return (
     <RACSelect
       {...props}
       data-scope="select"
       data-part="root"
-      style={{
-        boxSizing: 'border-box',
-        display: 'inline-flex',
-        flexDirection: 'column',
-        gap: vars.spacing.gap.stack.xs,
-      }}
+      style={buildFieldRootStyle({ labelPosition })}
     >
-      {({ isInvalid }) => {
+      {({ isInvalid, isRequired }) => {
         return (
           <>
-            {/* label */}
-            {label && (
-              <RACLabel
-                data-scope="select"
-                data-part="label"
-                style={{
-                  ...(vars.text.label.md as React.CSSProperties),
-                  color: resolveSelectLabelColor({ c, isInvalid }),
-                }}
+            {/*
+              The label reads the family's neutral ink. It alone used to tint
+              itself `text.invalid` when the field was invalid — a divergence
+              that stayed invisible because F-032 measured that token as the same
+              ink as `text.default` in both modes. It is dropped rather than
+              spread: when F-032 lands a real negative ink, a whole label turning
+              red is not the language (the reference tints the message and the
+              chrome, never the name of the field).
+            */}
+            {label != null && (
+              <FieldLabelPart
+                contextualHelp={contextualHelp}
+                scope="select"
+                colors={c}
+                isRequired={isRequired}
               >
                 {label}
-              </RACLabel>
+              </FieldLabelPart>
             )}
 
             {/* trigger — the button that opens the dropdown */}
             <RACButton
               data-scope="select"
               data-part="trigger"
-              style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => {
+              style={({ isHovered, isDisabled, isFocusVisible }) => {
                 return {
-                  boxSizing: 'border-box',
+                  // The row, the floated focus ring and the declared reading
+                  // edge all come from the shared anatomy. Before it, this
+                  // trigger drew the ring flush at 0px where the rest of the
+                  // family floats it at 2px, and its value inherited
+                  // `text-align: center` from the `<button>` it is — so a
+                  // selected value sat centred one row above a start-aligned
+                  // input (visible in the Studio's invite dialog).
+                  ...buildFieldControlStyle({
+                    colors: c,
+                    labelPosition,
+                    isHovered,
+                    isDisabled,
+                    isFocusVisible,
+                    isInvalid,
+                  }),
+                  // What is the trigger's own: a row that pushes the chevron to
+                  // the far edge, and the pointer affordance.
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   gap: vars.spacing.gap.inline.sm,
-                  minHeight: vars.sizing.hit,
-                  // Tight block padding + small chevron keep the trigger on the
-                  // field row — the same 34px (desktop) as TextField and
-                  // ActionButton, because a row with mixed controls must align
-                  // (P3 slice 3).
-                  paddingBlock: vars.spacing.inset.control.sm,
-                  paddingInline: vars.spacing.inset.control.md,
-                  borderRadius: vars.radii.control,
-                  borderWidth: vars.border.outline.control.width,
-                  borderStyle: vars.border.outline.control.style,
-                  ...(vars.text.label.md as React.CSSProperties),
                   cursor: isDisabled ? 'not-allowed' : 'pointer',
                   opacity: isDisabled ? vars.opacity.disabled : undefined,
-                  backgroundColor: resolveInteractiveStyle(c?.background, {
-                    isDisabled,
-                    isInvalid,
-                    isHovered,
-                    isPressed,
-                  }),
-                  borderColor: resolveInteractiveStyle(c?.border, {
-                    isDisabled,
-                    isInvalid,
-                    isFocusVisible,
-                  }),
-                  color:
-                    resolveInteractiveStyle(c?.text, {
-                      isDisabled,
-                      isInvalid,
-                      isHovered,
-                      isPressed,
-                    }) ?? c?.text?.default,
-                  transitionProperty: 'background-color, border-color, color',
-                  transitionDuration: vars.motion.feedback.duration,
-                  transitionTimingFunction: vars.motion.feedback.easing,
-                  outline: focusRingOutline(isFocusVisible),
                 } as React.CSSProperties;
               }}
             >
@@ -228,6 +242,12 @@ export const Select = <T extends object = object>({
                 }}
               </SelectValue>
 
+              <FieldInvalidGlyph
+                scope="select"
+                isInvalid={isInvalid}
+                edgeInset={false}
+              />
+
               {/* chevron icon */}
               <span
                 data-scope="select"
@@ -239,23 +259,39 @@ export const Select = <T extends object = object>({
               </span>
             </RACButton>
 
-            {/* dropdown popover */}
+            {description != null && (
+              <FieldDescriptionPart scope="select" colors={c}>
+                {description}
+              </FieldDescriptionPart>
+            )}
+
+            {/*
+              Always mounted: with no `errorMessage` React Aria falls back to the
+              platform's own constraint copy, which is the localized message we
+              could not ship ourselves (ADR-001).
+            */}
+            <FieldValidationMessagePart scope="select" colors={c}>
+              {errorMessage}
+            </FieldValidationMessagePart>
+
+            {/*
+              The dropdown takes the field row's width, which is the whole of
+              F-019: it measured 102.11px under a 1200px trigger. The knob widens
+              it for options longer than the row; it can never be narrower
+              (ADR-023).
+            */}
             <RACPopover
               data-scope="select"
               data-part="positioner"
-              // Surface within the Select composite — uses Selection entity tokens.
-              style={buildPopoverStyle(c)}
+              style={buildPickerPopoverStyle({
+                colors: c,
+                widthKnob: '--fsl-select-popover-width',
+              })}
             >
               <RACListBox
                 data-scope="select"
                 data-part="surface"
-                style={{
-                  outline: 'none',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  padding: vars.spacing.inset.control.md,
-                  gap: vars.spacing.gap.stack.xs,
-                }}
+                style={buildPickerListStyle()}
               >
                 {children}
               </RACListBox>
@@ -304,15 +340,9 @@ export const SelectItem = ({ children, ...props }: SelectItemProps) => {
         isSelected,
       }) => {
         return {
-          boxSizing: 'border-box',
-          display: 'flex',
-          alignItems: 'center',
-          paddingBlock: vars.spacing.inset.control.md,
-          paddingInline: vars.spacing.inset.control.md,
-          borderRadius: vars.radii.control,
+          ...buildChoosableRowStyle(),
           cursor: isDisabled ? 'not-allowed' : 'pointer',
           opacity: isDisabled ? vars.opacity.disabled : undefined,
-          ...(vars.text.label.md as React.CSSProperties),
           backgroundColor: resolveInteractiveStyle(c?.background, {
             isDisabled,
             isSelected,
@@ -326,7 +356,6 @@ export const SelectItem = ({ children, ...props }: SelectItemProps) => {
               isHovered,
             }) ?? c?.text?.default,
           outline: focusRingOutline(isFocusVisible),
-          outlineOffset: '2px',
           transitionProperty: 'background-color, color',
           transitionDuration: vars.motion.feedback.duration,
           transitionTimingFunction: vars.motion.feedback.easing,

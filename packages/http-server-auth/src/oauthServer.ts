@@ -1,10 +1,7 @@
-import {
-  createOAuthHandlers,
-  type OAuthRequest,
-  type OAuthResponse,
-  type OAuthServerOptions,
-} from '@ttoss/auth-core';
+import { createOAuthHandlers, type OAuthServerOptions } from '@ttoss/auth-core';
 import { type Context, type Middleware, Router } from '@ttoss/http-server';
+
+import { applyResponse, toAuthRequest } from './koaAdapter';
 
 /**
  * The OAuth authorization-server option types and runner-agnostic engine live
@@ -29,38 +26,6 @@ export {
   type OnRefreshTokenResult,
   type StoredAuthorizationCode,
 } from '@ttoss/auth-core';
-
-/** Normalizes a Koa query/header value (which may be an array) to a string. */
-const firstValue = (
-  value: string | string[] | undefined
-): string | undefined => {
-  return Array.isArray(value) ? value[0] : value;
-};
-
-const toOAuthRequest = (ctx: Context): OAuthRequest => {
-  const query: Record<string, string | undefined> = {};
-  for (const [key, value] of Object.entries(ctx.query)) {
-    query[key] = firstValue(value);
-  }
-  const headers: Record<string, string | undefined> = {};
-  for (const [key, value] of Object.entries(ctx.headers)) {
-    headers[key] = firstValue(value);
-  }
-  return {
-    query,
-    body: (ctx.request.body ?? {}) as Record<string, unknown>,
-    headers,
-  };
-};
-
-const applyResponse = (ctx: Context, res: OAuthResponse): void => {
-  if (res.redirect !== undefined) {
-    ctx.redirect(res.redirect);
-    return;
-  }
-  ctx.status = res.status;
-  ctx.body = res.body;
-};
 
 /**
  * Mounts an OAuth 2.1 Authorization Server (issuing tokens) as a Koa `Router`,
@@ -97,15 +62,15 @@ export const oauthServer = (options: OAuthServerOptions): Router => {
   }
 
   router.get(engine.paths.authorize, async (ctx: Context) => {
-    applyResponse(ctx, await engine.authorize(toOAuthRequest(ctx)));
+    applyResponse(ctx, await engine.authorize(toAuthRequest(ctx)));
   });
 
   router.post(engine.paths.token, async (ctx: Context) => {
-    applyResponse(ctx, await engine.token(toOAuthRequest(ctx)));
+    applyResponse(ctx, await engine.token(toAuthRequest(ctx)));
   });
 
   router.post(engine.paths.register, async (ctx: Context) => {
-    applyResponse(ctx, await engine.register(toOAuthRequest(ctx)));
+    applyResponse(ctx, await engine.register(toAuthRequest(ctx)));
   });
 
   return router;

@@ -23,6 +23,8 @@ import { join, resolve } from 'node:path';
 
 import { render } from '@testing-library/react';
 import { toCssVarName } from '@ttoss/fsl-theme/css';
+import { vars } from '@ttoss/fsl-theme/vars';
+import { FIELD_ROW } from 'src/components/Field/anatomy';
 import * as pkg from 'src/index';
 import {
   ENTITIES,
@@ -32,7 +34,10 @@ import {
   ENTITY_STRUCTURE,
   STRUCTURAL_ROLES,
 } from 'src/semantics/taxonomy';
+import { CHOOSABLE_ROW } from 'src/tokens/choosableRow';
+import { FOCUS_RING_OFFSET } from 'src/tokens/focusRing';
 import { ENTITY_TOKEN_MAPPING } from 'src/tokens/projection';
+import { SELECTION_CONTROL } from 'src/tokens/selectionControl';
 
 import { DOM_FIXTURES } from './domFixtures';
 
@@ -249,13 +254,21 @@ describe('contract: token hygiene', () => {
     }
   );
 
-  // Raw `var(--…)` reads outside the two sanctioned namespaces (`--tt-`
-  // theme tokens emitted by `vars.*`, `--fsl-` host knobs via `fslVar`)
-  // would create an unreviewable styling side channel.
-  const FOREIGN_VAR = /\bvar\(\s*--(?!tt-|fsl-)/;
+  // Raw `var(--…)` reads outside the sanctioned namespaces (`--tt-` theme
+  // tokens emitted by `vars.*`, `--fsl-` host knobs via `fslVar`) would create
+  // an unreviewable styling side channel. One narrow exception exists and it is
+  // an allowlist, not a hole: a property published as documented API by a direct
+  // dependency, read through `upstreamVar` (ADR-023).
+  //
+  // This is the source-text half of the rule, and on its own it is **not
+  // sufficient** — a helper living outside `src/components/**` composes the
+  // string somewhere this regex never looks, which is exactly what happened when
+  // `upstreamVar` was introduced and this test stayed green. The runtime half is
+  // below, over the rendered fixtures, and it is the one that actually binds.
+  const FOREIGN_VAR = /\bvar\(\s*--(?!tt-|fsl-|trigger-width\b)/;
 
   test.each(componentSources)(
-    '%s reads no CSS variables outside the --tt-/--fsl- namespaces',
+    '%s reads no CSS variables outside the sanctioned namespaces',
     (_path, source) => {
       expect(stripComments(source)).not.toMatch(FOREIGN_VAR);
     }
@@ -294,6 +307,103 @@ describe('contract: token hygiene', () => {
 //   - no `var(--fsl-…)` without a fallback anywhere in a component source.
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// 4b. Foreign custom properties — the allowlist, enforced at runtime (ADR-023)
+//
+// The source-text rule in §4 catches a hand-written `var(--x)` in a component.
+// It does not catch one composed by a helper elsewhere — proven, not supposed:
+// `upstreamVar` was added in `src/tokens/`, both pickers started reading
+// `--trigger-width`, and the source scan stayed green because it only reads
+// `src/components/**`.
+//
+// So the binding rule is over the **rendered** styles: whatever produced the
+// value, it lands in an inline style, and every `var()` read there must be a
+// theme token, a host knob, or an allowlisted upstream property. A helper cannot
+// launder a foreign namespace past this.
+// ---------------------------------------------------------------------------
+
+describe('contract: foreign CSS variables come from a named allowlist', () => {
+  /**
+   * Published as documented API by a dependency we already depend on. One entry
+   * per name; growing this list is an ADR-023 amendment, not a refactor.
+   *
+   * Kept as literals rather than imported from `UpstreamCssVar` on purpose: a
+   * test that imports the thing it polices would pass by construction the day
+   * someone widens the type.
+   */
+  const ALLOWED_UPSTREAM: ReadonlySet<string> = new Set(['--trigger-width']);
+
+  const varReadsIn = (): Set<string> => {
+    const names = new Set<string>();
+
+    for (const el of document.querySelectorAll<HTMLElement>('[style]')) {
+      const style = el.getAttribute('style') ?? '';
+      // Reads only. A *declaration* (`--trigger-width: 1200px`) is React Aria
+      // publishing the value, which is the whole point — see the write guard.
+      for (const match of style.matchAll(/var\(\s*(--[a-z0-9-]+)/gi)) {
+        names.add(match[1]);
+      }
+    }
+
+    return names;
+  };
+
+  const assertAllowed = (names: Set<string>) => {
+    const foreign = [...names].filter((name) => {
+      return (
+        !name.startsWith('--tt-') &&
+        !name.startsWith('--fsl-') &&
+        !ALLOWED_UPSTREAM.has(name)
+      );
+    });
+
+    expect(foreign).toEqual([]);
+  };
+
+  test.each(Object.entries(DOM_FIXTURES))(
+    '%s reads only theme tokens, host knobs and allowlisted properties',
+    (_name, fixture) => {
+      const { unmount } = render(fixture.element());
+      fixture.open?.();
+
+      assertAllowed(varReadsIn());
+
+      unmount();
+    }
+  );
+
+  test('an open picker popover reads the allowlisted property, not a foreign one', () => {
+    // The fixture registry renders a ComboBox closed, so its popover — the one
+    // element that reads `--trigger-width` — never mounts there. Opened
+    // explicitly, because a guard that cannot see the subject is not a guard.
+    const { unmount } = render(
+      <pkg.Select label="Choice" defaultOpen>
+        <pkg.SelectItem id="a">A</pkg.SelectItem>
+      </pkg.Select>
+    );
+
+    const reads = varReadsIn();
+
+    expect(reads.has('--trigger-width')).toBe(true);
+    assertAllowed(reads);
+
+    unmount();
+  });
+
+  test('no component writes an allowlisted property', () => {
+    // React Aria resolves `--trigger-width` as `props.style[…] || measured`, and
+    // supplying our own also switches off the ResizeObserver keeping it current —
+    // so writing it would freeze the popover at the trigger's first-paint width.
+    // Read-only is a mechanism, not a convention.
+    const WRITES = /['"`]--trigger-width['"`]\s*:/;
+
+    for (const [path, source] of componentSources) {
+      expect(stripComments(source)).not.toMatch(WRITES);
+      expect(path).toBeTruthy();
+    }
+  });
+});
+
 describe('contract: escape hatches (§7)', () => {
   const RAW_FSL_VAR = /\bvar\(\s*--fsl-/;
   const FSL_VAR_WITHOUT_FALLBACK = /\bvar\(\s*--fsl-[a-z0-9-]+\s*\)/;
@@ -307,6 +417,33 @@ describe('contract: escape hatches (§7)', () => {
       expect(stripped).not.toMatch(FSL_VAR_WITHOUT_FALLBACK);
     }
   );
+
+  // The focus ring's two offsets are constants, and a literal beside them is how
+  // the package ended up with four different row insets — `2px` via the constant,
+  // `2px` twice hand-written, `-1px`, `-2px` — one of which was measured clipping.
+  // The values are identical today, which is exactly why nothing caught it: a
+  // literal that happens to match is indistinguishable from one that tracks, until
+  // the theme changes the ring's thickness and only the derived one follows.
+  const OUTLINE_OFFSET_LITERAL = /outlineOffset:\s*['"`]/;
+
+  test.each(componentSources)(
+    '%s reads focus-ring offsets from the constants, never a literal',
+    (_path, source) => {
+      expect(stripComments(source)).not.toMatch(OUTLINE_OFFSET_LITERAL);
+    }
+  );
+
+  test('the two offsets are distinct, and the inset is derived from the ring width', async () => {
+    const { FOCUS_RING_INSET: inset, FOCUS_RING_OFFSET: offset } =
+      await import('src/tokens/focusRing');
+
+    // A ring needs `offset + width` px of room outside its box. The floated one
+    // asks for room; the inset one asks for none, by construction rather than by
+    // a chosen number — so it holds if the theme changes the thickness.
+    expect(inset).toBe(`calc(-1 * ${vars.focus.ring.width})`);
+    expect(inset).not.toBe(offset);
+    expect(offset).not.toMatch(/calc/);
+  });
 
   test('fslVar output always contains the fallback', async () => {
     const { fslVar } = await import('src/tokens/escapeHatch');
@@ -580,10 +717,14 @@ describe('contract: utility triggers share the field row', () => {
     return geometry;
   };
 
-  test('ActionButton and ToggleButton match the TextField control exactly', () => {
+  test('ActionButton and ToggleButton match the field row exactly', () => {
+    // Baseline: the Select trigger — the family's remaining SELF-PAINTED
+    // member, which resolves the whole row on one element. TextField was the
+    // baseline until forms item H split it (frame owns the floor, value owns
+    // the insets), which no longer offers all five properties on one node.
     const field = renderRoot(
-      'TextFieldControl',
-      '[data-scope="text-field"][data-part="control"]'
+      'Select',
+      '[data-scope="select"][data-part="trigger"]'
     );
 
     expect(
@@ -602,8 +743,8 @@ describe('contract: utility triggers share the field row', () => {
 
   test('Button leaves the row on inset and type, keeping the same floor', () => {
     const field = renderRoot(
-      'TextFieldControl',
-      '[data-scope="text-field"][data-part="control"]'
+      'Select',
+      '[data-scope="select"][data-part="trigger"]'
     );
     const command = renderRoot(
       'Button',
@@ -621,5 +762,492 @@ describe('contract: utility triggers share the field row', () => {
     // jsdom cannot resolve `var()`, so it is asserted in fsl-theme's
     // `typography.test.ts`.
     expect(command.minHeight).toBe(field.minHeight);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Invariant #11: the field family reads one row, from one source
+//
+// Invariant #10 asserts that a *utility trigger* matches the field row. It
+// proves that by comparing a trigger against `TextField`, which is fine for
+// the two Action members it names — but it cannot be widened to the field
+// family as written, because it compares inline-style *strings*: a sibling
+// that declared `minBlockSize` instead of `minHeight` computed exactly the
+// same box and still failed the comparison.
+//
+// So this invariant asserts against the shared source (`FIELD_ROW` +
+// `sizing.hit`) rather than against a peer. A member drifts the moment it
+// stops reading the anatomy — which is the only way it *can* drift now.
+//
+// The list grows by one entry per component migrated onto the anatomy; it is
+// the authority on who is on the row, which is why it is a list and not a
+// glob over the fixtures.
+// ---------------------------------------------------------------------------
+
+describe('contract: the field family reads one row', () => {
+  // A *self-painted* member resolves the whole row on one element. A *split*
+  // member spreads it across two: the frame owns the floor, the radius, the
+  // border and the ring, while the value owns the insets and the reading edge —
+  // a frame that also padded would double the gap on the reading edge. So the
+  // invariant asks each shape for the half it is responsible for; asking both
+  // for all six is what would make a correct split control look broken.
+  const SELF_PAINTED: ReadonlyArray<readonly [string, string, string]> = [
+    ['Select trigger', 'Select', 'select'],
+  ];
+
+  // TextField and TextArea joined the split shape in forms item H: the frame
+  // is the lawful home for in-box adornments (the validation glyph today,
+  // prefix/suffix when pulled), which is the reserved-padding hack item D
+  // deleted from SearchField.
+  const SPLIT: ReadonlyArray<readonly [string, string, string]> = [
+    ['ComboBox', 'ComboBox', 'combo-box'],
+    ['TextField', 'TextFieldControl', 'text-field'],
+    ['TextArea', 'TextAreaControl', 'text-area'],
+  ];
+
+  const styleOf = (selector: string): CSSStyleDeclaration => {
+    const el = document.querySelector<HTMLElement>(selector);
+
+    expect(el).not.toBeNull();
+
+    return (el as HTMLElement).style;
+  };
+
+  test.each(SELF_PAINTED)(
+    '%s resolves the whole row from FIELD_ROW',
+    (_label, fixtureName, scope) => {
+      const { unmount } = render(DOM_FIXTURES[fixtureName].element());
+      const part = scope === 'select' ? 'trigger' : 'control';
+      const style = styleOf(`[data-scope="${scope}"][data-part="${part}"]`);
+
+      expect(style.minHeight).toBe(vars.sizing.hit);
+      expect(style.paddingBlock).toBe(FIELD_ROW.insetBlock);
+      expect(style.paddingInline).toBe(FIELD_ROW.insetInline);
+      expect(style.borderRadius).toBe(FIELD_ROW.radius);
+      // The reading edge is declared, never inherited: the host element's UA
+      // default decides it otherwise, and `<input>` and `<button>` disagree.
+      expect(style.textAlign).toBe('start');
+      expect(style.outlineOffset).toBe(FOCUS_RING_OFFSET);
+      expect(style.fontSize).toBe(FIELD_ROW.text.fontSize);
+
+      unmount();
+    }
+  );
+
+  test.each(SPLIT)(
+    '%s spreads the row across its frame and its value',
+    (_label, fixtureName, scope) => {
+      const { unmount } = render(DOM_FIXTURES[fixtureName].element());
+
+      const frame = styleOf(`[data-scope="${scope}"][data-part="frame"]`);
+      const value = styleOf(`[data-scope="${scope}"][data-part="control"]`);
+
+      expect(frame.minHeight).toBe(vars.sizing.hit);
+      expect(frame.borderRadius).toBe(FIELD_ROW.radius);
+      expect(frame.outlineOffset).toBe(FOCUS_RING_OFFSET);
+      // The frame declares the row's type although it renders no text: measured
+      // at 16px in Storybook and 18px in the Studio's dialog before it did,
+      // because an undeclared frame inherits the host's paragraph size and
+      // hands it to every adornment placed inside it.
+      expect(frame.fontSize).toBe(FIELD_ROW.text.fontSize);
+
+      expect(value.paddingBlock).toBe(FIELD_ROW.insetBlock);
+      expect(value.paddingInline).toBe(FIELD_ROW.insetInline);
+      expect(value.textAlign).toBe('start');
+
+      unmount();
+    }
+  );
+});
+
+// ---------------------------------------------------------------------------
+// Invariant #13: the choosable row is one decision
+//
+// Five components render a row the user picks from — a Select option, a ComboBox
+// option, a MenuItem, a ListBoxItem, a GridListItem — across three entities. The
+// row is the same physical thing everywhere, so it comes from one source
+// (`CHOOSABLE_ROW`), and this asserts against that source rather than against a
+// peer, for the same reason invariant #11 does.
+//
+// The measurement that made it necessary: three of the five were 44px tall
+// against the other two at 32px, because they wrote `inset.control.md` on the
+// block axis where the others wrote `sm`, and three had **no ergonomic floor at
+// all**. 32px is also what the reference derives for a medium menu row
+// (`component-height-100`) — the field row's content box.
+//
+// The ring is part of the row, not a footnote: four different offsets were in
+// use, two of them hand-written literals duplicating the constant, and the
+// floated `+2px` was measured **clipping** at a scrolled list's edge.
+// ---------------------------------------------------------------------------
+
+describe('contract: the choosable row is one decision', () => {
+  // `[scope, fixture, selector]`. Menu's row was selected by role while
+  // `MenuItem` published `data-part="root"` — the same pair as its popover
+  // (F-030). That is fixed, so it is addressed like every other row.
+  const ROWS: ReadonlyArray<readonly [string, string, string]> = [
+    ['SelectItem', 'SelectItem', '[data-scope="select"][data-part="item"]'],
+    [
+      'ComboBoxItem',
+      'ComboBoxItem',
+      '[data-scope="combo-box"][data-part="item"]',
+    ],
+    ['ListBoxItem', 'ListBoxItem', '[data-scope="list-box"][data-part="item"]'],
+    [
+      'GridListItem',
+      'GridListItem',
+      '[data-scope="grid-list"][data-part="item"]',
+    ],
+    ['MenuItem', 'MenuItem', '[data-scope="menu"][data-part="control"]'],
+  ];
+
+  test.each(ROWS)(
+    '%s resolves its box from CHOOSABLE_ROW',
+    (_label, fixtureName, selector) => {
+      const fixture = DOM_FIXTURES[fixtureName];
+      const { unmount } = render(fixture.element());
+      fixture.open?.();
+
+      const el = document.querySelector<HTMLElement>(selector);
+
+      expect(el).not.toBeNull();
+
+      const style = (el as HTMLElement).style;
+
+      expect(style.minHeight).toBe(CHOOSABLE_ROW.minHeight);
+      expect(style.paddingBlock).toBe(CHOOSABLE_ROW.insetBlock);
+      expect(style.paddingInline).toBe(CHOOSABLE_ROW.insetInline);
+      expect(style.borderRadius).toBe(CHOOSABLE_ROW.radius);
+      expect(style.outlineOffset).toBe(CHOOSABLE_ROW.focusOffset);
+
+      unmount();
+    }
+  );
+
+  test('the row reads the field row apart from the border the field adds', () => {
+    // Both come from `inset.control.sm` on the block axis and `label.md` for the
+    // type, which is why a 32px option sits under a 34px field without looking
+    // like a different scale. Asserted against the two sources so a change to
+    // either has to be a deliberate change to both.
+    expect(CHOOSABLE_ROW.insetBlock).toBe(FIELD_ROW.insetBlock);
+    expect(CHOOSABLE_ROW.insetInline).toBe(FIELD_ROW.insetInline);
+    expect(CHOOSABLE_ROW.radius).toBe(FIELD_ROW.radius);
+    expect(CHOOSABLE_ROW.text.fontSize).toBe(FIELD_ROW.text.fontSize);
+  });
+
+  test('the row insets its ring by exactly the ring width', () => {
+    // The arithmetic is the guarantee: a ring needs `offset + width` px of room
+    // outside the box, so at `offset = -width` it needs none and cannot clip at
+    // any scroll position. Measured before this held: the focused option in a
+    // scrolled ComboBox list sat 0.11px from the viewport edge against a 4px
+    // ring extent. A literal would not carry the property.
+    expect(CHOOSABLE_ROW.focusOffset).toBe(
+      `calc(-1 * ${vars.focus.ring.width})`
+    );
+    expect(CHOOSABLE_ROW.focusOffset).not.toBe(FOCUS_RING_OFFSET);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Invariant #12: `(data-scope, data-part)` is unique per subtree
+//
+// The pair is the package's addressing scheme: a test, a host stylesheet or an
+// agent resolves a part by it. Sibling repeats are legitimate and common — two
+// radios in a group, two steppers in a NumberField, two glyph hosts — so the
+// defect is not "the pair appears twice in the document". It is an element
+// that *contains a descendant carrying the same pair*, because then no
+// selector can address either one unambiguously.
+//
+// Measured in a real browser before being written down: three components wrap
+// an `<input>` in a painted `<div>` and name both `control`. They are listed
+// as known violations rather than silently excluded, so the list can only
+// shrink — each entry names the queue item that removes it.
+// ---------------------------------------------------------------------------
+
+describe('contract: (scope, part) is unique per subtree', () => {
+  // Each entry names what removes it. Do not add to this list: for a field, a
+  // new violation means the anatomy was bypassed.
+  // Empty, and it should stay that way. Both entries that lived here —
+  // `search-field/control` and `number-field/control` — were closed by forms
+  // item D: each wrapper became `data-part="frame"` and `control` stayed on the
+  // element a caller operates, the precedent C1 set on `ComboBox`. F-026 is the
+  // finding; the anti-stale companion below is what forced this list to shrink
+  // rather than sit here as a standing exemption.
+  const KNOWN_NESTED_PAIRS: ReadonlySet<string> = new Set([]);
+
+  const nestedPairs = (root: ParentNode): string[] => {
+    const found: string[] = [];
+    for (const el of root.querySelectorAll<HTMLElement>(
+      '[data-scope][data-part]'
+    )) {
+      const { scope, part } = el.dataset;
+      if (
+        el.querySelector(`[data-scope="${scope}"][data-part="${part}"]`) !==
+        null
+      ) {
+        found.push(`${scope}/${part}`);
+      }
+    }
+    return found;
+  };
+
+  test.each(Object.entries(DOM_FIXTURES))(
+    '%s nests no repeated (scope, part)',
+    (_name, fixture) => {
+      const { unmount } = render(fixture.element());
+
+      fixture.open?.();
+
+      const offending = [...new Set(nestedPairs(document.body))].filter(
+        (pair) => {
+          return !KNOWN_NESTED_PAIRS.has(pair);
+        }
+      );
+
+      expect(offending).toEqual([]);
+
+      unmount();
+    }
+  );
+
+  test('every known violation is still real (the list cannot go stale)', () => {
+    const seen = new Set<string>();
+
+    for (const fixture of Object.values(DOM_FIXTURES)) {
+      const { unmount } = render(fixture.element());
+      fixture.open?.();
+      for (const pair of nestedPairs(document.body)) {
+        seen.add(pair);
+      }
+      unmount();
+    }
+
+    // A fixed violation must be deleted from the list, not left behind as a
+    // permanent exemption for a defect that no longer exists.
+    expect(
+      [...KNOWN_NESTED_PAIRS].filter((p) => {
+        return !seen.has(p);
+      })
+    ).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Contract invariant #14 — embedded triggers share one silhouette
+//
+// An Action that lives *inside* a field's box — a `SearchField`'s clear button,
+// a `NumberField`'s two steppers, a `ComboBox`'s chevron — is one physical
+// thing, so it is one decision. The reference system agrees: it names the
+// primitive `in-field-button` and gives it its own layout token set.
+//
+// This exists because the class had drifted into three different boxes, measured
+// in Chromium at 1280px before `EMBEDDED_TRIGGER`: the steppers at 32×32, the
+// chevron at 25.33, the clear button at 20×20. Two independent causes — a
+// font-relative glyph inside a `<button>` that inherits the UA's 13.3333px, and
+// paddings that disagreed — which is why it was three numbers and not two.
+//
+// Like #10 and #13, this asserts **token identity** and never a pixel: the
+// trigger's inset is container-fluid, so every measured number above is the top
+// of a ramp, and jsdom has no layout to measure with anyway.
+// ---------------------------------------------------------------------------
+
+describe('contract: embedded triggers share one silhouette', () => {
+  const TRIGGERS: ReadonlyArray<readonly [string, string]> = [
+    ['search-field', 'trailingAdornment'],
+    ['number-field', 'trigger'],
+    ['combo-box', 'trigger'],
+  ];
+
+  const silhouette = (el: HTMLElement) => {
+    return {
+      minInlineSize: el.style.minInlineSize,
+      minBlockSize: el.style.minBlockSize,
+      padding: el.style.padding,
+      borderRadius: el.style.borderRadius,
+      fontSize: el.style.fontSize,
+      outlineOffset: el.style.outlineOffset,
+    };
+  };
+
+  const rendered = (scope: string, part: string) => {
+    // `SearchField` is authored here rather than taken from `DOM_FIXTURES`
+    // because its clear button only exists once there is something to clear —
+    // this guard caught that itself when the button gained its `isEmpty` gate.
+    const { unmount } = render(
+      scope === 'search-field' ? (
+        <pkg.SearchField clearLabel="Clear search" defaultValue="ada" />
+      ) : (
+        DOM_FIXTURES[
+          scope === 'number-field' ? 'NumberField' : 'ComboBox'
+        ].element()
+      )
+    );
+
+    const els = [
+      ...document.querySelectorAll<HTMLElement>(
+        `[data-scope="${scope}"][data-part="${part}"]`
+      ),
+    ];
+
+    expect(els.length).toBeGreaterThan(0);
+
+    const shapes = els.map(silhouette);
+
+    unmount();
+
+    return shapes;
+  };
+
+  test('every embedded trigger in the family resolves the same box', () => {
+    const shapes = TRIGGERS.flatMap(([scope, part]) => {
+      return rendered(scope, part);
+    });
+
+    // Includes both of NumberField's steppers, which is the cheapest place for
+    // an asymmetry between increment and decrement to show up.
+    expect(shapes.length).toBeGreaterThanOrEqual(4);
+    for (const shape of shapes) expect(shape).toEqual(shapes[0]);
+  });
+
+  test('the shared box is the ergonomic floor, not a hand-written size', () => {
+    const [shape] = rendered('number-field', 'trigger');
+
+    // `hit` on both axes is what keeps the trigger above WCAG 2.5.8's 24px
+    // target minimum — the clear button used to be 20×20, and 2.5.8's spacing
+    // exception cannot rescue the steppers because they are adjacent.
+    expect(shape.minInlineSize).toBe(vars.sizing.hit);
+    expect(shape.minBlockSize).toBe(vars.sizing.hit);
+    expect(shape.padding).toBe(vars.spacing.inset.control.sm);
+  });
+
+  test('it declares the field row type, so no glyph is font-relative', () => {
+    const [shape] = rendered('combo-box', 'trigger');
+
+    // The load-bearing one. A `<button>` with no type of its own inherits the
+    // UA's 13.3333px, and this chevron's glyph was `size="text"` — so the box
+    // came out 13.33 + 6 + 6 = 25.33 while its siblings were 32.
+    expect(shape.fontSize).toBe(
+      (vars.text.label.md as { fontSize?: string }).fontSize
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Contract invariant #15 — selection controls share one scale
+//
+// The mark the user toggles — a `Checkbox`'s square, a `Radio`'s circle, a
+// `GridList` row's selection box, a `Switch`'s track, a `Slider`'s handle — is
+// one scale, stated once in `SELECTION_CONTROL` (S2's large step: 18px box,
+// 12px glyph).
+//
+// This exists because the class had drifted the way every unshared constant
+// does: `1.125rem` was hand-written in five files, `Switch`'s track had grown
+// to 2.5rem × 1.5rem (larger than the reference's extra-large), `GridList`'s
+// box had kept the full `control` radius that P3 slice 3 halved on `Checkbox`
+// (the reads-as-a-Radio defect, fixed in one copy and kept in the other), and
+// the indicator glyph was `size="sm"` — a container-fluid step measured at
+// 20×20 inside its own fixed 18×18 box.
+//
+// Two complementary halves, like #14's: the equality tests catch one component
+// diverging from the shared source, the value test catches the shared source
+// itself drifting. Token identity and rem literals, never a measured pixel.
+// ---------------------------------------------------------------------------
+
+describe('contract: selection controls share one scale', () => {
+  /** The boxed marks: square/circle the user checks. */
+  const boxedMark = (): Array<[string, HTMLElement]> => {
+    const marks: Array<[string, HTMLElement]> = [];
+
+    render(DOM_FIXTURES.Checkbox.element());
+    render(DOM_FIXTURES.RadioGroup.element());
+    render(DOM_FIXTURES.GridList.element());
+
+    const checkbox = document.querySelector<HTMLElement>(
+      '[data-scope="checkbox"] [data-part="selectionControl"]'
+    );
+    const radio = document.querySelector<HTMLElement>(
+      '[data-scope="radio"] [data-part="selectionControl"]'
+    );
+    // GridList's addressable part is the RAC checkbox wrapper; the painted box
+    // is the `aria-hidden` span inside it (the first child is RAC's
+    // visually-hidden input wrapper, a 1px box).
+    const gridListBox = document.querySelector<HTMLElement>(
+      '[data-scope="grid-list"][data-part="selectionControl"] > span[aria-hidden="true"]'
+    );
+
+    if (checkbox) marks.push(['checkbox', checkbox]);
+    if (radio) marks.push(['radio', radio]);
+    if (gridListBox) marks.push(['grid-list', gridListBox]);
+
+    return marks;
+  };
+
+  test('every boxed mark resolves the same box and glyph scale', () => {
+    const marks = boxedMark();
+
+    expect(marks.length).toBe(3);
+    for (const [, el] of marks) {
+      expect(el.style.width).toBe(SELECTION_CONTROL.size);
+      expect(el.style.height).toBe(SELECTION_CONTROL.size);
+      // The load-bearing one: anything font-relative inside the box — the
+      // `Icon` asked for `size="text"` — resolves against this, never against
+      // a fluid ramp step or the paragraph the control happens to sit in.
+      expect(el.style.fontSize).toBe(SELECTION_CONTROL.glyph);
+    }
+  });
+
+  test('checkbox-shaped marks share the halved radius; the radio is round', () => {
+    const marks = new Map(boxedMark());
+
+    // Halved because the full `control` radius reads as a circle at 18px —
+    // GridList's second copy of the box had kept the full radius after
+    // Checkbox was fixed, which is the drift this line retires.
+    expect(marks.get('checkbox')?.style.borderRadius).toBe(
+      SELECTION_CONTROL.checkboxRadius
+    );
+    expect(marks.get('grid-list')?.style.borderRadius).toBe(
+      SELECTION_CONTROL.checkboxRadius
+    );
+    expect(marks.get('radio')?.style.borderRadius).toBe(vars.radii.round);
+  });
+
+  test('the switch track and the slider handle read the same scale', () => {
+    render(DOM_FIXTURES.Switch.element());
+    render(DOM_FIXTURES.Slider.element());
+
+    const track = document.querySelector<HTMLElement>(
+      '[data-scope="switch"] [data-part="control"]'
+    );
+    const handle = document.querySelector<HTMLElement>(
+      '[data-scope="slider"] [data-part="handle"]'
+    );
+
+    // The track's height IS the control scale — that is what aligns a switch
+    // with the checkbox and radio beside it (S2 large: 30×18).
+    expect(track?.style.height).toBe(SELECTION_CONTROL.size);
+    expect(handle?.style.inlineSize).toBe(SELECTION_CONTROL.size);
+    expect(handle?.style.blockSize).toBe(SELECTION_CONTROL.size);
+  });
+
+  test('the slider thumb is an ergonomic target, not its visible handle', () => {
+    render(DOM_FIXTURES.Slider.element());
+
+    const thumb = document.querySelector<HTMLElement>(
+      '[data-scope="slider"] [data-part="control"]'
+    );
+
+    // WCAG 2.5.8 (AA, 24×24): the interactive box takes `hit`, the visible
+    // handle inside it is the fill — the same split EMBEDDED_TRIGGER records.
+    // A range slider's two thumbs are adjacent, so the spacing exception
+    // cannot rescue an undersized handle.
+    expect(thumb?.style.inlineSize).toBe(vars.sizing.hit);
+    expect(thumb?.style.blockSize).toBe(vars.sizing.hit);
+  });
+
+  test('the shared source states the reference scale (value half)', () => {
+    // The equality tests above go vacuous if the shared source itself moves —
+    // this is the half that pins it. S2 large step: `checkbox-control-size-
+    // large` 18px, `checkmark-icon-size-200` 12px.
+    expect(SELECTION_CONTROL.size).toBe('1.125rem');
+    expect(SELECTION_CONTROL.glyph).toBe('0.75rem');
   });
 });

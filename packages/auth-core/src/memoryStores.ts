@@ -1,4 +1,11 @@
 import type {
+  EmailAuthUser,
+  EmailAuthUserStore,
+  OneTimeTokenStore,
+  RequestRateLimitStore,
+  StoredOneTimeToken,
+} from './emailAuthTypes';
+import type {
   AccessTokenStore,
   AuthCodeStore,
   ClientStore,
@@ -113,6 +120,149 @@ export const createMemoryAccessTokenStore = (): AccessTokenStore => {
       return [...tokens.values()].filter((token) => {
         return token.subject === subject;
       });
+    },
+  };
+};
+
+/**
+ * In-memory reference {@link EmailAuthUserStore}, keyed by normalized email.
+ * Ids are sequential, so they are stable within a run but meaningless across
+ * runs. For tests, local development, and examples only.
+ */
+export const createMemoryUserStore = (
+  initial: EmailAuthUser[] = []
+): EmailAuthUserStore => {
+  const users = new Map<string, EmailAuthUser>(
+    initial.map((user) => {
+      return [user.email, user];
+    })
+  );
+
+  let nextId = initial.length + 1;
+
+  const findById = (id: string): EmailAuthUser => {
+    for (const user of users.values()) {
+      if (user.id === id) {
+        return user;
+      }
+    }
+
+    throw new Error(`No user with id ${id}.`);
+  };
+
+  return {
+    findByEmail: (email) => {
+      return users.get(email) ?? null;
+    },
+    create: ({ email, passwordHash, emailVerified }) => {
+      const user: EmailAuthUser = {
+        id: `user_${nextId}`,
+        email,
+        passwordHash,
+        emailVerified,
+      };
+
+      nextId += 1;
+      users.set(email, user);
+
+      return user;
+    },
+    update: ({ id, passwordHash, emailVerified }) => {
+      const current = findById(id);
+
+      const updated: EmailAuthUser = {
+        ...current,
+        ...(passwordHash === undefined ? {} : { passwordHash }),
+        ...(emailVerified === undefined ? {} : { emailVerified }),
+      };
+
+      users.set(updated.email, updated);
+
+      return updated;
+    },
+  };
+};
+
+/**
+ * In-memory reference {@link OneTimeTokenStore}, keyed by `tokenHash` and
+ * purpose. Implements the full surface, including the attempt counting the
+ * `emailCode` mode requires. For tests and local development only.
+ */
+export const createMemoryOneTimeTokenStore = (): OneTimeTokenStore => {
+  const tokens = new Map<string, StoredOneTimeToken>();
+
+  const key = (args: { tokenHash: string; purpose: string }): string => {
+    return `${args.purpose}:${args.tokenHash}`;
+  };
+
+  return {
+    save: (token) => {
+      tokens.set(key(token), token);
+    },
+    find: ({ tokenHash, purpose }) => {
+      return tokens.get(key({ tokenHash, purpose })) ?? null;
+    },
+    findByEmail: ({ email, purpose }) => {
+      for (const token of tokens.values()) {
+        if (token.email === email && token.purpose === purpose) {
+          return token;
+        }
+      }
+
+      return null;
+    },
+    delete: ({ tokenHash, purpose }) => {
+      tokens.delete(key({ tokenHash, purpose }));
+    },
+    deleteFor: ({ email, purpose }) => {
+      for (const [entry, token] of tokens) {
+        if (token.email === email && token.purpose === purpose) {
+          tokens.delete(entry);
+        }
+      }
+    },
+    incrementAttempts: ({ tokenHash, purpose }) => {
+      const entry = key({ tokenHash, purpose });
+      const token = tokens.get(entry);
+
+      if (token) {
+        tokens.set(entry, { ...token, attempts: (token.attempts ?? 0) + 1 });
+      }
+    },
+  };
+};
+
+/**
+ * In-memory reference {@link RequestRateLimitStore}, keyed by address and
+ * purpose. Records are pruned on read, so the map does not grow without bound.
+ *
+ * For tests and local development. A production deployment wants this shared
+ * across instances — a table with an index on `(email, purpose, requested_at)`,
+ * or a Redis counter — because a per-process limiter caps each replica
+ * separately and so lets the fleet send N times the intended rate.
+ */
+export const createMemoryRequestRateLimitStore = (): RequestRateLimitStore => {
+  const requests = new Map<string, Date[]>();
+
+  const key = (args: { email: string; purpose: string }): string => {
+    return `${args.purpose}:${args.email}`;
+  };
+
+  return {
+    recent: ({ email, purpose, since }) => {
+      const entry = key({ email, purpose });
+
+      const kept = (requests.get(entry) ?? []).filter((at) => {
+        return at.getTime() >= since.getTime();
+      });
+
+      requests.set(entry, kept);
+
+      return kept;
+    },
+    record: ({ email, purpose, requestedAt }) => {
+      const entry = key({ email, purpose });
+      requests.set(entry, [...(requests.get(entry) ?? []), requestedAt]);
     },
   };
 };

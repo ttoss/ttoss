@@ -9,6 +9,32 @@ export {
   createAccessTokenVerifier,
   type VerifiedAccessToken,
 } from './createAccessTokenVerifier';
+export {
+  createEmailAuthHandlers,
+  type EmailAuthErrorCode,
+  emailAuthErrorCodes,
+  normalizeEmail,
+} from './emailAuth';
+export type {
+  EmailAuthDelivery,
+  EmailAuthHandler,
+  EmailAuthHandlers,
+  EmailAuthHooks,
+  EmailAuthMode,
+  EmailAuthOptions,
+  EmailAuthPaths,
+  EmailAuthSession,
+  EmailAuthTtl,
+  EmailAuthUser,
+  EmailAuthUserStore,
+  EmailCodeOptions,
+  OneTimeTokenPurpose,
+  OneTimeTokenStore,
+  PasswordOptions,
+  RequestRateLimit,
+  RequestRateLimitStore,
+  StoredOneTimeToken,
+} from './emailAuthTypes';
 export { decode, encode } from './encodeDecode';
 export {
   decryptValue,
@@ -21,7 +47,10 @@ export {
   createMemoryAccessTokenStore,
   createMemoryAuthCodeStore,
   createMemoryClientStore,
+  createMemoryOneTimeTokenStore,
   createMemoryRefreshTokenStore,
+  createMemoryRequestRateLimitStore,
+  createMemoryUserStore,
 } from './memoryStores';
 export {
   buildAuthorizationServerMetadata,
@@ -29,17 +58,21 @@ export {
   generateAuthorizationCode,
   type GeneratedAuthorizationCode,
   hashAuthorizationCode,
+  hashClientSecret,
   OAuthError,
   type OAuthErrorCode,
   oauthErrorCodes,
   type Rfc8414Metadata,
   type Rfc9728Metadata,
   validateRedirectUri,
+  verifyClientSecret,
   verifyPkceChallenge,
 } from './oauth';
 export {
   type AccessTokenStore,
   type AuthCodeStore,
+  type AuthHttpRequest,
+  type AuthHttpResponse,
   type AuthorizeRequest,
   type ClientStore,
   createOAuthHandlers,
@@ -64,7 +97,10 @@ export {
 export {
   generateOneTimeToken,
   hashOneTimeToken,
+  MAX_NUMERIC_DIGITS,
+  MIN_NUMERIC_DIGITS,
   type OneTimeToken,
+  type OneTimeTokenFormat,
   verifyOneTimeToken,
 } from './oneTimeToken';
 export {

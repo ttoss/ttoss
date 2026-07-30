@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.7](https://github.com/ttoss/ttoss/compare/@ttoss/fsl-theme@2.1.6...@ttoss/fsl-theme@2.1.7) (2026-07-29)
+
+**Note:** Version bump only for package @ttoss/fsl-theme
+
 ## [2.1.6](https://github.com/ttoss/ttoss/compare/@ttoss/fsl-theme@2.1.5...@ttoss/fsl-theme@2.1.6) (2026-07-26)
 
 **Note:** Version bump only for package @ttoss/fsl-theme

@@ -27,6 +27,7 @@ const zoneItems = () => {
 const meta: Meta<typeof ComboBox> = {
   title: 'Input/ComboBox',
   component: ComboBox,
+  tags: ['autodocs'],
   subcomponents: { ComboBoxItem },
 };
 
@@ -104,6 +105,17 @@ export const Disabled: Story = {
   render: () => {
     return (
       <ComboBox label="Timezone" isDisabled defaultSelectedKey="Europe/Lisbon">
+        {zoneItems()}
+      </ComboBox>
+    );
+  },
+};
+
+/** Required, and marked — the envelope's marker, hidden from assistive tech. */
+export const Required: Story = {
+  render: () => {
+    return (
+      <ComboBox label="Timezone" isRequired>
         {zoneItems()}
       </ComboBox>
     );

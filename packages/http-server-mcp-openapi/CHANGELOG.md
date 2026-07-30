@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.5](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.2.4...@ttoss/http-server-mcp-openapi@0.2.5) (2026-07-30)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp-openapi
+
+## [0.2.4](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.2.3...@ttoss/http-server-mcp-openapi@0.2.4) (2026-07-30)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp-openapi
+
+## [0.2.3](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.2.2...@ttoss/http-server-mcp-openapi@0.2.3) (2026-07-30)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp-openapi
+
+## [0.2.2](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.2.1...@ttoss/http-server-mcp-openapi@0.2.2) (2026-07-29)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp-openapi
+
+## [0.2.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.2.0...@ttoss/http-server-mcp-openapi@0.2.1) (2026-07-29)
+
+### Bug Fixes
+
+- **http-server-mcp-openapi:** resolve unresolvable $refs to an empty schema ([#1174](https://github.com/ttoss/ttoss/issues/1174)) ([f29f140](https://github.com/ttoss/ttoss/commit/f29f140a8edb50c92437deacde50533a5892e175))
+
+# [0.2.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.1.3...@ttoss/http-server-mcp-openapi@0.2.0) (2026-07-29)
+
+### Features
+
+- **http-server-mcp:** serve the MCP 2026-07-28 revision alongside 2025-era traffic ([#1171](https://github.com/ttoss/ttoss/issues/1171)) ([b9fcc16](https://github.com/ttoss/ttoss/commit/b9fcc16e66c4c1df8277af956d0301e695f6ea4b))
+
+## [0.1.3](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.1.2...@ttoss/http-server-mcp-openapi@0.1.3) (2026-07-29)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp-openapi
+
 ## [0.1.2](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.1.1...@ttoss/http-server-mcp-openapi@0.1.2) (2026-07-29)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp-openapi
