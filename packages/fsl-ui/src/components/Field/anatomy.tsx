@@ -59,12 +59,20 @@ type InputColors = typeof vars.colors.input.primary;
  *
  * **The row is these tokens, and since fsl-theme ADR-022 the inset is a
  * fixed-px contract** (outcome-bearing — a control's box is its inset + type
- * over the `hit` floor). Measured at 390/900/1280/1920: a field reads
- * **32 / 34 / 34 / 34** — the fractional mid-range drift F-035 measured
- * (32.5 at 900px, twice masquerading as a regression) is gone, and the one
- * step left at the narrow end is the fluid *type* (kept fluid by the same
- * ruling) meeting the 32px floor: ADR-020's floor doing its job, not an
- * inset drift. On a coarse pointer the 48px `hit` floor dominates, as before.
+ * over the `hit` floor; ADR-023 moved the fixed values into
+ * `core.spacing.fixed.*` without changing one of them).
+ *
+ * What is fixed is the **inset**: it resolves 6/12/24px at every container
+ * width, which is the guarantee and the thing to assert. The **row** is not
+ * fixed, because control type stayed fluid by the same ruling — so a measured
+ * row height is meaningless without the container that produced it. Two real
+ * measurements, both current: a Storybook story at a 1200px canvas reads
+ * 32 / 34 / 34 / 34 at viewport 390/900/1280/1920, while the Studio's
+ * Environments form (a narrower column inside a padded Surface) reads
+ * 32 / 32.67 / 34 / 34 at the same viewports. Neither is the number; the
+ * fractional mid-range value is the fluid *type*, not the inset drift F-035
+ * measured, and at the narrow end the 32px `hit` floor binds — ADR-020 doing
+ * its job. On a coarse pointer the 48px floor dominates, as before.
  *
  * That is why every contract invariant on this row — #10, #11, #13 — asserts
  * **token identity** and never a measured pixel. jsdom has no layout, so it could

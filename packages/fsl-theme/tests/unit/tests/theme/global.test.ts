@@ -85,14 +85,27 @@ describe.each(bundleEntries)(
   ({ source: { base } }) => {
     // Error #3: semantic tokens remain meaning-first — a semantic token holds a raw value
     // in source instead of a token ref, bypassing the symbolic indirection layer
-    // Documented raw exceptions:
-    //   - sizing.hit, sizing.measure: dynamic/viewport values not expressible as core refs
-    //   - spacing.inset.control: outcome-bearing FIXED px (ADR-022) — a constant
-    //     cannot be a TokenRef because every core.spacing step is fluid by design;
-    //     the fixed shape is itself validated (spacing Error #17)
-    //   - var() and clamp() expressions: CSS-layer constructs resolved at render time
+    //
+    // TWO shapes are lawful and there is no third (ADR-023):
+    //   - a token ref — the rule (model.md §2)
+    //   - a CSS function expression (clamp/rgba/var/…) — a *composition*, which
+    //     is the only thing a single `{token.path}` genuinely cannot express, so
+    //     it is what §8's necessity test is for; each one is registered there
+    //
+    // A BARE CONSTANT is never lawful, and this list of exceptions used to hold
+    // three of them. `spacing.inset.control` carried a literal `6px` under a
+    // §8 entry reading "a constant cannot be a TokenRef because every
+    // core.spacing step is fluid" — which describes a MISSING CORE STEP, not a
+    // technical impossibility, and the necessity test it was granted under is
+    // therefore circular: a constant is always expressible as a ref the moment
+    // core holds it, and core is the layer whose job is raw values (§1). The
+    // fix put the value in `core.spacing.fixed.*` and left this guard with
+    // nothing to exempt — the `sizing.hit`/`sizing.measure` entries beside it
+    // had already gone stale (both are refs or compositions today), so the
+    // whole escape hatch was dead the moment the real offender moved.
+    //
     // Tested against base source only — alternates only overlay semantic tokens
-    test('all semantic tokens are refs or documented exceptions', () => {
+    test('all semantic tokens are refs or compositions — never bare constants', () => {
       const semanticFlat = flattenObject(
         base.semantic as unknown as Record<string, unknown>,
         'semantic'
@@ -100,18 +113,18 @@ describe.each(bundleEntries)(
       for (const [path, value] of Object.entries(semanticFlat)) {
         if (typeof value !== 'string') continue;
         const isRef = isTokenRef(value);
-        const isRawSizing =
-          path.includes('sizing.hit') ||
-          path.includes('sizing.measure') ||
-          path.includes('spacing.inset.control');
         // CSS function expressions (clamp, var, rgba, rgb, hsl, hsla, color,
         // calc, min, max) are valid containers for embedded refs — they are
         // resolved at render time by the CSS layer.
         const isCssFnExpr = /^[a-z-]+\(.*\)$/i.test(value.trim());
-        if (!isRef && !isRawSizing && !isCssFnExpr) {
+        if (!isRef && !isCssFnExpr) {
           throw new Error(
-            `Semantic token "${path}" must be a token ref, a raw sizing/viewport exception, ` +
-              `or a CSS function expression — found raw value: "${value}"`
+            `Semantic token "${path}" holds the bare constant "${value}".\n` +
+              `A semantic token is a ref or a composition (model.md §2/§8) — a constant ` +
+              `belongs in core, which is the layer that holds values (§1). Add the step ` +
+              `to core (see \`core.spacing.fixed.*\` for the precedent) and reference it. ` +
+              `"Core has no step for this value" is a missing core token, never a ` +
+              `RawValue necessity (ADR-023).`
           );
         }
       }

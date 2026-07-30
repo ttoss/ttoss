@@ -12,9 +12,31 @@ interface CoreSpacingEngine {
   unitCq?: RawValue;
 }
 
+/**
+ * The non-fluid step scale — the counterpart of the engine-driven steps, for
+ * semantic tokens whose *resolved outcome* is the guarantee rather than the
+ * rhythm (`inset.control.*`, ADR-022/ADR-023). Plain values: core is the layer
+ * that holds raw values (model.md §1), which is why a fixed step belongs here
+ * and never as a literal in the semantic layer.
+ *
+ * Keys mirror the fluid steps' multipliers. The base theme sets them to the
+ * engine's desktop bound so the fixed and fluid scales agree on wide surfaces;
+ * that agreement is a theme choice, not a contract.
+ */
+interface CoreFixedSpacingSteps {
+  /** One engine step at the desktop bound. */
+  1: RawValue;
+  /** Two steps. */
+  2: RawValue;
+  /** Four steps. */
+  4: RawValue;
+}
+
 export interface CoreSpacingSteps {
   /** Responsive engine primitives — internal, not for direct component use */
   engine: CoreSpacingEngine;
+  /** Non-fluid steps — for outcome-bearing semantic tokens (ADR-023). */
+  fixed: CoreFixedSpacingSteps;
   0: RawValue;
   1: RawValue;
   2: RawValue;
@@ -40,13 +62,17 @@ interface InsetSteps {
  * a control's box is its inset + type with `hit` as the floor, so an inset
  * riding the fluid engine makes the box container-fluid — the thing
  * ADR-019/020 rule against, and ADR-020's "the residual never binds" premise
- * was measured false above ~900px (F-035). `RawValue` because a constant
- * cannot be a `TokenRef` — every `core.spacing` step is fluid by design.
- * Validation enforces the fixed-px shape (spacing Error #17).
+ * was measured false above ~900px (F-035).
+ *
+ * References `core.spacing.fixed.*`, the non-fluid step scale — ADR-022 rules
+ * the outcome fixed, and ADR-023 corrects the mechanism: the fixed values are
+ * core's to hold, so this stays a `CoreSpacingRef` like every other semantic
+ * spacing token. Validation enforces the resolved fixed shape (spacing
+ * Error #17).
  */
 interface ControlInsetSteps {
   /** Compact step — the field family's block inset. */
-  sm: RawValue;
+  sm: CoreSpacingRef;
   /** Default step — the field family's inline inset. */
   md: RawValue;
   /** Roomy step — a command trigger's inline inset. */

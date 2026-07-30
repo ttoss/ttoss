@@ -619,3 +619,91 @@ Re-litigation answers:
 - "Why fixed instead of the `action.block` bounded-band shape?" → the band's guarantee is different. `action.block` promises "desktop resolves exactly 40px"; this token promises "the box does not move across the fine-pointer range" — and any band wide enough to contain the engine's natural values reproduces the 900px drift that was the defect.
 - "Doesn't this break `spacing.md`'s fluid-from-one-engine identity?" → the identity governs **rhythm** (gaps, gutters, surface insets — all still fluid). The doc already carves out tokens whose _resolved outcome_ is a guarantee (`gutter.*` and `separation.interactive.min` must be bounded by validation; `action.block` is bounded for a named pixel outcome). This ADR classifies the control inset into that existing category; it invents no new one.
 - "Why did the row's 'both bottom out at 32 at 390px' claim change?" → it did not — that end is the floor working. Measured after: the field reads 32 / 34 / 34 / 34 at 390/900/1280/1920. What changed is the _middle_: 900px read 32.5 before and reads 34 now, because the inset no longer rides the engine; the 390px step is the fluid type (kept fluid by this same ADR) dropping the content below the 32px floor, where `hit` binds exactly as ADR-020 describes.
+- **Correction this ADR's re-measurement forced on ADR-022's own numbers.** ADR-022
+  states the post-fix row as "32 / 34 / 34 / 34 at 390/900/1280/1920" with no
+  container named, and that reads as universal when it cannot be: control type
+  stayed fluid by the same ruling, so the row is inset + a container-fluid type.
+  Re-measured 2026-07-30 — the Studio's Environments form (a narrower column
+  inside a padded Surface) reads **32 / 32.67 / 34 / 34** at those viewports,
+  while the Storybook story at its 1200px canvas still reads 32 / 34 / 34 / 34.
+  Both are true; neither is "the" row height. What ADR-022 actually achieved,
+  and what is worth asserting, is that the **inset** resolves 6/12/24px at every
+  container width — verified again here. This is the failure mode CLAUDE.md names
+  ("state the container that produced it, because a bare figure is wrong at every
+  other width"), and it slipped into four files.
+
+### ADR-023: A fixed semantic outcome is a core step, not a literal — `core.spacing.fixed.*`
+
+Status: accepted (2026-07-30, owner review of #1181)
+Tags: spacing, token model, ADR-022, model.md §1/§2/§8
+
+Decision: the fixed control inset moves into the **core** layer as
+`core.spacing.fixed.{1|2|4}` (`6px` / `12px` / `24px` in the base theme — the
+engine's own desktop bound, unchanged numbers), and
+`semantic.spacing.inset.control.{sm|md|lg}` becomes an ordinary
+`CoreSpacingRef` pointing at it. ADR-022's ruling is **untouched**: the control
+inset is outcome-bearing and its resolved value is fixed. What this ADR corrects
+is the _mechanism_ ADR-022 reached for.
+
+The defect, stated as the model states it: ADR-022 wrote `6px` directly into the
+semantic layer and registered a `RawValue` exception whose necessity argument
+read "a constant cannot be a `TokenRef` because every `core.spacing` step is
+fluid by design". That sentence describes a **missing core step**, not a
+technical impossibility — which is precisely what §8's necessity test asks
+("the value cannot be expressed as a single `{token.path}` reference"). A
+constant is expressible as a ref the moment core holds it, and core is the layer
+whose job is holding values (§1). So the exception was granted on a circular
+premise, and the consequence was a semantic token that stopped referencing core
+at all (§2), the one shape the architecture has no room for.
+
+**It was the only instance, and the discriminator is mechanical.** A scan of the
+whole semantic layer found exactly three non-ref values that are not
+compositions, and all three were `inset.control.*`; every other `RawValue`
+(`gutter.*`, `separation.interactive.min`, `inset.action.block`,
+`measure.reading`, `overlay.scrim`) is a `clamp()`/`rgba()`/`ch` composition —
+genuinely inexpressible as one ref, which is what the exception exists for. So
+the rule now written into model.md §8 and enforced without an exception list:
+**a bare constant is never a lawful semantic value; a composition may be.**
+
+Verified in Chromium against the pre-change baseline, the Studio's Environments
+form at viewport 390 / 900 / 1280 / 1920: `--tt-spacing-inset-control-sm`,
+the control's resolved `padding-top`, and the field row's height are
+**byte-identical** across the two mechanisms (`6px` / `6px` / 32, 32.67, 34, 34).
+The resolved tokens are byte-identical too (`6px` / `12px` / `24px` in both
+bundles), and the full suite passed with **no test edited** — because the fixed-shape
+guard (spacing Error #17) asserts the _resolved_ value and therefore always
+guarded the outcome rather than the authoring literal — and the semantic-ref
+guard's entire exception list turned out to be dead the moment the real offender
+moved (`sizing.hit`/`sizing.measure` had already become refs or compositions),
+so the guard now runs with no escape hatch, injection-verified against the exact
+shape that shipped.
+
+Cost: one new core group. It is not parallel vocabulary (§6): `fixed.N` and the
+fluid step `N` answer different questions — "the value that must not move" vs
+"N units of rhythm" — the same way `sizing` has always carried a fluid `ramp.*`
+beside the rem-anchored `hit`. Themes retune the fixed steps as plain px, as
+before; what moved is only _where_ they live. The `inset.surface ≥ inset.control`
+comparison still crosses two shapes and still resolves in px at the engine floor
+— that follows from ADR-022's ruling, not from this mechanism.
+
+Anchors: `src/baseTheme.ts` › `core.spacing.fixed` and
+`semantic.spacing.inset.control`, `src/families/spacing.ts` ›
+`CoreFixedSpacingSteps` + `ControlInsetSteps`,
+`tests/unit/tests/theme/global.test.ts` › "refs or compositions — never bare
+constants" (injection-verified), model.md §8, `families/spacing.md` › Core set.
+
+Re-litigation answers:
+
+- "Does this reopen ADR-022?" → no. Its ruling (fixed, outcome-bearing) and its
+  numbers survive unchanged; only the layer holding the number moves. ADR-022's
+  own "Cost" line — "a constant cannot be a `TokenRef`" — is the sentence this
+  ADR retires.
+- "Why not keep the exception and document it better?" → because the exception
+  was not true. Documenting it better would have made the circular premise
+  harder to notice, and the escape hatch it required was already hiding two
+  stale entries beside it.
+- "Should the fixed steps derive from the engine's max so one edit moves both?"
+  → rejected. Deriving them would make the fixed scale follow the engine, which
+  is the fluidity ADR-022 removed; and a validated equality would forbid a theme
+  from choosing a control inset the engine's bound does not happen to hit. The
+  agreement between the two scales is a base-theme choice, and the docs say so.

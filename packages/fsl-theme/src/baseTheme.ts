@@ -257,6 +257,24 @@ export const baseTheme: ThemeTokens = {
         unit: 'clamp(4px, 0.25cqi + 3px, 6px)',
       },
 
+      // The NON-FLUID counterpart of the steps below — plain values, because
+      // core is the layer whose job is raw values (model.md §1). It exists so
+      // that a semantic token whose *resolved outcome* is the guarantee
+      // (`inset.control.*`, ADR-022) has a core step to reference instead of
+      // inlining a literal into the semantic layer, which would break "semantic
+      // references core only" (§2) and would not satisfy §8's necessity test —
+      // a bare constant is always expressible as a `TokenRef` once core holds
+      // it. Keys mirror the fluid steps' multipliers and the base theme sets
+      // them to the engine's own desktop bound (6px), so a control resolves
+      // identically at ≥1200px to the fluid scale it left. A theme may retune
+      // them freely; what validation guarantees is the ordering and the fixed
+      // shape, never these numbers.
+      fixed: {
+        1: '6px',
+        2: '12px',
+        4: '24px',
+      },
+
       0: '0px',
       1: 'calc(1 * var(--tt-core-spacing-engine-unit))',
       2: 'calc(2 * var(--tt-core-spacing-engine-unit))',
@@ -1371,12 +1389,14 @@ export const baseTheme: ThemeTokens = {
         // desktop bound), so nothing changes visually at ≥1200px; the residual
         // narrow-end step is the fluid type meeting the `hit` floor, which is
         // the floor's job (ADR-020), not an inset ramp.
-        // RawValue rationale: a fixed px cannot be a TokenRef — every
-        // `core.spacing` step is fluid by design (model.md §8 inventory).
+        // The fixed values live in core (`core.spacing.fixed.*`, the non-fluid
+        // step scale) and are referenced here like every other semantic
+        // spacing token: ADR-022 rules the *outcome* fixed, and a literal in
+        // this layer was the wrong mechanism for it (ADR-023).
         control: {
-          sm: '6px',
-          md: '12px',
-          lg: '24px',
+          sm: '{core.spacing.fixed.1}',
+          md: '{core.spacing.fixed.2}',
+          lg: '{core.spacing.fixed.4}',
         },
         // inset.surface ≥ inset.control (validation invariant) and sits
         // above gap.stack at the default step so containers visibly enclose
