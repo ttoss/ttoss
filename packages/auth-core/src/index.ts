@@ -58,12 +58,14 @@ export {
   generateAuthorizationCode,
   type GeneratedAuthorizationCode,
   hashAuthorizationCode,
+  hashClientSecret,
   OAuthError,
   type OAuthErrorCode,
   oauthErrorCodes,
   type Rfc8414Metadata,
   type Rfc9728Metadata,
   validateRedirectUri,
+  verifyClientSecret,
   verifyPkceChallenge,
 } from './oauth';
 export {

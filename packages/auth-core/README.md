@@ -309,6 +309,12 @@ const res = await oauth.token({ query: {}, body, headers }); // { status, body }
 
 Your app keeps its user model, signing keys, and login/consent UI behind the hooks. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline for the full flow.
 
+### Client secrets
+
+`hashClientSecret` and `verifyClientSecret` hash a `client_secret` with SHA-256 and compare a presented value against a stored hash in constant time. Plain SHA-256 is deliberate: a registered secret is 32 random bytes, so there is no low-entropy guess space for `hashPassword`'s PBKDF2 to slow down.
+
+Implement the optional `ClientStore.verifyClientSecret` to use them, and the raw secret never has to be recoverable — the engine hands your store the presented value instead of comparing the one `get` returned. A store that omits the method makes the engine fall back to comparing `get`'s `client_secret`, which requires keeping that value recoverable.
+
 ### Refresh token rotation
 
 `createRefreshRotation` implements opaque, server-stored refresh tokens with OAuth 2.1 rotation against any `RefreshTokenStore`: single use, expiry, scope narrowing, and reuse detection (replaying a rotated token revokes the owner's whole token set). Only token hashes are persisted. Wire `issue` into `issueTokens` and pass the ready `onRefreshToken` straight through.

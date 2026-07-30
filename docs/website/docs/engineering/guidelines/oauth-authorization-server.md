@@ -103,6 +103,8 @@ Clients bootstrap by fetching metadata, so they need no manual configuration. Th
 
 `POST /register` ([RFC 7591](https://www.rfc-editor.org/rfc/rfc7591)) lets clients self-register: they post their `redirect_uris` and metadata, and the server issues a `client_id` (plus a `client_secret` for confidential clients) and persists it via `clientStore.register`. Your `ClientStore` only needs `get(clientId)` and `register(client)` — back it with DynamoDB, Postgres, or anything else.
 
+Implement the optional `verifyClientSecret({ clientId, clientSecret })` to keep secrets hashed at rest: the server hands over the value the client presented and your store compares it against its own stored form with `verifyClientSecret` from `@ttoss/auth-core`, so the raw secret never has to be recoverable. Without it the server compares the `client_secret` your `get` returns, which means the store must keep that value recoverable. `@ttoss/auth-postgresdb` implements it, so `client_secret_hash` is all its `oauth_clients` table holds.
+
 ## Authorization endpoint and PKCE
 
 `GET /authorize` validates the `client_id` and `redirect_uri` against the store, then calls your `onAuthorize` hook with the request and its headers. Return `{ approved: true, subject }` once the user is authenticated and has consented — the server issues a single-use code bound to the user, the requested scopes, and the PKCE challenge. Return `{ approved: false, redirect }` to send the user to your own login page (or `{ approved: false, status, body }` for an inline response); the adapter performs it. **PKCE S256 is mandatory** ([RFC 7636](https://www.rfc-editor.org/rfc/rfc7636)): the `code_challenge` is bound to the code and verified at the token endpoint, so codes are useless if intercepted.
