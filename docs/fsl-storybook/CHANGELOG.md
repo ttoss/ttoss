@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.6](https://github.com/ttoss/ttoss/compare/@docs/fsl-storybook@0.1.5...@docs/fsl-storybook@0.1.6) (2026-07-30)
+
+**Note:** Version bump only for package @docs/fsl-storybook
+
 ## [0.1.5](https://github.com/ttoss/ttoss/compare/@docs/fsl-storybook@0.1.4...@docs/fsl-storybook@0.1.5) (2026-07-29)
 
 **Note:** Version bump only for package @docs/fsl-storybook

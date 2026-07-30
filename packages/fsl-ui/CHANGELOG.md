@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.11](https://github.com/ttoss/ttoss/compare/@ttoss/fsl-ui@0.2.10...@ttoss/fsl-ui@0.2.11) (2026-07-30)
+
+**Note:** Version bump only for package @ttoss/fsl-ui
+
 ## [0.2.10](https://github.com/ttoss/ttoss/compare/@ttoss/fsl-ui@0.2.9...@ttoss/fsl-ui@0.2.10) (2026-07-29)
 
 **Note:** Version bump only for package @ttoss/fsl-ui
