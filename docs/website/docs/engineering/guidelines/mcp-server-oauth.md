@@ -112,6 +112,10 @@ const mcpRouter = createMcpRouter(mcpServer, {
 
 Setting both `resourceServerUrl` and `authorizationServerUrl` also serves that metadata document at `/.well-known/oauth-protected-resource`, completing the discovery chain the `WWW-Authenticate` header points to.
 
+**One document per path.** `oauthServer({ resource })` serves `/.well-known/oauth-protected-resource` too, so a deployment that hosts both halves ends up with two routers answering the same path — whichever mounted first wins, and nothing breaks because the bodies agree, which is exactly why nobody notices there are now two sources for one contract. When the authorization server is in the same deployment, set only `resourceMetadataUrl` on the MCP router and let the authorization server serve the document.
+
+**Error envelopes swallow the `401`.** The router rejects with `ctx.throw(401, 'Unauthorized', { headers })`, and an app whose catch-all error middleware recognizes only its own error class turns that into a `500` with no `WWW-Authenticate` header. The client then gets an opaque server error where it expected the pointer to the authorization server, so discovery silently never starts and it reads like a client bug. Run caught values through `toHttpError` and `applyHttpErrorHeaders` from [`@ttoss/http-server`](/docs/modules/packages/http-server) before falling back to `500`.
+
 **`publicMethods` and the OAuth flow.** With the default `['initialize', 'tools/list']`, an OAuth-aware client (Claude connector, Cursor) receives `200` on `initialize` and concludes the server is public — it never starts the OAuth PKCE flow, while `notifications/initialized` still returns `401`, silently breaking the handshake. The visible symptom is "connected, no tools available, no sign-in prompt". Setting `publicMethods: []` makes `initialize` return `401 + WWW-Authenticate`, which is what triggers the client's OAuth discovery and login. Use the default only when auth is handled outside the client-initiated OAuth flow (e.g. API keys or tokens injected by a gateway); set `publicMethods: []` whenever you want the client to authenticate itself before any other interaction.
 
 ## Authorization server: issuing tokens
@@ -131,6 +135,20 @@ createMcpRouter(mcpServer, {
     requiredScopes: ['mcp:access'],
   },
 });
+```
+
+**`requiredScopes` and first-party credentials.** An endpoint that accepts both OAuth tokens and the app's own API keys or session JWTs has a problem: those credentials carry no `scope` claim, so the scope check throws `verifyToken returned no scope/scopes but requiredScopes is set` and the caller gets a `403` for a claim it can never present. Report first-party credentials as holding the required scope in `verifyToken` — they already carry the user's full authority:
+
+```typescript
+verifyToken: async (token) => {
+  const principal = await authenticateBearer(token);
+  return {
+    sub: principal.userId,
+    // Session JWTs and API keys predate OAuth and hold the user's full
+    // authority; without this they fail a scope check they cannot satisfy.
+    scope: (principal.scopes ?? ['mcp:access']).join(' '),
+  };
+},
 ```
 
 ## Choosing your setup
