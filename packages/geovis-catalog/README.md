@@ -1,6 +1,6 @@
 # @ttoss/geovis-catalog
 
-Trusted catalog contract for [`@ttoss/geovis`](../geovis) — the curated, machine-facing metadata an AI or a builder validates against before generating a map. Nothing in the catalog is raw data; it describes what is mappable (metrics, datasets, geographies, joins, map types) so a generation request can be rejected before it hallucinates a reference that doesn't exist.
+Trusted catalog contract for [`@ttoss/geovis`](/docs/modules/packages/geovis/) — the curated, machine-facing metadata an AI or a builder validates against before generating a map. Nothing in the catalog is raw data; it describes what is mappable (metrics, datasets, geographies, joins, map types) so a generation request can be rejected before it hallucinates a reference that doesn't exist.
 
 ## Installation
 
@@ -282,4 +282,4 @@ const domain = computeFilterDomain({ filter, rows });
 
 ## Status
 
-PRD-004 (this package's bootstrap, catalog contract, and integrity validation) is implemented. PRD-005 (constrained map intent) and PRD-006 (deterministic resolution) build on top of it — see [`../geovis/docs/plans/`](../geovis/docs/plans/).
+PRD-004 (this package's bootstrap, catalog contract, and integrity validation) is implemented. PRD-005 (constrained map intent) and PRD-006 (deterministic resolution) build on top of it.
