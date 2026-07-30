@@ -585,8 +585,44 @@ both modes → commit.
   **New finding, filed rather than folded in:** F-036 — the theme's contrast
   suite pairs text against its own role's background, so the ink-on-page-surface
   pairing this item introduced is measured by hand and guarded by nothing.
-- **G. `FieldGroup` + `Wizard`.** `role="group"` with `aria-labelledby`;
-  per-step validation for the multistep flow.
+- **G. ✅ `FieldGroup` + `Wizard` (2026-07-29).** The audit came first and cut
+  the item in half. **The Wizard half was already built and its validation
+  half was inherited:** the `Wizard` composite ships steps/summary/navigation
+  with a render-prop whose JSDoc had promised "validation gating" — probed in
+  jsdom before anything was written, and the composition works with **zero new
+  API**: each step's content is its own `Form`, the forward button is a
+  submit bound to the _active_ step's form via the HTML `form` attribute
+  (`Button` forwards `type`/`form`), and native validation gates `goNext`
+  while the step's own fields report the refusal. The deliverable is the B3a
+  shape — a guard (two assertions in `Wizard.test.tsx`, invalid-blocks and
+  valid-advances-with-rebinding) plus the story and llms.txt documenting the
+  composition, because it would vanish silently under a Button that stopped
+  forwarding the attributes.
+  **The FieldGroup half was the build**, and the ADR-014 duplicate test is
+  what needed answering: `Group` already ships `role="group"` +
+  `aria-labelledby`, so a second component on the same role had to differ by
+  more than paint. It does — `Group` is a labelled _surface_ frame
+  (`inset.surface`, `radii.surface`, `title.sm` label: a bordered region of
+  content) while `FieldGroup` **is a field** whose control happens to be a
+  cluster: Input/root, the envelope's label step via
+  `buildFieldTextPartStyle`, the form's stack rhythm, and a subgrid row under
+  `labelPosition="side"` exactly like every other field (measured: its label
+  shares the column with the fields around it at x=40). The label is a `span`
+  wired by `aria-labelledby`, **not** a `<label>` — there is no single
+  labelable control to point at — and each inner control keeps its own
+  `aria-label`, because the group names the cluster and AT still needs each
+  member named. Controls split the row equally (`grid-auto-columns: 1fr`,
+  measured 594/594). Validation stays with the inner fields: a group has no
+  validation state of its own, per FORMS §3's constraint (RAC's contexts are
+  supplied per field root).
+  _Studio consumer, both halves at once:_ Billing's **Add payment method**
+  wizard — step 1 (card number with a `validate`, the Expiry `FieldGroup` as
+  the month/year pair §2 named) gates step 2 (billing address) through native
+  validation; saving writes the card's last4 to the store and the Billing
+  page shows "Card ending 4242". Verified in Chromium both modes: the blocked
+  step shows the field's own message plus the platform copy on both Selects,
+  the pair splits the row equally, and the flow completes. Suites: fsl-ui
+  2387, Studio 83 (coverage threshold moved up to 98.9/90.5).
 - **H. Field formats, and the in-control validation glyph.** A `format` registry
   on the `Icon`-intent pattern: named, locale-scoped format data resolving mask +
   `inputMode` + `autoComplete`. Never a `type` prop explosion. The Brazil set
@@ -727,8 +763,8 @@ it lands unverified in dark until that audit exists.
 
 ~~**B4** `contextualHelp`~~ (**done 2026-07-29**) · ~~**D** `SearchField` +
 `NumberField`~~ (**done 2026-07-29**) · ~~**E** the selection family~~ (**done
-2026-07-29**) · **G** `FieldGroup` + `Wizard` · **H** field formats · **I**
-the Studio's complete form.
+2026-07-29**) · ~~**G** `FieldGroup` + `Wizard`~~ (**done 2026-07-29**) ·
+**H** field formats · **I** the Studio's complete form.
 
 **F came in far smaller than this plan sized it**, and the reason is the lesson
 rather than the schedule. It was queued as a token-model change — switch the field

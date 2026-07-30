@@ -24,6 +24,8 @@ interface WorkspaceState {
   members: Member[];
   planId: Plan['id'];
   settings: WorkspaceSettings;
+  /** The card on file, or null before one is added (Billing's wizard). */
+  paymentMethod: { last4: string } | null;
 }
 
 const INITIAL_SETTINGS: WorkspaceSettings = {
@@ -40,6 +42,7 @@ let state: WorkspaceState = {
   members: INITIAL_MEMBERS,
   planId: 'pro',
   settings: INITIAL_SETTINGS,
+  paymentMethod: null,
 };
 
 const listeners = new Set<() => void>();
@@ -95,6 +98,10 @@ export const setPlan = ({ planId }: { planId: Plan['id'] }) => {
   setState({ ...state, planId });
 };
 
+export const setPaymentMethod = ({ last4 }: { last4: string }) => {
+  setState({ ...state, paymentMethod: { last4 } });
+};
+
 export const saveSettings = (settings: WorkspaceSettings) => {
   setState({ ...state, settings });
 };
@@ -106,6 +113,7 @@ export const resetWorkspace = () => {
     members: INITIAL_MEMBERS,
     planId: 'pro',
     settings: INITIAL_SETTINGS,
+    paymentMethod: null,
   });
 };
 

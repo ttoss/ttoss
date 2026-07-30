@@ -215,6 +215,17 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
     },
   },
   CheckboxGroup: { scope: 'checkbox-group', element: treeCheckboxGroup },
+  FieldGroup: {
+    scope: 'field-group',
+    element: () => {
+      return (
+        <pkg.FieldGroup label="Expiry">
+          <pkg.TextField aria-label="Expiry month" />
+          <pkg.TextField aria-label="Expiry year" />
+        </pkg.FieldGroup>
+      );
+    },
+  },
   FileTrigger: {
     scope: 'file-trigger',
     element: () => {

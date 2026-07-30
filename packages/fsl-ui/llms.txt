@@ -270,6 +270,22 @@ Forms:       Form publishes field layout to every field inside it as STATIC
 
 Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              WizardNavigation, Separator, Group (labelled role=group frame),
+             PER-STEP WIZARD VALIDATION is a composition, not a prop: each
+             step's content is its own <Form id="step-N">, and the navigation
+             render-prop's forward button is
+             <Button type="submit" form={`step-${state.currentStep}`}> — the
+             HTML form attribute binds it to the ACTIVE step's form, so native
+             validation gates the advance and the step's own fields report
+             the refusal. No Wizard API exists for this; the composition is
+             the mechanism (guarded in Wizard.test.tsx).
+             FieldGroup = ONE LABEL OVER SEVERAL CONTROLS (an expiry's
+             month/year pair): role=group named by aria-labelledby, the
+             label a span (no single labelable control), each inner control
+             MUST keep its own aria-label. It IS a field — envelope label
+             step, form rhythm, a subgrid row under labelPosition="side" —
+             where Group is a labelled SURFACE frame for content regions.
+             Controls split the row equally. Validation stays with the inner
+             fields (RAC contexts are per field root; a cluster has none).
              Toolbar (THE ACTION FAMILY'S UTILITY GROUP — the reference
              system's "ActionGroup"/ActionButtonGroup under the role's own name:
              role=toolbar, named region, arrow keys walk the controls.

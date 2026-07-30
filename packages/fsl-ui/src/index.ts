@@ -86,6 +86,8 @@ export type {
   ContainerSize,
 } from './components/Container/Container';
 export { Container, containerMeta } from './components/Container/Container';
+export type { FieldGroupProps } from './components/FieldGroup/FieldGroup';
+export { FieldGroup, fieldGroupMeta } from './components/FieldGroup/FieldGroup';
 export type { FileTriggerProps } from './components/FileTrigger/FileTrigger';
 export {
   FileTrigger,
