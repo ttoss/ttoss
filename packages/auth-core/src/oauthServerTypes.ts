@@ -79,12 +79,38 @@ export interface OAuthClient extends OAuthClientMetadata {
  * app owns persistence (DynamoDB, Postgres, in-memory, …).
  */
 export interface ClientStore {
-  /** Look up a client by its `client_id`. Return `undefined` if unknown. */
+  /**
+   * Look up a client by its `client_id`. Return `undefined` if unknown.
+   *
+   * A store that implements {@link ClientStore.verifyClientSecret} should omit
+   * `client_secret` from the returned document — the core never needs the raw
+   * value, and leaving it out keeps it from reaching consent screens or logs.
+   */
   get: (
     clientId: string
   ) => Promise<OAuthClient | undefined> | OAuthClient | undefined;
   /** Persist a newly registered client. */
   register: (client: OAuthClient) => Promise<void> | void;
+  /**
+   * Verifies a `client_secret` presented at the token endpoint. Implement this
+   * to keep secrets hashed at rest: the core hands over the presented value and
+   * the store compares it against its own stored form, so the raw secret never
+   * has to be recoverable.
+   *
+   * Return `true` for a public client (one registered with
+   * `token_endpoint_auth_method: 'none'`, which has no secret to present), and
+   * `false` for an unknown `client_id`.
+   *
+   * When omitted, the core falls back to a constant-time comparison against the
+   * `client_secret` returned by {@link ClientStore.get} — which requires the
+   * store to keep the secret recoverable.
+   */
+  verifyClientSecret?: (args: {
+    /** The `client_id` being authenticated. */
+    clientId: string;
+    /** The secret presented by the client, absent when none was sent. */
+    clientSecret: string | undefined;
+  }) => Promise<boolean> | boolean;
 }
 
 /**

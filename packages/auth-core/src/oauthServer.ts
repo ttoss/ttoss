@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto';
 
+import { asString, authenticateClient } from './authenticateClient';
 import { verifyPkceChallenge } from './oauth';
 import type {
   ClientStore,
@@ -31,10 +32,6 @@ const generateToken = (bytes = 32): string => {
 
 const joinUrl = (issuer: string, path: string): string => {
   return `${issuer.replace(/\/$/, '')}${path}`;
-};
-
-const asString = (value: unknown): string | undefined => {
-  return typeof value === 'string' ? value : undefined;
 };
 
 const parseScopes = (scope: unknown): string[] => {
@@ -76,45 +73,6 @@ const redirectWithParams = (
     }
   }
   return url.toString();
-};
-
-/**
- * Authenticates the client at the token endpoint via `client_secret_basic`
- * (Authorization header), `client_secret_post` (body), or `none` (public,
- * PKCE-only). Returns the client, or `undefined` when authentication fails.
- */
-const authenticateClient = async (
-  request: OAuthRequest,
-  clientStore: ClientStore
-): Promise<OAuthClient | undefined> => {
-  let clientId = asString(request.body.client_id);
-  let clientSecret = asString(request.body.client_secret);
-
-  const authHeader = request.headers.authorization;
-  if (authHeader?.startsWith('Basic ')) {
-    const decoded = Buffer.from(authHeader.slice(6), 'base64').toString();
-    const separatorIndex = decoded.indexOf(':');
-    if (separatorIndex !== -1) {
-      clientId = decodeURIComponent(decoded.slice(0, separatorIndex));
-      clientSecret = decodeURIComponent(decoded.slice(separatorIndex + 1));
-    }
-  }
-
-  if (!clientId) {
-    return undefined;
-  }
-
-  const client = await clientStore.get(clientId);
-  if (!client) {
-    return undefined;
-  }
-
-  // Confidential clients must present the matching secret.
-  if (client.client_secret && client.client_secret !== clientSecret) {
-    return undefined;
-  }
-
-  return client;
 };
 
 // ---------------------------------------------------------------------------

@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.2](https://github.com/ttoss/ttoss/compare/@docs/website@3.2.1...@docs/website@3.2.2) (2026-07-30)
+
+### Bug Fixes
+
+- **auth:** hash client secrets at rest instead of storing plaintext ([#1182](https://github.com/ttoss/ttoss/issues/1182)) ([8f7b24e](https://github.com/ttoss/ttoss/commit/8f7b24ea7c74779d5ddf52d41f05fa0e075349da))
+
+## [3.2.1](https://github.com/ttoss/ttoss/compare/@docs/website@3.2.0...@docs/website@3.2.1) (2026-07-30)
+
+**Note:** Version bump only for package @docs/website
+
 # [3.2.0](https://github.com/ttoss/ttoss/compare/@docs/website@3.1.8...@docs/website@3.2.0) (2026-07-29)
 
 ### Features
