@@ -44,6 +44,10 @@ export interface McpAuthOptions {
   requiredScopes?: string[];
   /**
    * JSON-RPC methods (read from `body.method`) that bypass verification.
+   * Leaving this unset serves `tools/list` — the full tool catalogue —
+   * to unauthenticated callers, and logs a one-time warning explaining how
+   * to close it. Set explicitly (even to the same default) to silence the
+   * warning; set to `['initialize']` to require a token for `tools/list` too.
    * @default ['initialize', 'tools/list']
    */
   publicMethods?: string[];
@@ -506,6 +510,27 @@ export const createMcpRouter = (
 
   if (auth) {
     const verifyToken = buildVerifyToken(auth);
+
+    if (auth.publicMethods === undefined) {
+      // `tools/list` exposing the full tool catalogue to unauthenticated
+      // callers is a surprising default for anyone who configured `auth`
+      // without considering `publicMethods`. Warn once so operators find out
+      // from their own logs rather than from an unauthenticated tool listing
+      // in production. This default is a candidate to tighten to
+      // `['initialize']` in a future major — see
+      // https://github.com/ttoss/ttoss/issues/1176.
+      // eslint-disable-next-line no-console -- one-time operator-facing warning
+      console.warn(
+        `[@ttoss/http-server-mcp] "auth" is configured but "publicMethods" was not set, ` +
+          `so it defaults to ${JSON.stringify(DEFAULT_PUBLIC_METHODS)}. This means ` +
+          `"tools/list" — the full tool catalogue, including names, descriptions, and ` +
+          `input schemas — is served to unauthenticated callers. ` +
+          `To require a token for "tools/list" too, set publicMethods: ['initialize']. ` +
+          `To keep the current behaviour and silence this warning, set ` +
+          `publicMethods: ${JSON.stringify(DEFAULT_PUBLIC_METHODS)} explicitly.`
+      );
+    }
+
     const publicMethods = new Set(auth.publicMethods ?? DEFAULT_PUBLIC_METHODS);
 
     const verify = authMiddleware({

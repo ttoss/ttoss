@@ -360,7 +360,7 @@ The `WWW-Authenticate: Bearer resource_metadata="…"` header is how MCP clients
 
 The two behaviors the [MCP authorization spec](https://spec.modelcontextprotocol.io/specification/2025-03-26/basic/authorization/) requires for client bootstrapping are built into the `auth` option, so you no longer need the hand-rolled middleware shown above:
 
-- **`publicMethods`** — JSON-RPC methods that bypass verification, read from the request body's `method` field. Defaults to `['initialize', 'tools/list']` so clients can discover the server before authenticating. Pass `[]` to require a token for every method, or a custom list to change the exempt set.
+- **`publicMethods`** — JSON-RPC methods that bypass verification, read from the request body's `method` field. Defaults to `['initialize', 'tools/list']` so clients can discover the server before authenticating. Pass `[]` to require a token for every method, or a custom list to change the exempt set. Leaving it unset serves the full tool catalogue — every tool name, description, and input schema — to unauthenticated callers, and logs a one-time warning explaining that and how to close it. Set `publicMethods` explicitly (even to the same default) to silence the warning.
 - **`resourceMetadataUrl`** — when set, a `401` responds with `WWW-Authenticate: Bearer resource_metadata="<resourceMetadataUrl>"` (RFC 9728) instead of a bare `Bearer`, pointing MCP clients at the protected-resource metadata document. When omitted, the header falls back to `Bearer`.
 
 ```typescript
@@ -870,6 +870,8 @@ expect(call.status).toBe(200);
 - Setting `publicMethods: []` makes `initialize` return `401` + `WWW-Authenticate`, which triggers the client's OAuth discovery and PKCE flow.
 
 Use the default when token auth is handled outside the OAuth flow (Cognito, API keys, Bearer tokens). Set `publicMethods: []` only when you want OAuth clients to self-discover and authenticate before anything else.
+
+Leaving `publicMethods` unset also exposes the full tool catalogue (`tools/list`) to unauthenticated callers — a tool's name, description, and input schema can leak internal resource names and, for an OpenAPI-derived server, the shape of the whole underlying API. A one-time warning is logged when `auth` is configured without an explicit `publicMethods`, naming the exposure and how to close it. This default is a candidate to tighten to `['initialize']` in a future major; track the decision in [ttoss/ttoss#1176](https://github.com/ttoss/ttoss/issues/1176).
 
 ## AWS Lambda Deployment
 
