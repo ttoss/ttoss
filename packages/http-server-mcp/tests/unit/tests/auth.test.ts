@@ -572,6 +572,42 @@ describe('auth — public methods and RFC 9728 discovery', () => {
     expect(res.status).toBe(401);
   });
 
+  test('warns once when auth is configured without an explicit publicMethods', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    buildApp({});
+
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy.mock.calls[0][0]).toEqual(
+      expect.stringContaining('publicMethods')
+    );
+    expect(warnSpy.mock.calls[0][0]).toEqual(
+      expect.stringContaining('tools/list')
+    );
+
+    warnSpy.mockRestore();
+  });
+
+  test('does not warn when publicMethods is set explicitly, even to the default', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    buildApp({ publicMethods: ['initialize', 'tools/list'] });
+
+    expect(warnSpy).not.toHaveBeenCalled();
+
+    warnSpy.mockRestore();
+  });
+
+  test('does not warn when publicMethods is set to an empty array', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    buildApp({ publicMethods: [] });
+
+    expect(warnSpy).not.toHaveBeenCalled();
+
+    warnSpy.mockRestore();
+  });
+
   test('a request without a method is treated as protected', async () => {
     const res = await request(buildApp({}).callback())
       .post('/mcp')
