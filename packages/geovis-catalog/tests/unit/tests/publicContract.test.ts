@@ -23,6 +23,21 @@ test('package exports expected public symbols', () => {
   expect(typeof geovisCatalog.resolveCatalogOverallStatus).toBe('function');
 });
 
+test('the Zod schemas are public, so downstream packages compose rather than re-declare', () => {
+  expect(typeof geovisCatalog.catalogSchema.safeParse).toBe('function');
+  expect(typeof geovisCatalog.metricSchema.safeParse).toBe('function');
+  expect(typeof geovisCatalog.datasetSchema.safeParse).toBe('function');
+  expect(typeof geovisCatalog.geographySchema.safeParse).toBe('function');
+  expect(typeof geovisCatalog.joinSchema.safeParse).toBe('function');
+  expect(typeof geovisCatalog.filterFieldSchema.safeParse).toBe('function');
+  expect(typeof geovisCatalog.mapTypeCatalogEntrySchema.safeParse).toBe(
+    'function'
+  );
+  expect(geovisCatalog.metricKindSchema.options).toContain('density');
+  expect(geovisCatalog.geographyKindSchema.options).toContain('grid');
+  expect(geovisCatalog.geometrySchema.options).toContain('polygon');
+});
+
 test('Catalog and its sub-shapes are part of the public contract', () => {
   const metric: Metric = {
     id: 'metric-populacao',

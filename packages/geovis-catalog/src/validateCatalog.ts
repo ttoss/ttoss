@@ -1,12 +1,17 @@
-import Ajv2020 from 'ajv/dist/2020';
-
 import type { CatalogIssue, CatalogResult } from './catalogResult';
 import { resolveCatalogOverallStatus } from './catalogResult';
-import catalogSchema from './schema/catalog.schema.json';
+import { catalogSchema } from './schema/catalog';
 import type { Catalog } from './schema/types';
 
-const ajv = new Ajv2020({ strict: false });
-const _validate = ajv.compile(catalogSchema);
+/**
+ * Renders a Zod issue path in the JSON-Pointer style the previous Ajv-backed
+ * implementation reported (`/datasets/0/id`), so `subject.path` stays stable
+ * for consumers across the validator swap.
+ */
+const formatIssuePath = (path: ReadonlyArray<PropertyKey>): string => {
+  if (path.length === 0) return '(root)';
+  return `/${path.join('/')}`;
+};
 
 /** Indexes of items whose `id` repeats one already seen earlier in `items`. */
 const findDuplicateIndexes = (
@@ -256,27 +261,27 @@ const checkGeographyHierarchy = (catalog: Catalog): CatalogIssue[] => {
 };
 
 /**
- * Validates a raw value against the catalog JSON Schema and enforces
- * cross-field referential integrity rules not expressible in the schema.
- * Returns a `CatalogResult`: `{ status: 'valid', catalog }` on success, or a
- * failure status carrying every issue found in one pass.
+ * Validates a raw value against the catalog schema and enforces cross-field
+ * referential integrity rules the schema cannot express. Returns a
+ * `CatalogResult`: `{ status: 'valid', catalog }` on success, or a failure
+ * status carrying every issue found in one pass.
  */
 export const validateCatalog = (input: unknown): CatalogResult => {
-  const schemaValid = _validate(input);
+  const parsed = catalogSchema.safeParse(input);
 
-  if (!schemaValid) {
-    const issues: CatalogIssue[] = (_validate.errors ?? []).map((e) => {
-      const path = e.instancePath || '(root)';
+  if (!parsed.success) {
+    const issues: CatalogIssue[] = parsed.error.issues.map((issue) => {
+      const path = formatIssuePath(issue.path);
       return {
         code: 'invalid-catalog-schema',
         subject: { path },
-        message: `${path} ${e.message}`,
+        message: `${path} ${issue.message}`,
       };
     });
     return { status: 'invalid', issues };
   }
 
-  const catalog = input as unknown as Catalog;
+  const catalog = parsed.data as Catalog;
   const issues: CatalogIssue[] = [
     ...checkDuplicateIds(catalog),
     ...checkJoinReferences(catalog),

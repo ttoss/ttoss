@@ -1,4 +1,6 @@
-import catalogSchema from './schema/catalog.schema.json';
+import { z } from 'zod';
+
+import { catalogSchema } from './schema/catalog';
 import type { Catalog } from './schema/types';
 
 /**
@@ -18,10 +20,10 @@ export const getCatalogIntrospection = (
 
 /**
  * Returns the catalog's JSON Schema, directly usable as an LLM structured-
- * output or function-calling `input_schema`. No derivation step — the
- * schema is already JSON Schema (D1), so this returns the imported document
- * as-is.
+ * output or function-calling `input_schema`. Derived from the Zod schemas
+ * (D1), which are the single source of truth, so the document can never
+ * drift from what `validateCatalog` actually enforces.
  */
-export const getCatalogJSONSchema = (): typeof catalogSchema => {
-  return catalogSchema;
+export const getCatalogJSONSchema = (): Record<string, unknown> => {
+  return z.toJSONSchema(catalogSchema, { target: 'draft-2020-12' });
 };

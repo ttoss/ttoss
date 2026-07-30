@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@ttoss/geovis": "workspace:^",
-    "ajv": "^8.18.0"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",

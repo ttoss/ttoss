@@ -330,6 +330,10 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
       "type": "array",
     },
     "permissions": {
+      "additionalProperties": {},
+      "propertyNames": {
+        "type": "string",
+      },
       "type": "object",
     },
     "version": {

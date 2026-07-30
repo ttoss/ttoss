@@ -47,5 +47,4 @@ PRD-001 (taxonomy for catalog-mismatch reporting). Feeds PRD-005 and PRD-006.
 ## Open questions
 
 - ~~Catalog governance: who approves entries, and how permissions integrate with application auth.~~ Resolved as out of scope: `permissions` is an opaque, schema-reserved slot; the application enforces its own authorization logic. Governance process itself is an org/product question, not a package concern.
-- Field-level metadata (`Dataset.fields[]` carrying `role` and `display`) is confirmed for the catalog, since the workspace inspector and tooltip need to know which fields to show. Whether the same entry carries `sensitive` depends on a disclosure-policy decision that is not yet made — in both pilot applications the gateway, not the catalog, is the disclosure frontier.
-- Schema source of truth: the plan's D1 fixes Ajv plus a hand-authored JSON Schema, while the monorepo standardises on Zod for new schemas and `z.toJSONSchema()` would keep `getCatalogJSONSchema()` intact.
+- Whether `Dataset.fields[].sensitive` should also drive the application's rendered payloads, which today are the gateway's responsibility in both pilot applications. The catalog uses the declaration only to govern its own disclosure — introspection payloads and filter domains.

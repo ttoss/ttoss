@@ -1,17 +1,22 @@
-import Ajv2020 from 'ajv/dist/2020';
-import catalogSchema from 'src/schema/catalog.schema.json';
+import { getCatalogJSONSchema } from 'src/introspection';
+import {
+  catalogSchema,
+  datasetSchema,
+  filterFieldSchema,
+  geographySchema,
+  joinSchema,
+  mapTypeCatalogEntrySchema,
+  metricSchema,
+} from 'src/schema/catalog';
 
 import { sampleCatalog } from '../fixtures/sampleCatalog';
 
-const ajv = new Ajv2020({ strict: false });
-const validate = ajv.compile(catalogSchema);
-
 /**
  * The `Catalog` interface's field set (`src/schema/types.ts`), maintained by
- * hand alongside the JSON Schema (D4). Kept here, separate from the schema
- * import, so a field added to one without the other fails this test —
- * making the manual-sync discipline explicit and testable (Phase 2
- * acceptance) rather than left to reviewer attention alone.
+ * hand alongside the Zod schemas (D1). Kept here, separate from the schema
+ * import, so a field added to one without the other fails this test — making
+ * the manual-sync discipline explicit and testable rather than left to
+ * reviewer attention alone.
  */
 const CATALOG_KEYS = [
   'version',
@@ -70,62 +75,60 @@ const MAP_TYPE_CATALOG_ENTRY_KEYS = [
   'metricKinds',
 ].sort();
 
-describe('catalog.schema.json / Catalog type parity', () => {
+describe('Zod schema / Catalog type parity', () => {
   test('top-level Catalog properties match the schema', () => {
-    expect(Object.keys(catalogSchema.properties).sort()).toEqual(CATALOG_KEYS);
+    expect(Object.keys(catalogSchema.shape).sort()).toEqual(CATALOG_KEYS);
   });
 
   test('Metric properties match the schema', () => {
-    expect(Object.keys(catalogSchema.$defs.Metric.properties).sort()).toEqual(
-      METRIC_KEYS
-    );
+    expect(Object.keys(metricSchema.shape).sort()).toEqual(METRIC_KEYS);
   });
 
   test('Dataset properties match the schema', () => {
-    expect(Object.keys(catalogSchema.$defs.Dataset.properties).sort()).toEqual(
-      DATASET_KEYS
-    );
+    expect(Object.keys(datasetSchema.shape).sort()).toEqual(DATASET_KEYS);
   });
 
   test('Geography properties match the schema', () => {
-    expect(
-      Object.keys(catalogSchema.$defs.Geography.properties).sort()
-    ).toEqual(GEOGRAPHY_KEYS);
+    expect(Object.keys(geographySchema.shape).sort()).toEqual(GEOGRAPHY_KEYS);
   });
 
   test('Join properties match the schema', () => {
-    expect(Object.keys(catalogSchema.$defs.Join.properties).sort()).toEqual(
-      JOIN_KEYS
-    );
+    expect(Object.keys(joinSchema.shape).sort()).toEqual(JOIN_KEYS);
   });
 
   test('FilterField properties match the schema', () => {
-    expect(
-      Object.keys(catalogSchema.$defs.FilterField.properties).sort()
-    ).toEqual(FILTER_FIELD_KEYS);
+    expect(Object.keys(filterFieldSchema.shape).sort()).toEqual(
+      FILTER_FIELD_KEYS
+    );
   });
 
   test('MapTypeCatalogEntry properties match the schema', () => {
-    expect(
-      Object.keys(catalogSchema.$defs.MapTypeCatalogEntry.properties).sort()
-    ).toEqual(MAP_TYPE_CATALOG_ENTRY_KEYS);
+    expect(Object.keys(mapTypeCatalogEntrySchema.shape).sort()).toEqual(
+      MAP_TYPE_CATALOG_ENTRY_KEYS
+    );
   });
 });
 
-describe('catalog.schema.json validation', () => {
+describe('catalog schema validation', () => {
   test('the sample catalog validates', () => {
-    const valid = validate(sampleCatalog);
-    expect(validate.errors).toBeNull();
-    expect(valid).toBe(true);
+    const parsed = catalogSchema.safeParse(sampleCatalog);
+    expect(parsed.error).toBeUndefined();
+    expect(parsed.success).toBe(true);
   });
 
   test('a catalog missing a required field fails validation, pointing at the missing field', () => {
     const { version: _version, ...withoutVersion } = sampleCatalog;
-    const valid = validate(withoutVersion);
-    expect(valid).toBe(false);
-    expect(validate.errors?.[0]).toMatchObject({
-      params: { missingProperty: 'version' },
+    const parsed = catalogSchema.safeParse(withoutVersion);
+    expect(parsed.success).toBe(false);
+    expect(parsed.error?.issues[0].path).toEqual(['version']);
+  });
+
+  test('a catalog carrying an unknown top-level key fails validation', () => {
+    const parsed = catalogSchema.safeParse({
+      ...sampleCatalog,
+      notACatalogField: true,
     });
+    expect(parsed.success).toBe(false);
   });
 
   test('a geography with an unknown kind value fails validation', () => {
@@ -136,7 +139,7 @@ describe('catalog.schema.json validation', () => {
         ...sampleCatalog.geographies.slice(1),
       ],
     };
-    expect(validate(invalid)).toBe(false);
+    expect(catalogSchema.safeParse(invalid).success).toBe(false);
   });
 
   test('a geography omitting kind still validates (optional-with-default contract)', () => {
@@ -149,7 +152,7 @@ describe('catalog.schema.json validation', () => {
         ...sampleCatalog.geographies.slice(1),
       ],
     };
-    expect(validate(withoutKind)).toBe(true);
+    expect(catalogSchema.safeParse(withoutKind).success).toBe(true);
   });
 
   test('a metric with kind "density" or "distance" validates (D7)', () => {
@@ -188,6 +191,28 @@ describe('catalog.schema.json validation', () => {
 
   test('permissions is optional — a catalog omitting it still validates', () => {
     const { permissions: _permissions, ...withoutPermissions } = sampleCatalog;
-    expect(validate(withoutPermissions)).toBe(true);
+    expect(catalogSchema.safeParse(withoutPermissions).success).toBe(true);
+  });
+});
+
+describe('getCatalogJSONSchema', () => {
+  test('derives a draft 2020-12 document with the sub-shapes in $defs', () => {
+    const jsonSchema = getCatalogJSONSchema();
+
+    expect(jsonSchema.$schema).toBe(
+      'https://json-schema.org/draft/2020-12/schema'
+    );
+    expect(jsonSchema.$id).toBe(
+      'https://ttoss.dev/geovis-catalog/catalog.schema.json'
+    );
+    expect(Object.keys(jsonSchema.$defs as object).sort()).toEqual([
+      'Dataset',
+      'FilterField',
+      'Geography',
+      'Join',
+      'MapTypeCatalogEntry',
+      'Metric',
+    ]);
+    expect(jsonSchema.additionalProperties).toBe(false);
   });
 });

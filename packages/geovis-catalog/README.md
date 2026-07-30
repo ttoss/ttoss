@@ -10,7 +10,9 @@ pnpm add @ttoss/geovis-catalog
 
 ## `validateCatalog`
 
-Validates a raw value against the catalog JSON Schema and enforces referential integrity the schema alone can't express (unknown ids, duplicate ids, cyclic geography hierarchies). Returns a `CatalogResult`: `{ status: 'valid', catalog }` on success, or a failure status carrying every issue found in one pass.
+Validates a raw value against the catalog schema and enforces referential integrity the schema alone can't express (unknown ids, duplicate ids, cyclic geography hierarchies). Returns a `CatalogResult`: `{ status: 'valid', catalog }` on success, or a failure status carrying every issue found in one pass.
+
+Zod is the single source of truth for the contract: `validateCatalog` parses with it, and `getCatalogJSONSchema()` derives the JSON Schema document from the same schemas, so the published document can never drift from what is actually enforced. The schemas themselves are exported (`catalogSchema`, `metricSchema`, `datasetSchema`, …) so downstream packages compose them instead of re-declaring the shape.
 
 ```ts
 import { validateCatalog } from '@ttoss/geovis-catalog';
@@ -80,7 +82,7 @@ import {
 const introspection = getCatalogIntrospection(catalog);
 
 // The catalog's JSON Schema, usable directly as an LLM structured-output
-// or function-calling `input_schema`.
+// or function-calling `input_schema`. Derived from the Zod schemas.
 const schema = getCatalogJSONSchema();
 ```
 

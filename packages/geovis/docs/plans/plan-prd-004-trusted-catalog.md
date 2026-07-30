@@ -12,6 +12,8 @@ This is the first of three plans (PRD-004 → PRD-005 → PRD-006) that all land
 
 ### D1 — Schema validation: Ajv + hand-authored JSON Schema
 
+> **Superseded by D14 (2026-07-30): Zod is the source of truth and Ajv is gone.** The reasoning below is kept because it records why the JSON Schema document remains a published artifact.
+
 `@ttoss/geovis-catalog` is a machine-facing data contract package in the same product family as `@ttoss/geovis`. Following the established pattern from `@ttoss/geovis`'s own `VisualizationSpec`:
 
 - `catalog.schema.json` — hand-authored JSON Schema (draft 2020-12), `$id`/`additionalProperties: false`, styled exactly like `spec/schema.json`.
@@ -477,13 +479,31 @@ Selectable periods are **derived** from `extent` × `grain`; an explicit `period
 
 `Catalog.domain.language` already declares which language a catalog is written in. v1 keeps `label`/`description` as single strings and ships one catalog per language rather than turning every string into a locale map. The additive path stays open: a parallel optional field can carry locale maps later without breaking readers.
 
-### D12 — Field-level metadata, without sensitivity
+### D12 — Field-level metadata, including sensitivity
 
-`Dataset.fields[]` carries `name`, `role` and `display`, so the workspace inspector and hover tooltip derive from the catalog instead of hand-written config. It deliberately does not carry `sensitive`: disclosure policy is unresolved, and in both pilots the gateway is the disclosure frontier — `cozsolidarias` marks eight fields sensitive yet intentionally exposes five of them through its detail endpoint, so a dataset-level flag would be wrong in both directions. `sensitive` is additive once that policy lands.
+`Dataset.fields[]` carries `name`, `role`, `display` and `sensitive`, so the workspace inspector and hover tooltip derive from the catalog instead of hand-written config, and personal data is declared where it exists rather than tracked in a parallel document.
+
+`sensitive` is a **declaration, not an enforcement rule**. Both pilots prove a blanket "sensitive ⇒ hidden" rule would be wrong: `cozsolidarias` marks eight fields sensitive and intentionally exposes five of them (address, postcode, latitude, longitude) through its detail endpoint, while withholding e-mail, telephone and company registration. Exposure is a per-surface product decision, so the catalog records the fact and forces the decision to be explicit:
+
+- `display` is **required** on any field with `sensitive: true`. Exposure then can never be the result of an omission.
+- `getCatalogIntrospection` omits every `sensitive` field from the introspection payload, because that payload is what reaches a model.
+- A `FilterField` whose `property` is a sensitive field may not declare `domain.mode: 'values'` — enumerating the domain of a personal-data column would leak the values themselves, which is the one genuine catalog-to-model leak this contract can close.
+
+The gateway remains the disclosure frontier for rendered payloads; the catalog governs only what it itself discloses.
 
 ### D13 — Collections replace free-form `source`
 
 `Dataset.source?: string` (D7) becomes `collectionId?: string`, a foreign key into `Catalog.collections[]`. Both pilots already key each dataset to a single `collection_id`, so this absorbs an existing validated structure rather than inventing one. It also makes attribution computable: the legend's source note composes from `Collection.organization`, `publicReferenceUrl` and `temporal.extent` instead of the string hard-coded in `cozsolidarias`' `geovisScoreScales.ts`.
+
+### D14 — Zod is the schema source of truth
+
+Zod (`^4.4.3`, the version the rest of the monorepo already pins) replaces Ajv. `src/schema/catalog.ts` holds the schemas; `validateCatalog` parses with `catalogSchema.safeParse`; `getCatalogJSONSchema()` derives the draft 2020-12 document through `z.toJSONSchema`. `catalog.schema.json` and the `ajv` dependency are deleted.
+
+This resolves the contradiction D1 created against the monorepo standard (`CLAUDE.md` mandates Zod for new schemas, and three packages already depend on it), and it removes the drift risk D1 accepted: the JSON Schema document is now derived from the validator rather than maintained beside it. `strictObject` reproduces the previous `additionalProperties: false`, and `subject.path` keeps the JSON-Pointer rendering the Ajv implementation reported, so consumers see no change.
+
+It also unblocks D10. Grain and period tokens need regex validation coupled across fields — a period's format depends on its dataset's grain — which is a `superRefine` in Zod and would otherwise be imperative code duplicating the schema's intent.
+
+The schemas are exported from the package index so PRD-005's intent schema and PRD-006's resolver compose them rather than re-declaring the shape.
 
 ### Superseded by this block
 
@@ -539,8 +559,8 @@ This plan's package (`@ttoss/geovis-catalog`) and its exports (`Catalog`, `catal
 - **`codeScheme` as a controlled vocabulary** (D7): v1 leaves `codeScheme`/`Dataset.source` as free-form strings for maximum compatibility. Whether a later version ships a registry of well-known values (`ibge:municipio`, `sicar:imovel`, …) with validation/repair — so a typo like `ibge:municipios` becomes an `allowed-values` repair — is deferred; the string field is forward-compatible with that addition.
 - **Cross-`codeScheme` join validation** (D7): declaring `codeScheme` opens a future integrity check ("a join between two geographies of incompatible code schemes is a `mismatch`"). D5's join check stays id/field-level in v1; this is a Should-item extension, not a Must.
 - ~~**`Dataset.temporal.start`/`end` date-format enforcement**~~ — superseded by D10, which regex-validates grain and period tokens.
-- **Field-level sensitivity** (D12): `Dataset.fields[]` ships without `sensitive` because disclosure policy is undecided. Until it lands, a catalog derived from a restricted dataset must not be published to a model on the catalog's authority alone.
-- **Schema source of truth** (D1): the monorepo standardises on Zod for new schemas, and `z.toJSONSchema()` would keep `getCatalogJSONSchema()` intact while dropping the `ajv` dependency. D1's Ajv choice predates that standard and has not been revisited.
+- ~~**Schema source of truth**~~ — resolved by D14: Zod, with the JSON Schema document derived from it.
+- **Sensitivity beyond the catalog** (D12): `sensitive` governs what the catalog itself discloses (introspection payload, filter domains). Whether the same declaration should drive the application's own rendered payloads — today the gateway's job in both pilots — is a product decision this package does not make.
 
 ## Decisions confirmed with the user (2026-07-23)
 

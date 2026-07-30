@@ -2,7 +2,6 @@ import {
   getCatalogIntrospection,
   getCatalogJSONSchema,
 } from 'src/introspection';
-import catalogSchema from 'src/schema/catalog.schema.json';
 
 import { sampleCatalog } from '../fixtures/sampleCatalog';
 
@@ -24,8 +23,15 @@ describe('getCatalogIntrospection', () => {
 });
 
 describe('getCatalogJSONSchema', () => {
-  test('returns the imported catalog.schema.json document as-is', () => {
-    expect(getCatalogJSONSchema()).toEqual(catalogSchema);
+  test('derives a document that still validates the sample catalog against every required field', () => {
+    const jsonSchema = getCatalogJSONSchema();
+    expect(jsonSchema.required).toEqual(
+      expect.arrayContaining(
+        Object.keys(sampleCatalog).filter((key) => {
+          return key !== 'domain' && key !== 'permissions';
+        })
+      )
+    );
   });
 
   test('matches the committed schema shape (guards against accidental drift)', () => {

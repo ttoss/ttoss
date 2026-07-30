@@ -9,6 +9,18 @@ export {
   resolveCatalogOverallStatus,
 } from './catalogResult';
 export { getCatalogIntrospection, getCatalogJSONSchema } from './introspection';
+export {
+  catalogSchema,
+  datasetSchema,
+  filterFieldSchema,
+  geographyKindSchema,
+  geographySchema,
+  geometrySchema,
+  joinSchema,
+  mapTypeCatalogEntrySchema,
+  metricKindSchema,
+  metricSchema,
+} from './schema/catalog';
 export type {
   Catalog,
   Dataset,
