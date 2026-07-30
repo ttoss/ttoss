@@ -56,22 +56,22 @@ const MyMap = () => (
 
 Top-level spec object passed to `GeoVisProvider`.
 
-| Field           | Type                      | Required | Description                                                                                                                                                                                                                          |
-| --------------- | ------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `engine`        | `'maplibre'`              | ✓        | Engine adapter to use. Currently only `'maplibre'` is supported.                                                                                                                                                                     |
-| `sources`       | `DataSource[]`            | ✓        | Data sources referenced by layers. Supported types: `'geojson'`, `'vector-tiles'`, `'raster-tiles'`, `'raster-dem'`, `'image'`, `'video'`.                                                                                           |
-| `layers`        | `VisualizationLayer[]`    | ✓        | Ordered list of layers to render (bottom-to-top).                                                                                                                                                                                    |
-| `title`         | `string`                  |          | Human-readable title.                                                                                                                                                                                                                |
-| `description`   | `string`                  |          | Human-readable description.                                                                                                                                                                                                          |
-| `mapType`       | `MapType`                 |          | Auto-configuration hint (`'choropleth'`). When set, layers and legends are auto-generated from `mapData` — see [mapType auto-configuration](#maptype-auto-configuration).                                                            |
-| `view`          | `ViewState`               |          | Initial camera state: `center`, `zoom`, `maxZoomIn`, `pitch`, `bearing`, `projection`. `maxZoomIn` caps how far the user can zoom in (interactive, `setView`, and programmatic `zoom` are all clamped); defaults to MapLibre's `22`. |
-| `basemap`       | `BaseMapSpec`             |          | Basemap tile style. Pass `visible: false` to hide tiles and show only GeoJSON layers. When hidden, the canvas container receives a `#fcfcfc` background.                                                                             |
-| `legends`       | `LegendSpec[]`            |          | Shared legend registry. Layers reference entries via `activeLegendId`.                                                                                                                                                               |
-| `legendEnabled` | `boolean`                 |          | Controls whether the resolved `mapType` auto-generates legends. Defaults to `true`. Has no effect on legends supplied directly via `legends`.                                                                                        |
-| `mapData`       | `MapData[]`               |          | Attribute datasets joined to GeoJSON sources for choropleth coloring and tooltips.                                                                                                                                                   |
-| `metadata`      | `Record<string, unknown>` |          | Arbitrary consumer metadata; not read by the runtime.                                                                                                                                                                                |
-| `viewPresets`   | `ViewPreset[]`            |          | Named camera positions (`{ id, label?, view }`) `dispatch({ type: 'set-view-preset' })` can target by `id`. See [AI Action Surface](#ai-action-surface-dispatch).                                                                    |
-| `control`       | `LayerControl`            |          | A floating layer-toggle panel, auto-mounted on the map. See [Layer Control](#layer-control).                                                                                                                                         |
+| Field           | Type                      | Required | Description                                                                                                                                                                                                                                                                                      |
+| --------------- | ------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `engine`        | `'maplibre'`              | ✓        | Engine adapter to use. Currently only `'maplibre'` is supported.                                                                                                                                                                                                                                 |
+| `sources`       | `DataSource[]`            | ✓        | Data sources referenced by layers. Supported types: `'geojson'`, `'vector-tiles'`, `'raster-tiles'`, `'raster-dem'`, `'image'`, `'video'`.                                                                                                                                                       |
+| `layers`        | `VisualizationLayer[]`    | ✓        | Ordered list of layers to render (bottom-to-top).                                                                                                                                                                                                                                                |
+| `title`         | `string`                  |          | Human-readable title.                                                                                                                                                                                                                                                                            |
+| `description`   | `string`                  |          | Human-readable description.                                                                                                                                                                                                                                                                      |
+| `mapType`       | `MapType`                 |          | Auto-configuration hint (`'choropleth'`). When set, layers and legends are auto-generated from `mapData` — see [mapType auto-configuration](#maptype-auto-configuration).                                                                                                                        |
+| `view`          | `ViewState`               |          | Initial camera state: `center`, `zoom`, `maxZoomIn`, `maxZoomOut`, `pitch`, `bearing`, `projection`. `maxZoomIn` caps how far the user can zoom in and `maxZoomOut` caps how far out (interactive, `setView`, and programmatic `zoom` are all clamped); they default to MapLibre's `22` and `0`. |
+| `basemap`       | `BaseMapSpec`             |          | Basemap tile style. Pass `visible: false` to hide tiles and show only GeoJSON layers. When hidden, the canvas container receives a `#fcfcfc` background.                                                                                                                                         |
+| `legends`       | `LegendSpec[]`            |          | Shared legend registry. Layers reference entries via `activeLegendId`.                                                                                                                                                                                                                           |
+| `legendEnabled` | `boolean`                 |          | Controls whether the resolved `mapType` auto-generates legends. Defaults to `true`. Has no effect on legends supplied directly via `legends`.                                                                                                                                                    |
+| `mapData`       | `MapData[]`               |          | Attribute datasets joined to GeoJSON sources for choropleth coloring and tooltips.                                                                                                                                                                                                               |
+| `metadata`      | `Record<string, unknown>` |          | Arbitrary consumer metadata; not read by the runtime.                                                                                                                                                                                                                                            |
+| `viewPresets`   | `ViewPreset[]`            |          | Named camera positions (`{ id, label?, view }`) `dispatch({ type: 'set-view-preset' })` can target by `id`. See [AI Action Surface](#ai-action-surface-dispatch).                                                                                                                                |
+| `control`       | `LayerControl`            |          | A floating layer-toggle panel, auto-mounted on the map. See [Layer Control](#layer-control).                                                                                                                                                                                                     |
 
 ### `LegendSpec`
 
@@ -876,6 +876,11 @@ expanding it (on hover or click) reveals one button per item, and clicking a
 button flips the visibility of that item's layers via
 `dispatch({ type: 'toggle-layer' })` (validated, no source remount, no flicker).
 
+All GeoVis map overlays — positioned legends, this layer control, and the hover
+tooltip — render at `z-index: 1`, just above the map canvas. Host-app chrome
+(sidebars, drawers, modals) must use a higher `z-index` so it always covers the
+map and its overlays; the reference apps anchor sidebars at `z-index: 2`.
+
 ```typescript
 const spec: VisualizationSpec = {
   engine: 'maplibre',
@@ -911,12 +916,13 @@ const spec: VisualizationSpec = {
 
 ### `LayerControlItem` fields
 
-| Field           | Type       | Required | Description                                                                           |
-| --------------- | ---------- | -------- | ------------------------------------------------------------------------------------- |
-| `id`            | `string`   | ✓        | Stable identity. The on/off state is remembered by this id (see persistence below).   |
-| `label`         | `string`   | ✓        | Text on the toggle button.                                                            |
-| `layers`        | `string[]` | ✓        | Ids of `spec.layers` toggled together when the button is clicked.                     |
-| `defaultActive` | `boolean`  |          | Whether the layers start visible the first time the item is seen. Defaults to `true`. |
+| Field           | Type       | Required | Description                                                                                            |
+| --------------- | ---------- | -------- | ------------------------------------------------------------------------------------------------------ |
+| `id`            | `string`   | ✓        | Stable identity. The on/off state is remembered by this id (see persistence below).                    |
+| `label`         | `string`   | ✓        | Text on the toggle button.                                                                             |
+| `thumbnail`     | `string`   |          | Image (URL or data URI) filling the item's card, cropped to cover. Defaults to a built-in map preview. |
+| `layers`        | `string[]` | ✓        | Ids of `spec.layers` toggled together when the button is clicked.                                      |
+| `defaultActive` | `boolean`  |          | Whether the layers start visible the first time the item is seen. Defaults to `true`.                  |
 
 ### Three item states
 

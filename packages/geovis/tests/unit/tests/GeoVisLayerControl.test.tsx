@@ -124,6 +124,51 @@ describe('GeoVisLayerControl', () => {
     expect(item!.disabled).toBe(false);
   });
 
+  test('renders a per-item thumbnail image when provided, else the default preview', async () => {
+    const spec: VisualizationSpec = {
+      engine: 'maplibre',
+      view: { center: [0, 0], zoom: 1 },
+      sources: [source],
+      layers: [{ id: 'lyr', sourceId: 'src', geometry: 'point' }],
+      control: {
+        id: 'layers',
+        trigger: 'click',
+        items: [
+          {
+            id: 'with-thumb',
+            label: 'With thumb',
+            thumbnail: 'https://example.com/a.png',
+            layers: ['lyr'],
+          },
+          { id: 'no-thumb', label: 'No thumb', layers: ['lyr'] },
+        ],
+      },
+    };
+    render(
+      <GeoVisProvider spec={spec}>
+        <div />
+      </GeoVisProvider>
+    );
+    await act(async () => {});
+    await waitFor(() => {
+      expect(document.querySelector('button[aria-expanded]')).not.toBeNull();
+    });
+    act(() => {
+      openPanel();
+    });
+
+    const withThumb = document.querySelector(
+      'button[data-item-id="with-thumb"]'
+    )!;
+    const noThumb = document.querySelector('button[data-item-id="no-thumb"]')!;
+    const img = withThumb.querySelector('img');
+    expect(img).not.toBeNull();
+    expect(img!.getAttribute('src')).toBe('https://example.com/a.png');
+    // Default item shows the built-in SVG preview, no <img>.
+    expect(noThumb.querySelector('img')).toBeNull();
+    expect(noThumb.querySelector('svg')).not.toBeNull();
+  });
+
   test('clicking an item hides its existing layer (toggle-layer visible:false)', async () => {
     const { container } = render(
       <GeoVisProvider spec={buildSpec('cozinhas-pts')}>

@@ -95,6 +95,13 @@ export interface ViewState {
    * omitted, MapLibre's default maximum (`22`) applies.
    */
   maxZoomIn?: number;
+  /**
+   * Lowest zoom level the user can reach by zooming out. Acts as a camera
+   * floor: interactive zoom, `setView`, and programmatic `zoom` are all
+   * clamped to this value. Lower numbers mean farther from the ground. When
+   * omitted, MapLibre's default minimum (`0`) applies.
+   */
+  maxZoomOut?: number;
   pitch?: number;
   bearing?: number;
   projection?: 'mercator' | 'vertical-perspective';
@@ -611,6 +618,12 @@ export interface LayerControlItem {
   id: string;
   /** Text shown on the toggle button. */
   label: string;
+  /**
+   * Image shown on the item's card in the expanded panel — a URL or data URI
+   * rendered to fill the thumbnail square (cropped to cover). When omitted, a
+   * built-in stylised map preview is used, so every item looks identical.
+   */
+  thumbnail?: string;
   /** Ids of `spec.layers` toggled together when the button is clicked. */
   layers: string[];
   /**

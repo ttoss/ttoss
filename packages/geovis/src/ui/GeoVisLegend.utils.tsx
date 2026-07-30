@@ -103,7 +103,10 @@ export const resolvePositionStyle = (
   position: LegendPosition | undefined
 ): React.CSSProperties | undefined => {
   if (!position) return undefined;
-  const base = { position: 'absolute' as const, zIndex: 10 };
+  // All GeoVis map overlays (legend, layer control, hover tooltip) sit at
+  // z-index 1 — just above the map canvas but below host-app chrome (sidebars,
+  // drawers), which must use a higher z-index so it always covers the map.
+  const base = { position: 'absolute' as const, zIndex: 1 };
   const coords =
     position === 'top-left'
       ? { top: 24, left: 24 }

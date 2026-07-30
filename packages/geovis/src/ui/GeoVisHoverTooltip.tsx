@@ -18,7 +18,9 @@ const baseTooltipStyle: React.CSSProperties = {
   font: '12px/1.4 system-ui, sans-serif',
   boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
   whiteSpace: 'nowrap',
-  zIndex: 5,
+  // Shared GeoVis overlay layer (see resolvePositionStyle): sits below host-app
+  // chrome (sidebars/drawers) so they always cover it.
+  zIndex: 1,
 };
 
 export interface GeoVisHoverTooltipProps {

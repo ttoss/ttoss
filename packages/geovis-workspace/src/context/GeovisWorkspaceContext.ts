@@ -1,4 +1,4 @@
-import type { RepairOption } from '@ttoss/geovis';
+import type { MapClickInfo, RepairOption } from '@ttoss/geovis';
 import * as React from 'react';
 
 export interface GeovisWorkspaceMenuItem {
@@ -38,12 +38,7 @@ export interface GeovisWorkspaceSources {
  * Adding a name is additive; renaming one is breaking (ADR-0002).
  */
 export type GeovisWorkspaceSlotName =
-  | 'map'
-  | 'legend'
-  | 'warnings'
-  | 'inspector'
-  | 'metadata'
-  | 'controls';
+  'map' | 'legend' | 'warnings' | 'inspector' | 'metadata' | 'controls';
 
 export interface GeovisWorkspaceSlotConfig {
   /**
@@ -73,9 +68,54 @@ export interface GeovisWorkspaceSidebarState {
   initialState?: 'open' | 'closed';
 }
 
+export interface GeovisWorkspaceLeftSidebarState extends GeovisWorkspaceSidebarState {
+  /**
+   * Menu groups rendered by the `controls` slot's default panel — a
+   * convenience alias for `controls.menus` so the left sidebar can be
+   * configured in one place. When both are set, `controls.menus` wins.
+   */
+  menus?: GeovisWorkspaceMenu[];
+}
+
+/**
+ * Loading/error/data snapshot handed to
+ * {@link GeovisWorkspaceRightSidebarState.renderDetails}, derived from the
+ * `onFeatureSelect` promise for the current map click.
+ */
+export interface GeovisWorkspaceDetailState {
+  /** `true` while `onFeatureSelect` is in flight. */
+  loading: boolean;
+  /** Error thrown or rejected by `onFeatureSelect`, or `null`. */
+  error: unknown;
+  /**
+   * Value resolved by `onFeatureSelect`; `null` before the first resolve or
+   * when it resolves to `null`. Typed `unknown` — narrow it inside
+   * `renderDetails`.
+   */
+  data: unknown;
+}
+
 export interface GeovisWorkspaceRightSidebarState extends GeovisWorkspaceSidebarState {
   /** Title displayed at the top of the right sidebar. */
   title?: string;
+  /**
+   * Gate deciding whether a map click drives the inspector: return `false` to
+   * silently ignore the click (the sidebar keeps its current detail and open
+   * state). When omitted, every click is accepted. Pairs with
+   * `onFeatureSelect`.
+   */
+  shouldOpen?: (info: MapClickInfo) => boolean;
+  /**
+   * Fetches the detail data for the clicked feature. Its promise drives the
+   * `loading`/`error`/`data` state handed to `renderDetails`. When set, an
+   * accepted click also opens the right sidebar.
+   */
+  onFeatureSelect?: (info: MapClickInfo) => Promise<unknown>;
+  /**
+   * Renders the `inspector` slot's content from the current fetch state,
+   * replacing the built-in inspector panel when set.
+   */
+  renderDetails?: (state: GeovisWorkspaceDetailState) => React.ReactNode;
 }
 
 export interface GeovisWorkspaceConfig {
@@ -85,9 +125,9 @@ export interface GeovisWorkspaceConfig {
   controls?: GeovisWorkspaceControls;
   /** Content for the `legend` slot's default panel. */
   legend?: GeovisWorkspaceLegendConfig;
-  /** Left sidebar (hosts the `controls` slot) open/closed state. */
-  leftSidebar?: GeovisWorkspaceSidebarState;
-  /** Right sidebar (hosts legend/warnings/inspector/metadata) title and open/closed state. */
+  /** Left sidebar (hosts the `controls` slot) menus and open/closed state. */
+  leftSidebar?: GeovisWorkspaceLeftSidebarState;
+  /** Right sidebar (hosts legend/warnings/inspector/metadata) title, open/closed state, and detail API. */
   rightSidebar?: GeovisWorkspaceRightSidebarState;
 }
 

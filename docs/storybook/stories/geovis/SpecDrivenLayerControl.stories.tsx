@@ -88,6 +88,14 @@ const kitchens: GeoJSONFeatureCollection = {
   }),
 };
 
+// Inline SVG previews (data URIs) so each item shows a distinct, spec-provided
+// thumbnail without a network fetch: dots for the kitchen points, an outline
+// for the state lines.
+const KITCHENS_THUMB =
+  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><rect width='64' height='64' fill='rgb(234,238,227)'/><circle cx='20' cy='24' r='6' fill='rgb(217,72,60)'/><circle cx='42' cy='36' r='6' fill='rgb(217,72,60)'/><circle cx='28' cy='48' r='6' fill='rgb(217,72,60)'/></svg>";
+const STATES_THUMB =
+  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><rect width='64' height='64' fill='rgb(234,238,227)'/><path d='M8 12 L40 8 L56 28 L44 52 L14 48 Z' fill='none' stroke='rgb(31,41,55)' stroke-width='3'/></svg>";
+
 /** The single control, reused verbatim across every mode (the 1b pattern). */
 const control: NonNullable<VisualizationSpec['control']> = {
   id: 'layers',
@@ -98,6 +106,7 @@ const control: NonNullable<VisualizationSpec['control']> = {
     {
       id: 'kitchens',
       label: 'Localização das cozinhas',
+      thumbnail: KITCHENS_THUMB,
       // Both mode-specific ids; only the one present in the active mode is
       // toggled. In 'coropletico' neither exists → the item auto-disables.
       layers: ['kitchens-pts', 'kitchens-bubbles'],
@@ -105,6 +114,7 @@ const control: NonNullable<VisualizationSpec['control']> = {
     {
       id: 'states',
       label: 'Linhas dos estados',
+      thumbnail: STATES_THUMB,
       layers: ['states-line'],
     },
   ],

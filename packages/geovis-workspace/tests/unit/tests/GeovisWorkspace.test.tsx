@@ -1137,3 +1137,376 @@ test('LayerListControls renders a visibility checkbox per layer and calls onLaye
 
   expect(onLayerVisibilityChange).toHaveBeenCalledWith('roads', true);
 });
+
+test('right sidebar detail API fetches on click, auto-opens, and renders the detail', async () => {
+  const onFeatureSelect = jest.fn(() => {
+    return Promise.resolve({ name: 'Cozinha X' });
+  });
+
+  render(
+    <GeovisWorkspace
+      config={{
+        rightSidebar: {
+          title: 'Detalhe',
+          onFeatureSelect,
+          renderDetails: ({ loading, data }) => {
+            if (loading) return <span>Carregando</span>;
+            return <span>{(data as { name: string } | null)?.name}</span>;
+          },
+        },
+      }}
+      visualizationSpec={{
+        ...visualizationSpec,
+        mockClick: { layerId: 'kitchens', featureId: 'k1', value: null },
+      }}
+    />,
+    { wrapper: Provider }
+  );
+
+  // The detail renders without a manual open — an accepted click auto-opens the
+  // sidebar, so its reopen button is gone.
+  expect(await screen.findByText('Cozinha X')).toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Open details' })
+  ).not.toBeInTheDocument();
+  expect(onFeatureSelect).toHaveBeenCalledWith(
+    expect.objectContaining({ layerId: 'kitchens', featureId: 'k1' })
+  );
+});
+
+test('right sidebar detail API ignores clicks rejected by shouldOpen', async () => {
+  const onFeatureSelect = jest.fn(() => {
+    return Promise.resolve({ name: 'X' });
+  });
+
+  render(
+    <GeovisWorkspace
+      config={{
+        rightSidebar: {
+          onFeatureSelect,
+          shouldOpen: (info) => {
+            return info.layerId === 'kitchens';
+          },
+          renderDetails: ({ data }) => {
+            return (
+              <span>{(data as { name: string } | null)?.name ?? 'none'}</span>
+            );
+          },
+        },
+      }}
+      visualizationSpec={{
+        ...visualizationSpec,
+        mockClick: { layerId: 'other', featureId: 'x', value: null },
+      }}
+    />,
+    { wrapper: Provider }
+  );
+
+  await act(async () => {});
+
+  expect(
+    screen.queryByRole('button', { name: 'Open details' })
+  ).not.toBeInTheDocument();
+  expect(onFeatureSelect).not.toHaveBeenCalled();
+});
+
+test('right sidebar detail API surfaces onFeatureSelect errors to renderDetails', async () => {
+  const onFeatureSelect = jest.fn(() => {
+    return Promise.reject(new Error('boom'));
+  });
+
+  render(
+    <GeovisWorkspace
+      config={{
+        rightSidebar: {
+          onFeatureSelect,
+          shouldOpen: () => {
+            return true;
+          },
+          renderDetails: ({ loading, error }) => {
+            if (loading) return <span>Carregando</span>;
+            return error ? <span>Erro</span> : null;
+          },
+        },
+      }}
+      visualizationSpec={{
+        ...visualizationSpec,
+        mockClick: { layerId: 'kitchens', featureId: 'k1', value: null },
+      }}
+    />,
+    { wrapper: Provider }
+  );
+
+  expect(await screen.findByText('Erro')).toBeInTheDocument();
+});
+
+test('right sidebar detail API runs onFeatureSelect even without renderDetails', async () => {
+  const onFeatureSelect = jest.fn(() => {
+    return Promise.resolve(null);
+  });
+
+  render(
+    <GeovisWorkspace
+      config={{ rightSidebar: { onFeatureSelect } }}
+      visualizationSpec={{
+        ...visualizationSpec,
+        mockClick: { layerId: 'kitchens', featureId: 'k1', value: null },
+      }}
+    />,
+    { wrapper: Provider }
+  );
+
+  await act(async () => {});
+
+  expect(onFeatureSelect).toHaveBeenCalledWith(
+    expect.objectContaining({ layerId: 'kitchens' })
+  );
+});
+
+test('left sidebar reads menus from the leftSidebar.menus alias', () => {
+  render(
+    <GeovisWorkspace
+      config={{
+        leftSidebar: {
+          initialState: 'open',
+          menus: [
+            {
+              id: 'mode',
+              title: 'Modo',
+              defaultValue: 'a',
+              items: [
+                { value: 'a', label: 'Opção A' },
+                { value: 'b', label: 'Opção B' },
+              ],
+            },
+          ],
+        },
+      }}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  expect(screen.getByText('Modo')).toBeInTheDocument();
+  expect(screen.getByText('Opção A')).toBeInTheDocument();
+});
+
+test('getInitialSelection seeds the selection from leftSidebar.menus', () => {
+  const selection = getInitialSelection({
+    config: {
+      leftSidebar: {
+        menus: [{ id: 'mode', title: 'Modo', defaultValue: 'a', items: [] }],
+      },
+    },
+  });
+
+  expect(selection).toEqual({ mode: 'a' });
+});
+
+test('right sidebar shows inspector content for renderDetails without onFeatureSelect', async () => {
+  render(
+    <GeovisWorkspace
+      config={{
+        rightSidebar: {
+          renderDetails: ({ data }) => {
+            return <span>{String(data)}</span>;
+          },
+        },
+      }}
+      visualizationSpec={{
+        ...visualizationSpec,
+        mockClick: { layerId: 'kitchens', featureId: 'k1', value: null },
+      }}
+    />,
+    { wrapper: Provider }
+  );
+
+  await act(async () => {});
+
+  // With no `onFeatureSelect`, an accepted click gives the inspector slot
+  // content (so the sidebar exists) but nothing is fetched or auto-opened.
+  expect(
+    screen.getByRole('button', { name: 'Open details' })
+  ).toBeInTheDocument();
+});
+
+test('right sidebar detail API does not fetch until a feature is clicked', async () => {
+  const onFeatureSelect = jest.fn(() => {
+    return Promise.resolve({ name: 'X' });
+  });
+
+  render(
+    <GeovisWorkspace
+      config={{
+        legend: { description: 'Descrição' },
+        rightSidebar: {
+          onFeatureSelect,
+          renderDetails: ({ data }) => {
+            return (
+              <span>{(data as { name: string } | null)?.name ?? '—'}</span>
+            );
+          },
+        },
+      }}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  await act(async () => {});
+  await openRightSidebar();
+
+  expect(screen.getByText('Descrição')).toBeInTheDocument();
+  expect(onFeatureSelect).not.toHaveBeenCalled();
+});
+
+test('right sidebar detail API ignores a stale fetch when the click changes', async () => {
+  let resolveFirst: (value: unknown) => void = () => {};
+
+  const onFeatureSelect = jest.fn((info: { featureId: string | number }) => {
+    if (info.featureId === 'k1') {
+      return new Promise<unknown>((resolve) => {
+        resolveFirst = resolve;
+      });
+    }
+    return Promise.resolve({ name: 'Second' });
+  });
+
+  const detailConfig = {
+    rightSidebar: {
+      onFeatureSelect,
+      renderDetails: ({ data }: { data: unknown }) => {
+        return (
+          <span>{(data as { name: string } | null)?.name ?? 'pending'}</span>
+        );
+      },
+    },
+  };
+
+  const { rerender } = render(
+    <GeovisWorkspace
+      config={detailConfig}
+      visualizationSpec={{
+        ...visualizationSpec,
+        mockClick: { layerId: 'kitchens', featureId: 'k1', value: null },
+      }}
+    />,
+    { wrapper: Provider }
+  );
+
+  rerender(
+    <GeovisWorkspace
+      config={detailConfig}
+      visualizationSpec={{
+        ...visualizationSpec,
+        mockClick: { layerId: 'kitchens', featureId: 'k2', value: null },
+      }}
+    />
+  );
+
+  // Resolve the now-stale first request after the selection already moved on.
+  await act(async () => {
+    resolveFirst({ name: 'First' });
+  });
+
+  expect(await screen.findByText('Second')).toBeInTheDocument();
+  expect(screen.queryByText('First')).not.toBeInTheDocument();
+});
+
+test('right sidebar detail API skips the fetch for a rejected click while the sidebar stays up', async () => {
+  const onFeatureSelect = jest.fn(() => {
+    return Promise.resolve({ name: 'X' });
+  });
+
+  render(
+    <GeovisWorkspace
+      config={{
+        legend: { description: 'Descrição' },
+        rightSidebar: {
+          onFeatureSelect,
+          shouldOpen: (info) => {
+            return info.layerId === 'kitchens';
+          },
+          renderDetails: ({ data }) => {
+            return (
+              <span>{(data as { name: string } | null)?.name ?? '—'}</span>
+            );
+          },
+        },
+      }}
+      visualizationSpec={{
+        ...visualizationSpec,
+        mockClick: { layerId: 'other', featureId: 'x', value: null },
+      }}
+    />,
+    { wrapper: Provider }
+  );
+
+  await act(async () => {});
+  await openRightSidebar();
+
+  // The legend keeps the sidebar mounted, but the rejected click drives no fetch.
+  expect(screen.getByText('Descrição')).toBeInTheDocument();
+  expect(onFeatureSelect).not.toHaveBeenCalled();
+});
+
+test('right sidebar detail API shows loading again when a new click supersedes a resolved one', async () => {
+  let resolveSecond: (value: unknown) => void = () => {};
+
+  const onFeatureSelect = jest.fn((info: { featureId: string | number }) => {
+    if (info.featureId === 'k1') {
+      return Promise.resolve({ name: 'First' });
+    }
+    return new Promise<unknown>((resolve) => {
+      resolveSecond = resolve;
+    });
+  });
+
+  const detailConfig = {
+    rightSidebar: {
+      onFeatureSelect,
+      renderDetails: ({
+        loading,
+        data,
+      }: {
+        loading: boolean;
+        data: unknown;
+      }) => {
+        if (loading) return <span>Carregando</span>;
+        return <span>{(data as { name: string } | null)?.name}</span>;
+      },
+    },
+  };
+
+  const { rerender } = render(
+    <GeovisWorkspace
+      config={detailConfig}
+      visualizationSpec={{
+        ...visualizationSpec,
+        mockClick: { layerId: 'k', featureId: 'k1', value: null },
+      }}
+    />,
+    { wrapper: Provider }
+  );
+
+  expect(await screen.findByText('First')).toBeInTheDocument();
+
+  rerender(
+    <GeovisWorkspace
+      config={detailConfig}
+      visualizationSpec={{
+        ...visualizationSpec,
+        mockClick: { layerId: 'k', featureId: 'k2', value: null },
+      }}
+    />
+  );
+
+  // The resolved k1 detail must not linger while k2's fetch is still pending.
+  expect(await screen.findByText('Carregando')).toBeInTheDocument();
+
+  await act(async () => {
+    resolveSecond({ name: 'Second' });
+  });
+
+  expect(await screen.findByText('Second')).toBeInTheDocument();
+});
