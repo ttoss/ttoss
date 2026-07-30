@@ -669,8 +669,56 @@ both modes → commit.
   move. _Studio consumer:_ Billing's payment wizard address step collects CEP
   and CNPJ through the registry — the Brazilian-entity invoicing fields §2
   motivated. Suites: fsl-ui 2425, Studio 83.
-- **I. The Studio's complete form.** A Meridian flow exercising every capability
-  end to end — the proving ground and the regression surface.
+- **I. ✅ The Studio's complete form (2026-07-29).** Not a kitchen sink on one
+  page: the audit came first and mapped every capability to its Studio
+  consumer, and what the queue's eight items had left unconsumed was exactly
+  seven things — `RadioGroup`, `CheckboxGroup`, `NumberField`, `Slider`,
+  `SearchField`, and the two §1 inherited claims nothing had exercised:
+  `FormSubmit isPending` and `Form validationErrors`. **What shipped is the
+  Environments flow**: a new Meridian route whose list is filtered by a
+  `SearchField` (a filter, which is what a search field _is_ — not a form
+  value) and whose **New environment** form is the complete form — name
+  (TextField, `validate`), type (required RadioGroup with `contextualHelp`),
+  branch, instances (NumberField, 1–16), scale-up CPU (Slider, percent
+  `formatOptions`, the one control with no native form participation —
+  component state by design), notifications (CheckboxGroup) — submitted
+  **async** against the fictional backend, with the pending window on the
+  button and a duplicate name refused by the **server** and routed to the
+  field by `name`.
+  **The first consumer found a defect two items of JSDoc had promised away
+  (F-037):** `FormSubmit` hand-wrote `data-pending`/`data-composition` and
+  converted pending into `disabled` — the DOM carried neither attribute
+  (React Aria clobbers both after the passthrough spread) and the disable
+  dropped keyboard focus mid-submit. The fix subtracted code: RAC Button's
+  native `isPending` does the whole job strictly better — `aria-disabled`
+  (stays focusable), press blocked, `type` rides as `button` while pending
+  (no implicit re-submission through it), AT announced, `data-pending`
+  emitted. Measured while writing the guard: the form's own implicit
+  submission (Enter in a lone text input) still fires on the `<form>`, out
+  of any button's reach — so the host that owns the lifecycle re-entry-guards
+  its handler, and the Studio's does, with a test dispatching a raw submit
+  during the pending window. Also read at the source rather than assumed:
+  server errors clear on **commit** (blur), not per keystroke —
+  `useFormValidationState`'s `commitValidation` is what clears them.
+  _Guards:_ `formValidationBehaviour.test.tsx` gains the first
+  `isPending` and `validationErrors` assertions (pending
+  marks/names/stays-focusable; press blocked; server error routed by `name`,
+  withdrawn on commit); two Form stories (PendingSubmit, ServerErrors);
+  llms.txt states both capabilities. _Verified in Chromium both modes:_
+  filter narrows and clears, pending probe
+  `{data-pending: true, aria-disabled: true, disabled: false, type: button}`,
+  the server refusal renders the full item-F/H language on the name field
+  (border + message + glyph `rgb(185,28,28)`), slider steps 70%→65% by
+  keyboard, and the created row reads
+  `preview-eu · preview · main · 3 · Failed, Rolled back`. Suites: fsl-ui
+  2428, Studio 100 (coverage threshold up to 99.1/92.5/99).
+  **The map, for the record — where each capability lives in the Studio:**
+  one-line authoring everywhere · composed slots (Team invite) · side labels
+  - `Switch` envelope + `contextualHelp` (Settings) · wizard per-step
+    validation + `FieldGroup` + formats (Billing) · confirm `Checkbox` (Team)
+    · first-invalid focus (Login) · selection family, steppers, slider,
+    search, groups, async submit, server errors (Environments). Every field
+    kind and every form capability now stands in a real flow.
 
 ## 4b. The round before D — everything open, sorted by what unblocks it
 
@@ -799,8 +847,8 @@ it lands unverified in dark until that audit exists.
 ~~**B4** `contextualHelp`~~ (**done 2026-07-29**) · ~~**D** `SearchField` +
 `NumberField`~~ (**done 2026-07-29**) · ~~**E** the selection family~~ (**done
 2026-07-29**) · ~~**G** `FieldGroup` + `Wizard`~~ (**done 2026-07-29**) ·
-~~**H** field formats~~ (**done 2026-07-29**) · **I** the Studio's complete
-form.
+~~**H** field formats~~ (**done 2026-07-29**) · ~~**I** the Studio's complete
+form~~ (**done 2026-07-29**). **The queue is complete.**
 
 **F came in far smaller than this plan sized it**, and the reason is the lesson
 rather than the schedule. It was queued as a token-model change — switch the field

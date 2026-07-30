@@ -27,8 +27,8 @@ surface exists to close one:
 ## Product definition
 
 The Studio is a **theme workbench wrapped around a real product**: a fictional
-SaaS with complete screens (login, dashboard, team settings, billing) rendered
-inside a tool chrome with three surfaces.
+SaaS with complete screens (login, dashboard, environments, team settings,
+billing) rendered inside a tool chrome with three surfaces.
 
 | Surface       | Job                                                                                                          | Loop it closes                                  |
 | ------------- | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------- |

@@ -287,6 +287,18 @@ Forms:       Form publishes field layout to every field inside it as STATIC
              the validation scope, not a synonym for a big form). Never pass
              validationBehavior="aria": it REMOVES native constraints.
              React Aria already focuses the first invalid field on submit.
+             ASYNC SUBMIT: <FormSubmit isPending> while the request is in
+             flight. Pending is aria-disabled, NEVER disabled — the button
+             stays focusable (no dropping the keyboard user mid-submit),
+             press is blocked, its type rides as "button" (no implicit
+             re-submission through it), data-pending for host CSS. One hole
+             stays open by design: the form's own implicit submission (Enter
+             in a lone text input) fires on the <form>, so a host that owns
+             the lifecycle re-entry-guards its handler.
+             SERVER ERRORS: <Form validationErrors={{fieldName: 'msg'}}> —
+             the refusal only a server can issue routes to the field by
+             `name`, shows in its message slot, flags it invalid, and a
+             corrected value withdraws it on commit (blur).
 
 Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              WizardNavigation, Separator, Group (labelled role=group frame),
