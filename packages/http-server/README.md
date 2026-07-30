@@ -151,6 +151,46 @@ app.use(async (ctx, next) => {
 });
 ```
 
+An app with its own error envelope usually recognizes only its own error class,
+so a deliberate `ctx.throw(401, 'Unauthorized', { headers })` from a library
+middleware — `authMiddleware`, `createMcpRouter`'s `auth` — becomes a `500` with
+the `WWW-Authenticate` header stripped. For MCP that header is the whole
+[RFC 9728](https://www.rfc-editor.org/rfc/rfc9728) discovery chain: the client
+gets an opaque server error where it expected the pointer to the authorization
+server, so OAuth discovery never starts.
+
+`toHttpError` normalizes a thrown value into `{ status, message, headers }` when
+it is a deliberate, exposable 4xx, and `undefined` otherwise, so a genuine bug
+still becomes a `500` with nothing leaked. `applyHttpErrorHeaders` copies the
+headers the thrower attached onto the response — without it the status is right
+but discovery is still broken.
+
+```typescript
+import { App, applyHttpErrorHeaders, toHttpError } from '@ttoss/http-server';
+
+app.use(async (ctx, next) => {
+  try {
+    await next();
+  } catch (error) {
+    if (error instanceof ApiError) {
+      writeError(ctx, error);
+      return;
+    }
+
+    const httpError = toHttpError(error);
+
+    if (httpError) {
+      applyHttpErrorHeaders({ ctx, error });
+      writeError(ctx, new ApiError(httpError.status, httpError.message));
+      return;
+    }
+
+    console.error('Unhandled request error:', error);
+    writeError(ctx, new ApiError(500, 'internal_error'));
+  }
+});
+```
+
 ## OAuth
 
 Authentication lives in [`@ttoss/http-server-auth`](https://ttoss.dev/docs/modules/packages/http-server-auth) — `authMiddleware` (verify Bearer tokens, including an `oauth` strategy) and `oauthServer()` (issue tokens), a thin Koa layer over the runner-agnostic engine in [`@ttoss/auth-core`](https://ttoss.dev/docs/modules/packages/auth-core). This base runner stays auth-free. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline.
@@ -166,5 +206,8 @@ All exports are re-exported from established Koa ecosystem packages:
 - **`multer`** - [Koa multer](https://github.com/koajs/multer) for file uploads
 - **`serve`** - [Koa static](https://github.com/koajs/static) for serving static files
 - **`addHealthCheck({ app, path? })`** - Adds a health endpoint (defaults to `/health`) returning `{ status: 'ok' }`
+- **`toHttpError(error)`** - Normalizes a deliberate, exposable 4xx into `{ status, message, headers }`; `undefined` for anything else
+- **`applyHttpErrorHeaders({ ctx, error })`** - Copies headers attached to a thrown error onto the response (e.g. `WWW-Authenticate`)
+- **`NormalizedHttpError`** (type) - Return shape of `toHttpError`
 - **`MulterFile`** (type) - File type for uploaded files
 - **`RouterContext<StateT, ContextT>`** (type) - Generic Koa router context for type-safe route handlers
