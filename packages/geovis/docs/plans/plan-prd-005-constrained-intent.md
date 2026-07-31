@@ -8,9 +8,11 @@ Source: [PRD-005](../prds/prd-005-constrained-intent.md) · Basis: strategy §5.
 
 ## Durable decisions
 
-### D1 — Schema validation: Ajv + hand-authored JSON Schema
+### D1 — Schema validation: Zod
 
-Same approach as PRD-004 plan's D1: `AnalyticalIntent` is authored as `src/intent/intent.schema.json` + a hand-written `AnalyticalIntent` interface, validated with the same `Ajv2020` instance pattern `@ttoss/geovis-catalog` already set up for the catalog schema in PRD-004's plan — no second validation library added.
+> **Superseded by PRD-004 plan's D14 (2026-07-30): Zod replaces Ajv as the schema source of truth.** Originally this decision mirrored PRD-004 plan's D1 (Ajv + hand-authored JSON Schema); it now follows D14 instead.
+
+`AnalyticalIntent` is authored as a Zod schema in `src/intent/schema.ts`, validated with `intentSchema.safeParse` — the same pattern `@ttoss/geovis-catalog` uses for `Catalog` per PRD-004 plan's D14. No JSON Schema document and no `ajv` dependency are introduced for intent validation; `getCatalogJSONSchema()`-style derivation (via `z.toJSONSchema`) is available if a published schema document is ever needed, but nothing in PRD-005 requires one today.
 
 ### D2 — Intent schema shape (JSON Schema)
 

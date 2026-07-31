@@ -10,7 +10,7 @@ This is the first of three plans (PRD-004 → PRD-005 → PRD-006) that all land
 
 ## Durable decisions
 
-### D1 — Schema validation: Ajv + hand-authored JSON Schema
+### D1 — Schema validation: Zod
 
 > **Superseded by D14 (2026-07-30): Zod is the source of truth and Ajv is gone.** The reasoning below is kept because it records why the JSON Schema document remains a published artifact.
 

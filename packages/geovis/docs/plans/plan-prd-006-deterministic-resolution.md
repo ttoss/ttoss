@@ -8,9 +8,11 @@ Source: [PRD-006](../prds/prd-006-deterministic-resolution.md) · Basis: strateg
 
 ## Durable decisions
 
-### D1 — Ajv is the only schema-validation dependency
+### D1 — Zod is the only schema-validation dependency
 
-This plan authors no new JSON Schema (`TaskRule`/`ResolveResult` are plain TypeScript, not an AI-facing input contract). `resolve()` consumes `Catalog` and `AnalyticalIntent`, both already validated by the `Ajv2020` + hand-authored JSON Schema pattern from PRD-004 and PRD-005's plans. `@ttoss/geovis-catalog` keeps exactly one schema-validation dependency, `ajv`, across all three plans.
+> **Superseded by PRD-004 plan's D14 (2026-07-30): Zod replaces Ajv as the schema source of truth.** Originally this decision named Ajv as the shared dependency; it now names Zod instead.
+
+This plan authors no new schema (`TaskRule`/`ResolveResult` are plain TypeScript, not an AI-facing input contract). `resolve()` consumes `Catalog` and `AnalyticalIntent`, both already validated by the Zod pattern from PRD-004 plan's D14 and PRD-005 plan's D1. `@ttoss/geovis-catalog` keeps exactly one schema-validation dependency, `zod`, across all three plans.
 
 ### D2 — `resolveSpecFromMapType` is not exported from `@ttoss/geovis` today — needs an upstream export, not a deep import
 
