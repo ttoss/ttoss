@@ -28,10 +28,15 @@ export const ANALYTICAL_TASKS = [
   'outlier-detection',
   'feature-lookup',
   'coverage',
+  // Added by PRD-006 plan's D9, on the evidence of a real production catalogue:
+  'composition', // the categorical mix across a geography — no prior task answers "what is the breakdown"
+  'normalized-comparison', // a count over a declared denominator (e.g. per 100k inhabitants)
 ] as const;
 
 export type AnalyticalTask = (typeof ANALYTICAL_TASKS)[number];
 ```
+
+The last two entries were added after this plan's first revision: PRD-006 plan's D9 checked the seven-task vocabulary against `cozsolidarias`' shipped `dataset_catalogue.json` and found both gaps load-bearing there — three of its datasets carry a categorical status/type column with no task to express it, and two of its eleven datasets exist _only_ as rate denominators, named as such in their own descriptions. Growing the vocabulary is additive (a new enum member; every previously valid intent stays valid), and it is deliberately the only way to add a task: PRD-006 plan's D5 keeps its rule registry typed against this union precisely so an application cannot reopen the vocabulary at runtime and desynchronize `getIntentJSONSchema()` from what the resolver accepts.
 
 `ANALYTICAL_TASKS` is a genuine (small) addition beyond `@ttoss/geovis`'s own style — that package expresses closed string unions as bare TS union types (e.g. `VisualizationSpec['mapType']`) with no matching runtime array, because nothing there needs to _iterate_ the union at runtime. This plan's Phase 1 acceptance criterion ("one test per task, and a completeness test that every task has a rule" — reused again in PRD-006's plan) does need to iterate it, so a `readonly` const array with the type derived via `(typeof X)[number]` keeps one source of truth between the runtime list and the type.
 
@@ -51,6 +56,7 @@ export interface AnalyticalIntent {
   geographyId: string; // geography id, validated against Catalog
   datasetId?: string; // disambiguates when >1 dataset joins the same metric+geography
   categoryId?: string; // required when the resolved metric is 'nominal'; validated against that metric's categories (D6)
+  denominatorMetricId?: string; // required by the 'normalized-comparison' task; grounded against Catalog.metrics[].id exactly like metricId (D7)
   time?: { start?: string; end?: string };
   filters?: IntentFilter[];
   rationale?: string; // matches the `rationale` field already established by @ttoss/geovis's action vocabulary (ADR-0003), for consistency across every AI-facing input shape
@@ -67,11 +73,13 @@ This resolves PRD-005's second open question ("how intent versioning tracks cata
 
 ### D3 — Multi-metric / bivariate intents: deferred to v1's single-metric scope
 
-Resolves PRD-005's first open question. `AnalyticalIntent` in D2 has exactly one `metricId` field. Bivariate requests (the `dimension: 'color' | 'size'` pattern `@ttoss/geovis` already supports at the spec level) are **not** representable in v1's intent — PRD-006's resolver therefore only ever produces single-metric resolutions from this package. This is a scope cut, not a schema gap: adding a second optional `secondaryMetric` field later is additive (new optional property, old intents stay valid against `additionalProperties: false` since it would be added to the schema at the same time), so nothing here forecloses it.
+Resolves PRD-005's first open question. `AnalyticalIntent` in D2 has exactly one _displayed_ `metricId`. Bivariate requests (the `dimension: 'color' | 'size'` pattern `@ttoss/geovis` already supports at the spec level) are **not** representable in v1's intent — PRD-006's resolver therefore only ever produces single-metric resolutions from this package. This is a scope cut, not a schema gap: adding a second optional `secondaryMetric` field later is additive (new optional property, old intents stay valid against `additionalProperties: false` since it would be added to the schema at the same time), so nothing here forecloses it.
+
+`denominatorMetricId` (D2, D7) does not breach this cut, even though it means an intent can reference two metric ids. The test this decision actually applies is how many values reach the map: a rate is one number per feature, one color scale, one legend — the denominator is consumed during resolution and never rendered on its own axis. A bivariate intent is the opposite (two values per feature, two encodings, two legends), and that is what stays out of v1. PRD-006 plan's D9 records the same boundary from the resolver's side, and names the two genuinely bivariate tasks it declines to add (`correlation`, `co-location`) for exactly this reason.
 
 ### D4 — Validation against the catalog, extending the PRD-004 taxonomy
 
-`validateIntent(intent: unknown, catalog: Catalog): IntentResult` runs: (1) `intentSchema.safeParse(intent)` (D1) → `invalid-intent-schema`, errors mapped the same way `validateCatalog` (PRD-004 plan D14) already does; (1b) `schemaVersion` exact-match check against `INTENT_SCHEMA_VERSION` → `invalid-intent-schema-version` (D2); (2) `intent.metricId` must resolve to a `Catalog.metrics[].id` → `unknown-metric` with `repair: [{ kind: 'allowed-values', values: catalog.metrics.map(m => m.id) }]`; (2b) once the metric resolves, `categoryId` grounding runs (D6) — `unknown-category` when the resolved metric is `'nominal'` and `categoryId` doesn't match one of its `categories[].id`; (3) `intent.geographyId` must resolve to a `Catalog.geographies[].id` → `unknown-geography`, same repair shape; (4) if `datasetId` given, it must exist and its `metricIds`/`geographyIds` must include the requested metric/geography → `dataset-metric-mismatch` / `dataset-geography-mismatch`; (5) if `datasetId` omitted, the metric+geography pair must resolve to exactly one dataset via `Catalog.joins` — zero matches is a `mismatch` (`no-joinable-dataset`), and **more than one match is `needs-clarification`** (`ambiguous-dataset`, `repair: [{ kind: 'allowed-values', values: <candidate dataset ids> }]`) rather than silently picking one — this is PRD-005's "ambiguity is representable" Must item, and it is what extends `CatalogResultStatus` from PRD-004's plan (D3 there) with `'needs-clarification'`, exactly as anticipated; (6) once a `datasetId` is resolved (step 4 or 5), every `intent.filters[].field` is resolved against that dataset's own field names — `Dataset.fields[].name` first (PRD-004 plan's D12), falling back to `Dataset.columns` values plus `Spatial.field`/`Temporal.field` for a catalog whose datasets predate `fields[]` — an unresolvable name is `unknown-filter-field` (`mismatch`, `repair: [{ kind: 'allowed-values', values: <known field/column names for this dataset> }]`); a resolved field carrying `DatasetField.sensible: true` is `sensitive-filter-field` (`mismatch`, no repair — the fix is "don't filter on this field", not a suggested alternative computed from the sensitive value itself).
+`validateIntent(intent: unknown, catalog: Catalog): IntentResult` runs: (1) `intentSchema.safeParse(intent)` (D1) → `invalid-intent-schema`, errors mapped the same way `validateCatalog` (PRD-004 plan D14) already does; (1b) `schemaVersion` exact-match check against `INTENT_SCHEMA_VERSION` → `invalid-intent-schema-version` (D2); (2) `intent.metricId` must resolve to a `Catalog.metrics[].id` → `unknown-metric` with `repair: [{ kind: 'allowed-values', values: catalog.metrics.map(m => m.id) }]`; (2b) once the metric resolves, `categoryId` grounding runs (D6) — `unknown-category` when the resolved metric is `'nominal'` and `categoryId` doesn't match one of its `categories[].id`; (2c) `denominatorMetricId`, when present, is grounded against `Catalog.metrics[].id` the same way as step 2 → `unknown-denominator-metric` (D7); (3) `intent.geographyId` must resolve to a `Catalog.geographies[].id` → `unknown-geography`, same repair shape; (4) if `datasetId` given, it must exist and its `metricIds`/`geographyIds` must include the requested metric/geography → `dataset-metric-mismatch` / `dataset-geography-mismatch`; (5) if `datasetId` omitted, the metric+geography pair must resolve to exactly one dataset via `Catalog.joins` — zero matches is a `mismatch` (`no-joinable-dataset`), and **more than one match is `needs-clarification`** (`ambiguous-dataset`, `repair: [{ kind: 'allowed-values', values: <candidate dataset ids> }]`) rather than silently picking one — this is PRD-005's "ambiguity is representable" Must item, and it is what extends `CatalogResultStatus` from PRD-004's plan (D3 there) with `'needs-clarification'`, exactly as anticipated; (6) once a `datasetId` is resolved (step 4 or 5), every `intent.filters[].field` is resolved against that dataset's own field names — `Dataset.fields[].name` first (PRD-004 plan's D12), falling back to `Dataset.columns` values plus `Spatial.field`/`Temporal.field` for a catalog whose datasets predate `fields[]` — an unresolvable name is `unknown-filter-field` (`mismatch`, `repair: [{ kind: 'allowed-values', values: <known field/column names for this dataset> }]`); a resolved field carrying `DatasetField.sensible: true` is `sensitive-filter-field` (`mismatch`, no repair — the fix is "don't filter on this field", not a suggested alternative computed from the sensitive value itself).
 
 Step 6 closes a gap the original PRD-005 plan left open: `IntentFilter.field` was validated by JSON Schema shape (a string) but never checked against the catalog, so a model-supplied field name that doesn't exist — or does exist but names a sensitive column — passed `validateIntent` silently. Grounding it the same way `metricId`/`geographyId` are grounded (steps 2–3) closes the gap symmetrically rather than leaving `filters[]` as the one ungrounded part of the intent.
 
@@ -83,6 +91,7 @@ export type IntentIssueCode =
   | 'invalid-intent-schema-version'
   | 'unknown-metric'
   | 'unknown-category'
+  | 'unknown-denominator-metric'
   | 'unknown-geography'
   | 'dataset-metric-mismatch'
   | 'dataset-geography-mismatch'
@@ -111,12 +120,20 @@ A `'valid'` result always resolves `datasetId` — whether it was supplied and c
 
 Closes PRD-005's Must item "Intent references a `categoryId` when the requested metric is nominal…", left unaddressed by the plan until now regardless of how D2 is written. `metricCategorySchema` (PRD-004 plan, `src/schema/catalog.ts`) already gives each nominal `Metric` a closed `categories: MetricCategory[]` whitelist (`id`, `label`, `order?`, `colorToken?`) — `categoryId` is how an intent selects one of those, instead of a free-text category value a model could invent.
 
-`categoryId?: string` is optional at the schema level (D2) because whether it's *required* depends on the resolved metric's `kind`, which `intentSchema` cannot see — `AnalyticalIntent` only carries `metricId`, a bare string, until `validateIntent` resolves it against the catalog. So the check is domain validation, not shape validation, and lands in `validateIntent` immediately after `metricId` resolves (D4 step 2, as step 2b), before geography/dataset resolution — it depends only on the resolved `Metric`, nothing else:
+`categoryId?: string` is optional at the schema level (D2) because whether it's _required_ depends on the resolved metric's `kind`, which `intentSchema` cannot see — `AnalyticalIntent` only carries `metricId`, a bare string, until `validateIntent` resolves it against the catalog. So the check is domain validation, not shape validation, and lands in `validateIntent` immediately after `metricId` resolves (D4 step 2, as step 2b), before geography/dataset resolution — it depends only on the resolved `Metric`, nothing else:
 
 - Resolved metric's `kind === 'nominal'` and `categoryId` is absent, or present but not found in that metric's `categories[].id` → `unknown-category` (`mismatch`, `repair: [{ kind: 'allowed-values', values: resolvedMetric.categories.map(c => c.id) }]`). Both "missing" and "not-in-list" collapse to one code, the same way `unknown-metric`/`unknown-geography` don't distinguish "empty string" from "wrong id" — the repair (the catalog's actual allowed values) is identical either way, so a second code would add a distinction with no actionable difference.
-- Resolved metric's `kind !== 'nominal'` and `categoryId` is present → no check fires; a `categoryId` on a non-nominal request is inert, not an error (mirrors `metricCategorySchema`'s own catalog-side rule only rejecting `categories` on a non-nominal *metric definition* — the intent side doesn't need a symmetrical rejection, since an inert extra field costs nothing and rejecting it would make `categoryId` one more thing a caller has to conditionally omit).
+- Resolved metric's `kind !== 'nominal'` and `categoryId` is present → no check fires; a `categoryId` on a non-nominal request is inert, not an error (mirrors `metricCategorySchema`'s own catalog-side rule only rejecting `categories` on a non-nominal _metric definition_ — the intent side doesn't need a symmetrical rejection, since an inert extra field costs nothing and rejecting it would make `categoryId` one more thing a caller has to conditionally omit).
 
 `IntentIssueCode` gains `'unknown-category'` (`mismatch` family, alongside `unknown-metric`/`unknown-geography` — already reflected in D4's union).
+
+### D7 — `denominatorMetricId`: the rate task's second reference, grounded like the first
+
+Required by PRD-006 plan's D9, which added a `normalized-comparison` task after finding that two of `cozsolidarias`' eleven datasets exist purely as rate denominators (`municipios_populacao`, "denominador da taxa de cozinhas por 100 mil habitantes"; `municipios_cadunico`, "denominador das variantes de cobertura") and that the app's headline view is unrepresentable without one.
+
+`denominatorMetricId?: string` is optional at the schema level for the same reason `categoryId` is (D6): whether it's required depends on the _task_, and `intentSchema` could express that (a `.check()` on `analyticalTask === 'normalized-comparison'`) but deliberately doesn't. The requirement belongs to `TASK_RULES[task].requiresDenominator` in PRD-006's plan, which is where the task's semantics already live; duplicating it as a Zod cross-field rule here would put the same fact in two packages' schemas and guarantee they drift. So `validateIntent` grounds the field when present (step 2c: must resolve to a `Catalog.metrics[].id` → `unknown-denominator-metric`, `repair: [{ kind: 'allowed-values', values: catalog.metrics.map(m => m.id) }]`) and the resolver enforces its _presence_ (`missing-denominator`, PRD-006 plan D9). Two checks, one per layer, each owning the half it can actually see: this plan's `validateIntent` knows the catalog but not the task rules; the resolver knows both.
+
+A denominator that resolves to the same id as `metricId` is also `unknown-denominator-metric` rather than a separate code — a metric divided by itself is 1 everywhere, so it's a reference error, not a special case worth its own taxonomy entry.
 
 ## Phases
 
@@ -131,12 +148,12 @@ graph LR
 
 Implement `ANALYTICAL_TASKS`/`AnalyticalTask` (D2) and the `intentSchema`/`AnalyticalIntent`/`IntentFilter` Zod schema and types (D2) in `src/intent/`, following `src/schema/catalog.ts`'s pattern directly — no separate JSON Schema document is authored. Fixture intents: one per `AnalyticalTask` value, plus one with every optional field populated and one minimal (`analyticalTask`+`metricId`+`geographyId` only).
 
-**Demo:** validating `sampleIntent` with `intentSchema.safeParse` (D1) succeeds for all seven task fixtures; a fixture with an invalid `op` value fails validation.
+**Demo:** validating `sampleIntent` with `intentSchema.safeParse` (D1) succeeds for all nine task fixtures; a fixture with an invalid `op` value fails validation.
 **Acceptance:** one test per `AnalyticalTask` value confirming it round-trips; a schema/type parity test (same style as PRD-004 plan's Phase 2) confirms `intentSchema`'s `analyticalTask` enum matches `ANALYTICAL_TASKS` exactly; `rationale` and `filters` confirmed optional; public-contract test extended for the new exports.
 
 ### Phase 2 — Catalog-bound validation
 
-Implement `validateIntent` steps 1, 1b, 2, 2b, 3, 4 (D4/D6, excluding ambiguity) in `src/intent/validateIntent.ts`, reusing PRD-004 plan's `sampleCatalog` fixture. `IntentResultStatus`/`IntentIssueCode`/`IntentResult` types added alongside, plus `INTENT_SCHEMA_VERSION` and its version-mismatch check (D2).
+Implement `validateIntent` steps 1, 1b, 2, 2b, 2c, 3, 4 (D4/D6/D7, excluding ambiguity) in `src/intent/validateIntent.ts`, reusing PRD-004 plan's `sampleCatalog` fixture. `IntentResultStatus`/`IntentIssueCode`/`IntentResult` types added alongside, plus `INTENT_SCHEMA_VERSION` and its version-mismatch check (D2).
 
 **Demo:** an intent naming a real metric/geography/dataset from the sample catalog validates; an intent naming a metric not in the catalog returns `{ status: 'mismatch', issues: [{ code: 'unknown-metric', repair: [...] }] }`; a `categoryId` naming a real but non-listed category for a nominal metric returns `{ status: 'mismatch', issues: [{ code: 'unknown-category', repair: [...] }] }`.
 **Acceptance:** one fixture and test per new `IntentIssueCode` except `ambiguous-dataset`/`no-joinable-dataset` (Phase 3) — including `unknown-category`'s two triggering paths (`categoryId` absent, `categoryId` present but unlisted) and a fixture confirming a non-nominal metric with an extra `categoryId` still validates (D6's "inert, not an error" case); `datasetId`-supplied and `datasetId`-omitted-but-unambiguous paths both tested; a schema-version-mismatch fixture confirms the `set-value` repair suggests `INTENT_SCHEMA_VERSION`.
@@ -150,9 +167,9 @@ Implement `validateIntent` step 5 (D4's join-selection and ambiguity detection) 
 
 ### Phase 4 — JSON Schema export and docs
 
-Implement `getIntentJSONSchema()` (D5). Update `README.md` with the intent contract's field tables (including `categoryId`, D6), the task vocabulary, `validateIntent` usage examples (valid, mismatch, ambiguous, unknown-category), and a structured-output example matching `ai-integration-readiness.md`'s Pattern 2. Update `coverageThreshold`.
+Implement `getIntentJSONSchema()` (D5). Update `README.md` with the intent contract's field tables (including `categoryId` from D6 and `denominatorMetricId` from D7), the nine-entry task vocabulary, `validateIntent` usage examples (valid, mismatch, ambiguous, unknown-category), and a structured-output example matching `ai-integration-readiness.md`'s Pattern 2. Update `coverageThreshold`.
 
-**Demo:** README's structured-output example, copy-pasted, shows a JSON Schema whose `properties.analyticalTask.enum` lists all seven analytical tasks.
+**Demo:** README's structured-output example, copy-pasted, shows a JSON Schema whose `properties.analyticalTask.enum` lists all nine analytical tasks.
 **Acceptance:** `pnpm turbo run test --filter=...@ttoss/geovis-catalog` and `pnpm turbo run build --filter=...@ttoss/geovis-catalog` green; coverage threshold updated; `pnpm run -w lint` clean.
 
 ## Sequencing notes
@@ -166,7 +183,7 @@ This plan's outputs (`AnalyticalIntent`, `intentSchema`, `validateIntent`, `Inte
 - Whether a future `secondaryMetric` (bivariate) field lands is left for a later PRD revision — D3 only confirms it would be additive, not when or whether it ships.
 - The strategy document (`docs/website/docs/product/geovis/strategy.md`) is absent from the repo (see PRD-004 plan's Verification section) — strategy §12's full task-vocabulary rationale is unavailable beyond what PRD-005's own text already states, which this plan used directly.
 
-PRD-005's own two open questions (multi-metric/bivariate, intent-vs-catalog versioning) are resolved by D3 and D2 respectively, not carried forward as unresolved; the `time`-shape question raised during this revision is likewise closed by D2's re-evaluation paragraph (free-form range, no catalog-referenced `periodId`), and the `categoryId` Must item is closed by D6 — none of these reopen a "carried forward" item.
+PRD-005's own two open questions (multi-metric/bivariate, intent-vs-catalog versioning) are resolved by D3 and D2 respectively, not carried forward as unresolved; the `time`-shape question raised during this revision is likewise closed by D2's re-evaluation paragraph (free-form range, no catalog-referenced `periodId`), the `categoryId` Must item is closed by D6, and the rate-denominator gap PRD-006 plan's D9 surfaced is closed by D7 — none of these reopen a "carried forward" item.
 
 ## Verification against current codebase (2026-07-31)
 
@@ -177,3 +194,4 @@ PRD-005's own two open questions (multi-metric/bivariate, intent-vs-catalog vers
 - `Dataset.temporal` (PRD-004 plan's D10, `src/schema/catalog.ts`) confirmed to carry `extent`, optional `periods[]`, and `temporalGrain` — checked against D2's re-evaluation of `time`'s shape; `periods[]` being optional is exactly why `time` stays a free-form range rather than a `periodId` reference.
 - `@ttoss/geovis`'s `ADR-0003` action vocabulary already uses an optional `rationale` field on every semantic action — D2 mirrors that field name/shape for consistency across the AI-facing surface, rather than inventing a differently-named equivalent.
 - `packages/geovis/src/spec/types.ts`'s `SPEC_SCHEMA_VERSION` constant plus `validateSpec.checks.ts`'s `validateSchemaVersion` confirm the plain-`number`-plus-separate-check pattern D2 mirrors for `schemaVersion`/`INTENT_SCHEMA_VERSION`.
+- `cozsolidarias`' shipped `public/dataset_catalogue.json` (`schema_version: 2.0.0`, 11 datasets) is the evidence behind D2's two new `ANALYTICAL_TASKS` entries and D7's `denominatorMetricId` — read directly and recorded in full in PRD-006 plan's D9, not restated here.

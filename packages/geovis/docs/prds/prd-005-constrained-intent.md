@@ -24,7 +24,7 @@ AI expresses what the map should answer, never how to draw it.
 
 - Intent schema capturing analytical task, metric, geography, time, filters, and unresolved ambiguity (strategy §5.1) — JSON Schema with hand-written TypeScript interface.
 - Validation of intents against a catalog, reporting through the PRD-001 taxonomy.
-- Analytical task vocabulary from strategy §12 (distribution, comparison, ranking, change over time, outlier detection, feature lookup, coverage).
+- Analytical task vocabulary from strategy §12 (distribution, comparison, ranking, change over time, outlier detection, feature lookup, coverage), extended with `composition` (the categorical mix across a geography) and `normalized-comparison` (a count over a declared denominator) — both added because a real production catalogue needs them and none of strategy §12's seven express them (PRD-006 plan's D9).
 - Structured-output-friendly design: the JSON Schema usable directly as an LLM tool input schema.
 - Intent references a `categoryId` when the requested metric is nominal, so a categorical request is grounded in the catalog's closed category list rather than free text.
 
