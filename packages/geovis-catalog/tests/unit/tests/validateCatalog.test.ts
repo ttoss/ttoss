@@ -53,6 +53,36 @@ describe('validateCatalog', () => {
     }
   });
 
+  test('duplicate-dataset-field-name: two fields on the same dataset sharing a name fail (D12)', () => {
+    const [firstDataset, ...restDatasets] = sampleCatalog.datasets;
+    const catalog: Catalog = {
+      ...sampleCatalog,
+      datasets: [
+        {
+          ...firstDataset,
+          fields: [
+            ...(firstDataset.fields ?? []),
+            { name: 'populacao', label: 'Duplicado' },
+          ],
+        },
+        ...restDatasets,
+      ],
+    };
+    const result = validateCatalog(catalog);
+    expect(result.status).toBe('invalid');
+    if (result.status !== 'valid') {
+      const issue = result.issues.find((i) => {
+        return i.code === 'duplicate-dataset-field-name';
+      });
+      expect(issue).toBeDefined();
+      expect(issue?.repair).toBeUndefined();
+    }
+  });
+
+  test('a dataset with no duplicate field names, or no fields at all, is unaffected', () => {
+    expect(validateCatalog(sampleCatalog).status).toBe('valid');
+  });
+
   test('duplicate-geography-id: two geographies sharing an id fail', () => {
     const catalog: Catalog = {
       ...sampleCatalog,

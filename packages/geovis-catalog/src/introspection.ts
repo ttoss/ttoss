@@ -10,12 +10,30 @@ import type { Catalog } from './schema/types';
  * org-internal detail not meant for a model, so introspection omits it by
  * construction rather than trusting every future catalog author to keep it
  * model-safe.
+ *
+ * Every `Dataset.fields[]` entry declared `sensible: true` (D12) is also
+ * omitted — same principle as `permissions`, applied per-column instead of
+ * catalog-wide: a model reading the introspection payload never learns a
+ * sensitive column exists, let alone its name or label.
  */
 export const getCatalogIntrospection = (
   catalog: Catalog
 ): Omit<Catalog, 'permissions'> => {
   const { permissions: _permissions, ...introspection } = catalog;
-  return introspection;
+
+  return {
+    ...introspection,
+    datasets: introspection.datasets.map((dataset) => {
+      if (dataset.fields === undefined) return dataset;
+
+      return {
+        ...dataset,
+        fields: dataset.fields.filter((field) => {
+          return field.sensible !== true;
+        }),
+      };
+    }),
+  };
 };
 
 /**

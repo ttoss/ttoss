@@ -23,7 +23,7 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
           ],
           "type": "array",
         },
-        "center": {
+        "cameraCenter": {
           "prefixItems": [
             {
               "type": "number",
@@ -34,7 +34,7 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
           ],
           "type": "array",
         },
-        "zoom": {
+        "cameraZoom": {
           "type": "number",
         },
       },
@@ -101,6 +101,12 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
         "description": {
           "type": "string",
         },
+        "fields": {
+          "items": {
+            "$ref": "#/$defs/DatasetField",
+          },
+          "type": "array",
+        },
         "geographyIds": {
           "items": {
             "type": "string",
@@ -138,6 +144,24 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
         "description",
         "geographyIds",
         "metricIds",
+      ],
+      "type": "object",
+    },
+    "DatasetField": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "type": "string",
+        },
+        "name": {
+          "type": "string",
+        },
+        "sensible": {
+          "type": "boolean",
+        },
+      },
+      "required": [
+        "name",
       ],
       "type": "object",
     },

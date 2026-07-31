@@ -14,11 +14,51 @@ describe('getCatalogIntrospection', () => {
     expect(introspection.metrics).toEqual(sampleCatalog.metrics);
   });
 
-  test('a catalog with no permissions is unaffected', () => {
+  test('a catalog with no permissions and no sensible fields is unaffected', () => {
     const { permissions: _permissions, ...withoutPermissions } = sampleCatalog;
-    const introspection = getCatalogIntrospection(withoutPermissions);
+    const withoutSensibleFields = {
+      ...withoutPermissions,
+      datasets: withoutPermissions.datasets.map((dataset) => {
+        if (dataset.fields === undefined) return dataset;
+        return {
+          ...dataset,
+          fields: dataset.fields.filter((field) => {
+            return field.sensible !== true;
+          }),
+        };
+      }),
+    };
+    const introspection = getCatalogIntrospection(withoutSensibleFields);
     expect(introspection).not.toHaveProperty('permissions');
-    expect(introspection).toEqual(withoutPermissions);
+    expect(introspection).toEqual(withoutSensibleFields);
+  });
+
+  test('strips sensible Dataset.fields[] entries (D12), keeping non-sensitive fields', () => {
+    const introspection = getCatalogIntrospection(sampleCatalog);
+    const demografia = introspection.datasets.find((dataset) => {
+      return dataset.id === 'dataset-demografia-municipio';
+    });
+
+    expect(demografia?.fields).toEqual(
+      expect.arrayContaining([{ name: 'populacao', label: 'População' }])
+    );
+    expect(
+      demografia?.fields?.some((field) => {
+        return field.name === 'renda_domicilio';
+      })
+    ).toBe(false);
+  });
+
+  test('a dataset with no fields is unaffected', () => {
+    const introspection = getCatalogIntrospection(sampleCatalog);
+    const perfil = introspection.datasets.find((dataset) => {
+      return dataset.id === 'dataset-perfil-socioeconomico';
+    });
+    const sourcePerfil = sampleCatalog.datasets.find((dataset) => {
+      return dataset.id === 'dataset-perfil-socioeconomico';
+    });
+
+    expect(perfil).toEqual(sourcePerfil);
   });
 });
 

@@ -129,7 +129,9 @@ Resolves PRD-005's first open question. `AnalyticalIntent` in D2 has exactly one
 
 ### D4 — Validation against the catalog, extending the PRD-004 taxonomy
 
-`validateIntent(intent: unknown, catalog: Catalog): IntentResult` runs: (1) `Ajv2020`-compiled `intent.schema.json` against `intent` → `invalid-intent-schema`, errors mapped the same way `validateCatalog` (PRD-004 plan D5) already does; (1b) `schemaVersion` exact-match check against `INTENT_SCHEMA_VERSION` → `invalid-intent-schema-version` (D2); (2) `intent.metric` must resolve to a `Catalog.metrics[].id` → `unknown-metric` with `repair: [{ kind: 'allowed-values', values: catalog.metrics.map(m => m.id) }]`; (3) `intent.geography` must resolve to a `Catalog.geographies[].id` → `unknown-geography`, same repair shape; (4) if `datasetId` given, it must exist and its `metricIds`/`geographyIds` must include the requested metric/geography → `dataset-metric-mismatch` / `dataset-geography-mismatch`; (5) if `datasetId` omitted, the metric+geography pair must resolve to exactly one dataset via `Catalog.joins` — zero matches is a `mismatch` (`no-joinable-dataset`), and **more than one match is `needs-clarification`** (`ambiguous-dataset`, `repair: [{ kind: 'allowed-values', values: <candidate dataset ids> }]`) rather than silently picking one — this is PRD-005's "ambiguity is representable" Must item, and it is what extends `CatalogResultStatus` from PRD-004's plan (D3 there) with `'needs-clarification'`, exactly as anticipated.
+`validateIntent(intent: unknown, catalog: Catalog): IntentResult` runs: (1) `intentSchema.safeParse(intent)` (D1) → `invalid-intent-schema`, errors mapped the same way `validateCatalog` (PRD-004 plan D14) already does; (1b) `schemaVersion` exact-match check against `INTENT_SCHEMA_VERSION` → `invalid-intent-schema-version` (D2); (2) `intent.metric` must resolve to a `Catalog.metrics[].id` → `unknown-metric` with `repair: [{ kind: 'allowed-values', values: catalog.metrics.map(m => m.id) }]`; (3) `intent.geography` must resolve to a `Catalog.geographies[].id` → `unknown-geography`, same repair shape; (4) if `datasetId` given, it must exist and its `metricIds`/`geographyIds` must include the requested metric/geography → `dataset-metric-mismatch` / `dataset-geography-mismatch`; (5) if `datasetId` omitted, the metric+geography pair must resolve to exactly one dataset via `Catalog.joins` — zero matches is a `mismatch` (`no-joinable-dataset`), and **more than one match is `needs-clarification`** (`ambiguous-dataset`, `repair: [{ kind: 'allowed-values', values: <candidate dataset ids> }]`) rather than silently picking one — this is PRD-005's "ambiguity is representable" Must item, and it is what extends `CatalogResultStatus` from PRD-004's plan (D3 there) with `'needs-clarification'`, exactly as anticipated; (6) once a `datasetId` is resolved (step 4 or 5), every `intent.filters[].field` is resolved against that dataset's own field names — `Dataset.fields[].name` first (PRD-004 plan's D12), falling back to `Dataset.columns` values plus `Spatial.field`/`Temporal.field` for a catalog whose datasets predate `fields[]` — an unresolvable name is `unknown-filter-field` (`mismatch`, `repair: [{ kind: 'allowed-values', values: <known field/column names for this dataset> }]`); a resolved field carrying `DatasetField.sensible: true` is `sensitive-filter-field` (`mismatch`, no repair — the fix is "don't filter on this field", not a suggested alternative computed from the sensitive value itself).
+
+Step 6 closes a gap the original PRD-005 plan left open: `IntentFilter.field` was validated by JSON Schema shape (a string) but never checked against the catalog, so a model-supplied field name that doesn't exist — or does exist but names a sensitive column — passed `validateIntent` silently. Grounding it the same way `metric`/`geography` are grounded (steps 2–3) closes the gap symmetrically rather than leaving `filters[]` as the one ungrounded part of the intent.
 
 ```ts
 export type IntentResultStatus = CatalogResultStatus | 'needs-clarification';
@@ -142,7 +144,9 @@ export type IntentIssueCode =
   | 'dataset-metric-mismatch'
   | 'dataset-geography-mismatch'
   | 'no-joinable-dataset'
-  | 'ambiguous-dataset';
+  | 'ambiguous-dataset'
+  | 'unknown-filter-field'
+  | 'sensitive-filter-field';
 
 export type IntentResult =
   | {
@@ -154,7 +158,7 @@ export type IntentResult =
   | { status: IntentResultStatus; issues: CatalogIssue[] };
 ```
 
-A `'valid'` result always resolves `datasetId` — whether it was supplied and confirmed (step 4) or inferred as the single joinable candidate (step 5) — so PRD-006's resolver never has to repeat this join-selection logic; it consumes an already-disambiguated intent.
+A `'valid'` result always resolves `datasetId` — whether it was supplied and confirmed (step 4) or inferred as the single joinable candidate (step 5) — so PRD-006's resolver never has to repeat this join-selection logic; it consumes an already-disambiguated intent. Filter-field grounding (step 6) runs after `datasetId` resolution specifically because it needs a single, concrete dataset to resolve field names against — it cannot run earlier, when the target dataset is still ambiguous.
 
 ### D5 — Structured-output / tool-schema compatibility
 
@@ -173,7 +177,7 @@ graph LR
 
 Implement `ANALYTICAL_TASKS`/`AnalyticalTask` (D2), `intent.schema.json`, and the `AnalyticalIntent`/`IntentFilter` interfaces (D2) in `src/intent/`. Fixture intents: one per `AnalyticalTask` value, plus one with every optional field populated and one minimal (task+metric+geography only).
 
-**Demo:** validating `sampleIntent` against the compiled `intent.schema.json` succeeds for all seven task fixtures; a fixture with an invalid `op` value fails Ajv validation.
+**Demo:** validating `sampleIntent` with `intentSchema.safeParse` (D1) succeeds for all seven task fixtures; a fixture with an invalid `op` value fails validation.
 **Acceptance:** one test per `AnalyticalTask` value confirming it round-trips; a schema/type parity test (same style as PRD-004 plan's Phase 2) confirms `intent.schema.json`'s `task.enum` matches `ANALYTICAL_TASKS` exactly; `rationale` and `filters` confirmed optional; public-contract test extended for the new exports.
 
 ### Phase 2 — Catalog-bound validation
@@ -183,12 +187,12 @@ Implement `validateIntent` steps 1–4 (D4, excluding ambiguity) in `src/intent/
 **Demo:** an intent naming a real metric/geography/dataset from the sample catalog validates; an intent naming a metric not in the catalog returns `{ status: 'mismatch', issues: [{ code: 'unknown-metric', repair: [...] }] }`.
 **Acceptance:** one fixture and test per new `IntentIssueCode` except `ambiguous-dataset`/`no-joinable-dataset` (Phase 3); `datasetId`-supplied and `datasetId`-omitted-but-unambiguous paths both tested; a schema-version-mismatch fixture confirms the `set-value` repair suggests `INTENT_SCHEMA_VERSION`.
 
-### Phase 3 — Ambiguity handling
+### Phase 3 — Ambiguity handling and filter-field grounding
 
-Implement `validateIntent` step 5 (D4's join-selection and ambiguity detection). Extend the sample catalog fixture with a second dataset that joins the same metric+geography pair, to exercise the ambiguous case.
+Implement `validateIntent` step 5 (D4's join-selection and ambiguity detection) and step 6 (D4's filter-field grounding, which needs step 5's resolved `datasetId` and therefore lands in the same phase). Extend the sample catalog fixture with a second dataset that joins the same metric+geography pair, to exercise the ambiguous case, and reuse PRD-004 plan's D12 `Dataset.fields[]` (including its one `sensible: true` entry) to exercise grounding and sensitivity rejection.
 
-**Demo:** an intent with no `datasetId`, whose metric+geography joins to exactly one dataset, resolves with that `datasetId` filled in; the same intent against the two-dataset fixture returns `{ status: 'needs-clarification', issues: [{ code: 'ambiguous-dataset', repair: [{ kind: 'allowed-values', values: ['dataset-a', 'dataset-b'] }] }] }`.
-**Acceptance:** `no-joinable-dataset` and `ambiguous-dataset` each have a fixture and test; `CatalogResultStatus`'s extension to include `'needs-clarification'` (anticipated in PRD-004's plan D3) is exercised end-to-end here for the first time.
+**Demo:** an intent with no `datasetId`, whose metric+geography joins to exactly one dataset, resolves with that `datasetId` filled in; the same intent against the two-dataset fixture returns `{ status: 'needs-clarification', issues: [{ code: 'ambiguous-dataset', repair: [{ kind: 'allowed-values', values: ['dataset-a', 'dataset-b'] }] }] }`; an intent whose `filters[0].field` names a real but non-catalog column returns `{ status: 'mismatch', issues: [{ code: 'unknown-filter-field', repair: [...] }] }`; the same shape naming the fixture's `sensible: true` field returns `{ status: 'mismatch', issues: [{ code: 'sensitive-filter-field' }] }` with no repair.
+**Acceptance:** `no-joinable-dataset` and `ambiguous-dataset` each have a fixture and test; `CatalogResultStatus`'s extension to include `'needs-clarification'` (anticipated in PRD-004's plan D3) is exercised end-to-end here for the first time; `unknown-filter-field` and `sensitive-filter-field` each have a fixture and test; a fixture confirms a `filters[].field` matching `Dataset.columns`/`Spatial.field`/`Temporal.field` (no `fields[]` entry) still grounds successfully, for datasets predating D12.
 
 ### Phase 4 — JSON Schema export and docs
 
@@ -211,6 +215,7 @@ This plan's outputs (`AnalyticalIntent`, `intentSchema`, `validateIntent`, `Inte
 ## Verification against current codebase (2026-07-22)
 
 - Depends on `packages/geovis-catalog` existing with `Catalog`, `catalogSchema`, `CatalogResult`, `CatalogIssue`, `CatalogIssueCode`, `validateCatalog` exported
-- `ajv@^8.18.0` (already a dependency of `@ttoss/geovis-catalog` per PRD-004 plan's D1) is reused as-is — this plan adds no new dependency.
+- `zod` (already a dependency of `@ttoss/geovis-catalog` per PRD-004 plan's D14) is reused as-is — this plan adds no new dependency.
+- `Dataset.fields[]`/`DatasetField` (PRD-004 plan's D12, `src/schema/catalog.ts`) already ships with a `sensible`/`label` pair enforced by schema — D4's step 6 filter-field grounding consumes it directly, with no new catalog-side work needed.
 - `@ttoss/geovis`'s `ADR-0003` action vocabulary already uses an optional `rationale` field on every semantic action — D2 mirrors that field name/shape for consistency across the AI-facing surface, rather than inventing a differently-named equivalent.
 - `packages/geovis/src/spec/types.ts`'s `SPEC_SCHEMA_VERSION` constant plus `validateSpec.checks.ts`'s `validateSchemaVersion` confirm the plain-`number`-plus-separate-check pattern D2 mirrors for `schemaVersion`/`INTENT_SCHEMA_VERSION`.

@@ -24,8 +24,8 @@ export const sampleCatalog: Catalog = {
       codeScheme: 'ibge:uf',
       cameraFraming: {
         bbox: [-74.0, -34.0, -28.8, 5.3],
-        center: [-51.9, -14.2],
-        zoom: 3.5,
+        cameraCenter: [-51.9, -14.2],
+        cameraZoom: 3.5,
       },
     },
     {
@@ -164,6 +164,16 @@ export const sampleCatalog: Catalog = {
         'metric-populacao': 'populacao',
         'metric-densidade-populacional': 'densidade',
       },
+      fields: [
+        { name: 'populacao', label: 'População' },
+        { name: 'densidade', label: 'Densidade Populacional' },
+        { name: 'ano_referencia', label: 'Ano de Referência' },
+        {
+          name: 'renda_domicilio',
+          label: 'Renda Domiciliar',
+          sensible: true,
+        },
+      ],
     },
     {
       id: 'dataset-perfil-socioeconomico',

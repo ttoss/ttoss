@@ -81,6 +81,39 @@ const checkDuplicateIds = (catalog: Catalog): CatalogIssue[] => {
 };
 
 /**
+ * `Dataset.fields[]` name-uniqueness (D12). Two fields sharing a name on the
+ * same dataset would make `IntentFilter.field` resolution (PRD-005's
+ * `validateIntent`) ambiguous — which field a filter targets has to be
+ * unambiguous within one dataset, the same way ids are unambiguous within
+ * one catalog collection (`checkDuplicateIds`).
+ */
+const checkDuplicateDatasetFieldNames = (catalog: Catalog): CatalogIssue[] => {
+  const issues: CatalogIssue[] = [];
+
+  for (const [datasetIndex, dataset] of catalog.datasets.entries()) {
+    if (dataset.fields === undefined) continue;
+
+    const seen = new Set<string>();
+    for (const [fieldIndex, field] of dataset.fields.entries()) {
+      if (seen.has(field.name)) {
+        issues.push({
+          code: 'duplicate-dataset-field-name',
+          subject: {
+            path: `datasets[${datasetIndex}].fields[${fieldIndex}].name`,
+            id: field.name,
+          },
+          message: `dataset '${dataset.id}' declares field name '${field.name}' more than once`,
+        });
+      } else {
+        seen.add(field.name);
+      }
+    }
+  }
+
+  return issues;
+};
+
+/**
  * `FilterField` referential integrity. The schema already guarantees exactly
  * one of `sourceDatasetId`/`sourceGeographyId` is present and that the
  * kind/domain/operator combination is coherent; what it cannot see is whether
@@ -431,6 +464,7 @@ export const validateCatalog = (
   const catalog = parsed.data as Catalog;
   const issues: CatalogIssue[] = [
     ...checkDuplicateIds(catalog),
+    ...checkDuplicateDatasetFieldNames(catalog),
     ...checkJoinReferences(catalog),
     ...checkDatasetReferences(catalog),
     ...checkFilterReferences(catalog),

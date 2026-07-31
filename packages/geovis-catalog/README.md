@@ -86,7 +86,7 @@ const result = validateCatalog(catalog, {
 
 | Status     | Codes                                                                                                                                                                                                                                                                             |
 | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `invalid`  | `invalid-catalog-schema`, `duplicate-metric-id`, `duplicate-dataset-id`, `duplicate-geography-id`, `duplicate-filter-id`                                                                                                                                                          |
+| `invalid`  | `invalid-catalog-schema`, `duplicate-metric-id`, `duplicate-dataset-id`, `duplicate-geography-id`, `duplicate-filter-id`, `duplicate-dataset-field-name`                                                                                                                          |
 | `mismatch` | `unknown-join-dataset`, `unknown-join-geography`, `unknown-dataset-geography`, `unknown-dataset-metric`, `unknown-filter-dataset`, `unknown-filter-geography`, `unknown-filter-metric`, `unknown-parent-geography`, `cyclic-geography-hierarchy`, `unsupported-map-type-geometry` |
 
 `invalid` takes precedence over `mismatch` when a catalog has issues in both categories. `repair` (an `allowed-values` suggestion of the known ids) is attached wherever the correct set is already in hand — never for schema failures, duplicate ids, or cycles, since none of those has a single suggestable value.
@@ -171,19 +171,31 @@ A `kind: 'nominal'` metric (e.g. a land-use classification) has no numeric order
 
 ### `Dataset`
 
-| Field          | Type                                                                 | Required | Description                                                                          |
-| -------------- | -------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------ |
-| `id`           | `string`                                                             | ✓        | Unique identifier, referenced by `Join.from`.                                        |
-| `label`        | `string`                                                             | ✓        | Human-readable name.                                                                 |
-| `description`  | `string`                                                             | ✓        | Data, collection methodology, and caveats.                                           |
-| `aliases`      | `string[]`                                                           |          | Alternative names for search/discovery.                                              |
-| `geographyIds` | `string[]`                                                           | ✓        | Geographies this dataset can be joined to — validated against `catalog.geographies`. |
-| `metricIds`    | `string[]`                                                           | ✓        | Metrics this dataset carries — validated against `catalog.metrics`.                  |
-| `source`       | `string`                                                             |          | Provenance, e.g. `'ibge'`, `'ipea'`, `'sicar'`.                                      |
-| `spatial`      | `Spatial`                                                            |          | Spatial coverage, geometry, extent, and grain.                                       |
-| `temporal`     | `Temporal`                                                           |          | Temporal coverage, grain, history, and period metadata.                              |
-| `artifact`     | `{ url: string; format: 'csv' \| 'json' \| 'geojson' \| 'parquet' }` |          | Where the data lives and its format.                                                 |
-| `columns`      | `Record<string, string>`                                             |          | Metric ID → dataset column name mapping.                                             |
+| Field          | Type                                                                 | Required | Description                                                                                                                                 |
+| -------------- | -------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`           | `string`                                                             | ✓        | Unique identifier, referenced by `Join.from`.                                                                                               |
+| `label`        | `string`                                                             | ✓        | Human-readable name.                                                                                                                        |
+| `description`  | `string`                                                             | ✓        | Data, collection methodology, and caveats.                                                                                                  |
+| `aliases`      | `string[]`                                                           |          | Alternative names for search/discovery.                                                                                                     |
+| `geographyIds` | `string[]`                                                           | ✓        | Geographies this dataset can be joined to — validated against `catalog.geographies`.                                                        |
+| `metricIds`    | `string[]`                                                           | ✓        | Metrics this dataset carries — validated against `catalog.metrics`.                                                                         |
+| `source`       | `string`                                                             |          | Provenance, e.g. `'ibge'`, `'ipea'`, `'sicar'`.                                                                                             |
+| `spatial`      | `Spatial`                                                            |          | Spatial coverage, geometry, extent, and grain.                                                                                              |
+| `temporal`     | `Temporal`                                                           |          | Temporal coverage, grain, history, and period metadata.                                                                                     |
+| `artifact`     | `{ url: string; format: 'csv' \| 'json' \| 'geojson' \| 'parquet' }` |          | Where the data lives and its format.                                                                                                        |
+| `columns`      | `Record<string, string>`                                             |          | Metric ID → dataset column name mapping.                                                                                                    |
+| `fields`       | `DatasetField[]`                                                     |          | Per-column metadata, including per-field sensitivity (D12).                                                                                 |
+| `sensible`     | `boolean`                                                            |          | Flags the whole dataset as carrying sensitive data. A declaration, not enforcement — the catalog only uses it to govern its own disclosure. |
+
+#### `DatasetField` — per-column metadata (D12)
+
+| Field      | Type      | Required | Description                                                                                            |
+| ---------- | --------- | -------- | ------------------------------------------------------------------------------------------------------ |
+| `name`     | `string`  | ✓        | Column name — what `IntentFilter.field` (PRD-005) resolves against.                                    |
+| `label`    | `string`  |          | Human-readable name. Required when `sensible: true` — exposure can never be the result of an omission. |
+| `sensible` | `boolean` |          | Flags this specific column as sensitive, finer-grained than `Dataset.sensible`'s whole-dataset flag.   |
+
+`getCatalogIntrospection` omits every field declared `sensible: true` from the payload it returns — the same principle applied to `Catalog.permissions`, but per-column: a model reading the introspection never learns a sensitive column exists, let alone its name or label. Two fields on the same dataset cannot share a `name` — `validateCatalog` rejects it as `duplicate-dataset-field-name`.
 
 ### `Geography`
 
@@ -202,11 +214,11 @@ A `kind: 'nominal'` metric (e.g. a land-use classification) has no numeric order
 
 #### `CameraFraming` — resolver input, never a preset (D5)
 
-| Field    | Type                               | Required | Description                                                                |
-| -------- | ---------------------------------- | -------- | -------------------------------------------------------------------------- |
-| `bbox`   | `[number, number, number, number]` | ✓        | `[minLng, minLat, maxLng, maxLat]` bounding box of the geography's extent. |
-| `center` | `[number, number]`                 |          | `[lng, lat]` centroid, if known.                                           |
-| `zoom`   | `number`                           |          | A reasonable zoom level for viewing the whole extent.                      |
+| Field          | Type                               | Required | Description                                                                |
+| -------------- | ---------------------------------- | -------- | -------------------------------------------------------------------------- |
+| `bbox`         | `[number, number, number, number]` | ✓        | `[minLng, minLat, maxLng, maxLat]` bounding box of the geography's extent. |
+| `cameraCenter` | `[number, number]`                 |          | `[lng, lat]` centroid, if known.                                           |
+| `cameraZoom`   | `number`                           |          | A reasonable zoom level for viewing the whole extent.                      |
 
 `cameraFraming` is deliberately _not_ a `viewPreset` — PRD-006's resolver derives bounded `viewPresets` from it, so a `set-view-preset` action can only ever land on a position the catalog actually describes, not coordinates a model invents.
 

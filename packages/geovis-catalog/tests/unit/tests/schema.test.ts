@@ -1,6 +1,7 @@
 import { getCatalogJSONSchema } from 'src/introspection';
 import {
   catalogSchema,
+  datasetFieldSchema,
   datasetSchema,
   filterFieldSchema,
   geographySchema,
@@ -55,8 +56,11 @@ const DATASET_KEYS = [
   'spatial',
   'artifact',
   'columns',
+  'fields',
   'sensible',
 ].sort();
+
+const DATASET_FIELD_KEYS = ['name', 'label', 'sensible'].sort();
 
 const GEOGRAPHY_KEYS = [
   'id',
@@ -106,6 +110,12 @@ describe('Zod schema / Catalog type parity', () => {
 
   test('Dataset properties match the schema', () => {
     expect(Object.keys(datasetSchema.shape).sort()).toEqual(DATASET_KEYS);
+  });
+
+  test('DatasetField properties match the schema (D12)', () => {
+    expect(Object.keys(datasetFieldSchema.shape).sort()).toEqual(
+      DATASET_FIELD_KEYS
+    );
   });
 
   test('Geography properties match the schema', () => {
@@ -322,6 +332,47 @@ describe('Temporal.field (D2)', () => {
   });
 });
 
+describe('Dataset.fields[] (D12)', () => {
+  const demografia = sampleCatalog.datasets.find((dataset) => {
+    return dataset.id === 'dataset-demografia-municipio';
+  });
+
+  test('a dataset can declare per-column field metadata', () => {
+    expect(demografia?.fields).toEqual(
+      expect.arrayContaining([{ name: 'populacao', label: 'População' }])
+    );
+  });
+
+  test('a dataset omitting fields still validates', () => {
+    const { fields: _fields, ...withoutFields } = demografia!;
+    expect(datasetSchema.safeParse(withoutFields).success).toBe(true);
+  });
+
+  test('a field with sensible: true requires a label', () => {
+    expect(
+      datasetFieldSchema.safeParse({ name: 'renda_domicilio', sensible: true })
+        .success
+    ).toBe(false);
+    expect(
+      datasetFieldSchema.safeParse({
+        name: 'renda_domicilio',
+        label: 'Renda Domiciliar',
+        sensible: true,
+      }).success
+    ).toBe(true);
+  });
+
+  test('a field with sensible: false or omitted does not require a label', () => {
+    expect(datasetFieldSchema.safeParse({ name: 'populacao' }).success).toBe(
+      true
+    );
+    expect(
+      datasetFieldSchema.safeParse({ name: 'populacao', sensible: false })
+        .success
+    ).toBe(true);
+  });
+});
+
 describe('getCatalogJSONSchema', () => {
   test('derives a draft 2020-12 document with the sub-shapes in $defs', () => {
     const jsonSchema = getCatalogJSONSchema();
@@ -336,6 +387,7 @@ describe('getCatalogJSONSchema', () => {
       'CameraFraming',
       'CodedRef',
       'Dataset',
+      'DatasetField',
       'Dimension',
       'FilterField',
       'Geography',

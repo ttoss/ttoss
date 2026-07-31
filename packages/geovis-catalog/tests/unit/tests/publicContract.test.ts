@@ -5,6 +5,7 @@ import type {
   CatalogIssueCode,
   CatalogResult,
   Dataset,
+  DatasetField,
   FilterField,
   Geography,
   GeographyKind,
@@ -33,6 +34,7 @@ test('the Zod schemas are public, so downstream packages compose rather than re-
   expect(typeof geovisCatalog.mapTypeCatalogEntrySchema.safeParse).toBe(
     'function'
   );
+  expect(typeof geovisCatalog.datasetFieldSchema.safeParse).toBe('function');
   expect(geovisCatalog.metricKindSchema.options).toContain('density');
   expect(geovisCatalog.geographyKindSchema.options).toContain('grid');
   expect(geovisCatalog.geometrySchema.options).toContain('polygon');
@@ -57,6 +59,12 @@ test('Catalog and its sub-shapes are part of the public contract', () => {
     codeScheme: 'ibge:municipio',
   };
 
+  const datasetField: DatasetField = {
+    name: 'populacao_total',
+    label: 'População total',
+    sensible: false,
+  };
+
   const dataset: Dataset = {
     id: 'dataset-demografia',
     label: 'Demografia',
@@ -64,6 +72,7 @@ test('Catalog and its sub-shapes are part of the public contract', () => {
     geographyIds: [geography.id],
     metricIds: [metric.id],
     source: 'ibge',
+    fields: [datasetField],
     spatial: {
       dimensionStatus: 'described',
       spatialGeometry: 'polygon',

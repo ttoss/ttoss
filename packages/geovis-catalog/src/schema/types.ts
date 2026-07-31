@@ -5,6 +5,7 @@ import type {
   cameraFramingSchema,
   catalogSchema,
   codedRefSchema,
+  datasetFieldSchema,
   datasetSchema,
   dimensionSchema,
   filterDomainSchema,
@@ -88,6 +89,9 @@ export type MetricCategory = z.infer<typeof metricCategorySchema>;
 
 /** A measure/indicator carried by one or more datasets. */
 export type Metric = z.infer<typeof metricSchema>;
+
+/** Per-column metadata for a `Dataset`, including per-field sensitivity (D12). */
+export type DatasetField = z.infer<typeof datasetFieldSchema>;
 
 /** A data collection, its spatio-temporal dimensions, and its artifact (D9, D10). */
 export type Dataset = z.infer<typeof datasetSchema>;

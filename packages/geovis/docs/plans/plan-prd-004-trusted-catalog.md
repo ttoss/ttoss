@@ -481,12 +481,14 @@ Selectable periods are **derived** from `extent` × `grain`; an explicit `period
 
 ### D12 — Field-level metadata, including sensitivity
 
-`Dataset.fields[]` carries `name`, `role`, `display` and `sensitive`, so the workspace inspector and hover tooltip derive from the catalog instead of hand-written config, and personal data is declared where it exists rather than tracked in a parallel document.
+> **Reconciled (2026-07-31): shipped leaner than originally planned.** `role` and `display` were dropped — no implemented consumer (inspector, hover tooltip) needs them yet, and adding them speculatively would be exactly the kind of unused surface D4's own governance decision already warns against. See `docs/DECISIONS.md`'s D12 for the as-shipped shape and its actual rationale (PRD-005's `IntentFilter.field` grounding, not the inspector/tooltip use case below).
+
+`Dataset.fields[]` carries `name` and `sensitive`, so personal data is declared where it exists rather than tracked in a parallel document. (The original text below — `role`/`display`, workspace inspector/hover tooltip — described a broader shape than what shipped; kept for the historical rationale.)
 
 `sensitive` is a **declaration, not an enforcement rule**. Both pilots prove a blanket "sensitive ⇒ hidden" rule would be wrong: `cozsolidarias` marks eight fields sensitive and intentionally exposes five of them (address, postcode, latitude, longitude) through its detail endpoint, while withholding e-mail, telephone and company registration. Exposure is a per-surface product decision, so the catalog records the fact and forces the decision to be explicit:
 
-- `display` is **required** on any field with `sensitive: true`. Exposure then can never be the result of an omission.
-- `getCatalogIntrospection` omits every `sensitive` field from the introspection payload, because that payload is what reaches a model.
+- `label` is **required** on any field with `sensible: true` (shipped name for `sensitive`, matching `FilterField.sensible`'s naming). Exposure then can never be the result of an omission.
+- `getCatalogIntrospection` omits every `sensible: true` field from the introspection payload, because that payload is what reaches a model.
 - A `FilterField` whose `property` is a sensitive field may not declare `domain.mode: 'values'` — enumerating the domain of a personal-data column would leak the values themselves, which is the one genuine catalog-to-model leak this contract can close.
 
 The gateway remains the disclosure frontier for rendered payloads; the catalog governs only what it itself discloses.

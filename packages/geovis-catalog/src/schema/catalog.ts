@@ -146,8 +146,8 @@ export const metricSchema = z
 export const cameraFramingSchema = z
   .strictObject({
     bbox: z.tuple([z.number(), z.number(), z.number(), z.number()]),
-    center: z.tuple([z.number(), z.number()]).optional(),
-    zoom: z.number().optional(),
+    cameraCenter: z.tuple([z.number(), z.number()]).optional(),
+    cameraZoom: z.number().optional(),
   })
   .meta({ id: 'CameraFraming' });
 
@@ -267,6 +267,35 @@ export const seriesSchema = z
 
 // Dataset schema (uses Temporal and Spatial)
 
+/**
+ * Per-column metadata for a `Dataset` (D12). Deliberately thinner than a
+ * general data-dictionary entry — no `role`/`display`, since no consumer
+ * needs them yet: `name` is what PRD-005's `validateIntent` resolves
+ * `IntentFilter.field` against (grounding a filter to a real column instead
+ * of trusting a model-supplied string), and `sensible` gives per-column
+ * governance finer than `Dataset.sensible`'s whole-dataset flag.
+ */
+export const datasetFieldSchema = z
+  .strictObject({
+    name: z.string(),
+    label: z.string().optional(),
+    sensible: z.boolean().optional(),
+  })
+  .check((ctx) => {
+    const field = ctx.value;
+
+    if (field.sensible === true && field.label === undefined) {
+      ctx.issues.push({
+        code: 'custom',
+        input: field,
+        path: ['label'],
+        message:
+          "a field with 'sensible: true' must declare 'label' — exposure can never be the result of an omission",
+      });
+    }
+  })
+  .meta({ id: 'DatasetField' });
+
 export const datasetSchema = z
   .strictObject({
     id: z.string(),
@@ -285,6 +314,8 @@ export const datasetSchema = z
       })
       .optional(),
     columns: z.record(z.string(), z.string()).optional(),
+    /** Per-column metadata, including per-field sensitivity (D12). */
+    fields: z.array(datasetFieldSchema).optional(),
     sensible: z.boolean().optional(),
   })
   .meta({ id: 'Dataset' });
