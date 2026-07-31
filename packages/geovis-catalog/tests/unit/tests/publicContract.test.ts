@@ -61,10 +61,19 @@ test('Catalog and its sub-shapes are part of the public contract', () => {
     id: 'dataset-demografia',
     label: 'Demografia',
     description: 'Dados demográficos.',
-    geometry: 'polygon',
     geographyIds: [geography.id],
     metricIds: [metric.id],
     source: 'ibge',
+    spatial: {
+      dimensionStatus: 'described',
+      spatialGeometry: 'polygon',
+      spatialGrain: { scheme: 'ibge:municipio', code: 'codigo_municipio' },
+    },
+    temporal: {
+      dimensionStatus: 'described',
+      temporalGrain: 'P1Y',
+      temporalHistory: 'snapshot',
+    },
   };
 
   const join: Join = {
@@ -75,9 +84,13 @@ test('Catalog and its sub-shapes are part of the public contract', () => {
   };
 
   const filterField: FilterField = {
-    field: 'regiao',
+    id: 'filter-regiao',
+    label: 'Região',
+    property: 'regiao',
     kind: 'categorical',
-    domain: ['Norte', 'Sul'],
+    sourceGeographyId: geography.id,
+    operators: ['eq', 'in'],
+    domain: { mode: 'runtime' },
   };
 
   const mapTypeEntry: MapTypeCatalogEntry = {
@@ -113,7 +126,5 @@ test('CatalogResult taxonomy types are part of the public contract', () => {
   const result: CatalogResult = { status: 'mismatch', issues: [issue] };
 
   expect(result.status).toBe('mismatch');
-  if (result.status !== 'valid') {
-    expect(result.issues[0].code).toBe('unknown-join-geography');
-  }
+  expect(result.issues[0].code).toBe('unknown-join-geography');
 });

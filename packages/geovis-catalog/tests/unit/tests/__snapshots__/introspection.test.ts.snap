@@ -149,112 +149,17 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
           "type": "string",
         },
         "domain": {
-          "oneOf": [
-            {
-              "additionalProperties": false,
-              "properties": {
-                "mode": {
-                  "const": "values",
-                  "type": "string",
-                },
-                "values": {
-                  "items": {
-                    "additionalProperties": false,
-                    "properties": {
-                      "count": {
-                        "maximum": 9007199254740991,
-                        "minimum": 0,
-                        "type": "integer",
-                      },
-                      "label": {
-                        "type": "string",
-                      },
-                      "value": {
-                        "anyOf": [
-                          {
-                            "type": "string",
-                          },
-                          {
-                            "type": "number",
-                          },
-                        ],
-                      },
-                    },
-                    "required": [
-                      "value",
-                      "label",
-                    ],
-                    "type": "object",
-                  },
-                  "type": "array",
-                },
-              },
-              "required": [
-                "mode",
-                "values",
-              ],
-              "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "const": "runtime",
+              "type": "string",
             },
-            {
-              "additionalProperties": false,
-              "properties": {
-                "max": {
-                  "type": "number",
-                },
-                "min": {
-                  "type": "number",
-                },
-                "mode": {
-                  "const": "range",
-                  "type": "string",
-                },
-                "step": {
-                  "exclusiveMinimum": 0,
-                  "type": "number",
-                },
-              },
-              "required": [
-                "mode",
-                "min",
-                "max",
-              ],
-              "type": "object",
-            },
-            {
-              "additionalProperties": false,
-              "properties": {
-                "end": {
-                  "type": "string",
-                },
-                "mode": {
-                  "const": "interval",
-                  "type": "string",
-                },
-                "start": {
-                  "type": "string",
-                },
-              },
-              "required": [
-                "mode",
-                "start",
-                "end",
-              ],
-              "type": "object",
-            },
-            {
-              "additionalProperties": false,
-              "properties": {
-                "mode": {
-                  "const": "runtime",
-                  "type": "string",
-                },
-              },
-              "required": [
-                "mode",
-              ],
-              "type": "object",
-            },
+          },
+          "required": [
+            "mode",
           ],
+          "type": "object",
         },
         "id": {
           "type": "string",
@@ -562,6 +467,14 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
     "Spatial": {
       "additionalProperties": false,
       "properties": {
+        "dimensionStatus": {
+          "enum": [
+            "described",
+            "not_applicable",
+            "unknown",
+          ],
+          "type": "string",
+        },
         "extent": {
           "items": {
             "$ref": "#/$defs/CodedRef",
@@ -571,7 +484,7 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
         "field": {
           "type": "string",
         },
-        "geometry": {
+        "spatialGeometry": {
           "enum": [
             "point",
             "polygon",
@@ -581,34 +494,31 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
           ],
           "type": "string",
         },
-        "grain": {
-          "anyOf": [
-            {
-              "enum": [
-                "instant",
-                "irregular",
-                "continuous",
-                "unknown",
-              ],
-              "type": "string",
-            },
-            {
-              "pattern": "^P(?:\\d+Y)?(?:\\d+M)?(?:\\d+W)?(?:\\d+D)?(?:T(?:\\d+H)?(?:\\d+M)?(?:\\d+S)?)?$",
-              "type": "string",
-            },
-          ],
+        "spatialGrain": {
+          "$ref": "#/$defs/SpatialGrain",
         },
-        "status": {
-          "enum": [
-            "described",
-            "not_applicable",
-            "unknown",
-          ],
+      },
+      "required": [
+        "dimensionStatus",
+      ],
+      "type": "object",
+    },
+    "SpatialGrain": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string",
+        },
+        "label": {
+          "type": "string",
+        },
+        "scheme": {
           "type": "string",
         },
       },
       "required": [
-        "status",
+        "scheme",
+        "code",
       ],
       "type": "object",
     },
@@ -630,38 +540,19 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
     "Temporal": {
       "additionalProperties": false,
       "properties": {
+        "dimensionStatus": {
+          "enum": [
+            "described",
+            "not_applicable",
+            "unknown",
+          ],
+          "type": "string",
+        },
         "extent": {
           "items": {
             "$ref": "#/$defs/Interval",
           },
           "type": "array",
-        },
-        "grain": {
-          "anyOf": [
-            {
-              "enum": [
-                "instant",
-                "irregular",
-                "continuous",
-                "unknown",
-              ],
-              "type": "string",
-            },
-            {
-              "pattern": "^P(?:\\d+Y)?(?:\\d+M)?(?:\\d+W)?(?:\\d+D)?(?:T(?:\\d+H)?(?:\\d+M)?(?:\\d+S)?)?$",
-              "type": "string",
-            },
-          ],
-        },
-        "history": {
-          "enum": [
-            "snapshot",
-            "overwrite",
-            "append_only",
-            "revised",
-            "unknown",
-          ],
-          "type": "string",
         },
         "periods": {
           "items": {
@@ -685,17 +576,36 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
           },
           "type": "array",
         },
-        "status": {
+        "temporalGrain": {
+          "anyOf": [
+            {
+              "enum": [
+                "instant",
+                "irregular",
+                "continuous",
+                "unknown",
+              ],
+              "type": "string",
+            },
+            {
+              "pattern": "^P(?:\\d+Y)?(?:\\d+M)?(?:\\d+W)?(?:\\d+D)?(?:T(?:\\d+H)?(?:\\d+M)?(?:\\d+S)?)?$",
+              "type": "string",
+            },
+          ],
+        },
+        "temporalHistory": {
           "enum": [
-            "described",
-            "not_applicable",
+            "snapshot",
+            "overwrite",
+            "append_only",
+            "revised",
             "unknown",
           ],
           "type": "string",
         },
       },
       "required": [
-        "status",
+        "dimensionStatus",
       ],
       "type": "object",
     },

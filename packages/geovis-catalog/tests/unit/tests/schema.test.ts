@@ -221,17 +221,6 @@ describe('catalog schema validation', () => {
     ).toBe(false);
   });
 
-  test('a domain mode that contradicts the filter kind fails validation', () => {
-    const numeric = sampleCatalog.filters[2];
-    const parsed = filterFieldSchema.safeParse({
-      ...numeric,
-      domain: { mode: 'values', values: [{ value: 1, label: 'one' }] },
-    });
-
-    expect(parsed.success).toBe(false);
-    expect(parsed.error?.issues[0].message).toContain("domain mode 'range'");
-  });
-
   test('an operator meaningless for the kind fails validation', () => {
     const numeric = sampleCatalog.filters[2];
     const parsed = filterFieldSchema.safeParse({
@@ -287,6 +276,7 @@ describe('getCatalogJSONSchema', () => {
       'Metric',
       'Series',
       'Spatial',
+      'SpatialGrain',
       'SpatialGrainRef',
       'Temporal',
     ]);

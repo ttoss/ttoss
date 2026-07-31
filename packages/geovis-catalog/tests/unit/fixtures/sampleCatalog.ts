@@ -112,18 +112,18 @@ export const sampleCatalog: Catalog = {
       metricIds: ['metric-populacao', 'metric-densidade-populacional'],
       source: 'ibge',
       spatial: {
-        status: 'described',
-        geometry: 'polygon',
+        dimensionStatus: 'described',
+        spatialGeometry: 'polygon',
         extent: [
           { code: '35', label: 'São Paulo' },
           { code: '31', label: 'Minas Gerais' },
         ],
       },
       temporal: {
-        status: 'described',
-        grain: 'P1Y',
+        dimensionStatus: 'described',
+        temporalGrain: 'P1Y',
         extent: [{ start: '2010-01-01', end: '2022-12-31' }],
-        history: 'snapshot',
+        temporalHistory: 'snapshot',
       },
       columns: {
         'metric-populacao': 'populacao',
@@ -142,13 +142,13 @@ export const sampleCatalog: Catalog = {
       ],
       source: 'ipea',
       spatial: {
-        status: 'described',
-        geometry: 'polygon',
+        dimensionStatus: 'described',
+        spatialGeometry: 'polygon',
       },
       temporal: {
-        status: 'described',
-        grain: 'P1Y',
-        history: 'revised',
+        dimensionStatus: 'described',
+        temporalGrain: 'P1Y',
+        temporalHistory: 'revised',
       },
     },
     {
@@ -159,11 +159,11 @@ export const sampleCatalog: Catalog = {
       geographyIds: ['geo-poi-equipamentos'],
       metricIds: ['metric-distancia-hospital'],
       spatial: {
-        status: 'described',
-        geometry: 'point',
+        dimensionStatus: 'described',
+        spatialGeometry: 'point',
       },
       temporal: {
-        status: 'unknown',
+        dimensionStatus: 'unknown',
       },
     },
     {
@@ -174,12 +174,12 @@ export const sampleCatalog: Catalog = {
       metricIds: ['metric-populacao'],
       source: 'ibge',
       spatial: {
-        status: 'described',
-        geometry: 'polygon',
+        dimensionStatus: 'described',
+        spatialGeometry: 'polygon',
       },
       temporal: {
-        status: 'described',
-        grain: 'P1Y',
+        dimensionStatus: 'described',
+        temporalGrain: 'P1Y',
       },
     },
     {
@@ -190,11 +190,11 @@ export const sampleCatalog: Catalog = {
       metricIds: ['metric-distancia-hospital'],
       source: 'sicar',
       spatial: {
-        status: 'described',
-        geometry: 'polygon',
+        dimensionStatus: 'described',
+        spatialGeometry: 'polygon',
       },
       temporal: {
-        status: 'not_applicable',
+        dimensionStatus: 'not_applicable',
       },
     },
   ],
@@ -280,16 +280,7 @@ export const sampleCatalog: Catalog = {
       sourceGeographyId: 'geo-municipio',
       operators: ['in', 'not-in'],
       multiple: true,
-      domain: {
-        mode: 'values',
-        values: [
-          { value: 'Norte', label: 'Norte', count: 450 },
-          { value: 'Nordeste', label: 'Nordeste', count: 1794 },
-          { value: 'Centro-Oeste', label: 'Centro-Oeste', count: 467 },
-          { value: 'Sudeste', label: 'Sudeste', count: 1668 },
-          { value: 'Sul', label: 'Sul', count: 1191 },
-        ],
-      },
+      domain: { mode: 'runtime' },
     },
     {
       id: 'filter-ano',
@@ -298,7 +289,7 @@ export const sampleCatalog: Catalog = {
       kind: 'temporal',
       sourceDatasetId: 'dataset-demografia-municipio',
       operators: ['gte', 'lte'],
-      domain: { mode: 'interval', start: '2010-01-01', end: '2022-12-31' },
+      domain: { mode: 'runtime' },
     },
     {
       id: 'filter-populacao',
@@ -308,7 +299,7 @@ export const sampleCatalog: Catalog = {
       sourceDatasetId: 'dataset-demografia-municipio',
       metricId: 'metric-populacao',
       operators: ['gte', 'lte'],
-      domain: { mode: 'range', min: 0, max: 12_000_000, step: 1000 },
+      domain: { mode: 'runtime' },
     },
     {
       id: 'filter-distancia-hospital',

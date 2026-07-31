@@ -2,10 +2,10 @@ import { z } from 'zod';
 
 /**
  * Zod is the single source of truth for the catalog contract (D1): runtime
- * validation comes from these schemas, and `getCatalogJSONSchema()` derives
- * the JSON Schema document from them via `z.toJSONSchema`. The hand-written
- * interfaces in `./types` remain the documented public API; `types.parity`
- * asserts at compile time that the two never drift.
+ * validation comes from these schemas, `getCatalogJSONSchema()` derives the
+ * JSON Schema document from them via `z.toJSONSchema`, and the public types in
+ * `./types` are `z.infer` aliases of them — so drift is impossible by
+ * construction rather than asserted after the fact.
  *
  * `strictObject` throughout mirrors the previous document's
  * `additionalProperties: false` — an unknown key is a catalog authoring
@@ -141,10 +141,10 @@ export const codedRefSchema = z
 /** Temporal dimension — when/how a dataset is measured (D10). */
 export const temporalSchema = z
   .strictObject({
-    status: presenceSchema,
-    grain: temporalGrainSchema.optional(),
+    dimensionStatus: presenceSchema,
+    temporalGrain: temporalGrainSchema.optional(),
     extent: z.array(intervalSchema).optional(),
-    history: temporalHistorySchema.optional(),
+    temporalHistory: temporalHistorySchema.optional(),
     periods: z
       .array(
         z.strictObject({
@@ -177,10 +177,10 @@ export const spatialGrainRefSchema = z
 /** Spatial dimension — where/how a dataset is located (D10). */
 export const spatialSchema = z
   .strictObject({
-    status: presenceSchema,
-    geometry: spatialGeometrySchema.optional(),
+    dimensionStatus: presenceSchema,
+    spatialGeometry: spatialGeometrySchema.optional(),
     extent: z.array(codedRefSchema).optional(),
-    grain: temporalGrainSchema.optional(),
+    spatialGrain: spatialGrainSchema.optional(),
     field: z.string().optional(),
   })
   .meta({ id: 'Spatial' });
@@ -191,7 +191,7 @@ export const dimensionSchema = z
     id: z.string(),
     label: z.string(),
     description: z.string().optional(),
-    kind: z.enum(['categorical', 'numeric', 'temporal']),
+    kind: filterKindSchema,
     property: z.string(),
     aliases: z.array(z.string()).optional(),
   })
@@ -233,37 +233,20 @@ export const datasetSchema = z
 
 // Filter schemas
 
-export const filterOptionSchema = z.strictObject({
-  value: z.union([z.string(), z.number()]),
-  label: z.string(),
-  count: z.number().int().nonnegative().optional(),
+/**
+ * Filter domain always computed at runtime by the application. Catalog declares
+ * only that a domain exists; the UI determines its shape from the data.
+ *
+ * Historical modes (no longer in use):
+ * - 'values': pre-declared categorical options (UI built dropdown)
+ * - 'range': pre-declared numeric bounds (UI built slider)
+ * - 'interval': pre-declared temporal bounds (UI built date picker)
+ *
+ * All control logic now lives in the application, not the catalog.
+ */
+export const filterDomainSchema = z.strictObject({
+  mode: z.literal('runtime'),
 });
-
-export const filterDomainSchema = z.discriminatedUnion('mode', [
-  z.strictObject({
-    mode: z.literal('values'),
-    values: z.array(filterOptionSchema),
-  }),
-  z.strictObject({
-    mode: z.literal('range'),
-    min: z.number(),
-    max: z.number(),
-    step: z.number().positive().optional(),
-  }),
-  z.strictObject({
-    mode: z.literal('interval'),
-    start: z.string(),
-    end: z.string(),
-  }),
-  z.strictObject({ mode: z.literal('runtime') }),
-]);
-
-/** Domain modes each kind may declare, beyond the always-legal `runtime`. */
-const DOMAIN_MODES_BY_KIND = {
-  categorical: ['values'],
-  numeric: ['range'],
-  temporal: ['interval'],
-} as const;
 
 /** Operators that carry meaning for each kind. Ordering is irrelevant. */
 const OPERATORS_BY_KIND = {
@@ -304,20 +287,6 @@ export const filterFieldSchema = z
         path: ['sourceDatasetId'],
         message:
           'declare exactly one of `sourceDatasetId` or `sourceGeographyId` — the property has to live somewhere, and it cannot live in two places',
-      });
-    }
-
-    const allowedModes: readonly string[] = DOMAIN_MODES_BY_KIND[filter.kind];
-
-    if (
-      filter.domain.mode !== 'runtime' &&
-      !allowedModes.includes(filter.domain.mode)
-    ) {
-      ctx.issues.push({
-        code: 'custom',
-        input: filter,
-        path: ['domain', 'mode'],
-        message: `a '${filter.kind}' filter takes domain mode '${allowedModes[0]}' or 'runtime', not '${filter.domain.mode}'`,
       });
     }
 

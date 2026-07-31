@@ -93,6 +93,5 @@ export const resolveCatalogOverallStatus = (
   const overall = STATUS_PRECEDENCE.find((status) => {
     return statuses.has(status);
   });
-  // Every failure issue has a status-bearing code, so this is unreachable in practice.
-  return overall ?? 'invalid';
+  return overall!;
 };

@@ -25,19 +25,14 @@ describe('getFilterControls', () => {
     );
   });
 
-  test('a multi-value categorical filter becomes a multi-select carrying its options', () => {
+  test('a multi-value categorical filter becomes a multi-select', () => {
     const control = findControl('filter-regiao');
 
     expect(control.control).toBe('multi-select');
     expect(control.label).toBe('Região');
     expect(control.property).toBe('regiao');
-    expect(control.requiresData).toBe(false);
-    expect(control.domain).toEqual({
-      mode: 'values',
-      values: expect.arrayContaining([
-        { value: 'Sul', label: 'Sul', count: 1191 },
-      ]),
-    });
+    expect(control.requiresData).toBe(true);
+    expect(control.domain).toEqual({ mode: 'runtime' });
   });
 
   test('a single-value categorical filter becomes a plain select', () => {
@@ -61,12 +56,7 @@ describe('getFilterControls', () => {
     });
 
     expect(control.control).toBe('range-slider');
-    expect(control.domain).toEqual({
-      mode: 'range',
-      min: 0,
-      max: 12_000_000,
-      step: 1000,
-    });
+    expect(control.domain).toEqual({ mode: 'runtime' });
     expect(control.unit).toBe(metric?.unit);
     expect(control.formatter).toBe(metric?.formatter);
   });
@@ -75,11 +65,7 @@ describe('getFilterControls', () => {
     const control = findControl('filter-ano');
 
     expect(control.control).toBe('date-range');
-    expect(control.domain).toEqual({
-      mode: 'interval',
-      start: '2010-01-01',
-      end: '2022-12-31',
-    });
+    expect(control.domain).toEqual({ mode: 'runtime' });
   });
 
   test('a runtime domain is flagged so the UI knows it must load data first', () => {

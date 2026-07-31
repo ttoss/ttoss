@@ -28,15 +28,15 @@ const result = validateCatalog({
       metricIds: ['metric-populacao'],
       source: 'ibge',
       spatial: {
-        status: 'described',
-        geometry: 'polygon',
+        dimensionStatus: 'described',
+        spatialGeometry: 'polygon',
         extent: [{ code: '35', label: 'São Paulo' }],
       },
       temporal: {
-        status: 'described',
-        grain: 'P1Y',
+        dimensionStatus: 'described',
+        temporalGrain: 'P1Y',
         extent: [{ start: '2010-01-01', end: '2022-12-31' }],
-        history: 'snapshot',
+        temporalHistory: 'snapshot',
       },
     },
   ],
@@ -114,23 +114,23 @@ const schema = getCatalogJSONSchema();
 
 ### `Temporal`
 
-| Field     | Type                                                                   | Required | Description                                                                                 |
-| --------- | ---------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------- |
-| `status`  | `'described' \| 'not_applicable' \| 'unknown'`                         | ✓        | Whether temporal grain/coverage is documented.                                              |
-| `grain`   | ISO-8601 duration or keyword                                           |          | Time resolution: `P1Y`, `P1M`, `PT15M`, or `instant`, `irregular`, `continuous`, `unknown`. |
-| `extent`  | `{ start?: string; end?: string }[]`                                   |          | Time intervals covered (ISO-8601 dates). Multiple intervals for non-contiguous coverage.    |
-| `history` | `'snapshot' \| 'overwrite' \| 'append_only' \| 'revised' \| 'unknown'` |          | Update pattern: whether values change after collection.                                     |
-| `periods` | `{ start: string; end: string; label?: string }[]`                     |          | Explicit periods, optional — overrides gaps or carries per-period metadata.                 |
+| Field             | Type                                                                   | Required | Description                                                                                 |
+| ----------------- | ---------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------- |
+| `dimensionStatus` | `'described' \| 'not_applicable' \| 'unknown'`                         | ✓        | Whether temporal grain/coverage is documented.                                              |
+| `temporalGrain`   | ISO-8601 duration or keyword                                           |          | Time resolution: `P1Y`, `P1M`, `PT15M`, or `instant`, `irregular`, `continuous`, `unknown`. |
+| `extent`          | `{ start?: string; end?: string }[]`                                   |          | Time intervals covered (ISO-8601 dates). Multiple intervals for non-contiguous coverage.    |
+| `temporalHistory` | `'snapshot' \| 'overwrite' \| 'append_only' \| 'revised' \| 'unknown'` |          | Update pattern: whether values change after collection.                                     |
+| `periods`         | `{ start: string; end: string; label?: string }[]`                     |          | Explicit periods, optional — overrides gaps or carries per-period metadata.                 |
 
 ### `Spatial`
 
-| Field      | Type                                                         | Required | Description                                                       |
-| ---------- | ------------------------------------------------------------ | -------- | ----------------------------------------------------------------- |
-| `status`   | `'described' \| 'not_applicable' \| 'unknown'`               | ✓        | Whether spatial coverage is documented.                           |
-| `geometry` | `'point' \| 'polygon' \| 'line' \| 'multipolygon' \| 'none'` |          | Primary geometry type of features.                                |
-| `extent`   | `{ code: string; label?: string }[]`                         |          | Geographic regions/codes covered (e.g., IBGE municipality codes). |
-| `grain`    | ISO-8601 duration or keyword                                 |          | Spatial resolution or grid tessellation.                          |
-| `field`    | `string`                                                     |          | Dataset field name carrying spatial reference.                    |
+| Field             | Type                                                         | Required | Description                                                                    |
+| ----------------- | ------------------------------------------------------------ | -------- | ------------------------------------------------------------------------------ |
+| `dimensionStatus` | `'described' \| 'not_applicable' \| 'unknown'`               | ✓        | Whether spatial coverage is documented.                                        |
+| `spatialGeometry` | `'point' \| 'polygon' \| 'line' \| 'multipolygon' \| 'none'` |          | Primary geometry type of features.                                             |
+| `extent`          | `{ code: string; label?: string }[]`                         |          | Geographic regions/codes covered (e.g., IBGE municipality codes).              |
+| `spatialGrain`    | `{ scheme: string; code: string; label?: string }`           |          | Code scheme + field/code carrying the spatial grain (D8 seam, `SpatialGrain`). |
+| `field`           | `string`                                                     |          | Dataset field name carrying spatial reference.                                 |
 
 ### `Dataset`
 
