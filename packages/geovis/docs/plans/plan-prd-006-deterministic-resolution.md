@@ -119,6 +119,39 @@ The first revision of this plan attached `trace` under `spec.metadata`, claiming
 
 The fix: `trace` stays exactly where D3 already puts it — a field on `resolve()`'s own `ResolveResult`, nothing more — and this plan does not touch `VisualizationSpec`, `spec.metadata`, or `ContextPacket` at all. The application is the one that already holds both artifacts after generation (it called `resolve()` to get `ResolveResult`, then mounts `result.spec` and calls `runtime.getContextPacket()` for the same turn) and is the correct, and only, place to combine them for whatever it sends the model — e.g. `{ ...packet, resolutionTrace: result.trace }` — exactly the kind of per-application composition PRD-006's own Won't item ("per-application business rules") reserves to the caller, not the package. No new type is recreated to carry this composition; it is documentation guidance, not package surface.
 
+### D8 — `validateIntent` + `resolve()`: the failure-union duplication is real, and administrable as planned
+
+D7's `ResolveResultStatus = IntentResultStatus | 'insufficient-data'` means `ResolveResult`'s failure branch (`{ status: ResolveResultStatus; issues: CatalogIssue[] }`) has to carry every status `IntentResult` can already produce (`invalid`, `mismatch`, `needs-clarification`), because Phase 2's `resolve()` calls `validateIntent` internally and passes its failure straight through. A caller who already validated the intent — got `{ status: 'valid', ... }` back from its own `validateIntent` call, then calls `resolve()` on that same intent — still has to handle `invalid`/`mismatch`/`needs-clarification` at the `ResolveResult` call site, even though, on that call path, `resolve()`'s internal re-validation of an already-valid intent cannot produce them (the same intent, same catalog, same `validateIntent` — a pure function called twice on identical input gives identical output). That's real type noise, not a false alarm: TypeScript has no way to encode "this branch is unreachable *on this call path*" — the discriminated union has to stay wide enough for the general case (an intent nobody validated yet), so every `switch` over `ResolveResult.status` needs a case for statuses that, for the pre-validated caller, are dead code they're still required to write.
+
+The union itself is not the defect — a discriminated union over "resolved | every way this can fail" is the correct shape for `resolve()`'s *general* contract (intent unknown/unvalidated is exactly its most common real call pattern: one function, raw intent in, resolved spec or a structured reason out). The defect is that there is no *narrower* contract for the caller who has already paid for validation and would like a smaller union back. Two ways to close that gap, in increasing order of cost:
+
+- **Simpler (recommended for this plan): a second, narrower `resolve()` entry point that accepts the validated result, not just the raw intent.** Add an overload (or an exported `resolveValidated`) typed to accept only `Extract<IntentResult, { status: 'valid' }>`:
+
+  ```ts
+  export const resolveValidated = (
+    validIntent: Extract<IntentResult, { status: 'valid' }>,
+    catalog: Catalog,
+    data: MapDataRow[],
+    options?: { extraTaskRules?: Partial<Record<AnalyticalTask, TaskRule>> }
+  ): { status: 'resolved'; spec: VisualizationSpec; warnings: CatalogIssue[]; trace: ResolutionTraceEntry[] }
+    | { status: 'insufficient-data'; issues: CatalogIssue[] } => { /* ... */ };
+  ```
+
+  Because the input type statically rules out an invalid intent, the *return* type can drop `IntentResultStatus` entirely — `resolveValidated`'s failure branch is only ever `'insufficient-data'`, the one status genuinely new at this layer (D7). A caller who already validated gets a smaller union for free, with no runtime behavior change: `resolveValidated` is `resolve` minus the internal `validateIntent` call (which the type system now guarantees is redundant) plus the same task-rule lookup, spec assembly, and `resolveSpecFromMapType` call. `resolve(intent, catalog, data)` (the existing, wider signature) stays as the one-call convenience path for the common case of an unvalidated intent, calling `resolveValidated` internally once its own `validateIntent` step succeeds — so there is exactly one resolution implementation, not two. Low cost: one small additive export, no change to `ResolveResult`'s existing shape, nothing to migrate for existing callers of `resolve()`.
+
+- **More scalable, not adopted now: nest the sub-result instead of flattening its variants.** Rather than spreading `IntentResultStatus`'s members into `ResolveResultStatus`, wrap the whole failing `IntentResult` as one payload under a single top-level tag:
+
+  ```ts
+  export type ResolveResult =
+    | { status: 'resolved'; spec: VisualizationSpec; warnings: CatalogIssue[]; trace: ResolutionTraceEntry[] }
+    | { status: 'invalid-intent'; intentResult: Exclude<IntentResult, { status: 'valid' }> }
+    | { status: 'insufficient-data'; issues: CatalogIssue[] };
+  ```
+
+  A consumer's exhaustive `switch` over `ResolveResult.status` now has exactly three cases, permanently — a fourth `IntentResultStatus` member added to PRD-005's plan later (the taxonomy is explicitly "additive" per D4 of that plan) never touches this file or any of its consumers again; only code that actually inspects `intentResult.status` needs updating, and that's PRD-005's own concern to expose consistently. The cost is one extra level of nesting for whoever *does* want the specific reason (`result.intentResult.issues` instead of today's flat `result.issues`), and it's a breaking change to the shape D7 already documents — existing fixtures/tests written against the flat union move to the nested one. This is the shape to move to if/when more packages start consuming `ResolveResult` and re-deriving "is this actually an intent problem" logic independently (the flattened union invites exactly that duplication once there's more than one consumer); it is not adopted in this revision because nothing in this plan's Phases 2–5 yet has more than the one caller pattern D7 already covers, and the migration cost isn't justified pre-emptively.
+
+Phase 2 implements the recommended (simpler) option: `resolveValidated` ships alongside `resolve()`, not instead of it.
+
 ## Phases
 
 ```mermaid
@@ -146,10 +179,10 @@ Implement `TaskRule`/`TASK_RULES` (D4) in `src/resolve/taskRules.ts`, with concr
 
 ### Phase 2 — Deterministic `resolve()`, happy path
 
-Implement `resolve(intent, catalog, data)` (D3) in `src/resolve/resolve.ts`: validates via `validateIntent` (reusing PRD-005 plan's function — a `resolve()` call on an already-invalid intent short-circuits to that same `IntentResult` failure, no duplicate validation logic), looks up the task rule, builds a minimal `VisualizationSpec` (`mapType`, one `mapData` entry from `data`, engine defaulted to `maplibre`), and calls `resolveSpecFromMapType` (now reused directly from `@ttoss/geovis`, per Phase 0) to fill layers/legends — this is the "encoding seed" reuse PRD-006's Must item names explicitly.
+Implement `resolveValidated(validIntent, catalog, data, options?)` (D8) in `src/resolve/resolve.ts` as the actual resolution logic: looks up the task rule, builds a minimal `VisualizationSpec` (`mapType`, one `mapData` entry from `data`, engine defaulted to `maplibre`), and calls `resolveSpecFromMapType` (now reused directly from `@ttoss/geovis`, per Phase 0) to fill layers/legends — this is the "encoding seed" reuse PRD-006's Must item names explicitly. Then implement `resolve(intent, catalog, data, options?)` (D3) as the thin wrapper: calls `validateIntent` (reusing PRD-005 plan's function); on a non-`'valid'` result, returns that `IntentResult` unchanged (no duplicate validation logic); on `'valid'`, delegates to `resolveValidated`. `resolveValidated`'s narrower input type (`Extract<IntentResult, { status: 'valid' }>`) statically excludes `IntentResultStatus` from its own return type (D8) — its failure branch is only ever `'insufficient-data'`.
 
-**Demo:** a valid `distribution` intent against the sample catalog and a small `data` fixture produces `{ status: 'resolved', spec }` whose `spec.mapType === 'choropleth'` and whose legend matches `TASK_RULES.distribution.legendHint`.
-**Acceptance:** one end-to-end fixture per task (seven total) producing a `resolved` result with the rule-mandated `mapType`; every `IntentResult` failure status from PRD-005's plan (`invalid`, `mismatch`, `needs-clarification`) is confirmed to pass through `resolve()` unchanged, proving no duplicate validation.
+**Demo:** a valid `distribution` intent against the sample catalog and a small `data` fixture produces `{ status: 'resolved', spec }` whose `spec.mapType === 'choropleth'` and whose legend matches `TASK_RULES.distribution.legendHint`, via both `resolve()` and `resolveValidated()` (the latter called directly with `validateIntent`'s own `'valid'` result).
+**Acceptance:** one end-to-end fixture per task (seven total) producing a `resolved` result with the rule-mandated `mapType`; every `IntentResult` failure status from PRD-005's plan (`invalid`, `mismatch`, `needs-clarification`) is confirmed to pass through `resolve()` unchanged, proving no duplicate validation; a type-level test (e.g. a `// @ts-expect-error` fixture) confirms `resolveValidated` rejects an `IntentResult` typed as anything other than `{ status: 'valid' }`.
 
 ### Phase 3 — Warnings and `insufficient-data`
 
