@@ -228,6 +228,7 @@ export const datasetSchema = z
       })
       .optional(),
     columns: z.record(z.string(), z.string()).optional(),
+    sensible: z.boolean().optional(),
   })
   .meta({ id: 'Dataset' });
 
@@ -269,6 +270,7 @@ export const filterFieldSchema = z
     operators: z.array(layerFilterOperatorSchema).min(1),
     multiple: z.boolean().optional(),
     domain: filterDomainSchema,
+    sensible: z.boolean().optional(),
   })
   .check((ctx) => {
     const filter = ctx.value;

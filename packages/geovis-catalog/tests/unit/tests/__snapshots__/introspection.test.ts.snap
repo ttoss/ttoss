@@ -79,6 +79,9 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
           },
           "type": "array",
         },
+        "sensible": {
+          "type": "boolean",
+        },
         "source": {
           "type": "string",
         },
@@ -126,6 +129,9 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
         },
         "property": {
           "type": "string",
+        },
+        "sensible": {
+          "type": "boolean",
         },
       },
       "required": [

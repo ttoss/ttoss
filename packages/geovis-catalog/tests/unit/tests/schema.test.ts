@@ -54,6 +54,7 @@ const DATASET_KEYS = [
   'spatial',
   'artifact',
   'columns',
+  'sensible',
 ].sort();
 
 const GEOGRAPHY_KEYS = [
@@ -83,6 +84,7 @@ const FILTER_FIELD_KEYS = [
   'operators',
   'multiple',
   'domain',
+  'sensible',
 ].sort();
 
 const MAP_TYPE_CATALOG_ENTRY_KEYS = [
