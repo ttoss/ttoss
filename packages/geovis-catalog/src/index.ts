@@ -9,13 +9,16 @@ export {
   resolveCatalogOverallStatus,
 } from './catalogResult';
 export type {
+  ComputedFilterDomain,
   FilterControl,
   FilterControlKind,
   FilterControlSource,
+  FilterOption,
 } from './filterControls';
 export { computeFilterDomain, getFilterControls } from './filterControls';
 export { getCatalogIntrospection, getCatalogJSONSchema } from './introspection';
 export {
+  cameraFramingSchema,
   catalogSchema,
   codedRefSchema,
   datasetSchema,
@@ -30,6 +33,7 @@ export {
   joinSchema,
   layerFilterOperatorSchema,
   mapTypeCatalogEntrySchema,
+  metricCategorySchema,
   metricKindSchema,
   metricSchema,
   presenceSchema,
@@ -43,6 +47,7 @@ export {
   temporalSchema,
 } from './schema/catalog';
 export type {
+  CameraFraming,
   Catalog,
   CodedRef,
   Dataset,
@@ -57,6 +62,7 @@ export type {
   Join,
   MapTypeCatalogEntry,
   Metric,
+  MetricCategory,
   MetricKind,
   Presence,
   Series,

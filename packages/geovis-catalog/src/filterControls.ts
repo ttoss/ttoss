@@ -3,9 +3,26 @@ import type {
   FilterDomain,
   FilterField,
   FilterKind,
-  FilterOption,
   Metric,
 } from './schema/types';
+
+/** One option of a categorical filter's computed domain, with its row count. */
+export interface FilterOption {
+  value: string | number;
+  label: string;
+  count?: number;
+}
+
+/**
+ * The domain `computeFilterDomain` derives from data rows at runtime — never
+ * part of the catalog contract itself, where `FilterField.domain` is always
+ * `{ mode: 'runtime' }` (the catalog only declares that a domain exists; the
+ * application computes its actual shape from the rows it holds).
+ */
+export type ComputedFilterDomain =
+  | { mode: 'values'; values: FilterOption[] }
+  | { mode: 'range'; min: number; max: number }
+  | { mode: 'interval'; start: string; end: string };
 
 /** Widget a `FilterControl` expects to be rendered as. */
 export type FilterControlKind =
@@ -143,7 +160,7 @@ const computeValuesDomain = ({
 }: {
   rows: ReadonlyArray<Record<string, unknown>>;
   property: string;
-}): FilterDomain | undefined => {
+}): ComputedFilterDomain | undefined => {
   const counts = new Map<string | number, number>();
 
   for (const row of rows) {
@@ -171,7 +188,7 @@ const computeRangeDomain = ({
 }: {
   rows: ReadonlyArray<Record<string, unknown>>;
   property: string;
-}): FilterDomain | undefined => {
+}): ComputedFilterDomain | undefined => {
   let min = Number.POSITIVE_INFINITY;
   let max = Number.NEGATIVE_INFINITY;
   let seen = false;
@@ -193,7 +210,7 @@ const computeIntervalDomain = ({
 }: {
   rows: ReadonlyArray<Record<string, unknown>>;
   property: string;
-}): FilterDomain | undefined => {
+}): ComputedFilterDomain | undefined => {
   let start: string | undefined;
   let end: string | undefined;
 
@@ -228,7 +245,7 @@ export const computeFilterDomain = ({
 }: {
   filter: FilterField;
   rows: ReadonlyArray<Record<string, unknown>>;
-}): FilterDomain | undefined => {
+}): ComputedFilterDomain | undefined => {
   const property = filter.property;
 
   if (filter.kind === 'categorical') {

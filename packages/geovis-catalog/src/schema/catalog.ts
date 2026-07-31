@@ -21,6 +21,7 @@ export const metricKindSchema = z.enum([
   'index',
   'density',
   'distance',
+  'nominal',
 ]);
 
 export const geometrySchema = z.enum(['point', 'polygon', 'line']);
@@ -84,6 +85,20 @@ export const spatialGeometrySchema = z.enum([
 
 // Metric, Filter, and Geography schemas
 
+/**
+ * A closed value a `'nominal'` metric may take (D1). `order` positions it in
+ * legends/UI independent of alphabetical id sort; `colorToken` is a `@ttoss/ui`
+ * theme token, not a raw color, so a categorical choropleth stays on-theme.
+ */
+export const metricCategorySchema = z
+  .strictObject({
+    id: z.string(),
+    label: z.string(),
+    order: z.number().optional(),
+    colorToken: z.string().optional(),
+  })
+  .meta({ id: 'MetricCategory' });
+
 export const metricSchema = z
   .strictObject({
     id: z.string(),
@@ -92,10 +107,49 @@ export const metricSchema = z
     aliases: z.array(z.string()).optional(),
     unit: z.string().optional(),
     kind: metricKindSchema,
+    /** Closed whitelist of values — required when `kind: 'nominal'` (D1), absent otherwise. */
+    categories: z.array(metricCategorySchema).optional(),
     formatter: z.enum(['number', 'percent', 'currency', 'compact']).optional(),
     nullPolicy: z.enum(['hide', 'zero', 'explain']),
   })
+  .check((ctx) => {
+    const metric = ctx.value;
+
+    if (metric.kind === 'nominal') {
+      if (metric.categories === undefined || metric.categories.length === 0) {
+        ctx.issues.push({
+          code: 'custom',
+          input: metric,
+          path: ['categories'],
+          message:
+            "a 'nominal' metric must declare a non-empty 'categories' whitelist",
+        });
+      }
+    } else if (metric.categories !== undefined) {
+      ctx.issues.push({
+        code: 'custom',
+        input: metric,
+        path: ['categories'],
+        message: `'categories' only applies to a 'nominal' metric, not '${metric.kind}'`,
+      });
+    }
+  })
   .meta({ id: 'Metric' });
+
+/**
+ * A neutral framing of a geography's extent — bounding box, optional centre,
+ * optional zoom. This is resolver *input*, never a preset: PRD-006 derives
+ * `viewPresets` from it, which keeps a `set-view-preset` action bounded to
+ * positions the catalog actually declares instead of coordinates a model
+ * invents on the spot.
+ */
+export const cameraFramingSchema = z
+  .strictObject({
+    bbox: z.tuple([z.number(), z.number(), z.number(), z.number()]),
+    center: z.tuple([z.number(), z.number()]).optional(),
+    zoom: z.number().optional(),
+  })
+  .meta({ id: 'CameraFraming' });
 
 export const geographySchema = z
   .strictObject({
@@ -108,6 +162,7 @@ export const geographySchema = z
     parentId: z.string().optional(),
     codeScheme: z.string().optional(),
     resolution: z.string().optional(),
+    cameraFraming: cameraFramingSchema.optional(),
   })
   .meta({ id: 'Geography' });
 
@@ -154,6 +209,8 @@ export const temporalSchema = z
         })
       )
       .optional(),
+    /** Dataset field name carrying the temporal value — mirrors `Spatial.field` (D2). */
+    field: z.string().optional(),
   })
   .meta({ id: 'Temporal' });
 

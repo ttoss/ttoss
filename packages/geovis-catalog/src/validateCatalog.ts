@@ -1,3 +1,5 @@
+import type { CapabilitySet } from '@ttoss/geovis';
+
 import type { CatalogIssue, CatalogResult } from './catalogResult';
 import { resolveCatalogOverallStatus } from './catalogResult';
 import { catalogSchema } from './schema/catalog';
@@ -356,12 +358,62 @@ const checkGeographyHierarchy = (catalog: Catalog): CatalogIssue[] => {
 };
 
 /**
+ * `MapTypeCatalogEntry.supportedGeometries` documents which geometries make
+ * a map type *data-adequate* — it says nothing about whether the active
+ * engine adapter can actually render that geometry. Passing the adapter's
+ * `CapabilitySet` (from `@ttoss/geovis`) lets `validateCatalog` report the
+ * intersection: a map type the catalog declares data-adequate but the
+ * adapter cannot render is a mismatch the catalog alone cannot see.
+ */
+const checkMapTypeCapabilities = (
+  catalog: Catalog,
+  capabilities: CapabilitySet | undefined
+): CatalogIssue[] => {
+  if (capabilities === undefined) return [];
+
+  const issues: CatalogIssue[] = [];
+
+  for (const [index, mapType] of catalog.mapTypes.entries()) {
+    const unsupported = mapType.supportedGeometries.filter((geometry) => {
+      return !capabilities.layerGeometries.includes(geometry);
+    });
+
+    if (unsupported.length === 0) continue;
+
+    issues.push({
+      code: 'unsupported-map-type-geometry',
+      subject: {
+        path: `mapTypes[${index}].supportedGeometries`,
+        id: mapType.name,
+      },
+      message: `map type '${mapType.name}' declares geometries [${unsupported.join(', ')}] the active adapter's capabilities do not render`,
+      repair: [
+        {
+          kind: 'allowed-values',
+          path: `mapTypes[${index}].supportedGeometries`,
+          values: capabilities.layerGeometries,
+        },
+      ],
+    });
+  }
+
+  return issues;
+};
+
+/**
  * Validates a raw value against the catalog schema and enforces cross-field
  * referential integrity rules the schema cannot express. Returns a
  * `CatalogResult`: `{ status: 'valid', catalog }` on success, or a failure
  * status carrying every issue found in one pass.
+ *
+ * `options.capabilities` is optional: pass the active engine adapter's
+ * `CapabilitySet` (`adapter.getCapabilities()`) to additionally reject map
+ * types the catalog calls data-adequate but that adapter cannot render.
  */
-export const validateCatalog = (input: unknown): CatalogResult => {
+export const validateCatalog = (
+  input: unknown,
+  options?: { capabilities?: CapabilitySet }
+): CatalogResult => {
   const parsed = catalogSchema.safeParse(input);
 
   if (!parsed.success) {
@@ -383,6 +435,7 @@ export const validateCatalog = (input: unknown): CatalogResult => {
     ...checkDatasetReferences(catalog),
     ...checkFilterReferences(catalog),
     ...checkGeographyHierarchy(catalog),
+    ...checkMapTypeCapabilities(catalog, options?.capabilities),
   ];
 
   if (issues.length > 0) {

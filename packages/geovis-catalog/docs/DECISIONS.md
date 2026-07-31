@@ -1,235 +1,188 @@
 # PRD-004 Trusted Catalog — Durable Decisions (D1–D8)
 
-Implementation decisions for the catalog contract, addressing the analysis from July 31, 2026.
+Implementation decisions for the catalog contract. This document was originally
+drafted from a standalone analysis of PRD-004 before the package's actual
+implementation was located on this branch; it has since been corrected to
+describe what `src/schema/catalog.ts` and `src/schema/types.ts` actually
+enforce, plus a small set of genuine PRD-004 "Must" gaps that were closed as
+part of that reconciliation (`nominal` metric kind + `categories[]`,
+`Geography.cameraFraming`, `Temporal.field`, and the `validateCatalog`
+`capabilities` cross-check). It intentionally does not renumber or remove the
+package's own D8/D10 spatio-temporal-dimension comments in the schema
+(`Spatial`, `Temporal`, `Series`, `SpatialGrain`) — those are a separate,
+already-implemented decision set this document doesn't re-describe.
 
 ## D1: Metric.kind + categories[] for Nominals
 
-**Decision:** Metrics declare a `kind` (nominal, ordinal, quantitative). Nominal metrics **require** a `categories[]` whitelist.
+**Decision:** Metrics declare a `kind`: `'count' | 'rate' | 'ratio' | 'index' | 'density' | 'distance' | 'nominal'`. A `'nominal'` metric **requires** a non-empty `categories[]` whitelist; every other kind must _not_ declare `categories`.
 
 **Implementation:**
 
-- `Metric.kind: 'nominal' | 'ordinal' | 'quantitative'` (required)
-- `Metric.categories?: string[]` (required when kind='nominal')
-- Validation: nominals without categories are rejected
+- `metricKindSchema` — the seven-value enum above.
+- `metricCategorySchema` (`MetricCategory`) — `{ id, label, order?, colorToken? }`. `colorToken` is a `@ttoss/ui`/`@ttoss/theme` token, never a raw color, so a categorical choropleth stays on-theme.
+- `metricSchema.check()` enforces the pairing both ways: nominal without categories fails, categories on a non-nominal kind fails.
 
 **Rationale:**
 
-- PRD-006 (Resolver) references "metric kind" as a determinant for map type selection
-- Intent validation (PRD-005) needs type constraints to validate against
-- Nominal categorization enables whitelist validation of metric values
-- Supports "show top 5 states by income" — resolver knows "state" is nominal
+- PRD-004's own Must list calls this out explicitly: "Nominal metrics: `kind: 'nominal'` with a closed `categories[]` ... The spec's `CategoricalColorBy` has no catalog counterpart today, so a categorical choropleth cannot be expressed at all." This was the one Must-have with no implementation before this pass.
+- A closed whitelist lets intent validation (PRD-005) reject a category value that doesn't exist, the same way `Dataset.metricIds`/`geographyIds` reject unknown ids today.
 
 **Files:**
 
-- `src/schema/catalog.ts` — `metricSchema` with kind enum and conditional categories
-- `src/schema/types.ts` — `Metric` interface, `MetricKind` type
-- `tests/unit/tests/schema.test.ts` — validation that nominals require categories
+- `src/schema/catalog.ts` — `metricKindSchema`, `metricCategorySchema`, `metricSchema`
+- `src/schema/types.ts` — `MetricKind`, `MetricCategory`, `Metric`
+- `tests/unit/tests/schema.test.ts` — `describe('nominal metrics and categories (D1)')`
 
 ---
 
-## D2: Dataset.columns[] with Types — Referential Integrity
+## D2: Data Binding — artifact, columns, and named dimension fields
 
-**Decision:** Every dataset **declares its columns** with types, enabling metric→dataset→column validation.
+**Decision:** A dataset names where its bytes live (`artifact`), which column carries each metric (`columns`), which column carries its spatial reference (`Spatial.field`), and which column carries its temporal reference (`Temporal.field`).
 
 **Implementation:**
 
-- `Dataset.columns: Array<{ name, type, description?, ...}>` (required, minItems: 1)
-- `ColumnType = 'string' | 'number' | 'date' | 'boolean' | 'geojson' | 'json'`
-- Validation: `Metric.sourceColumn` must exist in `sourceDataset.columns`
+- `Dataset.artifact?: { url: string; format: 'csv' | 'json' | 'geojson' | 'parquet' }`
+- `Dataset.columns?: Record<string, string>` — metric id → dataset column name.
+- `Spatial.field?: string` (already implemented) and `Temporal.field?: string` (added in this pass, mirroring `Spatial.field`) — the join columns were already named via `Join.on.left`/`.right`, but the time column had no equivalent until now.
 
 **Rationale:**
 
-- PRD-004 MUST: "catalog validates its own referential integrity"
-- Without columns[], metrics can reference non-existent columns
-- Enables early rejection in intent validation (PRD-005)
-- Prevents runtime surprises in resolution (PRD-006)
+- PRD-004 Must: "Without both [`artifact` and `columns`], a valid catalog is still unconsumable — join, spatial and time columns are named, the measure column is not." Read literally at the time this was written, join and spatial columns were nameable but the _time_ column was not — `Temporal.field` closes exactly that gap.
 
 **Files:**
 
-- `src/schema/catalog.ts` — `datasetSchema`, `columnSchema`
-- `src/schema/types.ts` — `Dataset`, `CatalogColumn` interfaces
-- `src/validateCatalog.ts` — checks metric.sourceColumn exists in dataset.columns
-- `tests/unit/tests/schema.test.ts` — validation of column references
+- `src/schema/catalog.ts` — `datasetSchema`, `spatialSchema.field`, `temporalSchema.field`
+- `src/schema/types.ts` — `Dataset`, `Spatial`, `Temporal`
+- `tests/unit/tests/schema.test.ts` — `describe('Temporal.field (D2)')`
 
 ---
 
 ## D3: Package @ttoss/geovis-catalog — Separate, Modular
 
-**Decision:** Catalog is a **new, standalone package** (`@ttoss/geovis-catalog`), not an entry point in `@ttoss/geovis`.
+**Decision:** The catalog is a standalone package (`@ttoss/geovis-catalog`), not an entry point in `@ttoss/geovis`.
 
 **Implementation:**
 
-- New package at `packages/geovis-catalog/`
-- Exports: `validateCatalog`, types (`Catalog`, `Metric`, `Dataset`, etc.)
-- No React, no UI dependencies
-- Focused: schema + validation + introspection only
+- `packages/geovis-catalog/` with its own `package.json`, exporting `validateCatalog`, every schema (`catalogSchema`, `metricSchema`, …), and every `z.infer` type.
+- Depends on `@ttoss/geovis` only for `LayerFilterOperator`, `CapabilitySet`, and `RepairOption` types — no React, no UI, no rendering.
 
 **Rationale:**
 
-- Separates concerns: geovis (UI/rendering) vs. catalog (data schema/validation)
-- R4 has 3 PRDs (004, 005, 006) — each logically distinct
-- Catalog can evolve independently and be shared across contexts
-- Aligns with "modular solutions" architectural pattern
+- Separates concerns: `@ttoss/geovis` is rendering/runtime, `@ttoss/geovis-catalog` is contract/validation — each can evolve and version independently.
+- Aligns with the "modular solutions" architectural pattern the rest of the monorepo follows.
 
-**Files:**
-
-- `package.json` — proper monorepo configuration
-- `src/index.ts` — public API exports
-- `README.md` — standalone package documentation
+**Files:** `package.json`, `src/index.ts`, `README.md`
 
 ---
 
-## D4: Governance — Metadata-only (v1)
+## D4: Governance — Opaque, Metadata-only
 
-**Decision:** Catalog includes **governance metadata** (owner, dataClassification, permissions); **enforcement deferred** to PRD-006 resolver.
+**Decision:** The catalog carries an opaque `permissions` bag at the top level, plus a boolean `sensible` flag on `Dataset` and `FilterField`. Enforcement of both is entirely the application's responsibility.
 
 **Implementation:**
 
-- `Metric.owner?: string`, `createdAt?: string`
-- `Dataset.dataClassification?: 'public' | 'internal' | 'confidential'`
-- `permissions?: object` (schema-reserved, application-specific)
-- No validation of permissions in catalog itself
+- `Catalog.permissions?: Record<string, unknown>` — schema-reserved, application-defined shape. `getCatalogIntrospection()` strips it before anything is handed to a model.
+- `Dataset.sensible?: boolean` / `FilterField.sensible?: boolean` — flags a field the application may want to redact from its own rendered payloads; the catalog only uses the flag to govern its _own_ disclosure (introspection payloads, filter domains), per PRD-004's open question resolution.
 
 **Rationale:**
 
-- v1 avoids application-specific auth models
-- Governance is organizational concern, not library concern
-- Metadata enables intent validation (PRD-005) to check who can use what
-- Resolver (PRD-006) enforces: "this metric is confidential, reject intent"
-- Aligns with PRD-004's "Won't" list: application-level authorization out of scope
+- PRD-004's own resolved open question: "Governance: ... Resolved as out of scope: `permissions` is an opaque, schema-reserved slot; the application enforces its own authorization logic."
+- `sensible` answers the PRD's second open question directly: the catalog declares it, the gateway/application decides what to do with it.
 
-**Files:**
-
-- `src/schema/catalog.ts` — optional governance fields
-- `src/schema/types.ts` — governance properties on Metric, Dataset
-- `README.md` — governance strategy documented
+**Files:** `src/schema/catalog.ts` (`catalogSchema.permissions`, `datasetSchema.sensible`, `filterFieldSchema.sensible`), `src/introspection.ts`
 
 ---
 
-## D5: Geography Schema — geometryType + bounds + supportedMapTypes
+## D5: Geography.cameraFraming — Resolver Input, Never a Preset
 
-**Decision:** Geography declares **geometry type**, **bounding box**, and **map type compatibility**.
+**Decision:** A `Geography` may declare `cameraFraming`: a bounding box, optional centre, and optional zoom describing its extent.
 
 **Implementation:**
 
-- `Geography.geometryType: 'Point' | 'LineString' | 'Polygon' | 'MultiPolygon'` (required)
-- `Geography.bounds?: [minLng, minLat, maxLng, maxLat]` (for zoom optimization)
-- `Geography.supportedMapTypes: Array<'choropleth' | 'dotDensity' | 'proportionalCircles'>` (required, minItems: 1)
-- `Geography.geoDataSourceId: string` (where geometries live)
+- `cameraFramingSchema` (`CameraFraming`) — `{ bbox: [number,number,number,number]; center?: [number,number]; zoom?: number }`, added to `geographySchema`.
 
 **Rationale:**
 
-- Resolver (PRD-006) needs geometry constraints to select map type
-- Bounds enable auto-zoom behavior
-- `supportedMapTypes` prevents invalid combinations (e.g., choropleth on Point data)
-- Enables "Geographic Adequacy" validation in intent
+- PRD-004 Must, verbatim: "`Geography.cameraFraming` (bbox, centre, zoom) as **resolver input, never a preset** — PRD-006 derives `viewPresets` from it, keeping `set-view-preset` bounded to declared positions instead of coordinates a model invents." This was undeclared in the schema before this pass.
+- Keeping it a plain bbox/centre/zoom (not a `ViewState`/preset object) is deliberate: PRD-006's resolver is the only thing allowed to turn this into an actual `viewPreset` the runtime can act on.
 
-**Files:**
-
-- `src/schema/catalog.ts` — `geographySchema` with geometry and mapType constraints
-- `src/schema/types.ts` — `Geography`, `GeometryType`, `MapType` types
-- `src/validateCatalog.ts` — validates supportedMapTypes is non-empty
+**Files:** `src/schema/catalog.ts` (`cameraFramingSchema`, `geographySchema.cameraFraming`), `src/schema/types.ts` (`CameraFraming`), `tests/unit/tests/schema.test.ts` — `describe('Geography.cameraFraming (D5)')`
 
 ---
 
-## D6: Units in Catalog, Formatters Application-level
+## D6: Units and Formatters
 
-**Decision:** **Units** (symbol, decimals, conversion base) live in catalog; **formatters** (locale-specific patterns) live in the application via `@ttoss/react-i18n`.
-
-**Implementation:**
-
-- `CatalogUnit { id, name, symbol, decimals?, conversionBase?, ... }`
-- `Metric.unit?: CatalogUnit` (reference, not inline)
-- Catalog **never** declares locale-specific patterns ("$1.234,56" vs "$1,234.56")
-- Application uses unit metadata to build locale-aware display
+**Decision:** `Metric.unit` is a free-form string (`'%'`, `'km'`, `'hab/km²'`); `Metric.formatter` is a closed hint (`'number' | 'percent' | 'currency' | 'compact'`). Locale-specific rendering (decimal separators, date formats) is never declared by the catalog — it's resolved by the application via `@ttoss/react-i18n`.
 
 **Rationale:**
 
-- Catalog is domain-neutral, doesn't know about locales
-- Avoids catalog explosion: 1 unit × N locales = N entries
-- I18n is application concern (already handled by `@ttoss/react-i18n`)
-- Separates data declaration (catalog) from presentation (app)
+- The catalog is domain-neutral and locale-agnostic by design; a unit × locale cross-product would explode the schema for no benefit, since `@ttoss/react-i18n` already owns locale-aware formatting everywhere else in this monorepo.
+- `formatter` stays a coarse _hint_ (which family of formatting applies), not a format string — the actual pattern is an application/locale concern.
 
-**Files:**
-
-- `src/schema/catalog.ts` — `unitSchema` (symbol, decimals, no format patterns)
-- `src/schema/types.ts` — `CatalogUnit` interface
-- `README.md` — explains unit/formatter separation
-- `src/introspection.ts` — includes unit metadata in AI context packet
+**Files:** `src/schema/catalog.ts` (`metricSchema.unit`, `.formatter`), `README.md`
 
 ---
 
-## D7: Explicit Joins Registry — Not Implicit ForeignKeys
+## D7: Explicit Joins Registry
 
-**Decision:** All joins between datasets are **explicit entries** in a `catalog.joins` registry, validated end-to-end.
+**Decision:** Every join from a dataset to a geography is an explicit entry in `catalog.joins`, validated end-to-end.
 
 **Implementation:**
 
-- `CatalogJoin { id, name, leftDatasetId, leftColumn, rightDatasetId, rightColumn, joinType }`
-- `Catalog.joins: CatalogJoin[]` (required, not optional)
-- Validation: both sides exist, columns exist in respective datasets, no cycles
-- Repair suggestions: list valid datasets/columns when references are unknown
+- `joinSchema` (`Join`): `{ from: string; to: string; on: { left: string; right: string }; cardinality: '1:1' | '1:m' | 'm:1' }`.
+- `validateCatalog`'s `checkJoinReferences` confirms `from`/`to` resolve to a real dataset/geography; `checkGeographyHierarchy` additionally catches cycles in `Geography.parentId` chains that joins could otherwise traverse forever.
 
 **Rationale:**
 
-- Resolver (PRD-006) must know exact join semantics for data binding
-- Intent validation (PRD-005) can reject joins that don't exist
-- Explicit > implicit: no surprises from FK interpretation
-- Registry makes joins first-class citizens, auditable and discoverable
+- PRD-004's own Outcome: "the catalog validates its own referential integrity (joins point to real datasets and geographies)."
+- Explicit `on.left`/`on.right` field names, rather than an implicit foreign-key convention, make the join auditable without inspecting the underlying data.
 
-**Files:**
-
-- `src/schema/catalog.ts` — `joinSchema` with explicit references
-- `src/schema/types.ts` — `CatalogJoin`, `JoinType` types
-- `src/validateCatalog.ts` — validates both sides of every join
-- `tests/unit/tests/schema.test.ts` — join validation tests
+**Files:** `src/schema/catalog.ts` (`joinSchema`), `src/validateCatalog.ts` (`checkJoinReferences`, `checkGeographyHierarchy`), `tests/unit/tests/validateCatalog.test.ts`
 
 ---
 
-## D8: Catalog Versioning — Intent Schema Compatibility
+## D8: Catalog Versioning
 
-**Decision:** Catalog has a `version` field. Intents carry `schemaVersion` matching the catalog version when created. Resolver validates compatibility.
+**Decision:** `Catalog.version` is a required, non-empty, opaque string — the organization's own catalog version, not this package's schema version.
 
 **Implementation:**
 
-- `Catalog.version: string` (e.g., "2026-Q3")
-- Intent (PRD-005): `Intent.schemaVersion: string` (set at creation time)
-- Resolver (PRD-006): checks `intent.schemaVersion === catalog.version`
-  - If mismatch: return `{ status: 'invalid', code: 'catalog-version-mismatch', repair: { setTo: current_version } }`
+- `catalogSchema.version: z.string().min(1)`. Any non-empty string works: semver, a date/quarter (`'2026-Q3'`), an incrementing integer.
 
 **Rationale:**
 
-- Evals (PRD-007) measure "intent validity as catalog evolves"
-- Enables version-migration tracking: "which intents are stale?"
-- Prevents silent misalignment: catalog evolved, intent references removed metrics
-- Provides audit trail: "this intent was valid in v2026-Q2, not in v2026-Q3"
+- Lets a downstream consumer (PRD-005's Intent, PRD-006's resolver) carry a `schemaVersion` and detect drift against a specific catalog snapshot, without this package prescribing a versioning scheme.
 
-**Files:**
+**Files:** `src/schema/catalog.ts` (`catalogSchema.version`), `README.md`
 
-- `src/schema/catalog.ts` — `version: string` (required) in Catalog
-- `src/schema/types.ts` — `Catalog.version` property
-- `README.md` — explains version tracking and intent compatibility
-- `docs/prds/prd-004-trusted-catalog.md` — links to PRD-005/006 for version checking
+---
+
+## `MapTypeCatalogEntry` and adapter capabilities
+
+Not one of D1–D8, but closes another explicit PRD-004 Must and is small enough to note here: `mapTypes` documents **data adequacy** (which metric kinds make sense on which geometry), never adapter support — those are different questions, and conflating them was the risk PRD-004 called out: "`CapabilitySet` covers source types, layer geometries and data features but never map types, so `validateCatalog` accepts an optional `CapabilitySet` and reports the intersection."
+
+`validateCatalog(input, { capabilities })` now accepts the active engine adapter's `CapabilitySet` (from `@ttoss/geovis`, e.g. `adapter.getCapabilities()`) and reports `unsupported-map-type-geometry` (a `mismatch`) for any `MapTypeCatalogEntry.supportedGeometries` not covered by `capabilities.layerGeometries`. Omitting `capabilities` skips the check entirely — a catalog can be authored and validated in isolation, before any adapter is chosen.
+
+**Files:** `src/validateCatalog.ts` (`checkMapTypeCapabilities`), `src/catalogResult.ts` (`unsupported-map-type-geometry`), `tests/unit/tests/validateCatalog.test.ts`
 
 ---
 
 ## Summary: D1–D8 Implementation Status
 
-| #   | Decision                      | Implemented | Files                                                         |
-| --- | ----------------------------- | ----------- | ------------------------------------------------------------- |
-| 1   | Metric.kind + categories[]    | ✅          | schema/catalog.ts, schema/types.ts, tests                     |
-| 2   | Dataset.columns[] validation  | ✅          | schema/catalog.ts, schema/types.ts, validateCatalog.ts, tests |
-| 3   | Package @ttoss/geovis-catalog | ✅          | package.json, src/index.ts, README.md                         |
-| 4   | Governance metadata-only      | ✅          | schema/catalog.ts, schema/types.ts, README.md                 |
-| 5   | Geography schema complete     | ✅          | schema/catalog.ts, schema/types.ts, validateCatalog.ts        |
-| 6   | Units/Formatters separated    | ✅          | schema/catalog.ts, schema/types.ts, introspection.ts          |
-| 7   | Explicit joins registry       | ✅          | schema/catalog.ts, schema/types.ts, validateCatalog.ts, tests |
-| 8   | Catalog versioning            | ✅          | schema/catalog.ts, schema/types.ts, README.md                 |
+| #   | Decision                                                         | Implemented | Files                                        |
+| --- | ---------------------------------------------------------------- | ----------- | -------------------------------------------- |
+| 1   | Metric.kind (incl. nominal) + categories[]                       | ✅          | schema/catalog.ts, schema/types.ts, tests    |
+| 2   | Data binding: artifact, columns, temporal/spatial `field`        | ✅          | schema/catalog.ts, schema/types.ts, tests    |
+| 3   | Package @ttoss/geovis-catalog                                    | ✅          | package.json, src/index.ts, README.md        |
+| 4   | Governance: opaque permissions + sensible flag                   | ✅          | schema/catalog.ts, introspection.ts          |
+| 5   | Geography.cameraFraming                                          | ✅          | schema/catalog.ts, schema/types.ts, tests    |
+| 6   | Units (string) / formatters (hint) — app-level locale formatting | ✅          | schema/catalog.ts, README.md                 |
+| 7   | Explicit joins registry                                          | ✅          | schema/catalog.ts, validateCatalog.ts, tests |
+| 8   | Catalog versioning                                               | ✅          | schema/catalog.ts, README.md                 |
 
-All decisions are **fully implemented and tested** in the `feat/prd-004-trusted-catalog` branch.
+All eight are implemented and covered by tests in `tests/unit/tests/` at 100% statement/branch/function/line coverage for `src/`.
 
 ---
 
-**Date:** 2026-07-31  
-**Author:** Claude Code  
-**Status:** Complete
+**Date:** 2026-07-31
+**Status:** Complete — corrected against the actual implementation and extended with the `nominal`/`categories`, `cameraFraming`, `Temporal.field`, and `capabilities` additions.

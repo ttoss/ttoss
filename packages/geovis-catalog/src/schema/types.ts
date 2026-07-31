@@ -2,6 +2,7 @@ import type { LayerFilterOperator } from '@ttoss/geovis';
 import type { z } from 'zod';
 
 import type {
+  cameraFramingSchema,
   catalogSchema,
   codedRefSchema,
   datasetSchema,
@@ -16,6 +17,7 @@ import type {
   joinSchema,
   layerFilterOperatorSchema,
   mapTypeCatalogEntrySchema,
+  metricCategorySchema,
   metricKindSchema,
   metricSchema,
   presenceSchema,
@@ -78,8 +80,11 @@ export type Series = z.infer<typeof seriesSchema>;
 /** Geometry types a map type can render. */
 export type Geometry = z.infer<typeof geometrySchema>;
 
-/** Semantic category of a measure: count, rate, ratio, index, density, distance. */
+/** Semantic category of a measure: count, rate, ratio, index, density, distance, nominal. */
 export type MetricKind = z.infer<typeof metricKindSchema>;
+
+/** A closed value a `'nominal'` metric may take (D1). */
+export type MetricCategory = z.infer<typeof metricCategorySchema>;
 
 /** A measure/indicator carried by one or more datasets. */
 export type Metric = z.infer<typeof metricSchema>;
@@ -95,6 +100,9 @@ export type GeographyKind = z.infer<typeof geographyKindSchema>;
 
 /** A geographic boundary set or spatial index available for joining. */
 export type Geography = z.infer<typeof geographySchema>;
+
+/** Bounding box + optional centre/zoom — resolver input, never a view preset (D5). */
+export type CameraFraming = z.infer<typeof cameraFramingSchema>;
 
 /** A declared join path from a dataset to a geography. */
 export type Join = z.infer<typeof joinSchema>;

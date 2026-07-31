@@ -72,12 +72,22 @@ if (result.status === 'valid') {
 }
 ```
 
+`MapTypeCatalogEntry.supportedGeometries` documents _data adequacy_ only — that a metric kind makes sense on that geometry, nothing about which engine adapter is active. Pass the adapter's `CapabilitySet` (`adapter.getCapabilities()` from `@ttoss/geovis`) to additionally reject a map type the catalog calls data-adequate but the active adapter cannot render:
+
+```ts
+const result = validateCatalog(catalog, {
+  capabilities: adapter.getCapabilities(),
+});
+// mismatch, 'unsupported-map-type-geometry', if a mapType's supportedGeometries
+// aren't a subset of capabilities.layerGeometries
+```
+
 ### `CatalogResultStatus` and `CatalogIssueCode`
 
-| Status     | Codes                                                                                                                                                                                                                                            |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `invalid`  | `invalid-catalog-schema`, `duplicate-metric-id`, `duplicate-dataset-id`, `duplicate-geography-id`, `duplicate-filter-id`                                                                                                                         |
-| `mismatch` | `unknown-join-dataset`, `unknown-join-geography`, `unknown-dataset-geography`, `unknown-dataset-metric`, `unknown-filter-dataset`, `unknown-filter-geography`, `unknown-filter-metric`, `unknown-parent-geography`, `cyclic-geography-hierarchy` |
+| Status     | Codes                                                                                                                                                                                                                                                                             |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `invalid`  | `invalid-catalog-schema`, `duplicate-metric-id`, `duplicate-dataset-id`, `duplicate-geography-id`, `duplicate-filter-id`                                                                                                                                                          |
+| `mismatch` | `unknown-join-dataset`, `unknown-join-geography`, `unknown-dataset-geography`, `unknown-dataset-metric`, `unknown-filter-dataset`, `unknown-filter-geography`, `unknown-filter-metric`, `unknown-parent-geography`, `cyclic-geography-hierarchy`, `unsupported-map-type-geometry` |
 
 `invalid` takes precedence over `mismatch` when a catalog has issues in both categories. `repair` (an `allowed-values` suggestion of the known ids) is attached wherever the correct set is already in hand — never for schema failures, duplicate ids, or cycles, since none of those has a single suggestable value.
 
@@ -101,26 +111,53 @@ const schema = getCatalogJSONSchema();
 
 ### `Metric`
 
-| Field         | Type                                                                 | Required | Description                                           |
-| ------------- | -------------------------------------------------------------------- | -------- | ----------------------------------------------------- |
-| `id`          | `string`                                                             | ✓        | Unique identifier, referenced by `Dataset.metricIds`. |
-| `label`       | `string`                                                             | ✓        | Human-readable name.                                  |
-| `description` | `string`                                                             | ✓        | What the metric measures and how it's calculated.     |
-| `aliases`     | `string[]`                                                           |          | Alternative names for search/discovery.               |
-| `unit`        | `string`                                                             |          | Free-form measurement unit (`km`, `USD`, `hab/km²`).  |
-| `kind`        | `'count' \| 'rate' \| 'ratio' \| 'index' \| 'density' \| 'distance'` | ✓        | Semantic category.                                    |
-| `formatter`   | `'number' \| 'percent' \| 'currency' \| 'compact'`                   |          | Formatting hint.                                      |
-| `nullPolicy`  | `'hide' \| 'zero' \| 'explain'`                                      | ✓        | How nulls should be treated when rendering.           |
+| Field         | Type                                                                              | Required | Description                                                                               |
+| ------------- | --------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------- |
+| `id`          | `string`                                                                          | ✓        | Unique identifier, referenced by `Dataset.metricIds`.                                     |
+| `label`       | `string`                                                                          | ✓        | Human-readable name.                                                                      |
+| `description` | `string`                                                                          | ✓        | What the metric measures and how it's calculated.                                         |
+| `aliases`     | `string[]`                                                                        |          | Alternative names for search/discovery.                                                   |
+| `unit`        | `string`                                                                          |          | Free-form measurement unit (`km`, `USD`, `hab/km²`).                                      |
+| `kind`        | `'count' \| 'rate' \| 'ratio' \| 'index' \| 'density' \| 'distance' \| 'nominal'` | ✓        | Semantic category.                                                                        |
+| `categories`  | `MetricCategory[]`                                                                | ~        | Closed value whitelist. Required (non-empty) when `kind: 'nominal'`, forbidden otherwise. |
+| `formatter`   | `'number' \| 'percent' \| 'currency' \| 'compact'`                                |          | Formatting hint.                                                                          |
+| `nullPolicy`  | `'hide' \| 'zero' \| 'explain'`                                                   | ✓        | How nulls should be treated when rendering.                                               |
+
+#### `MetricCategory` — nominal metric values (D1)
+
+A `kind: 'nominal'` metric (e.g. a land-use classification) has no numeric ordering, so it declares its legal values instead of a range. This is what gives a categorical choropleth a catalog counterpart:
+
+```ts
+{
+  id: 'metric-classe-uso-solo',
+  label: 'Classe de Uso do Solo',
+  description: 'Classificação categórica do uso predominante do solo.',
+  kind: 'nominal',
+  categories: [
+    { id: 'urbano', label: 'Urbano', order: 1, colorToken: 'display.categorical.1' },
+    { id: 'rural', label: 'Rural', order: 2, colorToken: 'display.categorical.2' },
+  ],
+  nullPolicy: 'hide',
+}
+```
+
+| Field        | Type     | Required | Description                                                                                   |
+| ------------ | -------- | -------- | --------------------------------------------------------------------------------------------- |
+| `id`         | `string` | ✓        | Value the underlying column carries.                                                          |
+| `label`      | `string` | ✓        | Human-readable name.                                                                          |
+| `order`      | `number` |          | Legend/UI ordering, independent of `id`'s alphabetical sort.                                  |
+| `colorToken` | `string` |          | A `@ttoss/ui`/`@ttoss/theme` token — never a raw color — for a themed categorical choropleth. |
 
 ### `Temporal`
 
-| Field             | Type                                                                   | Required | Description                                                                                 |
-| ----------------- | ---------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------- |
-| `dimensionStatus` | `'described' \| 'not_applicable' \| 'unknown'`                         | ✓        | Whether temporal grain/coverage is documented.                                              |
-| `temporalGrain`   | ISO-8601 duration or keyword                                           |          | Time resolution: `P1Y`, `P1M`, `PT15M`, or `instant`, `irregular`, `continuous`, `unknown`. |
-| `extent`          | `{ start?: string; end?: string }[]`                                   |          | Time intervals covered (ISO-8601 dates). Multiple intervals for non-contiguous coverage.    |
-| `temporalHistory` | `'snapshot' \| 'overwrite' \| 'append_only' \| 'revised' \| 'unknown'` |          | Update pattern: whether values change after collection.                                     |
-| `periods`         | `{ start: string; end: string; label?: string }[]`                     |          | Explicit periods, optional — overrides gaps or carries per-period metadata.                 |
+| Field             | Type                                                                   | Required | Description                                                                                                                                                                     |
+| ----------------- | ---------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `dimensionStatus` | `'described' \| 'not_applicable' \| 'unknown'`                         | ✓        | Whether temporal grain/coverage is documented.                                                                                                                                  |
+| `temporalGrain`   | ISO-8601 duration or keyword                                           |          | Time resolution: `P1Y`, `P1M`, `PT15M`, or `instant`, `irregular`, `continuous`, `unknown`.                                                                                     |
+| `extent`          | `{ start?: string; end?: string }[]`                                   |          | Time intervals covered (ISO-8601 dates). Multiple intervals for non-contiguous coverage.                                                                                        |
+| `temporalHistory` | `'snapshot' \| 'overwrite' \| 'append_only' \| 'revised' \| 'unknown'` |          | Update pattern: whether values change after collection.                                                                                                                         |
+| `periods`         | `{ start: string; end: string; label?: string }[]`                     |          | Explicit periods, optional — overrides gaps or carries per-period metadata.                                                                                                     |
+| `field`           | `string`                                                               |          | Dataset field name carrying the temporal value — mirrors `Spatial.field`. Closes the data-binding gap: join and spatial columns were already nameable, the time column was not. |
 
 ### `Spatial`
 
@@ -150,17 +187,28 @@ const schema = getCatalogJSONSchema();
 
 ### `Geography`
 
-| Field         | Type                                              | Required | Description                                                                                                                                                                                                    |
-| ------------- | ------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`          | `string`                                          | ✓        | Unique identifier, referenced by `Dataset.geographyIds` and `Join.to`.                                                                                                                                         |
-| `label`       | `string`                                          | ✓        | Human-readable name.                                                                                                                                                                                           |
-| `description` | `string`                                          | ✓        | Geographic coverage and boundary source.                                                                                                                                                                       |
-| `aliases`     | `string[]`                                        |          | Alternative names, e.g. `'município'` for `'municipality'`.                                                                                                                                                    |
-| `kind`        | `'administrative' \| 'grid' \| 'poi' \| 'custom'` |          | Absent ⇒ `'administrative'`. Discriminates admin boundary (IBGE malha territorial) vs. spatial-index grid (H3/S2/geohash, IBGE grade estatística) vs. POI collection vs. custom parcel (SICAR rural property). |
-| `level`       | `number`                                          |          | Ordinal depth in a nesting hierarchy — lower is coarser.                                                                                                                                                       |
-| `parentId`    | `string`                                          |          | Geography id one level up — validated against `catalog.geographies`; cycles are rejected.                                                                                                                      |
-| `codeScheme`  | `string`                                          |          | External code system feature ids follow, e.g. `'ibge:municipio'`, `'sicar:imovel'`, `'h3'`.                                                                                                                    |
-| `resolution`  | `string`                                          |          | Tessellation resolution for `kind: 'grid'`, e.g. `'h3:8'`.                                                                                                                                                     |
+| Field           | Type                                              | Required | Description                                                                                                                                                                                                    |
+| --------------- | ------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`            | `string`                                          | ✓        | Unique identifier, referenced by `Dataset.geographyIds` and `Join.to`.                                                                                                                                         |
+| `label`         | `string`                                          | ✓        | Human-readable name.                                                                                                                                                                                           |
+| `description`   | `string`                                          | ✓        | Geographic coverage and boundary source.                                                                                                                                                                       |
+| `aliases`       | `string[]`                                        |          | Alternative names, e.g. `'município'` for `'municipality'`.                                                                                                                                                    |
+| `kind`          | `'administrative' \| 'grid' \| 'poi' \| 'custom'` |          | Absent ⇒ `'administrative'`. Discriminates admin boundary (IBGE malha territorial) vs. spatial-index grid (H3/S2/geohash, IBGE grade estatística) vs. POI collection vs. custom parcel (SICAR rural property). |
+| `level`         | `number`                                          |          | Ordinal depth in a nesting hierarchy — lower is coarser.                                                                                                                                                       |
+| `parentId`      | `string`                                          |          | Geography id one level up — validated against `catalog.geographies`; cycles are rejected.                                                                                                                      |
+| `codeScheme`    | `string`                                          |          | External code system feature ids follow, e.g. `'ibge:municipio'`, `'sicar:imovel'`, `'h3'`.                                                                                                                    |
+| `resolution`    | `string`                                          |          | Tessellation resolution for `kind: 'grid'`, e.g. `'h3:8'`.                                                                                                                                                     |
+| `cameraFraming` | `CameraFraming`                                   |          | Neutral bbox/centre/zoom framing of this geography's extent (D5).                                                                                                                                              |
+
+#### `CameraFraming` — resolver input, never a preset (D5)
+
+| Field    | Type                               | Required | Description                                                                |
+| -------- | ---------------------------------- | -------- | -------------------------------------------------------------------------- |
+| `bbox`   | `[number, number, number, number]` | ✓        | `[minLng, minLat, maxLng, maxLat]` bounding box of the geography's extent. |
+| `center` | `[number, number]`                 |          | `[lng, lat]` centroid, if known.                                           |
+| `zoom`   | `number`                           |          | A reasonable zoom level for viewing the whole extent.                      |
+
+`cameraFraming` is deliberately _not_ a `viewPreset` — PRD-006's resolver derives bounded `viewPresets` from it, so a `set-view-preset` action can only ever land on a position the catalog actually describes, not coordinates a model invents.
 
 ### `Join`
 
@@ -221,14 +269,15 @@ const schema = getCatalogJSONSchema();
 
 ### Building filter UI
 
-`FilterDomain` is a discriminated union on `mode`, which is what tells a component which widget to build:
+The catalog's own `FilterField.domain` (`FilterDomain`) is always `{ mode: 'runtime' }` — the catalog only declares that a domain exists; it is computed by the application from the data it holds, not pre-declared. `computeFilterDomain` returns a separate, richer shape — `ComputedFilterDomain` — which a component actually renders from:
 
 | Mode         | Shape                                    | Applies to  |
 | ------------ | ---------------------------------------- | ----------- |
 | `'values'`   | `{ values: { value, label, count? }[] }` | categorical |
-| `'range'`    | `{ min, max, step? }`                    | numeric     |
+| `'range'`    | `{ min, max }`                           | numeric     |
 | `'interval'` | `{ start, end }`                         | temporal    |
-| `'runtime'`  | —                                        | any kind    |
+
+`ComputedFilterDomain` is never written back onto `FilterField.domain` — it stays a UI-side value the application holds alongside the filter, keeping the catalog's declarative contract (`{ mode: 'runtime' }`) separate from the computed value.
 
 `getFilterControls(catalog)` projects `catalog.filters` into render-ready descriptors, resolving each filter's source and its metric's display hints so a component never has to walk the catalog itself:
 
@@ -238,8 +287,8 @@ import { computeFilterDomain, getFilterControls } from '@ttoss/geovis-catalog';
 const controls = getFilterControls(catalog);
 // [{ id: 'filter-populacao', label: 'População', control: 'range-slider',
 //    source: { kind: 'dataset', id: '…', label: 'Demografia Municipal' },
-//    domain: { mode: 'range', min: 0, max: 12000000, step: 1000 },
-//    unit: 'habitantes', formatter: 'compact', requiresData: false }, …]
+//    domain: { mode: 'runtime' },
+//    unit: 'habitantes', formatter: 'compact', requiresData: true }, …]
 
 const Filters = () => {
   return controls.map((control) => {
@@ -254,7 +303,7 @@ const Filters = () => {
 };
 ```
 
-`requiresData` is `true` when the catalog declares `mode: 'runtime'` — the bounds or options exist but are only knowable from the data. Compute them from rows the application already holds:
+`requiresData` is always `true` today, since the catalog always declares `mode: 'runtime'` — the bounds or options exist but are only knowable from the data. Compute them from rows the application already holds:
 
 ```ts
 const domain = computeFilterDomain({ filter, rows });
@@ -263,7 +312,7 @@ const domain = computeFilterDomain({ filter, rows });
 
 `computeFilterDomain` is pure: it reads the rows passed to it and fetches nothing, so data access stays on the application's side. Values that do not match the filter's `kind` are skipped rather than coerced — a numeric column holding `'12'` as text is a data problem, not something the catalog should silently parse.
 
-`operators` map 1:1 to `LayerFilter.operator` in `@ttoss/geovis`, and the schema rejects combinations that carry no meaning (`in` on a numeric filter, `multiple` outside a categorical one, a `values` domain on a numeric field), so a control never renders a predicate the runtime cannot compile.
+`operators` map 1:1 to `LayerFilter.operator` in `@ttoss/geovis`, and the schema rejects combinations that carry no meaning (`in` on a numeric filter, `multiple` outside a categorical one), so a control never renders a predicate the runtime cannot compile.
 
 ### `Catalog`
 
