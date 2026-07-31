@@ -49,24 +49,87 @@ PRD-006's Must item requires each of PRD-005's seven analytical tasks to have "e
 ```ts
 interface TaskRule {
   task: AnalyticalTask;
-  allowedMetricKinds: MetricKind[]; // e.g. distribution allows all kinds; ranking/comparison too; change-over-time requires a temporal dataset
+  allowedMetricKinds: MetricKind[];
   mapType: 'choropleth' | 'dotDensity' | 'proportionalCircles';
   legendHint: 'quantitative' | 'categorical' | 'proportional';
   warnOn: Array<'sparse-data' | 'missing-temporal-range' | 'small-sample'>;
 }
+```
 
+The full table, one entry per PRD-005 task, specified now rather than left to implementation time — each choice is traceable to a constraint already in `@ttoss/geovis-catalog`'s `metricKindSchema` (`'count' | 'rate' | 'ratio' | 'index' | 'density' | 'distance' | 'nominal'`) or `@ttoss/geovis`'s own `mapTypeDefaults/*.ts` (D2):
+
+| Task | `mapType` | `legendHint` | `allowedMetricKinds` | `warnOn` |
+| --- | --- | --- | --- | --- |
+| `distribution` | `choropleth` | `quantitative` | `count`, `rate`, `ratio`, `index`, `density`, `distance` | `sparse-data` |
+| `comparison` | `choropleth` | `quantitative` | `count`, `rate`, `ratio`, `index`, `density`, `distance` | `small-sample` |
+| `ranking` | `proportionalCircles` | `proportional` | `count`, `rate`, `ratio`, `index`, `density`, `distance` | `small-sample` |
+| `change-over-time` | `choropleth` | `quantitative` | `count`, `rate`, `ratio`, `index`, `density`, `distance` | `missing-temporal-range` |
+| `outlier-detection` | `choropleth` | `quantitative` | `count`, `rate`, `ratio`, `index`, `density`, `distance` | `small-sample` |
+| `feature-lookup` | `dotDensity` | `categorical` | `nominal`, `count` | *(none)* |
+| `coverage` | `dotDensity` | `categorical` | `nominal`, `count` | `sparse-data` |
+
+```ts
 export const TASK_RULES: Record<AnalyticalTask, TaskRule> = {
-  distribution: { mapType: 'choropleth', legendHint: 'quantitative', ... },
-  comparison: { mapType: 'choropleth', legendHint: 'quantitative', ... },
-  ranking: { mapType: 'proportionalCircles', legendHint: 'proportional', ... },
-  'change-over-time': { mapType: 'choropleth', legendHint: 'quantitative', warnOn: ['missing-temporal-range'], ... },
-  'outlier-detection': { mapType: 'choropleth', legendHint: 'quantitative', warnOn: ['small-sample'], ... },
-  'feature-lookup': { mapType: 'dotDensity', legendHint: 'categorical', ... },
-  coverage: { mapType: 'dotDensity', legendHint: 'categorical', warnOn: ['sparse-data'], ... },
+  distribution: {
+    task: 'distribution',
+    mapType: 'choropleth',
+    legendHint: 'quantitative',
+    allowedMetricKinds: ['count', 'rate', 'ratio', 'index', 'density', 'distance'],
+    warnOn: ['sparse-data'],
+  },
+  comparison: {
+    task: 'comparison',
+    mapType: 'choropleth',
+    legendHint: 'quantitative',
+    allowedMetricKinds: ['count', 'rate', 'ratio', 'index', 'density', 'distance'],
+    warnOn: ['small-sample'],
+  },
+  ranking: {
+    task: 'ranking',
+    mapType: 'proportionalCircles',
+    legendHint: 'proportional',
+    allowedMetricKinds: ['count', 'rate', 'ratio', 'index', 'density', 'distance'],
+    warnOn: ['small-sample'],
+  },
+  'change-over-time': {
+    task: 'change-over-time',
+    mapType: 'choropleth',
+    legendHint: 'quantitative',
+    allowedMetricKinds: ['count', 'rate', 'ratio', 'index', 'density', 'distance'],
+    warnOn: ['missing-temporal-range'],
+  },
+  'outlier-detection': {
+    task: 'outlier-detection',
+    mapType: 'choropleth',
+    legendHint: 'quantitative',
+    allowedMetricKinds: ['count', 'rate', 'ratio', 'index', 'density', 'distance'],
+    warnOn: ['small-sample'],
+  },
+  'feature-lookup': {
+    task: 'feature-lookup',
+    mapType: 'dotDensity',
+    legendHint: 'categorical',
+    allowedMetricKinds: ['nominal', 'count'],
+    warnOn: [],
+  },
+  coverage: {
+    task: 'coverage',
+    mapType: 'dotDensity',
+    legendHint: 'categorical',
+    allowedMetricKinds: ['nominal', 'count'],
+    warnOn: ['sparse-data'],
+  },
 };
 ```
 
-Concrete `allowedMetricKinds`/`warnOn` thresholds are a product-judgment detail filled in during implementation (this plan fixes the _shape_ of the table and that it is exhaustive over all seven tasks — the specific values are a Phase-1 acceptance item, reviewed against the fixture catalog rather than decided abstractly here). `TASK_RULES` is indexed by PRD-005 plan's `AnalyticalTask` union (backed by that plan's `ANALYTICAL_TASKS` const array), so a completeness test can iterate it directly.
+The reasoning behind each column, grouped by why tasks land together rather than repeated per row:
+
+- **`allowedMetricKinds` splits into exactly two groups, and the split _is_ the `mapType` split.** `distribution`/`comparison`/`ranking`/`change-over-time`/`outlier-detection` all need a magnitude to encode — as a Jenks-threshold color scale (`choropleth`, via `buildChoropleth`'s `isNumeric` branch) or as circle size (`proportionalCircles`'s `buildColorBy`/`sizeBy`, sqrt-area) — so they share the same five continuous `MetricKind`s and exclude `'nominal'` (a category has no magnitude to threshold or size by). `feature-lookup`/`coverage` are the opposite: they ask "what/where", not "how much", so `'nominal'` is the natural kind (a point's category *is* the answer), with `'count'` included too since both tasks commonly key off a simple occurrence count (how many of this feature, whether this cell has any data) without needing a full continuous scale.
+- **`mapType` follows `@ttoss/geovis`'s existing per-geometry defaults (D2), not a new judgment call.** `choropleth` resolves a polygon layer (`buildChoropleth`, `geometry: 'polygon'`) with a quantitative-or-categorical color legend — the right fit for a metric painted across areal geography, which is what `distribution`/`comparison`/`change-over-time`/`outlier-detection` all are (a single per-area value, classed into bins). `ranking` gets `proportionalCircles` instead of `choropleth` specifically because ranking is about relative magnitude *between* features, and circle size (not area color) is the encoding `@ttoss/geovis` already builds for that (`PROPORTIONAL_CIRCLES_DEFAULTS`, sqrt-area sizing) — reusing `choropleth` for ranking would bury the actual ranking signal (size) inside a color scale instead. `feature-lookup`/`coverage` get `dotDensity` (point layer, `resolveDotDensity`) because both are about individual located features/records, not an area-wide statistic — a polygon fill would imply a computed areal value neither task has.
+- **`legendHint` is `mapType`'s legend counterpart, not an independent choice** — `choropleth`'s two numeric-magnitude-driven tasks that don't rank get `quantitative` (matches `buildChoropleth`'s numeric branch); `ranking`'s `proportionalCircles` gets `proportional` (the size legend `getProportionalCirclesAutoLegendId` produces); `feature-lookup`/`coverage`'s `dotDensity` gets `categorical` (identity/presence, not a scale) even though `resolveDotDensity` itself currently returns no legend at all — `legendHint` here documents the *task's* semantic legend shape for the resolver to construct (Phase 2/D3's `VisualizationSpec` assembly is what actually adds a `LegendSpec`, since `resolveDotDensity` alone doesn't).
+- **`warnOn` follows each task's specific failure mode, not a shared default.** `change-over-time` is the one task whose data literally has a missing dimension without a declared `Temporal.extent`/`periods[]` (PRD-004 plan D10) — hence `missing-temporal-range`, unique to it. `ranking`/`comparison`/`outlier-detection` all become misleading with too few features (a ranking of 2 items, an outlier flagged among 3 points) — hence `small-sample`. `distribution`/`coverage` become misleading the opposite way, when most of the *geography* has no matching data at all (a distribution map that's 95% "no data" isn't showing a distribution) — hence `sparse-data`. `feature-lookup` gets no `warnOn`: a lookup returning few or even one result is the expected, correct outcome of a targeted query, not a data-quality problem to flag.
+
+`TASK_RULES` is indexed by PRD-005 plan's `AnalyticalTask` union (backed by that plan's `ANALYTICAL_TASKS` const array), so a completeness test can iterate it directly. The specific `small-sample`/`sparse-data` *thresholds* (how few is "too few") stay a Phase-3 implementation-time judgment call reviewed against the fixture catalog (Open questions) — this table fixes which warning applies to which task, not the numeric cutoff that trips it.
 
 ### D5 — Extension points: a registry, not a fork
 
@@ -172,10 +235,10 @@ Land D2 in `@ttoss/geovis`: add the barrel export, extend `publicContract.test.t
 
 ### Phase 1 — Task rule table
 
-Implement `TaskRule`/`TASK_RULES` (D4) in `src/resolve/taskRules.ts`, with concrete values for all seven tasks reviewed against PRD-004 plan's sample catalog and PRD-005 plan's seven task fixtures.
+Implement `TaskRule`/`TASK_RULES` (D4) in `src/resolve/taskRules.ts` with the table's seven entries verbatim, reviewed against PRD-004 plan's sample catalog and PRD-005 plan's seven task fixtures — D4 fixes the values, this phase is transcription plus fixture verification, not a design decision.
 
-**Demo:** `TASK_RULES.ranking.mapType === 'proportionalCircles'`; a table-completeness test iterates `ANALYTICAL_TASKS` (PRD-005 plan D2) and asserts every value has an entry.
-**Acceptance:** one test per task confirming its rule's `mapType`/`legendHint` are one of `@ttoss/geovis`'s valid enum values (compile-time via shared types, runtime via a fixture-backed test).
+**Demo:** `TASK_RULES.ranking.mapType === 'proportionalCircles'`; `TASK_RULES['feature-lookup'].warnOn` is `[]`; a table-completeness test iterates `ANALYTICAL_TASKS` (PRD-005 plan D2) and asserts every value has an entry.
+**Acceptance:** one test per task confirming its rule's `mapType`/`legendHint`/`allowedMetricKinds` match D4's table exactly and that `mapType`/`legendHint` are one of `@ttoss/geovis`'s valid enum values (compile-time via shared types, runtime via a fixture-backed test); a fixture per task confirms every metric kind in `allowedMetricKinds` actually resolves against at least one sample-catalog metric of that kind (`nominal`-allowing tasks checked against the sample catalog's nominal metric, D6 of PRD-005's plan).
 
 ### Phase 2 — Deterministic `resolve()`, happy path
 
@@ -213,7 +276,7 @@ R4's exit criterion ("an AI can only reference catalog entries; the resolver pro
 
 ## Open questions carried forward (not resolved by this plan)
 
-- Concrete `allowedMetricKinds`/`warnOn` threshold values in `TASK_RULES` are left as a Phase-1 implementation-time judgment call, reviewed against real fixtures rather than fixed in this planning document.
+- `TASK_RULES`'s `allowedMetricKinds`/`mapType`/`legendHint`/`warnOn` values are now fixed in D4's table, not left to implementation-time judgment. What remains open is the numeric *threshold* each `warnOn` category trips at (how few features counts as `small-sample`, what fraction of "no data" counts as `sparse-data`) — a Phase-3 implementation-time judgment call, reviewed against the fixture catalog rather than fixed in this planning document.
 - The strategy document (`docs/website/docs/product/geovis/strategy.md`) is absent from the repo (see PRD-004 plan's Verification section) — strategy §5.3 and §12's full rationale for task-rule specifics is unavailable beyond what PRD-006's own text states.
 - PRD-007 (Evaluation Suite) is the consumer that will exercise `resolve()`'s resolver-success and zero-guess-rate metrics; this plan does not build any eval harness itself (out of scope per PRD-006's own Won't and PRD-007's separate PRD).
 - Whether `@ttoss/geovis` maintainers want `resolveSpecFromMapType` exported under its current name/signature or a renamed/wrapped form is a Phase-0 review question for that package's own owners, not decided unilaterally by this plan.
