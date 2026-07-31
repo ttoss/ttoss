@@ -26,10 +26,7 @@ export type ComputedFilterDomain =
 
 /** Widget a `FilterControl` expects to be rendered as. */
 export type FilterControlKind =
-  | 'select'
-  | 'multi-select'
-  | 'range-slider'
-  | 'date-range';
+  'select' | 'multi-select' | 'range-slider' | 'date-range';
 
 /** Where the filtered property lives, resolved to a labelled reference. */
 export interface FilterControlSource {
