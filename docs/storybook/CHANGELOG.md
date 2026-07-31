@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 4.1.0 (2026-07-30)
+
+### Features
+
+- **auth-core:** add configurable email and password auth flows ([#1172](https://github.com/ttoss/ttoss/issues/1172)) ([5e75701](https://github.com/ttoss/ttoss/commit/5e7570145fdeafea947c3a78dbb00132b8f3744c))
+
+## [4.0.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@4.0.2...@docs/storybook@4.0.3) (2026-07-27)
+
+**Note:** Version bump only for package @docs/storybook
+
+## [4.0.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@4.0.1...@docs/storybook@4.0.2) (2026-07-23)
+
+**Note:** Version bump only for package @docs/storybook
+
 ## [4.0.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@4.0.0...@docs/storybook@4.0.1) (2026-07-22)
 
 **Note:** Version bump only for package @docs/storybook

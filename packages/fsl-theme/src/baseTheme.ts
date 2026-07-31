@@ -43,35 +43,46 @@ export const baseTheme: ThemeTokens = {
     // Core colors are intent-free primitives. Scale positions only.
     colors: {
       brand: {
-        50: '#eff6ff',
-        100: '#dbeafe',
-        200: '#bfdbfe',
-        300: '#60a5fa',
-        400: '#2b87f5',
-        500: '#0469e3',
-        600: '#035fca',
-        700: '#034da6',
-        800: '#023d85',
-        900: '#022e63',
+        // Vivid blue — P3 Slice 2, tuned against Adobe Spectrum 2's accent
+        // family: one saturated, slightly indigo-leaning blue does all the
+        // talking while every neutral stays silent. 500 is the filled-accent
+        // surface (4.8:1 with neutral.0 text — AA Normal); 700 doubles as the
+        // light-mode focus ring; 300 carries accent text/focus on dark.
+        50: '#f5f9ff',
+        100: '#e5f0fe',
+        200: '#cbe2fe',
+        300: '#8eb9fc',
+        400: '#5d89ff',
+        500: '#3b63fb',
+        600: '#274dea',
+        700: '#1d3ecf',
+        800: '#1532ad',
+        900: '#10288c',
       },
 
       neutral: {
+        // Hue-free ramp (R=G=B at every step) — P3 Slice 2, tuned against
+        // Adobe Spectrum 2's gray structure: surface steps sit close together
+        // (0–300) so layers whisper, then a deliberate legibility gap before
+        // the content steps (400+) so text speaks. The zinc ramp this
+        // replaces carried a cool cast that read as a navy tint on dark
+        // surfaces; pure grays keep every layered surface color-silent.
         0: '#ffffff',
-        50: '#f8fafc',
-        100: '#f1f5f9',
-        200: '#e2e8f0',
-        300: '#cbd5e1',
-        400: '#94a3b8',
-        500: '#64748b',
-        600: '#475569',
-        700: '#334155',
+        50: '#f8f8f8',
+        100: '#f0f0f0',
+        200: '#e1e1e1',
+        300: '#d0d0d0',
+        400: '#9d9d9d',
+        500: '#6f6f6f',
+        600: '#525252',
+        700: '#3d3d3d',
         // 800 fills the 700→900 gap so dark surfaces can stratify in fine
         // steps (canvas 900 → raised 800 → overlay 700) — depth in dark comes
         // from surfaces lightening as they rise, not from near-invisible
         // shadows. @see elevation.md — "Surface + Shadow".
-        800: '#1e293b',
-        900: '#0f172a',
-        1000: '#020617',
+        800: '#262626',
+        900: '#161616',
+        1000: '#0a0a0a',
       },
 
       red: {
@@ -135,28 +146,34 @@ export const baseTheme: ThemeTokens = {
     },
 
     // -- Elevation ----------------------------------------------------------
+    // Three-layer recipes (P3 Slice 2, Spectrum-derived): a wide low-opacity
+    // ambient layer + a soft transition layer + a tight "key" line that keeps
+    // the surface edge defined where the ambient blur fades. Softer and more
+    // physical than the two-layer stacks they replace.
     elevation: {
       level: {
         0: 'none',
-        1: '0 1px 2px rgba(0,0,0,0.06), 0 1px 1px rgba(0,0,0,0.04)',
-        2: '0 4px 8px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.06)',
-        3: '0 8px 16px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.08)',
-        4: '0 16px 32px rgba(0,0,0,0.14), 0 8px 16px rgba(0,0,0,0.10)',
+        1: '0 1px 4px rgba(0,0,0,0.06), 0 0 1px rgba(0,0,0,0.10)',
+        2: '0 2px 8px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04), 0 0 1px rgba(0,0,0,0.08)',
+        3: '0 4px 12px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04), 0 0 2px rgba(0,0,0,0.12)',
+        4: '0 12px 24px rgba(0,0,0,0.12), 0 6px 12px rgba(0,0,0,0.06), 0 0 4px rgba(0,0,0,0.12)',
       },
-      // High-opacity recipes — stronger depth contrast for dark or heavily-colored surfaces
+      // High-opacity recipes — stronger depth contrast for dark or
+      // heavily-colored surfaces (~3× the base opacities, the same ratio
+      // Spectrum applies to its dark drop shadows).
       emphatic: {
         0: 'none',
-        1: '0 1px 2px rgba(0,0,0,0.20), 0 1px 1px rgba(0,0,0,0.14)',
-        2: '0 4px 8px rgba(0,0,0,0.24), 0 2px 4px rgba(0,0,0,0.18)',
-        3: '0 8px 16px rgba(0,0,0,0.28), 0 4px 8px rgba(0,0,0,0.22)',
-        4: '0 16px 32px rgba(0,0,0,0.34), 0 8px 16px rgba(0,0,0,0.28)',
+        1: '0 1px 4px rgba(0,0,0,0.18), 0 0 1px rgba(0,0,0,0.30)',
+        2: '0 2px 8px rgba(0,0,0,0.24), 0 1px 4px rgba(0,0,0,0.12), 0 0 1px rgba(0,0,0,0.24)',
+        3: '0 4px 12px rgba(0,0,0,0.24), 0 2px 6px rgba(0,0,0,0.12), 0 0 2px rgba(0,0,0,0.36)',
+        4: '0 12px 24px rgba(0,0,0,0.36), 0 6px 12px rgba(0,0,0,0.18), 0 0 4px rgba(0,0,0,0.36)',
       },
     },
 
     // -- Font Primitives ----------------------------------------------------
     font: {
       family: {
-        sans: 'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji"',
+        sans: '"Inter Variable", Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji"',
         serif: 'ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
         mono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
       },
@@ -238,6 +255,24 @@ export const baseTheme: ThemeTokens = {
     spacing: {
       engine: {
         unit: 'clamp(4px, 0.25cqi + 3px, 6px)',
+      },
+
+      // The NON-FLUID counterpart of the steps below — plain values, because
+      // core is the layer whose job is raw values (model.md §1). It exists so
+      // that a semantic token whose *resolved outcome* is the guarantee
+      // (`inset.control.*`, ADR-022) has a core step to reference instead of
+      // inlining a literal into the semantic layer, which would break "semantic
+      // references core only" (§2) and would not satisfy §8's necessity test —
+      // a bare constant is always expressible as a `TokenRef` once core holds
+      // it. Keys mirror the fluid steps' multipliers and the base theme sets
+      // them to the engine's own desktop bound (6px), so a control resolves
+      // identically at ≥1200px to the fluid scale it left. A theme may retune
+      // them freely; what validation guarantees is the ordering and the fixed
+      // shape, never these numbers.
+      fixed: {
+        1: '6px',
+        2: '12px',
+        4: '24px',
       },
 
       0: '0px',
@@ -410,7 +445,7 @@ export const baseTheme: ThemeTokens = {
       action: {
         primary: {
           // neutral.1000 (black) background — authoritative, neutral primary action.
-          // Contrast: neutral.0 text on neutral.1000 → ~20:1 ✓ ; neutral.700 hover → ~12:1 ✓
+          // Contrast: neutral.0 text on neutral.1000 → ~19.8:1 ✓ ; neutral.900 hover → ~18:1 ✓
           background: {
             default: '{core.colors.neutral.1000}',
             hover: '{core.colors.neutral.900}',
@@ -446,7 +481,14 @@ export const baseTheme: ThemeTokens = {
             active: '{core.colors.neutral.400}',
             disabled: '{core.colors.neutral.100}',
             droptarget: '{core.colors.neutral.50}',
-            pressed: '{core.colors.neutral.400}',
+            // `pressed` is the *persistent* engaged state of a toggle (the
+            // only consumer of this state — ToggleButton). A quiet toolbar
+            // toggle must read unambiguously ON, so it inverts to a strong
+            // neutral fill instead of the mid-grey that reads as another
+            // hover. neutral.0 text on neutral.700 → 10.9:1 ✓. Keeping it
+            // distinct from `active` (neutral.400) also restores press
+            // feedback on an already-engaged toggle.
+            pressed: '{core.colors.neutral.700}',
             expanded: '{core.colors.neutral.200}',
           },
           border: {
@@ -455,18 +497,20 @@ export const baseTheme: ThemeTokens = {
             active: '{core.colors.neutral.400}',
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.200}',
-            pressed: '{core.colors.neutral.400}',
-            expanded: '{core.colors.brand.500}',
+            pressed: '{core.colors.neutral.700}',
+            expanded: '{core.colors.neutral.500}',
           },
           text: {
             default: '{core.colors.neutral.900}',
             disabled: '{core.colors.neutral.500}',
+            // The engaged fill is dark — its label inverts with it.
+            pressed: '{core.colors.neutral.0}',
             // hover/active/focused: all neutral.900 — omitted
           },
         },
         accent: {
           // brand.500 background — vivid blue that draws attention in the UI.
-          // Contrast: neutral.0 text on brand.500 (#0469e3) → ~5.7:1 ✓ AA
+          // Contrast: neutral.0 text on brand.500 (#3b63fb) → ~4.8:1 ✓ AA
           // All interactive states darken further → neutral.0 text remains valid.
           background: {
             default: '{core.colors.brand.500}',
@@ -522,7 +566,14 @@ export const baseTheme: ThemeTokens = {
           },
         },
         muted: {
-          // neutral.0 background, neutral.200 border, neutral.700 text
+          // The quietest rung of the Action emphasis ladder: the fill *is* the
+          // surface it sits on and the border matches it, so the control has no
+          // visible edge at rest and materialises on hover. This is the
+          // system's idiom for "no fill" — an opaque surface-coloured value,
+          // never `transparent`, so every pairing stays contrast-auditable
+          // (ADR-015). Giving it a visible border instead made it read as the
+          // classic outlined *secondary* of other systems and inverted the
+          // perceived order of the ladder.
           background: {
             default: '{core.colors.neutral.0}',
             hover: '{core.colors.neutral.50}',
@@ -533,13 +584,16 @@ export const baseTheme: ThemeTokens = {
             expanded: '{core.colors.neutral.50}',
           },
           border: {
-            default: '{core.colors.neutral.200}',
-            hover: '{core.colors.neutral.300}',
-            active: '{core.colors.neutral.300}',
+            // Every state mirrors its background: the edge never appears, the
+            // fill carries the whole affordance. `focused` is the exception —
+            // it is the one state that must be visible on any surface.
+            default: '{core.colors.neutral.0}',
+            hover: '{core.colors.neutral.50}',
+            active: '{core.colors.neutral.100}',
             focused: '{core.colors.brand.500}',
-            disabled: '{core.colors.neutral.200}',
-            pressed: '{core.colors.neutral.300}',
-            expanded: '{core.colors.brand.500}',
+            disabled: '{core.colors.neutral.100}',
+            pressed: '{core.colors.neutral.100}',
+            expanded: '{core.colors.neutral.50}',
           },
           text: {
             default: '{core.colors.neutral.700}',
@@ -560,10 +614,10 @@ export const baseTheme: ThemeTokens = {
             hover: '{core.colors.neutral.50}',
             active: '{core.colors.neutral.50}',
             disabled: '{core.colors.neutral.100}',
-            selected: '{core.colors.brand.50}',
+            selected: '{core.colors.neutral.100}',
             droptarget: '{core.colors.neutral.50}',
-            checked: '{core.colors.brand.500}',
-            indeterminate: '{core.colors.brand.300}',
+            checked: '{core.colors.neutral.1000}',
+            indeterminate: '{core.colors.neutral.1000}',
             pressed: '{core.colors.neutral.100}',
             expanded: '{core.colors.neutral.50}',
             // invalid: field stays readable — the red signal lives on the border
@@ -573,14 +627,14 @@ export const baseTheme: ThemeTokens = {
           border: {
             default: '{core.colors.neutral.300}',
             hover: '{core.colors.neutral.500}',
-            active: '{core.colors.brand.500}',
+            active: '{core.colors.neutral.500}',
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.200}',
-            selected: '{core.colors.brand.500}',
-            checked: '{core.colors.brand.500}',
-            indeterminate: '{core.colors.brand.300}',
+            selected: '{core.colors.neutral.1000}',
+            checked: '{core.colors.neutral.1000}',
+            indeterminate: '{core.colors.neutral.1000}',
             pressed: '{core.colors.neutral.500}',
-            expanded: '{core.colors.brand.500}',
+            expanded: '{core.colors.neutral.500}',
             // red.600 on neutral.0: 4.83:1 — clears the 3:1 non-text floor
             invalid: '{core.colors.red.600}',
           },
@@ -591,8 +645,8 @@ export const baseTheme: ThemeTokens = {
             // invalid: value stays readable in the control; valence text lives
             // on the validationMessage via input.negative.text.*
             invalid: '{core.colors.neutral.900}',
-            // brand.300 (indeterminate bg) is light — use dark text for contrast
-            indeterminate: '{core.colors.neutral.900}',
+            // indeterminate bg is neutral.1000 — light text for contrast
+            indeterminate: '{core.colors.neutral.0}',
             // hover/active/focused/selected: all neutral.900 — omitted
           },
         },
@@ -605,30 +659,30 @@ export const baseTheme: ThemeTokens = {
             hover: '{core.colors.neutral.50}',
             active: '{core.colors.neutral.100}',
             disabled: '{core.colors.neutral.100}',
-            selected: '{core.colors.brand.50}',
+            selected: '{core.colors.neutral.100}',
             droptarget: '{core.colors.neutral.50}',
-            checked: '{core.colors.brand.500}',
-            indeterminate: '{core.colors.brand.300}',
+            checked: '{core.colors.neutral.1000}',
+            indeterminate: '{core.colors.neutral.1000}',
             pressed: '{core.colors.neutral.100}',
             expanded: '{core.colors.neutral.50}',
           },
           border: {
             default: '{core.colors.neutral.200}',
             hover: '{core.colors.neutral.300}',
-            active: '{core.colors.brand.500}',
+            active: '{core.colors.neutral.500}',
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.200}',
-            selected: '{core.colors.brand.500}',
-            checked: '{core.colors.brand.500}',
-            indeterminate: '{core.colors.brand.300}',
+            selected: '{core.colors.neutral.1000}',
+            checked: '{core.colors.neutral.1000}',
+            indeterminate: '{core.colors.neutral.1000}',
             pressed: '{core.colors.neutral.300}',
-            expanded: '{core.colors.brand.500}',
+            expanded: '{core.colors.neutral.500}',
           },
           text: {
             default: '{core.colors.neutral.900}',
             disabled: '{core.colors.neutral.500}',
             checked: '{core.colors.neutral.0}',
-            indeterminate: '{core.colors.neutral.900}',
+            indeterminate: '{core.colors.neutral.0}',
           },
         },
         negative: {
@@ -718,7 +772,7 @@ export const baseTheme: ThemeTokens = {
             checked: '{core.colors.neutral.500}',
             indeterminate: '{core.colors.neutral.300}',
             pressed: '{core.colors.neutral.500}',
-            expanded: '{core.colors.brand.500}',
+            expanded: '{core.colors.neutral.500}',
           },
           text: {
             default: '{core.colors.neutral.700}',
@@ -735,8 +789,8 @@ export const baseTheme: ThemeTokens = {
             hover: '{core.colors.neutral.50}',
             active: '{core.colors.neutral.100}',
             disabled: '{core.colors.neutral.100}',
-            selected: '{core.colors.brand.50}',
-            droptarget: '{core.colors.brand.50}',
+            selected: '{core.colors.neutral.100}',
+            droptarget: '{core.colors.neutral.100}',
             visited: '{core.colors.neutral.50}',
           },
           border: {
@@ -745,8 +799,8 @@ export const baseTheme: ThemeTokens = {
             active: '{core.colors.neutral.300}',
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.100}',
-            selected: '{core.colors.brand.300}',
-            droptarget: '{core.colors.brand.300}',
+            selected: '{core.colors.neutral.400}',
+            droptarget: '{core.colors.neutral.400}',
           },
           text: {
             default: '{core.colors.neutral.900}',
@@ -760,7 +814,7 @@ export const baseTheme: ThemeTokens = {
             hover: '{core.colors.neutral.100}',
             active: '{core.colors.neutral.200}',
             disabled: '{core.colors.neutral.100}',
-            selected: '{core.colors.brand.50}',
+            selected: '{core.colors.neutral.100}',
             droptarget: '{core.colors.neutral.100}',
             visited: '{core.colors.neutral.100}',
           },
@@ -770,7 +824,7 @@ export const baseTheme: ThemeTokens = {
             active: '{core.colors.neutral.300}',
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.100}',
-            selected: '{core.colors.brand.300}',
+            selected: '{core.colors.neutral.400}',
           },
           text: {
             default: '{core.colors.neutral.700}',
@@ -897,14 +951,22 @@ export const baseTheme: ThemeTokens = {
         // Feedback is informational — surfaces show state, not interactions.
         // Legal states: default | focused (close button or focusable wrapper) | disabled.
         // hover, active, selected, pressed, expanded are absent: FSL §7.
+        //
+        // Filled language (P3 Slice 3, Spectrum-derived): status surfaces are
+        // deep saturated fills with neutral.0 text — confident, mode-stable
+        // (the valences hold the same fill in dark; only `primary`/`muted`
+        // remap). Every fill clears AA Normal with neutral.0: neutral.800
+        // 15.1:1 · green.700 5.0:1 · yellow.700 4.9:1 · red.600 4.8:1.
+        // `muted` stays a tinted neutral surface — the quiet chip and the
+        // rail/track color for Feedback fills (ProgressBar, Meter).
         primary: {
-          background: { default: '{core.colors.neutral.50}' },
+          background: { default: '{core.colors.neutral.800}' },
           border: {
-            default: '{core.colors.neutral.300}',
+            default: '{core.colors.neutral.800}',
             focused: '{core.colors.brand.500}',
           },
           text: {
-            default: '{core.colors.neutral.900}',
+            default: '{core.colors.neutral.0}',
             disabled: '{core.colors.neutral.500}',
           },
         },
@@ -920,35 +982,50 @@ export const baseTheme: ThemeTokens = {
           },
         },
         positive: {
-          background: { default: '{core.colors.green.100}' },
+          background: { default: '{core.colors.green.700}' },
           border: {
-            default: '{core.colors.green.500}',
-            focused: '{core.colors.green.700}',
+            default: '{core.colors.green.700}',
+            focused: '{core.colors.green.900}',
           },
           text: {
-            default: '{core.colors.green.900}',
+            default: '{core.colors.neutral.0}',
             disabled: '{core.colors.neutral.500}',
           },
         },
         caution: {
-          background: { default: '{core.colors.yellow.100}' },
+          background: { default: '{core.colors.yellow.700}' },
           border: {
-            default: '{core.colors.yellow.500}',
-            focused: '{core.colors.yellow.700}',
+            default: '{core.colors.yellow.700}',
+            focused: '{core.colors.yellow.900}',
           },
           text: {
-            default: '{core.colors.yellow.900}',
+            default: '{core.colors.neutral.0}',
             disabled: '{core.colors.neutral.500}',
           },
         },
         negative: {
-          background: { default: '{core.colors.red.100}' },
+          background: { default: '{core.colors.red.600}' },
           border: {
-            default: '{core.colors.red.500}',
-            focused: '{core.colors.red.700}',
+            default: '{core.colors.red.600}',
+            focused: '{core.colors.red.900}',
           },
           text: {
-            default: '{core.colors.red.900}',
+            default: '{core.colors.neutral.0}',
+            disabled: '{core.colors.neutral.500}',
+          },
+        },
+        // Informative valence (P3 Slice 3): status that is noteworthy but
+        // carries no judgement — "in progress", "new", "info". The brand
+        // fill is mode-stable (like action.accent); this is the canonical
+        // fill for ProgressBar/Meter activity.
+        accent: {
+          background: { default: '{core.colors.brand.500}' },
+          border: {
+            default: '{core.colors.brand.500}',
+            focused: '{core.colors.brand.700}',
+          },
+          text: {
+            default: '{core.colors.neutral.0}',
             disabled: '{core.colors.neutral.500}',
           },
         },
@@ -956,8 +1033,9 @@ export const baseTheme: ThemeTokens = {
 
       navigation: {
         primary: {
-          // Inline link on light surfaces: transparent bg, brand text underline.
-          // Contrast: brand.700 (#034da6) on neutral.0 (#ffffff) → ~9.5:1 ✓
+          // Inline link on light surfaces: transparent bg, monochrome text +
+          // underline (the underline carries the affordance — no hue needed).
+          // Contrast: neutral.800 (#262626) on neutral.0 (#ffffff) → ~15:1 ✓
           background: {
             default: '{core.colors.neutral.0}',
             hover: '{core.colors.neutral.50}',
@@ -970,15 +1048,18 @@ export const baseTheme: ThemeTokens = {
           border: {
             default: '{core.colors.neutral.0}',
             focused: '{core.colors.brand.500}',
+            // selected/current carry the tab indicator line — monochrome
+            selected: '{core.colors.neutral.1000}',
+            current: '{core.colors.neutral.1000}',
           },
           text: {
-            default: '{core.colors.brand.700}',
-            hover: '{core.colors.brand.900}',
-            active: '{core.colors.brand.900}',
+            default: '{core.colors.neutral.800}',
+            hover: '{core.colors.neutral.1000}',
+            active: '{core.colors.neutral.1000}',
             disabled: '{core.colors.neutral.500}',
-            current: '{core.colors.brand.900}',
+            current: '{core.colors.neutral.1000}',
             visited: '{core.colors.neutral.500}',
-            expanded: '{core.colors.brand.900}',
+            expanded: '{core.colors.neutral.1000}',
           },
         },
         secondary: {
@@ -988,9 +1069,9 @@ export const baseTheme: ThemeTokens = {
             hover: '{core.colors.neutral.100}',
             active: '{core.colors.neutral.200}',
             disabled: '{core.colors.neutral.100}',
-            selected: '{core.colors.brand.50}',
+            selected: '{core.colors.neutral.100}',
             droptarget: '{core.colors.neutral.100}',
-            current: '{core.colors.brand.100}',
+            current: '{core.colors.neutral.200}',
             visited: '{core.colors.neutral.100}',
             expanded: '{core.colors.neutral.100}',
           },
@@ -1000,15 +1081,15 @@ export const baseTheme: ThemeTokens = {
             active: '{core.colors.neutral.300}',
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.200}',
-            selected: '{core.colors.brand.400}',
-            current: '{core.colors.brand.500}',
+            selected: '{core.colors.neutral.1000}',
+            current: '{core.colors.neutral.1000}',
           },
           text: {
             default: '{core.colors.neutral.700}',
             hover: '{core.colors.neutral.900}',
             disabled: '{core.colors.neutral.500}',
-            selected: '{core.colors.brand.700}',
-            current: '{core.colors.brand.700}',
+            selected: '{core.colors.neutral.1000}',
+            current: '{core.colors.neutral.1000}',
             visited: '{core.colors.neutral.700}',
             expanded: '{core.colors.neutral.900}',
           },
@@ -1064,7 +1145,9 @@ export const baseTheme: ThemeTokens = {
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.200}',
             selected: '{core.colors.neutral.500}',
-            current: '{core.colors.brand.400}',
+            // brand.500 (not 400): the current-page indicator must clear the
+            // 3:1 non-text floor against the neutral.100 current background.
+            current: '{core.colors.brand.500}',
           },
           text: {
             default: '{core.colors.neutral.500}',
@@ -1218,7 +1301,7 @@ export const baseTheme: ThemeTokens = {
         lg: {
           fontFamily: '{core.font.family.sans}',
           fontSize: '{core.font.scale.text.3}',
-          fontWeight: '{core.font.weight.medium}',
+          fontWeight: '{core.font.weight.regular}',
           lineHeight: '{core.font.leading.snug}',
           letterSpacing: '{core.font.tracking.normal}',
           fontOpticalSizing: '{core.font.optical.auto}',
@@ -1226,7 +1309,7 @@ export const baseTheme: ThemeTokens = {
         md: {
           fontFamily: '{core.font.family.sans}',
           fontSize: '{core.font.scale.text.2}',
-          fontWeight: '{core.font.weight.medium}',
+          fontWeight: '{core.font.weight.regular}',
           lineHeight: '{core.font.leading.snug}',
           letterSpacing: '{core.font.tracking.normal}',
           fontOpticalSizing: '{core.font.optical.auto}',
@@ -1234,9 +1317,23 @@ export const baseTheme: ThemeTokens = {
         sm: {
           fontFamily: '{core.font.family.sans}',
           fontSize: '{core.font.scale.text.1}',
-          fontWeight: '{core.font.weight.medium}',
+          fontWeight: '{core.font.weight.regular}',
           lineHeight: '{core.font.leading.snug}',
           letterSpacing: '{core.font.tracking.wide}',
+          fontOpticalSizing: '{core.font.optical.auto}',
+        },
+      },
+
+      // Command-trigger text (P3 Slice 3): CTAs carry semibold while `label`
+      // sits at regular — the weight-contrast rhythm of reference-grade
+      // systems (controls quiet, commands assertive).
+      action: {
+        md: {
+          fontFamily: '{core.font.family.sans}',
+          fontSize: '{core.font.scale.text.2}',
+          fontWeight: '{core.font.weight.semibold}',
+          lineHeight: '{core.font.leading.snug}',
+          letterSpacing: '{core.font.tracking.normal}',
           fontOpticalSizing: '{core.font.optical.auto}',
         },
       },
@@ -1282,10 +1379,24 @@ export const baseTheme: ThemeTokens = {
     // driven by the rem-anchored `hit` floor, not the inset).
     spacing: {
       inset: {
+        // Control insets are OUTCOME-BEARING and therefore fixed (ADR-022,
+        // owner ruling 2026-07-29): a control's box is its inset + type with
+        // `hit` as the floor, so a fluid inset makes the box fluid — which is
+        // exactly what ADR-019/020 rule against, and ADR-020's own premise
+        // ("the ±2px residual never binds") was measured false above ~900px
+        // (F-035: the field row read 32 / 32.5 / 34 across the range). The
+        // values are the engine's own top step (`core.spacing.{1|2|4}` at the
+        // desktop bound), so nothing changes visually at ≥1200px; the residual
+        // narrow-end step is the fluid type meeting the `hit` floor, which is
+        // the floor's job (ADR-020), not an inset ramp.
+        // The fixed values live in core (`core.spacing.fixed.*`, the non-fluid
+        // step scale) and are referenced here like every other semantic
+        // spacing token: ADR-022 rules the *outcome* fixed, and a literal in
+        // this layer was the wrong mechanism for it (ADR-023).
         control: {
-          sm: '{core.spacing.1}',
-          md: '{core.spacing.2}',
-          lg: '{core.spacing.4}',
+          sm: '{core.spacing.fixed.1}',
+          md: '{core.spacing.fixed.2}',
+          lg: '{core.spacing.fixed.4}',
         },
         // inset.surface ≥ inset.control (validation invariant) and sits
         // above gap.stack at the default step so containers visibly enclose
@@ -1294,6 +1405,17 @@ export const baseTheme: ThemeTokens = {
           sm: '{core.spacing.4}',
           md: '{core.spacing.6}',
           lg: '{core.spacing.8}',
+        },
+        // Command triggers breathe a little more on the block axis than a
+        // generic control: at the desktop bound the button resolves to
+        // 9 + 20 (label line) + 9 + 2 (border) = 40px — the reference
+        // systems' comfortable CTA height — while a phone stays at 8px and
+        // the coarse-pointer `hit` floor (48px) takes over there anyway.
+        // Bounded rather than stepped: one engine step (≈5.6px) is too tight
+        // and two (≈11px) overshoot 40px. RawValue rationale mirrors
+        // `separation.interactive.min` — see model.md §8.
+        action: {
+          block: 'clamp(8px, {core.spacing.2}, 9px)',
         },
       },
 
@@ -1331,6 +1453,9 @@ export const baseTheme: ThemeTokens = {
     sizing: {
       hit: '{core.sizing.hit.fine}',
       icon: {
+        // Tracks the accompanying text (1em) so the glyph's ink lands inside
+        // the cap-height band — the optical-alignment step, not a ramp step.
+        text: '{core.sizing.relative.em}',
         sm: '{core.sizing.ramp.ui.2}',
         md: '{core.sizing.ramp.ui.3}',
         lg: '{core.sizing.ramp.ui.4}',
@@ -1359,6 +1484,10 @@ export const baseTheme: ThemeTokens = {
 
     // -- Radii --------------------------------------------------------------
     radii: {
+      // Pill CTAs (P3 Slice 3, Spectrum-derived): command triggers take the
+      // full-round silhouette while fields/choice controls stay at `control`
+      // — the "press me" vs "fill me in" distinction.
+      action: '{core.radii.full}',
       control: '{core.radii.md}',
       surface: '{core.radii.lg}',
       round: '{core.radii.full}',
@@ -1499,36 +1628,66 @@ export const darkAlternate: ModeOverride = {
             disabled: '{core.colors.neutral.700}',
             droptarget: '{core.colors.neutral.700}', // neutral.50 is near-white on dark
             expanded: '{core.colors.neutral.500}', // neutral.200 is near-white on dark
+            // The engaged toggle inverts the other way here: the base's dark
+            // fill equals dark mode's resting surface, so ON must be the
+            // light one. neutral.900 text on neutral.300 → 12:1 ✓.
+            pressed: '{core.colors.neutral.300}',
           },
           border: {
-            default: '{core.colors.neutral.500}',
-            hover: '{core.colors.neutral.300}',
-            active: '{core.colors.neutral.100}',
+            // Mirrors the background, exactly as light mode does. Carrying an
+            // edge here (neutral.500 over a neutral.700 fill) made a secondary
+            // action resolve to the *identical* triple as a text input in dark
+            // — same fill, same edge, same ink — so a button and a field became
+            // indistinguishable in one mode and clearly distinct in the other.
+            // A mode may change tonal depth (ADR-018); it may not change the
+            // vocabulary. `focused` and `expanded` keep their visible edge, the
+            // same two exceptions light mode makes.
+            default: '{core.colors.neutral.700}',
+            hover: '{core.colors.neutral.500}',
+            active: '{core.colors.neutral.300}',
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.700}',
+            pressed: '{core.colors.neutral.300}',
+            // Lighter than the expanded fill (neutral.500) so the open trigger
+            // still shows an edge — light mode's neutral.500-over-neutral.200.
+            expanded: '{core.colors.neutral.300}',
           },
           text: {
             default: '{core.colors.neutral.50}',
             disabled: '{core.colors.neutral.500}',
+            pressed: '{core.colors.neutral.900}',
           },
         },
         muted: {
+          // Dark mode's quiet rung sits ON the canvas (neutral.900), not one
+          // stratum above it: at neutral.700 it resolved to the exact same
+          // triple as `secondary` — two emphasis levels rendering the same
+          // pixels. The fill still appears on hover, one tonal step at a time
+          // (ADR-018: dark depth is carried by surface colour).
           background: {
-            default: '{core.colors.neutral.700}',
-            hover: '{core.colors.neutral.500}',
+            default: '{core.colors.neutral.900}',
+            hover: '{core.colors.neutral.700}',
             active: '{core.colors.neutral.500}', // neutral.300 fails AA with neutral.0 text (1.6:1); neutral.500 gives 5.5:1
-            disabled: '{core.colors.neutral.700}',
+            disabled: '{core.colors.neutral.900}',
             droptarget: '{core.colors.neutral.700}', // neutral.50 is near-white on dark
             pressed: '{core.colors.neutral.700}', // neutral.300 fails AA; darker = "depressed" feel, white text gives 8.6:1
             expanded: '{core.colors.neutral.500}', // neutral.50 is near-white on dark
           },
           border: {
-            default: '{core.colors.neutral.500}',
+            // Mirrors the background — no edge at rest, same as light mode.
+            default: '{core.colors.neutral.900}',
+            hover: '{core.colors.neutral.700}',
+            active: '{core.colors.neutral.500}',
             focused: '{core.colors.brand.500}',
-            disabled: '{core.colors.neutral.700}',
+            disabled: '{core.colors.neutral.900}',
+            pressed: '{core.colors.neutral.700}',
+            expanded: '{core.colors.neutral.500}',
           },
           text: {
-            default: '{core.colors.neutral.50}',
+            // Dimmer than `secondary`'s neutral.50: the quiet rung is quiet in
+            // ink as well as in fill. neutral.300 on the neutral.900 canvas →
+            // 13.6:1 ✓, and it brightens to neutral.0 once a fill appears.
+            default: '{core.colors.neutral.300}',
             disabled: '{core.colors.neutral.500}',
             // neutral.900 text on neutral.700 dark bg → ~3:1 — fails WCAG AA
             hover: '{core.colors.neutral.0}',
@@ -1575,57 +1734,74 @@ export const darkAlternate: ModeOverride = {
             hover: '{core.colors.neutral.500}',
             active: '{core.colors.neutral.500}', // neutral.50 is near-white on dark
             disabled: '{core.colors.neutral.900}',
-            selected: '{core.colors.brand.700}', // brand.50 is near-white on dark
+            selected: '{core.colors.neutral.800}', // monochrome selected tint on dark
             droptarget: '{core.colors.neutral.700}', // neutral.50 is near-white on dark
             pressed: '{core.colors.neutral.500}', // neutral.100 is near-white on dark
             expanded: '{core.colors.neutral.500}', // neutral.50 is near-white on dark
             invalid: '{core.colors.neutral.700}', // base neutral.0 would flash white on dark
+            // inverted mono: base checked bg (neutral.1000) vanishes on dark
+            checked: '{core.colors.neutral.0}',
+            indeterminate: '{core.colors.neutral.0}',
           },
           border: {
             default: '{core.colors.neutral.500}',
             hover: '{core.colors.neutral.300}',
+            active: '{core.colors.neutral.300}', // base neutral.500 == dark default
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.700}',
             invalid: '{core.colors.red.300}', // red.600 is too dark against neutral.700
+            selected: '{core.colors.neutral.300}', // base neutral.1000 vanishes on dark
+            checked: '{core.colors.neutral.0}',
+            indeterminate: '{core.colors.neutral.0}',
           },
           text: {
             default: '{core.colors.neutral.0}',
             disabled: '{core.colors.neutral.500}',
             invalid: '{core.colors.neutral.0}', // base neutral.900 would vanish on dark
-
-            // text.indeterminate pairs with bg.indeterminate = brand.300 (inherited from base)
-            // brand.300 is light — neutral.900 (dark) gives ~6.6:1 ✓; do NOT override here
+            // inverted mono box (neutral.0 bg) needs dark glyphs in dark mode
+            checked: '{core.colors.neutral.900}',
+            indeterminate: '{core.colors.neutral.900}',
           },
         },
-        // input.secondary: lower-emphasis field, matches primary dark values since both
-        // render on a dark page. base neutral.0 default fails on dark — full override.
+        // input.secondary: lower-emphasis field. It shares primary's dark fill
+        // (both render on a dark page, and base's neutral.0 default fails
+        // there), but it must NOT share primary's edge: in light mode
+        // secondary recedes via a lighter border (neutral.200 vs primary's
+        // neutral.300), and the dark override used to drop that distinction
+        // entirely — leaving the two roles byte-identical at rest. Here the
+        // border matches its own fill, so the field recedes until hovered.
         secondary: {
           background: {
             default: '{core.colors.neutral.700}',
             hover: '{core.colors.neutral.500}',
             active: '{core.colors.neutral.500}',
             disabled: '{core.colors.neutral.900}',
-            selected: '{core.colors.brand.700}',
+            selected: '{core.colors.neutral.800}',
             droptarget: '{core.colors.neutral.700}',
             pressed: '{core.colors.neutral.500}',
             expanded: '{core.colors.neutral.500}',
+            // inverted mono: base checked bg (neutral.1000) vanishes on dark
+            checked: '{core.colors.neutral.0}',
+            indeterminate: '{core.colors.neutral.0}',
           },
           border: {
-            default: '{core.colors.neutral.500}',
+            // Mirrors its own fill: the edge appears on hover, not at rest.
+            default: '{core.colors.neutral.700}',
             hover: '{core.colors.neutral.300}',
-            active: '{core.colors.brand.500}',
+            active: '{core.colors.neutral.300}',
             focused: '{core.colors.brand.500}',
             disabled: '{core.colors.neutral.700}',
-            selected: '{core.colors.brand.500}',
-            checked: '{core.colors.brand.500}',
-            indeterminate: '{core.colors.brand.300}',
+            selected: '{core.colors.neutral.300}',
+            checked: '{core.colors.neutral.0}',
+            indeterminate: '{core.colors.neutral.0}',
             pressed: '{core.colors.neutral.300}',
-            expanded: '{core.colors.brand.500}',
+            expanded: '{core.colors.neutral.300}',
           },
           text: {
             default: '{core.colors.neutral.0}',
             disabled: '{core.colors.neutral.500}',
-            checked: '{core.colors.neutral.0}',
+            checked: '{core.colors.neutral.900}', // inverted mono box (neutral.0 bg)
+            indeterminate: '{core.colors.neutral.900}',
           },
         },
         negative: {
@@ -1673,7 +1849,7 @@ export const darkAlternate: ModeOverride = {
             hover: '{core.colors.neutral.700}', // neutral.50 is near-white on dark
             active: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
             disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
-            selected: '{core.colors.brand.900}', // brand.50 is near-white on dark
+            selected: '{core.colors.neutral.700}', // monochrome selected tint on dark
             droptarget: '{core.colors.neutral.700}', // brand.50 is near-white on dark
             visited: '{core.colors.neutral.700}', // neutral.50 is near-white on dark
           },
@@ -1690,7 +1866,7 @@ export const darkAlternate: ModeOverride = {
             hover: '{core.colors.neutral.500}', // neutral.100 is near-white on dark
             active: '{core.colors.neutral.500}', // neutral.200 is near-white on dark
             disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
-            selected: '{core.colors.brand.900}', // brand.50 is near-white on dark
+            selected: '{core.colors.neutral.500}', // monochrome selected tint on dark
             droptarget: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
             visited: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
           },
@@ -1764,8 +1940,16 @@ export const darkAlternate: ModeOverride = {
         },
       },
       feedback: {
+        // Valence fills (positive/caution/negative) are mode-stable — the
+        // deep filled surfaces from the base read correctly on the dark
+        // canvas (same mechanism as action.negative), so only the neutral
+        // roles remap: primary lightens one stratum to stay a visible chip
+        // on the neutral.900 canvas; muted follows the dark neutral surface.
         primary: {
-          background: { default: '{core.colors.neutral.700}' },
+          // neutral.500 (not 700): the filled neutral chip must stand off the
+          // dark strata it sits on (canvas 900 / raised 800 / overlay 700) —
+          // 700 camouflages against a raised card. neutral.0 text: 5.0:1 ✓.
+          background: { default: '{core.colors.neutral.500}' },
           border: { default: '{core.colors.neutral.500}' },
           text: { default: '{core.colors.neutral.0}' },
         },
@@ -1773,21 +1957,6 @@ export const darkAlternate: ModeOverride = {
           background: { default: '{core.colors.neutral.700}' },
           border: { default: '{core.colors.neutral.500}' },
           text: { default: '{core.colors.neutral.300}' },
-        },
-        positive: {
-          background: { default: '{core.colors.neutral.900}' },
-          border: { default: '{core.colors.green.500}' },
-          text: { default: '{core.colors.green.300}' },
-        },
-        caution: {
-          background: { default: '{core.colors.neutral.900}' },
-          border: { default: '{core.colors.yellow.500}' },
-          text: { default: '{core.colors.yellow.300}' },
-        },
-        negative: {
-          background: { default: '{core.colors.neutral.900}' },
-          border: { default: '{core.colors.red.500}' },
-          text: { default: '{core.colors.red.300}' },
         },
       },
       navigation: {
@@ -1800,8 +1969,8 @@ export const darkAlternate: ModeOverride = {
         // neutral.700 so a nav item reads as a distinct affordance against the
         // page surface even with no elevation of its own.
         primary: {
-          // Inline link on dark surfaces: transparent bg, brand.300 text.
-          // Contrast: brand.300 (#60a5fa) on neutral.900 (#0f172a) → ~6.8:1 ✓
+          // Inline link on dark surfaces: transparent bg, monochrome text +
+          // underline. Contrast: neutral.200 on neutral.900 → ~12:1 ✓
           background: {
             default: '{core.colors.neutral.900}',
             hover: '{core.colors.neutral.700}',
@@ -1814,15 +1983,18 @@ export const darkAlternate: ModeOverride = {
           border: {
             default: '{core.colors.neutral.900}',
             focused: '{core.colors.brand.400}',
+            // selected/current tab indicator line — monochrome (light on dark)
+            selected: '{core.colors.neutral.0}',
+            current: '{core.colors.neutral.0}',
           },
           text: {
-            default: '{core.colors.brand.300}',
-            hover: '{core.colors.brand.100}',
-            active: '{core.colors.brand.100}',
+            default: '{core.colors.neutral.200}',
+            hover: '{core.colors.neutral.0}',
+            active: '{core.colors.neutral.0}',
             disabled: '{core.colors.neutral.500}',
-            current: '{core.colors.brand.100}',
+            current: '{core.colors.neutral.0}',
             visited: '{core.colors.neutral.300}',
-            expanded: '{core.colors.brand.100}',
+            expanded: '{core.colors.neutral.0}',
           },
         },
         secondary: {
@@ -1830,8 +2002,8 @@ export const darkAlternate: ModeOverride = {
             default: '{core.colors.neutral.900}',
             hover: '{core.colors.neutral.700}',
             active: '{core.colors.neutral.700}',
-            selected: '{core.colors.brand.900}',
-            current: '{core.colors.brand.900}',
+            selected: '{core.colors.neutral.700}',
+            current: '{core.colors.neutral.700}',
             visited: '{core.colors.neutral.900}',
             expanded: '{core.colors.neutral.700}',
             disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
@@ -1842,15 +2014,15 @@ export const darkAlternate: ModeOverride = {
             hover: '{core.colors.neutral.500}',
             active: '{core.colors.neutral.500}',
             focused: '{core.colors.brand.400}',
-            selected: '{core.colors.brand.500}',
-            current: '{core.colors.brand.500}',
+            selected: '{core.colors.neutral.300}',
+            current: '{core.colors.neutral.300}',
           },
           text: {
             default: '{core.colors.neutral.300}',
             hover: '{core.colors.neutral.0}',
             disabled: '{core.colors.neutral.500}',
-            selected: '{core.colors.brand.300}',
-            current: '{core.colors.brand.300}',
+            selected: '{core.colors.neutral.0}',
+            current: '{core.colors.neutral.0}',
             visited: '{core.colors.neutral.300}',
             expanded: '{core.colors.neutral.50}',
           },

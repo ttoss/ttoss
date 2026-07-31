@@ -1,7 +1,18 @@
 # Contributing to `@ttoss/fsl-ui`
 
-> **To author a component you need exactly two files: this file + `src/tokens/CONTRACT.md`.
-> FSL docs are reference philosophy — you do not need them.**
+> **To author a component you need exactly two files: this file + `src/tokens/CONTRACT.md`.**
+> That covers _mechanics_ — which `vars.*` path a part reads, which matrices must
+> cover a new Entity, which attributes it publishes.
+>
+> It does **not** cover _decisions_. The moment a question is "should this be a
+> colour or a valence", "may a component paint nothing", "does size come from a
+> fixed ramp", you are outside these two files and inside
+> `docs/website/docs/design/design-system/design-tokens/`, which is already
+> opinionated on all three. `INTERNAL/ROADMAP.md` →
+> "Before deciding anything — read the authorities first" maps each recurring
+> question to the document that answers it. Read it before escalating anything as
+> an owner decision; that section exists because two questions were escalated that
+> the docs had already settled.
 
 Two source-of-truth files drive every change:
 
@@ -431,3 +442,286 @@ Re-litigation answers:
 - "Doesn't an escape hatch break 'no arbitrary values in consumers'?" → no — Box accepts only token keys and layout keywords; there is no channel for a raw hex/px. The principle is preserved; only "no style prop at all" is superseded.
 - "Why is `columns={3}` allowed but `width: 300px` is not?" → a track _count_ is structural (like flex order), not a length; `300px` is an arbitrary length. Box exposes the former and forbids the latter.
 - "When should I use Box vs Surface vs Stack vs Grid?" → Stack = 1D flex rhythm; Grid = 2D; Container = centered page shell; Surface = depth-bearing card; Box = everything else (a plain padded/sized/grouped region).
+
+### ADR-010: `Icon` is a public export; the standalone package stays deferred
+
+Status: accepted (2026-07-22) — narrows ADR-005's "internal-only" clause
+Tags: icons, public-api, evidence, governance
+
+Decision: `Icon` (+ `iconMeta`, `IconProps`, `IconSize`, `IconIntent`, `ICON_INTENTS`) is exported from `src/index.ts`. The evidence rule fired: the Studio Pricing block needed glyphs outside shipped components (feature-list checkmarks — friction F-015), which is exactly the promotion trigger ADR-005 left open. The intent registry stays curated and grows one consumer-demanded intent at a time (`status.success` landed with this ADR); `ensureIconGlyphs`/`iconifyName` remain internal plumbing.
+Rejected: extracting `@ttoss/fsl-icon` now — its trigger is a consumer that wants icons _without_ fsl-ui, which does not exist; keeping Icon internal and letting blocks hand-author SVG — recreates the exact drift ADR-005 eliminated; exporting the whole glyph/registry plumbing — consumers need the component and the intent vocabulary, not the provider wiring.
+Cost: the intent vocabulary becomes public API — renames/removals now follow the deprecation rules; the curated-registry discipline ("grows slowly and shrinks never", icon-system.md) is load-bearing against icon sprawl.
+Anchors: `src/components/Icon/`, `src/index.ts`, `docs/design/design-system/components/icon-system.md`, `docs/fsl-studio/FRICTION.md` F-015.
+
+Re-litigation answers:
+
+- "ADR-005 says Icon is internal" → that clause is narrowed here, on the named trigger (real external-to-components demand); the rest of ADR-005 (provider, offline registration, intent contract) stands.
+- "Why not ship `@ttoss/fsl-icon` while we're at it?" → no consumer wants icons without fsl-ui; the module boundary is already package-shaped (`intents.ts` is dependency-free), so extraction later costs the same as extraction now.
+- "Can an app add its own intents?" → not through this package — app-specific intents are icon-system.md extensions in app space; this registry only admits intents a shipped component or block demands.
+
+### ADR-011: Definite-width layout primitives establish size containment
+
+Status: accepted (2026-07-24)
+Tags: layout, container-queries, fluid-scales, fsl-theme-interop
+
+Decision: layout primitives whose inline size is **definite** establish `container-type: inline-size` — `Grid` wraps each child in a `data-part="item"` container (track width is definite), `AppShell` marks its four regions (named-scale/track widths), and `Container` marks its root (stretch + max-width) — so fsl-theme's container-fluid scales (`cqi` clamps, fsl-theme ADR-019/020) finally resolve against a real container instead of silently falling back to the viewport (friction F-018: type/inset inside a 220px grid tile rendered at page scale and overflowed).
+Rejected: `Surface` as a container — it is content-sized in horizontal Stacks, and `inline-size` containment would collapse it (containment only where width is definite by construction); a `container` prop consumers opt into — the fluid engine is the theme's declared default, not a per-use choice; telling hosts to add containers in app CSS — recreates the hand-rolled-CSS drift this package exists to prevent.
+Cost: theme `cqi` scales now resolve locally — type/spacing inside narrow grid tracks, sidebars, and asides render at the clamp's lower range (the declared behavior, but a visible change for existing consumers); `Grid` children gain a wrapper element (fragments-as-children become a single item; per-child DOM selectors cross one more level).
+Anchors: `src/components/Grid/Grid.tsx`, `src/components/AppShell/AppShell.tsx`, `src/components/Container/Container.tsx`, `packages/fsl-theme/CONTRIBUTING.md` ADR-019/ADR-020, `docs/fsl-studio/FRICTION.md` F-018.
+
+Re-litigation answers:
+
+- "Why not put the container on the Grid root?" → `cqi` would resolve to the whole grid's width (≈ the page), not the tile — the per-item container is the entire point.
+
+### ADR-012: A freeform channel makes a picker `Input`, not `Selection`
+
+Status: accepted (2026-07-24)
+Tags: entity, input, selection, combobox, governance
+
+Context: the ROADMAP called `ComboBox` "the accordion-vs-select of ambiguity cases" — it is a text field and an option list at once, and `Select` (the neighbouring component) is `Selection`. Both entities project to the same `input` ux context, so the choice changes no colour; it changes what the component _claims to be_, which is what every later picker (`Autocomplete`, `DatePicker`, `SearchField`-with-suggestions) will copy.
+
+Decision: **the discriminant is whether a freeform channel exists.** A control the user can type an arbitrary value into is `Input`, even when it also offers a list; a control whose only act is picking from a closed set is `Selection`. `ComboBox` is therefore `Input`/`root`: the text field is the control and the filtered list is an affordance that narrows what the user types (with `allowsCustomValue` it can commit a value the set does not contain — something no `Selection` can do). `Select` stays `Selection`. The options themselves are `Selection`/`item` under the ADR-007 per-part split, identical to `SelectItem`/`ListBoxItem`, because option-selection semantics do not change with the host.
+
+Rejected: `Selection` for the whole composite — it would make `allowsCustomValue` incoherent (a "selection" that selects nothing in the set) and would misfile the part the user actually operates; a new `Combo`/`Hybrid` entity — nominal growth with nothing dispatching on it, the dead weight that killed the `Interaction` dimension; declaring the chevron an `Action` identity — `trigger` is not a legal `Input` role and a second entity in the file would buy nothing, so it ships as an internal data-part exactly as NumberField's steppers and Slider's track do (ADR-008).
+
+Cost: two sibling components with near-identical DOM carry different root entities, so "which entity is my picker?" is a judgement call at authoring time rather than a lookup — this ADR is that lookup.
+
+Anchors: `src/components/ComboBox/ComboBox.tsx` (header block), ROADMAP ComboBox row, `docs/fsl-studio/FRICTION.md` F-008.
+
+Re-litigation answers:
+
+- "Select and ComboBox look the same — why differ?" → they read the same tokens; only the claimed identity differs, and it differs because one accepts typed input and the other cannot.
+- "Is `SearchField` then also a picker?" → no — it has the freeform channel but no option set, so it stays a plain `Input` with adornments.
+- "What about `Autocomplete` (deferred)?" → same rule: it has a freeform channel, so it is `Input`. This ADR is the learning the ROADMAP said to wait for.
+- "Doesn't ADR-019 forbid container-fluidity?" → no — it forbids it for **control geometry** (rem-anchored `hit`/inset, unaffected here); layout/type fluidity by container is exactly what ADR-019/020 declare.
+- "Why does Stack not establish containment?" → a Stack's items size by content on the main axis (no definite width), the same reason Surface is rejected; containment is added only where the box's inline size is definite by construction.
+
+### ADR-013: `ButtonGroup` owns the action row — fixed rhythm, adaptive axis, and the first measured layout in the package
+
+Status: accepted (2026-07-25)
+Tags: structure, layout, action, overflow, measurement, P3
+
+Context: P3 Slice 4 ③. The action row — a form footer, a page header's cluster, a card's controls — had no component. `Stack direction="horizontal"` covers the arrangement but takes the gap from the caller, so every action row in a product can pick a different rhythm; `Toolbar` is a named `role="toolbar"` region with arrow-key navigation, which is not what a Save/Cancel pair is (see ADR-014); `DialogActions` reorders by `composition` per platform and throws outside a `<Dialog>`; `Group` paints a labelled boundary. The reference system ships `ButtonGroup` as its own component, and the behaviour that justifies it there is not layout but **overflow**: a row that does not fit becomes a column.
+
+Decision: `ButtonGroup` is `Structure`/`root` with exactly two props — `orientation` (`horizontal` default, `vertical`) and `align` (`start` default, `center`, `end`) — and **no `gap` prop**. The separation between sibling actions is one product-wide decision made by the theme (`gap.inline.sm`), which is the component's reason to exist over a Stack preset; both axes read that same token, because a row that columnised for space is the same set of actions and not a new stacking rhythm (the one place a Structure component deliberately does not follow `Stack`'s inline/stack split). `horizontal` is adaptive: the group measures its children against its own box and lays them out in a column when any child sticks out, publishing the rendered axis as `data-orientation` and marking a forced column `data-collapsed="true"`; `vertical` pins the column and skips the measurement entirely, which is also the escape hatch. Because the measurement needs children that hold their natural width, the group turns off shrinking on grouped triggers — via **context** (`ActionTriggerGroupProvider` in the shared trigger anatomy), the ecosystem's pattern, so it survives a `Tooltip` or `DialogTrigger` wrapper that `cloneElement` over children could not reach. `flexShrink: 0` is imposed _by the group_, never globally: a lone trigger in a narrow container should still give way rather than overflow the page — the same line the reference draws with `flexShrink: { default: 1, isInGroup: 0 }`.
+
+Rejected: a CSS-only `flex-wrap: wrap` (wrapping mid-row reads as a mistake where a column reads as a decision, and wrapping cannot right-align the remainder); a container query (the threshold depends on the buttons' own content width, which CSS cannot know); `role="group"` by default (an unnamed group is screen-reader noise — pass `role`/`aria-label` yourself, or use `Group`); `inline-flex` as the reference uses (it makes `align` inert in a row, since a content-sized box has no free space to distribute — ours is block-level so `align` works where authors expect it); propagating `isDisabled` to children (no consumer yet — §2.3 evidence rule; readmission criterion: a real "disable the whole footer while submitting" case, which `FormSubmit`'s `isPending` may produce); `align="stretch"` for full-width stacked CTAs (same rule — no consumer yet).
+
+Cost: the first component in the package that reads layout, so it carries a `ResizeObserver` on its container and a `useLayoutEffect` (degraded to `useEffect` on the server, where there is no layout to read and hydration re-measures). A collapse costs two renders — one row-shaped pass to measure, one to settle. jsdom reports every box as zero, so the unit suite stubs `offsetWidth`/`offsetLeft` and drives the observer callback directly: the _decision_ is unit-tested, the _measurement_ is verified in a real browser (collapse at 260px, recovery at 700px, both modes). Three trigger components gained a `useIsGroupedActionTrigger()` call.
+
+Implementation note that is easy to get wrong: the measurement state must be a **monotonic pass counter**, not an `isMeasuring` boolean. With a boolean, a request arriving in the same flush as the previous settle sets the atom `false` then `true`, React sees no net change, skips the re-render, and the machine sticks in "measuring" forever — the group then never collapses. A counter cannot cancel itself out.
+
+Anchors: `src/components/ButtonGroup/ButtonGroup.tsx`, `src/components/ActionTrigger/anatomy.tsx` (group context + `flexShrink`), `src/tokens/CONTRACT.md` §5, `packages/fsl-ui/INTERNAL/ROADMAP.md` P3 Slice 4 ③.
+
+Re-litigation answers:
+
+- "Why no `gap` prop when ADR-009 sanctions token-key props on Structure?" → sanctioned is not required. A gap prop would make this a Stack preset; the fixed rhythm _is_ the deliverable.
+- "Why does the vertical form not use the `gap.stack` family?" → because it is not a stack. It is the same action row with no horizontal room.
+- "Isn't measuring layout against the package's grain?" → the grain is _no hand-rolled visual CSS_; behaviour has always been allowed (`DialogActions` reorders children, `Wizard` tracks steps). What CSS cannot express, a component may.
+- "Why watch the container instead of the group?" → the group's own width does not change when the space around it does; in a collapsed column its width is the widest child, which says nothing about what is available.
+
+### ADR-014: `Toolbar` _is_ the Action family's group of utility actions; it paints nothing, and chrome is composed
+
+Status: accepted (2026-07-25)
+Tags: structure, action, toolbar, grouping, chrome, P3
+
+Context: P3 Slice 4 ④ asked for "ActionGroup — a group of ActionButtons". Reading the reference system's source settled what that component is there: its `ActionButtonGroup` is built on React Aria's `Toolbar`, carries **no selection**, and paints **no chrome** (its props are `density`, `isJustified`, `isQuiet`, `orientation`); selection lives in a separate `ToggleButtonGroup` that shares the same style recipe. It also ships a `Toolbar` that is a bare pass-through with zero styling. So the reference's split is: unstyled ARIA container · styled action cluster · styled selectable set.
+
+Decision: **we do not add a component.** `Toolbar` already is that cluster — same entity, same `role="toolbar"`, same keyboard affordance — so a second Structure component on the same role, differing only in whether it painted, would be the duplicate this package's doctrine rejects. The name stays `Toolbar` because that is the role it renders and the word a reader searches for; the queue's "ActionGroup" maps onto it. What changed is the component: (1) **the chrome is gone.** It painted an `informational` bar — background, 1px border, `radii.surface`, `inset.surface` — and measured **80px tall around 34px controls** in the browser: a card wrapping controls, which then read as bare text inside it (the buttons in a bar are `muted`, and ADR-021's ladder gives `muted` no resting edge). Whether a bar has a background depends on the surface it sits on, not on the bar, so chrome is now composed: `Surface level="overlay"` + `Toolbar` for a floating bar, nothing for a bar on the page. (2) Painting nothing means no colour is evaluated, so the `evaluation` prop is gone (§2.3 evidence rule). (3) It gained `align` — the same vocabulary `ButtonGroup` uses — and became block-level so `align` has free space to act on. (4) The three group containers (`ButtonGroup`, `Toolbar`, `ToggleButtonGroup`) now take their arrangement from one shared source, `buildActionGroupStyle` in the trigger anatomy: one gap token, one align mapping, one axis rule, plus the no-shrink context, so the family cannot drift apart the way the triggers did before ADR-013.
+
+Rejected: a new `ActionGroup`/`ActionButtonGroup` component (two identities, one role — and it would have to forbid the mixed controls a real bar carries: a `Select` for a filter, a `Separator` between clusters); keeping the painted bar behind a `variant`/`hasChrome` prop (a visual axis as an author decision, which CONTRACT §4 gives to the theme, and the composition already exists); `density`/`isJustified` from the reference (real patterns, no consumer yet — readmission criterion: a segmented view-switch that needs its options nearly touching, or a mobile bar whose controls must divide the width); the adaptive column `ButtonGroup` has (a toolbar that overflows moves its tail into an overflow menu — `ActionMenu`, queue item ⑤ — it does not restack; columnising a formatting strip turns a bar into a wall).
+
+Cost: a **breaking change** for anything that passed `evaluation` to `Toolbar` or relied on its bar (pre-1.0, no consumers in the repo; the Studio never used it). A bar that wants chrome now needs one more element. And the realignment exposed that the component does not implement the APG toolbar's single-tab-stop requirement — `useToolbar` supplies the arrow keys but cannot manage arbitrary children's `tabindex` — which was silently claimed in three places and is now documented and asserted instead (F-028).
+
+Anchors: `src/components/Toolbar/Toolbar.tsx`, `src/components/ActionTrigger/anatomy.tsx` (`buildActionGroupStyle`), `src/components/ToggleButtonGroup/ToggleButtonGroup.tsx`, `docs/fsl-studio/FRICTION.md` F-028, ROADMAP P3 Slice 4 ④.
+
+Re-litigation answers:
+
+- "Where is ActionGroup, then?" → it is `Toolbar`. The reference's `ActionButtonGroup` is a styled React Aria `Toolbar`; ours is the same thing under the role's own name.
+- "A toolbar with no background looks unfinished." → measure it against the page it sits on. The chrome that read as "finished" was a card, and the controls inside it lost their own edges to it. Compose `Surface` when the bar genuinely floats.
+- "Why does `ToggleButtonGroup` stay `inline-flex` when the other two are block-level?" → a segmented control is an object sized by its options; a command row and a toolbar are bands across their container. That is the one parameter `buildActionGroupStyle` takes.
+- "Should `Toolbar` collapse like `ButtonGroup`?" → no. Its overflow answer is an overflow menu, not a second axis.
+
+### ADR-015: `ActionMenu` ships as a composite (the overflow affordance is a convention); a menu row's resting rung is `muted`
+
+Status: accepted (2026-07-25)
+Tags: action, overlay, menu, icon, a11y, i18n, P3
+
+Context: P3 Slice 4 ⑤. The overflow menu — a row's trailing "…", a card's corner menu, the tail of a toolbar that ran out of room — was expressible by composing `MenuTrigger` + an icon-only `ActionButton` + `Menu`, and every call site would have had to pick the glyph, remember the icon-only square, and supply an accessible name. The reference system ships it as a component for the same reason.
+
+Decision: **`ActionMenu` is a composite with a narrow surface** — the open-state props of `MenuTrigger`, the item props of `Menu`, and the trigger's `evaluation`/`isDisabled`. Its single `*Meta` is the **trigger** (Action/root, `data-scope="action-menu"` via `ActionButton`'s documented scope override), because the surface it opens keeps `Menu`'s Overlay identity — it composes two identities instead of inventing a third. Three choices inside it are the point of the component: the glyph is the new **`action.more`** intent (the icon registry grows only when a component needs it — icon-system.md's change rule), the trigger is the utility silhouette's icon-only square, and **`aria-label` is a required prop**. The reference defaults that label to a translated "More actions", which it can because it ships an i18n runtime; ours cannot, and a hardcoded English default would ship untranslated copy into every product — so the type system asks (ADR-001). The trigger defaults to `evaluation="secondary"`, matching the reference's non-quiet default, which also means the shipped default is correct on every surface and does not wait on F-024.
+
+Second decision, forced by looking at an open menu for the first time since the P3 retune: **`MenuItem`'s default evaluation moves `primary` → `muted`.** With `primary` it painted every row a solid `neutral.1000` chip in light and a solid white one in dark — a menu that read as a stack of buttons, shipped in the Studio's own user menu without anyone noticing. `muted` is not merely quieter, it is _correct_: its resting background resolves to exactly the popover's colour in both modes (`neutral.0` / `neutral.900`), so the row borrows the surface and materialises on hover. Contrast holds (ink `#3d3d3d` on white ≈ 10.4:1, `#d0d0d0` on `#161616` ≈ 13.6:1).
+
+Rejected: documenting the composition instead of shipping the component (the glyph, the square and the name would drift per call site — the same argument that gives `ButtonGroup` a fixed rhythm); an `icon` prop on `ActionMenu` (the overflow glyph _is_ the convention; a caller who wants a different trigger composes `MenuTrigger` + `ActionButton` directly, which this is shorthand for and never a replacement of); a default `aria-label` in English (ADR-001); `evaluation="negative"` for a destructive row (it fills the row red — the missing rung is "negative ink on a surface", logged as F-029 rather than papered over).
+
+Cost: one intent added to the registry (`action.more` → Lucide `more-horizontal`); `MenuItem`'s visual default changed, which is a **breaking visual change** for any consumer that relied on filled rows (in-repo: the Studio's user menu, which was the bug); the destructive row currently has no colour of its own.
+
+Anchors: `src/composites/ActionMenu/ActionMenu.tsx`, `src/composites/Menu/Menu.tsx` (`MenuItem` default), `src/components/Icon/intents.ts` + `glyphs.ts`, `docs/fsl-studio/FRICTION.md` F-024 / F-029, ROADMAP P3 Slice 4 ⑤.
+
+Re-litigation answers:
+
+- "Why is the meta the trigger and not the whole thing?" → the composite renders no wrapper of its own; `MenuTrigger` is an orchestrator with no DOM. The button is the only root there is, and the popover already has an identity.
+- "Why does a menu row default to the _quiet_ rung — isn't a menu item a normal action?" → its container is the emphasis. A row inside an overlay surface is already prominent; painting it again makes a button of it.
+- "Then how do I make one row louder?" → pass `evaluation` explicitly (a primary "Create…" at the top of a menu). The default is the common case, not the only one.
+- "Why not add `action.more` speculatively along with a few other glyphs?" → icon-system.md: the registry grows slowly and shrinks never; add an intent when a component needs it.
+
+### ADR-022: A field's geometry comes from one shared anatomy; `control` names the element the user operates
+
+Status: accepted (2026-07-26)
+Tags: input, field, anatomy, geometry, a11y, addressability, P3
+
+Context: P3 Slice 5 ⓠ+①. The Input family had grown to eleven components, each declaring the field row for itself, and measuring it in Chromium (light + dark, 1920 / 900 / 390) turned up five class-level defects that no per-component fix would have stopped. Four are geometry drift: a control that declared `minBlockSize` where its siblings declared `minHeight` (computing the same box, invisible to the row guard); a focus ring floated 2px on four members and flush 0px on two; two host-element UA defaults nobody had declared (a `<button>` centring its value, an `<input>` keeping its 2px inline padding); and three in-field triggers at 20 / 25.33 / 32px. The fifth is addressability: three components wrap an `<input>` in a painted `<div>` and name **both** `data-part="control"`, so the anatomy the package publishes cannot address either one (F-026).
+
+Decision: **one shared anatomy module owns field geometry** — `components/Field/anatomy.tsx`, the counterpart of `ActionTrigger/anatomy.tsx` for the Action family. It exports `FIELD_ROW` (the four tokens that _are_ the row) plus builders for the two shapes a field control takes: _self-painted_, where one element is both the painted box and the operated element, and _split_, where a frame paints and hosts adornments while a borderless inner input carries the value. The row is asserted against that source by contract invariant **#11**, not against a peer component — which is what lets it widen past the two members invariant #10 could reach.
+
+Second decision, which the addressability defect forces: **`data-part="control"` names the element the user operates** — the one that takes focus and holds the value. A test, a host stylesheet or an agent told "type into the email field" resolves `[data-part="control"]`, and a `<div>` frame there would break that. The frame becomes an **internal part** (`data-part="frame"`), the treatment Slider's `track`/`fill` already get under ADR-008; the contract test checks `data-part` legality only for declared metas, so an internal part is free to use a name outside the entity's role vocabulary. Contract invariant **#12** then states the general rule: no element may contain a descendant carrying the same `(data-scope, data-part)`. Sibling repeats stay legal — two radios, two steppers, two glyph hosts — because the defect is ambiguity within a subtree, not repetition in a document.
+
+`textAlign` is declared rather than inherited, which is the whole fix for the UA-default class: a field displays a value at the reading edge, and when nothing states it the host element decides — `<input>` starts its text, `<button>` centres it.
+
+Rejected: keeping the row as a per-component declaration with a lint rule (the drift was in _which property_ was used, not in the values, so a value lint cannot see it); making the frame `control` and the input a `value` internal part (it inverts addressability — the operated element is what callers and agents reach for, and ADR-008 already pins `control` to Slider's thumb rather than its track); a `(scope, part)` uniqueness rule scoped per document (sibling repeats are the normal case and would have to be exempted one by one, which is the same as having no rule); standardising the floor on `minBlockSize` rather than `minHeight` (the logical-property rule the contract enforces governs _directional_ placement, which breaks RTL — sizing has no such failure mode, and `minHeight` is what the Action anatomy and five of six field members already read; the choice now lives in one place, so reversing it is a one-line change).
+
+Cost: an internal module with no public export, so the package's surface is unchanged and existing call sites keep compiling — but every future field must go through it or invariant #11 fails, which is the intent. Invariant #12 shipped with four **named** known violations rather than a silent exemption list: the three field cases above, each annotated with the queue item that removes it, plus `menu/root`, which this invariant found and the browser audit had missed — the Menu popover and every `MenuItem` both resolved `[data-scope="menu"][data-part="root"]`, because §5 has sub-parts reuse the host's scope while `MenuItem` also declared `structure: 'root'` (a different family and a different cause — F-030). A companion test asserts every listed violation is still real, so a fixed one must be deleted rather than left as a permanent exemption, and the list has since shrunk to **two**: `combo-box/control` fell in forms C1 and `menu/root` in forms round R3, where `MenuItem` moved to `structure: 'control'` — legal on Action already, and the word ADR-022 itself defines as the element the user operates.
+
+Anchors: `src/components/Field/anatomy.tsx`, `src/composites/TextField/TextField.tsx`, `src/composites/TextArea/TextArea.tsx`, `tests/unit/tests/components.contract.test.tsx` (invariants #11 and #12), `src/tokens/CONTRACT.md` §5, `docs/fsl-studio/FRICTION.md` F-026 / F-030, ROADMAP P3 Slice 5.
+
+Re-litigation answers:
+
+- "Why not one `Field` component wrapping any control, the way the design drafts model it?" → because React Aria wires label to control to description to error through context supplied by **the field root itself**. Read in `react-aria-components@1.19.0`: `LabelContext`, `TextContext` and `FieldErrorContext` are context-generic consumers, and all three are provided by `TextField`, `Select`, `ComboBox`, `NumberField`, `RadioGroup`, `SearchField` and `CheckboxGroup`. A wrapper outside that root cannot participate, so the envelope is the root each composite already renders plus parts mounted inside it.
+- "Then how does one label cover two controls?" → that is a `role="group"` with `aria-labelledby`, not a field. It is the only shape the context model allows, and it is also the correct ARIA.
+- "Does invariant #11 replace #10?" → no. #10 asserts the _Action_ side of the row (a utility trigger matches a field); #11 asserts the _field_ side against the shared source. They meet on the same tokens from opposite directions.
+- "Why does the row assert token strings instead of computed pixels?" → jsdom has no layout. The pixel check is the browser measurement that gates each queue item; the unit invariant guards the declaration, which is what actually drifts.
+- "Slider only provides `LabelContext` — is that a bug?" → no, it is the boundary. Slider has no validation in React Aria, so it takes a label and nothing else from the envelope.
+
+**Addendum 2026-07-26 — the authoring surface (forms item A).** The family had three shapes for one idea: `TextField`/`TextArea`/`SearchField` composed by slots, `Select`/`ComboBox`/`NumberField` took props, and `Select` had nowhere to render a message at all (F-009). Both shapes are legitimate — one line for the common field, slots when the arrangement is unusual — so the decision is **not to pick one** but to make every field support both from one code path, with the meaningless combination rejected at compile time. `FieldAuthoring<TChildren>` in the anatomy is a discriminated union: the `children` branch forbids `label`/`description`/`errorMessage`/`placeholder` and the copy branch forbids `children`, so "I passed both, which wins?" is a type error rather than a runtime precedence rule nobody can see. Existing per-component slot exports are unchanged and stay exported, so the surface only grows.
+
+Two details that are decisions, not incidents. `placeholder` is forwarded to the control rather than spread onto the root, because React Aria deliberately **omits** `placeholder` (and `label`, `description`, `errorMessage`) from `TextFieldProps` — they belong to the parts, and the one-line form is what puts them back. And the one-line form **always mounts the message slot**, even with no `errorMessage`: React Aria's `FieldError` renders only while invalid, so mounting it costs nothing and buys the platform's own constraint copy for `isRequired`/`type="email"` — already localized, which is copy we could never ship ourselves (ADR-001). Asserted by `fieldAuthoring.test.tsx` against a real failed submit, because a controlled `isInvalid` alone produces no message and would have made a weaker test pass.
+
+**Addendum 2026-07-28 — the envelope parts (forms item C2).** Item A rejected an
+**exported** generic `FieldLabel`, on the grounds that it would need its own
+`data-scope` and re-scoping the published per-component parts is a break bought
+for nothing. That holds. What it did not settle is whether the parts may share an
+_implementation_, and measuring the family answered that they must: probing all
+nine field roots showed the necessity marker reaching **three** of them, `Select`
+and `RadioGroup` with nowhere to render a message (F-009 and its sibling shape),
+and three files carrying a private helper computing the colours
+`buildFieldTextPartStyle` already computes.
+
+So the anatomy gains three **internal** parts — `FieldLabelPart`,
+`FieldDescriptionPart`, `FieldValidationMessagePart` — which take `scope` as a
+**prop** rather than owning one. That is the whole difference from what A
+rejected: `text-field/label` is still `text-field/label`, so every attribute a
+test, a stylesheet or an agent can address is byte-identical either side of the
+refactor, while the nine copies become one. The per-component slot exports remain
+the composable surface and now render through these.
+
+The guard is a class guard, `fieldEnvelope.test.tsx`, driven by a table whose axis
+is _every field root whose React Aria root supplies `TextContext` and
+`FieldErrorContext`_ — with `Switch` and `Slider` named as exceptions plus the
+mechanism excluding each, so the list can only shrink. A per-component test cannot
+catch this class of defect, because each component passes on its own.
+
+Two measured details that are decisions. A split control's **frame** now declares
+the row's type although it renders no text: without it the same `ComboBox`
+resolved `16px` in Storybook and `18px` inside the Studio's invite dialog, because
+an undeclared frame inherits the host's paragraph size and hands it to every
+adornment placed in it — invariant #11 now asserts the type on both control
+shapes. And `Select`'s label stopped tinting itself `text.invalid`: it was the
+only label in the family that did, the divergence was invisible because F-032
+measures that token as the same ink as `text.default` in both modes, and when
+F-032 lands a real negative ink a whole label turning red is not the language the
+reference uses — it tints the message and the chrome, never the name of the field.
+
+Anchors: `src/components/Field/anatomy.tsx`, `tests/unit/tests/fieldEnvelope.test.tsx`, `docs/fsl-studio/FRICTION.md` F-009 / F-032, `INTERNAL/FORMS.md` §3 and C2.
+
+### ADR-023: A picker's popover takes the field row's width, read from a named allowlist of upstream custom properties
+
+Status: accepted (2026-07-28)
+Tags: input, field, overlay, escape-hatch, governance, P3, forms
+
+Context: forms item C3 / F-019. Measured in Chromium at 1280 and 390, light and dark: `Select`'s dropdown came out **102.11px under a 1200px trigger** and 79.61px under 310px; `ComboBox`'s 142.88px and 115.27px. In the Studio's invite dialog the Role dropdown was a small detached box under a 426px field. All four cases had `--trigger-width` published **on the popover element itself** the whole time, correct and live, and read by nobody.
+
+Two questions, and only the second is governance. What should the width be, and may the package read a custom property from a namespace it does not own?
+
+Decision, part one: **a picker's popover takes the field row's width, and a menu's does not.** Both authorities draw that line in the same place, which is why it is the line. React Aria's own `Select` and `ComboBox` examples style their popovers `width: var(--trigger-width)`; its `Menu` example sets no width. Spectrum 2's `Picker` and `ComboBox` document `menuWidth` as "By default, matches width of the trigger. Note that the minimum width of the dropdown is always equal to the trigger's width"; its `Menu` has no such prop. The discriminant is what the popover shows: a picker shows the field's **value space**, so it belongs to the field's geometry; a menu shows **things to do**, so it sizes to its own content. Our `Menu` keeps `--fsl-menu-min-width` (measured 192px against a 108.88px trigger — correct, and unchanged), and `Popover` keeps its own max-width.
+
+S2's two sentences are two different rules, so they become two declarations: `min-width` is the unconditional floor, `width` is the default and is knob-overridable (`--fsl-select-popover-width`, `--fsl-combo-box-popover-width`). A host can therefore widen the list for long options but can never make it narrower than the row it hangs from — a dropdown narrower than its own trigger reads as a rendering fault.
+
+Decision, part two: **reading a custom property published as documented API by a direct dependency is legal, from a named allowlist.** `CONTRACT.md` §7 rule 2 reserves `--fsl-` and bans a third namespace because an unnamed one is an unreviewable side channel. That reasoning does not reach `--trigger-width`, which is not a side channel but the sanctioned way to read a value **only the dependency can compute** — a layout measurement of a different subtree, unavailable to CSS by any other means. It appears in React Aria's Popover documentation in a "CSS Variables" table, described as "The width of the popover trigger element". So the rule gains an exemption shaped as an allowlist: a fixed union (`UpstreamCssVar`), read through `upstreamVar(name, fallback)`, one row per name in §7 with the documentation that publishes it.
+
+The fallback is mandatory as it is for `fslVar`, but it means something else: not "the host did not customise this" but "the dependency did not publish it". For `--trigger-width` it is `auto`, which is the behaviour the package had before F-019 — degradation is a step back, not a break.
+
+**These properties are read-only, and that is a mechanism rather than a convention.** React Aria resolves `--trigger-width` as `props.style['--trigger-width'] || measured`, and supplying our own value _also_ switches off the `ResizeObserver` keeping it current — so writing it would silently freeze the popover at the trigger's first-paint width.
+
+Rejected: `min-width` alone with the popover still sizing to content (satisfies S2's floor sentence and contradicts its default sentence — and leaves the measured defect in place for any list narrower than its field); `width` alone with no floor (a host knob could then produce a dropdown narrower than its trigger); forwarding a `menuWidth`-style prop instead of a knob (geometry the host owns goes through §7's channel, and a prop would be a visual prop on a composite, which §4 forbids); reading the property without an allowlist (that is the unnamed namespace §7 rule 2 exists to prevent); putting the two-line style in each picker (third instance of the same duplication class in this family — the field row and the envelope were the first two, and both drifted).
+
+Cost: one entry in a governance allowlist, which must be argued each time it grows. The **enforcement** cost is where the real lesson is: the pre-existing rule was a source-text regex over `src/components/**`, and routing the read through a helper in `src/tokens/` slipped past it silently — the suite stayed green through a change the rule was written to catch. So the binding check is now over the **rendered** inline styles of every DOM fixture, where a value lands regardless of what composed it, plus a source check that nothing assigns an allowlisted name. All three guards were verified to fail on an injected violation before being trusted.
+
+Deliberate no-change: **the open popover overlays the description below the field, and stays that way.** React Aria anchors it to the trigger (`placement: 'bottom start'`, `triggerRef: buttonRef`, read in `Select.mjs`), so an overlay covers what is beneath the trigger — which is what an overlay is, and what both reference implementations do. F-019's original note mentioned the overlap alongside the width defect; only the width was a defect.
+
+Anchors: `src/components/Field/anatomy.tsx` (`buildPickerPopoverStyle`), `src/tokens/escapeHatch.ts` (`upstreamVar`, `UpstreamCssVar`), `src/tokens/CONTRACT.md` §7, `tests/unit/tests/components.contract.test.tsx` (§4b), `docs/fsl-studio/FRICTION.md` F-019, `INTERNAL/FORMS.md` C3.
+
+Re-litigation answers:
+
+- "Why not just always match trigger width for every anchored overlay?" → because a menu is not a picker. Both authorities exclude `Menu` explicitly, and the measurement agrees: our Menu's 192px floor against an 108.88px trigger is right, and forcing it to 108.88px would make every action label wrap.
+- "A long option now wraps instead of widening the list — is that a regression?" → it is the rule working, and it was measured: at a 140px trigger the option "Administrator with billing access" wraps to three lines with no overflow in either direction (`scrollWidth === clientWidth` on both the list and the item). A host that prefers a wider list has the knob. S2 behaves the same way.
+- "Does this make the Storybook Select dropdown absurdly wide at 1200px?" → the story canvas is full-bleed, so yes, and that is the field's own width — in a real layout (the Studio's 426px field) it is exactly right. Sizing the dropdown to content is what made the field look broken.
+- "Why not import `UpstreamCssVar` into the contract test instead of repeating the names?" → a test that imports the thing it polices passes by construction the day someone widens the type.
+
+### ADR-025: The `Form` publishes field layout as static context; a required field marks itself
+
+Status: accepted (2026-07-26)
+Tags: input, field, form, context, a11y, i18n, P3, forms
+
+> ADR-024 (the validation language) is reserved for forms item F. Numbers are allocated when a decision is planned, not when it lands.
+
+Context: forms item B1. Label layout and the necessity convention are one product decision, not a per-field one — a form where some labels sit above and others beside, or where one field marks required and the next does not, is a form nobody proofread. The reference system puts exactly these on its `<Form>` (`labelPosition`, `labelAlign`, `necessityIndicator`, `size`) and has each field inherit them, which is also this ecosystem's own pattern: applications configure once at the root, packages consume context, and no visual prop travels down a tree.
+
+Decision: **`Form` publishes a field-layout context and every field reads it — with a default, so a field outside any `Form` still works.** The read goes through a dedicated context in `Field/anatomy.tsx` rather than through `formScope`, because `formScope.use()` throws when its host is absent — correct for `FormActions`/`FormSubmit`, wrong for a field: a lone age input or a confirmation checkbox in a modal is a first-class case (FORMS.md §2b). The standalone default is that a required field still marks itself, because the marker states a fact about the field rather than a preference about the form. The shape is `ActionTriggerGroupProvider`/`useIsGroupedActionTrigger` from the Action anatomy — a container publishes, a member reads with a fallback.
+
+**The context carries static configuration only, and that is load-bearing rather than stylistic.** Every field in the form reads it, so a value whose identity changed per render would re-render all of them. The provider value is memoised on its inputs, and two tests hold the line: a keystroke in one field does not re-render its siblings, and the value survives a Form re-render by identity. TanStack Form can afford field _state_ in context because its values are static class instances with reactive properties; plain React context is not that, and validation state stays where React Aria already tracks it — on each field.
+
+First consumer, so the context is not reserved API: **`necessityIndicator: 'icon' | 'none'`, default `'icon'`.** The reference marks the _required_ fields rather than the optional ones, and so do we. The marker is a text asterisk rather than an `Icon`: the glyph registry does not grow for a character every font already has, and text inherits the label's size and weight for free. It is `aria-hidden`, because — **measured** — React Aria marks the control with the **native `required` attribute** and sets no `aria-required`; the native attribute is announced by assistive technology on its own, a second announcement is noise, and an asterisk absorbed into the accessible name is worse than no asterisk.
+
+Rejected: a `'label'` variant rendering the words "(required)" — that is copy, and copy is caller-supplied (ADR-001), so a translated string is not ours to ship. Readmission criterion: a consumer that needs it, plus a prop carrying its localized text. Also rejected: putting `labelPosition`/`labelAlign` in the context now — the grid that makes side labels work is item B2, and a context key with no consumer is reserved API (§2.3).
+
+Cost, and it is real: the marker lives **inside** the label element, so the label's text content grows an asterisk. The accessible name is unaffected — `aria-hidden` nodes are excluded from name computation, verified by a role query for the bare label still matching — but `getByLabelText('Email')` with an exact string stops matching for **required** fields. Four such queries in the Studio's own suite moved to `getByRole('textbox', { name: 'Email' })`, which follows the accessible-name algorithm and is the robust query regardless. Consumers marking a field required meet the same edge; a product that wants none of it sets `necessityIndicator="none"` on its `Form`.
+
+To carry the flag to the label, `TextField`'s and `TextArea`'s scopes moved from `createPresenceScope` to `createCompositeScope<{ isRequired: boolean }>` — the host now has something its parts need, which is the authoring rule in `composites/scope.ts` verbatim. The root publishes `isRequired` from its **render props** rather than from its prop, so the value is the one React Aria resolved. `Checkbox` needed separate wiring because its label is inline children rather than a `Label` part; it reads `isRequired` from its own render props.
+
+Anchors: `src/components/Field/anatomy.tsx` (`FieldLayoutProvider`, `useFieldLayout`, `FieldNecessityMarker`), `src/composites/Form/Form.tsx`, `src/composites/TextField/TextField.tsx`, `src/composites/TextArea/TextArea.tsx`, `src/components/Checkbox/Checkbox.tsx`, `tests/unit/tests/fieldLayout.test.tsx`, `INTERNAL/FORMS.md` items B1–B4.
+
+Re-litigation answers:
+
+- "Why not read the Form through `formScope`?" → it throws without the host, and a field without a Form is a supported case. The parts that genuinely require the host still use it.
+- "Why does a standalone field mark required at all — nobody configured it?" → the marker states a fact about the field. A field that is required and does not say so is the defect.
+- "Then why offer `none`?" → some products carry the convention in prose above the form, or mark the optional fields instead. That is a product call, made once, in the place that makes it once.
+- "Why is the asterisk not an `Icon`?" → the registry grows when a component needs a _glyph_; this needs a character, and text also keeps the marker on the label's own type scale.
+- "Why did `Checkbox` need wiring separately?" → its label is inline children, so it does not pass through the composite scope. `Switch` follows when it gets the envelope (F-033).
+
+### ADR-026: Field formats are a named, locale-scoped registry; the invalid box is marked by a shared glyph; `TextField`/`TextArea` take the split shape
+
+Status: accepted (2026-07-29)
+Tags: forms, input, formats, a11y, anatomy
+
+Decision, in three coupled parts (forms item H):
+
+(1) **The format registry** (`src/components/Field/formats.ts`) is the `Icon`-intent pattern applied to input shapes: a format is named by what it is (`{locale}.{format}` — `br.cep`, `br.cpf`, `br.cnpj`, `br.phone`), grows by one entry when a real consumer needs one, and resolves everything a formatted field must declare **together** — the mask, `inputMode` (the keyboard a phone raises) and `autoComplete` — because declared separately at each call site they drift apart. `TextField` takes `format` in both authoring forms; the field runs internally controlled, the caret is restored by **digit position** (a literal the mask inserts to the caret's left cannot displace it), and backspacing over a literal deletes the digit before it — the classic masked-input trap, pinned by test. The **submitted value is the masked string**; normalization is the consumer's decision, and `formatDigits`-style stripping is one line at the boundary that owns it.
+
+(2) **What a format deliberately does not resolve.** _Validation:_ a `validate` function returns the message the user reads, and the package ships no user-facing copy in any language (ADR-001) — so a format cannot ship the CPF/CNPJ checksum without shipping untranslated copy with it; callers own `validate`. _Currency:_ not a mask at all — grouping separators move as digits are typed, which is Intl's job, and `NumberField` already owns it (`formatOptions={{ style: 'currency', currency: 'BRL' }}`). Both were candidates for the registry and both are exclusions with a mechanism, not omissions.
+
+(3) **The invalid box is marked by `FieldInvalidGlyph`**, one shared source in the anatomy, gated on each member's own `isInvalid` render prop. The reference names the alert icon at the _field_ level (`field-edge-to-alert-icon`, whose medium step is 12px — exactly `inset.control.md` under fsl-theme ADR-022), so it is a family adornment: `aria-hidden` (the semantics already travel twice — `aria-invalid` and the message's words; the glyph is the WCAG 1.4.1 reinforcement F-032's fix deferred here), inked with the **reporting valence** (`input.negative.text`, the same §3.2 split as the message — a part that reports the outcome, never the control re-voiced). The three members without a field box — `RadioGroup`, `CheckboxGroup`, `Switch` — are named exceptions in the class guard.
+
+**The enabling change: `TextField` and `TextArea` moved to the split shape** (frame + borderless value, the D-item anatomy), because a glyph — and the `prefix`/`suffix` adornments item A deferred — needs a lawful home, and the alternative is the reserved-padding-and-absolute-positioning hack item D deleted from `SearchField`. Verified as behaviour-preserving in Chromium, both modes: frame 34×1200 at 1px border and 8px radius, value inset 6/12 at 16px `start`, the reading edge byte-identical to the pre-conversion baseline. `data-part="control"` stays on the element the user types into (ADR-022). The conversion surfaced a **latent drift and fixed its class**: a split member's value pinned its ink to `text.default`, so `input.primary.text.invalid` — the readable-invalid ink the theme annotates for exactly this — was read by self-painted members and silently ignored by split ones; `buildFieldValueStyle` is now flag-aware and every member resolves it. The frames also now pass `isHovered` (all three pre-existing split members had silently stopped hover-reacting while the self-painted members did — the same one-family-two-behaviours drift, closed in the same pass).
+
+Rejected: a `type`-prop explosion (`type="cpf"` beside the HTML `type` attribute — two vocabularies on one prop name); shipping checksum validation (blocked by ADR-001, see (2)); masking via absolute positioning or `input` event DOM surgery (the D-item anti-pattern); marking the invalid box only on naturally-split members (one family, two behaviours — the drift this package exists to prevent).
+
+Cost: `TextField`/`TextArea` gain an internal `frame` part (published attributes unchanged — additive); invariant #10's field-row baseline moved from `TextField` to the `Select` trigger (the family's remaining self-painted member); invariant #11's classification moved two members from self-painted to split.
+
+Anchors: `src/components/Field/formats.ts`, `src/components/Field/anatomy.tsx` › `FieldInvalidGlyph` / `buildFieldValueStyle` / `buildFieldFrameStyle(multiline)`, `src/composites/TextField/TextField.tsx`, `src/composites/TextArea/TextArea.tsx`, `tests/unit/tests/fieldFormats.test.tsx`, `tests/unit/tests/fieldEnvelope.test.tsx` › "the in-control validation glyph" (injection-verified), `components.contract.test.tsx` › invariants #10/#11.
+
+Re-litigation answers:
+
+- "Why is the submitted value masked rather than raw digits?" → the field submits what the user sees, which is what every server-side Brazilian-format consumer already parses; a hidden raw twin doubles the FormData surface for a one-line strip at the boundary. Reverse it only with a consumer whose backend rejects masked input and cannot strip.
+- "Why no `br.currency`?" → it is not a fixed pattern (see (2)); adding it to this registry would re-implement Intl badly. `NumberField` is the answer, documented in the registry header.
+- "Why does the glyph not render on `RadioGroup`/`CheckboxGroup`/`Switch`?" → no field box to sit in: the groups' members mark themselves and `Switch`'s control _is_ the mark. Their message carries the valence — the named-exception rows in the class guard.

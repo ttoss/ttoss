@@ -1,0 +1,43 @@
+openapi: 3.0.3
+paths:
+  /untagged:
+    get:
+      operationId: getUntagged
+      responses:
+        '200':
+          description: ok
+  /refs/{item_id}:
+    parameters:
+      - $ref: '#/components/parameters/ItemId'
+    post:
+      operationId: createFromRef
+      tags: [Refs]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePayload'
+      responses:
+        '201':
+          description: created
+components:
+  parameters:
+    ItemId:
+      name: item_id
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
+    CreatePayload:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          description: Name of the item
+        extra:
+          $ref: '#/components/schemas/ExtraInfo'
+    ExtraInfo:
+      type: string
+      description: Extra info resolved via nested $ref

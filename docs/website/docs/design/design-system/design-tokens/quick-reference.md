@@ -7,6 +7,8 @@ sidebar_position: 2
 
 Intent → token cheatsheet. Pick tokens fast here; read the family docs for the full contract.
 
+This page is the single source for the intent → token mapping — the `@ttoss/fsl-theme` README links here rather than carrying its own copy. The one deliberate duplicate is the package's `llms.txt`, which ships the same mapping inside the npm tarball so agents have it offline.
+
 > **Rule of thumb:** components consume **semantic** tokens only. If the token you need is not listed, check the family doc; if it still does not exist, open a [governance](./governance.md) request.
 
 Grammar reminder:

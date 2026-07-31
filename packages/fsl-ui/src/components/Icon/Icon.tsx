@@ -15,9 +15,10 @@ import type { IconIntent } from './intents';
 // only its size comes from a token (`vars.sizing.icon.*`). `structure: 'icon'`
 // is legal for Structure in ENTITY_STRUCTURE.
 //
-// INTERNAL (ROADMAP B1): this component is deliberately NOT exported from
-// `src/index.ts`. It is consumed only by other components in this package.
-// Public promotion is the future `@ttoss/fsl-icon` package (ADR-005).
+// PUBLIC since ADR-010 (2026-07-22): promoted from internal on the first
+// real consumer demand (Studio Pricing block feature lists, friction F-015).
+// A standalone `@ttoss/fsl-icon` package remains a separate, governed step —
+// its trigger is a consumer that wants icons *without* fsl-ui.
 // ---------------------------------------------------------------------------
 
 /** Formal semantic identity — Icon (Structure entity, static glyph). */
@@ -32,10 +33,18 @@ export const iconMeta = {
  * icon-system.md defines as the Icon contract. This is not the density
  * `size` prop CONTRACT.md §4 bans (that rule governs interactive hit
  * targets): a glyph legitimately scales with the context it reinforces.
+ *
+ * Pick `text` whenever the glyph sits **on the same line as text** (a button's
+ * leading icon, a picker's chevron beside its value): it resolves to the
+ * accompanying text's own size, which lands the drawn ink exactly inside the
+ * cap-height band — cap line to baseline, no overshoot. A fixed step is
+ * measurably off there: at `sm` beside 16px text the ink overhangs the
+ * baseline by 0.8px, which reads as a sunken icon. Use `sm`/`md`/`lg` for
+ * standalone glyphs, where there is no baseline to answer to.
  */
-export type IconSize = 'sm' | 'md' | 'lg';
+export type IconSize = 'text' | 'sm' | 'md' | 'lg';
 
-/** Props for the internal Icon component. */
+/** Props for the Icon component. */
 export interface IconProps {
   /**
    * Semantic intent — what the icon *means* (`icon.{family}.{intent}`), not

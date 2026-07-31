@@ -78,7 +78,10 @@ export const Badge = ({
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
-          paddingBlock: vars.spacing.inset.control.sm,
+          // Compact chip: half the control block-inset and a tight line
+          // height keep the chip at ~22-24px — reference-grade badges are
+          // dense annotations, not controls (P3 slice 3).
+          paddingBlock: `calc(${vars.spacing.inset.control.sm} / 2)`,
           paddingInline: vars.spacing.inset.control.md,
           borderRadius: vars.radii.control,
           borderWidth: vars.border.outline.surface.width,

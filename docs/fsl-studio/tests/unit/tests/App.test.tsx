@@ -1,104 +1,106 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 import { App } from 'src/App';
-import { Stage } from 'src/studio/Stage';
-import { ThemeStoreProvider } from 'src/studio/theme/themeStore';
+import { signIn } from 'src/session';
+import { resetWorkspace } from 'src/store';
 
-/** Boot into the studio (Theme lens) through the task-first home. */
-const renderStudio = () => {
-  const utils = render(<App />);
-  fireEvent.click(screen.getByRole('button', { name: /Create a theme/ }));
-  return utils;
-};
-
-test('renders the shell with brand, lens switcher, and side panels', () => {
-  renderStudio();
-
-  expect(screen.getByText('FSL Studio')).toBeInTheDocument();
-
-  const lensGroup = screen.getByRole('radiogroup', { name: 'Lens' });
-  expect(lensGroup).toBeInTheDocument();
-  expect(screen.getByRole('radio', { name: 'Theme' })).toBeInTheDocument();
-  expect(screen.getByRole('radio', { name: 'Components' })).toBeInTheDocument();
-  expect(screen.getByRole('radio', { name: 'Generate' })).toBeInTheDocument();
-
-  expect(
-    screen.getByRole('complementary', { name: 'Navigator' })
-  ).toBeInTheDocument();
-  expect(
-    screen.getByRole('complementary', { name: 'Inspector' })
-  ).toBeInTheDocument();
+beforeEach(() => {
+  resetWorkspace();
 });
 
-test('stage renders fsl-ui components in light and dark panes', () => {
-  renderStudio();
+describe('App', () => {
+  test('signed out, the login gate renders instead of the product', () => {
+    render(<App />);
 
-  const light = screen.getByTestId('stage-pane-light');
-  const dark = screen.getByTestId('stage-pane-dark');
+    expect(
+      screen.getByRole('heading', { name: 'Sign in to northline' })
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Overview')).not.toBeInTheDocument();
+  });
 
-  expect(light).not.toHaveAttribute('data-tt-mode');
-  expect(dark).toHaveAttribute('data-tt-mode', 'dark');
+  test('signing in through the form reaches the dashboard', async () => {
+    const user = userEvent.setup();
+    render(<App />);
 
-  // The same sample renders in both panes.
-  expect(screen.getAllByRole('button', { name: 'Save' })).toHaveLength(2);
-  expect(screen.getAllByRole('switch', { name: 'Notifications' })).toHaveLength(
-    2
-  );
+    await user.type(screen.getByLabelText('Email'), 'ana@northline.dev');
+    await user.type(screen.getByLabelText('Password'), 'correct-horse');
+    await user.click(screen.getByRole('button', { name: 'Sign in' }));
 
-  // The destructive action carries its consequence in the DOM contract.
-  const [deleteButton] = screen.getAllByRole('button', { name: 'Delete' });
-  expect(deleteButton).toHaveAttribute('data-consequence', 'destructive');
-});
+    expect(
+      await screen.findByRole('heading', { name: 'Overview' })
+    ).toBeInTheDocument();
+    expect(screen.getByText('ana@northline.dev')).toBeInTheDocument();
+  });
 
-test('switching lens swaps the panels and the stage subject, keeping the frame', async () => {
-  const user = userEvent.setup();
-  renderStudio();
+  test('sidebar tabs route between the product pages', async () => {
+    const user = userEvent.setup();
+    render(<App />);
 
-  const navigator = screen.getByRole('complementary', { name: 'Navigator' });
-  const themeCopy = navigator.textContent;
-  // Theme lens stage subject is the sample gallery.
-  expect(screen.getAllByRole('button', { name: 'Save' })).toHaveLength(2);
+    act(() => {
+      signIn({ email: 'ana@northline.dev' });
+    });
 
-  await user.click(screen.getByRole('radio', { name: 'Components' }));
+    await user.click(await screen.findByRole('tab', { name: 'Team' }));
+    expect(
+      await screen.findByRole('heading', { name: 'Team' })
+    ).toBeInTheDocument();
+    expect(window.location.hash).toBe('#/team');
 
-  // Panels swap; the stage frame (both panes) persists (PRD §6.2).
-  expect(navigator.textContent).not.toBe(themeCopy);
-  expect(screen.getByTestId('stage-pane-light')).toBeInTheDocument();
-  expect(screen.getByTestId('stage-pane-dark')).toBeInTheDocument();
-});
+    await user.click(screen.getByRole('tab', { name: 'Billing' }));
+    expect(
+      await screen.findByRole('heading', { name: 'Billing' })
+    ).toBeInTheDocument();
+    expect(window.location.hash).toBe('#/billing');
+  });
 
-test('lens selection cannot be emptied (one lens is always active)', async () => {
-  const user = userEvent.setup();
-  renderStudio();
+  test('the dark switch flips the resolved color mode', async () => {
+    const user = userEvent.setup();
+    render(<App />);
 
-  const themeLens = screen.getByRole('radio', { name: 'Theme' });
-  expect(themeLens).toHaveAttribute('aria-checked', 'true');
+    act(() => {
+      signIn({ email: 'ana@northline.dev' });
+    });
 
-  // Clicking the already-selected lens must not deselect it.
-  await user.click(themeLens);
-  expect(themeLens).toHaveAttribute('aria-checked', 'true');
-});
+    const darkSwitch = await screen.findByRole('switch', { name: 'Dark' });
+    expect(darkSwitch).not.toBeChecked();
 
-test('stage theme CSS is emitted element-scoped for the panes', () => {
-  const { container } = renderStudio();
+    await user.click(darkSwitch);
+    expect(darkSwitch).toBeChecked();
+    expect(document.documentElement.getAttribute('data-tt-mode')).toBe('dark');
 
-  const stageStyle = container.querySelector('.stage style');
-  expect(stageStyle?.textContent).toContain(
-    '[data-tt-theme="fsl-studio-stage"]'
-  );
-  expect(stageStyle?.textContent).toContain('[data-tt-mode="dark"]');
-});
+    await user.click(darkSwitch);
+    expect(darkSwitch).not.toBeChecked();
+  });
 
-test('the stage renders without a toolbar (optional prop)', () => {
-  const { container } = render(
-    <ThemeStoreProvider>
-      <Stage
-        renderSubject={() => {
-          return <span>subject</span>;
-        }}
-      />
-    </ThemeStoreProvider>
-  );
-  expect(container.querySelector('.stage-toolbar')).toBeNull();
-  expect(screen.getAllByText('subject')).toHaveLength(2);
+  test('signing out returns to the login gate', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    act(() => {
+      signIn({ email: 'ana@northline.dev' });
+    });
+
+    await user.click(screen.getByRole('button', { name: 'ana@northline.dev' }));
+    await user.click(await screen.findByRole('menuitem', { name: 'Sign out' }));
+
+    expect(
+      await screen.findByRole('heading', { name: 'Sign in to northline' })
+    ).toBeInTheDocument();
+  });
+
+  test('login gate has no axe violations', async () => {
+    const { container } = render(<App />);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  test('dashboard has no axe violations', async () => {
+    act(() => {
+      signIn({ email: 'ana@northline.dev' });
+    });
+    const { container } = render(<App />);
+
+    await screen.findByRole('heading', { name: 'Overview' });
+    expect(await axe(container)).toHaveNoViolations();
+  });
 });

@@ -100,6 +100,9 @@ const SidebarOverlay = ({
         top: 0,
         bottom: 0,
         [side]: 0,
+        // Full-width (whole workspace) on mobile; sized to its child on larger
+        // screens so the sidebar becomes a full-screen panel on phones.
+        width: ['100%', 'auto'],
         zIndex: 2,
         transform: open ? 'translateX(0)' : hiddenTransform,
         opacity: open ? 1 : 0,

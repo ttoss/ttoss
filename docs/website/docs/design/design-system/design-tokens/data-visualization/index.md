@@ -6,7 +6,7 @@ title: Data Visualization
 
 Data Visualization defines the semantic contract for representing analytical meaning across charts, dashboards, and geospatial overlays.
 
-It extends Design Tokens v2 with a small, explicit layer for data-specific semantics while preserving the same system architecture:
+It extends the [design token system](/docs/design/design-system/design-tokens/model) with a small, explicit layer for data-specific semantics while preserving the same system architecture:
 
 - core tokens define raw values
 - semantic tokens define meaning
@@ -89,10 +89,12 @@ Patterns and implementations govern composition and behavior.
 Data Visualization follows the same architectural model as the rest of the system:
 
 ```text
-core.foundation → semantic.foundation
-core.dataviz    → semantic.dataviz
-patterns/specs  → consume semantic only
+core.<family>  → semantic.<family>   (foundation families: colors, spacing, …)
+core.dataviz   → semantic.dataviz    (this extension)
+patterns/specs → consume semantic only
 ```
+
+("Foundation" here is shorthand for the existing non-dataviz families — there is no physical `foundation` key in `ThemeTokens`; see the [Token Model](/docs/design/design-system/design-tokens/model).)
 
 ### Foundation reuse
 

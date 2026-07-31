@@ -1,0 +1,34 @@
+openapi: 3.0.3
+servers:
+  - url: https://api.example.com
+tags:
+  - name: Widgets
+paths:
+  /widgets:
+    get:
+      operationId: listWidgets
+      tags: [Widgets]
+      responses:
+        '200':
+          $ref: './a-widgets.yaml#/components/responses/WidgetList'
+components:
+  schemas:
+    Widget:
+      type: object
+      properties:
+        id:
+          type: string
+  responses:
+    WidgetList:
+      description: A list of widgets
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  parameters:
+    ProjectId:
+      name: project_id
+      in: path
+      required: true
+      schema:
+        type: string

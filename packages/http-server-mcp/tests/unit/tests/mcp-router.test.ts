@@ -277,6 +277,137 @@ describe('createMcpRouter', () => {
     connectSpy.mockRestore();
   });
 
+  test('POST handler returns 500 when getApiHeaders throws', async () => {
+    const mcpServer = new McpServer({
+      name: 'test-server',
+      version: '1.0.0',
+    });
+
+    const app = new App();
+    app.use(bodyParser());
+    const router = createMcpRouter(mcpServer, {
+      getApiHeaders: () => {
+        throw new Error('getApiHeaders failed');
+      },
+    });
+    app.use(router.routes());
+
+    const response = await request(app.callback())
+      .post('/mcp')
+      .send({ jsonrpc: '2.0', method: 'initialize', params: {}, id: 1 })
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json, text/event-stream');
+
+    expect(response.status).toBe(500);
+    expect(response.body.error).toMatch(/getApiHeaders failed/);
+  });
+
+  test('DELETE handler returns 500 when getApiHeaders throws', async () => {
+    const mcpServer = new McpServer({
+      name: 'test-server',
+      version: '1.0.0',
+    });
+
+    const app = new App();
+    const router = createMcpRouter(mcpServer, {
+      getApiHeaders: () => {
+        throw new Error('getApiHeaders failed');
+      },
+    });
+    app.use(router.routes());
+
+    const response = await request(app.callback()).delete('/mcp');
+
+    expect(response.status).toBe(500);
+    expect(response.body.error).toMatch(/getApiHeaders failed/);
+  });
+
+  describe('2026-07-28 protocol revision', () => {
+    /**
+     * A request speaking the 2026-07-28 revision: the per-request envelope in
+     * `params._meta` plus the `Mcp-Method` header the revision requires. Such a
+     * request is served by that revision's stateless core rather than the
+     * transport that answers 2025-era traffic.
+     */
+    const modernRequest = (method: string) => {
+      return {
+        body: {
+          jsonrpc: '2.0',
+          method,
+          id: 1,
+          params: {
+            _meta: {
+              'io.modelcontextprotocol/protocolVersion': '2026-07-28',
+              'io.modelcontextprotocol/clientCapabilities': {},
+            },
+          },
+        },
+        headers: { 'Mcp-Method': method },
+      };
+    };
+
+    const buildApp = () => {
+      const mcpServer = new McpServer({
+        name: 'test-server',
+        version: '1.0.0',
+      });
+      mcpServer.registerTool(
+        'test-tool',
+        { description: 'A test tool', inputSchema: { param: z.string() } },
+        async ({ param }) => {
+          return { content: [{ type: 'text', text: param }] };
+        }
+      );
+      const app = new App();
+      app.use(bodyParser());
+      app.use(createMcpRouter(mcpServer).routes());
+      return app;
+    };
+
+    test('serves tools/list from the same registered tools', async () => {
+      const { body, headers } = modernRequest('tools/list');
+
+      const response = await request(buildApp().callback())
+        .post('/mcp')
+        .send(body)
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json, text/event-stream')
+        .set(headers);
+
+      expect(response.status).toBe(200);
+      expect(response.body.result.tools).toEqual([
+        expect.objectContaining({ name: 'test-tool' }),
+      ]);
+    });
+
+    test('answers with plain JSON, same as 2025-era traffic', async () => {
+      const { body, headers } = modernRequest('tools/list');
+
+      const response = await request(buildApp().callback())
+        .post('/mcp')
+        .send(body)
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json, text/event-stream')
+        .set(headers);
+
+      expect(response.headers['content-type']).toMatch(/application\/json/);
+    });
+
+    test('a 2025-era request is still served by the legacy transport', async () => {
+      const response = await request(buildApp().callback())
+        .post('/mcp')
+        .send({ jsonrpc: '2.0', method: 'tools/list', id: 1, params: {} })
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json, text/event-stream');
+
+      expect(response.status).toBe(200);
+      expect(response.headers['content-type']).toMatch(/application\/json/);
+      expect(response.body.result.tools).toEqual([
+        expect.objectContaining({ name: 'test-tool' }),
+      ]);
+    });
+  });
+
   describe('aliases', () => {
     test('POST at alias path is handled', async () => {
       const mcpServer = new McpServer({

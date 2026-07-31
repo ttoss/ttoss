@@ -104,6 +104,17 @@ describe('AppShell', () => {
     expect(part('root')?.style.blockSize).toBe('100dvh');
   });
 
+  test('every region is a size container for the theme cqi scales (ADR-011)', () => {
+    render(
+      <AppShell header={<i>h</i>} sidebar={<i>n</i>} aside={<i>i</i>}>
+        main
+      </AppShell>
+    );
+    for (const region of ['header', 'sidebar', 'main', 'aside'] as const) {
+      expect(part(region)?.style.containerType).toBe('inline-size');
+    }
+  });
+
   test('forwards pass-through props to the root', () => {
     render(
       <AppShell id="shell" aria-label="Studio">

@@ -17,6 +17,7 @@ import type {
   ConsequencesFor,
   EvaluationsFor,
 } from '../../semantics';
+import { buildChoosableRowStyle } from '../../tokens/choosableRow';
 import { fslVar } from '../../tokens/escapeHatch';
 import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
@@ -215,13 +216,24 @@ Menu.displayName = menuMeta.displayName;
 /**
  * Formal semantic identity — a single menu action (Layer 1).
  *
- * Entity = Action. Structure is `root` — a MenuItem is the root of its own
- * Action identity, nested inside the menu's `data-scope="menu"`.
+ * Entity = Action, structure `control` — **not** `root`, and the reason is
+ * F-030. A composite sub-part reuses its host's `data-scope` (CONTRACT §5), so
+ * a `MenuItem` declaring `root` made `[data-scope="menu"][data-part="root"]`
+ * resolve the popover **and** every row: no selector could address either one.
+ * Nothing was mislabelled — the convention and the meta were each defensible
+ * alone — but the pair produced an unaddressable anatomy, which invariant #12
+ * exists to forbid.
+ *
+ * `control` is legal on Action and is the more accurate word besides: ADR-022
+ * settled that `control` names the element the user operates, and a menu row is
+ * exactly that. So the fix needed no taxonomy change. It **is** a change to a
+ * published attribute, taken because the attribute it replaces is the ambiguous
+ * one.
  */
 export const menuItemMeta = {
   displayName: 'MenuItem',
   entity: 'Action',
-  structure: 'root',
+  structure: 'control',
 } as const satisfies ComponentMeta<'Action'>;
 
 /**
@@ -232,8 +244,24 @@ export interface MenuItemProps extends Omit<
   'style' | 'children' | 'className'
 > {
   /**
-   * Semantic emphasis for the item.
-   * @default 'primary'
+   * Semantic emphasis for the item. `muted` is the default and the only rung
+   * that makes sense at rest: a menu row must show **no fill** until it is
+   * hovered, and the quiet rung's resting background resolves to exactly the
+   * popover's own colour in both modes (`neutral.0` / `neutral.900`), so the row
+   * borrows the surface and materialises on hover.
+   *
+   * It used to default to `primary`, which after the P3 retune painted every row
+   * as a solid `neutral.1000` chip in light and a solid white one in dark — a
+   * menu that read as a stack of buttons. The default was never inspected with an
+   * open menu.
+   *
+   * Reach for another rung only to make one row *louder* than its siblings (a
+   * primary "Create…" at the top of a menu). Note that `negative` fills the row
+   * red rather than tinting its ink — see F-029 before using it to mark a
+   * destructive row; `consequence="destructive"` is the semantic marker and
+   * carries no colour.
+   *
+   * @default 'muted'
    */
   evaluation?: EvaluationsFor<(typeof menuItemMeta)['entity']>;
   /**
@@ -267,7 +295,7 @@ export interface MenuItemProps extends Omit<
  * `vars.spacing.inset.control.sm`, `vars.text.label.md`, `vars.motion.feedback`.
  */
 export const MenuItem = ({
-  evaluation = 'primary',
+  evaluation = 'muted',
   consequence = 'neutral',
   composition,
   children,
@@ -280,21 +308,14 @@ export const MenuItem = ({
     <RACMenuItem
       {...props}
       data-scope="menu"
-      data-part="root"
+      data-part="control"
       data-evaluation={evaluation}
       data-consequence={consequence}
       data-composition={composition}
       style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => {
         return {
-          boxSizing: 'border-box',
-          display: 'flex',
-          alignItems: 'center',
+          ...buildChoosableRowStyle(),
           cursor: isDisabled ? 'not-allowed' : 'pointer',
-          borderRadius: vars.radii.control,
-          minHeight: vars.sizing.hit,
-          paddingBlock: vars.spacing.inset.control.sm,
-          paddingInline: vars.spacing.inset.control.md,
-          ...(vars.text.label.md as React.CSSProperties),
           transitionDuration: vars.motion.feedback.duration,
           transitionTimingFunction: vars.motion.feedback.easing,
           transitionProperty: 'background-color, color',
@@ -310,7 +331,6 @@ export const MenuItem = ({
               isDisabled,
             }) ?? colors?.text?.default,
           outline: focusRingOutline(isFocusVisible),
-          outlineOffset: '-1px',
         } as React.CSSProperties;
       }}
     >

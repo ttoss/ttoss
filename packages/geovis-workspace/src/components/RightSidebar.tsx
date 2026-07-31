@@ -10,7 +10,7 @@ import {
 import { useGeovisWorkspace } from '../hooks/useGeovisWorkspace';
 import { messages } from '../messages';
 import { RIGHT_SIDEBAR_SLOTS } from '../slots';
-import { InspectorPanel } from './InspectorPanel';
+import { InspectorSlot } from './InspectorPanel';
 import { MetadataPanel } from './MetadataPanel';
 import { WarningsPanel } from './WarningsPanel';
 
@@ -112,7 +112,7 @@ const DEFAULT_PANELS: Record<GeovisWorkspaceSlotName, React.ComponentType> = {
   controls: EmptyPanel,
   legend: LegendPanel,
   warnings: WarningsPanel,
-  inspector: InspectorPanel,
+  inspector: InspectorSlot,
   metadata: MetadataPanel,
 };
 
@@ -134,7 +134,8 @@ export const RightSidebar = () => {
         position: 'relative',
         flexDirection: 'column',
         gap: '4',
-        width: '256px',
+        // Fills the full-width overlay on mobile; fixed panel on larger screens.
+        width: ['100%', '256px'],
         height: '100%',
         flexShrink: 0,
         paddingX: '4',

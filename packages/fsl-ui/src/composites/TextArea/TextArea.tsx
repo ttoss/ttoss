@@ -1,28 +1,40 @@
 import { vars } from '@ttoss/fsl-theme/vars';
-import type * as React from 'react';
 import {
-  FieldError as RACFieldError,
   type FieldErrorProps as RACFieldErrorProps,
-  Label as RACLabel,
   type LabelProps as RACLabelProps,
-  Text as RACText,
   TextArea as RACTextArea,
   type TextAreaProps as RACTextAreaProps,
   TextField as RACTextField,
   type TextFieldProps as RACTextFieldProps,
   type TextProps as RACTextProps,
 } from 'react-aria-components';
+import { Group as RACGroup } from 'react-aria-components';
 
+import {
+  buildFieldFrameStyle,
+  buildFieldRootStyle,
+  buildFieldValueStyle,
+  type FieldAuthoring,
+  FieldDescriptionPart,
+  FieldInvalidGlyph,
+  FieldLabelPart,
+  type FieldLabelPartProps,
+  FieldValidationMessagePart,
+  useFieldLayout,
+} from '../../components/Field/anatomy';
 import type { ComponentMeta } from '../../semantics';
-import { focusRingOutline } from '../../tokens/focusRing';
-import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
-import { createPresenceScope } from '../scope';
+import { createCompositeScope } from '../scope';
 
 // ---------------------------------------------------------------------------
 // Composite scope — presence-only host guard (same contract as TextField).
 // ---------------------------------------------------------------------------
 
-const textAreaScope = createPresenceScope('TextArea');
+// Stateful rather than presence-only: the host now has something its parts
+// need. The label cannot know the field is required — React Aria does not tell
+// it — and the necessity marker belongs beside the label text, so the root
+// publishes the flag from its own render props (the authoritative value, not the
+// prop). `scope.ts`'s authoring rule: share state when there is state to share.
+const textAreaScope = createCompositeScope<{ isRequired: boolean }>('TextArea');
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -75,8 +87,141 @@ export const textAreaErrorMeta = {
   composition: 'status',
 } as const satisfies ComponentMeta<'Input'>;
 
-/** Props for the TextArea root. */
-export type TextAreaProps = Omit<RACTextFieldProps, 'style' | 'className'>;
+/**
+ * Props for the TextArea root.
+ *
+ * `rows` is one-line-only, the same shape `placeholder` has: React Aria puts it
+ * on the `<textarea>` and the composed form passes it to `TextAreaControl`
+ * directly, so the props form is where it would otherwise be unreachable — which
+ * it was until the Studio's settings form asked for a three-row description.
+ */
+export type TextAreaProps = Omit<
+  RACTextFieldProps,
+  'style' | 'className' | 'children'
+> &
+  FieldAuthoring<RACTextFieldProps['children'], { rows?: number }>;
+
+/** Props for the TextArea label. */
+export type TextAreaLabelProps = Omit<RACLabelProps, 'style' | 'className'> &
+  Pick<FieldLabelPartProps, 'contextualHelp'>;
+
+/** The label slot of a TextArea. */
+export const TextAreaLabel = ({ children, ...props }: TextAreaLabelProps) => {
+  const { isRequired } = textAreaScope.use(textAreaLabelMeta.displayName);
+  const colors = vars.colors.input.primary;
+
+  return (
+    <FieldLabelPart
+      {...props}
+      scope="text-area"
+      colors={colors}
+      isRequired={isRequired}
+    >
+      {children}
+    </FieldLabelPart>
+  );
+};
+TextAreaLabel.displayName = textAreaLabelMeta.displayName;
+
+/** Props for the TextArea control. */
+export type TextAreaControlProps = Omit<
+  RACTextAreaProps,
+  'style' | 'className'
+>;
+
+/**
+ * The control slot — since forms item H, the **split** shape: a painted frame
+ * hosting a borderless `<textarea>` (see `TextFieldControl` for the full
+ * rationale — the frame is the lawful home for in-box adornments). The frame
+ * is `multiline`: the value stretches instead of centring, vertical resize
+ * stays on the `<textarea>` (the frame grows with it), and the validation
+ * glyph pins to the top edge — centred on a five-line box it would mark
+ * nothing (the reference's `field-top-to-alert-icon` placement).
+ */
+export const TextAreaControl = (props: TextAreaControlProps) => {
+  textAreaScope.use(textAreaControlMeta.displayName);
+  const colors = vars.colors.input.primary;
+  const { labelPosition } = useFieldLayout();
+
+  return (
+    <RACGroup
+      data-scope="text-area"
+      data-part="frame"
+      style={({ isHovered, isDisabled, isFocusVisible, isInvalid }) => {
+        return buildFieldFrameStyle({
+          colors,
+          labelPosition,
+          multiline: true,
+          isHovered,
+          isDisabled,
+          isFocusVisible,
+          isInvalid,
+        });
+      }}
+    >
+      {({ isInvalid }) => {
+        return (
+          <>
+            <RACTextArea
+              {...props}
+              data-scope="text-area"
+              data-part="control"
+              style={({ isHovered, isDisabled, isInvalid }) => {
+                return {
+                  ...buildFieldValueStyle({
+                    colors,
+                    isHovered,
+                    isDisabled,
+                    isInvalid,
+                  }),
+                  resize: 'vertical',
+                };
+              }}
+            />
+            <FieldInvalidGlyph
+              scope="text-area"
+              isInvalid={isInvalid}
+              multiline
+            />
+          </>
+        );
+      }}
+    </RACGroup>
+  );
+};
+TextAreaControl.displayName = textAreaControlMeta.displayName;
+
+/** Props for the TextArea description. */
+export type TextAreaDescriptionProps = Omit<
+  RACTextProps,
+  'style' | 'className' | 'slot'
+>;
+
+/** Helper/description text linked to the control. */
+export const TextAreaDescription = (props: TextAreaDescriptionProps) => {
+  textAreaScope.use(textAreaDescriptionMeta.displayName);
+  const colors = vars.colors.input.primary;
+
+  return <FieldDescriptionPart {...props} scope="text-area" colors={colors} />;
+};
+TextAreaDescription.displayName = textAreaDescriptionMeta.displayName;
+
+/** Props for the TextArea error. */
+export type TextAreaErrorProps = Omit<
+  RACFieldErrorProps,
+  'style' | 'className'
+>;
+
+/** Validation message — rendered by React Aria only when the field is invalid. */
+export const TextAreaError = (props: TextAreaErrorProps) => {
+  textAreaScope.use(textAreaErrorMeta.displayName);
+  const colors = vars.colors.input.primary;
+
+  return (
+    <FieldValidationMessagePart {...props} scope="text-area" colors={colors} />
+  );
+};
+TextAreaError.displayName = textAreaErrorMeta.displayName;
 
 /**
  * A multiline text input composite (Input entity) — the multiline sibling of
@@ -93,25 +238,46 @@ export type TextAreaProps = Omit<RACTextFieldProps, 'style' | 'className'>;
  * </TextArea>
  * ```
  */
-export const TextArea = ({ children, ...props }: TextAreaProps) => {
+export const TextArea = ({
+  children,
+  label,
+  contextualHelp,
+  description,
+  errorMessage,
+  placeholder,
+  rows,
+  ...props
+}: TextAreaProps) => {
+  const { labelPosition } = useFieldLayout();
+
   return (
     <RACTextField
       {...props}
       data-scope="text-area"
       data-part="root"
-      style={
-        {
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: vars.spacing.gap.stack.xs,
-        } as React.CSSProperties
-      }
+      style={buildFieldRootStyle({ labelPosition })}
     >
       {(values) => {
         return (
-          <textAreaScope.Provider>
-            {typeof children === 'function' ? children(values) : children}
+          <textAreaScope.Provider value={{ isRequired: values.isRequired }}>
+            {children === undefined ? (
+              <>
+                {label !== undefined && (
+                  <TextAreaLabel contextualHelp={contextualHelp}>
+                    {label}
+                  </TextAreaLabel>
+                )}
+                <TextAreaControl placeholder={placeholder} rows={rows} />
+                {description !== undefined && (
+                  <TextAreaDescription>{description}</TextAreaDescription>
+                )}
+                <TextAreaError>{errorMessage}</TextAreaError>
+              </>
+            ) : typeof children === 'function' ? (
+              children(values)
+            ) : (
+              children
+            )}
           </textAreaScope.Provider>
         );
       }}
@@ -119,139 +285,3 @@ export const TextArea = ({ children, ...props }: TextAreaProps) => {
   );
 };
 TextArea.displayName = textAreaMeta.displayName;
-
-/** Props for the TextArea label. */
-export type TextAreaLabelProps = Omit<RACLabelProps, 'style' | 'className'>;
-
-/** The label slot of a TextArea. */
-export const TextAreaLabel = (props: TextAreaLabelProps) => {
-  textAreaScope.use(textAreaLabelMeta.displayName);
-  const colors = vars.colors.input.primary;
-
-  return (
-    <RACLabel
-      {...props}
-      data-scope="text-area"
-      data-part="label"
-      style={
-        {
-          color: colors?.text?.default,
-          ...(vars.text.label.md as React.CSSProperties),
-        } as React.CSSProperties
-      }
-    />
-  );
-};
-TextAreaLabel.displayName = textAreaLabelMeta.displayName;
-
-/** Props for the TextArea control. */
-export type TextAreaControlProps = Omit<
-  RACTextAreaProps,
-  'style' | 'className'
->;
-
-/**
- * The control slot — the actual `<textarea>`. Surfaces the `invalid` State
- * via `vars.colors.input.primary.*`; vertical resize is enabled.
- */
-export const TextAreaControl = (props: TextAreaControlProps) => {
-  textAreaScope.use(textAreaControlMeta.displayName);
-  const colors = vars.colors.input.primary;
-
-  return (
-    <RACTextArea
-      {...props}
-      data-scope="text-area"
-      data-part="control"
-      style={({ isHovered, isDisabled, isFocusVisible, isInvalid }) => {
-        return {
-          boxSizing: 'border-box',
-          resize: 'vertical',
-          minBlockSize: vars.sizing.hit,
-          paddingBlock: vars.spacing.inset.control.sm,
-          paddingInline: vars.spacing.inset.control.md,
-          borderRadius: vars.radii.control,
-          borderWidth: vars.border.outline.control.width,
-          borderStyle: vars.border.outline.control.style,
-          transitionDuration: vars.motion.feedback.duration,
-          transitionTimingFunction: vars.motion.feedback.easing,
-          transitionProperty: 'background-color, border-color, color',
-          backgroundColor: resolveInteractiveStyle(colors?.background, {
-            isHovered,
-            isDisabled,
-            isInvalid,
-          }),
-          borderColor: resolveInteractiveStyle(colors?.border, {
-            isDisabled,
-            isInvalid,
-            isFocusVisible,
-          }),
-          color:
-            resolveInteractiveStyle(colors?.text, {
-              isHovered,
-              isDisabled,
-              isInvalid,
-            }) ?? colors?.text?.default,
-          outline: focusRingOutline(isFocusVisible),
-          ...(vars.text.label.md as React.CSSProperties),
-        } as React.CSSProperties;
-      }}
-    />
-  );
-};
-TextAreaControl.displayName = textAreaControlMeta.displayName;
-
-/** Props for the TextArea description. */
-export type TextAreaDescriptionProps = Omit<
-  RACTextProps,
-  'style' | 'className' | 'slot'
->;
-
-/** Helper/description text linked to the control. */
-export const TextAreaDescription = (props: TextAreaDescriptionProps) => {
-  textAreaScope.use(textAreaDescriptionMeta.displayName);
-  const colors = vars.colors.input.primary;
-
-  return (
-    <RACText
-      slot="description"
-      {...props}
-      data-scope="text-area"
-      data-part="description"
-      style={
-        {
-          color: colors?.text?.default,
-          ...(vars.text.label.sm as React.CSSProperties),
-        } as React.CSSProperties
-      }
-    />
-  );
-};
-TextAreaDescription.displayName = textAreaDescriptionMeta.displayName;
-
-/** Props for the TextArea error. */
-export type TextAreaErrorProps = Omit<
-  RACFieldErrorProps,
-  'style' | 'className'
->;
-
-/** Validation message — rendered by React Aria only when the field is invalid. */
-export const TextAreaError = (props: TextAreaErrorProps) => {
-  textAreaScope.use(textAreaErrorMeta.displayName);
-  const colors = vars.colors.input.primary;
-
-  return (
-    <RACFieldError
-      {...props}
-      data-scope="text-area"
-      data-part="validationMessage"
-      style={
-        {
-          color: colors?.text?.invalid ?? colors?.text?.default,
-          ...(vars.text.label.sm as React.CSSProperties),
-        } as React.CSSProperties
-      }
-    />
-  );
-};
-TextAreaError.displayName = textAreaErrorMeta.displayName;

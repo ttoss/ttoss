@@ -7,6 +7,11 @@ import serve from 'koa-static';
 
 export { App, bodyParser, cors, multer, Router, serve };
 export * from './addHealthCheck';
+export {
+  applyHttpErrorHeaders,
+  type NormalizedHttpError,
+  toHttpError,
+} from './httpError';
 export type { File as MulterFile } from '@koa/multer';
 export type { Context, Middleware, Next } from 'koa';
 

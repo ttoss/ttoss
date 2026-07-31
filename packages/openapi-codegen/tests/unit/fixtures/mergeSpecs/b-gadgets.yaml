@@ -1,0 +1,26 @@
+openapi: 3.0.3
+tags:
+  - name: Gadgets
+paths:
+  /gadgets:
+    get:
+      operationId: listGadgets
+      tags: [Gadgets]
+      parameters:
+        - $ref: './a-widgets.yaml#/components/parameters/ProjectId'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: './a-widgets.yaml#/components/schemas/Widget'
+components:
+  schemas:
+    Gadget:
+      type: object
+      properties:
+        widget:
+          $ref: './a-widgets.yaml#/components/schemas/Widget'

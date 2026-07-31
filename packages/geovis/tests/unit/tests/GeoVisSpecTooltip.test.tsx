@@ -126,8 +126,7 @@ const triggerMove = (
   features?: ReadonlyArray<{ id?: string | number; layer?: { id: string } }>
 ) => {
   const handler = map.__handlers.get(`mousemove:${layerId}`) as
-    | MapMouseHandler
-    | undefined;
+    MapMouseHandler | undefined;
   if (!handler) throw new Error(`mousemove handler missing for ${layerId}`);
   act(() => {
     handler({ point, features });
@@ -246,6 +245,53 @@ describe('spec-driven hover tooltip (layer.hoverTooltip)', () => {
     await waitFor(() => {
       const tooltip = document.querySelector('[role="tooltip"]');
       expect(tooltip?.textContent).toBe('spec-abc');
+    });
+  });
+
+  test('renders the tooltip when hovering a point layer with click and hoverTooltip', async () => {
+    const onReady = jest.fn();
+    render(
+      <GeoVisProvider
+        spec={buildSpec([
+          {
+            id: 'pts',
+            sourceId: 'districts',
+            geometry: 'point',
+            click: {},
+            hoverTooltip: {
+              render: (info) => {
+                return <span>pt-{String(info.featureId)}</span>;
+              },
+            },
+          },
+        ])}
+      >
+        <ExposeRuntime onReady={onReady} />
+      </GeoVisProvider>
+    );
+    await waitFor(() => {
+      expect(onReady).toHaveBeenCalled();
+    });
+
+    mockCurrentMap.queryRenderedFeatures.mockImplementation(
+      (_point: unknown, opts?: { layers?: string[] }) => {
+        if (opts?.layers?.includes('pts')) {
+          return [{ layer: { id: 'pts' }, id: 7, source: 'districts' }];
+        }
+        return [];
+      }
+    );
+
+    const globalHandler = mockCurrentMap.__handlers.get('mousemove:*') as
+      MapMouseHandler | undefined;
+    if (!globalHandler) throw new Error('global mousemove handler missing');
+    act(() => {
+      globalHandler({ point: { x: 10, y: 10 } });
+    });
+
+    await waitFor(() => {
+      const tooltip = document.querySelector('[role="tooltip"]');
+      expect(tooltip?.textContent).toBe('pt-7');
     });
   });
 

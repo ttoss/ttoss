@@ -23,6 +23,16 @@ export const treeRadio = (): React.ReactElement => {
   );
 };
 
+// React Aria's ComboBox ignores `defaultOpen` (unlike Select) — the list is
+// opened by the trigger, so the item fixture drives it through `open` instead.
+export const treeComboBox = (): React.ReactElement => {
+  return (
+    <pkg.ComboBox label="Choice">
+      <pkg.ComboBoxItem id="a">A</pkg.ComboBoxItem>
+    </pkg.ComboBox>
+  );
+};
+
 export const treeSelect = (defaultOpen?: boolean): React.ReactElement => {
   return (
     <pkg.Select label="Choice" defaultOpen={defaultOpen}>
@@ -152,6 +162,29 @@ export const treeTagGroup = (): React.ReactElement => {
       <pkg.Tag id="react">React</pkg.Tag>
       <pkg.Tag id="vue">Vue</pkg.Tag>
     </pkg.TagGroup>
+  );
+};
+
+export const treeTable = (): React.ReactElement => {
+  return (
+    <pkg.Table aria-label="Team">
+      <pkg.TableHeader>
+        <pkg.TableColumn id="name" isRowHeader allowsSorting>
+          Name
+        </pkg.TableColumn>
+        <pkg.TableColumn id="role">Role</pkg.TableColumn>
+      </pkg.TableHeader>
+      <pkg.TableBody>
+        <pkg.TableRow id="ada">
+          <pkg.TableCell>Ada Lovelace</pkg.TableCell>
+          <pkg.TableCell>Admin</pkg.TableCell>
+        </pkg.TableRow>
+        <pkg.TableRow id="grace">
+          <pkg.TableCell>Grace Hopper</pkg.TableCell>
+          <pkg.TableCell>Editor</pkg.TableCell>
+        </pkg.TableRow>
+      </pkg.TableBody>
+    </pkg.Table>
   );
 };
 

@@ -99,4 +99,38 @@ describe('Grid', () => {
     expect(el).toHaveAttribute('id', 'cards');
     expect(el).toHaveAttribute('aria-label', 'Cards');
   });
+
+  test('hosts each child in an item wrapper that is a size container (ADR-011)', () => {
+    render(
+      <Grid columns={2}>
+        <i>a</i>
+        <i>b</i>
+      </Grid>
+    );
+    const items = document.querySelectorAll<HTMLElement>(
+      '[data-scope="grid"][data-part="item"]'
+    );
+    expect(items).toHaveLength(2);
+    for (const item of items) {
+      expect(item.style.containerType).toBe('inline-size');
+      // The wrapper's own grid display keeps the child stretching to the
+      // track exactly as it did before the wrapper existed.
+      expect(item.style.display).toBe('grid');
+      expect(item.querySelector('i')).toBeInTheDocument();
+    }
+  });
+
+  test('null children produce no item wrapper', () => {
+    const hidden = false as boolean;
+    render(
+      <Grid columns={2}>
+        <i>a</i>
+        {null}
+        {hidden && <i>b</i>}
+      </Grid>
+    );
+    expect(
+      document.querySelectorAll('[data-scope="grid"][data-part="item"]')
+    ).toHaveLength(1);
+  });
 });

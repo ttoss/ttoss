@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.1](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.13.0...@ttoss/auth-core@0.13.1) (2026-07-30)
+
+### Bug Fixes
+
+- **auth:** hash client secrets at rest instead of storing plaintext ([#1182](https://github.com/ttoss/ttoss/issues/1182)) ([8f7b24e](https://github.com/ttoss/ttoss/commit/8f7b24ea7c74779d5ddf52d41f05fa0e075349da))
+
+# [0.13.0](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.12.0...@ttoss/auth-core@0.13.0) (2026-07-29)
+
+### Features
+
+- **auth-core:** cap how often one address can be mailed ([#1175](https://github.com/ttoss/ttoss/issues/1175)) ([ef5ea08](https://github.com/ttoss/ttoss/commit/ef5ea08b9e3fce60b9c1861df4ac0c5a3ab88cc7))
+
+# [0.12.0](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.11.0...@ttoss/auth-core@0.12.0) (2026-07-29)
+
+### Bug Fixes
+
+- **auth-core:** use absolute docs URL for the http-server-auth cross-link ([#1173](https://github.com/ttoss/ttoss/issues/1173)) ([a59a316](https://github.com/ttoss/ttoss/commit/a59a31676a15c3e947016b84eae451ca0b6d307d))
+
+### Features
+
+- **auth-core:** add configurable email and password auth flows ([#1172](https://github.com/ttoss/ttoss/issues/1172)) ([5e75701](https://github.com/ttoss/ttoss/commit/5e7570145fdeafea947c3a78dbb00132b8f3744c))
+
+# 0.11.0 (2026-07-29)
+
+### Features
+
+- **http-server-mcp-openapi:** generate MCP tools from OpenAPI specs ([#1157](https://github.com/ttoss/ttoss/issues/1157)) ([1de1203](https://github.com/ttoss/ttoss/commit/1de1203d19065e095a2ff10090b48465fc2c4300))
+- **http-server-mcp,auth-core:** add resource indicator and OIDC verifier ([#1170](https://github.com/ttoss/ttoss/issues/1170)) ([7646b7c](https://github.com/ttoss/ttoss/commit/7646b7ca55844a2d087587865cb9e218b392141b))
+
 # [0.10.0](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.9.0...@ttoss/auth-core@0.10.0) (2026-06-28)
 
 ### Features

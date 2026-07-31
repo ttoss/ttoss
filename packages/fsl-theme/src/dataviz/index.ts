@@ -32,4 +32,5 @@
 export { coreDataviz, semanticDataviz } from './baseTheme';
 export type { CoreDataviz, SemanticDataviz } from './Types';
 export { useDatavizTokens } from './useDatavizTokens';
+export { datavizVars } from './vars';
 export { withDataviz } from './withDataviz';

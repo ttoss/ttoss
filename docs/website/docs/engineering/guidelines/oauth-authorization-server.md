@@ -103,6 +103,8 @@ Clients bootstrap by fetching metadata, so they need no manual configuration. Th
 
 `POST /register` ([RFC 7591](https://www.rfc-editor.org/rfc/rfc7591)) lets clients self-register: they post their `redirect_uris` and metadata, and the server issues a `client_id` (plus a `client_secret` for confidential clients) and persists it via `clientStore.register`. Your `ClientStore` only needs `get(clientId)` and `register(client)` — back it with DynamoDB, Postgres, or anything else.
 
+Implement the optional `verifyClientSecret({ clientId, clientSecret })` to keep secrets hashed at rest: the server hands over the value the client presented and your store compares it against its own stored form with `verifyClientSecret` from `@ttoss/auth-core`, so the raw secret never has to be recoverable. Without it the server compares the `client_secret` your `get` returns, which means the store must keep that value recoverable. `@ttoss/auth-postgresdb` implements it, so `client_secret_hash` is all its `oauth_clients` table holds.
+
 ## Authorization endpoint and PKCE
 
 `GET /authorize` validates the `client_id` and `redirect_uri` against the store, then calls your `onAuthorize` hook with the request and its headers. Return `{ approved: true, subject }` once the user is authenticated and has consented — the server issues a single-use code bound to the user, the requested scopes, and the PKCE challenge. Return `{ approved: false, redirect }` to send the user to your own login page (or `{ approved: false, status, body }` for an inline response); the adapter performs it. **PKCE S256 is mandatory** ([RFC 7636](https://www.rfc-editor.org/rfc/rfc7636)): the `code_challenge` is bound to the code and verified at the token endpoint, so codes are useless if intercepted.
@@ -141,9 +143,34 @@ const authServer = oauthServer({
 
 The store persists only token hashes — plaintext tokens never touch your database — keyed so the `(clientId, subject)` owner is the unit revoked on reuse.
 
-## In-memory reference stores
+## Stores
 
 `@ttoss/auth-core` ships `createMemoryClientStore`, `createMemoryAuthCodeStore`, and `createMemoryRefreshTokenStore` — `Map`-backed implementations of the three store contracts. They are for tests, local development, and examples (state is lost on restart); production swaps in a durable backend behind the same interfaces.
+
+For Postgres that backend is [`@ttoss/auth-postgresdb`](/docs/modules/packages/auth-postgresdb): register its `oauthModels` alongside your own so `ttoss-postgresdb sync` manages the tables, then build every store from the `db` handle.
+
+```typescript
+import {
+  createPostgresdbOAuthStores,
+  oauthModels,
+} from '@ttoss/auth-postgresdb';
+import { initialize } from '@ttoss/postgresdb';
+
+const db = await initialize({ models: { ...oauthModels, User } });
+
+const { clientStore, authCodeStore, consentStore, refreshTokenStore } =
+  createPostgresdbOAuthStores({ db });
+```
+
+Writing a store by hand? Two details are not obvious from the interfaces. `AuthCodeStore.get` is handed the plaintext code, but the engine reads only the bound metadata off the result — so hash the code to look the row up and echo the presented value back, because a code that travels through a browser redirect must not sit in the database in plaintext. And a live refresh token's `consumedAt` must be **absent**, never `null`: rotation treats `consumedAt !== undefined` as reuse, so a nullable timestamp column makes the first refresh look like a replay and revokes the owner's whole token set.
+
+## Deferred consent screens
+
+`createRedirectConsentOnAuthorize` sends the user to an external consent page with the OAuth parameters — including `redirect_uri` — on the query string, and consumes the approval it records (see `ConsentGrantStore`). Two rules keep that page safe.
+
+**Never navigate to `redirect_uri`.** The consent page cannot distinguish a genuine redirect from `/authorize` from a URL an attacker built and sent to a victim, so using that parameter to navigate turns an authenticated page into an open redirector. On approval, navigate to the authorization server's own `/authorize` with the parameters it was handed — the server re-validates `redirect_uri` against the registered client, so a forged one fails there. On cancel, render a terminal "nothing was connected" state; losing the OAuth-conformant `error=access_denied` redirect is the correct trade.
+
+**Render sign-in in place.** If the consent route redirects an unauthenticated visitor to `/login`, the OAuth parameters have to be carried there and back — threading a single-use PKCE challenge through a redirect chain where it can land in logs or a `Referer` header. Render the sign-in form on the consent route instead, so the query string stays in exactly one place.
 
 ## Scopes
 

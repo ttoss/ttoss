@@ -6,6 +6,7 @@ import {
   GeovisWorkspaceContext,
   type GeovisWorkspaceSelection,
 } from './context/GeovisWorkspaceContext';
+import { resolveMenus } from './menus';
 
 export interface GeovisWorkspaceProviderProps {
   /** Content to render inside the provider. */
@@ -55,7 +56,7 @@ export const getInitialSelection = ({
 }): GeovisWorkspaceSelection => {
   const selection: GeovisWorkspaceSelection = {};
 
-  const menus = config.controls?.menus ?? [];
+  const menus = resolveMenus(config);
 
   for (const menu of menus) {
     selection[menu.id] = menu.defaultValue;

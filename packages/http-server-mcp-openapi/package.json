@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/http-server-mcp-openapi",
-  "version": "0.1.1",
+  "version": "0.2.5",
   "description": "Generate Model Context Protocol (MCP) tools from an OpenAPI specification for @ttoss/http-server-mcp",
   "keywords": [
     "ai",
@@ -38,6 +38,7 @@
     "@ttoss/http-server-mcp": "workspace:^"
   },
   "devDependencies": {
+    "@modelcontextprotocol/server": "^2.0.0",
     "@ttoss/config": "workspace:^",
     "@ttoss/http-server": "workspace:^",
     "jest": "^30.4.2",

@@ -186,6 +186,18 @@ What must remain constant is the architecture:
 
 Semantic tokens must reference core tokens. A `RawValue` is permitted only when a `TokenRef` is technically impossible (e.g., `clamp()` expressions mixing units from multiple token paths, or CSS units with no core token equivalent such as `ch`).
 
+**A bare constant is never a lawful `RawValue`.** Every entry below is a
+_composition_ — a `clamp()`, an `rgba()`, a unit with no core home — because a
+composition is the only thing a single `{token.path}` genuinely cannot express.
+A plain value is the opposite case: it becomes a `TokenRef` the moment core
+holds it, and core is the layer whose job is holding values (§1). So
+"core has no step for this value" is a **missing core token**, never a
+necessity — the fix is to add the step to core and reference it, and
+`core.spacing.fixed.*` (the non-fluid spacing scale, added for exactly this
+reason) is the precedent. `semantic.spacing.inset.control.*` shipped as a
+literal `6px` under a necessity argument of that circular shape and was
+corrected in ADR-023; the guard that enforces this now has no exception list.
+
 Approval criteria — a semantic `RawValue` must satisfy all three:
 
 1. **Technical necessity**: the value cannot be expressed as a single `{token.path}` reference.
@@ -194,13 +206,14 @@ Approval criteria — a semantic `RawValue` must satisfy all three:
 
 **Approved RawValue inventory** (complete list as of this writing):
 
-| Token path                                    | Reason                                                                                                                        |
-| :-------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------- |
-| `semantic.spacing.gutter.page`                | `clamp()` expression embedding multiple token refs — no single `TokenRef` can express responsive fluid gutters                |
-| `semantic.spacing.gutter.section`             | same as above                                                                                                                 |
-| `semantic.spacing.separation.interactive.min` | `clamp()` with mixed units (`px` + token ref) — minimum touch-target separation cannot be expressed as a pure token reference |
-| `semantic.sizing.measure.reading`             | `ch` units — character-based measure has no core token equivalent                                                             |
-| `semantic.overlay.scrim`                      | `rgba()` composing `{semantic.opacity.scrim}` — no single `TokenRef` can express a partial-opacity overlay color              |
+| Token path                                    | Reason                                                                                                                                                                                                                                     |
+| :-------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `semantic.spacing.gutter.page`                | `clamp()` expression embedding multiple token refs — no single `TokenRef` can express responsive fluid gutters                                                                                                                             |
+| `semantic.spacing.gutter.section`             | same as above                                                                                                                                                                                                                              |
+| `semantic.spacing.separation.interactive.min` | `clamp()` with mixed units (`px` + token ref) — minimum touch-target separation cannot be expressed as a pure token reference                                                                                                              |
+| `semantic.spacing.inset.action.block`         | `clamp()` with mixed units — the command trigger's block padding is a bounded 8–9px range the engine's unit steps straddle (ADR-021 addendum; this entry was added late — the token shipped unregistered, against this section's own rule) |
+| `semantic.sizing.measure.reading`             | `ch` units — character-based measure has no core token equivalent                                                                                                                                                                          |
+| `semantic.overlay.scrim`                      | `rgba()` composing `{semantic.opacity.scrim}` — no single `TokenRef` can express a partial-opacity overlay color                                                                                                                           |
 
 Any new `RawValue` in the semantic layer requires an entry in this table before merging.
 

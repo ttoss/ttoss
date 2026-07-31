@@ -1,0 +1,6 @@
+environments:
+  Production:
+    aliases:
+      - fsl-storybook.ttoss.dev
+    cloudfront: true
+    stackName: FslStorybook

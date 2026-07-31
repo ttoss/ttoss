@@ -18,8 +18,17 @@
  * documented convention.
  */
 import { fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import * as React from 'react';
-import { Wizard, WizardNavigation, WizardStep, WizardSummary } from 'src/index';
+import {
+  Button,
+  Form,
+  TextField,
+  Wizard,
+  WizardNavigation,
+  WizardStep,
+  WizardSummary,
+} from 'src/index';
 
 describe('Wizard — composition-driven step selection', () => {
   test('renders only the step at currentStep', () => {
@@ -536,5 +545,99 @@ describe('Wizard — focus management and announcements (A12)', () => {
     expect(
       container.querySelector('[data-scope="wizard"][data-part="status"]')
     ).toHaveTextContent('Etapa 1 de 2');
+  });
+});
+
+/**
+ * Per-step validation (forms item G) — a guard, not an implementation.
+ *
+ * Probed before anything was built, and the composition is INHERITED: each
+ * step's content lives in its own `Form`, the navigation's forward button is
+ * a submit bound to the active step's form via the HTML `form` attribute, and
+ * the platform's native validation gates the advance. No Wizard API was added
+ * for this — the render-prop navigation and the Form the family already has
+ * are the whole mechanism. This suite pins it, because it is load-bearing and
+ * invisible: it would vanish under a Button that stopped forwarding
+ * `type`/`form`, or a Form that stopped accepting `id`.
+ */
+describe('Wizard — per-step validation composes from Form + navigation', () => {
+  const Flow = () => {
+    const [step, setStep] = React.useState(0);
+    return (
+      <Wizard currentStep={step} onStepChange={setStep} aria-label="Checkout">
+        <WizardStep>
+          <Form
+            id="checkout-step-0"
+            aria-label="Card"
+            onSubmit={(e) => {
+              e.preventDefault();
+              setStep(1);
+            }}
+          >
+            <TextField label="Card number" name="card" isRequired />
+          </Form>
+        </WizardStep>
+        <WizardStep>
+          <TextField label="City" name="city" />
+        </WizardStep>
+        <WizardNavigation>
+          {(state) => {
+            return (
+              <>
+                <Button
+                  evaluation="secondary"
+                  onPress={state.goPrev}
+                  isDisabled={state.isFirst}
+                >
+                  Back
+                </Button>
+                <Button
+                  type="submit"
+                  form={`checkout-step-${state.currentStep}`}
+                >
+                  Next
+                </Button>
+              </>
+            );
+          }}
+        </WizardNavigation>
+      </Wizard>
+    );
+  };
+
+  test('an invalid step blocks the advance and reports through its own field', async () => {
+    const user = userEvent.setup();
+    render(<Flow />);
+
+    await user.click(screen.getByRole('button', { name: 'Next' }));
+
+    // Still on step 1: the required field refused the submit, and its
+    // always-mounted message part carries the platform's constraint copy.
+    expect(
+      screen.getByRole('textbox', { name: /Card number/ })
+    ).toBeInTheDocument();
+    expect(
+      document.querySelector(
+        '[data-scope="text-field"][data-part="validationMessage"]'
+      )
+    ).toHaveTextContent(/\S/);
+  });
+
+  test('a valid step advances, and the submit button follows the active form', async () => {
+    const user = userEvent.setup();
+    render(<Flow />);
+
+    await user.type(
+      screen.getByRole('textbox', { name: /Card number/ }),
+      '4242 4242'
+    );
+    await user.click(screen.getByRole('button', { name: 'Next' }));
+
+    expect(screen.getByRole('textbox', { name: /City/ })).toBeInTheDocument();
+    // The binding is per-step: the same button now submits the next form.
+    expect(screen.getByRole('button', { name: 'Next' })).toHaveAttribute(
+      'form',
+      'checkout-step-1'
+    );
   });
 });

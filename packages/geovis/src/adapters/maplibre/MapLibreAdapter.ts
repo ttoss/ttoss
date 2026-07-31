@@ -75,6 +75,24 @@ const syncZoom = (
   map.setZoom(next.zoom);
 };
 
+const syncMaxZoom = (
+  map: maplibregl.Map,
+  prev: VisualizationSpec['view'],
+  next: VisualizationSpec['view']
+): void => {
+  if (prev?.maxZoomIn === next?.maxZoomIn) return;
+  map.setMaxZoom(next?.maxZoomIn ?? null);
+};
+
+const syncMinZoom = (
+  map: maplibregl.Map,
+  prev: VisualizationSpec['view'],
+  next: VisualizationSpec['view']
+): void => {
+  if (prev?.maxZoomOut === next?.maxZoomOut) return;
+  map.setMinZoom(next?.maxZoomOut ?? null);
+};
+
 /** Syncs map camera (center, zoom, pitch, bearing) to `next`, skipping values unchanged from `prev`. */
 const syncMapView = (
   map: maplibregl.Map,
@@ -84,6 +102,8 @@ const syncMapView = (
   if (!next) return;
   const p = prev ?? {};
   syncCenter(map, prev, next);
+  syncMaxZoom(map, prev, next);
+  syncMinZoom(map, prev, next);
   syncZoom(map, prev, next);
   const pp = p.pitch ?? 0;
   const np = next.pitch ?? 0;
@@ -107,15 +127,17 @@ const createMap = (
   spec: VisualizationSpec,
   container: HTMLElement
 ): { map: maplibregl.Map; style: MapLibreStyle } => {
-  const { view } = spec;
+  const view = spec.view ?? {};
   const style = resolveStyle(spec);
   const map = new maplibregl.Map({
     container,
     style,
-    center: (view?.center ?? [0, 0]) as maplibregl.LngLatLike,
-    zoom: view?.zoom ?? 1,
-    pitch: view?.pitch ?? 0,
-    bearing: view?.bearing ?? 0,
+    center: (view.center ?? [0, 0]) as maplibregl.LngLatLike,
+    zoom: view.zoom ?? 1,
+    maxZoom: view.maxZoomIn,
+    minZoom: view.maxZoomOut,
+    pitch: view.pitch ?? 0,
+    bearing: view.bearing ?? 0,
   });
   map.addControl(
     new maplibregl.NavigationControl({

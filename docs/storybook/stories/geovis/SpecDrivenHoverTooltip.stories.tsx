@@ -71,7 +71,6 @@ const formatPopulation = (value: number | string): string => {
 };
 
 const spec: VisualizationSpec = {
-  id: 'spec-driven-hover-tooltip',
   title: 'Spec-driven hover tooltip',
   description:
     'Hover a district: the tooltip is configured entirely through ' +
@@ -118,7 +117,7 @@ const spec: VisualizationSpec = {
   legends: [
     {
       id: 'population',
-      label: 'Population',
+      title: 'Population',
       colorBy: {
         type: 'quantitative',
         property: 'population',

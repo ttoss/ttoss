@@ -29,13 +29,24 @@ export interface CoreRadii {
  * Semantic radius contracts — stable shape API consumed by components.
  *
  * Pick by structural role:
- * - `control`  → interactive element (button, input, toggle, chip)
+ * - `action`   → command triggers (button, toggle button) — the CTA silhouette
+ * - `control`  → interactive element (input, select, chip)
  * - `surface`  → containing surface (card, panel, dialog, menu)
  * - `round`    → explicitly fully-rounded shape intent (pill, capsule, avatar)
  *
  * @see radii.md — Decision Matrix and Rules of Engagement.
  */
 export interface SemanticRadii {
+  /**
+   * Radius for the **command** silhouette. Split from `control` so a theme can
+   * give commitments their own shape (e.g. pill) while fields, choice controls
+   * and ambient/utility triggers keep the standard control radius — the
+   * distinction reference-grade systems draw between "press me" and "fill me
+   * in". Which components wear which silhouette is a consumer's decision and is
+   * declared there (fsl-ui `tokens/CONTRACT.md` §1), never named here: this
+   * package has no dependency on its consumers and cannot track a reassignment.
+   */
+  action: CoreRadiiRef;
   /** Radius for interactive controls and touchable UI elements. */
   control: CoreRadiiRef;
   /** Radius for surfaces that contain or group content. */

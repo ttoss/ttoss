@@ -19,18 +19,7 @@ import type { CoreColorRef, RawValue } from './primitives';
  * Themes may use any subset; step 500 is always required as the canonical mid-point.
  */
 type CoreColorStep =
-  | 0
-  | 50
-  | 100
-  | 200
-  | 300
-  | 400
-  | 500
-  | 600
-  | 700
-  | 800
-  | 900
-  | 1000;
+  0 | 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 1000;
 
 /**
  * Palette scale — partial record over CoreColorStep with 500 required.
@@ -224,7 +213,24 @@ interface InputColorRoles {
   positive: ColorDimensionOf<InputColorStates>;
   /** Input whose value carries risk that needs attention but does not block submission. */
   caution: ColorDimensionOf<InputColorStates>;
-  /** Input whose value failed validation — maps from React Aria `isInvalid`. Validation failure is *not* a state on `primary`; it selects this role (FSL Lexicon §5). */
+  /**
+   * Negative valence on a data-entry surface: the parts that *report* an
+   * adverse outcome, and controls an author deliberately voices negative.
+   *
+   * **This role is not how a control shows failed validation.** That is the
+   * `invalid` State on whichever role the control was authored with — see
+   * `InputColorStates.invalid` and FSL Lexicon §10.15, which calls re-voicing
+   * the control for a runtime outcome a category mistake: state lives in the
+   * user's data, evaluation lives in the author's pen. What §10.15 does place
+   * here is the adjacent display part, so `text.*` is the dimension a
+   * `validationMessage` consumes.
+   *
+   * This comment previously said the opposite — "validation failure is *not* a
+   * state on `primary`; it selects this role" — and cited §5, which defines
+   * Evaluation without addressing validation at all. It contradicted both
+   * §10.15 and `InputColorStates.invalid` twelve lines above, and the
+   * contradiction was live long enough to be reasoned from.
+   */
   negative: ColorDimensionOf<InputColorStates>;
 }
 
@@ -252,6 +258,12 @@ interface FeedbackColorRoles {
   caution: ColorDimensionOf<FeedbackColorStates>;
   /** Feedback reporting failure or an invalid system state. */
   negative: ColorDimensionOf<FeedbackColorStates>;
+  /**
+   * Informative feedback that is noteworthy but carries no judgement —
+   * "in progress", "new", "info". The canonical fill for activity
+   * indicators (ProgressBar, Meter).
+   */
+  accent: ColorDimensionOf<FeedbackColorStates>;
 }
 
 /** `informational`: informational surfaces and readable content. Roles: primary | secondary | accent | muted | positive | caution | negative */

@@ -1,8 +1,7 @@
 /**
- * Internal Icon module barrel. NOT re-exported from the package root
- * (`src/index.ts`) — the Icon is an internal primitive consumed by other
- * components while `@ttoss/fsl-icon` is not yet a standalone package
- * (ROADMAP B1 / ADR-005).
+ * Icon module barrel. Public since ADR-010 (`Icon`, `iconMeta`, intent
+ * types re-exported from `src/index.ts`); `ensureIconGlyphs`/`iconifyName`
+ * stay package-internal plumbing.
  */
 export { ensureIconGlyphs, iconifyName } from './glyphs';
 export type { IconProps, IconSize } from './Icon';

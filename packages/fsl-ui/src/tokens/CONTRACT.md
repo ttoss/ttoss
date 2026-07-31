@@ -65,17 +65,17 @@ the current combination of React Aria state booleans.
 
 A component MUST use ONLY tokens from its Entity row.
 
-| Entity         | Colors          | Radii     | Border                        | Sizing | Spacing         | Typography               | Motion       | Elevation        |
-| -------------- | --------------- | --------- | ----------------------------- | ------ | --------------- | ------------------------ | ------------ | ---------------- |
-| **Action**     | `action`        | `control` | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Input**      | `input`         | `control` | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Selection**  | `input`         | `control` | `outline.control`, `selected` | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Navigation** | `navigation`    | `control` | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Disclosure** | `navigation`    | `control` | `outline.control`             | `hit`  | `inset.control` | `label`                  | `transition` | `flat`           |
-| **Overlay**    | `informational` | `surface` | `outline.surface`             | —      | `inset.surface` | `title`, `body`, `label` | `transition` | `overlay`        |
-| **Feedback**   | `feedback`      | `surface` | `outline.surface`             | —      | `inset.surface` | `body`, `label`          | `feedback`   | `raised`         |
-| **Collection** | `informational` | `surface` | `outline.surface`, `divider`  | —      | `inset.surface` | `body`, `label`          | —            | `flat`, `raised` |
-| **Structure**  | `informational` | `surface` | `outline.surface`, `divider`  | —      | `inset.surface` | `title`, `body`, `label` | —            | `flat`, `raised` |
+| Entity         | Colors          | Radii                      | Border                        | Sizing | Spacing         | Typography               | Motion       | Elevation        |
+| -------------- | --------------- | -------------------------- | ----------------------------- | ------ | --------------- | ------------------------ | ------------ | ---------------- |
+| **Action**     | `action`        | `action`                   | `outline.control`             | `hit`  | `inset.control` | `action`                 | `feedback`   | `flat`           |
+| **Input**      | `input`         | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
+| **Selection**  | `input`         | `control`                  | `outline.control`, `selected` | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
+| **Navigation** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
+| **Disclosure** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `transition` | `flat`           |
+| **Overlay**    | `informational` | `surface`                  | `outline.surface`             | —      | `inset.surface` | `title`, `body`, `label` | `transition` | `overlay`        |
+| **Feedback**   | `feedback`      | `surface`, `round` (rails) | `outline.surface`             | —      | `inset.surface` | `body`, `label`          | `feedback`   | `raised`         |
+| **Collection** | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `body`, `label`          | —            | `flat`, `raised` |
+| **Structure**  | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `title`, `body`, `label` | —            | `flat`, `raised` |
 
 **Cross-cutting** (apply to ALL interactive entities — not in the table because they are entity-agnostic):
 
@@ -112,7 +112,7 @@ The grouping criterion is a single discriminant question:
 
 **Stacking inside `informational`.** When two `informational` surfaces overlap (Card inside Dialog, Dialog over page, …) they may resolve to the same `background` colour. Differentiation is paid in `elevation` first, `border` second, never in colour. See [colors.md → Stacking informational surfaces](/docs/design/design-system/design-tokens/colors#stacking-informational-surfaces) for the operational rule.
 
-**Collection containers with Selection items (per-part entity split).** A selectable list composite (`ListBox`, `GridList`) is allowed to declare **two entities across its parts**: the container root is `Collection` (an `informational` surface — the frame that carries the items) while each selectable item is `Selection` (`input` chrome, `selected` State). The item's selection chrome is therefore identical to `Select`/`Checkbox`/`RadioGroup` (`vars.colors.input.*`), and the container reads `vars.colors.informational.*`. This is intentional and enforced-compatible: the entity→ux-context contract test unions the contexts of all entities declared in a file, so both reads are legal. See ADR-007 for the rationale.
+**Collection containers with Selection items (per-part entity split).** A selectable list composite (`ListBox`, `GridList`, `Table`) is allowed to declare **two entities across its parts**: the container root is `Collection` (an `informational` surface — the frame that carries the items) while each selectable item is `Selection` (`input` chrome, `selected` State). The item's selection chrome is therefore identical to `Select`/`Checkbox`/`RadioGroup` (`vars.colors.input.*`), and the container reads `vars.colors.informational.*`. This is intentional and enforced-compatible: the entity→ux-context contract test unions the contexts of all entities declared in a file, so both reads are legal. See ADR-007 for the rationale. `Table` extends the split with two Collection parts: `TableColumn` is the `title` structural role (columnheader; sortable columns render the `action.sortAscending`/`action.sortDescending` Icon intents) and `TableCell` is `content` — the ROADMAP B2 mapping, no taxonomy addition needed.
 
 **Surface type rule** (derives all non-color columns):
 
@@ -284,6 +284,34 @@ color:           resolveInteractiveStyle(c?.text,       { isHovered, isPressed, 
                ?? c?.text?.default,
 ```
 
+### §3.2 — Validation: the one part that reads another role
+
+`invalid` is a State, `negative` is an Evaluation, and FSL Lexicon §10.15 keeps
+them apart in a way that splits a failed field across **two token lines**:
+
+- **The control** keeps the role it was authored with and flips that role's
+  `invalid` State. A `muted` field that fails validation is still `muted`.
+  Re-voicing it (`evaluation: 'negative'`) is the category mistake §10.15 names —
+  state lives in the user's data, evaluation lives in the author's pen.
+- **The `validationMessage`** is the adjacent display part _reporting_ the
+  outcome, so it lawfully carries the valence and reads
+  `input.negative.text.*` — regardless of the control's role. It is the only
+  part in the family that reads a role other than its component's, which is
+  why it goes through `buildFieldTextPartStyle`'s `tone` rather than being
+  hand-written per component.
+
+The theme states the same split from its side: `input.primary.text.invalid` is
+the control's ordinary reading ink on purpose, because a value the user must
+re-read is not where the signal is spent. The valence on the control is the
+border alone.
+
+**Hover does not apply while invalid** (owner ruling, 2026-07-29). No mechanism
+was needed for it — `invalid` already outranks `hovered` in the cascade above,
+and `border` passes no `isHovered` at all. It is recorded here because it is now
+a product decision rather than a side effect of the tuple's order, and
+`tests/unit/tests/fieldEnvelope.test.tsx` fails if a call site stops passing
+`isInvalid` and lets hover win.
+
 ---
 
 ## §4 — Standard Step Rule
@@ -315,16 +343,18 @@ Is it a toolbar action? A chip? A compact selection control? Name it, give it an
 
 Every component root MUST carry the identity attributes (`data-scope`, `data-part`); other attributes are emitted only when the dimension applies.
 
-| Attribute          | Where                                       | Type / value                                                        | When emitted                                                                                                                                          |
-| ------------------ | ------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `data-scope`       | every element                               | `kebab-case(meta.displayName)` — e.g. `"button"`, `"dialog"`        | Always.                                                                                                                                               |
-| `data-part`        | every element                               | `meta.structure` — e.g. `"root"`, `"label"`, `"control"`            | Always.                                                                                                                                               |
-| `data-evaluation`  | parts that consume evaluation tokens        | `EvaluationsFor<E>` — e.g. `"primary"`, `"negative"`                | When the part renders evaluation-dependent colors.                                                                                                    |
-| `data-consequence` | leaf Action elements that declare an effect | `ConsequencesFor<E>` — `"neutral" \| "committing" \| "destructive"` | When the component accepts a `consequence` prop (`Button`, `MenuItem`, `FormSubmit`).                                                                 |
-| `data-composition` | leaves that play a parent slot              | `CompositionsFor<E>` — e.g. `"primaryAction"`                       | When the component accepts a `composition` prop. Read at runtime by composites (e.g. `DialogActions` reorders by it).                                 |
-| `data-platform`    | `DialogActions` only                        | `"ios" \| "windows"`                                                | Always on `DialogActions`. Reflects the active ordering convention.                                                                                   |
-| `data-pending`     | `FormSubmit` only                           | `"true"` (omitted otherwise)                                        | While `isPending` is `true`. Lets host CSS/tests show spinner without re-wiring the disabled path.                                                    |
-| `data-arming`      | `ConfirmationDialog` confirm button only    | `"true"` (omitted otherwise)                                        | While a `destructive` confirmation is awaiting its second click. Selected at runtime from `consequence` — the proof that Consequence drives behavior. |
+| Attribute          | Where                                           | Type / value                                                        | When emitted                                                                                                                                                                                                                                                                                                             |
+| ------------------ | ----------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `data-scope`       | every element                                   | `kebab-case(meta.displayName)` — e.g. `"button"`, `"dialog"`        | Always.                                                                                                                                                                                                                                                                                                                  |
+| `data-part`        | every element                                   | `meta.structure` — e.g. `"root"`, `"label"`, `"control"`            | Always.                                                                                                                                                                                                                                                                                                                  |
+| `data-evaluation`  | parts that consume evaluation tokens            | `EvaluationsFor<E>` — e.g. `"primary"`, `"negative"`                | When the part renders evaluation-dependent colors.                                                                                                                                                                                                                                                                       |
+| `data-consequence` | leaf Action elements that declare an effect     | `ConsequencesFor<E>` — `"neutral" \| "committing" \| "destructive"` | When the component accepts a `consequence` prop (`Button`, `MenuItem`, `FormSubmit`).                                                                                                                                                                                                                                    |
+| `data-composition` | leaves that play a parent slot                  | `CompositionsFor<E>` — e.g. `"primaryAction"`                       | When the component accepts a `composition` prop. Read at runtime by composites (e.g. `DialogActions` reorders by it).                                                                                                                                                                                                    |
+| `data-platform`    | `DialogActions` only                            | `"ios" \| "windows"`                                                | Always on `DialogActions`. Reflects the active ordering convention.                                                                                                                                                                                                                                                      |
+| `data-pending`     | `FormSubmit` only                               | `"true"` (omitted otherwise)                                        | While `isPending` is `true`. Lets host CSS/tests show spinner without re-wiring the disabled path.                                                                                                                                                                                                                       |
+| `data-arming`      | `ConfirmationDialog` confirm button only        | `"true"` (omitted otherwise)                                        | While a `destructive` confirmation is awaiting its second click. Selected at runtime from `consequence` — the proof that Consequence drives behavior.                                                                                                                                                                    |
+| `data-orientation` | Action-family groups (`ButtonGroup`, `Toolbar`) | `"horizontal" \| "vertical"`                                        | Always. On `ButtonGroup` it reflects the axis **actually rendered**, so it reads `vertical` when a horizontal row had to collapse — assert the rendered state, not the authored prop. On `Toolbar` (emitted by React Aria) it is the authored axis, which is also the arrow-key axis; a toolbar never re-orients itself. |
+| `data-collapsed`   | `ButtonGroup` only                              | `"true"` (omitted otherwise)                                        | When a `horizontal` request gave way because the row did not fit. Separates "the author asked for a column" from "the row ran out of room" for host CSS and tests.                                                                                                                                                       |
 
 **Sub-part identity convention** — composites reuse the host's `data-scope` and pin the per-part `data-part`:
 
@@ -332,6 +362,84 @@ Every component root MUST carry the identity attributes (`data-scope`, `data-par
 <div data-scope="dialog" data-part="actions">…</div>
 <button data-scope="button" data-part="root" data-composition="primaryAction">…</button>
 ```
+
+**Uniqueness — `(data-scope, data-part)` addresses one element per subtree.** The pair is the
+package's addressing scheme: a test, a host stylesheet and an AI agent all resolve a part by
+it. So **no element may contain a descendant carrying the same pair.** Sibling repeats are
+legitimate and common — two radios in a group, two steppers in a NumberField, two glyph hosts
+— because the defect is ambiguity _within_ a subtree, not repetition in a document. Asserted
+by contract invariant #12, which ships with a list of named known violations, each annotated
+with what removes it; a companion test asserts every listed violation still reproduces, so a
+fixed one must be deleted rather than left as a standing exemption.
+
+**Declared parts vs internal parts.** `data-part` equals `meta.structure` for every part that
+declares a `ComponentMeta`, and those are checked against the entity's legal roles. A component
+may also emit **internal** parts — elements with no meta, whose names need not be in the
+entity's role vocabulary (`Slider`'s `track`/`fill`/`labelRow`, `ComboBox`'s
+`positioner`/`surface`, a field's `frame`). Internal parts exist so that structure the entity
+has no role for stays addressable without growing the taxonomy nominally (ADR-008). They are
+still bound by the uniqueness rule above.
+
+The clearest case is the field envelope on a **`Selection`** root. `Select`, `CheckboxGroup`
+and `RadioGroup` each render `description` and `validationMessage`, and neither is a legal
+`Selection` structural role — the roles are root/control/label/indicator/selectionControl/item,
+and those two belong to `Input`. All three ship them as internal parts, so no illegal role is
+ever claimed and the vocabulary does not grow for three components that borrow one shape.
+Admitting the roles to `ENTITY_STRUCTURE.Selection` stays available as an FSL governance
+decision; three components reaching the same answer is evidence for the internal-part
+treatment, not against it.
+
+**The embedded trigger.** An Action that lives _inside_ a field's box — a
+`SearchField`'s clear button, a `NumberField`'s two steppers, a `ComboBox`'s
+chevron — resolves its box from `EMBEDDED_TRIGGER` (`src/tokens/embeddedTrigger.ts`),
+never from its host. The reference system names the same primitive
+(`in-field-button`, with its own layout token set), so this is a third posture
+beside the command and utility silhouettes in `ActionTrigger/anatomy.tsx` rather
+than a convenience. Contract invariant **#14** asserts it.
+
+Two rules an author will otherwise get wrong. **It declares the field row's type
+although it renders no text:** a `<button>` with no type of its own inherits the
+UA's `13.3333px`, so anything font-relative inside it — an `Icon` asked for
+`size="text"` — silently shrinks. That is what made three triggers measure 32,
+25.33 and 20px. **Its colours come from its host and not from `action.*`:** the
+"entity → ux-context alignment" test binds a file's colour reads to the entities
+that file declares, and these hosts declare `Input` only. It costs nothing —
+`input.primary.background` resolves the same first two rungs as `action.muted`, so
+the trigger is invisible against its field until the pointer arrives.
+
+**The choosable row.** A row the user picks from — a `Select` option, a `ComboBox` option, a
+`MenuItem`, a `ListBoxItem`, a `GridListItem` — resolves its box from `CHOOSABLE_ROW`
+(`src/tokens/choosableRow.ts`), not from its own component. The five span three entities, and the
+entity decides a row's **colours**, never its geometry: they read the same block inset, inline
+inset, radius and type as the field row, so an option sits under a field at the same rhythm — the
+row is the field's content box, and the field is that plus the 1px border per edge it draws. Stated
+in tokens rather than pixels on purpose — a theme may retune them — and since fsl-theme ADR-022 the
+control inset is a fixed-px contract: the pair reads 32px row / 34px field wherever the fluid type
+is at its 16px top (~900px and up), and both meet the 32px `hit` floor below that — the inset ramp
+itself is gone (F-035, closed; 900px used to read 32.5). Its
+focus ring
+is **inset by exactly the ring width**, because every one of these rows lives in a clipped or
+scrolling surface and a ring needing room outside the box gets cut off at a scroll edge. Asserted by
+contract invariant #13.
+
+**The selection control.** The mark the user toggles — a `Checkbox`'s square, a `Radio`'s
+circle, a `Switch`'s track, a `GridList` row's selection box, a `Slider`'s visible handle —
+resolves its scale from `SELECTION_CONTROL` (`src/tokens/selectionControl.ts`), never from its
+own component. One scale (S2's large step: 18px box, 12px glyph, derived from the family's 16px
+label text), five consumers across three entities; the host decides the mark's colours and its
+shape (`round` vs the halved checkbox radius), never its size. Two rules an author will
+otherwise get wrong: **the glyph inside a fixed mark is fixed too** — `Icon size="sm"` is a
+container-fluid step and was measured rendering 20×20 inside its own 18×18 box, so indicator
+hosts declare `SELECTION_CONTROL.glyph` as their `fontSize` and ask the `Icon` for
+`size="text"` (1em); and **the interactive box is not the visible mark** — a `Slider` thumb's
+target takes `sizing.hit` (WCAG 2.5.8; a range slider's two thumbs are adjacent, so the spacing
+exception cannot save an undersized handle) while the 18px handle inside it is the fill, the
+same split `EMBEDDED_TRIGGER` records. Asserted by contract invariant **#15**.
+
+Where a control's painted box and its operated element are different nodes, **`control` names
+the element the user operates** — the one that takes focus and holds the value — and the
+painted box is an internal `frame`. Reversing that would make `[data-part="control"]` resolve a
+`<div>` nobody can type into (ADR-022; ADR-008 draws the same line for Slider's thumb).
 
 The contract test [`components.contract.test.tsx`](../../tests/unit/tests/components.contract.test.tsx) auto-discovers every `*Meta` and asserts each attribute value is legal per the matrices in `taxonomy.ts`.
 
@@ -412,21 +520,78 @@ Rules (enforced by the contract tests):
 
 Registered knobs:
 
-| Knob                      | Component     | Fallback           |
-| ------------------------- | ------------- | ------------------ |
-| `--fsl-dialog-max-width`  | `DialogModal` | `min(500px, 90vw)` |
-| `--fsl-dialog-max-height` | `DialogModal` | `90vh`             |
-| `--fsl-menu-min-width`    | `Menu`        | `12rem`            |
-| `--fsl-menu-max-width`    | `Menu`        | `min(320px, 90vw)` |
-| `--fsl-popover-max-width` | `Popover`     | `min(320px, 90vw)` |
-| `--fsl-tooltip-max-width` | `Tooltip`     | `min(280px, 90vw)` |
+| Knob                            | Component     | Fallback               |
+| ------------------------------- | ------------- | ---------------------- |
+| `--fsl-combo-box-max-height`    | `ComboBox`    | `min(20rem, 60vh)`     |
+| `--fsl-combo-box-popover-width` | `ComboBox`    | `var(--trigger-width)` |
+| `--fsl-form-label-width`        | `Form`        | `max-content`          |
+| `--fsl-dialog-max-width`        | `DialogModal` | `min(500px, 90vw)`     |
+| `--fsl-dialog-max-height`       | `DialogModal` | `90vh`                 |
+| `--fsl-menu-min-width`          | `Menu`        | `12rem`                |
+| `--fsl-menu-max-width`          | `Menu`        | `min(320px, 90vw)`     |
+| `--fsl-popover-max-width`       | `Popover`     | `min(320px, 90vw)`     |
+| `--fsl-select-popover-width`    | `Select`      | `var(--trigger-width)` |
+| `--fsl-tooltip-max-width`       | `Tooltip`     | `min(280px, 90vw)`     |
+
+### Upstream custom properties — a named allowlist (ADR-023)
+
+Rule 2 above reserves `--fsl-` for host knobs and bans a third namespace, because
+an unnamed one is an unreviewable styling side channel. One narrow class is
+exempt: a custom property **published as documented API by a direct dependency**,
+where the value is something only the dependency can compute.
+
+The exemption is an allowlist, not a hole. Names live in the `UpstreamCssVar`
+union and are read through `upstreamVar(name, fallback)` — same fallback
+requirement as `fslVar`, though it means something different: not "the host did
+not customise this" but "the dependency did not publish it".
+
+| Property          | Published by         | Read by              | Fallback |
+| ----------------- | -------------------- | -------------------- | -------- |
+| `--trigger-width` | React Aria `Popover` | `Select`, `ComboBox` | `auto`   |
+
+**Reads only.** React Aria resolves `--trigger-width` as
+`props.style['--trigger-width'] || measured`, and supplying our own value also
+switches off the `ResizeObserver` that keeps it current — so writing it would
+freeze a popover at its trigger's first-paint width.
+
+Both halves are enforced, and the source-text rule alone is **not** sufficient:
+it scans `src/components/**`, so a helper composing the string elsewhere slips
+past it (which is exactly what happened when `upstreamVar` was added). The
+binding check is over the **rendered** inline styles of every DOM fixture, plus a
+source check that nothing assigns an allowlisted name.
 
 ---
 
 ## §8 — Full Example: Button (Entity = Action)
 
-`entity: 'Action'` → §1 row: colors=`action`, radii=`control`, border=`outline.control`,
-sizing=`hit`, spacing=`inset.control.md`, typography=`label.md`, motion=`feedback`, elevation=`flat`.
+`entity: 'Action'` → §1 row: colors=`action`, radii=`action`, border=`outline.control`,
+sizing=`hit`, spacing=`inset.control.md`, typography=`action.md`, motion=`feedback`, elevation=`flat`.
+
+**Two silhouettes inside the Action row.** The row above lists the _command_
+tokens (`radii.action`, `text.action`, `inset.action.block`) that `Button`
+reads. `ActionButton` and `ToggleButton` read the **utility** set from the same
+row — `radii.control`, `text.label.md`, `inset.control.{sm,md}` — because an
+ambient operation on content must recede beside a commitment. Both silhouettes
+are declared once in `components/ActionTrigger/anatomy.tsx`
+(`COMMAND_SILHOUETTE` / `UTILITY_SILHOUETTE`) and every Action trigger takes
+its geometry from that module: the anatomy, the `hit` floor on both axes and
+the icon-only square are shared code, not conventions each component
+re-implements.
+
+Anatomy: `root` · `icon` · `label` — all three are lawful Action structural
+roles (`ENTITY_STRUCTURE.Action`), so a Button with a glyph declares real
+identities instead of anonymous spans. `sizing.hit` binds **both** axes: it
+drives the height and supplies a square minimum width, which is what makes the
+icon-only form's _floor_. The square itself is arithmetic, not an imposed
+`aspect-ratio`: the icon-only form mirrors its block inset on the inline axis
+and squares its glyph slot to one line (`1lh`), so both axes carry identical
+padding and identical content extent — which also makes the square resolve to
+the same height as a labelled CTA (40px at the desktop bound). Deriving it from
+`aspect-ratio` was tried and rejected: the shrink-to-fit width won, squeezing
+the vertical inset and breaking that height parity. The glyph arrives as a caller-supplied `<Icon>` **element**, not
+an intent string: a component that renders a caller's glyph imports
+`IconProps` as a _type only_, so it never pulls the glyph registry into a
+consumer that renders text alone (the tree-shaking guarantee — ADR-006).
 
 ```typescript
 import { vars } from '@ttoss/fsl-theme/vars';
@@ -456,7 +621,7 @@ export const Button = ({ evaluation = 'primary', ...props }: ButtonProps) => {
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: vars.radii.control,
+        borderRadius: vars.radii.action,
         borderWidth: vars.border.outline.control.width,
         borderStyle: vars.border.outline.control.style,
         minHeight: vars.sizing.hit,
@@ -490,15 +655,14 @@ export const Button = ({ evaluation = 'primary', ...props }: ButtonProps) => {
 
 ---
 
-## §9 — Icons (internal glyph layer)
+## §9 — Icons (semantic glyph layer; public since ADR-010)
 
 When a component needs a glyph (chevron, check, close, …), do **not** hardcode
-a unicode character or hand-author SVG. Use the internal `Icon`
-(`src/components/Icon/`) — a semantic layer over the Iconify provider
-(ADR-005):
+a unicode character or hand-author SVG. Use `Icon` — a semantic layer over
+the Iconify provider (ADR-005; public export per ADR-010):
 
 ```typescript
-import { Icon } from '../Icon'; // from src/components/*; '../../components/Icon' from composites
+import { Icon } from '@ttoss/fsl-ui'; // inside this package: '../Icon' from src/components/*
 
 <Icon intent="disclosure.expand" />          // named by meaning, not glyph
 <Icon intent="action.close" size="sm" />     // sm | md (default) | lg → vars.sizing.icon.*

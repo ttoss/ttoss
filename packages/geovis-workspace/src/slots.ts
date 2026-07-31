@@ -9,6 +9,7 @@ import {
   type GeovisWorkspaceConfig,
   type GeovisWorkspaceSlotName,
 } from './context/GeovisWorkspaceContext';
+import { resolveMenus } from './menus';
 import { getResultIssues, isColdStart } from './warnings';
 
 /** Right-sidebar slots, stacked in this fixed order (ADR-0002). */
@@ -42,8 +43,7 @@ export const getSlotOverride = ({
 };
 
 const hasControlsDefaultContent = (config: GeovisWorkspaceConfig): boolean => {
-  const menuCount = config.controls?.menus?.length ?? 0;
-  return menuCount > 0;
+  return resolveMenus(config).length > 0;
 };
 
 const hasLegendDefaultContent = ({
@@ -72,11 +72,22 @@ const hasWarningsDefaultContent = ({
 };
 
 const hasInspectorDefaultContent = ({
+  config,
   click,
 }: {
+  config: GeovisWorkspaceConfig;
   click: MapClickInfo | null;
 }): boolean => {
-  return click !== null;
+  if (!click) return false;
+
+  // Detail API mode: the inspector only has content for clicks the right
+  // sidebar accepts via `shouldOpen` (defaults to accepting every click).
+  const rightSidebar = config.rightSidebar;
+  if (rightSidebar?.onFeatureSelect || rightSidebar?.renderDetails) {
+    return rightSidebar.shouldOpen ? rightSidebar.shouldOpen(click) : true;
+  }
+
+  return true;
 };
 
 const hasMetadataDefaultContent = ({

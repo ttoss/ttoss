@@ -85,6 +85,19 @@ describe('Icon — glyph registry (icon-system.md)', () => {
     expect(iconifyName('selection.indeterminate')).toBe(
       'fsl-ui:selection-indeterminate'
     );
+    // camelCase intents kebab-case their humps.
+    expect(iconifyName('action.sortAscending')).toBe(
+      'fsl-ui:action-sort-ascending'
+    );
+  });
+
+  test('every registry name is Iconify-valid (lowercase [a-z0-9-] only)', () => {
+    // Iconify's addIcon rejects invalid names *silently* — the element
+    // renders 0×0 with no SVG. Caught live in the Studio (camelCase
+    // intent); this invariant keeps it from regressing.
+    for (const intent of ICON_INTENTS) {
+      expect(iconifyName(intent)).toMatch(/^[a-z0-9-]+:[a-z0-9-]+$/);
+    }
   });
 
   test('every intent maps to a unique registry name (no glyph collisions)', () => {

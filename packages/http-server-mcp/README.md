@@ -266,6 +266,41 @@ mcpServer.registerTool(
 
 Cognito encodes scopes as a space-separated string in `payload.scope` (e.g. `"openid mcp:access admin"`).
 
+### Resource indicator validation (RFC 8707)
+
+`requiredScopes` checks _what_ a token can do; `resourceIndicator` checks that the token was minted _for this server_ in the first place. Without it, a token issued by your authorization server for a different resource (another API, another MCP server) would still pass verification here as long as the signature checks out — the classic confused-deputy risk RFC 8707 exists to close.
+
+```typescript
+createMcpRouter(mcpServer, {
+  auth: {
+    cognitoUserPool: { userPoolId: '...', clientId: '...' },
+    resourceIndicator: 'https://mcp.example.com',
+  },
+});
+```
+
+The verified token's `aud` claim must include at least one of the configured values (a single string or an array of strings, for servers reachable under multiple hostnames), or the request receives `401 Unauthorized`. This applies uniformly regardless of the verification method — `cognitoUserPool`, a custom `verifyToken`, or `@ttoss/auth-core/oidc`'s `createOidcVerifier` below.
+
+### OIDC providers (Entra ID, Okta, Auth0, …)
+
+For any standards-compliant OIDC provider beyond Cognito, use `createOidcVerifier` from `@ttoss/auth-core/oidc`. It discovers the provider's signing keys from its `/.well-known/openid-configuration` document — no manual JWKS URL, no hand-rolled discovery:
+
+```typescript
+import { createOidcVerifier } from '@ttoss/auth-core/oidc';
+import { createMcpRouter } from '@ttoss/http-server-mcp';
+
+const mcpRouter = createMcpRouter(mcpServer, {
+  auth: {
+    verifyToken: createOidcVerifier({
+      issuer: 'https://login.microsoftonline.com/<tenant>/v2.0',
+    }),
+    resourceIndicator: 'https://mcp.example.com',
+  },
+});
+```
+
+`createOidcVerifier` deliberately does not validate `aud` itself — pass `resourceIndicator` alongside it, as shown, so audience validation stays consistent across every auth method this router supports. See the [`@ttoss/auth-core` README](https://ttoss.dev/docs/modules/packages/auth-core) for details on key caching and rotation.
+
 ### OAuth Protected Resource Metadata
 
 MCP clients (Claude, Cursor, etc.) fetch `/.well-known/oauth-protected-resource` to discover which authorization server issues tokens for your MCP server. The endpoint must be **unauthenticated** — MCP clients call it before they have a token.
@@ -325,7 +360,7 @@ The `WWW-Authenticate: Bearer resource_metadata="…"` header is how MCP clients
 
 The two behaviors the [MCP authorization spec](https://spec.modelcontextprotocol.io/specification/2025-03-26/basic/authorization/) requires for client bootstrapping are built into the `auth` option, so you no longer need the hand-rolled middleware shown above:
 
-- **`publicMethods`** — JSON-RPC methods that bypass verification, read from the request body's `method` field. Defaults to `['initialize', 'tools/list']` so clients can discover the server before authenticating. Pass `[]` to require a token for every method, or a custom list to change the exempt set.
+- **`publicMethods`** — JSON-RPC methods that bypass verification, read from the request body's `method` field. Defaults to `['initialize', 'tools/list']` so clients can discover the server before authenticating. Pass `[]` to require a token for every method, or a custom list to change the exempt set. Leaving it unset serves the full tool catalogue — every tool name, description, and input schema — to unauthenticated callers, and logs a one-time warning explaining that and how to close it. Set `publicMethods` explicitly (even to the same default) to silence the warning.
 - **`resourceMetadataUrl`** — when set, a `401` responds with `WWW-Authenticate: Bearer resource_metadata="<resourceMetadataUrl>"` (RFC 9728) instead of a bare `Bearer`, pointing MCP clients at the protected-resource metadata document. When omitted, the header falls back to `Bearer`.
 
 ```typescript
@@ -460,6 +495,7 @@ Creates a Koa router configured to handle MCP protocol requests.
     - `auth.resourceServerUrl` + `auth.authorizationServerUrl` — Enable `/.well-known/oauth-protected-resource`; the metadata `resource` is set to `resourceServerUrl + path` so clients following `resource` land on the actual MCP endpoint
     - `auth.publicMethods` — JSON-RPC methods that bypass verification (default `['initialize', 'tools/list']`)
     - `auth.resourceMetadataUrl` — Emit RFC 9728 `WWW-Authenticate: Bearer resource_metadata="…"` on 401
+    - `auth.resourceIndicator` — Expected `aud` value(s) (RFC 8707); rejects tokens minted for a different resource. See [Resource indicator validation](#resource-indicator-validation-rfc-8707)
 
 **Returns:** `Router` — Koa router instance
 
@@ -557,9 +593,16 @@ Use this when tool definitions are shared between the MCP server and an AI SDK a
 - `params.name` (`string`) — Unique tool name
 - `params.description` (`string`, optional) — Human-readable description
 - `params.inputSchema` (`JsonObjectSchema`, optional) — Plain JSON Schema object (defaults to `{ type: 'object', properties: {} }`)
+- `params.validateArguments` (`boolean`, optional) — Enforce `inputSchema` on `tools/call` (default: `false`); see [Argument validation](#argument-validation)
 - `params.handler` (`(args: Record<string, unknown>) => CallToolResult | Promise<CallToolResult>`) — Tool handler receiving the raw request arguments
 
 **Returns:** `void`
+
+#### Argument validation
+
+By default, `inputSchema` is **advertised but not enforced**: it round-trips verbatim over `tools/list` so clients know what to send, while arguments reach your handler unchecked. Pass `validateArguments: true` to reject mismatched calls with an MCP error before the handler runs.
+
+Enable it once you're confident `inputSchema` describes every value the tool genuinely accepts. Schemas derived from an OpenAPI document are a common source of _incomplete_ ones — a field a client may send as `null` to clear it, or one that accepts several shapes, is easily emitted as a bare `{ type: 'string' }`. Validating against a schema like that rejects calls the underlying API would have accepted. To describe those cases accurately, use `{ type: ['string', 'null'] }` for a nullable field and forward `oneOf`/`anyOf` verbatim rather than collapsing to one type.
 
 ## Examples
 
@@ -751,7 +794,9 @@ app.listen(3000);
 
 ## Protocol Details
 
-This package implements the [Model Context Protocol](https://spec.modelcontextprotocol.io/) over HTTP using JSON responses (no SSE streaming). It uses the `StreamableHTTPServerTransport` from the MCP SDK with `enableJsonResponse: true` and adapts Koa's context-based middleware to work with the MCP SDK's Node.js request/response expectations.
+This package implements the [Model Context Protocol](https://spec.modelcontextprotocol.io/) over HTTP using JSON responses (no SSE streaming), and serves each request over the protocol revision it actually speaks.
+
+Requests are classified once at the boundary. Traffic from today's MCP clients is served over `NodeStreamableHTTPServerTransport` with `enableJsonResponse: true`, adapting Koa's context-based middleware to the SDK's Node.js request/response expectations. Requests carrying the `2026-07-28` revision's per-request envelope are served by that revision's stateless core (`createMcpHandler`) instead. Both paths are served from the same `McpServer` instance and the same registered tools, so supporting the newer revision requires no configuration.
 
 **Supported HTTP methods:**
 
@@ -775,6 +820,8 @@ If you authenticate with `auth.verifyToken`, you do not need `sessionIdGenerator
 | ------------------------------- | --------------------------------------------- | ------------------------------------- |
 | Stateless (default)             | Bearer/API tokens, serverless, multi-instance | DB/verify hit per request             |
 | Stateful (`sessionIdGenerator`) | SSE events, context-preserving streams        | Needs session affinity / shared state |
+
+The `2026-07-28` revision has no session concept in its core, so requests speaking that revision are always served statelessly regardless of `sessionIdGenerator`.
 
 ## Testing an MCP server
 
@@ -824,11 +871,13 @@ expect(call.status).toBe(200);
 
 Use the default when token auth is handled outside the OAuth flow (Cognito, API keys, Bearer tokens). Set `publicMethods: []` only when you want OAuth clients to self-discover and authenticate before anything else.
 
+Leaving `publicMethods` unset also exposes the full tool catalogue (`tools/list`) to unauthenticated callers — a tool's name, description, and input schema can leak internal resource names and, for an OpenAPI-derived server, the shape of the whole underlying API. A one-time warning is logged when `auth` is configured without an explicit `publicMethods`, naming the exposure and how to close it. This default is a candidate to tighten to `['initialize']` in a future major; track the decision in [ttoss/ttoss#1176](https://github.com/ttoss/ttoss/issues/1176).
+
 ## AWS Lambda Deployment
 
 The default **stateless** mode (see [Stateless vs stateful mode](#stateless-vs-stateful-mode)) is built for serverless: a fresh transport is created per request, nothing is kept in memory between invocations, and responses are plain JSON (no SSE) — exactly the request/response shape API Gateway and Lambda Function URLs expect.
 
-Use [`@ttoss/http-server-serverless`](https://github.com/ttoss/ttoss/tree/main/packages/http-server-serverless) as the Lambda adapter. It wraps `serverless-http` and additionally populates `req.rawHeaders` from the API Gateway event before the request reaches Koa. Without this step, `@hono/node-server` — used internally by the MCP transport — drops all headers (including `Accept`) and every `initialize` request returns HTTP 406.
+Use [`@ttoss/http-server-serverless`](https://github.com/ttoss/ttoss/tree/main/packages/http-server-serverless) as the Lambda adapter. It wraps `serverless-http` and additionally populates `req.rawHeaders` from the API Gateway event before the request reaches Koa. Without this step, the adapter sitting between Koa and the MCP transport can drop all headers (including `Accept`), making every `initialize` request return HTTP 406.
 
 ```mermaid
 flowchart LR
@@ -877,7 +926,8 @@ Keep the following in mind:
 
 - [@ttoss/http-server](https://ttoss.dev/docs/modules/packages/http-server) - HTTP server foundation
 - [@ttoss/http-server-serverless](https://github.com/ttoss/ttoss/tree/main/packages/http-server-serverless) - AWS Lambda adapter (required for MCP on Lambda)
-- [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/sdk) - MCP SDK
+- [@modelcontextprotocol/server](https://github.com/modelcontextprotocol/typescript-sdk) - MCP server SDK (2026-07-28 core)
+- [@modelcontextprotocol/node](https://github.com/modelcontextprotocol/typescript-sdk) - Node.js request/response bridge for the SDK's fetch-based handler
 
 ## Resources
 

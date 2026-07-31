@@ -1,7 +1,6 @@
 import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
 import {
-  Label as RACLabel,
   Radio as RACRadio,
   RadioGroup as RACRadioGroup,
   type RadioGroupProps as RACRadioGroupProps,
@@ -11,6 +10,15 @@ import {
 import type { ComponentMeta } from '../../semantics';
 import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import {
+  SELECTION_BOX_BASE,
+  SELECTION_GROUP_STYLE,
+} from '../../tokens/selectionControl';
+import {
+  FieldDescriptionPart,
+  FieldLabelPart,
+  FieldValidationMessagePart,
+} from '../Field/anatomy';
 
 // ---------------------------------------------------------------------------
 // Semantic identities — Layer 1
@@ -25,7 +33,15 @@ import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 //
 // Validation feedback flows from React Aria's `isInvalid` prop on the group
 // (or `validate`/`validationBehavior`) into the `invalid` token state via the
-// `isInvalid` render-prop on each Radio child.
+// `isInvalid` render-prop on each Radio child — and, since forms C2, into a
+// `validationMessage` part, so an invalid group can say why.
+//
+// FRICTION LOG (F-009's shape, one family over). Like `Select` and
+// `CheckboxGroup`, the group's `description` and `validationMessage` ship as
+// INTERNAL data-parts carrying no `*Meta`: the Selection entity's structural
+// roles are root/control/label/indicator/selectionControl/item, and neither of
+// those two is among them (they belong to Input). Third component to reach the
+// same answer without widening the vocabulary.
 // ---------------------------------------------------------------------------
 
 /** Formal semantic identity — RadioGroup root (Selection entity, single-choice). */
@@ -56,6 +72,19 @@ export interface RadioGroupProps extends Omit<
 > {
   /** Group label displayed above the radio options. */
   label?: React.ReactNode;
+  /**
+   * A `<ContextualHelp>` element rendered beside the label (the reference
+   * system's prop shape) — for the explanation too long for `description`.
+   */
+  contextualHelp?: React.ReactNode;
+  /** Supplementary helper text linked to the group via `aria-describedby`. */
+  description?: React.ReactNode;
+  /**
+   * Validation message shown when the group is invalid (`isInvalid` /
+   * `validate`). Supply caller-localized copy (i18n rule / §6); omit it and the
+   * platform's own constraint message is shown instead.
+   */
+  errorMessage?: React.ReactNode;
   /** Radio option children — must be `Radio` components. */
   children?: React.ReactNode;
 }
@@ -78,7 +107,14 @@ export interface RadioGroupProps extends Omit<
  * </RadioGroup>
  * ```
  */
-export const RadioGroup = ({ label, children, ...props }: RadioGroupProps) => {
+export const RadioGroup = ({
+  label,
+  contextualHelp,
+  description,
+  errorMessage,
+  children,
+  ...props
+}: RadioGroupProps) => {
   const c = vars.colors.input.primary;
 
   return (
@@ -86,26 +122,27 @@ export const RadioGroup = ({ label, children, ...props }: RadioGroupProps) => {
       {...props}
       data-scope="radio-group"
       data-part="root"
-      style={{
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: vars.spacing.gap.stack.sm,
-      }}
+      style={SELECTION_GROUP_STYLE}
     >
-      {label && (
-        <RACLabel
-          data-scope="radio-group"
-          data-part="label"
-          style={{
-            ...(vars.text.label.md as React.CSSProperties),
-            color: c?.text?.default,
-          }}
+      {label != null && (
+        <FieldLabelPart
+          scope="radio-group"
+          contextualHelp={contextualHelp}
+          colors={c}
+          isRequired={props.isRequired}
         >
           {label}
-        </RACLabel>
+        </FieldLabelPart>
       )}
       {children}
+      {description != null && (
+        <FieldDescriptionPart scope="radio-group" colors={c}>
+          {description}
+        </FieldDescriptionPart>
+      )}
+      <FieldValidationMessagePart scope="radio-group" colors={c}>
+        {errorMessage}
+      </FieldValidationMessagePart>
     </RACRadioGroup>
   );
 };
@@ -117,21 +154,13 @@ RadioGroup.displayName = radioGroupMeta.displayName;
 
 type InputColors = typeof vars.colors.input.primary;
 
+// Size and glyph scale come from the shared selection-control source; the
+// circle is the one axis a radio differs on (`round` vs the halved control
+// radius of a checkbox-shaped mark).
 const RADIO_BOX_STATIC = {
-  boxSizing: 'border-box',
-  flexShrink: 0,
+  ...SELECTION_BOX_BASE,
   position: 'relative',
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '1.125rem',
-  height: '1.125rem',
   borderRadius: vars.radii.round,
-  borderStyle: vars.border.outline.control.style,
-  transitionProperty: 'background-color, border-color, border-width',
-  transitionDuration: vars.motion.feedback.duration,
-  transitionTimingFunction: vars.motion.feedback.easing,
-  outlineOffset: '2px',
 } satisfies React.CSSProperties;
 
 /** Circular radio-indicator style (state-dependent chrome + focus ring). */

@@ -11,8 +11,16 @@ import type {
   ConsequencesFor,
   EvaluationsFor,
 } from '../../semantics';
-import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import {
+  type ActionIconPlacement,
+  type ActionLabellingProps,
+  ActionTriggerContent,
+  buildActionTriggerStyle,
+  COMMAND_SILHOUETTE,
+  useIsGroupedActionTrigger,
+} from '../ActionTrigger/anatomy';
+import type { IconProps } from '../Icon';
 
 /**
  * Formal semantic identity — what this component *is* (Layer 1).
@@ -23,14 +31,20 @@ export const buttonMeta = {
   structure: 'root',
 } as const satisfies ComponentMeta<'Action'>;
 
+/** Where the icon sits relative to the label. @see ActionIconPlacement */
+export type ButtonIconPlacement = ActionIconPlacement;
+
 /**
- * Displays a semantic action trigger (entity: Action).
+ * Button props *except* the labelling contract — the reusable half.
  *
- * Entity = Action → colors: `action`, radii: `control`, border: `outline.control`,
- * sizing: `hit` (ergonomic floor, drives height), spacing: `inset.control`
- * (`sm` block / `lg` inline), typography: `label.md`, motion: `feedback`.
+ * Composites that always render a visible label (e.g. `FormSubmit`) extend
+ * this and declare `children` themselves, instead of carrying the
+ * icon-only branch of `ButtonProps` they can never take.
  */
-export interface ButtonProps extends Omit<RACButtonProps, 'style'> {
+export interface ButtonOwnProps extends Omit<
+  RACButtonProps,
+  'style' | 'children' | 'aria-label'
+> {
   /**
    * Semantic emphasis.
    * @default 'primary'
@@ -59,6 +73,29 @@ export interface ButtonProps extends Omit<RACButtonProps, 'style'> {
    */
   composition?: CompositionsFor<(typeof buttonMeta)['entity']>;
   /**
+   * An `<Icon>` element naming the glyph by intent. Button forces the `text`
+   * size step, so the glyph tracks the label's own size and its ink lands
+   * inside the cap-height band — pass the intent, let the button own the
+   * scale.
+   *
+   * Omit `children` to render an **icon-only** button: the control becomes a
+   * square (the block inset is mirrored on the inline axis and the glyph slot
+   * squares to one line) and `aria-label` becomes required. The square
+   * resolves to the same height as a labelled CTA, so a toolbar mixing the two
+   * keeps one baseline.
+   *
+   * @example
+   * ```tsx
+   * <Button icon={<Icon intent="action.search" />}>Search</Button>
+   * ```
+   */
+  icon?: React.ReactElement<IconProps>;
+  /**
+   * Which side of the label the `icon` sits on.
+   * @default 'leading'
+   */
+  iconPlacement?: ButtonIconPlacement;
+  /**
    * Data scope identifier for the button.
    * @default 'button'
    */
@@ -66,16 +103,55 @@ export interface ButtonProps extends Omit<RACButtonProps, 'style'> {
 }
 
 /**
+ * Displays a semantic action trigger (entity: Action) in the **command**
+ * silhouette — the assertive posture, for actions the user commits to:
+ * submitting a form, confirming a dialog, the primary action of a surface.
+ *
+ * For ambient operations *on* content — toolbar controls, row actions, the
+ * trigger of an overflow menu — reach for `ActionButton`, which wears the
+ * quieter utility silhouette. Both are Action/root; what separates them is the
+ * weight of the commitment, the same way `Meter` and `ProgressBar` are both
+ * Feedback/root separated by meaning.
+ *
+ * Entity = Action → colors: `action`, radii: `action`, border: `outline.control`,
+ * sizing: `hit` (ergonomic floor — drives both height and the square minimum
+ * width), spacing: `inset.action.block` (block) + `inset.control.lg` (inline)
+ * plus `gap.inline.xs` between glyph and label, typography: `action.md`,
+ * motion: `feedback`.
+ *
+ * Anatomy (`data-part`): `root` · `icon` · `label` — the sub-parts are lawful
+ * `icon` / `label` structural roles for Action, so the glyph and the text are
+ * observable identities rather than anonymous spans.
+ */
+export type ButtonProps = ButtonOwnProps & ActionLabellingProps;
+
+/**
  * A semantic action button built on React Aria.
+ *
+ * @example
+ * ```tsx
+ * <Button evaluation="accent">Save changes</Button>
+ * <Button icon={<Icon intent="action.close" />} evaluation="muted">Dismiss</Button>
+ * <Button icon={<Icon intent="disclosure.expand" />} iconPlacement="trailing">
+ *   More
+ * </Button>
+ * <Button icon={<Icon intent="action.close" />} aria-label={closeLabel} />
+ * ```
  */
 export const Button = ({
   evaluation = 'primary',
   consequence = 'neutral',
   composition,
+  icon,
+  iconPlacement = 'leading',
+  children,
   'data-scope': dataScope = 'button',
   ...props
 }: ButtonProps) => {
   const colors = vars.colors.action[evaluation];
+  const hasIcon = icon !== undefined;
+  const isIconOnly = hasIcon && children === undefined;
+  const isGrouped = useIsGroupedActionTrigger();
 
   return (
     <RACButton
@@ -85,46 +161,43 @@ export const Button = ({
       data-evaluation={evaluation}
       data-consequence={consequence}
       data-composition={composition}
+      data-icon-placement={hasIcon ? iconPlacement : undefined}
       style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => {
-        return {
-          boxSizing: 'border-box',
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: isDisabled ? 'not-allowed' : 'pointer',
-          borderRadius: vars.radii.control,
-          borderWidth: vars.border.outline.control.width,
-          borderStyle: vars.border.outline.control.style,
-          minHeight: vars.sizing.hit,
-          // Block padding is intentionally tight (`inset.control.sm`) so the
-          // rem-anchored `hit` floor binds and drives height (~32–36px on the
-          // desktop); a wider inline inset (`lg`) gives visual breathing
-          // (matches MUI/Bootstrap/Tailwind ~1:3 vertical:horizontal ratio).
-          paddingBlock: vars.spacing.inset.control.sm,
-          paddingInline: vars.spacing.inset.control.lg,
-          ...(vars.text.label.md as React.CSSProperties),
-          transitionDuration: vars.motion.feedback.duration,
-          transitionTimingFunction: vars.motion.feedback.easing,
-          transitionProperty: 'background-color, border-color, color',
-          backgroundColor: resolveInteractiveStyle(colors?.background, {
-            isHovered,
-            isPressed,
-            isDisabled,
-          }),
-          borderColor: resolveInteractiveStyle(colors?.border, {
-            isDisabled,
-            isFocusVisible,
-          }),
-          color:
-            resolveInteractiveStyle(colors?.text, {
+        return buildActionTriggerStyle({
+          silhouette: COMMAND_SILHOUETTE,
+          hasIcon,
+          isIconOnly,
+          isDisabled,
+          isFocusVisible,
+          isGrouped,
+          colors: {
+            background: resolveInteractiveStyle(colors?.background, {
               isHovered,
               isPressed,
               isDisabled,
-            }) ?? colors?.text?.default,
-          outline: focusRingOutline(isFocusVisible),
-        } as React.CSSProperties;
+            }),
+            border: resolveInteractiveStyle(colors?.border, {
+              isDisabled,
+              isFocusVisible,
+            }),
+            text:
+              resolveInteractiveStyle(colors?.text, {
+                isHovered,
+                isPressed,
+                isDisabled,
+              }) ?? colors?.text?.default,
+          },
+        });
       }}
-    />
+    >
+      <ActionTriggerContent
+        dataScope={dataScope}
+        icon={icon}
+        iconPlacement={iconPlacement}
+      >
+        {children}
+      </ActionTriggerContent>
+    </RACButton>
   );
 };
 Button.displayName = buttonMeta.displayName;

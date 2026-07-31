@@ -80,6 +80,7 @@ describe('registerOpenApitools', () => {
       'delete-agent',
       'get-agent',
       'list-agents',
+      'update-agent',
     ]);
     const getAgent = list.find((t) => {
       return t.name === 'get-agent';

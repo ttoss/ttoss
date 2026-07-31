@@ -84,7 +84,6 @@ const GEOJSON_DATA: GeoJSON.FeatureCollection = {
 };
 
 const DEFAULT_SPEC: VisualizationSpec = {
-  id: 'dot-density-minimal',
   title: 'Dot Density Map',
   description: 'Global points rendered as dot density with year on hover.',
   engine: 'maplibre',
@@ -94,7 +93,7 @@ const DEFAULT_SPEC: VisualizationSpec = {
     zoom: 3,
   },
   basemap: {
-    style: 'https://demotiles.maplibre.org/style.json',
+    styleUrl: 'https://demotiles.maplibre.org/style.json',
   },
   sources: [
     {

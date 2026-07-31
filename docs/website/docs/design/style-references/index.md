@@ -18,7 +18,7 @@ That architecture separates concerns that are often conflated:
 
 - **Semantic Contract** — stable meaning, naming, governance, validation
 - **Visual Language Reference** — technical reference for a recurring visual language
-- **Formal Style Profile** — operational style constraints derived from a reference
+- **Formal Style Profile** — operational style constraints derived from a reference, published in the canonical format defined by [Theme Authoring](/docs/design/design-system/design-tokens/theme-authoring#formal-style-profile)
 - **Theme Archetype** — product-facing visual posture
 - **Built-in Theme** — concrete token implementation
 - **Interaction Posture** — attentional and behavioral stance
@@ -115,30 +115,17 @@ Each style reference in this directory is expected to:
 5. document its risks and failure modes
 6. map its impact across ttoss token families
 7. distinguish token-layer fit from recipe-layer fit
-8. propose an initial formal style profile
+8. propose an initial formal style profile, indexed by token family and using the five constraint levels, exactly as [Theme Authoring](/docs/design/design-system/design-tokens/theme-authoring#formal-style-profile) defines them — a reference does not invent its own format or level vocabulary
 9. identify likely archetype affinity
 
 A style reference that only describes visual taste is incomplete. A style reference becomes useful only when it makes the style technically legible.
 
 ## Current references
 
-The initial set in this library covers styles that are historically significant, operationally distinct, or especially relevant to modern token-based theming:
-
-**Structural references:**
-
 - [Skeuomorphic](./skeuomorphic.md)
 - [Flat 2.0](./flat2.md)
-- [Minimalist](./minimalist.md)
 
-**Specialized references:**
-
-- [Material](./material.md)
-- [Glass](./glass.md)
-- [Neobrutalism](./neobrutalism.md)
-- [Neumorphism](./neumorphism.md)
-- [90s](./90s.md)
-
-These references are not expected to be symmetrical in recommendation level. Some are strong sources for production archetypes. Others are valuable because they clarify limits, tradeoffs, or cautionary boundaries.
+Further references (minimalist, material, glass, neobrutalism, neumorphism, 90s) are planned and will be added as they are authored against the inclusion criteria above. References are not expected to be symmetrical in recommendation level: some are strong sources for production archetypes, others clarify limits, tradeoffs, or cautionary boundaries.
 
 ## Principle
 

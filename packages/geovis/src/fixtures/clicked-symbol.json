@@ -56,7 +56,7 @@
       "legends": [
         {
           "id": "marker-color",
-          "label": "Markers",
+          "title": "Markers",
           "colorBy": {
             "type": "categorical",
             "property": "label",

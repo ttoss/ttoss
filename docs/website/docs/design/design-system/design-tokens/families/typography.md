@@ -198,7 +198,7 @@ Semantic typography tokens are the only typography API for components.
 text.{family}.{step}
 ```
 
-- `family`: `display | headline | title | body | label | code`
+- `family`: `display | headline | title | body | label | action | code`
 - `step`: `lg | md | sm` (code uses `md | sm`)
 
 #### Text Families
@@ -211,7 +211,8 @@ Each text family represents a distinct typographic role in the interface.
 | `headline` | Section or page headings that structure content and guide scanning through the interface.                                       |
 | `title`    | Titles for surfaces such as cards, panels, dialogs, and structured UI sections.                                                 |
 | `body`     | Default text for paragraphs, descriptions, and long-form reading. Optimized for readability.                                    |
-| `label`    | Short UI text such as field labels, button text, badges, and metadata.                                                          |
+| `label`    | Short UI text such as field labels, badges, and metadata.                                                                       |
+| `action`   | Command-trigger text (Button/ToggleButton) — semibold, single `md` step; CTAs carry more weight than the chrome around them.    |
 | `code`     | Monospaced text for code snippets, logs, identifiers, or technical data.                                                        |
 
 ### Canonical semantic set
@@ -221,6 +222,7 @@ Each text family represents a distinct typographic role in the interface.
 - `text.title.{lg|md|sm}`
 - `text.body.{lg|md|sm}`
 - `text.label.{lg|md|sm}`
+- `text.action.md`
 - `text.code.{md|sm}`
 
 > Keep this set stable. Add new families only if they represent a genuinely new typographic function.

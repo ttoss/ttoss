@@ -1,0 +1,32 @@
+openapi: 3.0.3
+tags:
+  - name: Gadgets
+paths:
+  /gadgets:
+    put:
+      operationId: replaceOrCreateGadget
+      tags: [Gadgets]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  required: [id, name]
+                  properties:
+                    id:
+                      type: string
+                      description: Existing gadget id
+                    name:
+                      type: string
+                      description: Gadget name
+                - type: object
+                  required: [name]
+                  properties:
+                    name:
+                      type: string
+                      description: Gadget name
+      responses:
+        '200':
+          description: ok
+components: {}

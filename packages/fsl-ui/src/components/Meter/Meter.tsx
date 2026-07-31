@@ -33,22 +33,26 @@ export const meterMeta = {
 
 type FeedbackColors = (typeof vars.colors.feedback)[EvaluationsFor<'Feedback'>];
 
-/** Track (body) style — the empty rail the fill sits in. */
-const buildTrackStyle = (c: FeedbackColors): React.CSSProperties => {
+// Track thickness: the thin pill rail shared with ProgressBar (P3 slice 3 —
+// reference-grade activity/level silhouette, measured 6px in Spectrum 2).
+const TRACK_THICKNESS = '6px';
+
+/** Track (body) style — the neutral rail the fill sits in. Reads the `muted`
+ * evaluation (the Feedback entity's quiet surface) so the rail stays neutral
+ * while the selected evaluation drives the fill. */
+const buildTrackStyle = (): React.CSSProperties => {
   return {
     position: 'relative',
     overflow: 'hidden',
     width: '100%',
-    height: vars.spacing.gap.stack.sm,
-    backgroundColor: c?.background?.default,
-    borderRadius: vars.radii.control,
-    borderWidth: vars.border.outline.surface.width,
-    borderStyle: vars.border.outline.surface.style,
-    borderColor: c?.border?.default,
+    height: TRACK_THICKNESS,
+    backgroundColor: vars.colors.feedback.muted.border?.default,
+    borderRadius: vars.radii.round,
   };
 };
 
-/** Fill (content) style — width tracks the value's percentage of the range. */
+/** Fill (content) style — width tracks the value's percentage of the range.
+ * The fill is the evaluation's filled surface (`background.default`). */
 const buildFillStyle = ({
   c,
   percentage,
@@ -59,7 +63,7 @@ const buildFillStyle = ({
   return {
     height: '100%',
     width: `${percentage}%`,
-    backgroundColor: c?.border?.default,
+    backgroundColor: c?.background?.default,
     borderRadius: 'inherit',
     transitionProperty: 'width',
     transitionDuration: vars.motion.transition.enter.duration,
@@ -147,7 +151,9 @@ export const Meter = ({
                     justifyContent: 'space-between',
                     alignItems: 'baseline',
                     gap: vars.spacing.gap.inline.sm,
-                    color: c?.text?.default,
+                    // Label row sits on the page, not on the fill — the
+                    // entity's quiet text is correct here (see ProgressBar).
+                    color: vars.colors.feedback.muted.text?.default,
                     ...(vars.text.label.md as React.CSSProperties),
                   } as React.CSSProperties
                 }
@@ -180,7 +186,7 @@ export const Meter = ({
             )}
 
             {/* Track */}
-            <div data-scope="meter" data-part="body" style={buildTrackStyle(c)}>
+            <div data-scope="meter" data-part="body" style={buildTrackStyle()}>
               {/* Fill */}
               <div
                 data-scope="meter"

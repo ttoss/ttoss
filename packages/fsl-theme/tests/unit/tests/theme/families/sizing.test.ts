@@ -187,6 +187,15 @@ describe('semantic sizing: core ramp anchoring', () => {
         }
       });
 
+      // `icon.text` is deliberately NOT a ramp step: it resolves relative to
+      // the accompanying text so the glyph's ink lands inside the cap-height
+      // band. Asserted explicitly so the exemption stays intentional.
+      test('icon.text resolves to the relative em primitive, not a ramp step', () => {
+        expect(base['semantic.sizing.icon.text']).toBe(
+          base['core.sizing.relative.em']
+        );
+      });
+
       // Warning #2: any identity.* token resolves outside core.sizing.ramp.ui.*
       test('identity tokens resolve within core.sizing.ramp.ui', () => {
         const rampUi = new Set(

@@ -1,11 +1,10 @@
+import { createTheme } from '@ttoss/fsl-theme';
+import { withDataviz } from '@ttoss/fsl-theme/dataviz';
+
 /**
- * themeId used to scope the stage panes' CSS. With a themeId,
- * `getThemeStylesContent` emits vars against `[data-tt-theme="<id>"]` and
- * `[data-tt-theme="<id>"][data-tt-mode="dark"]` — element-scoped, which is
- * what lets the stage render light and dark side by side regardless of the
- * chrome's color mode (PRD §6.2).
- *
- * The live theme bundle itself lives in the theme store
- * (`src/studio/theme/themeStore.tsx`).
+ * The Studio runs the unedited base theme — it is the flagship the Stage
+ * exists to prove (ROADMAP P3). The dataviz extension powers the dashboard
+ * chart, the Stage's one bespoke widget (BLUEPRINT D-002); its tokens are
+ * referenced via `datavizVars` from `@ttoss/fsl-theme/dataviz`.
  */
-export const STAGE_THEME_ID = 'fsl-studio-stage';
+export const theme = withDataviz(createTheme());
