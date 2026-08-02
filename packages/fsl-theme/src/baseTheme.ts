@@ -1954,8 +1954,13 @@ export const darkAlternate: ModeOverride = {
           },
           border: {
             default: '{core.colors.brand.300}',
-            hover: '{core.colors.brand.400}',
-            active: '{core.colors.brand.400}',
+            // Engaging lifts the fill a step (brand.900 → brand.700), so the
+            // edge must lift with it or the cascade inverts: brand.400 moved
+            // *down* the ramp while the fill moved up, and the pair closed to
+            // under the border pairing floor. brand.200 keeps the edge one step
+            // clear of the resting brand.300 it must also differ from.
+            hover: '{core.colors.brand.200}',
+            active: '{core.colors.brand.200}',
             // brand.100 for focused — must differ from default (brand.300) for state distinguishability
             focused: '{core.colors.brand.100}',
             disabled: '{core.colors.neutral.700}',
@@ -2073,8 +2078,11 @@ export const darkAlternate: ModeOverride = {
             hover: '{core.colors.brand.400}',
             active: '{core.colors.brand.300}',
             focused: '{core.colors.brand.400}',
-            selected: '{core.colors.brand.400}',
-            current: '{core.colors.brand.400}',
+            // `selected` and `current` are the only two states here that fill
+            // with brand.700, so their edge is read against the marker rather
+            // than the page and needs the same lift the fill took.
+            selected: '{core.colors.brand.200}',
+            current: '{core.colors.brand.200}',
           },
           text: {
             default: '{core.colors.brand.300}',

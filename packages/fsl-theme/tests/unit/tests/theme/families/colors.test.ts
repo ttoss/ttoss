@@ -313,11 +313,6 @@ const DARK: BorderInventory = {
       'input.muted.focused',
       'input.primary.focused',
       'input.secondary.focused',
-      // The accent cascade inverts here — logged, not tuned (F-039).
-      'informational.accent.active',
-      'informational.accent.hover',
-      'navigation.accent.current',
-      'navigation.accent.selected',
     ],
   }),
 };
@@ -672,6 +667,21 @@ const CROSS_ROLE_TEXT_PAIRINGS: ReadonlyArray<{
     surfaces: INFORMATIONAL_STRATA,
     // A field's message renders at body size — no large-text allowance.
     threshold: WCAG.AA_NORMAL,
+  },
+  {
+    // Required Pairing #3 names "the focused color against the adjacent
+    // background", and for every entity-bearing component that colour is the
+    // cross-cutting ring: `focusRingOutline` draws it on all of them and
+    // `{ux}.{role}.border.focused` only re-tints the edge underneath. The ring
+    // is floated off the control (`FOCUS_RING_OFFSET`), so the background it
+    // lands on is the stratum, not the control's own fill — which is why a
+    // filled Action can carry a sub-threshold `border.focused` and still be
+    // focus-visible. Nothing verified this pairing until now.
+    part: 'focus ring',
+    ink: 'semantic.focus.ring.color',
+    surfaces: INFORMATIONAL_STRATA,
+    // Non-text indicator.
+    threshold: WCAG.AA_LARGE,
   },
 ];
 
