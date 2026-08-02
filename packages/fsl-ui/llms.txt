@@ -410,6 +410,15 @@ Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              isSidebarOpen + onSidebarOpenChange take it over.
              WHICH VARIANT IS THE APP'S CALL, not the shell's — the app knows
              its breakpoints. Same line MUI draws on its Drawer.
+             List + ListItem (content list with REAL list semantics — ul/ol +
+             li, so it announces as "list, N items". variant=plain|unordered|
+             ordered, plain is the DEFAULT and keeps ul semantics with the
+             marker hidden; gap from the stacking scale. A Stack renders a div,
+             so the same content announces as unrelated blocks — never
+             hand-roll role="list"/role="listitem" on Stacks. For a list the
+             user OPERATES — selects, reorders, acts on — use ListBox or
+             GridList: those are Collection entities with keyboard navigation,
+             this is presentation),
              Code (code text: block=true scrollable <pre> surface, block=false
              inline <code> run)
 

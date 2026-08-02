@@ -15,15 +15,22 @@
 import { vars } from '@ttoss/fsl-theme/vars';
 
 /**
- * Standard gap between a control's edge and its focus ring (P3 Slice 2,
- * Spectrum-derived: 2px ring + 2px gap). Floating the ring off the edge
- * keeps it legible against the control's own fill — a flush ring drowns on
- * filled buttons and checked controls. A row inside a clipped or scrolling
- * container uses `FOCUS_RING_INSET` instead: this doc used to say such rows
- * "keep their negative insets", and *bespoke* is exactly what produced two
- * different insets, one of which clips.
+ * Standard gap between a control's edge and its focus ring.
+ *
+ * Floating the ring off the edge keeps it legible against the control's own
+ * fill — a flush ring drowns on filled buttons and checked controls — and it is
+ * what makes the ring's contrast a pairing against the page rather than against
+ * the control. A row inside a clipped or scrolling container uses
+ * `FOCUS_RING_INSET` instead: this doc used to say such rows "keep their
+ * negative insets", and *bespoke* is exactly what produced two different
+ * insets, one of which clips.
+ *
+ * Reads the theme (`semantic.focus.ring.offset`) rather than the `2px` literal
+ * it shipped as. The literal was the component owning a value the theme should
+ * own: no theme could retune the gap, while the reference system treats it as a
+ * first-class token beside the ring's thickness (F-020).
  */
-export const FOCUS_RING_OFFSET = '2px';
+export const FOCUS_RING_OFFSET = vars.focus.ring.offset;
 
 /**
  * Offset for a ring that must stay **inside** its own box, because outside the

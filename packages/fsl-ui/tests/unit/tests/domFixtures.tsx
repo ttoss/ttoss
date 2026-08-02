@@ -174,6 +174,26 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       return <pkg.Chip>Admin</pkg.Chip>;
     },
   },
+  List: {
+    scope: 'list',
+    element: () => {
+      return (
+        <pkg.List>
+          <pkg.ListItem>one</pkg.ListItem>
+        </pkg.List>
+      );
+    },
+  },
+  ListItem: {
+    scope: 'list',
+    element: () => {
+      return (
+        <pkg.List>
+          <pkg.ListItem>one</pkg.ListItem>
+        </pkg.List>
+      );
+    },
+  },
   Code: {
     scope: 'code',
     element: () => {

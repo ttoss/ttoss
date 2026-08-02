@@ -129,6 +129,13 @@ export { Icon, ICON_INTENTS, iconMeta } from './components/Icon';
 export type { LinkProps } from './components/Link/Link';
 export { Link, linkMeta } from './components/Link/Link';
 export type {
+  ListGap,
+  ListItemProps,
+  ListProps,
+  ListVariant,
+} from './components/List/List';
+export { List, ListItem, listItemMeta, listMeta } from './components/List/List';
+export type {
   ListBoxItemProps,
   ListBoxProps,
 } from './components/ListBox/ListBox';

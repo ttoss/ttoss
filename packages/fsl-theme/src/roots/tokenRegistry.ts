@@ -151,6 +151,11 @@ export const TOKEN_PATH_REGISTRY: readonly TokenPathEntry[] = [
     cssPrefix: '--tt-core-border-style-',
   },
   {
+    path: 'core.border.offset.',
+    cssPrefix: '--tt-core-border-offset-',
+    dtcgType: 'dimension',
+  },
+  {
     path: 'core.opacity.',
     cssPrefix: '--tt-core-opacity-',
     dtcgType: 'number',

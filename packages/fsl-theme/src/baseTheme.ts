@@ -371,6 +371,11 @@ export const baseTheme: ThemeTokens = {
         dotted: 'dotted',
         none: 'none',
       },
+      // Agrees with `width.focused` here by choice, not by contract — the two
+      // are independent tokens a theme retunes for different reasons.
+      offset: {
+        focused: '2px',
+      },
     },
 
     // -- Opacity ------------------------------------------------------------
@@ -1520,6 +1525,7 @@ export const baseTheme: ThemeTokens = {
       ring: {
         width: '{core.border.width.focused}',
         style: '{core.border.style.solid}',
+        offset: '{core.border.offset.focused}',
         // References the semantic accent focused border so mode overrides
         // remap focus color automatically (e.g. brand.300 in dark mode).
         color: '{semantic.colors.action.accent.border.focused}',

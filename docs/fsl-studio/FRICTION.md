@@ -12,7 +12,7 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 
 ## Open items (derived — the entry below is always the source of truth)
 
-Twelve open, grouped by the _kind of decision_ each one needs rather than by
+Ten open, grouped by the _kind of decision_ each one needs rather than by
 severity, because that is what makes a review round plannable. Regenerate with
 `grep -c '^- .*Status:\*\* open' FRICTION.md`, which counts entry lines only —
 **not** by grepping the bare phrase, because that also matches the sentence
@@ -24,7 +24,7 @@ Do not edit an entry through this list.
 | #         | What                                                                                                                                                                                                                                                                                                                           | Where the evidence is                                                  |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
 | F-024     | ~~Decision~~ **ruled 2026-07-29: a component always paints** — no `transparent`, no omitted background. The dark-raised mismatch is an accepted limit; a stratum-aware opaque value is the lawful future fix (after F-027), on evidence.                                                                                       | `Overlay/ActionMenu` → `Emphasis`, dark: `#161616` on a `#262626` card |
-| F-029     | Same question for a valence: a destructive menu row has no "negative **ink** on a surface" rung, so it either looks like every other row or fills red. Four candidate shapes written.                                                                                                                                          | `Overlay/ActionMenu`, any mode                                         |
+| F-029     | A destructive menu row has no quiet rung: the `text` dimension the loudness ladder promises is occupied by the label on the filled valence. **Governance proposal written 2026-08-02** — recommend splitting static-on-fill ink from the role's `text`, at the version boundary.                                               | `Overlay/ActionMenu`, any mode                                         |
 | ~~F-039~~ | **Resolved 2026-08-02.** The accent cascade was a real pairing-#2 violation and is fixed (brand.200). The focused-border half was **not** a defect: the docs already ruled it and had it backwards — the ring indicates on every entity, the border only tints, and no component uses the border alone. `colors.md` corrected. |
 | ~~F-027~~ | **Resolved 2026-07-31** (P3 Round 0, ADR-024). The border pairing now runs per mode, `disabled` is exempt and a mirrored edge is its own asserted set — which cut ~90 names to a readable list and turned 22 dark-only contexts into four omissions, all remapped. What it exposed and did not settle is F-039.                |
 | ~~F-021~~ | **Ruled 2026-07-29 (ADR-022): control type stays fluid** — the system's own identity; S2 is reference, not authority. Readmission: measured illegibility at 14px, or a coarse-pointer consumer.                                                                                                                                | measured 14–16px across the range                                      |
@@ -37,7 +37,7 @@ Do not edit an entry through this list.
 | F-002     | `Link` cannot mark `aria-current`: the theme ships `navigation.*.text.current` and nothing reads it. (F-017 is its evidence: the Studio uses vertical `Tabs` as navigation to work around it.)                    |
 | F-004     | No named narrow width step (an auth card, ~20–26rem) between `reading` and `surface`.                                                                                                                             |
 | ~~F-010~~ | **Resolved 2026-08-02.** `Chip` — Structure entity, the descriptive member both references ship and we lacked. Box shared with `Badge` via `CHIP_BOX`.                                                            |
-| F-016     | No semantic list primitive for content lists.                                                                                                                                                                     |
+| ~~F-016~~ | **Resolved 2026-08-02.** `List`/`ListItem` — a pair, as the reference ships it, because an `as` prop cannot enforce that a stack's children became list items. No vocabulary change was needed.                   |
 | ~~F-023~~ | **Resolved 2026-08-02.** The root cause was the missing `Drawer`, not the grid. `Drawer` shipped + `AppShell sidebarVariant='temporary'`. Which variant applies stays the app's call, as in all three references. |
 
 **Contract / a11y debt — the component works but its published promise does not hold:**
@@ -64,10 +64,10 @@ Do not edit an entry through this list.
 
 **Ecosystem / token vocabulary:**
 
-| #     | What                                                                                |
-| ----- | ----------------------------------------------------------------------------------- |
-| F-005 | The ADR-004 forms recipe drags the legacy field suite into a consumer.              |
-| F-020 | The focus-ring gap is a component literal (`FOCUS_RING_OFFSET`), not a theme token. |
+| #         | What                                                                                                                                                     |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F-005     | The ADR-004 forms recipe drags the legacy field suite into a consumer.                                                                                   |
+| ~~F-020~~ | **Resolved 2026-08-02.** `core.border.offset.focused` + `semantic.focus.ring.offset`; kept independent of the ring's width, as the reference keeps them. |
 
 ---
 
@@ -178,9 +178,13 @@ Do not edit an entry through this list.
 
 ### F-016 — no semantic list primitive for content lists
 
-- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` catalog (Pricing block) · **Severity:** paper-cut · **Status:** open
+- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` catalog (Pricing block) · **Severity:** paper-cut · **Status:** ✅ resolved 2026-08-02 (`List`/`ListItem`)
 - Marketing feature lists want `ul`/`li` semantics, but `Stack` renders a div and `Text` renders only p/span/div. The block hand-applies `role="list"`/`role="listitem"` on Stacks — accessible, but every content list will repeat this.
 - **Backlog:** a `List`/`ListItem` Structure primitive, or an `as`/role affordance on `Stack`, via governance.
+- **Resolved 2026-08-02 the first way, and the reference settled it.** Chakra ships `List.Root` + `List.Item`, not a polymorphic stack, and the reason generalises: a list is not one element but a **pair whose parts are only valid together** — an `<li>` outside a list owner is loose content — and an `as` prop on `Stack` cannot enforce that its children became list items. Making it a pair is what lets the identity be stated per part.
+- **No governance was needed after all.** The entry assumed a vocabulary change; the parts are `Structure`/`root` and `Structure`/`content`, both already legal, and the component paints nothing — a frame-only Structure lawfully reads a subset of its row.
+- **`variant='plain'` is the default** because it is the shape most product lists want and the one that otherwise gets hand-rolled: `<ul>` semantics kept, marker hidden, and the indent the browser reserves for the absent marker reclaimed rather than left as the hanging space every reset strips by hand.
+- _Studio:_ the Billing plan's feature list drops its `role="list"`/`role="listitem"` workaround.
 
 ### F-017 — Tabs-as-navigation demands panel co-location and a width workaround
 
@@ -211,10 +215,14 @@ Do not edit an entry through this list.
 
 ### F-020 — focus-ring gap is not a theme token
 
-- **Date:** 2026-07-25 · **Surface:** `@ttoss/fsl-theme` `semantic.focus.ring` / `@ttoss/fsl-ui` `tokens/focusRing.ts` · **Severity:** paper-cut · **Status:** open
+- **Date:** 2026-07-25 · **Surface:** `@ttoss/fsl-theme` `semantic.focus.ring` / `@ttoss/fsl-ui` `tokens/focusRing.ts` · **Severity:** paper-cut · **Status:** ✅ resolved 2026-08-02 (`focus.ring.offset`)
 - Found in the P3 Slice 2 review: the reference system treats the gap between a control's edge and its focus ring as a first-class token (Spectrum: 2px ring + 2px gap), but `semantic.focus.ring` carries only `width`/`style`/`color` — the offset had no home, so components applied it ad hoc (11 of the ring's call sites were flush while `Select`/`Checkbox`/`Switch` floated at 2px — an inconsistency invisible to DOM-level tests).
 - **Workaround (shipped with Slice 2):** `FOCUS_RING_OFFSET = '2px'` as a named constant in fsl-ui `tokens/focusRing.ts` (the ring's single owner), applied to all flush call sites; clipped-container insets (menu items, table rows) stay bespoke by design.
 - **Backlog:** promote the gap to `semantic.focus.ring.offset` via governance so themes can retune it (a compact theme may want 1px, a playful one 3px). Type-level change to `ThemeTokens` — beyond a P3 value tune.
+- **Resolved 2026-08-02 exactly as the backlog specified.** `core.border.offset.focused` holds the value (core is the layer that holds values — ADR-023's rule that a bare constant is never a lawful semantic value applies here too) and `semantic.focus.ring.offset` references it; `FOCUS_RING_OFFSET` in fsl-ui now reads the token instead of the `2px` literal it shipped as.
+- **Kept independent of `width.focused` although the base theme sets both to the same value**, because the reference does the same — `focus-indicator-gap` and the indicator thickness are two tokens that happen to agree — and a theme retunes them for different reasons: thickness for prominence, gap for how much the ring breathes off the control.
+- **`FOCUS_RING_INSET` deliberately did _not_ move onto it.** The inset is arithmetic, not taste: a ring needs `offset + width` of room outside the box, so at `-width` it needs none. Tying it to the gap would break the property its JSDoc argues for. Both halves are now asserted.
+- **One stale artefact fixed alongside:** `families/focus.ts` still carried the focus-token decision table that F-039 corrected in `colors.md`, and its example wrote `outline-offset: 2px` as a literal — the very thing this entry is about.
 
 ### F-021 — control text is container-fluid, so it shrinks exactly where it should grow
 
@@ -316,6 +324,20 @@ Do not edit an entry through this list.
 - **What the model promises, and what the theme actually holds.** The doc's ladder is `negative.background` loud / `negative.text` quiet. Measured, `action.negative.text.default` and `feedback.negative.text.default` are both `#ffffff` in both modes — the label _on the filled red_, not a standalone ink. The quiet rung the model describes exists in `input.negative.text` and `informational.negative.text` (which is what F-032 moved the validation message onto) and, in `action`/`feedback`, was taken by the filled variant. So the entry's premise was right about the outcome and wrong about the cause: **the Action tree does not lack the rung — the loud variant occupies it**, and all three dimensions of `action.negative` are load-bearing for the filled destructive button.
 - **The cross-role route does not apply here, on a closer read.** F-036's pairing is one ux's ink (`input.negative.text`) on **another role's surface**; the ink stays inside the component's own ux. A destructive `MenuItem` is `Action` (verified: `menuItemMeta.entity`, reading `vars.colors.action[evaluation]`), so borrowing `informational.negative.text` would be cross-**ux** ink, which has no precedent and no rule permitting it.
 - **Conclusion: not buildable under the current registry, and the doc now says so.** `colors.md` › Picking a role gained the paragraph naming where the loudness ladder exists and where it does not, so the next reader does not rediscover this by shipping white text on a page. Closing it means a `dimension`-registry change — governance, per Rules of Engagement #3 — and is not a theme value tune.
+
+- **Governance proposal 2026-08-02**, written in the format `governance.md` § Review asks for, because this is a model change and the process routes it through design review rather than through a slice.
+
+  **What problem exists.** No lawful expression for a quiet destructive action — a menu row, a destructive link, a text-only "Delete". `MenuItem` is Action; `evaluation="negative"` fills the row red; `consequence="destructive"` carries no colour.
+
+  **Why reuse is not enough.** Measured, not assumed: `action.negative.text` and `feedback.negative.text` are `#ffffff` in both modes, because P3 chose deep filled valences (ADR-021) and the `text` dimension became the label _on that fill_. The doc's loudness ladder — "intensity within a valence is expressed by `dimension`, `negative.background` louder than `negative.text`" — therefore has no quiet rung in these two contexts, while it works in `input`/`informational` whose valence fill is light enough for one ink to serve both. Combining valence with emphasis is forbidden outright. Borrowing `informational.negative.text` would be cross-**ux** ink from an Action part, which has no precedent: F-036's pairing is one ux's ink on another **role's surface**, and the ink never leaves its own ux.
+
+  **What is being proposed.** Recognise that a filled surface's label is not the role's `text` — it is **static ink on a coloured fill**, a different concept, and the reference already models it that way (Spectrum keeps `static-*` apart from its semantic content colours). Moving those labels off `{ux}.{valence}.text` frees the dimension to be the standalone valence ink the model already promises, which makes a quiet destructive row fall out with no new axis, no new role, and no rule bent.
+
+  **What impact exists.** Large but coherent: every filled Action and Feedback surface's label moves — not only `negative`, since `action.primary`/`accent` labels sit on fills too. It is a published-surface change and belongs at the same version boundary as the other P3 members. Contrast pairing gains a case the suite does not model today (static ink against every fill it can land on), which is the same shape as the cross-role inventory F-036 added.
+
+  **Alternatives costed.** (a) `consequence` gains a colour projection — defensible from the Lexicon, which already separates `negative` (evaluation) from `destructive` (consequence), but it adds a fourth axis to a three-axis token path for one case. (b) Let a part that paints no surface read the ux it renders _into_ — small, but it weakens the entity→ux alignment the contract test enforces. (c) Do nothing and rule that destructive rows are filled — honest, and visibly worse than every reference.
+
+  **Recommendation:** the static-ink split, taken at the version boundary rather than now. Nothing about it is urgent, and the analysis is what was missing rather than the code.
 
 ### F-030 — a composite sub-part that is itself a root collides with its host's root
 
