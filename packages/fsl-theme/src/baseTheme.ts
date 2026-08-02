@@ -1753,6 +1753,12 @@ export const darkAlternate: ModeOverride = {
             selected: '{core.colors.neutral.300}', // base neutral.1000 vanishes on dark
             checked: '{core.colors.neutral.0}',
             indeterminate: '{core.colors.neutral.0}',
+            // The engaged fill lifts to neutral.500 here, which the base edge
+            // (also neutral.500) then matched exactly — a pressed or expanded
+            // field lost its edge in this mode while keeping it in the base.
+            // Same step hover/active already take above.
+            pressed: '{core.colors.neutral.300}',
+            expanded: '{core.colors.neutral.300}',
           },
           text: {
             default: '{core.colors.neutral.0}',
@@ -1809,7 +1815,20 @@ export const darkAlternate: ModeOverride = {
             default: '{core.colors.neutral.900}',
             disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
           },
-          border: { default: '{core.colors.red.500}' },
+          border: {
+            default: '{core.colors.red.500}',
+            // The base cascade darkens the edge on interaction (red.500 →
+            // red.700) because it sits on a light red fill. Here the fill is
+            // the dark canvas, so darkening weakens the edge instead — it fell
+            // under the border pairing floor while resting cleared it, i.e. an
+            // invalid field went quieter the moment it was focused. Inverted to
+            // the step this alternate already picked for the same problem at
+            // `input.primary.border.invalid`.
+            active: '{core.colors.red.300}',
+            expanded: '{core.colors.red.300}',
+            focused: '{core.colors.red.300}',
+            pressed: '{core.colors.red.300}',
+          },
           text: { default: '{core.colors.red.300}' },
         },
         positive: {
@@ -1838,6 +1857,11 @@ export const darkAlternate: ModeOverride = {
             default: '{core.colors.neutral.500}',
             active: '{core.colors.neutral.300}',
             selected: '{core.colors.neutral.300}',
+            // Engaged states keep the resting fill and move only the edge, so
+            // the base's darkening step lands on the dark fill and recedes.
+            // Same inversion as the three states above.
+            expanded: '{core.colors.neutral.300}',
+            pressed: '{core.colors.neutral.300}',
           },
           text: { default: '{core.colors.neutral.300}' },
         },
@@ -1910,7 +1934,14 @@ export const darkAlternate: ModeOverride = {
             default: '{core.colors.neutral.900}',
             disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
           },
-          border: { default: '{core.colors.red.500}' },
+          border: {
+            default: '{core.colors.red.500}',
+            // Same inversion as `input.negative.border` — the base darkens the
+            // edge on interaction against a light red fill; here it sits on the
+            // dark canvas, so it lightens instead.
+            active: '{core.colors.red.300}',
+            focused: '{core.colors.red.300}',
+          },
           text: { default: '{core.colors.red.300}' },
         },
         // Full remap: base brand.50/100/200 backgrounds are near-white and fail on dark pages.
@@ -2071,7 +2102,12 @@ export const darkAlternate: ModeOverride = {
             active: '{core.colors.neutral.500}',
             focused: '{core.colors.brand.400}',
             selected: '{core.colors.neutral.300}',
-            current: '{core.colors.brand.500}',
+            // Was brand.500 — the step the base picked to clear the indicator
+            // floor against a light page. Its two siblings here (`focused`, and
+            // `text.current` below) were already lifted for the dark canvas and
+            // this one was not, so the current-page marker sat under the floor
+            // in this mode alone.
+            current: '{core.colors.brand.400}',
           },
           text: {
             default: '{core.colors.neutral.500}',

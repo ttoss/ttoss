@@ -470,7 +470,7 @@ Themes tune **core palette values**, **which core tokens semantic tokens referen
 - a semantic color token uses an invalid `ux → role` combination
 - a semantic color token uses a state outside the allowed state restrictions for that contract
 - any required semantic pairing fails the contrast targets defined below
-- any supported mode fails the same required pairings for the same semantic contract
+- any supported mode fails the same required pairings for the same semantic contract — an alternate mode remaps references by hand, so it is where a role's `background` subtree can move while its `border` subtree stays behind
 
 ### Warning (validation should warn when)
 
@@ -490,10 +490,21 @@ Validation must check at least these pairings:
      floor. All other contexts — including `action.*` button labels, which render
      at `text.label` sizes and do **not** qualify as WCAG large text — must meet
      `≥ 4.5:1`.
+   - **Corresponding is where the part renders, not who owns the token.** A part
+     that reads one role's ink and paints no surface of its own — the validation
+     message is the declared case — pairs against the surface it lands on. Because
+     the page and every contained surface share one background token and differ by
+     `elevation.tonal.*` ([Stacking informational surfaces](#stacking-informational-surfaces)),
+     "the surface it lands on" is every stratum, not one value.
 
 2. **Border / non-text pairing**
    - `*.border.*` against the adjacent background it sits on
    - minimum: `≥ 3:1`
+   - `disabled` is exempt (WCAG 2.2 §1.4.3), as it is for the text pairing.
+   - A border that resolves to its own background is a role with **no edge by
+     construction** — a distinct outcome from a soft edge, and validated as its
+     own set, so that a role gaining or losing its edge is a failure in either
+     direction.
 
 3. **Focus pairing**
    - the focused color against the adjacent background

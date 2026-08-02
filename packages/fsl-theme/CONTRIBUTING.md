@@ -707,3 +707,58 @@ Re-litigation answers:
   is the fluidity ADR-022 removed; and a validated equality would forbid a theme
   from choosing a control inset the engine's bound does not happen to hit. The
   agreement between the two scales is a base-theme choice, and the docs say so.
+
+### ADR-024: The border pairing is audited per mode, and the inventory is split by the rule that made it unreadable
+
+Status: accepted (2026-07-31)
+Tags: colors, contrast, validation, dark mode, F-027, F-036, ADR-015
+
+Decision: the border-vs-background guard iterates every supported mode (not the
+base bundle alone), and its known-violations list splits into two asserted sets —
+**mirrored** (border resolves to its own background) and **soft** (border differs
+and is still below AA Large by design) — with `disabled` contexts excluded
+outright. A third guard pairs a part's ink against the surface it actually
+renders on when that surface belongs to another role.
+
+`colors.md` has always required that "any supported mode fails the same required
+pairings" (Error #4). The text pairing implemented it; the border pairing did
+not, and the dark alternate ran unaudited for as long as it has existed. It hid
+one class of defect the whole time: the alternate remaps references by hand, so
+it can remap a role's `background` subtree and leave its `border` subtree at base
+values. That is not hypothetical — it is what the first run of this guard found
+(see the ROADMAP entry for the four remaps it forced).
+
+The split is what makes the per-mode inventory reviewable rather than a paste.
+A single below-threshold list is ~95 names per mode, two thirds of which are
+`border === background` and carry no judgement; the entries that do carry one
+are invisible among them. Splitting also makes the guard **stronger**: a role
+that stops mirroring its background but stays under 3:1 changes no ratio and was
+previously undetectable, because both states satisfy "below AA Large" — the
+single case where the old inventory could not tell a design from a regression.
+
+Rejected: paste the dark contexts into the existing set — F-027's own objection,
+a guard that documents nothing and freezes whatever dark happens to be; derive
+the alternate's inventory from the base's — the alternate is authored by hand, so
+a derived list asserts the wrong thing and hides exactly the divergences this
+exists to catch; let `fsl-ui` own the cross-role assertion — it cannot resolve
+colours in jsdom, and the theme owns both ends of the pairing.
+Cost: four inventories instead of two, and a reviewer must read the two rules
+before concluding that an absent context is unguarded rather than exempt.
+Anchors: `tests/unit/tests/theme/families/colors.test.ts`,
+`docs/.../families/colors.md#validation`, `docs/fsl-studio/FRICTION.md` F-027/F-036.
+
+Re-litigation answers:
+
+- "Why is `disabled` gone from the border inventory?" → WCAG 2.2 §1.4.3 exempts
+  disabled UI, and the text pairing beside it always assumed that. The border
+  pairing was enshrining ~14 contexts per bundle that no rule ever wanted.
+- "Can the mirrored set be inferred instead of listed?" → no. Inferring it means
+  a role silently gaining or losing its edge produces no delta in either
+  direction, which is the regression the split exists to catch.
+- "Why do the strata appear in the cross-role pairing and not one page token?" →
+  because a raised or overlay surface is `background` + `elevation.tonal.*`, a
+  composite no colour token names (`colors.md` › Stacking informational
+  surfaces). Pairing against the page alone verifies the easiest of the three.
+- "Does the alternate now need a full parallel inventory per bundle?" → no. Each
+  variant declares an explicit delta over the base list, so a reviewer reads what
+  differs, and the deltas are asserted in both directions like the lists are.
