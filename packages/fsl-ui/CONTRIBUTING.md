@@ -376,7 +376,7 @@ Anchors: `package.json` (`react-aria-components`), `tests/unit/tests/racCanary.t
 
 ### ADR-004: `@ttoss/forms` interop is a documented recipe, not an adapter entry point
 
-Status: accepted (2026-07-15)
+Status: superseded-by:ADR-027 (2026-08-02)
 Tags: forms, integration, react-hook-form
 
 Decision: fsl-ui controls connect to the monorepo's form standard (`@ttoss/forms` = react-hook-form + Zod) through the plain react-hook-form `Controller`, mapping `field.value/onChange/onBlur` and `fieldState.invalid` onto the controls' controlled props (`isInvalid`, `value`, `onChange`). The pattern lives as an integration test (`tests/unit/tests/formsBridge.test.tsx`) that consumes `@ttoss/forms` as a devDependency — no `@ttoss/fsl-ui/forms` entry ships.
@@ -725,3 +725,46 @@ Re-litigation answers:
 - "Why is the submitted value masked rather than raw digits?" → the field submits what the user sees, which is what every server-side Brazilian-format consumer already parses; a hidden raw twin doubles the FormData surface for a one-line strip at the boundary. Reverse it only with a consumer whose backend rejects masked input and cannot strip.
 - "Why no `br.currency`?" → it is not a fixed pattern (see (2)); adding it to this registry would re-implement Intl badly. `NumberField` is the answer, documented in the registry header.
 - "Why does the glyph not render on `RadioGroup`/`CheckboxGroup`/`Switch`?" → no field box to sit in: the groups' members mark themselves and `Switch`'s control _is_ the mark. Their message carries the valence — the named-exception rows in the class guard.
+
+### ADR-027: The form bridge names its upstreams directly; fsl-ui takes no form-library dependency
+
+Status: accepted (2026-08-02)
+Tags: forms, integration, react-hook-form, supersedes:ADR-004, F-005
+
+Decision: the react-hook-form recipe imports `react-hook-form`, `zod` and
+`@hookform/resolvers/zod` by name. `@ttoss/forms` leaves this package entirely,
+including as a devDependency.
+
+ADR-004's substance survives untouched — the bridge is a documented recipe
+living as an integration test, no adapter entry ships, and consumers wire
+`Controller` by hand. What it got wrong is one line: it named `@ttoss/forms` as
+"the monorepo's form standard" and therefore as the import site. That package
+has a single entry which also exports the legacy `FormField*` suite, carrying
+`@ttoss/ui`, `@ttoss/components` and `@ttoss/react-i18n` as peers — so an app
+following the documented recipe inherited the entire legacy stack to obtain four
+re-exported symbols (F-005).
+
+**The premise also expired.** `@ttoss/forms` is legacy alongside `@ttoss/ui` and
+is being discontinued (owner ruling, `INTERNAL/FORMS.md` § Ground rules), and
+fsl-ui takes no form-library dependency ever. The bridge is not how fsl-ui does
+validation — React Aria's native validation is the default and needs no library
+at all, which is what the Studio runs on. This recipe exists for an app that
+_already_ runs react-hook-form, and such an app has those packages directly.
+
+Rejected: keep importing from `@ttoss/forms` and document the peer cost — the
+cost is unavoidable at the import, not a documentation problem; add a lean
+subpath (`@ttoss/forms/core`) — changes a package that is being discontinued, to
+serve a re-export nobody needs once the recipe names its upstreams.
+Cost: one more devDependency here (`@hookform/resolvers`), where a single
+workspace import used to cover three.
+Anchors: `tests/unit/tests/formsBridge.test.tsx`, `INTERNAL/FORMS.md`,
+`docs/fsl-studio/FRICTION.md` F-005.
+
+Re-litigation answers:
+
+- "Should fsl-ui ship a react-hook-form adapter now?" → no, and less than
+  before: the default path uses no form library, so an adapter would serve a
+  minority integration.
+- "Does this make react-hook-form a dependency of fsl-ui?" → no. It is a
+  devDependency of the test that proves the recipe; the package ships no import
+  of it.
