@@ -168,6 +168,12 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       );
     },
   },
+  Chip: {
+    scope: 'chip',
+    element: () => {
+      return <pkg.Chip>Admin</pkg.Chip>;
+    },
+  },
   Code: {
     scope: 'code',
     element: () => {
@@ -397,6 +403,17 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
             <pkg.Dialog aria-label="test">content</pkg.Dialog>
           </pkg.DialogModal>
         </pkg.DialogTrigger>
+      );
+    },
+  },
+  // Drawer is a portal overlay and renders its own Dialog — open it directly.
+  Drawer: {
+    scope: 'drawer',
+    element: () => {
+      return (
+        <pkg.Drawer aria-label="Navigation" isOpen>
+          content
+        </pkg.Drawer>
       );
     },
   },

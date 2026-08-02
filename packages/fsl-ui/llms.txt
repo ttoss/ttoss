@@ -237,7 +237,18 @@ Input:       TextField, TextArea — each authored EITHER one-line
              id. Items are Selection/item (ADR-007 split, same as SelectItem).
 Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
              DialogActions, Menu, MenuTrigger, ConfirmationDialog,
-             Popover, PopoverTrigger, Tooltip, TooltipTrigger
+             Popover, PopoverTrigger, Tooltip, TooltipTrigger, Drawer
+             Drawer = a REGION of the app brought temporarily into view, not a
+             prompt: navigation on a narrow viewport, a filter panel, a detail
+             inspector. Anchored to an edge (placement=start|end|top|bottom —
+             start/end are LOGICAL, so RTL flips them) and sized from the same
+             named scale AppShell's sidebar uses (width=sm|md|lg), which is what
+             lets a sidebar become a drawer without changing width. aria-label
+             is REQUIRED (it renders a dialog; ADR-001 forbids an English
+             default). It renders its own Dialog — do NOT wrap the children in
+             one. Controlled via isOpen/onOpenChange, or put it under a
+             DialogTrigger. For an interrupting question with heading/body/
+             actions use DialogModal instead.
              ActionMenu = THE OVERFLOW MENU (a row's trailing "…", a card's
              corner menu, the tail of a toolbar that ran out of room): composes
              MenuTrigger + icon-only ActionButton + Menu. aria-label is
@@ -268,6 +279,20 @@ Feedback:    ProgressBar, Meter, Toast, ToastRegion, createToastQueue
              ProgressBar = a task in flight. Pick by "state" vs "progressing"),
              Badge (status chip, filled: evaluation=primary|positive|caution|negative|accent,
              numeric=tabular for counts — never a hand-rolled colored span)
+             THREE CHIPS, pick by what the COLOUR SAYS, not by shape — they
+             share one box (`CHIP_BOX`) and differ only in meaning:
+               Chip  = descriptive label, no outcome ("Admin", "Beta", "Draft").
+                       Structure entity, informational colours. THE DEFAULT for
+                       a role/category/attribute.
+               Badge = an outcome the SYSTEM reports (passing, degraded, 3
+                       errors). Feedback entity, valence colours.
+               Tag   = an item inside a TagGroup the user selects or removes.
+                       Selection entity, interactive, needs the group.
+             Reaching for Badge with a neutral evaluation to label a role is
+             the F-010 mistake: it claims an outcome that does not exist.
+             NAMING WARNING: Spectrum and Chakra both call the DESCRIPTIVE chip
+             "Badge" and give the status one another name. Ours are inverted
+             (F-040) — read the table above, not the name.
 Forms:       Form publishes field layout to every field inside it as STATIC
              context — necessityIndicator='icon'|'none' (default 'icon': an
              asterisk marks the REQUIRED fields, following the reference; 'none'
@@ -373,7 +398,18 @@ Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              sidebarWidth/asideWidth=sm|md|lg, sidebarLabel/asideLabel for the
              landmark names; main content as children — instead of a
              hand-rolled viewport grid; every region is a size container for
-             theme cqi scales),
+             theme cqi scales).
+             NARROW VIEWPORTS: sidebarVariant='temporary' drops the sidebar's
+             grid track and moves the panel into a Drawer, reached from a
+             trigger the shell puts at the inline start of the header row
+             (forcing a header row into existence if the host passed none).
+             It REQUIRES sidebarTriggerLabel — without a name the shell stays
+             permanent rather than hide the panel, because an unreachable
+             sidebar is worse than a scrolling one and an English default is
+             forbidden (ADR-001). Open state is uncontrolled by default;
+             isSidebarOpen + onSidebarOpenChange take it over.
+             WHICH VARIANT IS THE APP'S CALL, not the shell's — the app knows
+             its breakpoints. Same line MUI draws on its Drawer.
              Code (code text: block=true scrollable <pre> surface, block=false
              inline <code> run)
 

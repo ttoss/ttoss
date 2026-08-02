@@ -2,6 +2,7 @@ import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
+import { CHIP_BOX } from '../../tokens/chipBox';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -75,23 +76,14 @@ export const Badge = ({
       data-evaluation={evaluation}
       style={
         {
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          // Compact chip: half the control block-inset and a tight line
-          // height keep the chip at ~22-24px — reference-grade badges are
-          // dense annotations, not controls (P3 slice 3).
-          paddingBlock: `calc(${vars.spacing.inset.control.sm} / 2)`,
-          paddingInline: vars.spacing.inset.control.md,
-          borderRadius: vars.radii.control,
-          borderWidth: vars.border.outline.surface.width,
-          borderStyle: vars.border.outline.surface.style,
+          // The box is shared with `Tag` — same physical chip, different
+          // meaning. Only the colours below are Badge's own.
+          ...CHIP_BOX,
           borderColor: colors?.border?.default,
           color: colors?.text?.default,
           backgroundColor: colors?.background?.default,
           fontVariantNumeric:
             numeric === 'tabular' ? 'tabular-nums' : undefined,
-          ...(vars.text.label.sm as React.CSSProperties),
         } as React.CSSProperties
       }
     >

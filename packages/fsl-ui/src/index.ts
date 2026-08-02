@@ -21,6 +21,7 @@ export {
 } from './components/ActionButton/ActionButton';
 export type {
   AppShellProps,
+  AppShellSidebarVariant,
   AppShellSidebarWidth,
 } from './components/AppShell/AppShell';
 export { AppShell, appShellMeta } from './components/AppShell/AppShell';
@@ -68,6 +69,8 @@ export {
   CheckboxGroup,
   checkboxGroupMeta,
 } from './components/CheckboxGroup/CheckboxGroup';
+export type { ChipProps } from './components/Chip/Chip';
+export { Chip, chipMeta } from './components/Chip/Chip';
 export type { CodeProps, CodeSize } from './components/Code/Code';
 export { Code, codeMeta } from './components/Code/Code';
 export type {
@@ -322,6 +325,8 @@ export {
   DisclosureTrigger,
   disclosureTriggerMeta,
 } from './composites/Disclosure/Disclosure';
+export type { DrawerPlacement, DrawerProps } from './composites/Drawer/Drawer';
+export { Drawer, drawerMeta } from './composites/Drawer/Drawer';
 export type {
   FormActionsProps,
   FormProps,

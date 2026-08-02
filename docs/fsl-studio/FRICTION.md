@@ -32,13 +32,13 @@ Do not edit an entry through this list.
 
 **Component gaps — something to build, scope already understood:**
 
-| #     | What                                                                                                                                                                                           |
-| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| F-002 | `Link` cannot mark `aria-current`: the theme ships `navigation.*.text.current` and nothing reads it. (F-017 is its evidence: the Studio uses vertical `Tabs` as navigation to work around it.) |
-| F-004 | No named narrow width step (an auth card, ~20–26rem) between `reading` and `surface`.                                                                                                          |
-| F-010 | No neutral tag primitive for descriptive (non-status) labels.                                                                                                                                  |
-| F-016 | No semantic list primitive for content lists.                                                                                                                                                  |
-| F-023 | `AppShell` has no narrow-container behaviour: the shell overflows at 390px (442px scroll width). The owner deferred the IA decision — drawer vs off-canvas vs stacking.                        |
+| #         | What                                                                                                                                                                                                              |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F-002     | `Link` cannot mark `aria-current`: the theme ships `navigation.*.text.current` and nothing reads it. (F-017 is its evidence: the Studio uses vertical `Tabs` as navigation to work around it.)                    |
+| F-004     | No named narrow width step (an auth card, ~20–26rem) between `reading` and `surface`.                                                                                                                             |
+| ~~F-010~~ | **Resolved 2026-08-02.** `Chip` — Structure entity, the descriptive member both references ship and we lacked. Box shared with `Badge` via `CHIP_BOX`.                                                            |
+| F-016     | No semantic list primitive for content lists.                                                                                                                                                                     |
+| ~~F-023~~ | **Resolved 2026-08-02.** The root cause was the missing `Drawer`, not the grid. `Drawer` shipped + `AppShell sidebarVariant='temporary'`. Which variant applies stays the app's call, as in all three references. |
 
 **Contract / a11y debt — the component works but its published promise does not hold:**
 
@@ -54,6 +54,13 @@ Do not edit an entry through this list.
 | ~~F-036~~ | **Resolved 2026-07-31** (P3 Round 0, ADR-024). A cross-role inventory pairs a part's ink against the surface it renders on; the correction the measurement forced is that the surface is the four `informational` strata, not one page token — this entry's own 7.97 was the raised card, not the page. |
 | ~~F-037~~ | **Resolved 2026-07-29** (forms item I). `FormSubmit`'s JSDoc promised `data-pending` and `data-composition`; the DOM carried neither — React Aria clobbers both after the passthrough spread. First consumer found it two items after the promise was written. |
 | ~~F-038~~ | **Resolved 2026-07-30** (ADR-023, owner review of #1181). ADR-022 wrote the fixed control inset as a literal `6px` in the **semantic** layer under a `RawValue` necessity that was circular — "core has no fixed step" is a missing core token, not an impossibility. Moved to `core.spacing.fixed.*`; the semantic guard's exception list is gone. |
+
+**Naming / discoverability:**
+
+| #     | What                                                                                                                                                                        |
+| ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F-040 | Both references call the _descriptive_ chip `Badge`; ours is the status one, so the two familiar words point at the wrong members and the third took `Chip`. AI-first cost. |
+| F-041 | No in-system way to pick a responsive variant — both references ship a breakpoint helper, we ship none, so an app hand-rolls `matchMedia`.                                  |
 
 **Ecosystem / token vocabulary:**
 
@@ -129,9 +136,13 @@ Do not edit an entry through this list.
 
 ### F-010 — no neutral tag primitive for descriptive labels
 
-- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` `Badge` semantics · **Severity:** paper-cut · **Status:** open
+- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` `Badge` semantics · **Severity:** paper-cut · **Status:** ✅ resolved 2026-08-02 (`Chip`)
 - Role chips ("Admin", "Editor") are descriptive, not evaluative — but the only chip-shaped primitive is `Badge` (Entity = Feedback, valence vocabulary). The block uses `Badge` with the neutral `primary` evaluation, which renders fine but blurs the Feedback entity. `TagGroup` is Selection (interactive), so it is not the answer either.
 - **Backlog:** decide whether descriptive chips are a legitimate `Badge` use (document it) or a small Structure-entity `Tag` primitive.
+- **Resolved 2026-08-02 the second way, and the references decided it rather than taste.** Both split this axis three ways and we had shipped two of the three: Spectrum has Badge (metadata) / StatusLight (semantic status) / TagGroup (user-managed); Chakra has Badge (plain span) / Status (root+indicator) / Tag (compound with a close trigger). Ours are `Badge` — Feedback, i.e. the member Spectrum calls **StatusLight** — and `Tag`, the Selection item inside a `TagGroup`. The static descriptive chip was the missing middle, and it is a different **entity** from both rather than a variant: it neither reports (Feedback is "the user is the audience of a system-initiated outcome") nor is operated (Selection). That is Structure → `informational`.
+- **Named `Chip`, not `Tag`, because `Tag` was already taken** by the interactive member — and that collision surfaced the larger finding now filed as F-040: both references call the _descriptive_ chip `Badge`, so our two published names are inverted relative to them.
+- **Guarded as a class, not as a component.** The box moved into `CHIP_BOX` (`src/tokens/chipBox.ts`) with `Badge` refactored onto it, because two chips side by side must not be able to disagree about their own roundness — the drift ADR-013 and F-022 each paid for. The test asserts the _rendered_ box of both, so a component that stops reading the shared source fails even while the module still exists.
+- _Studio:_ three sites converted — the team roster's role, an environment's type, and the workspace name beside the product mark. All three were labels; none was an outcome.
 
 ### F-011 — Table sorting types leaked a react-aria-components import
 
@@ -227,10 +238,15 @@ Do not edit an entry through this list.
 
 ### F-023 — `AppShell` has no narrow-container behaviour: the shell overflows on a phone
 
-- **Date:** 2026-07-25 · **Surface:** `@ttoss/fsl-ui` `AppShell` (+ Meridian's use of it) · **Severity:** gap · **Status:** open
+- **Date:** 2026-07-25 · **Surface:** `@ttoss/fsl-ui` `AppShell` (+ Meridian's use of it) · **Severity:** gap · **Status:** ✅ resolved 2026-08-02 (`Drawer` + `sidebarVariant`)
 - Found while answering an owner question about resolved type and padding at 1920×1080 vs 390×844. At 390px the document scrolls to **442px** (52px of horizontal overflow): `AppShell` composes its body as a fixed grid — `bodyColumns()` emits `<sidebarWidth> minmax(0, 1fr)` — with no breakpoint, container query, or prop that lets the start sidebar collapse. The rail keeps its full width, the main region cannot shrink below its content, and the shell pushes past the viewport. Every page inherits it, so the Meridian screens are unusable on a phone even though each individual component behaves correctly at that size (measured in isolation: the Button resolves 14px/48px-tall and stays inside its box).
 - **Not worked around:** the honest fix is a component affordance, not app CSS, and the shape of it is a design decision (drawer over the content · off-canvas with a trigger · sidebar stacking above the main region · a `collapseBelow` prop vs. an automatic container query). Picking one without the owner would bake an IA decision into a layout primitive.
 - **Backlog:** decide the narrow-container contract for `AppShell` and implement it; then re-run the visual ritual at a phone viewport, which the ritual does not currently require — S2 shipped with desktop-only verification (BLUEPRINT's ritual says "light and dark", never "narrow and wide").
+- **Resolved 2026-08-02, and reading the references first moved the root cause.** This entry blamed the fixed grid. The deeper fact is that **fsl-ui had no `Drawer`** — the primitive all three reference systems reach for when a persistent panel has nowhere to live — so no shell could answer a narrow viewport regardless of how its grid was written. Chakra ships **no** AppShell at all (`Drawer`, `Splitter`, `Sticky`, `Container`, `Grid`, `SkipNav`, composed by the app); Spectrum S2 ships no shell either; MUI is the one that names the axis, and it puts it **on the Drawer** — `permanent | persistent | temporary`. The convergent lesson: the variation belongs to the _navigation region_, not to the shell.
+- **What shipped.** `Drawer` as an Overlay composite (edge placement, the shared panel-width scale, its own `Dialog` for the accessible name, RAC focus containment and dismissal), and `AppShell` gains `sidebarVariant='permanent'|'temporary'`. `temporary` drops the sidebar track and moves the panel into a `Drawer`, reached from a trigger the shell places at the inline start of the header row — forcing a header row into existence when the host passed none, because otherwise the trigger has nowhere to live.
+- **The IA decision this entry refused to bake is still not baked.** Which variant applies is the _app's_ call, exactly where both references leave it: the app knows its breakpoints, the shell does not. What changed is that the choice is now expressible.
+- **One safety rule, and it is asserted:** `temporary` needs `sidebarTriggerLabel`, and without it the shell stays permanent rather than hide the panel. An unreachable sidebar is worse than the horizontal scroll this entry measured, and an English default is forbidden (ADR-001).
+- **Still open, split out rather than absorbed:** the app has no in-system way to _pick_ the variant — both references ship a breakpoint helper (`useMediaQuery`, `useBreakpointValue`) and we ship none, so an app hand-rolls `matchMedia`. Filed as F-041.
 - **Note on scope:** this is _not_ a defect in the P3 aesthetic work. Type and spacing resolve sensibly at 390px on their own (heading 28→20px, body 18→16px, control text 16→14px, `hit` 32→48px via the coarse-pointer override). What is missing is the shell's response to the width.
 
 ### F-024 — no transparent resting fill, so the "quiet" toolbar posture is approximated
@@ -416,3 +432,20 @@ Do not edit an entry through this list.
 - **So (a) is not a defect and the nine contexts stay as inventory.** What was owed was a doc fix: the section is now "the ring indicates, the border tints", and Required Pairing #3 names the ring as the token that owes it.
 - **The real gap it exposed, now closed:** pairing #3 had never been verified for the actual indicator. The ring is floated, so the background it lands on is the stratum — a cross-role pairing, and now the second entry in that inventory alongside the validation message.
 - **(b) fixed 2026-08-02.** Pairing #2 is unconditional and the accent's engaged edge failed it with no exemption available (not focus, not disabled, not mirrored). Engaging lifts the fill a step while the base's edge moved _down_ the ramp — the inversion. `informational.accent.border.{hover,active}` and `navigation.accent.border.{current,selected}` take brand.200: one step clear of the resting brand.300 they must also differ from (Warning #1), which brand.300 itself would have violated.
+
+### F-040 — our two chip names are inverted relative to both reference systems
+
+- **Date:** 2026-08-02 · **Surface:** `@ttoss/fsl-ui` `Badge` / `Chip` naming · **Severity:** paper-cut · **Status:** open
+- Found while resolving F-010, by the collision that blocked the obvious name. In **Spectrum**: `Badge` is color-categorized metadata, `StatusLight` is the semantic status indicator, `TagGroup` manages a user-editable set. In **Chakra 3**: `Badge` is a plain descriptive span, `Status` is root + indicator, `Tag` is the compound with a close trigger. Both call the **descriptive** chip `Badge` and give the **status** one a different name.
+- Ours are the other way round: `Badge` is Feedback (the valence reporter — their `StatusLight`/`Status`), and `Tag` is the Selection item inside a `TagGroup`. So the two words a reader already knows both point at the wrong member, and the third member had to take a third word (`Chip`).
+- **Why this matters more here than in a human-only system.** The package is AI-first and its first-pass correctness is the thesis. An agent asked for "a role chip" reaches for `Badge` or `Tag` on priors from every other library: `Badge` renders a valence it never asked for, and `Tag` throws for want of a `TagGroup`. `llms.txt` now carries the disambiguation table and an explicit naming warning, which is mitigation, not a fix — the fix is the name.
+- **Not renamed now, deliberately.** Both names are published, and a rename cascades through the catalog, the Studio, the stories and the manifests for a benefit that is real but not urgent. It is also exactly the kind of change that belongs to a version boundary rather than to a slice.
+- **Backlog:** decide at the v1.0 break whether to align with the references — `Badge` becomes the descriptive chip, the status member takes `StatusLight` or `Status`, and `Chip` folds into `Badge`. Mechanical if taken then; awkward forever if not.
+
+### F-041 — no in-system way to pick a responsive variant
+
+- **Date:** 2026-08-02 · **Surface:** `@ttoss/fsl-ui` (+ `@ttoss/fsl-theme` breakpoints) · **Severity:** gap · **Status:** open
+- Split out of F-023 rather than absorbed into it. `AppShell` can now express both sidebar shapes and the reference systems agree that choosing between them is the app's call — but they also both ship the helper that makes the choice: MUI has `useMediaQuery`, Chakra has `useBreakpointValue`. We ship neither, so an app hand-rolls `matchMedia` and re-derives the breakpoint values it cannot read from the theme in a media query.
+- **The constraint is real and documented:** `families/breakpoints.md` states that the emitted custom properties "are for JS/tooling inspection only; they cannot be used in `@media` queries (CSS spec restriction on custom properties)". So a CSS-only answer does not exist, and _inspection_ — reading the resolved value in JS — is the sanctioned use the docs already name.
+- **Consequence today:** any consumer that wants the narrow shape writes viewport logic by hand, which is the class of workaround this log exists to prevent, and it will be written slightly differently in every app.
+- **Backlog:** a hook that resolves a named breakpoint against the current viewport, reading the value off the emitted custom property rather than duplicating the scale. Package boundary is the open question — `fsl-theme` owns the values and already ships React (`react.tsx`), while `fsl-ui` is where the consumer lives.

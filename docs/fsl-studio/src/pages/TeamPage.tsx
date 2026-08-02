@@ -1,8 +1,8 @@
 import type { SortDescriptor } from '@ttoss/fsl-ui';
 import {
-  Badge,
   Button,
   Checkbox,
+  Chip,
   ComboBox,
   ComboBoxItem,
   ConfirmationDialog,
@@ -224,12 +224,8 @@ const MembersTable = ({ members }: { members: Member[] }) => {
                 </Text>
               </TableCell>
               <TableCell>
-                {/*
-                 * Descriptive role chip — the recorded F-010 pattern: Badge
-                 * with the neutral `primary` evaluation until a descriptive
-                 * Tag primitive exists.
-                 */}
-                <Badge>{member.role}</Badge>
+                {/* Descriptive role chip — a role is not an outcome (F-010). */}
+                <Chip>{member.role}</Chip>
               </TableCell>
               <TableCell>
                 <Text variant="body-sm" tone="muted">
