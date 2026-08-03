@@ -18,6 +18,7 @@ import {
   SelectItem,
   Separator,
   Stack,
+  StatusLight,
   Surface,
   Text,
   TextField,
@@ -252,7 +253,7 @@ const CurrentPlanCard = ({ plan }: { plan: Plan }) => {
           <Stack gap="xs">
             <Stack direction="horizontal" align="center" gap="sm">
               <Text variant="label-lg">{`${plan.name} plan`}</Text>
-              <Badge evaluation="positive">Active</Badge>
+              <StatusLight evaluation="positive">Active</StatusLight>
             </Stack>
             <Text variant="body-sm" tone="muted">
               Renews August 18, 2026 · billed monthly

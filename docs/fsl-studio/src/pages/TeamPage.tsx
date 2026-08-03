@@ -1,8 +1,8 @@
 import type { SortDescriptor } from '@ttoss/fsl-ui';
 import {
+  Badge,
   Button,
   Checkbox,
-  Chip,
   ComboBox,
   ComboBoxItem,
   ConfirmationDialog,
@@ -225,7 +225,7 @@ const MembersTable = ({ members }: { members: Member[] }) => {
               </TableCell>
               <TableCell>
                 {/* Descriptive role chip — a role is not an outcome (F-010). */}
-                <Chip>{member.role}</Chip>
+                <Badge>{member.role}</Badge>
               </TableCell>
               <TableCell>
                 <Text variant="body-sm" tone="muted">

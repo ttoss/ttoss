@@ -1,9 +1,9 @@
 import { useColorMode } from '@ttoss/fsl-theme/react';
 import {
   AppShell,
+  Badge,
   Box,
   Button,
-  Chip,
   Container,
   Link,
   Menu,
@@ -44,7 +44,7 @@ const HeaderBar = ({ session }: { session: Session }) => {
     <Stack direction="horizontal" align="center" justify="between">
       <Stack direction="horizontal" align="center" gap="sm">
         <Text variant="label-lg">Meridian</Text>
-        <Chip>northline</Chip>
+        <Badge>northline</Badge>
       </Stack>
       <Stack direction="horizontal" align="center" gap="lg">
         <Switch

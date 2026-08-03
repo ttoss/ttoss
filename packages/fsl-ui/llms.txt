@@ -277,22 +277,20 @@ Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
 Feedback:    ProgressBar, Meter, Toast, ToastRegion, createToastQueue
              (Meter = static quantity in a range e.g. battery/disk;
              ProgressBar = a task in flight. Pick by "state" vs "progressing"),
-             Badge (status chip, filled: evaluation=primary|positive|caution|negative|accent,
-             numeric=tabular for counts — never a hand-rolled colored span)
+             StatusLight (status chip, filled: evaluation=primary|positive|
+             caution|negative|accent, numeric=tabular for counts — never a
+             hand-rolled colored span)
              THREE CHIPS, pick by what the COLOUR SAYS, not by shape — they
              share one box (`CHIP_BOX`) and differ only in meaning:
-               Chip  = descriptive label, no outcome ("Admin", "Beta", "Draft").
-                       Structure entity, informational colours. THE DEFAULT for
-                       a role/category/attribute.
-               Badge = an outcome the SYSTEM reports (passing, degraded, 3
-                       errors). Feedback entity, valence colours.
-               Tag   = an item inside a TagGroup the user selects or removes.
-                       Selection entity, interactive, needs the group.
-             Reaching for Badge with a neutral evaluation to label a role is
-             the F-010 mistake: it claims an outcome that does not exist.
-             NAMING WARNING: Spectrum and Chakra both call the DESCRIPTIVE chip
-             "Badge" and give the status one another name. Ours are inverted
-             (F-040) — read the table above, not the name.
+               Badge       = descriptive label, no outcome ("Admin", "Beta",
+                             "Draft"). Structure entity, informational colours.
+                             THE DEFAULT for a role/category/attribute.
+               StatusLight = an outcome the SYSTEM reports (passing, degraded,
+                             3 errors). Feedback entity, valence colours.
+               Tag         = an item inside a TagGroup the user selects or
+                             removes. Selection entity, needs the group.
+             Names match Spectrum's (Badge / StatusLight / TagGroup) and
+             Chakra's split; they were inverted here until F-040.
 Forms:       Form publishes field layout to every field inside it as STATIC
              context — necessityIndicator='icon'|'none' (default 'icon': an
              asterisk marks the REQUIRED fields, following the reference; 'none'

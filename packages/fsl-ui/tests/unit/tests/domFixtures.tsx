@@ -86,7 +86,13 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
   Badge: {
     scope: 'badge',
     element: () => {
-      return <pkg.Badge>New</pkg.Badge>;
+      return <pkg.Badge>Admin</pkg.Badge>;
+    },
+  },
+  StatusLight: {
+    scope: 'status-light',
+    element: () => {
+      return <pkg.StatusLight>New</pkg.StatusLight>;
     },
   },
   Box: {
@@ -166,12 +172,6 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
           <pkg.Button>Save</pkg.Button>
         </pkg.ButtonGroup>
       );
-    },
-  },
-  Chip: {
-    scope: 'chip',
-    element: () => {
-      return <pkg.Chip>Admin</pkg.Chip>;
     },
   },
   List: {

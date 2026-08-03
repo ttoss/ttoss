@@ -1,8 +1,8 @@
 import {
+  Badge,
   Button,
   Checkbox,
   CheckboxGroup,
-  Chip,
   ContextualHelp,
   Form,
   FormActions,
@@ -225,7 +225,7 @@ const EnvironmentsTable = ({ query }: { query: string }) => {
             <TableRow key={environment.id} id={environment.id}>
               <TableCell>{environment.name}</TableCell>
               <TableCell>
-                <Chip>{environment.type}</Chip>
+                <Badge>{environment.type}</Badge>
               </TableCell>
               <TableCell>{environment.branch}</TableCell>
               <TableCell>{String(environment.instances)}</TableCell>

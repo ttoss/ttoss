@@ -12,7 +12,7 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 
 ## Open items (derived — the entry below is always the source of truth)
 
-Eight open, grouped by the _kind of decision_ each one needs rather than by
+Seven open, grouped by the _kind of decision_ each one needs rather than by
 severity, because that is what makes a review round plannable. Regenerate with
 `grep -c '^- .*Status:\*\* open' FRICTION.md`, which counts entry lines only —
 **not** by grepping the bare phrase, because that also matches the sentence
@@ -57,10 +57,12 @@ Do not edit an entry through this list.
 
 **Naming / discoverability:**
 
-| #     | What                                                                                                                                                                        |
-| ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| F-040 | Both references call the _descriptive_ chip `Badge`; ours is the status one, so the two familiar words point at the wrong members and the third took `Chip`. AI-first cost. |
-| F-041 | No in-system way to pick a responsive variant — both references ship a breakpoint helper, we ship none, so an app hand-rolls `matchMedia`.                                  |
+| #         | What                                                                                                                                                                                                                                           |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ~~F-040~~ | **Resolved 2026-08-02** (owner decision). Renamed to Spectrum's split: `Badge` is descriptive, `StatusLight` carries the valence, `TagGroup` stays the interactive set. Scopes moved with the names.                                           |
+| ~~F-041~~ | **Closed 2026-08-02 — the docs had already placed it.** `breakpoints.md` puts local aliases (its own example: `navCollapse`) in the application layer, and forbids components behaving on viewport thresholds. Neither package ships the hook. |
+
+| F-042 | Meridian's `TabList` navigation cannot move into a `Drawer` — React Aria does not populate a portaled collection — so `AppShell sidebarVariant="temporary"` has no consumer until F-002 lands. |
 
 **Ecosystem / token vocabulary:**
 
@@ -465,17 +467,34 @@ Do not edit an entry through this list.
 
 ### F-040 — our two chip names are inverted relative to both reference systems
 
-- **Date:** 2026-08-02 · **Surface:** `@ttoss/fsl-ui` `Badge` / `Chip` naming · **Severity:** paper-cut · **Status:** open
+- **Date:** 2026-08-02 · **Surface:** `@ttoss/fsl-ui` `Badge` / `Chip` naming · **Severity:** paper-cut · **Status:** ✅ resolved 2026-08-02 (owner decision — renamed)
 - Found while resolving F-010, by the collision that blocked the obvious name. In **Spectrum**: `Badge` is color-categorized metadata, `StatusLight` is the semantic status indicator, `TagGroup` manages a user-editable set. In **Chakra 3**: `Badge` is a plain descriptive span, `Status` is root + indicator, `Tag` is the compound with a close trigger. Both call the **descriptive** chip `Badge` and give the **status** one a different name.
 - Ours are the other way round: `Badge` is Feedback (the valence reporter — their `StatusLight`/`Status`), and `Tag` is the Selection item inside a `TagGroup`. So the two words a reader already knows both point at the wrong member, and the third member had to take a third word (`Chip`).
 - **Why this matters more here than in a human-only system.** The package is AI-first and its first-pass correctness is the thesis. An agent asked for "a role chip" reaches for `Badge` or `Tag` on priors from every other library: `Badge` renders a valence it never asked for, and `Tag` throws for want of a `TagGroup`. `llms.txt` now carries the disambiguation table and an explicit naming warning, which is mitigation, not a fix — the fix is the name.
 - **Not renamed now, deliberately.** Both names are published, and a rename cascades through the catalog, the Studio, the stories and the manifests for a benefit that is real but not urgent. It is also exactly the kind of change that belongs to a version boundary rather than to a slice.
 - **Backlog:** decide at the v1.0 break whether to align with the references — `Badge` becomes the descriptive chip, the status member takes `StatusLight` or `Status`, and `Chip` folds into `Badge`. Mechanical if taken then; awkward forever if not.
+- **Owner took it immediately rather than at the boundary (2026-08-02), and taking it now was the cheaper half of the trade.** `Chip` folded into **`Badge`** (Structure, descriptive) and the status member became **`StatusLight`** (Feedback, valence) — Spectrum's exact split, and the one Chakra makes under different words. The names now mean what an agent's priors expect, which is the whole point in a package whose thesis is first-pass correctness.
+- **Why immediately was right:** the window this entry worried about was "mechanical now, awkward forever". `Chip` had existed for hours and had three consumers; the rename touched two source files, two suites, two stories and six Studio sites, and every one of them was mechanical. Waiting would have added every consumer written in between to the same migration.
+- **The scopes moved with the names** (`chip` → `badge`, `badge` → `status-light`), because a published `data-scope` that disagrees with its component's name is the ambiguity F-026 and F-030 were filed for, one level up.
+- **`CHIP_BOX` kept its name deliberately.** It is no longer any component's name, which is exactly right for the shared source: it names the _physical object_ two components render, and the entity decides only its colours.
 
 ### F-041 — no in-system way to pick a responsive variant
 
-- **Date:** 2026-08-02 · **Surface:** `@ttoss/fsl-ui` (+ `@ttoss/fsl-theme` breakpoints) · **Severity:** gap · **Status:** open
+- **Date:** 2026-08-02 · **Surface:** `@ttoss/fsl-ui` (+ `@ttoss/fsl-theme` breakpoints) · **Severity:** gap · **Status:** ⛔ closed 2026-08-02 — answered by the docs: application layer
 - Split out of F-023 rather than absorbed into it. `AppShell` can now express both sidebar shapes and the reference systems agree that choosing between them is the app's call — but they also both ship the helper that makes the choice: MUI has `useMediaQuery`, Chakra has `useBreakpointValue`. We ship neither, so an app hand-rolls `matchMedia` and re-derives the breakpoint values it cannot read from the theme in a media query.
 - **The constraint is real and documented:** `families/breakpoints.md` states that the emitted custom properties "are for JS/tooling inspection only; they cannot be used in `@media` queries (CSS spec restriction on custom properties)". So a CSS-only answer does not exist, and _inspection_ — reading the resolved value in JS — is the sanctioned use the docs already name.
 - **Consequence today:** any consumer that wants the narrow shape writes viewport logic by hand, which is the class of workaround this log exists to prevent, and it will be written slightly differently in every app.
 - **Backlog:** a hook that resolves a named breakpoint against the current viewport, reading the value off the emitted custom property rather than duplicating the scale. Package boundary is the open question — `fsl-theme` owns the values and already ships React (`react.tsx`), while `fsl-ui` is where the consumer lives.
+- **Closed 2026-08-02: the boundary was never open — `breakpoints.md` had already placed it, and the entry was filed without reading it.** The family doc states that breakpoints are "adaptation infrastructure, not visual design tokens", that they define no semantic layer, that "**applications may adjust or replace them** based on real layout needs", and — naming this exact case — that "any local aliases (e.g. **`navCollapse`**, `shellWide`) **stay in the application layer**".
+- **So neither package should ship the hook.** `fsl-theme` publishing a viewport hook would give a semantic-free infrastructure family a runtime the doc says applications own; `fsl-ui` publishing one would make components depend on viewport thresholds, which the same page forbids in its own words: "**breakpoints define _when_ layout changes, not _how_ components behave**".
+- **The friction was real and it was pointing at the wrong layer.** What the doc leaves to the app is a handful of lines it wants to own anyway, over a scale it is explicitly allowed to replace; the emitted custom properties are readable from JS for exactly this ("for JS/tooling inspection only").
+- **Same page also settles when breakpoints are the wrong tool at all:** "a single component needs to adapt → **container queries**". A component adapting to its own width never reaches for this.
+
+### F-042 — the Tabs-as-navigation workaround cannot move into a Drawer, so the shell's narrow shape has no consumer
+
+- **Date:** 2026-08-02 · **Surface:** `@ttoss/fsl-studio` `AppFrame` (`Tabs` as primary nav) × `@ttoss/fsl-ui` `AppShell sidebarVariant="temporary"` · **Severity:** gap · **Status:** open
+- Found while wiring Meridian to the narrow shell shipped for F-023, which is the first time the two workarounds met. The shell collapses correctly and the drawer opens with its accessible name — and the `tablist` inside it renders **empty**: `<div role="tablist" aria-label="Workspace" />` with no `tab` children. React Aria's collection does not populate a `TabList` portaled into a `Modal`, so the navigation exists as a labelled shell with nothing in it.
+- **This is two recorded workarounds colliding, not a defect in either component.** `AppShell`'s temporary variant is proven in isolation (its own suite, and the Storybook story). Meridian's sidebar is a `TabList` only because `Link` cannot mark `aria-current` (F-002), and the whole frame lives inside one `Tabs` because a `TabList` without panels emits invalid ARIA (F-017). A `TabList` is a collection owner; a drawer is a portal. The two cannot be the same element.
+- **Not worked around, and the app-layer threshold was reverted with it.** A `useNavCollapse` hook and the `sidebarVariant` wiring were written and then removed rather than shipped half-working: leaving them in would hide the navigation on a phone, which is worse than the horizontal scroll F-023 measured. The Studio keeps the permanent shell until its navigation stops being tabs.
+- **What it changes about F-002.** That entry was parked on a token-lifecycle ruling (no token leaves while the package stabilises), and the parking is unaffected — but its cost is now larger than "a sidebar cannot mark the active page". It also blocks the narrow shell for the only app that needs it. When `Link` gains `current`, the Studio's nav becomes links, the drawer holds them without a collection owner, and this closes with it.
+- **Backlog:** re-attempt once F-002 lands. Nothing to build here in the meantime; the capability it consumes already exists.

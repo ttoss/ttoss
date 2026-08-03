@@ -25,7 +25,7 @@ export type {
   AppShellSidebarWidth,
 } from './components/AppShell/AppShell';
 export { AppShell, appShellMeta } from './components/AppShell/AppShell';
-export type { BadgeNumeric, BadgeProps } from './components/Badge/Badge';
+export type { BadgeProps } from './components/Badge/Badge';
 export { Badge, badgeMeta } from './components/Badge/Badge';
 export type {
   BoxBackground,
@@ -69,8 +69,6 @@ export {
   CheckboxGroup,
   checkboxGroupMeta,
 } from './components/CheckboxGroup/CheckboxGroup';
-export type { ChipProps } from './components/Chip/Chip';
-export { Chip, chipMeta } from './components/Chip/Chip';
 export type { CodeProps, CodeSize } from './components/Code/Code';
 export { Code, codeMeta } from './components/Code/Code';
 export type {
@@ -186,6 +184,14 @@ export type {
   StackProps,
 } from './components/Stack/Stack';
 export { Stack, stackMeta } from './components/Stack/Stack';
+export type {
+  StatusLightNumeric,
+  StatusLightProps,
+} from './components/StatusLight/StatusLight';
+export {
+  StatusLight,
+  statusLightMeta,
+} from './components/StatusLight/StatusLight';
 export type {
   SurfaceLevel,
   SurfacePadding,
