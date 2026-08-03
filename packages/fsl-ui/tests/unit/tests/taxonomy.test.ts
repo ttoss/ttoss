@@ -153,6 +153,7 @@ describe('STATE_PRIORITY', () => {
       'isInvalid',
       'isExpanded',
       'isIndeterminate',
+      'isCurrent',
       'isSelected',
       'isFocusVisible',
       'isPressed',

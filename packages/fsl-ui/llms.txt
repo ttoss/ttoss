@@ -72,6 +72,14 @@ Action:      Button = COMMAND silhouette (commit: submit/confirm/primary action
              FormSubmit (inside Form)
 Navigation:  Link, Breadcrumbs/Breadcrumb, Tabs/TabList/Tab
              (TabPanel is Structure — the content revealed by the tabs)
+             SIDEBAR / PRIMARY NAV = a `nav` landmark of `Link`s with
+             `isCurrent` on the live route — NOT Tabs. `isCurrent` sets
+             aria-current="page" and resolves navigation.{role}.text.current;
+             React Aria exposes no equivalent flag because only the app knows
+             which route is live. Tabs switch panels in place, and using them
+             for navigation forces the whole frame into one Tabs scope and
+             cannot be portaled into a Drawer (F-002/F-017/F-042, all closed
+             by this prop).
 Disclosure:  Accordion, AccordionItem, AccordionTrigger, AccordionPanel,
              Disclosure, DisclosureTrigger, DisclosurePanel (standalone single
              section — Accordion is the DisclosureGroup)

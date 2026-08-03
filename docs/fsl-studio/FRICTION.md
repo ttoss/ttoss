@@ -12,7 +12,7 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 
 ## Open items (derived — the entry below is always the source of truth)
 
-Seven open, grouped by the _kind of decision_ each one needs rather than by
+Four open, grouped by the _kind of decision_ each one needs rather than by
 severity, because that is what makes a review round plannable. Regenerate with
 `grep -c '^- .*Status:\*\* open' FRICTION.md`, which counts entry lines only —
 **not** by grepping the bare phrase, because that also matches the sentence
@@ -32,13 +32,13 @@ Do not edit an entry through this list.
 
 **Component gaps — something to build, scope already understood:**
 
-| #         | What                                                                                                                                                                                                              |
-| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| F-002     | `Link` cannot mark `aria-current`: the theme ships `navigation.*.text.current` and nothing reads it. (F-017 is its evidence: the Studio uses vertical `Tabs` as navigation to work around it.)                    |
-| F-004     | No named narrow width step (an auth card, ~20–26rem) between `reading` and `surface`.                                                                                                                             |
-| ~~F-010~~ | **Resolved 2026-08-02.** `Chip` — Structure entity, the descriptive member both references ship and we lacked. Box shared with `Badge` via `CHIP_BOX`.                                                            |
-| ~~F-016~~ | **Resolved 2026-08-02.** `List`/`ListItem` — a pair, as the reference ships it, because an `as` prop cannot enforce that a stack's children became list items. No vocabulary change was needed.                   |
-| ~~F-023~~ | **Resolved 2026-08-02.** The root cause was the missing `Drawer`, not the grid. `Drawer` shipped + `AppShell sidebarVariant='temporary'`. Which variant applies stays the app's call, as in all three references. |
+| #         | What                                                                                                                                                                                                                       |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ~~F-002~~ | **Resolved 2026-08-03.** `Link isCurrent` sets `aria-current="page"` and reads the `current` ink the theme always shipped. No vocabulary grew — `current` was already a legal State; the resolver was missing the mapping. |
+| F-004     | No named narrow width step (an auth card, ~20–26rem) between `reading` and `surface`.                                                                                                                                      |
+| ~~F-010~~ | **Resolved 2026-08-02.** `Chip` — Structure entity, the descriptive member both references ship and we lacked. Box shared with `Badge` via `CHIP_BOX`.                                                                     |
+| ~~F-016~~ | **Resolved 2026-08-02.** `List`/`ListItem` — a pair, as the reference ships it, because an `as` prop cannot enforce that a stack's children became list items. No vocabulary change was needed.                            |
+| ~~F-023~~ | **Resolved 2026-08-02.** The root cause was the missing `Drawer`, not the grid. `Drawer` shipped + `AppShell sidebarVariant='temporary'`. Which variant applies stays the app's call, as in all three references.          |
 
 **Contract / a11y debt — the component works but its published promise does not hold:**
 
@@ -62,7 +62,7 @@ Do not edit an entry through this list.
 | ~~F-040~~ | **Resolved 2026-08-02** (owner decision). Renamed to Spectrum's split: `Badge` is descriptive, `StatusLight` carries the valence, `TagGroup` stays the interactive set. Scopes moved with the names.                                           |
 | ~~F-041~~ | **Closed 2026-08-02 — the docs had already placed it.** `breakpoints.md` puts local aliases (its own example: `navCollapse`) in the application layer, and forbids components behaving on viewport thresholds. Neither package ships the hook. |
 
-| F-042 | Meridian's `TabList` navigation cannot move into a `Drawer` — React Aria does not populate a portaled collection — so `AppShell sidebarVariant="temporary"` has no consumer until F-002 lands. |
+| ~~F-042~~ | **Resolved 2026-08-03**, one day later, by the fix it predicted. Links have no collection owner, so the drawer holds them; Meridian runs the temporary shell below `md`. |
 
 **Ecosystem / token vocabulary:**
 
@@ -83,10 +83,14 @@ Do not edit an entry through this list.
 
 ### F-002 — `Link` has no `current`-state affordance
 
-- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` `Link` / `resolveInteractiveStyle` · **Severity:** gap · **Status:** open
+- **Date:** 2026-07-22 · **Surface:** `@ttoss/fsl-ui` `Link` / `resolveInteractiveStyle` · **Severity:** gap · **Status:** ✅ resolved 2026-08-03 (`Link isCurrent`)
 - The theme ships `colors.navigation.*.text.current`, but `InteractiveStates` has no `current` entry and `Link` never reads it — `aria-current` renders identically to any other link. A sidebar built from `Link`s cannot mark the active page without host CSS.
 - **Workaround:** the Studio shell uses a vertical `Tabs` as primary navigation (Navigation entity; selected state and keyboard support from React Aria).
 - **Backlog:** support `current` on `Link` (RAC exposes no `isCurrent`, so likely via an explicit prop mapped to `aria-current` + the `current` color).
+- **Resolved 2026-08-03 exactly as the backlog specified, and nothing in the vocabulary grew.** `current` was already a legal State in the registry and already listed in `CONTEXT_EXTRA_STATES.navigation`; what was missing was the resolver's flag→state mapping and a component to pass it. `STATE_PRIORITY` gains `isCurrent → current` and `Link` gains `isCurrent`, which sets `aria-current="page"` and resolves `navigation.{role}.text.current`. **This was implementation catching up with the contract, not a token decision** — the owner's standing rule (no token leaves while the package stabilises) is satisfied in the strongest way available: the token now has a reader.
+- **Cascade placement, and why:** `current` outranks `checked` because it is the more specific claim about the same kind of fact — `colors.md` § Picking a state says a tab representing the live route is both selected _and_ current — and both sit under `disabled`, because unavailability is the more urgent thing to announce. Pinned by the cascade-order test and asserted through the component.
+- **`aria-current="page"`, not `true`:** the link names a destination, so the specific token is what AT should read, and it is what APG's navigation pattern asks for.
+- _Studio:_ the sidebar became a real `nav` landmark of `Link`s — which closed F-017 and F-042 with it.
 
 ### F-003 — `Tab` selected indicator is block-end even in vertical orientation
 
@@ -192,10 +196,12 @@ Do not edit an entry through this list.
 
 ### F-017 — Tabs-as-navigation demands panel co-location and a width workaround
 
-- **Date:** 2026-07-24 · **Surface:** `@ttoss/fsl-ui` `Tabs` (S2 shell) · **Severity:** gap · **Status:** open — evidence for the F-002 backlog
+- **Date:** 2026-07-24 · **Surface:** `@ttoss/fsl-ui` `Tabs` (S2 shell) · **Severity:** gap · **Status:** ✅ resolved 2026-08-03 — the workaround it documented is gone
 - Two stacked findings while wiring the S2 sidebar navigation with the recorded F-002 workaround (vertical `Tabs` as primary nav): (1) a `TabList` with **no TabPanels** emits `aria-controls` pointing at a nonexistent panel — axe fails with `aria-valid-attr-value`, so the nav-only usage v2 shipped was silently invalid ARIA; (2) fixing it by spanning one `Tabs` scope across the app frame (TabList in the AppShell sidebar, TabPanel in the main region — RAC context supports the separation) collides with the `Tabs` root's co-located layout: it imposes `display: flex; flex-direction: row`, which shrinks an `AppShell` child to content width.
 - **Workaround:** the whole frame lives inside one `Tabs`; a `Box width="full"` wrapper restores the AppShell width; each route's page renders inside its real `TabPanel`, so tab semantics are genuine (selection = client-side routing) and axe passes.
 - **Backlog:** strengthens F-002 — primary navigation wants a real affordance (Link `current` state or a Navigation-entity nav list), not tab semantics contorted around an app frame.
+- **Resolved 2026-08-03 by removing the workaround rather than by fixing `Tabs`.** Both findings here were consequences of using tabs for navigation: no panel-less `TabList` (so the whole frame had to live inside one `Tabs` scope) and no width workaround (so `Box width="full"` had to undo the tab row's layout). With `Link isCurrent` shipped the sidebar is a `nav` landmark of links, the `Tabs` scope is gone from `AppFrame`, and both workarounds went with it — including the `Box width="full"` this entry filed.
+- **Nothing about `Tabs` changed, and nothing should have.** The component was never wrong; it was being asked to be navigation. The entry's real content was the cost of that ask, and the cost is now paid down.
 
 ### F-018 — the container-fluid engine has no container: `cqi` resolves against the viewport everywhere
 
@@ -492,9 +498,11 @@ Do not edit an entry through this list.
 
 ### F-042 — the Tabs-as-navigation workaround cannot move into a Drawer, so the shell's narrow shape has no consumer
 
-- **Date:** 2026-08-02 · **Surface:** `@ttoss/fsl-studio` `AppFrame` (`Tabs` as primary nav) × `@ttoss/fsl-ui` `AppShell sidebarVariant="temporary"` · **Severity:** gap · **Status:** open
+- **Date:** 2026-08-02 · **Surface:** `@ttoss/fsl-studio` `AppFrame` (`Tabs` as primary nav) × `@ttoss/fsl-ui` `AppShell sidebarVariant="temporary"` · **Severity:** gap · **Status:** ✅ resolved 2026-08-03 (closed with F-002)
 - Found while wiring Meridian to the narrow shell shipped for F-023, which is the first time the two workarounds met. The shell collapses correctly and the drawer opens with its accessible name — and the `tablist` inside it renders **empty**: `<div role="tablist" aria-label="Workspace" />` with no `tab` children. React Aria's collection does not populate a `TabList` portaled into a `Modal`, so the navigation exists as a labelled shell with nothing in it.
 - **This is two recorded workarounds colliding, not a defect in either component.** `AppShell`'s temporary variant is proven in isolation (its own suite, and the Storybook story). Meridian's sidebar is a `TabList` only because `Link` cannot mark `aria-current` (F-002), and the whole frame lives inside one `Tabs` because a `TabList` without panels emits invalid ARIA (F-017). A `TabList` is a collection owner; a drawer is a portal. The two cannot be the same element.
 - **Not worked around, and the app-layer threshold was reverted with it.** A `useNavCollapse` hook and the `sidebarVariant` wiring were written and then removed rather than shipped half-working: leaving them in would hide the navigation on a phone, which is worse than the horizontal scroll F-023 measured. The Studio keeps the permanent shell until its navigation stops being tabs.
 - **What it changes about F-002.** That entry was parked on a token-lifecycle ruling (no token leaves while the package stabilises), and the parking is unaffected — but its cost is now larger than "a sidebar cannot mark the active page". It also blocks the narrow shell for the only app that needs it. When `Link` gains `current`, the Studio's nav becomes links, the drawer holds them without a collection owner, and this closes with it.
 - **Backlog:** re-attempt once F-002 lands. Nothing to build here in the meantime; the capability it consumes already exists.
+- **Resolved 2026-08-03, one day later, by the fix this entry predicted.** `Link isCurrent` landed, the Studio's sidebar became links, and the re-attempt worked on the first try: a list of links has no collection owner, so nothing needs the portal to register anything. Meridian now runs `sidebarVariant="temporary"` below the `md` threshold, with the app-layer `useNavCollapse` alias the breakpoints doc names.
+- **The lesson is about the shape of the diagnosis, not the fix.** Neither component was defective and neither needed changing; the failure lived in the interaction of two workarounds, and it was only visible when both were exercised at once. It took building the second capability to find that the first one's cost had grown.

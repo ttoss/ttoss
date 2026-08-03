@@ -233,7 +233,7 @@ order defined by `STATE_PRIORITY` in
 first:
 
 ```
-disabled > invalid > expanded > indeterminate > selected
+disabled > invalid > expanded > indeterminate > current > selected
         > focusVisible > pressed > hovered > default
 ```
 

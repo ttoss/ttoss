@@ -46,6 +46,12 @@ export interface InteractiveFlags {
    * (Accordion) when the disclosure panel is open.
    */
   readonly isExpanded?: boolean;
+  /**
+   * Maps to the `current` token state — the user's present location in a
+   * navigation set. Authorial: only the app knows which route is live, which
+   * is why React Aria exposes no equivalent flag.
+   */
+  readonly isCurrent?: boolean;
 }
 
 export interface InteractiveStates {
@@ -62,6 +68,8 @@ export interface InteractiveStates {
   readonly invalid?: string;
   /** Rendered when `isExpanded` is true. Corresponds to e.g. `NavigationColorStates.expanded`. */
   readonly expanded?: string;
+  /** Rendered when `isCurrent` is true. Corresponds to `NavigationColorStates.current`. */
+  readonly current?: string;
 }
 
 export const resolveInteractiveStyle = (
