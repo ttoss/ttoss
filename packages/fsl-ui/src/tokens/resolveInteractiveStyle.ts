@@ -25,6 +25,7 @@
  * `TextField`, and `Accordion`.
  */
 
+import type { InteractiveStateKey } from '../semantics/taxonomy';
 import { STATE_PRIORITY } from '../semantics/taxonomy';
 
 export interface InteractiveFlags {
@@ -72,15 +73,30 @@ export interface InteractiveStates {
   readonly current?: string;
 }
 
+/**
+ * Which token state the cascade lands on for a given set of flags.
+ *
+ * Split out of {@link resolveInteractiveStyle} because the answer is useful
+ * without a token in hand: `resolveConsequenceInk` needs to know *which state
+ * the host is painting* to decide whether its tint still holds, and deriving
+ * that from the same tuple is what keeps the two helpers from disagreeing
+ * about, say, whether `isPressed` means `active` or `pressed`.
+ */
+export const resolveStateKey = (
+  flags: InteractiveFlags
+): InteractiveStateKey => {
+  for (const { flag, state } of STATE_PRIORITY) {
+    if (flags[flag]) {
+      return state;
+    }
+  }
+  return 'default';
+};
+
 export const resolveInteractiveStyle = (
   states: InteractiveStates | undefined,
   flags: InteractiveFlags
 ): string | undefined => {
   if (!states) return undefined;
-  for (const { flag, state } of STATE_PRIORITY) {
-    if (flags[flag]) {
-      return states[state];
-    }
-  }
-  return states.default;
+  return states[resolveStateKey(flags)];
 };

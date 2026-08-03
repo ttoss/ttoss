@@ -44,10 +44,11 @@ type FooEvaluation = EvaluationsFor<(typeof fooMeta)['entity']>;
 ```
 
 `evaluation` and `consequence` are orthogonal: `consequence: 'destructive'`
-(FSL §6) drives the interaction _mechanism_ (e.g. ConfirmationDialog arming);
-`evaluation: 'negative'` drives the adverse _color voice_. A destructive
-action typically pairs both, but neither implies the other — see §6 and
-ENTITY_CONSEQUENCE in `taxonomy.ts`.
+(FSL §6) drives the interaction _mechanism_ (e.g. ConfirmationDialog arming) and,
+on a part that paints no fill, the ink that carries its valence (§3.3);
+`evaluation: 'negative'` drives the adverse _color voice_ — the filled red
+command. A destructive action may pair both, but neither implies the other —
+see §6 and ENTITY_CONSEQUENCE in `taxonomy.ts`.
 
 ### Step 3 — Read token paths from §1
 
@@ -312,6 +313,48 @@ a product decision rather than a side effect of the tuple's order, and
 `tests/unit/tests/fieldEnvelope.test.tsx` fails if a call site stops passing
 `isInvalid` and lets hover win.
 
+### §3.3 — Parts that paint no surface borrow the stratum's ink
+
+> **A part that paints no surface of its own takes its ink from the surface it
+> renders on. When that part carries a valence, `consequence` is what selects
+> it — not `evaluation`.**
+
+§3.2 is the first instance of this and the field family is where it was found;
+the rule is the general form. The quiet rung (`muted`) is the system's idiom for
+"no fill" — an opaque surface-coloured token, never `transparent`, so every
+pairing stays auditable. A control on that rung has nowhere to say "this
+deletes something" except the ink.
+
+Reaching for `evaluation="negative"` instead fills the control solid red,
+because in `action` the valence **is** the filled destructive command. That is a
+different claim: a filled red button is the loudest thing on the surface, while
+a destructive menu row is a peer of "Duplicate" and "Rename". The mismatch is
+F-029, and it existed because `consequence` drove mechanism only, so authors
+substituted the one axis with a visual projection.
+
+Implemented once, in `tokens/consequenceInk.ts`:
+
+|                |                                                                        |
+| -------------- | ---------------------------------------------------------------------- |
+| **Applies to** | `evaluation === 'muted'` and `consequence === 'destructive'`           |
+| **Paints**     | `color` only — and, through `currentColor`, any `Icon` inside the part |
+| **Reads**      | `informational.negative.text.default`                                  |
+| **Yields at**  | `disabled`, `active`, `expanded` (`TINT_YIELDS_TO`)                    |
+
+Ink only: the quiet rung's border mirrors its background by construction, so
+tinting the edge would invent an outlined-destructive language the system does
+not have. It yields at the engaged states because the quiet rung materialises a
+real fill there and the theme lifts its _own_ ink to clear it — a fixed valence
+ink measures 2.65:1 against the dark alternate's engaged fill. It yields when
+disabled because unavailability outranks valence.
+
+Every surface the tint can land on is enumerated and measured in fsl-theme's
+cross-role inventory (`colors.test.ts` → `quiet destructive control`); the
+excluded states are excluded because the rule does not reach them. A component
+that emits `data-consequence` and paints from `vars.colors.action` **must**
+resolve its ink through the helper — `components.contract.test.tsx` fails
+otherwise, so the crossing stays a single licensed one rather than a habit.
+
 ---
 
 ## §4 — Standard Step Rule
@@ -457,10 +500,11 @@ import { ENTITY_EVALUATION } from '@ttoss/fsl-ui/semantics';
 const valid = ENTITY_EVALUATION['Action'];
 // → ['primary', 'secondary', 'accent', 'muted', 'negative']
 //
-// Note: 'negative' on Action is the adverse color *voice*. It does not
-// imply behavior — effect-on-state is expressed separately through
-// `consequence: 'destructive'` (see ENTITY_CONSEQUENCE), which drives
-// interaction mechanics (e.g. ConfirmationDialog arming).
+// Note: 'negative' on Action is the adverse color *voice* — the filled red
+// command. It does not imply behavior: effect-on-state is expressed
+// separately through `consequence: 'destructive'` (see ENTITY_CONSEQUENCE),
+// which drives interaction mechanics (e.g. ConfirmationDialog arming) and,
+// on the quiet rung alone, the ink that carries the valence (§3.3).
 ```
 
 ---

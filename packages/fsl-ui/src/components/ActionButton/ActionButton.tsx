@@ -11,6 +11,7 @@ import type {
   ConsequencesFor,
   EvaluationsFor,
 } from '../../semantics';
+import { resolveConsequenceInk } from '../../tokens/consequenceInk';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import {
   type ActionIconPlacement,
@@ -53,15 +54,21 @@ export interface ActionButtonOwnProps extends Omit<
    * announces itself with a quiet fill, not with the authority of a command.
    *
    * Use `muted` for the **quiet** posture — a toolbar control that shows no
-   * fill until hovered. Use `negative` for a destructive row action; pair it
-   * with `consequence="destructive"` so a confirm wrapper can dispatch on it.
+   * fill until hovered. Use `negative` when the destructive action is the
+   * loud one on the surface and should read as a filled red command; for a
+   * destructive control that sits as a *peer* among its siblings, keep the
+   * rung and set `consequence="destructive"`, which tints the ink instead.
+   * Either way `consequence` is what a confirm wrapper dispatches on.
    * @default 'secondary'
    */
   evaluation?: EvaluationsFor<(typeof actionButtonMeta)['entity']>;
   /**
    * Effect on state this action produces. Emitted as `data-consequence` for
-   * host integrations and tests; never used for coloring (that is
-   * `evaluation`).
+   * host integrations and tests.
+   *
+   * Carries colour in exactly one case: `destructive` on the **quiet** rung
+   * (`evaluation="muted"`) tints the ink — see {@link resolveConsequenceInk}.
+   * On every filled rung the fill is the voice and `evaluation` owns it.
    * @default 'neutral'
    */
   consequence?: ConsequencesFor<(typeof actionButtonMeta)['entity']>;
@@ -171,6 +178,7 @@ export const ActionButton = ({
       data-composition={composition}
       data-icon-placement={hasIcon ? iconPlacement : undefined}
       style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => {
+        const flags = { isDisabled, isHovered, isPressed };
         return buildActionTriggerStyle({
           silhouette: UTILITY_SILHOUETTE,
           hasIcon,
@@ -179,21 +187,19 @@ export const ActionButton = ({
           isFocusVisible,
           isGrouped,
           colors: {
-            background: resolveInteractiveStyle(colors?.background, {
-              isHovered,
-              isPressed,
-              isDisabled,
-            }),
+            background: resolveInteractiveStyle(colors?.background, flags),
             border: resolveInteractiveStyle(colors?.border, {
               isDisabled,
               isFocusVisible,
             }),
-            text:
-              resolveInteractiveStyle(colors?.text, {
-                isHovered,
-                isPressed,
-                isDisabled,
-              }) ?? colors?.text?.default,
+            text: resolveConsequenceInk({
+              consequence,
+              evaluation,
+              flags,
+              ink:
+                resolveInteractiveStyle(colors?.text, flags) ??
+                colors?.text?.default,
+            }),
           },
         });
       }}

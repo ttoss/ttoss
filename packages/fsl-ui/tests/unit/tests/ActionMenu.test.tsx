@@ -168,6 +168,46 @@ describe('ActionMenu — behaviour', () => {
     );
   });
 
+  test('a destructive row tints its ink and stays a peer of its siblings', async () => {
+    // F-029, the case the rule was written for. Before this, the only way to
+    // mark the row was `evaluation="negative"`, which fills it solid red — a
+    // menu where "Delete" reads as the loudest thing on the surface rather than
+    // one row among "Duplicate" and "Archive".
+    const user = userEvent.setup();
+    render(
+      <ActionMenu aria-label="More actions">
+        <MenuItem id="duplicate">Duplicate</MenuItem>
+        <MenuItem id="delete" consequence="destructive">
+          Delete
+        </MenuItem>
+      </ActionMenu>
+    );
+
+    await user.click(getTrigger());
+    const row = screen.getByRole('menuitem', { name: 'Delete' });
+
+    expect(row).toHaveAttribute('data-evaluation', 'muted');
+    expect(row).toHaveAttribute('data-consequence', 'destructive');
+    expect(row.style.color).toBe(
+      vars.colors.informational.negative.text!.default
+    );
+    // Same silhouette as its siblings: only the ink differs.
+    expect(row.style.backgroundColor).toBe(
+      screen.getByRole('menuitem', { name: 'Duplicate' }).style.backgroundColor
+    );
+  });
+
+  test('a neutral row reads the quiet rung’s own ink', async () => {
+    const user = userEvent.setup();
+    renderActionMenu();
+
+    await user.click(getTrigger());
+
+    expect(
+      screen.getByRole('menuitem', { name: 'Duplicate' }).style.color
+    ).toBe(vars.colors.action.muted!.text!.default);
+  });
+
   test('forwards the surface placement, so a row-end trigger can anchor', async () => {
     const user = userEvent.setup();
     renderActionMenu({ placement: 'bottom end' });

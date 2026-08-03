@@ -683,6 +683,37 @@ const CROSS_ROLE_TEXT_PAIRINGS: ReadonlyArray<{
     // Non-text indicator.
     threshold: WCAG.AA_LARGE,
   },
+  {
+    // fsl-ui F-029. A control on the *quiet* rung paints no fill of its own, so
+    // when its `consequence` is destructive there is no surface to carry the
+    // valence and the ink carries it instead (`resolveConsequenceInk`). Same
+    // shape as the validation message above, one family over.
+    //
+    // The literal surface is the quiet rung's own opaque fill — `muted` is an
+    // opaque surface-coloured token, never `transparent` (ADR-015), so the
+    // control always covers whatever is beneath it. In both bundles that
+    // resting fill equals the page background, which makes the strata the same
+    // check seen from the other side; they stay listed so the entry still holds
+    // if a theme ever gives the quiet rung a tonal resting fill of its own.
+    part: 'quiet destructive control',
+    ink: 'semantic.colors.informational.negative.text.default',
+    surfaces: [
+      ...INFORMATIONAL_STRATA,
+      'semantic.colors.action.muted.background.default',
+      'semantic.colors.action.muted.background.hover',
+      // NOT `.active` / `.expanded`. Those are the engaged fills, where the
+      // theme lifts the quiet rung's *own* ink to stay legible and a fixed
+      // valence ink cannot follow: in this file's dark alternate the engaged
+      // fill is `neutral.500` and the muted ink goes `neutral.0`, so the
+      // valence ink lands at 2.65:1 — a figure no check reports, because the
+      // pair is deliberately outside the rule. `TINT_YIELDS_TO` in
+      // `resolveConsequenceInk` hands the ink back at exactly those states.
+      // NOT `.disabled` either: unavailability outranks valence and the rule
+      // yields there too, matching WCAG 2.2 §1.4.3.
+    ],
+    // A label renders at body size — no large-text allowance.
+    threshold: WCAG.AA_NORMAL,
+  },
 ];
 
 describe('Color contrast — cross-role text pairings', () => {

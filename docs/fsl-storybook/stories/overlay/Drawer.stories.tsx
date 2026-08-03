@@ -47,7 +47,7 @@ const DrawerDemo = ({
         width={width}
       >
         <Stack gap="md">
-          <Heading level={2} size="md">
+          <Heading level={2} size="title-md">
             {label}
           </Heading>
           <Text>

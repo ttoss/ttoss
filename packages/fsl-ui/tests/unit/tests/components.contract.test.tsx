@@ -588,6 +588,58 @@ describe('contract: entity → ux-context alignment', () => {
 });
 
 // ---------------------------------------------------------------------------
+// 4c. The consequence-ink rule has exactly one licensed crossing
+//
+// CONTRACT.md §3.3: a part that paints no surface borrows the stratum's ink,
+// and when it carries a valence `consequence` selects it. That makes an Action
+// component read `informational.negative.text` — a cross-family read that 4b
+// above would wave through for any file declaring an Overlay part too (Menu
+// declares both), so the union would let it pass by coincidence rather than by
+// rule.
+//
+// The rule is therefore encoded here instead: the crossing lives in exactly one
+// module, and every component that could want it goes through that module.
+// ---------------------------------------------------------------------------
+
+describe('contract: consequence ink (§3.3)', () => {
+  const CONSEQUENCE_INK = resolve(
+    __dirname,
+    '../../../src/tokens/consequenceInk.ts'
+  );
+  const helperSource = readFileSync(CONSEQUENCE_INK, 'utf8');
+
+  test('the helper is the module that reads the destructive ink', () => {
+    expect(stripComments(helperSource)).toContain(
+      'vars.colors.informational.negative.text'
+    );
+  });
+
+  test.each(componentSources)(
+    '%s: does not hand-roll the crossing',
+    (_path, source) => {
+      // A component reaching for the negative ink of a family it does not own
+      // is the F-029 shape reappearing. Route it through the helper so the
+      // bounds (which rung, which states) hold in one place.
+      expect(stripComments(source)).not.toContain(
+        'vars.colors.informational.negative'
+      );
+    }
+  );
+
+  test.each(componentSources)(
+    '%s: an Action that declares a consequence resolves its ink through the helper',
+    (_path, source) => {
+      const stripped = stripComments(source);
+      const declaresConsequence = stripped.includes('data-consequence={');
+      const paintsAction = stripped.includes('vars.colors.action');
+      if (!declaresConsequence || !paintsAction) return;
+
+      expect(stripped).toContain('resolveConsequenceInk(');
+    }
+  );
+});
+
+// ---------------------------------------------------------------------------
 // 5. toCssVarName prefix convention
 // ---------------------------------------------------------------------------
 

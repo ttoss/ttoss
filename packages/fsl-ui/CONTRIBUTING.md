@@ -768,3 +768,99 @@ Re-litigation answers:
 - "Does this make react-hook-form a dependency of fsl-ui?" → no. It is a
   devDependency of the test that proves the recipe; the package ships no import
   of it.
+
+### ADR-028: A part that paints no surface borrows the stratum's ink; `consequence` selects it
+
+Status: accepted (2026-08-03)
+Tags: colors, taxonomy, consequence, F-029, closes:F-029
+
+Decision: **a part that paints no surface of its own takes its ink from the
+surface it renders on, and when that part carries a valence, `consequence` is
+what selects it.** Implemented once in `tokens/consequenceInk.ts`, written into
+`CONTRACT.md` §3.3, and bounded three ways: the quiet rung only
+(`evaluation="muted"`, which `colors.md` names as the system's idiom for "no
+fill"), the `color` dimension only, and yielding to the host's own cascade at
+`disabled`, `active` and `expanded`.
+
+This is not a new idea in the system. §3.2's validation message has always read
+`input.negative.text` and rendered on whatever informational surface the form
+sits on; F-036 built the contrast inventory that makes such a pairing
+verifiable. ADR-028 is that pattern stated as a rule and given a second family.
+
+**The 2026-08-02 governance recommendation is retracted.** It proposed splitting
+"static ink on a coloured fill" out of `{ux}.{valence}.text`, freeing the
+dimension to be the standalone valence ink the loudness ladder promises. Stress-
+tested against a second theme, it is circular: the ink is only static while the
+fill is known, and `action.primary` (neutral.1000 light / neutral.0 dark),
+`action.accent` (brand.500) and `feedback.caution` (a yellow) do not share one.
+The split immediately needs per-role on-fill ink — one token per role per mode —
+which is `{ux}.{role}.text` renamed, at the cost of every published Action and
+Feedback label.
+
+What shipped is the proposal's own alternatives (a) and (b), which it costed in
+a line each and dismissed. Neither works alone. (b) supplies the licence, (a)
+supplies the trigger. (a)'s objection — "a fourth axis on a three-axis token
+path" — does not apply, because nothing is added to the path:
+`informational.negative.text.default` already exists, and `consequence` is
+already declared per entity, already emitted as `data-consequence`, already
+driving `ConfirmationDialog`'s arming. It gains reach, not vocabulary. (b)'s
+objection — "it weakens the entity→ux alignment the contract test enforces" —
+was real, and is answered by making the crossing **licensed and singular**: the
+read lives in one module, and the contract suite fails any component that
+reaches for `informational.negative` by hand, or that emits `data-consequence`,
+paints from `vars.colors.action`, and does not route its ink through that
+module. `Menu.tsx` would previously have passed such a read by coincidence,
+because it declares an Overlay part and the alignment test unions the contexts.
+
+The engaged-state bound is measured, not stylistic. `action.muted` materialises
+a real fill on engagement and the theme lifts its own ink to clear it — in the
+dark alternate the fill is `neutral.500` and the muted ink goes pure white. A
+fixed valence ink cannot follow: rest reads 10.02 light / 9.53 dark and hover
+9.43 / 5.72, while the engaged fill reads **2.65**, under every floor. `disabled`
+yields for a different reason — unavailability outranks valence, the same ground
+WCAG 2.2 §1.4.3 exempts it on.
+
+Enabling refactor: `resolveStateKey` is split out of `resolveInteractiveStyle`,
+so "which state is the host painting" has one answer derived from
+`STATE_PRIORITY` rather than two readers guessing whether `isPressed` means
+`active` or `pressed`. No behaviour change.
+
+Rejected: the static-ink split (circular, see above); a `negativeQuiet`
+evaluation (grows the taxonomy for one case and reads as a variant axis the
+system does not have); `action.negative.textOnSurface` (a dimension-registry
+change — governance — for what an existing token already holds); tinting the
+border too (the quiet rung's border mirrors its background by construction, so
+this invents an outlined-destructive language and needs its own non-text
+pairing); extending the tint to `secondary` (the rule is "paints no surface",
+and `colors.md` gives that meaning to `muted` alone — widening later is
+additive, retracting is breaking).
+
+Cost: `consequence` is no longer colour-free, which four JSDoc blocks and
+`llms.txt` asserted. Every one of them is corrected rather than left ambiguous,
+because "drives mechanism, not colour" was load-bearing guidance. The rule's
+surface inventory is now a thing fsl-theme must keep passing — a theme that
+retunes `action.muted`'s hover fill will fail `quiet destructive control` before
+it ships, which is the intent.
+
+Anchors: `src/tokens/consequenceInk.ts`, `src/tokens/CONTRACT.md` §3.3,
+`tests/unit/tests/consequenceInk.test.ts`,
+`tests/unit/tests/components.contract.test.tsx` (§4c),
+`packages/fsl-theme/tests/unit/tests/theme/families/colors.test.ts`
+(`quiet destructive control`), `docs/fsl-studio/FRICTION.md` F-029.
+
+Re-litigation answers:
+
+- "Why not just let authors use `evaluation="negative"` on a menu row?" → it
+  fills the row solid red. In `action` the valence **is** the filled destructive
+  command; a menu row is a peer of "Duplicate" and "Rename". Both shapes are
+  real and the system now expresses both.
+- "Does this mean `consequence` is a colour prop?" → no. It carries colour in
+  exactly one case, on the one rung that has no surface to carry it. On every
+  filled rung the fill is the voice and `evaluation` owns it.
+- "Why does the tint disappear when I press the row?" → the quiet rung paints a
+  real fill there and the theme raises its own ink to clear it; the valence ink
+  measures 2.65:1 against that fill. The press lasts a moment and the row is
+  already tinted at rest and on hover.
+- "Can a Structure or Feedback part use this?" → not today. The helper is scoped
+  to parts that read `vars.colors.action`, because that is where the evidence
+  is. A second family needs a consumer and its own inventory entry.

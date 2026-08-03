@@ -18,6 +18,7 @@ import type {
   EvaluationsFor,
 } from '../../semantics';
 import { buildChoosableRowStyle } from '../../tokens/choosableRow';
+import { resolveConsequenceInk } from '../../tokens/consequenceInk';
 import { fslVar } from '../../tokens/escapeHatch';
 import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
@@ -256,10 +257,10 @@ export interface MenuItemProps extends Omit<
    * open menu.
    *
    * Reach for another rung only to make one row *louder* than its siblings (a
-   * primary "Create…" at the top of a menu). Note that `negative` fills the row
-   * red rather than tinting its ink — see F-029 before using it to mark a
-   * destructive row; `consequence="destructive"` is the semantic marker and
-   * carries no colour.
+   * primary "Create…" at the top of a menu). To mark a **destructive** row,
+   * leave this alone and set `consequence` — `negative` fills the row solid red
+   * because in `action` the valence is the *filled* destructive command, which
+   * is a different thing from a peer row that happens to delete something.
    *
    * @default 'muted'
    */
@@ -269,8 +270,12 @@ export interface MenuItemProps extends Omit<
    *
    * Emitted as `data-consequence` on the rendered element so callers, tests,
    * and host integrations (confirm wrappers, telemetry) can observe the
-   * contract. This component does **not** alter colors based on consequence;
-   * visual distinction (if any) is a theme / CSS layer concern.
+   * contract.
+   *
+   * `destructive` also tints the row's ink — see
+   * {@link resolveConsequenceInk} for the rule and its bounds. The row keeps
+   * the quiet rung's geometry and fill; only the ink (and, through
+   * `currentColor`, any `Icon` inside it) carries the valence.
    *
    * @default 'neutral'
    */
@@ -313,23 +318,22 @@ export const MenuItem = ({
       data-consequence={consequence}
       data-composition={composition}
       style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => {
+        const flags = { isDisabled, isHovered, isPressed };
         return {
           ...buildChoosableRowStyle(),
           cursor: isDisabled ? 'not-allowed' : 'pointer',
           transitionDuration: vars.motion.feedback.duration,
           transitionTimingFunction: vars.motion.feedback.easing,
           transitionProperty: 'background-color, color',
-          backgroundColor: resolveInteractiveStyle(colors?.background, {
-            isHovered,
-            isPressed,
-            isDisabled,
+          backgroundColor: resolveInteractiveStyle(colors?.background, flags),
+          color: resolveConsequenceInk({
+            consequence,
+            evaluation,
+            flags,
+            ink:
+              resolveInteractiveStyle(colors?.text, flags) ??
+              colors?.text?.default,
           }),
-          color:
-            resolveInteractiveStyle(colors?.text, {
-              isHovered,
-              isPressed,
-              isDisabled,
-            }) ?? colors?.text?.default,
           outline: focusRingOutline(isFocusVisible),
         } as React.CSSProperties;
       }}

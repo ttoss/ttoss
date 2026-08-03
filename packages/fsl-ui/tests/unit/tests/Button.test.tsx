@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { vars } from '@ttoss/fsl-theme/vars';
 
 import { Button, Icon } from '../../../src';
 
@@ -206,6 +207,35 @@ describe('Button — behavior is unchanged by the icon anatomy', () => {
     await user.click(screen.getByRole('button', { name: 'Dismiss' }));
 
     expect(onPress).not.toHaveBeenCalled();
+  });
+});
+
+describe('Button — the quiet destructive posture (CONTRACT §3.3)', () => {
+  test('the command silhouette gets the same rule as the utility one', () => {
+    // The rule keys on the rung, not on the silhouette: a quiet command
+    // (a text-only "Delete account" beside a filled "Cancel") paints no fill
+    // either, so the ink is where its valence goes.
+    render(
+      <Button evaluation="muted" consequence="destructive">
+        Delete account
+      </Button>
+    );
+    const root = screen.getByRole('button', { name: 'Delete account' });
+
+    expect(root.style.color).toBe(
+      vars.colors.informational.negative.text!.default
+    );
+    expect(root.style.backgroundColor).toBe(
+      vars.colors.action.muted!.background!.default
+    );
+  });
+
+  test('the default primary command is untouched', () => {
+    render(<Button consequence="destructive">Delete account</Button>);
+
+    expect(
+      screen.getByRole('button', { name: 'Delete account' }).style.color
+    ).toBe(vars.colors.action.primary!.text!.default);
   });
 });
 

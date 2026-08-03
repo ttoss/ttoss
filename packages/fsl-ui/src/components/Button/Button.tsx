@@ -11,6 +11,7 @@ import type {
   ConsequencesFor,
   EvaluationsFor,
 } from '../../semantics';
+import { resolveConsequenceInk } from '../../tokens/consequenceInk';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import {
   type ActionIconPlacement,
@@ -55,8 +56,10 @@ export interface ButtonOwnProps extends Omit<
    * `data-consequence` on the DOM so host integrations (confirm wrappers,
    * telemetry, undo/redo hooks) and tests can observe the contract.
    *
-   * NOT used for coloring — visual distinction (if any) is a theme /
-   * host-CSS concern, matching the same contract as `MenuItem`.
+   * Carries colour in exactly one case: `destructive` on the **quiet** rung
+   * (`evaluation="muted"`) tints the ink, because a part that paints no fill
+   * has nowhere else to say it — see {@link resolveConsequenceInk}. On every
+   * filled rung the fill is the voice and `evaluation` owns it.
    *
    * @default 'neutral'
    */
@@ -163,6 +166,7 @@ export const Button = ({
       data-composition={composition}
       data-icon-placement={hasIcon ? iconPlacement : undefined}
       style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => {
+        const flags = { isDisabled, isHovered, isPressed };
         return buildActionTriggerStyle({
           silhouette: COMMAND_SILHOUETTE,
           hasIcon,
@@ -171,21 +175,19 @@ export const Button = ({
           isFocusVisible,
           isGrouped,
           colors: {
-            background: resolveInteractiveStyle(colors?.background, {
-              isHovered,
-              isPressed,
-              isDisabled,
-            }),
+            background: resolveInteractiveStyle(colors?.background, flags),
             border: resolveInteractiveStyle(colors?.border, {
               isDisabled,
               isFocusVisible,
             }),
-            text:
-              resolveInteractiveStyle(colors?.text, {
-                isHovered,
-                isPressed,
-                isDisabled,
-              }) ?? colors?.text?.default,
+            text: resolveConsequenceInk({
+              consequence,
+              evaluation,
+              flags,
+              ink:
+                resolveInteractiveStyle(colors?.text, flags) ??
+                colors?.text?.default,
+            }),
           },
         });
       }}
