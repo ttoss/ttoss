@@ -9,6 +9,7 @@ import {
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { fslVar } from '../../tokens/escapeHatch';
+import { voicedSurface } from '../../tokens/surfaceScope';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -97,7 +98,9 @@ export const Popover = ({
           borderWidth: vars.border.outline.surface.width,
           borderStyle: vars.border.outline.surface.style,
           borderColor: colors?.border?.default,
-          backgroundColor: colors?.background?.default,
+          // A hosting surface publishes itself (CONTRACT §3.4); only the
+          // page-like primary voice does — a voiced surface keeps its voice.
+          ...voicedSurface({ evaluation, color: colors?.background?.default }),
           color: colors?.text?.default,
           boxShadow: vars.elevation.surface.overlay,
           padding: vars.spacing.inset.surface.md,

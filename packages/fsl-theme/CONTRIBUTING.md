@@ -841,3 +841,82 @@ Re-litigation answers:
   coupling and a grammar violation.
 - "Does `neutral`/`committing` ever get a token?" → on evidence: a consumer
   with a visual projection that survives measurement. Symmetry is not evidence.
+
+### ADR-026: The text pairing audits the ink a component actually renders; a mode only remaps
+
+Status: accepted (2026-08-04)
+Tags: colors, contrast, validation, modes, F-043, companion:ADR-024
+
+Two decisions, found as one defect (F-043: an open menu's `secondary` trigger
+rendering its label at 1.45:1 in dark for as long as the menu stays open).
+
+**First: the text pairing pairs the effective ink.** `colors.md` pairing #1
+already defined "corresponding" as _where the part renders, not who owns the
+token_ — and the component contract renders an ink for **every** background
+state, because call sites fall back (`resolveInteractiveStyle(...) ??
+text.default`; the selection mark resolves `indeterminate → checked →
+default`). The extractor paired same-state declarations only and skipped when
+the ink side was absent, so it audited a pair nobody renders and skipped the
+pair everyone does — the exact mirror of the deletion trap the fsl-ui CLAUDE.md
+names, and ADR-024's border finding one dimension over. The extractor now walks
+every declared `background.<state>` and pairs the declared state's ink or its
+documented fallback chain. 192 previously unaudited pairs entered the suite;
+seven failed, in three classes:
+
+- `input.{negative,positive,muted}.text.indeterminate` (both modes): the mark's
+  chain passes through `checked`, whose `neutral.0` belongs to the _filled_
+  checked box — on the light indeterminate fill it lands at 1.4–1.9:1. Each
+  role now declares the indeterminate ink in base (the valence's own dark
+  step, hue kept), which both modes inherit.
+- `action.secondary.text.active` (dark): the alternate inverts the engaged
+  fill to light and had inverted the ink for `pressed` but not `active`.
+- `informational.{valence}.background.selected` (dark): the alternate remaps
+  the valence _text_ to light inks while `background.selected` inherited the
+  base's light tint — ink and fill met at 1.0:1. The alternate now maps
+  selected to the monochrome step the neutral roles already use, with the
+  edge lightening to `.300` (the same move this alternate makes on negative's
+  active/focused and accent's hover).
+
+**Second: a mode only remaps.** The first fix for `text.active` was declared
+in the dark alternate alone — and the suite went green while the screen did
+not change, because `vars` mirrors the **base** shape: an alt-only leaf emits
+a CSS custom property no component can reference. `model.md` § Modes already
+states it ("semantic token names do not change; references may point to
+different core tokens"); it is now enforced — `global.test.ts` fails any
+bundle whose alternate declares a path the base does not, and the scan that
+motivated it found exactly one violation in the whole theme: the fix itself.
+`action.secondary.text.active` is therefore declared in base (`neutral.1000` —
+the fill darkens a step on the press and the ink firms with it, and Warning #1
+requires it to differ from `default`) and remapped in dark.
+
+Verified: two seeded mutations (a removed indeterminate ink; the removed
+`active` ink) each fail the suite in every affected bundle and mode; the
+structural guard fails on the alt-only shape it was written for; and the open
+menu's trigger label reads `rgb(22,22,22)` on `rgb(208,208,208)` in dark in
+Chromium, where it read `rgb(248,248,248)` before.
+
+Rejected: a lower floor for glyph-carried states (`checked`/`indeterminate`
+render the selection mark, arguably non-text at 3:1) — the registry defines
+the `text` dimension as "readable foreground, labels, and **text-like
+icons**", pairing #1 exempts only `*.muted.*`, and a selected row _does_ put
+running text on `background.checked`, so the stricter floor governs; reader-
+aware pairing (skip combinations no component renders today) — the suite has
+always audited the declared grammar, and a pair that fails only until someone
+reads it is a landmine, not a saving.
+
+Anchors: `colors.test.ts` (`extractTextBackgroundPairs`), `global.test.ts`
+("the alternate only remaps"), `src/baseTheme.ts` (the seven values),
+colors.md § Validation (the effective-pair bullet and the new mode error),
+`docs/fsl-studio/FRICTION.md` F-043.
+
+Re-litigation answers:
+
+- "Why does `text.active` exist in base if light never needed it?" → because
+  the leaf must exist for any mode to remap it — that is what "modes remap"
+  means, and the guard now enforces it. Light gains a one-step firmer press
+  ink it never had a complaint about; dark gains the legible label it owed.
+- "Should the indeterminate mark really meet 4.5:1?" → the dimension's own
+  definition folds text-like icons into `text`, and the fix costs one dark
+  step per valence. If a future case genuinely needs the non-text floor, that
+  is a registry discussion about a `glyph` dimension, not a threshold carve-out
+  in the guard.

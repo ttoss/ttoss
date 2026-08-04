@@ -9,6 +9,7 @@ import {
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { PANEL_WIDTH, type PanelWidth } from '../../tokens/panelWidth';
+import { voicedSurface } from '../../tokens/surfaceScope';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -167,12 +168,14 @@ const panelMotion = ({
 /** The panel itself — full-bleed on its cross axis, sized on its main axis. */
 const buildSurfaceStyle = ({
   colors,
+  evaluation,
   placement,
   width,
   isEntering,
   isExiting,
 }: {
   colors: InformationalColors;
+  evaluation: EvaluationsFor<'Overlay'>;
   placement: DrawerPlacement;
   width: PanelWidth;
   isEntering?: boolean;
@@ -182,7 +185,9 @@ const buildSurfaceStyle = ({
     ...panelBox({ placement, width }),
     ...cornerRadii(placement),
     ...panelMotion({ isEntering, isExiting, placement }),
-    backgroundColor: colors?.background?.default,
+    // A hosting surface publishes itself (CONTRACT §3.4); only the
+    // page-like primary voice does — a voiced surface keeps its voice.
+    ...voicedSurface({ evaluation, color: colors?.background?.default }),
     borderColor: colors?.border?.default,
     borderStyle: vars.border.outline.surface.style,
     borderWidth: vars.border.outline.surface.width,
@@ -282,6 +287,7 @@ export const Drawer = ({
         style={({ isEntering, isExiting }) => {
           return buildSurfaceStyle({
             colors,
+            evaluation,
             isEntering,
             isExiting,
             placement,

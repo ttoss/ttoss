@@ -224,7 +224,7 @@ describe('Button — the quiet destructive posture (CONTRACT §3.3)', () => {
 
     expect(root.style.color).toBe(vars.consequence.destructive.ink);
     expect(root.style.backgroundColor).toBe(
-      vars.colors.action.muted!.background!.default
+      `var(--fsl-surface, ${vars.colors.action.muted!.background!.default})`
     );
   });
 

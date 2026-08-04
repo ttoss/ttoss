@@ -388,8 +388,21 @@ const parseSemanticColorKey = (
 };
 
 /**
- * Text/background pairs: for each ux.role.state where both background and
- * text tokens resolve to hex values.
+ * Text/background pairs: for each `background.<state>`, the ink a component
+ * **actually renders** on it.
+ *
+ * Pairing #1 defines "corresponding" as *where the part renders, not who owns
+ * the token* — and a state that declares a background without an ink still
+ * renders one, because the component contract falls back (fsl-ui CONTRACT
+ * §3.1: `resolveInteractiveStyle(...) ?? text.default`; the selection mark
+ * resolves `indeterminate → checked → default`). The previous extractor
+ * paired only same-state declarations and skipped when the ink side was
+ * absent, so the pair every component renders went unaudited while a pair
+ * nobody renders was verified — F-043's mechanism, and the mirror image of
+ * the trap the fsl-ui CLAUDE.md already names for deletions. This is how the
+ * dark alternate shipped `action.secondary.background.active` at 1.45:1
+ * against the ink that really lands on it, visible for as long as a menu
+ * stays open.
  */
 const extractTextBackgroundPairs = (
   tokens: Record<string, string | number>
@@ -397,6 +410,10 @@ const extractTextBackgroundPairs = (
   const pairs: Array<{ bgPath: string; textPath: string; context: string }> =
     [];
   const prefix = 'semantic.colors.';
+
+  const hexAt = (path: string): boolean => {
+    return path in tokens && isHexColor(tokens[path]!);
+  };
 
   for (const bgPath of Object.keys(tokens)) {
     if (!bgPath.startsWith(prefix) || !bgPath.includes('.background.')) {
@@ -408,8 +425,21 @@ const extractTextBackgroundPairs = (
     if (!parsed) continue;
     const { ux, role, state } = parsed;
 
-    const textPath = `${prefix}${ux}.${role}.text.${state}`;
-    if (!(textPath in tokens) || !isHexColor(tokens[textPath]!)) continue;
+    const textBase = `${prefix}${ux}.${role}.text`;
+    // The effective ink: the declared state, then the renderer's documented
+    // fallback chain. `indeterminate` passes through `checked` because the
+    // only thing that renders on that fill is the selection mark, and that is
+    // the chain it resolves (Checkbox's indicator).
+    const chain =
+      state === 'indeterminate'
+        ? [
+            `${textBase}.indeterminate`,
+            `${textBase}.checked`,
+            `${textBase}.default`,
+          ]
+        : [`${textBase}.${state}`, `${textBase}.default`];
+    const textPath = chain.find(hexAt);
+    if (!textPath) continue;
 
     pairs.push({ bgPath, textPath, context: `${ux}.${role}.${state}` });
   }
@@ -706,6 +736,12 @@ const CROSS_ROLE_TEXT_PAIRINGS: ReadonlyArray<{
       ...INFORMATIONAL_STRATA,
       'semantic.colors.action.muted.background.default',
       'semantic.colors.action.muted.background.hover',
+      // The surface contract (§3.4) lets a quiet destructive part rest on any
+      // published surface, so the row family's *resting* fill joins the strata
+      // — a destructive row action sits on exactly this. Hosts publish resting
+      // fills only: the dark row hover fill measures 2.65:1 against this ink,
+      // which is why transient host states do not republish.
+      'semantic.colors.input.primary.background.default',
       // NOT `.active` / `.expanded`. Those are the engaged fills, where the
       // theme lifts the quiet rung's *own* ink to stay legible and a fixed
       // valence ink cannot follow: in this file's dark alternate the engaged
@@ -718,6 +754,29 @@ const CROSS_ROLE_TEXT_PAIRINGS: ReadonlyArray<{
     ],
     // A label renders at body size — no large-text allowance.
     threshold: WCAG.AA_NORMAL,
+  },
+  {
+    // fsl-ui F-024 / CONTRACT §3.4. The quiet rung's resting fill follows the
+    // surface its host *published* (`--fsl-surface`), so its resting ink can
+    // land on any published surface rather than only the rung's own token.
+    // The list below is the publishable set: the informational strata (the
+    // page-voiced panels, popovers, dialogs and painted Boxes, plus Surface's
+    // tonal lifts) and the resting fill of the row family and the field
+    // frame — hosts publish resting fills only; transient states do not
+    // republish (the dark row hover fails the destructive ink's floor). Three exclusions are the design, not gaps: selection
+    // fills (the dark selected row inverts to near-white — 1.5:1 against
+    // this ink), Feedback fills, and *voiced* informational fills (a muted
+    // Menu's dark fill fails the destructive ink's floor) — voices are not
+    // strata, and fsl-ui does not publish them (surfaceScope.ts).
+    part: 'quiet control on published surfaces',
+    ink: 'semantic.colors.action.muted.text.default',
+    surfaces: [
+      ...INFORMATIONAL_STRATA,
+      'semantic.colors.input.primary.background.default',
+    ],
+    // The quiet rung is the one context pairing #1 holds to the large-text
+    // floor — intentionally subdued ink.
+    threshold: WCAG.AA_LARGE,
   },
 ];
 

@@ -16,6 +16,7 @@ import {
   SELECTION_BOX_BASE,
   SELECTION_CONTROL,
 } from '../../tokens/selectionControl';
+import { publishSurface } from '../../tokens/surfaceScope';
 import { Icon } from '../Icon';
 
 // ---------------------------------------------------------------------------
@@ -76,6 +77,10 @@ const buildRowStyle = ({
     transitionProperty: 'background-color, color',
     transitionDuration: vars.motion.feedback.duration,
     transitionTimingFunction: vars.motion.feedback.easing,
+    // The row paints its resolved fill and publishes its *resting* one —
+    // transient states and the selection voice do not republish (§3.4, see
+    // Table's row). Spread order: the dynamic paint wins.
+    ...publishSurface(c?.background?.default),
     backgroundColor: resolveInteractiveStyle(c?.background, {
       isDisabled,
       isSelected,
@@ -204,7 +209,8 @@ export const GridList = <T extends object = object>({
         borderWidth: vars.border.outline.surface.width,
         borderStyle: vars.border.outline.surface.style,
         borderColor: surface?.border?.default ?? 'transparent',
-        backgroundColor: surface?.background?.default,
+        // A hosting surface publishes itself (CONTRACT §3.4).
+        ...publishSurface(surface?.background?.default),
       }}
     >
       {children}

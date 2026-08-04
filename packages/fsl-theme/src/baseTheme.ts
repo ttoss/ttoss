@@ -510,7 +510,16 @@ export const baseTheme: ThemeTokens = {
             disabled: '{core.colors.neutral.500}',
             // The engaged fill is dark — its label inverts with it.
             pressed: '{core.colors.neutral.0}',
-            // hover/active/focused: all neutral.900 — omitted
+            // Declared in base so the leaf exists for the dark alternate to
+            // remap — `vars` mirrors the base shape, so a mode may only remap
+            // states, never add them (model.md § Modes; the structural guard
+            // in global.test.ts holds this). Here the fill darkens a step on
+            // the press and the ink firms with it; in dark the fill inverts
+            // to light and this leaf takes the dark ink that keeps the label
+            // legible for as long as an anchored overlay holds the press
+            // (F-043's 1.45:1).
+            active: '{core.colors.neutral.1000}',
+            // hover/focused: neutral.900 — omitted
           },
         },
         accent: {
@@ -711,6 +720,11 @@ export const baseTheme: ThemeTokens = {
             default: '{core.colors.red.700}',
             disabled: '{core.colors.neutral.500}',
             checked: '{core.colors.neutral.0}',
+            // The mark resolves indeterminate → checked → default, and
+            // `checked`'s neutral.0 belongs to the *filled* red.700 box — on
+            // the light red.300 indeterminate fill it lands at 1.9:1. The
+            // valence's own dark step keeps the hue and clears AA (F-043).
+            indeterminate: '{core.colors.red.900}',
           },
         },
         positive: {
@@ -734,6 +748,9 @@ export const baseTheme: ThemeTokens = {
             default: '{core.colors.green.700}',
             disabled: '{core.colors.neutral.500}',
             checked: '{core.colors.neutral.0}',
+            // Same shape as negative: checked's neutral.0 is the filled box's
+            // ink; the light green.300 indeterminate fill needs the dark step.
+            indeterminate: '{core.colors.green.900}',
           },
         },
         caution: {
@@ -783,6 +800,9 @@ export const baseTheme: ThemeTokens = {
             default: '{core.colors.neutral.700}',
             disabled: '{core.colors.neutral.500}',
             checked: '{core.colors.neutral.0}',
+            // checked's neutral.0 sits on the neutral.500 filled box; the
+            // indeterminate fill is neutral.300, where it lands at 1.5:1.
+            indeterminate: '{core.colors.neutral.900}',
           },
         },
       },
@@ -1672,6 +1692,12 @@ export const darkAlternate: ModeOverride = {
           text: {
             default: '{core.colors.neutral.50}',
             disabled: '{core.colors.neutral.500}',
+            // The engaged fills invert to light (neutral.300 above), so the
+            // ink inverts with them — `pressed` (the held toggle) always had
+            // this; `active` (the momentary press, held for as long as an
+            // anchored overlay stays open) was missed, leaving the resting
+            // near-white ink on the light fill at 1.45:1 (F-043).
+            active: '{core.colors.neutral.900}',
             pressed: '{core.colors.neutral.900}',
           },
         },
@@ -1934,22 +1960,42 @@ export const darkAlternate: ModeOverride = {
           background: {
             default: '{core.colors.neutral.900}',
             disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+            // The base's selected tint is the light green.300, which is also
+            // where this role's *ink* remaps on dark — inherited, the pair
+            // closes to 1:1 (F-043). The monochrome selected step the neutral
+            // roles already use keeps the light valence ink legible on it.
+            selected: '{core.colors.neutral.700}',
           },
-          border: { default: '{core.colors.green.500}' },
+          border: {
+            default: '{core.colors.green.500}',
+            // The inherited green.700 edge sinks against the neutral.700
+            // selected fill. Engaging lightens the edge on dark — the same
+            // move this alternate makes on negative's active/focused and on
+            // accent's hover — and .300 also keeps it distinct from the
+            // resting .500.
+            selected: '{core.colors.green.300}',
+          },
           text: { default: '{core.colors.green.300}' },
         },
         caution: {
           background: {
             default: '{core.colors.neutral.900}',
             disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+            // Same remap as positive — see the comment there.
+            selected: '{core.colors.neutral.700}',
           },
-          border: { default: '{core.colors.yellow.500}' },
+          border: {
+            default: '{core.colors.yellow.500}',
+            selected: '{core.colors.yellow.300}',
+          },
           text: { default: '{core.colors.yellow.300}' },
         },
         negative: {
           background: {
             default: '{core.colors.neutral.900}',
             disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+            // Same remap as positive — see the comment there.
+            selected: '{core.colors.neutral.700}',
           },
           border: {
             default: '{core.colors.red.500}',
@@ -1958,6 +2004,7 @@ export const darkAlternate: ModeOverride = {
             // dark canvas, so it lightens instead.
             active: '{core.colors.red.300}',
             focused: '{core.colors.red.300}',
+            selected: '{core.colors.red.300}',
           },
           text: { default: '{core.colors.red.300}' },
         },

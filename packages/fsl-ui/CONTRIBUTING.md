@@ -921,3 +921,96 @@ Re-litigation answers:
 - "Why keep the helper if the token is now lawful to read?" → the ring is
   unconditional; this ink is not. The helper owns the rung and the yield set,
   and §4c fails any component that reads the token directly.
+
+### ADR-030: The surface contract — hosts publish what they paint; the quiet rung follows at rest
+
+Status: accepted (2026-08-04)
+Tags: colors, surfaces, F-024, CONTRACT §3.4, closes:F-024
+
+Decision: the element that paints a **hosting surface** publishes it on
+`--fsl-surface` (`publishSurface(fill)` — the fill plus its publication), and
+the quiet rung's resting `background`/`border` read
+`var(--fsl-surface, <own token>)` (`resolveSurfaceBoundStyle`). Outside a
+publisher nothing changes — the fallback is the exact value the rung painted
+before. Inside one, the control borrows the real composite the cascade
+produced, which is always one of the opaque values fsl-theme audits.
+
+The owner ruling (2026-07-29) is kept whole, not relaxed: a component always
+paints; no `transparent`; no omitted background; every declared token stays an
+auditable hex; the theme's own `muted.text ↔ background` pairs stay in the
+suite untouched. What the ruling called the lawful fix — "a stratum-aware
+opaque value" — turned out to be impossible to mint **in the theme**, by the
+theme's own doctrine: `colors.md` § Stacking pays depth in `elevation.tonal.*`
+over one shared background token, so the effective surface is a composite "no
+colour token names or can name" (F-024's 2026-07-29 analysis). And the
+consumer that finally fired shows the class is wider than tonal strata anyway:
+the Studio's table row paints `input.primary` — another family's fill — under
+the quiet `Remove`. Only the painter knows the surface. So the stratum-aware
+value lives where the knowledge lives: published by the painter, consumed by
+the rung, opaque end to end.
+
+Bounds, each load-bearing:
+
+- **Resting state only.** Engaged fills are how a quiet control materialises;
+  they stay absolute.
+- **The muted rung only.** Every other rung's fill is its voice.
+- **A publisher's transient states do not republish.** The first draft had
+  rows publish whatever fill the render resolved — elegant, and the inventory
+  killed it: the dark row hover fill measures 2.65:1 against the destructive
+  ink. A row paints its resolved fill and publishes its resting one (spread
+  order does the work).
+- **Selection fills never publish.** A selected row inverts to near-white in
+  dark, where the muted ink measures 1.5–1.8:1 — seeded into the inventory as
+  a mutation and caught. A quiet control on a selected row keeps its own
+  legible pill (today's rendering).
+- **Voiced fills never publish.** A toast's red, and a Menu's or Box's
+  non-primary informational fill, are voices — the dark muted fill fails the
+  destructive ink's floor. Only the page-like `primary` voice and Surface's
+  tonal strata publish.
+
+`--fsl-surface` deliberately sits in the §7 host-facing namespace: a host
+application that paints its own panel publishes the same property and every
+quiet control inside follows, with no fsl-ui change.
+
+Guards: fsl-theme's cross-role inventory gains `quiet control on published
+surfaces` — the quiet ink against every publishable surface (the
+informational strata and the row family's resting fill), at the rung's own
+floor, per bundle and per mode — and the destructive-ink entry gains the row
+surface for the same reason.
+fsl-ui's `surfaceScope` suite pins both halves: publishers publish what they
+painted, consumers read the var at rest and their own fills everywhere else.
+
+Rejected: minting the value in the theme (cannot be expressed — see above);
+`transparent` or omission (the ruling, twice over); publishing from Feedback
+fills and selection fills (measured illegible — the exclusions are the design);
+re-scoping the `--tt-colors-action-muted-*` theme variables per subtree (a
+component doing the theme's job, N variables where one property suffices, and
+`--tt-` fallbacks are forbidden by contract test); extending the ink to follow
+the surface as well (an ink needs a _pairing_, not a variable — the inventory
+is what makes the fill-follow lawful, and no equivalent exists for arbitrary
+host inks).
+
+Cost: `Surface` and painted `Box` now emit `backgroundColor` + the property
+where they emitted a `background` shorthand — behaviour-identical, assert-
+visible. The publisher list is a convention future surface components must
+join (CONTRACT §3.4 states it; the surfaceScope suite holds the ones that
+exist). The known limit stays known: on a mid-tone host surface the rung's
+absolute hover fill can coincide with the host (dark row hover), where hover
+feedback is carried by the cursor and the press step — unchanged from before.
+
+Anchors: `src/tokens/surfaceScope.ts`, CONTRACT §3.4,
+`tests/unit/tests/surfaceScope.test.tsx`, fsl-theme `colors.test.ts`
+(`quiet control on published surfaces`), `docs/fsl-studio/FRICTION.md` F-024.
+
+Re-litigation answers:
+
+- "Why does the quiet control still show a pill on a selected row?" → because
+  the alternative is worse and measured: the selection fill inverts, the muted
+  ink fails against it, and an illegible control is a worse outcome than a
+  visible chip. The selection fill is a voice.
+- "Can a host make its own panel behave like a stratum?" → yes — publish
+  `--fsl-surface: <your fill>` on the panel. That is why the property lives in
+  the host-facing namespace.
+- "Why not follow the surface on hover too?" → the hover fill is the rung
+  _materialising_ — the affordance itself. Following the surface there would
+  make a quiet control permanently invisible.

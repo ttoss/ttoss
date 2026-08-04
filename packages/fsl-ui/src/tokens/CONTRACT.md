@@ -368,6 +368,56 @@ component that emits `data-consequence` and paints from `vars.colors.action`
 reads `vars.consequence` or another family's negative ink directly —
 `components.contract.test.tsx` fails otherwise.
 
+### §3.4 — The surface contract: hosts publish, the quiet rung follows
+
+> **The element that paints a hosting surface publishes it; the quiet rung's
+> resting fill and edge read the published surface, with their own tokens as
+> the fallback.**
+
+`colors.md` § Stacking informational surfaces makes the effective colour under
+a control a **composite no colour token can name** — the page and every
+contained surface share one background token, and depth is paid in
+`elevation.tonal.*` or in another family's fill (a table row paints
+`input.primary`). Only the element that painted the surface knows the result.
+The quiet rung (`muted`) paints "the surface's own colour" as an opaque token —
+byte-identical to the page and to every overlay, and wrong on every other
+surface: measured in the Studio, dark, a quiet row action painted `#161616` on
+a `#3d3d3d` table row — a black pill in every row (F-024).
+
+The owner ruling stands unchanged: **a component always paints** — no
+`transparent`, no omitted background, and the theme's own `muted.text ↔
+background` pairs stay in the suite. What moves is where the surface is known.
+Implemented once, in `tokens/surfaceScope.ts`:
+
+|                |                                                                                                      |
+| -------------- | ---------------------------------------------------------------------------------------------------- |
+| **Publishers** | parts hosting arbitrary content spread `publishSurface(restingFill)` — the fill plus `--fsl-surface` |
+| **Consumers**  | quiet-capable Action call sites resolve `background`/`border` via `resolveSurfaceBoundStyle`         |
+| **Reads as**   | `var(--fsl-surface, <the rung's own token>)` — outside a publisher, nothing changes                  |
+| **Bounds**     | resting state only, on both sides; the muted rung only; voiced fills never publish                   |
+
+The bounds are each load-bearing, and each is measured rather than stylistic.
+The consumer's **engaged fills** (`hover`/`active`/`pressed`/`expanded`) stay
+absolute — they are how a quiet control materialises. The publisher's
+**transient states do not republish** — a row paints its hover fill but keeps
+publishing its resting one, because the dark row hover measures 2.65:1
+against the destructive ink. The **selection fill is a voice, not a
+stratum** — in dark it inverts to near-white, 1.5:1 against the muted ink.
+**Feedback fills and non-primary informational fills are voices too**: a
+toast's red and a muted Menu's grey are not strata the quiet inks are audited
+against, so only the page-like `primary` voice (and Surface's tonal strata)
+publishes.
+
+`--fsl-surface` lives in the §7 host-facing namespace on purpose: a **host
+application** that paints its own surface can publish the same property and
+every quiet control inside it follows, with zero fsl-ui changes.
+
+Legibility is guarded where the values live: fsl-theme's cross-role inventory
+(`colors.test.ts` → `quiet control on published surfaces`) pairs the quiet ink
+against every publishable surface, at the rung's own floor, in every bundle
+and both modes — and the excluded selection fill is excluded _because it fails
+there_, which the entry states.
+
 ---
 
 ## §4 — Standard Step Rule

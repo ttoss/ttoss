@@ -12,6 +12,7 @@ import {
 import { type FslKnob, fslVar, upstreamVar } from '../../tokens/escapeHatch';
 import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import { publishSurface } from '../../tokens/surfaceScope';
 
 // ---------------------------------------------------------------------------
 // Shared anatomy of a field.
@@ -785,7 +786,9 @@ const pickerPopoverChrome = (colors: InputColors): React.CSSProperties => {
     borderWidth: vars.border.outline.control.width,
     borderStyle: vars.border.outline.control.style,
     borderColor: colors?.border?.default,
-    backgroundColor: colors?.background?.default,
+    // The field frame is a hosting surface — embedded triggers and host
+    // adornments sit on it (CONTRACT §3.4).
+    ...publishSurface(colors?.background?.default),
     overflow: 'hidden',
   };
 };

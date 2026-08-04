@@ -22,6 +22,10 @@ import { resolveConsequenceInk } from '../../tokens/consequenceInk';
 import { fslVar } from '../../tokens/escapeHatch';
 import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import {
+  resolveSurfaceBoundStyle,
+  voicedSurface,
+} from '../../tokens/surfaceScope';
 import { createPresenceScope } from '../scope';
 
 // Layout constants (CONTRIBUTING §4 layout-literal rule) — popover surface
@@ -177,7 +181,12 @@ export const Menu = <T extends object>({
             borderWidth: vars.border.outline.surface.width,
             borderStyle: vars.border.outline.surface.style,
             borderColor: colors?.border?.default,
-            backgroundColor: colors?.background?.default,
+            // A hosting surface publishes itself (CONTRACT §3.4); only the
+            // page-like primary voice does — a voiced surface keeps its voice.
+            ...voicedSurface({
+              evaluation,
+              color: colors?.background?.default,
+            }),
             color: colors?.text?.default,
             boxShadow: vars.elevation.surface.overlay,
             outline: 'none',
@@ -325,7 +334,14 @@ export const MenuItem = ({
           transitionDuration: vars.motion.feedback.duration,
           transitionTimingFunction: vars.motion.feedback.easing,
           transitionProperty: 'background-color, color',
-          backgroundColor: resolveInteractiveStyle(colors?.background, flags),
+          // The quiet row's resting fill follows the published surface
+          // (§3.4) — inside this Menu's own popover that is the identical
+          // value, so the read matters when a host portals rows elsewhere.
+          backgroundColor: resolveSurfaceBoundStyle({
+            evaluation,
+            states: colors?.background,
+            flags,
+          }),
           color: resolveConsequenceInk({
             consequence,
             evaluation,

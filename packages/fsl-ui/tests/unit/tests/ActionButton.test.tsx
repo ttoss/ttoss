@@ -74,8 +74,10 @@ describe('ActionButton — the quiet destructive posture (CONTRACT §3.3)', () =
     const { style } = getRoot();
 
     expect(style.color).toBe(vars.consequence.destructive.ink);
+    // The quiet resting fill follows the published surface, with the rung's
+    // own token as the fallback (CONTRACT §3.4).
     expect(style.backgroundColor).toBe(
-      vars.colors.action.muted!.background!.default
+      `var(--fsl-surface, ${vars.colors.action.muted!.background!.default})`
     );
   });
 

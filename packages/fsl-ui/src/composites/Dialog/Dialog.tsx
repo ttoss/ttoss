@@ -13,6 +13,7 @@ import {
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { fslVar } from '../../tokens/escapeHatch';
+import { voicedSurface } from '../../tokens/surfaceScope';
 import { createPresenceScope } from '../scope';
 
 // ---------------------------------------------------------------------------
@@ -213,10 +214,12 @@ const buildBackdropStyle = ({
 /** Modal surface style — the blocking card; scales + fades on enter/exit. */
 const buildModalSurfaceStyle = ({
   colors,
+  evaluation,
   isEntering,
   isExiting,
 }: {
   colors: InformationalColors;
+  evaluation: EvaluationsFor<'Overlay'>;
   isEntering?: boolean;
   isExiting?: boolean;
 }): React.CSSProperties => {
@@ -233,7 +236,9 @@ const buildModalSurfaceStyle = ({
     borderStyle: vars.border.outline.surface.style,
     borderColor: colors?.border?.default,
     boxShadow: vars.elevation.surface.overlay,
-    backgroundColor: colors?.background?.default,
+    // A hosting surface publishes itself (CONTRACT §3.4); only the
+    // page-like primary voice does — a voiced surface keeps its voice.
+    ...voicedSurface({ evaluation, color: colors?.background?.default }),
     outline: 'none',
     transition: phase
       ? `transform ${phase.duration} ${phase.easing}, opacity ${phase.duration} ${phase.easing}`
@@ -297,7 +302,12 @@ export const DialogModal = ({
         data-part="surface"
         data-evaluation={evaluation}
         style={({ isEntering, isExiting }) => {
-          return buildModalSurfaceStyle({ colors, isEntering, isExiting });
+          return buildModalSurfaceStyle({
+            colors,
+            evaluation,
+            isEntering,
+            isExiting,
+          });
         }}
       >
         {children}

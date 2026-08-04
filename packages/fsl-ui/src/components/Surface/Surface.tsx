@@ -2,6 +2,7 @@ import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
+import { publishSurface } from '../../tokens/surfaceScope';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -132,7 +133,9 @@ export const Surface = ({
           boxSizing: 'border-box',
           padding: PADDING_BY_KEY[padding],
           color: SURFACE_TEXT,
-          background: backgroundFor(level),
+          // A hosting surface publishes itself (CONTRACT §3.4) — this is
+          // the stratum F-024 was filed about.
+          ...publishSurface(backgroundFor(level)),
           boxShadow: vars.elevation.surface[level],
           borderRadius: vars.radii.surface,
           borderWidth: vars.border.outline.surface.width,

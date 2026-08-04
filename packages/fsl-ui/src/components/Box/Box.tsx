@@ -2,6 +2,7 @@ import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
 
 import type { ComponentMeta } from '../../semantics';
+import { publishSurface } from '../../tokens/surfaceScope';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -54,6 +55,17 @@ const BACKGROUND: Record<BoxBackground, string | undefined> = {
   none: 'transparent',
   primary: vars.colors.informational.primary.background?.default,
   muted: vars.colors.informational.muted.background?.default,
+};
+
+/**
+ * `none` stays a plain transparent layout box. A painted Box is a hosting
+ * surface and publishes itself (CONTRACT §3.4) — but only the page-like
+ * primary voice: `muted` is a voiced fill, and the inventory shows the
+ * destructive ink failing against it in dark.
+ */
+const boxBackgroundStyle = (background: BoxBackground): React.CSSProperties => {
+  if (background === 'primary') return publishSurface(BACKGROUND[background]);
+  return { background: BACKGROUND[background] };
 };
 
 const RADIUS: Record<BoxRadius, string> = {
@@ -204,7 +216,7 @@ export const Box = ({
           boxSizing: 'border-box',
           paddingBlock: PADDING[paddingBlock ?? padding],
           paddingInline: PADDING[paddingInline ?? padding],
-          background: BACKGROUND[background],
+          ...boxBackgroundStyle(background),
           borderRadius: RADIUS[radius],
           ...borderStyleFor(border),
           width: WIDTH[width],

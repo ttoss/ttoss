@@ -163,8 +163,10 @@ describe('ActionMenu — behaviour', () => {
     // after the P3 retune painted every row as a solid chip — a menu that read
     // as a stack of buttons.
     expect(row).toHaveAttribute('data-evaluation', 'muted');
+    // At rest the row reads the published surface — its own popover, whose
+    // fill is also the fallback (CONTRACT §3.4).
     expect(row.style.backgroundColor).toBe(
-      vars.colors.action.muted?.background?.default
+      `var(--fsl-surface, ${vars.colors.action.muted?.background?.default})`
     );
   });
 

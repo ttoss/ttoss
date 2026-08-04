@@ -13,6 +13,7 @@ import type {
 } from '../../semantics';
 import { resolveConsequenceInk } from '../../tokens/consequenceInk';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import { resolveSurfaceBoundStyle } from '../../tokens/surfaceScope';
 import {
   type ActionIconPlacement,
   type ActionLabellingProps,
@@ -175,10 +176,17 @@ export const Button = ({
           isFocusVisible,
           isGrouped,
           colors: {
-            background: resolveInteractiveStyle(colors?.background, flags),
-            border: resolveInteractiveStyle(colors?.border, {
-              isDisabled,
-              isFocusVisible,
+            // The quiet rung's resting fill and edge follow the published
+            // surface (CONTRACT §3.4); every other read is the plain cascade.
+            background: resolveSurfaceBoundStyle({
+              evaluation,
+              states: colors?.background,
+              flags,
+            }),
+            border: resolveSurfaceBoundStyle({
+              evaluation,
+              states: colors?.border,
+              flags: { isDisabled, isFocusVisible },
             }),
             text: resolveConsequenceInk({
               consequence,

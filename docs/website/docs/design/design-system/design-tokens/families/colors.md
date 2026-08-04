@@ -488,6 +488,7 @@ Themes tune **core palette values**, **which core tokens semantic tokens referen
 - a semantic color token uses a state outside the allowed state restrictions for that contract
 - any required semantic pairing fails the contrast targets defined below
 - any supported mode fails the same required pairings for the same semantic contract — an alternate mode remaps references by hand, so it is where a role's `background` subtree can move while its `border` subtree stays behind
+- an alternate mode declares a semantic path the base does not — a mode remaps references ([model.md § Modes](../model.md#modes)), it never adds a leaf, because component bindings mirror the base shape and an alt-only leaf is unreachable: its value ships and nothing can read it
 
 ### Warning (validation should warn when)
 
@@ -513,6 +514,12 @@ Validation must check at least these pairings:
      the page and every contained surface share one background token and differ by
      `elevation.tonal.*` ([Stacking informational surfaces](#stacking-informational-surfaces)),
      "the surface it lands on" is every stratum, not one value.
+   - **A `background` state with no ink of its own still renders one.** The
+     component contract falls back to `text.default` (the selection mark resolves
+     `indeterminate → checked → default`), so validation pairs the **effective**
+     ink against every declared background state — never only the same-state
+     declarations. A same-state-only check audits a pair nobody renders and skips
+     the pair everyone does.
 
 2. **Border / non-text pairing**
    - `*.border.*` against the adjacent background it sits on

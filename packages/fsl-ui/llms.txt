@@ -35,6 +35,15 @@ are undefined and components render unstyled.
   Input/Selection components have NO evaluation prop (data entry carries no
   authorial voice); validation is the runtime `invalid` STATE (`isInvalid`),
   never `evaluation="negative"`.
+  The muted rung at REST follows the surface it sits on (CONTRACT §3.4):
+  hosting surfaces (Surface, painted Box, rows, panels, popovers, the field
+  frame) publish their fill on --fsl-surface, and a quiet Action reads
+  var(--fsl-surface, <its own token>) — so a quiet control matches a raised
+  card or a table row instead of painting a page-coloured pill. Host apps can
+  publish --fsl-surface on their own panels to get the same behaviour.
+  Voiced fills never publish (selection fills, Feedback fills, non-primary
+  informational fills) — they are voices, not strata — and hosts publish
+  their RESTING fill only (transient host states do not republish).
 - consequence (prop) — effect on state: 'neutral' | 'committing' |
   'destructive'. Drives MECHANISM (e.g. ConfirmationDialog two-click arming).
   Carries COLOR in exactly one case (CONTRACT §3.3): on the quiet rung
