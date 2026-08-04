@@ -382,6 +382,72 @@ export const LayerListVariant: Story = {
 };
 
 /**
+ * Drives the layer-control-clearance variant: builds a spec that carries the
+ * map's own `control` (the layer-toggle button anchored bottom-left) alongside
+ * a togglable outline layer, and starts with the left sidebar open so the
+ * shift is visible immediately.
+ */
+const LayerControlClearsSidebarStory = () => {
+  const [selection, setSelection] = React.useState(() => {
+    return getInitialSelection({ config: workspaceConfig });
+  });
+
+  const visualizationSpec = React.useMemo<VisualizationSpec>(() => {
+    const spec = buildSpec({
+      variable: selection.variable ?? 'cumulative-rate',
+      age: selection.age ?? '65-plus',
+    });
+
+    const outlineLayer: VisualizationSpec['layers'][number] = {
+      id: 'regions-outline',
+      sourceId: 'regions',
+      geometry: 'polygon',
+      paint: { fillOpacity: 0, lineColor: '#111827', lineWidth: 2 },
+    };
+
+    return {
+      ...spec,
+      layers: [...spec.layers, outlineLayer],
+      // The map's own layer-toggle control, anchored to the same bottom-left
+      // corner the left sidebar opens over. `GeoVisProvider` auto-mounts it.
+      control: {
+        id: 'layers',
+        label: 'Camadas',
+        position: 'bottom-left',
+        trigger: 'click',
+        items: [
+          { id: 'fill', label: 'Preenchimento', layers: ['regions-fill'] },
+          { id: 'outline', label: 'Contorno', layers: ['regions-outline'] },
+        ],
+      },
+    };
+  }, [selection]);
+
+  return (
+    <GeovisWorkspace
+      config={{ ...workspaceConfig, leftSidebar: { initialState: 'open' } }}
+      visualizationSpec={visualizationSpec}
+      variables={selection}
+      onVariableChange={setSelection}
+    />
+  );
+};
+
+/**
+ * The map carries its own `control` — the layer-toggle button anchored to the
+ * bottom-left corner. The left sidebar opens over that same corner, so the
+ * workspace shifts the control clear of it while the sidebar is open: its
+ * `control.offset.x` grows to slide the button right along the bottom edge,
+ * and snaps back when the sidebar closes. The story starts with the sidebar
+ * open (button already clear); close and reopen the menu to watch it slide.
+ */
+export const LayerControlClearsSidebar: Story = {
+  render: () => {
+    return <LayerControlClearsSidebarStory />;
+  },
+};
+
+/**
  * The `metadata` slot's default panel needs no config at all: it reads
  * `spec.sources.length` straight off the live spec and shows a pluralized
  * source count, appearing automatically the moment the spec has at least one

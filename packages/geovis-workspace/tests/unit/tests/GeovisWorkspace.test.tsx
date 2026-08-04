@@ -1,3 +1,4 @@
+import { useGeoVis } from '@ttoss/geovis';
 import { I18nProvider } from '@ttoss/react-i18n';
 import { act, fireEvent, render, screen } from '@ttoss/test-utils/react';
 import type * as React from 'react';
@@ -9,6 +10,7 @@ import {
   LayerListControls,
   useGeovisWorkspace,
 } from 'src';
+import { LEFT_SIDEBAR_CONTROL_CLEARANCE } from 'src/controlOffset';
 
 interface MockClick {
   layerId: string;
@@ -234,6 +236,45 @@ test('closing the left sidebar brings the open button back', async () => {
   });
 
   expect(screen.getByRole('button', { name: 'Open menu' })).toBeInTheDocument();
+});
+
+test("shifts the map's layer control clear of the left sidebar while open", async () => {
+  // Reads the live spec fed to `GeoVisProvider` so the test observes the exact
+  // `control.offset` the workspace hands the map as the sidebar opens/closes.
+  const ControlOffsetProbe = () => {
+    const { spec } = useGeoVis();
+    return (
+      <div data-testid="control-offset">
+        {JSON.stringify(spec.control?.offset ?? null)}
+      </div>
+    );
+  };
+
+  render(
+    <GeovisWorkspace
+      config={{ slots: { controls: { component: ControlOffsetProbe } } }}
+      visualizationSpec={{
+        ...visualizationSpec,
+        control: { id: 'layers', position: 'bottom-left', items: [] },
+      }}
+    />,
+    { wrapper: Provider }
+  );
+
+  // Closed: the control keeps its own (unset) offset — the map is untouched.
+  expect(screen.getByTestId('control-offset')).toHaveTextContent('null');
+
+  await openLeftSidebar();
+
+  expect(screen.getByTestId('control-offset')).toHaveTextContent(
+    JSON.stringify({ x: LEFT_SIDEBAR_CONTROL_CLEARANCE })
+  );
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'Close menu' }));
+  });
+
+  expect(screen.getByTestId('control-offset')).toHaveTextContent('null');
 });
 
 test('left sidebar starts open when initialState is "open"', () => {
@@ -695,6 +736,38 @@ test('GeovisWorkspaceProvider exposes context to consumers', () => {
   );
 
   expect(screen.getByText('none')).toBeInTheDocument();
+});
+
+test('GeovisWorkspaceProvider manages left sidebar open state uncontrolled', async () => {
+  const Consumer = () => {
+    const { isLeftSidebarOpen, setLeftSidebarOpen } = useGeovisWorkspace();
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          return setLeftSidebarOpen({ open: !isLeftSidebarOpen });
+        }}
+      >
+        {isLeftSidebarOpen ? 'open' : 'closed'}
+      </button>
+    );
+  };
+
+  render(
+    <GeovisWorkspaceProvider config={config}>
+      <Consumer />
+    </GeovisWorkspaceProvider>,
+    { wrapper: Provider }
+  );
+
+  // No controlled prop → the provider seeds and flips its own internal state.
+  expect(screen.getByRole('button', { name: 'closed' })).toBeInTheDocument();
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'closed' }));
+  });
+
+  expect(screen.getByRole('button', { name: 'open' })).toBeInTheDocument();
 });
 
 test('warnings panel shows a resolved result warning with its i18n text and subject', async () => {

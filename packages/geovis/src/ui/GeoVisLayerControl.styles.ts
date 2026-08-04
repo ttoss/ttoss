@@ -32,18 +32,22 @@ const buildContainerStyle = (alignTop: boolean): React.CSSProperties => {
 
 /**
  * Absolute-positioning style for the whole control, anchored to the map corner
- * named by `position`. `offset` (when set) overrides the default edge gap.
+ * named by `position`. `offset` (when set) overrides the default edge gap — a
+ * number applies to both edges; `{ x, y }` offsets each axis independently
+ * (each falling back to {@link EDGE_GAP}), so callers can push the control
+ * clear of a side panel horizontally without lifting it off the bottom edge.
  */
 export const buildOuterStyle = ({
   position,
   offset,
 }: {
   position: LegendPosition;
-  offset?: number;
+  offset?: number | { x?: number; y?: number };
 }): React.CSSProperties => {
   const isTop = position.startsWith('top');
   const isRight = position.endsWith('right');
-  const gap = offset ?? EDGE_GAP;
+  const xGap = (typeof offset === 'number' ? offset : offset?.x) ?? EDGE_GAP;
+  const yGap = (typeof offset === 'number' ? offset : offset?.y) ?? EDGE_GAP;
   return {
     ...resolvePositionStyle(position),
     ...buildContainerStyle(isTop),
@@ -52,9 +56,16 @@ export const buildOuterStyle = ({
     // control floating over it. Same shared overlay z-index as the legend and
     // hover tooltip (resolvePositionStyle), restated here for clarity.
     zIndex: OVERLAY_Z_INDEX,
-    // Push the trigger off the anchored edges.
-    [isTop ? 'top' : 'bottom']: gap,
-    [isRight ? 'right' : 'left']: gap,
+    // Push the trigger off the anchored edges (x → left/right, y → top/bottom).
+    [isTop ? 'top' : 'bottom']: yGap,
+    [isRight ? 'right' : 'left']: xGap,
+    // Animate a changed anchor distance so a shifting `offset` (e.g. a
+    // workspace pushing the control clear of an opening side panel) slides the
+    // control across instead of teleporting it. Matches the sidebar's own
+    // `0.25s ease-in-out` slide, so the two move together. Only fires on
+    // change, so the initial mount is not animated.
+    transition:
+      'top 0.25s ease-in-out, bottom 0.25s ease-in-out, left 0.25s ease-in-out, right 0.25s ease-in-out',
   };
 };
 

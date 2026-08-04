@@ -118,6 +118,19 @@ const config: GeovisWorkspaceConfig = {
 };
 ```
 
+## Layer control and the left sidebar
+
+If the map spec declares a [`control`](https://github.com/ttoss-labs/ttoss/tree/main/packages/geovis#layer-control) (GeoVis's floating layer-toggle panel), it is auto-mounted by
+`GeoVisProvider` and anchored to a map corner — by default the bottom-left,
+the same corner the left sidebar opens over. To keep an opening sidebar from
+covering it, the workspace hands the map a larger `control.offset.x` while the
+left sidebar is open, sliding the control clear along the bottom edge; it snaps
+back when the sidebar closes. The shift is purely presentational (the workspace
+never mutates your spec's other fields) and only applies to a left-anchored
+control — a `bottom-right`/`top-right` control the sidebar never overlaps is
+left untouched. No configuration is needed; it follows the sidebar's open state
+automatically.
+
 ## Warnings and repair
 
 The `warnings` slot's default panel renders every issue on the current

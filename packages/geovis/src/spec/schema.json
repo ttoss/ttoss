@@ -602,8 +602,18 @@
           "enum": ["top-left", "top-right", "bottom-left", "bottom-right"]
         },
         "offset": {
-          "type": "number",
-          "description": "Distance in pixels from the two anchored map edges. Defaults to 40."
+          "description": "Distance in pixels from the anchored map edges. Defaults to 40. A number applies to both edges; an object offsets each axis independently.",
+          "anyOf": [
+            { "type": "number" },
+            {
+              "type": "object",
+              "properties": {
+                "x": { "type": "number" },
+                "y": { "type": "number" }
+              },
+              "additionalProperties": false
+            }
+          ]
         },
         "label": {
           "type": "string"
