@@ -17,13 +17,13 @@ import { WarningsPanel } from './WarningsPanel';
 /** Renders one data-source entry, as an external link when `href` is set. */
 const SourceItem = ({ label, href }: GeovisWorkspaceSource) => {
   return (
-    <Box as="li" sx={{ fontSize: 'xs', color: '#6b7280', lineHeight: 'base' }}>
+    <Box as="li" sx={{ fontSize: 'xs', color: '#7A716D', lineHeight: 'base' }}>
       {href ? (
         <Link
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          sx={{ color: '#4338ca', textDecoration: 'underline' }}
+          sx={{ color: '#A23228', textDecoration: 'underline' }}
         >
           {label}
         </Link>
@@ -69,7 +69,7 @@ const LegendPanel = () => {
   return (
     <Flex sx={{ flexDirection: 'column', gap: '4' }}>
       {description && (
-        <Text sx={{ fontSize: 'sm', color: '#374151', lineHeight: 'base' }}>
+        <Text sx={{ fontSize: 'sm', color: '#524945', lineHeight: 'base' }}>
           {description}
         </Text>
       )}
@@ -80,7 +80,7 @@ const LegendPanel = () => {
         <Box>
           {sources.title && (
             <Text
-              sx={{ fontSize: 'sm', fontWeight: 'semibold', color: '#6b7280' }}
+              sx={{ fontSize: 'sm', fontWeight: 'semibold', color: '#7A716D' }}
             >
               {sources.title}
             </Text>
@@ -135,14 +135,19 @@ export const RightSidebar = () => {
         flexDirection: 'column',
         gap: '4',
         // Fills the full-width overlay on mobile; fixed panel on larger screens.
-        width: ['100%', '256px'],
+        // Matches the left sidebar width so both panels read as the same size.
+        width: ['100%', '300px'],
         height: '100%',
         flexShrink: 0,
         paddingX: '4',
         paddingTop: '5',
         paddingBottom: '4',
-        backgroundColor: '#ffffff',
-        borderLeft: '1px solid #e5e7eb',
+        // Warm ivory surface (cozsolidarias brand) — never cold white.
+        backgroundColor: '#FAF9F7',
+        // Floating card on larger screens; flush full-screen panel on mobile.
+        border: '1px solid #E4DED3',
+        borderRadius: [0, '16px'],
+        boxShadow: ['none', '0 8px 24px rgba(36, 31, 33, 0.12)'],
         overflowY: 'auto',
       }}
     >
@@ -159,11 +164,11 @@ export const RightSidebar = () => {
           position: 'absolute',
           top: '3',
           right: '3',
-          color: '#6b7280',
+          color: '#7A716D',
           backgroundColor: 'transparent',
           borderRadius: 'md',
           '&:hover': {
-            color: '#4338ca',
+            color: '#A23228',
           },
         }}
       />
@@ -176,7 +181,7 @@ export const RightSidebar = () => {
           fontWeight: 'semibold',
           textTransform: 'uppercase',
           letterSpacing: '0.08em',
-          color: '#6b7280',
+          color: '#7A716D',
         }}
       >
         {config.rightSidebar?.title ?? formatMessage(messages.detailsTitle)}

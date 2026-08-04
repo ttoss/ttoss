@@ -20,12 +20,13 @@ const DefaultControlsPanel = () => {
           <Box key={menu.id} sx={{ display: 'flex', flexDirection: 'column' }}>
             <Text
               sx={{
-                fontSize: 'xs',
-                fontWeight: 'semibold',
-                color: '#6b7280',
+                fontSize: '11px',
+                fontWeight: 700,
+                color: '#7A716D',
                 textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                marginBottom: '2',
+                letterSpacing: '0.09em',
+                marginBottom: '6px',
+                paddingLeft: '12px',
               }}
             >
               {menu.title}
@@ -76,8 +77,12 @@ export const LeftSidebar = () => {
         paddingX: '4',
         paddingTop: '5',
         paddingBottom: '4',
-        backgroundColor: '#ffffff',
-        borderRight: '1px solid #e5e7eb',
+        // Warm ivory surface (cozsolidarias brand) — never cold white.
+        backgroundColor: '#FAF9F7',
+        // Floating card on larger screens; flush full-screen panel on mobile.
+        border: '1px solid #E4DED3',
+        borderRadius: [0, '16px'],
+        boxShadow: ['none', '0 8px 24px rgba(36, 31, 33, 0.12)'],
         overflowY: 'auto',
       }}
     >
@@ -94,11 +99,11 @@ export const LeftSidebar = () => {
           position: 'absolute',
           top: '3',
           right: '3',
-          color: '#6b7280',
+          color: '#7A716D',
           backgroundColor: 'transparent',
           borderRadius: 'md',
           '&:hover': {
-            color: '#4338ca',
+            color: '#A23228',
           },
         }}
       />

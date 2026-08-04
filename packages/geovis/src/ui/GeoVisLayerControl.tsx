@@ -237,7 +237,7 @@ const LayerControlPanel = ({
   onHoverChange: React.Dispatch<React.SetStateAction<string | null>>;
 }) => {
   return (
-    <div key="panel" role="group" aria-label={label} style={panelStyle}>
+    <div role="group" aria-label={label} style={panelStyle}>
       {items.map((item) => {
         const disabled = !item.layers.some((id) => {
           return layerIds.has(id);
@@ -341,6 +341,7 @@ export const GeoVisLayerControl = () => {
 
   const panel = expanded ? (
     <LayerControlPanel
+      key="panel"
       label={label}
       items={control.items}
       activeById={activeById}
