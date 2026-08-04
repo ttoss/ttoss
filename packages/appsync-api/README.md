@@ -128,7 +128,7 @@ export const handler = createAppSyncResolverHandler({
 
 **`GraphQLError.extensions` never reaches the client.** Because AppSync invokes this handler as a Direct Lambda Resolver, each field runs as its own Lambda invocation. A resolver error — thrown directly, or returned as an `Error`/`GraphQLError`, which this handler re-throws — leaves the Lambda as an unhandled invocation exception, and the Node.js runtime serializes that exception into only `error.name` (exposed by AppSync as `errorType`) and `error.message`; every other property, including `extensions`, is dropped before AppSync builds the response. AppSync's `errorInfo` field — [documented by AWS as the channel for structured error data in Direct Lambda Resolvers](https://docs.aws.amazon.com/appsync/latest/devguide/tutorial-lambda-resolvers.html) — stays `null` for the same reason: nothing in this handler ever sets it. Unit tests that call resolvers via `graphql()` directly never exercise this path, so they won't catch it either.
 
-To get structured error data to the client, either encode it in `error.name` — the one property that survives — or have the resolver **return** (never throw) an object shaped like AWS's Direct Lambda Resolver error contract; since that is a normal Lambda return value rather than an exception, `errorInfo` reaches the client intact:
+To get structured error data to the client, encode it in `error.name` — the one property confirmed, against a real deployed AppSync API, to survive this boundary. Returning (never throwing) an object shaped like AWS's Direct Lambda Resolver error contract is a second, theoretically viable option: since a normal return value skips the unhandled-exception path entirely, `errorInfo` should reach the client. But that path is only an inference from AWS's documented contract for Direct Lambda Resolvers — it has **not** been verified against a real deployment of this handler. Confirm it independently before relying on it in production:
 
 ```typescript
 // ❌ extensions is silently dropped — this becomes an unhandled Lambda exception.
@@ -137,11 +137,14 @@ throw new GraphQLError('Invalid input', {
 });
 
 // ✅ error.name survives — AppSync exposes it as `errorType`.
+// Verified live against a production Direct Lambda Resolver deployment.
 const error = new Error('Invalid input');
 error.name = 'EXPECTED';
 throw error;
 
-// ✅ or return (never throw) the Direct Lambda Resolver error contract.
+// ⚠️ or return (never throw) the Direct Lambda Resolver error contract.
+// Inferred from AWS's documented contract, NOT verified live — confirm
+// errorInfo actually reaches the client before relying on this.
 return {
   errorType: 'EXPECTED',
   errorMessage: 'Invalid input',
