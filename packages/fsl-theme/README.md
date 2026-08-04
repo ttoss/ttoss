@@ -34,32 +34,33 @@ Components consume only semantic tokens. Core tokens never change between light 
 
 One entry per semantic family. Use `vars.*` for typed CSS variable references; use the `semantic.*` path shape below when naming tokens in TypeScript or in discussion.
 
-| Family    | Path shape                                                       | Leaf value              |
-| --------- | ---------------------------------------------------------------- | ----------------------- |
-| colors    | `semantic.colors.{ux}.{role}.{dimension}.{state}`                | CSS color               |
-| spacing   | `semantic.spacing.inset.{control,surface}.{sm,md,lg}`            | CSS length              |
-|           | `semantic.spacing.gap.{stack,inline}.{xs,sm,md,lg,xl}`           | CSS length              |
-|           | `semantic.spacing.gutter.{page,section}`                         | CSS length / `clamp()`  |
-|           | `semantic.spacing.separation.interactive.min`                    | CSS length              |
-| text      | `semantic.text.{display,headline,title,body,label}.{lg,md,sm}`   | TextStyle object        |
-|           | `semantic.text.code.{md,sm}`                                     | TextStyle object        |
-| sizing    | `semantic.sizing.hit`                                            | CSS length              |
-|           | `semantic.sizing.icon.{sm,md,lg}`                                | CSS length              |
-|           | `semantic.sizing.identity.{sm,md,lg,xl}`                         | CSS length              |
-|           | `semantic.sizing.measure.reading`                                | CSS `ch` / `clamp()`    |
-|           | `semantic.sizing.surface.maxWidth`                               | CSS length              |
-|           | `semantic.sizing.viewport.{height,width}.full`                   | CSS dvh/dvw             |
-| radii     | `semantic.radii.{control,surface,round}`                         | CSS length              |
-| border    | `semantic.border.divider`                                        | `{width, style}`        |
-|           | `semantic.border.outline.{surface,control,selected}`             | `{width, style}`        |
-| focus     | `semantic.focus.ring`                                            | `{width, style, color}` |
-| elevation | `semantic.elevation.surface.{flat,raised,overlay,blocking}`      | CSS box-shadow          |
-|           | `semantic.elevation.tonal.{raised,overlay,blocking}`             | CSS color (optional)    |
-| opacity   | `semantic.opacity.{scrim,loading,disabled}`                      | number in (0, 1)        |
-| overlay   | `semantic.overlay.scrim`                                         | CSS color with alpha    |
-| motion    | `semantic.motion.{feedback,emphasis,decorative}`                 | `{duration, easing}`    |
-|           | `semantic.motion.transition.{enter,exit}`                        | `{duration, easing}`    |
-| zIndex    | `semantic.zIndex.layer.{base,sticky,overlay,blocking,transient}` | integer                 |
+| Family      | Path shape                                                       | Leaf value                      |
+| ----------- | ---------------------------------------------------------------- | ------------------------------- |
+| colors      | `semantic.colors.{ux}.{role}.{dimension}.{state}`                | CSS color                       |
+| spacing     | `semantic.spacing.inset.{control,surface}.{sm,md,lg}`            | CSS length                      |
+|             | `semantic.spacing.gap.{stack,inline}.{xs,sm,md,lg,xl}`           | CSS length                      |
+|             | `semantic.spacing.gutter.{page,section}`                         | CSS length / `clamp()`          |
+|             | `semantic.spacing.separation.interactive.min`                    | CSS length                      |
+| text        | `semantic.text.{display,headline,title,body,label}.{lg,md,sm}`   | TextStyle object                |
+|             | `semantic.text.code.{md,sm}`                                     | TextStyle object                |
+| sizing      | `semantic.sizing.hit`                                            | CSS length                      |
+|             | `semantic.sizing.icon.{sm,md,lg}`                                | CSS length                      |
+|             | `semantic.sizing.identity.{sm,md,lg,xl}`                         | CSS length                      |
+|             | `semantic.sizing.measure.reading`                                | CSS `ch` / `clamp()`            |
+|             | `semantic.sizing.surface.maxWidth`                               | CSS length                      |
+|             | `semantic.sizing.viewport.{height,width}.full`                   | CSS dvh/dvw                     |
+| radii       | `semantic.radii.{control,surface,round}`                         | CSS length                      |
+| border      | `semantic.border.divider`                                        | `{width, style}`                |
+|             | `semantic.border.outline.{surface,control,selected}`             | `{width, style}`                |
+| focus       | `semantic.focus.ring`                                            | `{width, style, color, offset}` |
+| consequence | `semantic.consequence.destructive.ink`                           | CSS color                       |
+| elevation   | `semantic.elevation.surface.{flat,raised,overlay,blocking}`      | CSS box-shadow                  |
+|             | `semantic.elevation.tonal.{raised,overlay,blocking}`             | CSS color (optional)            |
+| opacity     | `semantic.opacity.{scrim,loading,disabled}`                      | number in (0, 1)                |
+| overlay     | `semantic.overlay.scrim`                                         | CSS color with alpha            |
+| motion      | `semantic.motion.{feedback,emphasis,decorative}`                 | `{duration, easing}`            |
+|             | `semantic.motion.transition.{enter,exit}`                        | `{duration, easing}`            |
+| zIndex      | `semantic.zIndex.layer.{base,sticky,overlay,blocking,transient}` | integer                         |
 
 The colors axes (`{ux}`, `{role}`, `{dimension}`, `{state}`) are a formal FSL projection with a normative mapping — including which Entity Kinds collapse into which `ux` value, and which states are legal per `ux`. That grammar is defined once, in [Semantic Color Grammar](https://ttoss.dev/docs/design/design-system/design-tokens/model#semantic-color-grammar--fsl-projection) and the [colors family spec](https://ttoss.dev/docs/design/design-system/design-tokens/families/colors).
 

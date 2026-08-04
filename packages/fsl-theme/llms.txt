@@ -81,6 +81,7 @@ Components consume **only** `semantic.*`. Core values never change between light
 | `semantic.radii.` | `--tt-radii-` | `vars.radii.control` → `var(--tt-radii-control)` |
 | `semantic.border.` | `--tt-border-` | `vars.border.outline.control.width` → `var(--tt-border-outline-control-width)` |
 | `semantic.focus.` | `--tt-focus-` | `vars.focus.ring.color` → `var(--tt-focus-ring-color)` |
+| `semantic.consequence.` | `--tt-consequence-` | `vars.consequence.destructive.ink` → `var(--tt-consequence-destructive-ink)` |
 | `semantic.elevation.` | `--tt-elevation-` | `vars.elevation.surface.raised` → `var(--tt-elevation-surface-raised)` |
 | `semantic.opacity.` | `--tt-opacity-` | `vars.opacity.disabled` → `var(--tt-opacity-disabled)` |
 | `semantic.overlay.` | `--tt-overlay-` | `vars.overlay.scrim` → `var(--tt-overlay-scrim)` |
@@ -148,7 +149,8 @@ Valid `{ux, state}` combinations: see [Color state legality](#color-state-legali
 | **radii** | `vars.radii.{control,surface,round}` | CSS length |
 | **border** | `vars.border.divider.{width,style}` | object |
 | | `vars.border.outline.{surface,control,selected}.{width,style}` | object |
-| **focus** | `vars.focus.ring.{width,style,color}` | object |
+| **focus** | `vars.focus.ring.{width,style,color,offset}` | object |
+| **consequence** | `vars.consequence.destructive.ink` (cross-cutting: destructive ink for parts that paint no surface) | CSS color |
 | **elevation** | `vars.elevation.surface.{flat,raised,overlay,blocking}` | box-shadow |
 | | `vars.elevation.tonal.{raised,overlay,blocking}` (optional) | CSS color |
 | **opacity** | `vars.opacity.{scrim,loading,disabled}` | number in (0,1) |

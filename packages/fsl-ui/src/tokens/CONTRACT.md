@@ -80,13 +80,14 @@ A component MUST use ONLY tokens from its Entity row.
 
 **Cross-cutting** (apply to ALL interactive entities — not in the table because they are entity-agnostic):
 
-| Token family     | Path                                          |
-| ---------------- | --------------------------------------------- | ------ | ------- | -------- | ----------- |
-| Focus ring       | `vars.focus.ring.width` / `.style` / `.color` |
-| Disabled opacity | `vars.opacity.disabled`                       |
-| Scrim opacity    | `vars.opacity.scrim`                          |
-| Scrim color      | `vars.overlay.scrim`                          |
-| Z-Index          | `vars.zIndex.layer.{base                      | sticky | overlay | blocking | transient}` |
+| Token family     | Path                                                                              |
+| ---------------- | --------------------------------------------------------------------------------- | ------ | ------- | -------- | ----------- |
+| Focus ring       | `vars.focus.ring.width` / `.style` / `.color`                                     |
+| Consequence ink  | `vars.consequence.destructive.ink` — read via `resolveConsequenceInk` only (§3.3) |
+| Disabled opacity | `vars.opacity.disabled`                                                           |
+| Scrim opacity    | `vars.opacity.scrim`                                                              |
+| Scrim color      | `vars.overlay.scrim`                                                              |
+| Z-Index          | `vars.zIndex.layer.{base                                                          | sticky | overlay | blocking | transient}` |
 
 ### §1.1 — Mapping Rationale
 
@@ -338,8 +339,17 @@ Implemented once, in `tokens/consequenceInk.ts`:
 | -------------- | ---------------------------------------------------------------------- |
 | **Applies to** | `evaluation === 'muted'` and `consequence === 'destructive'`           |
 | **Paints**     | `color` only — and, through `currentColor`, any `Icon` inside the part |
-| **Reads**      | `informational.negative.text.default`                                  |
+| **Reads**      | `vars.consequence.destructive.ink` (§1 cross-cutting table)            |
 | **Yields at**  | `disabled`, `active`, `expanded` (`TINT_YIELDS_TO`)                    |
+
+The ink is a **cross-cutting token** (model.md §6, fsl-theme ADR-025), the same
+mechanism as the focus ring — and the analogy is structural, not cosmetic: both
+render against the stratum behind the component rather than a fill of their own
+(the ring because it floats off the edge, this ink because the quiet rung's
+fill _is_ the stratum), which is what lets one system-wide colour serve
+everything. The base theme aliases it to the standalone negative valence ink;
+a theme may repoint it without touching validation messages. No entity row is
+crossed: the read is licensed by the §1 cross-cutting table like the ring's.
 
 Ink only: the quiet rung's border mirrors its background by construction, so
 tinting the edge would invent an outlined-destructive language the system does
@@ -349,11 +359,14 @@ ink measures 2.65:1 against the dark alternate's engaged fill. It yields when
 disabled because unavailability outranks valence.
 
 Every surface the tint can land on is enumerated and measured in fsl-theme's
-cross-role inventory (`colors.test.ts` → `quiet destructive control`); the
-excluded states are excluded because the rule does not reach them. A component
-that emits `data-consequence` and paints from `vars.colors.action` **must**
-resolve its ink through the helper — `components.contract.test.tsx` fails
-otherwise, so the crossing stays a single licensed one rather than a habit.
+cross-role inventory (`colors.test.ts` → `quiet destructive control`), which
+pairs **the token itself**, so a theme that repoints the alias is audited on
+what components actually render. Unlike the ring the read is conditional (one
+rung, a yield set), so it is confined to the helper where those bounds live: a
+component that emits `data-consequence` and paints from `vars.colors.action`
+**must** resolve its ink through `resolveConsequenceInk`, and no component
+reads `vars.consequence` or another family's negative ink directly —
+`components.contract.test.tsx` fails otherwise.
 
 ---
 

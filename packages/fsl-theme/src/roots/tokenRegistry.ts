@@ -209,6 +209,11 @@ export const TOKEN_PATH_REGISTRY: readonly TokenPathEntry[] = [
   },
   { path: 'semantic.focus.', cssPrefix: '--tt-focus-' },
   { path: 'semantic.overlay.', cssPrefix: '--tt-overlay-', dtcgType: 'color' },
+  {
+    path: 'semantic.consequence.',
+    cssPrefix: '--tt-consequence-',
+    dtcgType: 'color',
+  },
   { path: 'semantic.border.', cssPrefix: '--tt-border-' },
   {
     path: 'semantic.opacity.',

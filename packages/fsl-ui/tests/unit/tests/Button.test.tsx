@@ -222,9 +222,7 @@ describe('Button — the quiet destructive posture (CONTRACT §3.3)', () => {
     );
     const root = screen.getByRole('button', { name: 'Delete account' });
 
-    expect(root.style.color).toBe(
-      vars.colors.informational.negative.text!.default
-    );
+    expect(root.style.color).toBe(vars.consequence.destructive.ink);
     expect(root.style.backgroundColor).toBe(
       vars.colors.action.muted!.background!.default
     );

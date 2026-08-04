@@ -230,10 +230,14 @@ ladder only where the valence's `text` is a standalone ink. In `input` and
 `informational` it is, and a part may read it while sitting on any surface — the
 validation message is that case. In `action` and `feedback` the valence ships as
 a **filled** surface, so `text` is the label _on that fill_ (near-white) and there
-is no quiet rung: a destructive button is filled, a status toast is filled. A
-quiet destructive Action therefore cannot be expressed today, and cannot be added
-by reaching for emphasis — the ❌ above forbids exactly that. It is a governance
-question about the `dimension` registry, not a token a theme may invent.
+is no quiet rung inside those contexts: a destructive button is filled, a status
+toast is filled — and it cannot be added by reaching for emphasis, which the ❌
+above forbids. The quiet destructive Action is instead expressed by the
+[cross-cutting](#cross-cutting-tokens-siblings-of-semanticcolors)
+`semantic.consequence.destructive.ink`: a part on the quiet rung paints the
+stratum's own colour, so the ink it needs is a system-wide default no `{ux}`
+owns — the same shape as the focus ring, and the same §6 mechanism. The
+component layer scopes when it applies (`@ttoss/fsl-ui` CONTRACT §3.3).
 
 ---
 
@@ -340,12 +344,13 @@ Core palette values are **immutable across modes**; modes remap which core token
 
 ## Cross-cutting tokens (siblings of `semantic.colors.*`)
 
-Two tokens carry **system-wide defaults** that no `{ux}` owns. They live as siblings of `semantic.colors.*` per [model.md §6](../model.md#6-no-parallel-vocabulary), not inside it:
+Three tokens carry **system-wide defaults** that no `{ux}` owns. They live as siblings of `semantic.colors.*` per [model.md §6](../model.md#6-no-parallel-vocabulary), not inside it:
 
 - `semantic.focus.ring.color` — system focus indicator color
 - `semantic.overlay.scrim` — modal backdrop
+- `semantic.consequence.destructive.ink` — foreground for a destructive part that paints no surface
 
-They are **not** parallel vocabulary: `{ux}.{role}.border.focused` answers _"what does this `{ux}`'s own edge become while focused?"_; `semantic.focus.ring.color` answers _"what marks focus?"_.
+They are **not** parallel vocabulary: `{ux}.{role}.border.focused` answers _"what does this `{ux}`'s own edge become while focused?"_; `semantic.focus.ring.color` answers _"what marks focus?"_. Likewise `{ux}.{valence}.text` answers _"what is this `{ux}`'s valence ink on its own surfaces?"_; the consequence ink answers _"what marks a destructive part that paints nothing?"_.
 
 ### Focus color — the ring indicates, the border tints
 

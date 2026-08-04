@@ -762,3 +762,82 @@ Re-litigation answers:
 - "Does the alternate now need a full parallel inventory per bundle?" → no. Each
   variant declares an explicit delta over the base list, so a reviewer reads what
   differs, and the deltas are asserted in both directions like the lists are.
+
+### ADR-025: The quiet destructive ink is a cross-cutting token, minted where model.md §6 says system-wide defaults live
+
+Status: accepted (2026-08-04)
+Tags: colors, cross-cutting, consequence, model §6, F-029, refines fsl-ui ADR-028
+
+Decision: `semantic.consequence.destructive.ink` — a cross-cutting sibling of
+`focus` and `overlay` — holds the foreground for a destructive part that paints
+no surface of its own. The base theme aliases it to
+`{semantic.colors.informational.negative.text.default}` (a semantic→semantic
+reference, the same shape and the same "mode overrides remap it automatically"
+rationale as `focus.ring.color`), so both modes and both bundles resolve today's
+exact values. `@ttoss/fsl-ui`'s `resolveConsequenceInk` is the sole consumer and
+owns the behavioural bounds (which rung, which states — its CONTRACT §3.3).
+
+The day before, fsl-ui ADR-028 shipped the same behaviour by reading
+`informational.negative.text.default` **directly from the component layer** — a
+cross-ux read, licensed and guarded, but a precedent the entity→ux alignment
+had never had. Re-reading the model showed the question was already answered:
+§6 names the exact criterion ("a question the principal grammar cannot ask in a
+single token — a system-wide default that no `{ux}` owns") and the F-029
+analysis had already proven both halves — the grammar cannot combine valence
+with emphasis, and in `action`/`feedback` the valence `text` is the label on a
+fill, occupied. The structural twin is the focus ring: both render against the
+stratum behind the component rather than a fill of their own (the ring floats
+off the edge; the quiet rung's fill _is_ the stratum), which is what lets one
+system-wide colour serve everything, and why `SemanticFocus.ring.color` is even
+_typed_ `TokenRef<semantic.*>` for exactly this aliasing pattern.
+
+§6's gate, answered: **necessity** — the F-029 record (measured, both modes,
+both bundles); **JSDoc** — on the family and the token; **registration** — the
+§6 canonical-examples list, `colors.md` § Cross-cutting, the quick reference,
+and `TOKEN_PATH_REGISTRY` (`--tt-consequence-*`, DTCG `color`), whose coverage
+test fails if the registry entry is missing. `committing` deliberately gets no
+token: no visual projection exists and no consumer waits — evidence, not
+symmetry.
+
+What this buys over the direct read, stated as the trade it is: the entity→ux
+alignment goes back to having **zero** exceptions (the licensed-crossing
+apparatus in fsl-ui's contract test becomes ordinary cross-cutting consumption,
+like the ring); the contrast inventory pairs **the token components actually
+render** instead of its referent, so a theme that repoints the alias is audited
+on what ships; and a theme gains the freedom to retune the quiet destructive
+ink without touching validation messages — while the default alias keeps them
+identical, which is the right default because both are the standalone negative
+valence ink. The cost is one registered token (MINOR per governance.md) and a
+required member on `ThemeTokens.semantic` — additive for every `overrides`/
+`extends`-authored theme (bruttal included); a hypothetical complete-`base`
+theme gains a one-line member, the same class of addition as `focus.ring.offset`
+(F-020).
+
+Rejected: keeping the component-layer read (works, guarded, but spends a
+constitutional exception §6 exists to make unnecessary — and pins the ink to
+the validation message's token in every theme, a coupling nothing demands);
+`action.muted.text.destructive` (consequence is not a State — Lexicon §11.2
+keeps the axes disjoint, and the state axis is runtime while consequence is
+authorial); a `destructive` entry inside `semantic.colors.*` (§6 places
+cross-cutting tokens as siblings, not inside the grammar they escape); a
+`committing` twin (unconsumed vocabulary).
+
+Anchors: `src/families/consequence.ts`, `src/baseTheme.ts` (the alias),
+`src/roots/tokenRegistry.ts`, `colors.test.ts` → `quiet destructive control`
+(pairs the token, both bundles, both modes), model.md §6, colors.md
+§ Cross-cutting, fsl-ui `tokens/consequenceInk.ts` + CONTRACT §3.3.
+
+Re-litigation answers:
+
+- "Why does the alias point at `informational.negative.text` and not at a core
+  red?" → so the standalone negative valence ink has one source by default:
+  retune it and the validation message and the destructive ink move together,
+  which is what a theme author expects. Repointing is the opt-out, not the
+  default.
+- "Why not let fsl-ui keep reading the informational token, since the values
+  are identical?" → because _which token a component renders_ is the thing the
+  inventory audits and the thing a theme retunes. A borrowed token couples two
+  meanings behind one name; §6 exists so the system never has to choose between
+  coupling and a grammar violation.
+- "Does `neutral`/`committing` ever get a token?" → on evidence: a consumer
+  with a visual projection that survives measurement. Symmetry is not evidence.

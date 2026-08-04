@@ -588,17 +588,14 @@ describe('contract: entity → ux-context alignment', () => {
 });
 
 // ---------------------------------------------------------------------------
-// 4c. The consequence-ink rule has exactly one licensed crossing
+// 4c. The consequence ink is read in exactly one module, with its bounds
 //
 // CONTRACT.md §3.3: a part that paints no surface borrows the stratum's ink,
-// and when it carries a valence `consequence` selects it. That makes an Action
-// component read `informational.negative.text` — a cross-family read that 4b
-// above would wave through for any file declaring an Overlay part too (Menu
-// declares both), so the union would let it pass by coincidence rather than by
-// rule.
-//
-// The rule is therefore encoded here instead: the crossing lives in exactly one
-// module, and every component that could want it goes through that module.
+// and when it carries a valence `consequence` selects it. The ink is the
+// cross-cutting `vars.consequence.destructive.ink` (model.md §6) — a lawful
+// read like the focus ring's colour — but unlike the ring it is conditional
+// (one rung, a yield set), so the read is confined to `consequenceInk.ts`
+// where those bounds live, and components route through it.
 // ---------------------------------------------------------------------------
 
 describe('contract: consequence ink (§3.3)', () => {
@@ -610,19 +607,20 @@ describe('contract: consequence ink (§3.3)', () => {
 
   test('the helper is the module that reads the destructive ink', () => {
     expect(stripComments(helperSource)).toContain(
-      'vars.colors.informational.negative.text'
+      'vars.consequence.destructive.ink'
     );
   });
 
   test.each(componentSources)(
-    '%s: does not hand-roll the crossing',
+    '%s: does not read the ink outside the helper',
     (_path, source) => {
-      // A component reaching for the negative ink of a family it does not own
-      // is the F-029 shape reappearing. Route it through the helper so the
-      // bounds (which rung, which states) hold in one place.
-      expect(stripComments(source)).not.toContain(
-        'vars.colors.informational.negative'
-      );
+      const stripped = stripComments(source);
+      // Reading the token directly skips the bounds (which rung, which
+      // states) that make it legible — the helper is where they live.
+      expect(stripped).not.toContain('vars.consequence');
+      // And reaching for another family's negative ink is the F-029 shape
+      // reappearing; no component reads it for any purpose.
+      expect(stripped).not.toContain('vars.colors.informational.negative');
     }
   );
 

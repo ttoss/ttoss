@@ -50,11 +50,16 @@ const TINT_YIELDS_TO: ReadonlySet<InteractiveStateKey> = new Set([
  * renders on. When that part carries a valence, `consequence` is what selects
  * it — not `evaluation`.
  *
- * This is the generalisation of a pattern the package already ships: the
- * validation message reads `input.negative.text` and renders on whatever
- * informational surface the form sits on, with the pairing declared in
- * fsl-theme's cross-role inventory (F-036). A destructive menu row is the same
- * shape, one family over — and because the tint lands on `color`, an `Icon`
+ * The ink is `vars.consequence.destructive.ink` — a **cross-cutting** token
+ * (model.md §6), sibling of the focus ring's colour and consumed the same way:
+ * the CONTRACT §1 cross-cutting table is what licenses the read, no entity row
+ * involved. The structural analogy to the ring is exact — both render against
+ * the stratum behind the component rather than a fill of their own (the ring
+ * because it floats off the edge, this ink because the quiet rung's fill *is*
+ * the stratum), which is what lets one system-wide colour serve everything.
+ * The base theme aliases it to the standalone negative valence ink, the same
+ * source the validation message reads (F-036); a theme may repoint it without
+ * touching validation messages. Because the tint lands on `color`, an `Icon`
  * inside the part follows it through `currentColor` with no extra wiring.
  *
  * Ink only. The quiet rung's border mirrors its background by construction, so
@@ -110,5 +115,5 @@ export const resolveConsequenceInk = ({
   // ever deleted, fsl-theme's pairing above fails on `isHexColor` rather than
   // this package quietly rendering a destructive row in neutral ink. A silent
   // downgrade of a safety signal is the one outcome worth not defending into.
-  return vars.colors.informational.negative.text?.default;
+  return vars.consequence.destructive.ink;
 };

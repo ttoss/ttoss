@@ -46,6 +46,7 @@ Grammar reminder:
 | Divider line                                                                              | `semantic.colors.informational.muted.border`                        |
 | Focus ring color (system default — use when no `{ux}` applies)                            | `semantic.focus.ring.color`                                         |
 | Focus ring color (per-context — `{ux}` is `Action` / `Input` / `Navigation` / `Feedback`) | `semantic.colors.{ux}.{role}.border.focused`                        |
+| Destructive ink on a part that paints no surface (quiet menu row / text action)           | `semantic.consequence.destructive.ink`                              |
 
 Full grammar + role decision table: [Colors](./families/colors.md).
 

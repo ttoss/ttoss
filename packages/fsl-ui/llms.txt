@@ -39,10 +39,12 @@ are undefined and components render unstyled.
   'destructive'. Drives MECHANISM (e.g. ConfirmationDialog two-click arming).
   Carries COLOR in exactly one case (CONTRACT §3.3): on the quiet rung
   (evaluation="muted", which paints no fill) a destructive Action tints its
-  INK — Button, ActionButton, MenuItem. Everywhere else the fill is the voice
-  and evaluation owns it. So: a destructive PEER among siblings keeps its rung
-  and sets consequence; a destructive COMMAND that should be the loudest thing
-  on the surface is evaluation="negative". Neither implies the other.
+  INK — Button, ActionButton, MenuItem — reading the cross-cutting
+  vars.consequence.destructive.ink (never another entity's colour tree).
+  Everywhere else the fill is the voice and evaluation owns it. So: a
+  destructive PEER among siblings keeps its rung and sets consequence; a
+  destructive COMMAND that should be the loudest thing on the surface is
+  evaluation="negative". Neither implies the other.
 - composition (prop on leaves) — slot the element plays inside a parent:
   'primaryAction' | 'secondaryAction' | 'dismissAction' … DialogActions
   reorders children by it per platform convention.

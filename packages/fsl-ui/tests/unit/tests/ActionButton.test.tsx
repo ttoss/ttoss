@@ -73,7 +73,7 @@ describe('ActionButton — the quiet destructive posture (CONTRACT §3.3)', () =
     );
     const { style } = getRoot();
 
-    expect(style.color).toBe(vars.colors.informational.negative.text!.default);
+    expect(style.color).toBe(vars.consequence.destructive.ink);
     expect(style.backgroundColor).toBe(
       vars.colors.action.muted!.background!.default
     );

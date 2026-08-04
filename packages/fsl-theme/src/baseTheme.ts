@@ -1532,6 +1532,17 @@ export const baseTheme: ThemeTokens = {
       },
     },
 
+    consequence: {
+      destructive: {
+        // The standalone negative valence ink — the same source the
+        // validation message reads, referenced semantically (like
+        // focus.ring.color) so the dark alternate's remap of that token
+        // carries this one with it. A theme may repoint the alias without
+        // touching validation messages.
+        ink: '{semantic.colors.informational.negative.text.default}',
+      },
+    },
+
     // -- Overlay ------------------------------------------------------------
     overlay: {
       // Full modal backdrop color. Alpha is sourced from semantic.opacity.scrim

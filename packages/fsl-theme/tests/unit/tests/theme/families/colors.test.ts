@@ -689,6 +689,11 @@ const CROSS_ROLE_TEXT_PAIRINGS: ReadonlyArray<{
     // valence and the ink carries it instead (`resolveConsequenceInk`). Same
     // shape as the validation message above, one family over.
     //
+    // The ink is the cross-cutting consequence token (model.md §6 — ADR-025),
+    // which the base theme aliases to the standalone negative valence ink.
+    // Pairing the alias rather than its referent means a theme that repoints
+    // it is audited on what components actually render.
+    //
     // The literal surface is the quiet rung's own opaque fill — `muted` is an
     // opaque surface-coloured token, never `transparent` (ADR-015), so the
     // control always covers whatever is beneath it. In both bundles that
@@ -696,7 +701,7 @@ const CROSS_ROLE_TEXT_PAIRINGS: ReadonlyArray<{
     // check seen from the other side; they stay listed so the entry still holds
     // if a theme ever gives the quiet rung a tonal resting fill of its own.
     part: 'quiet destructive control',
-    ink: 'semantic.colors.informational.negative.text.default',
+    ink: 'semantic.consequence.destructive.ink',
     surfaces: [
       ...INFORMATIONAL_STRATA,
       'semantic.colors.action.muted.background.default',

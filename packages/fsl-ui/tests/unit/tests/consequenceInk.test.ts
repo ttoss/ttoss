@@ -12,7 +12,7 @@ import { EVALUATIONS } from 'src/semantics/taxonomy';
 import { resolveConsequenceInk } from 'src/tokens/consequenceInk';
 
 const HOST_INK = 'host-ink';
-const DESTRUCTIVE_INK = vars.colors.informational.negative.text!.default!;
+const DESTRUCTIVE_INK = vars.consequence.destructive.ink;
 
 const resolve = (
   overrides: Partial<Parameters<typeof resolveConsequenceInk>[0]> = {}

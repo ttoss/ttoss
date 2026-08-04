@@ -188,9 +188,7 @@ describe('ActionMenu — behaviour', () => {
 
     expect(row).toHaveAttribute('data-evaluation', 'muted');
     expect(row).toHaveAttribute('data-consequence', 'destructive');
-    expect(row.style.color).toBe(
-      vars.colors.informational.negative.text!.default
-    );
+    expect(row.style.color).toBe(vars.consequence.destructive.ink);
     // Same silhouette as its siblings: only the ink differs.
     expect(row.style.backgroundColor).toBe(
       screen.getByRole('menuitem', { name: 'Duplicate' }).style.backgroundColor

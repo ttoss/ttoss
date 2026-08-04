@@ -864,3 +864,60 @@ Re-litigation answers:
 - "Can a Structure or Feedback part use this?" → not today. The helper is scoped
   to parts that read `vars.colors.action`, because that is where the evidence
   is. A second family needs a consumer and its own inventory entry.
+
+### ADR-029: The consequence ink moves to the cross-cutting token; the licensed crossing retires
+
+Status: accepted (2026-08-04)
+Tags: colors, consequence, cross-cutting, refines:ADR-028, fsl-theme ADR-025
+
+Decision: `resolveConsequenceInk` reads `vars.consequence.destructive.ink` —
+the cross-cutting token fsl-theme ADR-025 mints under model.md §6 — instead of
+`vars.colors.informational.negative.text.default`. Everything behavioural in
+ADR-028 stands unchanged: the rule ("a part that paints no surface takes its
+ink from the surface it renders on; `consequence` selects it"), the bounds (the
+quiet rung, `color` only, yielding at `disabled`/`active`/`expanded`), the
+measurements, the consumers, the retraction of the static-ink split. What
+changes is the **address** of the ink, and with it the one cost ADR-028
+conceded without an answer.
+
+ADR-028 answered the entity→ux objection by making the crossing licensed and
+singular. That was the right mitigation and the wrong final state: model.md §6
+already provides the mechanism for exactly this question — "a system-wide
+default that no `{ux}` owns" — with the focus ring as the typed precedent, and
+the ring is this ink's structural twin (both render against the stratum, not a
+fill; that is why one system-wide colour serves). Read through §6, the day-old
+"unprecedented cross-ux read" was a cross-cutting token that hadn't been minted
+yet. Minting it means the §1 alignment goes back to zero exceptions, the
+contract test's job simplifies from "keep the crossing singular" to "keep the
+conditional read inside the helper that owns its bounds", and a theme can
+retune the destructive ink without touching validation messages (the base alias
+keeps them identical by default).
+
+Resolved values are byte-identical in both modes and both bundles — the token
+aliases the exact source the helper read before — so no visual change, no
+measurement invalidated, no Studio or story edit. fsl-theme's `quiet
+destructive control` inventory now pairs the token itself, auditing what
+components actually render even after a theme repoints the alias.
+
+Rejected: leaving ADR-028's read in place (guarded, but spends a constitutional
+exception the model prices at one registered token); widening component access
+to `vars.consequence.*` (the read stays confined to the helper — unlike the
+ring it is conditional, and the bounds live where the condition does).
+
+Cost: none at the component surface; fsl-ui's floor version of `@ttoss/fsl-theme`
+must include the token, which the workspace guarantees and the `vars` typing
+enforces at compile time.
+
+Anchors: `src/tokens/consequenceInk.ts`, `src/tokens/CONTRACT.md` §1
+(cross-cutting table) + §3.3, `tests/unit/tests/components.contract.test.tsx`
+(§4c), fsl-theme ADR-025, model.md §6, colors.md § Cross-cutting.
+
+Re-litigation answers:
+
+- "Is this a behaviour change?" → no. Same resolved hex in every mode and
+  bundle; only the CSS custom property a component emits changes
+  (`--tt-consequence-destructive-ink`). Hosts targeting the old var name in
+  overrides were targeting a token no component documented reading.
+- "Why keep the helper if the token is now lawful to read?" → the ring is
+  unconditional; this ink is not. The helper owns the rung and the yield set,
+  and §4c fails any component that reads the token directly.
