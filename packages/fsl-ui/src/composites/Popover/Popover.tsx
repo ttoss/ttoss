@@ -9,6 +9,7 @@ import {
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { fslVar } from '../../tokens/escapeHatch';
+import { OCCLUDING_OUTLINE } from '../../tokens/occludingSurface';
 import { voicedSurface } from '../../tokens/surfaceScope';
 
 // ---------------------------------------------------------------------------
@@ -97,13 +98,16 @@ export const Popover = ({
           borderRadius: vars.radii.surface,
           borderWidth: vars.border.outline.surface.width,
           borderStyle: vars.border.outline.surface.style,
-          borderColor: colors?.border?.default,
+          // Occluding boundary (CONTRACT §3.5).
+          borderColor: OCCLUDING_OUTLINE,
           // A hosting surface publishes itself (CONTRACT §3.4); only the
           // page-like primary voice does — a voiced surface keeps its voice.
           ...voicedSurface({ evaluation, color: colors?.background?.default }),
           color: colors?.text?.default,
           boxShadow: vars.elevation.surface.overlay,
-          padding: vars.spacing.inset.surface.md,
+          // An anchored surface is not a page panel (F-045): the reference
+          // pads a popover at one tight step, not at the dialog's.
+          padding: vars.spacing.inset.surface.sm,
           outline: 'none',
           ...(vars.text.body.md as React.CSSProperties),
           zIndex: vars.zIndex.layer.overlay,

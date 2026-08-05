@@ -1014,3 +1014,88 @@ Re-litigation answers:
 - "Why not follow the surface on hover too?" → the hover fill is the rung
   _materialising_ — the affordance itself. Following the surface there would
   make a quiet control permanently invisible.
+
+### ADR-031: The two kinds of surface — occluding and embedded — and what each owes
+
+Status: accepted (2026-08-04)
+Tags: colors, spacing, overlay, P3, F-044, F-045, F-046, F-047, closes:F-044, closes:F-045, closes:F-046, closes:F-047
+
+Decision: the package distinguishes a surface that **covers content** from one
+that sits **in the flow**, and the distinction drives three things — the edge,
+the padding, and the size envelope (CONTRACT §3.5, and §3.4's companion step).
+
+|         | Occluding                                                                                                    | Embedded                                 |
+| ------- | ------------------------------------------------------------------------------------------------------------ | ---------------------------------------- |
+| Members | popover, menu, tooltip, dialog panel, drawer panel, toast                                                    | `Surface`, `Box`, dividers, field frames |
+| Edge    | `vars.overlay.outline` via `OCCLUDING_OUTLINE`                                                               | `{ux}.{role}.border.*`, unchanged        |
+| Padding | `inset.surface.xs` (fixed, anchored) — except `Dialog`, which frames content rather than rows and keeps `md` | `inset.surface.{sm,md,lg}` (fluid)       |
+| Size    | a floor as well as a ceiling                                                                                 | caller-chosen                            |
+
+**The root cause behind all four findings is one sentence: `elevation` is the
+only family that knows a surface floats.** Every other family treats "surface"
+as one thing, so an occluding surface inherited an embedded one's hairline
+(F-044), its page-scaled and fluid padding (F-045), and had no shared notion of
+a size envelope at all, which is why each component invented its own literals
+(F-046, F-047).
+
+What each finding cost, measured rather than argued:
+
+- **F-044** — an overlay's fill is byte-identical to the page by design, and its
+  only edge read **1.31:1 light / 1.67:1 dark** against that page, while
+  `colors.md` § Stacking assigns exactly that edge a ≥3:1 duty _"even when
+  shadow is suppressed (high-contrast preferences, print)"_. Under
+  `forced-colors` a menu was an unbounded rectangle of page-coloured text. The
+  fix is a cross-cutting token (fsl-theme ADR-027), not a retune of every
+  `informational` edge — and it costs nothing that existed: all three
+  informational roles resolved the _same_ border value in both modes, so
+  `evaluation` never varied an overlay's edge.
+- **F-045** — the menu's gutter was 24px around fixed 32px rows (34% of the
+  surface's height); after, 6px and 13%, and the surface fell 146px → 110px for
+  the same three rows. The mechanism half is ADR-022's own ruling one scale out:
+  the gutter moved 16 → 24px across viewports while every row stayed 32.0px.
+- **F-046** — `Dialog` had a max width and height and no minimum, so a short
+  confirm collapsed to its content and the action row became the widest thing
+  in it. `--fsl-dialog-min-width` now ships beside the two knobs it pairs with,
+  defaulting to the reference's 288px.
+- **F-047** — `Tooltip` capped at 280px against a 160px desktop reference. It
+  takes **200px**, the reference's mobile value, because our label type is a
+  step larger than theirs, so the same phrase needs the wider of their two
+  numbers to hold the same line count.
+
+Guarded by `tests/unit/tests/occludingSurface.test.tsx`, which pins **both**
+sides of the discriminant: every occluding surface reads the boundary, and an
+embedded one does not. Without the second half, "put the boundary everywhere"
+would pass — and that is exactly the theme-wide retune this contract exists to
+avoid.
+
+Verified in Chromium off the fsl Storybook, both modes: menu 192×110 with a
+`rgb(111,111,111)` boundary in light and `rgb(208,208,208)` in dark, tooltip a
+bounded hint chip instead of a white slab, Dialog unchanged at its `md` inset.
+
+Rejected: a `size` prop on the overlays (CONTRACT §4 — a different envelope is
+a different semantic identity, and these are the same one); per-component
+boundary colours (the boundary is infrastructure, one system colour, like the
+ring); giving `Tooltip` `inset.control.md` on the inline axis to match the
+reference's 6/12 pair (an entity-row violation — Overlay's §1 row is
+`inset.surface`, and the reference's own anchored padding is uniform anyway).
+
+Cost: the six occluding components stop reading their role's border. That is a
+visible change (the edge is now defined rather than nearly invisible) and it is
+the point; nothing about the `evaluation` prop's other duties moves.
+
+Anchors: `src/tokens/occludingSurface.ts`, `src/tokens/CONTRACT.md` §3.5 + §1
+cross-cutting table, `tests/unit/tests/occludingSurface.test.tsx`, fsl-theme
+ADR-027, `docs/fsl-studio/FRICTION.md` F-044…F-047.
+
+Re-litigation answers:
+
+- "Should `Surface level="overlay"` take the boundary?" → no, and that is the
+  discriminant working: `Surface` is the embedded primitive. A host that wants
+  a floating panel composes `Popover`/`Drawer`, which occlude by construction.
+- "Why does the Dialog keep 36px?" → it frames prose and a title, not rows. The
+  anchored step is for a gutter beside children that carry their own inset.
+- "What about the overlays painting the flat stratum's fill?" → real, separate,
+  and filed as F-048: `Surface` reads `elevation.tonal.*` and no overlay does,
+  so two components claiming the same stratum paint different colours in dark.
+  It cannot close F-044 (1.67:1 at best) and it changes what `evaluation` drives
+  on an Overlay, so it is its own decision.

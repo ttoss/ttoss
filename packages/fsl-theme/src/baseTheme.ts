@@ -1427,6 +1427,15 @@ export const baseTheme: ThemeTokens = {
         // above gap.stack at the default step so containers visibly enclose
         // their sequential children.
         surface: {
+          // The anchored/row-framing step, and the one member of this group
+          // that is FIXED: its outcome is the relationship to fixed-height
+          // children, so a fluid value would make that relationship
+          // container-fluid (ADR-022's argument one context over — see the
+          // family type for the measurement). Same core step as
+          // `inset.control.sm`, and deliberately so: a gutter beside a control
+          // is the control's own step, which is what keeps a menu's
+          // edge-to-text distance close to the reference's.
+          xs: '{core.spacing.fixed.1}',
           sm: '{core.spacing.4}',
           md: '{core.spacing.6}',
           lg: '{core.spacing.8}',
@@ -1570,6 +1579,11 @@ export const baseTheme: ThemeTokens = {
       // RawValue rationale: rgba() composing a token ref cannot be expressed
       // as a single TokenRef — see model.md §8 RawValue inventory.
       scrim: 'rgba(0, 0, 0, {semantic.opacity.scrim})',
+      // Boundary of an occluding surface. neutral.500 clears the ≥3:1
+      // separator floor against every stratum an overlay can land on in this
+      // mode — the pairing that proves it is `colors.test.ts` › "occluding
+      // boundary", which also reports the ratios.
+      outline: '{core.colors.neutral.500}',
     },
 
     // -- Opacity ------------------------------------------------------------
@@ -2210,6 +2224,14 @@ export const darkAlternate: ModeOverride = {
         overlay: '{core.colors.neutral.700}',
         blocking: '{core.colors.neutral.700}',
       },
+    },
+    overlay: {
+      // The boundary inverts with the canvas: light mode needs a dark hairline
+      // to bound a light surface, dark mode a light one. neutral.300 is the
+      // step that clears the ≥3:1 separator floor against every stratum in
+      // this mode, including the tonal lifts an overlay lands on — the
+      // "occluding boundary" pairing reports the ratios.
+      outline: '{core.colors.neutral.300}',
     },
   },
 };

@@ -21,6 +21,7 @@ import { buildChoosableRowStyle } from '../../tokens/choosableRow';
 import { resolveConsequenceInk } from '../../tokens/consequenceInk';
 import { fslVar } from '../../tokens/escapeHatch';
 import { focusRingOutline } from '../../tokens/focusRing';
+import { OCCLUDING_OUTLINE } from '../../tokens/occludingSurface';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import {
   resolveSurfaceBoundStyle,
@@ -180,7 +181,10 @@ export const Menu = <T extends object>({
             borderRadius: vars.radii.surface,
             borderWidth: vars.border.outline.surface.width,
             borderStyle: vars.border.outline.surface.style,
-            borderColor: colors?.border?.default,
+            // An occluding surface's boundary is infrastructure, not voice
+            // (CONTRACT §3.5) — see the helper for why the role's own edge
+            // cannot carry the ≥3:1 separator duty.
+            borderColor: OCCLUDING_OUTLINE,
             // A hosting surface publishes itself (CONTRACT §3.4); only the
             // page-like primary voice does — a voiced surface keeps its voice.
             ...voicedSurface({
@@ -204,7 +208,11 @@ export const Menu = <T extends object>({
             {
               boxSizing: 'border-box',
               outline: 'none',
-              padding: vars.spacing.inset.surface.sm,
+              // The anchored/row-framing step (CONTRACT §3.4 companion,
+              // F-045): a gutter beside rows that carry their own
+              // `inset.control`, fixed so the relationship to those fixed-height
+              // rows does not drift with the viewport.
+              padding: vars.spacing.inset.surface.xs,
               display: 'flex',
               flexDirection: 'column',
               ...(vars.text.label.md as React.CSSProperties),

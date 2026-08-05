@@ -920,3 +920,95 @@ Re-litigation answers:
   step per valence. If a future case genuinely needs the non-text floor, that
   is a registry discussion about a `glyph` dimension, not a threshold carve-out
   in the guard.
+
+### ADR-027: A surface that occludes gets a cross-cutting boundary; the anchored inset is its own fixed step
+
+Status: accepted (2026-08-04)
+Tags: colors, spacing, cross-cutting, overlay, F-044, F-045, closes:F-044, closes:F-045
+
+Two tokens, one root cause: **`elevation` is the only family that knows a
+surface floats.** Every geometry and colour family treats "surface" as one
+thing — `radii.surface`, `outline.surface`, `inset.surface`,
+`informational.{role}.border` — while `elevation` alone distinguishes four
+strata. So an occluding surface inherited the edge and the padding of an
+embedded one, and the P3 Overlay round measured both.
+
+**`semantic.overlay.outline`** — the boundary of a surface that covers content.
+Cross-cutting per model.md §6, sibling of `scrim`, and the family is already
+the right home: `scrim` is what an occluding surface puts _behind_ itself, this
+is what it puts _around_ itself. The §6 gate: occlusion is neither a `role`
+(emphasis/valence) nor a `state` (runtime), and it **crosses UX contexts** — a
+Menu is `informational`, a Toast is `feedback`, and both cover content — so the
+grammar cannot ask for it in a single token. Registration needed no registry
+change: `semantic.overlay.` already maps to `--tt-overlay-` with DTCG `color`.
+
+`colors.md` § Stacking already assigned the duty this meets: the surface
+outline is the **secondary separator** and owes _"≥ 3:1 contrast against the
+adjacent background … even when shadow is suppressed (high-contrast
+preferences, print)"_. `{ux}.{role}.border.default` cannot carry it because it
+carries the opposite duty — an embedded card's decorative edge and a divider,
+where a hairline is deliberate and listed in the border pairing's accepted-soft
+inventory. Measured, that hairline read **1.31:1 light / 1.67:1 dark** against
+the page, so with shadows suppressed a menu was an unbounded rectangle.
+
+The value is one token per mode, and that is a measurement rather than a
+convenience: light `neutral.500`, dark `neutral.300` each clear 3:1 against
+_every_ stratum an overlay can land on. A per-stratum family was the first
+design and the measurement retired it — nothing needed per-stratum granularity.
+
+**`semantic.spacing.inset.surface.xs`** — the anchored / row-framing step.
+`inset.surface`'s tightest step was 16–24px and every anchored overlay read it:
+a menu's gutter was 24px around fixed 32px rows (34% of the surface's height),
+a tooltip's 24/36px for one line, against an 8px reference. No vocabulary grew
+— `spacing.md` already lists `xs` and `gap.stack.xs` ships. **Fixed, not
+fluid**, and that is ADR-022's own argument one scale out: the step's whole
+outcome is its relationship to fixed-height children, and measured before the
+change the gutter moved 16px → 24px across viewports while every row stayed
+exactly 32.0px. It therefore joins `inset.control` in the fixed-px contract
+rather than the fluid aliasing one — the guard was renamed to say so.
+
+Guards: the cross-role inventory gains **"occluding boundary"** — a
+cross-stratum pair, which is precisely why the same-role border extractor
+structurally could not see the defect (it evaluates an edge against its own
+role's fill and lists the result as accepted-soft: correct for what it audits,
+blind to the pair that carries the signal). The ordering guard gains `xs < sm`,
+compared at the engine's floor because the two sides now have different shapes.
+
+Rejected: retuning `informational.primary.border.default` to clear 3:1 (one
+token, but it darkens every card edge in the system to fix a different class's
+problem — and it would make the accepted-soft inventory self-contradictory);
+`elevation.edge.*` as a per-stratum companion to `tonal` (defensible, and the
+measurement showed the granularity is unused — one value per mode covers every
+stratum, so this would be membership guessing); making the overlays read
+`elevation.tonal.*` for their fill (they should, and it is filed separately as
+F-048 — but it reaches 1.67:1 at best in dark and nothing at all in light, so
+it cannot close F-044 and it changes what `evaluation` means on Overlay);
+retuning `inset.surface.sm` instead of adding `xs` (`Box`/`Surface` publish
+`sm` as a caller-facing step — retuning it changes an API surface to fix a
+different class).
+
+Cost: two registered semantic tokens (MINOR per governance.md), one of them a
+new required member on `SemanticOverlay` and one on the shared `InsetSteps` —
+additive for every `overrides`/`extends`-authored theme, a one-line addition
+for a hypothetical complete-`base` theme, the same class as `focus.ring.offset`
+(F-020) and `consequence` (ADR-025).
+
+Anchors: `src/families/overlay.ts`, `src/families/spacing.ts`,
+`src/baseTheme.ts` (both values + the dark remap), `colors.test.ts`
+("occluding boundary"), `spacing.test.ts` (the fixed-inset contract),
+colors.md § Stacking + § Cross-cutting, model.md §6, spacing.md,
+`docs/fsl-studio/FRICTION.md` F-044/F-045.
+
+Re-litigation answers:
+
+- "Why is the boundary not evaluation-driven?" → it says "your content resumes
+  here", which is infrastructure, the same argument that gives the focus ring
+  one colour. And nothing is lost: measured, all three informational roles
+  resolved the _same_ border value in both modes, so `evaluation` never varied
+  an overlay's edge.
+- "Why does a Dialog still pad at `md`?" → it frames content, not rows. The
+  discriminant for `xs` is whether the padding gutters children that carry
+  their own inset, not whether the surface floats.
+- "Is `xs` the same value as `inset.control.sm`?" → yes, deliberately: a gutter
+  beside a control is the control's own step, which is what keeps the
+  edge-to-text distance close to the reference's.

@@ -344,10 +344,11 @@ Core palette values are **immutable across modes**; modes remap which core token
 
 ## Cross-cutting tokens (siblings of `semantic.colors.*`)
 
-Three tokens carry **system-wide defaults** that no `{ux}` owns. They live as siblings of `semantic.colors.*` per [model.md §6](../model.md#6-no-parallel-vocabulary), not inside it:
+Four tokens carry **system-wide defaults** that no `{ux}` owns. They live as siblings of `semantic.colors.*` per [model.md §6](../model.md#6-no-parallel-vocabulary), not inside it:
 
 - `semantic.focus.ring.color` — system focus indicator color
 - `semantic.overlay.scrim` — modal backdrop
+- `semantic.overlay.outline` — boundary of a surface that **occludes** content
 - `semantic.consequence.destructive.ink` — foreground for a destructive part that paints no surface
 
 They are **not** parallel vocabulary: `{ux}.{role}.border.focused` answers _"what does this `{ux}`'s own edge become while focused?"_; `semantic.focus.ring.color` answers _"what marks focus?"_. Likewise `{ux}.{valence}.text` answers _"what is this `{ux}`'s valence ink on its own surfaces?"_; the consequence ink answers _"what marks a destructive part that paints nothing?"_.
@@ -389,7 +390,7 @@ Multiple `informational` surfaces commonly overlap in the visual hierarchy — a
 Differentiation between stacked `informational` surfaces is paid in this order — **never in colour**:
 
 1. **`elevation`** is the primary separator. `Overlay → elevation.surface.overlay`, `Structure`/`Collection` → `elevation.surface.flat | raised`. Drop shadows are local to each level, so the rule survives arbitrary nesting (Card inside Dialog inside Drawer): each level paints its own shadow over whatever sits beneath it.
-2. **`border.outline.surface`** is the secondary separator. A 1px outline at ≥ 3:1 contrast against the adjacent background guarantees a perceptual edge even when shadow is suppressed (high-contrast preferences, print).
+2. **`border.outline.surface`** is the secondary separator. A 1px outline at ≥ 3:1 contrast against the adjacent background guarantees a perceptual edge even when shadow is suppressed (high-contrast preferences, print). **Which colour that outline takes depends on whether the surface occludes.** An _embedded_ surface (a card, a panel in the flow) draws `{ux}.{role}.border.default` — a deliberate hairline, listed in the border pairing's soft inventory, because losing its edge loses decoration. A surface that **covers** content draws `semantic.overlay.outline`, the cross-cutting boundary, because losing _its_ edge loses the information about where the covered content resumes. One token cannot be both, and the duty above belongs to the second.
 3. **Tonal step displacement** is the optional reinforcement, delivered through `elevation.tonal.*` — **not** a second background token. By default the page and every contained `informational` surface resolve from the _same_ token (`informational.primary.background.default`); there is no separate `page` colour role, and none should be added. When a theme wants a raised surface to read as a literal step lighter/darker than the page (the classic "grey page, white cards", or dark-mode lifted surfaces), it maps `elevation.tonal.{raised,overlay,blocking}` to a surface-colour overlay on top of the shared background. The page (flat stratum) has no tonal overlay, so the net effective colours differ by one step while the base colour vocabulary stays single-sourced. This keeps [Rules of Engagement #4](#rules-of-engagement-non-negotiable) intact: the colour token is not carrying depth — `elevation` is.
 
 > **Why not two background tokens.** Page-vs-card is a stratum distinction, and strata are an `elevation` axis, not a `role` axis (`role` is emphasis/valence, §Role Coverage). Splitting the page background into its own colour role would encode depth in colour — the exact move Rule #4 forbids. The single `informational.primary.background.default` + `elevation` (shadow) + `elevation.tonal` (surface lift) + `border.outline.surface` fully expresses the stack.

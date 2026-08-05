@@ -54,6 +54,14 @@ are undefined and components render unstyled.
   destructive PEER among siblings keeps its rung and sets consequence; a
   destructive COMMAND that should be the loudest thing on the surface is
   evaluation="negative". Neither implies the other.
+- Surfaces come in two kinds, and it changes their edge and their padding:
+  OCCLUDING (popover, menu, tooltip, dialog, drawer, toast) draws
+  vars.overlay.outline — the cross-cutting boundary that clears the >=3:1
+  separator floor so the surface survives shadow suppression (CONTRACT §3.5) —
+  and pads at inset.surface.xs, the fixed anchored step. EMBEDDED (Surface,
+  Box, dividers, field frames) keeps informational.{role}.border, a deliberate
+  hairline, and the fluid inset.surface.{sm,md,lg} steps. A Dialog is the one
+  occluding surface that still pads at `md`: it frames content, not rows.
 - composition (prop on leaves) — slot the element plays inside a parent:
   'primaryAction' | 'secondaryAction' | 'dismissAction' … DialogActions
   reorders children by it per platform convention.

@@ -8,6 +8,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
+import { OCCLUDING_OUTLINE } from '../../tokens/occludingSurface';
 import { PANEL_WIDTH, type PanelWidth } from '../../tokens/panelWidth';
 import { voicedSurface } from '../../tokens/surfaceScope';
 
@@ -188,7 +189,8 @@ const buildSurfaceStyle = ({
     // A hosting surface publishes itself (CONTRACT §3.4); only the
     // page-like primary voice does — a voiced surface keeps its voice.
     ...voicedSurface({ evaluation, color: colors?.background?.default }),
-    borderColor: colors?.border?.default,
+    // Occluding boundary (CONTRACT §3.5).
+    borderColor: OCCLUDING_OUTLINE,
     borderStyle: vars.border.outline.surface.style,
     borderWidth: vars.border.outline.surface.width,
     boxShadow: vars.elevation.surface.overlay,

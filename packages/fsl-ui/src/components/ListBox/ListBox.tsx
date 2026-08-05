@@ -84,7 +84,8 @@ export const ListBox = <T extends object = object>({
         display: 'flex',
         flexDirection: 'column',
         gap: vars.spacing.gap.stack.xs,
-        padding: vars.spacing.inset.surface.sm,
+        // Row-framing gutter, not a page inset (F-045).
+        padding: vars.spacing.inset.surface.xs,
         borderRadius: vars.radii.surface,
         borderWidth: vars.border.outline.surface.width,
         borderStyle: vars.border.outline.surface.style,

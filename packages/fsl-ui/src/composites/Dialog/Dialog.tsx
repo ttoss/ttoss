@@ -13,6 +13,7 @@ import {
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { fslVar } from '../../tokens/escapeHatch';
+import { OCCLUDING_OUTLINE } from '../../tokens/occludingSurface';
 import { voicedSurface } from '../../tokens/surfaceScope';
 import { createPresenceScope } from '../scope';
 
@@ -171,6 +172,12 @@ type InformationalColors =
 // Hosts override via the §7 escape hatches below, not by editing these.
 const DIALOG_MAX_WIDTH_DEFAULT = 'min(500px, 90vw)';
 const DIALOG_MAX_HEIGHT_DEFAULT = '90vh';
+// A floor as well as a ceiling: with only a maximum, a dialog whose body is one
+// short sentence collapses to its content and the action row becomes the widest
+// thing in it — the `ConfirmationDialog` shape exactly. 288px is the
+// reference's own minimum for both its standard and its alert dialog, and it
+// stays inside the 90vw clamp on a 320px viewport (F-046).
+const DIALOG_MIN_WIDTH_DEFAULT = 'min(288px, 90vw)';
 
 /**
  * The active enter/exit motion spec, or `null` when the surface is at rest.
@@ -228,13 +235,15 @@ const buildModalSurfaceStyle = ({
   return {
     boxSizing: 'border-box',
     // Host knobs (CONTRACT.md §7): override via CSS on [data-scope="dialog"].
+    minWidth: fslVar('--fsl-dialog-min-width', DIALOG_MIN_WIDTH_DEFAULT),
     maxWidth: fslVar('--fsl-dialog-max-width', DIALOG_MAX_WIDTH_DEFAULT),
     maxHeight: fslVar('--fsl-dialog-max-height', DIALOG_MAX_HEIGHT_DEFAULT),
     overflow: 'auto',
     borderRadius: vars.radii.surface,
     borderWidth: vars.border.outline.surface.width,
     borderStyle: vars.border.outline.surface.style,
-    borderColor: colors?.border?.default,
+    // Occluding boundary (CONTRACT §3.5).
+    borderColor: OCCLUDING_OUTLINE,
     boxShadow: vars.elevation.surface.overlay,
     // A hosting surface publishes itself (CONTRACT §3.4); only the
     // page-like primary voice does — a voiced surface keeps its voice.

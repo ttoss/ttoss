@@ -756,6 +756,33 @@ const CROSS_ROLE_TEXT_PAIRINGS: ReadonlyArray<{
     threshold: WCAG.AA_NORMAL,
   },
   {
+    // fsl-ui F-044. `colors.md` § Stacking names `border.outline.surface` the
+    // **secondary separator** and requires "a 1px outline at ≥ 3:1 contrast
+    // against the adjacent background … even when shadow is suppressed
+    // (high-contrast preferences, print)". For an *occluding* surface that
+    // adjacent background is whatever it covers — the page, either tonal lift,
+    // a row fill, a voiced surface — never its own fill, so the same-role
+    // border extractor structurally cannot audit it: it pairs an edge against
+    // the background of its own role and lists the result in the accepted-soft
+    // inventory. Correct for what it audits (an embedded card's edge carries no
+    // separation duty and is a deliberate hairline); blind to the pair that
+    // carries the signal. This entry is that pair.
+    //
+    // One token rather than a per-stratum family precisely because one value
+    // per mode clears the floor against all of them — which this test is what
+    // proves.
+    part: 'occluding boundary',
+    ink: 'semantic.overlay.outline',
+    surfaces: [
+      ...INFORMATIONAL_STRATA,
+      'semantic.colors.input.primary.background.default',
+      'semantic.colors.informational.muted.background.default',
+      'semantic.colors.informational.secondary.background.default',
+    ],
+    // A boundary is a non-text indicator.
+    threshold: WCAG.AA_LARGE,
+  },
+  {
     // fsl-ui F-024 / CONTRACT §3.4. The quiet rung's resting fill follows the
     // surface its host *published* (`--fsl-surface`), so its resting ink can
     // land on any published surface rather than only the rung's own token.

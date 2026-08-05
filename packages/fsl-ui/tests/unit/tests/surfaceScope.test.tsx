@@ -15,7 +15,16 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vars } from '@ttoss/fsl-theme/vars';
-import { ActionButton, Box, Button, Surface, ToggleButton } from 'src/index';
+import {
+  ActionButton,
+  Box,
+  Button,
+  Menu,
+  MenuItem,
+  MenuTrigger,
+  Surface,
+  ToggleButton,
+} from 'src/index';
 import {
   publishSurface,
   quietRestingFill,
@@ -125,6 +134,31 @@ describe('surfaceScope — hosting surfaces publish what they paint', () => {
       el.style.backgroundColor
     );
     expect(el.style.backgroundColor).toBe(vars.elevation.tonal!.raised);
+  });
+
+  test('a voiced overlay keeps its voice and publishes nothing', async () => {
+    // The `voicedSurface` half of the rule, asserted through a real overlay:
+    // only the page-like `primary` voice is a stratum. This case shipped
+    // untested in the F-024 commit — the coverage gate caught it on the next
+    // run, which is the gate working.
+    const user = userEvent.setup();
+    render(
+      <MenuTrigger>
+        <Button>Open</Button>
+        <Menu evaluation="muted">
+          <MenuItem>Rename</MenuItem>
+        </Menu>
+      </MenuTrigger>
+    );
+    await user.click(screen.getByRole('button', { name: 'Open' }));
+
+    const surface = document.querySelector<HTMLElement>(
+      '[data-scope="menu"][data-part="root"]'
+    )!;
+    expect(surface.style.backgroundColor).toBe(
+      vars.colors.informational.muted.background!.default
+    );
+    expect(surface.style.getPropertyValue('--fsl-surface')).toBe('');
   });
 
   test('a page-voiced Box publishes; transparent and voiced ones do not', () => {

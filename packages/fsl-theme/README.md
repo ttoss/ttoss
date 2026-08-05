@@ -37,7 +37,8 @@ One entry per semantic family. Use `vars.*` for typed CSS variable references; u
 | Family      | Path shape                                                       | Leaf value                      |
 | ----------- | ---------------------------------------------------------------- | ------------------------------- |
 | colors      | `semantic.colors.{ux}.{role}.{dimension}.{state}`                | CSS color                       |
-| spacing     | `semantic.spacing.inset.{control,surface}.{sm,md,lg}`            | CSS length                      |
+| spacing     | `semantic.spacing.inset.control.{sm,md,lg}`                      | CSS length (fixed)              |
+|             | `semantic.spacing.inset.surface.{xs,sm,md,lg}`                   | CSS length (`xs` fixed)         |
 |             | `semantic.spacing.gap.{stack,inline}.{xs,sm,md,lg,xl}`           | CSS length                      |
 |             | `semantic.spacing.gutter.{page,section}`                         | CSS length / `clamp()`          |
 |             | `semantic.spacing.separation.interactive.min`                    | CSS length                      |
@@ -58,6 +59,7 @@ One entry per semantic family. Use `vars.*` for typed CSS variable references; u
 |             | `semantic.elevation.tonal.{raised,overlay,blocking}`             | CSS color (optional)            |
 | opacity     | `semantic.opacity.{scrim,loading,disabled}`                      | number in (0, 1)                |
 | overlay     | `semantic.overlay.scrim`                                         | CSS color with alpha            |
+|             | `semantic.overlay.outline`                                       | CSS color                       |
 | motion      | `semantic.motion.{feedback,emphasis,decorative}`                 | `{duration, easing}`            |
 |             | `semantic.motion.transition.{enter,exit}`                        | `{duration, easing}`            |
 | zIndex      | `semantic.zIndex.layer.{base,sticky,overlay,blocking,transient}` | integer                         |

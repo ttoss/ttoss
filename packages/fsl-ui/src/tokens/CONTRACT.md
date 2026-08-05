@@ -80,14 +80,15 @@ A component MUST use ONLY tokens from its Entity row.
 
 **Cross-cutting** (apply to ALL interactive entities — not in the table because they are entity-agnostic):
 
-| Token family     | Path                                                                              |
-| ---------------- | --------------------------------------------------------------------------------- | ------ | ------- | -------- | ----------- |
-| Focus ring       | `vars.focus.ring.width` / `.style` / `.color`                                     |
-| Consequence ink  | `vars.consequence.destructive.ink` — read via `resolveConsequenceInk` only (§3.3) |
-| Disabled opacity | `vars.opacity.disabled`                                                           |
-| Scrim opacity    | `vars.opacity.scrim`                                                              |
-| Scrim color      | `vars.overlay.scrim`                                                              |
-| Z-Index          | `vars.zIndex.layer.{base                                                          | sticky | overlay | blocking | transient}` |
+| Token family       | Path                                                                              |
+| ------------------ | --------------------------------------------------------------------------------- | ------ | ------- | -------- | ----------- |
+| Focus ring         | `vars.focus.ring.width` / `.style` / `.color`                                     |
+| Consequence ink    | `vars.consequence.destructive.ink` — read via `resolveConsequenceInk` only (§3.3) |
+| Occluding boundary | `vars.overlay.outline` — the edge of a surface that **covers** content (§3.5)     |
+| Disabled opacity   | `vars.opacity.disabled`                                                           |
+| Scrim opacity      | `vars.opacity.scrim`                                                              |
+| Scrim color        | `vars.overlay.scrim`                                                              |
+| Z-Index            | `vars.zIndex.layer.{base                                                          | sticky | overlay | blocking | transient}` |
 
 ### §1.1 — Mapping Rationale
 
@@ -417,6 +418,46 @@ Legibility is guarded where the values live: fsl-theme's cross-role inventory
 against every publishable surface, at the rung's own floor, in every bundle
 and both modes — and the excluded selection fill is excluded _because it fails
 there_, which the entry states.
+
+### §3.5 — A surface that occludes owes a boundary
+
+> **A surface that covers content draws `vars.overlay.outline`. A surface that
+> sits in the flow keeps its role's hairline.**
+
+`colors.md` § Stacking orders the separators — `elevation` first, the surface
+outline second, `elevation.tonal` third — and states the second one's duty in
+its own words: _"a 1px outline at ≥ 3:1 contrast against the adjacent
+background guarantees a perceptual edge **even when shadow is suppressed
+(high-contrast preferences, print)**"_. An overlay's fill is byte-identical to
+the page by design (one background token for the page and everything on it), so
+`elevation` and that outline are all it has — and under `forced-colors` or print
+the shadow is gone.
+
+`{ux}.{role}.border.default` cannot carry that duty because it already carries
+the opposite one: an embedded card's decorative edge and a divider inside
+content, where a near-invisible hairline is deliberate — it is a listed member
+of the border pairing's accepted-**soft** inventory. Measured before this
+shipped, that hairline read **1.31:1 in light and 1.67:1 in dark** against the
+page it was meant to separate from, so a menu with shadows suppressed was an
+unbounded rectangle of page-coloured text (F-044).
+
+|                 |                                                                                                              |
+| --------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Occludes**    | popover, menu, tooltip, dialog panel, drawer panel, toast → `vars.overlay.outline` (via `OCCLUDING_OUTLINE`) |
+| **In the flow** | `Surface`, `Box`, dividers, field frames → `{ux}.{role}.border.*`, unchanged                                 |
+| **Not a voice** | the boundary is one system colour, like the focus ring — `evaluation` keeps driving fill and ink             |
+
+The last row costs nothing that existed: measured across both modes,
+`informational.{primary,secondary,muted}.border.default` all resolved the
+**same** value, so an Overlay's `evaluation` never varied its edge.
+
+Guarded on both sides. fsl-theme's cross-role inventory pairs the token against
+every stratum an overlay can land on ("occluding boundary") — a cross-stratum
+pair, which is why the same-role border extractor structurally could not see the
+defect. `tests/unit/tests/occludingSurface.test.tsx` pins which token each
+surface reads, **including that an embedded surface does not** — without that
+half, "put the boundary everywhere" would pass, and that is the theme-wide
+retune this contract exists to avoid.
 
 ---
 
