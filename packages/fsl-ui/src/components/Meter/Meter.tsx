@@ -6,6 +6,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
+import { FEEDBACK_RAIL_FILL, RAIL_BASE } from '../../tokens/rail';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -33,21 +34,13 @@ export const meterMeta = {
 
 type FeedbackColors = (typeof vars.colors.feedback)[EvaluationsFor<'Feedback'>];
 
-// Track thickness: the thin pill rail shared with ProgressBar (P3 slice 3 —
-// reference-grade activity/level silhouette, measured 6px in Spectrum 2).
-const TRACK_THICKNESS = '6px';
-
-/** Track (body) style — the neutral rail the fill sits in. Reads the `muted`
- * evaluation (the Feedback entity's quiet surface) so the rail stays neutral
- * while the selected evaluation drives the fill. */
+/** Track (body) style — the neutral rail the fill sits in. Geometry comes from
+ * the shared rail (`TRACK_RAIL`, one silhouette across the three rails); the
+ * colour is the entity's quiet **surface**, not its border (F-050). */
 const buildTrackStyle = (): React.CSSProperties => {
   return {
-    position: 'relative',
-    overflow: 'hidden',
-    width: '100%',
-    height: TRACK_THICKNESS,
-    backgroundColor: vars.colors.feedback.muted.border?.default,
-    borderRadius: vars.radii.round,
+    ...RAIL_BASE,
+    backgroundColor: FEEDBACK_RAIL_FILL,
   };
 };
 

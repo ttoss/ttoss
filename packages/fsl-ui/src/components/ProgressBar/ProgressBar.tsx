@@ -7,6 +7,7 @@ import {
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { ANIMATION_NAMES, ensureKeyframes } from '../../tokens/keyframes';
+import { FEEDBACK_RAIL_FILL, RAIL_BASE } from '../../tokens/rail';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -38,22 +39,14 @@ type FeedbackColors = (typeof vars.colors.feedback)[EvaluationsFor<'Feedback'>];
 // enough to read as "working", fast enough to read as "alive").
 const INDETERMINATE_FILL_WIDTH = '40%';
 const INDETERMINATE_CYCLE_DURATION = '1.2s';
-// Track thickness: a thin rail is the reference-grade activity silhouette
-// (P3 slice 3 review measured 6px in Spectrum 2); the label row above the
-// bar, not the rail, carries the reading size.
-const TRACK_THICKNESS = '6px';
-
-/** Track (body) style — the neutral rail the fill animates across. Reads the
- * `muted` evaluation (the Feedback entity's quiet surface) so the rail stays
- * neutral while the selected evaluation drives the fill. */
+/** Track (body) style — the neutral rail the fill animates across. Geometry
+ * comes from the shared rail (`TRACK_RAIL`, one silhouette across the three
+ * rails); the colour is the entity's quiet **surface**, not its border
+ * (F-050). */
 const buildTrackStyle = (): React.CSSProperties => {
   return {
-    position: 'relative',
-    overflow: 'hidden',
-    width: '100%',
-    height: TRACK_THICKNESS,
-    backgroundColor: vars.colors.feedback.muted.border?.default,
-    borderRadius: vars.radii.round,
+    ...RAIL_BASE,
+    backgroundColor: FEEDBACK_RAIL_FILL,
   };
 };
 

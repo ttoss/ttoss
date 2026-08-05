@@ -1116,3 +1116,68 @@ describe('Semantic color grammar — roles within a context are distinguishable'
     });
   }
 });
+
+// ---------------------------------------------------------------------------
+// The rail: a fill against the track it sits in (fsl-ui F-050)
+//
+// The two suites above compare *states within a role* and *roles within a
+// context*. Neither could see the pair a `ProgressBar` or `Meter` actually
+// paints: the fill is `feedback.{role}.background.default` and the rail behind
+// it is `feedback.muted` — one role's background against another role's
+// resting surface, across roles *and* across dimensions.
+//
+// It shipped broken. The rail read `muted.border`, which the dark alternate
+// remaps *lighter* so an edge stays visible on a dark canvas, and it landed on
+// `neutral.500` — byte-identical to `feedback.primary.background`'s own dark
+// value. `<ProgressBar evaluation="primary" />` rendered a uniform grey rail
+// with no visible fill, and every existing pairing passed: the border suite
+// audits an edge against its own role's fill, the text suite audits ink.
+// The third instance of the F-043/F-044 asymmetry class — the inventories are
+// organised by token kind, the defects live in what a component paints next to
+// what.
+//
+// The rule is deliberately identity, not contrast. How *much* a fill must
+// differ from its rail is a design judgement the reference itself does not
+// hold uniformly (its own dark accent-on-track measures 2.56:1), but a fill
+// that resolves to the rail's own value renders nothing at all, in any theme.
+// ---------------------------------------------------------------------------
+
+describe('Semantic color grammar — a Feedback fill differs from the rail behind it', () => {
+  const RAIL = 'semantic.colors.feedback.muted.background.default';
+
+  for (const { label, base, alt } of bundleEntries) {
+    describe(label, () => {
+      for (const [mode, tokens] of [
+        ['base', base],
+        ['alt', alt],
+      ] as const) {
+        if (!tokens) continue;
+
+        test(`${mode}: no feedback role's resting fill collapses onto the rail`, () => {
+          const rail = tokens[RAIL];
+          // A theme that does not paint the quiet surface has no rail to
+          // collapse onto; the components' own guard pins that it is read.
+          if (!isHexColor(rail)) return;
+
+          const collapsed = Object.keys(tokens)
+            .filter((key) => {
+              return (
+                key.startsWith('semantic.colors.feedback.') &&
+                key.endsWith('.background.default') &&
+                // `muted` *is* the rail — it is the fill only when a caller
+                // asks for the quiet evaluation, which paints no bar.
+                !key.includes('.muted.') &&
+                isHexColor(tokens[key]!) &&
+                tokens[key] === rail
+              );
+            })
+            .map((key) => {
+              return `${key} == rail (${rail})`;
+            });
+
+          expect(collapsed).toEqual([]);
+        });
+      }
+    });
+  }
+});

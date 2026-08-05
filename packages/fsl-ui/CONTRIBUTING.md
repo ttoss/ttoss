@@ -1173,3 +1173,95 @@ Re-litigation answers:
 - "Should `keyboard.test.tsx` absorb this?" → no. That suite is per-member key
   handling; this one is the family relation, and its discriminants only make
   sense read together.
+
+### ADR-033: A rail is one silhouette in `src/tokens/rail.ts`, and its fill is the entity's quiet **surface** — not its border
+
+Status: accepted (2026-08-05)
+Tags: colors, spacing, feedback, input, P3, review-round-3, F-050, F-051, F-052, closes:F-050
+
+Decision: the thin pill track a value travels along — `ProgressBar`'s activity
+bar, `Meter`'s level bar, `Slider`'s range track — is stated once in
+`src/tokens/rail.ts` (`TRACK_RAIL`, `RAIL_BASE`, `FEEDBACK_RAIL_FILL`), and the
+two `Feedback` rails read `feedback.muted.background.default` rather than
+`feedback.muted.border.default`.
+
+**The colour half fixed a blocker.** The rail read the entity's quiet _border_,
+which the dark alternate remaps **lighter** — correct for an edge on a dark
+canvas — landing on `neutral.500`, which is also
+`feedback.primary.background.default` in dark. Measured **1.00:1**:
+`<ProgressBar evaluation="primary" value={40} />` painted a uniform grey rail
+with no visible fill, in both the base and `bruttal` bundles. Only the
+achromatic evaluation was affected, and that asymmetry is the finding's own
+evidence: the other four fills sit at 1.02–1.04:1 against the old rail and stay
+perfectly legible, because a contrast ratio measures luminance and they differ
+in hue. `primary` is the one evaluation where luminance is the only channel.
+
+So the rule pinned is **identity, not contrast**. How much a fill must differ
+from its rail is a design judgement the reference itself does not hold
+uniformly (its own dark accent-on-track measures 2.56:1), but a fill that
+resolves to the rail's own value renders nothing, in any theme.
+
+**Reuse, not growth.** `feedback.muted.background` is what both the family docs
+and `baseTheme`'s own `feedback` comment already called the rail — _"`muted`
+stays a tinted neutral surface — the rail/track color for Feedback fills
+(ProgressBar, Meter)"_. The code had diverged from a ruling written in two
+places, which `CLAUDE.md`'s own rule says to read before deciding anything. Dark
+lands on `neutral.700` (`#3d3d3d`), four units off the reference's dark track
+(`rgb(57,57,57)`), and the reference confirms the direction: a rail **darkens**
+in dark while a border lightens.
+
+**The geometry half retires three copies of one ruling.** P3 slice 3 decided
+"three rails, one answer" and the answer was then written out three times in two
+units — `'6px'` in `ProgressBar`, `'6px'` in `Meter`, `'0.375rem'` in `Slider`.
+`TRACK_RAIL.thickness` is now the single source. `TRACK_RAIL.minWidth` adds the
+floor the reference sets (48px) and we had none of: a rail is `width: 100%`, so
+in a narrow cell it collapsed toward zero while the component still rendered —
+F-046's shape one family over. The 768px **ceiling** was deliberately not taken;
+it is authorial, it needs a default width to pair with, and F-052 records it.
+
+`RAIL_BASE` is shared by the two `Feedback` rails only, and the guard asserts
+why: it clips its fill to the pill, which is right for a bar and wrong for
+`Slider`, whose thumb overflows the rail on purpose. `Slider` takes the
+thickness and nothing else — its rail colour is still a borrow
+(`input.primary.background.disabled`, a _state_ standing in for a _part_), which
+is F-051's open half.
+
+Guarded twice, because the two claims live in different packages. fsl-ui
+`rail.test.tsx` pins **which token** each part reads, from both sides — the
+quiet surface is read and the quiet border is not — since asserting only the
+first would let a refactor reach the border by another path. fsl-theme's colour
+suite pins **the values differ**, which only resolved tokens can see: no
+`feedback` role's resting fill may equal the rail, in every mode of every
+bundle. That guard was verified to fail on injection, reproducing the shipped
+defect verbatim (`feedback.primary.background.default == rail (#6f6f6f)`) in
+both bundles' dark alternate.
+
+Rejected: a dedicated rail token now (F-051's option (a) — it is the right end
+state and the analysis is written, but nothing about it is urgent once the
+user-visible half is closed and guarded, and it changes fsl-theme's published
+surface); retuning the dark alternate's `feedback.primary.background`
+(`neutral.500` is deliberate there — the filled neutral chip must stand off the
+dark strata, with a documented 5.0:1 against its own ink, and `Badge`/
+`StatusLight` read it); a contrast threshold on the fill/rail pair (the
+reference does not hold one, and a bar's value is also published as text).
+
+Cost: in light the rail is quieter than the reference's — **1.14:1** against the
+page versus their 1.40:1 — so a bar's total extent reads more faintly than
+before. That is the half a dedicated address would recover, and it is stated in
+F-050 rather than absorbed.
+
+Anchors: `src/tokens/rail.ts`, `tests/unit/tests/rail.test.tsx`,
+`packages/fsl-theme/tests/unit/tests/theme/families/colors.test.ts`
+(§"a Feedback fill differs from the rail behind it"),
+`docs/fsl-studio/FRICTION.md` F-050…F-052, `INTERNAL/ROADMAP.md` §P3 round 3.
+
+Re-litigation answers:
+
+- "Why not give the rail its own token?" → it should have one; F-051 costs the
+  options and recommends it at the version boundary. The reuse closes the
+  defect today without changing another package's public surface.
+- "The other four fills measured ~1.03:1 too — why were they fine?" → hue.
+  Contrast ratio is luminance-only, so it understates a chromatic pair. The
+  screenshots are in the round entry; only `primary` was invisible.
+- "Should `Slider` spread `RAIL_BASE`?" → no, and the guard says so: the base
+  clips, and the Slider thumb must overflow its rail.
