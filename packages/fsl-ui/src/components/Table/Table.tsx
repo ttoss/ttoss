@@ -16,6 +16,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
+import { resolveCollectionRowBackground } from '../../tokens/collectionRow';
 import { FOCUS_RING_INSET, focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import { publishSurface } from '../../tokens/surfaceScope';
@@ -258,6 +259,8 @@ export const TableRow = <T extends object = object>(
   props: TableRowProps<T>
 ) => {
   const c: InputColors = vars.colors.input.primary;
+  const containerBackground =
+    vars.colors.informational.primary.background?.default;
 
   return (
     <RACRow
@@ -288,12 +291,20 @@ export const TableRow = <T extends object = object>(
           // (CONTRACT §3.4): transient row states do not republish — measured,
           // the dark row hover fill fails the destructive ink's floor — and a
           // selection fill is a voice besides. The spread order makes the
-          // dynamic paint win while the publication stays at rest.
-          ...publishSurface(c?.background?.default),
-          backgroundColor: resolveInteractiveStyle(c?.background, {
-            isDisabled,
-            isSelected,
-            isHovered: isHovered && selectionMode !== 'none',
+          // dynamic paint win while the publication stays at rest. The
+          // resting fill borrows the container's own colour, not
+          // `input.primary`'s (F-055, `resolveCollectionRowBackground`) — the
+          // dark alternate remaps the entity's own default to a filled-box
+          // value that only coincides with the container in light.
+          ...publishSurface(containerBackground),
+          backgroundColor: resolveCollectionRowBackground({
+            itemBackground: c?.background,
+            containerBackground,
+            flags: {
+              isDisabled,
+              isSelected,
+              isHovered: isHovered && selectionMode !== 'none',
+            },
           }),
           color: resolveInteractiveStyle(c?.text, {
             isDisabled,

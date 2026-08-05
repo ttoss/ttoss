@@ -1024,12 +1024,12 @@ Decision: the package distinguishes a surface that **covers content** from one
 that sits **in the flow**, and the distinction drives three things — the edge,
 the padding, and the size envelope (CONTRACT §3.5, and §3.4's companion step).
 
-|         | Occluding                                                                                                    | Embedded                                 |
-| ------- | ------------------------------------------------------------------------------------------------------------ | ---------------------------------------- |
-| Members | popover, menu, tooltip, dialog panel, drawer panel, toast                                                    | `Surface`, `Box`, dividers, field frames |
-| Edge    | `vars.overlay.outline` via `OCCLUDING_OUTLINE`                                                               | `{ux}.{role}.border.*`, unchanged        |
-| Padding | `inset.surface.xs` (fixed, anchored) — except `Dialog`, which frames content rather than rows and keeps `md` | `inset.surface.{sm,md,lg}` (fluid)       |
-| Size    | a floor as well as a ceiling                                                                                 | caller-chosen                            |
+|         | Occluding                                                                                                            | Embedded                                 |
+| ------- | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| Members | popover, menu, tooltip, dialog panel, drawer panel, toast                                                            | `Surface`, `Box`, dividers, field frames |
+| Edge    | `vars.overlay.outline` via `OCCLUDING_OUTLINE`                                                                       | `{ux}.{role}.border.*`, unchanged        |
+| Padding | `inset.surface.xs` (fixed, anchored) — except `Dialog` and `Toast`, which frame prose rather than rows and keep `md` | `inset.surface.{sm,md,lg}` (fluid)       |
+| Size    | a floor as well as a ceiling                                                                                         | caller-chosen                            |
 
 **The root cause behind all four findings is one sentence: `elevation` is the
 only family that knows a surface floats.** Every other family treats "surface"
@@ -1099,6 +1099,20 @@ Re-litigation answers:
   so two components claiming the same stratum paint different colours in dark.
   It cannot close F-044 (1.67:1 at best) and it changes what `evaluation` drives
   on an Overlay, so it is its own decision.
+
+**Addendum 2026-08-06 — F-054 closed, `Toast` named as a second `md`
+exception.** F-054 filed two things together, both this table's own
+contradiction: `Toast` reads `inset.surface.md` while this table's original
+text named `Dialog` as the sole exception, with `Toast` still listed among
+the plain `xs` members. Measured in Chromium: forcing `ToastRegion` to the
+reference's desktop `toast-maximum-width` (336px) wraps a real description
+("Check the build log for details.") from one line to two — the same
+type-runs-a-step-larger relationship F-021/F-047 already established, now
+verified for Toast's own copy. So both halves close the same way: the code
+was right and the table was incomplete. `Toast` frames a title + description
+the way `Dialog` frames prose — neither is a row-framer — and the table above
+now says so. `TOAST_REGION_MAX_WIDTH` stays `420px` at every viewport,
+deliberately, with the wrap measurement recorded next to the constant.
 
 ### ADR-032: The Overlay family's behaviour is a published promise, so it is pinned as wiring; modality is asserted as reachability, not as `aria-modal`
 
@@ -1265,3 +1279,91 @@ Re-litigation answers:
   screenshots are in the round entry; only `primary` was invisible.
 - "Should `Slider` spread `RAIL_BASE`?" → no, and the guard says so: the base
   clips, and the Slider thumb must overflow its rail.
+
+### ADR-034: A Collection row's resting fill borrows the container's colour, not its own entity's idiom
+
+Status: accepted (2026-08-06)
+Tags: colors, collection, selection, P3, review-round-4, F-055, closes:F-055
+
+Decision: `GridListItem`, `ListBoxItem` and `TableRow` — the three Selection
+entities ADR-007 splits out of a Collection container — read their resting
+background through `resolveCollectionRowBackground` (`src/tokens/collectionRow.ts`),
+which overrides only the `default` key of `input.primary.background` with the
+hosting container's own resolved background before running the state cascade.
+Hover, active, selected and checked keep exactly the values they had — only
+the row's rest state changes, from the entity's own idiom to the container's.
+
+**The finding.** All three called `resolveInteractiveStyle(c?.background, flags)`
+with `c = vars.colors.input.primary`; with every flag `false` at rest that
+returns `input.primary.background.default` unconditionally. Measured in
+Chromium, both modes: in light that value is `core.colors.neutral.0`, byte-
+identical to the container's `informational.primary.background.default` — the
+row read flush against its container, correctly, and correctly by luck. The
+dark alternate remaps `input.primary.background.default` to `neutral.700` (a
+text field's filled-box look) while the container stays `neutral.900` — every
+row in `GridList`/`ListBox`/`Table` rendered a solid lighter block, at rest,
+with no hover or selection. The reference has no "row background, resting"
+token — `table-row-hover-color`/`-opacity` and `table-selected-row-background-*`
+exist; nothing for the unselected, unhovered state, because rows are
+transparent at rest by construction there.
+
+**Why not the `MenuItem`/ADR-015 fix.** That defect was identical in shape —
+a row painted a filled default it should not have — and closed by moving
+`MenuItem`'s default `evaluation` from `primary` to `muted`, because
+`action.muted.background.default` happens to equal the popover's own fill in
+both modes. `Selection` has no `evaluation` dimension to swap
+(`ENTITY_EVALUATION.Selection = []`, CONTRIBUTING §1), and no `input.*` role's
+`default` matches `informational.primary.background`'s dark value either —
+checked, this is F-051's shape one family over: the model has no address for
+"the container's own colour, read from inside an item that belongs to a
+different entity."
+
+**The fix is composition, not a new token.** The container's background is
+already in scope at every call site — the root component (`GridList`,
+`ListBox`, `Table`) reads the identical token to publish its own surface via
+`publishSurface`, and the item components now read the same static token
+directly. `resolveCollectionRowBackground` is the one place that override
+happens, so a future Collection member composes it instead of re-deriving the
+rule. `publishSurface`'s own call at each row moved from the item's own
+`c?.background?.default` to `containerBackground` to match — the published
+value must be what actually renders, per CONTRACT §3.4.
+
+Guarded from both sides in `tests/unit/tests/collectionRow.test.tsx`: the
+resting read matches the container, and the entity's own `default` is
+asserted **not** reached — without the second half, a refactor that
+reintroduced `c?.background?.default` at rest would pass the first assertion
+by coincidence in light and still be wrong in dark.
+
+Verified in Chromium: `Table`'s dark row fill went from `rgb(61,61,61)` to
+`rgb(22,22,22)` on its `rgb(22,22,22)` container; `GridList`/`ListBox` the
+same. Screenshotted both modes: rows sit flush against the surface at rest,
+the `checked` white pill and hover tint are unchanged.
+
+Rejected: a dedicated `semantic.rail`-style cross-cutting token for "no fill
+inside an Overlay's/Collection's own item" (F-051's own recommendation is
+already the registered analogue for the rail; this defect closes with data
+already in scope, so a new registration is not the minimal fix — revisit
+together with F-051 at the version boundary if a third shape needing the same
+address turns up); giving `Selection` an `evaluation` dimension solely to
+reach `muted` (nominal vocabulary growth for a mechanism `resolveCollectionRowBackground`
+already provides without it — the evidence rule); leaving it — the dark
+defect is real and visible, not a taste judgement call.
+
+Anchors: `src/tokens/collectionRow.ts`, `src/components/GridList/GridList.tsx`,
+`src/components/ListBox/ListBox.tsx`, `src/components/Table/Table.tsx`,
+`tests/unit/tests/collectionRow.test.tsx`, `docs/fsl-studio/FRICTION.md` F-055,
+`INTERNAL/ROADMAP.md` §P3 round 4.
+
+Re-litigation answers:
+
+- "Isn't this the same fix as ADR-015?" → same defect shape, different
+  mechanism. ADR-015 swapped which role's colours the row reads by changing
+  an `evaluation` prop that exists on `Action`. `Selection` has no such prop,
+  so the override happens once, inside the cascade, at the one key that was
+  wrong.
+- "Why not add a `Selection` `muted` idiom instead?" → there is no consumer
+  demanding a second Selection appearance — the row still reads
+  `input.primary` for every non-resting state. Only the resting key was wrong.
+- "Does this contradict `muted` being the system's 'no fill' idiom?" → no —
+  it implements the same idiom (rest = the surface's own colour) by the only
+  mechanism available to an entity that carries no emphasis dimension.
