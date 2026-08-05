@@ -378,9 +378,9 @@ reads `vars.consequence` or another family's negative ink directly —
 
 `colors.md` § Stacking informational surfaces makes the effective colour under
 a control a **composite no colour token can name** — the page and every
-contained surface share one background token, and depth is paid in
-`elevation.tonal.*` or in another family's fill (a table row paints
-`input.primary`). Only the element that painted the surface knows the result.
+contained surface share one background token, and depth is paid in shadow or
+in another family's fill (a table row paints `input.primary`). Only the
+element that painted the surface knows the result.
 The quiet rung (`muted`) paints "the surface's own colour" as an opaque token —
 byte-identical to the page and to every overlay, and wrong on every other
 surface: measured in the Studio, dark, a quiet row action painted `#161616` on
@@ -407,8 +407,10 @@ against the destructive ink. The **selection fill is a voice, not a
 stratum** — in dark it inverts to near-white, 1.5:1 against the muted ink.
 **Feedback fills and non-primary informational fills are voices too**: a
 toast's red and a muted Menu's grey are not strata the quiet inks are audited
-against, so only the page-like `primary` voice (and Surface's tonal strata)
-publishes.
+against, so only the page-like `primary` voice publishes — `Surface` included,
+now that it reads the same `informational.{evaluation}.background` fill the
+overlays do (F-048/ADR-037): a `muted` (default) `Surface` keeps its own
+voice and does not publish, same as a `muted` `Menu`.
 
 `--fsl-surface` lives in the §7 host-facing namespace on purpose: a **host
 application** that paints its own surface can publish the same property and

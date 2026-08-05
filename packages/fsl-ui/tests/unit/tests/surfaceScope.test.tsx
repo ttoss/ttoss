@@ -125,15 +125,34 @@ describe('surfaceScope — quiet consumers read the published surface at rest', 
 });
 
 describe('surfaceScope — hosting surfaces publish what they paint', () => {
-  test('Surface publishes its stratum, per level', () => {
-    render(<Surface level="raised">card</Surface>);
+  test('a primary Surface publishes its evaluation fill, per evaluation (F-048: not per level)', () => {
+    // `primary` is the page-like voice and is a stratum (`voicedSurface`),
+    // same as `Menu`/`Popover`/`Dialog`/`Drawer` at `evaluation="primary"`.
+    render(
+      <Surface level="raised" evaluation="primary">
+        card
+      </Surface>
+    );
     const el = document.querySelector<HTMLElement>(
       '[data-scope="surface"][data-part="root"]'
     )!;
     expect(el.style.getPropertyValue('--fsl-surface')).toBe(
       el.style.backgroundColor
     );
-    expect(el.style.backgroundColor).toBe(vars.elevation.tonal!.raised);
+    expect(el.style.backgroundColor).toBe(
+      vars.colors.informational.primary!.background!.default
+    );
+  });
+
+  test('a muted (default) Surface keeps its voice and publishes nothing (F-048)', () => {
+    render(<Surface level="raised">card</Surface>);
+    const el = document.querySelector<HTMLElement>(
+      '[data-scope="surface"][data-part="root"]'
+    )!;
+    expect(el.style.getPropertyValue('--fsl-surface')).toBe('');
+    expect(el.style.backgroundColor).toBe(
+      vars.colors.informational.muted!.background!.default
+    );
   });
 
   test('a voiced overlay keeps its voice and publishes nothing', async () => {

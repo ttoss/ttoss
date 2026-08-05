@@ -17,8 +17,11 @@ import {
  *
  * `colors.md` § Stacking informational surfaces: the page and every contained
  * surface resolve from the *same* background token, and depth is paid in
- * `elevation.tonal.*` or in another family's fill (a table row paints
- * `input.primary`). The effective colour under a control is therefore a
+ * shadow (`elevation.surface.*`) or in another family's fill (a table row
+ * paints `input.primary`) — not in colour, since `Surface` and every real
+ * overlay now share one fill rule (`informational.{evaluation}.background`,
+ * fsl-ui F-048/ADR-037; `elevation.tonal` stays defined but unread). The
+ * effective colour under a control is therefore a
  * **composite no colour token names or can name** — it is produced by the
  * cascade, and only the element that painted it knows it. The quiet rung
  * (`action.muted`) paints "the surface's own colour" as an opaque token, which
@@ -63,8 +66,8 @@ import {
  *
  * The legibility guarantee moves with the mechanism: fsl-theme's cross-role
  * inventory pairs the quiet ink — and the destructive ink — against every
- * publishable surface (page, tonal strata, the row family's resting fill),
- * each at its own floor.
+ * publishable surface (the page-like `informational.primary.background`, and
+ * the row family's resting fill), each at its own floor.
  */
 export const SURFACE_VAR = '--fsl-surface' as const;
 

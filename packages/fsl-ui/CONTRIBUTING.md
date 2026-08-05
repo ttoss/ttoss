@@ -531,9 +531,11 @@ Decision: **we do not add a component.** `Toolbar` already is that cluster — s
 
 Rejected: a new `ActionGroup`/`ActionButtonGroup` component (two identities, one role — and it would have to forbid the mixed controls a real bar carries: a `Select` for a filter, a `Separator` between clusters); keeping the painted bar behind a `variant`/`hasChrome` prop (a visual axis as an author decision, which CONTRACT §4 gives to the theme, and the composition already exists); `density`/`isJustified` from the reference (real patterns, no consumer yet — readmission criterion: a segmented view-switch that needs its options nearly touching, or a mobile bar whose controls must divide the width); the adaptive column `ButtonGroup` has (a toolbar that overflows moves its tail into an overflow menu — `ActionMenu`, queue item ⑤ — it does not restack; columnising a formatting strip turns a bar into a wall).
 
-Cost: a **breaking change** for anything that passed `evaluation` to `Toolbar` or relied on its bar (pre-1.0, no consumers in the repo; the Studio never used it). A bar that wants chrome now needs one more element. And the realignment exposed that the component does not implement the APG toolbar's single-tab-stop requirement — `useToolbar` supplies the arrow keys but cannot manage arbitrary children's `tabindex` — which was silently claimed in three places and is now documented and asserted instead (F-028).
+Cost: a **breaking change** for anything that passed `evaluation` to `Toolbar` or relied on its bar (pre-1.0, no consumers in the repo; the Studio never used it). A bar that wants chrome now needs one more element. And the realignment exposed what was read, at the time, as the component not implementing the APG toolbar's single-tab-stop requirement — `useToolbar` supplies the arrow keys but cannot manage arbitrary children's `tabindex` — which had been silently claimed in three places; the claim was removed and asserted-against instead (F-028).
 
-Anchors: `src/components/Toolbar/Toolbar.tsx`, `src/components/ActionTrigger/anatomy.tsx` (`buildActionGroupStyle`), `src/components/ToggleButtonGroup/ToggleButtonGroup.tsx`, `docs/fsl-studio/FRICTION.md` F-028, ROADMAP P3 Slice 4 ④.
+**Corrected 2026-08-05: the single-tab-stop claim was right after all, and the removal was the wrong fix for a test-harness gap.** `useToolbar` (`react-aria` `private/toolbar/useToolbar.js`) never needed to manage a child's `tabindex` to get one tab stop — on a `Tab` keydown it calls a generic, DOM-walking focus manager (`createFocusManager` → `getFocusableTreeWalker`, which finds tabbable descendants by walking the DOM subtree, not by any child registering itself) to jump focus to the toolbar's first/last tabbable descendant, then leaves the keydown's native default action to carry Tab onward from there — landing outside the toolbar in one observable step, for _any_ child, cooperative or not. `@testing-library/user-event`'s `tab()` cannot see this: its `keydown.js` behaviour computes the Tab destination from the element the event was dispatched _to_, not from `document.activeElement` after the toolbar's own keydown handler has already moved it — so the 2026-07-25 test asserting "every control is still its own tab stop" was a false negative produced by the test harness, not a defect in the shipped component. Verified three ways: reading `useToolbar`'s source line by line; a `fireEvent.keyDown`-driven jsdom test (bypasses user-event's simulation) proving the jump lands on the last/first tabbable descendant across a plain host `<button>` and an fsl-ui `Select`; and a real Chromium session (Playwright, driving Storybook's `KeyboardInvestigation` story) confirming Tab enters once, exits once from any position (forward and Shift+Tab), and arrow keys still walk every control including the host `<button>` and the `Select`. Nothing in `Toolbar.tsx` changed — the mechanism was always upstream's, per the original backlog's preferred outcome ("upstream fixes `useToolbar`… it owns the keyboard model"), it had simply already happened by the time this was measured with the wrong tool.
+
+Anchors: `src/components/Toolbar/Toolbar.tsx`, `src/components/ActionTrigger/anatomy.tsx` (`buildActionGroupStyle`), `src/components/ToggleButtonGroup/ToggleButtonGroup.tsx`, `tests/unit/tests/Toolbar.test.tsx`, `docs/fsl-studio/FRICTION.md` F-028, ROADMAP P3 Slice 4 ④.
 
 Re-litigation answers:
 
@@ -541,6 +543,7 @@ Re-litigation answers:
 - "A toolbar with no background looks unfinished." → measure it against the page it sits on. The chrome that read as "finished" was a card, and the controls inside it lost their own edges to it. Compose `Surface` when the bar genuinely floats.
 - "Why does `ToggleButtonGroup` stay `inline-flex` when the other two are block-level?" → a segmented control is an object sized by its options; a command row and a toolbar are bands across their container. That is the one parameter `buildActionGroupStyle` takes.
 - "Should `Toolbar` collapse like `ButtonGroup`?" → no. Its overflow answer is an overflow menu, not a second axis.
+- "Is `Toolbar` a single tab stop?" → yes, verified in a real browser (F-028, corrected 2026-08-05). `user.tab()` in the jsdom suite cannot show it; `fireEvent.keyDown` and a Chromium session can.
 
 ### ADR-015: `ActionMenu` ships as a composite (the overflow affordance is a convention); a menu row's resting rung is `muted`
 
@@ -1566,6 +1569,121 @@ Re-litigation answers:
   without reading the reference's own default-width asymmetry would have been
   the "assume, don't measure" mistake this package's `CLAUDE.md` exists to
   prevent.
+
+### ADR-037: `Surface` takes the overlays' fill rule; `elevation.tonal` stays opt-in
+
+Status: accepted (2026-08-06)
+Tags: colors, structure, elevation, P3, F-048, F-057, closes:F-048, closes:F-057
+
+Decision: **`Surface` reads `vars.colors.informational[evaluation].background.
+default` for its fill at every level, the same expression `Menu`/`Popover`/
+`Dialog`/`Drawer` already apply via `voicedSurface`, instead of
+`vars.elevation.tonal[level]`.** `backgroundFor` takes `evaluation`, not
+`level`; the call site swaps `publishSurface(backgroundFor(level))` for
+`voicedSurface({ evaluation, color: backgroundFor(evaluation) })`. Depth is
+now carried by the paired shadow recipe alone, at every level — `Surface` no
+longer reads `elevation.tonal`, which stays defined in the theme (and its own
+tests unchanged) as an opt-in address for a future consumer that wants a
+colourless elevation cue.
+
+**Why F-048's own option (b), not (a).** The entry costed both: (a) move the
+six occluding overlays onto `tonal`, so a stratum's tonal step is what
+`evaluation` stops driving; (b) give `Surface` the overlays' fill rule instead.
+(a) was measured, in the entry that filed it, to raise a dark overlay's
+separation from the page from 1.00:1 to only 1.67:1 — still under the ≥3:1
+`colors.md` § Stacking requires for an occluding edge, so it would not have
+closed F-044 either, and it does nothing in light. It would also have
+multiplied `tonal`'s consumer count from one to seven in the same round F-057
+found `tonal`'s dark values colliding byte-for-byte with `Surface`'s own fixed
+border at `overlay`/`blocking` — widening a family already in that state
+compounds a known problem rather than fixing one. (b) costs nothing that
+exists (five components keep the fill rule they already have) and removes the
+inconsistency from the one component that diverges from it.
+
+**Measured, Chromium, `structure-surface--evaluations` vs `overlay-dialog
+--default`, both at `evaluation="primary"`:** dark, before — `Surface
+level="overlay"` `#3d3d3d`, `Dialog` panel `#161616` (two components declaring
+the same stratum, different colours). After — both `#161616`, byte-identical.
+`evaluation="muted"` now resolves `#6f6f6f`, matching a `muted` `Menu`'s own
+fill (previously `Surface`'s fill never varied with `evaluation` at all for
+`raised`/`overlay`/`blocking`).
+
+**`voicedSurface`, not unconditional `publishSurface`, and the reason is a
+second audit gap the fill change would otherwise have opened.** Before this
+ADR, `Surface` always published (`publishSurface`, unconditional) because its
+fill — `tonal[level]` or the `flat` fallback — was always one of the values
+`colors.test.ts`'s cross-role inventory already lists as a publishable
+stratum, regardless of `evaluation`. Once the fill depends on `evaluation`,
+publishing unconditionally would publish `informational.muted.background.
+default` on every default (`evaluation="muted"`) `Surface` — a value the
+inventory does not audit as a publishable surface for the quiet ink, an
+unaudited pairing this package's own `CLAUDE.md` names as the exact failure
+mode a colour change owes an explicit replacement assertion against. Reading
+`Surface` through `voicedSurface` instead — the same helper `Menu` already
+uses for this fill — keeps the published set exactly what it was: only the
+page-like `primary` voice, already covered by `CROSS_ROLE_TEXT_PAIRINGS` →
+`INFORMATIONAL_STRATA` in fsl-theme's suite.
+
+**F-057 closes as a side effect, not by any of its own three costed options.**
+That entry's collision was the border (`informational.{evaluation}.border.
+default`, unchanged by this ADR) sitting against a _different_ family's fill
+(`tonal`); once the fill reads the border's own role's `background`, the pair
+becomes exactly the one `extractBorderBackgroundPairs` (`colors.test.ts`)
+already audits for every other `informational` role, in both modes. Measured,
+dark, `overlay`/`blocking` (level-independent within a mode): `muted` —
+`#6f6f6f` fill vs `#3d3d3d` border, **2.16:1** (was 1.00:1); `primary` —
+`#161616` vs `#3d3d3d`, **1.67:1** (was 1.00:1). Neither clears 3:1, and
+neither needs to — `Surface` is an _embedded_ surface (ADR-031) and owes no
+occluding-boundary duty — but the **mirrored** collision F-057 named is gone
+in both evaluations, with no change to `elevation.tonal`'s ramp and no repeat
+of the ink-legibility breakage that repair attempt caused.
+
+Guarded from both sides in `tests/unit/tests/Surface.test.tsx` (the fill
+reads `informational[evaluation].background.default` at every level and
+never `elevation.tonal`, verified to fail on revert) and
+`tests/unit/tests/surfaceScope.test.tsx` (a `primary` `Surface` publishes; a
+`muted` one does not, mirroring `Menu`'s own two cases in the same file).
+
+Rejected: option (a) from F-048 (above); a `size`-style prop or per-component
+override for the fill (CONTRACT §4 — the fill is `evaluation`'s concern, not
+a second knob for the same identity); repairing `elevation.tonal`'s dark ramp
+to clear F-057 directly (the exact attempt F-057 already recorded as reverted
+for breaking three ink-legibility pairings — superseded here rather than
+retried).
+
+Cost: a Storybook story (`Structure/Surface` → `Levels`) that showed the four
+levels as four visibly different tints now shows four identical fills
+differing only by shadow — its own doc comment was rewritten to say so rather
+than leave the stale claim, and a new `Evaluations` story demonstrates the
+fill actually responding to `evaluation`. `elevation.tonal` has no consumer
+left in this package (a comment-only note, not a behaviour change, since
+nothing was reading it that this ADR did not just stop).
+
+Anchors: `src/components/Surface/Surface.tsx`, `src/tokens/surfaceScope.ts`,
+`src/tokens/CONTRACT.md` §3.4, `tests/unit/tests/Surface.test.tsx`,
+`tests/unit/tests/surfaceScope.test.tsx`,
+`docs/fsl-storybook/stories/structure/Surface.stories.tsx`,
+`docs/fsl-studio/FRICTION.md` F-048/F-057.
+
+Re-litigation answers:
+
+- "Doesn't `Surface` lose a depth cue in `forced-colors`/print, now that fill
+  never varies with `level`?" → yes, and it is an accepted, pre-existing gap
+  rather than a new one: `Surface`'s hairline boundary
+  (`informational.{evaluation}.border.default`) is unchanged by this ADR and
+  does not stand in for the missing tonal step, but ADR-031 already
+  classifies `Surface` as _embedded_, not _occluding_, and owing no ≥3:1
+  edge-even-when-shadow-is-suppressed duty in the first place — so this ADR
+  characterizes a gap ADR-031 already scoped `Surface` out of, rather than
+  opening one.
+- "Should `elevation.tonal` be deleted, since nothing reads it?" → no — it is
+  documented as optional in `elevation.ts` itself (`Omit when the product
+does not use tonal elevation`), and deleting a defined family is a
+  different, larger decision than retiring its one consumer.
+- "Why not also give `Menu`/`Popover`/etc. a comment pointing back here?" →
+  they were already right; the JSDoc updates belong to `Surface`, the
+  component whose contract changed, per this package's own rule that a stale
+  claim is fixed where the claim was made.
 
 ### ADR-038: `StatusLight` takes its own silhouette — a dot plus a label, no fill; `Badge` keeps the pill
 
