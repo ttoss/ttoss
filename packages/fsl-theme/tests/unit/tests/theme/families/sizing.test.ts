@@ -221,6 +221,17 @@ describe('semantic sizing: core ramp anchoring', () => {
           true
         );
       });
+
+      // FRICTION F-004: the narrow centered-card cap must alias a ramp step
+      // too, not a new formula — same rule as surface.maxWidth above.
+      test('surface.card resolves within core.sizing.ramp.layout', () => {
+        const rampLayout = new Set(
+          [1, 2, 3, 4, 5, 6].map((n) => {
+            return base[`core.sizing.ramp.layout.${n}`];
+          })
+        );
+        expect(rampLayout.has(base['semantic.sizing.surface.card'])).toBe(true);
+      });
     });
   }
 });
@@ -328,6 +339,31 @@ describe('semantic sizing: measure.reading ≠ surface.maxWidth', () => {
       test('measure.reading and surface.maxWidth are distinct', () => {
         expect(base['semantic.sizing.measure.reading']).not.toBe(
           base['semantic.sizing.surface.maxWidth']
+        );
+      });
+    });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// F-004: the card cap is its own step, not a copy of the two it sits between
+// ---------------------------------------------------------------------------
+
+describe('semantic sizing: surface.card is distinct from its neighbours', () => {
+  for (const { label, base } of bundleEntries) {
+    describe(label, () => {
+      // Guards the same class of copy-paste error warning #9 guards for
+      // measure.reading/surface.maxWidth — verified to fail if `card` is
+      // pointed back at `maxWidth` (both would then read core.sizing.ramp.layout.5).
+      test('surface.card and surface.maxWidth are distinct', () => {
+        expect(base['semantic.sizing.surface.card']).not.toBe(
+          base['semantic.sizing.surface.maxWidth']
+        );
+      });
+
+      test('surface.card and measure.reading are distinct', () => {
+        expect(base['semantic.sizing.surface.card']).not.toBe(
+          base['semantic.sizing.measure.reading']
         );
       });
     });

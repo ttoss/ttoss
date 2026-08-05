@@ -1794,3 +1794,73 @@ Re-litigation answers:
   against our larger type once flexbox handles the centring; retuning without
   a measured reason would be the same "assume, don't measure" mistake F-047
   avoided by taking the reference's mobile value with a stated reason.
+
+### ADR-039: A named `card` width step, aliasing `core.sizing.ramp.layout.1`
+
+Status: accepted (2026-08-05)
+Tags: sizing, structure, fsl-theme, P3, F-004, closes:F-004
+
+Decision: **`fsl-theme` gains `semantic.sizing.surface.card`, aliasing
+`core.sizing.ramp.layout.1`; `Box.maxWidth` and `Container.size` both gain a
+`'card'` step reading it.** This is the last open finding of the P3 round —
+owner ruling delegated, same as F-051/F-052/F-053/F-048/F-028 before it — and
+it closes the width vocabulary's one remaining gap: a narrow, standalone
+centered card (an auth form, a confirmation page) had no in-system cap
+between `reading` (a line-length contract, not a container width) and
+`surface` (the page-shell cap, ~2–3× too wide for one card).
+
+**Reuse before creation, measured rather than assumed.** `sizing.md` already
+states the pattern semantic fluid tokens must follow — alias a
+`core.sizing.ramp.layout` step, never define a new `clamp()` — and
+`model.md` §6 gates any vocabulary growth on reuse-before-creation cutting
+both ways: a free step is only a fit if nothing else already means something
+different at that address. Checked all six `layout` steps for a consumer
+before picking one: only `layout.5` had one (`surface.maxWidth`), so
+`layout.1` through `layout.4` and `layout.6` were all free candidates, not
+just the obvious floor match. `layout.1` — `clamp(320px, 40cqi, 480px)` — won
+on the numbers the finding itself supplied (~20–26rem / 320–416px): its floor
+(320px) is the target range's own floor exactly; its ceiling (480px)
+overshoots the target's 416px top by one ramp step of headroom, which is the
+closest available fit and strictly smaller than reusing `layout.2` (`clamp(
+384px, 50cqi, 640px)`, whose floor already sits inside the target range and
+whose ceiling is 224px past it — a worse fit on both ends). No `layout.7` was
+minted, and no theme-specific override was needed: `bruttal` does not touch
+`sizing` at all, so it inherits `card` from `baseTheme.ts` the same way it
+already inherits `overlay`/`focus`/`rail`.
+
+**Where the two Box/Container tokens differ from `surface`, restated in the
+prop doc so the choice reads as one sentence.** `surface` caps a page shell;
+`card` caps a single object on the page; `reading` caps a line length, not a
+container. Nothing about `Box`'s or `Container`'s existing contract changed
+— `card` is an additive union member with its own `MAX_WIDTH` map entry, read
+the same way `surface`/`reading` already are.
+
+**Guarded on both sides.** `fsl-theme`'s `sizing.test.ts` asserts `surface
+.card` resolves inside `core.sizing.ramp.layout.*` (the same warning-class
+guard `surface.maxWidth` already has) and that it is distinct from both
+`surface.maxWidth` and `measure.reading` — verified to fail by temporarily
+pointing `card` at `layout.5` and confirming the distinctness assertion
+breaks before reverting. `fsl-ui`'s `Box.test.tsx`/`Container.test.tsx` each
+gained a `'card'` case in their existing `maxWidth`/`size` table-driven tests.
+
+**Consumer switched, evidence rather than a synthetic story alone.** The
+Studio's `LoginPage` — the real auth card this finding was measured
+against — hand-rolled `min(24rem, calc(100% - 2rem))` on a bare `div`,
+exactly the workaround FRICTION F-004 described. That `div` is replaced with
+`<Container size="card" gutter="none">`; verified in Chromium at
+390/900/1280px, both modes: a narrow centered card, not a full-width one, in
+both light and dark. The page's _other_ bespoke rule — a `div` centering the
+whole page on the viewport's block axis, because no primitive fills the
+viewport block size — is untouched: it is a different axis than this ADR's
+scope, was never itself the width gap F-004 filed, and stays a bespoke rule
+until something files it.
+
+Rejected: `Grid`-level column caps (the finding's own option (b)) — this is
+the workaround the finding already named as insufficient for a standalone
+card page (it needs a companion panel to avoid spanning the page), so
+building it would not have closed the gap it was proposed against; a new
+`core.sizing.ramp.layout.7` sized exactly to 20–26rem — rejected because
+`layout.1` already clears the target's floor exactly and its ceiling
+overshoot is smaller than any other free step's, so a seventh rung would
+grow the ramp to solve a problem `layout.1` already solves, the model.md §6
+violation this ADR exists to avoid.

@@ -1505,6 +1505,7 @@ export const baseTheme: ThemeTokens = {
       },
       surface: {
         maxWidth: '{core.sizing.ramp.layout.5}',
+        card: '{core.sizing.ramp.layout.1}',
       },
       viewport: {
         height: {

@@ -41,8 +41,11 @@ export type BoxBorder = 'none' | 'muted' | 'strong';
 /** Inline size (`width`) from the sizing behavior keywords. */
 export type BoxWidth = 'auto' | 'full' | 'fit';
 
-/** Maximum inline size — a structural surface cap or the readability measure. */
-export type BoxMaxWidth = 'none' | 'surface' | 'reading';
+/**
+ * Maximum inline size — a structural surface cap, the narrow centered-card
+ * cap, or the readability measure.
+ */
+export type BoxMaxWidth = 'none' | 'surface' | 'card' | 'reading';
 
 const PADDING: Record<BoxPadding, string> = {
   none: '0',
@@ -92,6 +95,7 @@ const WIDTH: Record<BoxWidth, string> = {
 const MAX_WIDTH: Record<BoxMaxWidth, string | undefined> = {
   none: undefined,
   surface: vars.sizing.surface.maxWidth,
+  card: vars.sizing.surface.card,
   reading: vars.sizing.measure.reading,
 };
 
@@ -154,9 +158,11 @@ export interface BoxProps extends Omit<
   width?: BoxWidth;
   /**
    * Maximum inline size. `surface` caps at the structural surface width;
-   * `reading` caps at the readability measure (long-form text). Pair with
-   * `marginInline` centering via a parent `Stack`/`Grid` — Box does not center
-   * itself.
+   * `card` caps at the narrow centered-card width (an auth form, a
+   * standalone confirmation page — smaller than `surface`, wider than most
+   * form controls); `reading` caps at the readability measure (long-form
+   * text). Pair with `marginInline` centering via a parent `Stack`/`Grid` —
+   * Box does not center itself.
    * @default 'none'
    */
   maxWidth?: BoxMaxWidth;

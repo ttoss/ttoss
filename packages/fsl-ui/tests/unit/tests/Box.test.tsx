@@ -122,6 +122,7 @@ describe('Box', () => {
 
   test.each<[BoxMaxWidth, string]>([
     ['surface', vars.sizing.surface.maxWidth],
+    ['card', vars.sizing.surface.card],
     ['reading', vars.sizing.measure.reading],
   ])('maxWidth=%s caps inline size from the sizing scale', (mw, css) => {
     render(<Box maxWidth={mw} />);
