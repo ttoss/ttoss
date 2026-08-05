@@ -1367,3 +1367,94 @@ Re-litigation answers:
 - "Does this contradict `muted` being the system's 'no fill' idiom?" → no —
   it implements the same idiom (rest = the surface's own colour) by the only
   mechanism available to an entity that carries no emphasis dimension.
+
+### ADR-035: P3 review round 7 (Structure) — one component-by-component pass across 18+ members, one filed finding, zero code changes
+
+Status: accepted (2026-08-06)
+Tags: P3, review-round-7, structure, F-057
+
+Decision: round 7 covered the Structure entity's full published surface —
+`AppShell`, `Badge`, `Box`, `ButtonGroup`, `Code`, `Container`, `Grid`,
+`Group`, `Heading`, `Icon`, `List`, `Separator`, `Stack`, `Surface`, `Text`,
+`Toolbar`, `Wizard`, the `Tabs` panel and the `Form` field-row — against the
+same instrument as rounds 1/3/4: `@adobe/spectrum-tokens@14.15.0` flattened
+to resolved values, and a Chromium probe over the fsl Storybook at
+390/640/900/1280/1920, both modes, dumping every `[data-part]`'s box and
+colour. This is the largest round by member count and the one with the
+fewest defects: every member but one measured clean, several because prior
+rounds' fixes already reach them (`Box`/`Container`/`Group`/`Toolbar` publish
+or read `publishSurface`; the `Tabs` panel and `Code` were already named
+"right" in ADR-031's own inset audit; `List` shipped this session cycle with
+no colour opinion to be wrong about).
+
+**The one finding — F-057, `Surface`'s elevated boundary — is filed, not
+fixed, and the attempted-and-reverted repair is itself the evidence worth
+keeping.** `Surface`'s edge reads a fixed `informational.{evaluation}.border.default`
+regardless of `level`; its fill reads `elevation.tonal[level]`. In the dark
+alternate, `overlay` and `blocking` both resolve `tonal` to `neutral.700`,
+which is _also_ the dark value of every `informational.*.border.default` —
+so the boundary and the fill are byte-identical at exactly the two highest
+strata. Measured in Chromium, `structure-surface--levels`, dark: **1.00:1**
+border-vs-fill at `overlay` and `blocking`; `raised`/`flat` unaffected. Light
+is unaffected too — every tonal level shares `neutral.0` there by design (the
+theme's own comment: elevation is carried by shadow in light).
+
+**Why it was not fixed here, stated as a measurement rather than a refusal.**
+The direct repair — extend the dark ramp to three distinct, progressively
+lighter steps (`raised: 800, overlay: 600, blocking: 500`, continuing the
+direction `baseTheme.ts`'s own comment already states) — was implemented,
+guarded (`elevation.test.ts` gained a "tonal ramp never lands on the
+informational border step" assertion, verified to fail on the pre-fix
+values), and then **reverted**: it passes that guard and breaks three
+unrelated cross-role legibility pairings in `colors.test.ts` ("validation
+message", "focus ring", "quiet destructive control" legible on every
+informational stratum) in both bundles — measured **4.12:1** against the new
+`neutral.600` overlay step and **2.65:1** against `neutral.500` blocking,
+both under those pairings' 4.5:1 floor. Those inks are tuned against
+`neutral.700` specifically; lightening the fill to clear the border
+collision moves it further from the value the ink contract depends on. No
+single existing ramp step satisfies both contracts for both strata at once.
+
+**This is F-051's shape, one family over, and is documented as such rather
+than re-argued from scratch.** F-051 found the rail borrowing a token whose
+meaning was something else because the model has no dedicated address for
+"the unfilled part of a track". F-057 finds `Surface`'s elevated boundary
+borrowing the _flat card's_ edge token — never designed to track a rising
+tonal fill — for the identical reason: no address exists for "the boundary
+of a surface at a tonal depth". Costed options and the recommendation
+(a cross-cutting `semantic.elevation.edge.*`, sibling of `tonal`, at the
+version boundary) are in `docs/fsl-studio/FRICTION.md` F-057, not repeated
+here.
+
+**Method note, since the failed repair is the round's most useful output.**
+"Instrument first" cuts both ways: the same discipline that writes the guard
+before the value also means testing the value against _every_ guard it could
+plausibly touch before calling a fix minimal. A change that satisfies the
+suite it was written for and silently fails a suite three files away is not
+a smaller version of the right fix — it is evidence that the two suites are
+guarding a genuine tension in the model, which is exactly what got written
+down instead of shipped.
+
+No source files changed; `pnpm run test` (fsl-ui, unaffected) and fsl-theme's
+full suite (1228/1228, after the revert) both green, coverage unchanged on
+both packages.
+
+Anchors: `docs/fsl-studio/FRICTION.md` F-057, F-051, F-048; `INTERNAL/ROADMAP.md`
+§P3 round 7; `packages/fsl-theme/tests/unit/tests/theme/families/elevation.test.ts`
+(guard written and reverted, per the finding above — the _shape_ of the guard
+this fix needs is recorded in F-057's entry for whoever builds the cross-
+cutting token); `packages/fsl-theme/tests/unit/tests/theme/families/colors.test.ts`
+("Color contrast — cross-role text pairings").
+
+Re-litigation answers:
+
+- "Why file a finding with no guard, unlike every prior round?" → a guard
+  for a value that does not exist yet has nothing to pin. The guard this
+  needs is the one written and reverted here (assert no tonal stratum equals
+  the informational border step) — it belongs beside whichever token
+  F-057's (a) ships, not as a standing assertion against values known not to
+  satisfy it.
+- "Does the reverted commit's diff exist anywhere?" → no — reverted in the
+  same working session before any commit, per the instrument-before-value
+  rule: the numbers it produced are preserved in F-057 and here, which is
+  the artefact that matters, not the rejected diff.
