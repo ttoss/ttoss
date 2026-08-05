@@ -119,15 +119,33 @@ for (const { label, tokens } of bundleEntries) {
       expect(md).toBeLessThan(lg);
     });
 
-    test('inset.surface: sm < md < lg', () => {
-      const sm = parseSpaceValue(tokens['semantic.spacing.inset.surface.sm']!);
-      const md = parseSpaceValue(tokens['semantic.spacing.inset.surface.md']!);
-      const lg = parseSpaceValue(tokens['semantic.spacing.inset.surface.lg']!);
+    test('inset.surface: xs < sm < md < lg', () => {
+      // `xs` is fixed while the rest ride the engine (F-045 / ADR-022's
+      // argument one context over), so the comparison happens at the engine's
+      // FLOOR — the width where a fluid step is tightest. Holding there holds
+      // everywhere, and it is the same technique the `≥ inset.control` test
+      // below uses for the same mixed-shape reason.
+      const xs = resolveMinPx(
+        tokens['semantic.spacing.inset.surface.xs']!,
+        tokens
+      );
+      const sm = resolveMinPx(
+        tokens['semantic.spacing.inset.surface.sm']!,
+        tokens
+      );
+      const md = resolveMinPx(
+        tokens['semantic.spacing.inset.surface.md']!,
+        tokens
+      );
+      const lg = resolveMinPx(
+        tokens['semantic.spacing.inset.surface.lg']!,
+        tokens
+      );
 
-      expect(sm).not.toBeNaN();
-      expect(md).not.toBeNaN();
-      expect(lg).not.toBeNaN();
+      for (const v of [xs, sm, md, lg]) expect(v).not.toBeNaN();
 
+      // Error #3: the anchored step is not the tightest
+      expect(xs).toBeLessThan(sm);
       // Error #3: inset.surface.sm > inset.surface.md
       expect(sm).toBeLessThan(md);
       // Error #4: inset.surface.md > inset.surface.lg
@@ -259,17 +277,25 @@ for (const { label, tokens } of bundleEntries) {
 // ---------------------------------------------------------------------------
 
 for (const { label, tokens } of bundleEntries) {
-  describe(`Semantic spacing — control inset fixed contract (${label})`, () => {
-    test.each(['sm', 'md', 'lg'] as const)(
-      'inset.control.%s is a fixed px value',
-      (step) => {
-        // Error #17: a control inset rides the fluid engine (or any formula),
-        //            making the control box container-fluid against ADR-019/020
-        const value = String(tokens[`semantic.spacing.inset.control.${step}`]);
+  describe(`Semantic spacing — fixed inset contract (${label})`, () => {
+    // Error #17: an inset whose outcome is a *relationship to fixed content*
+    // rides the fluid engine, making that relationship container-fluid against
+    // ADR-019/020. Two groups owe this, for the same reason at two scales:
+    // every `inset.control` step (a control's box is its inset + type over the
+    // `hit` floor — ADR-022) and `inset.surface.xs` (a gutter beside children
+    // that carry their own fixed inset — F-045). The rest of `inset.surface`
+    // is deliberately fluid: it frames arbitrary content and scales with the
+    // page, which is what the aliasing contract above asserts.
+    test.each([
+      'inset.control.sm',
+      'inset.control.md',
+      'inset.control.lg',
+      'inset.surface.xs',
+    ] as const)('%s is a fixed px value', (path) => {
+      const value = String(tokens[`semantic.spacing.${path}`]);
 
-        expect(value).toMatch(/^\d+(\.\d+)?px$/);
-      }
-    );
+      expect(value).toMatch(/^\d+(\.\d+)?px$/);
+    });
   });
 }
 

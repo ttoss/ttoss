@@ -2,8 +2,13 @@
  * Unit tests for `resolveInteractiveStyle` — the shared state cascade helper
  * consumed by Button, Link, Checkbox, Switch, RadioGroup, and Select.
  */
-import { resolveInteractiveStyle } from 'src/tokens/resolveInteractiveStyle';
+import { STATE_PRIORITY } from 'src/semantics/taxonomy';
+import {
+  resolveInteractiveStyle,
+  resolveStateKey,
+} from 'src/tokens/resolveInteractiveStyle';
 
+/** One distinct value per state in the cascade — every key of `InteractiveStates`. */
 const states = {
   default: 'd',
   hover: 'h',
@@ -14,6 +19,7 @@ const states = {
   indeterminate: 'i',
   invalid: 'v',
   expanded: 'e',
+  current: 'n',
 } as const;
 
 describe('resolveInteractiveStyle', () => {
@@ -178,5 +184,38 @@ describe('resolveInteractiveStyle', () => {
         isHovered: true,
       })
     ).toBe('e');
+  });
+});
+
+/**
+ * `resolveStateKey` is the same walk without the token lookup. It exists so a
+ * caller that needs to know *which state the host is painting* — currently
+ * `resolveConsequenceInk`, deciding whether its tint still holds — asks the
+ * cascade instead of re-deriving the flag→state mapping and drifting from it.
+ */
+describe('resolveStateKey', () => {
+  test('answers `default` when nothing is set', () => {
+    expect(resolveStateKey({})).toBe('default');
+  });
+
+  test('names the token state, not the React Aria flag', () => {
+    // `isPressed` → `active` is exactly the mapping a second reader would get
+    // wrong by guessing.
+    expect(resolveStateKey({ isPressed: true })).toBe('active');
+  });
+
+  test('reports the cascade winner, not the first flag passed', () => {
+    expect(resolveStateKey({ isDisabled: true, isHovered: true })).toBe(
+      'disabled'
+    );
+  });
+
+  test('agrees with resolveInteractiveStyle on every state in the tuple', () => {
+    for (const { flag, state } of STATE_PRIORITY) {
+      expect(resolveStateKey({ [flag]: true })).toBe(state);
+      expect(resolveInteractiveStyle(states, { [flag]: true })).toBe(
+        states[state]
+      );
+    }
   });
 });

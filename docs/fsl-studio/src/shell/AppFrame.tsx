@@ -6,15 +6,13 @@ import {
   Button,
   Container,
   Link,
+  List,
+  ListItem,
   Menu,
   MenuItem,
   MenuTrigger,
   Stack,
   Switch,
-  Tab,
-  TabList,
-  TabPanel,
-  Tabs,
   Text,
 } from '@ttoss/fsl-ui';
 import type * as React from 'react';
@@ -25,9 +23,10 @@ import { EnvironmentsPage } from '../pages/EnvironmentsPage';
 import { SettingsPage } from '../pages/SettingsPage';
 import { TeamPage } from '../pages/TeamPage';
 import type { Route } from '../router';
-import { navigate, ROUTES } from '../router';
+import { ROUTES } from '../router';
 import type { Session } from '../session';
 import { signOut } from '../session';
+import { useNavCollapse } from './useNavCollapse';
 
 const PAGES: Record<Route, React.ReactNode> = {
   dashboard: <DashboardPage />,
@@ -72,24 +71,33 @@ const HeaderBar = ({ session }: { session: Session }) => {
   );
 };
 
-const SidebarNav = () => {
+const SidebarNav = ({ route }: { route: Route }) => {
   return (
     <Stack gap="xl">
       {/*
-       * Primary navigation as vertical Tabs — the recorded F-002 workaround
-       * (Link has no `current`-state affordance). The routed page renders
-       * inside the matching TabPanel in the main region, so the tabs control
-       * a real panel and the ARIA relationship stays valid (F-017).
+       * Primary navigation as links in a real `nav` landmark. It was vertical
+       * `Tabs` until `Link` gained `isCurrent` — the F-002 workaround, whose
+       * cost turned out to be larger than the missing marker: tab semantics
+       * forced the whole frame inside one `Tabs` scope (F-017) and a
+       * collection owner cannot be portaled into a drawer (F-042).
        */}
-      <TabList aria-label="Workspace">
-        {(Object.keys(ROUTES) as Route[]).map((key) => {
-          return (
-            <Tab key={key} id={key}>
-              {ROUTES[key].label}
-            </Tab>
-          );
-        })}
-      </TabList>
+      <nav aria-label="Workspace">
+        <List gap="sm">
+          {(Object.keys(ROUTES) as Route[]).map((key) => {
+            return (
+              <ListItem key={key}>
+                <Link
+                  evaluation="muted"
+                  href={ROUTES[key].hash}
+                  isCurrent={key === route}
+                >
+                  {ROUTES[key].label}
+                </Link>
+              </ListItem>
+            );
+          })}
+        </List>
+      </nav>
       <Stack gap="sm">
         <Text variant="label-sm" tone="muted">
           Resources
@@ -107,9 +115,12 @@ const SidebarNav = () => {
 
 /**
  * The product chrome: header (brand, workspace, mode, account), sidebar
- * navigation, and the routed page inside a centered content column. The
- * whole frame lives inside one `Tabs` scope so the sidebar TabList and the
- * main-region TabPanel share selection state across AppShell slots.
+ * navigation, and the routed page inside a centered content column.
+ *
+ * The frame used to live inside one `Tabs` scope so a sidebar `TabList` could
+ * share selection state with a main-region `TabPanel`. That is gone: the nav
+ * is links, so the shell is just the shell, and the sidebar can move into a
+ * drawer on a narrow viewport (F-002 → F-017 → F-042, closed together).
  */
 export const AppFrame = ({
   route,
@@ -118,45 +129,31 @@ export const AppFrame = ({
   route: Route;
   session: Session;
 }) => {
+  // The shell owns the two navigation shapes; the app owns the threshold —
+  // the split `families/breakpoints.md` specifies, down to naming this alias.
+  const isNavCollapsed = useNavCollapse();
+
   return (
-    <Tabs
-      orientation="vertical"
-      selectedKey={route}
-      onSelectionChange={(key) => {
-        navigate(key as Route);
-      }}
+    <AppShell
+      header={
+        <Box paddingInline="md" paddingBlock="sm">
+          <HeaderBar session={session} />
+        </Box>
+      }
+      sidebar={
+        <Box padding="md">
+          <SidebarNav route={route} />
+        </Box>
+      }
+      sidebarLabel="Workspace navigation"
+      sidebarTriggerLabel="Open workspace navigation"
+      sidebarVariant={isNavCollapsed ? 'temporary' : 'permanent'}
     >
-      {/*
-       * Tabs' root imposes a co-located `flex` row (list | panel); hosting an
-       * app frame inside it needs the width restored (FRICTION F-017).
-       */}
-      <Box width="full">
-        <AppShell
-          header={
-            <Box paddingInline="md" paddingBlock="sm">
-              <HeaderBar session={session} />
-            </Box>
-          }
-          sidebar={
-            <Box padding="md">
-              <SidebarNav />
-            </Box>
-          }
-          sidebarLabel="Workspace navigation"
-        >
-          <Box paddingBlock="lg">
-            <Container size="surface" gutter="section">
-              {(Object.keys(ROUTES) as Route[]).map((key) => {
-                return (
-                  <TabPanel key={key} id={key}>
-                    {PAGES[key]}
-                  </TabPanel>
-                );
-              })}
-            </Container>
-          </Box>
-        </AppShell>
+      <Box paddingBlock="lg">
+        <Container size="surface" gutter="section">
+          {PAGES[route]}
+        </Container>
       </Box>
-    </Tabs>
+    </AppShell>
   );
 };

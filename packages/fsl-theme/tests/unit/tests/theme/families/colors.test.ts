@@ -112,117 +112,210 @@ const CONTEXT_EXTRA_STATES: Readonly<Record<string, ReadonlyArray<string>>> = {
   informational: ['visited', 'expanded'],
 };
 
-/** Known `{ux}.{role}.{state}` contexts whose border falls below AA Large against
- *  its adjacent background by design. Sorted alphabetically for diff stability. */
-const KNOWN_BORDER_CONTRAST_VIOLATIONS: ReadonlySet<string> = new Set([
-  // action — solid and subtle variants
+// ---------------------------------------------------------------------------
+// Border-vs-background inventories, per bundle AND per mode
+//
+// Two mechanical rules keep these lists reviewable. Without them a single
+// below-threshold list per mode is dominated by contexts that carry no
+// judgement, and the ones that do carry it become invisible — an inventory
+// nobody can read is the guard failing quietly (fsl-theme ADR-024):
+//
+//   • **Mirrored** — a border that resolves to its own background has no edge
+//     by construction. Listed separately, because the interesting event is a
+//     role *gaining* or *losing* its edge, which a below-threshold list cannot
+//     express (both states sit under 3:1).
+//   • **Disabled** — excluded entirely. WCAG 2.2 §1.4.3 exempts disabled UI,
+//     which the text pairing above already assumes; the border pairing was
+//     enshrining disabled contexts that no rule ever wanted.
+//
+// What survives both rules is the real inventory: a border that differs from
+// its background and is still deliberately below AA Large.
+// ---------------------------------------------------------------------------
+
+type BorderInventory = {
+  /** Border differs from its background and sits below AA Large, by design. */
+  soft: ReadonlySet<string>;
+  /** Border resolves to its own background — no edge by construction. */
+  mirrored: ReadonlySet<string>;
+};
+
+/** Apply an explicit delta to a base set. Both lists are asserted, so an entry
+ *  that stops applying fails rather than lingering. */
+const withDelta = (
+  base: ReadonlySet<string>,
+  { add = [], remove = [] }: { add?: string[]; remove?: string[] }
+): ReadonlySet<string> => {
+  const next = new Set(base);
+  for (const c of remove) next.delete(c);
+  for (const c of add) next.add(c);
+  return next;
+};
+
+/** Filled surfaces and quiet rungs: the role paints one colour and its border
+ *  repeats it. `focused` is the deliberate exception across the Action ladder —
+ *  the one state that must show on any surface — and is absent here. */
+const MIRRORED_BORDERS: ReadonlySet<string> = new Set([
+  // action — the emphasis ladder is filled; the edge is the fill
   'action.accent.active',
   'action.accent.default',
-  'action.accent.disabled',
   'action.accent.expanded',
-  'action.accent.focused',
   'action.accent.hover',
   'action.accent.pressed',
-  // `action.muted` is the ladder's quiet rung: its border mirrors its
-  // background in every state, so the edge never appears (pattern (a) —
-  // border == background by design). `focused` is the deliberate exception and
-  // is therefore absent from this list.
   'action.muted.active',
   'action.muted.default',
-  'action.muted.disabled',
   'action.muted.expanded',
   'action.muted.hover',
   'action.muted.pressed',
   'action.negative.active',
   'action.negative.default',
-  'action.negative.disabled',
   'action.negative.expanded',
-  'action.negative.focused',
   'action.negative.hover',
   'action.negative.pressed',
   'action.primary.active',
   'action.primary.default',
-  'action.primary.disabled',
   'action.primary.expanded',
   'action.primary.hover',
   'action.primary.pressed',
   'action.secondary.active',
   'action.secondary.default',
-  'action.secondary.disabled',
   'action.secondary.hover',
   'action.secondary.pressed',
-  // feedback — filled status surfaces (P3 slice 3): border == background by
-  // design (pattern (a)); the focused border sits on the surface's own deep
-  // fill — focus indication is carried by the component-level outline ring.
+  // feedback — filled status surfaces (P3 slice 3)
   'feedback.accent.default',
-  'feedback.accent.focused',
   'feedback.caution.default',
-  'feedback.caution.focused',
-  'feedback.muted.default',
   'feedback.negative.default',
-  'feedback.negative.focused',
   'feedback.positive.default',
-  'feedback.positive.focused',
   'feedback.primary.default',
-  // informational — content-surface separators
-  'informational.accent.disabled',
+  // input — the checked/indeterminate box is a solid mark, not an outline
+  'input.caution.indeterminate',
+  'input.muted.checked',
+  'input.muted.indeterminate',
+  'input.negative.indeterminate',
+  'input.positive.indeterminate',
+  'input.primary.checked',
+  'input.primary.indeterminate',
+  'input.secondary.checked',
+  'input.secondary.indeterminate',
+  // navigation — the accent marker is a fill; primary's rail has no edge
+  'navigation.accent.current',
+  'navigation.accent.selected',
+  'navigation.primary.default',
+]);
+
+/** Deliberately soft edges. Three patterns, all visible in the grouping:
+ *  (a) a `focused` border sitting on its own role's fill — focus is carried by
+ *      the component outline ring, not by this token (ADR-011);
+ *  (b) content-surface separators, below the interactive-border threshold on
+ *      purpose because they divide rather than delimit;
+ *  (c) resting and hover edges on quiet or low-emphasis controls, which
+ *      materialise on engagement rather than at rest. */
+const SOFT_BORDERS: ReadonlySet<string> = new Set([
+  // (a) focused-on-own-fill
+  'action.accent.focused',
+  'action.negative.focused',
+  'feedback.accent.focused',
+  'feedback.caution.focused',
+  'feedback.negative.focused',
+  'feedback.positive.focused',
+  // (b) separators
+  'feedback.muted.default',
   'informational.accent.selected',
   'informational.caution.default',
-  'informational.caution.disabled',
   'informational.muted.default',
   'informational.muted.hover',
-  'informational.negative.disabled',
   'informational.positive.default',
-  'informational.positive.disabled',
   'informational.primary.active',
   'informational.primary.default',
-  'informational.primary.disabled',
   'informational.primary.droptarget',
   'informational.primary.hover',
   'informational.primary.selected',
   'informational.secondary.active',
   'informational.secondary.default',
-  'informational.secondary.disabled',
   'informational.secondary.hover',
   'informational.secondary.selected',
-  // input — soft resting/disabled borders
+  // (c) quiet resting edges
   'input.caution.default',
-  'input.caution.disabled',
-  'input.caution.indeterminate',
-  'input.muted.checked',
   'input.muted.default',
-  'input.muted.disabled',
   'input.muted.hover',
-  'input.muted.indeterminate',
-  'input.negative.disabled',
-  'input.negative.indeterminate',
   'input.positive.default',
-  'input.positive.disabled',
-  'input.positive.indeterminate',
-  'input.primary.checked',
   'input.primary.default',
-  'input.primary.disabled',
-  'input.primary.indeterminate',
-  'input.secondary.checked',
   'input.secondary.default',
-  'input.secondary.disabled',
   'input.secondary.hover',
-  'input.secondary.indeterminate',
   'input.secondary.pressed',
-  // navigation — subtle nav borders
-  'navigation.accent.current',
-  'navigation.accent.disabled',
-  'navigation.accent.selected',
   'navigation.muted.active',
   'navigation.muted.default',
-  'navigation.muted.disabled',
   'navigation.muted.hover',
-  'navigation.primary.default',
   'navigation.secondary.active',
   'navigation.secondary.default',
-  'navigation.secondary.disabled',
   'navigation.secondary.hover',
 ]);
+
+/**
+ * The dark alternate is not the light inventory with different hex values: it
+ * remaps references by hand, so a context can change pattern between modes.
+ * Every delta below was measured and classified rather than transcribed
+ * (F-027). The `soft` additions are all pattern (a) — the brand step the
+ * alternate keeps for `border.focused` sits on the mid-grey engaged fills — plus
+ * the accent cascade, whose border weakens on hover/active where the base
+ * strengthens it. That last one is a degree question, not an omission, and is
+ * logged for the owner's review rather than tuned here.
+ */
+const DARK: BorderInventory = {
+  mirrored: withDelta(MIRRORED_BORDERS, {
+    remove: [
+      // The inverted primary pill: its engaged fills step away from the edge.
+      'action.primary.expanded',
+      'action.primary.pressed',
+      // The accent marker paints a brand fill in the base and grows an edge
+      // here, because the fill and the dark page are one step apart.
+      'navigation.accent.current',
+      'navigation.accent.selected',
+    ],
+    add: [
+      // The low-emphasis surfaces mirror their own fill at rest in this mode —
+      // the documented way `input.secondary` recedes on a dark page (the edge
+      // appears on hover, not at rest).
+      'informational.muted.hover',
+      'informational.secondary.default',
+      'input.secondary.default',
+    ],
+  }),
+  soft: withDelta(SOFT_BORDERS, {
+    remove: [
+      // Resolved by the dark canvas: these clear AA Large without the base's
+      // light fills behind them.
+      'informational.caution.default',
+      'informational.muted.hover',
+      'informational.positive.default',
+      'informational.primary.active',
+      'informational.primary.droptarget',
+      'informational.primary.hover',
+      'informational.primary.selected',
+      'informational.secondary.active',
+      'informational.secondary.default',
+      'informational.secondary.hover',
+      'input.caution.default',
+      'input.muted.hover',
+      'input.positive.default',
+      'input.secondary.default',
+      'input.secondary.hover',
+      'input.secondary.pressed',
+    ],
+    add: [
+      // (a) focused-on-own-fill — the ring carries focus in this mode too, and
+      // it is the one token the alternate lifts to brand.300 for the purpose.
+      'action.primary.focused',
+      'action.secondary.focused',
+      'feedback.muted.focused',
+      'feedback.primary.focused',
+      'informational.muted.focused',
+      'informational.secondary.focused',
+      'input.muted.focused',
+      'input.primary.focused',
+      'input.secondary.focused',
+    ],
+  }),
+};
 
 // ---------------------------------------------------------------------------
 // Test bundles — extend this array when new theme bundles are added
@@ -232,25 +325,46 @@ const bundleEntries: ReadonlyArray<{
   label: string;
   base: Record<string, string | number>;
   alt?: Record<string, string | number>;
-  /**
-   * Known `{ux}.{role}.{state}` contexts whose border falls below AA Large
-   * against its adjacent background by design. When omitted, the default
-   * inventory is used.
-   */
-  knownBorderViolations?: ReadonlySet<string>;
+  /** Border inventory for this bundle's base mode. */
+  borders: BorderInventory;
+  /** Border inventory for this bundle's alternate mode. */
+  bordersAlt: BorderInventory;
 }> = [
-  { label: 'default', base: themeFlatToTest, alt: themeAltFlatToTest },
+  {
+    label: 'default',
+    base: themeFlatToTest,
+    alt: themeAltFlatToTest,
+    borders: { mirrored: MIRRORED_BORDERS, soft: SOFT_BORDERS },
+    bordersAlt: DARK,
+  },
   {
     label: 'bruttal',
     base: bruttalFixtures.base,
     alt: bruttalFixtures.alt,
-    // Bruttal's brown brand.500 (#6D5D4F) sits below 3:1 against the filled
-    // feedback.primary surface (neutral.800) — one extra entry over the
-    // default inventory, same pattern (a) rationale.
-    knownBorderViolations: new Set([
-      ...KNOWN_BORDER_CONTRAST_VIOLATIONS,
-      'feedback.primary.focused',
-    ]),
+    borders: {
+      mirrored: MIRRORED_BORDERS,
+      // Bruttal's brown brand.500 sits below AA Large against the filled
+      // feedback.primary surface where the blue one clears it — pattern (a),
+      // a palette difference rather than a different decision.
+      soft: withDelta(SOFT_BORDERS, { add: ['feedback.primary.focused'] }),
+    },
+    bordersAlt: {
+      mirrored: DARK.mirrored,
+      soft: withDelta(DARK.soft, {
+        // The brown ramp is flatter than the blue one against a dark canvas, so
+        // the same patterns catch more contexts here — including the accent's
+        // resting edge. A palette difference, not a different decision.
+        add: [
+          'action.muted.focused',
+          'informational.primary.focused',
+          'navigation.accent.default',
+          'navigation.accent.hover',
+          'navigation.muted.current',
+        ],
+        // …and brand.300 clears the accent fill in this palette.
+        remove: ['action.accent.focused'],
+      }),
+    },
   },
 ];
 
@@ -274,8 +388,21 @@ const parseSemanticColorKey = (
 };
 
 /**
- * Text/background pairs: for each ux.role.state where both background and
- * text tokens resolve to hex values.
+ * Text/background pairs: for each `background.<state>`, the ink a component
+ * **actually renders** on it.
+ *
+ * Pairing #1 defines "corresponding" as *where the part renders, not who owns
+ * the token* — and a state that declares a background without an ink still
+ * renders one, because the component contract falls back (fsl-ui CONTRACT
+ * §3.1: `resolveInteractiveStyle(...) ?? text.default`; the selection mark
+ * resolves `indeterminate → checked → default`). The previous extractor
+ * paired only same-state declarations and skipped when the ink side was
+ * absent, so the pair every component renders went unaudited while a pair
+ * nobody renders was verified — F-043's mechanism, and the mirror image of
+ * the trap the fsl-ui CLAUDE.md already names for deletions. This is how the
+ * dark alternate shipped `action.secondary.background.active` at 1.45:1
+ * against the ink that really lands on it, visible for as long as a menu
+ * stays open.
  */
 const extractTextBackgroundPairs = (
   tokens: Record<string, string | number>
@@ -283,6 +410,10 @@ const extractTextBackgroundPairs = (
   const pairs: Array<{ bgPath: string; textPath: string; context: string }> =
     [];
   const prefix = 'semantic.colors.';
+
+  const hexAt = (path: string): boolean => {
+    return path in tokens && isHexColor(tokens[path]!);
+  };
 
   for (const bgPath of Object.keys(tokens)) {
     if (!bgPath.startsWith(prefix) || !bgPath.includes('.background.')) {
@@ -294,8 +425,21 @@ const extractTextBackgroundPairs = (
     if (!parsed) continue;
     const { ux, role, state } = parsed;
 
-    const textPath = `${prefix}${ux}.${role}.text.${state}`;
-    if (!(textPath in tokens) || !isHexColor(tokens[textPath]!)) continue;
+    const textBase = `${prefix}${ux}.${role}.text`;
+    // The effective ink: the declared state, then the renderer's documented
+    // fallback chain. `indeterminate` passes through `checked` because the
+    // only thing that renders on that fill is the selection mark, and that is
+    // the chain it resolves (Checkbox's indicator).
+    const chain =
+      state === 'indeterminate'
+        ? [
+            `${textBase}.indeterminate`,
+            `${textBase}.checked`,
+            `${textBase}.default`,
+          ]
+        : [`${textBase}.${state}`, `${textBase}.default`];
+    const textPath = chain.find(hexAt);
+    if (!textPath) continue;
 
     pairs.push({ bgPath, textPath, context: `${ux}.${role}.${state}` });
   }
@@ -511,64 +655,289 @@ describe('Color contrast — text vs background', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Error #3 (border pairing): border vs background contrast — regression guard
+// Error #3 (text pairing), cross-role: a part that renders one role's ink on
+// another role's surface
+//
+// `extractTextBackgroundPairs` pairs `text.*` with the `background.*` of the
+// **same** role. That is right for a part that paints its own surface and wrong
+// for one that does not, and the field family deliberately does not: the
+// validation message reads the negative role's ink and renders on whatever
+// informational surface the form sits on (fsl-ui CONTRACT §3.2). What the
+// same-role pairing verifies for that token is the filled negative input — a
+// surface no field in the family renders (F-036).
+//
+// The surface is not one token. Per colors.md → "Stacking informational
+// surfaces", the page and every contained surface resolve from the *same*
+// background token, and a raised or overlay stratum is that token plus an
+// `elevation.tonal.*` lift. So a part rendering "on the page" can sit on any of
+// the strata below, and each is a distinct pairing.
+//
+// Keyed by where the part renders, not by which role owns the token. Additions
+// are cheap; the entry earns its place by naming a part that actually composes
+// this way, so the list stays as short as the evidence.
+// ---------------------------------------------------------------------------
+
+/** Every effective surface an `informational` stratum can resolve to. */
+const INFORMATIONAL_STRATA: ReadonlyArray<string> = [
+  'semantic.colors.informational.primary.background.default',
+  'semantic.elevation.tonal.raised',
+  'semantic.elevation.tonal.overlay',
+  'semantic.elevation.tonal.blocking',
+];
+
+const CROSS_ROLE_TEXT_PAIRINGS: ReadonlyArray<{
+  part: string;
+  ink: string;
+  surfaces: ReadonlyArray<string>;
+  threshold: number;
+}> = [
+  {
+    part: 'validation message',
+    ink: 'semantic.colors.input.negative.text.default',
+    surfaces: INFORMATIONAL_STRATA,
+    // A field's message renders at body size — no large-text allowance.
+    threshold: WCAG.AA_NORMAL,
+  },
+  {
+    // Required Pairing #3 names "the focused color against the adjacent
+    // background", and for every entity-bearing component that colour is the
+    // cross-cutting ring: `focusRingOutline` draws it on all of them and
+    // `{ux}.{role}.border.focused` only re-tints the edge underneath. The ring
+    // is floated off the control (`FOCUS_RING_OFFSET`), so the background it
+    // lands on is the stratum, not the control's own fill — which is why a
+    // filled Action can carry a sub-threshold `border.focused` and still be
+    // focus-visible. Nothing verified this pairing until now.
+    part: 'focus ring',
+    ink: 'semantic.focus.ring.color',
+    surfaces: INFORMATIONAL_STRATA,
+    // Non-text indicator.
+    threshold: WCAG.AA_LARGE,
+  },
+  {
+    // fsl-ui F-029. A control on the *quiet* rung paints no fill of its own, so
+    // when its `consequence` is destructive there is no surface to carry the
+    // valence and the ink carries it instead (`resolveConsequenceInk`). Same
+    // shape as the validation message above, one family over.
+    //
+    // The ink is the cross-cutting consequence token (model.md §6 — ADR-025),
+    // which the base theme aliases to the standalone negative valence ink.
+    // Pairing the alias rather than its referent means a theme that repoints
+    // it is audited on what components actually render.
+    //
+    // The literal surface is the quiet rung's own opaque fill — `muted` is an
+    // opaque surface-coloured token, never `transparent` (ADR-015), so the
+    // control always covers whatever is beneath it. In both bundles that
+    // resting fill equals the page background, which makes the strata the same
+    // check seen from the other side; they stay listed so the entry still holds
+    // if a theme ever gives the quiet rung a tonal resting fill of its own.
+    part: 'quiet destructive control',
+    ink: 'semantic.consequence.destructive.ink',
+    surfaces: [
+      ...INFORMATIONAL_STRATA,
+      'semantic.colors.action.muted.background.default',
+      'semantic.colors.action.muted.background.hover',
+      // The surface contract (§3.4) lets a quiet destructive part rest on any
+      // published surface, so the row family's *resting* fill joins the strata
+      // — a destructive row action sits on exactly this. Hosts publish resting
+      // fills only: the dark row hover fill measures 2.65:1 against this ink,
+      // which is why transient host states do not republish.
+      'semantic.colors.input.primary.background.default',
+      // NOT `.active` / `.expanded`. Those are the engaged fills, where the
+      // theme lifts the quiet rung's *own* ink to stay legible and a fixed
+      // valence ink cannot follow: in this file's dark alternate the engaged
+      // fill is `neutral.500` and the muted ink goes `neutral.0`, so the
+      // valence ink lands at 2.65:1 — a figure no check reports, because the
+      // pair is deliberately outside the rule. `TINT_YIELDS_TO` in
+      // `resolveConsequenceInk` hands the ink back at exactly those states.
+      // NOT `.disabled` either: unavailability outranks valence and the rule
+      // yields there too, matching WCAG 2.2 §1.4.3.
+    ],
+    // A label renders at body size — no large-text allowance.
+    threshold: WCAG.AA_NORMAL,
+  },
+  {
+    // fsl-ui F-044. `colors.md` § Stacking names `border.outline.surface` the
+    // **secondary separator** and requires "a 1px outline at ≥ 3:1 contrast
+    // against the adjacent background … even when shadow is suppressed
+    // (high-contrast preferences, print)". For an *occluding* surface that
+    // adjacent background is whatever it covers — the page, either tonal lift,
+    // a row fill, a voiced surface — never its own fill, so the same-role
+    // border extractor structurally cannot audit it: it pairs an edge against
+    // the background of its own role and lists the result in the accepted-soft
+    // inventory. Correct for what it audits (an embedded card's edge carries no
+    // separation duty and is a deliberate hairline); blind to the pair that
+    // carries the signal. This entry is that pair.
+    //
+    // One token rather than a per-stratum family precisely because one value
+    // per mode clears the floor against all of them — which this test is what
+    // proves.
+    part: 'occluding boundary',
+    ink: 'semantic.overlay.outline',
+    surfaces: [
+      ...INFORMATIONAL_STRATA,
+      'semantic.colors.input.primary.background.default',
+      'semantic.colors.informational.muted.background.default',
+      'semantic.colors.informational.secondary.background.default',
+    ],
+    // A boundary is a non-text indicator.
+    threshold: WCAG.AA_LARGE,
+  },
+  {
+    // fsl-ui F-024 / CONTRACT §3.4. The quiet rung's resting fill follows the
+    // surface its host *published* (`--fsl-surface`), so its resting ink can
+    // land on any published surface rather than only the rung's own token.
+    // The list below is the publishable set: the informational strata (the
+    // page-voiced panels, popovers, dialogs and painted Boxes, plus Surface's
+    // tonal lifts) and the resting fill of the row family and the field
+    // frame — hosts publish resting fills only; transient states do not
+    // republish (the dark row hover fails the destructive ink's floor). Three exclusions are the design, not gaps: selection
+    // fills (the dark selected row inverts to near-white — 1.5:1 against
+    // this ink), Feedback fills, and *voiced* informational fills (a muted
+    // Menu's dark fill fails the destructive ink's floor) — voices are not
+    // strata, and fsl-ui does not publish them (surfaceScope.ts).
+    part: 'quiet control on published surfaces',
+    ink: 'semantic.colors.action.muted.text.default',
+    surfaces: [
+      ...INFORMATIONAL_STRATA,
+      'semantic.colors.input.primary.background.default',
+    ],
+    // The quiet rung is the one context pairing #1 holds to the large-text
+    // floor — intentionally subdued ink.
+    threshold: WCAG.AA_LARGE,
+  },
+];
+
+describe('Color contrast — cross-role text pairings', () => {
+  for (const { label, base, alt } of bundleEntries) {
+    describe(label, () => {
+      for (const [mode, tokens] of [
+        ['base', base],
+        ['alt', alt],
+      ] as const) {
+        if (!tokens) continue;
+
+        for (const {
+          part,
+          ink,
+          surfaces,
+          threshold,
+        } of CROSS_ROLE_TEXT_PAIRINGS) {
+          test(`${mode}: ${part} is legible on every informational stratum`, () => {
+            const inkValue = tokens[ink];
+            // The pairing is only meaningful while both ends exist — an absent
+            // ink is a removed token, which the grammar suites above own.
+            expect(isHexColor(inkValue!)).toBe(true);
+
+            const failures = surfaces
+              .map((surface) => {
+                const ratio = getContrastRatio(
+                  String(inkValue),
+                  String(tokens[surface])
+                );
+                return {
+                  surface,
+                  ratio: ratio === null ? null : Number(ratio.toFixed(2)),
+                };
+              })
+              .filter(({ ratio }) => {
+                return ratio === null || ratio < threshold;
+              });
+
+            expect({ ink: String(inkValue), failures }).toMatchObject({
+              failures: [],
+            });
+          });
+        }
+      }
+    });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Error #3 (border pairing) + Error #4: border vs background contrast
 //
 // Required Pairing #2: *.border.* ≥ 3:1 against the adjacent background.
+// Error #4 applies the same assertion to each supported alternate mode — the
+// text pairing above has always done so; this one did not, and the dark
+// alternate ran unaudited until F-027 (fsl-theme ADR-024).
 //
 // Rather than a single numeric baseline (which is a license to drift), the
 // guard is an explicit inventory of the `{ux}.{role}.{state}` pairs that are
-// intentionally below threshold. Any delta — new violation OR a resolved one
-// not yet removed from the inventory — fails the test and forces an explicit
-// decision.
-//
-// The inventory reflects four design patterns:
-//   (a) Solid filled buttons (action.primary/negative/accent) where
-//       border == background by design;
-//   (b) Ghost/muted buttons (action.muted/secondary) with subtle borders;
-//   (c) Informational / feedback surfaces where the border is a decorative
-//       separator deliberately below the interactive-border threshold;
-//   (d) Input / navigation resting states with intentionally soft borders.
+// intentionally below threshold, split by the rules documented at the
+// inventories above. Any delta in either set — a new entry OR a listed one that
+// no longer applies — fails and forces an explicit decision.
 // ---------------------------------------------------------------------------
 
+/** Classify one mode's border pairs against its declared inventory. */
+const assertBorderInventory = (
+  tokens: Record<string, string | number>,
+  inventory: BorderInventory
+) => {
+  const mirrored = new Set<string>();
+  const soft = new Set<string>();
+
+  for (const { borderPath, bgPath, context } of extractBorderBackgroundPairs(
+    tokens
+  )) {
+    // WCAG 2.2 §1.4.3 exempts disabled UI, as the text pairing above assumes.
+    if (context.endsWith('.disabled')) continue;
+
+    const border = String(tokens[borderPath]);
+    const background = String(tokens[bgPath]);
+
+    if (border.toLowerCase() === background.toLowerCase()) {
+      mirrored.add(context);
+      continue;
+    }
+
+    const ratio = getContrastRatio(border, background);
+    if (ratio !== null && ratio < WCAG.AA_LARGE) soft.add(context);
+  }
+
+  const delta = (
+    observed: ReadonlySet<string>,
+    declared: ReadonlySet<string>
+  ) => {
+    return {
+      added: [...observed]
+        .filter((c) => {
+          return !declared.has(c);
+        })
+        .sort(),
+      resolved: [...declared]
+        .filter((c) => {
+          return !observed.has(c);
+        })
+        .sort(),
+    };
+  };
+
+  // `added`: a regression — require design review or a fix.
+  // `resolved`: progress — remove the entry to lock the improvement in.
+  expect({
+    mirrored: delta(mirrored, inventory.mirrored),
+    soft: delta(soft, inventory.soft),
+  }).toEqual({
+    mirrored: { added: [], resolved: [] },
+    soft: { added: [], resolved: [] },
+  });
+};
+
 describe('Color contrast — border vs background', () => {
-  for (const entry of bundleEntries) {
-    const { label, base } = entry;
-    const inventory =
-      entry.knownBorderViolations ?? KNOWN_BORDER_CONTRAST_VIOLATIONS;
+  for (const { label, base, alt, borders, bordersAlt } of bundleEntries) {
     describe(label, () => {
-      test('base: border/bg violations match the documented inventory exactly', () => {
+      test('base: border/bg inventories match exactly', () => {
         // Error #3 (border/non-text pairing): *.border.* ≥ 3:1 against adjacent *.background.*
-        const pairs = extractBorderBackgroundPairs(base);
-        const observed = new Set(
-          pairs
-            .filter(({ borderPath, bgPath }) => {
-              const ratio = getContrastRatio(
-                String(base[borderPath]),
-                String(base[bgPath])
-              );
-              return ratio !== null && ratio < WCAG.AA_LARGE;
-            })
-            .map((v) => {
-              return v.context;
-            })
-        );
-
-        const added = [...observed]
-          .filter((c) => {
-            return !inventory.has(c);
-          })
-          .sort();
-        const resolved = [...inventory]
-          .filter((c) => {
-            return !observed.has(c);
-          })
-          .sort();
-
-        // New violations: a regression — require design review or fix.
-        // Resolved violations: progress — remove the entry from the inventory
-        // above to lock in the improvement.
-        expect({ added, resolved }).toEqual({ added: [], resolved: [] });
+        assertBorderInventory(base, borders);
       });
+
+      if (alt) {
+        test('alt: border/bg inventories match exactly', () => {
+          // Error #4: any supported mode fails the same required pairings for
+          // the same semantic contract.
+          assertBorderInventory(alt, bordersAlt);
+        });
+      }
     });
   }
 });

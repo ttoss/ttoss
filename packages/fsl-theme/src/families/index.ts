@@ -13,6 +13,7 @@
 export * from './borders';
 export * from './breakpoints';
 export * from './colors';
+export * from './consequence';
 export * from './elevation';
 export * from './focus';
 export * from './motion';

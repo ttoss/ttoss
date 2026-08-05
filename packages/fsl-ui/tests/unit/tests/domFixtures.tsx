@@ -86,7 +86,13 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
   Badge: {
     scope: 'badge',
     element: () => {
-      return <pkg.Badge>New</pkg.Badge>;
+      return <pkg.Badge>Admin</pkg.Badge>;
+    },
+  },
+  StatusLight: {
+    scope: 'status-light',
+    element: () => {
+      return <pkg.StatusLight>New</pkg.StatusLight>;
     },
   },
   Box: {
@@ -165,6 +171,26 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
           <pkg.Button evaluation="secondary">Cancel</pkg.Button>
           <pkg.Button>Save</pkg.Button>
         </pkg.ButtonGroup>
+      );
+    },
+  },
+  List: {
+    scope: 'list',
+    element: () => {
+      return (
+        <pkg.List>
+          <pkg.ListItem>one</pkg.ListItem>
+        </pkg.List>
+      );
+    },
+  },
+  ListItem: {
+    scope: 'list',
+    element: () => {
+      return (
+        <pkg.List>
+          <pkg.ListItem>one</pkg.ListItem>
+        </pkg.List>
       );
     },
   },
@@ -397,6 +423,17 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
             <pkg.Dialog aria-label="test">content</pkg.Dialog>
           </pkg.DialogModal>
         </pkg.DialogTrigger>
+      );
+    },
+  },
+  // Drawer is a portal overlay and renders its own Dialog — open it directly.
+  Drawer: {
+    scope: 'drawer',
+    element: () => {
+      return (
+        <pkg.Drawer aria-label="Navigation" isOpen>
+          content
+        </pkg.Drawer>
       );
     },
   },

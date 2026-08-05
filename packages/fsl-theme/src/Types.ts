@@ -64,6 +64,7 @@ import type {
   DeepPartial,
   SemanticBorder,
   SemanticColors,
+  SemanticConsequence,
   SemanticElevation,
   SemanticFocus,
   SemanticMotion,
@@ -133,6 +134,11 @@ export interface ThemeTokens {
     border: SemanticBorder;
     focus: SemanticFocus;
     overlay: SemanticOverlay;
+    /**
+     * Cross-cutting valence ink for parts that paint no surface (model.md §6).
+     * Sibling of `focus` and `overlay`.  families/consequence.ts
+     */
+    consequence: SemanticConsequence;
     opacity: SemanticOpacity;
     motion: SemanticMotion;
     zIndex: SemanticZIndex;

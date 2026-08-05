@@ -49,7 +49,7 @@ with `aria-label` then required by the type system.
 Three props carry the semantic model everywhere:
 
 - `evaluation` — authorial emphasis (`primary`, `muted`, `negative`, …). Data-entry components (`TextField`, `Select`, `Checkbox`, …) intentionally have none: validation is the runtime `isInvalid` state, never a color prop.
-- `consequence` — effect on state (`neutral`, `committing`, `destructive`). It drives mechanism: a `destructive` `ConfirmationDialog` requires a two-click armed confirmation.
+- `consequence` — effect on state (`neutral`, `committing`, `destructive`). It drives mechanism: a `destructive` `ConfirmationDialog` requires a two-click armed confirmation. It carries colour in one case — on the quiet rung (`evaluation="muted"`), which paints no fill and so has nowhere else to say it, a `destructive` action tints its ink. A destructive _peer_ among siblings keeps its rung and sets `consequence`; a destructive _command_ that should be the loudest thing on the surface is `evaluation="negative"`.
 - `composition` — the slot an element plays inside a parent (`primaryAction`, `dismissAction`, …). `DialogActions` reorders its children by it per platform convention.
 
 Flow-critical labels are required props with no English defaults — `ConfirmationDialog` and `WizardNavigation` force the caller to supply localized copy (see `CONTRIBUTING.md` §6).

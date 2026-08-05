@@ -100,3 +100,36 @@ export const ShortLabels: Story = {
 export const Disabled: Story = {
   args: { children: 'Unavailable', isDisabled: true },
 };
+
+/**
+ * `consequence` names the effect of activating the button and normally carries
+ * no colour — the fill is the voice, and `evaluation` owns the fill. The one
+ * exception is the **quiet** rung, which paints no fill and so has nowhere else
+ * to say it: there, `destructive` tints the ink (CONTRACT §3.3).
+ *
+ * The pair below is the choice an author actually makes. A destructive
+ * **command** that should dominate its surface is `evaluation="negative"`; a
+ * destructive **peer** standing beside a neutral action keeps its rung and
+ * marks itself with `consequence` instead.
+ */
+export const QuietDestructive: Story = {
+  tags: ['autodocs'],
+  render: () => {
+    return (
+      <Stack gap="lg">
+        <Stack direction="horizontal" gap="md" align="center">
+          <Button evaluation="negative" consequence="destructive">
+            Delete workspace
+          </Button>
+          <Button evaluation="secondary">Cancel</Button>
+        </Stack>
+        <Stack direction="horizontal" gap="md" align="center">
+          <Button>Save changes</Button>
+          <Button evaluation="muted" consequence="destructive">
+            Delete account
+          </Button>
+        </Stack>
+      </Stack>
+    );
+  },
+};

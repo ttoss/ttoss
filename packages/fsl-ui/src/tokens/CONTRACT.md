@@ -44,10 +44,11 @@ type FooEvaluation = EvaluationsFor<(typeof fooMeta)['entity']>;
 ```
 
 `evaluation` and `consequence` are orthogonal: `consequence: 'destructive'`
-(FSL §6) drives the interaction _mechanism_ (e.g. ConfirmationDialog arming);
-`evaluation: 'negative'` drives the adverse _color voice_. A destructive
-action typically pairs both, but neither implies the other — see §6 and
-ENTITY_CONSEQUENCE in `taxonomy.ts`.
+(FSL §6) drives the interaction _mechanism_ (e.g. ConfirmationDialog arming) and,
+on a part that paints no fill, the ink that carries its valence (§3.3);
+`evaluation: 'negative'` drives the adverse _color voice_ — the filled red
+command. A destructive action may pair both, but neither implies the other —
+see §6 and ENTITY_CONSEQUENCE in `taxonomy.ts`.
 
 ### Step 3 — Read token paths from §1
 
@@ -79,13 +80,15 @@ A component MUST use ONLY tokens from its Entity row.
 
 **Cross-cutting** (apply to ALL interactive entities — not in the table because they are entity-agnostic):
 
-| Token family     | Path                                          |
-| ---------------- | --------------------------------------------- | ------ | ------- | -------- | ----------- |
-| Focus ring       | `vars.focus.ring.width` / `.style` / `.color` |
-| Disabled opacity | `vars.opacity.disabled`                       |
-| Scrim opacity    | `vars.opacity.scrim`                          |
-| Scrim color      | `vars.overlay.scrim`                          |
-| Z-Index          | `vars.zIndex.layer.{base                      | sticky | overlay | blocking | transient}` |
+| Token family       | Path                                                                              |
+| ------------------ | --------------------------------------------------------------------------------- | ------ | ------- | -------- | ----------- |
+| Focus ring         | `vars.focus.ring.width` / `.style` / `.color`                                     |
+| Consequence ink    | `vars.consequence.destructive.ink` — read via `resolveConsequenceInk` only (§3.3) |
+| Occluding boundary | `vars.overlay.outline` — the edge of a surface that **covers** content (§3.5)     |
+| Disabled opacity   | `vars.opacity.disabled`                                                           |
+| Scrim opacity      | `vars.opacity.scrim`                                                              |
+| Scrim color        | `vars.overlay.scrim`                                                              |
+| Z-Index            | `vars.zIndex.layer.{base                                                          | sticky | overlay | blocking | transient}` |
 
 ### §1.1 — Mapping Rationale
 
@@ -233,7 +236,7 @@ order defined by `STATE_PRIORITY` in
 first:
 
 ```
-disabled > invalid > expanded > indeterminate > selected
+disabled > invalid > expanded > indeterminate > current > selected
         > focusVisible > pressed > hovered > default
 ```
 
@@ -311,6 +314,150 @@ and `border` passes no `isHovered` at all. It is recorded here because it is now
 a product decision rather than a side effect of the tuple's order, and
 `tests/unit/tests/fieldEnvelope.test.tsx` fails if a call site stops passing
 `isInvalid` and lets hover win.
+
+### §3.3 — Parts that paint no surface borrow the stratum's ink
+
+> **A part that paints no surface of its own takes its ink from the surface it
+> renders on. When that part carries a valence, `consequence` is what selects
+> it — not `evaluation`.**
+
+§3.2 is the first instance of this and the field family is where it was found;
+the rule is the general form. The quiet rung (`muted`) is the system's idiom for
+"no fill" — an opaque surface-coloured token, never `transparent`, so every
+pairing stays auditable. A control on that rung has nowhere to say "this
+deletes something" except the ink.
+
+Reaching for `evaluation="negative"` instead fills the control solid red,
+because in `action` the valence **is** the filled destructive command. That is a
+different claim: a filled red button is the loudest thing on the surface, while
+a destructive menu row is a peer of "Duplicate" and "Rename". The mismatch is
+F-029, and it existed because `consequence` drove mechanism only, so authors
+substituted the one axis with a visual projection.
+
+Implemented once, in `tokens/consequenceInk.ts`:
+
+|                |                                                                        |
+| -------------- | ---------------------------------------------------------------------- |
+| **Applies to** | `evaluation === 'muted'` and `consequence === 'destructive'`           |
+| **Paints**     | `color` only — and, through `currentColor`, any `Icon` inside the part |
+| **Reads**      | `vars.consequence.destructive.ink` (§1 cross-cutting table)            |
+| **Yields at**  | `disabled`, `active`, `expanded` (`TINT_YIELDS_TO`)                    |
+
+The ink is a **cross-cutting token** (model.md §6, fsl-theme ADR-025), the same
+mechanism as the focus ring — and the analogy is structural, not cosmetic: both
+render against the stratum behind the component rather than a fill of their own
+(the ring because it floats off the edge, this ink because the quiet rung's
+fill _is_ the stratum), which is what lets one system-wide colour serve
+everything. The base theme aliases it to the standalone negative valence ink;
+a theme may repoint it without touching validation messages. No entity row is
+crossed: the read is licensed by the §1 cross-cutting table like the ring's.
+
+Ink only: the quiet rung's border mirrors its background by construction, so
+tinting the edge would invent an outlined-destructive language the system does
+not have. It yields at the engaged states because the quiet rung materialises a
+real fill there and the theme lifts its _own_ ink to clear it — a fixed valence
+ink measures 2.65:1 against the dark alternate's engaged fill. It yields when
+disabled because unavailability outranks valence.
+
+Every surface the tint can land on is enumerated and measured in fsl-theme's
+cross-role inventory (`colors.test.ts` → `quiet destructive control`), which
+pairs **the token itself**, so a theme that repoints the alias is audited on
+what components actually render. Unlike the ring the read is conditional (one
+rung, a yield set), so it is confined to the helper where those bounds live: a
+component that emits `data-consequence` and paints from `vars.colors.action`
+**must** resolve its ink through `resolveConsequenceInk`, and no component
+reads `vars.consequence` or another family's negative ink directly —
+`components.contract.test.tsx` fails otherwise.
+
+### §3.4 — The surface contract: hosts publish, the quiet rung follows
+
+> **The element that paints a hosting surface publishes it; the quiet rung's
+> resting fill and edge read the published surface, with their own tokens as
+> the fallback.**
+
+`colors.md` § Stacking informational surfaces makes the effective colour under
+a control a **composite no colour token can name** — the page and every
+contained surface share one background token, and depth is paid in
+`elevation.tonal.*` or in another family's fill (a table row paints
+`input.primary`). Only the element that painted the surface knows the result.
+The quiet rung (`muted`) paints "the surface's own colour" as an opaque token —
+byte-identical to the page and to every overlay, and wrong on every other
+surface: measured in the Studio, dark, a quiet row action painted `#161616` on
+a `#3d3d3d` table row — a black pill in every row (F-024).
+
+The owner ruling stands unchanged: **a component always paints** — no
+`transparent`, no omitted background, and the theme's own `muted.text ↔
+background` pairs stay in the suite. What moves is where the surface is known.
+Implemented once, in `tokens/surfaceScope.ts`:
+
+|                |                                                                                                      |
+| -------------- | ---------------------------------------------------------------------------------------------------- |
+| **Publishers** | parts hosting arbitrary content spread `publishSurface(restingFill)` — the fill plus `--fsl-surface` |
+| **Consumers**  | quiet-capable Action call sites resolve `background`/`border` via `resolveSurfaceBoundStyle`         |
+| **Reads as**   | `var(--fsl-surface, <the rung's own token>)` — outside a publisher, nothing changes                  |
+| **Bounds**     | resting state only, on both sides; the muted rung only; voiced fills never publish                   |
+
+The bounds are each load-bearing, and each is measured rather than stylistic.
+The consumer's **engaged fills** (`hover`/`active`/`pressed`/`expanded`) stay
+absolute — they are how a quiet control materialises. The publisher's
+**transient states do not republish** — a row paints its hover fill but keeps
+publishing its resting one, because the dark row hover measures 2.65:1
+against the destructive ink. The **selection fill is a voice, not a
+stratum** — in dark it inverts to near-white, 1.5:1 against the muted ink.
+**Feedback fills and non-primary informational fills are voices too**: a
+toast's red and a muted Menu's grey are not strata the quiet inks are audited
+against, so only the page-like `primary` voice (and Surface's tonal strata)
+publishes.
+
+`--fsl-surface` lives in the §7 host-facing namespace on purpose: a **host
+application** that paints its own surface can publish the same property and
+every quiet control inside it follows, with zero fsl-ui changes.
+
+Legibility is guarded where the values live: fsl-theme's cross-role inventory
+(`colors.test.ts` → `quiet control on published surfaces`) pairs the quiet ink
+against every publishable surface, at the rung's own floor, in every bundle
+and both modes — and the excluded selection fill is excluded _because it fails
+there_, which the entry states.
+
+### §3.5 — A surface that occludes owes a boundary
+
+> **A surface that covers content draws `vars.overlay.outline`. A surface that
+> sits in the flow keeps its role's hairline.**
+
+`colors.md` § Stacking orders the separators — `elevation` first, the surface
+outline second, `elevation.tonal` third — and states the second one's duty in
+its own words: _"a 1px outline at ≥ 3:1 contrast against the adjacent
+background guarantees a perceptual edge **even when shadow is suppressed
+(high-contrast preferences, print)**"_. An overlay's fill is byte-identical to
+the page by design (one background token for the page and everything on it), so
+`elevation` and that outline are all it has — and under `forced-colors` or print
+the shadow is gone.
+
+`{ux}.{role}.border.default` cannot carry that duty because it already carries
+the opposite one: an embedded card's decorative edge and a divider inside
+content, where a near-invisible hairline is deliberate — it is a listed member
+of the border pairing's accepted-**soft** inventory. Measured before this
+shipped, that hairline read **1.31:1 in light and 1.67:1 in dark** against the
+page it was meant to separate from, so a menu with shadows suppressed was an
+unbounded rectangle of page-coloured text (F-044).
+
+|                 |                                                                                                              |
+| --------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Occludes**    | popover, menu, tooltip, dialog panel, drawer panel, toast → `vars.overlay.outline` (via `OCCLUDING_OUTLINE`) |
+| **In the flow** | `Surface`, `Box`, dividers, field frames → `{ux}.{role}.border.*`, unchanged                                 |
+| **Not a voice** | the boundary is one system colour, like the focus ring — `evaluation` keeps driving fill and ink             |
+
+The last row costs nothing that existed: measured across both modes,
+`informational.{primary,secondary,muted}.border.default` all resolved the
+**same** value, so an Overlay's `evaluation` never varied its edge.
+
+Guarded on both sides. fsl-theme's cross-role inventory pairs the token against
+every stratum an overlay can land on ("occluding boundary") — a cross-stratum
+pair, which is why the same-role border extractor structurally could not see the
+defect. `tests/unit/tests/occludingSurface.test.tsx` pins which token each
+surface reads, **including that an embedded surface does not** — without that
+half, "put the boundary everywhere" would pass, and that is the theme-wide
+retune this contract exists to avoid.
 
 ---
 
@@ -457,10 +604,11 @@ import { ENTITY_EVALUATION } from '@ttoss/fsl-ui/semantics';
 const valid = ENTITY_EVALUATION['Action'];
 // → ['primary', 'secondary', 'accent', 'muted', 'negative']
 //
-// Note: 'negative' on Action is the adverse color *voice*. It does not
-// imply behavior — effect-on-state is expressed separately through
-// `consequence: 'destructive'` (see ENTITY_CONSEQUENCE), which drives
-// interaction mechanics (e.g. ConfirmationDialog arming).
+// Note: 'negative' on Action is the adverse color *voice* — the filled red
+// command. It does not imply behavior: effect-on-state is expressed
+// separately through `consequence: 'destructive'` (see ENTITY_CONSEQUENCE),
+// which drives interaction mechanics (e.g. ConfirmationDialog arming) and,
+// on the quiet rung alone, the ink that carries the valence (§3.3).
 ```
 
 ---

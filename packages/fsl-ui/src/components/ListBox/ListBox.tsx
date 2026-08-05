@@ -11,6 +11,7 @@ import type { ComponentMeta } from '../../semantics';
 import { buildChoosableRowStyle } from '../../tokens/choosableRow';
 import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import { publishSurface } from '../../tokens/surfaceScope';
 
 // ---------------------------------------------------------------------------
 // Semantic identities — Layer 1 (per-part entity split, ADR-007)
@@ -83,12 +84,14 @@ export const ListBox = <T extends object = object>({
         display: 'flex',
         flexDirection: 'column',
         gap: vars.spacing.gap.stack.xs,
-        padding: vars.spacing.inset.surface.sm,
+        // Row-framing gutter, not a page inset (F-045).
+        padding: vars.spacing.inset.surface.xs,
         borderRadius: vars.radii.surface,
         borderWidth: vars.border.outline.surface.width,
         borderStyle: vars.border.outline.surface.style,
         borderColor: surface?.border?.default ?? 'transparent',
-        backgroundColor: surface?.background?.default,
+        // A hosting surface publishes itself (CONTRACT §3.4).
+        ...publishSurface(surface?.background?.default),
       }}
     >
       {children}
@@ -129,6 +132,10 @@ export const ListBoxItem = ({ children, ...props }: ListBoxItemProps) => {
           ...buildChoosableRowStyle(),
           cursor: isDisabled ? 'not-allowed' : 'pointer',
           opacity: isDisabled ? vars.opacity.disabled : undefined,
+          // The option paints its resolved fill and publishes its *resting*
+          // one — transient states and the selection voice do not republish
+          // (§3.4, see Table's row). Spread order: the dynamic paint wins.
+          ...publishSurface(c?.background?.default),
           backgroundColor: resolveInteractiveStyle(c?.background, {
             isDisabled,
             isSelected,

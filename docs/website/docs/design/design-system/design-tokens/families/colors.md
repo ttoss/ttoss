@@ -222,8 +222,22 @@ Valence dominates emphasis: if the token communicates **outcome or validity** (s
 > Intensity _within_ a valence is expressed by `dimension`, not by combining with emphasis.
 >
 > ❌ `feedback.negative.primary.background.default` — combining valence + emphasis is forbidden.
-> ✅ `feedback.negative.text.default` — quiet error (foreground only).
-> ✅ `feedback.negative.background.default` — loud error (filled surface).
+> ✅ `informational.negative.text.default` — quiet error (foreground only).
+> ✅ `informational.negative.background.default` — loud error (filled surface).
+
+**Where the loudness ladder does and does not exist.** The two rungs above are a
+ladder only where the valence's `text` is a standalone ink. In `input` and
+`informational` it is, and a part may read it while sitting on any surface — the
+validation message is that case. In `action` and `feedback` the valence ships as
+a **filled** surface, so `text` is the label _on that fill_ (near-white) and there
+is no quiet rung inside those contexts: a destructive button is filled, a status
+toast is filled — and it cannot be added by reaching for emphasis, which the ❌
+above forbids. The quiet destructive Action is instead expressed by the
+[cross-cutting](#cross-cutting-tokens-siblings-of-semanticcolors)
+`semantic.consequence.destructive.ink`: a part on the quiet rung paints the
+stratum's own colour, so the ink it needs is a system-wide default no `{ux}`
+owns — the same shape as the focus ring, and the same §6 mechanism. The
+component layer scopes when it applies (`@ttoss/fsl-ui` CONTRACT §3.3).
 
 ---
 
@@ -330,36 +344,40 @@ Core palette values are **immutable across modes**; modes remap which core token
 
 ## Cross-cutting tokens (siblings of `semantic.colors.*`)
 
-Two tokens carry **system-wide defaults** that no `{ux}` owns. They live as siblings of `semantic.colors.*` per [model.md §6](../model.md#6-no-parallel-vocabulary), not inside it:
+Four tokens carry **system-wide defaults** that no `{ux}` owns. They live as siblings of `semantic.colors.*` per [model.md §6](../model.md#6-no-parallel-vocabulary), not inside it:
 
 - `semantic.focus.ring.color` — system focus indicator color
 - `semantic.overlay.scrim` — modal backdrop
+- `semantic.overlay.outline` — boundary of a surface that **occludes** content
+- `semantic.consequence.destructive.ink` — foreground for a destructive part that paints no surface
 
-They are **not** parallel vocabulary: per-context tokens (`{ux}.{role}.border.focused`) answer _"how does this `{ux}` look when focused?"_; cross-cutting tokens answer _"what is the system default when no `{ux}` applies?"_.
+They are **not** parallel vocabulary: `{ux}.{role}.border.focused` answers _"what does this `{ux}`'s own edge become while focused?"_; `semantic.focus.ring.color` answers _"what marks focus?"_. Likewise `{ux}.{valence}.text` answers _"what is this `{ux}`'s valence ink on its own surfaces?"_; the consequence ink answers _"what marks a destructive part that paints nothing?"_.
 
-### Focus color — which token to pick
+### Focus color — the ring indicates, the border tints
 
-| The component is…                                                                                                | Use                                                                       |
-| :--------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------ |
-| an `Action` / `Input` / `Navigation` / `Feedback` (clear FSL Entity Kind)                                        | `{ux}.{role}.border.focused` from `semantic.colors.*`                     |
-| an `Informational` surface made interactive (focusable Card, profile chip, custom widget with no obvious `{ux}`) | `semantic.focus.ring.color`                                               |
-| an `Input` with validation valence (`negative`, `caution`) where focus must inherit the valence colour           | `input.{negative\|caution}.border.focused` (overrides the system default) |
+The two are **layers, not alternatives**, and every focusable component uses both.
 
-The two paths are not duplicates — they answer different questions and are picked by _which question the component is asking_.
+**`semantic.focus.ring.color` is the indicator, on every entity alike.** It is drawn as an `outline` — never a `border`, which would shift layout — and floated off the control's edge, so the surface it must contrast against is the stratum behind the component rather than the component's own fill. That is what lets one system-wide colour serve everything: a filled `action.primary` pill is near-black in light and near-white in dark, and no single edge colour clears both it and the page, but a ring sitting outside it only ever meets the page.
+
+**`{ux}.{role}.border.focused` re-tints the component's own edge underneath that ring.** It reinforces, and carries no indication duty of its own — which is why a filled surface may leave it below the border floor without the component becoming unfocusable.
+
+One case inverts the emphasis: an `Input` carrying a validation valence keeps that valence in its border while focused (`input.{negative|caution}.border.focused`), because dropping it would make focusing an invalid field look like fixing it. The ring is unchanged — the valence rides the border, not the indicator.
+
+> Contrast duty follows indication. The ring owes [Required pairing #3](#required-pairings) against every stratum it can land on; the tinted border owes the border pairing, and is exempt where it sits on its own role's fill.
 
 ### Example
 
 A focusable profile card (no obvious `{ux}`):
 
 - line geometry from `semantic.border.outline.surface` + `semantic.focus.ring.{width,style}` on `:focus-visible`
-- focus colour from `semantic.focus.ring.color` (system default)
+- ring colour from `semantic.focus.ring.color`; the card has no `{ux}` edge to tint
 
 A text input in error:
 
 - line geometry from `semantic.border.outline.control` + `semantic.focus.ring.{width,style}` on `:focus-visible`
-- focus colour from `input.negative.border.focused` (per-context override; the negative valence outranks the system default)
-
-A raised card may combine:
+- ring colour from `semantic.focus.ring.color`, as everywhere
+- edge colour from `input.negative.border.focused` — the valence survives focus
+  A raised card may combine:
 
 - surface color from `informational.primary.background.default`
 - outline color from `informational.muted.border.default`
@@ -372,7 +390,7 @@ Multiple `informational` surfaces commonly overlap in the visual hierarchy — a
 Differentiation between stacked `informational` surfaces is paid in this order — **never in colour**:
 
 1. **`elevation`** is the primary separator. `Overlay → elevation.surface.overlay`, `Structure`/`Collection` → `elevation.surface.flat | raised`. Drop shadows are local to each level, so the rule survives arbitrary nesting (Card inside Dialog inside Drawer): each level paints its own shadow over whatever sits beneath it.
-2. **`border.outline.surface`** is the secondary separator. A 1px outline at ≥ 3:1 contrast against the adjacent background guarantees a perceptual edge even when shadow is suppressed (high-contrast preferences, print).
+2. **`border.outline.surface`** is the secondary separator. A 1px outline at ≥ 3:1 contrast against the adjacent background guarantees a perceptual edge even when shadow is suppressed (high-contrast preferences, print). **Which colour that outline takes depends on whether the surface occludes.** An _embedded_ surface (a card, a panel in the flow) draws `{ux}.{role}.border.default` — a deliberate hairline, listed in the border pairing's soft inventory, because losing its edge loses decoration. A surface that **covers** content draws `semantic.overlay.outline`, the cross-cutting boundary, because losing _its_ edge loses the information about where the covered content resumes. One token cannot be both, and the duty above belongs to the second.
 3. **Tonal step displacement** is the optional reinforcement, delivered through `elevation.tonal.*` — **not** a second background token. By default the page and every contained `informational` surface resolve from the _same_ token (`informational.primary.background.default`); there is no separate `page` colour role, and none should be added. When a theme wants a raised surface to read as a literal step lighter/darker than the page (the classic "grey page, white cards", or dark-mode lifted surfaces), it maps `elevation.tonal.{raised,overlay,blocking}` to a surface-colour overlay on top of the shared background. The page (flat stratum) has no tonal overlay, so the net effective colours differ by one step while the base colour vocabulary stays single-sourced. This keeps [Rules of Engagement #4](#rules-of-engagement-non-negotiable) intact: the colour token is not carrying depth — `elevation` is.
 
 > **Why not two background tokens.** Page-vs-card is a stratum distinction, and strata are an `elevation` axis, not a `role` axis (`role` is emphasis/valence, §Role Coverage). Splitting the page background into its own colour role would encode depth in colour — the exact move Rule #4 forbids. The single `informational.primary.background.default` + `elevation` (shadow) + `elevation.tonal` (surface lift) + `border.outline.surface` fully expresses the stack.
@@ -470,7 +488,8 @@ Themes tune **core palette values**, **which core tokens semantic tokens referen
 - a semantic color token uses an invalid `ux → role` combination
 - a semantic color token uses a state outside the allowed state restrictions for that contract
 - any required semantic pairing fails the contrast targets defined below
-- any supported mode fails the same required pairings for the same semantic contract
+- any supported mode fails the same required pairings for the same semantic contract — an alternate mode remaps references by hand, so it is where a role's `background` subtree can move while its `border` subtree stays behind
+- an alternate mode declares a semantic path the base does not — a mode remaps references ([model.md § Modes](../model.md#modes)), it never adds a leaf, because component bindings mirror the base shape and an alt-only leaf is unreachable: its value ships and nothing can read it
 
 ### Warning (validation should warn when)
 
@@ -490,14 +509,32 @@ Validation must check at least these pairings:
      floor. All other contexts — including `action.*` button labels, which render
      at `text.label` sizes and do **not** qualify as WCAG large text — must meet
      `≥ 4.5:1`.
+   - **Corresponding is where the part renders, not who owns the token.** A part
+     that reads one role's ink and paints no surface of its own — the validation
+     message is the declared case — pairs against the surface it lands on. Because
+     the page and every contained surface share one background token and differ by
+     `elevation.tonal.*` ([Stacking informational surfaces](#stacking-informational-surfaces)),
+     "the surface it lands on" is every stratum, not one value.
+   - **A `background` state with no ink of its own still renders one.** The
+     component contract falls back to `text.default` (the selection mark resolves
+     `indeterminate → checked → default`), so validation pairs the **effective**
+     ink against every declared background state — never only the same-state
+     declarations. A same-state-only check audits a pair nobody renders and skips
+     the pair everyone does.
 
 2. **Border / non-text pairing**
    - `*.border.*` against the adjacent background it sits on
    - minimum: `≥ 3:1`
+   - `disabled` is exempt (WCAG 2.2 §1.4.3), as it is for the text pairing.
+   - A border that resolves to its own background is a role with **no edge by
+     construction** — a distinct outcome from a soft edge, and validated as its
+     own set, so that a role gaining or losing its edge is a failure in either
+     direction.
 
 3. **Focus pairing**
    - the focused color against the adjacent background
    - and, when focus distinction depends on color, against the prior unfocused state
+   - The focused colour is `semantic.focus.ring.color` — the indicator, not the tint ([the ring indicates, the border tints](#focus-color--the-ring-indicates-the-border-tints)). Because the ring is floated off the control, the adjacent background is every stratum it can land on, so this is a **cross-role** pairing and belongs with pairing #1's inventory rather than inside a `{ux}.{role}` subtree.
 
 4. **Selected/current pairing**
    - the selected or current color against the adjacent background

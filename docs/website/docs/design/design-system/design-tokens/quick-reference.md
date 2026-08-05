@@ -46,6 +46,9 @@ Grammar reminder:
 | Divider line                                                                              | `semantic.colors.informational.muted.border`                        |
 | Focus ring color (system default — use when no `{ux}` applies)                            | `semantic.focus.ring.color`                                         |
 | Focus ring color (per-context — `{ux}` is `Action` / `Input` / `Navigation` / `Feedback`) | `semantic.colors.{ux}.{role}.border.focused`                        |
+| Destructive ink on a part that paints no surface (quiet menu row / text action)           | `semantic.consequence.destructive.ink`                              |
+| Edge of a surface that **covers** content (popover, menu, tooltip, dialog, drawer, toast) | `semantic.overlay.outline`                                          |
+| Edge of a surface **in the flow** (card, panel, divider)                                  | `semantic.colors.informational.{role}.border`                       |
 
 Full grammar + role decision table: [Colors](./families/colors.md).
 
@@ -53,15 +56,16 @@ Full grammar + role decision table: [Colors](./families/colors.md).
 
 ## Spacing — by intent
 
-| I want…                                 | Token                                          |
-| :-------------------------------------- | :--------------------------------------------- |
-| Padding inside a button/input           | `semantic.spacing.inset.control.{sm,md,lg}`    |
-| Padding inside a card/surface           | `semantic.spacing.inset.surface.{sm,md,lg}`    |
-| Gap between stacked items (form fields) | `semantic.spacing.gap.stack.{xs,sm,md,lg,xl}`  |
-| Gap between inline items (icon + label) | `semantic.spacing.gap.inline.{xs,sm,md,lg,xl}` |
-| Page horizontal gutter (responsive)     | `semantic.spacing.gutter.page`                 |
-| Section vertical gutter (responsive)    | `semantic.spacing.gutter.section`              |
-| Minimum distance between hit targets    | `semantic.spacing.separation.interactive.min`  |
+| I want…                                                                             | Token                                          |
+| :---------------------------------------------------------------------------------- | :--------------------------------------------- |
+| Padding inside a button/input                                                       | `semantic.spacing.inset.control.{sm,md,lg}`    |
+| Padding inside a card/surface                                                       | `semantic.spacing.inset.surface.{sm,md,lg}`    |
+| Gutter inside an anchored surface or a row container (popover, menu, tooltip, list) | `semantic.spacing.inset.surface.xs`            |
+| Gap between stacked items (form fields)                                             | `semantic.spacing.gap.stack.{xs,sm,md,lg,xl}`  |
+| Gap between inline items (icon + label)                                             | `semantic.spacing.gap.inline.{xs,sm,md,lg,xl}` |
+| Page horizontal gutter (responsive)                                                 | `semantic.spacing.gutter.page`                 |
+| Section vertical gutter (responsive)                                                | `semantic.spacing.gutter.section`              |
+| Minimum distance between hit targets                                                | `semantic.spacing.separation.interactive.min`  |
 
 See [Spacing](./families/spacing.md).
 

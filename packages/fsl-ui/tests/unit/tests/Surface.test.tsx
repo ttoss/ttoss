@@ -40,7 +40,10 @@ describe('Surface', () => {
         level === 'flat'
           ? vars.colors.informational.primary.background?.default
           : vars.elevation.tonal?.[level];
-      expect(el?.style.background).toBe(expectedBg);
+      expect(el?.style.backgroundColor).toBe(expectedBg);
+      // A hosting surface publishes what it painted (CONTRACT §3.4), so the
+      // quiet rung inside it can match the stratum instead of the page.
+      expect(el?.style.getPropertyValue('--fsl-surface')).toBe(expectedBg);
     }
   );
 

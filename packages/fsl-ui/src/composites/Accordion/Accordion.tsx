@@ -18,6 +18,7 @@ import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { FOCUS_RING_INSET, focusRingOutline } from '../../tokens/focusRing';
 import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import { publishSurface } from '../../tokens/surfaceScope';
 import { createCompositeScope } from '../scope';
 
 // ---------------------------------------------------------------------------
@@ -408,7 +409,8 @@ export const AccordionPanel = ({ children, ...props }: AccordionPanelProps) => {
             boxSizing: 'border-box',
             paddingBlock: vars.spacing.inset.control.md,
             paddingInline: vars.spacing.inset.control.md,
-            backgroundColor: c?.background?.default,
+            // A hosting surface publishes itself (CONTRACT §3.4).
+            ...publishSurface(c?.background?.default),
             color: c?.text?.default,
             ...(vars.text.body.md as React.CSSProperties),
           } as React.CSSProperties

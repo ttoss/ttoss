@@ -30,19 +30,45 @@ export interface LinkProps extends RACLinkProps {
    * @default 'primary'
    */
   evaluation?: EvaluationsFor<(typeof linkMeta)['entity']>;
+  /**
+   * Whether this link points at the user's present location.
+   *
+   * Sets `aria-current="page"` and resolves the `current` colour the theme has
+   * always shipped at `navigation.{role}.text.current`. React Aria exposes no
+   * equivalent flag, and it could not: only the app knows which route is live.
+   *
+   * This is what a sidebar needs to mark the active page. Without it, a link
+   * to the current route renders identically to every other link — the gap
+   * that pushed the Studio into using `Tabs` as navigation (F-002/F-017).
+   */
+  isCurrent?: boolean;
 }
 
 /**
  * A link component for navigation, styled with navigation tokens.
+ *
+ * @example
+ * ```tsx
+ * <Link href="/team" isCurrent={route === 'team'}>Team</Link>
+ * ```
  */
-export const Link = ({ evaluation = 'primary', ...props }: LinkProps) => {
+export const Link = ({
+  evaluation = 'primary',
+  isCurrent = false,
+  ...props
+}: LinkProps) => {
   const colors = vars.colors.navigation[evaluation];
 
   return (
     <RACLink
       {...props}
+      // `page` rather than `true`: the link names a destination, and a
+      // sidebar's live entry is the current *page* in that set. AT announces
+      // the specific token, and it is what APG's navigation pattern asks for.
+      aria-current={isCurrent ? 'page' : undefined}
       data-scope="link"
       data-part="root"
+      data-current={isCurrent ? 'true' : undefined}
       data-evaluation={evaluation}
       style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => {
         return {
@@ -58,9 +84,10 @@ export const Link = ({ evaluation = 'primary', ...props }: LinkProps) => {
           cursor: isDisabled ? 'not-allowed' : 'pointer',
           ...(vars.text.label.md as React.CSSProperties),
           color: resolveInteractiveStyle(colors?.text, {
+            isCurrent,
+            isDisabled,
             isHovered,
             isPressed,
-            isDisabled,
           }),
           outline: focusRingOutline(isFocusVisible),
           outlineOffset: FOCUS_RING_OFFSET,
