@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.1](https://github.com/ttoss/ttoss/compare/@ttoss/fsl-ui@0.3.0...@ttoss/fsl-ui@0.3.1) (2026-08-05)
+
+**Note:** Version bump only for package @ttoss/fsl-ui
+
 # [0.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/fsl-ui@0.2.11...@ttoss/fsl-ui@0.3.0) (2026-08-05)
 
 - Audit border contrast per mode; correct the focus-token guidance (#1184) ([07e6da4](https://github.com/ttoss/ttoss/commit/07e6da4fd35fc93ea0d79c79c35fe9c4a3a50746)), closes [#1184](https://github.com/ttoss/ttoss/issues/1184) [#4](https://github.com/ttoss/ttoss/issues/4) [#3](https://github.com/ttoss/ttoss/issues/3) [#3](https://github.com/ttoss/ttoss/issues/3) [#2](https://github.com/ttoss/ttoss/issues/2) [#1](https://github.com/ttoss/ttoss/issues/1) [hi#contrast](https://github.com/hi/issues/contrast)

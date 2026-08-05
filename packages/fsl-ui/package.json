@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/fsl-ui",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Semantic, token-native component library for the ttoss ecosystem. Built on React Aria Components with @ttoss/fsl-theme tokens.",
   "repository": {
     "type": "git",
