@@ -87,10 +87,16 @@ export interface ToolbarProps extends Omit<
  * - `ToggleButtonGroup` — a selectable set (one/many of), where the engaged state
  *   *is* the value.
  *
- * Keyboard, precisely: React Aria adds the arrow keys, and every control remains
- * its own tab stop. APG's toolbar pattern asks for a *single* tab stop, which
- * `useToolbar` does not implement — it cannot manage the tabindex of arbitrary
- * children. Tracked as F-028; do not read this component as a single stop.
+ * Keyboard, precisely: React Aria's `useToolbar` gives this a single tab stop
+ * with arrow-key navigation inside, APG's toolbar pattern. It does not manage
+ * any child's `tabindex` — it cannot, for arbitrary children — but on Tab it
+ * moves focus itself, generically (a DOM-walking focus manager, not a
+ * mechanism children opt into), to the toolbar's first/last tabbable
+ * descendant and lets the browser's own Tab action carry focus onward from
+ * there, so Tab in and out both land in one step regardless of which control
+ * had focus. Verified for a plain host `<button>` and an fsl-ui `Select`
+ * sitting beside fsl-ui triggers, not only for cooperating components
+ * (F-028).
  *
  * Mixed controls are welcome: a `Select` for the font, `ToggleButton`s for the
  * styles, a `Separator` between clusters. What makes it a toolbar is the region

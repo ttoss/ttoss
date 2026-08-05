@@ -80,15 +80,16 @@ A component MUST use ONLY tokens from its Entity row.
 
 **Cross-cutting** (apply to ALL interactive entities — not in the table because they are entity-agnostic):
 
-| Token family       | Path                                                                              |
-| ------------------ | --------------------------------------------------------------------------------- | ------ | ------- | -------- | ----------- |
-| Focus ring         | `vars.focus.ring.width` / `.style` / `.color`                                     |
-| Consequence ink    | `vars.consequence.destructive.ink` — read via `resolveConsequenceInk` only (§3.3) |
-| Occluding boundary | `vars.overlay.outline` — the edge of a surface that **covers** content (§3.5)     |
-| Disabled opacity   | `vars.opacity.disabled`                                                           |
-| Scrim opacity      | `vars.opacity.scrim`                                                              |
-| Scrim color        | `vars.overlay.scrim`                                                              |
-| Z-Index            | `vars.zIndex.layer.{base                                                          | sticky | overlay | blocking | transient}` |
+| Token family       | Path                                                                                   |
+| ------------------ | -------------------------------------------------------------------------------------- | ------ | ------- | -------- | ----------- |
+| Focus ring         | `vars.focus.ring.width` / `.style` / `.color`                                          |
+| Consequence ink    | `vars.consequence.destructive.ink` — read via `resolveConsequenceInk` only (§3.3)      |
+| Occluding boundary | `vars.overlay.outline` — the edge of a surface that **covers** content (§3.5)          |
+| Rail fill          | `vars.rail.track` — the unfilled part of a `ProgressBar`/`Meter`/`Slider` track (§3.6) |
+| Disabled opacity   | `vars.opacity.disabled`                                                                |
+| Scrim opacity      | `vars.opacity.scrim`                                                                   |
+| Scrim color        | `vars.overlay.scrim`                                                                   |
+| Z-Index            | `vars.zIndex.layer.{base                                                               | sticky | overlay | blocking | transient}` |
 
 ### §1.1 — Mapping Rationale
 
@@ -377,9 +378,9 @@ reads `vars.consequence` or another family's negative ink directly —
 
 `colors.md` § Stacking informational surfaces makes the effective colour under
 a control a **composite no colour token can name** — the page and every
-contained surface share one background token, and depth is paid in
-`elevation.tonal.*` or in another family's fill (a table row paints
-`input.primary`). Only the element that painted the surface knows the result.
+contained surface share one background token, and depth is paid in shadow or
+in another family's fill (a table row paints `input.primary`). Only the
+element that painted the surface knows the result.
 The quiet rung (`muted`) paints "the surface's own colour" as an opaque token —
 byte-identical to the page and to every overlay, and wrong on every other
 surface: measured in the Studio, dark, a quiet row action painted `#161616` on
@@ -406,8 +407,10 @@ against the destructive ink. The **selection fill is a voice, not a
 stratum** — in dark it inverts to near-white, 1.5:1 against the muted ink.
 **Feedback fills and non-primary informational fills are voices too**: a
 toast's red and a muted Menu's grey are not strata the quiet inks are audited
-against, so only the page-like `primary` voice (and Surface's tonal strata)
-publishes.
+against, so only the page-like `primary` voice publishes — `Surface` included,
+now that it reads the same `informational.{evaluation}.background` fill the
+overlays do (F-048/ADR-037): a `muted` (default) `Surface` keeps its own
+voice and does not publish, same as a `muted` `Menu`.
 
 `--fsl-surface` lives in the §7 host-facing namespace on purpose: a **host
 application** that paints its own surface can publish the same property and
@@ -458,6 +461,36 @@ defect. `tests/unit/tests/occludingSurface.test.tsx` pins which token each
 surface reads, **including that an embedded surface does not** — without that
 half, "put the boundary everywhere" would pass, and that is the theme-wide
 retune this contract exists to avoid.
+
+### §3.6 — A rail's fill is cross-cutting infrastructure, not a borrow
+
+> **The unfilled part of a `ProgressBar`/`Meter`/`Slider` track reads
+> `vars.rail.track`. No component reads a role's background or a state token
+> to paint one.**
+
+Before this token existed, every consumer that needed a rail borrowed a token
+whose meaning was something else: `ProgressBar`/`Meter` took
+`feedback.muted.background` (a role's own resting fill, F-050's fix — a better
+borrow than the `muted.border` that shipped broken, but still a borrow), and
+`Slider` took `input.primary.background.disabled` — a **state** used as a
+**part**, so an empty `Slider` rail meant "disabled" in the token model
+(F-051). `vars.rail.track` is the dedicated address, minted the same way
+`vars.overlay.outline` was (fsl-theme ADR-028): a rail crosses UX contexts
+(`Feedback` ×2, `Input` ×1) and its mode behaviour is its own — it **darkens**
+in dark while every `{ux}.{role}.border.*` lightens — so no existing token in
+the grammar could carry both directions.
+
+|                 |                                                                                  |
+| --------------- | -------------------------------------------------------------------------------- |
+| **Reads**       | `RAIL_FILL` (`src/tokens/rail.ts`) → `vars.rail.track`                           |
+| **Consumers**   | `ProgressBar`, `Meter` (`Feedback`), `Slider` (`Input`)                          |
+| **Not a voice** | one system colour per mode, like the rail's siblings — no `evaluation` drives it |
+
+Guarded on both sides. fsl-theme's `rail.test.ts` pins the resolved value in
+every mode of every bundle and that it differs from the tokens it replaced;
+`tests/unit/tests/rail.test.tsx` pins that all three components read the same
+`RAIL_FILL` constant, comparing the `var()` reference itself so a refactor
+that reaches either old borrow by a different path still fails.
 
 ---
 
@@ -668,18 +701,20 @@ Rules (enforced by the contract tests):
 
 Registered knobs:
 
-| Knob                            | Component     | Fallback               |
-| ------------------------------- | ------------- | ---------------------- |
-| `--fsl-combo-box-max-height`    | `ComboBox`    | `min(20rem, 60vh)`     |
-| `--fsl-combo-box-popover-width` | `ComboBox`    | `var(--trigger-width)` |
-| `--fsl-form-label-width`        | `Form`        | `max-content`          |
-| `--fsl-dialog-max-width`        | `DialogModal` | `min(500px, 90vw)`     |
-| `--fsl-dialog-max-height`       | `DialogModal` | `90vh`                 |
-| `--fsl-menu-min-width`          | `Menu`        | `12rem`                |
-| `--fsl-menu-max-width`          | `Menu`        | `min(320px, 90vw)`     |
-| `--fsl-popover-max-width`       | `Popover`     | `min(320px, 90vw)`     |
-| `--fsl-select-popover-width`    | `Select`      | `var(--trigger-width)` |
-| `--fsl-tooltip-max-width`       | `Tooltip`     | `min(280px, 90vw)`     |
+| Knob                            | Component                        | Fallback               |
+| ------------------------------- | -------------------------------- | ---------------------- |
+| `--fsl-combo-box-max-height`    | `ComboBox`                       | `min(20rem, 60vh)`     |
+| `--fsl-combo-box-popover-width` | `ComboBox`                       | `var(--trigger-width)` |
+| `--fsl-form-label-width`        | `Form`                           | `max-content`          |
+| `--fsl-dialog-max-width`        | `DialogModal`                    | `min(500px, 90vw)`     |
+| `--fsl-dialog-min-width`        | `DialogModal`                    | `min(288px, 90vw)`     |
+| `--fsl-dialog-max-height`       | `DialogModal`                    | `90vh`                 |
+| `--fsl-menu-min-width`          | `Menu`                           | `12rem`                |
+| `--fsl-menu-max-width`          | `Menu`                           | `min(320px, 90vw)`     |
+| `--fsl-popover-max-width`       | `Popover`                        | `min(320px, 90vw)`     |
+| `--fsl-select-popover-width`    | `Select`                         | `var(--trigger-width)` |
+| `--fsl-tooltip-max-width`       | `Tooltip`                        | `min(280px, 90vw)`     |
+| `--fsl-track-max-width`         | `ProgressBar`, `Meter`, `Slider` | `none`                 |
 
 ### Upstream custom properties — a named allowlist (ADR-023)
 

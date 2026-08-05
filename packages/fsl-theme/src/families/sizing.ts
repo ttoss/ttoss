@@ -127,6 +127,24 @@ export interface SemanticSizing {
      * readability — that is `measure.reading`.
      */
     maxWidth: CoreSizingRef;
+    /**
+     * Maximum width of a narrow, standalone centered card — an auth form, a
+     * confirmation page, any single-purpose surface that should read as an
+     * object on the page rather than a page-shell column. Distinct from
+     * `maxWidth` (the page-shell cap) and from `measure.reading` (a
+     * line-length contract, not a container width): this is the "small
+     * object" rung the width vocabulary lacked (FRICTION F-004).
+     *
+     * Aliases `core.sizing.ramp.layout.1`, the ramp's narrowest step and, at
+     * the time this was added, the only step with no other semantic
+     * consumer — `maxWidth` already owns `layout.5`, so this reuses rather
+     * than grows the ramp (model.md §6, "no parallel vocabulary"). Its floor
+     * (320px) lands exactly on the bottom of the ~20–26rem (320–416px) target
+     * this token was measured against; its ceiling (480px) overshoots the
+     * target's own 416px top by one ramp step's worth of headroom, which is
+     * the closest fit available without inventing a new formula.
+     */
+    card: CoreSizingRef;
   };
   viewport: {
     height: {

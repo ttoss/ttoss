@@ -76,6 +76,39 @@ export const MixedControls: Story = {
 };
 
 /**
+ * F-028 investigation scaffold: a plain host `<button>` sits between fsl-ui
+ * controls, with focusable siblings before and after the toolbar itself, so
+ * Tab-in / Tab-out / arrow-key behaviour can be checked in a real browser for
+ * a child that does not participate in any fsl-ui mechanism.
+ */
+export const KeyboardInvestigation: Story = {
+  tags: ['autodocs'],
+  render: () => {
+    return (
+      <Stack gap="md">
+        <button type="button">before</button>
+        <Toolbar aria-label="Investigation">
+          <ActionButton
+            icon={<Icon intent="action.search" />}
+            aria-label="Find"
+          />
+          <button type="button">plain host button</button>
+          <Select defaultSelectedKey="all">
+            <SelectItem id="all">All records</SelectItem>
+            <SelectItem id="mine">Mine</SelectItem>
+          </Select>
+          <ToggleButton
+            icon={<Icon intent="action.sortAscending" />}
+            aria-label="Sort ascending"
+          />
+        </Toolbar>
+        <button type="button">after</button>
+      </Stack>
+    );
+  },
+};
+
+/**
  * `align` acts on whichever axis has free space, the same vocabulary
  * `ButtonGroup` uses — a bar pinned to the end of a header wants `end`.
  */

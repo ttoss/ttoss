@@ -2,16 +2,18 @@ import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
 
 /**
- * Geometry of a **chip** — the compact, non-interactive pill that carries one
- * short label.
+ * Geometry of a **chip** — the compact, non-interactive filled pill that
+ * carries one short label.
  *
- * Two components render one, and they differ only in what the colour is
- * *saying*: `Badge` reports a Feedback valence (a rating, a validation state),
- * `Tag` labels content descriptively (a role, a category — Structure). The box
- * is the same physical object in both cases, which is why it lives in the
+ * `Badge` (Structure) is now its sole reader. `StatusLight` (Feedback) read it
+ * too until F-053: measured against the same silhouette, distinguished only by
+ * which colour family it read, which is the reference's cue that the two are
+ * different objects — `StatusLight` took the reference's own dot-plus-label
+ * form instead, and `Badge` kept the filled pill. The box still lives in the
  * cross-cutting token layer beside `ICON_SLOT_STYLE` and `choosableRow` rather
- * than inside either family: the entity decides the chip's *colours*, never its
- * box.
+ * than inside `Badge`'s own family file: it names a physical object a
+ * component renders, independent of how many components currently render it,
+ * the same reasoning `TRACK_RAIL`/`SELECTION_CONTROL` apply.
  *
  * ## Why this is shared rather than copied
  *

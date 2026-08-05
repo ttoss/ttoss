@@ -46,6 +46,14 @@ type FeedbackColors = (typeof vars.colors.feedback)[EvaluationsFor<'Feedback'>];
 // 240px keeps a short toast from collapsing to its title width; the region
 // clamp (420px / viewport minus breathing room) keeps long toasts readable
 // without spanning the whole screen.
+//
+// F-054 (P3 round 4 leftover, closed): the reference's `toast-maximum-width`
+// is 336px desktop / 420px mobile, and this shipped the mobile value at every
+// viewport with no stated reason — F-047's shape (Tooltip) without F-047's
+// recorded rationale. Same rationale, now verified for Toast too: forcing the
+// region to 336px in Chromium wraps "Check the build log for details." from
+// one line (27px) to two (54px), because our type ladder runs a step larger
+// than the reference's (F-021/F-047). 420px is kept deliberately, uniformly.
 const TOAST_MIN_WIDTH = '240px';
 const TOAST_REGION_MAX_WIDTH = 'min(420px, calc(100vw - 2rem))';
 
@@ -57,6 +65,10 @@ const buildToastRootStyle = (c: FeedbackColors): React.CSSProperties => {
     alignItems: 'flex-start',
     gap: vars.spacing.gap.inline.md,
     minWidth: TOAST_MIN_WIDTH,
+    // `md`, not the occluding default `xs` (ADR-031): a Toast frames a
+    // title + description the way `Dialog` frames prose, not fixed-height
+    // rows the way Menu/Select do — the same exception ADR-031 already
+    // carves out for Dialog, now stated for Toast too (F-054, closed).
     padding: vars.spacing.inset.surface.md,
     borderRadius: vars.radii.surface,
     borderWidth: vars.border.outline.surface.width,

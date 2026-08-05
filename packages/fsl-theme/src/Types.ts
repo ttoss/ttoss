@@ -71,6 +71,7 @@ import type {
   SemanticOpacity,
   SemanticOverlay,
   SemanticRadii,
+  SemanticRail,
   SemanticSizing,
   SemanticSpacing,
   SemanticText,
@@ -139,6 +140,11 @@ export interface ThemeTokens {
      * Sibling of `focus` and `overlay`.  families/consequence.ts
      */
     consequence: SemanticConsequence;
+    /**
+     * Cross-cutting fill for the unfilled part of a track (model.md §6).
+     * Sibling of `focus`/`overlay`/`consequence`.  families/rail.ts
+     */
+    rail: SemanticRail;
     opacity: SemanticOpacity;
     motion: SemanticMotion;
     zIndex: SemanticZIndex;

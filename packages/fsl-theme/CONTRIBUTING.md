@@ -1012,3 +1012,102 @@ Re-litigation answers:
 - "Is `xs` the same value as `inset.control.sm`?" → yes, deliberately: a gutter
   beside a control is the control's own step, which is what keeps the
   edge-to-text distance close to the reference's.
+
+### ADR-028: A rail gets a cross-cutting address; `semantic.rail.track` replaces two borrows
+
+Status: accepted (2026-08-05)
+Tags: colors, cross-cutting, feedback, input, P3, F-050, F-051, closes:F-051
+
+Decision: `semantic.rail.track` — the unfilled part of a `ProgressBar`/`Meter`/
+`Slider` track — joins `focus`/`overlay`/`consequence` as a sibling
+cross-cutting family (model.md §6). `ProgressBar` and `Meter` now read it
+instead of `feedback.muted.background` (F-050's fix); `Slider` reads it
+instead of `input.primary.background.disabled`, retiring the one borrow F-050
+could not close because it belongs to a different entity.
+
+**The §6 gate.** A rail is neither a `role` (emphasis/valence) nor a `state`
+(runtime), and it crosses UX contexts exactly the way `overlay.outline` does:
+`ProgressBar`/`Meter` are `Feedback`, `Slider` is `Input`, and all three need
+the same neutral pill. The reference (`@adobe/spectrum-tokens@14.15.0`) agrees
+by construction — `track-color` is its own token, aliased to a private grey
+step rather than to any role's dimension — because a rail's mode behaviour is
+its own: it **darkens** in dark (`rgb(218,218,218)` → `rgb(57,57,57)`) while
+every `{ux}.{role}.border.*` in this system **lightens** on the same canvas.
+No single existing token could serve both directions, which is the technical
+necessity §6 (and §8's parallel `RawValue` gate) asks for before minting one.
+
+**Values, measured.** Light: `core.colors.neutral.200` (`#e1e1e1`) — 7 units
+per channel off the reference's `rgb(218,218,218)`, the closest step (the next
+candidate, `neutral.300`, sits 10 off). This is the half F-050 left owing:
+the borrowed `feedback.muted.background` sat at `neutral.100`, 1.14:1 against
+the page against the reference's own 1.40:1; `neutral.200` moves the
+separation to ~1.31:1, closer without reaching for a value the ramp does not
+have. Dark: `core.colors.neutral.700` (`#3d3d3d`) — the same step F-050 already
+found 4 units off the reference's `rgb(57,57,57)`, kept rather than replaced,
+because F-050 had already found the right dark answer; only the light half and
+the address needed fixing.
+
+**Why the dark value coincides with `feedback.muted.background`'s, and that is
+not a residual borrow.** `Slider`'s dark rail moves from
+`input.primary.background.disabled` (`neutral.900`) to `neutral.700` — a real,
+measured change, and the one that matters: an empty `Slider` rail no longer
+means "disabled" in the token model. `ProgressBar`/`Meter`'s dark rail keeps
+the same rendered value it had after F-050, because that value was already
+right; what moved for them is the _address_ they read, not the pixel — the
+component no longer names a `Feedback`-role token to get a value every rail
+needs. `rail.test.ts` pins this precisely: the dedicated address differs from
+`input.primary.background.disabled` in both modes (Slider's actual defect),
+and from `feedback.muted.background` in light (the half that had a numeric gap
+to close); it does not assert dark inequality against `feedback.muted.background`,
+because asserting a coincidence would be pinning an artifact of ADR-033's
+already-correct choice, not a defect.
+
+**Reuse, not growth, at the component side.** `src/tokens/rail.ts` (fsl-ui)
+renames its `FEEDBACK_RAIL_FILL` constant to `RAIL_FILL` — it is no longer
+`Feedback`-specific — and `Slider` reads it instead of deriving its rail from
+`c?.background?.disabled`. No new component-side vocabulary: one existing
+constant now serves all three consumers, which is what "one silhouette, one
+answer" (ADR-033) always implied once the colour half caught up to the
+geometry half.
+
+Guarded from both sides, same shape as `overlay.outline`'s guard in ADR-027:
+`rail.test.ts` (this package) pins the resolved values and the two inequalities
+above, in every mode of every bundle; fsl-ui's `rail.test.tsx` pins that each
+component reads the shared constant by comparing the `var()` reference itself
+— not the resolved colour — so a refactor that reached either old address by a
+different path still fails even where the rendered pixel would not change.
+
+Rejected: waiting past the version boundary, ADR-033's own recommendation when
+F-051 was only analysis — no longer applicable once the owner asked for a
+ruling on both F-051 and F-052 in the same pass (`docs/fsl-studio/FRICTION.md`);
+a per-stratum `rail` family (`raised`/`overlay`/`blocking` companions) — a rail
+does not stratify, only two modes, so a flat family is one value per mode, not
+a ramp; retuning `feedback.muted.background`'s dark value instead of minting a
+new address — it already sits 4 units off the reference and three other
+consumers (`Badge`, `StatusLight`'s neutral chip, the row family) would move
+with it for no reason tied to a rail.
+
+Cost: one registered semantic token (MINOR per governance.md), a new required
+member on the `ThemeTokens['semantic']` tree — additive for every
+`overrides`/`extends`-authored theme, the same class `focus.ring.offset`
+(F-020), `consequence` (ADR-025) and `overlay.outline` (ADR-027) already cost.
+
+Anchors: `src/families/rail.ts`, `src/baseTheme.ts` (both values + the dark
+remap), `src/roots/tokenRegistry.ts`, `tests/unit/tests/theme/families/rail.test.ts`,
+model.md §6, `docs/fsl-studio/FRICTION.md` F-050/F-051, fsl-ui ADR-036.
+
+Re-litigation answers:
+
+- "Why not just retune `feedback.muted.background`'s light value?" → that
+  token has three other readers (`Badge`, `StatusLight`, the row family) with
+  no rail-shaped reason to move; a dedicated address changes exactly the one
+  thing that needed to change.
+- "Should this be `semantic.colors.rail.*` instead, inside the colour grammar?"
+  → no — §6's own text places cross-cutting tokens as siblings of
+  `semantic.colors.*`, not inside it, and `focus`/`overlay`/`consequence` are
+  already there for the same reason: they answer a question the `{ux}.{role}`
+  grammar cannot ask in one token.
+- "Does `bruttal` need its own `rail` override?" → no, the same way it needs
+  none for `overlay`/`focus`: it drifts brand colour, radii and elevation only
+  (`themes/bruttal.ts`) and inherits every other family from the base via
+  `deepMerge`.

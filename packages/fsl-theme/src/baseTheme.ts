@@ -1505,6 +1505,7 @@ export const baseTheme: ThemeTokens = {
       },
       surface: {
         maxWidth: '{core.sizing.ramp.layout.5}',
+        card: '{core.sizing.ramp.layout.1}',
       },
       viewport: {
         height: {
@@ -1584,6 +1585,14 @@ export const baseTheme: ThemeTokens = {
       // mode — the pairing that proves it is `colors.test.ts` › "occluding
       // boundary", which also reports the ratios.
       outline: '{core.colors.neutral.500}',
+    },
+
+    // -- Rail -----------------------------------------------------------------
+    rail: {
+      // The unfilled part of a ProgressBar/Meter/Slider track (F-050/F-051).
+      // neutral.200 — see `families/rail.ts` for the reference delta and why
+      // this is the half F-050 left owing.
+      track: '{core.colors.neutral.200}',
     },
 
     // -- Opacity ------------------------------------------------------------
@@ -2232,6 +2241,12 @@ export const darkAlternate: ModeOverride = {
       // this mode, including the tonal lifts an overlay lands on — the
       // "occluding boundary" pairing reports the ratios.
       outline: '{core.colors.neutral.300}',
+    },
+    rail: {
+      // A rail darkens in dark while a border lightens (`families/rail.ts`) —
+      // the opposite direction of `outline` just above. neutral.700 is the
+      // same step F-050 already found closest to the reference here.
+      track: '{core.colors.neutral.700}',
     },
   },
 };

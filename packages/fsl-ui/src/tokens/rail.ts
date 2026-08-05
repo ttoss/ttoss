@@ -1,6 +1,8 @@
 import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
 
+import { fslVar } from './escapeHatch';
+
 /**
  * Geometry of a **rail** — the thin pill track a value travels along:
  * `ProgressBar`'s activity bar, `Meter`'s level bar, `Slider`'s range track.
@@ -25,10 +27,18 @@ import type * as React from 'react';
  * collapses toward zero and the value it encodes disappears while the
  * component still renders. The reference sets `progress-bar-minimum-width` and
  * `meter-minimum-width` at **48px**; ours had no floor at all — the same shape
- * as F-046, where `Dialog` had a ceiling and no floor. The ceiling half is
- * deliberately *not* taken here: the reference caps a bar at 768px, and
- * whether a rail fills its container or caps is an authorial question with no
- * measurement behind it (recorded in F-051).
+ * as F-046, where `Dialog` had a ceiling and no floor.
+ *
+ * ## The ceiling is a host knob, not a hard cap (F-052)
+ *
+ * The reference also sets `*-maximum-width` at **768px**, but whether a rail
+ * fills its container or caps is authorial — a bar in a wide card that stops
+ * at 768px changes every existing consumer's layout, and no measurement picks
+ * a side. `--fsl-track-max-width` ships the reference's ceiling as an *opt-in*
+ * knob (ADR-031's `--fsl-dialog-min-width` precedent) rather than a literal:
+ * unset, `maxWidth` resolves to `none` and today's fluid `width: 100%` is
+ * unchanged; a host that wants the reference's cap sets the property on
+ * `[data-scope]` and gets 768px without a code change.
  */
 export const TRACK_RAIL = {
   /**
@@ -42,6 +52,12 @@ export const TRACK_RAIL = {
    * proportion.
    */
   minWidth: '3rem',
+  /**
+   * Width ceiling default — unset (`none`). The reference's 768px ships as
+   * the documented value for a host to opt into via `--fsl-track-max-width`,
+   * not as this default (F-052).
+   */
+  maxWidth: 'none',
 } as const;
 
 /**
@@ -49,6 +65,10 @@ export const TRACK_RAIL = {
  * space down to the floor and clips the fill to its own radius. The host adds
  * the rail's `backgroundColor` — that is the one axis the three consumers
  * genuinely differ on, and the axis F-050 is about.
+ *
+ * `maxWidth` reads the `--fsl-track-max-width` host knob (CONTRACT.md §7),
+ * defaulting to `TRACK_RAIL.maxWidth` (`none`) — a rail fills its container
+ * exactly as it did before this knob existed, unless a host opts in.
  */
 export const RAIL_BASE = {
   boxSizing: 'border-box',
@@ -56,30 +76,23 @@ export const RAIL_BASE = {
   overflow: 'hidden',
   width: '100%',
   minWidth: TRACK_RAIL.minWidth,
+  maxWidth: fslVar('--fsl-track-max-width', TRACK_RAIL.maxWidth),
   height: TRACK_RAIL.thickness,
   borderRadius: vars.radii.round,
 } satisfies React.CSSProperties;
 
 /**
- * The rail colour the two `Feedback` rails share.
+ * The rail fill all three components share — `ProgressBar`'s activity bar,
+ * `Meter`'s level bar, `Slider`'s range track.
  *
- * It is the entity's **quiet surface**, which is what both the family's own
- * docs and `baseTheme`'s `feedback` comment already said it was — _"`muted`
- * stays a tinted neutral surface — the rail/track color for Feedback fills
- * (ProgressBar, Meter)"_. The components read `muted.border` instead, and in
- * dark that is `neutral.500`: byte-identical to `feedback.primary.background`,
- * so `<ProgressBar evaluation="primary" />` rendered a uniform grey rail with
- * no visible fill (F-050, measured 1.00:1). A border remaps *lighter* on a
- * dark canvas because an edge must stay visible; a rail must remap *darker*
- * because the fill is the thing that speaks — one token cannot do both, which
- * is why the reference keeps `track-color` as its own address (light
- * `rgb(218,218,218)` → dark `rgb(57,57,57)`, i.e. it darkens).
- *
- * Reading the quiet surface is the reuse that closes the byte-identity without
- * growing the vocabulary: dark lands on `neutral.700` (`#3d3d3d`), four units
- * off the reference's own dark track. What it costs is stated in F-050 — in
- * light the rail is quieter than the reference's (1.14:1 against the page
- * versus their 1.40:1), which is the half a dedicated address would recover.
+ * Reads the cross-cutting `semantic.rail.track` (fsl-theme, model.md §6),
+ * minted for exactly this address (F-050/F-051). Before it existed,
+ * `ProgressBar`/`Meter` read `feedback.muted.background` — a better borrow
+ * than the `muted.border` that shipped broken (F-050, measured 1.00:1
+ * fill-vs-rail in dark), but still a borrow — and `Slider` read
+ * `input.primary.background.disabled`, a *state* standing in for a *part*, so
+ * an empty `Slider` rail meant "disabled" in the token model. All three now
+ * read the same dedicated address; see `fsl-theme/src/families/rail.ts` for
+ * the measured light/dark values and the reference delta.
  */
-export const FEEDBACK_RAIL_FILL =
-  vars.colors.feedback.muted.background?.default;
+export const RAIL_FILL = vars.rail.track;

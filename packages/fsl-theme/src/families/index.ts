@@ -21,6 +21,7 @@ export * from './opacity';
 export * from './overlay';
 export * from './primitives';
 export * from './radii';
+export * from './rail';
 export * from './sizing';
 export * from './spacing';
 export * from './typography';

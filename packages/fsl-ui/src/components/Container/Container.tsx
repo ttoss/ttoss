@@ -21,14 +21,18 @@ export const containerMeta = {
   structure: 'root',
 } as const satisfies ComponentMeta<'Structure'>;
 
-/** The inline-size cap: a structural surface width or the readability measure. */
-export type ContainerSize = 'surface' | 'reading';
+/**
+ * The inline-size cap: a structural surface width, a narrow centered-card
+ * width, or the readability measure.
+ */
+export type ContainerSize = 'surface' | 'card' | 'reading';
 
 /** Edge padding drawn from the gutter scale (`none` removes it). */
 export type ContainerGutter = 'none' | 'section' | 'page';
 
 const MAX_WIDTH: Record<ContainerSize, string> = {
   surface: vars.sizing.surface.maxWidth,
+  card: vars.sizing.surface.card,
   reading: vars.sizing.measure.reading,
 };
 
@@ -44,8 +48,11 @@ export interface ContainerProps extends Omit<
   'style' | 'className'
 > {
   /**
-   * Inline-size cap. `surface` is the structural page/content width; `reading`
-   * is the narrower long-form readability measure. There is no raw max-width.
+   * Inline-size cap. `surface` is the structural page/content width; `card`
+   * is the narrow centered-card width (an auth form, a standalone
+   * confirmation page — one object on the page, not a page-shell column);
+   * `reading` is the narrower long-form readability measure. There is no raw
+   * max-width.
    * @default 'surface'
    */
   size?: ContainerSize;
@@ -65,8 +72,9 @@ export interface ContainerProps extends Omit<
  * Entity = Structure. Wrap a page (or a major region) in a Container to give
  * it the product's standard content width and edge padding without hand-rolling
  * `max-width` + `margin: auto`. Pick `size="reading"` for long-form article
- * columns and `size="surface"` for app/page shells. Place `Stack`, `Grid`, and
- * `Surface` inside it.
+ * columns, `size="card"` for a standalone centered card (an auth form, a
+ * confirmation page), and `size="surface"` for app/page shells. Place
+ * `Stack`, `Grid`, and `Surface` inside it.
  *
  * @example
  * ```tsx

@@ -85,6 +85,7 @@ Components consume **only** `semantic.*`. Core values never change between light
 | `semantic.elevation.` | `--tt-elevation-` | `vars.elevation.surface.raised` → `var(--tt-elevation-surface-raised)` |
 | `semantic.opacity.` | `--tt-opacity-` | `vars.opacity.disabled` → `var(--tt-opacity-disabled)` |
 | `semantic.overlay.` | `--tt-overlay-` | `vars.overlay.scrim` → `var(--tt-overlay-scrim)`; `vars.overlay.outline` → `var(--tt-overlay-outline)` |
+| `semantic.rail.` | `--tt-rail-` | `vars.rail.track` → `var(--tt-rail-track)` |
 | `semantic.motion.` | `--tt-motion-` | `vars.motion.feedback.duration` → `var(--tt-motion-feedback-duration)` |
 | `semantic.zIndex.layer.` | `--tt-z-index-` | `vars.zIndex.layer.overlay` → `var(--tt-z-index-overlay)` |
 
@@ -156,6 +157,7 @@ Valid `{ux, state}` combinations: see [Color state legality](#color-state-legali
 | **opacity** | `vars.opacity.{scrim,loading,disabled}` | number in (0,1) |
 | **overlay** | `vars.overlay.scrim` | CSS color with alpha |
 | | `vars.overlay.outline` (cross-cutting: boundary of a surface that OCCLUDES content — popover/menu/tooltip/dialog/drawer/toast. An embedded card keeps `informational.{role}.border`) | CSS color |
+| **rail** | `vars.rail.track` (cross-cutting: the unfilled part of a `ProgressBar`/`Meter`/`Slider` track — darkens in dark mode, unlike a border) | CSS color |
 | **motion** | `vars.motion.{feedback,emphasis,decorative}.{duration,easing}` | object |
 | | `vars.motion.transition.{enter,exit}.{duration,easing}` | object |
 | **zIndex** | `vars.zIndex.layer.{base,sticky,overlay,blocking,transient}` | integer |
