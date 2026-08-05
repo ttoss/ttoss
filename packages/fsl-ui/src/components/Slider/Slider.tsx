@@ -11,6 +11,7 @@ import {
 
 import type { ComponentMeta } from '../../semantics';
 import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
+import { TRACK_RAIL } from '../../tokens/rail';
 import { SELECTION_CONTROL } from '../../tokens/selectionControl';
 
 // ---------------------------------------------------------------------------
@@ -43,13 +44,14 @@ export const sliderMeta = {
   structure: 'root',
 } as const satisfies ComponentMeta<'Input'>;
 
-// Rail thickness (CONTRIBUTING §4 layout-literal rule): geometry of the rail,
-// not a semantic token — 6px, matching the pill rails `ProgressBar` and
-// `Meter` adopted in P3 slice 3 (deliberately kept over S2's 4px: the three
-// rails are one internal decision). The visible handle takes the shared
+// Rail thickness comes from the shared rail (`TRACK_RAIL`) — the third copy of
+// P3 slice 3's "three rails, one answer" ruling, which had been written out as
+// `'0.375rem'` here and `'6px'` twice in `Feedback` (deliberately kept over
+// S2's 4px: the three rails are one internal decision). Only the thickness is
+// shared: `RAIL_BASE` clips its fill, and this rail must not — the thumb
+// overflows it on purpose. The visible handle takes the shared
 // selection-control scale (18px) so it reads as a grabbable knob on the rail;
 // its *interactive* box is `sizing.hit` — see the thumb below.
-const TRACK_THICKNESS = '0.375rem';
 
 type InputColors = typeof vars.colors.input.primary;
 
@@ -65,7 +67,7 @@ const buildTrackStyle = (c: InputColors): React.CSSProperties => {
     boxSizing: 'border-box',
     position: 'relative',
     inlineSize: '100%',
-    blockSize: TRACK_THICKNESS,
+    blockSize: TRACK_RAIL.thickness,
     borderRadius: vars.radii.round,
     backgroundColor: c?.background?.disabled ?? c?.background?.default,
   };
