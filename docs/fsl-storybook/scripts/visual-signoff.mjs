@@ -176,6 +176,9 @@ const escape = (value) =>
     (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]
   );
 
+/** Escapes, then promotes the backtick spans the section briefs are written with. */
+const prose = (value) => escape(value).replace(/`([^`]+)`/g, '<code>$1</code>');
+
 /**
  * Writes `index.html` beside the frames: every story as one row, light and dark
  * side by side, grouped by review round. With `INLINE=1` the images are
@@ -250,11 +253,11 @@ const renderSheet = async ({ manifest, inline }) => {
     }
 
     sections.push(
-      `<section id="${section.id}"><header><h2>${escape(
-        section.label
-      )}</h2><p>${escape(section.look)}</p><p class="count">${
-        members.length
-      } stories</p></header>${rows.join('')}</section>`
+      `<section id="${section.id}"><header><p class="eyebrow">${escape(
+        section.label.replace(' — ', ' · ')
+      )} <span>· ${members.length * 2} frames</span></p><p class="brief">${prose(
+        section.look
+      )}</p></header>${rows.join('')}</section>`
     );
   }
 
@@ -272,7 +275,9 @@ const renderSheet = async ({ manifest, inline }) => {
       );
     }
     sections.push(
-      `<section id="unmapped"><header><h2>Not mapped to a section</h2><p>Stories whose entity is not named above — the section map in <code>scripts/visual-signoff.mjs</code> has drifted from the catalog.</p><p class="count">${orphans.length} stories</p></header>${rows.join(
+      `<section id="unmapped"><header><p class="eyebrow">Not mapped to a section <span>· ${
+        orphans.length * 2
+      } frames</span></p><p class="brief">Stories whose entity is not named above — the section map in <code>scripts/visual-signoff.mjs</code> has drifted from the catalog.</p></header>${rows.join(
         ''
       )}</section>`
     );
@@ -282,43 +287,71 @@ const renderSheet = async ({ manifest, inline }) => {
     (s) => `<a href="#${s.id}">${escape(s.label.split(' — ')[0])}</a>`
   ).join('');
 
+  // The chrome is deliberately achromatic and never sets a corner radius: this
+  // page exists so someone can judge colour and geometry, so every hue and
+  // every curve on it belongs to a frame, not to the sheet around them. For the
+  // same reason the chrome avoids Inter, which is the specimens' own face.
   const html = `<title>FSL P3 — visual sign-off sheet</title>
 <style>
-  :root { color-scheme: light dark; --bg:#fff; --fg:#101010; --dim:#5b5b5b; --line:#e3e3e3; --card:#fafafa; }
-  @media (prefers-color-scheme: dark) { :root { --bg:#0e0e0e; --fg:#f2f2f2; --dim:#a0a0a0; --line:#2a2a2a; --card:#161616; } }
-  :root[data-theme="dark"] { --bg:#0e0e0e; --fg:#f2f2f2; --dim:#a0a0a0; --line:#2a2a2a; --card:#161616; }
-  :root[data-theme="light"] { --bg:#fff; --fg:#101010; --dim:#5b5b5b; --line:#e3e3e3; --card:#fafafa; }
-  body { background:var(--bg); color:var(--fg); font:15px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; margin:0; }
-  .wrap { max-width:1180px; margin:0 auto; padding:2.5rem 1.25rem 6rem; }
-  h1 { font-size:1.6rem; margin:0 0 .5rem; letter-spacing:-.01em; }
-  .lede { color:var(--dim); max-width:60ch; margin:0 0 1.25rem; }
-  .rule { border:1px solid var(--line); border-radius:10px; padding:1rem 1.15rem; background:var(--card); margin:0 0 2rem; }
-  .rule p { margin:0; }
-  nav { position:sticky; top:0; z-index:2; display:flex; flex-wrap:wrap; gap:.4rem; padding:.6rem 0; background:var(--bg); border-bottom:1px solid var(--line); margin-bottom:2rem; }
-  nav a { font-size:.8rem; text-decoration:none; color:var(--fg); border:1px solid var(--line); border-radius:999px; padding:.2rem .6rem; }
-  section { margin:0 0 3.5rem; scroll-margin-top:4rem; }
-  section > header { border-top:2px solid var(--fg); padding-top:.75rem; margin-bottom:1.5rem; }
-  section > header h2 { font-size:1.15rem; margin:0 0 .5rem; }
-  section > header p { color:var(--dim); margin:0 0 .35rem; max-width:76ch; font-size:.9rem; }
-  .count { font-variant-numeric:tabular-nums; font-size:.78rem !important; text-transform:uppercase; letter-spacing:.06em; }
-  .story { margin:0 0 1.5rem; }
-  .story h3 { font-size:.9rem; margin:0 0 .4rem; font-weight:600; }
+  :root {
+    color-scheme: light dark;
+    --ground:#ffffff; --ink:#111111; --dim:#6a6a6a; --rule:#d7d7d7; --well:#f6f6f6;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    --serif: ui-serif, Georgia, "Iowan Old Style", "Times New Roman", serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ground:#0a0a0a; --ink:#ececec; --dim:#8e8e8e; --rule:#2c2c2c; --well:#141414; }
+  }
+  :root[data-theme="dark"] { --ground:#0a0a0a; --ink:#ececec; --dim:#8e8e8e; --rule:#2c2c2c; --well:#141414; }
+  :root[data-theme="light"] { --ground:#ffffff; --ink:#111111; --dim:#6a6a6a; --rule:#d7d7d7; --well:#f6f6f6; }
+
+  body { background:var(--ground); color:var(--ink); font:400 15px/1.6 var(--serif); margin:0; }
+  .wrap { max-width:1200px; margin:0 auto; padding:3.5rem 1.25rem 7rem; display:flex; flex-direction:column; gap:2rem; }
+  :focus-visible { outline:2px solid var(--ink); outline-offset:2px; }
+  code { font:400 .88em/1 var(--mono); }
+
+  .masthead { display:flex; flex-direction:column; gap:.9rem; }
+  .masthead h1 { font:600 1.75rem/1.2 var(--serif); margin:0; letter-spacing:-.015em; text-wrap:balance; }
+  .stamp { font:400 .7rem/1 var(--mono); letter-spacing:.16em; text-transform:uppercase; color:var(--dim); }
+  .lede { margin:0; max-width:64ch; color:var(--dim); }
+  .lede strong { color:var(--ink); font-weight:600; }
+  .caveat { margin:0; max-width:70ch; padding:1rem 1.15rem; background:var(--well); border-left:3px solid var(--ink); }
+
+  nav { position:sticky; top:0; z-index:2; display:flex; flex-wrap:wrap; gap:1.1rem; padding:.85rem 0; background:var(--ground); border-bottom:1px solid var(--rule); }
+  nav a { font:400 .7rem/1 var(--mono); letter-spacing:.12em; text-transform:uppercase; text-decoration:none; color:var(--dim); border-bottom:1px solid transparent; padding-bottom:.15rem; }
+  nav a:hover { color:var(--ink); border-bottom-color:var(--ink); }
+
+  section { scroll-margin-top:4.5rem; display:flex; flex-direction:column; gap:1.6rem; }
+  section > header { border-top:3px solid var(--ink); padding-top:.85rem; display:flex; flex-direction:column; gap:.6rem; }
+  .eyebrow { margin:0; font:500 .74rem/1.3 var(--mono); letter-spacing:.14em; text-transform:uppercase; }
+  .eyebrow span { color:var(--dim); font-variant-numeric:tabular-nums; }
+  .brief { margin:0; max-width:74ch; color:var(--dim); font-size:.95rem; }
+
+  .story { display:flex; flex-direction:column; gap:.5rem; }
+  .story h3 { margin:0; font:500 .82rem/1.3 var(--mono); letter-spacing:.02em; display:flex; align-items:baseline; gap:.55rem; flex-wrap:wrap; }
   .story h3 span { color:var(--dim); font-weight:400; }
-  .zoom { font:inherit; font-size:.68rem; letter-spacing:.04em; margin-left:.5rem; padding:.05rem .4rem; border:1px solid var(--line); border-radius:5px; background:transparent; color:var(--dim); cursor:pointer; }
-  .zoom:hover { color:var(--fg); }
-  .story.wide .zoom { color:var(--fg); border-color:currentColor; }
-  .pair { display:grid; grid-template-columns:1fr 1fr; gap:.6rem; }
+  .zoom { font:400 .66rem/1.4 var(--mono); letter-spacing:.08em; padding:.05rem .4rem; border:1px solid var(--rule); background:transparent; color:var(--dim); cursor:pointer; }
+  .zoom:hover { color:var(--ink); border-color:var(--ink); }
+  .story.wide .zoom { color:var(--ground); background:var(--ink); border-color:var(--ink); }
+
+  .pair { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; }
   .story.wide .pair { grid-template-columns:1fr; }
   @media (max-width:760px) { .pair { grid-template-columns:1fr; } }
-  .frame { margin:0; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
-  .frame figcaption { font-size:.62rem; letter-spacing:.09em; text-transform:uppercase; color:var(--dim); padding:.2rem .5rem; border-bottom:1px solid var(--line); }
+
+  .frame { margin:0; border:1px solid var(--rule); overflow:hidden; }
+  .frame figcaption { font:400 .62rem/1 var(--mono); letter-spacing:.16em; text-transform:uppercase; color:var(--dim); padding:.35rem .55rem; border-bottom:1px solid var(--rule); }
   .frame img { display:block; width:100%; height:auto; }
-  .missing { display:grid; place-items:center; min-height:80px; color:var(--dim); font-size:.8rem; padding:1rem; text-align:center; }
+  .missing { display:grid; place-items:center; min-height:80px; color:var(--dim); font:400 .78rem/1.4 var(--mono); padding:1rem; text-align:center; }
 </style>
 <div class="wrap">
-<h1>FSL P3 — visual sign-off sheet</h1>
-<p class="lede">Every story in the fsl Storybook, rendered in Chromium at ${WIDTH}px, light and dark side by side, in the order of the P3 review rounds. Two-up halves each frame’s scale — <strong>1:1</strong> on a row stacks its two modes at full width when something needs a closer look.</p>
-<div class="rule"><p>This sheet is evidence, not a verdict. The rounds closed their findings and <code>FRICTION.md</code> is at zero open — that is a separate fact from the owner’s visual sign-off, which no generated artefact can perform. Anything wrong that you see here becomes a new <code>FRICTION.md</code> entry, numbered from the highest <code>F-###</code> in the file.</p></div>
+<div class="masthead">
+  <p class="stamp">fsl Storybook · Chromium ${WIDTH}px · light + dark · ${
+    stories.length * 2
+  } frames</p>
+  <h1>FSL P3 — visual sign-off sheet</h1>
+  <p class="lede">Every story in the catalog, both colour modes side by side, in the order of the P3 review rounds, with what each round changed stated beside the frames it touched. Two-up halves each frame’s scale — <strong>1:1</strong> on a row stacks its two modes at full width when something needs a closer look.</p>
+  <p class="caveat">This sheet is evidence, not a verdict. The rounds closed their findings and <code>FRICTION.md</code> is at zero open — that is a separate fact from the owner’s visual sign-off, which no generated artefact can perform. Anything wrong that you see here becomes a new <code>FRICTION.md</code> entry, numbered from the highest <code>F-###</code> in the file.</p>
+</div>
 <nav>${nav}</nav>
 ${sections.join('')}
 </div>
