@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.25.0 (2026-08-05)
+
+### Features
+
+- **http-server-mcp:** serve the MCP 2026-07-28 revision alongside 2025-era traffic ([#1171](https://github.com/ttoss/ttoss/issues/1171)) ([b9fcc16](https://github.com/ttoss/ttoss/commit/b9fcc16e66c4c1df8277af956d0301e695f6ea4b))
+
 ## 0.24.16 (2026-07-03)
 
 **Note:** Version bump only for package @ttoss/appsync-api
