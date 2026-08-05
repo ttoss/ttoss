@@ -60,6 +60,7 @@ One entry per semantic family. Use `vars.*` for typed CSS variable references; u
 | opacity     | `semantic.opacity.{scrim,loading,disabled}`                      | number in (0, 1)                |
 | overlay     | `semantic.overlay.scrim`                                         | CSS color with alpha            |
 |             | `semantic.overlay.outline`                                       | CSS color                       |
+| rail        | `semantic.rail.track`                                            | CSS color                       |
 | motion      | `semantic.motion.{feedback,emphasis,decorative}`                 | `{duration, easing}`            |
 |             | `semantic.motion.transition.{enter,exit}`                        | `{duration, easing}`            |
 | zIndex      | `semantic.zIndex.layer.{base,sticky,overlay,blocking,transient}` | integer                         |
