@@ -1458,3 +1458,111 @@ Re-litigation answers:
   same working session before any commit, per the instrument-before-value
   rule: the numbers it produced are preserved in F-057 and here, which is
   the artefact that matters, not the rejected diff.
+
+### ADR-036: A rail's fill moves to the cross-cutting `semantic.rail.track`; its ceiling ships as a host knob, unset by default
+
+Status: accepted (2026-08-05)
+Tags: colors, spacing, feedback, input, P3, F-051, F-052, closes:F-051, closes:F-052
+
+Decision: two findings ADR-033 left open, ruled together because both are the
+rail's own address — one for colour, one for width.
+
+**F-051 — the colour half.** `ProgressBar`/`Meter`/`Slider` now read
+`RAIL_FILL` (`src/tokens/rail.ts`) → `vars.rail.track`, the cross-cutting
+token fsl-theme ADR-028 mints for exactly this address (model.md §6, sibling
+of `focus`/`overlay`/`consequence`). Before it existed, `ProgressBar`/`Meter`
+read `feedback.muted.background` (ADR-033's own fix — a better borrow than
+the `muted.border` that shipped broken, but still a borrow) and `Slider` read
+`input.primary.background.disabled`, a **state** standing in for a **part**,
+so an empty `Slider` rail meant "disabled" in the token model. All three now
+read the same address; `Slider`'s `buildTrackStyle` drops its `InputColors`
+parameter entirely, since the rail no longer varies with the entity's colour
+tree at all.
+
+**Why this was ADR-033's own recommendation, not a new idea.** ADR-033 named
+"(a) a dedicated rail token, at the version boundary" as the right end state
+and declined to build it because nothing about it was urgent once F-050's
+blocker was closed. The owner delegated a ruling on both findings this round;
+"nothing urgent" is not "wrong", and the analysis ADR-033 and F-051 wrote is
+what this ADR executes.
+
+**F-052 — the width half, ceiling only.** `TRACK_RAIL.maxWidth` defaults to
+`'none'`, read through `--fsl-track-max-width` via `fslVar` — the same
+sanctioned escape hatch `--fsl-dialog-min-width` uses (ADR-031/CONTRACT §7),
+for the same reason: the reference's own 768px cap is authorial, and hard-
+capping every rail by default is a breaking layout change for any consumer
+currently filling a wide container. Unset, `maxWidth` resolves to `none` and
+`width: 100%` behaves exactly as before this knob existed; a host that wants
+the reference's ceiling sets `--fsl-track-max-width: 768px` on `[data-scope]`
+and gets it with no code change. The floor (`TRACK_RAIL.minWidth`, 48px)
+ADR-033 already shipped is unaffected — this ADR only adds the other end of
+the envelope, and only as an opt-in.
+
+**`Meter` does not get the reference's `meter-default-width` (192px).**
+Read from the flattened `@adobe/spectrum-tokens@14.15.0` data directly rather
+than assumed: `progress-bar-minimum-width`/`-maximum-width` exist and nothing
+named `progress-bar-default-width` does, while `meter-minimum-width`/
+`-maximum-width` **and** `meter-default-width`/`meter-width` (192px desktop /
+240px mobile, `meter-default-width` aliasing `meter-width`) all exist. So the
+reference itself draws the line F-052 asked about: `ProgressBar` is meant to
+fill whatever length hosts it end to end; `Meter`, a static gauge rather than
+an in-flow activity bar, additionally has an intrinsic size when nothing
+constrains it. **Not adopted here.** Defaulting `Meter` to a fixed width is
+the same class of breaking change the ceiling knob was written to avoid —
+every existing `Meter` currently fills its container — and this package
+already has a composition-level way to give any block a fixed width
+(`Box`/`Container`, CONTRACT §7.1) without adding a second, component-level
+mechanism for the identical outcome. `ProgressBar`/`Meter`/`Slider` keep one
+silhouette (ADR-033's ruling); a `Meter`-only default width would be the first
+exception to it for a capability the package already has another way to
+reach.
+
+Guarded from both sides, same shape as every prior cross-cutting token:
+`packages/fsl-theme/tests/unit/tests/theme/families/rail.test.ts` pins the
+resolved value and that it no longer collapses onto either borrow, in every
+mode of every bundle; `tests/unit/tests/rail.test.tsx` (this package) pins
+that all three components read the identical `RAIL_FILL` constant — comparing
+the `var()` reference itself, not a resolved colour, so a refactor that
+reaches either old borrow by a different path still fails — and that the
+`--fsl-track-max-width` knob is unset by default and shared by name across all
+three.
+
+Rejected: a `size`/`maxWidth` prop on the three components (CONTRACT §4 — the
+same rejection ADR-031 already made for the overlays: a different envelope is
+a different semantic identity, and a knob is the sanctioned channel for host-
+owned geometry on a component that exposes no `style`); hard-capping at 768px
+by default (breaking, and no measurement forces the choice — F-052's own
+text); a `Meter`-only default width (above); waiting for the version boundary
+(superseded by the owner's explicit delegation this round).
+
+Cost: one renamed internal constant (`FEEDBACK_RAIL_FILL` → `RAIL_FILL`, not
+exported from the package's public surface, so no consumer-facing break); one
+registered host knob (`--fsl-track-max-width`, MINOR per governance.md, same
+class as `--fsl-dialog-min-width`); `Slider`'s rail is no longer visually
+"disabled-tinted" in dark mode outside the `disabled` state — the fix's actual
+intent, not a regression.
+
+Anchors: `src/tokens/rail.ts`, `src/components/ProgressBar/ProgressBar.tsx`,
+`src/components/Meter/Meter.tsx`, `src/components/Slider/Slider.tsx`,
+`src/tokens/CONTRACT.md` §1 cross-cutting table, §3.6, §7 knob table,
+`tests/unit/tests/rail.test.tsx`, fsl-theme `src/families/rail.ts` + ADR-028,
+`docs/fsl-studio/FRICTION.md` F-051/F-052.
+
+Re-litigation answers:
+
+- "Why does `Slider`'s dark rail render the same pixel as before, if the
+  borrow was the defect?" → `ProgressBar`/`Meter`'s dark rail happens to
+  render the same pixel too (ADR-028 kept ADR-033's already-correct dark
+  value); `Slider`'s does **not** — it moves from `neutral.900`
+  (`input.primary.background.disabled`) to `neutral.700`
+  (`semantic.rail.track`), which is the actual defect this ADR closes.
+- "Should `Slider` get its own `--fsl-slider-track-max-width` knob instead of
+  sharing `--fsl-track-max-width`?" → no — the three components are one
+  silhouette by ADR-033's own ruling, and a shared knob name is what lets one
+  host rule cap all three without three near-identical selectors.
+- "Why rule on F-052's `Meter` question here instead of filing it separately?"
+  → the owner asked for both findings resolved in the same pass, and the two
+  are the same address (a rail's width envelope) — ruling on the ceiling
+  without reading the reference's own default-width asymmetry would have been
+  the "assume, don't measure" mistake this package's `CLAUDE.md` exists to
+  prevent.

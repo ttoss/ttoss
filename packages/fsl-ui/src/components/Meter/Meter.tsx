@@ -6,7 +6,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
-import { FEEDBACK_RAIL_FILL, RAIL_BASE } from '../../tokens/rail';
+import { RAIL_BASE, RAIL_FILL } from '../../tokens/rail';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -36,11 +36,12 @@ type FeedbackColors = (typeof vars.colors.feedback)[EvaluationsFor<'Feedback'>];
 
 /** Track (body) style — the neutral rail the fill sits in. Geometry comes from
  * the shared rail (`TRACK_RAIL`, one silhouette across the three rails); the
- * colour is the entity's quiet **surface**, not its border (F-050). */
+ * colour is the cross-cutting rail fill every rail shares (`semantic.rail.track`,
+ * F-050/F-051), not a borrowed role token. */
 const buildTrackStyle = (): React.CSSProperties => {
   return {
     ...RAIL_BASE,
-    backgroundColor: FEEDBACK_RAIL_FILL,
+    backgroundColor: RAIL_FILL,
   };
 };
 
