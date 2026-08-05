@@ -1099,3 +1099,77 @@ Re-litigation answers:
   so two components claiming the same stratum paint different colours in dark.
   It cannot close F-044 (1.67:1 at best) and it changes what `evaluation` drives
   on an Overlay, so it is its own decision.
+
+### ADR-032: The Overlay family's behaviour is a published promise, so it is pinned as wiring; modality is asserted as reachability, not as `aria-modal`
+
+Status: accepted (2026-08-05)
+Tags: a11y, overlay, behaviour, P3, review-round-2, F-049
+
+Decision: the Overlay family's **behavioural** contract — dismiss semantics,
+focus containment, and the APG contract each role publishes — is guarded by
+`tests/unit/tests/overlayBehaviour.test.tsx`, which asserts the _wiring_ our
+composites own rather than React Aria's correctness, and asserts **modality as
+whether outside content is still reachable by assistive technology** rather than
+as the presence of `aria-modal`.
+
+Round 2 of the P3 component review measured this half and **found no defect**:
+every member already holds its promise. That is the reason the file exists. Each
+component's JSDoc tells a consumer the surface dismisses, contains focus, or
+never takes it, and until now nothing failed if a refactor took that away —
+the same class as the geometry promises Round 1 found unguarded, one dimension
+over. A behavioural contract nobody can break by accident is not a contract; it
+is a coincidence that currently holds.
+
+What only this suite pins, member by member:
+
+| Contract                                          | Members                             | The regression it catches                                                   |
+| ------------------------------------------------- | ----------------------------------- | --------------------------------------------------------------------------- |
+| Outside content leaves the accessibility tree     | Menu, DialogModal, Drawer, Popover  | a surface handed `isNonModal`, or a portal swapped in for `ModalOverlay`    |
+| Escape dismisses and focus returns to the trigger | Drawer, Popover, ConfirmationDialog | the three members `keyboard.test.tsx` never reached                         |
+| An outside press light-dismisses                  | Popover                             | a `Popover` that starts behaving like a modal prompt                        |
+| Tab cycles inside the surface                     | Popover                             | focus escaping into a page the reader can no longer see                     |
+| Dismissal never commits the effect                | ConfirmationDialog                  | an abandoned destructive confirmation that fires `onConfirm` anyway         |
+| `aria-controls` resolves to the menu itself       | Menu                                | the trigger pointing at the surface wrapper instead of the list (see F-049) |
+| The surface's name resolves to rendered text      | Dialog, Drawer                      | a dangling `aria-labelledby`, which an attribute assertion cannot see       |
+| The hint describes its trigger and is no tab stop | Tooltip                             | interactive content migrating into a surface that cannot be reached         |
+
+**Modality is asserted as reachability because no member carries `aria-modal`.**
+React Aria hides the rest of the tree with `ariaHideOutside` instead, which is
+the more robust mechanism and the one the reference ships. A contributor reading
+APG will look for `aria-modal`, not find it, and "fix" it; the assertion is
+written so that the _outcome_ is pinned and the mechanism stays upstream's to
+choose. This is the unstated invariant the round's measurement surfaced.
+
+Three discriminants are asserted from the other side, as in ADR-031's guard: a
+Tooltip must **not** blank the page, a modal prompt must **not** light-dismiss,
+and a Tooltip must **never** hold focus. Without them, "make every overlay modal
+and dismissable" would pass, which is the family-wide flattening this avoids.
+
+Rejected: asserting `aria-modal` (fails on a correct implementation — see
+above); a per-component behaviour test per member (the contract is a family
+relation, and eight files would restate the same setup and hide which member
+diverged); publishing the behavioural contract in `CONTRACT.md` (§1–§7 are the
+token contract; behaviour has no token to name, and the suite is the readable
+statement of it).
+
+Cost: one more integration suite on real timers (+17 tests, ~4s) and a second
+place — beside `keyboard.test.tsx` — where an Overlay interaction may be
+asserted. The boundary between them is stated in the suite header: `keyboard`
+owns key-by-key navigation within a member, `overlayBehaviour` owns the family
+relation and the discriminants.
+
+Anchors: `tests/unit/tests/overlayBehaviour.test.tsx`,
+`tests/unit/tests/keyboard.test.tsx`, `docs/fsl-studio/FRICTION.md` F-049,
+`INTERNAL/ROADMAP.md` §P3 round 2.
+
+Re-litigation answers:
+
+- "Our dialogs are missing `aria-modal` — bug?" → no. Outside content is hidden
+  with `aria-hidden`; the suite pins that outcome. Adding `aria-modal` on top
+  duplicates the guarantee and reintroduces the VoiceOver bugs upstream avoids.
+- "Why does a Menu popover announce as a dialog?" → upstream default (RAC 1.19
+  renders `role="dialog"` on any popover not marked `isNonModal`), matched by the
+  reference. F-049 records it with a readmission criterion.
+- "Should `keyboard.test.tsx` absorb this?" → no. That suite is per-member key
+  handling; this one is the family relation, and its discriminants only make
+  sense read together.
