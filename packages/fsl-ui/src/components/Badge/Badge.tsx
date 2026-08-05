@@ -24,6 +24,11 @@ import { CHIP_BOX } from '../../tokens/chipBox';
 // outcome", CONTRACT §1.1) nor is operated (Selection). It presents. That is
 // Structure, which the FSL Entity Kind Mapping projects onto `informational`.
 //
+// Badge is now `CHIP_BOX`'s sole reader (F-053): StatusLight took its own
+// dot-plus-label silhouette, so the shared box no longer needs to distinguish
+// two components by colour alone — it names the one filled-chip shape this
+// package ships.
+//
 // The distinction is not decorative: painting a valence onto "Admin" claims an
 // outcome that does not exist, the same category error the taxonomy blocks when
 // it keeps `Evaluation` (authorial) apart from `State.invalid` (runtime).

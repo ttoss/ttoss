@@ -26,10 +26,10 @@ export const Emphasis: Story = {
 };
 
 /**
- * The distinction the component exists for. Both chips are the same box — a
- * `Badge` beside a `StatusLight` must not disagree about its own roundness — and they
- * say different things: the Badge reports an outcome the system observed, the
- * Badge labels content that simply is what it is.
+ * The distinction the component exists for — form and colour both, since
+ * F-053. `Badge` is a filled pill; `StatusLight` is a coloured dot plus a
+ * label with no fill of its own. `StatusLight` reports an outcome the system
+ * observed; `Badge` labels content that simply is what it is.
  */
 export const AgainstStatusLight: Story = {
   render: () => {

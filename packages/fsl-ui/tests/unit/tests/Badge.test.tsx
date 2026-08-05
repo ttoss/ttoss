@@ -58,11 +58,13 @@ describe('Badge', () => {
     expect(el?.style.backgroundColor).not.toBe(feedback.background!.default);
   });
 
-  test('shares its box with StatusLight, byte for byte', () => {
-    // Two chips side by side in one UI must not be able to disagree about
-    // their own roundness. `CHIP_BOX` is the shared source; this asserts the
-    // *outcome* rather than the import, so a component that stops reading it
-    // fails here even if the module still exists.
+  test('no longer shares its box with StatusLight (F-053)', () => {
+    // Until F-053 the two were the same silhouette, distinguished only by
+    // which colour family they read. StatusLight now renders a dot + label
+    // with no fill; Badge keeps the filled `CHIP_BOX` pill. This asserts the
+    // *outcome* rather than the import, so a regression that puts the box
+    // back under StatusLight's root fails here even if `chipBox.ts` still
+    // exists unchanged.
     render(
       <>
         <Badge>Admin</Badge>
@@ -74,19 +76,12 @@ describe('Badge', () => {
       '[data-scope="status-light"][data-part="root"]'
     )!;
 
-    for (const property of [
-      'borderRadius',
-      'borderWidth',
-      'borderStyle',
-      'paddingBlock',
-      'paddingInline',
-      'fontSize',
-      'lineHeight',
-    ] as const) {
-      expect({ [property]: chip.style[property] }).toEqual({
-        [property]: statusLight.style[property],
-      });
-    }
+    expect(chip.style.borderWidth).not.toBe('');
+    expect(chip.style.paddingInline).not.toBe('');
+    // The StatusLight root carries none of the pill's chrome any more.
+    expect(statusLight.style.borderWidth).toBe('');
+    expect(statusLight.style.paddingInline).toBe('');
+    expect(statusLight.style.backgroundColor).toBe('');
   });
 
   test('is inert — no role, no tabindex, no handlers wired', () => {

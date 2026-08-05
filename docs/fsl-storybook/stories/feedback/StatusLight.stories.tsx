@@ -14,6 +14,12 @@ export const Default: Story = {
   args: { children: 'New' },
 };
 
+/**
+ * The four evaluations, side by side. F-053: the silhouette is a coloured
+ * dot plus a label on the page's own background — no fill. Only the dot
+ * carries the valence; the label's ink is the same page default in every
+ * case.
+ */
 export const Valences: Story = {
   render: () => {
     return (

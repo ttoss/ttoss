@@ -1566,3 +1566,113 @@ Re-litigation answers:
   without reading the reference's own default-width asymmetry would have been
   the "assume, don't measure" mistake this package's `CLAUDE.md` exists to
   prevent.
+
+### ADR-038: `StatusLight` takes its own silhouette — a dot plus a label, no fill; `Badge` keeps the pill
+
+Status: accepted (2026-08-05)
+Tags: colors, geometry, feedback, structure, P3, F-053, closes:F-053
+
+Decision: **`StatusLight` renders a small coloured dot plus a text label on
+the page's own background, with no fill of its own — the reference's and
+Chakra's form for this member.** `Badge` is unaffected: it keeps `CHIP_BOX`,
+and is now that token's sole reader. Implemented in `src/tokens/statusLight.ts`
+(`STATUS_LIGHT_DOT`, `STATUS_LIGHT_ROOT`, `STATUS_LIGHT_DOT_STYLE`,
+`STATUS_LIGHT_LABEL`) and wired into `StatusLight.tsx` as two parts,
+`data-part="dot"` and `data-part="label"`, under the existing root.
+
+**This is the second half of F-040, which is the entry's own words.** That
+finding fixed the two chip names to match both reference systems —
+`StatusLight` valence-bearing, `Badge` descriptive — and left them sharing one
+box, "differing in what the colour is saying". F-053 measured that the
+resulting pair is distinguishable only by which colour family it reads: a
+`Badge` and a `StatusLight` painted from equivalent neutral rungs are the same
+object. The reference does not leave the two as colour variants of one shape
+— `StatusLight` is a dot (`status-light-dot-size-medium`, 10px) plus a 6px
+gap and a label with no fill at all, and Chakra 3 draws the identical line
+under different names (`Status` is a dot; `Badge` is the filled chip).
+Adopting the reference's form finishes what F-040 started rather than
+restating it: the names have been right since 2026-08-02, and this is the
+silhouette catching up to them.
+
+**Where the three numbers came from, and why only two shipped literally.**
+Read from `@adobe/spectrum-tokens@14.15.0`'s desktop set, the same instrument
+P3 rounds 3–7 used: `status-light-dot-size-medium` (10px, `0.625rem`) and
+`status-light-text-to-visual-100` (6px, `0.375rem`, the dot-to-label gap) ship
+as literals in `STATUS_LIGHT_DOT`. `status-light-top-to-dot-medium` (11px)
+does not: it is a vertical-centring pad the reference's own layout tool needs
+to align a fixed dot against a text baseline without flexbox. `STATUS_LIGHT_
+ROOT` is `display: inline-flex; align-items: center`, which centres the dot
+against the label's line box directly — verified in Chromium, both modes,
+against our own label type (`label.sm`, one step larger than the reference's
+per F-021): the dot sits visually centred with no separate offset.
+
+**The dot's colour and radius are the entity's own existing tokens, not new
+ones.** `radii.round` (`core.radii.full`) is already the Feedback row's second
+radius in CONTRACT.md §1 (`surface`, `round` — the rail silhouette's own
+value), so a circular dot reads vocabulary the entity already has.
+`feedback.{evaluation}.background.default` is the exact address the old pill
+read for its fill; the valence colour moves onto a smaller shape, it does not
+become a different token.
+
+**The label's ink is the page's own default text, not the feedback valence.**
+The reference publishes no `status-light-text` colour token at all — the dot
+alone carries the valence in every reference measurement taken. `informational
+.primary.text.default` is the address `Surface`/`Code` already use for text
+sitting directly on the page; reading it here rather than `feedback.
+{evaluation}.text` keeps the valence claim on the one part built to carry it
+and avoids painting the label a colour the reference never specifies.
+
+**Accepted cost: a visible break on every existing `StatusLight` consumer,
+inside this package and in the Studio.** The pill is gone from `DashboardPage`
+(KPI deltas, the deploy-status table column) and `BillingPage` (the plan
+status), and from every `StatusLight` Storybook story. None of those sites
+depended on the pill's fixed box for row alignment — each is an inline flex
+row (`align="center"`, `gap`), and the new inline-flex dot+label shape fills
+that role identically — so no consumer _code_ changed, but every one of them
+now _looks_ different. That is the cost F-053 named and did not hide: "the
+names are right" was doing all the work until this ADR.
+
+Rejected: keeping the pill and finding "some other differentiator" (F-053's
+own alternative) — costed and dropped, because the reference and Chakra both
+independently reach for form, not a second colour axis, and inventing a third
+differentiator when two systems already agree on one is exactly the kind of
+divergence this package's `CLAUDE.md` asks to be evidenced before it ships;
+a component-owned `src/components/StatusLight/geometry.ts` instead of a
+`src/tokens/statusLight.ts` — rejected on the same reasoning `rail.ts`/
+`chipBox.ts` apply: no other Feedback-entity member (`ProgressBar`, `Meter`
+are rails; `Toast` is neither) is a plausible second consumer today, but the
+geometry names a physical object rather than one component's private detail,
+and the cross-cutting layer is where this package's other single-purpose
+silhouettes already live; carrying `status-light-top-to-dot-medium` forward as
+a literal padding value — rejected because it duplicates what `align-items:
+center` already delivers and would need re-deriving by hand against any
+future label-type change, where the flexbox rule tracks it for free.
+
+Cost: one breaking visual change across every `StatusLight` consumer (stated
+above); `CHIP_BOX` drops to one reader, which is a comment-only change to that
+module's own doc, not a behaviour change for `Badge`.
+
+Anchors: `src/tokens/statusLight.ts`, `src/components/StatusLight/
+StatusLight.tsx`, `src/components/Badge/Badge.tsx`, `src/tokens/chipBox.ts`,
+`tests/unit/tests/StatusLight.test.tsx`, `tests/unit/tests/Badge.test.tsx`,
+`docs/fsl-storybook/stories/feedback/StatusLight.stories.tsx`,
+`docs/fsl-storybook/stories/structure/Badge.stories.tsx`,
+`docs/fsl-studio/FRICTION.md` F-053/F-040.
+
+Re-litigation answers:
+
+- "Why does the label not carry the evaluation's colour at all?" → the
+  reference ships no colour token for it, and painting it from
+  `feedback.*.text` would put the valence claim in two places for no reading
+  benefit — the dot already carries it, unambiguously, at a glance.
+- "Doesn't losing the fill make `StatusLight` harder to notice in a dense
+  table?" → the reference's own answer to density is the dot's size, not a
+  fill; nothing measured argues our tables are denser than the reference's.
+  A component that wants a filled pill for pure category labelling has one —
+  `Badge` — and this ADR is exactly the ruling that keeps that shape from
+  meaning two different things.
+- "Why 10px/6px and not our own retune?" → no measurement argued for a
+  different number, and the reference's own values already read cleanly
+  against our larger type once flexbox handles the centring; retuning without
+  a measured reason would be the same "assume, don't measure" mistake F-047
+  avoided by taking the reference's mobile value with a stated reason.
