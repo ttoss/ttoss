@@ -41,8 +41,10 @@ maps each recurring question to the document that already answers it. Start ther
 
 - **"The theme has no token for this."** Check the theme, not the components. A
   token that nothing reads looks identical to a token that does not exist.
-- **"The contrast suite will catch it."** Only in one direction. Both pair
+- **"The contrast suite will catch it."** Only in one direction. The pair
   extractors in `packages/fsl-theme/tests/unit/tests/theme/families/colors.test.ts`
-  iterate over what exists and skip when the counterpart is absent — so _removing_
-  a colour token silently drops its pairings and the suite stays green. Any change
-  that deletes a colour owes an explicit replacement assertion.
+  iterate over declared **backgrounds** — a missing ink no longer hides a pair
+  (fsl-theme ADR-026: the suite audits the fallback ink the component actually
+  renders), but _removing a background token_ still silently drops its pairings
+  and the suite stays green. Any change that deletes a colour owes an explicit
+  replacement assertion.

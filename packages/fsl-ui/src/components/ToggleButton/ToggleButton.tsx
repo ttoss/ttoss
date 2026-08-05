@@ -5,7 +5,12 @@ import {
   type ToggleButtonProps as RACToggleButtonProps,
 } from 'react-aria-components';
 
-import type { ComponentMeta, EvaluationsFor } from '../../semantics';
+import type {
+  ComponentMeta,
+  Evaluation,
+  EvaluationsFor,
+} from '../../semantics';
+import { quietRestingFill } from '../../tokens/surfaceScope';
 import {
   type ActionIconPlacement,
   type ActionLabellingProps,
@@ -51,6 +56,7 @@ type ActionColors = typeof vars.colors.action.primary;
 
 /** Flags the toggle cascade reads. */
 type ToggleFlags = {
+  evaluation: Evaluation;
   isHovered?: boolean;
   isPressed?: boolean;
   isSelected?: boolean;
@@ -64,13 +70,14 @@ type ToggleFlags = {
  */
 const resolveToggleBackground = (
   bg: NonNullable<ActionColors['background']>,
-  { isDisabled, isPressed, isSelected, isHovered }: ToggleFlags
+  { evaluation, isDisabled, isPressed, isSelected, isHovered }: ToggleFlags
 ): string | undefined => {
   if (isDisabled) return bg.disabled;
   if (isPressed) return bg.active;
   if (isSelected) return bg.pressed;
   if (isHovered) return bg.hover;
-  return bg.default;
+  // The quiet rung's resting fill follows the published surface (§3.4).
+  return quietRestingFill({ evaluation, value: bg.default });
 };
 
 /** Text cascade — same order, with `?? default` since not every voice defines every state. */
@@ -89,17 +96,20 @@ const resolveToggleText = (
 const resolveToggleBorder = (
   border: NonNullable<ActionColors['border']>,
   {
+    evaluation,
     isFocusVisible,
     isDisabled,
     isSelected,
-  }: Pick<ToggleFlags, 'isDisabled' | 'isSelected'> & {
+  }: Pick<ToggleFlags, 'evaluation' | 'isDisabled' | 'isSelected'> & {
     isFocusVisible?: boolean;
   }
 ): string | undefined => {
   if (isFocusVisible) return border.focused;
   if (isDisabled) return border.disabled;
   if (isSelected) return border.pressed ?? border.default;
-  return border.default;
+  // Mirrors the resting fill — an absolute edge on a borrowed fill would
+  // re-draw the seam the surface contract removes (§3.4).
+  return quietRestingFill({ evaluation, value: border.default });
 };
 
 /** Where the icon sits relative to the label. @see ActionIconPlacement */
@@ -186,7 +196,13 @@ export const ToggleButton = ({
         isDisabled,
         isFocusVisible,
       }) => {
-        const flags = { isHovered, isPressed, isSelected, isDisabled };
+        const flags = {
+          evaluation,
+          isHovered,
+          isPressed,
+          isSelected,
+          isDisabled,
+        };
         return buildActionTriggerStyle({
           silhouette: UTILITY_SILHOUETTE,
           hasIcon,
@@ -200,6 +216,7 @@ export const ToggleButton = ({
               : undefined,
             border: colors?.border
               ? resolveToggleBorder(colors.border, {
+                  evaluation,
                   isFocusVisible,
                   isDisabled,
                   isSelected,

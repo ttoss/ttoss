@@ -11,11 +11,14 @@ import {
   Grid,
   Heading,
   Icon,
+  List,
+  ListItem,
   Meter,
   Select,
   SelectItem,
   Separator,
   Stack,
+  StatusLight,
   Surface,
   Text,
   TextField,
@@ -250,7 +253,7 @@ const CurrentPlanCard = ({ plan }: { plan: Plan }) => {
           <Stack gap="xs">
             <Stack direction="horizontal" align="center" gap="sm">
               <Text variant="label-lg">{`${plan.name} plan`}</Text>
-              <Badge evaluation="positive">Active</Badge>
+              <StatusLight evaluation="positive">Active</StatusLight>
             </Stack>
             <Text variant="body-sm" tone="muted">
               Renews August 18, 2026 · billed monthly
@@ -348,26 +351,18 @@ const PlanCard = ({ plan, currentPlan }: { plan: Plan; currentPlan: Plan }) => {
           {plan.description}
         </Text>
         <Separator />
-        {/*
-         * Content list — the recorded F-016 pattern: Stack carries the list
-         * semantics until a List primitive exists.
-         */}
-        <Stack gap="sm" role="list">
+        <List gap="sm">
           {plan.features.map((feature) => {
             return (
-              <Stack
-                key={feature}
-                direction="horizontal"
-                align="center"
-                gap="sm"
-                role="listitem"
-              >
-                <Icon intent="status.success" size="sm" />
-                <Text variant="body-sm">{feature}</Text>
-              </Stack>
+              <ListItem key={feature}>
+                <Stack direction="horizontal" align="center" gap="sm">
+                  <Icon intent="status.success" size="sm" />
+                  <Text variant="body-sm">{feature}</Text>
+                </Stack>
+              </ListItem>
             );
           })}
-        </Stack>
+        </List>
         {isCurrent ? (
           <Button evaluation="secondary" isDisabled>
             Current plan

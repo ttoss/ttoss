@@ -1,18 +1,24 @@
 /**
- * @ttoss/forms (react-hook-form + Zod) ↔ fsl-ui bridge (audit A11 / ADR-004).
+ * react-hook-form + Zod ↔ fsl-ui bridge (ADR-027, superseding ADR-004).
  *
- * The monorepo's form standard is `@ttoss/forms`, which re-exports
- * react-hook-form's primitives (`useForm`, `Controller`) and the Zod
- * resolver. This suite is the living recipe: fsl-ui controls connect
- * through the plain `Controller`, mapping `field.*` / `fieldState.invalid`
- * onto the controls' controlled props. No adapter entry point ships —
- * see CONTRIBUTING ADR-004 for the decision record.
+ * This suite is the living recipe: fsl-ui controls connect through the plain
+ * `Controller`, mapping `field.*` / `fieldState.invalid` onto the controls'
+ * controlled props. No adapter entry point ships.
  *
- * `@ttoss/forms` is a devDependency here (scope guard: its source is never
- * modified by this package).
+ * **The imports are the recipe.** It used to pull the same four symbols from
+ * `@ttoss/forms`, whose single entry also exports the legacy `FormField*`
+ * suite with `@ttoss/ui`, `@ttoss/components` and `@ttoss/react-i18n` as peers
+ * — so following the documented recipe dragged all of that into an fsl-first
+ * app (F-005). fsl-ui takes no form-library dependency ever, so the recipe
+ * names the upstream packages directly and this file proves the one it names.
+ *
+ * Nothing here is required to use fsl-ui: React Aria's native validation is
+ * the default and the Studio uses only that. This is the bridge for an app
+ * that already runs react-hook-form.
  */
+import { zodResolver } from '@hookform/resolvers/zod';
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { Controller, useForm, z, zodResolver } from '@ttoss/forms';
+import { Controller, useForm } from 'react-hook-form';
 import {
   Checkbox,
   Form,
@@ -25,6 +31,7 @@ import {
   TextFieldError,
   TextFieldLabel,
 } from 'src/index';
+import { z } from 'zod';
 
 const schema = z.object({
   email: z.string().min(1, 'Email is required'),

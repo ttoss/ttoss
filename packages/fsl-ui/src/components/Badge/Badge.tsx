@@ -2,26 +2,39 @@ import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
+import { CHIP_BOX } from '../../tokens/chipBox';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
 //
-// Entity = Feedback → CONTRACT.md §1 row: colours `feedback`. Badge is the
-// small, non-interactive status pill: a compact label whose colour carries a
-// valence (informational / positive / caution / negative). It is the audience
-// side of Feedback — a rating, a count, a state tag — not an action. It reads
-// no interactive State.
+// Entity = Structure → CONTRACT.md §1 row: colours `informational`. Badge is the
+// **descriptive** member of the chip family: it labels content ("Admin",
+// "Beta", "Draft") without reporting an outcome and without being operable.
+//
+// The name is the reference's. Spectrum splits this axis three ways — Badge
+// (metadata) / StatusLight (semantic status) / TagGroup (user-managed) — and so
+// does Chakra: Badge (plain span) / Status (indicator) / Tag (compound). Both
+// give the *descriptive* chip the word `Badge`. This package shipped it the
+// other way round for a while, with `Badge` on the status member; F-040 records
+// why that cost more than it looks in an AI-first system, since an agent asked
+// for "a role chip" reaches for `Badge` on priors from every other library.
+//
+// It is a different entity from the other two, not a variant of either: it
+// neither reports (Feedback is "the user is the audience of a system-initiated
+// outcome", CONTRACT §1.1) nor is operated (Selection). It presents. That is
+// Structure, which the FSL Entity Kind Mapping projects onto `informational`.
+//
+// The distinction is not decorative: painting a valence onto "Admin" claims an
+// outcome that does not exist, the same category error the taxonomy blocks when
+// it keeps `Evaluation` (authorial) apart from `State.invalid` (runtime).
 // ---------------------------------------------------------------------------
 
-/** Formal semantic identity — Badge root (Feedback entity, status pill). */
+/** Formal semantic identity — Badge root (Structure entity, descriptive chip). */
 export const badgeMeta = {
   displayName: 'Badge',
-  entity: 'Feedback',
+  entity: 'Structure',
   structure: 'root',
-} as const satisfies ComponentMeta<'Feedback'>;
-
-/** Numeric figure style — `tabular` aligns digits (ratios, counts). */
-export type BadgeNumeric = 'normal' | 'tabular';
+} as const satisfies ComponentMeta<'Structure'>;
 
 /** Props for the Badge component. */
 export interface BadgeProps extends Omit<
@@ -29,43 +42,43 @@ export interface BadgeProps extends Omit<
   'style' | 'className'
 > {
   /**
-   * Feedback valence the badge communicates. `primary` is neutral-informational;
-   * `positive`/`caution`/`negative` carry status colour.
-   * @default 'primary'
+   * Presentational emphasis. `muted` is the resting descriptive chip — a filled
+   * surface that recedes into the page. `primary` promotes it to the page's own
+   * surface with a hairline edge, for a chip that must read as an object rather
+   * than as an annotation.
+   * @default 'muted'
    */
   evaluation?: EvaluationsFor<(typeof badgeMeta)['entity']>;
-  /**
-   * Numeric figure style. `tabular` renders `tabular-nums` so digits line up —
-   * use it for ratios/counts inside a scannable column.
-   * @default 'normal'
-   */
-  numeric?: BadgeNumeric;
-  /** The badge label. */
+  /** The chip label. */
   children?: React.ReactNode;
 }
 
 /**
- * A compact status pill bound to the FSL feedback palette.
+ * A compact descriptive chip — a label for content, carrying no outcome.
  *
- * Entity = Feedback. Use it for a small, non-interactive tag whose colour
- * carries meaning: a contrast rating, a validation state, a count. Pick the
- * `evaluation` by valence, not by colour — the theme decides the hue per mode.
- * For running feedback messages use `Toast`; for interactive filters use a
- * control.
+ * Entity = Structure. Use it for categories, roles and attributes: "Admin",
+ * "Beta", "TypeScript". It is not interactive and it reports nothing.
+ *
+ * Pick between the three chips by what the colour is saying:
+ *
+ * | You are showing…                                  | Use           |
+ * | ------------------------------------------------- | ------------- |
+ * | a descriptive label with no outcome               | `Badge`       |
+ * | an outcome or status the system is reporting      | `StatusLight` |
+ * | a set the user can select from or remove from     | `TagGroup`    |
  *
  * @example
  * ```tsx
- * <Badge evaluation="positive" numeric="tabular">AA 5.1:1</Badge>
- * <Badge evaluation="negative">Fail</Badge>
+ * <Badge>Admin</Badge>
+ * <Badge evaluation="primary">Beta</Badge>
  * ```
  */
 export const Badge = ({
-  evaluation = 'primary',
-  numeric = 'normal',
+  evaluation = 'muted',
   children,
   ...props
 }: BadgeProps) => {
-  const colors = vars.colors.feedback[evaluation];
+  const colors = vars.colors.informational[evaluation];
 
   return (
     <span
@@ -75,23 +88,12 @@ export const Badge = ({
       data-evaluation={evaluation}
       style={
         {
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          // Compact chip: half the control block-inset and a tight line
-          // height keep the chip at ~22-24px — reference-grade badges are
-          // dense annotations, not controls (P3 slice 3).
-          paddingBlock: `calc(${vars.spacing.inset.control.sm} / 2)`,
-          paddingInline: vars.spacing.inset.control.md,
-          borderRadius: vars.radii.control,
-          borderWidth: vars.border.outline.surface.width,
-          borderStyle: vars.border.outline.surface.style,
+          // The box is shared with `StatusLight` — same physical chip,
+          // different meaning. Only the colours below are Badge's own.
+          ...CHIP_BOX,
           borderColor: colors?.border?.default,
           color: colors?.text?.default,
           backgroundColor: colors?.background?.default,
-          fontVariantNumeric:
-            numeric === 'tabular' ? 'tabular-nums' : undefined,
-          ...(vars.text.label.sm as React.CSSProperties),
         } as React.CSSProperties
       }
     >

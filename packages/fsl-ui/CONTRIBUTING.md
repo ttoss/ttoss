@@ -376,7 +376,7 @@ Anchors: `package.json` (`react-aria-components`), `tests/unit/tests/racCanary.t
 
 ### ADR-004: `@ttoss/forms` interop is a documented recipe, not an adapter entry point
 
-Status: accepted (2026-07-15)
+Status: superseded-by:ADR-027 (2026-08-02)
 Tags: forms, integration, react-hook-form
 
 Decision: fsl-ui controls connect to the monorepo's form standard (`@ttoss/forms` = react-hook-form + Zod) through the plain react-hook-form `Controller`, mapping `field.value/onChange/onBlur` and `fieldState.invalid` onto the controls' controlled props (`isInvalid`, `value`, `onChange`). The pattern lives as an integration test (`tests/unit/tests/formsBridge.test.tsx`) that consumes `@ttoss/forms` as a devDependency — no `@ttoss/fsl-ui/forms` entry ships.
@@ -725,3 +725,377 @@ Re-litigation answers:
 - "Why is the submitted value masked rather than raw digits?" → the field submits what the user sees, which is what every server-side Brazilian-format consumer already parses; a hidden raw twin doubles the FormData surface for a one-line strip at the boundary. Reverse it only with a consumer whose backend rejects masked input and cannot strip.
 - "Why no `br.currency`?" → it is not a fixed pattern (see (2)); adding it to this registry would re-implement Intl badly. `NumberField` is the answer, documented in the registry header.
 - "Why does the glyph not render on `RadioGroup`/`CheckboxGroup`/`Switch`?" → no field box to sit in: the groups' members mark themselves and `Switch`'s control _is_ the mark. Their message carries the valence — the named-exception rows in the class guard.
+
+### ADR-027: The form bridge names its upstreams directly; fsl-ui takes no form-library dependency
+
+Status: accepted (2026-08-02)
+Tags: forms, integration, react-hook-form, supersedes:ADR-004, F-005
+
+Decision: the react-hook-form recipe imports `react-hook-form`, `zod` and
+`@hookform/resolvers/zod` by name. `@ttoss/forms` leaves this package entirely,
+including as a devDependency.
+
+ADR-004's substance survives untouched — the bridge is a documented recipe
+living as an integration test, no adapter entry ships, and consumers wire
+`Controller` by hand. What it got wrong is one line: it named `@ttoss/forms` as
+"the monorepo's form standard" and therefore as the import site. That package
+has a single entry which also exports the legacy `FormField*` suite, carrying
+`@ttoss/ui`, `@ttoss/components` and `@ttoss/react-i18n` as peers — so an app
+following the documented recipe inherited the entire legacy stack to obtain four
+re-exported symbols (F-005).
+
+**The premise also expired.** `@ttoss/forms` is legacy alongside `@ttoss/ui` and
+is being discontinued (owner ruling, `INTERNAL/FORMS.md` § Ground rules), and
+fsl-ui takes no form-library dependency ever. The bridge is not how fsl-ui does
+validation — React Aria's native validation is the default and needs no library
+at all, which is what the Studio runs on. This recipe exists for an app that
+_already_ runs react-hook-form, and such an app has those packages directly.
+
+Rejected: keep importing from `@ttoss/forms` and document the peer cost — the
+cost is unavoidable at the import, not a documentation problem; add a lean
+subpath (`@ttoss/forms/core`) — changes a package that is being discontinued, to
+serve a re-export nobody needs once the recipe names its upstreams.
+Cost: one more devDependency here (`@hookform/resolvers`), where a single
+workspace import used to cover three.
+Anchors: `tests/unit/tests/formsBridge.test.tsx`, `INTERNAL/FORMS.md`,
+`docs/fsl-studio/FRICTION.md` F-005.
+
+Re-litigation answers:
+
+- "Should fsl-ui ship a react-hook-form adapter now?" → no, and less than
+  before: the default path uses no form library, so an adapter would serve a
+  minority integration.
+- "Does this make react-hook-form a dependency of fsl-ui?" → no. It is a
+  devDependency of the test that proves the recipe; the package ships no import
+  of it.
+
+### ADR-028: A part that paints no surface borrows the stratum's ink; `consequence` selects it
+
+Status: accepted (2026-08-03)
+Tags: colors, taxonomy, consequence, F-029, closes:F-029
+
+Decision: **a part that paints no surface of its own takes its ink from the
+surface it renders on, and when that part carries a valence, `consequence` is
+what selects it.** Implemented once in `tokens/consequenceInk.ts`, written into
+`CONTRACT.md` §3.3, and bounded three ways: the quiet rung only
+(`evaluation="muted"`, which `colors.md` names as the system's idiom for "no
+fill"), the `color` dimension only, and yielding to the host's own cascade at
+`disabled`, `active` and `expanded`.
+
+This is not a new idea in the system. §3.2's validation message has always read
+`input.negative.text` and rendered on whatever informational surface the form
+sits on; F-036 built the contrast inventory that makes such a pairing
+verifiable. ADR-028 is that pattern stated as a rule and given a second family.
+
+**The 2026-08-02 governance recommendation is retracted.** It proposed splitting
+"static ink on a coloured fill" out of `{ux}.{valence}.text`, freeing the
+dimension to be the standalone valence ink the loudness ladder promises. Stress-
+tested against a second theme, it is circular: the ink is only static while the
+fill is known, and `action.primary` (neutral.1000 light / neutral.0 dark),
+`action.accent` (brand.500) and `feedback.caution` (a yellow) do not share one.
+The split immediately needs per-role on-fill ink — one token per role per mode —
+which is `{ux}.{role}.text` renamed, at the cost of every published Action and
+Feedback label.
+
+What shipped is the proposal's own alternatives (a) and (b), which it costed in
+a line each and dismissed. Neither works alone. (b) supplies the licence, (a)
+supplies the trigger. (a)'s objection — "a fourth axis on a three-axis token
+path" — does not apply, because nothing is added to the path:
+`informational.negative.text.default` already exists, and `consequence` is
+already declared per entity, already emitted as `data-consequence`, already
+driving `ConfirmationDialog`'s arming. It gains reach, not vocabulary. (b)'s
+objection — "it weakens the entity→ux alignment the contract test enforces" —
+was real, and is answered by making the crossing **licensed and singular**: the
+read lives in one module, and the contract suite fails any component that
+reaches for `informational.negative` by hand, or that emits `data-consequence`,
+paints from `vars.colors.action`, and does not route its ink through that
+module. `Menu.tsx` would previously have passed such a read by coincidence,
+because it declares an Overlay part and the alignment test unions the contexts.
+
+The engaged-state bound is measured, not stylistic. `action.muted` materialises
+a real fill on engagement and the theme lifts its own ink to clear it — in the
+dark alternate the fill is `neutral.500` and the muted ink goes pure white. A
+fixed valence ink cannot follow: rest reads 10.02 light / 9.53 dark and hover
+9.43 / 5.72, while the engaged fill reads **2.65**, under every floor. `disabled`
+yields for a different reason — unavailability outranks valence, the same ground
+WCAG 2.2 §1.4.3 exempts it on.
+
+Enabling refactor: `resolveStateKey` is split out of `resolveInteractiveStyle`,
+so "which state is the host painting" has one answer derived from
+`STATE_PRIORITY` rather than two readers guessing whether `isPressed` means
+`active` or `pressed`. No behaviour change.
+
+Rejected: the static-ink split (circular, see above); a `negativeQuiet`
+evaluation (grows the taxonomy for one case and reads as a variant axis the
+system does not have); `action.negative.textOnSurface` (a dimension-registry
+change — governance — for what an existing token already holds); tinting the
+border too (the quiet rung's border mirrors its background by construction, so
+this invents an outlined-destructive language and needs its own non-text
+pairing); extending the tint to `secondary` (the rule is "paints no surface",
+and `colors.md` gives that meaning to `muted` alone — widening later is
+additive, retracting is breaking).
+
+Cost: `consequence` is no longer colour-free, which four JSDoc blocks and
+`llms.txt` asserted. Every one of them is corrected rather than left ambiguous,
+because "drives mechanism, not colour" was load-bearing guidance. The rule's
+surface inventory is now a thing fsl-theme must keep passing — a theme that
+retunes `action.muted`'s hover fill will fail `quiet destructive control` before
+it ships, which is the intent.
+
+Anchors: `src/tokens/consequenceInk.ts`, `src/tokens/CONTRACT.md` §3.3,
+`tests/unit/tests/consequenceInk.test.ts`,
+`tests/unit/tests/components.contract.test.tsx` (§4c),
+`packages/fsl-theme/tests/unit/tests/theme/families/colors.test.ts`
+(`quiet destructive control`), `docs/fsl-studio/FRICTION.md` F-029.
+
+Re-litigation answers:
+
+- "Why not just let authors use `evaluation="negative"` on a menu row?" → it
+  fills the row solid red. In `action` the valence **is** the filled destructive
+  command; a menu row is a peer of "Duplicate" and "Rename". Both shapes are
+  real and the system now expresses both.
+- "Does this mean `consequence` is a colour prop?" → no. It carries colour in
+  exactly one case, on the one rung that has no surface to carry it. On every
+  filled rung the fill is the voice and `evaluation` owns it.
+- "Why does the tint disappear when I press the row?" → the quiet rung paints a
+  real fill there and the theme raises its own ink to clear it; the valence ink
+  measures 2.65:1 against that fill. The press lasts a moment and the row is
+  already tinted at rest and on hover.
+- "Can a Structure or Feedback part use this?" → not today. The helper is scoped
+  to parts that read `vars.colors.action`, because that is where the evidence
+  is. A second family needs a consumer and its own inventory entry.
+
+### ADR-029: The consequence ink moves to the cross-cutting token; the licensed crossing retires
+
+Status: accepted (2026-08-04)
+Tags: colors, consequence, cross-cutting, refines:ADR-028, fsl-theme ADR-025
+
+Decision: `resolveConsequenceInk` reads `vars.consequence.destructive.ink` —
+the cross-cutting token fsl-theme ADR-025 mints under model.md §6 — instead of
+`vars.colors.informational.negative.text.default`. Everything behavioural in
+ADR-028 stands unchanged: the rule ("a part that paints no surface takes its
+ink from the surface it renders on; `consequence` selects it"), the bounds (the
+quiet rung, `color` only, yielding at `disabled`/`active`/`expanded`), the
+measurements, the consumers, the retraction of the static-ink split. What
+changes is the **address** of the ink, and with it the one cost ADR-028
+conceded without an answer.
+
+ADR-028 answered the entity→ux objection by making the crossing licensed and
+singular. That was the right mitigation and the wrong final state: model.md §6
+already provides the mechanism for exactly this question — "a system-wide
+default that no `{ux}` owns" — with the focus ring as the typed precedent, and
+the ring is this ink's structural twin (both render against the stratum, not a
+fill; that is why one system-wide colour serves). Read through §6, the day-old
+"unprecedented cross-ux read" was a cross-cutting token that hadn't been minted
+yet. Minting it means the §1 alignment goes back to zero exceptions, the
+contract test's job simplifies from "keep the crossing singular" to "keep the
+conditional read inside the helper that owns its bounds", and a theme can
+retune the destructive ink without touching validation messages (the base alias
+keeps them identical by default).
+
+Resolved values are byte-identical in both modes and both bundles — the token
+aliases the exact source the helper read before — so no visual change, no
+measurement invalidated, no Studio or story edit. fsl-theme's `quiet
+destructive control` inventory now pairs the token itself, auditing what
+components actually render even after a theme repoints the alias.
+
+Rejected: leaving ADR-028's read in place (guarded, but spends a constitutional
+exception the model prices at one registered token); widening component access
+to `vars.consequence.*` (the read stays confined to the helper — unlike the
+ring it is conditional, and the bounds live where the condition does).
+
+Cost: none at the component surface; fsl-ui's floor version of `@ttoss/fsl-theme`
+must include the token, which the workspace guarantees and the `vars` typing
+enforces at compile time.
+
+Anchors: `src/tokens/consequenceInk.ts`, `src/tokens/CONTRACT.md` §1
+(cross-cutting table) + §3.3, `tests/unit/tests/components.contract.test.tsx`
+(§4c), fsl-theme ADR-025, model.md §6, colors.md § Cross-cutting.
+
+Re-litigation answers:
+
+- "Is this a behaviour change?" → no. Same resolved hex in every mode and
+  bundle; only the CSS custom property a component emits changes
+  (`--tt-consequence-destructive-ink`). Hosts targeting the old var name in
+  overrides were targeting a token no component documented reading.
+- "Why keep the helper if the token is now lawful to read?" → the ring is
+  unconditional; this ink is not. The helper owns the rung and the yield set,
+  and §4c fails any component that reads the token directly.
+
+### ADR-030: The surface contract — hosts publish what they paint; the quiet rung follows at rest
+
+Status: accepted (2026-08-04)
+Tags: colors, surfaces, F-024, CONTRACT §3.4, closes:F-024
+
+Decision: the element that paints a **hosting surface** publishes it on
+`--fsl-surface` (`publishSurface(fill)` — the fill plus its publication), and
+the quiet rung's resting `background`/`border` read
+`var(--fsl-surface, <own token>)` (`resolveSurfaceBoundStyle`). Outside a
+publisher nothing changes — the fallback is the exact value the rung painted
+before. Inside one, the control borrows the real composite the cascade
+produced, which is always one of the opaque values fsl-theme audits.
+
+The owner ruling (2026-07-29) is kept whole, not relaxed: a component always
+paints; no `transparent`; no omitted background; every declared token stays an
+auditable hex; the theme's own `muted.text ↔ background` pairs stay in the
+suite untouched. What the ruling called the lawful fix — "a stratum-aware
+opaque value" — turned out to be impossible to mint **in the theme**, by the
+theme's own doctrine: `colors.md` § Stacking pays depth in `elevation.tonal.*`
+over one shared background token, so the effective surface is a composite "no
+colour token names or can name" (F-024's 2026-07-29 analysis). And the
+consumer that finally fired shows the class is wider than tonal strata anyway:
+the Studio's table row paints `input.primary` — another family's fill — under
+the quiet `Remove`. Only the painter knows the surface. So the stratum-aware
+value lives where the knowledge lives: published by the painter, consumed by
+the rung, opaque end to end.
+
+Bounds, each load-bearing:
+
+- **Resting state only.** Engaged fills are how a quiet control materialises;
+  they stay absolute.
+- **The muted rung only.** Every other rung's fill is its voice.
+- **A publisher's transient states do not republish.** The first draft had
+  rows publish whatever fill the render resolved — elegant, and the inventory
+  killed it: the dark row hover fill measures 2.65:1 against the destructive
+  ink. A row paints its resolved fill and publishes its resting one (spread
+  order does the work).
+- **Selection fills never publish.** A selected row inverts to near-white in
+  dark, where the muted ink measures 1.5–1.8:1 — seeded into the inventory as
+  a mutation and caught. A quiet control on a selected row keeps its own
+  legible pill (today's rendering).
+- **Voiced fills never publish.** A toast's red, and a Menu's or Box's
+  non-primary informational fill, are voices — the dark muted fill fails the
+  destructive ink's floor. Only the page-like `primary` voice and Surface's
+  tonal strata publish.
+
+`--fsl-surface` deliberately sits in the §7 host-facing namespace: a host
+application that paints its own panel publishes the same property and every
+quiet control inside follows, with no fsl-ui change.
+
+Guards: fsl-theme's cross-role inventory gains `quiet control on published
+surfaces` — the quiet ink against every publishable surface (the
+informational strata and the row family's resting fill), at the rung's own
+floor, per bundle and per mode — and the destructive-ink entry gains the row
+surface for the same reason.
+fsl-ui's `surfaceScope` suite pins both halves: publishers publish what they
+painted, consumers read the var at rest and their own fills everywhere else.
+
+Rejected: minting the value in the theme (cannot be expressed — see above);
+`transparent` or omission (the ruling, twice over); publishing from Feedback
+fills and selection fills (measured illegible — the exclusions are the design);
+re-scoping the `--tt-colors-action-muted-*` theme variables per subtree (a
+component doing the theme's job, N variables where one property suffices, and
+`--tt-` fallbacks are forbidden by contract test); extending the ink to follow
+the surface as well (an ink needs a _pairing_, not a variable — the inventory
+is what makes the fill-follow lawful, and no equivalent exists for arbitrary
+host inks).
+
+Cost: `Surface` and painted `Box` now emit `backgroundColor` + the property
+where they emitted a `background` shorthand — behaviour-identical, assert-
+visible. The publisher list is a convention future surface components must
+join (CONTRACT §3.4 states it; the surfaceScope suite holds the ones that
+exist). The known limit stays known: on a mid-tone host surface the rung's
+absolute hover fill can coincide with the host (dark row hover), where hover
+feedback is carried by the cursor and the press step — unchanged from before.
+
+Anchors: `src/tokens/surfaceScope.ts`, CONTRACT §3.4,
+`tests/unit/tests/surfaceScope.test.tsx`, fsl-theme `colors.test.ts`
+(`quiet control on published surfaces`), `docs/fsl-studio/FRICTION.md` F-024.
+
+Re-litigation answers:
+
+- "Why does the quiet control still show a pill on a selected row?" → because
+  the alternative is worse and measured: the selection fill inverts, the muted
+  ink fails against it, and an illegible control is a worse outcome than a
+  visible chip. The selection fill is a voice.
+- "Can a host make its own panel behave like a stratum?" → yes — publish
+  `--fsl-surface: <your fill>` on the panel. That is why the property lives in
+  the host-facing namespace.
+- "Why not follow the surface on hover too?" → the hover fill is the rung
+  _materialising_ — the affordance itself. Following the surface there would
+  make a quiet control permanently invisible.
+
+### ADR-031: The two kinds of surface — occluding and embedded — and what each owes
+
+Status: accepted (2026-08-04)
+Tags: colors, spacing, overlay, P3, F-044, F-045, F-046, F-047, closes:F-044, closes:F-045, closes:F-046, closes:F-047
+
+Decision: the package distinguishes a surface that **covers content** from one
+that sits **in the flow**, and the distinction drives three things — the edge,
+the padding, and the size envelope (CONTRACT §3.5, and §3.4's companion step).
+
+|         | Occluding                                                                                                    | Embedded                                 |
+| ------- | ------------------------------------------------------------------------------------------------------------ | ---------------------------------------- |
+| Members | popover, menu, tooltip, dialog panel, drawer panel, toast                                                    | `Surface`, `Box`, dividers, field frames |
+| Edge    | `vars.overlay.outline` via `OCCLUDING_OUTLINE`                                                               | `{ux}.{role}.border.*`, unchanged        |
+| Padding | `inset.surface.xs` (fixed, anchored) — except `Dialog`, which frames content rather than rows and keeps `md` | `inset.surface.{sm,md,lg}` (fluid)       |
+| Size    | a floor as well as a ceiling                                                                                 | caller-chosen                            |
+
+**The root cause behind all four findings is one sentence: `elevation` is the
+only family that knows a surface floats.** Every other family treats "surface"
+as one thing, so an occluding surface inherited an embedded one's hairline
+(F-044), its page-scaled and fluid padding (F-045), and had no shared notion of
+a size envelope at all, which is why each component invented its own literals
+(F-046, F-047).
+
+What each finding cost, measured rather than argued:
+
+- **F-044** — an overlay's fill is byte-identical to the page by design, and its
+  only edge read **1.31:1 light / 1.67:1 dark** against that page, while
+  `colors.md` § Stacking assigns exactly that edge a ≥3:1 duty _"even when
+  shadow is suppressed (high-contrast preferences, print)"_. Under
+  `forced-colors` a menu was an unbounded rectangle of page-coloured text. The
+  fix is a cross-cutting token (fsl-theme ADR-027), not a retune of every
+  `informational` edge — and it costs nothing that existed: all three
+  informational roles resolved the _same_ border value in both modes, so
+  `evaluation` never varied an overlay's edge.
+- **F-045** — the menu's gutter was 24px around fixed 32px rows (34% of the
+  surface's height); after, 6px and 13%, and the surface fell 146px → 110px for
+  the same three rows. The mechanism half is ADR-022's own ruling one scale out:
+  the gutter moved 16 → 24px across viewports while every row stayed 32.0px.
+- **F-046** — `Dialog` had a max width and height and no minimum, so a short
+  confirm collapsed to its content and the action row became the widest thing
+  in it. `--fsl-dialog-min-width` now ships beside the two knobs it pairs with,
+  defaulting to the reference's 288px.
+- **F-047** — `Tooltip` capped at 280px against a 160px desktop reference. It
+  takes **200px**, the reference's mobile value, because our label type is a
+  step larger than theirs, so the same phrase needs the wider of their two
+  numbers to hold the same line count.
+
+Guarded by `tests/unit/tests/occludingSurface.test.tsx`, which pins **both**
+sides of the discriminant: every occluding surface reads the boundary, and an
+embedded one does not. Without the second half, "put the boundary everywhere"
+would pass — and that is exactly the theme-wide retune this contract exists to
+avoid.
+
+Verified in Chromium off the fsl Storybook, both modes: menu 192×110 with a
+`rgb(111,111,111)` boundary in light and `rgb(208,208,208)` in dark, tooltip a
+bounded hint chip instead of a white slab, Dialog unchanged at its `md` inset.
+
+Rejected: a `size` prop on the overlays (CONTRACT §4 — a different envelope is
+a different semantic identity, and these are the same one); per-component
+boundary colours (the boundary is infrastructure, one system colour, like the
+ring); giving `Tooltip` `inset.control.md` on the inline axis to match the
+reference's 6/12 pair (an entity-row violation — Overlay's §1 row is
+`inset.surface`, and the reference's own anchored padding is uniform anyway).
+
+Cost: the six occluding components stop reading their role's border. That is a
+visible change (the edge is now defined rather than nearly invisible) and it is
+the point; nothing about the `evaluation` prop's other duties moves.
+
+Anchors: `src/tokens/occludingSurface.ts`, `src/tokens/CONTRACT.md` §3.5 + §1
+cross-cutting table, `tests/unit/tests/occludingSurface.test.tsx`, fsl-theme
+ADR-027, `docs/fsl-studio/FRICTION.md` F-044…F-047.
+
+Re-litigation answers:
+
+- "Should `Surface level="overlay"` take the boundary?" → no, and that is the
+  discriminant working: `Surface` is the embedded primitive. A host that wants
+  a floating panel composes `Popover`/`Drawer`, which occlude by construction.
+- "Why does the Dialog keep 36px?" → it frames prose and a title, not rows. The
+  anchored step is for a gutter beside children that carry their own inset.
+- "What about the overlays painting the flat stratum's fill?" → real, separate,
+  and filed as F-048: `Surface` reads `elevation.tonal.*` and no overlay does,
+  so two components claiming the same stratum paint different colours in dark.
+  It cannot close F-044 (1.67:1 at best) and it changes what `evaluation` drives
+  on an Overlay, so it is its own decision.

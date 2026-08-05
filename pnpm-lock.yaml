@@ -558,7 +558,7 @@ importers:
         version: link:../postgresdb
       jest:
         specifier: ^30.4.2
-        version: 30.4.2(@types/node@24.12.4)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.15.40(@swc/helpers@0.5.23))(@types/node@24.12.4)(typescript@6.0.3))
+        version: 30.4.2(@types/node@26.1.1)(babel-plugin-macros@3.1.0)(ts-node@10.9.2(@swc/core@1.15.40(@swc/helpers@0.5.23))(@types/node@26.1.1)(typescript@6.0.3))
       tsdown:
         specifier: ^0.22.2
         version: 0.22.2(oxc-resolver@11.19.1(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0))(tsx@4.22.3)(typescript@6.0.3)
@@ -840,7 +840,7 @@ importers:
         version: 8.21.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@theme-ui/css':
         specifier: ^0.17.4
-        version: 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))
+        version: 0.17.4(@emotion/react@11.14.0(react@19.2.6))
       '@types/react-modal':
         specifier: ^3.16.3
         version: 3.16.3
@@ -1247,6 +1247,9 @@ importers:
         specifier: ~1.19.0
         version: 1.19.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
     devDependencies:
+      '@hookform/resolvers':
+        specifier: ^5.2.2
+        version: 5.4.0(react-hook-form@7.76.1(react@19.2.6))
       '@testing-library/react':
         specifier: ^16.3.2
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -1256,9 +1259,6 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
-      '@ttoss/forms':
-        specifier: workspace:^
-        version: link:../forms
       '@ttoss/test-utils':
         specifier: workspace:^
         version: link:../test-utils
@@ -24565,7 +24565,7 @@ snapshots:
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.15)(react@19.2.6)
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.6))
       deepmerge: 4.3.1
       react: 19.2.6
 
@@ -24576,7 +24576,7 @@ snapshots:
       '@styled-system/should-forward-prop': 5.1.5
       '@styled-system/space': 5.1.2
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.6))
       '@theme-ui/theme-provider': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
       '@types/styled-system': 5.1.25
       react: 19.2.6
@@ -24584,11 +24584,11 @@ snapshots:
   '@theme-ui/core@0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.15)(react@19.2.6)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.6))
       deepmerge: 4.3.1
       react: 19.2.6
 
-  '@theme-ui/css@0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))':
+  '@theme-ui/css@0.17.4(@emotion/react@11.14.0(react@19.2.6))':
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.15)(react@19.2.6)
       csstype: 3.2.3
@@ -24597,13 +24597,13 @@ snapshots:
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.15)(react@19.2.6)
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.6))
       react: 19.2.6
 
   '@theme-ui/match-media@0.17.4(@theme-ui/core@0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6))(@theme-ui/css@0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6)))(react@19.2.6)':
     dependencies:
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.6))
       react: 19.2.6
 
   '@theme-ui/theme-provider@0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)':
@@ -24611,7 +24611,7 @@ snapshots:
       '@emotion/react': 11.14.0(@types/react@19.2.15)(react@19.2.6)
       '@theme-ui/color-modes': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.6))
       react: 19.2.6
 
   '@tmcp/adapter-valibot@0.1.6(tmcp@1.19.4(typescript@6.0.3))(valibot@1.2.0(typescript@6.0.3))':
@@ -35139,7 +35139,7 @@ snapshots:
       '@theme-ui/color-modes': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
       '@theme-ui/components': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(@theme-ui/theme-provider@0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6))(react@19.2.6)
       '@theme-ui/core': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
-      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))
+      '@theme-ui/css': 0.17.4(@emotion/react@11.14.0(react@19.2.6))
       '@theme-ui/global': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
       '@theme-ui/theme-provider': 0.17.4(@emotion/react@11.14.0(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)
       react: 19.2.6

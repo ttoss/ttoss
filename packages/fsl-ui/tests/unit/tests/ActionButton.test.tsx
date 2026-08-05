@@ -62,6 +62,66 @@ describe('ActionButton — identity and labelling', () => {
   });
 });
 
+describe('ActionButton — the quiet destructive posture (CONTRACT §3.3)', () => {
+  test('a quiet destructive action tints its ink and keeps its rung', () => {
+    // The F-029 case: a peer among its siblings, so the fill stays the quiet
+    // rung's and only the ink says what activating it does.
+    render(
+      <ActionButton evaluation="muted" consequence="destructive">
+        Remove
+      </ActionButton>
+    );
+    const { style } = getRoot();
+
+    expect(style.color).toBe(vars.consequence.destructive.ink);
+    // The quiet resting fill follows the published surface, with the rung's
+    // own token as the fallback (CONTRACT §3.4).
+    expect(style.backgroundColor).toBe(
+      `var(--fsl-surface, ${vars.colors.action.muted!.background!.default})`
+    );
+  });
+
+  test('the tint reaches the glyph through currentColor, not a second read', () => {
+    render(
+      <ActionButton
+        evaluation="muted"
+        consequence="destructive"
+        icon={<Icon intent="action.close" />}
+        aria-label="Remove"
+      />
+    );
+
+    // The Icon paints no colour of its own (icon-system.md); the root's `color`
+    // is the only place the valence is written.
+    const icon = getRoot().querySelector<HTMLElement>('[data-part="icon"]');
+    expect(icon?.style.color).toBe('');
+  });
+
+  test('a filled rung is left to its fill — the valence is already the surface', () => {
+    render(
+      <ActionButton evaluation="negative" consequence="destructive">
+        Delete
+      </ActionButton>
+    );
+
+    expect(getRoot().style.color).toBe(
+      vars.colors.action.negative!.text!.default
+    );
+  });
+
+  test('disabled yields the tint — unavailability outranks valence', () => {
+    render(
+      <ActionButton evaluation="muted" consequence="destructive" isDisabled>
+        Remove
+      </ActionButton>
+    );
+
+    expect(getRoot().style.color).toBe(
+      vars.colors.action.muted!.text!.disabled
+    );
+  });
+});
+
 describe('ActionButton — the utility silhouette', () => {
   test('wears the control radius, label type and tight control inset', () => {
     render(<ActionButton>Edit</ActionButton>);

@@ -12,7 +12,7 @@
   "author": "Ennio Lopes <enniolopes@gmail.com>",
   "type": "module",
   "scripts": {
-    "build": "storybook build --quiet && pnpm run generate-llms",
+    "build": "tsc --noEmit -p tsconfig.json && storybook build --quiet && pnpm run generate-llms",
     "deploy": "carlin deploy static-app",
     "dev": "storybook dev -p 6007",
     "generate-llms": "storybook-llms-extractor --config llms.config.mjs",

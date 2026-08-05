@@ -13,6 +13,7 @@ import {
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
+import { OCCLUDING_OUTLINE } from '../../tokens/occludingSurface';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import { Icon } from '../Icon';
 
@@ -60,7 +61,10 @@ const buildToastRootStyle = (c: FeedbackColors): React.CSSProperties => {
     borderRadius: vars.radii.surface,
     borderWidth: vars.border.outline.surface.width,
     borderStyle: vars.border.outline.surface.style,
-    borderColor: c?.border?.default,
+    // A toast floats over content, so it owes the same boundary as every
+    // other occluding surface (CONTRACT §3.5) — its own filled valences keep
+    // their fill, which is what the `feedback` role still drives.
+    borderColor: OCCLUDING_OUTLINE,
     backgroundColor: c?.background?.default,
     color: c?.text?.default,
     boxShadow: vars.elevation.surface.raised,

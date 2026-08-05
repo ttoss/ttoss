@@ -22,6 +22,24 @@ interface CoreBorderWidths {
 }
 
 /**
+ * Core line offsets — the gap between a box's edge and a line drawn outside it.
+ *
+ * One member, because the focus ring is the only line the system draws outside
+ * the box. Named for its canonical use site like the width scale beside it, and
+ * defended by the same argument (borders.md § Naming note): the name carries the
+ * relationship a purely ordinal key would lose.
+ *
+ * Kept **independent of `width.focused`** even though the base theme sets both
+ * to the same value. The reference system does the same — `focus-indicator-gap`
+ * and the indicator thickness are two tokens that happen to agree — because a
+ * theme retunes them for different reasons: thickness for prominence, gap for
+ * how much the ring breathes off the control.
+ */
+interface CoreBorderOffsets {
+  focused: RawValue;
+}
+
+/**
  * Core line styles — intent-free primitives.
  * Default to `solid`; use `dashed` or `dotted` only when the pattern truly requires it.
  */
@@ -32,10 +50,11 @@ interface CoreBorderStyles {
   none: RawValue;
 }
 
-/** Intent-free line primitives — width and style only. */
+/** Intent-free line primitives — width, style, and outside-the-box offset. */
 export interface CoreBorder {
   width: CoreBorderWidths;
   style: CoreBorderStyles;
+  offset: CoreBorderOffsets;
 }
 
 /**

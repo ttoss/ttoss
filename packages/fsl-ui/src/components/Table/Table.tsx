@@ -18,6 +18,7 @@ import {
 import type { ComponentMeta } from '../../semantics';
 import { FOCUS_RING_INSET, focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import { publishSurface } from '../../tokens/surfaceScope';
 import { Icon } from '../Icon';
 
 /**
@@ -123,7 +124,8 @@ export const Table = (props: TableProps) => {
         borderWidth: vars.border.outline.surface.width,
         borderStyle: vars.border.outline.surface.style,
         borderColor: surface?.border?.default ?? 'transparent',
-        backgroundColor: surface?.background?.default,
+        // A hosting surface publishes itself (CONTRACT §3.4).
+        ...publishSurface(surface?.background?.default),
         color: surface?.text?.default,
       }}
     />
@@ -282,6 +284,12 @@ export const TableRow = <T extends object = object>(
           transitionProperty: 'background-color, color',
           transitionDuration: vars.motion.feedback.duration,
           transitionTimingFunction: vars.motion.feedback.easing,
+          // The row paints its resolved fill and publishes its *resting* one
+          // (CONTRACT §3.4): transient row states do not republish — measured,
+          // the dark row hover fill fails the destructive ink's floor — and a
+          // selection fill is a voice besides. The spread order makes the
+          // dynamic paint win while the publication stays at rest.
+          ...publishSurface(c?.background?.default),
           backgroundColor: resolveInteractiveStyle(c?.background, {
             isDisabled,
             isSelected,

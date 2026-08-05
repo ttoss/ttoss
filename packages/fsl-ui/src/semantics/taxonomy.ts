@@ -253,6 +253,11 @@ export const STATE_PRIORITY = [
   { flag: 'isInvalid', state: 'invalid' },
   { flag: 'isExpanded', state: 'expanded' },
   { flag: 'isIndeterminate', state: 'indeterminate' },
+  // `current` outranks `checked` because it is the more specific claim about
+  // the same kind of fact: a tab representing the live route is both selected
+  // and current (colors.md § Picking a state), and the location is what the
+  // user needs to see. Both sit above the transient states below.
+  { flag: 'isCurrent', state: 'current' },
   { flag: 'isSelected', state: 'checked' },
   { flag: 'isFocusVisible', state: 'focused' },
   { flag: 'isPressed', state: 'active' },

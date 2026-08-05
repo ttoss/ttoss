@@ -588,6 +588,56 @@ describe('contract: entity → ux-context alignment', () => {
 });
 
 // ---------------------------------------------------------------------------
+// 4c. The consequence ink is read in exactly one module, with its bounds
+//
+// CONTRACT.md §3.3: a part that paints no surface borrows the stratum's ink,
+// and when it carries a valence `consequence` selects it. The ink is the
+// cross-cutting `vars.consequence.destructive.ink` (model.md §6) — a lawful
+// read like the focus ring's colour — but unlike the ring it is conditional
+// (one rung, a yield set), so the read is confined to `consequenceInk.ts`
+// where those bounds live, and components route through it.
+// ---------------------------------------------------------------------------
+
+describe('contract: consequence ink (§3.3)', () => {
+  const CONSEQUENCE_INK = resolve(
+    __dirname,
+    '../../../src/tokens/consequenceInk.ts'
+  );
+  const helperSource = readFileSync(CONSEQUENCE_INK, 'utf8');
+
+  test('the helper is the module that reads the destructive ink', () => {
+    expect(stripComments(helperSource)).toContain(
+      'vars.consequence.destructive.ink'
+    );
+  });
+
+  test.each(componentSources)(
+    '%s: does not read the ink outside the helper',
+    (_path, source) => {
+      const stripped = stripComments(source);
+      // Reading the token directly skips the bounds (which rung, which
+      // states) that make it legible — the helper is where they live.
+      expect(stripped).not.toContain('vars.consequence');
+      // And reaching for another family's negative ink is the F-029 shape
+      // reappearing; no component reads it for any purpose.
+      expect(stripped).not.toContain('vars.colors.informational.negative');
+    }
+  );
+
+  test.each(componentSources)(
+    '%s: an Action that declares a consequence resolves its ink through the helper',
+    (_path, source) => {
+      const stripped = stripComments(source);
+      const declaresConsequence = stripped.includes('data-consequence={');
+      const paintsAction = stripped.includes('vars.colors.action');
+      if (!declaresConsequence || !paintsAction) return;
+
+      expect(stripped).toContain('resolveConsequenceInk(');
+    }
+  );
+});
+
+// ---------------------------------------------------------------------------
 // 5. toCssVarName prefix convention
 // ---------------------------------------------------------------------------
 

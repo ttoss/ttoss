@@ -707,3 +707,308 @@ Re-litigation answers:
   is the fluidity ADR-022 removed; and a validated equality would forbid a theme
   from choosing a control inset the engine's bound does not happen to hit. The
   agreement between the two scales is a base-theme choice, and the docs say so.
+
+### ADR-024: The border pairing is audited per mode, and the inventory is split by the rule that made it unreadable
+
+Status: accepted (2026-07-31)
+Tags: colors, contrast, validation, dark mode, F-027, F-036, ADR-015
+
+Decision: the border-vs-background guard iterates every supported mode (not the
+base bundle alone), and its known-violations list splits into two asserted sets —
+**mirrored** (border resolves to its own background) and **soft** (border differs
+and is still below AA Large by design) — with `disabled` contexts excluded
+outright. A third guard pairs a part's ink against the surface it actually
+renders on when that surface belongs to another role.
+
+`colors.md` has always required that "any supported mode fails the same required
+pairings" (Error #4). The text pairing implemented it; the border pairing did
+not, and the dark alternate ran unaudited for as long as it has existed. It hid
+one class of defect the whole time: the alternate remaps references by hand, so
+it can remap a role's `background` subtree and leave its `border` subtree at base
+values. That is not hypothetical — it is what the first run of this guard found
+(see the ROADMAP entry for the four remaps it forced).
+
+The split is what makes the per-mode inventory reviewable rather than a paste.
+A single below-threshold list is ~95 names per mode, two thirds of which are
+`border === background` and carry no judgement; the entries that do carry one
+are invisible among them. Splitting also makes the guard **stronger**: a role
+that stops mirroring its background but stays under 3:1 changes no ratio and was
+previously undetectable, because both states satisfy "below AA Large" — the
+single case where the old inventory could not tell a design from a regression.
+
+Rejected: paste the dark contexts into the existing set — F-027's own objection,
+a guard that documents nothing and freezes whatever dark happens to be; derive
+the alternate's inventory from the base's — the alternate is authored by hand, so
+a derived list asserts the wrong thing and hides exactly the divergences this
+exists to catch; let `fsl-ui` own the cross-role assertion — it cannot resolve
+colours in jsdom, and the theme owns both ends of the pairing.
+Cost: four inventories instead of two, and a reviewer must read the two rules
+before concluding that an absent context is unguarded rather than exempt.
+Anchors: `tests/unit/tests/theme/families/colors.test.ts`,
+`docs/.../families/colors.md#validation`, `docs/fsl-studio/FRICTION.md` F-027/F-036.
+
+Re-litigation answers:
+
+- "Why is `disabled` gone from the border inventory?" → WCAG 2.2 §1.4.3 exempts
+  disabled UI, and the text pairing beside it always assumed that. The border
+  pairing was enshrining ~14 contexts per bundle that no rule ever wanted.
+- "Can the mirrored set be inferred instead of listed?" → no. Inferring it means
+  a role silently gaining or losing its edge produces no delta in either
+  direction, which is the regression the split exists to catch.
+- "Why do the strata appear in the cross-role pairing and not one page token?" →
+  because a raised or overlay surface is `background` + `elevation.tonal.*`, a
+  composite no colour token names (`colors.md` › Stacking informational
+  surfaces). Pairing against the page alone verifies the easiest of the three.
+- "Does the alternate now need a full parallel inventory per bundle?" → no. Each
+  variant declares an explicit delta over the base list, so a reviewer reads what
+  differs, and the deltas are asserted in both directions like the lists are.
+
+### ADR-025: The quiet destructive ink is a cross-cutting token, minted where model.md §6 says system-wide defaults live
+
+Status: accepted (2026-08-04)
+Tags: colors, cross-cutting, consequence, model §6, F-029, refines fsl-ui ADR-028
+
+Decision: `semantic.consequence.destructive.ink` — a cross-cutting sibling of
+`focus` and `overlay` — holds the foreground for a destructive part that paints
+no surface of its own. The base theme aliases it to
+`{semantic.colors.informational.negative.text.default}` (a semantic→semantic
+reference, the same shape and the same "mode overrides remap it automatically"
+rationale as `focus.ring.color`), so both modes and both bundles resolve today's
+exact values. `@ttoss/fsl-ui`'s `resolveConsequenceInk` is the sole consumer and
+owns the behavioural bounds (which rung, which states — its CONTRACT §3.3).
+
+The day before, fsl-ui ADR-028 shipped the same behaviour by reading
+`informational.negative.text.default` **directly from the component layer** — a
+cross-ux read, licensed and guarded, but a precedent the entity→ux alignment
+had never had. Re-reading the model showed the question was already answered:
+§6 names the exact criterion ("a question the principal grammar cannot ask in a
+single token — a system-wide default that no `{ux}` owns") and the F-029
+analysis had already proven both halves — the grammar cannot combine valence
+with emphasis, and in `action`/`feedback` the valence `text` is the label on a
+fill, occupied. The structural twin is the focus ring: both render against the
+stratum behind the component rather than a fill of their own (the ring floats
+off the edge; the quiet rung's fill _is_ the stratum), which is what lets one
+system-wide colour serve everything, and why `SemanticFocus.ring.color` is even
+_typed_ `TokenRef<semantic.*>` for exactly this aliasing pattern.
+
+§6's gate, answered: **necessity** — the F-029 record (measured, both modes,
+both bundles); **JSDoc** — on the family and the token; **registration** — the
+§6 canonical-examples list, `colors.md` § Cross-cutting, the quick reference,
+and `TOKEN_PATH_REGISTRY` (`--tt-consequence-*`, DTCG `color`), whose coverage
+test fails if the registry entry is missing. `committing` deliberately gets no
+token: no visual projection exists and no consumer waits — evidence, not
+symmetry.
+
+What this buys over the direct read, stated as the trade it is: the entity→ux
+alignment goes back to having **zero** exceptions (the licensed-crossing
+apparatus in fsl-ui's contract test becomes ordinary cross-cutting consumption,
+like the ring); the contrast inventory pairs **the token components actually
+render** instead of its referent, so a theme that repoints the alias is audited
+on what ships; and a theme gains the freedom to retune the quiet destructive
+ink without touching validation messages — while the default alias keeps them
+identical, which is the right default because both are the standalone negative
+valence ink. The cost is one registered token (MINOR per governance.md) and a
+required member on `ThemeTokens.semantic` — additive for every `overrides`/
+`extends`-authored theme (bruttal included); a hypothetical complete-`base`
+theme gains a one-line member, the same class of addition as `focus.ring.offset`
+(F-020).
+
+Rejected: keeping the component-layer read (works, guarded, but spends a
+constitutional exception §6 exists to make unnecessary — and pins the ink to
+the validation message's token in every theme, a coupling nothing demands);
+`action.muted.text.destructive` (consequence is not a State — Lexicon §11.2
+keeps the axes disjoint, and the state axis is runtime while consequence is
+authorial); a `destructive` entry inside `semantic.colors.*` (§6 places
+cross-cutting tokens as siblings, not inside the grammar they escape); a
+`committing` twin (unconsumed vocabulary).
+
+Anchors: `src/families/consequence.ts`, `src/baseTheme.ts` (the alias),
+`src/roots/tokenRegistry.ts`, `colors.test.ts` → `quiet destructive control`
+(pairs the token, both bundles, both modes), model.md §6, colors.md
+§ Cross-cutting, fsl-ui `tokens/consequenceInk.ts` + CONTRACT §3.3.
+
+Re-litigation answers:
+
+- "Why does the alias point at `informational.negative.text` and not at a core
+  red?" → so the standalone negative valence ink has one source by default:
+  retune it and the validation message and the destructive ink move together,
+  which is what a theme author expects. Repointing is the opt-out, not the
+  default.
+- "Why not let fsl-ui keep reading the informational token, since the values
+  are identical?" → because _which token a component renders_ is the thing the
+  inventory audits and the thing a theme retunes. A borrowed token couples two
+  meanings behind one name; §6 exists so the system never has to choose between
+  coupling and a grammar violation.
+- "Does `neutral`/`committing` ever get a token?" → on evidence: a consumer
+  with a visual projection that survives measurement. Symmetry is not evidence.
+
+### ADR-026: The text pairing audits the ink a component actually renders; a mode only remaps
+
+Status: accepted (2026-08-04)
+Tags: colors, contrast, validation, modes, F-043, companion:ADR-024
+
+Two decisions, found as one defect (F-043: an open menu's `secondary` trigger
+rendering its label at 1.45:1 in dark for as long as the menu stays open).
+
+**First: the text pairing pairs the effective ink.** `colors.md` pairing #1
+already defined "corresponding" as _where the part renders, not who owns the
+token_ — and the component contract renders an ink for **every** background
+state, because call sites fall back (`resolveInteractiveStyle(...) ??
+text.default`; the selection mark resolves `indeterminate → checked →
+default`). The extractor paired same-state declarations only and skipped when
+the ink side was absent, so it audited a pair nobody renders and skipped the
+pair everyone does — the exact mirror of the deletion trap the fsl-ui CLAUDE.md
+names, and ADR-024's border finding one dimension over. The extractor now walks
+every declared `background.<state>` and pairs the declared state's ink or its
+documented fallback chain. 192 previously unaudited pairs entered the suite;
+seven failed, in three classes:
+
+- `input.{negative,positive,muted}.text.indeterminate` (both modes): the mark's
+  chain passes through `checked`, whose `neutral.0` belongs to the _filled_
+  checked box — on the light indeterminate fill it lands at 1.4–1.9:1. Each
+  role now declares the indeterminate ink in base (the valence's own dark
+  step, hue kept), which both modes inherit.
+- `action.secondary.text.active` (dark): the alternate inverts the engaged
+  fill to light and had inverted the ink for `pressed` but not `active`.
+- `informational.{valence}.background.selected` (dark): the alternate remaps
+  the valence _text_ to light inks while `background.selected` inherited the
+  base's light tint — ink and fill met at 1.0:1. The alternate now maps
+  selected to the monochrome step the neutral roles already use, with the
+  edge lightening to `.300` (the same move this alternate makes on negative's
+  active/focused and accent's hover).
+
+**Second: a mode only remaps.** The first fix for `text.active` was declared
+in the dark alternate alone — and the suite went green while the screen did
+not change, because `vars` mirrors the **base** shape: an alt-only leaf emits
+a CSS custom property no component can reference. `model.md` § Modes already
+states it ("semantic token names do not change; references may point to
+different core tokens"); it is now enforced — `global.test.ts` fails any
+bundle whose alternate declares a path the base does not, and the scan that
+motivated it found exactly one violation in the whole theme: the fix itself.
+`action.secondary.text.active` is therefore declared in base (`neutral.1000` —
+the fill darkens a step on the press and the ink firms with it, and Warning #1
+requires it to differ from `default`) and remapped in dark.
+
+Verified: two seeded mutations (a removed indeterminate ink; the removed
+`active` ink) each fail the suite in every affected bundle and mode; the
+structural guard fails on the alt-only shape it was written for; and the open
+menu's trigger label reads `rgb(22,22,22)` on `rgb(208,208,208)` in dark in
+Chromium, where it read `rgb(248,248,248)` before.
+
+Rejected: a lower floor for glyph-carried states (`checked`/`indeterminate`
+render the selection mark, arguably non-text at 3:1) — the registry defines
+the `text` dimension as "readable foreground, labels, and **text-like
+icons**", pairing #1 exempts only `*.muted.*`, and a selected row _does_ put
+running text on `background.checked`, so the stricter floor governs; reader-
+aware pairing (skip combinations no component renders today) — the suite has
+always audited the declared grammar, and a pair that fails only until someone
+reads it is a landmine, not a saving.
+
+Anchors: `colors.test.ts` (`extractTextBackgroundPairs`), `global.test.ts`
+("the alternate only remaps"), `src/baseTheme.ts` (the seven values),
+colors.md § Validation (the effective-pair bullet and the new mode error),
+`docs/fsl-studio/FRICTION.md` F-043.
+
+Re-litigation answers:
+
+- "Why does `text.active` exist in base if light never needed it?" → because
+  the leaf must exist for any mode to remap it — that is what "modes remap"
+  means, and the guard now enforces it. Light gains a one-step firmer press
+  ink it never had a complaint about; dark gains the legible label it owed.
+- "Should the indeterminate mark really meet 4.5:1?" → the dimension's own
+  definition folds text-like icons into `text`, and the fix costs one dark
+  step per valence. If a future case genuinely needs the non-text floor, that
+  is a registry discussion about a `glyph` dimension, not a threshold carve-out
+  in the guard.
+
+### ADR-027: A surface that occludes gets a cross-cutting boundary; the anchored inset is its own fixed step
+
+Status: accepted (2026-08-04)
+Tags: colors, spacing, cross-cutting, overlay, F-044, F-045, closes:F-044, closes:F-045
+
+Two tokens, one root cause: **`elevation` is the only family that knows a
+surface floats.** Every geometry and colour family treats "surface" as one
+thing — `radii.surface`, `outline.surface`, `inset.surface`,
+`informational.{role}.border` — while `elevation` alone distinguishes four
+strata. So an occluding surface inherited the edge and the padding of an
+embedded one, and the P3 Overlay round measured both.
+
+**`semantic.overlay.outline`** — the boundary of a surface that covers content.
+Cross-cutting per model.md §6, sibling of `scrim`, and the family is already
+the right home: `scrim` is what an occluding surface puts _behind_ itself, this
+is what it puts _around_ itself. The §6 gate: occlusion is neither a `role`
+(emphasis/valence) nor a `state` (runtime), and it **crosses UX contexts** — a
+Menu is `informational`, a Toast is `feedback`, and both cover content — so the
+grammar cannot ask for it in a single token. Registration needed no registry
+change: `semantic.overlay.` already maps to `--tt-overlay-` with DTCG `color`.
+
+`colors.md` § Stacking already assigned the duty this meets: the surface
+outline is the **secondary separator** and owes _"≥ 3:1 contrast against the
+adjacent background … even when shadow is suppressed (high-contrast
+preferences, print)"_. `{ux}.{role}.border.default` cannot carry it because it
+carries the opposite duty — an embedded card's decorative edge and a divider,
+where a hairline is deliberate and listed in the border pairing's accepted-soft
+inventory. Measured, that hairline read **1.31:1 light / 1.67:1 dark** against
+the page, so with shadows suppressed a menu was an unbounded rectangle.
+
+The value is one token per mode, and that is a measurement rather than a
+convenience: light `neutral.500`, dark `neutral.300` each clear 3:1 against
+_every_ stratum an overlay can land on. A per-stratum family was the first
+design and the measurement retired it — nothing needed per-stratum granularity.
+
+**`semantic.spacing.inset.surface.xs`** — the anchored / row-framing step.
+`inset.surface`'s tightest step was 16–24px and every anchored overlay read it:
+a menu's gutter was 24px around fixed 32px rows (34% of the surface's height),
+a tooltip's 24/36px for one line, against an 8px reference. No vocabulary grew
+— `spacing.md` already lists `xs` and `gap.stack.xs` ships. **Fixed, not
+fluid**, and that is ADR-022's own argument one scale out: the step's whole
+outcome is its relationship to fixed-height children, and measured before the
+change the gutter moved 16px → 24px across viewports while every row stayed
+exactly 32.0px. It therefore joins `inset.control` in the fixed-px contract
+rather than the fluid aliasing one — the guard was renamed to say so.
+
+Guards: the cross-role inventory gains **"occluding boundary"** — a
+cross-stratum pair, which is precisely why the same-role border extractor
+structurally could not see the defect (it evaluates an edge against its own
+role's fill and lists the result as accepted-soft: correct for what it audits,
+blind to the pair that carries the signal). The ordering guard gains `xs < sm`,
+compared at the engine's floor because the two sides now have different shapes.
+
+Rejected: retuning `informational.primary.border.default` to clear 3:1 (one
+token, but it darkens every card edge in the system to fix a different class's
+problem — and it would make the accepted-soft inventory self-contradictory);
+`elevation.edge.*` as a per-stratum companion to `tonal` (defensible, and the
+measurement showed the granularity is unused — one value per mode covers every
+stratum, so this would be membership guessing); making the overlays read
+`elevation.tonal.*` for their fill (they should, and it is filed separately as
+F-048 — but it reaches 1.67:1 at best in dark and nothing at all in light, so
+it cannot close F-044 and it changes what `evaluation` means on Overlay);
+retuning `inset.surface.sm` instead of adding `xs` (`Box`/`Surface` publish
+`sm` as a caller-facing step — retuning it changes an API surface to fix a
+different class).
+
+Cost: two registered semantic tokens (MINOR per governance.md), one of them a
+new required member on `SemanticOverlay` and one on the shared `InsetSteps` —
+additive for every `overrides`/`extends`-authored theme, a one-line addition
+for a hypothetical complete-`base` theme, the same class as `focus.ring.offset`
+(F-020) and `consequence` (ADR-025).
+
+Anchors: `src/families/overlay.ts`, `src/families/spacing.ts`,
+`src/baseTheme.ts` (both values + the dark remap), `colors.test.ts`
+("occluding boundary"), `spacing.test.ts` (the fixed-inset contract),
+colors.md § Stacking + § Cross-cutting, model.md §6, spacing.md,
+`docs/fsl-studio/FRICTION.md` F-044/F-045.
+
+Re-litigation answers:
+
+- "Why is the boundary not evaluation-driven?" → it says "your content resumes
+  here", which is infrastructure, the same argument that gives the focus ring
+  one colour. And nothing is lost: measured, all three informational roles
+  resolved the _same_ border value in both modes, so `evaluation` never varied
+  an overlay's edge.
+- "Why does a Dialog still pad at `md`?" → it frames content, not rows. The
+  discriminant for `xs` is whether the padding gutters children that carry
+  their own inset, not whether the surface floats.
+- "Is `xs` the same value as `inset.control.sm`?" → yes, deliberately: a gutter
+  beside a control is the control's own step, which is what keeps the
+  edge-to-text distance close to the reference's.

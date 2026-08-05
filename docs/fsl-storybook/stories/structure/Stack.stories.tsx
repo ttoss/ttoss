@@ -27,7 +27,7 @@ export const Horizontal: Story = {
     return (
       <Stack direction="horizontal" gap="md" align="center" justify="between">
         <Text>Deploys this week</Text>
-        <Badge evaluation="positive">87</Badge>
+        <Badge>87</Badge>
       </Stack>
     );
   },
