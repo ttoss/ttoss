@@ -211,47 +211,47 @@ Claude-Session: https://claude.ai/code/session_01PEHd46JcLBYN4Haywg7fdP
 
 ## [0.2.11](https://github.com/ttoss/ttoss/compare/@ttoss/fsl-ui@0.2.10...@ttoss/fsl-ui@0.2.11) (2026-07-30)
 
-**Note:** Version bump only for package @ttoss/fsl-ui
+Forms item H — field formats and a locale-scoped format registry, a shared invalid-field glyph, and `TextField`/`TextArea` take the split anatomy shape (ADR-026). `FieldGroup` and `ContextualHelp` composites ship. `Slider`, `Switch`, `RadioGroup`, `Checkbox` and `ComboBox` get geometry refinements on the shared `Field`/`selectionControl` anatomy.
 
 ## [0.2.10](https://github.com/ttoss/ttoss/compare/@ttoss/fsl-ui@0.2.9...@ttoss/fsl-ui@0.2.10) (2026-07-29)
 
-**Note:** Version bump only for package @ttoss/fsl-ui
+Field geometry extracted into one shared anatomy module (ADR-022): `src/components/Field/anatomy.tsx` owns the row `TextField`, `TextArea`, `Select`, `NumberField`, `ComboBox`, `Checkbox`, `RadioGroup`, `Switch` and `SearchField` all read from, closing several class-level geometry-drift defects a per-component fix could not have caught. `Form` publishes field layout as static context (ADR-025). One-line field authoring (`label`/`description`/`errorMessage`/`placeholder` props) ships alongside the existing slot API, rejected at compile time when combined with `children`.
 
 ## [0.2.9](https://github.com/ttoss/ttoss/compare/@ttoss/fsl-ui@0.2.8...@ttoss/fsl-ui@0.2.9) (2026-07-26)
 
-**Note:** Version bump only for package @ttoss/fsl-ui
+P3 Slice 4 — the Action family moves onto one shared trigger anatomy (`src/components/ActionTrigger/anatomy.tsx`): `ActionButton` and `ButtonGroup` (ADR-013, the first measured layout in the package — an adaptive row that collapses to a column on overflow) ship, `Toolbar` is rebuilt to paint nothing and compose its chrome (ADR-014), and the `ActionMenu` composite ships with `MenuItem`'s default evaluation moving `primary` → `muted` (ADR-015). `Button`, `ToggleButton` and `ToggleButtonGroup` move onto the same shared anatomy.
 
 ## [0.2.8](https://github.com/ttoss/ttoss/compare/@ttoss/fsl-ui@0.2.7...@ttoss/fsl-ui@0.2.8) (2026-07-25)
 
-**Note:** Version bump only for package @ttoss/fsl-ui
+`ComboBox` ships — a typeahead-filtered option picker. Entity = `Input`, not `Selection`, because a freeform channel exists (`allowsCustomValue`); the options themselves stay `Selection`/`item` under the ADR-007 split (ADR-012).
 
 ## [0.2.7](https://github.com/ttoss/ttoss/compare/@ttoss/fsl-ui@0.2.6...@ttoss/fsl-ui@0.2.7) (2026-07-24)
 
-**Note:** Version bump only for package @ttoss/fsl-ui
+`Grid`, `AppShell` and `Container` establish `container-type: inline-size` on their definite-width regions (ADR-011), so fsl-theme's container-fluid scales resolve against the real container instead of silently falling back to the viewport. FSL Studio ships its S2 milestone (login/dashboard/team/billing), the package's first real multi-flow consumer.
 
 ## [0.2.6](https://github.com/ttoss/ttoss/compare/@ttoss/fsl-ui@0.2.5...@ttoss/fsl-ui@0.2.6) (2026-07-23)
 
-**Note:** Version bump only for package @ttoss/fsl-ui
+P3 Slice 1 — brand-neutral retune: the neutral ramp moves slate→zinc (hue-free grays), Inter Variable becomes the lead font, navigation and selection go monochrome (brand reserved for `focused`/`accent`/Feedback valences). `Table` ships; `Tabs` is substantially reworked; the `Icon` glyph registry is extended. FSL Studio is restructured from theme/component labs to adoption blocks.
 
 ## [0.2.5](https://github.com/ttoss/ttoss/compare/@ttoss/fsl-ui@0.2.4...@ttoss/fsl-ui@0.2.5) (2026-07-19)
 
-**Note:** Version bump only for package @ttoss/fsl-ui
+Continued component-catalog buildout and test-coverage growth (Workstream B waves). No architectural decision recorded for this cut — the pre-2026-07-22 commit history that would attribute individual components to this release is not part of this repository's visible history.
 
 ## [0.2.4](https://github.com/ttoss/ttoss/compare/@ttoss/fsl-ui@0.2.3...@ttoss/fsl-ui@0.2.4) (2026-07-18)
 
-**Note:** Version bump only for package @ttoss/fsl-ui
+`Box`, `Grid` and `Container` ship as a token-constrained presentational layer (ADR-009) — the sanctioned composition escape hatch: every visual prop accepts only a token key or a layout keyword, never a raw `style`/`className`/hex/px.
 
 ## [0.2.3](https://github.com/ttoss/ttoss/compare/@ttoss/fsl-ui@0.2.2...@ttoss/fsl-ui@0.2.3) (2026-07-17)
 
-**Note:** Version bump only for package @ttoss/fsl-ui
+Continued component-catalog buildout and test-coverage growth (Workstream B waves). No architectural decision recorded for this cut — the pre-2026-07-22 commit history that would attribute individual components to this release is not part of this repository's visible history.
 
 ## [0.2.2](https://github.com/ttoss/ttoss/compare/@ttoss/fsl-ui@0.2.1...@ttoss/fsl-ui@0.2.2) (2026-07-16)
 
-**Note:** Version bump only for package @ttoss/fsl-ui
+`GridList` and `ListBox` land on the per-part entity split for Collection containers (ADR-007): the container is `Collection` (`informational` surface) while each selectable item is `Selection` (`input` chrome). `Slider` ships its track/output as internal, unaddressed data-parts rather than new `Input` structural roles (ADR-008).
 
 ## [0.2.1](https://github.com/ttoss/ttoss/compare/@ttoss/fsl-ui@0.2.0...@ttoss/fsl-ui@0.2.1) (2026-07-16)
 
-**Note:** Version bump only for package @ttoss/fsl-ui
+The build switches to one output module per file (`unbundle`, ADR-006), so `dist` tree-shakes per export at the published-artifact level — a consumer importing only `Button` no longer pulls composites like `Wizard` or `ConfirmationDialog` into their bundle.
 
 # 0.2.0 (2026-07-15)
 
