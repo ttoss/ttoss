@@ -110,6 +110,21 @@ describe('the payment wizard (forms item G consumer)', () => {
     ).toBeInTheDocument();
   });
 
+  // This is the heaviest interaction in the suite by a wide margin — 77
+  // characters typed across four fields plus two dropdown selections and a
+  // wizard step change, each keystroke a real userEvent-driven act() cycle.
+  // Measured wall-clock cost (process wall time, not the fake-timers clock
+  // this project enables globally): ~3.0s unloaded, climbing under CPU
+  // contention (~3.5s with three CPU-bound processes competing for the same
+  // 4 cores). Against the 5000ms default Jest timeout that is only ~40%
+  // headroom, and CI's `turbo run test` runs dozens of packages' builds and
+  // test suites concurrently — the exact kind of contention that pushed this
+  // specific test over 5000ms in CI while every other test in this file (far
+  // fewer keystrokes) has ample margin. There is no hang: every step
+  // completes and asserts correctly, just slower under load than the default
+  // budget allows. Rather than raise the suite-wide default (every other
+  // test here comfortably fits it), give only this outlier a timeout sized
+  // to its measured cost with real headroom.
   test('a complete flow saves the card and shows its last four digits', async () => {
     const user = userEvent.setup();
     const dialog = await openWizard(user);
@@ -149,7 +164,7 @@ describe('the payment wizard (forms item G consumer)', () => {
     await user.click(within(dialog).getByRole('button', { name: 'Save card' }));
 
     expect(await screen.findByText('Card ending 4242')).toBeInTheDocument();
-  });
+  }, 15000);
 });
 
 describe('cardLast4 / validateCardNumber', () => {
