@@ -582,10 +582,14 @@ export interface LayerControl {
    */
   position?: LegendPosition;
   /**
-   * Distance in pixels from the two anchored map edges. Defaults to `40`.
-   * Increase it to clear map chrome (e.g. MapLibre's attribution) or app UI.
+   * Distance in pixels from the anchored map edges. Defaults to `40`. A single
+   * number applies to both edges; pass `{ x, y }` to offset each axis
+   * independently (each falling back to `40` when omitted) — e.g. push the
+   * control clear of a side panel horizontally without lifting it off the
+   * bottom edge. Increase it to clear map chrome (e.g. MapLibre's attribution)
+   * or app UI.
    */
-  offset?: number;
+  offset?: number | { x?: number; y?: number };
   /** Text shown on the collapsed trigger button. Defaults to `'Layers'`. */
   label?: string;
   /**

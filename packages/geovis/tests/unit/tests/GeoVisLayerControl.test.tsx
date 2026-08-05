@@ -350,6 +350,127 @@ describe('GeoVisLayerControl', () => {
     expect(findKitchenButton()!.getAttribute('aria-pressed')).toBe('false');
   });
 
+  test('per-axis `offset` pushes each edge independently, defaulting the omitted axis', async () => {
+    const spec: VisualizationSpec = {
+      engine: 'maplibre',
+      view: { center: [0, 0], zoom: 1 },
+      sources: [source],
+      layers: [{ id: 'cozinhas-pts', sourceId: 'src', geometry: 'point' }],
+      control: {
+        id: 'layers',
+        position: 'bottom-left',
+        trigger: 'click',
+        // Only `x` is set: the control clears a left panel horizontally while
+        // `y` falls back to the default EDGE_GAP on the bottom edge.
+        offset: { x: 320 },
+        items: [
+          { id: 'kitchens', label: 'Kitchens', layers: ['cozinhas-pts'] },
+        ],
+      },
+    };
+    render(
+      <GeoVisProvider spec={spec}>
+        <SpecProbe />
+      </GeoVisProvider>
+    );
+    await act(async () => {});
+
+    const trigger = await waitFor(() => {
+      const el = document.querySelector('button[aria-expanded]');
+      expect(el).not.toBeNull();
+      return el as HTMLButtonElement;
+    });
+    const container = trigger.parentElement as HTMLElement;
+    expect(container.style.left).toBe('320px');
+    expect(container.style.bottom).toBe('40px');
+    // A shifting offset slides the control across instead of teleporting it.
+    expect(container.style.transition).toContain('left 0.25s ease-in-out');
+  });
+
+  test('a numeric `offset` pushes both anchored edges by the same distance', async () => {
+    const spec: VisualizationSpec = {
+      engine: 'maplibre',
+      view: { center: [0, 0], zoom: 1 },
+      sources: [source],
+      layers: [{ id: 'cozinhas-pts', sourceId: 'src', geometry: 'point' }],
+      control: {
+        id: 'layers',
+        position: 'bottom-left',
+        trigger: 'click',
+        offset: 16,
+        items: [
+          { id: 'kitchens', label: 'Kitchens', layers: ['cozinhas-pts'] },
+        ],
+      },
+    };
+    render(
+      <GeoVisProvider spec={spec}>
+        <SpecProbe />
+      </GeoVisProvider>
+    );
+    await act(async () => {});
+
+    const trigger = await waitFor(() => {
+      const el = document.querySelector('button[aria-expanded]');
+      expect(el).not.toBeNull();
+      return el as HTMLButtonElement;
+    });
+    const container = trigger.parentElement as HTMLElement;
+    expect(container.style.left).toBe('16px');
+    expect(container.style.bottom).toBe('16px');
+  });
+
+  test('re-applies a changed `offset` across spec prop updates (open→close→open)', async () => {
+    const make = (offset?: { x?: number; y?: number }): VisualizationSpec => {
+      return {
+        engine: 'maplibre',
+        view: { center: [0, 0], zoom: 1 },
+        sources: [source],
+        layers: [{ id: 'cozinhas-pts', sourceId: 'src', geometry: 'point' }],
+        control: {
+          id: 'layers',
+          position: 'bottom-left',
+          trigger: 'click',
+          ...(offset ? { offset } : {}),
+          items: [
+            { id: 'kitchens', label: 'Kitchens', layers: ['cozinhas-pts'] },
+          ],
+        },
+      };
+    };
+
+    const left = () => {
+      const el = document.querySelector(
+        'button[aria-expanded]'
+      ) as HTMLButtonElement;
+      return (el.parentElement as HTMLElement).style.left;
+    };
+
+    const { rerender } = render(
+      <GeoVisProvider spec={make({ x: 320 })}>
+        <SpecProbe />
+      </GeoVisProvider>
+    );
+    await act(async () => {});
+    expect(left()).toBe('320px');
+
+    rerender(
+      <GeoVisProvider spec={make()}>
+        <SpecProbe />
+      </GeoVisProvider>
+    );
+    await act(async () => {});
+    expect(left()).toBe('40px');
+
+    rerender(
+      <GeoVisProvider spec={make({ x: 320 })}>
+        <SpecProbe />
+      </GeoVisProvider>
+    );
+    await act(async () => {});
+    expect(left()).toBe('320px');
+  });
+
   test('highlights an item row on pointer enter and clears it on leave', async () => {
     render(
       <GeoVisProvider spec={buildSpec('cozinhas-pts')}>

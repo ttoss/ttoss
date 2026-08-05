@@ -906,13 +906,14 @@ const spec: VisualizationSpec = {
 
 ### `LayerControl` fields
 
-| Field      | Type                 | Required | Description                                                                        |
-| ---------- | -------------------- | -------- | ---------------------------------------------------------------------------------- |
-| `id`       | `string`             | ✓        | Unique identifier for the panel.                                                   |
-| `items`    | `LayerControlItem[]` | ✓        | The toggle buttons revealed when the panel is expanded.                            |
-| `position` | `LegendPosition`     |          | Corner the panel is anchored to. Defaults to `'bottom-left'`.                      |
-| `label`    | `string`             |          | Text on the collapsed trigger. Defaults to `'Layers'`.                             |
-| `trigger`  | `'hover' \| 'click'` |          | How the panel expands. `'hover'` (default) also opens on click, for touch devices. |
+| Field      | Type                                   | Required | Description                                                                                                                                                                                                                                                                                                                                            |
+| ---------- | -------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `id`       | `string`                               | ✓        | Unique identifier for the panel.                                                                                                                                                                                                                                                                                                                       |
+| `items`    | `LayerControlItem[]`                   | ✓        | The toggle buttons revealed when the panel is expanded.                                                                                                                                                                                                                                                                                                |
+| `position` | `LegendPosition`                       |          | Corner the panel is anchored to. Defaults to `'bottom-left'`.                                                                                                                                                                                                                                                                                          |
+| `offset`   | `number \| { x?: number; y?: number }` |          | Distance in pixels from the anchored edges. Defaults to `40`. A number applies to both edges; `{ x, y }` offsets each axis independently (each falling back to `40`) — e.g. push the control clear of a side panel horizontally without lifting it off the bottom edge. A changed `offset` animates, so the control slides across rather than jumping. |
+| `label`    | `string`                               |          | Text on the collapsed trigger. Defaults to `'Layers'`.                                                                                                                                                                                                                                                                                                 |
+| `trigger`  | `'hover' \| 'click'`                   |          | How the panel expands. `'hover'` (default) also opens on click, for touch devices.                                                                                                                                                                                                                                                                     |
 
 ### `LayerControlItem` fields
 

@@ -1,12 +1,14 @@
 import type { RepairOption, VisualizationSpec } from '@ttoss/geovis';
 import { GeoVisProvider } from '@ttoss/geovis';
 import { Box } from '@ttoss/ui';
+import * as React from 'react';
 
 import { Layout } from './components/Layout';
 import {
   type GeovisWorkspaceConfig,
   type GeovisWorkspaceSelection,
 } from './context/GeovisWorkspaceContext';
+import { applyLeftSidebarControlOffset } from './controlOffset';
 import {
   GeovisWorkspaceProvider,
   type GeovisWorkspaceProviderProps,
@@ -67,24 +69,44 @@ export const GeovisWorkspace = ({
   onRepair,
   onLayerVisibilityChange,
 }: GeovisWorkspaceProps) => {
+  // Owned here (rather than only inside the provider) so the spec fed to
+  // `GeoVisProvider` can react to it: while the left sidebar is open the map's
+  // layer control is shifted clear of it, since an opening sidebar (z-index 2)
+  // otherwise covers the control (z-index 1) that shares its corner.
+  const [isLeftSidebarOpen, setIsLeftSidebarOpen] = React.useState(() => {
+    return config.leftSidebar?.initialState === 'open';
+  });
+
+  const spec = React.useMemo(() => {
+    return applyLeftSidebarControlOffset({
+      spec: visualizationSpec,
+      leftSidebarOpen: isLeftSidebarOpen,
+    });
+  }, [visualizationSpec, isLeftSidebarOpen]);
+
   return (
-    <GeoVisProvider spec={visualizationSpec}>
-      {/* `GeoVisProvider` auto-mounts any spec legend that declares a
-          `position` as an absolutely-positioned overlay, anchored to the
-          nearest positioned ancestor. This Box is that ancestor, so those
-          overlays stay confined to the workspace instead of escaping into
-          whatever container the host application renders it in. */}
-      <Box sx={{ position: 'relative' }}>
+    // `GeoVisProvider` auto-mounts any spec legend (or the layer `control`)
+    // that declares a `position` as an absolutely-positioned overlay, rendered
+    // as a sibling of its `children` and anchored to the nearest positioned
+    // ancestor. This Box must therefore *wrap* `GeoVisProvider` — not sit
+    // inside it — so it becomes that ancestor: the overlays stay confined to
+    // the workspace (aligned to the map area, e.g. the layer control at the
+    // map's bottom-left) instead of escaping to whatever container the host
+    // application renders it in.
+    <Box sx={{ position: 'relative' }}>
+      <GeoVisProvider spec={spec}>
         <GeovisWorkspaceProviderWithRuntime
           config={config}
           selection={variables}
           onSelectionChange={onVariableChange}
           onRepair={onRepair}
           onLayerVisibilityChange={onLayerVisibilityChange}
+          isLeftSidebarOpen={isLeftSidebarOpen}
+          onLeftSidebarOpenChange={setIsLeftSidebarOpen}
         >
           <Layout />
         </GeovisWorkspaceProviderWithRuntime>
-      </Box>
-    </GeoVisProvider>
+      </GeoVisProvider>
+    </Box>
   );
 };

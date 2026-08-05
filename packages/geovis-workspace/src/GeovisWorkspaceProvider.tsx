@@ -42,6 +42,18 @@ export interface GeovisWorkspaceProviderProps {
    * GeoVis runtime.
    */
   hasResolvedOnce?: boolean;
+  /**
+   * Whether the left sidebar is open. Provide it to control the open state
+   * from the parent (as `GeovisWorkspace` does, so it can shift the map's
+   * layer control clear of the open sidebar). Omit it to let the provider
+   * manage the state internally (seeded from `config.leftSidebar.initialState`).
+   */
+  isLeftSidebarOpen?: boolean;
+  /**
+   * Called with the next open state whenever the left sidebar is opened or
+   * closed. Pair it with `isLeftSidebarOpen` to control the open state.
+   */
+  onLeftSidebarOpenChange?: (open: boolean) => void;
 }
 
 /**
@@ -78,6 +90,8 @@ export const GeovisWorkspaceProvider = ({
   onRepair,
   onLayerVisibilityChange,
   hasResolvedOnce = false,
+  isLeftSidebarOpen: leftSidebarOpenProp,
+  onLeftSidebarOpenChange,
 }: GeovisWorkspaceProviderProps) => {
   const isControlled = selection !== undefined;
 
@@ -88,9 +102,17 @@ export const GeovisWorkspaceProvider = ({
 
   const currentSelection = isControlled ? selection : internalSelection;
 
-  const [isLeftSidebarOpen, setIsLeftSidebarOpen] = React.useState(() => {
-    return config.leftSidebar?.initialState === 'open';
-  });
+  const isLeftControlled = leftSidebarOpenProp !== undefined;
+
+  const [internalLeftSidebarOpen, setInternalLeftSidebarOpen] = React.useState(
+    () => {
+      return config.leftSidebar?.initialState === 'open';
+    }
+  );
+
+  const isLeftSidebarOpen = isLeftControlled
+    ? leftSidebarOpenProp
+    : internalLeftSidebarOpen;
 
   const [isRightSidebarOpen, setIsRightSidebarOpen] = React.useState(() => {
     return config.rightSidebar?.initialState === 'open';
@@ -111,9 +133,13 @@ export const GeovisWorkspaceProvider = ({
 
   const setLeftSidebarOpen = React.useCallback(
     ({ open }: { open: boolean }) => {
-      setIsLeftSidebarOpen(open);
+      if (!isLeftControlled) {
+        setInternalLeftSidebarOpen(open);
+      }
+
+      onLeftSidebarOpenChange?.(open);
     },
-    []
+    [isLeftControlled, onLeftSidebarOpenChange]
   );
 
   const setRightSidebarOpen = React.useCallback(

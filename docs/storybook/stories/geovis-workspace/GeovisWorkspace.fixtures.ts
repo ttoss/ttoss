@@ -127,13 +127,11 @@ export const buildSpec = ({
     legends: Object.entries(VARIABLES).map(([id, config]) => {
       return {
         id,
-        // Only the active legend gets a `position`, so `GeoVisProvider` mounts
-        // exactly one on-map legend overlay (the corner box) instead of
-        // stacking every legend in the registry. Overlaying it lets us verify
-        // the workspace sidebars render above the map's own legend.
-        ...(id === variable
-          ? { title: config.title, position: 'bottom-right' as const }
-          : {}),
+        // No legend gets a `position`, so `GeoVisProvider` mounts no on-map
+        // legend overlay. The registry stays so the layer's `activeLegendId`
+        // still resolves its colors from it; only the corner-box overlay is
+        // removed.
+        ...(id === variable ? { title: config.title } : {}),
         colorBy: {
           type: 'quantitative' as const,
           property: 'value',
