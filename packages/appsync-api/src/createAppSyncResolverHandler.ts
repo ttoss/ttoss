@@ -48,6 +48,16 @@ export type CreateContext = (
   baseContext: BaseAppSyncContext
 ) => Promise<Record<string, any>> | Record<string, any>;
 
+/**
+ * Creates a Lambda handler for an AppSync Direct Lambda Resolver.
+ *
+ * Each GraphQL field is invoked as its own Lambda invocation. A resolver
+ * error — thrown, or returned as an `Error`/`GraphQLError` (re-thrown below)
+ * — leaves the Lambda as an unhandled exception, so the Node.js runtime only
+ * preserves `error.name` (-> `errorType`) and `error.message`; custom
+ * properties like `GraphQLError.extensions` do not survive. See the "Error
+ * Handling" section in the package README for the workaround.
+ */
 export const createAppSyncResolverHandler = ({
   createContext,
   ...buildSchemaInput
