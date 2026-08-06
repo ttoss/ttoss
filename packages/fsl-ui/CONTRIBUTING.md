@@ -342,7 +342,7 @@ When adding a component, classify every string it renders into 1–3 before writ
 
 ## 7 — Decisions (ADRs)
 
-Canonical trade-off record for this package, mirroring the `@ttoss/fsl-theme` convention: IDs sequential, never reused; append only; superseded entries keep their ID with `Status: superseded-by:ADR-NNN`. Search here before re-litigating a decision.
+Canonical trade-off record for this package, mirroring the `@ttoss/fsl-theme` convention: IDs sequential, never reused; append only; superseded entries keep their ID with `Status: superseded-by:ADR-NNN`. Search here before re-litigating a decision. IDs 016–021 were never allocated (the numbering jumped; the gap is fact, not lost history) and 024 was reserved then released unused (see the note at ADR-023) — unused IDs stay unused.
 
 ### ADR-001: All user-facing copy is caller-supplied; flow-critical labels are required props
 

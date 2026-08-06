@@ -1,3 +1,9 @@
+> **Measuring instrument, not a status doc** — the market-parity scoring matrix
+> and cohort methodology for `packages/fsl-bench` (parked; re-runs post-v1 as
+> evidence). Written in Portuguese; `packages/*/INTERNAL/` is exempt from the
+> docs-tree English rule (E1 ruling, 2026-08-06) — translate if the bench
+> unparks with non-Portuguese-speaking operators.
+
 Abaixo está uma **matriz formal de benchmark comparativo de paridade de mercado**. Ela foi desenhada para responder à pergunta: **“independentemente do diferencial semântico do ttoss, essa library compete bem no baseline que o mercado espera?”** Esse baseline aparece de forma consistente nas referências oficiais: APG/WAI-ARIA para acessibilidade e interação, Storybook para documentação e testes, DTCG e Open UI para tokens/customização, MUI para plataformas suportadas e disciplina de bundle, e políticas públicas de release para confiança operacional.
 
 Use sempre a mesma coorte de comparação. Para o ttoss, a coorte principal deve ser **Ark UI, Radix, React Aria, Headless UI e Base UI**, porque todas se posicionam como foundations/headless ou low-level accessible UI; se quiser um controle adicional “mais opinionated”, adicione **MUI** em uma coluna separada. ([Ark UI][2])

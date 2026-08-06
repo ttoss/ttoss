@@ -205,6 +205,29 @@ and doc stays evidence of an unstated invariant until proven otherwise.
   `model.md` §11 hierarchy (FSL Lexicon → `Types.ts` → family docs). Includes a docs
   density pass (cut what decides nothing) and an explicit blocker-or-not ruling on
   F-058/F-059. **Exit:** zero known contradictions across the three sources.
+
+  **E1 sweep landed 2026-08-06** (~54 findings; three audit slices). The deep
+  architecture agreed everywhere; the drift lived in hand-maintained enumerations,
+  plus two real code defects (preflight CSS-var casing silently unbound the body
+  typography — fixed with a guard that validates every `var()` the preflight reads
+  against the emitter; `ControlInsetSteps.md/lg` typed as raw values since before
+  ADR-023 — tightened to refs). **Rulings, under the owner's basis-form directive
+  ("recurring exceptions mean the abstraction is wrong — fix the model"):**
+  CONTRACT §1 restated as a part-identity rule plus the motion-purpose axis, so the
+  Toast/ProgressBar reads stop being exceptions; deprecation-metadata enforcement
+  deferred to the first actual deprecation (evidence rule — validation.md now says
+  so); the Entity→ux mapping's single owner is `ENTITY_TOKEN_MAPPING` in code,
+  `colors.md` mirrors; `@ttoss/forms`/`@ttoss/ui` marked legacy in the root repo
+  doctrine (2026-07-26 ruling propagated); `packages/*/INTERNAL/` is exempt from the
+  docs-tree English rule; F-058/F-059 are paper-cuts below the reusability gate —
+  non-blocking, re-evaluated visually at E5. **New doctrine, program-wide:** docs
+  never hand-enumerate membership of a set the code owns — name the axis and point
+  at the typed source; a mirror that must enumerate for offline consumers
+  (`llms.txt`) carries a drift guard instead (fsl-ui's now exists —
+  `tests/unit/tests/llms.test.ts`, catalog/intents/knobs/cascade, verified to fail
+  on injection; fsl-theme's already did). **E1 remainder:** compress the process
+  history in this file and `FORMS.md` to a dated index + durable rulings.
+
 - **E2 — Consolidation** (design-level abstraction): inventory remaining duplicated or
   ad-hoc styling logic and complete the shared-anatomy movement (`ActionTrigger`,
   `Field`, `disclosureAnatomy`, `rail`, `collectionRow` are the pattern). Each

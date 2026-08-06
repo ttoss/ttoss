@@ -64,25 +64,37 @@ the current combination of React Aria state booleans.
 
 ## §1 — Entity → Token Map
 
-A component MUST use ONLY tokens from its Entity row.
+A **part** MUST read only the token row of the entity it embodies. For a
+single-identity component that is its own row; a composite that hosts a part of
+another entity (Toast's action button is an Action part) reads that entity's row
+for that part. Composition changes which row applies — it never licenses mixing
+rows within one part.
 
-| Entity         | Colors          | Radii                      | Border                        | Sizing | Spacing         | Typography               | Motion       | Elevation        |
-| -------------- | --------------- | -------------------------- | ----------------------------- | ------ | --------------- | ------------------------ | ------------ | ---------------- |
-| **Action**     | `action`        | `action`                   | `outline.control`             | `hit`  | `inset.control` | `action`                 | `feedback`   | `flat`           |
-| **Input**      | `input`         | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Selection**  | `input`         | `control`                  | `outline.control`, `selected` | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Navigation** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Disclosure** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `transition` | `flat`           |
-| **Overlay**    | `informational` | `surface`                  | `outline.surface`             | —      | `inset.surface` | `title`, `body`, `label` | `transition` | `overlay`        |
-| **Feedback**   | `feedback`      | `surface`, `round` (rails) | `outline.surface`             | —      | `inset.surface` | `body`, `label`          | `feedback`   | `raised`         |
-| **Collection** | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `body`, `label`          | —            | `flat`, `raised` |
-| **Structure**  | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `title`, `body`, `label` | —            | `flat`, `raised` |
+Colors are the mechanically enforced column: the contract suite audits every
+rendered color read against the row. The other columns record each entity's
+silhouette. One axis is orthogonal by design: **motion binds to the movement's
+purpose, not the entity** — `feedback` acknowledges an interaction on the
+element itself, `transition` carries content entering or leaving — so the Motion
+column lists the purposes an entity's movements have, and a read outside it is
+wrong unless the movement's purpose says otherwise.
+
+| Entity         | Colors          | Radii                      | Border                        | Sizing | Spacing         | Typography               | Motion                                | Elevation        |
+| -------------- | --------------- | -------------------------- | ----------------------------- | ------ | --------------- | ------------------------ | ------------------------------------- | ---------------- |
+| **Action**     | `action`        | `action`                   | `outline.control`             | `hit`  | `inset.control` | `action`                 | `feedback`                            | `flat`           |
+| **Input**      | `input`         | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`                            | `flat`           |
+| **Selection**  | `input`         | `control`                  | `outline.control`, `selected` | `hit`  | `inset.control` | `label`                  | `feedback`                            | `flat`           |
+| **Navigation** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`                            | `flat`           |
+| **Disclosure** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `transition`                          | `flat`           |
+| **Overlay**    | `informational` | `surface`                  | `outline.surface`             | —      | `inset.surface` | `title`, `body`, `label` | `transition`                          | `overlay`        |
+| **Feedback**   | `feedback`      | `surface`, `round` (rails) | `outline.surface`             | —      | `inset.surface` | `body`, `label`          | `feedback`, `transition` (enter/exit) | `raised`         |
+| **Collection** | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `body`, `label`          | —                                     | `flat`, `raised` |
+| **Structure**  | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `title`, `body`, `label` | —                                     | `flat`, `raised` |
 
 **Cross-cutting** (apply to ALL interactive entities — not in the table because they are entity-agnostic):
 
 | Token family       | Path                                                                                   |
 | ------------------ | -------------------------------------------------------------------------------------- | ------ | ------- | -------- | ----------- |
-| Focus ring         | `vars.focus.ring.width` / `.style` / `.color`                                          |
+| Focus ring         | `vars.focus.ring.width` / `.style` / `.color` / `.offset`                              |
 | Consequence ink    | `vars.consequence.destructive.ink` — read via `resolveConsequenceInk` only (§3.3)      |
 | Occluding boundary | `vars.overlay.outline` — the edge of a surface that **covers** content (§3.5)          |
 | Rail fill          | `vars.rail.track` — the unfilled part of a `ProgressBar`/`Meter`/`Slider` track (§3.6) |
