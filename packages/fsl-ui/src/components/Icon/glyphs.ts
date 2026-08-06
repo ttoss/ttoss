@@ -73,6 +73,11 @@ const INTENT_GLYPHS = {
   // opposition-adjacent "two intents, one glyph" warning stays moot).
   'status.success': unwrapGlyph(checkCircleGlyph),
   'status.alert': unwrapGlyph(alertTriangleGlyph),
+  // Same ⓘ as `action.help`, and deliberately: Lucide ships one info mark and
+  // inventing a second shape to keep two intents apart would make the glyph
+  // carry a distinction the user does not need to draw. The intents stay
+  // separate so a theme *can* split them.
+  'status.info': unwrapGlyph(infoGlyph),
 } satisfies Record<IconIntent, GlyphData>;
 
 /**

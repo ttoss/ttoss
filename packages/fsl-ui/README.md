@@ -86,6 +86,43 @@ button, `NumberField`'s steppers, `ComboBox`'s chevron — split it in two:
 the element you operate. `control` names the operated element on every field, so
 a selector that types into one always resolves something typeable.
 
+### Toasts
+
+Create the queue once, mount one region at the root, and report from anywhere:
+
+```tsx
+export const toastQueue = createToastQueue();
+
+// at the root, once
+<ToastRegion queue={toastQueue} />;
+
+// anywhere
+toastQueue.add(
+  { title: 'Changes published', evaluation: 'positive' },
+  { timeout: 5000 }
+);
+```
+
+The `evaluation` picks the valence and the valence brings its own glyph, so the
+outcome survives a reader who does not see the fill. `primary` is the neutral
+voice and carries no mark — it reports without claiming a status.
+
+Two rules belong to the queue rather than to the call site, because a call site
+is the worst place to remember them. A supplied `timeout` is a **floor**: short
+values are raised to 5s, and omitting it means the toast stays until dismissed
+(React Aria pauses every timer while the region is hovered or focused). And a
+toast carrying an `actionLabel` **never auto-dismisses** — an offer that expires
+on a timer cannot be taken.
+
+```tsx
+toastQueue.add({
+  title: 'Message archived',
+  actionLabel: undoLabel, // caller-localized, like every string here
+  onAction: restoreMessage, // pressing it dismisses, unless
+  // shouldCloseOnAction: false
+});
+```
+
 ## Customization
 
 Composites accept no `style`/`className`. Geometry the host legitimately owns is exposed as `--fsl-*` CSS custom properties with built-in fallbacks:

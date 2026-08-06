@@ -17,7 +17,8 @@
     "dev": "storybook dev -p 6007",
     "generate-llms": "storybook-llms-extractor --config llms.config.mjs",
     "start": "storybook dev -p 6007",
-    "storybook": "storybook dev -p 6007"
+    "storybook": "storybook dev -p 6007",
+    "visual-signoff": "node scripts/visual-signoff.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",

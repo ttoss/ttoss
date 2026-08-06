@@ -1864,3 +1864,199 @@ building it would not have closed the gap it was proposed against; a new
 overshoot is smaller than any other free step's, so a seventh rung would
 grow the ramp to solve a problem `layout.1` already solves, the model.md §6
 violation this ADR exists to avoid.
+
+---
+
+### ADR-040: `Toast` takes the complete Feedback anatomy — a valence glyph, a single action, and a dismissal contract the queue owns
+
+Status: accepted (2026-08-06)
+Tags: feedback, toast, a11y, icons, react-aria, P3, opens:F-058, opens:F-059
+
+Context: P3's visual sign-off round put `Toast` beside the reference system's
+member-by-member and the comparison came back split. The **language** matched
+already — the filled valences are Spectrum-derived by construction, the
+close trigger, the queue, the raised surface and the region's placement are
+all in the same idiom, and the two places the geometry diverges (`420px`
+instead of the 336px desktop cap; `inset.surface.md` instead of the occluding
+`xs`) are both measured and recorded under F-054. The **anatomy** did not. The
+reference gives `info`/`positive`/`negative` an icon, offers an optional
+action, and clamps `timeout` to a reading-time floor. This package's toast had
+none of the three, and the first of them is not a matter of taste: a toast
+that separates "saved" from "failed" by fill alone fails WCAG 1.4.1, which is
+the conclusion this package already drew one family over when it shipped
+`FieldInvalidGlyph` so an invalid field is not red-only.
+
+Decision, part one: **each valence that claims an outcome carries a glyph, and
+`primary` deliberately does not.** `TOAST_VALENCE_GLYPH` maps `accent` →
+`status.info`, `positive` → `status.success`, `caution`/`negative` →
+`status.alert`, and `primary` → nothing. `primary` is the Feedback context's
+_neutral_ voice (`neutral.800`, an informational grey), so there is no outcome
+for a mark to reinforce and an icon there would claim a status the toast is
+not making — the reference's `neutral` ships bare for the same reason.
+`status.info` is the round's one registry addition, admitted under
+icon-system.md's change rule because a component needs the meaning: `accent`
+is the informative valence P3 Slice 3 added, and it is what the reference
+calls its `info` toast. It shares the ⓘ with `action.help` in the default
+mapping, which the opposition rule permits — that rule governs pairs that must
+never be confused with each other, and an _offer_ the user can open is not a
+_report_ the system is making. `caution` and `negative` share the triangle:
+1.4.1 asks that colour not be the sole carrier, which the mark plus the
+caller's own copy satisfies, and a third status glyph has no consumer yet
+(readmission: a product shipping both side by side that needs them told apart
+at a glance).
+
+The glyph aligns by consuming Icon's own documented optical rule rather than a
+centring wrapper. The `glyph` part declares `text.label.md` — the title's type
+— and asks for `size="text"`, so the mark resolves at 1em of the title and its
+line box is a line of the title. Measured in Chromium at 1280px: the glyph
+ink's top and the title's top differ by **0.00px** under the root's
+`flex-start`, with no offset anywhere in the component. The reference reaches
+the same result with a `CenterBaseline` wrapper it had to build.
+
+Decision, part two: **a toast may carry one action, dressed by the surface it
+sits on.** `actionLabel`/`onAction`/`shouldCloseOnAction` on the queued
+content; the trigger is an outline silhouette whose edge and ink are both
+`feedback.{evaluation}.text.default` — the same neutral the title is set in.
+That is not a style preference. The "entity → ux-context alignment" contract
+test binds a file's colour reads to the entities it declares, and this file
+declares Feedback only, so `action.*` is not reachable from here; it is also
+the right answer visually, since an Action-palette button would arrive with
+the page's colours on top of a saturated red. The reference needs a
+`staticColor="white"` escape to land the same silhouette; ours falls out of
+the surface's own palette, so no static-colour concept is required. The
+trigger takes `text.action.md` (semibold) against the title's `label.md`
+(regular) — P3 Slice 3's weight-contrast rhythm, which also stops a one-word
+command reading as a second title.
+
+It sits **under the message and outside the announced region**. React Aria
+puts `role="alert"` on the content, so a button inside it would be read as
+part of the sentence; the `content` column wraps the alert and the action as
+siblings, at `gap.stack.sm` — one step above the `xs` that holds title and
+description together, because those two are one utterance and the action is
+not. Verified in Chromium: at `xs` the button crowds the title on the
+description-less shape ("Undo"), which is the common actionable toast.
+Dismissal goes through the region's state (`UNSTABLE_ToastStateContext`, the
+fifth `UNSTABLE_` export the ADR-003 canary now lists) because `QueuedToast`
+carries no `close()` — the same route React Aria wires the close button
+through.
+
+Decision, part three: **the dismissal contract belongs to the queue, not to
+the call site.** `createToastQueue` returns a `ToastQueue` subclass whose
+`add` runs `resolveToastOptions`: an actionable toast has its `timeout`
+cleared unconditionally, and any other supplied timeout is raised to
+`TOAST_MIN_TIMEOUT` (5000). Both rules are accessibility floors that a call
+site is structurally bad at remembering — the caller knows the message but not
+the reader. The floor is the reference's own (`Math.max(options.timeout,
+5000)`); its web-component line publishes 6000 with a per-120-words increment,
+and we take the lower because the clamp is not the whole mechanism: React Aria
+pauses every visible timer while the region is hovered or focused, so 5000
+bounds _unattended_ display rather than reading time. The actionable
+exemption is WCAG 2.2.1 read literally — an offer that expires on a timer
+cannot be taken — and it is the one place the queue refuses what the caller
+asked for, because the alternative is shipping a broken affordance quietly.
+The package's own story was the proof the rule was needed: it fired a toast at
+`timeout: 4000`, under both published floors, and nothing said so.
+
+Measured, and one intended change was reverted by its own measurement. The
+trailing inset looked like the reference's clearest remaining correction
+(`paddingStart: 16` / `paddingEnd: 8`, on the reasoning that the close
+trigger's box already carries breathing room on that edge). The effect is real
+here — at 1280px the leading edge sits 37px from the glyph's ink and the
+trailing edge 41.7px from the close trigger's ink, so the trailing side reads
+4.7px heavy — but stepping the trailing inset to `inset.surface.sm`
+**overshoots to 29.7px, 7.3px light**. No step on the ladder lands it
+symmetric, because the correction owed is half the trigger's internal inset
+and the ladder has no half-step there. The uniform value stays, the residual
+is F-058, and a test now asserts the uniformity so the next "obvious"
+asymmetry has to re-measure before it lands. Every valence was verified in
+Chromium at 1280px in both modes, actionable and not, short and wrapping.
+
+Rejected: a `placement` prop on `ToastRegion` (the reference ships four; a
+product whose toasts appear bottom-end on one screen and top-center on the
+next has two notification systems — CONTRACT §4 gives visual axes to the
+theme, and the trailing bottom corner is where a transient report is furthest
+from both the content being read and the primary actions being reached for);
+collapsing the stack into an expandable pile as the reference does (real
+behaviour, no consumer yet — `maxVisibleToasts` already bounds the column, and
+the expand affordance brings its own keyboard contract; readmission: a product
+that routinely queues more toasts than the region can show); a single-string
+`children` matching the reference's content shape (ours is title + description
+because React Aria's `useToast` labels the surface by the title and describes
+it by the description — the two-slot shape is what makes `aria-labelledby`/
+`aria-describedby` land, and ADR-031 already records that Toast frames prose
+the way Dialog does); giving the triggers a hover fill (`FeedbackColorStates`
+admits `default | focused | disabled` only, FSL §7 — the cascade returns the
+resting value at every pointer state, which is F-059 and a theme-level
+question, not one to work around inside a component).
+
+---
+
+### ADR-041: The field frame owns its interior — the browser's duplicate in-field controls are suppressed at the anatomy, by part rather than by component
+
+Status: accepted (2026-08-06)
+Tags: fields, anatomy, css, chromium, F-060, closes:F-060
+
+Context: F-060, reported from a product screen — a `SearchField` with text
+renders **two ✕**. A field in this package is a frame that owns its interior:
+`ICON_SLOT_STYLE` places the leading glyph, `FieldInvalidGlyph` the invalid
+mark, `EMBEDDED_TRIGGER` the clear button and the steppers, and the `<input>`
+inside is borderless and carries the value alone. But an `<input>` also brings
+controls decided by its `type`, drawn by the browser into that same box, and
+nothing reconciled the two. `SearchField`'s input is `type="search"` — React
+Aria's `useSearchField` sets it, and correctly, since the type carries the
+Escape-clears behaviour — so Chromium paints `::-webkit-search-cancel-button`
+beside the clear button the anatomy already drew.
+
+Decision: **a stylesheet, injected by the shared value builder, suppresses the
+UA decorations that duplicate an adornment the anatomy draws — and only
+those.** `src/tokens/nativeFieldDecorations.ts` follows `keyframes.ts`'s
+mechanism exactly (one `<style>` per document, SSR-safe, idempotent, tolerant
+of a second copy of the package) because the two share the same constraint:
+CSS this package needs that an inline `style` object cannot express. It is a
+separate module and a separate element from `keyframes.ts` because that
+module's contents are governed by `ANIMATION_NAMES` and contract invariant #8,
+which have nothing to say about this; one export should not stand behind two
+unrelated invariants.
+
+Three choices inside it are the decision.
+
+**The inclusion rule is duplication, not tidiness.** Suppressed:
+`::-webkit-search-cancel-button` (duplicates the clear button),
+`::-webkit-search-decoration` and `::-webkit-search-results-button`
+(duplicate the leading `action.search` glyph). Left to the browser:
+`::-webkit-calendar-picker-indicator`, the spin buttons, the password reveal —
+each is the _only_ affordance for its type, and this package ships no
+replacement for any of them, so removing one would take away function rather
+than a duplicate. Measured, not assumed: `type="date"` was confirmed to render
+its indicator inside our frame today, and it stays. A component that grows its
+own version of one of those adds a row to the table in the module header.
+
+**It is keyed to the part, not to `SearchField`.** Read from the rendered DOM
+in Chromium, `search-field` is the only control in the package carrying a
+decorated type; `NumberField` is `type="text"` with `inputmode="numeric"`
+(React Aria supplies the spinbutton semantics, so the native steppers never
+appear) and `TextField`/`ComboBox` are `type="text"`. But `TextField` passes a
+caller's `type` straight through, so `<TextField type="search">` is the same
+defect one prop away. The selector is the package's own attribute contract
+(CONTRACT §5) — `[data-scope][data-part='control']`, both attributes on the
+same element — so the next field to acquire a decorated type is covered
+before it is written. The stated consequence: a `TextField type="search"` has
+no clear button at all, because the anatomy draws none there. That is the
+intended reading — a search box is `SearchField`.
+
+**The call site is `buildFieldValueStyle`, the one place every field control
+passes through.** A per-component call would be one more thing to remember on
+the next field, and forgetting it is precisely how this shipped; a unit test
+now asserts that the injection lives in the shared builder and that no
+component calls it directly.
+
+Rejected: `appearance: none` on the input — tried first, because it would have
+been an inline one-liner needing no new mechanism, and **screenshotted as not
+working**: current Chromium keeps the cancel button through it. A rule scoped
+to `[data-scope='search-field']` — fixes the instance and not the bug, and
+leaves the `TextField type="search"` path open. Removing `type="search"` from
+the input — it is React Aria's, it carries real behaviour, and overriding it
+would trade a cosmetic duplicate for a functional regression. Shipping a real
+CSS file with the package — the package's whole styling model is inline
+`vars.*` reads, and one `<style>` for what inline styles cannot express is the
+established exception, not a new direction.
