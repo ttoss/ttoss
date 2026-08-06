@@ -194,8 +194,10 @@ and doc stays evidence of an unstated invariant until proven otherwise.
   at the typed source; a mirror that must enumerate for offline consumers
   (`llms.txt`) carries a drift guard instead (fsl-ui's now exists —
   `tests/unit/tests/llms.test.ts`, catalog/intents/knobs/cascade, verified to fail
-  on injection; fsl-theme's already did). **E1 remainder:** compress the process
-  history in this file and `FORMS.md` to a dated index + durable rulings.
+  on injection; fsl-theme's already did). **E1 work complete 2026-08-06** — the
+  process-history compression landed the same day (this file 806→540 lines,
+  `FORMS.md` 946→317, `EVOLUTION.md` retired to git history). Exit criterion met
+  to the audits' best knowledge; the owner check that opens E2 is pending.
 
 - **E2 — Consolidation** (design-level abstraction): inventory remaining duplicated or
   ad-hoc styling logic and complete the shared-anatomy movement (`ActionTrigger`,
