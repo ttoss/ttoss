@@ -11,6 +11,7 @@ import {
   type ModalOverlayProps as RACModalOverlayProps,
 } from 'react-aria-components';
 
+import { buildActionRowStyle } from '../../components/ActionTrigger/anatomy';
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { fslVar } from '../../tokens/escapeHatch';
 import { buildOccludingSurfaceStyle } from '../../tokens/occludingSurface';
@@ -518,12 +519,13 @@ export const DialogActions = ({
       data-scope="dialog"
       data-part="actions"
       data-platform={platform}
-      style={{
-        display: 'flex',
-        justifyContent: 'flex-end',
-        gap: vars.spacing.gap.inline.md,
-        marginBlockStart: vars.spacing.gap.stack.lg,
-      }}
+      // `usesFlexDefaults` keeps this row's historical shape (cross axis at
+      // the flex default, not centred) — see the builder's doc for why that
+      // divergence is preserved rather than converged here.
+      style={buildActionRowStyle({
+        topGap: vars.spacing.gap.stack.lg,
+        usesFlexDefaults: true,
+      })}
     >
       {sorted}
     </div>

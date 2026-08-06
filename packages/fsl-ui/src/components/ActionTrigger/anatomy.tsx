@@ -211,11 +211,13 @@ const GROUP_ALIGN: Record<ActionGroupAlign, string> = {
 };
 
 /**
- * Arrangement shared by the group containers that opt into it. `DialogActions`
- * is the standing exception: it predates this builder, reorders its children by
- * `composition` per platform, and uses the wider `gap.inline.md` — so the action
- * row currently has two rhythms, which is a real inconsistency and not a bug in
- * either place.
+ * Arrangement shared by the group containers that opt into it. The
+ * committed-actions rows (`DialogActions`, `FormActions`, `WizardNavigation`)
+ * use the sibling {@link buildActionRowStyle} instead, with the wider
+ * `gap.inline.md` — so the action row has two rhythms, each now stated exactly
+ * once in this file. That is a real inconsistency and not a bug in either
+ * place; whether the rhythms should converge is an open owner question the
+ * extraction deliberately does not answer.
  *
  * `align` acts on whichever axis has free space — the main axis in a row
  * (`justify-content`), the cross axis in a column (`align-items`) — so the prop
@@ -243,6 +245,65 @@ export const buildActionGroupStyle = ({
     alignItems: isColumn ? GROUP_ALIGN[align] : 'center',
     justifyContent: isColumn ? 'flex-start' : GROUP_ALIGN[align],
     flexWrap: 'nowrap',
+  } as React.CSSProperties;
+};
+
+/**
+ * Where a committed-actions row places its actions along the inline axis.
+ * `between` exists because `FormActions` offers it (dismiss at one edge,
+ * commit at the other); the other rows are end-aligned.
+ */
+export type ActionRowAlign = 'start' | 'end' | 'between';
+
+const ROW_ALIGN: Record<ActionRowAlign, string> = {
+  start: 'flex-start',
+  end: 'flex-end',
+  between: 'space-between',
+};
+
+/**
+ * Arrangement of a **committed-actions row** — the band of terminal actions a
+ * composite ends with: `DialogActions`, `FormActions`, `WizardNavigation`.
+ * This is the family's second rhythm: sibling actions sit `gap.inline.md`
+ * apart where a group's triggers sit `gap.inline.sm` (see
+ * {@link buildActionGroupStyle}, which names the inconsistency), and the row
+ * separates itself from the content it commits with a block-start margin.
+ *
+ * `topGap` stays a parameter because the three composites end their stacks at
+ * different distances: a dialog's body sits `gap.stack.lg` above its actions,
+ * a form's fields and a wizard's step only `gap.stack.sm`. Whether those
+ * should converge belongs to the same owner question as the two rhythms.
+ *
+ * `usesFlexDefaults` preserves `DialogActions`' historical shape byte for
+ * byte: that row asserts none of `boxSizing`/`flexDirection`/`alignItems`.
+ * Direction and box-model are no-ops either way, but the cross axis is a real
+ * behavioural difference — the dialog row stays at the flex default
+ * (`stretch`) where the other rows centre — so converging it is an owner
+ * decision, not an extraction. These rows also do not provide
+ * `ActionTriggerGroupProvider`: granting their children the group's no-shrink
+ * behaviour would be a behaviour change, owed the same decision.
+ */
+export const buildActionRowStyle = ({
+  align = 'end',
+  topGap,
+  usesFlexDefaults,
+}: {
+  align?: ActionRowAlign;
+  topGap: string;
+  usesFlexDefaults?: boolean;
+}): React.CSSProperties => {
+  return {
+    ...(usesFlexDefaults
+      ? { display: 'flex' }
+      : {
+          boxSizing: 'border-box',
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+        }),
+    justifyContent: ROW_ALIGN[align],
+    gap: vars.spacing.gap.inline.md,
+    marginBlockStart: topGap,
   } as React.CSSProperties;
 };
 
