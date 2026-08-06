@@ -221,6 +221,7 @@ and doc stays evidence of an unstated invariant until proven otherwise.
   8. C-02 occluding-surface chrome ×6 + C-09 Toast-internal triggers → `occludingSurface.ts` / `hostedTrigger.ts`
   9. C-10 action-row rhythm extraction (Dialog/Form/Wizard) — the anatomy's own named inconsistency
   10. C-12 gap/align scale maps · C-13 stylesheet injector · C-11 navigation `current` through the cascade
+  - **Wave 1 landed 2026-08-06** (queue items 1–4 and 6: C-03 `overlayMotion`, C-06/C-07 `selectionControl`, C-08 rail envelope, C-01 `ActionTriggerRoot`). Suites 2845/2845 at 100. **Parity verdict:** full 358-frame recapture on a fresh server — 357 within capture noise (max delta 14/255 between same-code runs, sub-perceptual AA jitter, light-JPEG-only), and the single real diff was not a regression: the adaptive ButtonGroup story lost a pre-existing font-load race the extraction's timing shift exposed — verdict logic verified intact via the dark frame and the ADR-013 suite, filed as **F-061**.
   - Deferred with reason: C-14 field-envelope JSX (8 files × ~15 lines, anatomy notes read as a deliberate stop-point — revisit if a ninth field lands).
   - Design questions split from the mechanical work (owner or FRICTION, not silently absorbed): Tooltip is the only occluder whose `primary` voice does not publish (C-02); Tag's remove button lacks ring + hit floor — an a11y fix, not a refactor (C-09); whether the two action-row rhythms (`inline.sm` group vs `inline.md` committed row) converge (C-10).
 

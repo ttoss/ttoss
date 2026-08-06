@@ -12,9 +12,10 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 
 ## Open items (derived — the entry below is always the source of truth)
 
-**Two open — F-058 and F-059**, both opened 2026-08-06 by the `Toast`
-anatomy review (fsl-ui ADR-040), both `paper-cut`, both with the measurement
-already taken and the repair deliberately not built. Before them the log had
+**Three open — F-058 and F-059** (both opened 2026-08-06 by the `Toast`
+anatomy review, fsl-ui ADR-040) **and F-061** (opened 2026-08-06 by the E2
+wave-1 parity gate), all `paper-cut`, all with the measurement already taken
+and the repair deliberately not built. Before them the log had
 been at zero since F-004 resolved 2026-08-05. The grouping below (by the
 _kind of decision_ each one needed rather than by severity, because that is
 what made a review round plannable) is historical: every row in it is struck
@@ -734,3 +735,12 @@ Do not edit an entry through this list.
 - **Measured, before deciding the blast radius.** Read from the rendered DOM in Chromium: `search-field` is the only control in the package carrying a decorated type (`type="search"`); `NumberField` is `type="text"` with `inputmode="numeric"` (React Aria supplies the spinbutton semantics, so the native steppers never appear), `TextField` and `ComboBox` are `type="text"`. So one component is affected today — but `TextField` passes a caller's `type` straight to the input, which puts the same defect one prop away, and `type="date"` was confirmed to render `::-webkit-calendar-picker-indicator` inside our frame right now.
 - **`appearance: none` on the input does not fix it** — tried first, since it would have been an inline one-liner in `buildFieldValueStyle` and needed no new mechanism. Screenshotted: current Chromium keeps the cancel button. Only the pseudo-element rule removes it, and a pseudo-element cannot be addressed from a `style` object, which is the only styling channel this package uses.
 - **Resolved at the anatomy, type-agnostically.** New `src/tokens/nativeFieldDecorations.ts` injects one `<style>` per document via the `ensureKeyframes()` pattern, suppressing exactly the decorations that duplicate an adornment the anatomy draws (`search-cancel-button`, `search-decoration`, `search-results-button`) and deliberately leaving every decoration that is the _only_ affordance for its type (calendar indicator, spin buttons, password reveal) to the browser. It is called from `buildFieldValueStyle` — the one place every field control passes through — rather than from a component, because a per-component call is one more thing to forget on the next field, which is how this shipped. Verified in Chromium: one ✕, ours.
+
+### F-061 — The adaptive ButtonGroup's overflow verdict goes stale when a child resizes after mount
+
+- **Date:** 2026-08-06 · **Surface:** `@ttoss/fsl-ui` `ButtonGroup` (`useAdaptiveColumn`) · **Severity:** paper-cut · **Status:** open
+- Found by the E2 wave-1 pixel-parity gate, which is exactly the kind of eye that catches it: in the `collapses-when-it-does-not-fit` story, the light capture rendered the 360px "fits" case **collapsed** while the dark capture of the same page session — same code, later in the load — rendered it correctly side by side. Two independent fresh-server captures reproduced the split; the ADR-013 suite and the dark frame prove the verdict logic itself is intact.
+- **Root cause:** the verdict is measured once per `children` identity in a mount-time layout effect, and invalidation watches only the **container** (`ResizeObserver` on `parentElement`). Inter Variable arrives after first layout; the fallback-font row measures wider than the container, the group settles on `isColumn: true`, and when the real font lands narrower nothing re-measures — a child's resize is invisible to the container observer. The race runs in both directions (wrongly collapsed row, or an overflowing row that should have collapsed), lasts until the next container resize, and any consumer on a slow font path can ship it to users.
+- Not introduced by E2 — the extraction changed module-load timing enough to lose the race in the probe, which is how a pre-existing hole became visible. The capture harness now documents the one legitimate non-noise diff it has produced.
+- **Costed options**, none built: **(a)** observe the children too — correct signal, but settling _changes_ the children's layout, so the observer must not re-invalidate on the resize the settle itself causes; the verdict-key machine absorbs one cycle but an oscillating fit (row fits ⇄ column fits) could ping-pong. **(b)** `document.fonts.ready.then(invalidate)` — one-shot, targets the actual late resizer, no loop surface; misses non-font child resizes (an icon loading, a label swap), which today have no known consumer. **(c)** leave it: transient, self-heals on any container resize.
+- **Recommendation: (b)** — the only late child resize with a real consumer is the webfont, and `fonts.ready` is its precise, once-per-document signal. Re-open toward (a) if a non-font consumer appears.
