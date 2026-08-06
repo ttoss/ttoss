@@ -1,4 +1,7 @@
 import { vars } from '@ttoss/fsl-theme/vars';
+import type * as React from 'react';
+
+import { voicedSurface } from './surfaceScope';
 
 /**
  * The boundary of a surface that **occludes content** (CONTRACT §3.5, F-044).
@@ -48,3 +51,85 @@ import { vars } from '@ttoss/fsl-theme/vars';
  * proves one token suffices instead of a per-stratum family.
  */
 export const OCCLUDING_OUTLINE = vars.overlay.outline;
+
+/**
+ * The colour subtree an occluding surface paints from. Only the resting fill
+ * is read here — the ink, and every state beyond rest, stay at the call site.
+ */
+interface OccludingSurfaceColors {
+  background?: { default?: string };
+}
+
+/**
+ * The chrome every **occluding surface** shares (CONTRACT §3.5, ADR-031):
+ * the surface radius, the `outline.surface` edge painted in the occluding
+ * boundary above, the elevation shadow, the fill, and a suppressed UA
+ * `outline` (React Aria overlays are focusable containers). Six components
+ * assemble this — `Popover`, `Tooltip`, `Menu`'s popover, `Dialog`'s modal
+ * surface, `Drawer`'s panel, `Toast`'s root — and until E2 each wrote it out
+ * by hand: six copies that agree today are indistinguishable from six that
+ * track, until one moves (the two-constants lesson, `rail.ts`).
+ *
+ * The axes the six genuinely differ on are parameters; everything a caller
+ * owns alone (padding, knob-based min/max sizes, overflow, ink, motion,
+ * z-index) stays at the caller:
+ *
+ * - `elevation` — the stratum's shadow: `overlay` for the five that block or
+ *   anchor, `raised` for `Toast`, the one surface that lifts off the page
+ *   plane without covering a specific spot.
+ * - `fill` — whether the surface **publishes** itself (CONTRACT §3.4).
+ *   `voiced` routes through `voicedSurface`: the page-like `primary` voice
+ *   publishes on `--fsl-surface`, every other voice keeps its voice.
+ *   `plain` paints without ever publishing.
+ * - `corners` — a surface flush with a viewport edge (`Drawer`) squares its
+ *   anchored corners, so it passes its per-corner radii here instead of the
+ *   uniform `radii.surface` default. A slice parameter, not a boolean, so the
+ *   uniform shorthand is never emitted next to the longhands it would fight.
+ *
+ * ## Constraint — the two `plain` callers are not the same case
+ *
+ * `Toast` is ruled: a Feedback fill is a voice at every evaluation (its
+ * `primary` is `neutral.800`, not the page), and voiced fills never publish
+ * (`surfaceScope` bounds, held by fsl-theme's inventory). `Tooltip` is the
+ * **open question**: it is the only occluder whose page-like `primary` voice
+ * does not publish. Nothing breaks today — a tooltip hosts nothing, it must
+ * contain only non-interactive text — but if one ever hosts a quiet control,
+ * whether its primary voice should publish like every other Overlay's is an
+ * owner ruling still pending. `plain` here preserves that behaviour; it does
+ * not decide the question.
+ */
+export const buildOccludingSurfaceStyle = ({
+  evaluation = 'primary',
+  colors,
+  elevation,
+  fill,
+  corners,
+}: {
+  /** The surface's voice — read only by the `voiced` fill's publish rule. */
+  evaluation?: string;
+  /** The caller's entity colour subtree (informational or feedback). */
+  colors: OccludingSurfaceColors | undefined;
+  /** Depth stratum: blocking/anchored surfaces are `overlay`, Toast is `raised`. */
+  elevation: 'overlay' | 'raised';
+  /** `voiced` publishes the page-like primary voice; `plain` never publishes. */
+  fill: 'voiced' | 'plain';
+  /** Per-corner radii for a surface flush with an edge; default is the uniform surface radius. */
+  corners?: React.CSSProperties;
+}): React.CSSProperties => {
+  const restingFill = colors?.background?.default;
+  return {
+    ...(corners ?? { borderRadius: vars.radii.surface }),
+    borderWidth: vars.border.outline.surface.width,
+    borderStyle: vars.border.outline.surface.style,
+    // Occluding boundary (CONTRACT §3.5) — see above for why the role's own
+    // edge cannot carry the ≥3:1 separator duty.
+    borderColor: OCCLUDING_OUTLINE,
+    ...(fill === 'voiced'
+      ? // A hosting surface publishes itself (CONTRACT §3.4); only the
+        // page-like primary voice does — a voiced surface keeps its voice.
+        voicedSurface({ evaluation, color: restingFill })
+      : { backgroundColor: restingFill }),
+    boxShadow: vars.elevation.surface[elevation],
+    outline: 'none',
+  };
+};

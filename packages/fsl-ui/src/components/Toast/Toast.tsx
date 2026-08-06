@@ -14,8 +14,8 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
-import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
-import { OCCLUDING_OUTLINE } from '../../tokens/occludingSurface';
+import { buildHostedTriggerStyle } from '../../tokens/hostedTrigger';
+import { buildOccludingSurfaceStyle } from '../../tokens/occludingSurface';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import type { IconIntent } from '../Icon';
 import { Icon } from '../Icon';
@@ -166,17 +166,18 @@ const buildToastRootStyle = (c: FeedbackColors): React.CSSProperties => {
     // there. 4.7px heavy beats 7.3px light, so the uniform value stays and
     // the residual is filed, not papered over with a literal.
     padding: vars.spacing.inset.surface.md,
-    borderRadius: vars.radii.surface,
-    borderWidth: vars.border.outline.surface.width,
-    borderStyle: vars.border.outline.surface.style,
     // A toast floats over content, so it owes the same boundary as every
-    // other occluding surface (CONTRACT §3.5) — its own filled valences keep
-    // their fill, which is what the `feedback` role still drives.
-    borderColor: OCCLUDING_OUTLINE,
-    backgroundColor: c?.background?.default,
+    // other occluding surface (CONTRACT §3.5) — `raised`, not `overlay`: it
+    // lifts off the page plane without covering a specific spot. `plain`, not
+    // `voiced`: its filled valences keep their fill, which is what the
+    // `feedback` role still drives — a Feedback fill is a voice at every
+    // evaluation and never publishes (`surfaceScope` bounds).
+    ...buildOccludingSurfaceStyle({
+      colors: c,
+      elevation: 'raised',
+      fill: 'plain',
+    }),
     color: c?.text?.default,
-    boxShadow: vars.elevation.surface.raised,
-    outline: 'none',
   };
 };
 
@@ -198,8 +199,12 @@ const buildToastGlyphStyle = (): React.CSSProperties => {
   } as React.CSSProperties;
 };
 
-/** Close-button (closeTrigger) style — icon button, transparent by default. */
-const buildCloseTriggerStyle = ({
+/**
+ * Close-button (closeTrigger) style — icon button, transparent by default.
+ * The box is `hostedTrigger`'s `icon` posture; the colours stay this host's
+ * (`feedback.*` — see the file header for why `action.*` is not available).
+ */
+const buildToastCloseTriggerStyle = ({
   c,
   isHovered,
   isPressed,
@@ -214,24 +219,13 @@ const buildCloseTriggerStyle = ({
 }): React.CSSProperties => {
   const flags = { isHovered, isPressed, isDisabled, isFocusVisible } as const;
   const text = c?.text;
-  return {
-    boxSizing: 'border-box',
-    flexShrink: 0,
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: vars.sizing.icon.lg,
-    height: vars.sizing.icon.lg,
-    padding: 0,
-    border: 'none',
-    borderRadius: vars.radii.control,
+  return buildHostedTriggerStyle({
+    posture: 'icon',
     background: resolveInteractiveStyle(c?.background, flags) ?? 'transparent',
-    color: resolveInteractiveStyle(text, flags) ?? text?.default,
-    cursor: isDisabled ? 'not-allowed' : 'pointer',
-    opacity: isDisabled ? vars.opacity.disabled : undefined,
-    outline: focusRingOutline(isFocusVisible),
-    outlineOffset: FOCUS_RING_OFFSET,
-  };
+    ink: resolveInteractiveStyle(text, flags) ?? text?.default,
+    isDisabled,
+    isFocusVisible,
+  });
 };
 
 /**
@@ -255,8 +249,13 @@ const buildCloseTriggerStyle = ({
  * nothing" no contrast audit can see (the argument `EMBEDDED_TRIGGER` makes
  * at length). Here it is also simply true: the trigger's interior *is* the
  * toast.
+ *
+ * The box is `hostedTrigger`'s `outlined` posture. Renamed from the
+ * `buildActionTriggerStyle` this file shipped with, which deliberately
+ * name-collided with the `ActionTrigger` anatomy's export of the same name —
+ * this one is the toast's, dressed by the toast.
  */
-const buildActionTriggerStyle = ({
+const buildToastActionTriggerStyle = ({
   c,
   isHovered,
   isPressed,
@@ -272,26 +271,13 @@ const buildActionTriggerStyle = ({
   const flags = { isHovered, isPressed, isDisabled, isFocusVisible } as const;
   const text = c?.text;
   const ink = resolveInteractiveStyle(text, flags) ?? text?.default;
-  return {
-    boxSizing: 'border-box',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'flex-start',
-    paddingBlock: vars.spacing.inset.control.sm,
-    paddingInline: vars.spacing.inset.control.md,
-    borderRadius: vars.radii.control,
-    borderWidth: vars.border.outline.control.width,
-    borderStyle: vars.border.outline.control.style,
-    borderColor: ink,
+  return buildHostedTriggerStyle({
+    posture: 'outlined',
     background: resolveInteractiveStyle(c?.background, flags),
-    color: ink,
-    cursor: isDisabled ? 'not-allowed' : 'pointer',
-    opacity: isDisabled ? vars.opacity.disabled : undefined,
-    outline: focusRingOutline(isFocusVisible),
-    outlineOffset: FOCUS_RING_OFFSET,
-    ...(vars.text.action.md as React.CSSProperties),
-  } as React.CSSProperties;
+    ink,
+    isDisabled,
+    isFocusVisible,
+  });
 };
 
 /** Formal semantic identity — ToastRegion (Feedback entity, root host). */
@@ -571,7 +557,7 @@ export const Toast = ({ toast }: ToastProps) => {
               }
             }}
             style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => {
-              return buildActionTriggerStyle({
+              return buildToastActionTriggerStyle({
                 c,
                 isHovered,
                 isPressed,
@@ -590,7 +576,7 @@ export const Toast = ({ toast }: ToastProps) => {
         data-scope="toast"
         data-part="closeTrigger"
         style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => {
-          return buildCloseTriggerStyle({
+          return buildToastCloseTriggerStyle({
             c,
             isHovered,
             isPressed,

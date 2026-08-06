@@ -13,13 +13,12 @@ import {
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { fslVar } from '../../tokens/escapeHatch';
-import { OCCLUDING_OUTLINE } from '../../tokens/occludingSurface';
+import { buildOccludingSurfaceStyle } from '../../tokens/occludingSurface';
 import {
   buildScrimStyle,
   resolveTransitionPhase,
   surfacePhaseTransition,
 } from '../../tokens/overlayMotion';
-import { voicedSurface } from '../../tokens/surfaceScope';
 import { createPresenceScope } from '../scope';
 
 // ---------------------------------------------------------------------------
@@ -211,16 +210,14 @@ const buildModalSurfaceStyle = ({
     maxWidth: fslVar('--fsl-dialog-max-width', DIALOG_MAX_WIDTH_DEFAULT),
     maxHeight: fslVar('--fsl-dialog-max-height', DIALOG_MAX_HEIGHT_DEFAULT),
     overflow: 'auto',
-    borderRadius: vars.radii.surface,
-    borderWidth: vars.border.outline.surface.width,
-    borderStyle: vars.border.outline.surface.style,
-    // Occluding boundary (CONTRACT §3.5).
-    borderColor: OCCLUDING_OUTLINE,
-    boxShadow: vars.elevation.surface.overlay,
-    // A hosting surface publishes itself (CONTRACT §3.4); only the
-    // page-like primary voice does — a voiced surface keeps its voice.
-    ...voicedSurface({ evaluation, color: colors?.background?.default }),
-    outline: 'none',
+    // Occluding chrome (CONTRACT §3.5/§3.4): boundary, published voiced
+    // fill, overlay elevation — one builder across the six occluders.
+    ...buildOccludingSurfaceStyle({
+      evaluation,
+      colors,
+      elevation: 'overlay',
+      fill: 'voiced',
+    }),
     transition: surfacePhaseTransition(phase),
     transform: inTransition ? 'scale(0.95)' : 'scale(1)',
     opacity: inTransition ? 0 : 1,

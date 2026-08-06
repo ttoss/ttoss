@@ -9,7 +9,7 @@ import {
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { fslVar } from '../../tokens/escapeHatch';
-import { OCCLUDING_OUTLINE } from '../../tokens/occludingSurface';
+import { buildOccludingSurfaceStyle } from '../../tokens/occludingSurface';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -95,14 +95,20 @@ export const Tooltip = ({
             '--fsl-tooltip-max-width',
             TOOLTIP_MAX_WIDTH_DEFAULT
           ),
-          borderRadius: vars.radii.surface,
-          borderWidth: vars.border.outline.surface.width,
-          borderStyle: vars.border.outline.surface.style,
-          // Occluding boundary (CONTRACT §3.5).
-          borderColor: OCCLUDING_OUTLINE,
-          backgroundColor: colors?.background?.default,
+          // Occluding chrome (CONTRACT §3.5). `plain`, not `voiced`: the
+          // Tooltip is the one occluder whose primary voice does not publish
+          // `--fsl-surface` — see the builder's constraint note (owner ruling
+          // pending; a tooltip hosts nothing today).
+          ...buildOccludingSurfaceStyle({
+            colors,
+            elevation: 'overlay',
+            fill: 'plain',
+          }),
+          // A tooltip is never a focus target and declared no `outline`
+          // before the shared chrome existed — `undefined` keeps the rendered
+          // attribute byte-identical (React skips undefined style keys).
+          outline: undefined,
           color: colors?.text?.default,
-          boxShadow: vars.elevation.surface.overlay,
           // A hint frames one line of text, so it takes the anchored step on
           // both axes — uniform, which is the shape the reference gives every
           // anchored surface (`popover-padding` is one value, not a pair).

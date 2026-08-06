@@ -20,12 +20,9 @@ import type {
 import { buildChoosableRowInteractiveStyle } from '../../tokens/choosableRow';
 import { resolveConsequenceInk } from '../../tokens/consequenceInk';
 import { fslVar } from '../../tokens/escapeHatch';
-import { OCCLUDING_OUTLINE } from '../../tokens/occludingSurface';
+import { buildOccludingSurfaceStyle } from '../../tokens/occludingSurface';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
-import {
-  resolveSurfaceBoundStyle,
-  voicedSurface,
-} from '../../tokens/surfaceScope';
+import { resolveSurfaceBoundStyle } from '../../tokens/surfaceScope';
 import { createPresenceScope } from '../scope';
 
 // Layout constants (CONTRIBUTING §4 layout-literal rule) — popover surface
@@ -177,22 +174,16 @@ export const Menu = <T extends object>({
             // [data-scope="menu"][data-part="root"].
             minWidth: fslVar('--fsl-menu-min-width', MENU_MIN_WIDTH_DEFAULT),
             maxWidth: fslVar('--fsl-menu-max-width', MENU_MAX_WIDTH_DEFAULT),
-            borderRadius: vars.radii.surface,
-            borderWidth: vars.border.outline.surface.width,
-            borderStyle: vars.border.outline.surface.style,
-            // An occluding surface's boundary is infrastructure, not voice
-            // (CONTRACT §3.5) — see the helper for why the role's own edge
-            // cannot carry the ≥3:1 separator duty.
-            borderColor: OCCLUDING_OUTLINE,
-            // A hosting surface publishes itself (CONTRACT §3.4); only the
-            // page-like primary voice does — a voiced surface keeps its voice.
-            ...voicedSurface({
+            // Occluding chrome (CONTRACT §3.5/§3.4): boundary, published
+            // voiced fill, overlay elevation — one builder across the six
+            // occluders.
+            ...buildOccludingSurfaceStyle({
               evaluation,
-              color: colors?.background?.default,
+              colors,
+              elevation: 'overlay',
+              fill: 'voiced',
             }),
             color: colors?.text?.default,
-            boxShadow: vars.elevation.surface.overlay,
-            outline: 'none',
             overflow: 'auto',
             zIndex: vars.zIndex.layer.overlay,
           } as React.CSSProperties

@@ -8,14 +8,13 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
-import { OCCLUDING_OUTLINE } from '../../tokens/occludingSurface';
+import { buildOccludingSurfaceStyle } from '../../tokens/occludingSurface';
 import {
   buildScrimStyle,
   resolveTransitionPhase,
   surfacePhaseTransition,
 } from '../../tokens/overlayMotion';
 import { PANEL_WIDTH, type PanelWidth } from '../../tokens/panelWidth';
-import { voicedSurface } from '../../tokens/surfaceScope';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -169,16 +168,19 @@ const buildSurfaceStyle = ({
 }): React.CSSProperties => {
   return {
     ...panelBox({ placement, width }),
-    ...cornerRadii(placement),
     ...panelMotion({ isEntering, isExiting, placement }),
-    // A hosting surface publishes itself (CONTRACT §3.4); only the
-    // page-like primary voice does — a voiced surface keeps its voice.
-    ...voicedSurface({ evaluation, color: colors?.background?.default }),
-    // Occluding boundary (CONTRACT §3.5).
-    borderColor: OCCLUDING_OUTLINE,
-    borderStyle: vars.border.outline.surface.style,
-    borderWidth: vars.border.outline.surface.width,
-    boxShadow: vars.elevation.surface.overlay,
+    // Occluding chrome (CONTRACT §3.5/§3.4): boundary, published voiced
+    // fill, overlay elevation — one builder across the six occluders. The
+    // anchored edge keeps its per-corner radii, passed through as the
+    // builder's `corners` slice so the uniform shorthand is never emitted
+    // beside the longhands a flush panel needs.
+    ...buildOccludingSurfaceStyle({
+      evaluation,
+      colors,
+      elevation: 'overlay',
+      fill: 'voiced',
+      corners: cornerRadii(placement),
+    }),
     boxSizing: 'border-box',
     // A definite inline size makes the panel a size container, so the theme's
     // `cqi` scales resolve against the drawer rather than the viewport
