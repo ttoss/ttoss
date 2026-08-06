@@ -205,6 +205,25 @@ and doc stays evidence of an unstated invariant until proven otherwise.
   abstraction = one ADR + pixel-identical Chromium verification light+dark (the round-6
   precedent) + suites at 100. **Exit:** no byte-duplicated styling logic.
   **Opened 2026-08-06** (owner check on E1 passed the same day).
+
+  **E2 inventory (2026-08-06):** jscpd (22 exact clones, ~384 lines) + a semantic
+  read of every component against the existing shared sources. Queue, ordered by
+  completes-an-existing-pattern first, blast radius ascending — items 1–8 are
+  byte-safe extractions (parity gate: byte-identical JPEG recapture against the
+  358-frame baseline; harness verified deterministic):
+  1. C-03 modal motion/scrim (Dialog⇄Drawer) → `tokens/overlayMotion.ts`
+  2. C-07 selection label ink + option row (Checkbox/Radio/Switch) → `selectionControl.ts`
+  3. C-08 rail root/labelRow/track/fill (ProgressBar/Meter/Slider) → `rail.ts`
+  4. C-06 selection-mark cascade (same trio; GridList's degenerate copy stays) → `selectionControl.ts`
+  5. C-05 collection container chrome (GridList/ListBox/Table) → `collectionRow.ts`
+  6. C-01 action-trigger colour triple (Button/ActionButton; Menu opts in) → trigger anatomy
+  7. C-04 choosable-row state wiring (SelectItem/ComboBoxItem/ListBox/GridList/Menu) → `choosableRow.ts`
+  8. C-02 occluding-surface chrome ×6 + C-09 Toast-internal triggers → `occludingSurface.ts` / `hostedTrigger.ts`
+  9. C-10 action-row rhythm extraction (Dialog/Form/Wizard) — the anatomy's own named inconsistency
+  10. C-12 gap/align scale maps · C-13 stylesheet injector · C-11 navigation `current` through the cascade
+  - Deferred with reason: C-14 field-envelope JSX (8 files × ~15 lines, anatomy notes read as a deliberate stop-point — revisit if a ninth field lands).
+  - Design questions split from the mechanical work (owner or FRICTION, not silently absorbed): Tooltip is the only occluder whose `primary` voice does not publish (C-02); Tag's remove button lacks ring + hit floor — an a11y fix, not a refactor (C-09); whether the two action-row rhythms (`inline.sm` group vs `inline.md` committed row) converge (C-10).
+
 - **E3 — Technical hygiene** (mechanical, zero public-surface change): dead code
   (`knip`-class sweep + the treeshake probe), structure/co-location, naming; retire
   `visual-signoff.mjs`. **Exit:** zero unused exports; builds, probes and ratchets
