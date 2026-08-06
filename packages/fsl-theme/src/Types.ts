@@ -10,7 +10,9 @@
  *
  * Structure (post-decomposition):
  *   - Per-family types live in `./families/<family>.ts` (one file per token
- *     family, mirroring `docs/.../design-tokens/families/*.md`).
+ *     family, mirroring `docs/.../design-tokens/families/*.md` — except the
+ *     cross-cutting families (model.md §6), documented inside the pages of
+ *     the families they compose with rather than on pages of their own).
  *   - This file is the assembler: it re-exports the primitives and family
  *     types, and defines the top-level `ThemeTokens`, `ThemeBundle`,
  *     `ModeOverride`, and `SemanticTokens` contracts that consumers depend on.

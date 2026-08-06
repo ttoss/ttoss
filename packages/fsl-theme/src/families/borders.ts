@@ -25,9 +25,11 @@ interface CoreBorderWidths {
  * Core line offsets — the gap between a box's edge and a line drawn outside it.
  *
  * One member, because the focus ring is the only line the system draws outside
- * the box. Named for its canonical use site like the width scale beside it, and
- * defended by the same argument (borders.md § Naming note): the name carries the
- * relationship a purely ordinal key would lose.
+ * the box. Named for its canonical use site like the width scale beside it:
+ * the name carries the relationship a purely ordinal key would lose. The
+ * offset's promotion into the token contract is defended where the ring's
+ * composition is specified (borders.md, focus-ring composition — § Focus
+ * Implementation).
  *
  * Kept **independent of `width.focused`** even though the base theme sets both
  * to the same value. The reference system does the same — `focus-indicator-gap`

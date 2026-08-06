@@ -7,7 +7,11 @@ import type * as React from 'react';
 
 import { baseBundle } from '../../../../../src/baseBundle';
 import { createTheme } from '../../../../../src/createTheme';
-import { getPreflightStyles, PREFLIGHT_CSS } from '../../../../../src/css';
+import {
+  getPreflightStyles,
+  PREFLIGHT_CSS,
+  toCssVars,
+} from '../../../../../src/css';
 import { useDatavizTokens } from '../../../../../src/dataviz/useDatavizTokens';
 import { withDataviz } from '../../../../../src/dataviz/withDataviz';
 import {
@@ -1375,6 +1379,32 @@ describe('ThemeReset / preflight', () => {
     // Layout-agnostic: the base declares no layout (that is fsl-ui / the app).
     expect(PREFLIGHT_CSS).not.toContain('display:');
     expect(PREFLIGHT_CSS).not.toContain('grid');
+  });
+
+  test('every var() the preflight reads is emitted by the theme CSS', () => {
+    // Guard against emitter/preflight naming drift: the preflight is a static
+    // string, so a rename in the emitter (toCssVarName) would otherwise make
+    // its var() reads silently fall back (T-20). Every custom property the
+    // preflight reads must exist in the vars record the emitter produces.
+    const emittedVars = toCssVars(defaultBundle).base.cssVars;
+    const readVars = [...PREFLIGHT_CSS.matchAll(/var\((--tt-[\w-]+)/g)].map(
+      (match) => {
+        return match[1];
+      }
+    );
+
+    // Sanity: the body typography reads are among them.
+    expect(readVars).toEqual(
+      expect.arrayContaining([
+        '--tt-text-body-md-fontFamily',
+        '--tt-text-body-md-fontSize',
+        '--tt-text-body-md-lineHeight',
+      ])
+    );
+
+    for (const varName of readVars) {
+      expect(emittedVars).toHaveProperty([varName]);
+    }
   });
 
   test('ThemeReset injects the preflight into a <style> tag', () => {
