@@ -93,7 +93,7 @@ wrong unless the movement's purpose says otherwise.
 **Cross-cutting** (apply to ALL interactive entities — not in the table because they are entity-agnostic):
 
 | Token family       | Path                                                                                   |
-| ------------------ | -------------------------------------------------------------------------------------- | ------ | ------- | -------- | ----------- |
+| ------------------ | -------------------------------------------------------------------------------------- |
 | Focus ring         | `vars.focus.ring.width` / `.style` / `.color` / `.offset`                              |
 | Consequence ink    | `vars.consequence.destructive.ink` — read via `resolveConsequenceInk` only (§3.3)      |
 | Occluding boundary | `vars.overlay.outline` — the edge of a surface that **covers** content (§3.5)          |
@@ -101,7 +101,7 @@ wrong unless the movement's purpose says otherwise.
 | Disabled opacity   | `vars.opacity.disabled`                                                                |
 | Scrim opacity      | `vars.opacity.scrim`                                                                   |
 | Scrim color        | `vars.overlay.scrim`                                                                   |
-| Z-Index            | `vars.zIndex.layer.{base                                                               | sticky | overlay | blocking | transient}` |
+| Z-Index            | `vars.zIndex.layer.{base,sticky,overlay,blocking,transient}`                           |
 
 ### §1.1 — Mapping Rationale
 

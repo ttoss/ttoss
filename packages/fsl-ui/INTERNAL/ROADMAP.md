@@ -204,6 +204,7 @@ and doc stays evidence of an unstated invariant until proven otherwise.
   `Field`, `disclosureAnatomy`, `rail`, `collectionRow` are the pattern). Each
   abstraction = one ADR + pixel-identical Chromium verification light+dark (the round-6
   precedent) + suites at 100. **Exit:** no byte-duplicated styling logic.
+  **Opened 2026-08-06** (owner check on E1 passed the same day).
 - **E3 — Technical hygiene** (mechanical, zero public-surface change): dead code
   (`knip`-class sweep + the treeshake probe), structure/co-location, naming; retire
   `visual-signoff.mjs`. **Exit:** zero unused exports; builds, probes and ratchets
