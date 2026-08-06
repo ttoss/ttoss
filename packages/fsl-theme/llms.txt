@@ -136,18 +136,23 @@ Valid `{ux, state}` combinations: see [Color state legality](#color-state-legali
 | Family | Path shape | Leaf type |
 | --- | --- | --- |
 | **colors** | `vars.colors.{ux}.{role}.{dimension}.{state?}` | CSS color |
-| **spacing** | `vars.spacing.inset.{control,surface}.{sm,md,lg}` | CSS length |
+| **spacing** | `vars.spacing.inset.control.{sm,md,lg}` | CSS length |
+| | `vars.spacing.inset.surface.{xs,sm,md,lg}` | CSS length |
+| | `vars.spacing.inset.action.block` (block padding of a command CTA) | CSS length |
 | | `vars.spacing.gap.{stack,inline}.{xs,sm,md,lg,xl}` | CSS length |
 | | `vars.spacing.gutter.{page,section}` | CSS length / `clamp()` |
 | | `vars.spacing.separation.interactive.min` | CSS length |
-| **text** | `vars.text.{display,headline,title,body,label,code}.{lg,md,sm}` | TextStyle (object — see below) |
+| **text** | `vars.text.{display,headline,title,body,label}.{lg,md,sm}` | TextStyle (object — see below) |
+| | `vars.text.code.{md,sm}` | TextStyle |
+| | `vars.text.action.md` (command button label — semibold) | TextStyle |
 | **sizing** | `vars.sizing.hit` | CSS length |
 | | `vars.sizing.icon.{sm,md,lg}` | CSS length |
+| | `vars.sizing.icon.text` (text-adjacent glyph — em-relative) | CSS length |
 | | `vars.sizing.identity.{sm,md,lg,xl}` | CSS length |
 | | `vars.sizing.measure.reading` | CSS `ch` / `clamp()` |
-| | `vars.sizing.surface.maxWidth` | CSS length |
+| | `vars.sizing.surface.{maxWidth,card}` | CSS length |
 | | `vars.sizing.viewport.{height,width}.full` | dvh / dvw |
-| **radii** | `vars.radii.{control,surface,round}` | CSS length |
+| **radii** | `vars.radii.{control,surface,action,round}` | CSS length |
 | **border** | `vars.border.divider.{width,style}` | object |
 | | `vars.border.outline.{surface,control,selected}.{width,style}` | object |
 | **focus** | `vars.focus.ring.{width,style,color,offset}` | object |
@@ -171,7 +176,8 @@ Find the CSS property you are setting; follow the branch.
 **`padding` → `spacing.inset`**
 
 - Interactive control (button, input, toggle) → `vars.spacing.inset.control.{sm|md|lg}`
-- Container (card, panel, dialog, section) → `vars.spacing.inset.surface.{sm|md|lg}`
+- Command CTA block padding → `vars.spacing.inset.action.block` (inline stays `inset.control.lg`)
+- Container (card, panel, dialog, section) → `vars.spacing.inset.surface.{xs|sm|md|lg}`
 - Default step at any level → `md`
 
 **`gap` → `spacing.gap`**
@@ -193,7 +199,8 @@ Find the CSS property you are setting; follow the branch.
 | Page or section heading | `vars.text.headline.{lg,md,sm}` |
 | Surface heading (card, panel, dialog) | `vars.text.title.{lg,md,sm}` |
 | Reading prose / description | `vars.text.body.{lg,md,sm}` |
-| UI label / button text / badge | `vars.text.label.{lg,md,sm}` |
+| UI label / utility trigger text / badge | `vars.text.label.{lg,md,sm}` |
+| Command button (CTA) label | `vars.text.action.md` |
 | Code / identifiers / monospace | `vars.text.code.{md,sm}` |
 
 `vars.text.*.*` is a **TextStyle object** — each field is its own `var(--tt-text-*)` string. Apply each field individually to the corresponding CSS property:
@@ -230,6 +237,7 @@ Available fields: `fontFamily` · `fontSize` · `fontWeight` · `lineHeight` · 
 **`border-radius` → `radii`**
 
 - Interactive control → `vars.radii.control`
+- Command button (CTA — pill in the base theme) → `vars.radii.action`
 - Containing surface → `vars.radii.surface`
 - Pill / capsule / circular avatar → `vars.radii.round`
 
@@ -301,7 +309,7 @@ State disambiguation rules:
 - **`active` vs `pressed`**: `active` = the brief moment of clicking (transient). `pressed` = persistent toggle engaged ("Bold" button). Never use `active` for toggle state.
 - **`selected` vs `checked`**: `selected` = one-of-many in a set (segment, picker option). `checked` = two-state on/off (checkbox, radio, switch).
 - **`selected` vs `current`**: `selected` = set membership. `current` = the user's actual location in the navigation set.
-- **Validation failure is not a state**: an invalid input renders with the `input.negative.*` role, not with an `invalid` state on `input.primary.*`.
+- **`invalid` is a state on the authored role, not a role swap**: an invalid input keeps its authored role and gains the `invalid` state (`isInvalid` at runtime — never authorial); the validation message carries `input.negative.text`. (FSL Lexicon §10.15; ADR-017)
 
 ## Co-occurrence rules (cross-family)
 
@@ -342,7 +350,7 @@ For each common LLM mistake, the wrong pick → the correct pick + the rule that
 | Delete / destroy button | `vars.colors.feedback.negative.*` | `vars.colors.action.negative.*` | Triggers → `action`. Reporting an outcome → `feedback`. |
 | Success toast | `vars.colors.informational.positive.*` | `vars.colors.feedback.positive.*` | System *reports* a result → `feedback`. Passive surface → `informational`. |
 | Warning text inside a card | `vars.colors.feedback.caution.*` | `vars.colors.informational.caution.*` | If it's part of static content (not a system event), it's `informational`. |
-| Form field with validation error | `input.primary.*` + `invalid` state | `vars.colors.input.negative.*` | Validation failure is a *role*, not a state. (FSL Lexicon §5) |
+| Form field with validation error | re-role the control to `vars.colors.input.negative.*` | authored role + `invalid` state (message text carries `input.negative.text`) | Validation failure is a *state* on the authored role, not a role swap. (FSL Lexicon §10.15; ADR-017) |
 | Disabled icon button | `opacity: vars.opacity.disabled` | `color: vars.colors.action.{role}.text.disabled` | §3 — controls/text carry contrast; only assets without color contract use `opacity.disabled`. |
 | Active tab indicator | `border.outline.selected` *only* | `border.outline.selected` + `colors.navigation.{role}.border.current` | Width via `border.outline.selected`; color via the `current` state. |
 | Toggle button engaged | `state: active` | `state: pressed` | `active` is transient (mouse down); `pressed` is persistent toggle. |
@@ -361,7 +369,7 @@ For each common LLM mistake, the wrong pick → the correct pick + the rule that
   outline-width: var(--tt-focus-ring-width);
   outline-style: var(--tt-focus-ring-style);
   outline-color: var(--tt-colors-action-primary-border-focused);
-  outline-offset: 2px;
+  outline-offset: var(--tt-focus-ring-offset);
 }
 .btn:hover:not(:disabled) {
   background: var(--tt-colors-action-primary-background-hover);
@@ -375,7 +383,7 @@ For each common LLM mistake, the wrong pick → the correct pick + the rule that
   outline-width: var(--tt-focus-ring-width);
   outline-style: var(--tt-focus-ring-style);
   outline-color: var(--tt-focus-ring-color);
-  outline-offset: 2px;
+  outline-offset: var(--tt-focus-ring-offset);
 }
 ```
 
@@ -614,9 +622,11 @@ import { createTheme } from '@ttoss/fsl-theme';
 
 const theme = createTheme({
   extends?: ThemeBundle,                       // built-in theme to extend
+  base?: ThemeTokens,                          // replace the base token set entirely
   baseMode?: 'light' | 'dark',                 // which mode the base represents
   overrides?: DeepPartial<ThemeTokens>,        // changes to the base
   alternate?: ModeOverride | null,             // dark alternate (null = single-mode)
+  brief?: ThemeBrief,                          // machine-readable design brief → bundle.meta (never emitted; format: theme-authoring docs)
 });
 ```
 

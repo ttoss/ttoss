@@ -676,7 +676,7 @@ Re-litigation answers:
 Status: accepted (2026-07-26)
 Tags: input, field, form, context, a11y, i18n, P3, forms
 
-> ADR-024 (the validation language) is reserved for forms item F. Numbers are allocated when a decision is planned, not when it lands.
+> ADR-024 was reserved for forms item F, which closed 2026-07-29 needing no architectural decision (FORMS.md: the validation language collapsed to a single branch in one function). The ID stays unused — numbers are never reallocated.
 
 Context: forms item B1. Label layout and the necessity convention are one product decision, not a per-field one — a form where some labels sit above and others beside, or where one field marks required and the next does not, is a form nobody proofread. The reference system puts exactly these on its `<Form>` (`labelPosition`, `labelAlign`, `necessityIndicator`, `size`) and has each field inherit them, which is also this ecosystem's own pattern: applications configure once at the root, packages consume context, and no visual prop travels down a tree.
 

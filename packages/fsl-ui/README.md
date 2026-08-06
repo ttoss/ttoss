@@ -10,7 +10,7 @@ Components are not visual variants of widgets — they are executable expression
 pnpm add @ttoss/fsl-ui @ttoss/fsl-theme react-aria-components
 ```
 
-Peer dependencies: `react >= 18`, `react-dom >= 18`. The package is ESM-only, ships `sideEffects: false`, and tree-shakes: a Button-only import costs ≈ 2.3 KB minified before shared dependencies (React Aria Components is the dominant cost and is shared across every component you use).
+Peer dependencies: `react >= 18`, `react-dom >= 18`. The package is ESM-only, ships `sideEffects: false`, and tree-shakes: a Button-only import costs ≈ 3.8 KB minified before shared dependencies (`pnpm run verify:treeshake` prints the current figure) (React Aria Components is the dominant cost and is shared across every component you use).
 
 ## Quickstart
 

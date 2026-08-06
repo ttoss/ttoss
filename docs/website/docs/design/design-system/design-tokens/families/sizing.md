@@ -176,30 +176,32 @@ This avoids ambiguity and prevents token-per-component drift.
 #### Canonical shapes
 
 - `hit`
-- `icon.{sm|md|lg}`
+- `icon.{text|sm|md|lg}`
 - `identity.{sm|md|lg|xl}`
 - `measure.reading`
 - `surface.maxWidth`
+- `surface.card`
 - `viewport.height.full`
 - `viewport.width.full`
 
 ### Semantic Tokens Summary Table
 
-| token                  | use when you are building…                                                                                                    | contract (must be true)                                                                 | default value                      |
-| :--------------------- | :---------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------- | :--------------------------------- |
-| `hit`                  | any interactive target (buttons, inputs, toggles, list rows)                                                                  | minimum interactive area; **not visual size**; **must not shrink**; enforce via `min-*` | theme-defined ergonomic floor      |
-| `icon.text`            | Glyph on the same line as text (button icon, picker chevron) — resolves to `1em`, so the ink lands inside the cap-height band |
-| `icon.sm`              | small glyphs / dense UI                                                                                                       | visual only; bounded range via core ramp                                                | `core.sizing.ramp.ui.2`            |
-| `icon.md`              | standard icons                                                                                                                | visual only; bounded range via core ramp                                                | `core.sizing.ramp.ui.3`            |
-| `icon.lg`              | prominent icons                                                                                                               | visual only; bounded range via core ramp                                                | `core.sizing.ramp.ui.4`            |
-| `identity.sm`          | compact identity objects                                                                                                      | visual only; bounded range via core ramp                                                | `core.sizing.ramp.ui.5`            |
-| `identity.md`          | standard identity objects                                                                                                     | visual only; bounded range via core ramp                                                | `core.sizing.ramp.ui.6`            |
-| `identity.lg`          | prominent identity objects                                                                                                    | visual only; bounded range via core ramp                                                | `core.sizing.ramp.ui.7`            |
-| `identity.xl`          | hero identity / brand objects                                                                                                 | visual only; bounded range via core ramp                                                | `core.sizing.ramp.ui.8`            |
-| `measure.reading`      | long-form text containers                                                                                                     | single bounded readability contract                                                     | `clamp(45ch, 60ch, 75ch)`          |
-| `surface.maxWidth`     | cards, panels, dialogs, surface shells                                                                                        | bounded structural max width; container-first                                           | `core.sizing.ramp.layout.5`        |
-| `viewport.height.full` | full-height layouts                                                                                                           | must use dynamic viewport units; use intentionally for full-height layouts              | `core.sizing.viewport.height.full` |
-| `viewport.width.full`  | full-width layouts                                                                                                            | must use dynamic viewport units; use intentionally for full-width layouts               | `core.sizing.viewport.width.full`  |
+| token                  | use when you are building…                                     | contract (must be true)                                                                                              | default value                      |
+| :--------------------- | :------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------- | :--------------------------------- |
+| `hit`                  | any interactive target (buttons, inputs, toggles, list rows)   | minimum interactive area; **not visual size**; **must not shrink**; enforce via `min-*`                              | theme-defined ergonomic floor      |
+| `icon.text`            | glyph on the same line as text (button icon, picker chevron)   | visual only; relative (`1em`) so the ink lands inside the cap-height band                                            | `core.sizing.relative.em`          |
+| `icon.sm`              | small glyphs / dense UI                                        | visual only; bounded range via core ramp                                                                             | `core.sizing.ramp.ui.2`            |
+| `icon.md`              | standard icons                                                 | visual only; bounded range via core ramp                                                                             | `core.sizing.ramp.ui.3`            |
+| `icon.lg`              | prominent icons                                                | visual only; bounded range via core ramp                                                                             | `core.sizing.ramp.ui.4`            |
+| `identity.sm`          | compact identity objects                                       | visual only; bounded range via core ramp                                                                             | `core.sizing.ramp.ui.5`            |
+| `identity.md`          | standard identity objects                                      | visual only; bounded range via core ramp                                                                             | `core.sizing.ramp.ui.6`            |
+| `identity.lg`          | prominent identity objects                                     | visual only; bounded range via core ramp                                                                             | `core.sizing.ramp.ui.7`            |
+| `identity.xl`          | hero identity / brand objects                                  | visual only; bounded range via core ramp                                                                             | `core.sizing.ramp.ui.8`            |
+| `measure.reading`      | long-form text containers                                      | single bounded readability contract                                                                                  | `clamp(45ch, 60ch, 75ch)`          |
+| `surface.maxWidth`     | page shells, content columns, card / panel / dialog wrappers   | bounded structural max width; container-first                                                                        | `core.sizing.ramp.layout.5`        |
+| `surface.card`         | narrow standalone centered card (auth form, confirmation page) | bounded structural max width; distinct from `maxWidth` (page-shell cap) and `measure.reading` (line-length contract) | `core.sizing.ramp.layout.1`        |
+| `viewport.height.full` | full-height layouts                                            | must use dynamic viewport units; use intentionally for full-height layouts                                           | `core.sizing.viewport.height.full` |
+| `viewport.width.full`  | full-width layouts                                             | must use dynamic viewport units; use intentionally for full-width layouts                                            | `core.sizing.viewport.width.full`  |
 
 Accessibility note: WCAG 2.2 Target Size (Minimum) defines a lower baseline of `24×24` CSS px, with exceptions. ttoss recommends stronger ergonomic baselines, especially for coarse pointer environments, while allowing themes to tune values based on product needs.
 

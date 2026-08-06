@@ -18,15 +18,17 @@ The central rule:
 
 The model adopts FSL dimension names directly (no projection renames; FSL §17.1 permits renames but this profile keeps the foundation vocabulary):
 
-| FSL dimension    | Model name      | Notes                                                                                                                                                                       |
-| :--------------- | :-------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Entity Kind      | **Entity**      | Values identical; field name is `entity` in `ComponentMeta` and all `*Meta` declarations                                                                                    |
-| Structural Role  | **Structure**   | Root structural role of the component (e.g. `root`); legal values constrained per Entity via `ENTITY_STRUCTURE`                                                             |
-| Composition Role | **Composition** | Flat vocabulary; Lexicon §4 values plus three declared profile extensions (`step`, `summary`, `navigation`). Per-Entity legality via `ENTITY_COMPOSITION` in `taxonomy.ts`. |
-| Interaction Kind | —               | **Deferred** per FSL §13.3 — not codified in this profile. See `taxonomy.ts` §Dimension Coverage for rationale and readmission criterion.                                   |
-| Evaluation       | **Evaluation**  | Values identical                                                                                                                                                            |
-| Consequence      | **Consequence** | Values identical                                                                                                                                                            |
-| State            | **State**       | Values identical; runtime-resolved by React Aria render props, not authorially declared                                                                                     |
+| FSL dimension    | Model name      | Notes                                                                                                                                                                                                                                                  |
+| :--------------- | :-------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Entity Kind      | **Entity**      | Values identical; field name is `entity` in `ComponentMeta` and all `*Meta` declarations                                                                                                                                                               |
+| Structural Role  | **Structure**   | Root structural role of the component (e.g. `root`); legal values constrained per Entity via `ENTITY_STRUCTURE`                                                                                                                                        |
+| Composition Role | **Composition** | Flat vocabulary; Lexicon §4 values plus three declared profile extensions (`step`, `summary`, `navigation`). Per-Entity legality via `ENTITY_COMPOSITION` in `taxonomy.ts`.                                                                            |
+| Interaction Kind | —               | **Deferred** per FSL §13.3 — not codified in this profile. See `taxonomy.ts` §Dimension Coverage for rationale and readmission criterion.                                                                                                              |
+| Evaluation       | **Evaluation**  | Values identical                                                                                                                                                                                                                                       |
+| Consequence      | **Consequence** | Profile-narrowed subset — `neutral`, `committing`, `destructive` only (`CONSEQUENCES` in `taxonomy.ts`); the remaining Lexicon §6 values are rejected with recorded rationale ([Lexicon §6](/docs/design/design-system/fsl/fsl-lexicon#6-consequence)) |
+| State            | **State**       | Values identical; runtime-resolved by React Aria render props, not authorially declared                                                                                                                                                                |
+| Layer Role       | —               | **Absorbed** per FSL §13.3 — fully captured by the token projection's `surfaceType` (`control`/`surface`) and the CONTRACT §1 Elevation column; an independent dimension would be redundant. See `taxonomy.ts` §Dimension Coverage.                    |
+| Context Class    | —               | **Deferred** per FSL §13.3 — refinement dimension (density, mode, a11y preferences) with no prototype exercising it. Readmission criterion: mode switching validated end-to-end via `@ttoss/fsl-theme`. See `taxonomy.ts` §Dimension Coverage.         |
 
 ## Entity → Token UX context mapping
 
@@ -56,6 +58,7 @@ The model is expressed as a `ComponentExpression` — the typed semantic express
 ```ts
 type ComponentExpression = {
   entity: Entity; // required — what the component IS
+  structure: StructuralRole; // required — root structural role (e.g. 'root'); legality per Entity via ENTITY_STRUCTURE
   composition?: CompositionRole; // optional — flat slot name (FSL Lexicon §4)
   evaluation?: Evaluation; // optional — emphatic meaning
   consequence?: Consequence; // optional — risk profile
@@ -130,17 +133,21 @@ Example selector: `[data-scope="dialog"][data-part="actions"] [data-composition=
 
 Evaluation answers: _What emphatic or evaluative meaning does this expression carry?_
 
-Evaluation is optional. When omitted, it is inferred by the resolver from the Entity and composition context. Add it explicitly only when the default inference is wrong.
+Evaluation is optional. When omitted, each component applies its own documented default today; inference from Entity and composition context is the job of the **planned** Deterministic Resolver (layer 5). Add it explicitly only when the default is wrong.
 
-| Value         | Use for                              |
-| :------------ | :----------------------------------- |
-| **primary**   | main intended emphasis               |
-| **secondary** | subordinate but still intentional    |
-| **accent**    | deliberately differentiated emphasis |
-| **muted**     | de-emphasized but still meaningful   |
-| **positive**  | affirming, successful, or favorable  |
-| **caution**   | warning or careful-attention signal  |
-| **negative**  | harmful, erroneous, or adverse       |
+Legality is per Entity (source of truth: `ENTITY_EVALUATION` in `taxonomy.ts`), same as the Composition table:
+
+| Value         | Use for                              | Legal Entities                                                           |
+| :------------ | :----------------------------------- | :----------------------------------------------------------------------- |
+| **primary**   | main intended emphasis               | Action, Collection, Overlay, Navigation, Disclosure, Feedback, Structure |
+| **secondary** | subordinate but still intentional    | Action, Overlay, Navigation                                              |
+| **accent**    | deliberately differentiated emphasis | Action, Overlay, Navigation, Feedback                                    |
+| **muted**     | de-emphasized but still meaningful   | Action, Collection, Overlay, Navigation, Disclosure, Structure           |
+| **positive**  | affirming, successful, or favorable  | Feedback                                                                 |
+| **caution**   | warning or careful-attention signal  | Feedback                                                                 |
+| **negative**  | harmful, erroneous, or adverse       | Action, Overlay, Feedback                                                |
+
+`Input` and `Selection` carry **no** evaluations: form controls are data-entry surfaces, not decision hierarchies, and validation is the runtime `invalid` State (`isInvalid`), never `evaluation: 'negative'` — see the design note on `ENTITY_EVALUATION` in `taxonomy.ts`.
 
 ---
 
@@ -150,15 +157,15 @@ Consequence answers: _What user-facing consequence or risk profile does this car
 
 Consequence is optional. When omitted, `neutral` is implied. Distinct from Evaluation: `negative` is evaluative meaning; `destructive` is outcome risk — both may appear simultaneously.
 
-| Value                   | Use for                                       |
-| :---------------------- | :-------------------------------------------- |
-| **neutral**             | no special risk profile                       |
-| **reversible**          | effect can be undone                          |
-| **committing**          | moves to a more committed state               |
-| **destructive**         | causes deletion or materially harmful loss    |
-| **interruptive**        | interrupts flow and demands handling          |
-| **recoverable**         | adverse path exists but recovery is supported |
-| **safeDefaultRequired** | the safer path must be privileged             |
+The profile codifies three values (`CONSEQUENCES` in `taxonomy.ts`) — a deliberate narrowing of the Lexicon §6 vocabulary. `reversible`, `interruptive`, `recoverable`, and `safeDefaultRequired` are rejected with recorded rationale; see [Lexicon §6 — Profile narrowing](/docs/design/design-system/fsl/fsl-lexicon#6-consequence).
+
+| Value           | Use for                                    |
+| :-------------- | :----------------------------------------- |
+| **neutral**     | no special risk profile                    |
+| **committing**  | moves to a more committed state            |
+| **destructive** | causes deletion or materially harmful loss |
+
+Only `Action` carries consequence — every other entity's legal set in `ENTITY_CONSEQUENCE` is empty.
 
 ---
 
@@ -234,7 +241,7 @@ Most expressions don't need explicit Evaluation. Add it when the standard infere
 
 ## Usage Examples
 
-> Token paths reference the **Semantic Token Projection** (layer 4). They reflect the current token projection and will be confirmed during its re-engineering.
+> Token paths reference the **Semantic Token Projection** (layer 4) and are confirmed against the shipped `@ttoss/fsl-theme`.
 
 #### Dialog footer buttons
 

@@ -10,15 +10,15 @@ pnpm add @ttoss/fsl-theme
 
 ## Entry points
 
-| Import                     | Exports                                                                                                                                                                     |
-| :------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@ttoss/fsl-theme`         | `createTheme`, `baseTheme`, `darkAlternate`, built-in theme (`bruttal`), types (`ThemeTokens`, `ThemeBundle`, `SemanticTokens`, `ModeOverride`, `DeepPartial`, `ThemeMode`) |
-| `@ttoss/fsl-theme/react`   | `ThemeProvider`, `ThemeHead`, `ThemeScript`, `ThemeStyles`, `useColorMode`, `useTokens`, `useResolvedTokens`                                                                |
-| `@ttoss/fsl-theme/dataviz` | `withDataviz`, `useDatavizTokens`                                                                                                                                           |
-| `@ttoss/fsl-theme/css`     | `getThemeStylesContent`, `toCssVars`, `toCssVarName`, `toFlatTokens`                                                                                                        |
-| `@ttoss/fsl-theme/vars`    | `vars`, `buildVarsMap`, type `CssVarsMap`                                                                                                                                   |
-| `@ttoss/fsl-theme/dtcg`    | `toDTCG` (W3C Design Tokens format)                                                                                                                                         |
-| `@ttoss/fsl-theme/runtime` | `createThemeRuntime`, `getThemeScriptContent`                                                                                                                               |
+| Import                     | Exports                                                                                                                                                                                   |
+| :------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@ttoss/fsl-theme`         | `createTheme`, `baseTheme`, `darkAlternate`, built-in theme (`bruttal`), types (`ThemeTokens`, `ThemeBundle`, `ThemeBrief`, `SemanticTokens`, `ModeOverride`, `DeepPartial`, `ThemeMode`) |
+| `@ttoss/fsl-theme/react`   | `ThemeProvider`, `ThemeHead`, `ThemeReset`, `ThemeScript`, `ThemeStyles`, `useColorMode`, `useTokens`, `useResolvedTokens`                                                                |
+| `@ttoss/fsl-theme/dataviz` | `withDataviz`, `useDatavizTokens`, `datavizVars`, `coreDataviz`, `semanticDataviz`                                                                                                        |
+| `@ttoss/fsl-theme/css`     | `getThemeStylesContent`, `getPreflightStyles`, `PREFLIGHT_CSS`, `toCssVars`, `toCssVarName`, `toFlatTokens`                                                                               |
+| `@ttoss/fsl-theme/vars`    | `vars`, `buildVarsMap`, type `CssVarsMap`                                                                                                                                                 |
+| `@ttoss/fsl-theme/dtcg`    | `toDTCG` (W3C Design Tokens format)                                                                                                                                                       |
+| `@ttoss/fsl-theme/runtime` | `createThemeRuntime`, `getThemeScriptContent`, `DATA_MODE_ATTR`, `DATA_THEME_ATTR`                                                                                                        |
 
 ## Token architecture
 
@@ -38,19 +38,21 @@ One entry per semantic family. Use `vars.*` for typed CSS variable references; u
 | ----------- | ---------------------------------------------------------------- | ------------------------------- |
 | colors      | `semantic.colors.{ux}.{role}.{dimension}.{state}`                | CSS color                       |
 | spacing     | `semantic.spacing.inset.control.{sm,md,lg}`                      | CSS length (fixed)              |
+|             | `semantic.spacing.inset.action.block`                            | CSS length (fixed range)        |
 |             | `semantic.spacing.inset.surface.{xs,sm,md,lg}`                   | CSS length (`xs` fixed)         |
 |             | `semantic.spacing.gap.{stack,inline}.{xs,sm,md,lg,xl}`           | CSS length                      |
 |             | `semantic.spacing.gutter.{page,section}`                         | CSS length / `clamp()`          |
 |             | `semantic.spacing.separation.interactive.min`                    | CSS length                      |
 | text        | `semantic.text.{display,headline,title,body,label}.{lg,md,sm}`   | TextStyle object                |
+|             | `semantic.text.action.md`                                        | TextStyle object                |
 |             | `semantic.text.code.{md,sm}`                                     | TextStyle object                |
 | sizing      | `semantic.sizing.hit`                                            | CSS length                      |
-|             | `semantic.sizing.icon.{sm,md,lg}`                                | CSS length                      |
+|             | `semantic.sizing.icon.{text,sm,md,lg}`                           | CSS length (`text` = `1em`)     |
 |             | `semantic.sizing.identity.{sm,md,lg,xl}`                         | CSS length                      |
 |             | `semantic.sizing.measure.reading`                                | CSS `ch` / `clamp()`            |
-|             | `semantic.sizing.surface.maxWidth`                               | CSS length                      |
+|             | `semantic.sizing.surface.{maxWidth,card}`                        | CSS length                      |
 |             | `semantic.sizing.viewport.{height,width}.full`                   | CSS dvh/dvw                     |
-| radii       | `semantic.radii.{control,surface,round}`                         | CSS length                      |
+| radii       | `semantic.radii.{action,control,surface,round}`                  | CSS length                      |
 | border      | `semantic.border.divider`                                        | `{width, style}`                |
 |             | `semantic.border.outline.{surface,control,selected}`             | `{width, style}`                |
 | focus       | `semantic.focus.ring`                                            | `{width, style, color, offset}` |
@@ -116,6 +118,8 @@ const childTheme = createTheme({ extends: myTheme });
 **`alternate`** is typed `ModeOverride = { semantic: DeepPartial<ThemeTokens['semantic']> }`. Pass `alternate: null` for single-mode.
 
 **`darkAlternate`** is also exported for direct composition. `createTheme()` includes it by default.
+
+**`base`** / **`baseMode`** swap the base tokens and declare which mode they represent (defaults: `baseTheme`, `'light'`, or the parent's when `extends` is given). **`brief`** attaches a machine-readable `ThemeBrief` to the bundle's `meta` — orthogonal to tokens, never affects CSS/DTCG output; the brief format is defined in [theme authoring](https://ttoss.dev/docs/design/design-system/design-tokens/theme-authoring#theme-brief).
 
 ## React (Vite / CRA)
 
@@ -300,6 +304,8 @@ const lightFirstCss = getThemeStylesContent(myTheme, undefined, {
 });
 // <ThemeProvider> / <ThemeHead> derive this automatically from `defaultMode`.
 ```
+
+A minimal token-bound preflight stylesheet (box-sizing reset, body typography and colour drawn from semantic tokens, reduced-motion guard) ships as `getPreflightStyles()` / `PREFLIGHT_CSS` from `@ttoss/fsl-theme/css` — inject once at the app root, or render `<ThemeReset />` from the react entry.
 
 ## Storybook / micro-frontends
 

@@ -178,12 +178,16 @@ Example: `vars.border.outline.control.width`, `vars.border.outline.control.style
 ### Sizing (interactive entities)
 
 ```
-vars.sizing.hit.{step}
+vars.sizing.hit
 ```
 
-Standard step for all interactive components: **`base`**.  
-`min` and `prominent` are reserved for components with a distinct semantic identity (e.g. compact toolbar action, prominent CTA).  
-Hit targets are ergonomic minimums — CSS automatically responds to `@media (any-pointer: coarse)`.
+A single leaf, no steps (§4): one ergonomic floor per pointer profile, never a
+visual size — apply via `min-height` / `min-width`, and let inset + type produce
+the visible control size. The former `base`/`min`/`prominent` ramp is gone
+(fsl-theme ADR-020: only `base` was ever consumed). CSS automatically responds
+to `@media (any-pointer: coarse)` — the coarse floor is injected by the theme's
+output layer, no component code needed. Glyph sizes are a separate subtree:
+`vars.sizing.icon.{text|sm|md|lg}` (§9).
 
 ### Spacing
 
@@ -528,7 +532,7 @@ Every component root MUST carry the identity attributes (`data-scope`, `data-par
 | `data-scope`       | every element                                   | `kebab-case(meta.displayName)` — e.g. `"button"`, `"dialog"`        | Always.                                                                                                                                                                                                                                                                                                                  |
 | `data-part`        | every element                                   | `meta.structure` — e.g. `"root"`, `"label"`, `"control"`            | Always.                                                                                                                                                                                                                                                                                                                  |
 | `data-evaluation`  | parts that consume evaluation tokens            | `EvaluationsFor<E>` — e.g. `"primary"`, `"negative"`                | When the part renders evaluation-dependent colors.                                                                                                                                                                                                                                                                       |
-| `data-consequence` | leaf Action elements that declare an effect     | `ConsequencesFor<E>` — `"neutral" \| "committing" \| "destructive"` | When the component accepts a `consequence` prop (`Button`, `MenuItem`, `FormSubmit`).                                                                                                                                                                                                                                    |
+| `data-consequence` | leaf Action elements that declare an effect     | `ConsequencesFor<E>` — `"neutral" \| "committing" \| "destructive"` | When the component accepts a `consequence` prop (`Button`, `ActionButton`, `MenuItem`, `FormSubmit`). `ConfirmationDialog` also emits it on its Overlay root (`data-scope="confirmation-dialog"`), so hosts and tests can address the whole confirming surface by consequence.                                           |
 | `data-composition` | leaves that play a parent slot                  | `CompositionsFor<E>` — e.g. `"primaryAction"`                       | When the component accepts a `composition` prop. Read at runtime by composites (e.g. `DialogActions` reorders by it).                                                                                                                                                                                                    |
 | `data-platform`    | `DialogActions` only                            | `"ios" \| "windows"`                                                | Always on `DialogActions`. Reflects the active ordering convention.                                                                                                                                                                                                                                                      |
 | `data-pending`     | `FormSubmit` only                               | `"true"` (omitted otherwise)                                        | While `isPending` is `true`. Lets host CSS/tests show spinner without re-wiring the disabled path.                                                                                                                                                                                                                       |
@@ -748,7 +752,8 @@ source check that nothing assigns an allowlisted name.
 ## §8 — Full Example: Button (Entity = Action)
 
 `entity: 'Action'` → §1 row: colors=`action`, radii=`action`, border=`outline.control`,
-sizing=`hit`, spacing=`inset.control.md`, typography=`action.md`, motion=`feedback`, elevation=`flat`.
+sizing=`hit`, spacing=`inset.action.block` (block) + `inset.control.lg` (inline),
+typography=`action.md`, motion=`feedback`, elevation=`flat`.
 
 **Two silhouettes inside the Action row.** The row above lists the _command_
 tokens (`radii.action`, `text.action`, `inset.action.block`) that `Button`
@@ -808,9 +813,9 @@ export const Button = ({ evaluation = 'primary', ...props }: ButtonProps) => {
         borderWidth: vars.border.outline.control.width,
         borderStyle: vars.border.outline.control.style,
         minHeight: vars.sizing.hit,
-        paddingBlock: vars.spacing.inset.control.md,
-        paddingInline: vars.spacing.inset.control.md,
-        ...(vars.text.label.md as React.CSSProperties),
+        paddingBlock: vars.spacing.inset.action.block,
+        paddingInline: vars.spacing.inset.control.lg,
+        ...(vars.text.action.md as React.CSSProperties),
         transitionDuration: vars.motion.feedback.duration,
         transitionTimingFunction: vars.motion.feedback.easing,
         transitionProperty: 'background-color, border-color, color',
@@ -867,5 +872,7 @@ Rules:
    hit targets); a glyph legitimately scales with its context.
 4. **Decorative by default** (`aria-hidden`). Pass `label` only when the icon
    is the sole carrier of meaning — and pass caller-localized copy (§6/i18n).
-5. Icon is **internal** — never re-export it from `src/index.ts`. It is the
-   seed of a future standalone `@ttoss/fsl-icon` package.
+5. Icon is a **public export** of `src/index.ts` (ADR-010). Its semantic
+   layer (`intents.ts` + `glyphs.ts`) stays free of React and token imports
+   so it can be lifted whole into a future standalone `@ttoss/fsl-icon`
+   package.
