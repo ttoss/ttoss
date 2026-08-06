@@ -11,6 +11,7 @@ import {
 
 import { type FslKnob, fslVar, upstreamVar } from '../../tokens/escapeHatch';
 import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
+import { ensureNativeFieldDecorationReset } from '../../tokens/nativeFieldDecorations';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import { publishSurface } from '../../tokens/surfaceScope';
 
@@ -263,6 +264,13 @@ export const buildFieldValueStyle = ({
    */
   textAlign?: 'start' | 'center';
 }): React.CSSProperties => {
+  // The frame owns its interior, so the browser's own in-field controls must
+  // not draw into it alongside ours. That reset is a pseudo-element rule and
+  // therefore cannot live in this object; it is injected here because this
+  // builder is the one place every field control in the package passes
+  // through. Idempotent, SSR-safe.
+  ensureNativeFieldDecorationReset();
+
   return {
     boxSizing: 'border-box',
     flex: 1,

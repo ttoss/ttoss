@@ -1988,3 +1988,75 @@ the way Dialog does); giving the triggers a hover fill (`FeedbackColorStates`
 admits `default | focused | disabled` only, FSL §7 — the cascade returns the
 resting value at every pointer state, which is F-059 and a theme-level
 question, not one to work around inside a component).
+
+---
+
+### ADR-041: The field frame owns its interior — the browser's duplicate in-field controls are suppressed at the anatomy, by part rather than by component
+
+Status: accepted (2026-08-06)
+Tags: fields, anatomy, css, chromium, F-060, closes:F-060
+
+Context: F-060, reported from a product screen — a `SearchField` with text
+renders **two ✕**. A field in this package is a frame that owns its interior:
+`ICON_SLOT_STYLE` places the leading glyph, `FieldInvalidGlyph` the invalid
+mark, `EMBEDDED_TRIGGER` the clear button and the steppers, and the `<input>`
+inside is borderless and carries the value alone. But an `<input>` also brings
+controls decided by its `type`, drawn by the browser into that same box, and
+nothing reconciled the two. `SearchField`'s input is `type="search"` — React
+Aria's `useSearchField` sets it, and correctly, since the type carries the
+Escape-clears behaviour — so Chromium paints `::-webkit-search-cancel-button`
+beside the clear button the anatomy already drew.
+
+Decision: **a stylesheet, injected by the shared value builder, suppresses the
+UA decorations that duplicate an adornment the anatomy draws — and only
+those.** `src/tokens/nativeFieldDecorations.ts` follows `keyframes.ts`'s
+mechanism exactly (one `<style>` per document, SSR-safe, idempotent, tolerant
+of a second copy of the package) because the two share the same constraint:
+CSS this package needs that an inline `style` object cannot express. It is a
+separate module and a separate element from `keyframes.ts` because that
+module's contents are governed by `ANIMATION_NAMES` and contract invariant #8,
+which have nothing to say about this; one export should not stand behind two
+unrelated invariants.
+
+Three choices inside it are the decision.
+
+**The inclusion rule is duplication, not tidiness.** Suppressed:
+`::-webkit-search-cancel-button` (duplicates the clear button),
+`::-webkit-search-decoration` and `::-webkit-search-results-button`
+(duplicate the leading `action.search` glyph). Left to the browser:
+`::-webkit-calendar-picker-indicator`, the spin buttons, the password reveal —
+each is the _only_ affordance for its type, and this package ships no
+replacement for any of them, so removing one would take away function rather
+than a duplicate. Measured, not assumed: `type="date"` was confirmed to render
+its indicator inside our frame today, and it stays. A component that grows its
+own version of one of those adds a row to the table in the module header.
+
+**It is keyed to the part, not to `SearchField`.** Read from the rendered DOM
+in Chromium, `search-field` is the only control in the package carrying a
+decorated type; `NumberField` is `type="text"` with `inputmode="numeric"`
+(React Aria supplies the spinbutton semantics, so the native steppers never
+appear) and `TextField`/`ComboBox` are `type="text"`. But `TextField` passes a
+caller's `type` straight through, so `<TextField type="search">` is the same
+defect one prop away. The selector is the package's own attribute contract
+(CONTRACT §5) — `[data-scope][data-part='control']`, both attributes on the
+same element — so the next field to acquire a decorated type is covered
+before it is written. The stated consequence: a `TextField type="search"` has
+no clear button at all, because the anatomy draws none there. That is the
+intended reading — a search box is `SearchField`.
+
+**The call site is `buildFieldValueStyle`, the one place every field control
+passes through.** A per-component call would be one more thing to remember on
+the next field, and forgetting it is precisely how this shipped; a unit test
+now asserts that the injection lives in the shared builder and that no
+component calls it directly.
+
+Rejected: `appearance: none` on the input — tried first, because it would have
+been an inline one-liner needing no new mechanism, and **screenshotted as not
+working**: current Chromium keeps the cancel button through it. A rule scoped
+to `[data-scope='search-field']` — fixes the instance and not the bug, and
+leaves the `TextField type="search"` path open. Removing `type="search"` from
+the input — it is React Aria's, it carries real behaviour, and overriding it
+would trade a cosmetic duplicate for a functional regression. Shipping a real
+CSS file with the package — the package's whole styling model is inline
+`vars.*` reads, and one `<style>` for what inline styles cannot express is the
+established exception, not a new direction.
