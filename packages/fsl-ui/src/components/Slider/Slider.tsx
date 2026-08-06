@@ -12,7 +12,12 @@ import {
 import type { ComponentMeta } from '../../semantics';
 import { fslVar } from '../../tokens/escapeHatch';
 import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
-import { RAIL_FILL, TRACK_RAIL } from '../../tokens/rail';
+import {
+  buildRailLabelRowStyle,
+  RAIL_FILL,
+  RAIL_ROOT_STYLE,
+  TRACK_RAIL,
+} from '../../tokens/rail';
 import { SELECTION_CONTROL } from '../../tokens/selectionControl';
 
 // ---------------------------------------------------------------------------
@@ -200,24 +205,16 @@ export const Slider = <T extends number | number[] = number>({
       {...props}
       data-scope="slider"
       data-part="root"
-      style={{
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: vars.spacing.gap.stack.xs,
-      }}
+      style={RAIL_ROOT_STYLE}
     >
       {(label != null || showOutput) && (
         <div
           data-scope="slider"
           data-part="labelRow"
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'baseline',
-            color: c?.text?.default,
-            ...(vars.text.label.md as React.CSSProperties),
-          }}
+          // The shared row, with Input's own quiet text — the ink is the
+          // parametrized axis, not a normalized colour (Feedback's rails
+          // read their entity's quiet text instead).
+          style={buildRailLabelRowStyle({ ink: c?.text?.default })}
         >
           {label != null && (
             <RACLabel data-scope="slider" data-part="label">

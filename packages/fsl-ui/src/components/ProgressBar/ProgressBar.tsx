@@ -7,7 +7,12 @@ import {
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { ANIMATION_NAMES, ensureKeyframes } from '../../tokens/keyframes';
-import { RAIL_BASE, RAIL_FILL } from '../../tokens/rail';
+import {
+  buildRailFillStyle,
+  buildRailLabelRowStyle,
+  buildRailTrackStyle,
+  RAIL_ROOT_STYLE,
+} from '../../tokens/rail';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -39,20 +44,12 @@ type FeedbackColors = (typeof vars.colors.feedback)[EvaluationsFor<'Feedback'>];
 // enough to read as "working", fast enough to read as "alive").
 const INDETERMINATE_FILL_WIDTH = '40%';
 const INDETERMINATE_CYCLE_DURATION = '1.2s';
-/** Track (body) style — the neutral rail the fill animates across. Geometry
- * comes from the shared rail (`TRACK_RAIL`, one silhouette across the three
- * rails); the colour is the cross-cutting rail fill every rail shares
- * (`semantic.rail.track`, F-050/F-051), not a borrowed role token. */
-const buildTrackStyle = (): React.CSSProperties => {
-  return {
-    ...RAIL_BASE,
-    backgroundColor: RAIL_FILL,
-  };
-};
 
 /** Fill (content) style — width tracks percentage; indeterminate animates.
  * The fill is the evaluation's filled surface (`background.default`) — deep
- * valence fills and the informative `accent` brand fill. */
+ * valence fills and the informative `accent` brand fill. Envelope from the
+ * shared rail (`buildRailFillStyle`); only the value geometry and the sweep
+ * are this component's. */
 const buildFillStyle = ({
   c,
   percentage,
@@ -62,18 +59,13 @@ const buildFillStyle = ({
   percentage?: number | null;
   isIndeterminate?: boolean;
 }): React.CSSProperties => {
-  return {
-    height: '100%',
+  return buildRailFillStyle({
     width: isIndeterminate ? INDETERMINATE_FILL_WIDTH : `${percentage ?? 0}%`,
-    backgroundColor: c?.background?.default,
-    borderRadius: 'inherit',
-    transitionProperty: 'width',
-    transitionDuration: vars.motion.transition.enter.duration,
-    transitionTimingFunction: vars.motion.transition.enter.easing,
+    color: c?.background?.default,
     animation: isIndeterminate
       ? `${ANIMATION_NAMES.progressBarIndeterminate} ${INDETERMINATE_CYCLE_DURATION} linear infinite`
       : undefined,
-  };
+  });
 };
 
 // ---------------------------------------------------------------------------
@@ -138,14 +130,7 @@ export const ProgressBar = ({
       data-scope="progress-bar"
       data-part="root"
       data-evaluation={evaluation}
-      style={
-        {
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: vars.spacing.gap.stack.xs,
-        } as React.CSSProperties
-      }
+      style={RAIL_ROOT_STYLE}
     >
       {({ percentage, valueText, isIndeterminate }) => {
         return (
@@ -154,18 +139,12 @@ export const ProgressBar = ({
               <div
                 data-scope="progress-bar"
                 data-part="labelRow"
-                style={
-                  {
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'baseline',
-                    // The label row sits on the page surface, not on the
-                    // fill — filled evaluations carry neutral.0 text that
-                    // would vanish here; the entity's quiet text is correct.
-                    color: vars.colors.feedback.muted.text?.default,
-                    ...(vars.text.label.md as React.CSSProperties),
-                  } as React.CSSProperties
-                }
+                style={buildRailLabelRowStyle({
+                  // The label row sits on the page surface, not on the
+                  // fill — filled evaluations carry neutral.0 text that
+                  // would vanish here; the entity's quiet text is correct.
+                  ink: vars.colors.feedback.muted.text?.default,
+                })}
               >
                 <span data-scope="progress-bar" data-part="title">
                   {label}
@@ -186,7 +165,7 @@ export const ProgressBar = ({
             <div
               data-scope="progress-bar"
               data-part="body"
-              style={buildTrackStyle()}
+              style={buildRailTrackStyle()}
             >
               {/* Fill */}
               <div

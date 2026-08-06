@@ -24,7 +24,13 @@
 import { render } from '@testing-library/react';
 import { vars } from '@ttoss/fsl-theme/vars';
 import { Meter, ProgressBar, Slider } from 'src/index';
-import { RAIL_BASE, RAIL_FILL, TRACK_RAIL } from 'src/tokens/rail';
+import {
+  buildRailTrackStyle,
+  RAIL_BASE,
+  RAIL_FILL,
+  RAIL_ROOT_STYLE,
+  TRACK_RAIL,
+} from 'src/tokens/rail';
 
 const railOf = (scope: string): HTMLElement => {
   const el = document.querySelector<HTMLElement>(
@@ -97,8 +103,17 @@ describe('the rail is one silhouette across the three components that have one',
   // for a rail whose fill is a bar and wrong for one whose thumb overflows it.
   test('the shared base clips, and the Slider rail deliberately does not', () => {
     expect(RAIL_BASE.overflow).toBe('hidden');
+    // The track builder inherits the clip — a rail that must not clip cannot
+    // route through it, which is why the Slider rail states its own chrome.
+    expect(buildRailTrackStyle().overflow).toBe('hidden');
 
-    render(<Slider label="Volume" defaultValue={40} />);
+    render(
+      <>
+        <ProgressBar label="Uploading" value={40} />
+        <Slider label="Volume" defaultValue={40} />
+      </>
+    );
+    expect(railOf('progress-bar').style.overflow).toBe('hidden');
     expect(sliderRail().style.overflow).toBe('');
   });
 });
@@ -148,6 +163,21 @@ describe('all three rails read the cross-cutting rail fill, not a borrowed role 
     );
     expect(fill?.style.backgroundColor).not.toBe(RAIL_FILL);
   });
+
+  // The shared fill builder deliberately does not resolve a colour — each
+  // component passes its own evaluation surface. Meter pins that the second
+  // consumer kept its per-evaluation source rather than inheriting a default.
+  test('Meter’s fill keeps its own evaluation surface through the shared builder', () => {
+    render(<Meter label="Storage" value={40} evaluation="caution" />);
+
+    const fill = document.querySelector<HTMLElement>(
+      '[data-scope="meter"][data-part="content"]'
+    );
+    expect(fill?.style.backgroundColor).toBe(
+      vars.colors.feedback.caution.background?.default
+    );
+    expect(fill?.style.backgroundColor).not.toBe(RAIL_FILL);
+  });
 });
 
 describe('the rail width ceiling is an opt-in host knob, not a default (F-052)', () => {
@@ -183,5 +213,101 @@ describe('the rail width ceiling is an opt-in host knob, not a default (F-052)',
     expect(railOf('progress-bar').style.maxWidth).toMatch(KNOB);
     expect(railOf('meter').style.maxWidth).toMatch(KNOB);
     expect(sliderTrackRow().style.maxWidth).toMatch(KNOB);
+  });
+});
+
+/**
+ * The envelope (C-08). ADR-033/ADR-036 moved the silhouette and the fill
+ * colour into the shared source; the chrome *around* the rail — root stack,
+ * label row, track builder, value fill — had stayed written out per
+ * component. As with the fill, the assertions are written from both sides:
+ * the shared layout is read, and the axes that genuinely differ (row ink per
+ * entity, Meter's gutter) stay different — parametrized, not normalized.
+ */
+describe('the rail envelope is one source, parametrized on the axes that differ', () => {
+  const partOf = (scope: string, part: string): HTMLElement => {
+    const el = document.querySelector<HTMLElement>(
+      `[data-scope="${scope}"][data-part="${part}"]`
+    );
+    if (!el) {
+      throw new Error(`no ${part} rendered for ${scope}`);
+    }
+    return el;
+  };
+
+  test('all three roots stack the label row over the track with the shared gap', () => {
+    render(
+      <>
+        <ProgressBar label="Uploading" value={40} />
+        <Meter label="Storage" value={40} />
+        <Slider label="Volume" defaultValue={40} />
+      </>
+    );
+
+    expect(RAIL_ROOT_STYLE.gap).toBe(vars.spacing.gap.stack.xs);
+    for (const scope of ['progress-bar', 'meter', 'slider']) {
+      const root = partOf(scope, 'root');
+      expect(root.style.flexDirection).toBe('column');
+      expect(root.style.gap).toBe(RAIL_ROOT_STYLE.gap);
+    }
+  });
+
+  test('the label row is one layout: space-between on the baseline, set in label.md', () => {
+    render(
+      <>
+        <ProgressBar label="Uploading" value={40} />
+        <Meter label="Storage" value={40} />
+        <Slider label="Volume" defaultValue={40} />
+      </>
+    );
+
+    const labelMd = vars.text.label.md as { fontSize?: string };
+    for (const scope of ['progress-bar', 'meter', 'slider']) {
+      const row = partOf(scope, 'labelRow');
+      expect(row.style.justifyContent).toBe('space-between');
+      expect(row.style.alignItems).toBe('baseline');
+      expect(row.style.fontSize).toBe(labelMd.fontSize);
+    }
+  });
+
+  test('the row ink is each entity’s quiet text, not one normalized colour', () => {
+    render(
+      <>
+        <ProgressBar label="Uploading" value={40} />
+        <Meter label="Storage" value={40} />
+        <Slider label="Volume" defaultValue={40} />
+      </>
+    );
+
+    const feedbackInk = vars.colors.feedback.muted.text?.default;
+    const inputInk = vars.colors.input.primary.text?.default;
+
+    // Both sides: the Feedback rows read Feedback's quiet text and not
+    // Input's; the Input row reads Input's and not Feedback's. A builder
+    // that hardcoded either ink would fail one of the four.
+    expect(partOf('progress-bar', 'labelRow').style.color).toBe(feedbackInk);
+    expect(partOf('meter', 'labelRow').style.color).toBe(feedbackInk);
+    expect(partOf('progress-bar', 'labelRow').style.color).not.toBe(inputInk);
+
+    expect(partOf('slider', 'labelRow').style.color).toBe(inputInk);
+    expect(partOf('slider', 'labelRow').style.color).not.toBe(feedbackInk);
+  });
+
+  test('only Meter opts into the row gutter its ellipsizing title needs', () => {
+    render(
+      <>
+        <ProgressBar label="Uploading" value={40} />
+        <Meter label="Storage" value={40} />
+        <Slider label="Volume" defaultValue={40} />
+      </>
+    );
+
+    expect(partOf('meter', 'labelRow').style.gap).toBe(
+      vars.spacing.gap.inline.sm
+    );
+    // The other two rows had no gutter before the shared row existed, and a
+    // builder default would have added one — the axis is opt-in.
+    expect(partOf('progress-bar', 'labelRow').style.gap).toBe('');
+    expect(partOf('slider', 'labelRow').style.gap).toBe('');
   });
 });

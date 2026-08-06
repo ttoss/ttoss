@@ -96,3 +96,96 @@ export const RAIL_BASE = {
  * the measured light/dark values and the reference delta.
  */
 export const RAIL_FILL = vars.rail.track;
+
+// ---------------------------------------------------------------------------
+// The rail envelope — ADR-033 moved the silhouette here; the envelope (root
+// stack, label row, track chrome, value fill) had stayed written out per
+// component. Same two-constants rule: styles that agree today are
+// indistinguishable from styles that track, until one moves.
+// ---------------------------------------------------------------------------
+
+/**
+ * The root of a railed component: label row stacked over the track with the
+ * smallest stack gap. Geometry only — the root paints nothing, so it carries
+ * no colour axis to parametrize.
+ */
+export const RAIL_ROOT_STYLE = {
+  boxSizing: 'border-box',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: vars.spacing.gap.stack.xs,
+} satisfies React.CSSProperties;
+
+/**
+ * The label row above a rail: title at the inline start, status/output at the
+ * inline end, on a shared text baseline, set in `label.md`.
+ *
+ * `ink` is required because it is the one axis the row genuinely differs on —
+ * each entity's quiet text, never one normalized colour. The row sits on the
+ * page surface, not on the fill, so an on-fill ink would vanish here.
+ *
+ * `gap` is opt-in: a row whose title may ellipsize needs a guaranteed gutter
+ * before the status; a row with short static parts does not, and forcing one
+ * on it would change its rendered layout.
+ */
+export const buildRailLabelRowStyle = ({
+  ink,
+  gap,
+}: {
+  ink: React.CSSProperties['color'];
+  gap?: React.CSSProperties['gap'];
+}): React.CSSProperties => {
+  return {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    ...(gap !== undefined ? { gap } : {}),
+    color: ink,
+    ...(vars.text.label.md as React.CSSProperties),
+  };
+};
+
+/**
+ * The clipping track: `RAIL_BASE` chrome painted with the cross-cutting rail
+ * fill. Correct for a rail whose value is a bar clipped to the pill; a rail
+ * whose thumb must overflow it cannot use this builder — that discriminant
+ * (`overflow: hidden`) is exactly what `RAIL_BASE` owns and `rail.test.tsx`
+ * pins.
+ */
+export const buildRailTrackStyle = (): React.CSSProperties => {
+  return {
+    ...RAIL_BASE,
+    backgroundColor: RAIL_FILL,
+  };
+};
+
+/**
+ * The value bar inside a clipping track. The caller supplies the two axes the
+ * builder cannot know: `width` — the encoded value, or an indeterminate
+ * geometry — and `color`, the evaluation's filled surface. The fill is the one
+ * part of a rail that rotates with evaluation, so its colour source stays at
+ * the call site rather than being resolved here. `animation` is for an
+ * indeterminate sweep; left undefined it emits nothing. Width changes ease
+ * with `transition.enter` — value movement is an entrance, and a rail has no
+ * dismissal.
+ */
+export const buildRailFillStyle = ({
+  width,
+  color,
+  animation,
+}: {
+  width: React.CSSProperties['width'];
+  color: React.CSSProperties['backgroundColor'];
+  animation?: React.CSSProperties['animation'];
+}): React.CSSProperties => {
+  return {
+    height: '100%',
+    width,
+    backgroundColor: color,
+    borderRadius: 'inherit',
+    transitionProperty: 'width',
+    transitionDuration: vars.motion.transition.enter.duration,
+    transitionTimingFunction: vars.motion.transition.enter.easing,
+    animation,
+  };
+};
