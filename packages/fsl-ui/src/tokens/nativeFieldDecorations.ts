@@ -29,7 +29,9 @@
  * purpose. That module's contents are governed by a name registry
  * (`ANIMATION_NAMES`, contract invariant #8) that has nothing to say about
  * this; folding a UA reset into it would put two unrelated invariants behind
- * one export.
+ * one export. Only the content-agnostic injection plumbing is shared
+ * (`stylesheetInjection.ts`) — id, CSS and the invariants they answer to
+ * stay with their owners.
  *
  * ## What is suppressed, and what deliberately is not
  *
@@ -69,6 +71,8 @@
  * the affordance the anatomy owns.
  */
 
+import { injectStylesheetOnce } from './stylesheetInjection';
+
 const STYLE_ELEMENT_ID = 'fsl-ui-native-field-decorations';
 
 /**
@@ -95,14 +99,13 @@ export const NATIVE_FIELD_DECORATION_CSS = `
 }
 `.trim();
 
-let injected = false;
-
 /**
  * Injects the reset into `document.head` exactly once.
  *
  * No-op on the server (SSR-safe) and when the element already exists — two
  * copies of the package on one page share the first copy's stylesheet, the
- * same contract `ensureKeyframes` holds.
+ * same contract `ensureKeyframes` holds. Both guarantees come from the
+ * shared {@link injectStylesheetOnce} mechanism.
  *
  * Called from `buildFieldValueStyle`, which is the one place every field
  * control in the package passes through. A per-component call would be one
@@ -110,17 +113,8 @@ let injected = false;
  * bug.
  */
 export const ensureNativeFieldDecorationReset = (): void => {
-  if (injected) return;
-  const doc: Document | undefined = globalThis.document;
-  /* istanbul ignore next -- SSR guard: jsdom always provides a document */
-  if (doc === undefined) return;
-  if (doc.getElementById(STYLE_ELEMENT_ID) !== null) {
-    injected = true;
-    return;
-  }
-  const style = doc.createElement('style');
-  style.id = STYLE_ELEMENT_ID;
-  style.textContent = NATIVE_FIELD_DECORATION_CSS;
-  doc.head.appendChild(style);
-  injected = true;
+  injectStylesheetOnce({
+    id: STYLE_ELEMENT_ID,
+    css: NATIVE_FIELD_DECORATION_CSS,
+  });
 };

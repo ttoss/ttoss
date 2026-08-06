@@ -1,7 +1,8 @@
-import { vars } from '@ttoss/fsl-theme/vars';
 import * as React from 'react';
 
 import type { ComponentMeta } from '../../semantics';
+import type { BoxAlignment, GapScaleStep } from '../../tokens/gapScale';
+import { GRID_ALIGN, STACK_GAP } from '../../tokens/gapScale';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -22,10 +23,10 @@ export const gridMeta = {
 } as const satisfies ComponentMeta<'Structure'>;
 
 /** A step of the gap scale. */
-export type GridGap = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+export type GridGap = GapScaleStep;
 
 /** Track (item) alignment along an axis. */
-export type GridAlign = 'start' | 'center' | 'end' | 'stretch';
+export type GridAlign = BoxAlignment;
 
 /**
  * Minimum column width for a responsive auto-fit grid. A small named
@@ -35,14 +36,6 @@ export type GridAlign = 'start' | 'center' | 'end' | 'stretch';
  */
 export type GridMinColumnWidth = 'xs' | 'sm' | 'md' | 'lg';
 
-const GAP: Record<GridGap, string> = {
-  xs: vars.spacing.gap.stack.xs,
-  sm: vars.spacing.gap.stack.sm,
-  md: vars.spacing.gap.stack.md,
-  lg: vars.spacing.gap.stack.lg,
-  xl: vars.spacing.gap.stack.xl,
-};
-
 // Card-width thresholds for auto-fit. Fixed rem thresholds (a named layout
 // scale, like breakpoints) — not arbitrary per-use lengths.
 const MIN_COLUMN_WIDTH: Record<GridMinColumnWidth, string> = {
@@ -50,13 +43,6 @@ const MIN_COLUMN_WIDTH: Record<GridMinColumnWidth, string> = {
   sm: '16rem',
   md: '20rem',
   lg: '24rem',
-};
-
-const ALIGN: Record<GridAlign, string> = {
-  start: 'start',
-  center: 'center',
-  end: 'end',
-  stretch: 'stretch',
 };
 
 /** Equal-fraction track template with an overflow-safe minimum. */
@@ -154,9 +140,9 @@ export const Grid = ({
           display: 'grid',
           gridTemplateColumns: templateColumns,
           gridTemplateRows: rows === undefined ? undefined : tracks(rows),
-          gap: GAP[gap],
-          alignItems: ALIGN[align],
-          justifyItems: ALIGN[justify],
+          gap: STACK_GAP[gap],
+          alignItems: GRID_ALIGN[align],
+          justifyItems: GRID_ALIGN[justify],
         } as React.CSSProperties
       }
     >
