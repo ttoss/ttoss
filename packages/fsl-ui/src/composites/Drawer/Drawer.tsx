@@ -9,6 +9,11 @@ import {
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { OCCLUDING_OUTLINE } from '../../tokens/occludingSurface';
+import {
+  buildScrimStyle,
+  resolveTransitionPhase,
+  surfacePhaseTransition,
+} from '../../tokens/overlayMotion';
 import { PANEL_WIDTH, type PanelWidth } from '../../tokens/panelWidth';
 import { voicedSurface } from '../../tokens/surfaceScope';
 
@@ -58,22 +63,6 @@ const isInlineEdge = (placement: DrawerPlacement): boolean => {
   return placement === 'start' || placement === 'end';
 };
 
-/**
- * The active enter/exit motion spec, or `null` at rest. Mirrors `DialogModal`'s
- * resolver — same tokens, same phases.
- */
-const resolveTransitionPhase = ({
-  isEntering,
-  isExiting,
-}: {
-  isEntering?: boolean;
-  isExiting?: boolean;
-}): { duration: string; easing: string } | null => {
-  if (isEntering) return vars.motion.transition.enter;
-  if (isExiting) return vars.motion.transition.exit;
-  return null;
-};
-
 /** Scrim backdrop — dims the page and anchors the surface to one edge. */
 const buildBackdropStyle = ({
   placement,
@@ -84,23 +73,21 @@ const buildBackdropStyle = ({
   isEntering?: boolean;
   isExiting?: boolean;
 }): React.CSSProperties => {
-  const phase = resolveTransitionPhase({ isEntering, isExiting });
   const inline = isInlineEdge(placement);
-  return {
-    position: 'fixed',
-    inset: 0,
-    display: 'flex',
+  return buildScrimStyle({
+    isEntering,
+    isExiting,
     // The flex axis places the surface: an inline edge pins it along the row,
     // a block edge along the column. `start`/`end` are logical, so an RTL
     // document anchors a `start` drawer on the right with no extra rule.
-    flexDirection: inline ? 'row' : 'column',
-    justifyContent:
-      placement === 'start' || placement === 'top' ? 'flex-start' : 'flex-end',
-    zIndex: vars.zIndex.layer.blocking,
-    backgroundColor: vars.overlay.scrim,
-    transition: phase ? `opacity ${phase.duration} ${phase.easing}` : undefined,
-    opacity: isExiting ? 0 : 1,
-  };
+    surfacePlacement: {
+      flexDirection: inline ? 'row' : 'column',
+      justifyContent:
+        placement === 'start' || placement === 'top'
+          ? 'flex-start'
+          : 'flex-end',
+    },
+  });
 };
 
 /**
@@ -160,9 +147,7 @@ const panelMotion = ({
   return {
     opacity: inTransition ? 0 : 1,
     transform: inTransition ? `${axis}(${away})` : `${axis}(0)`,
-    transition: phase
-      ? `transform ${phase.duration} ${phase.easing}, opacity ${phase.duration} ${phase.easing}`
-      : undefined,
+    transition: surfacePhaseTransition(phase),
   };
 };
 

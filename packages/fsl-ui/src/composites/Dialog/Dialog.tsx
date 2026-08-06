@@ -14,6 +14,11 @@ import {
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { fslVar } from '../../tokens/escapeHatch';
 import { OCCLUDING_OUTLINE } from '../../tokens/occludingSurface';
+import {
+  buildScrimStyle,
+  resolveTransitionPhase,
+  surfacePhaseTransition,
+} from '../../tokens/overlayMotion';
 import { voicedSurface } from '../../tokens/surfaceScope';
 import { createPresenceScope } from '../scope';
 
@@ -179,43 +184,10 @@ const DIALOG_MAX_HEIGHT_DEFAULT = '90vh';
 // stays inside the 90vw clamp on a 320px viewport (F-046).
 const DIALOG_MIN_WIDTH_DEFAULT = 'min(288px, 90vw)';
 
-/**
- * The active enter/exit motion spec, or `null` when the surface is at rest.
- * Collapses the repeated `transition[isEntering ? 'enter' : 'exit']` lookups
- * into a single resolution the style builders read from.
- */
-const resolveTransitionPhase = ({
-  isEntering,
-  isExiting,
-}: {
-  isEntering?: boolean;
-  isExiting?: boolean;
-}): { duration: string; easing: string } | null => {
-  if (isEntering) return vars.motion.transition.enter;
-  if (isExiting) return vars.motion.transition.exit;
-  return null;
-};
-
-/** Scrim backdrop style — dims + centers, fades on enter/exit. */
-const buildBackdropStyle = ({
-  isEntering,
-  isExiting,
-}: {
-  isEntering?: boolean;
-  isExiting?: boolean;
-}): React.CSSProperties => {
-  const phase = resolveTransitionPhase({ isEntering, isExiting });
-  return {
-    position: 'fixed',
-    inset: 0,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: vars.zIndex.layer.blocking,
-    backgroundColor: vars.overlay.scrim,
-    transition: phase ? `opacity ${phase.duration} ${phase.easing}` : undefined,
-    opacity: isExiting ? 0 : 1,
-  };
+/** A dialog's scrim centres the surface on both axes. */
+const DIALOG_SURFACE_PLACEMENT: React.CSSProperties = {
+  alignItems: 'center',
+  justifyContent: 'center',
 };
 
 /** Modal surface style — the blocking card; scales + fades on enter/exit. */
@@ -249,9 +221,7 @@ const buildModalSurfaceStyle = ({
     // page-like primary voice does — a voiced surface keeps its voice.
     ...voicedSurface({ evaluation, color: colors?.background?.default }),
     outline: 'none',
-    transition: phase
-      ? `transform ${phase.duration} ${phase.easing}, opacity ${phase.duration} ${phase.easing}`
-      : undefined,
+    transition: surfacePhaseTransition(phase),
     transform: inTransition ? 'scale(0.95)' : 'scale(1)',
     opacity: inTransition ? 0 : 1,
   };
@@ -303,7 +273,11 @@ export const DialogModal = ({
       data-scope="dialog"
       data-part="backdrop"
       style={({ isEntering, isExiting }) => {
-        return buildBackdropStyle({ isEntering, isExiting });
+        return buildScrimStyle({
+          isEntering,
+          isExiting,
+          surfacePlacement: DIALOG_SURFACE_PLACEMENT,
+        });
       }}
     >
       <RACModal
