@@ -58,6 +58,14 @@ export const ICON_INTENTS = [
   // The invalid-field mark (the field family's validation glyph) and any
   // "needs attention" indicator.
   'status.alert',
+  // The informative mark — status that is noteworthy and carries no
+  // judgement ("in progress", "new"), the `accent` valence of the Feedback
+  // entity. Distinct from `action.help`, which is an *affordance*: help is
+  // something the user can open, this is something the system is reporting.
+  // The two share the ⓘ in the default mapping and that is the theme's
+  // choice, not the intents' — the opposition rule governs pairs that must
+  // never be confused with each other, and an offer is not a report.
+  'status.info',
 ] as const;
 
 /** A semantic icon intent — the public "name" of an icon. */
