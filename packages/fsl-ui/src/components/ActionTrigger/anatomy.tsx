@@ -1,8 +1,25 @@
 import { vars } from '@ttoss/fsl-theme/vars';
 import * as React from 'react';
+import {
+  Button as RACButton,
+  type ButtonProps as RACButtonProps,
+} from 'react-aria-components';
 
+import type {
+  CompositionsFor,
+  ConsequencesFor,
+  Evaluation,
+  EvaluationsFor,
+} from '../../semantics';
+import { resolveConsequenceInk } from '../../tokens/consequenceInk';
 import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
+import {
+  type InteractiveFlags,
+  type InteractiveStates,
+  resolveInteractiveStyle,
+} from '../../tokens/resolveInteractiveStyle';
+import { resolveSurfaceBoundStyle } from '../../tokens/surfaceScope';
 // Type-only import: a trigger must never pull the Icon implementation (and
 // with it the whole glyph registry) into a consumer that renders text alone —
 // the package's tree-shaking guarantee (README, ADR-006) depends on it. The
@@ -24,10 +41,12 @@ import type { IconProps } from '../Icon';
 //
 // What differs between them is the **silhouette** (radius, type step, insets)
 // and the **state cascade** (a toggle maps `isSelected → pressed`, a plain
-// trigger does not). So this module owns anatomy + geometry, parameterised by
-// silhouette; each component keeps its own colour resolution. Copying the
-// geometry into each component instead is how the drift measured in F-022 and
-// the icon-only rectangle got in: one shared source, one place to fix.
+// trigger does not). So this module owns anatomy + geometry — and, for the
+// plain trigger, the colour cascade and root wiring — parameterised by
+// silhouette; a toggle keeps its own colour resolution (see ToggleButton's
+// documented divergence). Copying the geometry into each component instead is
+// how the drift measured in F-022 and the icon-only rectangle got in: one
+// shared source, one place to fix.
 // ---------------------------------------------------------------------------
 
 /**
@@ -235,9 +254,65 @@ export interface ActionTriggerColors {
 }
 
 /**
+ * The three state cascades an Action colour rung declares
+ * (`vars.colors.action[evaluation]`).
+ */
+export interface ActionTriggerStateColors {
+  background?: InteractiveStates;
+  border?: InteractiveStates;
+  text?: InteractiveStates;
+}
+
+/**
+ * The plain (non-toggle) trigger's colour cascade — one source for every
+ * component that paints an Action rung without a persistent `pressed` state.
+ * A toggle must NOT use this: its cascade maps `isSelected → pressed`, which
+ * the shared `STATE_PRIORITY` tuple deliberately does not model (see
+ * ToggleButton's documented divergence).
+ */
+export const resolveActionTriggerColors = ({
+  evaluation,
+  consequence,
+  colors,
+  flags,
+  isFocusVisible,
+}: {
+  evaluation: Evaluation;
+  consequence: ConsequencesFor<'Action'>;
+  colors: ActionTriggerStateColors | undefined;
+  /** Transient render flags (`isDisabled`, `isHovered`, `isPressed`). */
+  flags: InteractiveFlags;
+  /** Kept out of `flags`: only the border reacts to focus. */
+  isFocusVisible?: boolean;
+}): ActionTriggerColors => {
+  return {
+    // The quiet rung's resting fill and edge follow the published surface
+    // (CONTRACT §3.4); every other read is the plain cascade.
+    background: resolveSurfaceBoundStyle({
+      evaluation,
+      states: colors?.background,
+      flags,
+    }),
+    border: resolveSurfaceBoundStyle({
+      evaluation,
+      states: colors?.border,
+      flags: { isDisabled: flags.isDisabled, isFocusVisible },
+    }),
+    text: resolveConsequenceInk({
+      consequence,
+      evaluation,
+      flags,
+      ink:
+        resolveInteractiveStyle(colors?.text, flags) ?? colors?.text?.default,
+    }),
+  };
+};
+
+/**
  * Geometry + resolved colours for a trigger root. Colour *resolution* stays
- * with the component (a toggle reads `pressed`, a plain trigger does not);
- * this owns everything that must be identical across triggers.
+ * out of this builder — a plain trigger's cascade is
+ * {@link resolveActionTriggerColors}, a toggle's own cascade reads `pressed` —
+ * so this owns everything that must be identical across triggers.
  */
 export const buildActionTriggerStyle = ({
   silhouette,
@@ -349,5 +424,95 @@ export const ActionTriggerContent = ({
       )}
       {iconPlacement === 'trailing' && glyph}
     </>
+  );
+};
+
+/**
+ * Props of {@link ActionTriggerRoot}. Defaults live with the component
+ * identities (`Button`, `ActionButton`), not here — every field the identities
+ * disagree on arrives already resolved.
+ */
+export interface ActionTriggerRootProps extends Omit<
+  RACButtonProps,
+  'style' | 'children'
+> {
+  /** Which posture the trigger wears. */
+  silhouette: ActionSilhouette;
+  /** Semantic emphasis — selects the Action colour rung. */
+  evaluation: EvaluationsFor<'Action'>;
+  /** Effect on state; emitted as `data-consequence`. */
+  consequence: ConsequencesFor<'Action'>;
+  /** Slot inside a parent composite; emitted as `data-composition`. */
+  composition?: CompositionsFor<'Action'>;
+  /** @see ActionTriggerContent */
+  icon?: React.ReactElement<IconProps>;
+  /** @see ActionIconPlacement */
+  iconPlacement: ActionIconPlacement;
+  /** Visible label, when the trigger has one. */
+  children?: React.ReactNode;
+  /** `data-scope` emitted on every part. */
+  dataScope: string;
+}
+
+/**
+ * The complete render of a plain Action trigger: React Aria `Button` root,
+ * data-attribute contract (`data-scope`/`data-part`/`data-evaluation`/
+ * `data-consequence`/`data-composition`/`data-icon-placement`), geometry,
+ * colour cascade and ordered content. `Button` and `ActionButton` are this
+ * root plus a silhouette and their own defaults — nothing else may differ
+ * between them. Not part of the package's public API.
+ */
+export const ActionTriggerRoot = ({
+  silhouette,
+  evaluation,
+  consequence,
+  composition,
+  icon,
+  iconPlacement,
+  children,
+  dataScope,
+  ...props
+}: ActionTriggerRootProps) => {
+  const colors = vars.colors.action[evaluation];
+  const hasIcon = icon !== undefined;
+  const isIconOnly = hasIcon && children === undefined;
+  const isGrouped = useIsGroupedActionTrigger();
+
+  return (
+    <RACButton
+      {...props}
+      data-scope={dataScope}
+      data-part="root"
+      data-evaluation={evaluation}
+      data-consequence={consequence}
+      data-composition={composition}
+      data-icon-placement={hasIcon ? iconPlacement : undefined}
+      style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => {
+        const flags = { isDisabled, isHovered, isPressed };
+        return buildActionTriggerStyle({
+          silhouette,
+          hasIcon,
+          isIconOnly,
+          isDisabled,
+          isFocusVisible,
+          isGrouped,
+          colors: resolveActionTriggerColors({
+            evaluation,
+            consequence,
+            colors,
+            flags,
+            isFocusVisible,
+          }),
+        });
+      }}
+    >
+      <ActionTriggerContent
+        dataScope={dataScope}
+        icon={icon}
+        iconPlacement={iconPlacement}
+      >
+        {children}
+      </ActionTriggerContent>
+    </RACButton>
   );
 };
