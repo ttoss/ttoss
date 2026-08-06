@@ -17,10 +17,9 @@ import type {
   ConsequencesFor,
   EvaluationsFor,
 } from '../../semantics';
-import { buildChoosableRowStyle } from '../../tokens/choosableRow';
+import { buildChoosableRowInteractiveStyle } from '../../tokens/choosableRow';
 import { resolveConsequenceInk } from '../../tokens/consequenceInk';
 import { fslVar } from '../../tokens/escapeHatch';
-import { focusRingOutline } from '../../tokens/focusRing';
 import { OCCLUDING_OUTLINE } from '../../tokens/occludingSurface';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import {
@@ -336,12 +335,10 @@ export const MenuItem = ({
       data-composition={composition}
       style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => {
         const flags = { isDisabled, isHovered, isPressed };
-        return {
-          ...buildChoosableRowStyle(),
-          cursor: isDisabled ? 'not-allowed' : 'pointer',
-          transitionDuration: vars.motion.feedback.duration,
-          transitionTimingFunction: vars.motion.feedback.easing,
-          transitionProperty: 'background-color, color',
+        return buildChoosableRowInteractiveStyle({
+          isDisabled,
+          isFocusVisible,
+          // No disabled opacity: a menu row's disabled affordance is its ink.
           // The quiet row's resting fill follows the published surface
           // (§3.4) — inside this Menu's own popover that is the identical
           // value, so the read matters when a host portals rows elsewhere.
@@ -358,8 +355,7 @@ export const MenuItem = ({
               resolveInteractiveStyle(colors?.text, flags) ??
               colors?.text?.default,
           }),
-          outline: focusRingOutline(isFocusVisible),
-        } as React.CSSProperties;
+        }) as React.CSSProperties;
       }}
     >
       {children}

@@ -135,3 +135,38 @@ describe('GridListItem and ListBoxItem paint the container colour at rest', () =
     expect(item?.style.backgroundColor).not.toBe(itemBg?.default);
   });
 });
+
+// E2 C-05 — the container half of the split, stated once and shared.
+describe('collection container chrome', () => {
+  // Deep import on purpose: the builders are internal, not package exports.
+  const {
+    buildCollectionContainerEdge,
+    buildCollectionContainerStyle,
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+  } = require('../../../src/tokens/collectionRow');
+
+  test('the stacked container states the row-list layout once', () => {
+    const style = buildCollectionContainerStyle();
+    expect(style.display).toBe('flex');
+    expect(style.flexDirection).toBe('column');
+    expect(style.gap).toBe(vars.spacing.gap.stack.xs);
+    // Row-framing gutter, not a page inset (F-045).
+    expect(style.padding).toBe(vars.spacing.inset.surface.xs);
+  });
+
+  test('every collection host shares the edge and publishes its surface', () => {
+    const edge = buildCollectionContainerEdge();
+    expect(edge.borderRadius).toBe(vars.radii.surface);
+    expect(edge.borderWidth).toBe(vars.border.outline.surface.width);
+    expect(edge.borderStyle).toBe(vars.border.outline.surface.style);
+    expect(edge.backgroundColor).toBe(
+      vars.colors.informational.primary.background?.default
+    );
+    // Table consumes only the edge, so the edge must not impose a layout.
+    expect(edge.display).toBeUndefined();
+    expect(edge.gap).toBeUndefined();
+    expect(edge.padding).toBeUndefined();
+    // A surface with no declared edge keeps a verifiable value, not a hole.
+    expect(buildCollectionContainerEdge({}).borderColor).toBe('transparent');
+  });
+});

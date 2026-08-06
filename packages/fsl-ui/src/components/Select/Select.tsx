@@ -13,8 +13,7 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
-import { buildChoosableRowStyle } from '../../tokens/choosableRow';
-import { focusRingOutline } from '../../tokens/focusRing';
+import { buildChoosableRowInteractiveStyle } from '../../tokens/choosableRow';
 import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import {
@@ -339,9 +338,9 @@ export const SelectItem = ({ children, ...props }: SelectItemProps) => {
         isFocusVisible,
         isSelected,
       }) => {
-        return {
-          ...buildChoosableRowStyle(),
-          cursor: isDisabled ? 'not-allowed' : 'pointer',
+        return buildChoosableRowInteractiveStyle({
+          isDisabled,
+          isFocusVisible,
           opacity: isDisabled ? vars.opacity.disabled : undefined,
           backgroundColor: resolveInteractiveStyle(c?.background, {
             isDisabled,
@@ -355,11 +354,7 @@ export const SelectItem = ({ children, ...props }: SelectItemProps) => {
               isSelected,
               isHovered,
             }) ?? c?.text?.default,
-          outline: focusRingOutline(isFocusVisible),
-          transitionProperty: 'background-color, color',
-          transitionDuration: vars.motion.feedback.duration,
-          transitionTimingFunction: vars.motion.feedback.easing,
-        } as React.CSSProperties;
+        }) as React.CSSProperties;
       }}
     >
       {children}
