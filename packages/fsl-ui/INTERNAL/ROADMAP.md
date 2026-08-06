@@ -185,6 +185,46 @@ adoption-demanded component (`ComboBox`) shipped the same day, closing F-008.
 
 - **v1.0 criteria (all of):** ✅ adoption gate met (Studio deployed, four flows, friction log at zero blockers — 2026-07-24) · ✅ P0 both remaining items done (2026-07-24) · ✅ P2 items the adoption demanded shipped (`Table`, `Icon`, `ComboBox`) · ◐ P3 bar applied (Slices 1–4 landed; review rounds 1–7 closed — Overlay, Feedback, Collection, Navigation, Disclosure, Structure — each with its own instrument, findings, fixes or a recorded no-defect/filed-finding verdict; ritual applied to all four Meridian flows light + dark — **round 7 (Structure) covered `AppShell`, `Badge`, `Box`, `ButtonGroup`, `Code`, `Container`, `Grid`, `Group`, `Heading`, `Icon`, `List`, `Separator`, `Stack`, `Surface`, `Text`, `Toolbar`, `Wizard`, the `Tabs` panel and the `Form` field-row — the P3 bar is now applied to every round the owner named, and what remains is the owner's own visual sign-off**, not another review round) · ✅ CHANGELOG migration notes honest (2026-08-06 — the 11 fsl-ui entries from 0.2.1 to 0.2.11 that said "Version bump only" now describe their actual content, reconstructed from `git diff` between each release commit and cross-referenced against the ADRs each cut shipped; 0.2.3/0.2.5 are the two cuts whose content is not recoverable from this repository's visible history — pre-2026-07-22 — and say so rather than guess). **What it owes is derived, not listed here:** the published surface is declared at its own edit sites — `packages/fsl-theme/tests/unit/tests/theme/families/colors.test.ts` (`ALLOWED_ROLES`, which carries the rule) and each `src/families/*.ts` interface — so read those, never a copy in this file. An earlier revision of this line enumerated "three breaking changes" and was already wrong by one; the count is the wrong shape. **Activation condition:** account for the P3 surface change when the release is cut — at that point `fsl-theme` (2.x, published) needs a major for the five required members P3 added (`colors.feedback.accent`, `radii.action`, `text.action.md`, `sizing.icon.text`, `spacing.inset.action.block`), while `fsl-ui` (0.x) needs only the notes, since a marked and an unmarked break bump it identically. **FRICTION.md's open count is now zero — every filed finding is closed, and that is a distinct fact from the owner's visual sign-off, which has NOT happened.** F-004 (no narrow-card width step) was the last one open; it closed 2026-08-05 by owner delegation (`fsl-theme`/`fsl-ui` ADR-039: `semantic.sizing.surface.card` aliasing `core.sizing.ramp.layout.1`, `Box`/`Container` gain `'card'`, the Studio's `LoginPage` switched off its hand-rolled width workaround). F-053 (Badge/StatusLight silhouette), F-057 (Surface elevated-boundary address), and F-048 (evaluation on a lifted surface) closed the same way in earlier rounds this session (fsl-ui ADR-038/037). F-051 (rail address) and F-052 (rail width envelope) were ruled 2026-08-06 by owner delegation rather than left for the version boundary — fsl-theme ADR-028, fsl-ui ADR-036. F-028 (Toolbar single tab stop) was resolved by owner delegation on 2026-08-05: the claim was correct after all — see ROADMAP Slice 4 ④ and FRICTION.md. **What that does NOT mean: it is not the owner's visual sign-off across all seven review rounds, which is a separate act this document cannot perform on the owner's behalf and which has not occurred.** That sign-off — not another finding, not another measurement — is what stands between here and v1.0. **v1.x milestone:** first screen in an external business app.
 
+### Route to the visual sign-off — harmonization program (owner decision, 2026-08-06)
+
+The sign-off does not run against the current catalog as-is, and its instrument changes.
+The owner ruled that a screenshot sheet answers the wrong question: the v1.0 question is
+**"does the system hold when the theme changes?"**, and that is answered live — Studio
+(four flows) + fsl Storybook, switching theme and mode, across **at least four bundles**
+(`base`, `bruttal`, plus two new themes authored in E5 below). The `visual-signoff` sheet
+generator in `docs/fsl-storybook` is judged over-engineered for that method and retires in E3.
+
+Five stages, strictly sequential; each closes on a binary exit criterion and an owner check
+before the next opens. Findings-first discipline throughout (the rule this file already
+carries): classify before cutting — **drift** (fix) / **audited mirror** (keep, e.g.
+`llms.txt`) / **over-doc** (cut) / **ambiguity** (owner ruling). Divergence between code
+and doc stays evidence of an unstated invariant until proven otherwise.
+
+- **E1 — Consistency** (docs ⇄ fsl-theme ⇄ fsl-ui): cross-artifact sweep by claim class
+  (token grammar, Entity→ux mapping, component contracts, public exports) under the
+  `model.md` §11 hierarchy (FSL Lexicon → `Types.ts` → family docs). Includes a docs
+  density pass (cut what decides nothing) and an explicit blocker-or-not ruling on
+  F-058/F-059. **Exit:** zero known contradictions across the three sources.
+- **E2 — Consolidation** (design-level abstraction): inventory remaining duplicated or
+  ad-hoc styling logic and complete the shared-anatomy movement (`ActionTrigger`,
+  `Field`, `disclosureAnatomy`, `rail`, `collectionRow` are the pattern). Each
+  abstraction = one ADR + pixel-identical Chromium verification light+dark (the round-6
+  precedent) + suites at 100. **Exit:** no byte-duplicated styling logic.
+- **E3 — Technical hygiene** (mechanical, zero public-surface change): dead code
+  (`knip`-class sweep + the treeshake probe), structure/co-location, naming; retire
+  `visual-signoff.mjs`. **Exit:** zero unused exports; builds, probes and ratchets
+  green; `dist/*.d.ts` diff clean.
+- **E4 — Theme-authoring skill**: package `theme-authoring.md` (Theme Brief, Formal
+  Style Profile, 15-step derivation, 12-axis scorecard, `FSL-*` rules) into an
+  executable AI skill — packaging, not new theory. **Acceptance:** reproduce `bruttal`
+  from its own brief, then produce a theme that passes scorecard + suites unaided.
+- **E5 — Two new themes + sign-off**: Enterprise Neutral (draft profile → shipped
+  theme) + one deliberately contrasting style-reference theme; contrast/identity suites
+  parameterised across all four bundles; then the sign-off ritual above. Findings →
+  FRICTION.md with honest severity (blockers hold the release, paper-cuts do not);
+  verdict dated in the criteria line above (◐ → ✅), which triggers the release
+  mechanics already recorded there (fsl-theme major, ADR-012 expiry).
+
 ### Anti-scope-creep rules (binding)
 
 1. **Evidence rule, program-wide** (extends the existing ADR culture): no new package, doc family, tool, or projection axis without a real consumer already waiting.
