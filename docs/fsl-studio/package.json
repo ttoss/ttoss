@@ -1,6 +1,6 @@
 {
   "name": "@docs/fsl-studio",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "private": true,
   "description": "FSL Studio — a theme workbench wrapped around a real product: Meridian, a fictional deploy platform built exclusively with @ttoss/fsl-ui on @ttoss/fsl-theme.",
   "repository": {
