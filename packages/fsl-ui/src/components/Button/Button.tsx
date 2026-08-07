@@ -1,9 +1,5 @@
-import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
-import {
-  Button as RACButton,
-  type ButtonProps as RACButtonProps,
-} from 'react-aria-components';
+import type { ButtonProps as RACButtonProps } from 'react-aria-components';
 
 import type {
   ComponentMeta,
@@ -11,16 +7,11 @@ import type {
   ConsequencesFor,
   EvaluationsFor,
 } from '../../semantics';
-import { resolveConsequenceInk } from '../../tokens/consequenceInk';
-import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
-import { resolveSurfaceBoundStyle } from '../../tokens/surfaceScope';
 import {
   type ActionIconPlacement,
   type ActionLabellingProps,
-  ActionTriggerContent,
-  buildActionTriggerStyle,
+  ActionTriggerRoot,
   COMMAND_SILHOUETTE,
-  useIsGroupedActionTrigger,
 } from '../ActionTrigger/anatomy';
 import type { IconProps } from '../Icon';
 
@@ -152,62 +143,19 @@ export const Button = ({
   'data-scope': dataScope = 'button',
   ...props
 }: ButtonProps) => {
-  const colors = vars.colors.action[evaluation];
-  const hasIcon = icon !== undefined;
-  const isIconOnly = hasIcon && children === undefined;
-  const isGrouped = useIsGroupedActionTrigger();
-
   return (
-    <RACButton
+    <ActionTriggerRoot
       {...props}
-      data-scope={dataScope}
-      data-part="root"
-      data-evaluation={evaluation}
-      data-consequence={consequence}
-      data-composition={composition}
-      data-icon-placement={hasIcon ? iconPlacement : undefined}
-      style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => {
-        const flags = { isDisabled, isHovered, isPressed };
-        return buildActionTriggerStyle({
-          silhouette: COMMAND_SILHOUETTE,
-          hasIcon,
-          isIconOnly,
-          isDisabled,
-          isFocusVisible,
-          isGrouped,
-          colors: {
-            // The quiet rung's resting fill and edge follow the published
-            // surface (CONTRACT §3.4); every other read is the plain cascade.
-            background: resolveSurfaceBoundStyle({
-              evaluation,
-              states: colors?.background,
-              flags,
-            }),
-            border: resolveSurfaceBoundStyle({
-              evaluation,
-              states: colors?.border,
-              flags: { isDisabled, isFocusVisible },
-            }),
-            text: resolveConsequenceInk({
-              consequence,
-              evaluation,
-              flags,
-              ink:
-                resolveInteractiveStyle(colors?.text, flags) ??
-                colors?.text?.default,
-            }),
-          },
-        });
-      }}
+      silhouette={COMMAND_SILHOUETTE}
+      evaluation={evaluation}
+      consequence={consequence}
+      composition={composition}
+      icon={icon}
+      iconPlacement={iconPlacement}
+      dataScope={dataScope}
     >
-      <ActionTriggerContent
-        dataScope={dataScope}
-        icon={icon}
-        iconPlacement={iconPlacement}
-      >
-        {children}
-      </ActionTriggerContent>
-    </RACButton>
+      {children}
+    </ActionTriggerRoot>
   );
 };
 Button.displayName = buttonMeta.displayName;

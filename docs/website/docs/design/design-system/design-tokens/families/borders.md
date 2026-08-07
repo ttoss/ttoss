@@ -57,10 +57,11 @@ Line thickness should remain stable across viewport sizes to preserve consistenc
 
 ### Core Token Set
 
-Core border tokens are organized into two groups:
+Core border tokens are organized into three groups:
 
 1. **Widths** — line thickness
 2. **Styles** — line pattern
+3. **Offsets** — gap between a box's edge and a line drawn outside it
 
 #### Border Widths
 
@@ -79,6 +80,14 @@ Core border tokens are organized into two groups:
 | `core.border.style.dashed` | interrupted line | optional alternate structural emphasis     |
 | `core.border.style.dotted` | dotted line      | rare, low-frequency utility use            |
 | `core.border.style.none`   | no visible line  | reset cases                                |
+
+#### Border Offsets
+
+| Token                        | Meaning                                   | Recommended use                      |
+| :--------------------------- | :---------------------------------------- | :----------------------------------- |
+| `core.border.offset.focused` | gap between a control's edge and the ring | focus ring offset (`outline-offset`) |
+
+One member, because the focus ring is the only line the system draws outside the box. Kept independent of `width.focused` even though the base theme sets both to the same value — a theme retunes thickness for prominence and offset for how much the ring breathes off the control.
 
 > **Naming note:** Border width names (`default`, `selected`, `focused`) look like state names but are not UI intent in the sense prohibited by model.md §1. They are positions in a four-step scale named by their canonical use-site — a deliberate choice that encodes an ordering constraint: `focused ≥ selected > default > none`. A purely ordinal scheme (`0, 1, 2, 3`) would lose this constraint from the name and JSDoc alone. Themes may remap the semantic layer (e.g., map `outline.selected.width` to `core.border.width.default` when selection is expressed through color only, not thickness) — the indirection is not ceremonial. The prohibition in §1 targets component-specific or context-specific names (`core.border.width.button`, `core.border.width.card`), not canonical use-site names in a small, closed scale.
 
@@ -101,6 +110,10 @@ const coreBorder = {
       dashed: 'dashed',
       dotted: 'dotted',
       none: 'none',
+    },
+
+    offset: {
+      focused: '2px',
     },
   },
 };
@@ -130,20 +143,20 @@ They are intentionally anchored in **structural role**, not in component names.
 - `border.outline.surface`
 - `border.outline.control`
 - `border.outline.selected`
-- `focus.ring` — width + style + **color**; the color field is the system-wide focus default (cross-cutting infrastructure, see [model.md §6](../model.md#6-no-parallel-vocabulary))
+- `focus.ring` — width + style + **color** + **offset**; the color field is the system-wide focus default (cross-cutting infrastructure, see [model.md §6](../model.md#6-no-parallel-vocabulary)); the offset floats the ring off the control's edge
 
 > Keep this set stable.
 > Do not introduce component-specific line tokens by default (`border.input`, `border.card`, `border.tab`, etc.).
 
 ### Semantic Tokens Summary Table
 
-| token                     | use when you are building…                      | contract (must be true)                                                                    | default mapping                                                                       |
-| :------------------------ | :---------------------------------------------- | :----------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------ |
-| `border.divider`          | separators between content groups               | purely structural; low emphasis                                                            | `core.border.width.default` + `core.border.style.solid`                               |
-| `border.outline.surface`  | cards, panels, dialogs, menus, grouped surfaces | defines surface boundary                                                                   | `core.border.width.default` + `core.border.style.solid`                               |
-| `border.outline.control`  | buttons, inputs, toggles, interactive controls  | defines control boundary                                                                   | `core.border.width.default` + `core.border.style.solid`                               |
-| `border.outline.selected` | active tabs, selected rows, chosen items        | selection/current state changes thickness                                                  | `core.border.width.selected` + `core.border.style.solid`                              |
-| `focus.ring`              | keyboard focus indicators                       | must remain clearly visible and accessible; carries width + style + color (system default) | `core.border.width.focused` + `core.border.style.solid` + `semantic.focus.ring.color` |
+| token                     | use when you are building…                      | contract (must be true)                                                                             | default mapping                                                                                                      |
+| :------------------------ | :---------------------------------------------- | :-------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------- |
+| `border.divider`          | separators between content groups               | purely structural; low emphasis                                                                     | `core.border.width.default` + `core.border.style.solid`                                                              |
+| `border.outline.surface`  | cards, panels, dialogs, menus, grouped surfaces | defines surface boundary                                                                            | `core.border.width.default` + `core.border.style.solid`                                                              |
+| `border.outline.control`  | buttons, inputs, toggles, interactive controls  | defines control boundary                                                                            | `core.border.width.default` + `core.border.style.solid`                                                              |
+| `border.outline.selected` | active tabs, selected rows, chosen items        | selection/current state changes thickness                                                           | `core.border.width.selected` + `core.border.style.solid`                                                             |
+| `focus.ring`              | keyboard focus indicators                       | must remain clearly visible and accessible; carries width + style + color (system default) + offset | `core.border.width.focused` + `core.border.style.solid` + `semantic.focus.ring.color` + `core.border.offset.focused` |
 
 ### Example
 
@@ -177,6 +190,7 @@ const semanticBorder = {
     ring: {
       width: '{core.border.width.focused}',
       style: '{core.border.style.solid}',
+      offset: '{core.border.offset.focused}',
     },
   },
 };
@@ -210,7 +224,7 @@ Typical pairings:
 
 ## Focus Implementation
 
-`focus.ring` is a semantic line contract for keyboard/programmatic focus. It carries `width`, `style`, **and** `color` — the colour field exists because focus needs a system-wide default that no `{ux}` owns (see [model.md §6](../model.md#6-no-parallel-vocabulary)).
+`focus.ring` is a semantic line contract for keyboard/programmatic focus. It carries `width`, `style`, `color`, **and** `offset` — the colour field exists because focus needs a system-wide default that no `{ux}` owns (see [model.md §6](../model.md#6-no-parallel-vocabulary)); the offset (rendered as `outline-offset`, aliasing `core.border.offset.focused`) floats the ring off the control so it stays legible against the control's own fill and its contrast pairing is against the stratum behind.
 
 Render via CSS `outline`, not `border`: outlines sit outside the box, avoid layout shift, and produce clearer a11y indicators.
 
@@ -232,7 +246,7 @@ The two paths are not duplicates — per-context tokens answer "how does _this_ 
   outline-width: var(--tt-focus-ring-width);
   outline-style: var(--tt-focus-ring-style);
   outline-color: var(--tt-focus-ring-color);
-  outline-offset: 2px;
+  outline-offset: var(--tt-focus-ring-offset);
 }
 
 /* Input in error — negative valence overrides the system default */
@@ -240,11 +254,11 @@ The two paths are not duplicates — per-context tokens answer "how does _this_ 
   outline-width: var(--tt-focus-ring-width);
   outline-style: var(--tt-focus-ring-style);
   outline-color: var(--tt-input-negative-border-focused);
-  outline-offset: 2px;
+  outline-offset: var(--tt-focus-ring-offset);
 }
 ```
 
-> `outline-offset` belongs to the implementation layer unless the system later promotes it into a token.
+> A row inside a clipped or scrolling container has nowhere to put the gap and insets the ring by its own width instead — a component decision derived from `width`, not a second token.
 
 ## Scope: Tokens vs Components vs Edge Selection
 

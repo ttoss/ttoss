@@ -8,9 +8,10 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
-import { focusRingOutline } from '../../tokens/focusRing';
-import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import {
+  buildSelectionMarkStyle,
+  buildSelectionOptionRowStyle,
+  resolveSelectionLabelInk,
   SELECTION_BOX_BASE,
   SELECTION_GROUP_STYLE,
 } from '../../tokens/selectionControl';
@@ -152,8 +153,6 @@ RadioGroup.displayName = radioGroupMeta.displayName;
 // Radio — individual option
 // ---------------------------------------------------------------------------
 
-type InputColors = typeof vars.colors.input.primary;
-
 // Size and glyph scale come from the shared selection-control source; the
 // circle is the one axis a radio differs on (`round` vs the halved control
 // radius of a checkbox-shaped mark).
@@ -162,62 +161,6 @@ const RADIO_BOX_STATIC = {
   position: 'relative',
   borderRadius: vars.radii.round,
 } satisfies React.CSSProperties;
-
-/** Circular radio-indicator style (state-dependent chrome + focus ring). */
-const buildRadioBoxStyle = ({
-  c,
-  isSelected,
-  isInvalid,
-  isDisabled,
-  isHovered,
-  isPressed,
-  isFocusVisible,
-}: {
-  c: InputColors;
-  isSelected?: boolean;
-  isInvalid?: boolean;
-  isDisabled?: boolean;
-  isHovered?: boolean;
-  isPressed?: boolean;
-  isFocusVisible?: boolean;
-}): React.CSSProperties => {
-  return {
-    ...RADIO_BOX_STATIC,
-    borderWidth: isSelected
-      ? vars.border.outline.selected.width
-      : vars.border.outline.control.width,
-    backgroundColor: resolveInteractiveStyle(c?.background, {
-      isDisabled,
-      isInvalid,
-      isSelected,
-      isHovered,
-      isPressed,
-    }),
-    borderColor: resolveInteractiveStyle(c?.border, {
-      isDisabled,
-      isInvalid,
-      isSelected,
-      isFocusVisible,
-    }),
-    outline: focusRingOutline(isFocusVisible),
-  };
-};
-
-/** Label color — invalid dominates disabled dominates default. */
-const resolveRadioLabelColor = ({
-  c,
-  isInvalid,
-  isDisabled,
-}: {
-  c: InputColors;
-  isInvalid?: boolean;
-  isDisabled?: boolean;
-}): string | undefined => {
-  const text = c?.text;
-  if (isInvalid) return text?.invalid;
-  if (isDisabled) return text?.disabled;
-  return text?.default;
-};
 
 /**
  * Props for the Radio component.
@@ -250,14 +193,7 @@ export const Radio = ({ children, ...props }: RadioProps) => {
       data-part="root"
       style={({ isDisabled }) => {
         return {
-          boxSizing: 'border-box',
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: vars.spacing.gap.inline.sm,
-          minHeight: vars.sizing.hit,
-          cursor: isDisabled ? 'not-allowed' : 'pointer',
-          opacity: isDisabled ? vars.opacity.disabled : undefined,
-          ...(vars.text.label.md as React.CSSProperties),
+          ...buildSelectionOptionRowStyle({ isDisabled }),
           color: isDisabled ? c?.text?.disabled : c?.text?.default,
         } as React.CSSProperties;
       }}
@@ -279,14 +215,18 @@ export const Radio = ({ children, ...props }: RadioProps) => {
               data-scope="radio"
               data-part="selectionControl"
               aria-hidden
-              style={buildRadioBoxStyle({
-                c,
-                isSelected,
-                isInvalid,
-                isDisabled,
-                isHovered,
-                isPressed,
-                isFocusVisible,
+              style={buildSelectionMarkStyle({
+                base: RADIO_BOX_STATIC,
+                colors: c,
+                flags: {
+                  isSelected,
+                  isInvalid,
+                  isDisabled,
+                  isHovered,
+                  isPressed,
+                  isFocusVisible,
+                },
+                selectedBorderWidth: vars.border.outline.selected.width,
               })}
             >
               {/* indicator — inner dot when selected */}
@@ -312,7 +252,11 @@ export const Radio = ({ children, ...props }: RadioProps) => {
                 data-scope="radio"
                 data-part="label"
                 style={{
-                  color: resolveRadioLabelColor({ c, isInvalid, isDisabled }),
+                  color: resolveSelectionLabelInk({
+                    text,
+                    isInvalid,
+                    isDisabled,
+                  }),
                 }}
               >
                 {children}

@@ -64,32 +64,44 @@ the current combination of React Aria state booleans.
 
 ## §1 — Entity → Token Map
 
-A component MUST use ONLY tokens from its Entity row.
+A **part** MUST read only the token row of the entity it embodies. For a
+single-identity component that is its own row; a composite that hosts a part of
+another entity (Toast's action button is an Action part) reads that entity's row
+for that part. Composition changes which row applies — it never licenses mixing
+rows within one part.
 
-| Entity         | Colors          | Radii                      | Border                        | Sizing | Spacing         | Typography               | Motion       | Elevation        |
-| -------------- | --------------- | -------------------------- | ----------------------------- | ------ | --------------- | ------------------------ | ------------ | ---------------- |
-| **Action**     | `action`        | `action`                   | `outline.control`             | `hit`  | `inset.control` | `action`                 | `feedback`   | `flat`           |
-| **Input**      | `input`         | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Selection**  | `input`         | `control`                  | `outline.control`, `selected` | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Navigation** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Disclosure** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `transition` | `flat`           |
-| **Overlay**    | `informational` | `surface`                  | `outline.surface`             | —      | `inset.surface` | `title`, `body`, `label` | `transition` | `overlay`        |
-| **Feedback**   | `feedback`      | `surface`, `round` (rails) | `outline.surface`             | —      | `inset.surface` | `body`, `label`          | `feedback`   | `raised`         |
-| **Collection** | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `body`, `label`          | —            | `flat`, `raised` |
-| **Structure**  | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `title`, `body`, `label` | —            | `flat`, `raised` |
+Colors are the mechanically enforced column: the contract suite audits every
+rendered color read against the row. The other columns record each entity's
+silhouette. One axis is orthogonal by design: **motion binds to the movement's
+purpose, not the entity** — `feedback` acknowledges an interaction on the
+element itself, `transition` carries content entering or leaving — so the Motion
+column lists the purposes an entity's movements have, and a read outside it is
+wrong unless the movement's purpose says otherwise.
+
+| Entity         | Colors          | Radii                      | Border                        | Sizing | Spacing         | Typography               | Motion                                | Elevation        |
+| -------------- | --------------- | -------------------------- | ----------------------------- | ------ | --------------- | ------------------------ | ------------------------------------- | ---------------- |
+| **Action**     | `action`        | `action`                   | `outline.control`             | `hit`  | `inset.control` | `action`                 | `feedback`                            | `flat`           |
+| **Input**      | `input`         | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`                            | `flat`           |
+| **Selection**  | `input`         | `control`                  | `outline.control`, `selected` | `hit`  | `inset.control` | `label`                  | `feedback`                            | `flat`           |
+| **Navigation** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`                            | `flat`           |
+| **Disclosure** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `transition`                          | `flat`           |
+| **Overlay**    | `informational` | `surface`                  | `outline.surface`             | —      | `inset.surface` | `title`, `body`, `label` | `transition`                          | `overlay`        |
+| **Feedback**   | `feedback`      | `surface`, `round` (rails) | `outline.surface`             | —      | `inset.surface` | `body`, `label`          | `feedback`, `transition` (enter/exit) | `raised`         |
+| **Collection** | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `body`, `label`          | —                                     | `flat`, `raised` |
+| **Structure**  | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `title`, `body`, `label` | —                                     | `flat`, `raised` |
 
 **Cross-cutting** (apply to ALL interactive entities — not in the table because they are entity-agnostic):
 
 | Token family       | Path                                                                                   |
-| ------------------ | -------------------------------------------------------------------------------------- | ------ | ------- | -------- | ----------- |
-| Focus ring         | `vars.focus.ring.width` / `.style` / `.color`                                          |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| Focus ring         | `vars.focus.ring.width` / `.style` / `.color` / `.offset`                              |
 | Consequence ink    | `vars.consequence.destructive.ink` — read via `resolveConsequenceInk` only (§3.3)      |
 | Occluding boundary | `vars.overlay.outline` — the edge of a surface that **covers** content (§3.5)          |
 | Rail fill          | `vars.rail.track` — the unfilled part of a `ProgressBar`/`Meter`/`Slider` track (§3.6) |
 | Disabled opacity   | `vars.opacity.disabled`                                                                |
 | Scrim opacity      | `vars.opacity.scrim`                                                                   |
 | Scrim color        | `vars.overlay.scrim`                                                                   |
-| Z-Index            | `vars.zIndex.layer.{base                                                               | sticky | overlay | blocking | transient}` |
+| Z-Index            | `vars.zIndex.layer.{base,sticky,overlay,blocking,transient}`                           |
 
 ### §1.1 — Mapping Rationale
 
@@ -178,12 +190,16 @@ Example: `vars.border.outline.control.width`, `vars.border.outline.control.style
 ### Sizing (interactive entities)
 
 ```
-vars.sizing.hit.{step}
+vars.sizing.hit
 ```
 
-Standard step for all interactive components: **`base`**.  
-`min` and `prominent` are reserved for components with a distinct semantic identity (e.g. compact toolbar action, prominent CTA).  
-Hit targets are ergonomic minimums — CSS automatically responds to `@media (any-pointer: coarse)`.
+A single leaf, no steps (§4): one ergonomic floor per pointer profile, never a
+visual size — apply via `min-height` / `min-width`, and let inset + type produce
+the visible control size. The former `base`/`min`/`prominent` ramp is gone
+(fsl-theme ADR-020: only `base` was ever consumed). CSS automatically responds
+to `@media (any-pointer: coarse)` — the coarse floor is injected by the theme's
+output layer, no component code needed. Glyph sizes are a separate subtree:
+`vars.sizing.icon.{text|sm|md|lg}` (§9).
 
 ### Spacing
 
@@ -528,7 +544,7 @@ Every component root MUST carry the identity attributes (`data-scope`, `data-par
 | `data-scope`       | every element                                   | `kebab-case(meta.displayName)` — e.g. `"button"`, `"dialog"`        | Always.                                                                                                                                                                                                                                                                                                                  |
 | `data-part`        | every element                                   | `meta.structure` — e.g. `"root"`, `"label"`, `"control"`            | Always.                                                                                                                                                                                                                                                                                                                  |
 | `data-evaluation`  | parts that consume evaluation tokens            | `EvaluationsFor<E>` — e.g. `"primary"`, `"negative"`                | When the part renders evaluation-dependent colors.                                                                                                                                                                                                                                                                       |
-| `data-consequence` | leaf Action elements that declare an effect     | `ConsequencesFor<E>` — `"neutral" \| "committing" \| "destructive"` | When the component accepts a `consequence` prop (`Button`, `MenuItem`, `FormSubmit`).                                                                                                                                                                                                                                    |
+| `data-consequence` | leaf Action elements that declare an effect     | `ConsequencesFor<E>` — `"neutral" \| "committing" \| "destructive"` | When the component accepts a `consequence` prop (`Button`, `ActionButton`, `MenuItem`, `FormSubmit`). `ConfirmationDialog` also emits it on its Overlay root (`data-scope="confirmation-dialog"`), so hosts and tests can address the whole confirming surface by consequence.                                           |
 | `data-composition` | leaves that play a parent slot                  | `CompositionsFor<E>` — e.g. `"primaryAction"`                       | When the component accepts a `composition` prop. Read at runtime by composites (e.g. `DialogActions` reorders by it).                                                                                                                                                                                                    |
 | `data-platform`    | `DialogActions` only                            | `"ios" \| "windows"`                                                | Always on `DialogActions`. Reflects the active ordering convention.                                                                                                                                                                                                                                                      |
 | `data-pending`     | `FormSubmit` only                               | `"true"` (omitted otherwise)                                        | While `isPending` is `true`. Lets host CSS/tests show spinner without re-wiring the disabled path.                                                                                                                                                                                                                       |
@@ -748,7 +764,8 @@ source check that nothing assigns an allowlisted name.
 ## §8 — Full Example: Button (Entity = Action)
 
 `entity: 'Action'` → §1 row: colors=`action`, radii=`action`, border=`outline.control`,
-sizing=`hit`, spacing=`inset.control.md`, typography=`action.md`, motion=`feedback`, elevation=`flat`.
+sizing=`hit`, spacing=`inset.action.block` (block) + `inset.control.lg` (inline),
+typography=`action.md`, motion=`feedback`, elevation=`flat`.
 
 **Two silhouettes inside the Action row.** The row above lists the _command_
 tokens (`radii.action`, `text.action`, `inset.action.block`) that `Button`
@@ -808,9 +825,9 @@ export const Button = ({ evaluation = 'primary', ...props }: ButtonProps) => {
         borderWidth: vars.border.outline.control.width,
         borderStyle: vars.border.outline.control.style,
         minHeight: vars.sizing.hit,
-        paddingBlock: vars.spacing.inset.control.md,
-        paddingInline: vars.spacing.inset.control.md,
-        ...(vars.text.label.md as React.CSSProperties),
+        paddingBlock: vars.spacing.inset.action.block,
+        paddingInline: vars.spacing.inset.control.lg,
+        ...(vars.text.action.md as React.CSSProperties),
         transitionDuration: vars.motion.feedback.duration,
         transitionTimingFunction: vars.motion.feedback.easing,
         transitionProperty: 'background-color, border-color, color',
@@ -867,5 +884,7 @@ Rules:
    hit targets); a glyph legitimately scales with its context.
 4. **Decorative by default** (`aria-hidden`). Pass `label` only when the icon
    is the sole carrier of meaning — and pass caller-localized copy (§6/i18n).
-5. Icon is **internal** — never re-export it from `src/index.ts`. It is the
-   seed of a future standalone `@ttoss/fsl-icon` package.
+5. Icon is a **public export** of `src/index.ts` (ADR-010). Its semantic
+   layer (`intents.ts` + `glyphs.ts`) stays free of React and token imports
+   so it can be lifted whole into a future standalone `@ttoss/fsl-icon`
+   package.

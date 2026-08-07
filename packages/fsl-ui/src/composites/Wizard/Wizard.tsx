@@ -1,6 +1,7 @@
 import { vars } from '@ttoss/fsl-theme/vars';
 import * as React from 'react';
 
+import { buildActionRowStyle } from '../../components/ActionTrigger/anatomy';
 import { Button } from '../../components/Button/Button';
 import type { ComponentMeta } from '../../semantics';
 import { createCompositeScope } from '../scope';
@@ -630,17 +631,7 @@ const WizardNavigationBase = ({
       data-scope="wizard"
       data-part="actions"
       data-composition="navigation"
-      style={
-        {
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'flex-end',
-          gap: vars.spacing.gap.inline.md,
-          marginBlockStart: vars.spacing.gap.stack.sm,
-        } as React.CSSProperties
-      }
+      style={buildActionRowStyle({ topGap: vars.spacing.gap.stack.sm })}
     >
       {content}
     </div>

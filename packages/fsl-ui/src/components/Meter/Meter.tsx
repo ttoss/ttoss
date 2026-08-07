@@ -6,7 +6,12 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
-import { RAIL_BASE, RAIL_FILL } from '../../tokens/rail';
+import {
+  buildRailFillStyle,
+  buildRailLabelRowStyle,
+  buildRailTrackStyle,
+  RAIL_ROOT_STYLE,
+} from '../../tokens/rail';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -34,19 +39,10 @@ export const meterMeta = {
 
 type FeedbackColors = (typeof vars.colors.feedback)[EvaluationsFor<'Feedback'>];
 
-/** Track (body) style — the neutral rail the fill sits in. Geometry comes from
- * the shared rail (`TRACK_RAIL`, one silhouette across the three rails); the
- * colour is the cross-cutting rail fill every rail shares (`semantic.rail.track`,
- * F-050/F-051), not a borrowed role token. */
-const buildTrackStyle = (): React.CSSProperties => {
-  return {
-    ...RAIL_BASE,
-    backgroundColor: RAIL_FILL,
-  };
-};
-
 /** Fill (content) style — width tracks the value's percentage of the range.
- * The fill is the evaluation's filled surface (`background.default`). */
+ * The fill is the evaluation's filled surface (`background.default`).
+ * Envelope from the shared rail (`buildRailFillStyle`); Meter is the static
+ * sibling, so unlike ProgressBar it passes no sweep animation. */
 const buildFillStyle = ({
   c,
   percentage,
@@ -54,15 +50,10 @@ const buildFillStyle = ({
   c: FeedbackColors;
   percentage: number;
 }): React.CSSProperties => {
-  return {
-    height: '100%',
+  return buildRailFillStyle({
     width: `${percentage}%`,
-    backgroundColor: c?.background?.default,
-    borderRadius: 'inherit',
-    transitionProperty: 'width',
-    transitionDuration: vars.motion.transition.enter.duration,
-    transitionTimingFunction: vars.motion.transition.enter.easing,
-  };
+    color: c?.background?.default,
+  });
 };
 
 /**
@@ -123,14 +114,7 @@ export const Meter = ({
       data-scope="meter"
       data-part="root"
       data-evaluation={evaluation}
-      style={
-        {
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: vars.spacing.gap.stack.xs,
-        } as React.CSSProperties
-      }
+      style={RAIL_ROOT_STYLE}
     >
       {({ percentage, valueText }) => {
         return (
@@ -139,18 +123,14 @@ export const Meter = ({
               <div
                 data-scope="meter"
                 data-part="labelRow"
-                style={
-                  {
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'baseline',
-                    gap: vars.spacing.gap.inline.sm,
-                    // Label row sits on the page, not on the fill — the
-                    // entity's quiet text is correct here (see ProgressBar).
-                    color: vars.colors.feedback.muted.text?.default,
-                    ...(vars.text.label.md as React.CSSProperties),
-                  } as React.CSSProperties
-                }
+                style={buildRailLabelRowStyle({
+                  // Label row sits on the page, not on the fill — the
+                  // entity's quiet text is correct here (see ProgressBar).
+                  ink: vars.colors.feedback.muted.text?.default,
+                  // The ellipsizing title needs a guaranteed gutter before
+                  // the status — the opt-in axis of the shared row.
+                  gap: vars.spacing.gap.inline.sm,
+                })}
               >
                 <span
                   data-scope="meter"
@@ -180,7 +160,11 @@ export const Meter = ({
             )}
 
             {/* Track */}
-            <div data-scope="meter" data-part="body" style={buildTrackStyle()}>
+            <div
+              data-scope="meter"
+              data-part="body"
+              style={buildRailTrackStyle()}
+            >
               {/* Fill */}
               <div
                 data-scope="meter"

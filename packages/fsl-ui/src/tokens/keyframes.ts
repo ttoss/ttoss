@@ -19,6 +19,8 @@
  *    `prefers-reduced-motion: reduce`.
  */
 
+import { injectStylesheetOnce } from './stylesheetInjection';
+
 const STYLE_ELEMENT_ID = 'fsl-ui-keyframes';
 
 /**
@@ -46,30 +48,17 @@ export const KEYFRAMES_CSS = `
 }
 `.trim();
 
-let injected = false;
-
 /**
  * Injects the package stylesheet into `document.head` exactly once.
  * No-op on the server (SSR-safe) and when the element already exists
- * (e.g. two copies of the package on one page).
+ * (e.g. two copies of the package on one page) — the shared
+ * {@link injectStylesheetOnce} mechanism carries those guarantees.
  *
  * Call it from a `React.useInsertionEffect` in any component that uses a
  * name from {@link ANIMATION_NAMES} — insertion effects never run during
- * server rendering, so the SSR guard below is defense in depth for direct
- * callers, not the primary mechanism.
+ * server rendering, so the injector's SSR guard is defense in depth for
+ * direct callers, not the primary mechanism.
  */
 export const ensureKeyframes = (): void => {
-  if (injected) return;
-  const doc: Document | undefined = globalThis.document;
-  /* istanbul ignore next -- SSR guard: jsdom always provides a document */
-  if (doc === undefined) return;
-  if (doc.getElementById(STYLE_ELEMENT_ID) !== null) {
-    injected = true;
-    return;
-  }
-  const style = doc.createElement('style');
-  style.id = STYLE_ELEMENT_ID;
-  style.textContent = KEYFRAMES_CSS;
-  doc.head.appendChild(style);
-  injected = true;
+  injectStylesheetOnce({ id: STYLE_ELEMENT_ID, css: KEYFRAMES_CSS });
 };

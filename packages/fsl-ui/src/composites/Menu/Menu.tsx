@@ -17,16 +17,12 @@ import type {
   ConsequencesFor,
   EvaluationsFor,
 } from '../../semantics';
-import { buildChoosableRowStyle } from '../../tokens/choosableRow';
+import { buildChoosableRowInteractiveStyle } from '../../tokens/choosableRow';
 import { resolveConsequenceInk } from '../../tokens/consequenceInk';
 import { fslVar } from '../../tokens/escapeHatch';
-import { focusRingOutline } from '../../tokens/focusRing';
-import { OCCLUDING_OUTLINE } from '../../tokens/occludingSurface';
+import { buildOccludingSurfaceStyle } from '../../tokens/occludingSurface';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
-import {
-  resolveSurfaceBoundStyle,
-  voicedSurface,
-} from '../../tokens/surfaceScope';
+import { resolveSurfaceBoundStyle } from '../../tokens/surfaceScope';
 import { createPresenceScope } from '../scope';
 
 // Layout constants (CONTRIBUTING §4 layout-literal rule) — popover surface
@@ -178,22 +174,16 @@ export const Menu = <T extends object>({
             // [data-scope="menu"][data-part="root"].
             minWidth: fslVar('--fsl-menu-min-width', MENU_MIN_WIDTH_DEFAULT),
             maxWidth: fslVar('--fsl-menu-max-width', MENU_MAX_WIDTH_DEFAULT),
-            borderRadius: vars.radii.surface,
-            borderWidth: vars.border.outline.surface.width,
-            borderStyle: vars.border.outline.surface.style,
-            // An occluding surface's boundary is infrastructure, not voice
-            // (CONTRACT §3.5) — see the helper for why the role's own edge
-            // cannot carry the ≥3:1 separator duty.
-            borderColor: OCCLUDING_OUTLINE,
-            // A hosting surface publishes itself (CONTRACT §3.4); only the
-            // page-like primary voice does — a voiced surface keeps its voice.
-            ...voicedSurface({
+            // Occluding chrome (CONTRACT §3.5/§3.4): boundary, published
+            // voiced fill, overlay elevation — one builder across the six
+            // occluders.
+            ...buildOccludingSurfaceStyle({
               evaluation,
-              color: colors?.background?.default,
+              colors,
+              elevation: 'overlay',
+              fill: 'voiced',
             }),
             color: colors?.text?.default,
-            boxShadow: vars.elevation.surface.overlay,
-            outline: 'none',
             overflow: 'auto',
             zIndex: vars.zIndex.layer.overlay,
           } as React.CSSProperties
@@ -336,12 +326,10 @@ export const MenuItem = ({
       data-composition={composition}
       style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => {
         const flags = { isDisabled, isHovered, isPressed };
-        return {
-          ...buildChoosableRowStyle(),
-          cursor: isDisabled ? 'not-allowed' : 'pointer',
-          transitionDuration: vars.motion.feedback.duration,
-          transitionTimingFunction: vars.motion.feedback.easing,
-          transitionProperty: 'background-color, color',
+        return buildChoosableRowInteractiveStyle({
+          isDisabled,
+          isFocusVisible,
+          // No disabled opacity: a menu row's disabled affordance is its ink.
           // The quiet row's resting fill follows the published surface
           // (§3.4) — inside this Menu's own popover that is the identical
           // value, so the read matters when a host portals rows elsewhere.
@@ -358,8 +346,7 @@ export const MenuItem = ({
               resolveInteractiveStyle(colors?.text, flags) ??
               colors?.text?.default,
           }),
-          outline: focusRingOutline(isFocusVisible),
-        } as React.CSSProperties;
+        }) as React.CSSProperties;
       }}
     >
       {children}

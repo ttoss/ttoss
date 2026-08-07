@@ -68,9 +68,9 @@ are undefined and components render unstyled.
 - State — runtime only (hover, active, focused, disabled, checked,
   indeterminate, expanded, invalid, …). Emitted by React Aria render props;
   priority cascade: disabled > invalid > expanded > indeterminate >
-  selected > focusVisible > pressed > hovered > default.
+  current > selected > focusVisible > pressed > hovered > default.
 
-## Component catalog (all exports also ship a `*Meta` identity object)
+## Component catalog (every component with a semantic identity ships a `*Meta` object; plain re-exports — triggers, table sections, helpers — do not)
 
 Action:      Button = COMMAND silhouette (commit: submit/confirm/primary action
              of a surface; pill radius, semibold, 40px desktop).
@@ -393,8 +393,8 @@ Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              Heading (h1-h6 bound to the type scale: level=1..6 sets the
              element, size overrides the visual step — never a raw font-size),
              Text (copy + stat figures: variant=display-sm (stat step for KPI
-             values/prices — data, not headings)|body|label-lg|md|sm, tone=muted for
-             secondary hierarchy, as=p|span|div — never a raw font-size),
+             values/prices — data, not headings)|body-{lg,md,sm}|label-{lg,md,sm},
+             tone=muted for secondary hierarchy, as=p|span|div — never a raw font-size),
              Stack (layout rhythm: direction=vertical|horizontal picks the
              gap.stack|gap.inline family, gap=xs..xl, align, justify, wrap —
              never a raw gap; use instead of a hand-rolled flex div),
@@ -459,9 +459,11 @@ Icons: Icon is a PUBLIC export (ADR-010): a semantic glyph named by intent
 Decorative by default (aria-hidden); pass `label` (caller-localized) only
 when the icon is the sole carrier of meaning. Color inherits (currentColor);
 size = sm|md|lg → vars.sizing.icon.*. Intents are a curated registry
-(ICON_INTENTS): disclosure.expand/collapse, selection.checked/indeterminate,
-action.close/search/increment/decrement/sortAscending/sortDescending,
-status.success — it grows only on component/block demand. Glyphs map to
+(ICON_INTENTS): action.close, action.search, action.increment,
+action.decrement, action.sortAscending, action.sortDescending, action.more,
+action.help, disclosure.expand, disclosure.collapse, navigation.menu,
+selection.checked, selection.indeterminate, status.success, status.alert,
+status.info — it grows only on component/block demand. Glyphs map to
 Lucide via the Iconify provider, registered offline (no runtime API fetch).
 
 ## Entity → token map (a component reads ONLY its row)
@@ -486,10 +488,13 @@ Color path formula: `vars.colors.{ux}[evaluation][background|border|text][state]
 1. Composites accept NO `style`/`className`. Customize geometry via CSS
    custom-property knobs on the composite scope (fallbacks built in):
    `--fsl-dialog-max-width` (default min(500px, 90vw)),
-   `--fsl-dialog-max-height` (90vh), `--fsl-menu-min-width` (12rem),
+   `--fsl-dialog-max-height` (90vh), `--fsl-dialog-min-width` (min(288px, 90vw)),
+   `--fsl-menu-min-width` (12rem),
    `--fsl-menu-max-width` (min(320px, 90vw)),
    `--fsl-popover-max-width` (min(320px, 90vw)),
-   `--fsl-tooltip-max-width` (min(280px, 90vw)).
+   `--fsl-tooltip-max-width` (min(280px, 90vw)),
+   `--fsl-combo-box-max-height` (min(20rem, 60vh)),
+   `--fsl-track-max-width` (none — ProgressBar/Meter/Slider).
    Example: `[data-scope='dialog'] { --fsl-dialog-max-width: 720px; }`
 2. There is NO `size` prop anywhere. Different density = different
    semantic identity = different component.
@@ -509,8 +514,9 @@ Color path formula: `vars.colors.{ux}[evaluation][background|border|text][state]
 
 ## Package facts
 
-- ESM only, `sideEffects: false`, tree-shakes (Button-only import ≈ 1.8 KB
-  min before deps). Peer deps: react >= 18, react-dom >= 18.
+- ESM only, `sideEffects: false`, tree-shakes (Button-only import ≈ 3.8 KB
+  min before deps; `pnpm run verify:treeshake` prints the current figure).
+  Peer deps: react >= 18, react-dom >= 18.
 - `react-aria-components` pinned `~1.19.0` while Toast uses UNSTABLE_ APIs.
 - SSR-safe: the only DOM injection (`@keyframes` for ProgressBar) happens in
   a client-only insertion effect. Icon glyphs register into an in-memory

@@ -34,7 +34,7 @@
  *   outline-width: var(--tt-focus-ring-width);
  *   outline-style: var(--tt-focus-ring-style);
  *   outline-color: var(--tt-focus-ring-color);
- *   outline-offset: 2px;
+ *   outline-offset: var(--tt-focus-ring-offset);
  * }
  *
  * // Input in error — negative valence overrides the default

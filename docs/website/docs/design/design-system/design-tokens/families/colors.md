@@ -129,7 +129,7 @@ See [Usage Examples](#usage-examples) below for concrete tokens.
 
 ## FSL Entity Kind Mapping
 
-The `ux` axis is a projection-scoped subset of FSL Entity Kinds (FSL Structural Language §17.1). This normative table maps each FSL Entity Kind → token UX context; the planned resolver (see [component-model.md](/docs/design/design-system/components/component-model) — not yet implemented) will consume it to translate a component's Entity into its token context:
+The `ux` axis is a projection-scoped subset of FSL Entity Kinds (FSL Structural Language §17.1). This table **mirrors** `ENTITY_TOKEN_MAPPING` in `@ttoss/fsl-ui` — the code is the single source of truth and wins on any divergence; the planned resolver (see [component-model.md](/docs/design/design-system/components/component-model) — not yet implemented) will consume it to translate a component's Entity into its token context:
 
 | FSL Entity Kind | Token `ux`      | Notes                                                                                                                                                                |
 | :-------------- | :-------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -255,21 +255,22 @@ The foundation keeps a **small canonical registry**. `ux` is defined in [UX cont
 
 ### State level
 
-| `state`         | Meaning                         |
-| :-------------- | :------------------------------ |
-| `default`       | resting/base state              |
-| `hover`         | pointer hover                   |
-| `active`        | press/engaged moment            |
-| `focused`       | keyboard/programmatic focus     |
-| `disabled`      | unavailable/non-interactive     |
-| `selected`      | selected item in a set          |
-| `checked`       | on/off control state            |
-| `pressed`       | pressed toggle state            |
-| `expanded`      | disclosure open state           |
-| `current`       | current location in navigation  |
-| `visited`       | visited link state              |
-| `indeterminate` | mixed/unknown boolean state     |
-| `droptarget`    | valid drag-and-drop destination |
+| `state`         | Meaning                                  |
+| :-------------- | :--------------------------------------- |
+| `default`       | resting/base state                       |
+| `hover`         | pointer hover                            |
+| `active`        | press/engaged moment                     |
+| `focused`       | keyboard/programmatic focus              |
+| `disabled`      | unavailable/non-interactive              |
+| `selected`      | selected item in a set                   |
+| `checked`       | on/off control state                     |
+| `pressed`       | pressed toggle state                     |
+| `expanded`      | disclosure open state                    |
+| `current`       | current location in navigation           |
+| `visited`       | visited link state                       |
+| `indeterminate` | mixed/unknown boolean state              |
+| `droptarget`    | valid drag-and-drop destination          |
+| `invalid`       | failed runtime validation (`input` only) |
 
 > Keep the state set stable.
 > Add a new state only when the meaning cannot be expressed by an existing one.
@@ -278,20 +279,21 @@ The foundation keeps a **small canonical registry**. `ux` is defined in [UX cont
 
 Several states sound interchangeable but answer different questions. Pick by **what the state asserts about the element**, not by the verb in the component name.
 
-| The state asserts…                                                                          | State           |
-| :------------------------------------------------------------------------------------------ | :-------------- |
-| pointer is currently over the element                                                       | `hover`         |
-| pointer/key is currently down on the element (transient, lasts only while held)             | `active`        |
-| element has keyboard or programmatic focus                                                  | `focused`       |
-| element is non-interactive                                                                  | `disabled`      |
-| element is **one of many** in a set and the user picked it (tab, list row, segment)         | `selected`      |
-| element is a **two-state control** that is currently on (checkbox, radio, switch)           | `checked`       |
-| element is a **toggle button** that is currently engaged (persistent, not transient)        | `pressed`       |
-| disclosure / accordion / details is currently open                                          | `expanded`      |
-| element is the user's **current location** in a navigation set (active route, current step) | `current`       |
-| link points to a URL the user has visited                                                   | `visited`       |
-| boolean control is in a mixed/unknown state (parent checkbox over partial children)         | `indeterminate` |
-| element is a **valid drop destination** during an active drag                               | `droptarget`    |
+| The state asserts…                                                                                                                                              | State           |
+| :-------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------- |
+| pointer is currently over the element                                                                                                                           | `hover`         |
+| pointer/key is currently down on the element (transient, lasts only while held)                                                                                 | `active`        |
+| element has keyboard or programmatic focus                                                                                                                      | `focused`       |
+| element is non-interactive                                                                                                                                      | `disabled`      |
+| element is **one of many** in a set and the user picked it (tab, list row, segment)                                                                             | `selected`      |
+| element is a **two-state control** that is currently on (checkbox, radio, switch)                                                                               | `checked`       |
+| element is a **toggle button** that is currently engaged (persistent, not transient)                                                                            | `pressed`       |
+| disclosure / accordion / details is currently open                                                                                                              | `expanded`      |
+| element is the user's **current location** in a navigation set (active route, current step)                                                                     | `current`       |
+| link points to a URL the user has visited                                                                                                                       | `visited`       |
+| boolean control is in a mixed/unknown state (parent checkbox over partial children)                                                                             | `indeterminate` |
+| element is a **valid drop destination** during an active drag                                                                                                   | `droptarget`    |
+| the control's **value failed runtime validation** (`isInvalid` — never authorial; the control keeps its authored role, the message carries `negative`; ADR-017) | `invalid`       |
 
 **Common confusions resolved:**
 
@@ -336,20 +338,19 @@ Not every implementation needs all three dimensions. Components choose which the
 
 ## Relationship to Modes
 
-Core palette values are **immutable across modes**; modes remap which core tokens the semantic layer references. Token names and component code never change. If a semantic color works in one mode but fails in another, remap the semantic reference to a different core token — do not mutate the core value or rename the semantic token.
-
-> Modes remap references, not values.
+Core palette values are **immutable across modes**; modes remap which core tokens the semantic layer references. Token names and component code never change — the remap doctrine lives in [Modes](../modes.md#relationship-to-the-token-model).
 
 ---
 
 ## Cross-cutting tokens (siblings of `semantic.colors.*`)
 
-Four tokens carry **system-wide defaults** that no `{ux}` owns. They live as siblings of `semantic.colors.*` per [model.md §6](../model.md#6-no-parallel-vocabulary), not inside it:
+Five tokens carry **system-wide defaults** that no `{ux}` owns. They live as siblings of `semantic.colors.*` per [model.md §6](../model.md#6-no-parallel-vocabulary), not inside it:
 
 - `semantic.focus.ring.color` — system focus indicator color
 - `semantic.overlay.scrim` — modal backdrop
 - `semantic.overlay.outline` — boundary of a surface that **occludes** content
 - `semantic.consequence.destructive.ink` — foreground for a destructive part that paints no surface
+- `semantic.rail.track` — the unfilled part of a `ProgressBar`/`Meter`/`Slider` track; darkens in dark mode, unlike a border (ADR-028)
 
 They are **not** parallel vocabulary: `{ux}.{role}.border.focused` answers _"what does this `{ux}`'s own edge become while focused?"_; `semantic.focus.ring.color` answers _"what marks focus?"_. Likewise `{ux}.{valence}.text` answers _"what is this `{ux}`'s valence ink on its own surfaces?"_; the consequence ink answers _"what marks a destructive part that paints nothing?"_.
 
@@ -369,12 +370,12 @@ One case inverts the emphasis: an `Input` carrying a validation valence keeps th
 
 A focusable profile card (no obvious `{ux}`):
 
-- line geometry from `semantic.border.outline.surface` + `semantic.focus.ring.{width,style}` on `:focus-visible`
+- line geometry from `semantic.border.outline.surface` + `semantic.focus.ring.{width,style,offset}` on `:focus-visible`
 - ring colour from `semantic.focus.ring.color`; the card has no `{ux}` edge to tint
 
 A text input in error:
 
-- line geometry from `semantic.border.outline.control` + `semantic.focus.ring.{width,style}` on `:focus-visible`
+- line geometry from `semantic.border.outline.control` + `semantic.focus.ring.{width,style,offset}` on `:focus-visible`
 - ring colour from `semantic.focus.ring.color`, as everywhere
 - edge colour from `input.negative.border.focused` — the valence survives focus
   A raised card may combine:

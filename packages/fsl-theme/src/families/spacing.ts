@@ -94,9 +94,9 @@ interface ControlInsetSteps {
   /** Compact step — the field family's block inset. */
   sm: CoreSpacingRef;
   /** Default step — the field family's inline inset. */
-  md: RawValue;
+  md: CoreSpacingRef;
   /** Roomy step — a command trigger's inline inset. */
-  lg: RawValue;
+  lg: CoreSpacingRef;
 }
 
 interface GapStackSteps {

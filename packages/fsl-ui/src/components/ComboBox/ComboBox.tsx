@@ -13,10 +13,9 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
-import { buildChoosableRowStyle } from '../../tokens/choosableRow';
+import { buildChoosableRowInteractiveStyle } from '../../tokens/choosableRow';
 import { buildEmbeddedTriggerStyle } from '../../tokens/embeddedTrigger';
 import { fslVar } from '../../tokens/escapeHatch';
-import { focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import {
   buildFieldFrameStyle,
@@ -320,9 +319,9 @@ export const ComboBoxItem = ({ children, ...props }: ComboBoxItemProps) => {
         isFocusVisible,
         isSelected,
       }) => {
-        return {
-          ...buildChoosableRowStyle(),
-          cursor: isDisabled ? 'not-allowed' : 'pointer',
+        return buildChoosableRowInteractiveStyle({
+          isDisabled,
+          isFocusVisible,
           opacity: isDisabled ? vars.opacity.disabled : undefined,
           backgroundColor: resolveInteractiveStyle(c?.background, {
             isDisabled,
@@ -336,11 +335,7 @@ export const ComboBoxItem = ({ children, ...props }: ComboBoxItemProps) => {
               isSelected,
               isHovered,
             }) ?? c?.text?.default,
-          outline: focusRingOutline(isFocusVisible),
-          transitionProperty: 'background-color, color',
-          transitionDuration: vars.motion.feedback.duration,
-          transitionTimingFunction: vars.motion.feedback.easing,
-        } as React.CSSProperties;
+        }) as React.CSSProperties;
       }}
     >
       {children}

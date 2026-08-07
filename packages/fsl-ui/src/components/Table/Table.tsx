@@ -16,7 +16,10 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
-import { resolveCollectionRowBackground } from '../../tokens/collectionRow';
+import {
+  buildCollectionContainerEdge,
+  resolveCollectionRowBackground,
+} from '../../tokens/collectionRow';
 import { FOCUS_RING_INSET, focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import { publishSurface } from '../../tokens/surfaceScope';
@@ -121,12 +124,7 @@ export const Table = (props: TableProps) => {
         inlineSize: '100%',
         borderCollapse: 'separate',
         borderSpacing: 0,
-        borderRadius: vars.radii.surface,
-        borderWidth: vars.border.outline.surface.width,
-        borderStyle: vars.border.outline.surface.style,
-        borderColor: surface?.border?.default ?? 'transparent',
-        // A hosting surface publishes itself (CONTRACT §3.4).
-        ...publishSurface(surface?.background?.default),
+        ...buildCollectionContainerEdge(),
         color: surface?.text?.default,
       }}
     />

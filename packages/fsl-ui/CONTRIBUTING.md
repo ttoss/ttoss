@@ -311,7 +311,7 @@ Then add `ENTITY_TOKEN_MAPPING[MyEntity]` in `src/tokens/projection.ts` and the 
 - `taxonomy.ts` imports nothing. `src/semantics/` never learns colors, `vars`, or CSS.
 - Types derive from arrays via `(typeof X)[number]` — never a standalone union.
 - Components consume only `vars.*`. No hex/rgb literals. No `var(--tt-*, fallback)`. Host knobs use `--fsl-*` custom properties **only** through `fslVar` and always with a fallback (CONTRACT.md §7 / ADR-002). Contract tests enforce.
-- **Layout-literal rule.** A layout literal (`12rem`, `500px`, `1.2s`, `40%`, …) is allowed only as a **named module-level constant with a justification comment** (the `TRACK_W` pattern in `Switch.tsx`). Magic inline literals in style objects are forbidden — a reviewer must be able to ask "why this number?" and find the answer next to the name. Focus-ring `outlineOffset` micro-nudges (`'2px'`, `'-1px'`) are the sole tolerated inline exception.
+- **Layout-literal rule.** A layout literal (`12rem`, `500px`, `1.2s`, `40%`, …) is allowed only as a **named module-level constant with a justification comment** (the `TRACK_W` pattern in `Switch.tsx`). Magic inline literals in style objects are forbidden — a reviewer must be able to ask "why this number?" and find the answer next to the name. That includes `outlineOffset`: no component source may write an `outlineOffset` literal (forms round R2 class guard — a literal that happens to match a constant is indistinguishable from one that tracks it until the theme changes the ring's thickness).
 - **Logical CSS properties only.** `insetInlineStart`, `marginBlockEnd`, `paddingInline`, … — never `left`, `top`, `marginRight`, `borderLeftWidth`, etc. RTL correctness is a contract-test invariant.
 - Every `animation:` references a name from `ANIMATION_NAMES` (`src/tokens/keyframes.ts`), whose `@keyframes` ships via `ensureKeyframes()` — never a bare string (contract invariant #8).
 - State-dependent colors go through `resolveInteractiveStyle`. Structural tokens (`radii`, `border.*`, `sizing`, `spacing`, `typography`, `motion`) are literal `vars.*` reads.
@@ -342,7 +342,7 @@ When adding a component, classify every string it renders into 1–3 before writ
 
 ## 7 — Decisions (ADRs)
 
-Canonical trade-off record for this package, mirroring the `@ttoss/fsl-theme` convention: IDs sequential, never reused; append only; superseded entries keep their ID with `Status: superseded-by:ADR-NNN`. Search here before re-litigating a decision.
+Canonical trade-off record for this package, mirroring the `@ttoss/fsl-theme` convention: IDs sequential, never reused; append only; superseded entries keep their ID with `Status: superseded-by:ADR-NNN`. Search here before re-litigating a decision. IDs 016–021 were never allocated (the numbering jumped; the gap is fact, not lost history) and 024 was reserved then released unused (see the note at ADR-023) — unused IDs stay unused.
 
 ### ADR-001: All user-facing copy is caller-supplied; flow-critical labels are required props
 
@@ -431,11 +431,11 @@ Anchors: `src/components/Slider/Slider.tsx`, ROADMAP Slider row, `src/semantics/
 Status: accepted (2026-07-18)
 Tags: presentational-layer, structure, escape-hatch, composition, governance
 
-Context: FSL Studio — the first real consumer — needed **827 lines of `studio.css`** with zero token redefinitions and zero library overrides (measured, EVOLUTION.md §1). The CSS filled a _vacuum_: the package shipped 34 interactive controls but nothing for composition (no `Box`/`Grid`/`Container`), so every shell, layout, and one-off region had no library answer and fell to raw CSS. The doctrine simultaneously forbade variation (§4 "no size prop") and free escape (§7 host-knobs only for composites), leaving no way to express a padded/sized/grouped region.
+Context: FSL Studio — the first real consumer — needed **827 lines of `studio.css`** with zero token redefinitions and zero library overrides (measured; EVOLUTION.md §1, retired — see Anchors below). The CSS filled a _vacuum_: the package shipped 34 interactive controls but nothing for composition (no `Box`/`Grid`/`Container`), so every shell, layout, and one-off region had no library answer and fell to raw CSS. The doctrine simultaneously forbade variation (§4 "no size prop") and free escape (§7 host-knobs only for composites), leaving no way to express a padded/sized/grouped region.
 Decision: ship a **presentational layer** — `Box` (generic block escape hatch), `Grid` (2D), `Container` (page shell), alongside the existing `Stack`/`Surface`/`Text`/`Heading` — all Entity = `Structure`. The escape hatch is real but **token-constrained**: every visual prop accepts _only_ a token key (`padding="md"`, `background="muted"`, `radius="surface"`, `columns={3}`, `maxWidth="reading"`) — never a raw `style`/`className`/hex/px. Layout _behaviour_ keywords that are not design tokens (flex/grid alignment, `auto`/`100%`/`fit-content`, `text-align`, `tabular-nums`) are allowed as literals, exactly as `Stack` already maps `align`/`justify` to flex keywords. This supersedes "no style at all": expressive enough to compose any app layout, constrained enough that no arbitrary value can enter a consumer.
 Rejected: a free `style`/`className` prop (re-admits arbitrary hex/px — the exact drift the token contract exists to prevent); a component-per-layout explosion (does not scale — the Studio proved 38 hand-rolled selectors); leaving composition to host CSS (the status quo that produced 827 lines); a `weight` prop on Text/Heading (weight belongs to the type-scale step — a free weight knob is the same "no size prop" violation §4 forbids).
 Cost: a broader public surface (four+ layout primitives) and a standing judgement call at review time — "is this prop a token key or a layout keyword?" (the contract tests still forbid hex/rgb/`var(--tt-*,fallback)` in every component source, which catches the dangerous cases). `Box` overlaps `Surface` on padding/background/border, disambiguated by intent: `Surface` bears elevation/depth; `Box` is a plain container.
-Anchors: `src/components/{Box,Grid,Container,Stack,Surface,Text,Heading}`, `src/tokens/CONTRACT.md` §4/§7, `packages/fsl-ui/INTERNAL/EVOLUTION.md` §3 (D1).
+Anchors: `src/components/{Box,Grid,Container,Stack,Surface,Text,Heading}`, `src/tokens/CONTRACT.md` §4/§7, `EVOLUTION.md` §3 (D1) — that file was retired to git history 2026-08-06, so read it with `git log --follow -- packages/fsl-ui/INTERNAL/EVOLUTION.md`.
 
 Re-litigation answers:
 
@@ -676,7 +676,7 @@ Re-litigation answers:
 Status: accepted (2026-07-26)
 Tags: input, field, form, context, a11y, i18n, P3, forms
 
-> ADR-024 (the validation language) is reserved for forms item F. Numbers are allocated when a decision is planned, not when it lands.
+> ADR-024 was reserved for forms item F, which closed 2026-07-29 needing no architectural decision (FORMS.md: the validation language collapsed to a single branch in one function). The ID stays unused — numbers are never reallocated.
 
 Context: forms item B1. Label layout and the necessity convention are one product decision, not a per-field one — a form where some labels sit above and others beside, or where one field marks required and the next does not, is a form nobody proofread. The reference system puts exactly these on its `<Form>` (`labelPosition`, `labelAlign`, `necessityIndicator`, `size`) and has each field inherit them, which is also this ecosystem's own pattern: applications configure once at the root, packages consume context, and no visual prop travels down a tree.
 
@@ -2060,3 +2060,58 @@ would trade a cosmetic duplicate for a functional regression. Shipping a real
 CSS file with the package — the package's whole styling model is inline
 `vars.*` reads, and one `<style>` for what inline styles cannot express is the
 established exception, not a new direction.
+
+### ADR-042: A styling decision is stated once — the E2 consolidation rule and its shared-source map
+
+Status: accepted (2026-08-06)
+Tags: architecture, tokens, anatomy, refactor, E2, harmonization
+
+Context: the E2 stage of the harmonization program (ROADMAP § "Route to the
+visual sign-off"). jscpd found 22 exact clones (~384 lines) and a semantic
+read of every component found the same shape behind them: a decision an ADR
+had already made — a silhouette, a cascade, a chrome sextet, a scale map —
+restated per component, where the next change has to land N times to stay in
+sync. That is the F-056 class, program-wide. The owner's basis-form directive
+rules the response: recurring restatement means the abstraction is missing,
+so build the shared source, never a per-file exception.
+
+Decision: **no styling decision may be restated per file.** Each family of
+restatements got (or joined) its one shared source, colours staying with the
+caller (the entity decides colour; the shared source decides everything the
+entity does not): `overlayMotion` (modal phase + scrim), `selectionControl`
+(mark cascade, label ink, option row), `rail` (root/labelRow/track/fill
+envelope), `ActionTriggerRoot` + `resolveActionTriggerColors` (the plain
+trigger, whole), `choosableRow` (interactive skeleton), `collectionRow`
+(container chrome + edge), `occludingSurface` (the six occluders' chrome),
+`hostedTrigger` (a trigger dressed by its host), `gapScale` (step→token and
+keyword maps), `stylesheetInjection` (inject-once plumbing), and the
+committed-actions row in the trigger anatomy. Membership is not enumerated
+here on purpose — `grep -rl 'tokens/<module>' src/` answers it; this entry
+records the rule and where the pattern lives.
+
+The gate every extraction passed: suites at 100, and a full 358-frame
+Chromium recapture (light+dark, fresh server) byte-compared against a
+pre-E2 baseline — differences above the measured same-code capture noise
+are treated as regressions. The gate's one real catch was not a regression
+but a pre-existing race it exposed (F-061).
+
+Rejected: per-component copies with review discipline (seven P3 rounds
+proved the discipline finds the drift only after it ships); normalizing the
+real divergences into the shared sources (a toggle's `isSelected → pressed`
+cascade, `Slider`'s unclipped track, `Tooltip`'s unpublished fill, Menu's
+no-opacity disabled idiom are semantics, not drift — they stay at their
+callers, named); DOM-attribute byte-parity as the gate (property order
+inside `style` is not rendering; pixel parity is the contract).
+
+Cost: one more indirection per component read path, and a judgement call at
+review time — "is this divergence semantics or drift?" — which each shared
+source's constraint comment now answers for its own family.
+
+Re-litigation answers: "why not one mega-builder per entity?" — the shared
+sources cut across entities exactly where the physical thing is the same
+(a row, a ring, a scrim) and stop where semantics differ; an entity-keyed
+mega-builder would re-encode the entity in a second place and drift against
+the CONTRACT §1 row. "Why do colours never move into the shared sources?" —
+because the entity→ux mapping is the projection's load-bearing edge
+(CONTRACT §1); a shared source that resolved colours would need the entity,
+and then it is the mega-builder.

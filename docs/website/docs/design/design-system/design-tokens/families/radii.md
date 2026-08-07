@@ -93,15 +93,18 @@ radii.{contract}
 
 ### Semantic contracts
 
-| `contract` | meaning                                                                                         |
-| :--------- | :---------------------------------------------------------------------------------------------- |
-| `action`   | Radius for command triggers (Button, ToggleButton) — the CTA silhouette; pill in the base theme |
-| `control`  | Radius for interactive controls and touchable UI elements                                       |
-| `surface`  | Radius for surfaces that contain or group content                                               |
-| `round`    | Full-round shape intent for pills, capsules, and circular affordances                           |
+| `contract` | meaning                                                                                                                                                                                   |
+| :--------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `action`   | Radius for the **command** silhouette — the CTA; pill in the base theme. Utility triggers (icon buttons, toggle buttons) are not commands and keep `control` (fsl-ui ADR-021 silhouettes) |
+| `control`  | Radius for interactive controls and touchable UI elements — fields, choice controls, utility triggers                                                                                     |
+| `surface`  | Radius for surfaces that contain or group content                                                                                                                                         |
+| `round`    | Full-round shape intent for pills, capsules, and circular affordances                                                                                                                     |
+
+Which components wear which silhouette is the consumer's decision (fsl-ui `tokens/CONTRACT.md` §1): in fsl-ui, `Button` wears `action`; `ActionButton` and `ToggleButton` wear `control`.
 
 ### Canonical semantic set
 
+- `radii.action`
 - `radii.control`
 - `radii.surface`
 - `radii.round`
@@ -110,17 +113,19 @@ radii.{contract}
 
 ### Semantic Tokens Summary Table
 
-| token           | use when you are building…                                         | contract (must be true)                         | default mapping   |
-| :-------------- | :----------------------------------------------------------------- | :---------------------------------------------- | :---------------- |
-| `radii.control` | buttons, inputs, toggles, interactive chips, clickable affordances | the element is primarily an interactive control | `core.radii.md`   |
-| `radii.surface` | cards, panels, dialogs, menus, popovers, grouped containers        | the element is primarily a containing surface   | `core.radii.lg`   |
-| `radii.round`   | pills, capsules, circular affordances, fully rounded shapes        | the intended shape is explicitly fully rounded  | `core.radii.full` |
+| token           | use when you are building…                                                  | contract (must be true)                         | default mapping   |
+| :-------------- | :-------------------------------------------------------------------------- | :---------------------------------------------- | :---------------- |
+| `radii.action`  | command triggers — the CTA silhouette                                       | the element is a command the user commits with  | `core.radii.full` |
+| `radii.control` | inputs, toggles, utility triggers, interactive chips, clickable affordances | the element is primarily an interactive control | `core.radii.md`   |
+| `radii.surface` | cards, panels, dialogs, menus, popovers, grouped containers                 | the element is primarily a containing surface   | `core.radii.lg`   |
+| `radii.round`   | pills, capsules, circular affordances, fully rounded shapes                 | the intended shape is explicitly fully rounded  | `core.radii.full` |
 
 ### Example
 
 ```js
 const semanticRadii = {
   radii: {
+    action: '{core.radii.full}',
     control: '{core.radii.md}',
     surface: '{core.radii.lg}',
     round: '{core.radii.full}',
@@ -135,7 +140,7 @@ const semanticRadii = {
 Radii tokens define **shape contracts**. They do not define component variants.
 
 - **Design tokens** define the radius scale and the stable semantic contracts.
-- **Components** consume those contracts (`radii.control`, `radii.surface`, `radii.round`).
+- **Components** consume those contracts (`radii.action`, `radii.control`, `radii.surface`, `radii.round`).
 - **Component-specific corner rules** belong to the component or pattern layer, not the foundation layer.
 
 > Example: an avatar does not need a dedicated `radii.avatar` token.
@@ -155,13 +160,16 @@ Radii tokens define **shape contracts**. They do not define component variants.
 
 ## Decision Matrix (pick fast)
 
-1. **Is the element primarily an interactive control?**
+1. **Is the element a command trigger (the "press me" silhouette)?**
+   → `radii.action`
+
+2. **Is the element primarily an interactive control (field, choice control, utility trigger)?**
    → `radii.control`
 
-2. **Is the element primarily a containing surface?**
+3. **Is the element primarily a containing surface?**
    → `radii.surface`
 
-3. **Is the intended shape explicitly fully rounded?**
+4. **Is the intended shape explicitly fully rounded?**
    → `radii.round`
 
 ---
@@ -195,7 +203,8 @@ Use them only when layout or internationalization truly requires them.
 
 | Usage                                  | Token           |
 | :------------------------------------- | :-------------- |
-| Standard button radius                 | `radii.control` |
+| Command trigger (Button / CTA) radius  | `radii.action`  |
+| Input or utility trigger radius        | `radii.control` |
 | Card or panel radius                   | `radii.surface` |
 | Fully rounded chip or pill             | `radii.round`   |
 | Avatar with fully rounded shape intent | `radii.round`   |

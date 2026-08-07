@@ -7,9 +7,13 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
-import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
-import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
-import { SELECTION_CONTROL } from '../../tokens/selectionControl';
+import { FOCUS_RING_OFFSET } from '../../tokens/focusRing';
+import {
+  buildSelectionMarkStyle,
+  buildSelectionOptionRowStyle,
+  resolveSelectionLabelInk,
+  SELECTION_CONTROL,
+} from '../../tokens/selectionControl';
 import {
   FieldDescriptionPart,
   FieldNecessityMarker,
@@ -87,43 +91,6 @@ const TRACK_STYLE_STATIC = {
   outlineOffset: FOCUS_RING_OFFSET,
 } satisfies React.CSSProperties;
 
-/** Sliding-track style (state-dependent background/border + focus ring). */
-const buildTrackStyle = ({
-  c,
-  isDisabled,
-  isSelected,
-  isInvalid,
-  isHovered,
-  isPressed,
-  isFocusVisible,
-}: {
-  c: InputColors;
-  isDisabled?: boolean;
-  isSelected?: boolean;
-  isInvalid?: boolean;
-  isHovered?: boolean;
-  isPressed?: boolean;
-  isFocusVisible?: boolean;
-}): React.CSSProperties => {
-  return {
-    ...TRACK_STYLE_STATIC,
-    backgroundColor: resolveInteractiveStyle(c?.background, {
-      isDisabled,
-      isInvalid,
-      isSelected,
-      isHovered,
-      isPressed,
-    }),
-    borderColor: resolveInteractiveStyle(c?.border, {
-      isDisabled,
-      isInvalid,
-      isSelected,
-      isFocusVisible,
-    }),
-    outline: focusRingOutline(isFocusVisible),
-  };
-};
-
 /**
  * Thumb color:
  *   ON  → text.checked (typically neutral.0 = white on brand track)
@@ -138,22 +105,6 @@ const resolveThumbColor = ({
 }): string | undefined => {
   const text = c?.text;
   return isSelected ? (text?.checked ?? text?.default) : c?.border?.default;
-};
-
-/** Label color — invalid dominates disabled dominates default. */
-const resolveLabelColor = ({
-  c,
-  isInvalid,
-  isDisabled,
-}: {
-  c: InputColors;
-  isInvalid?: boolean;
-  isDisabled?: boolean;
-}): string | undefined => {
-  const text = c?.text;
-  if (isInvalid) return text?.invalid;
-  if (isDisabled) return text?.disabled;
-  return text?.default;
 };
 
 /**
@@ -282,16 +233,7 @@ export const Switch = ({
               data-scope="switch"
               data-part="button"
               style={({ isDisabled }) => {
-                return {
-                  boxSizing: 'border-box',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: vars.spacing.gap.inline.sm,
-                  minHeight: vars.sizing.hit,
-                  cursor: isDisabled ? 'not-allowed' : 'pointer',
-                  opacity: isDisabled ? vars.opacity.disabled : undefined,
-                  ...(vars.text.label.md as React.CSSProperties),
-                } as React.CSSProperties;
+                return buildSelectionOptionRowStyle({ isDisabled });
               }}
             >
               {({
@@ -322,14 +264,17 @@ export const Switch = ({
                       data-scope="switch"
                       data-part="control"
                       aria-hidden
-                      style={buildTrackStyle({
-                        c,
-                        isDisabled,
-                        isSelected,
-                        isInvalid,
-                        isHovered,
-                        isPressed,
-                        isFocusVisible,
+                      style={buildSelectionMarkStyle({
+                        base: TRACK_STYLE_STATIC,
+                        colors: c,
+                        flags: {
+                          isDisabled,
+                          isSelected,
+                          isInvalid,
+                          isHovered,
+                          isPressed,
+                          isFocusVisible,
+                        },
                       })}
                     >
                       {/* indicator — the sliding thumb */}
@@ -359,8 +304,8 @@ export const Switch = ({
                         data-scope="switch"
                         data-part="label"
                         style={{
-                          color: resolveLabelColor({
-                            c,
+                          color: resolveSelectionLabelInk({
+                            text: c?.text,
                             isInvalid,
                             isDisabled,
                           }),

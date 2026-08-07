@@ -1,8 +1,12 @@
+import { vars } from '@ttoss/fsl-theme/vars';
+import type * as React from 'react';
+
 import type {
   InteractiveFlags,
   InteractiveStates,
 } from './resolveInteractiveStyle';
 import { resolveInteractiveStyle } from './resolveInteractiveStyle';
+import { publishSurface } from './surfaceScope';
 
 /**
  * Resting background for a **Selection item inside a Collection container**
@@ -63,4 +67,40 @@ export const resolveCollectionRowBackground = ({
     { ...itemBackground, default: containerBackground },
     flags
   );
+};
+
+/**
+ * Chrome of the **Collection container** — the other half of ADR-007/ADR-034's
+ * container⇄item split (the item side got `resolveCollectionRowBackground`;
+ * the container's chrome was restated per component until E2).
+ *
+ * The edge quartet + published surface is what every Collection host shares;
+ * the stacked-list layout on top of it is what the flex members share. `Table`
+ * lays out as a table, so it takes only the edge.
+ */
+export const buildCollectionContainerEdge = (
+  surface: typeof vars.colors.informational.primary = vars.colors.informational
+    .primary
+): React.CSSProperties => {
+  return {
+    borderRadius: vars.radii.surface,
+    borderWidth: vars.border.outline.surface.width,
+    borderStyle: vars.border.outline.surface.style,
+    borderColor: surface?.border?.default ?? 'transparent',
+    // A hosting surface publishes itself (CONTRACT §3.4).
+    ...publishSurface(surface?.background?.default),
+  };
+};
+
+/** The stacked-list Collection container (flex column of rows). */
+export const buildCollectionContainerStyle = (): React.CSSProperties => {
+  return {
+    boxSizing: 'border-box',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: vars.spacing.gap.stack.xs,
+    // Row-framing gutter, not a page inset (F-045).
+    padding: vars.spacing.inset.surface.xs,
+    ...buildCollectionContainerEdge(),
+  };
 };

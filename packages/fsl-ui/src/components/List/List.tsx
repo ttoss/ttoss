@@ -1,7 +1,8 @@
-import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
 
 import type { ComponentMeta } from '../../semantics';
+import type { GapScaleStep } from '../../tokens/gapScale';
+import { STACK_GAP } from '../../tokens/gapScale';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -39,7 +40,7 @@ export const listItemMeta = {
 } as const satisfies ComponentMeta<'Structure'>;
 
 /** A step of the stacking gap scale. */
-export type ListGap = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+export type ListGap = GapScaleStep;
 
 /**
  * Whether the items are ordered, and whether the marker shows.
@@ -50,14 +51,6 @@ export type ListGap = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
  * `list-style: none`.
  */
 export type ListVariant = 'plain' | 'unordered' | 'ordered';
-
-const GAP: Record<ListGap, string> = {
-  xs: vars.spacing.gap.stack.xs,
-  sm: vars.spacing.gap.stack.sm,
-  md: vars.spacing.gap.stack.md,
-  lg: vars.spacing.gap.stack.lg,
-  xl: vars.spacing.gap.stack.xl,
-};
 
 /** Props for the List component. */
 export interface ListProps extends Omit<
@@ -120,7 +113,7 @@ export const List = ({
         {
           display: 'flex',
           flexDirection: 'column',
-          gap: GAP[gap],
+          gap: STACK_GAP[gap],
           // A marker needs room the browser reserves outside the content box;
           // `plain` has no marker, so it reclaims the indent rather than
           // leaving the hanging space every reset strips by hand.

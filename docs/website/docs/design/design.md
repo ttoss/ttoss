@@ -10,10 +10,8 @@ We're open sourcing our design department to share how we approach design and bu
 
 ## What You'll Find Here
 
-- **[Design System](/docs/design/design-system)**: Our comprehensive design system with tokens, components, and guidelines
-- **Design Principles**: Core principles that guide our design decisions
-- **Resources**: Tools, guides, and best practices for designers and developers
-- **Examples**: Real-world implementations and usage patterns
+- **[Design System](/docs/design/design-system)**: Our design system with tokens, components, and guidelines
+- **[Getting Started](/docs/design/getting-started)**: Setup and basic usage
 
 ## Our Design Philosophy
 
@@ -30,11 +28,3 @@ New to our design system? Start with:
 1. **[Getting Started Guide](/docs/design/getting-started)** - Set up and basic usage
 2. **[Design Tokens](/docs/design/design-system/design-tokens)** - Understanding our design foundation
 3. **[Storybook](https://storybook.ttoss.dev)** - Interactive component explorer
-
-## Contributing
-
-Our design system evolves through:
-
-- **Community feedback** and real-world usage patterns
-- **Cross-team collaboration** between design and engineering
-- **Continuous iteration** based on user needs and technical constraints

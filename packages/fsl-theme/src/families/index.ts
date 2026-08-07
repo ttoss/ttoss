@@ -1,8 +1,10 @@
 /* ==========================================================================
  * Families barrel — re-exports every family's public types.
  *
- * Families are organized 1:1 with the design tokens documentation under
- * `docs/website/docs/design/design-system/design-tokens/families/`.
+ * Families are organized to mirror the design tokens documentation under
+ * `docs/website/docs/design/design-system/design-tokens/families/` — except
+ * the cross-cutting families (model.md §6), which are documented inside the
+ * pages of the families they compose with rather than on pages of their own.
  *
  * Each family file owns its Core* and Semantic* interfaces. Cross-family
  * dependencies flow only through `primitives.ts` (the only leaf module),

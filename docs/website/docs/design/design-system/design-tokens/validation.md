@@ -76,10 +76,10 @@ It must guarantee:
 - valid references
 - resolvable references
 - no circular references
-- explicit deprecation metadata
-- replacement metadata when applicable
 
 If the token graph is invalid, validation must fail before build.
+
+Deprecation and replacement metadata are governed by [governance](./governance.md) but not yet machine-enforced — no deprecated token has ever shipped, and the enforcement lands with the first one (evidence rule).
 
 ### Semantic contract validation
 
