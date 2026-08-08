@@ -282,6 +282,20 @@ The role taxonomy that routing decisions are made against:
 
 **Failure Scenario:** An agent is tasked with "Add \$50 credit to User A." The agent adds the credit but the connection times out before it reports success. The orchestrator thinks it failed and retries the task. The agent adds another \$50. The ledger is now corrupt.
 
+### Bounded Iteration
+
+**The Problem:** A closed loop that self-corrects has no natural end. "Keep retrying until it works" is not a loop design; it is an uncontrolled cost leak with a silent failure mode. The agent burns budget on a problem it cannot solve, oscillates between two wrong fixes, or drifts toward satisfying the checker rather than the requirement — and because the loop reports its best attempt as the result, nobody learns that it never converged.
+
+**The Underlying Principle:** Derived from [The Principle of Automated Closed Loops](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-automated-closed-loops), [The Principle of Prompt Economics](/docs/ai/agentic-development-principles/economics-of-interaction#the-principle-of-prompt-economics), and [The Principle of Proxy Collapse](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-proxy-collapse).
+
+**The Strategy:** Closing a loop makes it stable; bounding it makes it affordable. Declare three things before the loop runs: a success predicate that a machine can evaluate, a ceiling expressed in iterations or budget, and an escalation path for exhaustion.
+
+The decisive requirement is that exhaustion be a distinct, visible outcome. A loop that hits its ceiling must report non-convergence along with the last failing check, never return its best attempt as though it had succeeded — a loop that degrades quietly into a plausible answer is worse than one that fails, because it manufactures the false confidence described by [The Principle of Invisible Risk](/docs/ai/agentic-development-principles/governance-of-technical-debt#the-principle-of-invisible-risk).
+
+Stop early when the evidence signal stops moving. Repeated failure against the same check is information — the task is misframed, or the environment is missing something the agent cannot obtain — and further iterations spend money to relearn it. Rising iteration counts are also the leading indicator of [The Principle of Proxy Collapse](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-proxy-collapse): the longer an agent optimizes against a visible checker, the more likely it is to satisfy the proxy rather than the intent.
+
+**Failure Scenario:** A team leaves an agent running overnight to fix a failing test suite, instructed to iterate until CI passes. It alternates between two incorrect fixes for four hundred iterations, spending \$2,000. The morning report reads "completed with warnings," and the last commit is the more plausible-looking of the two wrong fixes. A ceiling of ten iterations with an escalation path would have surfaced the real problem — an unresolvable environment defect — for a fraction of a percent of the cost.
+
 ### Automated Verification Pipeline
 
 **The Problem:** AI generation scales infinitely; human review does not. When teams adopt AI agents for code generation, they often discover that the bottleneck shifts from "writing code" to "reviewing code." Engineers become full-time reviewers, velocity stalls, and the promised productivity gains evaporate.
@@ -313,3 +327,28 @@ AI Output → Linter (1s) → Type Check (5s) → Unit Tests (30s) → Integrati
 ```
 
 Each layer filters out a category of errors, ensuring humans only review semantically valid, syntactically correct, tested code. The earlier a defect is caught, the cheaper it is to fix.
+
+### Layered Failure Diagnosis
+
+**The Problem:** When an agentic system misbehaves, teams reach for the fix they know rather than the fix the failure calls for. They rewrite prompts when the agent was never given the tool it needed, add workflow structure when the real defect is an unbounded loop, or blame the model for what is an environment defect. The symptom persists, and the system accumulates structure that solves a problem it does not have — which is expensive twice, because that structure must then be maintained.
+
+**The Underlying Principle:** Derived from [The Principle of Distributed Unreliability](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-distributed-unreliability) and [The Principle of Structural Determinism](/docs/ai/agentic-development-principles/physics-of-ai-integration#the-principle-of-structural-determinism), and dependent on the [Observability](/docs/ai/agentic-engineering-foundations/observability) pillar for the traces that make attribution possible.
+
+**The Strategy:** Attribute the failure to a layer before changing anything. An agentic system has three, and each owns a different class of defect: the **environment** determines what the agent can see and do, the **feedback loop** determines how its work is checked and corrected, and the **flow** determines what is allowed to happen next.
+
+Diagnose by asking, in order, whether a competent human could do this task with the same access, context, and tools. If not, the defect is environmental and no amount of looping or structure will fix it. If yes, but the output is nearly right and varies between runs with nothing catching the difference, the defect is in the feedback loop. Only when individual steps are each correct and the problem is their sequencing, approval, or handoff does the defect belong to the flow.
+
+```mermaid
+flowchart TD
+    A["Agent failure observed"] --> B{"Could a competent human do this<br/>with the same access, context, and tools?"}
+    B -->|No| E["Environment defect<br/>missing tool, stale state, no permission"]
+    B -->|Yes| C{"Is the output nearly right<br/>but inconsistent, with no check catching it?"}
+    C -->|Yes| F["Feedback defect<br/>no evidence, no stop rule, weak verifier"]
+    C -->|No| D{"Are the steps individually correct<br/>but their order or handoff unmanageable?"}
+    D -->|Yes| G["Flow defect<br/>make the topology explicit"]
+    D -->|No| H["Re-examine: likely an unobserved<br/>environment or feedback defect"]
+```
+
+The ordering is not arbitrary. Environment defects masquerade as every other kind — an agent denied the context it needs produces inconsistent output that looks like a feedback problem and erratic sequencing that looks like a flow problem. Diagnosing in the other direction reliably produces structure built to compensate for a missing tool.
+
+**Failure Scenario:** An agent intermittently proposes database migrations that contradict the current schema. The team responds by designing a six-node approval workflow with two human gates. The actual defect is environmental: the agent has no read access to the live schema and is inferring it from stale fixtures. The workflow adds latency and review burden to every migration, and the wrong migrations keep arriving — now carrying signatures that imply someone verified them.
