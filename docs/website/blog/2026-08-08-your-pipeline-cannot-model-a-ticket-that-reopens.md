@@ -152,9 +152,9 @@ modeled the thing as a state machine in the first place.
 
 We built this distinction into [SOAT](https://soat.ttoss.dev) as two separate primitives
 rather than one flexible one — orchestrations for the acyclic pipelines, workflows and tasks
-for the cyclic state graphs, with an explicit dispatch edge between them. The reasoning, the
-full comparison, and the composition patterns are written up in
-[Choosing an Automation Model](https://soat.ttoss.dev/docs/getting-started/choosing-an-automation-model).
+for the cyclic state graphs, with an explicit dispatch edge between them. The state model,
+the guards and transition history, and the composition patterns are written up in the
+[Workflows & Tasks](https://soat.ttoss.dev/docs/modules/workflows) module documentation.
 
 But the idea outlives the implementation. Before you add another `status` column, ask which
 of the two shapes the thing in front of you actually has. If it can go backward, no amount
