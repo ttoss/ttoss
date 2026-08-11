@@ -12,10 +12,12 @@ import {
 export const uploadBuiltAppToS3 = async ({
   buildFolder: directory,
   bucket,
+  uploadSourceMaps,
 }: {
   buildFolder?: string;
   bucket: string;
   cloudfront?: boolean;
+  uploadSourceMaps?: boolean;
 }) => {
   /**
    * Only empty directory if the number of the files inside $directory.
@@ -26,7 +28,7 @@ export const uploadBuiltAppToS3 = async ({
     if (files.length > 0) {
       await deleteOldS3Files({ bucket, retentionDays: 7 });
     }
-    await uploadDirectoryToS3({ bucket, directory });
+    await uploadDirectoryToS3({ bucket, directory, uploadSourceMaps });
     return;
   }
 
@@ -34,7 +36,11 @@ export const uploadBuiltAppToS3 = async ({
 
   if (defaultDirectory) {
     await deleteOldS3Files({ bucket, retentionDays: 7 });
-    await uploadDirectoryToS3({ bucket, directory: defaultDirectory });
+    await uploadDirectoryToS3({
+      bucket,
+      directory: defaultDirectory,
+      uploadSourceMaps,
+    });
     await copyRoot404To404Index({ bucket });
     return;
   }

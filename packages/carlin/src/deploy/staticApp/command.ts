@@ -1,11 +1,12 @@
 /* eslint-disable no-param-reassign */
-import { CLOUDFRONT_REGION, NAME } from '../../config';
-import { CommandModule, InferredOptionTypes } from 'yargs';
-import { addGroupToOptions } from '../../utils';
-import { defaultBuildFolders } from './findDefaultBuildFolder';
-import { deployStaticApp } from './deployStaticApp';
-import { destroyCloudFormation } from '../cloudformation';
 import AWS from 'aws-sdk';
+import type { CommandModule, InferredOptionTypes } from 'yargs';
+
+import { CLOUDFRONT_REGION, NAME } from '../../config';
+import { addGroupToOptions } from '../../utils';
+import { destroyCloudFormation } from '../cloudformation';
+import { deployStaticApp } from './deployStaticApp';
+import { defaultBuildFolders } from './findDefaultBuildFolder';
 
 export const options = {
   acm: {
@@ -65,6 +66,19 @@ export const options = {
     default: false,
     describe:
       'This option enables CloudFront to serve a single page application (SPA).',
+    require: false,
+    type: 'boolean',
+  },
+  /**
+   * Source maps contain the application's original source, and the bucket this
+   * command uploads to is public, so publishing them is a source disclosure.
+   * The default is therefore to exclude them, and including them must be an
+   * explicit, deliberate choice.
+   */
+  'upload-source-maps': {
+    default: false,
+    describe:
+      'Upload source map (`.map`) files to S3. They are excluded by default because the bucket is public and source maps expose the application source.',
     require: false,
     type: 'boolean',
   },

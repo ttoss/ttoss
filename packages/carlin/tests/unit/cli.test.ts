@@ -37,6 +37,16 @@ jest.mock('src/deploy/cloudformation', () => {
   };
 });
 
+/**
+ * Parsing runs the matched command's handler, so the static-app deploy is
+ * stubbed out — these tests are about option parsing, not deployment.
+ */
+jest.mock('src/deploy/staticApp/deployStaticApp', () => {
+  return {
+    deployStaticApp: jest.fn(),
+  };
+});
+
 jest.mock('deepmerge', () => {
   return {
     all: jest.fn(),
@@ -373,4 +383,18 @@ describe('lambda-runtime option', () => {
       expect(argv.lambdaRuntime).toEqual(runtime);
     }
   );
+});
+
+describe('upload-source-maps option', () => {
+  test('should exclude source maps by default', async () => {
+    const argv = await parseCli('deploy static-app', {});
+    expect(argv.uploadSourceMaps).toEqual(false);
+  });
+
+  test('should accept upload-source-maps option', async () => {
+    const argv = await parseCli('deploy static-app', {
+      uploadSourceMaps: true,
+    });
+    expect(argv.uploadSourceMaps).toEqual(true);
+  });
 });
