@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.0.0](https://github.com/ttoss/ttoss/compare/@docs/website@5.0.2...@docs/website@6.0.0) (2026-08-11)
+
+- feat(carlin)!: exclude source maps from the static-app S3 upload by default (#1196) ([b37f275](https://github.com/ttoss/ttoss/commit/b37f27533cccaea1ed28ddd79e6bf4cacb81032e)), closes [#1196](https://github.com/ttoss/ttoss/issues/1196)
+
+### BREAKING CHANGES
+
+- `carlin deploy static-app` no longer uploads `.map` files by
+  default. Deployments that relied on source maps being served publicly must now
+  pass `--upload-source-maps`; without it those files start returning 404, and
+  nothing fails at deploy time.
+
+Claude-Session: https://claude.ai/code/session_0197A4HuutzqfL2JN7cqDYk2
+
+Co-authored-by: Claude <noreply@anthropic.com>
+
 ## [5.0.2](https://github.com/ttoss/ttoss/compare/@docs/website@5.0.1...@docs/website@5.0.2) (2026-08-08)
 
 **Note:** Version bump only for package @docs/website
