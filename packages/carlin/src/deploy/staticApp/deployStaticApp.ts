@@ -25,6 +25,7 @@ export const deployStaticApp = async ({
   hostedZoneName,
   region,
   skipUpload,
+  uploadSourceMaps,
 }: {
   acm?: string;
   aliases?: string[];
@@ -35,6 +36,7 @@ export const deployStaticApp = async ({
   hostedZoneName?: string;
   region: string;
   skipUpload?: boolean;
+  uploadSourceMaps?: boolean;
 }) => {
   try {
     const { stackName } = await handleDeployInitialization({ logPrefix });
@@ -59,7 +61,12 @@ export const deployStaticApp = async ({
      */
     if (bucket) {
       if (!skipUpload) {
-        await uploadBuiltAppToS3({ buildFolder, bucket, cloudfront });
+        await uploadBuiltAppToS3({
+          buildFolder,
+          bucket,
+          cloudfront,
+          uploadSourceMaps,
+        });
       }
 
       const { Outputs } = await deploy({ params, template });
@@ -79,7 +86,12 @@ export const deployStaticApp = async ({
         throw new Error(`Cannot find bucket at ${stackName}.`);
       }
 
-      await uploadBuiltAppToS3({ buildFolder, bucket: newBucket, cloudfront });
+      await uploadBuiltAppToS3({
+        buildFolder,
+        bucket: newBucket,
+        cloudfront,
+        uploadSourceMaps,
+      });
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
