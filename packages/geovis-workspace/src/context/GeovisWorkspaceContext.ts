@@ -8,16 +8,66 @@ export interface GeovisWorkspaceMenuItem {
   label: string;
 }
 
-export interface GeovisWorkspaceMenu {
-  /** Unique identifier of the menu group. */
+/**
+ * A carousel group of a grouped menu: one selectable chip at the top of the
+ * sidebar, holding the subset of items shown while it is the open group.
+ */
+export interface GeovisWorkspaceMenuGroup {
+  /** Unique identifier of the group; used to track which chip is open. */
   id: string;
+  /** Text shown on the group's chip in the carousel. */
+  label: string;
+  /** Items shown while this group is the open one. */
+  items: GeovisWorkspaceMenuItem[];
+}
+
+interface GeovisWorkspaceMenuBase {
+  /** Unique identifier of the menu group; keys this menu's selection. */
+  id: string;
+  /** Value of the item selected by default in this menu. */
+  defaultValue?: string;
+}
+
+/**
+ * The default menu shape: a titled group whose items stack vertically in the
+ * left sidebar. `items` and `groups` are mutually exclusive — a flat menu never
+ * carries `groups`.
+ */
+export interface GeovisWorkspaceFlatMenu extends GeovisWorkspaceMenuBase {
   /** Title displayed above the group's items. */
   title: string;
   /** Selectable items within the group. */
   items: GeovisWorkspaceMenuItem[];
-  /** Value of the item selected by default in this group. */
-  defaultValue?: string;
+  groups?: never;
 }
+
+/**
+ * A grouped menu: its items are split across carousel groups rendered as a row
+ * of chips at the top of the sidebar, with only the open group's items shown
+ * below. The selection stays a single value shared across every group — the
+ * carousel only chooses which items are visible, never what is selected.
+ * `items` and `groups` are mutually exclusive.
+ */
+export interface GeovisWorkspaceGroupedMenu extends GeovisWorkspaceMenuBase {
+  /** Optional heading rendered above the carousel chips. */
+  title?: string;
+  /** The carousel groups; each becomes a chip. */
+  groups: GeovisWorkspaceMenuGroup[];
+  items?: never;
+  /**
+   * Id of the group that starts open. Defaults to the group containing
+   * `defaultValue`, falling back to the first group. Ignored when it matches
+   * no group.
+   */
+  defaultGroupId?: string;
+}
+
+/**
+ * A left-sidebar menu group. Either a flat list of items (the default) or a
+ * grouped/carousel menu — never both, enforced by the `never` fields.
+ */
+export type GeovisWorkspaceMenu =
+  GeovisWorkspaceFlatMenu | GeovisWorkspaceGroupedMenu;
 
 export interface GeovisWorkspaceSource {
   /** Source description text. */

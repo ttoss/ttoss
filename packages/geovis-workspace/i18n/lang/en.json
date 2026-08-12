@@ -7,6 +7,10 @@
     "defaultMessage": "This view feature is not supported.",
     "description": "Warnings panel: a view-level feature is not implemented by the engine adapter."
   },
+  "/iua3l": {
+    "defaultMessage": "Scroll groups forward",
+    "description": "Accessible label for the arrow that scrolls the grouped-menu carousel to later groups."
+  },
   "0tNse0": {
     "defaultMessage": "Dismiss selection",
     "description": "Accessible label for the button that clears the inspector panel selection."
@@ -22,6 +26,10 @@
   "35Dt1p": {
     "defaultMessage": "Details",
     "description": "Default title shown in the right sidebar when none is set."
+  },
+  "3Jc+Ry": {
+    "defaultMessage": "Scroll groups backward",
+    "description": "Accessible label for the arrow that scrolls the grouped-menu carousel to earlier groups."
   },
   "4Kaze0": {
     "defaultMessage": "A layer references a source that does not exist.",
