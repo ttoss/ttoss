@@ -12,11 +12,13 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 
 ## Open items (derived — the entry below is always the source of truth)
 
-**Three open — F-058 and F-059** (both opened 2026-08-06 by the `Toast`
-anatomy review, fsl-ui ADR-040) **and F-061** (opened 2026-08-06 by the E2
-wave-1 parity gate), all `paper-cut`, all with the measurement already taken
-and the repair deliberately not built. Before them the log had
-been at zero since F-004 resolved 2026-08-05. The grouping below (by the
+**Four open — F-058 and F-059** (both opened 2026-08-06 by the `Toast`
+anatomy review, fsl-ui ADR-040), **F-061** (opened 2026-08-06 by the E2
+wave-1 parity gate) — those three `paper-cut` — **and F-063** (opened
+2026-08-12 by the `InlineAlert` design, a `gap`): all four have the
+measurement already taken and the repair deliberately not built, each with a
+recommendation and a readmission condition in its own entry. Before them the
+log had been at zero since F-004 resolved 2026-08-05. The grouping below (by the
 _kind of decision_ each one needed rather than by severity, because that is
 what made a review round plannable) is historical: every row in it is struck
 through. Regenerate with
@@ -744,3 +746,32 @@ Do not edit an entry through this list.
 - Not introduced by E2 — the extraction changed module-load timing enough to lose the race in the probe, which is how a pre-existing hole became visible. The capture harness now documents the one legitimate non-noise diff it has produced.
 - **Costed options**, none built: **(a)** observe the children too — correct signal, but settling _changes_ the children's layout, so the observer must not re-invalidate on the resize the settle itself causes; the verdict-key machine absorbs one cycle but an oscillating fit (row fits ⇄ column fits) could ping-pong. **(b)** `document.fonts.ready.then(invalidate)` — one-shot, targets the actual late resizer, no loop surface; misses non-font child resizes (an icon loading, a label swap), which today have no known consumer. **(c)** leave it: transient, self-heals on any container resize.
 - **Recommendation: (b)** — the only late child resize with a real consumer is the webfont, and `fonts.ready` is its precise, once-per-document signal. Re-open toward (a) if a non-font consumer appears.
+
+### F-062 — the reference's InlineAlert was read as tinted; tinted is its opt-in, and the default is a bordered neutral
+
+- **Date:** 2026-08-12 · **Surface:** `packages/fsl-ui/INTERNAL/ROADMAP.md` (B3b) + `INTERNAL/FORMS.md` (standing deferrals) vs `@react-spectrum/s2` `InlineAlert` · **Severity:** paper-cut (doc) · **Status:** ✅ resolved 2026-08-12, same day
+- Found while scoping `InlineAlert` (the `status.passive` counterpart of `Toast`). Two planning docs carry the same sentence, verbatim, as the reason `FormErrorSummary` is parked: _"`feedback.negative` is a filled rung while the reference's InlineAlert is **tinted** and the tinted rung lives in `informational.negative`, which §1 forbids a Feedback component from reading."_
+- **Read from the reference's source, not from a screenshot:** `packages/@react-spectrum/s2/src/InlineAlert.tsx` takes `fillStyle?: 'border' | 'subtleFill' | 'boldFill'` and **defaults to `'border'`** — a neutral `gray-25` surface with a valence border and a valence icon. `subtleFill` (`{valence}-subtle`) and `boldFill` (`{valence}`) are opt-in. So the sentence describes the _second_ of three styles as though it were the component. Spectrum v3's `InlineAlert` has no `fillStyle` at all and is the same bordered shape.
+- **Why the misreading mattered.** It made the blocker look like a missing _tinted fill family_ (4 roles × 3 dimensions × 2 modes) when the default style needs no valence fill at all — only a valence **ink** and a valence **edge**. The cheaper diagnosis was one prop signature away the whole time.
+- **What the reference's default costs us that a screenshot hides:** `fillStyle` is a variant axis, and CONTRACT §4 forbids one (no `size`, no `variant`). fsl-ui must pick one style and keep it; it cannot ship the reference's three.
+- **Corrected in both docs**, and the deferral's reason restated: `FormErrorSummary` waits on its consumer (a form tall enough to scroll the first invalid field off-screen), not on a tinted fill family. The colour half is answered by `semantic.valence.{positive,caution,negative}.ink` (fsl-theme ADR-029).
+- **Lesson, and it is the CLAUDE.md rule one layer out.** "Read the design documentation before deciding anything" has a sibling: read the _reference's_ source before quoting its behaviour. This sentence was copied between two planning docs and cited in three rounds of analysis without anyone opening the file it describes — the same shape as F-032, where the reasoning was sound and the reading was missing.
+
+### F-063 — a `secondary` action inside a quiet Feedback surface resolves the surface's own colour in dark, on fill and edge alike
+
+- **Date:** 2026-08-12 · **Surface:** `@ttoss/fsl-theme` `semantic.colors.action.secondary` × `semantic.colors.feedback.muted.background` · **Severity:** gap · **Status:** open
+- Found while designing `InlineAlert`, whose surface is the quiet Feedback rung (`feedback.muted`) and which hosts caller-supplied actions as children — the composition that lets it host real `action.*` controls at all, since a quiet neutral surface is exactly where the page's palette is correct (the inverse of the argument `Toast` makes for re-dressing its own triggers, ADR-040).
+- **Measured from the resolved theme, both bundles, before deciding anything.** Dark: `feedback.muted.background.default` is `#3d3d3d`; `action.secondary.background.default` is `#3d3d3d` and `action.secondary.border.default` is `#3d3d3d` too (a mirrored edge, by design — it is a listed member of the border pairing's `MIRRORED_BORDERS` set). **1.00:1 on fill and 1.00:1 on edge**: a secondary button inside the surface disappears as an object and only its `#f8f8f8` label remains. `bruttal` inherits every one of these values, so it reproduces identically.
+- **Separation of every action rung against this surface**, so the guidance is measured rather than asserted:
+
+  | Rung        | Dark (on `#3d3d3d`)   | Light (on `#f0f0f0`) |
+  | ----------- | --------------------- | -------------------- |
+  | `primary`   | **10.86:1**           | **17.37:1**          |
+  | `accent`    | 2.26:1                | 4.22:1               |
+  | `secondary` | **1.00:1** (mirrored) | 1.15:1               |
+  | `muted`     | 1.67:1                | 1.14:1               |
+
+- **Two of those four rows are not this entry's finding.** `muted` at 1.67:1 is the F-024 class, whose ruling already accepted it as a known limit of the quiet rung with `publishSurface` named as the lawful fix. And `secondary`'s light 1.15:1 is not a defect either: that rung is "a light fill, visibly present, clearly below primary" by design and never owed a 3:1 boundary — it reads about the same against the page. What is new is the **dark identity**: not "low separation" but the _same value_, on both dimensions, which is the mirrored-collision class the theme treats as a defect elsewhere.
+- **Why no suite saw it, and it is the fifth instance of the same asymmetry.** `colors.test.ts`'s "roles within a context are distinguishable" invariant compares roles _inside_ one `ux`; this pair is `action` against `feedback`. The border extractor pairs a border against **its own role's** background. Neither can look across contexts — the same organised-by-token-kind blind spot F-044, F-050, F-055 and F-057 each named, now between a control and the surface a _sibling component_ paints under it.
+- **Costed options**, none built: **(a)** admit `feedback.muted` to the §3.4 publisher set — narrowing "Feedback fills are voices" to "Feedback **valence** fills are voices", which is true by construction since `muted` is the entity's no-fill rung and a stratum rather than a voice. Then a quiet action inside the surface borrows the published fill and materialises correctly on hover, which also unblocks an in-surface dismiss trigger. Costs one cross-role inventory row (the quiet ink and the destructive ink against `feedback.muted`, both modes, both bundles) and it does **not** fix `secondary`, which is a voiced fill and never follows a surface. **(b)** Document the rule instead: an action inside a `status.passive` surface is `primary`. Zero cost, and it is defensible on its own terms rather than as a workaround — the reference ships no actions at all, `Toast` allows exactly one, and "the primary path out of this condition" is a semantic claim, not a colour dodge. Its cost is a footgun: a caller passing `secondary` gets a silent dark-only failure, which is the exact class F-024 kept rediscovering. **(c)** Give `action.secondary` a dark fill that is not `neutral.700` — smallest-looking and worst: that step was chosen in F-025 to fix `secondary`/`muted` collapsing onto each other, and moving it re-opens a settled ladder to fix one host surface.
+- **Recommendation: (b) now, (a) at the version boundary.** (b) is what `InlineAlert` ships with, stated in its JSDoc and its story rather than left to the caller to discover; (a) is worth doing when the dismiss trigger gets a consumer, because both needs are the same publisher change and it is cheaper to measure once. Not urgent under (b): the shipped default is correct in both modes, and nothing is unreachable.
