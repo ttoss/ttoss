@@ -1573,6 +1573,34 @@ export const baseTheme: ThemeTokens = {
       },
     },
 
+    // -- Valence ------------------------------------------------------------
+    // The standalone valence inks, for a part that *reports* an outcome while
+    // painting no surface of its own (a status mark on a quiet surface, a
+    // summary line). Each aliases the ink its own ux already ships, referenced
+    // semantically — like focus.ring.color and consequence.destructive.ink —
+    // so the dark alternate's remap of those tokens carries these with it and
+    // no new core value is minted.
+    //
+    // `negative` resolves the same value as consequence.destructive.ink today.
+    // That is a choice, not an identity: FSL Lexicon §10.5 keeps `negative`
+    // (reported outcome) apart from `destructive` (effect on state), and a
+    // theme may repoint one without the other. See families/valence.ts.
+    //
+    // No `accent`/`primary` member: those are Emphasis roles, not valences
+    // (colors.md § Role Coverage), and an emphasis rung has no outcome for an
+    // ink to carry.
+    valence: {
+      positive: {
+        ink: '{semantic.colors.informational.positive.text.default}',
+      },
+      caution: {
+        ink: '{semantic.colors.informational.caution.text.default}',
+      },
+      negative: {
+        ink: '{semantic.colors.informational.negative.text.default}',
+      },
+    },
+
     // -- Overlay ------------------------------------------------------------
     overlay: {
       // Full modal backdrop color. Alpha is sourced from semantic.opacity.scrim

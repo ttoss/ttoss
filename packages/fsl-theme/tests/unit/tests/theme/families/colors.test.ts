@@ -755,6 +755,35 @@ const CROSS_ROLE_TEXT_PAIRINGS: ReadonlyArray<{
     // A label renders at body size — no large-text allowance.
     threshold: WCAG.AA_NORMAL,
   },
+  ...(['positive', 'caution', 'negative'] as const).map((valence) => {
+    return {
+      // ADR-029. A part that *reports* a valence while painting no surface of
+      // its own takes the cross-cutting `valence.{v}.ink` — the generalization
+      // of the destructive ink above, for the other two valences. The consumer
+      // is a `status.passive` Feedback surface (fsl-ui `InlineAlert`): its
+      // surface is the quiet Feedback rung and the valence lives in a mark, so
+      // this ink is the only thing carrying it.
+      //
+      // The surfaces are the strata a mark can land on **plus the quiet
+      // Feedback fill it actually sits on** — `feedback.muted.background` is a
+      // stratum rather than a voice (it is the entity's "no fill" rung), which
+      // is why it is listed here while the valence fills are not: those are
+      // voices, and a part on a voiced fill takes the fill's own label ink.
+      //
+      // Threshold is AA Normal even though the consumer renders a glyph (which
+      // would owe 1.4.11's 3:1). Measured, every pair clears 4.5:1 with the
+      // worst at 5.72:1, so holding the stricter floor costs nothing and keeps
+      // the family safe for a valence-inked *line of copy* — which is what the
+      // deferred `FormErrorSummary` will want.
+      part: `passive status mark (${valence})`,
+      ink: `semantic.valence.${valence}.ink`,
+      surfaces: [
+        ...INFORMATIONAL_STRATA,
+        'semantic.colors.feedback.muted.background.default',
+      ],
+      threshold: WCAG.AA_NORMAL,
+    };
+  }),
   {
     // fsl-ui F-044. `colors.md` § Stacking names `border.outline.surface` the
     // **secondary separator** and requires "a 1px outline at ≥ 3:1 contrast

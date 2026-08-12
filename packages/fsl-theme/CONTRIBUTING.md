@@ -1111,3 +1111,55 @@ Re-litigation answers:
   none for `overlay`/`focus`: it drifts brand colour, radii and elevation only
   (`themes/bruttal.ts`) and inherits every other family from the base via
   `deepMerge`.
+
+### ADR-029: The standalone valence inks get a cross-cutting family; `consequence.destructive.ink` was a family of one
+
+Status: accepted (2026-08-12)
+Tags: colors, cross-cutting, valence, model §6, generalizes:ADR-025, fsl-ui InlineAlert
+
+Decision: `semantic.valence.{positive,caution,negative}.ink` — a cross-cutting sibling of `focus`, `overlay`, `consequence` and `rail` — holds the foreground for a part that **reports** a valence while painting no surface of its own; each member aliases `{semantic.colors.informational.{valence}.text.default}`, so no core value is minted and both modes remap for free.
+Rejected: a fourth one-off token per consumer — repeats ADR-025's shape for the third time and leaves the next valence to rediscover it; a tinted `feedback.{valence}` fill family — 4 roles × 3 dimensions × 2 modes to say what one ink says, and `colors.md` § Picking a role forbids the emphasis-plus-valence path it would need; letting the component read `informational.{valence}.text` directly — the licensed cross-ux crossing ADR-025 retired three days after shipping it; collapsing `consequence.destructive.ink` into `valence.negative.ink` — deletes the FSL §10.5 distinction to resolve a value coincidence.
+Cost: a fourth cross-cutting family in a model that prizes a small registry, and `negative` now has two addresses resolving one value — a reviewer will read that as duplication until §10.5 is quoted.
+Anchors: `src/families/valence.ts`, `src/baseTheme.ts`, `src/roots/tokenRegistry.ts`, `docs/.../design-tokens/model.md#6-no-parallel-vocabulary`, `docs/.../families/colors.md#cross-cutting-tokens-siblings-of-semanticcolors`.
+
+**What problem exists.** A `Feedback` part that reports an outcome while painting nothing has no lawful ink. `colors.md` § Picking a role states the loudness ladder is a ladder only where the valence's `text` is a standalone ink — true in `input`/`informational`, false in `action`/`feedback`, where the valence ships filled and `text` is the label _on_ that fill. The consumer that forced it: `InlineAlert`, the `status.passive` counterpart of `Toast` (FSL Lexicon §3), whose surface is `feedback.muted` and whose valence therefore lives in a mark rather than in a fill. With no valence ink the four states differ only by glyph shape — two grey boxes — which fails the north star's "visually refined out of the box" before it reaches a reviewer.
+
+**Why reuse is not enough.** Measured, not assumed: `action.negative.text` and `feedback.negative.text` are `#ffffff` in both modes (ADR-021 chose deep filled valences; the `text` dimension became the on-fill label). Combining valence with emphasis is the ❌ example in that same section. `informational.{valence}.text` holds the inks — but reaching for them from a `Feedback` component is the cross-ux read ADR-025 licensed and then retired, and `components.contract.test.tsx` now fails any component that reaches for `informational.negative` by hand.
+
+**Why a family rather than a fifth sibling.** ADR-025's own §6 rationale — _"the grammar cannot combine valence with emphasis, and the filled valence contexts have no standalone ink"_ — is a statement about **valence**, not about **destructiveness**. It is true of `positive` and `caution` verbatim. That token was a family of one wherever a family was warranted; this ADR does not add a concept, it finishes one. The residual lesson of ADR-025 was "search the model for the mechanism that makes the exception unnecessary before licensing it"; the residual lesson here is one step earlier — when a cross-cutting token is minted for one member of a closed set, ask whether the set is the unit.
+
+**Why `valence.negative.ink` ≠ `consequence.destructive.ink`, although they resolve alike.** FSL Lexicon §10.5 keeps `negative` (Evaluation — authorial valence, "what is being reported") apart from `destructive` (Consequence — effect on state, "what this interaction does"), and §10.15 mirrors the split one dimension over. The two tokens answer different questions and a theme may repoint one without the other: a product wanting "Delete" rows louder than error reports needs both addresses to exist. They coincide in this theme by choice. Collapsing them is the mirror of the static-ink proposal ADR-025 retracted — resolving a naming coincidence by deleting a distinction.
+
+**Three members, not five.** `role` is a discriminated union of Emphasis and Valence (`colors.md` § Role Coverage); an emphasis rung carries no outcome, so there is nothing for a valence ink to say. `accent` stays out **although** `ENTITY_EVALUATION.Feedback` admits it and fsl-ui's taxonomy comment calls it "the informative valence" — by this system's own role classification `accent` is Emphasis, so the two artefacts disagree. `model.md` §11 fixes the order when artefacts conflict (family doc wins), so the disagreement is filed rather than pre-empted: an informative mark takes the stratum's ordinary ink until the classification is settled on the doc side.
+
+**What impact exists.** Purely additive — one new semantic family, no existing token moved, no rendered pixel changed anywhere today. MINOR per `governance.md` § Versioning. `bruttal` needs no override, for the same reason it needs none for `overlay`/`focus`/`rail`.
+
+**Measured, all 24 pairs, before deciding.** Each valence ink against every stratum a mark can land on (`INFORMATIONAL_STRATA`) plus the quiet Feedback surface it actually sits on (`feedback.muted.background.default` — `neutral.100` light, `neutral.700` dark):
+
+| Surface (light)               | positive | caution | negative |
+| ----------------------------- | -------: | ------: | -------: |
+| `neutral.0` (page + 3 tonal)  |   9.11:1 |  8.67:1 |  10.02:1 |
+| `neutral.100` (quiet surface) |   7.99:1 |  7.61:1 |   8.79:1 |
+
+| Surface (dark)                         | positive | caution | negative |
+| -------------------------------------- | -------: | ------: | -------: |
+| `neutral.900` (page)                   |  12.89:1 | 13.73:1 |   9.53:1 |
+| `neutral.800` (tonal raised)           |  10.78:1 | 11.48:1 |   7.97:1 |
+| `neutral.700` (tonal overlay/blocking) |   7.74:1 |  8.24:1 |   5.72:1 |
+| `neutral.700` (quiet surface)          |   7.74:1 |  8.24:1 |   5.72:1 |
+
+Every pair clears **AA Normal (4.5:1)** — not merely the 3:1 non-text floor a glyph would owe — so the family is safe for a valence-inked line of copy, not only for a mark. Worst case is `negative` on the dark `neutral.700` step at 5.72:1, which is the figure ADR-025's inventory already reports, because that member _is_ that token. Only `positive` and `caution` are genuinely new pairs, and both are more legible than the member already in the suite.
+
+**The dark alternate corroborates rather than obstructs.** It drops the light valence tint entirely — `informational.{positive,caution,negative}.background.default` all remap to `neutral.900` — and keeps only the border and the ink. The theme already commits to ink-plus-edge as the way a valence speaks on a quiet surface in that mode; this token gives that commitment an address instead of leaving each component to find it.
+
+**§6's gate, answered.** **Necessity** — the measurement above plus the F-029 record it generalizes; the question crosses `ux` (a mark is `feedback`, a summary is `informational`, a message is `input`) so the per-context grammar cannot express it. **JSDoc** — on the family, on the per-valence interface, and on each `ink`. **Registration** — `TOKEN_PATH_REGISTRY` (`--tt-valence-*`, DTCG `color`, whose coverage test fails if the entry is missing), §6's canonical-examples list, `colors.md` § Cross-cutting, and the quick reference.
+
+Guarded from both sides, the shape ADR-027/ADR-028 established: `valence.test.ts` pins the resolved values per mode per bundle and pins that `valence.negative.ink` and `consequence.destructive.ink` are separately declared addresses (asserting the coincidence is deliberate, never that one derives from the other); `colors.test.ts` gains the cross-role entry `passive status mark` — each ink against the strata plus the quiet Feedback surface, at AA Normal, per bundle and per mode.
+
+Re-litigation answers:
+
+- "This duplicates `consequence.destructive.ink`." → It generalizes it. `negative` coincides in value; the questions differ per FSL §10.5, and a theme may split them.
+- "Then delete `consequence.destructive.ink` and point `resolveConsequenceInk` here." → That deletes the §10.5 distinction to save one alias; the ink a destructive _command_ borrows is not the ink an error _report_ carries, even when a theme paints them alike.
+- "Why no `accent`/informative member?" → `accent` is Emphasis in `colors.md` § Role Coverage; fsl-ui's taxonomy calls it a valence. Two artefacts disagree — `model.md` §11 gives the family doc precedence, so it stays out until the doc side settles it.
+- "Why not `semantic.colors.valence.*`, inside the colour grammar?" → §6 places cross-cutting tokens as siblings of `semantic.colors.*`, not inside it — same as `focus`/`overlay`/`consequence`/`rail`.
+- "Should a filled surface use this ink?" → No. There the fill is the voice and `{ux}.{valence}.background` owns it; this ink is for a part that paints nothing.
