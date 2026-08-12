@@ -34,8 +34,10 @@ import { Icon } from '../Icon';
 // ENTITY_EVALUATION.Feedback = ['primary','positive','caution','negative',
 // 'accent'] — no `muted` for this entity; a muted toast would defeat the
 // purpose of feedback (demanding the user's attention). `accent` is the
-// informative valence P3 Slice 3 added ("in progress", "new", "info"), and
-// it is what the reference calls its `info` toast.
+// informative rung P3 Slice 3 added ("in progress", "new", "info"), and it is
+// what the reference calls its `info` toast. It is Emphasis, not a valence
+// (FSL Lexicon §5) — which costs a toast nothing, because here the colour is a
+// filled voice; it is a passive surface that feels the difference (ADR-043).
 //
 // Every colour this file reads comes from `vars.colors.feedback` — including
 // the two triggers it hosts. That is not a stylistic preference: the

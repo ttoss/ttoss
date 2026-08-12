@@ -93,14 +93,15 @@ const VALENCE_INK = {
  * token is legible only with its bounds, and the bounds are conditional. Two of
  * them:
  *
- * - **Emphasis rungs yield.** `primary` and `accent` are emphasis, not valence
- *   (`colors.md` § Role Coverage), so there is no outcome for a valence ink to
- *   state and the mark takes the ground's own ink. `accent` is the live case: it
- *   reads as informative and gets the ⓘ glyph, but its colour claim is
- *   emphasis, and fsl-theme ADR-029 records that fsl-ui's taxonomy comment and
- *   `colors.md` disagree about which class it belongs to rather than
- *   pre-empting it. When that is settled on the doc side, this is the one
- *   function that changes.
+ * - **Emphasis rungs yield.** `primary` and `accent` are Emphasis, not Valence
+ *   — FSL Lexicon §5 owns that classification and defines `accent` as "semantic
+ *   divergence", where a valence is a judgement about outcome. So there is no
+ *   outcome for a valence ink to state and the mark takes the ground's own ink.
+ *   `accent` is the case worth naming: it reads as informative and earns the ⓘ,
+ *   but its colour claim in `feedback` is a *voiced fill* (the activity rail),
+ *   which a surface painting no fill cannot express. Measured, it could not
+ *   anyway — `feedback.accent.background.default` inks at 2.26:1 against the
+ *   quiet ground in dark (fsl-theme ADR-029).
  * - **Never on a filled surface.** On a voiced fill the fill *is* the voice and
  *   `{ux}.{valence}.background` owns it; a mark inked from here would state the
  *   valence twice and leave the label unaudited. `Toast` is why this is written

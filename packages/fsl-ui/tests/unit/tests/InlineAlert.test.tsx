@@ -87,10 +87,10 @@ describe('InlineAlert — the valence lives in the mark', () => {
   });
 
   test('accent takes the glyph but keeps the prose ink', () => {
-    // `accent` is an *emphasis* role in colors.md § Role Coverage, so it has no
-    // valence ink to take (fsl-theme ADR-029 records that fsl-ui's taxonomy
-    // comment disagrees, rather than pre-empting it). The glyph still earns its
-    // place: "note this" is a claim about attention, not about outcome.
+    // `accent` is an Emphasis role — FSL Lexicon §5, which owns the
+    // classification — so it has no valence ink to take. The glyph still earns
+    // its place: "note this" is a claim about attention, not about outcome, and
+    // that is exactly the distinction the ink is withheld to preserve.
     render(<InlineAlert evaluation="accent">Body</InlineAlert>);
     const mark = part('status');
 

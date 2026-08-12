@@ -62,8 +62,8 @@ export interface InlineAlertProps extends Omit<
    * `primary` is the neutral voice and carries **no mark**: it reports without
    * claiming a status, the same rule `Toast` applies to its own neutral rung.
    * `accent` is informative — it takes the ⓘ but keeps the prose ink, because
-   * `accent` is an *emphasis* role rather than a valence and so has no valence
-   * ink (`colors.md` § Role Coverage; fsl-theme ADR-029).
+   * `accent` is an **Emphasis** role rather than a Valence and so has no
+   * valence ink to take (FSL Lexicon §5; fsl-theme ADR-029).
    *
    * @default 'primary'
    */

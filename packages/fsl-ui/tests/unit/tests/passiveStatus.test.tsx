@@ -84,13 +84,12 @@ describe('resolveValenceInk — the bounds', () => {
   test.each(['primary', 'accent'] as const)(
     '%s yields to the ground ink — emphasis carries no outcome',
     (evaluation) => {
-      // `colors.md` § Role Coverage: `role` is a discriminated union, and these
-      // two are the Emphasis class. There is no outcome for a valence ink to
-      // state. `accent` is the live case — fsl-theme ADR-029 records that
-      // fsl-ui's taxonomy comment calls it "the informative valence" while the
-      // family doc classes it Emphasis, and model.md §11 gives the family doc
-      // precedence. If that is ever settled the other way, this is the one
-      // function that changes.
+      // FSL Lexicon §5: `role` is a discriminated union and these two are the
+      // Emphasis class — `accent` is "semantic divergence", not a judgement
+      // about outcome, so there is no valence ink for it to take. Settled by
+      // the artefact that owns identity (model.md §11 ranks the Lexicon first),
+      // and measurement agrees: the only candidate ink inks at 2.26:1 on the
+      // quiet ground in dark (fsl-theme ADR-029).
       expect(resolveValenceInk({ evaluation, groundInk: GROUND_INK })).toBe(
         GROUND_INK
       );

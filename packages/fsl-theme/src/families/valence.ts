@@ -55,17 +55,20 @@
  *
  * ## Three members, not five
  *
- * `role` is a discriminated union of two classes (`colors.md` § Role
- * Coverage): Emphasis (`primary`, `secondary`, `accent`, `muted`) and Valence
- * (`positive`, `caution`, `negative`). An emphasis rung carries no outcome, so
- * there is nothing for a valence ink to say — a part on an emphasis rung takes
- * the stratum's ordinary ink. `accent` therefore has no member here even
- * though `ENTITY_EVALUATION.Feedback` admits it, and `@ttoss/fsl-ui`'s
- * taxonomy comment calls it "the informative valence": by this system's own
- * role classification `accent` is Emphasis, and the two artefacts disagree.
- * `model.md` §11 fixes the order when artefacts conflict — the family doc
- * wins — so `accent` stays out until that disagreement is resolved on the doc
- * side rather than pre-empted here.
+ * `role` is a discriminated union of two classes, and **FSL Lexicon §5** owns
+ * the classification: Emphasis (`primary`, `secondary`, `accent`, `muted`) and
+ * Valence (`positive`, `caution`, `negative`). A valence is a judgement about
+ * **outcome**; `accent` is "semantic divergence" — it claims attention without
+ * claiming an outcome — so there is nothing for a valence ink to say, and a
+ * part on an emphasis rung takes the stratum's ordinary ink.
+ *
+ * `accent` therefore takes no member here, even though
+ * `ENTITY_EVALUATION.Feedback` admits it. That is **settled, not deferred**:
+ * `Types.ts` agrees in substance (`feedback.accent` is "noteworthy but carries
+ * no judgement") and so does `colors.md` § Role Coverage. `model.md` §11 ranks
+ * the Lexicon first and the family docs last, so a comment elsewhere calling
+ * `accent` a valence is a defect in the lower-priority artefact, never a live
+ * disagreement this family should wait on.
  *
  * ## Values, measured
  *

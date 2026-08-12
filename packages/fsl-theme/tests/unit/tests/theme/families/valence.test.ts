@@ -125,14 +125,12 @@ describe('Valence — `negative` and the destructive consequence are two address
 });
 
 describe('Valence — the family has no emphasis members', () => {
-  // `role` is a discriminated union of Emphasis and Valence (colors.md § Role
-  // Coverage). An emphasis rung carries no outcome, so a valence ink has
-  // nothing to say there. `accent` is the live case: fsl-ui's taxonomy comment
-  // calls it "the informative valence" while `colors.md` classes it Emphasis,
-  // and model.md §11 gives the family doc precedence — so it stays out until
-  // that disagreement is settled on the doc side. This test is the tripwire: a
-  // member added here without settling it fails, rather than quietly shipping
-  // a fourth ink and a contradiction.
+  // `role` is a discriminated union of Emphasis and Valence, and FSL Lexicon §5
+  // owns the classification: `accent` is Emphasis — "semantic divergence" — not
+  // a judgement about outcome, so a valence ink has nothing to say there.
+  // Settled rather than open: `Types.ts` and `colors.md` agree, and §11 ranks
+  // the Lexicon above both. This test is the tripwire — a fourth member added
+  // here fails rather than quietly shipping an ink that contradicts §5.
   const EMPHASIS_ROLES = ['primary', 'secondary', 'accent', 'muted'] as const;
 
   for (const { label, base } of bundleEntries) {

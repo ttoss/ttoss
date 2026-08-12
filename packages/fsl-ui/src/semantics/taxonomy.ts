@@ -375,8 +375,15 @@ export const ENTITY_EVALUATION = {
   Overlay: ['primary', 'secondary', 'accent', 'muted', 'negative'],
   Navigation: ['primary', 'secondary', 'accent', 'muted'],
   Disclosure: ['primary', 'muted'],
-  // `accent` = informative valence (in progress / new / info) — the fill for
+  // `accent` = the informative rung (in progress / new / info) — the fill for
   // activity indicators; added with the filled-feedback language (P3 slice 3).
+  // It is **Emphasis, not a valence**: FSL Lexicon §5 lists it in the Emphasis
+  // class and defines it as "semantic divergence", while a valence is a
+  // judgement about outcome. Its colour in `feedback` is a voiced fill (the
+  // activity rail), never a standalone ink — which is why
+  // `semantic.valence.*` has three members and not four (fsl-theme ADR-029).
+  // An earlier revision of this comment called it "the informative valence",
+  // and that reading reached two ADRs before anyone opened the Lexicon.
   Feedback: ['primary', 'positive', 'caution', 'negative', 'accent'],
   Structure: ['primary', 'muted'],
 } as const satisfies Record<Entity, ReadonlyArray<Evaluation>>;
