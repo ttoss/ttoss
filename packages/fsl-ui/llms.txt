@@ -307,7 +307,36 @@ Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
              the words would join the field's accessible name). For the
              explanation too long for `description` and too rare to spend
              permanent space on. Standalone composition also works.
-Feedback:    ProgressBar, Meter, Toast, ToastRegion, createToastQueue
+Feedback:    ProgressBar, Meter, Toast, ToastRegion, createToastQueue, InlineAlert
+             THE TWO POSTURES (CONTRACT §1.2, ADR-043) — pick by WHO OWNS THE
+             LIFETIME, then the colour follows:
+               Toast       = status.interruptive. Ends on a timer or a dismissal.
+                             Floats over content, out of the flow, on a queue.
+                             VOICED FILL: feedback.{evaluation} paints the
+                             surface and dresses its own triggers.
+               InlineAlert = status.passive. Ends when the CONDITION ends.
+                             In the flow, occupies layout, idempotent (rendering
+                             it twice is one state, not two notifications),
+                             scrollable-to. QUIET GROUND: feedback.muted in
+                             every evaluation — the ground NEVER takes the
+                             valence, on fill or on edge. The valence lives in a
+                             leading mark: the glyph's SHAPE carries it (WCAG
+                             1.4.1) and vars.valence.{v}.ink reinforces.
+                             props title?/children/actions?/evaluation. No
+                             dismiss (neither Spectrum version has one; it needs
+                             the surface to publish itself first — F-063).
+                             role="status" and nothing else: a live region does
+                             not announce content already present when it was
+                             registered, so it is silent on mount and announces
+                             when inserted. Never add aria-live (the role implies
+                             polite) and never aria-labelledby (a name competes
+                             with the announced content). The title is TEXT, not
+                             a heading — only the host knows the outline level.
+                             ACTIONS ARE THE CALLER'S Button/Link, and they must
+                             be evaluation="primary": measured, in dark
+                             action.secondary resolves this ground's own value on
+                             fill AND edge, so a secondary button vanishes as an
+                             object (F-063).
              (Meter = static quantity in a range e.g. battery/disk;
              ProgressBar = a task in flight. Pick by "state" vs "progressing"),
              StatusLight (status chip, filled: evaluation=primary|positive|
