@@ -17,6 +17,7 @@ import {
   buildBrokenSpec,
   buildPolicyViolationSpec,
   buildSpec,
+  groupedWorkspaceConfig,
 } from './GeovisWorkspace.fixtures';
 
 /**
@@ -459,5 +460,59 @@ export const LayerControlClearsSidebar: Story = {
 export const MetadataDefaultPanel: Story = {
   render: () => {
     return <WorkspaceStory config={workspaceConfig} />;
+  },
+};
+
+/** The three demo color scales this fixture builder knows how to render. */
+const KNOWN_VARIABLES = [
+  'cumulative-rate',
+  'cumulative-proportion',
+  'range',
+] as const;
+
+/**
+ * Drives the grouped/carousel variant: holds the single shared selection and
+ * derives the map spec from it. The 20 grouped values are demo labels, so each
+ * one is mapped deterministically onto one of the three real color scales
+ * `buildSpec` knows — enough to see the map recolor as different variations are
+ * picked across groups.
+ */
+const GroupedControlsStory = () => {
+  const [selection, setSelection] = React.useState(() => {
+    return getInitialSelection({ config: groupedWorkspaceConfig });
+  });
+
+  const visualizationSpec = React.useMemo(() => {
+    const selected = selection.variable ?? 'pop-total';
+
+    const index =
+      [...selected].reduce((sum, char) => {
+        return sum + char.charCodeAt(0);
+      }, 0) % KNOWN_VARIABLES.length;
+
+    return buildSpec({ variable: KNOWN_VARIABLES[index], age: '65-plus' });
+  }, [selection]);
+
+  return (
+    <GeovisWorkspace
+      config={groupedWorkspaceConfig}
+      visualizationSpec={visualizationSpec}
+      variables={selection}
+      onVariableChange={setSelection}
+    />
+  );
+};
+
+/**
+ * The left sidebar's `controls` slot renders a grouped menu as a chip carousel:
+ * 20 variations split across four groups (Demografia, Renda, Saúde, Educação).
+ * Only the open group's items show below the chips, so the list never scrolls.
+ * The carousel opens on the group holding `defaultValue` ('renda-media' →
+ * Renda); picking an item recolors the map and switching chips only changes
+ * which items are visible — the selection stays put in its own group.
+ */
+export const GroupedControls: Story = {
+  render: () => {
+    return <GroupedControlsStory />;
   },
 };
