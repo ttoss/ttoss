@@ -36,7 +36,7 @@ import {
 } from 'src/semantics/taxonomy';
 import { CHOOSABLE_ROW } from 'src/tokens/choosableRow';
 import { FOCUS_RING_OFFSET } from 'src/tokens/focusRing';
-import { ENTITY_TOKEN_MAPPING } from 'src/tokens/projection';
+import { ENTITY_TOKEN_MAPPING, TYPE_FAMILIES } from 'src/tokens/projection';
 import { SELECTION_CONTROL } from 'src/tokens/selectionControl';
 
 import { DOM_FIXTURES } from './domFixtures';
@@ -720,6 +720,61 @@ describe('contract: glyph hosts centre their glyph (ICON_SLOT_STYLE)', () => {
         expect(host.style.display).toMatch(/flex$/);
         expect(host.style.alignItems).toBe('center');
         expect(host.style.justifyContent).toBe('center');
+      }
+    }
+  );
+});
+
+// ---------------------------------------------------------------------------
+// Invariant #16: an entity that can name a title over a body can type it
+//
+// `ENTITY_STRUCTURE` says which parts an entity may declare; the §1 typography
+// column says which `vars.text.*` families it may set type from. When an entity
+// declares BOTH `title` and `body`, those two parts are siblings in a hierarchy
+// — the title has to outrank the body — and the column has to be able to say so.
+//
+// It cannot say so with `label.*`. Every step of that family is weight 400, and
+// the largest (`label.lg`) merely *ties* `body.md` rather than exceeding it. So
+// an entity with both roles and no `title` family produces an inverted heading
+// by construction, not by a component's mistake: a 14–16px/400 caption above a
+// 16–18px/400 paragraph.
+//
+// That is exactly what shipped. `Feedback` declared `title` and `body` as legal
+// parts while its typography column read `body, label`, so `Toast` typed its
+// title from `label.md` and `InlineAlert` copied it — measured in Chromium at
+// 1280px: title 16px/400 over body 18px/400 (F-064). `Dialog` never had the
+// defect because `Overlay` carries `title`.
+//
+// The colour column has been audited from the start and has been corrected many
+// times; typography lived only in the prose table, and its one contradiction
+// survived two components. This invariant is the column earning the same
+// treatment — it constrains the projection against the taxonomy, so the next
+// entity that gains a `title` part gets the question asked for it.
+// ---------------------------------------------------------------------------
+
+describe('contract: a title over a body can be typed (#16)', () => {
+  const entitiesWithBoth = ENTITIES.filter((entity) => {
+    const roles: ReadonlyArray<string> = ENTITY_STRUCTURE[entity];
+    return roles.includes('title') && roles.includes('body');
+  });
+
+  test('the rule has subjects — a vacuous invariant guards nothing', () => {
+    expect(entitiesWithBoth.length).toBeGreaterThan(0);
+  });
+
+  test.each(entitiesWithBoth)(
+    '%s declares title + body, so its typography column carries `title`',
+    (entity) => {
+      const { typography } = ENTITY_TOKEN_MAPPING[entity];
+      expect(typography).toContain('title');
+    }
+  );
+
+  test.each(ENTITIES)(
+    '%s: every typography family it claims is registered',
+    (entity) => {
+      for (const family of ENTITY_TOKEN_MAPPING[entity].typography) {
+        expect(TYPE_FAMILIES).toContain(family);
       }
     }
   );

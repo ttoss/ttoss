@@ -232,12 +232,18 @@ validation message is that case. In `action` and `feedback` the valence ships as
 a **filled** surface, so `text` is the label _on that fill_ (near-white) and there
 is no quiet rung inside those contexts: a destructive button is filled, a status
 toast is filled — and it cannot be added by reaching for emphasis, which the ❌
-above forbids. The quiet destructive Action is instead expressed by the
-[cross-cutting](#cross-cutting-tokens-siblings-of-semanticcolors)
-`semantic.consequence.destructive.ink`: a part on the quiet rung paints the
-stratum's own colour, so the ink it needs is a system-wide default no `{ux}`
-owns — the same shape as the focus ring, and the same §6 mechanism. The
-component layer scopes when it applies (`@ttoss/fsl-ui` CONTRACT §3.3).
+above forbids. Both cases are instead expressed by
+[cross-cutting](#cross-cutting-tokens-siblings-of-semanticcolors) inks, because
+a part that paints the stratum's own colour needs an ink that is a system-wide
+default no `{ux}` owns — the same shape as the focus ring, and the same §6
+mechanism:
+
+| The part…                                                     | Ink                                    |
+| :------------------------------------------------------------ | :------------------------------------- |
+| **performs** a destructive act (a quiet "Delete")             | `semantic.consequence.destructive.ink` |
+| **reports** an outcome (a status mark, an error summary line) | `semantic.valence.{valence}.ink`       |
+
+The component layer scopes when each applies (`@ttoss/fsl-ui` CONTRACT §3.3).
 
 ---
 
@@ -344,15 +350,20 @@ Core palette values are **immutable across modes**; modes remap which core token
 
 ## Cross-cutting tokens (siblings of `semantic.colors.*`)
 
-Five tokens carry **system-wide defaults** that no `{ux}` owns. They live as siblings of `semantic.colors.*` per [model.md §6](../model.md#6-no-parallel-vocabulary), not inside it:
+These tokens carry **system-wide defaults** that no `{ux}` owns. They live as siblings of `semantic.colors.*` per [model.md §6](../model.md#6-no-parallel-vocabulary), not inside it:
 
 - `semantic.focus.ring.color` — system focus indicator color
 - `semantic.overlay.scrim` — modal backdrop
 - `semantic.overlay.outline` — boundary of a surface that **occludes** content
 - `semantic.consequence.destructive.ink` — foreground for a destructive part that paints no surface
+- `semantic.valence.{positive,caution,negative}.ink` — foreground for a part that **reports** that valence while painting no surface (ADR-029)
 - `semantic.rail.track` — the unfilled part of a `ProgressBar`/`Meter`/`Slider` track; darkens in dark mode, unlike a border (ADR-028)
 
-They are **not** parallel vocabulary: `{ux}.{role}.border.focused` answers _"what does this `{ux}`'s own edge become while focused?"_; `semantic.focus.ring.color` answers _"what marks focus?"_. Likewise `{ux}.{valence}.text` answers _"what is this `{ux}`'s valence ink on its own surfaces?"_; the consequence ink answers _"what marks a destructive part that paints nothing?"_.
+They are **not** parallel vocabulary: `{ux}.{role}.border.focused` answers _"what does this `{ux}`'s own edge become while focused?"_; `semantic.focus.ring.color` answers _"what marks focus?"_. Likewise `{ux}.{valence}.text` answers _"what is this `{ux}`'s valence ink on its own surfaces?"_; the valence inks answer _"what marks a part reporting that outcome while painting nothing?"_.
+
+**Why `consequence.destructive.ink` and `valence.negative.ink` both exist.** They resolve to the same value in the base theme, by choice rather than by identity. [FSL Lexicon §10.5](../../fsl/fsl-lexicon.md) keeps `negative` (an Evaluation — what is being _reported_) apart from `destructive` (a Consequence — what an interaction _does_), so the two answer different questions and a theme may repoint one without the other: a product that wants "Delete" rows louder than error reports needs both addresses. Pick by asking whether the part reports an outcome or performs an act.
+
+**No `primary`/`accent` valence ink.** `role` is a discriminated union of Emphasis and Valence (see [Role Coverage](#role-coverage)); an emphasis rung carries no outcome, so a valence ink has nothing to say there. A part on an emphasis rung takes the stratum's ordinary ink.
 
 ### Focus color — the ring indicates, the border tints
 

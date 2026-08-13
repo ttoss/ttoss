@@ -250,7 +250,17 @@ interface NavigationColorRoles {
 interface FeedbackColorRoles {
   /** Neutral / informational feedback that carries no valence — "Auto-saved", "Connected". */
   primary: ColorDimensionOf<FeedbackColorStates>;
-  /** Quiet feedback that should not steal attention — inline hints, low-priority status text. */
+  /**
+   * Quiet feedback that should not steal attention — a standing report in the
+   * flow, an inline hint, low-priority status text.
+   *
+   * Its background is **the page's own colour**, not a grey step: this is the
+   * `muted` idiom ("the surface's own colour", colors.md § the Action emphasis
+   * ladder) and § Stacking requires a contained surface to share the page's
+   * background, paying differentiation in elevation and border instead. A
+   * consumer that wants the surface to *read* as a box takes its edge from its
+   * own evaluation's `border` — see ADR-030.
+   */
   muted: ColorDimensionOf<FeedbackColorStates>;
   /** Feedback reporting success, completion, or validity confirmed. */
   positive: ColorDimensionOf<FeedbackColorStates>;

@@ -85,6 +85,7 @@ Components consume **only** `semantic.*`. Core values never change between light
 | `semantic.elevation.` | `--tt-elevation-` | `vars.elevation.surface.raised` → `var(--tt-elevation-surface-raised)` |
 | `semantic.opacity.` | `--tt-opacity-` | `vars.opacity.disabled` → `var(--tt-opacity-disabled)` |
 | `semantic.overlay.` | `--tt-overlay-` | `vars.overlay.scrim` → `var(--tt-overlay-scrim)`; `vars.overlay.outline` → `var(--tt-overlay-outline)` |
+| `semantic.valence.` | `--tt-valence-` | `vars.valence.negative.ink` → `var(--tt-valence-negative-ink)` |
 | `semantic.rail.` | `--tt-rail-` | `vars.rail.track` → `var(--tt-rail-track)` |
 | `semantic.motion.` | `--tt-motion-` | `vars.motion.feedback.duration` → `var(--tt-motion-feedback-duration)` |
 | `semantic.zIndex.layer.` | `--tt-z-index-` | `vars.zIndex.layer.overlay` → `var(--tt-z-index-overlay)` |
@@ -157,6 +158,7 @@ Valid `{ux, state}` combinations: see [Color state legality](#color-state-legali
 | | `vars.border.outline.{surface,control,selected}.{width,style}` | object |
 | **focus** | `vars.focus.ring.{width,style,color,offset}` | object |
 | **consequence** | `vars.consequence.destructive.ink` (cross-cutting: destructive ink for parts that paint no surface) | CSS color |
+| **valence** | `vars.valence.{positive,caution,negative}.ink` (cross-cutting: ink for a part that REPORTS that outcome while painting no surface — a status mark, a summary line. Distinct from `consequence.destructive.ink`, which marks a part that PERFORMS a destructive act; FSL Lexicon §10.5. No `primary`/`accent` member — those are emphasis roles, not valences) | CSS color |
 | **elevation** | `vars.elevation.surface.{flat,raised,overlay,blocking}` | box-shadow |
 | | `vars.elevation.tonal.{raised,overlay,blocking}` (optional) | CSS color |
 | **opacity** | `vars.opacity.{scrim,loading,disabled}` | number in (0,1) |

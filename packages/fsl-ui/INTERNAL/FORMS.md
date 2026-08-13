@@ -133,12 +133,16 @@ under an upstream change or a stray `validationBehavior="aria"`.
   one. **Readmission:** a form tall enough that the first invalid field can be
   scrolled off-screen. Both halves are pre-verified: the data is reachable
   (`onInvalid` fires once per invalid field with the **control** as target —
-  the payoff of invariant #12), and its appearance is blocked on the
-  F-024/F-029 axis, because `feedback.negative` is a filled rung while the
-  reference's InlineAlert is tinted and the tinted rung lives in
-  `informational.negative`, which CONTRACT §1 forbids a Feedback component from
-  reading. Decide that in the colour model, not by having one component reach
-  across.
+  the payoff of invariant #12), and **its appearance is no longer blocked**:
+  the colour half is answered by `semantic.valence.{valence}.ink` (fsl-theme
+  ADR-029) and the surface by the `status.passive` posture (`feedback.muted`,
+  fsl-ui ADR-043) — it composes on `InlineAlert` rather than needing a
+  language of its own. So the only thing it waits on is its consumer.
+  **Corrected 2026-08-12 (F-062):** this entry used to say the appearance was
+  blocked because "the reference's InlineAlert is tinted and the tinted rung
+  lives in `informational.negative`". Tinted is the reference's opt-in
+  `fillStyle="subtleFill"`; its default is a bordered neutral, which needs a
+  valence ink and edge and no valence fill at all.
 - **⏸ The quiet field posture** (C4) — deferred on the evidence rule for the
   fourth time in this plan. S2 exposes `isQuiet` on `Picker` **only** and
   models it as an inset collapse; our default already matches its default.

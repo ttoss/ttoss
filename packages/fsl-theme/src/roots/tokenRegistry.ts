@@ -214,6 +214,7 @@ export const TOKEN_PATH_REGISTRY: readonly TokenPathEntry[] = [
     cssPrefix: '--tt-consequence-',
     dtcgType: 'color',
   },
+  { path: 'semantic.valence.', cssPrefix: '--tt-valence-', dtcgType: 'color' },
   { path: 'semantic.rail.', cssPrefix: '--tt-rail-', dtcgType: 'color' },
   { path: 'semantic.border.', cssPrefix: '--tt-border-' },
   {

@@ -27,4 +27,5 @@ export * from './rail';
 export * from './sizing';
 export * from './spacing';
 export * from './typography';
+export * from './valence';
 export * from './z-index';

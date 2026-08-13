@@ -77,6 +77,7 @@ import type {
   SemanticSizing,
   SemanticSpacing,
   SemanticText,
+  SemanticValence,
   SemanticZIndex,
 } from './families';
 
@@ -142,6 +143,13 @@ export interface ThemeTokens {
      * Sibling of `focus` and `overlay`.  families/consequence.ts
      */
     consequence: SemanticConsequence;
+    /**
+     * Cross-cutting valence ink for a part that *reports* an outcome while
+     * painting no surface (model.md §6). Sibling of
+     * `focus`/`overlay`/`consequence`; distinct from `consequence` per FSL
+     * Lexicon §10.5 (`negative` ≠ `destructive`).  families/valence.ts
+     */
+    valence: SemanticValence;
     /**
      * Cross-cutting fill for the unfilled part of a track (model.md §6).
      * Sibling of `focus`/`overlay`/`consequence`.  families/rail.ts

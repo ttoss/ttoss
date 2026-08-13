@@ -16,8 +16,8 @@ import {
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { buildHostedTriggerStyle } from '../../tokens/hostedTrigger';
 import { buildOccludingSurfaceStyle } from '../../tokens/occludingSurface';
+import { VALENCE_GLYPH } from '../../tokens/passiveStatus';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
-import type { IconIntent } from '../Icon';
 import { Icon } from '../Icon';
 
 // ---------------------------------------------------------------------------
@@ -27,15 +27,19 @@ import { Icon } from '../Icon';
 //   colors: `feedback.{primary|positive|caution|negative}` (uxContext = feedback),
 //   radii: `surface`, border: `outline.surface`,
 //   sizing: `hit` (close trigger), spacing: `inset.surface`,
-//   typography: `label.md` (title) + `body.md` (description),
+//   typography: `title.sm` (title) + `body.md` (description) — the row gained
+//     `title` in F-064; before that the pair inverted, a 16px/400 heading over
+//     an 18px/400 paragraph,
 //   elevation: `raised` — first component in the system to consume it,
 //   motion: `transition.{enter,exit}`.
 //
 // ENTITY_EVALUATION.Feedback = ['primary','positive','caution','negative',
 // 'accent'] — no `muted` for this entity; a muted toast would defeat the
 // purpose of feedback (demanding the user's attention). `accent` is the
-// informative valence P3 Slice 3 added ("in progress", "new", "info"), and
-// it is what the reference calls its `info` toast.
+// informative rung P3 Slice 3 added ("in progress", "new", "info"), and it is
+// what the reference calls its `info` toast. It is Emphasis, not a valence
+// (FSL Lexicon §5) — which costs a toast nothing, because here the colour is a
+// filled voice; it is a passive surface that feels the difference (ADR-043).
 //
 // Every colour this file reads comes from `vars.colors.feedback` — including
 // the two triggers it hosts. That is not a stylistic preference: the
@@ -104,41 +108,15 @@ const TOAST_REGION_MAX_WIDTH = 'min(420px, calc(100vw - 2rem))';
  */
 const TOAST_MIN_TIMEOUT = 5000;
 
-/**
- * The valence glyph each evaluation carries — the non-colour half of the
- * signal.
- *
- * A toast distinguishes "saved" from "failed" by fill alone unless something
- * else carries the valence, which is WCAG 1.4.1 (Use of Color). This package
- * already draws that conclusion one family over: `FieldInvalidGlyph` exists
- * so an invalid field is not red-only. A toast is the same claim on a bigger
- * surface.
- *
- * `primary` is deliberately glyph-less. It is the Feedback context's
- * *neutral* voice — `neutral.800`, an informational grey rather than a
- * valence — so there is no outcome for a glyph to reinforce, and the
- * reference's equivalent (`neutral`) ships without an icon for the same
- * reason. An icon there would claim a status the toast is not making.
- *
- * `accent` is the informative valence and takes `status.info`, the one
- * registry addition this round: icon-system.md grows the vocabulary when a
- * component needs a meaning, and this is that. It is the reference's `info`
- * toast under FSL's own name.
- *
- * `caution` and `negative` share `status.alert`. The registry "grows slowly
- * and shrinks never" and adding a third status glyph to split two attention
- * levels has no consumer yet: 1.4.1 asks that colour not be the *sole*
- * carrier, which the shared triangle plus the caller's own title copy already
- * satisfies. Readmission criterion: a product that ships caution and negative
- * toasts side by side and needs them told apart at a glance.
- */
-const TOAST_VALENCE_GLYPH = {
-  primary: undefined,
-  accent: 'status.info',
-  positive: 'status.success',
-  caution: 'status.alert',
-  negative: 'status.alert',
-} as const satisfies Record<FeedbackEvaluation, IconIntent | undefined>;
+// The valence glyph map moved to `src/tokens/passiveStatus.ts` when
+// `InlineAlert` resolved an identical one (ADR-042's consolidation rule: a
+// styling decision is stated once). The reasoning — why `primary` is
+// glyph-less, why `caution` and `negative` share the triangle, and the
+// readmission criterion for splitting them — lives there now.
+//
+// What a toast must NOT take from that module is `resolveValenceInk`: this
+// surface is a voiced fill, the fill *is* the voice, and a mark inked from the
+// cross-cutting valence ink would state the valence twice (CONTRACT §1.2).
 
 /** Root surface style — raised feedback card chrome. */
 const buildToastRootStyle = (c: FeedbackColors): React.CSSProperties => {
@@ -458,7 +436,7 @@ export const Toast = ({ toast }: ToastProps) => {
   const evaluation = toast.content.evaluation ?? 'primary';
   const c = vars.colors.feedback[evaluation];
   const textColor = c?.text?.default;
-  const glyph = TOAST_VALENCE_GLYPH[evaluation];
+  const glyph = VALENCE_GLYPH[evaluation];
   const { actionLabel, onAction, shouldCloseOnAction = true } = toast.content;
   // `QueuedToast` carries no `close()` — dismissal lives on the region's
   // state, which is how React Aria wires the close button's own `onPress`
@@ -522,7 +500,13 @@ export const Toast = ({ toast }: ToastProps) => {
             data-part="title"
             style={
               {
-                ...(vars.text.label.md as React.CSSProperties),
+                // `title.sm`, not the `label.md` ADR-040 shipped. Measured in
+                // Chromium: that pair typed a 16px/400 title over an 18px/400
+                // description — the title smaller AND no heavier than the prose
+                // it introduces. The cause was the §1 row, not this component
+                // (F-064): `Feedback` could name a `title` part but not type
+                // one, and `label.*` has no step that outranks `body.md`.
+                ...(vars.text.title.sm as React.CSSProperties),
                 color: textColor,
               } as React.CSSProperties
             }

@@ -86,22 +86,34 @@ wrong unless the movement's purpose says otherwise.
 | **Navigation** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`                            | `flat`           |
 | **Disclosure** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `transition`                          | `flat`           |
 | **Overlay**    | `informational` | `surface`                  | `outline.surface`             | —      | `inset.surface` | `title`, `body`, `label` | `transition`                          | `overlay`        |
-| **Feedback**   | `feedback`      | `surface`, `round` (rails) | `outline.surface`             | —      | `inset.surface` | `body`, `label`          | `feedback`, `transition` (enter/exit) | `raised`         |
+| **Feedback**   | `feedback`      | `surface`, `round` (rails) | `outline.surface`             | —      | `inset.surface` | `title`, `body`, `label` | `feedback`, `transition` (enter/exit) | `raised`         |
 | **Collection** | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `body`, `label`          | —                                     | `flat`, `raised` |
 | **Structure**  | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `title`, `body`, `label` | —                                     | `flat`, `raised` |
 
 **Cross-cutting** (apply to ALL interactive entities — not in the table because they are entity-agnostic):
 
-| Token family       | Path                                                                                   |
-| ------------------ | -------------------------------------------------------------------------------------- |
-| Focus ring         | `vars.focus.ring.width` / `.style` / `.color` / `.offset`                              |
-| Consequence ink    | `vars.consequence.destructive.ink` — read via `resolveConsequenceInk` only (§3.3)      |
-| Occluding boundary | `vars.overlay.outline` — the edge of a surface that **covers** content (§3.5)          |
-| Rail fill          | `vars.rail.track` — the unfilled part of a `ProgressBar`/`Meter`/`Slider` track (§3.6) |
-| Disabled opacity   | `vars.opacity.disabled`                                                                |
-| Scrim opacity      | `vars.opacity.scrim`                                                                   |
-| Scrim color        | `vars.overlay.scrim`                                                                   |
-| Z-Index            | `vars.zIndex.layer.{base,sticky,overlay,blocking,transient}`                           |
+| Token family       | Path                                                                                                                                                     |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Focus ring         | `vars.focus.ring.width` / `.style` / `.color` / `.offset`                                                                                                |
+| Consequence ink    | `vars.consequence.destructive.ink` — read via `resolveConsequenceInk` only (§3.3)                                                                        |
+| Valence ink        | `vars.valence.{positive\|caution\|negative}.ink` — for a part that **reports** an outcome and paints no surface; read via `passiveStatus.ts` only (§1.2) |
+| Occluding boundary | `vars.overlay.outline` — the edge of a surface that **covers** content (§3.5)                                                                            |
+| Rail fill          | `vars.rail.track` — the unfilled part of a `ProgressBar`/`Meter`/`Slider` track (§3.6)                                                                   |
+| Disabled opacity   | `vars.opacity.disabled`                                                                                                                                  |
+| Scrim opacity      | `vars.opacity.scrim`                                                                                                                                     |
+| Scrim color        | `vars.overlay.scrim`                                                                                                                                     |
+| Z-Index            | `vars.zIndex.layer.{base,sticky,overlay,blocking,transient}`                                                                                             |
+
+**The Typography column is data, and it is constrained.** It lives in
+`tokens/projection.ts` alongside the Colors column rather than only in this
+table, because a legality claim that only prose carries cannot fail. Contract
+invariant **#16** binds it to the taxonomy: an entity whose `ENTITY_STRUCTURE`
+declares **both** `title` and `body` must carry `title` here. It has to, because
+no `label.*` step can outrank `body.md` — every step of that family is weight
+400 and the largest merely ties it — so such an entity would type an inverted
+heading by construction. `Feedback` was that case: it could name a `title` part
+and not type one, and both `Toast` and `InlineAlert` shipped a 16px/400 title
+over an 18px/400 body before anyone measured it (F-064).
 
 ### §1.1 — Mapping Rationale
 
@@ -141,6 +153,60 @@ This means the full §1 row for any entity is determined by two decisions:
 
 1. **Cognitive mode** → Colors column
 2. **Surface type** → all other columns (except Typography, Motion, and Elevation which have entity-specific assignments)
+
+### §1.2 — Feedback has two postures, and the Interaction Kind picks which (ADR-043)
+
+The §1 row says a Feedback part reads `colors.feedback`. It does not say _which
+rung_, and for this entity that is a semantic decision rather than an authorial
+one. FSL Lexicon §3 already names the axis:
+
+| Interaction Kind      | Meaning (Lexicon §3)                                   | Posture                                                                                        | Member                       |
+| :-------------------- | :----------------------------------------------------- | :--------------------------------------------------------------------------------------------- | :--------------------------- |
+| `status.interruptive` | "interrupts, escalates, or demands immediate handling" | the **voiced fill** — `feedback.{evaluation}` paints the surface, the label is its on-fill ink | `Toast`                      |
+| `status.passive`      | "informs without demanding immediate user action"      | the **quiet rung** — `feedback.muted` paints the surface, the valence lives in a mark          | `InlineAlert`, `StatusLight` |
+
+This is a **stated law, not a declared dimension**: `Interaction` is DEFERRED in
+`taxonomy.ts` and nothing dispatches on it at runtime — each member fixes its own
+posture in its own source. Do not add `interaction` to a `*Meta`; the readmission
+criterion is unchanged (a runtime that branches on it).
+
+Two rules follow, and both are load-bearing:
+
+- **The ground is the page; the EDGE carries the evaluation; the MARK adds the
+  valence ink.** That is § Stacking's own order — a contained surface shares the
+  page's background and pays separation in _"elevation first, border second,
+  never in colour"_ — so the ground reads `feedback.muted.background` (the page's
+  colour, fsl-theme ADR-030), the edge reads `feedback.{evaluation}.border`, and
+  the mark reads `vars.valence.{positive|caution|negative}.ink` with its glyph's
+  **shape** carrying the valence for WCAG 1.4.1. Against a page-coloured ground
+  the edge is Required Pairing #2, the pair the theme audits for every role — not
+  the border-against-another-family's-fill pair F-050/F-055/F-057 each got wrong,
+  which is what an earlier revision of this section wrongly feared here. **A
+  valence fill is still forbidden:** the ground never takes one. The shared
+  posture lives in `src/tokens/passiveStatus.ts` — never tuned per component.
+- **A passive surface may host real `action.*` children; an interruptive one may
+  not.** On a quiet neutral the page's palette is correct, so actions are
+  caller-supplied `Button`/`Link` children and no cross-ux read occurs. On a
+  voiced fill an `action.*` control would arrive with the page's colours on top of
+  a saturated surface, which is why `Toast` dresses its own triggers from
+  `feedback.*` (ADR-040). Inside a passive surface the action is `primary` — the
+  only rung with measured separation against it in both modes (F-063).
+
+`primary` is the passive posture's neutral voice and carries **no mark**: it
+claims no outcome, the same rule `Toast` applies to its own neutral rung. It is
+not edgeless, though — its own border is the strong neutral, which is what keeps
+a judgement-free report a deliberate box rather than a ghost on the page, and it
+is what the reference gives its own neutral variant. `accent` takes the info
+glyph with the prose ink, because `accent` is Emphasis in `colors.md` § Role
+Coverage and therefore has no valence ink — its **edge** still carries the brand
+step, which is where its "semantic divergence" (FSL Lexicon §5) becomes visible.
+
+**A report always has a body.** A title _introduces_ something; with nothing to
+introduce it is the message, not a title. So a Feedback surface with both parts
+makes its body **required**, which is the whole of that rule — the same
+resolve-by-type move the field envelope makes for its two authoring shapes.
+Without it, one-line reports render at two different type steps depending on
+which prop the caller reached for.
 
 ---
 

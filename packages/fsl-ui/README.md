@@ -123,6 +123,30 @@ toastQueue.add({
 });
 ```
 
+### Standing reports
+
+A toast ends on a timer or a dismissal. When the thing you are reporting ends
+instead when the **condition** ends — read-only mode, a failed sync, a
+maintenance window — that is `InlineAlert`, and it lives in the flow:
+
+```tsx
+<InlineAlert evaluation="caution" title="Read-only mode">
+  Scheduled maintenance until 22:00.
+</InlineAlert>
+```
+
+The two are the Feedback entity's two postures, and the split is FSL's own
+(`status.interruptive` / `status.passive`, Lexicon §3). It decides the colour
+without a prop: an interrupting report earns a voiced fill, a standing one keeps
+a quiet ground in **every** evaluation and carries its valence in a leading mark
+— the glyph's shape first, its ink second. So a `negative` alert is not a red
+box, and it announces politely rather than interrupting: `role="status"` and
+nothing else, which is silent on mount and announced when inserted.
+
+It takes one action, the way out of the condition, as your own `Button` —
+`evaluation="primary"`, which is the only rung with real separation against that
+ground in both modes.
+
 ## Customization
 
 Composites accept no `style`/`className`. Geometry the host legitimately owns is exposed as `--fsl-*` CSS custom properties with built-in fallbacks:

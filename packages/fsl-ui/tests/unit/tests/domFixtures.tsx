@@ -95,6 +95,20 @@ export const DOM_FIXTURES: Record<string, DomFixture> = {
       return <pkg.StatusLight>New</pkg.StatusLight>;
     },
   },
+  // Deliberately not the default `primary`: that rung carries no mark, so the
+  // canonical render would leave the glyph host unexercised by this suite and
+  // by axe. A valenced report with a title, a body and its way out is also the
+  // more representative usage.
+  InlineAlert: {
+    scope: 'inline-alert',
+    element: () => {
+      return (
+        <pkg.InlineAlert evaluation="negative" title="Sync failed">
+          The last three changes were not saved.
+        </pkg.InlineAlert>
+      );
+    },
+  },
   Box: {
     scope: 'box',
     element: () => {

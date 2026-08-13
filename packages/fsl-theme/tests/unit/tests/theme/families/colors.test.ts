@@ -300,13 +300,21 @@ const DARK: BorderInventory = {
       'input.secondary.default',
       'input.secondary.hover',
       'input.secondary.pressed',
+      // Resolved by ADR-030: the quiet Feedback ground moved from the lifted
+      // `neutral.700` to the canvas, so its own `neutral.500` edge stops
+      // sitting on a near-identical fill and clears AA Large. The base mode
+      // keeps this pair soft — there the ground is white and the edge a
+      // deliberate hairline, which is the (b) separator pattern.
+      'feedback.muted.default',
     ],
     add: [
       // (a) focused-on-own-fill — the ring carries focus in this mode too, and
       // it is the one token the alternate lifts to brand.300 for the purpose.
       'action.primary.focused',
       'action.secondary.focused',
-      'feedback.muted.focused',
+      // `feedback.muted.focused` left this list with ADR-030: the brand step sat
+      // on the old lifted grey ground and now sits on the canvas. It stays soft
+      // in `bruttal`, whose brown ramp is flatter — see its own delta.
       'feedback.primary.focused',
       'informational.muted.focused',
       'informational.secondary.focused',
@@ -356,6 +364,9 @@ const bundleEntries: ReadonlyArray<{
         // resting edge. A palette difference, not a different decision.
         add: [
           'action.muted.focused',
+          // The brown brand step does not clear the canvas the way the blue one
+          // does after ADR-030 moved the quiet Feedback ground onto it.
+          'feedback.muted.focused',
           'informational.primary.focused',
           'navigation.accent.default',
           'navigation.accent.hover',
@@ -755,6 +766,35 @@ const CROSS_ROLE_TEXT_PAIRINGS: ReadonlyArray<{
     // A label renders at body size — no large-text allowance.
     threshold: WCAG.AA_NORMAL,
   },
+  ...(['positive', 'caution', 'negative'] as const).map((valence) => {
+    return {
+      // ADR-029. A part that *reports* a valence while painting no surface of
+      // its own takes the cross-cutting `valence.{v}.ink` — the generalization
+      // of the destructive ink above, for the other two valences. The consumer
+      // is a `status.passive` Feedback surface (fsl-ui `InlineAlert`): its
+      // surface is the quiet Feedback rung and the valence lives in a mark, so
+      // this ink is the only thing carrying it.
+      //
+      // The surfaces are the strata a mark can land on **plus the quiet
+      // Feedback fill it actually sits on** — `feedback.muted.background` is a
+      // stratum rather than a voice (it is the entity's "no fill" rung), which
+      // is why it is listed here while the valence fills are not: those are
+      // voices, and a part on a voiced fill takes the fill's own label ink.
+      //
+      // Threshold is AA Normal even though the consumer renders a glyph (which
+      // would owe 1.4.11's 3:1). Measured, every pair clears 4.5:1 with the
+      // worst at 5.72:1, so holding the stricter floor costs nothing and keeps
+      // the family safe for a valence-inked *line of copy* — which is what the
+      // deferred `FormErrorSummary` will want.
+      part: `passive status mark (${valence})`,
+      ink: `semantic.valence.${valence}.ink`,
+      surfaces: [
+        ...INFORMATIONAL_STRATA,
+        'semantic.colors.feedback.muted.background.default',
+      ],
+      threshold: WCAG.AA_NORMAL,
+    };
+  }),
   {
     // fsl-ui F-044. `colors.md` § Stacking names `border.outline.surface` the
     // **secondary separator** and requires "a 1px outline at ≥ 3:1 contrast

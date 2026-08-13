@@ -48,6 +48,7 @@ Grammar reminder:
 | Focus ring color (system default — use when no `{ux}` applies)                                  | `semantic.focus.ring.color`                                         |
 | Focus ring color (per-context — `{ux}` is `Action` / `Input` / `Navigation` / `Feedback`)       | `semantic.colors.{ux}.{role}.border.focused`                        |
 | Destructive ink on a part that paints no surface (quiet menu row / text action)                 | `semantic.consequence.destructive.ink`                              |
+| Valence ink on a part that **reports** an outcome and paints no surface (status mark, summary)  | `semantic.valence.{positive\|caution\|negative}.ink`                |
 | Unfilled part of a `ProgressBar`/`Meter`/`Slider` track (darkens in dark mode, unlike a border) | `semantic.rail.track`                                               |
 | Edge of a surface that **covers** content (popover, menu, tooltip, dialog, drawer, toast)       | `semantic.overlay.outline`                                          |
 | Edge of a surface **in the flow** (card, panel, divider)                                        | `semantic.colors.informational.{role}.border`                       |
