@@ -300,13 +300,21 @@ const DARK: BorderInventory = {
       'input.secondary.default',
       'input.secondary.hover',
       'input.secondary.pressed',
+      // Resolved by ADR-030: the quiet Feedback ground moved from the lifted
+      // `neutral.700` to the canvas, so its own `neutral.500` edge stops
+      // sitting on a near-identical fill and clears AA Large. The base mode
+      // keeps this pair soft — there the ground is white and the edge a
+      // deliberate hairline, which is the (b) separator pattern.
+      'feedback.muted.default',
     ],
     add: [
       // (a) focused-on-own-fill — the ring carries focus in this mode too, and
       // it is the one token the alternate lifts to brand.300 for the purpose.
       'action.primary.focused',
       'action.secondary.focused',
-      'feedback.muted.focused',
+      // `feedback.muted.focused` left this list with ADR-030: the brand step sat
+      // on the old lifted grey ground and now sits on the canvas. It stays soft
+      // in `bruttal`, whose brown ramp is flatter — see its own delta.
       'feedback.primary.focused',
       'informational.muted.focused',
       'informational.secondary.focused',
@@ -356,6 +364,9 @@ const bundleEntries: ReadonlyArray<{
         // resting edge. A palette difference, not a different decision.
         add: [
           'action.muted.focused',
+          // The brown brand step does not clear the canvas the way the blue one
+          // does after ADR-030 moved the quiet Feedback ground onto it.
+          'feedback.muted.focused',
           'informational.primary.focused',
           'navigation.accent.default',
           'navigation.accent.hover',

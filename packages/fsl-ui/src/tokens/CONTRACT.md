@@ -172,14 +172,18 @@ criterion is unchanged (a runtime that branches on it).
 
 Two rules follow, and both are load-bearing:
 
-- **A passive surface never paints a valence** — not its fill, not its edge. The
-  valence is confined to a mark whose **shape** carries it (WCAG 1.4.1) and whose
-  ink is the cross-cutting `vars.valence.{positive|caution|negative}.ink`
-  (fsl-theme ADR-029). Intensity is tuned on the mark, never on the box: a mark's
-  ink is a pair the contrast inventory models, while a valence edge against a
-  `feedback.muted` fill is the cross-family border pair F-050/F-055/F-057 each got
-  wrong. The shared posture lives in `src/tokens/passiveStatus.ts` — never tuned
-  per component.
+- **The ground is the page; the EDGE carries the evaluation; the MARK adds the
+  valence ink.** That is § Stacking's own order — a contained surface shares the
+  page's background and pays separation in _"elevation first, border second,
+  never in colour"_ — so the ground reads `feedback.muted.background` (the page's
+  colour, fsl-theme ADR-030), the edge reads `feedback.{evaluation}.border`, and
+  the mark reads `vars.valence.{positive|caution|negative}.ink` with its glyph's
+  **shape** carrying the valence for WCAG 1.4.1. Against a page-coloured ground
+  the edge is Required Pairing #2, the pair the theme audits for every role — not
+  the border-against-another-family's-fill pair F-050/F-055/F-057 each got wrong,
+  which is what an earlier revision of this section wrongly feared here. **A
+  valence fill is still forbidden:** the ground never takes one. The shared
+  posture lives in `src/tokens/passiveStatus.ts` — never tuned per component.
 - **A passive surface may host real `action.*` children; an interruptive one may
   not.** On a quiet neutral the page's palette is correct, so actions are
   caller-supplied `Button`/`Link` children and no cross-ux read occurs. On a
@@ -189,9 +193,20 @@ Two rules follow, and both are load-bearing:
   only rung with measured separation against it in both modes (F-063).
 
 `primary` is the passive posture's neutral voice and carries **no mark**: it
-claims no outcome, the same rule `Toast` applies to its own neutral rung.
-`accent` takes the info glyph with the prose ink, because `accent` is Emphasis in
-`colors.md` § Role Coverage and therefore has no valence ink.
+claims no outcome, the same rule `Toast` applies to its own neutral rung. It is
+not edgeless, though — its own border is the strong neutral, which is what keeps
+a judgement-free report a deliberate box rather than a ghost on the page, and it
+is what the reference gives its own neutral variant. `accent` takes the info
+glyph with the prose ink, because `accent` is Emphasis in `colors.md` § Role
+Coverage and therefore has no valence ink — its **edge** still carries the brand
+step, which is where its "semantic divergence" (FSL Lexicon §5) becomes visible.
+
+**A report always has a body.** A title _introduces_ something; with nothing to
+introduce it is the message, not a title. So a Feedback surface with both parts
+makes its body **required**, which is the whole of that rule — the same
+resolve-by-type move the field envelope makes for its two authoring shapes.
+Without it, one-line reports render at two different type steps depending on
+which prop the caller reached for.
 
 ---
 

@@ -317,12 +317,18 @@ Feedback:    ProgressBar, Meter, Toast, ToastRegion, createToastQueue, InlineAle
                InlineAlert = status.passive. Ends when the CONDITION ends.
                              In the flow, occupies layout, idempotent (rendering
                              it twice is one state, not two notifications),
-                             scrollable-to. QUIET GROUND: feedback.muted in
-                             every evaluation — the ground NEVER takes the
-                             valence, on fill or on edge. The valence lives in a
-                             leading mark: the glyph's SHAPE carries it (WCAG
-                             1.4.1) and vars.valence.{v}.ink reinforces.
-                             props title?/children/actions?/evaluation. No
+                             scrollable-to. GROUND = THE PAGE (feedback.muted,
+                             which resolves the page's own colour — fsl-theme
+                             ADR-030) in every evaluation; the ground NEVER takes
+                             a valence FILL. Separation is paid in the EDGE
+                             (feedback.{evaluation}.border) and the valence also
+                             speaks from a leading MARK whose glyph SHAPE carries
+                             it (WCAG 1.4.1) inked by vars.valence.{v}.ink. That
+                             order is colors.md § Stacking: elevation first,
+                             border second, never colour.
+                             props: children (REQUIRED — a title introduces a
+                             body, so `<InlineAlert title="x"/>` is a compile
+                             error), title?, actions?, evaluation?. No
                              dismiss (neither Spectrum version has one; it needs
                              the surface to publish itself first — F-063).
                              role="status" and nothing else: a live region does

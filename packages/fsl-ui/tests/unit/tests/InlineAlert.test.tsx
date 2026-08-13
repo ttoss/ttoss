@@ -22,34 +22,50 @@ const part = (name: string) => {
 const VALENCES = ['positive', 'caution', 'negative'] as const;
 const EMPHASIS = ['primary', 'accent'] as const;
 
-describe('InlineAlert — the ground is the quiet rung, in every evaluation', () => {
+describe('InlineAlert — the ground is the page, the edge is the evaluation', () => {
   test.each([...EMPHASIS, ...VALENCES])(
-    'evaluation=%s paints feedback.muted and nothing else',
+    'evaluation=%s grounds on the quiet rung, never on a valence fill',
     (evaluation) => {
+      // The posture in one assertion: a `negative` report is not a red box. The
+      // ground is the quiet rung in every evaluation, and that rung resolves the
+      // page's own colour (fsl-theme ADR-030) — § Stacking has a contained
+      // surface share the page's background and pay separation elsewhere.
       render(<InlineAlert evaluation={evaluation}>Body</InlineAlert>);
-      const root = part('root');
 
-      expect(root?.style.backgroundColor).toBe(
+      expect(part('root')?.style.backgroundColor).toBe(
         vars.colors.feedback.muted.background!.default
       );
-      expect(root?.style.borderColor).toBe(
-        vars.colors.feedback.muted.border!.default
+      expect(part('root')?.style.backgroundColor).not.toBe(
+        vars.colors.feedback[evaluation].background!.default
       );
     }
   );
 
-  test('the ground never takes the valence, on fill or on edge', () => {
-    // The whole posture in one assertion: a `negative` report is not a red box.
-    // A valence border against this fill is the cross-family pair F-050/F-055/
-    // F-057 each got wrong, and the mark already says it twice (shape, ink).
-    render(<InlineAlert evaluation="negative">Body</InlineAlert>);
-    const root = part('root');
+  test.each([...EMPHASIS, ...VALENCES])(
+    'evaluation=%s pays its separation in the edge',
+    (evaluation) => {
+      // Where § Stacking says it belongs: elevation first, border second, never
+      // colour. Against a page-coloured ground this is Required Pairing #2, the
+      // border-vs-adjacent-surface pair the theme audits for every role.
+      render(<InlineAlert evaluation={evaluation}>Body</InlineAlert>);
 
-    expect(root?.style.backgroundColor).not.toBe(
-      vars.colors.feedback.negative.background!.default
+      expect(part('root')?.style.borderColor).toBe(
+        vars.colors.feedback[evaluation].border!.default
+      );
+    }
+  );
+
+  test('the neutral voice still reads as a box', () => {
+    // `primary` colours nothing, but it is not edgeless: its own border is the
+    // strong neutral the reference gives its neutral variant. A page-coloured
+    // ground with no edge would be a ghost.
+    render(<InlineAlert evaluation="primary">Body</InlineAlert>);
+
+    expect(part('root')?.style.borderColor).toBe(
+      vars.colors.feedback.primary.border!.default
     );
-    expect(root?.style.borderColor).not.toBe(
-      vars.colors.feedback.negative.border!.default
+    expect(part('root')?.style.borderColor).not.toBe(
+      part('root')?.style.backgroundColor
     );
   });
 
@@ -187,12 +203,17 @@ describe('InlineAlert — announcement', () => {
 });
 
 describe('InlineAlert — anatomy', () => {
-  test('title, body and actions are each optional', () => {
-    render(<InlineAlert />);
+  test('the body is the required part; title and actions are optional', () => {
+    // `<InlineAlert />` and `<InlineAlert title="x" />` are **compile errors** —
+    // `children` is required, which is the whole of the rule "a title needs a
+    // body". That is the assertion, and TypeScript is the only thing that can
+    // make it; this case pins the runtime half, that a bodied report needs
+    // nothing else.
+    render(<InlineAlert>Two fields still need attention.</InlineAlert>);
 
     expect(part('root')).not.toBeNull();
+    expect(part('body')?.textContent).toBe('Two fields still need attention.');
     expect(part('title')).toBeNull();
-    expect(part('body')).toBeNull();
     expect(part('actions')).toBeNull();
   });
 

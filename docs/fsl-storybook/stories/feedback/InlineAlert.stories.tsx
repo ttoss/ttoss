@@ -137,9 +137,14 @@ export const WithTheWayOut: Story = {
 };
 
 /**
- * Title and body are each optional. A one-line report needs no heading, and a
- * heading with no body is a legitimate shape for a condition whose name is the
- * whole message.
+ * A report always has a body; a title optionally **introduces** it. So there is
+ * one shape for a one-liner and one for a titled report — never the same content
+ * at two sizes depending on which prop the caller reached for.
+ *
+ * `<InlineAlert title="Connected" />` is a compile error, and an earlier revision
+ * of this story shipped it as if it were a feature: a lone title rendered at the
+ * title step beside a lone body at the body step, which read as arbitrary because
+ * it was. `children` being required is the whole of the rule.
  */
 export const Shapes: Story = {
   render: () => {
@@ -148,7 +153,9 @@ export const Shapes: Story = {
         <InlineAlert evaluation="caution">
           Two fields still need attention.
         </InlineAlert>
-        <InlineAlert evaluation="positive" title="Connected" />
+        <InlineAlert evaluation="positive" title="Connected">
+          The workspace is in sync.
+        </InlineAlert>
       </Stack>
     );
   },

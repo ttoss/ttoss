@@ -1168,3 +1168,29 @@ Re-litigation answers:
 - "ADR-021's title calls `feedback.accent` 'the informative valence'." → Loose wording in a title, kept because ADRs are append-only. The rung is Emphasis; what ADR-021 shipped — a filled informative surface — is unaffected, since that colour is a voice and not an ink.
 - "Why not `semantic.colors.valence.*`, inside the colour grammar?" → §6 places cross-cutting tokens as siblings of `semantic.colors.*`, not inside it — same as `focus`/`overlay`/`consequence`/`rail`.
 - "Should a filled surface use this ink?" → No. There the fill is the voice and `{ux}.{valence}.background` owns it; this ink is for a part that paints nothing.
+
+### ADR-030: The quiet Feedback ground is the page's own colour, not a grey step
+
+Status: accepted (2026-08-12)
+Tags: colors, feedback, stacking, muted, fsl-ui ADR-043, closes:F-066
+
+Decision: `semantic.colors.feedback.muted.background.default` remaps from `core.colors.neutral.100` to `core.colors.neutral.0` in the base and from `neutral.700` to `neutral.900` in the dark alternate — the page's own colour in each mode — so a quiet Feedback surface shares the page's background and pays its separation in the edge, which is what `colors.md` § Stacking requires of every contained surface.
+Rejected: leaving it and letting the consumer paint the page colour itself — a component cannot reach `informational.*` from the Feedback row, and inventing a second "page" address is the extra colour bucket Rule #4 forbids; giving the consumer a lighter grey step — the same defect one shade weaker, and § Stacking bans paying separation in colour at all; a new `feedback.page` role — parallel vocabulary for a value `muted` already means.
+Cost: a visible change for the one consumer that reads this token, and the dark border inventory reclassifies — `feedback.muted.default` leaves the soft list because its own edge now sits on the canvas instead of a near-identical grey, and `feedback.muted.focused` leaves it in the blue palette but stays in `bruttal`, whose brown ramp is flatter.
+Anchors: `src/baseTheme.ts`, `src/families/colors.ts`, `tests/unit/tests/theme/families/colors.test.ts`, `docs/.../families/colors.md#stacking-informational-surfaces`, `docs/fsl-studio/FRICTION.md` F-066.
+
+**What problem exists.** The owner's review of the first Feedback surface to use this token: _"esse cinza de fundo, me remete a muted, ou algo amador, não me remete a alto padrão de design"_. Literally correct — the surface was painting the `muted` rung as a grey **step**, and a flat grey box reads as disabled or placeholder. FSL Lexicon §10.6 keeps `muted` apart from `disabled` as _meaning_; nothing kept them apart visually.
+
+**Why reuse is not enough, and why this is a defect rather than a taste.** Two written rules already said the value was wrong. `colors.md` defines the `muted` idiom as **"the surface's own colour"** — the Action ladder's third rung paints exactly that and carries no visible edge at rest. And § Stacking states that the page and every contained surface resolve the **same** background token, with differentiation paid in _"elevation first, border second, never in colour"_. A standing report in the flow is a contained surface. At `neutral.100` this token broke both.
+
+**Why nobody noticed for so long.** It had no consumer for the arrangement that exposes it. The value was chosen when the token was a **chip** fill, where a grey step is right; chips then moved to `informational` (F-010/F-053) and the rail moved to `semantic.rail.track` (ADR-028). What remained read `feedback.muted.text` only — `ProgressBar`/`Meter`'s value label — so the background sat unread until `InlineAlert` painted a surface with it.
+
+**What impact exists.** One reader of the background (fsl-ui `InlineAlert`); `ProgressBar`/`Meter` read the `text` dimension and are untouched. `rail.test.ts`'s inequality against this token still holds in light (`neutral.200` vs `neutral.0`). The "roles within a context are distinguishable" invariant still passes in both modes. The `feedback.muted.text ↔ background` pairing improves (the ink now sits on the page rather than on a grey step). Semantic mapping changed, meaning unchanged — MINOR per `governance.md` § Versioning.
+
+**What it unlocks, and this is the half that makes it more than a value tune.** With the ground on the page, a valence **border** becomes Required Pairing #2 — a border against the adjacent surface, the pair the theme audits for every role — instead of the border-against-another-family's-fill pair F-050/F-055/F-057 each got wrong. That is what let fsl-ui ADR-043 move the valence onto the edge and reach the reference's own design. Measured against the page, every Feedback evaluation's own border clears the 3:1 floor in both modes; `colors.test.ts`'s border inventory reports the figures.
+
+Re-litigation answers:
+
+- "A quiet surface with the page's background is invisible." → It is, until it takes an edge. That is § Stacking's point: separation is the border's job, and every Feedback role ships one that clears 3:1 against the page.
+- "Should `informational.muted` move too?" → No. That role is a _content_ surface with its own strata and existing consumers; this ADR is scoped to the token whose meaning is "quiet feedback" and whose only reader asked for the page.
+- "Why not `neutral.50` — nearly the page, but not it?" → § Stacking forbids paying separation in colour at all, and a near-page grey is the same decision at lower contrast.

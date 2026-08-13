@@ -996,7 +996,15 @@ export const baseTheme: ThemeTokens = {
           },
         },
         muted: {
-          background: { default: '{core.colors.neutral.100}' },
+          // The page's own colour, not a grey step — `colors.md` defines the
+          // `muted` idiom as "the surface's own colour", and § Stacking has the
+          // page and every contained surface resolve the SAME background, with
+          // differentiation paid in elevation and border. A quiet Feedback
+          // surface in the flow is exactly that case; at `neutral.100` it read
+          // as a grey chip, which is what this token was originally for (a chip
+          // fill) before chips moved to `informational` and the rail moved to
+          // `semantic.rail.track` (ADR-028). See ADR-030.
+          background: { default: '{core.colors.neutral.0}' },
           border: {
             default: '{core.colors.neutral.300}',
             focused: '{core.colors.brand.500}',
@@ -2105,7 +2113,11 @@ export const darkAlternate: ModeOverride = {
           text: { default: '{core.colors.neutral.0}' },
         },
         muted: {
-          background: { default: '{core.colors.neutral.700}' },
+          // The canvas, mirroring the base's page colour (ADR-030). At
+          // `neutral.700` a quiet Feedback surface was a lifted grey block on a
+          // near-black page — the same "grey chip" reading the base had, one
+          // mode over.
+          background: { default: '{core.colors.neutral.900}' },
           border: { default: '{core.colors.neutral.500}' },
           text: { default: '{core.colors.neutral.300}' },
         },

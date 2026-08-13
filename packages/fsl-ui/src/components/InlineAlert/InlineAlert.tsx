@@ -3,7 +3,11 @@ import type * as React from 'react';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
-import { resolveValenceInk, VALENCE_GLYPH } from '../../tokens/passiveStatus';
+import {
+  resolveEvaluationEdge,
+  resolveValenceInk,
+  VALENCE_GLYPH,
+} from '../../tokens/passiveStatus';
 import { Icon } from '../Icon';
 
 // ---------------------------------------------------------------------------
@@ -25,12 +29,16 @@ import { Icon } from '../Icon';
 // nothing dispatches on it at runtime, so it is deliberately absent from the
 // meta below.
 //
-// Two roles of `feedback` are read, and that is the entity's own idiom rather
-// than a crossing: the ground reads `feedback.muted` while the mark reads the
-// valence. `ProgressBar`/`Meter` already do exactly this (quiet track, valence
-// fill). CONTRACT §1 constrains the token *row* — the ux context — not the role
-// within it; combining valence with emphasis in a single token PATH is what
-// `colors.md` forbids, and no path here does that.
+// Three roles of `feedback` are read, and the split is the one `colors.md`
+// § Stacking prescribes rather than a crossing: the GROUND is the quiet rung,
+// which resolves the page's own colour (fsl-theme ADR-030), and the
+// differentiation a contained surface owes is paid in the EDGE — the
+// evaluation's own `border` — because that section says depth and separation are
+// paid in elevation and border, "never in colour". The MARK adds the valence
+// ink. `ProgressBar`/`Meter` already read two roles of this entity for the same
+// kind of reason (quiet track, valence fill). CONTRACT §1 constrains the token
+// *row* — the ux context — not the role within it; what `colors.md` forbids is
+// combining valence with emphasis in a single token PATH, and no path here does.
 // ---------------------------------------------------------------------------
 
 /** Formal semantic identity — InlineAlert root (Feedback entity). */
@@ -42,7 +50,13 @@ export const inlineAlertMeta = {
 
 type FeedbackEvaluation = EvaluationsFor<(typeof inlineAlertMeta)['entity']>;
 
-/** The quiet rung — this surface's ground in every evaluation. */
+/**
+ * The quiet rung — this surface's ground and prose in every evaluation.
+ *
+ * Its background is the page's own colour, so the surface reads as a region of
+ * the page rather than as a grey block pasted onto it (fsl-theme ADR-030). What
+ * makes it a box is the edge, and the edge is the evaluation's.
+ */
 const ground = vars.colors.feedback.muted;
 
 /**
@@ -80,8 +94,21 @@ export interface InlineAlertProps extends Omit<
    * runtime.
    */
   title?: React.ReactNode;
-  /** The body of the report. Caller-supplied and caller-localized (ADR-001). */
-  children?: React.ReactNode;
+  /**
+   * The report itself. **Required** — and that is the whole of the rule "a title
+   * needs a body".
+   *
+   * A title's job is to *introduce* something; with nothing to introduce it is
+   * not a title, it is the message. Allowing `<InlineAlert title="Connected" />`
+   * meant one-line reports rendered at two different sizes depending on which
+   * prop the caller reached for — semantically identical content, arbitrarily
+   * different type. Making this required removes the choice instead of
+   * documenting it, the same way the field envelope makes its two authoring
+   * shapes mutually exclusive by type rather than by precedence.
+   *
+   * Caller-supplied and caller-localized (ADR-001).
+   */
+  children: React.ReactNode;
   /**
    * Optional single action — the primary path out of the condition being
    * reported ("Retry", "Reconnect", "Review the 3 fields").
@@ -182,11 +209,14 @@ export const InlineAlert = ({
           borderRadius: vars.radii.surface,
           borderWidth: vars.border.outline.surface.width,
           borderStyle: vars.border.outline.surface.style,
-          // The ground's own edge, never the valence's — a valence border
-          // against this fill is the cross-family border pair F-050/F-055/F-057
-          // each got wrong, and the mark already carries the valence twice over
-          // (shape, then ink). CONTRACT §1.2.
-          borderColor: ground.border?.default,
+          // The evaluation's own edge, against a page-coloured ground. This is
+          // Required Pairing #2 — a border against the adjacent surface — which
+          // the theme audits for every role; it is NOT the cross-family
+          // border-against-another-role's-fill pair F-050/F-055/F-057 each got
+          // wrong, and that difference is exactly what the ground moving to the
+          // page bought (ADR-030). Measured: every evaluation clears the 3:1
+          // floor in both modes.
+          borderColor: resolveEvaluationEdge(evaluation),
           backgroundColor: ground.background?.default,
           color: groundInk,
         } as React.CSSProperties
@@ -259,20 +289,18 @@ export const InlineAlert = ({
               {title}
             </span>
           )}
-          {children !== undefined && (
-            <div
-              data-scope="inline-alert"
-              data-part="body"
-              style={
-                {
-                  ...(vars.text.body.md as React.CSSProperties),
-                  color: groundInk,
-                } as React.CSSProperties
-              }
-            >
-              {children}
-            </div>
-          )}
+          <div
+            data-scope="inline-alert"
+            data-part="body"
+            style={
+              {
+                ...(vars.text.body.md as React.CSSProperties),
+                color: groundInk,
+              } as React.CSSProperties
+            }
+          >
+            {children}
+          </div>
         </div>
 
         {actions !== undefined && (
