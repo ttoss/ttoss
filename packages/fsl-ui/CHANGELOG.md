@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/fsl-ui@0.3.4...@ttoss/fsl-ui@0.4.0) (2026-08-13)
+
+- Add valence ink family for passive status marks (ADR-029) (#1197) ([5b82a3a](https://github.com/ttoss/ttoss/commit/5b82a3a90d56f84e69ce36e3c44e9e44673442df)), closes [#1197](https://github.com/ttoss/ttoss/issues/1197) [#16](https://github.com/ttoss/ttoss/issues/16) [#2](https://github.com/ttoss/ttoss/issues/2)
+
+### BREAKING CHANGES
+
+- `semantic.colors.feedback.muted.background.default` remaps from
+  `core.colors.neutral.100` to `core.colors.neutral.0` (base) and from
+  `neutral.700` to `neutral.900` (dark alternate). A theme or component that
+  painted a surface with it now paints the page's colour and must take an edge to
+  read as a box. `@ttoss/fsl-ui`'s `InlineAlert` also makes `children` required:
+  `<InlineAlert title="x" />` no longer compiles.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01VxT3sTBrHNxBj4Xxv3Tr2j
+
 ## [0.3.4](https://github.com/ttoss/ttoss/compare/@ttoss/fsl-ui@0.3.3...@ttoss/fsl-ui@0.3.4) (2026-08-07)
 
 **Note:** Version bump only for package @ttoss/fsl-ui

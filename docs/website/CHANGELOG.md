@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.0.0](https://github.com/ttoss/ttoss/compare/@docs/website@6.0.0...@docs/website@7.0.0) (2026-08-13)
+
+- Add valence ink family for passive status marks (ADR-029) (#1197) ([5b82a3a](https://github.com/ttoss/ttoss/commit/5b82a3a90d56f84e69ce36e3c44e9e44673442df)), closes [#1197](https://github.com/ttoss/ttoss/issues/1197) [#16](https://github.com/ttoss/ttoss/issues/16) [#2](https://github.com/ttoss/ttoss/issues/2)
+
+### BREAKING CHANGES
+
+- `semantic.colors.feedback.muted.background.default` remaps from
+  `core.colors.neutral.100` to `core.colors.neutral.0` (base) and from
+  `neutral.700` to `neutral.900` (dark alternate). A theme or component that
+  painted a surface with it now paints the page's colour and must take an edge to
+  read as a box. `@ttoss/fsl-ui`'s `InlineAlert` also makes `children` required:
+  `<InlineAlert title="x" />` no longer compiles.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01VxT3sTBrHNxBj4Xxv3Tr2j
+
 # [6.0.0](https://github.com/ttoss/ttoss/compare/@docs/website@5.0.2...@docs/website@6.0.0) (2026-08-11)
 
 - feat(carlin)!: exclude source maps from the static-app S3 upload by default (#1196) ([b37f275](https://github.com/ttoss/ttoss/commit/b37f27533cccaea1ed28ddd79e6bf4cacb81032e)), closes [#1196](https://github.com/ttoss/ttoss/issues/1196)
