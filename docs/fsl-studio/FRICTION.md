@@ -12,10 +12,11 @@ Severity: `blocker` (cannot express the flow inside the system) ·
 
 ## Open items (derived — the entry below is always the source of truth)
 
-**Four open — F-058 and F-059** (both opened 2026-08-06 by the `Toast`
+**Five open — F-058 and F-059** (both opened 2026-08-06 by the `Toast`
 anatomy review, fsl-ui ADR-040), **F-061** (opened 2026-08-06 by the E2
-wave-1 parity gate) — those three `paper-cut` — **and F-063** (opened
-2026-08-12 by the `InlineAlert` design, a `gap`): all four have the
+wave-1 parity gate) — those three `paper-cut` — **F-063** (opened
+2026-08-12 by the `InlineAlert` design) **and F-065** (opened 2026-08-12 by the
+owner's visual review of the same component) — those two `gap`: all five have the
 measurement already taken and the repair deliberately not built, each with a
 recommendation and a readmission condition in its own entry. Before them the
 log had been at zero since F-004 resolved 2026-08-05. The grouping below (by the
@@ -786,3 +787,24 @@ Do not edit an entry through this list.
 - **Resolved at the root, not at the two call sites.** The typography column moves into `tokens/projection.ts` beside the Colors column, and **contract invariant #16** binds it to the taxonomy: an entity whose `ENTITY_STRUCTURE` declares both `title` and `body` must carry `title` in its typography set. `Feedback` gains it; `Toast` and `InlineAlert` read `title.sm` (20px/500 at 1280 over the body's 18px/400). Exactly one entity was in violation, and the invariant was verified as a tripwire rather than a tautology: reverting only `Feedback`'s entry fails one test and no other.
 - **Why `title.sm` and not `title.md`:** `title.sm` (18–20px, weight 500) clears `body.md` (16–18px, 400) in both size and weight while staying a _component_ heading; `title.md` (20–24px, 600) is the Dialog step and would make a two-line report read as a page section.
 - **Lesson.** A legality claim that only prose carries is not a claim, it is a note. This one was written in a table, quoted in two ADRs and rendered by two components before anything measured it — and the fix that mattered was not the two values, it was making the column executable so the next entity that gains a `title` part gets the question asked for it.
+
+### F-065 — the catalog establishes no size container, so a story can only show a surface at page scale
+
+- **Date:** 2026-08-12 · **Surface:** `docs/fsl-storybook/.storybook/preview.tsx` + the story files · **Severity:** gap · **Status:** open (pattern shipped for one family)
+- Found by the owner looking at `InlineAlert`'s `AppearsInResponseToAnAction` story: _"esses tamanhos de letras e espaçamentos estão muito desproporcionais"_. Correct, and the component was not the cause. That story rendered the surface inside a bare `<details>` — roughly 420px — with no size container anywhere in its ancestry, so this theme's `cqi` clamps fell back to the viewport (F-018) and a 420px box was typed and inset at 1280px scale.
+- **The component is right; measured across the arrangement ADR-011 prescribes** (the parent is the definite-width container), in Chromium at a 1280px viewport:
+
+  | Container width | inset  | title   | body    |
+  | --------------- | ------ | ------- | ------- |
+  | 1200px          | 24px   | 20px    | 18px    |
+  | 640px           | 18.4px | 18.76px | 17.12px |
+  | 420px           | 16.2px | 18px    | 16px    |
+  | 280px           | 16px   | 18px    | 16px    |
+
+  Type, inset and gaps move together, and at 420px the surface lands on the reference's own 16px inset. Without a container every row of that table reads `24px / 20px / 18px`.
+
+- **A subtlety worth recording, because it rules out the obvious fix:** giving the surface `container-type: inline-size` itself corrects its _descendants'_ type but **not its own inset** — an element is not its own container — and ADR-011 already rejected containment on a content-sized surface, since `inline-size` containment collapses one. So containment belongs to the parent, exactly where ADR-011 put it.
+- **Blast radius, counted rather than assumed:** 7 of 57 story files use a primitive that establishes containment (`Container`, `Grid`, `AppShell`); the other 50 add none, and `preview.tsx` adds none globally. Varying the sign-off script's `WIDTH` does exercise the clamp range, because with no container `cqi` follows the viewport — so the sheet is not stuck at the top of the range. What it **cannot** show is the arrangement that matters here and that ADR-011 exists for: a surface that is _narrow inside a wide page_. That is where a narrow-context defect lives and where the catalog is currently blind.
+- **A global decorator is not the fix.** A container at canvas width changes nothing (measured: wrapping in `Container size="surface"` moved the surface from 1200px to 1024px and the type not at all), and forcing a narrow one would misrepresent the page arrangement, which is equally real. Containment has to be part of what a story _says_.
+- **Pattern shipped for one family, as the template:** `InlineAlert`'s stories now carry a `Container` decorator and a dedicated `ScalesToItsContainer` story that puts the same component in three `Grid` tracks — the story to open when a surface "looks disproportionate", because it separates "the component's values are wrong" from "there is no container in the ancestry". **Readmission for the rest:** the next family whose sign-off round runs; the cheap version is one `ScalesToItsContainer`-shaped story per fluid surface, not a sweep of all 50.
+- **Lesson, and it is about the instrument rather than the component.** The visual sign-off exists so a human can see what an app will get. A catalog that renders every surface at page scale shows one true point of a fluid range and hides the rest — which is also why the `Toast` title inversion (F-064) survived a Feedback review round: at page scale, with a short description, the two lines never sat together long enough to look wrong.
