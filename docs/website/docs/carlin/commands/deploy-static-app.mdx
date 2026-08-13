@@ -151,6 +151,33 @@ carlin deploy static-app --skip-upload
 
 **Use case**: Update CloudFront configuration without re-uploading files
 
+### --upload-source-maps
+
+Upload source map (`.map`) files to S3.
+
+```bash
+carlin deploy static-app --upload-source-maps
+```
+
+**Default**: `false` — source maps are excluded from the upload.
+
+The bucket this command publishes to is public, and a source map embeds your
+application's original source, so publishing one discloses that source to
+anyone who requests it. carlin therefore never uploads `.map` files unless you
+ask for it explicitly.
+
+:::caution
+Before enabling this, consider uploading your source maps to your error
+tracking provider instead. That gives you readable stack traces without
+serving the source publicly.
+:::
+
+carlin only decides which files are uploaded — it does not modify file
+contents. If your bundler emits `sourceMappingURL` comments and you leave this
+option off, those comments will point at files that return 404. Strip them at
+build time (most source-map upload tools do this for you) if that matters to
+you.
+
 ### --region
 
 :::note
@@ -363,6 +390,20 @@ Check status:
 
 ```bash
 aws cloudfront list-distributions
+```
+
+### Source Maps Return 404
+
+**Problem**: `.map` files that used to be served now return 404
+
+**Cause**: source maps are excluded from the upload by default. This changed in
+carlin v2 — earlier versions published everything in the build folder,
+including source maps.
+
+**Solution**: if you intend to serve them publicly, opt back in:
+
+```bash
+carlin deploy static-app --upload-source-maps
 ```
 
 ### SPA Routes Return 404

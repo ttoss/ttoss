@@ -85,6 +85,39 @@ control it from the parent — required when the selection must drive the
 its own group. Read the current selection anywhere inside the workspace with
 `useGeovisWorkspace()`.
 
+### Grouped menus
+
+When a menu has many items, split them into a carousel instead of one long
+list: give the menu `groups` (each a labelled tab) in place of `items`. Only the
+open group's items show, and the open group follows the selection so the active
+item is never hidden. The selection stays a single value shared across groups.
+
+```typescript
+const config: GeovisWorkspaceConfig = {
+  controls: {
+    menus: [
+      {
+        id: 'variable',
+        title: 'Variável',
+        defaultValue: 'rate',
+        groups: [
+          {
+            id: 'demografia',
+            label: 'Demografia',
+            items: [{ value: 'rate', label: 'Taxa cumulativa' }],
+          },
+          {
+            id: 'renda',
+            label: 'Renda',
+            items: [{ value: 'gini', label: 'Índice de Gini' }],
+          },
+        ],
+      },
+    ],
+  },
+};
+```
+
 ## Slots
 
 The workspace is built from six named slots. `map` fills the main area;
@@ -278,12 +311,26 @@ breaking.
 
 ### `GeovisWorkspaceMenu`
 
-| Property       | Type                                 | Description                            |
-| -------------- | ------------------------------------ | -------------------------------------- |
-| `id`           | `string`                             | Unique group identifier.               |
-| `title`        | `string`                             | Title shown above the group's items.   |
-| `items`        | `{ value: string; label: string }[]` | Selectable items.                      |
-| `defaultValue` | `string`                             | Item selected by default in the group. |
+A menu is either **flat** (a titled list of items) or **grouped** (its items
+split across a carousel of tabs, with only the open group's items shown).
+`items` and `groups` are mutually exclusive.
+
+| Property         | Type                                 | Description                                                                   |
+| ---------------- | ------------------------------------ | ----------------------------------------------------------------------------- |
+| `id`             | `string`                             | Unique menu identifier; keys this menu's selection.                           |
+| `defaultValue`   | `string`                             | Item selected by default.                                                     |
+| `title`          | `string`                             | Heading above the items (flat) or above the tabs (grouped — optional here).   |
+| `items`          | `{ value: string; label: string }[]` | Flat menu: selectable items.                                                  |
+| `groups`         | `GeovisWorkspaceMenuGroup[]`         | Grouped menu: carousel groups, one tab each.                                  |
+| `defaultGroupId` | `string`                             | Grouped menu: group open first. Defaults to the group holding `defaultValue`. |
+
+### `GeovisWorkspaceMenuGroup`
+
+| Property | Type                                 | Description                            |
+| -------- | ------------------------------------ | -------------------------------------- |
+| `id`     | `string`                             | Unique group id (tracks the open tab). |
+| `label`  | `string`                             | Text on the group's tab.               |
+| `items`  | `{ value: string; label: string }[]` | Items shown while the group is open.   |
 
 ### `GeovisWorkspaceSidebarState` / `GeovisWorkspaceLeftSidebarState` / `GeovisWorkspaceRightSidebarState`
 

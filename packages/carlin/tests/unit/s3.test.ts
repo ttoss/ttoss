@@ -1,4 +1,6 @@
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 import {
   CopyObjectCommand,
@@ -18,6 +20,7 @@ import {
   deleteS3Directory,
   emptyS3Directory,
   getBucketKeyUrl,
+  uploadDirectoryToS3,
   uploadFileToS3,
 } from '../../src/deploy/s3';
 
@@ -340,6 +343,85 @@ describe('S3 Utils', () => {
       expect(result).toBe(2);
       expect(s3Mock.commandCalls(ListObjectsV2Command)).toHaveLength(2);
       expect(s3Mock.commandCalls(DeleteObjectsCommand)).toHaveLength(2);
+    });
+  });
+  describe('uploadDirectoryToS3', () => {
+    let directory: string;
+
+    const uploadedKeys = () => {
+      return jest.mocked(Upload).mock.calls.map((call) => {
+        return call[0].params.Key;
+      });
+    };
+
+    beforeEach(() => {
+      directory = fs.mkdtempSync(path.join(os.tmpdir(), 'carlin-upload-'));
+      jest.mocked(fs.promises.readFile).mockResolvedValue(Buffer.from('x'));
+    });
+
+    afterEach(() => {
+      fs.rmSync(directory, { force: true, recursive: true });
+    });
+
+    const writeFiles = (names: string[]) => {
+      for (const name of names) {
+        fs.writeFileSync(path.join(directory, name), 'x');
+      }
+    };
+
+    test('should exclude source maps by default', async () => {
+      writeFiles(['index.js', 'index.js.map', 'styles.css']);
+
+      await uploadDirectoryToS3({ bucket: 'test-bucket', directory });
+
+      expect(uploadedKeys().sort()).toEqual(['index.js', 'styles.css']);
+    });
+
+    test('should upload source maps when uploadSourceMaps is true', async () => {
+      writeFiles(['index.js', 'index.js.map', 'styles.css']);
+
+      await uploadDirectoryToS3({
+        bucket: 'test-bucket',
+        directory,
+        uploadSourceMaps: true,
+      });
+
+      expect(uploadedKeys().sort()).toEqual([
+        'index.js',
+        'index.js.map',
+        'styles.css',
+      ]);
+    });
+
+    test('should exclude source maps in nested directories', async () => {
+      fs.mkdirSync(path.join(directory, 'assets'));
+      fs.writeFileSync(path.join(directory, 'assets', 'app.js'), 'x');
+      fs.writeFileSync(path.join(directory, 'assets', 'app.js.map'), 'x');
+
+      await uploadDirectoryToS3({ bucket: 'test-bucket', directory });
+
+      expect(uploadedKeys()).toEqual(['assets/app.js']);
+    });
+
+    /**
+     * "Directory has no files" means the build folder is probably wrong. A
+     * directory holding only source maps is a different situation and must not
+     * borrow that error, so the filter runs after the emptiness check.
+     */
+    test('should upload nothing, without throwing, when every file is a source map', async () => {
+      writeFiles(['index.js.map']);
+
+      await expect(
+        uploadDirectoryToS3({ bucket: 'test-bucket', directory })
+      ).resolves.toBeUndefined();
+
+      expect(Upload).not.toHaveBeenCalled();
+    });
+
+    test('should still throw when the directory is empty', async () => {
+      await expect(
+        uploadDirectoryToS3({ bucket: 'test-bucket', directory })
+      ).rejects.toThrow(`Directory ${directory}/ has no files.`);
     });
   });
 });

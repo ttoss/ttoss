@@ -146,7 +146,7 @@ export const RightSidebar = () => {
         backgroundColor: '#FAF9F7',
         // Floating card on larger screens; flush full-screen panel on mobile.
         border: '1px solid #E4DED3',
-        borderRadius: [0, '16px'],
+        borderRadius: [0, '8px'],
         boxShadow: ['none', '0 8px 24px rgba(36, 31, 33, 0.12)'],
         overflowY: 'auto',
       }}

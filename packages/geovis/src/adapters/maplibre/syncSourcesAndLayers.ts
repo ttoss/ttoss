@@ -11,6 +11,16 @@ import {
   toMaplibreSource,
 } from './sourceTranslation';
 
+/**
+ * Suffixes of the companion layers GeoVis generates per `spec.layers` entry,
+ * in the order they must sit above their parent (parent first, then these).
+ */
+const COMPANION_SUFFIXES = [
+  '-hover-outline',
+  '-selected-outline',
+  '-click-anchor',
+] as const;
+
 /** Removes layers from `previousSpec` no longer present in `spec`. */
 const removeStaleLayers = (
   map: maplibregl.Map,
@@ -321,9 +331,91 @@ const upsertLayers = (map: maplibregl.Map, spec: VisualizationSpec): void => {
 };
 
 /**
+ * Reorders the GeoVis-managed layers already on the map so their paint order
+ * equals `spec.layers` order (bottom → top), with each layer's companion
+ * layers kept adjacent and above it.
+ *
+ * This is the fix for the adapter's z-order divergence: `map.addLayer` appends
+ * to the top of the stack, so after any update the rendered order became a
+ * function of insertion history rather than of `spec.layers`. Running this
+ * idempotent pass after every layer sync makes `spec.layers` the single source
+ * of truth for paint priority — independent of add/remove/insertion history.
+ *
+ * Only managed layers are touched (the ones derived from `spec.layers` plus
+ * their companions); basemap and other non-managed layers are never moved.
+ * Layers not currently on the map (missing, or `visible: false` but absent)
+ * are skipped; hidden-but-present layers still occupy their slot so toggling
+ * `visible` never changes z-order. No `moveLayer` is issued when the on-map
+ * order already matches, avoiding needless repaints.
+ *
+ * @param map - Live MapLibre map instance.
+ * @param spec - The visualization spec whose `layers` order is the contract.
+ * @returns Nothing; mutates the live map's layer order in place.
+ *
+ * @example
+ * ```ts
+ * // spec.layers = [fillA, fillB, points]
+ * enforceManagedLayerOrder(map, spec); // points end up on top, fillA on bottom
+ * ```
+ */
+/**
+ * Builds the desired bottom→top order of GeoVis-managed layers currently on the
+ * map: each `spec.layers` entry (in array order) followed by its companion
+ * layers that exist. Layers not on the map are skipped.
+ */
+const collectManagedLayerOrder = (
+  map: maplibregl.Map,
+  spec: VisualizationSpec
+): string[] => {
+  const ordered: string[] = [];
+  for (const layer of spec.layers) {
+    if (!map.getLayer(layer.id)) continue;
+    ordered.push(layer.id);
+    for (const suffix of COMPANION_SUFFIXES) {
+      const companionId = `${layer.id}${suffix}`;
+      if (map.getLayer(companionId)) ordered.push(companionId);
+    }
+  }
+  return ordered;
+};
+
+export const enforceManagedLayerOrder = (
+  map: maplibregl.Map,
+  spec: VisualizationSpec
+): void => {
+  const desired = collectManagedLayerOrder(map, spec);
+  if (desired.length < 2) return;
+
+  const managed = new Set(desired);
+  const current = (map.getStyle()?.layers ?? [])
+    .filter((layer) => {
+      return managed.has(layer.id);
+    })
+    .map((layer) => {
+      return layer.id;
+    });
+
+  const alreadyOrdered =
+    current.length === desired.length &&
+    current.every((id, index) => {
+      return id === desired[index];
+    });
+  if (alreadyOrdered) return;
+
+  // Walk top → bottom, slotting each layer just beneath the previously placed
+  // one. `beforeId === undefined` moves a layer to the very top of the stack.
+  let aboveId: string | undefined;
+  for (let index = desired.length - 1; index >= 0; index--) {
+    map.moveLayer(desired[index], aboveId);
+    aboveId = desired[index];
+  }
+};
+
+/**
  * Reconciles the live MapLibre map's sources and layers with `spec`.
  * When `previousSpec` is `null` (first mount or style reset), only additive operations run.
  * Call order enforces MapLibre's dependency invariant: remove layers → remove sources → upsert sources → upsert layers.
+ * A final `enforceManagedLayerOrder` pass reconciles paint order to `spec.layers` order.
  */
 export const syncSourcesAndLayers = (
   map: maplibregl.Map,
@@ -336,4 +428,5 @@ export const syncSourcesAndLayers = (
   }
   upsertSources(map, spec, previousSpec);
   upsertLayers(map, spec);
+  enforceManagedLayerOrder(map, spec);
 };

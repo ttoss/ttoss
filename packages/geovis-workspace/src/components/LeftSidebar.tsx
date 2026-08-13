@@ -6,6 +6,7 @@ import { useGeovisWorkspace } from '../hooks/useGeovisWorkspace';
 import { resolveMenus } from '../menus';
 import { messages } from '../messages';
 import { MenuButton } from './MenuButton';
+import { MenuCarousel } from './MenuCarousel';
 
 /** Default content of the `controls` slot: the config-driven menu groups. */
 const DefaultControlsPanel = () => {
@@ -16,6 +17,13 @@ const DefaultControlsPanel = () => {
   return (
     <>
       {menus.map((menu) => {
+        // Grouped menus render as a chip carousel; flat menus keep the plain
+        // stacked list. The `groups` field is present only on the grouped
+        // variant, so it also narrows the type for the branch below.
+        if (menu.groups) {
+          return <MenuCarousel key={menu.id} menu={menu} />;
+        }
+
         return (
           <Box key={menu.id} sx={{ display: 'flex', flexDirection: 'column' }}>
             <Text
@@ -81,7 +89,7 @@ export const LeftSidebar = () => {
         backgroundColor: '#FAF9F7',
         // Floating card on larger screens; flush full-screen panel on mobile.
         border: '1px solid #E4DED3',
-        borderRadius: [0, '16px'],
+        borderRadius: [0, '8px'],
         boxShadow: ['none', '0 8px 24px rgba(36, 31, 33, 0.12)'],
         overflowY: 'auto',
       }}
@@ -99,6 +107,9 @@ export const LeftSidebar = () => {
           position: 'absolute',
           top: '3',
           right: '3',
+          // Above a grouped menu's full-bleed header band, which bleeds up to
+          // the card's top edge behind this button.
+          zIndex: 1,
           color: '#7A716D',
           backgroundColor: 'transparent',
           borderRadius: 'md',
