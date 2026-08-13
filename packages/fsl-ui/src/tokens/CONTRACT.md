@@ -86,7 +86,7 @@ wrong unless the movement's purpose says otherwise.
 | **Navigation** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`                            | `flat`           |
 | **Disclosure** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `transition`                          | `flat`           |
 | **Overlay**    | `informational` | `surface`                  | `outline.surface`             | —      | `inset.surface` | `title`, `body`, `label` | `transition`                          | `overlay`        |
-| **Feedback**   | `feedback`      | `surface`, `round` (rails) | `outline.surface`             | —      | `inset.surface` | `body`, `label`          | `feedback`, `transition` (enter/exit) | `raised`         |
+| **Feedback**   | `feedback`      | `surface`, `round` (rails) | `outline.surface`             | —      | `inset.surface` | `title`, `body`, `label` | `feedback`, `transition` (enter/exit) | `raised`         |
 | **Collection** | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `body`, `label`          | —                                     | `flat`, `raised` |
 | **Structure**  | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `title`, `body`, `label` | —                                     | `flat`, `raised` |
 
@@ -103,6 +103,17 @@ wrong unless the movement's purpose says otherwise.
 | Scrim opacity      | `vars.opacity.scrim`                                                                                                                                     |
 | Scrim color        | `vars.overlay.scrim`                                                                                                                                     |
 | Z-Index            | `vars.zIndex.layer.{base,sticky,overlay,blocking,transient}`                                                                                             |
+
+**The Typography column is data, and it is constrained.** It lives in
+`tokens/projection.ts` alongside the Colors column rather than only in this
+table, because a legality claim that only prose carries cannot fail. Contract
+invariant **#16** binds it to the taxonomy: an entity whose `ENTITY_STRUCTURE`
+declares **both** `title` and `body` must carry `title` here. It has to, because
+no `label.*` step can outrank `body.md` — every step of that family is weight
+400 and the largest merely ties it — so such an entity would type an inverted
+heading by construction. `Feedback` was that case: it could name a `title` part
+and not type one, and both `Toast` and `InlineAlert` shipped a 16px/400 title
+over an 18px/400 body before anyone measured it (F-064).
 
 ### §1.1 — Mapping Rationale
 

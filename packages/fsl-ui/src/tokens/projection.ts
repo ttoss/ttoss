@@ -55,27 +55,80 @@ export const SURFACE_TYPES = ['control', 'surface'] as const;
 export type SurfaceType = (typeof SURFACE_TYPES)[number];
 
 /**
+ * Type families — the Typography column of CONTRACT.md §1.
+ *
+ * Data rather than prose, because the column carries a legality claim and the
+ * colour column's history is the argument: colours are mechanically audited and
+ * have been corrected many times; typography lived only in the table and the
+ * one contradiction in it survived two components (F-064).
+ *
+ * `display` is deliberately absent: no §1 row names it (`Text`'s `display-sm`
+ * variant reads it without a row that grants it). That divergence is recorded,
+ * not resolved here — encoding it as legal would decide it by omission.
+ */
+export const TYPE_FAMILIES = ['action', 'label', 'body', 'title'] as const;
+export type TypeFamily = (typeof TYPE_FAMILIES)[number];
+
+/**
  * The full Entity → token derivation record.
  *
  * Given an Entity, this tells you:
  * - `uxContext`: which `vars.colors.{ux}` subtree to use
  * - `surfaceType`: which non-color token family to use (control vs surface)
+ * - `typography`: which `vars.text.{family}` subtrees the entity may set type
+ *   from. Constrained by invariant #16 against `ENTITY_STRUCTURE`: an entity
+ *   that can name a `title` **over** a `body` must be able to type it, because
+ *   no `label.*` step outranks `body.md` — every one of them is weight 400 and
+ *   the largest merely ties it (F-064).
  */
 export const ENTITY_TOKEN_MAPPING = {
-  Action: { uxContext: 'action', surfaceType: 'control' },
-  Input: { uxContext: 'input', surfaceType: 'control' },
-  Selection: { uxContext: 'input', surfaceType: 'control' },
-  Navigation: { uxContext: 'navigation', surfaceType: 'control' },
-  Disclosure: { uxContext: 'navigation', surfaceType: 'control' },
-  Overlay: { uxContext: 'informational', surfaceType: 'surface' },
-  Feedback: { uxContext: 'feedback', surfaceType: 'surface' },
-  Collection: { uxContext: 'informational', surfaceType: 'surface' },
-  Structure: { uxContext: 'informational', surfaceType: 'surface' },
+  Action: {
+    uxContext: 'action',
+    surfaceType: 'control',
+    typography: ['action'],
+  },
+  Input: { uxContext: 'input', surfaceType: 'control', typography: ['label'] },
+  Selection: {
+    uxContext: 'input',
+    surfaceType: 'control',
+    typography: ['label'],
+  },
+  Navigation: {
+    uxContext: 'navigation',
+    surfaceType: 'control',
+    typography: ['label'],
+  },
+  Disclosure: {
+    uxContext: 'navigation',
+    surfaceType: 'control',
+    typography: ['label'],
+  },
+  Overlay: {
+    uxContext: 'informational',
+    surfaceType: 'surface',
+    typography: ['title', 'body', 'label'],
+  },
+  Feedback: {
+    uxContext: 'feedback',
+    surfaceType: 'surface',
+    typography: ['title', 'body', 'label'],
+  },
+  Collection: {
+    uxContext: 'informational',
+    surfaceType: 'surface',
+    typography: ['body', 'label'],
+  },
+  Structure: {
+    uxContext: 'informational',
+    surfaceType: 'surface',
+    typography: ['title', 'body', 'label'],
+  },
 } as const satisfies Record<
   Entity,
   {
     uxContext: UxContext;
     surfaceType: SurfaceType;
+    typography: ReadonlyArray<TypeFamily>;
   }
 >;
 

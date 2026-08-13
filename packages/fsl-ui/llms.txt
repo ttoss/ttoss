@@ -505,7 +505,10 @@ Selection   → colors.input,         radii.control, motion.feedback
 Navigation  → colors.navigation,    radii.control, motion.feedback
 Disclosure  → colors.navigation,    radii.control, motion.transition
 Overlay     → colors.informational, radii.surface, motion.transition, elevation.overlay
-Feedback    → colors.feedback,      radii.surface (chips) / radii.round (rails), elevation.raised
+Feedback    → colors.feedback,      radii.surface (chips) / radii.round (rails), elevation.raised,
+            text.title (a title part) + text.body — NOT text.label for a title:
+            every label step is weight 400 and the largest only ties body.md,
+            so a label-typed title inverts (F-064, contract invariant #16)
 Collection  → colors.informational, radii.surface
 Structure   → colors.informational, radii.surface
 

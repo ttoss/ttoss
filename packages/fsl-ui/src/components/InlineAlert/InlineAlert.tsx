@@ -10,8 +10,8 @@ import { Icon } from '../Icon';
 // Semantic identity — Layer 1
 //
 // Entity = Feedback → CONTRACT.md §1 row: colours `feedback`, radii `surface`,
-// border `outline.surface`, spacing `inset.surface`, typography `label`/`body`,
-// elevation `flat`.
+// border `outline.surface`, spacing `inset.surface`, typography
+// `title`/`body`/`label`, elevation `flat`.
 //
 // `elevation: flat`, not the row's `raised` — the row lists what the entity MAY
 // read, not what it must (§1 "Legal vs required"). A Toast lifts off the page
@@ -168,7 +168,17 @@ export const InlineAlert = ({
           display: 'flex',
           alignItems: 'flex-start',
           gap: vars.spacing.gap.inline.md,
-          padding: vars.spacing.inset.surface.md,
+          // `sm`, not the `md` a Toast takes — and the difference is the width
+          // envelope, not the entity. ADR-031 hands every embedded surface the
+          // fluid ladder without naming a rung, so this component copied the
+          // rung `Toast` picked; measured in Chromium at 1280px that put 36px
+          // of inset around 59px of ink, a box 55% air. A toast can afford the
+          // page step because F-058 measured it inside a 420px cap; this
+          // surface spans the content column, where the same step reads as
+          // page padding on a component. `sm` (24px) against the reference's
+          // 16px is the one-step offset this package's type ladder already
+          // carries over the reference (F-021/F-047).
+          padding: vars.spacing.inset.surface.sm,
           borderRadius: vars.radii.surface,
           borderWidth: vars.border.outline.surface.width,
           borderStyle: vars.border.outline.surface.style,
@@ -237,7 +247,11 @@ export const InlineAlert = ({
               data-part="title"
               style={
                 {
-                  ...(vars.text.label.md as React.CSSProperties),
+                  // `title.sm`, not `label.md`. A title must outrank its body,
+                  // and no `label.*` step can: every one is weight 400 and the
+                  // largest merely ties `body.md` (F-064, contract invariant
+                  // #16). The Feedback row gained `title` for this.
+                  ...(vars.text.title.sm as React.CSSProperties),
                   color: groundInk,
                 } as React.CSSProperties
               }

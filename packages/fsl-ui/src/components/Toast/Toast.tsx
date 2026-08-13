@@ -27,7 +27,9 @@ import { Icon } from '../Icon';
 //   colors: `feedback.{primary|positive|caution|negative}` (uxContext = feedback),
 //   radii: `surface`, border: `outline.surface`,
 //   sizing: `hit` (close trigger), spacing: `inset.surface`,
-//   typography: `label.md` (title) + `body.md` (description),
+//   typography: `title.sm` (title) + `body.md` (description) — the row gained
+//     `title` in F-064; before that the pair inverted, a 16px/400 heading over
+//     an 18px/400 paragraph,
 //   elevation: `raised` — first component in the system to consume it,
 //   motion: `transition.{enter,exit}`.
 //
@@ -498,7 +500,13 @@ export const Toast = ({ toast }: ToastProps) => {
             data-part="title"
             style={
               {
-                ...(vars.text.label.md as React.CSSProperties),
+                // `title.sm`, not the `label.md` ADR-040 shipped. Measured in
+                // Chromium: that pair typed a 16px/400 title over an 18px/400
+                // description — the title smaller AND no heavier than the prose
+                // it introduces. The cause was the §1 row, not this component
+                // (F-064): `Feedback` could name a `title` part but not type
+                // one, and `label.*` has no step that outranks `body.md`.
+                ...(vars.text.title.sm as React.CSSProperties),
                 color: textColor,
               } as React.CSSProperties
             }

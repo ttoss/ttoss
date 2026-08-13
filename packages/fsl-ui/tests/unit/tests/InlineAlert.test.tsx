@@ -128,6 +128,32 @@ describe('InlineAlert — the valence lives in the mark', () => {
   });
 });
 
+describe('InlineAlert — the title outranks the body', () => {
+  // The defect this pins (F-064) was invisible to every existing suite: the
+  // contract tests audit colour, not type, so a title typed from `label.md`
+  // (16px/400) over a body typed from `body.md` (18px/400) shipped — smaller
+  // AND no heavier than the prose it introduces. Measured in Chromium, not
+  // inferred. jsdom resolves no `clamp()`, so the assertion is on the token
+  // each part reads, which is the thing the component actually decides.
+  test('the title reads the title family, never a label step', () => {
+    render(<InlineAlert title="Sync failed">Body</InlineAlert>);
+    expect(part('title')?.style.fontSize).toBe(vars.text.title.sm.fontSize);
+    expect(part('title')?.style.fontSize).not.toBe(vars.text.label.md.fontSize);
+  });
+
+  test('the title is heavier than the body', () => {
+    // The half a size step cannot carry on its own: every `label.*` step is
+    // weight 400, which is why no member of that family could ever have worked
+    // here. Contract invariant #16 keeps the row able to say this.
+    render(<InlineAlert title="Sync failed">Body</InlineAlert>);
+    expect(part('title')?.style.fontWeight).toBe(vars.text.title.sm.fontWeight);
+    expect(part('body')?.style.fontWeight).toBe(vars.text.body.md.fontWeight);
+    expect(part('title')?.style.fontWeight).not.toBe(
+      part('body')?.style.fontWeight
+    );
+  });
+});
+
 describe('InlineAlert — announcement', () => {
   test('it is a polite live region', () => {
     render(<InlineAlert>Body</InlineAlert>);
