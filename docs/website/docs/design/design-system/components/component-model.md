@@ -7,7 +7,7 @@ title: Component Model
 The Component Model is the **Component Semantics Projection** — [layer 3 of the FSL architecture](/docs/design/design-system/fsl/). It derives from the [FSL Lexicon](/docs/design/design-system/fsl/fsl-lexicon) and [FSL Structural Language](/docs/design/design-system/fsl/fsl-structural-language) and must not define vocabulary that contradicts them.
 
 :::info Status: implemented in `@ttoss/fsl-ui`
-This document is the design specification for the Component Semantics Projection, now **implemented** by `@ttoss/fsl-ui`: `taxonomy.ts` (vocabulary + legality matrices), `ComponentMeta`, `ENTITY_COMPOSITION` / `ENTITY_STRUCTURE` / `ENTITY_TOKEN_MAPPING` (`packages/fsl-ui/src/tokens/projection.ts`), and contract tests that auto-validate every component against the matrices. The [Semantic Token Projection](/docs/design/design-system/design-tokens/model) (layer 4, `@ttoss/fsl-theme`) is also implemented. The **Deterministic Resolver** (layer 5) remains planned. Where this document and the shipped code diverge, the code + its contract tests are the source of truth.
+This document is the design specification for the Component Semantics Projection, now **implemented** by `@ttoss/fsl-ui`: `taxonomy.ts` (vocabulary + legality matrices), `ComponentMeta`, `ENTITY_COMPOSITION` / `ENTITY_STRUCTURE` / `ENTITY_TOKEN_MAPPING` (`packages/fsl-ui/src/tokens/projection.ts`), and contract tests that auto-validate every component against the matrices. The [Semantic Token Projection](/docs/design/design-system/design-tokens/model) (layer 4, `@ttoss/fsl-theme`) is also implemented. The **Resolution contract** (layer 5) is satisfied by distributed mechanisms — see the [FSL overview](/docs/design/design-system/fsl/). Where this document and the shipped code diverge, the code + its contract tests are the source of truth.
 :::
 
 The central rule:
@@ -53,7 +53,7 @@ For the full `ux` role and state grammar, see the [Colors family — FSL Entity 
 
 ## ComponentExpression
 
-The model is expressed as a `ComponentExpression` — the typed semantic expression that the resolver consumes:
+The model is expressed as a `ComponentExpression` — the typed semantic expression that the resolution pipeline consumes:
 
 ```ts
 type ComponentExpression = {
@@ -135,7 +135,7 @@ Example selector: `[data-scope="dialog"][data-part="actions"] [data-composition=
 
 Evaluation answers: _What emphatic or evaluative meaning does this expression carry?_
 
-Evaluation is optional. When omitted, each component applies its own documented default today; inference from Entity and composition context is the job of the **planned** Deterministic Resolver (layer 5). Add it explicitly only when the default is wrong.
+Evaluation is optional. When omitted, each component applies its own documented default — and that is the design: defaults live with the component, because that is where the knowledge lives. Add it explicitly only when the default is wrong.
 
 Legality is per Entity (source of truth: `ENTITY_EVALUATION` in `taxonomy.ts`), same as the Composition table:
 

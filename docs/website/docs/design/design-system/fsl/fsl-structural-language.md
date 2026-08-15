@@ -71,8 +71,8 @@ The semantic architecture is composed of five layers:
 4. **Semantic Token Projection**  
    The semantic token model derived from FSL. Specified by the [design tokens documentation](/docs/design/design-system/design-tokens/model).
 
-5. **Deterministic Resolver**  
-   The engine that parses, normalizes, validates, projects, and explains semantic outputs. §14 specifies its interface.
+5. **Resolution contract**  
+   The obligation that every resolution function (validate, normalize, resolve, project, explain) has a declared owner. Defined in §14.
 
 This document defines only layer 2. It defines structure, not delivery state — the implementation status of each layer is tracked in the [FSL overview](./index.md).
 
@@ -356,7 +356,7 @@ Example shape:
 
 A qualified expression after lawful contextual refinement and normalization.
 
-This is the form consumed by downstream projection profiles and the deterministic resolver.
+This is the form consumed by downstream projection profiles and the resolution mechanisms that fulfill §14.
 
 ---
 
@@ -591,35 +591,25 @@ A disposition is legal only if it preserves foundational meaning. A profile may 
 
 ---
 
-# 14. Deterministic resolver interface
+# 14. Resolution contract
 
-The Structural Language is not the resolver.
-But it must define the interface the resolver depends on.
+The Structural Language does not require a resolution engine. It requires that resolution be lawful — and it defines that requirement as a contract.
 
-The resolver must consume:
+The choice of meaning is not deterministic: authors choose terms, context refines them, taste exists. What must be deterministic is the projection of a chosen expression into its result. The contract governs only that projection.
 
-- a semantic expression
-- active lexical registries
-- legality matrices
-- normalization rules
-- contextual refinement inputs
-- a selected projection profile
+A conforming system must provide the following resolution functions, and must name the owner of each:
 
-The resolver must output:
+- **Validate** — deliver a legality verdict from the declared legality sources (§9, §10)
+- **Normalize** — apply lawful defaults, inference, and canonicalization (§11)
+- **Resolve** — reduce concurrent activations through a declared, total order (§11.4)
+- **Project** — translate the refined expression into a projection profile's form (§13)
+- **Explain** — make every verdict and projection derivable from declared sources, not local interpretation
 
-- the normalized expression
-- legality verdict
-- projected semantic form
-- explanation trace
+The contract's inputs are: a semantic expression, the active lexical registries, the declared legality sources, the normalization rules, contextual refinement inputs, and a selected projection profile. Its outputs are: the normalized expression, a legality verdict, the projected semantic form, and an explanation.
 
-The Structural Language therefore guarantees that the resolver has:
+A single resolver engine that performs every function is one lawful fulfillment of this contract. A pipeline of distributed mechanisms, each owning one function, is another.
 
-- typed semantic inputs
-- lawful normalization rules
-- explicit legality boundaries
-- projection hooks
-
-This is what makes automatic token resolution possible.
+What makes token resolution deterministic is that every resolution function has a declared owner — not that one program performs them all.
 
 ---
 
@@ -765,4 +755,4 @@ It turns the Lexicon into a real language by defining:
 It is intentionally small.
 
 Its purpose is not to solve tokens or components directly.
-Its purpose is to make it possible for both to derive from the same semantic language, and for the eventual resolver to operate deterministically rather than through local interpretation.
+Its purpose is to make it possible for both to derive from the same semantic language, and for resolution to operate deterministically through declared owners rather than local interpretation.
