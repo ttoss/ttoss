@@ -20,10 +20,10 @@ FSL is composed of two normative artifacts:
 
 ## What derives from FSL
 
-Every downstream semantic system is a **projection** of FSL — it derives from the foundation and must not define its own incompatible vocabulary:
+Every downstream semantic system is a **projection** of FSL — it derives from the foundation and must not define its own incompatible vocabulary. This page is the status ledger for the layers; the two normative artifacts above never carry implementation status.
 
-- **Semantic Token Projection** (design tokens docs + `Types.ts`) — maps FSL to token families and addresses. **Implemented** as `@ttoss/fsl-theme`.
-- **Component Semantics Projection** (`component-model.md` + `taxonomy.ts`) — maps FSL to the component model. **Implemented** as `@ttoss/fsl-ui` (`packages/fsl-ui/src/semantics/taxonomy.ts` — vocabulary, legality matrices, `ComponentMeta`, contract tests).
+- **Semantic Token Projection** ([Token Model](/docs/design/design-system/design-tokens/model) and family docs) — maps FSL to token families and addresses. **Implemented** by `@ttoss/fsl-theme`.
+- **Component Semantics Projection** ([Component Model](/docs/design/design-system/components/component-model)) — maps FSL to the component model. **Implemented** by `@ttoss/fsl-ui`; the Component Model document names its source-of-truth files.
 - **Deterministic Resolver** — build-time/runtime tooling that validates and projects semantic expressions. **Planned** — no such tooling exists yet; [FSL Structural Language §14](./fsl-structural-language.md) specifies its interface.
 
 ## The guarantee

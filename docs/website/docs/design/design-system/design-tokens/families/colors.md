@@ -129,7 +129,7 @@ See [Usage Examples](#usage-examples) below for concrete tokens.
 
 ## FSL Entity Kind Mapping
 
-The `ux` axis is a projection-scoped subset of FSL Entity Kinds (FSL Structural Language §17.1). This table **mirrors** `ENTITY_TOKEN_MAPPING` in `@ttoss/fsl-ui` — the code is the single source of truth and wins on any divergence; the planned resolver (see [component-model.md](/docs/design/design-system/components/component-model) — not yet implemented) will consume it to translate a component's Entity into its token context:
+The `ux` axis is a projection-scoped subset of FSL Entity Kinds (FSL Structural Language §17.1). This table **mirrors** `ENTITY_TOKEN_MAPPING` in `@ttoss/fsl-ui` — the mapping is implemented and enforced by contract tests; the code is the single source of truth and wins on any divergence. The **planned** Deterministic Resolver ([FSL overview](/docs/design/design-system/fsl/)) will later consume this mapping to translate a component's Entity into its token context automatically:
 
 | FSL Entity Kind | Token `ux`      | Notes                                                                                                                                                                |
 | :-------------- | :-------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

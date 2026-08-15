@@ -57,7 +57,7 @@ Each entry contains:
 
 ---
 
-# 1. Entity Kind
+# 1. Entity Kind {#1-entity-kind}
 
 Entity Kind answers:
 
@@ -93,7 +93,7 @@ Entity Kinds are **pairwise disjoint** in the core lexicon.
 
 ---
 
-# 2. Structural Role
+# 2. Structural Role {#2-structural-role}
 
 Structural Role answers:
 
@@ -147,7 +147,7 @@ The same structural role may lawfully appear under different entities.
 
 ---
 
-# 3. Interaction Kind
+# 3. Interaction Kind {#3-interaction-kind}
 
 Interaction Kind answers:
 
@@ -184,7 +184,7 @@ Interaction Kind is fundamental because interactive meaning cannot be recovered 
 
 ---
 
-# 4. Composition Role
+# 4. Composition Role {#4-composition-role}
 
 Composition Role answers:
 
@@ -252,7 +252,7 @@ Evaluation is a **discriminated union** of two decision classes — an expressio
 
 ---
 
-# 6. Consequence
+# 6. Consequence {#6-consequence}
 
 Consequence answers:
 
@@ -280,33 +280,18 @@ Consequence exists because some meanings materially shape user experience and ri
 
 ### Profile narrowing (per FSL §13.3)
 
-A component-semantics profile may codify a narrower subset of this vocabulary
-when the broader terms collapse into one of the narrower ones or into another
-dimension. The `@ttoss/fsl-ui` profile (see
-[`component-model.md`](/docs/design/design-system/components/component-model) —
-implemented in `packages/fsl-ui/src/semantics/taxonomy.ts`) codifies three
-values — **neutral**, **committing**, **destructive** — rejecting the others
-with explicit rationale:
-
-- **reversible** is the logical complement of `committing`; carrying both
-  doubles the vocabulary without adding an expressible distinction.
-- **interruptive** is absorbed by the Entity `Overlay` — an Overlay is
-  interruptive by kind, and non-overlay interruption has no component
-  prototype to justify separate vocabulary.
-- **recoverable** describes a runtime outcome of failure, not an authorial
-  meta; recovery support belongs in component API (e.g. an `onRetry` prop),
-  not in `ComponentMeta`.
-- **safeDefaultRequired** is a derived policy: `destructive` already implies
-  the need for a safe default, so codifying the policy separately would
-  create a second source of truth for the same constraint.
-
-The rejections are invariants of the profile, not of FSL — a different
-profile may legitimately codify more of the vocabulary if its component
-prototypes create new distinctions.
+A projection profile may codify a narrower subset of this vocabulary when the
+broader terms collapse into one of the narrower ones or into another dimension.
+A narrowing is lawful only when it is declared and justified, term by term, in
+the profile's own artifact — and it binds that profile, not FSL: a different
+profile may codify more of the vocabulary if its prototypes create new
+distinctions. The shipped component profile narrows this dimension to three
+values; its declaration and rationale live in the
+[Component Model — Consequence](/docs/design/design-system/components/component-model#consequence).
 
 ---
 
-# 7. State
+# 7. State {#7-state}
 
 State answers:
 
@@ -342,7 +327,7 @@ Not every state is meaningful for every interaction kind.
 
 ---
 
-# 8. Layer Role
+# 8. Layer Role {#8-layer-role}
 
 Layer Role answers:
 
@@ -368,7 +353,7 @@ Layer Role is semantic layering, not raw stack arithmetic.
 
 ---
 
-# 9. Context Class
+# 9. Context Class {#9-context-class}
 
 Context Class answers:
 
@@ -505,7 +490,7 @@ An Overlay entity typically occupies the `overlay` or `blocking` Layer Role, but
 
 ## 10.14 `popup.*` (removed from the core) — projection-specific
 
-Earlier drafts of the FSL Interaction Kind vocabulary included `popup.listbox`, `popup.grid`, `popup.tree`, and `popup.dialog`. These were removed from the core lexicon because they smuggled projection-specific semantics (ARIA composite-widget patterns) into a foundational dimension, violating §3.1 ("Structure must remain smaller than projections") and §12.1 ("No projection-specific term may be treated as foundational").
+Earlier drafts of the FSL Interaction Kind vocabulary included `popup.listbox`, `popup.grid`, `popup.tree`, and `popup.dialog`. These were removed from the core lexicon because they smuggled projection-specific semantics (ARIA composite-widget patterns) into a foundational dimension, violating [Structural Language §3.1](./fsl-structural-language.md) ("Structure must remain smaller than projections") and rule 1 of §12 below ("No projection-specific term may be treated as foundational").
 
 The meaning those terms carried is recovered at the correct layers:
 

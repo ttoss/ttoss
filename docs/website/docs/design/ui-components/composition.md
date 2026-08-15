@@ -37,7 +37,7 @@ A surface with no typographic hierarchy gives the eye nowhere to land. Lead each
 </Surface>
 ```
 
-Choose `Heading level` for document structure (screen-reader order), not for size; reach for `size` only when the visual step must differ from the rank. `tone="muted"` is the sanctioned lever for secondary copy — captions, hints, metadata. Building hierarchy _is_ choosing which text recedes.
+Choose `Heading level` for document structure (screen-reader order), not for size; reach for `size` only when the visual step must differ from the rank. `tone="muted"` is the sanctioned lever for secondary copy — captions, hints, metadata (`tone` is `Text`'s name for the `muted` Evaluation — a projection rename per FSL §17.1, scoped to text parts). Building hierarchy _is_ choosing which text recedes.
 
 ## Rhythm: space from the scale, generously
 
