@@ -94,7 +94,8 @@ It must guarantee:
 - semantic meaning does not change silently
 - no parallel vocabulary is introduced
 - naming expresses meaning, not appearance, component, mode, chart type, or library behavior
-- meaning changes create new tokens and deprecate old ones
+
+The change policy these guarantees enforce — when meaning may change and how — is defined in [Governance](./governance.md).
 
 ### Cross-family validation
 
@@ -208,12 +209,7 @@ The following rules define how to evaluate a token change objectively:
 
 ### Change classification
 
-| Change type                  | Meaning                                                                              | Version impact                                                |
-| :--------------------------- | :----------------------------------------------------------------------------------- | :------------------------------------------------------------ |
-| Mapping change, same meaning | Semantic token references a different core token, but the design intent is preserved | MINOR or PATCH                                                |
-| Meaning change               | The semantic role, purpose, or contract of a token changes                           | Requires a **new token** + deprecation of the old one → MAJOR |
-| New token                    | A new semantic concept that does not duplicate existing meaning                      | MINOR                                                         |
-| Token removal                | A semantic token is removed from the public API                                      | MAJOR (must follow deprecation path)                          |
+Every change is classified by its version impact per [Governance — Versioning](./governance.md#versioning). Structural equivalence identifies mapping changes; anything beyond a meaning-preserving remap follows the deprecation and versioning policy defined there.
 
 ### Collision detection
 
@@ -224,26 +220,9 @@ A collision occurs when:
 
 ### Deprecation manifest
 
-Every deprecation must include:
-
-- the deprecated token name
-- the replacement token (or explicit statement that no replacement exists)
-- the version in which deprecation was introduced
-- the target version for removal
+Deprecation metadata requirements are defined in [Governance — Deprecation](./governance.md#deprecation). Validation checks that the required fields are present.
 
 > Semantic diff rules that require semantic judgment (e.g., "does this name express the same meaning?") require human review. Only structural and resolved equivalence checks are fully automatable.
-
-## Change rules
-
-Validation must support safe evolution over time.
-
-At minimum:
-
-- adding a core token is valid when a new raw value is needed
-- adding a semantic token is valid only when existing semantics cannot express the need
-- changing a semantic mapping is valid only when meaning stays the same
-- changing meaning requires a new semantic token and deprecation of the old one
-- removing a token requires explicit deprecation and a breaking-change path
 
 ## Merge rule
 

@@ -642,23 +642,7 @@ This is a legal minimal expression if `Action × control` is legal.
 
 ---
 
-## 16.2 Confirming primary action
-
-```txt id="44ngyw"
-{
-  entity: Action,
-  structure: control,
-  interaction: confirm,
-  composition: primaryAction,
-  evaluation: primary
-}
-```
-
-This is a qualified expression.
-
----
-
-## 16.3 Destructive dismissive overlay flow
+## 16.2 Destructive dismissive overlay flow
 
 ```txt id="4rn11t"
 {
@@ -678,7 +662,7 @@ This is valid only if:
 
 ---
 
-## 16.4 Tri-state selection control
+## 16.3 Tri-state selection control
 
 ```txt id="4l3qcb"
 {
@@ -690,25 +674,6 @@ This is valid only if:
 ```
 
 This expression exists specifically to prove that the language can represent semantics that cannot be safely reduced to “selected or not”.
-
----
-
-## 16.5 Navigation item
-
-```txt id="e8l59q"
-{
-  entity: Navigation,
-  structure: item,
-  interaction: navigate.link,
-  state: current
-}
-```
-
-This is valid only if:
-
-- `Navigation × item` is legal
-- `navigate.link` is legal for `Navigation`
-- `current` is legal for `navigate.link`
 
 ---
 
@@ -741,18 +706,7 @@ Example: a Component Semantics Projection could rename the `Entity` dimension to
 
 # 18. Final statement
 
-The FSL Structural Language is the formal structure of the foundational semantic language.
-
-It turns the Lexicon into a real language by defining:
-
-- the foundational dimensions
-- the canonical expression form
-- legality
-- normalization
-- contextual refinement
-- projection interfaces
-
-It is intentionally small.
+The FSL Structural Language is the formal structure of the foundational semantic language — it turns the Lexicon into a real language.
 
 Its purpose is not to solve tokens or components directly.
 Its purpose is to make it possible for both to derive from the same semantic language, and for resolution to operate deterministically through declared owners rather than local interpretation.

@@ -377,13 +377,7 @@ Family-specific validation may add stricter rules where needed.
 
 ## Change Rules
 
-Changes must preserve the model.
-
-- **Add core token** when a new raw value is needed
-- **Add semantic token** only when existing semantics cannot express the need
-- **Change semantic mapping** only if meaning stays the same
-- **Change semantic meaning** by creating a new token and deprecating the old one
-- **Remove token** only through explicit deprecation and versioned breaking change
+Changes must preserve the model. The change policy — when tokens may be added, remapped, deprecated, or removed, and how versioning applies — is defined in [Governance](./governance.md).
 
 ---
 
