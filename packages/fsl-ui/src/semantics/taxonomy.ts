@@ -58,8 +58,14 @@
 //                 │          │ Link navigation).
 //   Context       │ DEFERRED │ Refinement dimension (density, mode, a11y
 //                 │          │ preferences). No prototype exercises it yet.
-//                 │          │ Readmission criterion: stabilisation of mode
-//                 │          │ switching validated end-to-end via @ttoss/fsl-theme.
+//                 │          │ Readmission criterion: a component that
+//                 │          │ dispatches on a context class at runtime
+//                 │          │ (e.g. a density variant that changes which
+//                 │          │ spacing/sizing tokens a component consumes).
+//                 │          │ Mode switching shipped end-to-end in
+//                 │          │ @ttoss/fsl-theme with zero component-level
+//                 │          │ dispatch — mode lives at the theme layer,
+//                 │          │ not in ComponentMeta.
 //
 // Status key (FSL §13.3):
 //   CODIFIED — Dimension is part of this profile's authorial vocabulary.
