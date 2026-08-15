@@ -39,15 +39,19 @@
 //                 │          │ per-entity matrix — legality is
 //                 │          │ runtime-resolved by RAC, not authorially
 //                 │          │ declared.
-//   Layer         │ ABSORBED │ Fully captured by two existing mechanisms:
+//   Layer         │ ABSORBED │ Fully captured by three existing mechanisms:
 //                 │          │   1. Token projection's surfaceType →
 //                 │          │      control | surface (radii, border, spacing)
 //                 │          │      See ../tokens/projection.ts.
-//                 │          │   2. CONTRACT.md §1 Elevation column →
+//                 │          │   2. Elevation strata →
 //                 │          │      flat | raised | overlay | blocking
-//                 │          │ An independent Layer dimension would be
-//                 │          │ redundant — elevation tokens already encode
-//                 │          │ layer semantics per entity.
+//                 │          │      (CONTRACT.md §1 Elevation column).
+//                 │          │   3. Z-index layer scale →
+//                 │          │      base | sticky | overlay | blocking |
+//                 │          │      transient (vars.zIndex.layer.*).
+//                 │          │ Together they recover all six Lexicon §8
+//                 │          │ layer roles; an independent Layer dimension
+//                 │          │ would be redundant.
 //   Interaction   │ DEFERRED │ Previously codified; removed after 13
 //                 │          │ components declared it and zero dispatched
 //                 │          │ behavior, coloring, or DOM attributes from
