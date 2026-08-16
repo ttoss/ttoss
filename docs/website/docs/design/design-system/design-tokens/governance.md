@@ -62,23 +62,14 @@ Rules:
 
 - semantic tokens define intent, not raw value
 - semantic names are part of the public API
-- changing a semantic mapping is allowed
+- changing a semantic mapping is allowed only when meaning stays the same
 - changing a semantic token’s meaning is not allowed
 
 If the intention changes, create a new token and deprecate the old one.
 
 ## Contract checks
 
-Every token change must pass these checks:
-
-- the name follows the system taxonomy
-- semantic tokens reference valid tokens
-- references are resolvable
-- references are not circular
-- components do not consume core tokens directly
-- deprecated tokens provide a clear replacement when applicable
-
-If a rule can be validated automatically, it should be validated automatically.
+Every token change must pass validation before merge. What is checked, where each rule lives, and how severity works are defined in [Validation and Build](./validation.md). If a rule can be validated automatically, it should be validated automatically.
 
 ## Deprecation
 
@@ -91,6 +82,8 @@ When a token is no longer recommended:
 3. allow time for migration
 4. remove it in the next major version
 
+Every deprecation records the deprecated token name, the replacement (or an explicit statement that none exists), the version that introduced the deprecation, and the target version for removal.
+
 Deprecation is the preferred path for contract changes.
 
 ## Versioning
@@ -100,6 +93,8 @@ Tokens follow semantic versioning.
 - **PATCH**: documentation fixes, metadata fixes, or internal corrections that do not change the public token contract
 - **MINOR**: backward-compatible additions, new tokens, new aliases, or deprecations
 - **MAJOR**: removals, renames, meaning changes, or any other breaking contract change
+
+Remapping a semantic token to a different core token while meaning is preserved is MINOR or PATCH — the name and its meaning are the contract, not the resolved value. A meaning change is never a remap: it is a new token plus deprecation of the old one.
 
 ## Review
 

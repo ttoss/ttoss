@@ -35,8 +35,9 @@ import type { IconProps } from '../Icon';
 // ToggleButton is the component that proves the Action token tree needs BOTH
 // `active` (transient pointer-down) and `pressed` (persistent toggle-on)
 // state colors. React Aria exposes the persistent state as `isSelected`; the
-// shared `resolveInteractiveStyle` cascade maps `isSelected → checked` (the
-// Selection semantics) and does not model `pressed` at all. Rather than bend
+// shared `resolveInteractiveStyle` cascade resolves `isSelected` to the
+// selection-language keys — `checked` where the consulted set declares it,
+// else `selected` (ADR-044) — and does not model `pressed` at all. Rather than bend
 // the global STATE_PRIORITY tuple (entity-specific flag→state mapping does
 // not belong in one shared cascade), ToggleButton resolves its colors inline
 // and maps `isSelected → pressed`. No taxonomy change was required —

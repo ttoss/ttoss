@@ -326,7 +326,41 @@ disabled > invalid > expanded > indeterminate > current > selected
 `STATE_PRIORITY` is the single source of truth for this cascade. Do **not**
 duplicate the order in component code — use `resolveInteractiveStyle` (§3.1).
 The tuple also binds each React Aria flag to the token-state key it selects
-(e.g. `isSelected → checked`, `isPressed → active`, `isHovered → hover`).
+(e.g. `isPressed → active`, `isHovered → hover`).
+
+One binding is **context-aware** (ADR-044). `isSelected` serves two theme
+languages that fsl-theme's `families/colors.ts` keeps apart by law: `checked`
+(a two-state control that is on — only the `input` context may declare it)
+and `selected` (membership in a set — declared by `navigation` and
+`informational`, and by `input` backgrounds/borders for picker options). Per
+consulted token set, the resolution order is explicit and deterministic:
+
+```
+checked  — when the consulted set declares it
+selected — when the set declares that instead
+miss     — `undefined`, so the call site's `?? states.default` applies
+```
+
+Input/Selection controls therefore land on `checked` by declaration — never
+by accident of an undeclared key silently falling to `default` — while
+navigation/informational sets reach the theme's `selected` tokens. Where a
+set declares both (input backgrounds/borders), `checked` wins: every consumer
+passing `isSelected` against those sets ships the two-state language today.
+
+The transient `isPressed` flag stays collapsed into `active` (ADR-044) — a
+semantic reservation, not a gap in the theme. The `pressed` token state
+carries a different meaning that shares the word: the **persistent**
+toggle-on, which `ToggleButton` reads inline by mapping its `isSelected` to
+`pressed` (ADR-042 names that mapping as semantics, not drift), and which
+the base theme ships divergent from `active` for exactly that reason.
+Mapping the momentary pointer-down to `active` keeps the persistent state
+reserved for toggle semantics. Readmission criterion: a component whose
+**transient** press must paint differently from `active` at the token
+level. And two states have no render-prop flag at all: `droptarget` because
+no component surfaces a drag target yet (pending evidence), `visited`
+because browsers hide `:visited` from JavaScript for privacy — a
+**structural impossibility** per FSL Structural Language §10.1, not a
+pending flag.
 
 Template (React Aria pattern, background / border / text dimensions):
 
