@@ -43,6 +43,10 @@
     "defaultMessage": "Two sources conflict with each other.",
     "description": "Warnings panel: two sources declare overlapping scope."
   },
+  "DQdF4C": {
+    "defaultMessage": "Play",
+    "description": "Label for the timeline button that auto-advances the year in the preview sidebar."
+  },
   "IU+fm9": {
     "defaultMessage": "Open details",
     "description": "Accessible label for the button that opens the right sidebar."
@@ -134,5 +138,9 @@
   "yb6iwx": {
     "defaultMessage": "The visualization spec targets an unsupported schema version.",
     "description": "Warnings panel: spec.schemaVersion is not supported."
+  },
+  "yeNXkW": {
+    "defaultMessage": "Pause",
+    "description": "Label for the timeline button that stops the auto-advancing year in the preview sidebar."
   }
 }

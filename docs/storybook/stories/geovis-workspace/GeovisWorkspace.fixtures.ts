@@ -206,6 +206,8 @@ export const buildPolicyViolationSpec = (): VisualizationSpec => {
   };
 };
 
+export { sidebarPreviewConfig } from './GeovisWorkspace.sidebarPreview.fixture';
+
 /**
  * Grouped/carousel variant: a single menu whose 20+ variations are split across
  * six groups. The left sidebar shows a row of group tabs at the top and only

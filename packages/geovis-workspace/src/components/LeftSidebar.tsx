@@ -7,6 +7,7 @@ import { resolveMenus } from '../menus';
 import { messages } from '../messages';
 import { MenuButton } from './MenuButton';
 import { MenuCarousel } from './MenuCarousel';
+import { SidebarPreview } from './SidebarPreview';
 
 /** Default content of the `controls` slot: the config-driven menu groups. */
 const DefaultControlsPanel = () => {
@@ -71,6 +72,13 @@ export const LeftSidebar = () => {
   const { config, setLeftSidebarOpen } = useGeovisWorkspace();
 
   const ControlsOverride = config.slots?.controls?.component;
+
+  // Experimental opt-in: the preview sidebar brings its own full card chrome,
+  // so it replaces the default ivory panel entirely. A `controls` slot override
+  // still wins, keeping that escape hatch intact.
+  if (config.leftSidebarPreview && !ControlsOverride) {
+    return <SidebarPreview preview={config.leftSidebarPreview} />;
+  }
 
   return (
     <Flex

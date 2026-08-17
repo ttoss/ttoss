@@ -66,4 +66,14 @@ export const messages = defineMessages({
     description:
       'Accessible label for the arrow that scrolls the grouped-menu carousel to later groups.',
   },
+  play: {
+    defaultMessage: 'Play',
+    description:
+      'Label for the timeline button that auto-advances the year in the preview sidebar.',
+  },
+  pause: {
+    defaultMessage: 'Pause',
+    description:
+      'Label for the timeline button that stops the auto-advancing year in the preview sidebar.',
+  },
 });
