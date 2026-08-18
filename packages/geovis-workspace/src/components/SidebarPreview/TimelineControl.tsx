@@ -159,10 +159,80 @@ const PlayButton = ({
   );
 };
 
+/** Label + numeric seconds input controlling the play auto-advance cadence. */
+const IntervalControl = ({
+  seconds,
+  onChange,
+}: {
+  seconds: number;
+  onChange: (next: number) => void;
+}) => {
+  return (
+    <Flex
+      sx={{
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: '12px',
+        paddingX: '4px',
+      }}
+    >
+      <Text
+        sx={{
+          fontFamily: FONT_HEAD,
+          fontSize: '11px',
+          letterSpacing: '0.05em',
+          textTransform: 'uppercase',
+          color: COLOR.textFaint,
+        }}
+      >
+        Intervalo de reprodução
+      </Text>
+
+      <Flex sx={{ alignItems: 'center', gap: '6px' }}>
+        <input
+          type="number"
+          min={0.1}
+          max={10}
+          step={0.1}
+          value={seconds}
+          onChange={(event) => {
+            const next = parseFloat(event.target.value);
+            if (!Number.isNaN(next) && next >= 0.1 && next <= 10) {
+              onChange(next);
+            }
+          }}
+          style={{
+            width: '52px',
+            height: '28px',
+            textAlign: 'center',
+            outline: 'none',
+            borderRadius: '6px',
+            background: COLOR.fill,
+            border: `1px solid ${COLOR.border}`,
+            color: COLOR.textStrong,
+            fontFamily: FONT_MONO,
+            fontSize: '12px',
+          }}
+        />
+        <Text
+          sx={{
+            fontFamily: FONT_MONO,
+            fontSize: '11px',
+            color: COLOR.textFaint,
+          }}
+        >
+          s
+        </Text>
+      </Flex>
+    </Flex>
+  );
+};
+
 /**
  * The timeline filter: histogram + big value readout + range slider + a
- * prev / play-pause / next row. Play/pause and the current value are lifted to
- * the sidebar so the footer and auto-advance can share them.
+ * prev / play-pause / next row, plus a playback-interval input. Play/pause, the
+ * current value and the interval are lifted to the sidebar so the footer and
+ * auto-advance can share them.
  */
 export const TimelineControl = ({
   control,
@@ -170,12 +240,16 @@ export const TimelineControl = ({
   onChange,
   playing,
   onTogglePlay,
+  intervalSeconds,
+  onIntervalChange,
 }: {
   control: GeovisWorkspaceSidebarTimelineFilter;
   value: number;
   onChange: (next: number) => void;
   playing: boolean;
   onTogglePlay: () => void;
+  intervalSeconds: number;
+  onIntervalChange: (next: number) => void;
 }) => {
   const { min, max, step = 1, histogram, unitLabel } = control;
 
@@ -278,6 +352,8 @@ export const TimelineControl = ({
           }}
         />
       </Flex>
+
+      <IntervalControl seconds={intervalSeconds} onChange={onIntervalChange} />
     </Box>
   );
 };

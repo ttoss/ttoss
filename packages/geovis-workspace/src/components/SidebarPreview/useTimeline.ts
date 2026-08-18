@@ -2,7 +2,9 @@ import * as React from 'react';
 
 import type { GeovisWorkspaceSidebarTimelineFilter } from '../../context/GeovisWorkspaceContext';
 import { useGeovisWorkspace } from '../../hooks/useGeovisWorkspace';
-import { PLAY_INTERVAL_MS } from './theme';
+
+/** Default seconds between auto-advance steps while playing. */
+const DEFAULT_PLAY_INTERVAL_SECONDS = 1;
 
 const seedYear = ({
   timeline,
@@ -52,6 +54,12 @@ export const useTimeline = (
 
   const [playing, setPlaying] = React.useState(false);
 
+  // Seconds between auto-advance steps, editable via the timeline's interval
+  // input; clamped to [0.1, 10] by that control.
+  const [intervalSeconds, setIntervalSeconds] = React.useState(
+    DEFAULT_PLAY_INTERVAL_SECONDS
+  );
+
   // Auto-advance the year while playing; stop once it reaches the ceiling.
   React.useEffect(() => {
     if (!playing) {
@@ -66,12 +74,12 @@ export const useTimeline = (
         }
         return Math.min(timelineMax, current + timelineStep);
       });
-    }, PLAY_INTERVAL_MS);
+    }, intervalSeconds * 1000);
 
     return () => {
       clearInterval(id);
     };
-  }, [playing, timelineMax, timelineStep]);
+  }, [playing, timelineMax, timelineStep, intervalSeconds]);
 
   const togglePlay = () => {
     setPlaying((current) => {
@@ -83,5 +91,12 @@ export const useTimeline = (
     });
   };
 
-  return { year, setYear, playing, togglePlay };
+  return {
+    year,
+    setYear,
+    playing,
+    togglePlay,
+    intervalSeconds,
+    setIntervalSeconds,
+  };
 };

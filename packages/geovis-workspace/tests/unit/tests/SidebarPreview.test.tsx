@@ -309,9 +309,9 @@ test('play advances the year on a timer and stops at the ceiling', async () => {
     });
     expect(screen.getByRole('button', { name: 'Pause' })).toBeInTheDocument();
 
-    // 2023 → 2024 after one tick.
+    // 2023 → 2024 after one tick (default cadence is 1s).
     act(() => {
-      jest.advanceTimersByTime(900);
+      jest.advanceTimersByTime(1000);
     });
     expect(onVariableChange).toHaveBeenCalledWith(
       expect.objectContaining({ ano: '2024' })
@@ -319,7 +319,7 @@ test('play advances the year on a timer and stops at the ceiling', async () => {
 
     // At the ceiling the next tick stops playback.
     act(() => {
-      jest.advanceTimersByTime(900);
+      jest.advanceTimersByTime(1000);
     });
     expect(screen.getByRole('button', { name: 'Play' })).toBeInTheDocument();
   } finally {
@@ -507,6 +507,34 @@ test('the locator zoom action is disabled until something is selected', async ()
   expect(
     screen.getByRole('button', { name: /Selecione um município/ })
   ).toBeInTheDocument();
+});
+
+test('the playback interval input accepts valid seconds and rejects the rest', async () => {
+  renderPreview();
+  await openFiltros();
+
+  const interval = screen.getByRole('spinbutton');
+  expect(interval).toHaveValue(1);
+
+  // A value inside [0.1, 10] is accepted.
+  await act(async () => {
+    fireEvent.change(interval, { target: { value: '2.5' } });
+  });
+  expect(interval).toHaveValue(2.5);
+
+  // Out-of-range and non-numeric values are ignored (stays at 2.5).
+  await act(async () => {
+    fireEvent.change(interval, { target: { value: '20' } });
+  });
+  expect(interval).toHaveValue(2.5);
+  await act(async () => {
+    fireEvent.change(interval, { target: { value: '0.05' } });
+  });
+  expect(interval).toHaveValue(2.5);
+  await act(async () => {
+    fireEvent.change(interval, { target: { value: '' } });
+  });
+  expect(interval).toHaveValue(2.5);
 });
 
 test('collapsing a filter block hides its body', async () => {

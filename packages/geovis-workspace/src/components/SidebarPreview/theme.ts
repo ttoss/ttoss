@@ -28,6 +28,3 @@ export const FONT_HEAD = "'Barlow Condensed', sans-serif";
 
 /** JetBrains Mono monospace font stack used for numeric readouts. */
 export const FONT_MONO = "'JetBrains Mono', monospace";
-
-/** Auto-advance cadence, in milliseconds, while the timeline is playing. */
-export const PLAY_INTERVAL_MS = 900;

@@ -17,6 +17,8 @@ export const FiltersTab = ({
   onYearChange,
   playing,
   onTogglePlay,
+  intervalSeconds,
+  onIntervalChange,
   chipSelected,
   onChipToggle,
   onChipClear,
@@ -26,6 +28,8 @@ export const FiltersTab = ({
   onYearChange: (next: number) => void;
   playing: boolean;
   onTogglePlay: () => void;
+  intervalSeconds: number;
+  onIntervalChange: (next: number) => void;
   chipSelected: string[];
   onChipToggle: (id: string) => void;
   onChipClear: () => void;
@@ -57,6 +61,8 @@ export const FiltersTab = ({
                 onChange={onYearChange}
                 playing={playing}
                 onTogglePlay={onTogglePlay}
+                intervalSeconds={intervalSeconds}
+                onIntervalChange={onIntervalChange}
               />
             ) : control.kind === 'chips' ? (
               <ChipsControl
