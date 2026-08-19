@@ -172,7 +172,7 @@ Seeded directly from PRD-004's own field enumeration (metrics, datasets, geograp
         "aliases": { "type": "array", "items": { "type": "string" } },
         "kind": {
           "type": "string",
-          "enum": ["administrative", "grid", "poi", "custom"]
+          "enum": ["administrative", "grid", "poi", "other"]
         },
         "level": { "type": "number" },
         "parentId": { "type": "string" },
@@ -293,14 +293,14 @@ export interface Dataset {
  * How a geography's features are structured (D7).
  * Absent ⇒ treated as 'administrative' (the commonest case).
  */
-export type GeographyKind = 'administrative' | 'grid' | 'poi' | 'custom';
+export type GeographyKind = 'administrative' | 'grid' | 'poi' | 'other';
 
 /**
  * How a geography is defined (D7) and how it can be joined to datasets. The four kinds are:
- * administrative boundary (IBGE malha territorial), spatial-index grid (H3/S2/geohash, IBGE grade estatística), point-of-interest collection, or custom parcel (SICAR rural property)
+ * administrative boundary (IBGE malha territorial), spatial-index grid (H3/S2/geohash, IBGE grade estatística), point-of-interest collection, or `other` — the wide-scope catch-all for anything that doesn't fit the first three, e.g. a SICAR rural parcel (`imóvel`, arbitrary polygon, not part of any official hierarchy), but not limited to that example: any future domain's non-hierarchical, non-administrative, non-POI geography lands here without requiring an enum change.
  * grid resolution (H3/S2/geohash cell size, IBGE grade)
  * poi collection (e.g. IBGE malha de equipamentos urbanos).
- * custom parcel (SICAR rural property, arbitrary polygon, not part of any official hierarchy).
+ * `other` — catch-all for a geography that is genuinely none of the above; SICAR rural parcels are today's example, not the definition.
  */
 
 export interface Geography {
@@ -312,7 +312,7 @@ export interface Geography {
   description: string;
   /** Alternative names for search/discovery, e.g. 'município' for 'municipality' */
   aliases?: string[];
-  /** Discriminates admin boundary vs. spatial-index grid vs. POI collection vs. custom parcel */
+  /** Discriminates admin boundary vs. spatial-index grid vs. POI collection vs. other (catch-all) */
   kind?: GeographyKind;
   /** Ordinal depth in a nesting hierarchy — lower is coarser (0 = country, 1 = state, 2 = city) */
   level?: number;
@@ -429,7 +429,9 @@ PRD-004's literal field enumeration (D4) describes an abstract catalog but says 
 
 The four structural gaps and their minimal closure:
 
-1. **A flat `Geography` cannot say what kind of geography it is.** The user's domains explicitly separate _malhas de indexação espacial_ (H3/S2/geohash, IBGE grade estatística), _limites administrativos / fronteiras_ (IBGE malhas territoriais), and _pontos de interesse_. These resolve differently (a grid cell tessellation is not an administrative boundary is not a POI cloud). Added: `Geography.kind: 'administrative' | 'grid' | 'poi' | 'custom'` (optional, absence ⇒ `administrative`, the commonest case, so minimal catalogs stay minimal). `custom` is where SICAR rural parcels (`imóveis` — arbitrary polygons, not part of any official hierarchy) land.
+1. **A flat `Geography` cannot say what kind of geography it is.** The user's domains explicitly separate _malhas de indexação espacial_ (H3/S2/geohash, IBGE grade estatística), _limites administrativos / fronteiras_ (IBGE malhas territoriais), and _pontos de interesse_. These resolve differently (a grid cell tessellation is not an administrative boundary is not a POI cloud). Added: `Geography.kind: 'administrative' | 'grid' | 'poi' | 'other'` (optional, absence ⇒ `administrative`, the commonest case, so minimal catalogs stay minimal).
+
+   > **Renamed (2026-08-19): `custom` → `other`.** The value is the field's wide-scope safety valve, not a fourth named category on par with the other three — it is deliberately the bucket for whatever a future domain doesn't classify as administrative/grid/poi, and `other` names that role honestly where `custom` read as "a defined kind that happens to be user-authored" (SICAR rural parcels, `imóveis`, are today's example of something landing here, not what the value means). Kept single-valued, not an array: a geography picks its dominant/primary kind; if a source genuinely serves two roles (e.g. a grid cell also used as an administrative reporting unit), that is a product-level modeling choice for the catalog author to resolve by picking one, not a case this field is designed to represent simultaneously — revisit only if a real fixture forces the question.
 
 2. **A flat `Geography` cannot express hierarchy.** IBGE territory is strictly nested (país → UF → mesorregião → microrregião → município → distrito → setor censitário), and _demografia_/_perfil socioeconômico_ analyses roll up and drill down that hierarchy constantly. Added: `Geography.level?: number` (ordinal depth, coarser = lower) and `Geography.parentId?: string` (the containing geography one level up). Together they make roll-up/drill-down traversable without hard-coding IBGE's levels into the package.
 
@@ -472,6 +474,11 @@ export type CatalogSpatialDescribed = Omit<SpatialDescribed, 'grain'> & {
 ```
 
 `codeScheme`, `kind`, `level` and `resolution` therefore stay owned once, by `Geography` (D7). The seam is an explicit mapping function, never an inheritance rule.
+
+> **Updated (2026-08-19) — versioning and coupling implications of sharing this contract:** both artifacts' producers take `@ttoss/geovis-catalog` as an ordinary runtime/build dependency and import `Presence`/`Temporal`/`Spatial`/`Interval`/`CodedRef`/`TemporalGrain` directly (not copy-pasted), so drift is closed by construction rather than by convention. This has two implications the original decision left implicit:
+>
+> - **The dimension types are public API, versioned with the package.** A breaking change to any of them (removing a field, narrowing a union, changing `grain`'s validation) is a `@ttoss/geovis-catalog` major version bump, the same as any other exported type; additive fields are minor/patch, per ordinary semver. This is what actually prevents a repeat of the `cozsolidarias`-2.0.0-vs-`imagemsp`-1.0.0 divergence: that gap opened because both pilots held **private copies** with no dependency link at all, so drift was invisible until someone compared them. Once both import from the same package, "which version of the shared types" is a visible line in each pilot's own `package.json`, not a silent copy-paste gap — each pilot upgrades to a new major on its own schedule, same as any dependency bump.
+> - **This is a different version from `Catalog.version` (D4).** `Catalog.version` is a per-organization identifier for one _catalog instance_ (e.g. `'2026-Q3'`), opaque to the package. The package's own semver version (what this note is about) is a property of the _dimension-type contract_ both artifacts compile against. Neither is derived from the other; conflating them was a real risk once "version" started meaning three different things (package semver, `Catalog.version`, and the pilots' own `schema_version` field on the dictionary), so this note exists to keep them distinct in the plan text.
 
 ### D9 — Data binding: `artifact` and `columns`
 
@@ -558,7 +565,7 @@ Create `packages/geovis-catalog` with the scaffold in D2: `package.json` (with t
 
 ### Phase 2 — Catalog schema and types
 
-Implement `catalog.schema.json` and the `Catalog`/`Metric`/`Dataset`/`Geography`/`Join`/`FilterField`/`MapTypeCatalogEntry` interfaces (D4, including the D7 fields) in `src/schema/`, exported from `src/index.ts`. One fixture catalog (`tests/unit/fixtures/sampleCatalog.ts`) covering every field, used by this phase's and later phases' tests — modeled on real Brazilian-source shapes so the D7 compatibility claims are concrete, not asserted: an IBGE administrative hierarchy (`kind: 'administrative'`, `codeScheme: 'ibge:uf'` at `level` 1 → `codeScheme: 'ibge:municipio'` at a deeper `level` with `parentId` pointing at the UF), an H3 grid geography (`kind: 'grid'`, `codeScheme: 'h3'`, `resolution: 'h3:8'`), a SICAR parcel geography (`kind: 'custom'`, `codeScheme: 'sicar:imovel'`), a demografia dataset with a `density` metric and `source: 'ibge'`, an infrastructure dataset with a `distance` metric, and an IPEA socioeconomic dataset (`source: 'ipea'`) using existing `index`/`ratio` kinds.
+Implement `catalog.schema.json` and the `Catalog`/`Metric`/`Dataset`/`Geography`/`Join`/`FilterField`/`MapTypeCatalogEntry` interfaces (D4, including the D7 fields) in `src/schema/`, exported from `src/index.ts`. One fixture catalog (`tests/unit/fixtures/sampleCatalog.ts`) covering every field, used by this phase's and later phases' tests — modeled on real Brazilian-source shapes so the D7 compatibility claims are concrete, not asserted: an IBGE administrative hierarchy (`kind: 'administrative'`, `codeScheme: 'ibge:uf'` at `level` 1 → `codeScheme: 'ibge:municipio'` at a deeper `level` with `parentId` pointing at the UF), an H3 grid geography (`kind: 'grid'`, `codeScheme: 'h3'`, `resolution: 'h3:8'`), a SICAR parcel geography (`kind: 'other'`, `codeScheme: 'sicar:imovel'`), a demografia dataset with a `density` metric and `source: 'ibge'`, an infrastructure dataset with a `distance` metric, and an IPEA socioeconomic dataset (`source: 'ipea'`) using existing `index`/`ratio` kinds.
 
 **Demo:** `new Ajv2020({ strict: false }).compile(catalogSchema)(sampleCatalog)` succeeds; a deliberately malformed fixture (missing required field) fails with an Ajv error pointing at the missing field; a geography with an unknown `kind` value fails validation.
 **Acceptance:** one test per field group (metrics, datasets, geographies, joins, mapTypes, filters, permissions-optionality) plus the D7 fields (`kind`/`level`/`parentId`/`codeScheme`/`resolution`, `Metric.kind: 'density' | 'distance'`, `Dataset.source`); a test confirms a `Geography` omitting `kind` still validates (optional-with-default contract); `Catalog` type exported from `src/index.ts`; a schema/type parity test asserts the JSON Schema and the hand-written interface declare the same field set (D4/D7); public-contract test (mirroring `@ttoss/geovis`'s `publicContract.test.ts` pattern) locks the export surface.
