@@ -130,15 +130,15 @@ const TabBar = ({
   );
 };
 
-/** The footer: the active variation label and, when present, the current year. */
+/** The footer: the active variation label and, when present, the current timeline value. */
 const Footer = ({
   variationLabel,
-  year,
-  showYear,
+  value,
+  showValue,
 }: {
   variationLabel?: string;
-  year: number;
-  showYear: boolean;
+  value: number;
+  showValue: boolean;
 }) => {
   return (
     <Flex
@@ -176,7 +176,7 @@ const Footer = ({
         </Text>
       </Flex>
 
-      {showYear ? (
+      {showValue ? (
         <Text
           sx={{
             fontFamily: FONT_MONO,
@@ -184,7 +184,7 @@ const Footer = ({
             color: COLOR.textGhost,
           }}
         >
-          {year}
+          {value}
         </Text>
       ) : null}
     </Flex>
@@ -239,8 +239,8 @@ const TabContent = ({
       ) : section?.body.kind === 'filters' ? (
         <FiltersTab
           blocks={blocks}
-          year={timeline.year}
-          onYearChange={timeline.setYear}
+          value={timeline.value}
+          onValueChange={timeline.setValue}
           playing={timeline.playing}
           onTogglePlay={timeline.togglePlay}
           intervalSeconds={timeline.intervalSeconds}
@@ -258,7 +258,8 @@ const TabContent = ({
  * The experimental preview left sidebar: a single ivory card with a header that
  * mirrors the active tab (its icon + title + a close button), an icon tab bar
  * (one tab per section), the active tab's body, and a footer showing the active
- * variation and year. The variations tab drives the shared selection; the
+ * variation and current timeline value. The variations tab drives the shared
+ * selection; the
  * filter controls are visual-only, holding their state locally or lifted here
  * for the badge/footer.
  */
@@ -323,8 +324,8 @@ export const SidebarPreview = ({
 
       <Footer
         variationLabel={activeVariation?.label}
-        year={timelineState.year}
-        showYear={Boolean(timeline)}
+        value={timelineState.value}
+        showValue={Boolean(timeline)}
       />
     </Flex>
   );

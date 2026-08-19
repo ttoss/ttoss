@@ -43,10 +43,6 @@
     "defaultMessage": "Two sources conflict with each other.",
     "description": "Warnings panel: two sources declare overlapping scope."
   },
-  "DQdF4C": {
-    "defaultMessage": "Play",
-    "description": "Label for the timeline button that auto-advances the year in the preview sidebar."
-  },
   "IU+fm9": {
     "defaultMessage": "Open details",
     "description": "Accessible label for the button that opens the right sidebar."
@@ -67,6 +63,10 @@
     "defaultMessage": "This data feature is not supported.",
     "description": "Warnings panel: a data-level feature is not implemented by the engine adapter."
   },
+  "NNlALX": {
+    "defaultMessage": "Pause",
+    "description": "Label for the timeline button that stops the auto-advancing value in the preview sidebar."
+  },
   "Ng1Mep": {
     "defaultMessage": "This map engine is not supported.",
     "description": "Warnings panel: spec.engine has no matching adapter."
@@ -82,6 +82,10 @@
   "TzOKEV": {
     "defaultMessage": "Legend thresholds must be in ascending order.",
     "description": "Warnings panel: colorBy.thresholds are not sorted."
+  },
+  "U20GSl": {
+    "defaultMessage": "Play",
+    "description": "Label for the timeline button that auto-advances the current value in the preview sidebar."
   },
   "V3z2n/": {
     "defaultMessage": "The size mode configuration is invalid.",
@@ -138,9 +142,5 @@
   "yb6iwx": {
     "defaultMessage": "The visualization spec targets an unsupported schema version.",
     "description": "Warnings panel: spec.schemaVersion is not supported."
-  },
-  "yeNXkW": {
-    "defaultMessage": "Pause",
-    "description": "Label for the timeline button that stops the auto-advancing year in the preview sidebar."
   }
 }

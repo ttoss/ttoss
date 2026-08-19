@@ -13,8 +13,8 @@ import { TimelineControl } from './TimelineControl';
  */
 export const FiltersTab = ({
   blocks,
-  year,
-  onYearChange,
+  value,
+  onValueChange,
   playing,
   onTogglePlay,
   intervalSeconds,
@@ -24,8 +24,8 @@ export const FiltersTab = ({
   onChipClear,
 }: {
   blocks: GeovisWorkspaceSidebarFilterBlock[];
-  year: number;
-  onYearChange: (next: number) => void;
+  value: number;
+  onValueChange: (next: number) => void;
   playing: boolean;
   onTogglePlay: () => void;
   intervalSeconds: number;
@@ -57,8 +57,8 @@ export const FiltersTab = ({
             {control.kind === 'timeline' ? (
               <TimelineControl
                 control={control}
-                value={year}
-                onChange={onYearChange}
+                value={value}
+                onChange={onValueChange}
                 playing={playing}
                 onTogglePlay={onTogglePlay}
                 intervalSeconds={intervalSeconds}

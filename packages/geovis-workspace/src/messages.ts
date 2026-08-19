@@ -69,11 +69,11 @@ export const messages = defineMessages({
   play: {
     defaultMessage: 'Play',
     description:
-      'Label for the timeline button that auto-advances the year in the preview sidebar.',
+      'Label for the timeline button that auto-advances the current value in the preview sidebar.',
   },
   pause: {
     defaultMessage: 'Pause',
     description:
-      'Label for the timeline button that stops the auto-advancing year in the preview sidebar.',
+      'Label for the timeline button that stops the auto-advancing value in the preview sidebar.',
   },
 });

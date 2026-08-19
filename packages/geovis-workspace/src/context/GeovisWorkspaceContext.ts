@@ -227,8 +227,8 @@ export interface GeovisWorkspaceSidebarVariationsBody {
 }
 
 /**
- * A timeline filter: a year (or numeric) range with an optional mini histogram
- * and prev / play-pause / next controls.
+ * A timeline filter: a numeric range (years, months, days, or any step) with an
+ * optional mini histogram and prev / play-pause / next controls.
  *
  * When {@link menuId} is set, the current value is written to the shared
  * selection (`selection[menuId]`, as a string) so the app can react to it —
