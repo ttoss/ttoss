@@ -803,6 +803,18 @@
           "type": "string",
           "description": "Secondary description rendered below the title."
         },
+        "icon": {
+          "type": "string",
+          "description": "Icon rendered in a tinted chip beside the title, as a @ttoss/react-icons name (e.g. 'lucide:tractor')."
+        },
+        "iconColor": {
+          "type": "string",
+          "description": "Accent color for the icon chip. Defaults to the legend's first swatch color."
+        },
+        "footerValue": {
+          "type": "string",
+          "description": "Short value shown at the far right of the legend footer, e.g. a reference year."
+        },
         "labelFormat": {
           "$ref": "#/$defs/LabelFormatSpec"
         },

@@ -289,17 +289,6 @@ export const hasLegendContent = (
 };
 
 /**
- * Any legend past the first slot in its position group gets a top divider —
- * `GeoVisLegendBody` only reaches this check once `hasLegendContent` already
- * confirmed it has something to render, so no separate content check needed.
- */
-export const shouldShowTopDivider = (
-  isFirstInPositionGroup: boolean
-): boolean => {
-  return !isFirstInPositionGroup;
-};
-
-/**
  * Ids of every legend (top-level or per-layer) declaring the given
  * `position`, in declaration order. Used to stack same-position legends in
  * one overlay and to know which member is first (no leading divider).
@@ -351,14 +340,16 @@ export const buildContainerStyle = (
   position: LegendPosition | undefined
 ): React.CSSProperties => {
   const positionStyle = resolvePositionStyle(position);
-  if (!positionStyle) return {};
   return {
-    ...positionStyle,
-    backgroundColor: 'rgba(255,255,255,0.95)',
-    borderRadius: 6,
-    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-    padding: '8px 12px',
-    width: '16rem',
+    ...(positionStyle ?? {}),
+    display: 'flex',
+    flexDirection: 'column',
+    width: 276,
+    backgroundColor: '#ffffff',
+    borderRadius: 14,
+    boxShadow: '0 4px 24px rgba(0,0,0,0.11)',
+    border: '1px solid rgba(0,0,0,0.07)',
+    overflow: 'hidden',
   };
 };
 
@@ -371,17 +362,52 @@ export const buildReferenceContent = (
   return null;
 };
 
-export const BORDER_COLOR = '#d1d5db';
-export const MUTED_COLOR = '#6b7280';
+/* Prototype-aligned legend styling tokens. */
+export const SECTION_DIVIDER = 'rgba(0,0,0,0.06)';
+export const BORDER_COLOR = 'rgba(0,0,0,0.06)';
+export const MUTED_COLOR = '#6b7a90';
+export const TITLE_COLOR = '#1a2235';
+export const DESCRIPTION_COLOR = '#5d6b7e';
+
+/** Barlow Condensed heading stack used for the legend title. */
+export const FONT_HEAD = "'Barlow Condensed', sans-serif";
+/** JetBrains Mono stack used for the swatch labels and footer value. */
+export const FONT_MONO = "'JetBrains Mono', monospace";
+
+export const headerSectionStyle: React.CSSProperties = {
+  padding: '16px 18px 14px',
+};
+
+export const scaleSectionStyle: React.CSSProperties = {
+  padding: '14px 18px',
+};
+
+export const footerSectionStyle: React.CSSProperties = {
+  padding: '12px 18px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 10,
+};
 
 export const swatchBase: React.CSSProperties = {
   display: 'inline-block',
-  height: 12,
+  height: 14,
+  width: 14,
   marginRight: 8,
-  width: 12,
+  borderRadius: 3,
+  flexShrink: 0,
 };
 
 export const rowStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
+};
+
+/** Accent color for the icon chip and footer value: first swatch, else muted. */
+export const resolveSwatchColor = (
+  items: LegendItem[],
+  legend: LegendSpec
+): string => {
+  return items[0]?.color ?? legend.colorBy?.defaultColor ?? MUTED_COLOR;
 };

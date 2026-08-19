@@ -83,6 +83,9 @@ Each entry in `spec.legends` (or `layer.legends`) defines one choropleth legend.
 | `colorBy`       | `ColorBy`           | ✓        | Color-by configuration (`categorical` or `quantitative`).                                                                                           |
 | `title`         | `string`            |          | Short heading rendered above the swatches.                                                                                                          |
 | `subtitle`      | `string`            |          | Secondary description rendered below the title.                                                                                                     |
+| `icon`          | `string`            |          | Icon shown in a tinted chip beside the title, as a [`@ttoss/react-icons`](https://storybook.ttoss.dev/) name (e.g. `'lucide:tractor'`).             |
+| `iconColor`     | `string`            |          | Accent color (hex) tinting the `icon` chip. Defaults to the legend's first swatch color.                                                            |
+| `footerValue`   | `string`            |          | Short value shown at the far right of the footer, e.g. a reference year (`'2024'`).                                                                 |
 | `labelFormat`   | `LabelFormatSpec`   |          | Controls how quantitative bin labels are generated. Defaults to `'range'` style when omitted. See [LabelFormatSpec](#labelformatspec) table below.  |
 | `normalization` | `NormalizationSpec` |          | Statistical normalisation metadata for the mapped values. Used to append semantic suffixes when `labelFormat.extended` is `true`.                   |
 | `position`      | `LegendPosition`    |          | Corner overlay position: `'top-left'`, `'top-right'`, `'bottom-left'`, `'bottom-right'`. When set, `GeoVisLegend` applies absolute CSS positioning. |

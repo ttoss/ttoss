@@ -1,3 +1,4 @@
+import { Icon } from '@ttoss/react-icons';
 import * as React from 'react';
 
 import type { LegendSpec, VisualizationSpec } from '../spec/types';
@@ -16,14 +17,22 @@ import {
   buildReferenceContent,
   collectLegendIdsForPosition,
   computeNormalizedBreaks,
+  DESCRIPTION_COLOR,
+  FONT_HEAD,
+  FONT_MONO,
+  footerSectionStyle,
   hasLegendContent,
+  headerSectionStyle,
   MUTED_COLOR,
   resolveFormatter,
   resolveLegend,
+  resolveSwatchColor,
   rowStyle,
+  scaleSectionStyle,
+  SECTION_DIVIDER,
   shouldShowCircleItems,
-  shouldShowTopDivider,
   swatchBase,
+  TITLE_COLOR,
 } from './GeoVisLegend.utils';
 
 export { parseReference } from './GeoVisLegend.utils';
@@ -57,34 +66,127 @@ const useGeoVisLegend = (spec: VisualizationSpec, legendId: string) => {
   }, [spec, legendId]);
 };
 
+const swatchLabelStyle: React.CSSProperties = {
+  fontFamily: FONT_MONO,
+  fontSize: 11,
+  color: MUTED_COLOR,
+  lineHeight: 1.3,
+};
+
+const listStyle: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  gap: 8,
+  margin: 0,
+  padding: 0,
+  listStyle: 'none',
+};
+
+const titleTextStyle: React.CSSProperties = {
+  fontFamily: FONT_HEAD,
+  fontWeight: 600,
+  fontSize: 15,
+  color: TITLE_COLOR,
+  lineHeight: 1.2,
+};
+
+const descriptionStyle: React.CSSProperties = {
+  fontSize: 12,
+  color: DESCRIPTION_COLOR,
+  lineHeight: 1.55,
+  margin: 0,
+};
+
+const referenceStyle: React.CSSProperties = {
+  fontSize: 11,
+  color: MUTED_COLOR,
+  flex: 1,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+};
+
+/** Tinted rounded chip holding the legend's `@ttoss/react-icons` glyph. */
+const IconChip = ({ icon, color }: { icon: string; color: string }) => {
+  return (
+    <span
+      aria-hidden="true"
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 24,
+        height: 24,
+        borderRadius: 5,
+        flexShrink: 0,
+        backgroundColor: `${color}18`,
+        color,
+      }}
+    >
+      <Icon icon={icon} style={{ fontSize: 11, color }} />
+    </span>
+  );
+};
+
+const LegendTitleRow = ({
+  icon,
+  color,
+  title,
+  hasSubtitle,
+}: {
+  icon: string | undefined;
+  color: string;
+  title: string | undefined;
+  hasSubtitle: boolean;
+}) => {
+  if (!icon && !title) return null;
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        marginBottom: hasSubtitle ? 5 : 0,
+      }}
+    >
+      {!!icon && <IconChip icon={icon} color={color} />}
+      {!!title && <span style={titleTextStyle}>{title}</span>}
+    </div>
+  );
+};
+
 const GeoVisLegendHeader = ({
-  showTopDivider,
+  icon,
+  iconColor,
   title,
   subtitle,
+  hasContentBelow,
 }: {
-  showTopDivider: boolean;
+  icon: string | undefined;
+  iconColor: string;
   title: string | undefined;
   subtitle: string | undefined;
+  hasContentBelow: boolean;
 }) => {
+  if (!icon && !title && !subtitle) return null;
   return (
-    <>
-      {showTopDivider && (
-        <div
-          aria-hidden="true"
-          style={{ borderTop: `1px solid ${BORDER_COLOR}`, margin: '4px 0' }}
-        />
-      )}
-      {!!title && (
-        <p style={{ fontWeight: 600, margin: '0 0 2px', marginTop: 16 }}>
-          {title}
-        </p>
-      )}
-      {!!subtitle && (
-        <p style={{ color: MUTED_COLOR, fontSize: 12, margin: '0 0 4px' }}>
-          {subtitle}
-        </p>
-      )}
-    </>
+    <div
+      style={{
+        ...headerSectionStyle,
+        ...(hasContentBelow
+          ? { borderBottom: `1px solid ${SECTION_DIVIDER}` }
+          : {}),
+      }}
+    >
+      <LegendTitleRow
+        icon={icon}
+        color={iconColor}
+        title={title}
+        hasSubtitle={!!subtitle}
+      />
+      {!!subtitle && <p style={descriptionStyle}>{subtitle}</p>}
+    </div>
   );
 };
 
@@ -110,7 +212,7 @@ const GeoVisLegendItems = ({
                 border: `1px solid ${BORDER_COLOR}`,
               }}
             />
-            <span>{item.label}</span>
+            <span style={swatchLabelStyle}>{item.label}</span>
           </li>
         );
       })}
@@ -124,7 +226,7 @@ const GeoVisLegendItems = ({
               border: '1px solid #9ca3af',
             }}
           />
-          <span>{noDataLabel}</span>
+          <span style={swatchLabelStyle}>{noDataLabel}</span>
         </li>
       )}
     </>
@@ -151,63 +253,119 @@ const GeoVisLegendItemsDivider = ({
   );
 };
 
+const LegendScale = ({
+  legend,
+  items,
+  circleItems,
+  swatchColor,
+  hasFooter,
+}: {
+  legend: LegendSpec;
+  items: LegendItem[];
+  circleItems: CircledLegendItem[];
+  swatchColor: string;
+  hasFooter: boolean;
+}) => {
+  return (
+    <ul
+      aria-label={legend.title ?? legend.id}
+      style={{
+        ...listStyle,
+        ...scaleSectionStyle,
+        ...(hasFooter ? { borderBottom: `1px solid ${SECTION_DIVIDER}` } : {}),
+      }}
+    >
+      <GeoVisLegendItems
+        items={items}
+        legendId={legend.id}
+        noDataLabel={legend.noDataLabel}
+      />
+      <GeoVisLegendItemsDivider
+        itemsCount={items.length}
+        circleItemsCount={circleItems.length}
+      />
+      <CirclesLegendItems circleItems={circleItems} swatchColor={swatchColor} />
+    </ul>
+  );
+};
+
+const LegendFooter = ({
+  referenceContent,
+  footerValue,
+  swatchColor,
+}: {
+  referenceContent: React.ReactNode;
+  footerValue: string | undefined;
+  swatchColor: string;
+}) => {
+  return (
+    <div style={footerSectionStyle}>
+      {referenceContent != null && (
+        <span style={referenceStyle}>{referenceContent}</span>
+      )}
+      {!!footerValue && (
+        <span
+          style={{
+            fontFamily: FONT_MONO,
+            fontSize: 12,
+            fontWeight: 500,
+            color: swatchColor,
+            flexShrink: 0,
+          }}
+        >
+          {footerValue}
+        </span>
+      )}
+    </div>
+  );
+};
+
 const GeoVisLegendBody = ({
   className,
   legend,
   items,
   circleItems,
   referenceContent,
-  isFirstInPositionGroup,
+  extraStyle,
 }: {
   className: string | undefined;
   legend: LegendSpec;
   items: LegendItem[];
   circleItems: CircledLegendItem[];
   referenceContent: React.ReactNode;
-  isFirstInPositionGroup: boolean;
+  extraStyle: React.CSSProperties | undefined;
 }) => {
-  const swatchColor =
-    items[0]?.color ?? legend.colorBy?.defaultColor ?? MUTED_COLOR;
-  const showTopDivider = shouldShowTopDivider(isFirstInPositionGroup);
+  const swatchColor = resolveSwatchColor(items, legend);
+  const iconColor = legend.iconColor ?? swatchColor;
+  const hasItems = items.length > 0 || circleItems.length > 0;
+  const hasFooter = referenceContent != null || !!legend.footerValue;
   return (
-    <div className={className} style={buildContainerStyle(legend.position)}>
+    <div
+      className={className}
+      style={{ ...buildContainerStyle(legend.position), ...extraStyle }}
+    >
       <GeoVisLegendHeader
-        showTopDivider={showTopDivider}
+        icon={legend.icon}
+        iconColor={iconColor}
         title={legend.title}
         subtitle={legend.subtitle}
+        hasContentBelow={hasItems || hasFooter}
       />
-      {(items.length > 0 || circleItems.length > 0) && (
-        <ul
-          aria-label={legend.title ?? legend.id}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            gap: 4,
-            margin: 0,
-            padding: 0,
-            listStyle: 'none',
-          }}
-        >
-          <GeoVisLegendItems
-            items={items}
-            legendId={legend.id}
-            noDataLabel={legend.noDataLabel}
-          />
-          <GeoVisLegendItemsDivider
-            itemsCount={items.length}
-            circleItemsCount={circleItems.length}
-          />
-          <CirclesLegendItems
-            circleItems={circleItems}
-            swatchColor={swatchColor}
-          />
-        </ul>
+      {hasItems && (
+        <LegendScale
+          legend={legend}
+          items={items}
+          circleItems={circleItems}
+          swatchColor={swatchColor}
+          hasFooter={hasFooter}
+        />
       )}
-      {referenceContent != null && (
-        <p style={{ color: MUTED_COLOR, fontSize: 11, margin: '6px 0 0' }}>
-          {referenceContent}
-        </p>
+      {hasFooter && (
+        <LegendFooter
+          referenceContent={referenceContent}
+          footerValue={legend.footerValue}
+          swatchColor={swatchColor}
+        />
       )}
     </div>
   );
@@ -243,6 +401,10 @@ export const GeoVisLegend = ({
     return buildCircledItems(circleConfig!, resolvedFormatValue);
   }, [circleConfig, resolvedFormatValue, legend, spec]);
 
+  /**
+   * When several legends stack inside one shared position group, every card
+   * after the first gets a top margin so the cards don't touch.
+   */
   const isFirstInPositionGroup = React.useMemo(() => {
     if (!noPositionWrap || !legend?.position) return true;
     return collectLegendIdsForPosition(spec, legend.position)[0] === legendId;
@@ -270,7 +432,7 @@ export const GeoVisLegend = ({
       items={items}
       circleItems={circleItems}
       referenceContent={referenceContent}
-      isFirstInPositionGroup={isFirstInPositionGroup}
+      extraStyle={isFirstInPositionGroup ? undefined : { marginTop: 8 }}
     />
   );
 };

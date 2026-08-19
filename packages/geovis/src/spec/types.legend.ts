@@ -69,8 +69,7 @@ export type QuantitativeColorByTemplate = Omit<QuantitativeColorBy, 'property'>;
 
 /** Color-by template for a layer template. */
 export type ColorByTemplate =
-  | CategoricalColorByTemplate
-  | QuantitativeColorByTemplate;
+  CategoricalColorByTemplate | QuantitativeColorByTemplate;
 
 /**
  * Controls how quantitative legend bin labels are formatted.
@@ -165,10 +164,7 @@ export type NormalizationSpec =
  * of the map engine.
  */
 export type LegendPosition =
-  | 'top-left'
-  | 'top-right'
-  | 'bottom-left'
-  | 'bottom-right';
+  'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 
 /**
  * Alternative color/legend configuration exposed by a layer. Consumers MAY
@@ -185,6 +181,21 @@ export interface LegendSpec {
   title?: string;
   /** Secondary description rendered below the title. */
   subtitle?: string;
+  /**
+   * Icon rendered in a tinted chip beside the title, as a `@ttoss/react-icons`
+   * name (e.g. `'lucide:tractor'`). When omitted no icon chip is shown.
+   */
+  icon?: string;
+  /**
+   * Accent color for the `icon` chip — tints both the glyph and (at low alpha)
+   * the chip background. Defaults to the legend's first swatch color.
+   */
+  iconColor?: string;
+  /**
+   * Short value shown at the far right of the legend footer, e.g. a reference
+   * year (`'2024'`). Rendered beside the `reference` text.
+   */
+  footerValue?: string;
   /**
    * Controls how quantitative bin labels are generated.
    * When omitted the default `range` style is used.
