@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.2.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@5.1.0...@docs/storybook@5.2.0) (2026-08-19)
+
+### Features
+
+- **geovis-workspace:** tab-based preview sidebar with time-lapse tim… ([#1200](https://github.com/ttoss/ttoss/issues/1200)) ([9880b1c](https://github.com/ttoss/ttoss/commit/9880b1cd5cf80857cdc5a198415cd25e7ead4ca1))
+
 # [5.1.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@5.0.0...@docs/storybook@5.1.0) (2026-08-12)
 
 ### Features
