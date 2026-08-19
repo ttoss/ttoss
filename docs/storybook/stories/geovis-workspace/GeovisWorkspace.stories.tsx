@@ -18,6 +18,7 @@ import {
   buildPolicyViolationSpec,
   buildSpec,
   groupedWorkspaceConfig,
+  sidebarPreviewConfig,
 } from './GeovisWorkspace.fixtures';
 
 /**
@@ -514,5 +515,52 @@ const GroupedControlsStory = () => {
 export const GroupedControls: Story = {
   render: () => {
     return <GroupedControlsStory />;
+  },
+};
+
+/**
+ * Drives the experimental preview sidebar: seeds the shared `variable`
+ * selection from the config's default variation and maps whichever variation is
+ * picked onto one of the three real color scales `buildSpec` knows, so the map
+ * recolors as variations are chosen. The Filtros tab's controls (timeline,
+ * chips, locator) are visual-only for now.
+ */
+const SidebarPreviewStory = () => {
+  const [selection, setSelection] = React.useState({ variable: 'farms' });
+
+  const visualizationSpec = React.useMemo(() => {
+    const selected = selection.variable ?? 'farms';
+
+    const index =
+      [...selected].reduce((sum, char) => {
+        return sum + char.charCodeAt(0);
+      }, 0) % KNOWN_VARIABLES.length;
+
+    return buildSpec({ variable: KNOWN_VARIABLES[index], age: '65-plus' });
+  }, [selection]);
+
+  return (
+    <GeovisWorkspace
+      config={sidebarPreviewConfig}
+      visualizationSpec={visualizationSpec}
+      variables={selection}
+      onVariableChange={setSelection}
+    />
+  );
+};
+
+/**
+ * The experimental `leftSidebarPreview` config drives a redesigned left
+ * sidebar: a card with two icon tabs whose header mirrors the active tab. The
+ * "Variações" tab is a flat list of icon-led variations (tagged by group) that
+ * recolor the map through the shared selection; the "Filtros" tab has a timeline
+ * with play/pause, emoji chips (their count shown as a tab badge), and a
+ * município locator. Opt-in and non-breaking — every other story still renders
+ * the default menu panel. The filter controls are visual-only for now (local
+ * state, not yet wired to the map).
+ */
+export const LeftSidebarPreview: Story = {
+  render: () => {
+    return <SidebarPreviewStory />;
   },
 };

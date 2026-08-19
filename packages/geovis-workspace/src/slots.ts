@@ -43,6 +43,9 @@ export const getSlotOverride = ({
 };
 
 const hasControlsDefaultContent = (config: GeovisWorkspaceConfig): boolean => {
+  // The experimental preview sidebar also lives in the `controls` slot, so it
+  // must keep the left sidebar (and its reopen button) mounted on its own.
+  if (config.leftSidebarPreview) return true;
   return resolveMenus(config).length > 0;
 };
 

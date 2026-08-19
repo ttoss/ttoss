@@ -373,6 +373,43 @@ export interface VisualizationLayer {
    * value. Gated by `CapabilitySet.dataFeatures.filter` per source type.
    */
   filter?: LayerFilter;
+  /**
+   * Opt-in animated transition applied when this layer's source `data` changes
+   * between two specs. Only honoured for `point` (circle) layers backed by a
+   * `geojson` source; ignored otherwise. When declared, the adapter fades the
+   * OLD points out while the NEW points fade in, instead of swapping data
+   * instantly. Omit it to keep the instant `setData` behaviour.
+   *
+   * @example
+   * ```ts
+   * const layer: VisualizationLayer = {
+   *   id: 'stores',
+   *   sourceId: 'stores-src',
+   *   geometry: 'point',
+   *   transition: { kind: 'crossfade', durationMs: 600, easing: 'ease-in-out' },
+   * };
+   * ```
+   */
+  transition?: LayerTransition;
+}
+
+/**
+ * Declarative, engine-agnostic animated transition for a `VisualizationLayer`.
+ * `'crossfade'` is the only kind in v1 and applies exclusively to point
+ * (circle) layers whose `geojson` source `data` reference changes.
+ *
+ * @example
+ * ```ts
+ * const transition: LayerTransition = { kind: 'crossfade', durationMs: 400 };
+ * ```
+ */
+export interface LayerTransition {
+  /** Discriminator. `'crossfade'` fades old points out while new points fade in. */
+  kind: 'crossfade';
+  /** Total fade duration in milliseconds. @default 400 */
+  durationMs?: number;
+  /** Easing curve applied to the fade progress. @default 'ease-out' */
+  easing?: 'linear' | 'ease-out' | 'ease-in-out';
 }
 
 /** Comparison used by a `LayerFilter` — a closed set mapped to native engine filter expressions. */

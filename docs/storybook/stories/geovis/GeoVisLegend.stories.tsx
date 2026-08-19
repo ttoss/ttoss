@@ -27,6 +27,10 @@ type StoryArgs = {
   legendId: string;
   title: string;
   subtitle: string;
+  icon?: string;
+  iconColor?: string;
+  footerValue?: string;
+  reference?: string;
   labelFormat: LabelFormatSpec | undefined;
   normalization: NormalizationSpec | undefined;
   thresholds: number[];
@@ -44,6 +48,10 @@ const LegendStory: StoryFn<StoryArgs> = (args) => {
         id: args.legendId,
         title: args.title || undefined,
         subtitle: args.subtitle || undefined,
+        icon: args.icon || undefined,
+        iconColor: args.iconColor || undefined,
+        footerValue: args.footerValue || undefined,
+        reference: args.reference || undefined,
         labelFormat: args.labelFormat,
         normalization: args.normalization,
         position: args.position,
@@ -92,6 +100,10 @@ export default {
   argTypes: {
     title: { control: 'text' },
     subtitle: { control: 'text' },
+    icon: { control: 'text' },
+    iconColor: { control: 'color' },
+    footerValue: { control: 'text' },
+    reference: { control: 'text' },
     position: {
       control: 'select',
       options: ['none', 'top-left', 'top-right', 'bottom-left', 'bottom-right'],
@@ -254,4 +266,27 @@ WithCustomFormatValue.args = {
   position: undefined,
   noDataLabel: '',
   formatValue: true,
+};
+
+/**
+ * Full card: icon chip beside the title, a description, a source reference and
+ * a footer value (e.g. reference year). Icon renders from `@ttoss/react-icons`
+ * (requires the icon fonts/CSS to be loaded by the host app).
+ */
+export const WithIconAndFooter: StoryFn<StoryArgs> = LegendStory.bind({});
+WithIconAndFooter.args = {
+  legendId: 'farms',
+  title: 'Farm Locations',
+  subtitle: 'Registered rural properties in the state agricultural system.',
+  icon: 'lucide:tractor',
+  iconColor: '#0e9e6e',
+  footerValue: '2024',
+  reference: 'Source: {link:IBGE Censo 2023|https://ibge.gov.br}',
+  labelFormat: { type: 'count', abbreviate: true },
+  normalization: undefined,
+  thresholds: [25, 75, 150],
+  colors: ['#d1fae5', '#6ee7b7', '#10b981', '#065f46'],
+  position: undefined,
+  noDataLabel: '',
+  formatValue: false,
 };
