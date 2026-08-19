@@ -39,7 +39,7 @@ export type CatalogResultStatus = 'mismatch' | 'invalid';
 // "insufficient-data"/"needs-clarification" reserved-but-unused precedent.
 
 export type CatalogIssueCode =
-  | 'invalid-catalog-schema' // invalid: fails the JSON Schema (Ajv)
+  | 'invalid-catalog-schema' // invalid: fails the schema (Zod, D14)
   | 'duplicate-metric-id' // invalid: two metrics share an id
   | 'duplicate-dataset-id'
   | 'duplicate-geography-id'
@@ -48,7 +48,12 @@ export type CatalogIssueCode =
   | 'unknown-dataset-geography' // mismatch: Dataset.geographyIds[] references a geography id not in catalog.geographies
   | 'unknown-dataset-metric' // mismatch: Dataset.metricIds[] references a metric id not in catalog.metrics
   | 'unknown-parent-geography' // mismatch: Geography.parentId references a geography id not in catalog.geographies
-  | 'cyclic-geography-hierarchy'; // mismatch: a Geography.parentId chain loops back on itself
+  | 'cyclic-geography-hierarchy' // mismatch: a Geography.parentId chain loops back on itself
+  | 'unknown-column-metric' // mismatch: Dataset.columns (D9) key names a metric not in that dataset's metricIds
+  | 'unknown-filter-source-dataset' // mismatch: FilterField.sourceDatasetId (D15) references a dataset id not in catalog.datasets
+  | 'unknown-filter-source-geography' // mismatch: FilterField.sourceGeographyId (D15) references a geography id not in catalog.geographies
+  | 'unknown-filter-metric' // mismatch: FilterField.metricId (D15) references a metric id not in catalog.metrics
+  | 'incompatible-parent-codescheme'; // mismatch: a Geography.parentId link joins two codeScheme namespaces (D7) that don't match
 
 export interface CatalogIssue {
   code: CatalogIssueCode;
@@ -63,6 +68,8 @@ export type CatalogResult =
 ```
 
 "Reporting through the PRD-001 taxonomy" (both PRD-004 and PRD-005's own words) is satisfied by shape-and-vocabulary parity — the same discriminated-union/status/code/subject/message/repair contract — not by importing a union that would have to grow unrelated entries.
+
+> **Extended (2026-08-19):** the five codes above (`unknown-column-metric`, `unknown-filter-source-dataset`, `unknown-filter-source-geography`, `unknown-filter-metric`, `incompatible-parent-codescheme`) were added when D5 was revisited to cover referential integrity for the D9/D15 fields and to resolve D7's codeScheme-compatibility open question. See D5 for the checks that produce them.
 
 ### D4 — Catalog schema shape (JSON Schema)
 
@@ -384,21 +391,37 @@ A schema/type parity test (Phase 2) asserts every `Catalog` field the TypeScript
 
 ### D5 — Integrity validation scope
 
+> **Updated (2026-08-19):** step 1 now runs Zod (D14) instead of Ajv; three referential checks were added for fields D9/D15 introduced after this decision was first written (`Dataset.columns`, `FilterField.sourceDatasetId`/`sourceGeographyId`, `FilterField.metricId`); and D7's "cross-`codeScheme` join validation" open question is resolved into an actual check. `Dataset.collectionId` → `Catalog.collections[]` (D13) is deliberately **not** added here — the base `Catalog` interface (D4) was never amended to declare a `collections` field, and adding that referential check would require designing that field first; left as a follow-on, not folded into this pass.
+
 `validateCatalog(input: unknown): CatalogResult` runs, in order, mirroring `validateSpec.ts`'s own structure:
 
-1. `Ajv2020.compile(catalogSchema)` run against `input` → `invalid-catalog-schema`, mapping each Ajv error the same way `validateSpec.ts` already does (`e.instancePath || '(root)'` → `subject.path`, `${path} ${e.message}` → `message`).
+1. `catalogSchema.safeParse(input)` (D14) run against `input` → on failure, `invalid-catalog-schema`, mapping each Zod issue the way `validateSpec.ts` mapped Ajv errors before it: `issue.path.length ? '/' + issue.path.join('/') : '(root)'` → `subject.path` (the same JSON-Pointer-shaped string consumers already see — D14 promises no change here), `issue.message` → `message`.
 2. id-uniqueness checks per collection → `duplicate-*-id`.
-3. Cross-reference checks — every id one object declares as pointing at another collection must resolve there:
+3. Cross-reference checks — every id or key one object declares as pointing at another collection must resolve there:
    - `join.from`/`join.to` → known dataset/geography id (`unknown-join-dataset`/`unknown-join-geography`); `join.cardinality` is one of the three allowed values (`'1:1' | '1:m' | 'm:1'`).
    - Every `Dataset.geographyIds[]` entry → known geography id (`unknown-dataset-geography`); every `Dataset.metricIds[]` entry → known metric id (`unknown-dataset-metric`). This closes a gap the original D5 draft left open: without it, a dataset could declare a `metricIds`/`geographyIds` entry that names nothing in the catalog and pass validation, directly contradicting PRD-004's own Outcome ("the catalog validates its own referential integrity").
    - Every `Geography.parentId`, when present, → a known geography id (`unknown-parent-geography`).
-4. Hierarchy integrity — walk each geography's `parentId` chain to its root; a chain that revisits a geography already seen is `cyclic-geography-hierarchy` (`subject.id` names the geography where the cycle was detected). Cheap to check (bounded by catalog size, each geography visited once per its own chain) and worth doing at catalog-authoring time rather than only when a future consumer traverses the hierarchy and loops forever.
+   - **New:** every key of a dataset's `columns` map (D9) → that same dataset's own `metricIds[]` (`unknown-column-metric`). A column bound to a metric the dataset never declared is the same defect class as `unknown-dataset-metric`, one level down (the binding, not the membership).
+   - **New:** `FilterField.sourceDatasetId`, when present → known dataset id (`unknown-filter-source-dataset`); `FilterField.sourceGeographyId`, when present → known geography id (`unknown-filter-source-geography`). D15 requires exactly one of the two to be set; schema validation (step 1) already enforces that exclusivity, so this step only resolves whichever one is set.
+   - **New:** `FilterField.metricId`, when present → known metric id (`unknown-filter-metric`).
+4. Hierarchy integrity — walk each geography's `parentId` chain to its root:
+   - a chain that revisits a geography already seen is `cyclic-geography-hierarchy` (`subject.id` names the geography where the cycle was detected). Cheap to check (bounded by catalog size, each geography visited once per its own chain) and worth doing at catalog-authoring time rather than only when a future consumer traverses the hierarchy and loops forever.
+   - **New:** codeScheme compatibility — for each `parentId` link where both the geography and its parent declare `codeScheme` (D7), compare namespace prefixes (the substring before the first `:`, or the whole string when there's no `:` — so `'h3'` compares as `'h3'`, `'ibge:municipio'` compares as `'ibge'`). A mismatch (e.g. an `'ibge:*'` geography parented under a `'sicar:*'` one) is `incompatible-parent-codescheme` (`subject.id` names the child). Either side omitting `codeScheme` skips the check — this is a compatibility hint between two catalog authors' choices, not a requirement to declare a scheme at all. This resolves D7's "Cross-`codeScheme` join validation" open question (namespace-prefix comparison, chosen over exact-string match so `'ibge:uf'` parenting `'ibge:municipio'` — same organization, different granularity — is not flagged).
 
-No `repair` is computed for `invalid-catalog-schema`, `duplicate-*-id`, or `cyclic-geography-hierarchy`: in each case the correct fix ("correct the input", "choose an id not already taken", "break the cycle") is not a value this check has in hand — for duplicates specifically, the only known values are the ones already taken, which would make `allowed-values` a self-defeating suggestion (mirroring ADR-0001's rule that repair values are never invented, extended here to never suggesting a value known to be wrong). `unknown-join-*`, `unknown-dataset-*`, and `unknown-parent-geography` issues do attach `repair: [{ kind: 'allowed-values', path: ..., values: <the known ids> }]`, since the correct set is already in hand there.
+No `repair` is computed for `invalid-catalog-schema`, `duplicate-*-id`, `cyclic-geography-hierarchy`, or `incompatible-parent-codescheme`: in each case the correct fix ("correct the input", "choose an id not already taken", "break the cycle", "use a consistent codeScheme namespace") is not a value this check has in hand — for duplicates specifically, the only known values are the ones already taken, which would make `allowed-values` a self-defeating suggestion (mirroring ADR-0001's rule that repair values are never invented, extended here to never suggesting a value known to be wrong; for `incompatible-parent-codescheme` there is no menu of "the compatible schemes" to offer). `unknown-join-*`, `unknown-dataset-*`, `unknown-parent-geography`, `unknown-column-metric`, `unknown-filter-source-*`, and `unknown-filter-metric` issues do attach `repair: [{ kind: 'allowed-values', path: ..., values: <the known ids> }]`, since the correct set is already in hand there.
 
 ### D6 — Introspection surface
 
-`getCatalogIntrospection(catalog: Catalog)` returns the catalog with any `permissions` field stripped — the curated-metadata contract PRD-004's Must item requires ("never raw data") applies here too: nothing in `Catalog` is raw data (no rows), but `permissions` is the one field that could carry org-internal detail not meant for a model, so introspection omits it by construction rather than trusting every future catalog author to keep it model-safe. `getCatalogJSONSchema()` returns the imported `catalog.schema.json` document as-is — no derivation step, since D1 made the schema itself the source of truth.
+> **Updated (2026-08-19):** `getCatalogIntrospection` now takes an options parameter so callers can choose the with/without-`permissions` view explicitly, instead of `permissions` being unconditionally stripped. Sensitive-field stripping (D12) is unaffected — it stays unconditional, with no opt-out, because it is a leak-prevention guarantee rather than an org-authz convenience.
+
+`getCatalogIntrospection(catalog: Catalog, options?: { includePermissions?: boolean })` returns the catalog with:
+
+- every field a `Dataset.fields[]` entry declares `sensible: true` (D12) always stripped, regardless of `options` — this is the one leak-prevention guarantee the catalog itself enforces, and giving it an opt-out would let any caller bypass it by simply passing the flag, defeating the point.
+- the `permissions` field stripped **unless** the caller explicitly passes `includePermissions: true`. Default is `false` (`options` itself is also optional), so today's callers — the AI/model-facing consumers this was originally written for — see identical behavior to the previous unconditional-strip contract with a no-arg call. A caller that legitimately needs org-authz metadata (e.g. an internal admin UI building a permissions editor, which is not a "raw data" or "personal data" consumer) opts in explicitly rather than the package guessing intent from caller identity it has no way to check.
+
+The curated-metadata contract PRD-004's Must item requires ("never raw data") still holds either way: nothing in `Catalog` is raw data (no rows); `permissions` is org-authz metadata, not raw data, which is exactly why — unlike `sensible` fields — it is fine for it to be caller-selectable rather than always model-safe by construction.
+
+`getCatalogJSONSchema()` is unchanged by this update: it still returns the schema derived via `z.toJSONSchema` (D14), with no `options` parameter — there is only one JSON Schema document, independent of any caller's permission view.
 
 ### D7 — Domain and source compatibility (minimal geography/metric/dataset extensions)
 
@@ -544,15 +567,15 @@ Implement `catalog.schema.json` and the `Catalog`/`Metric`/`Dataset`/`Geography`
 
 Implement `CatalogResult`/`CatalogIssue`/`CatalogIssueCode` (D3) and `validateCatalog` (D5) in `src/validateCatalog.ts`.
 
-**Demo:** the sample fixture validates to `{ status: 'valid' }`; a fixture with a duplicate metric id returns `{ status: 'invalid', issues: [{ code: 'duplicate-metric-id' }] }` with no `repair`; a fixture whose join references a non-existent geography returns `{ status: 'mismatch', issues: [{ code: 'unknown-join-geography', repair: [{ kind: 'allowed-values', values: [...] }] }] }`; a fixture whose `Dataset.metricIds` names a metric not in `catalog.metrics` returns `unknown-dataset-metric`; a fixture with `geoA.parentId = 'geoB'` and `geoB.parentId = 'geoA'` returns `{ status: 'mismatch', issues: [{ code: 'cyclic-geography-hierarchy' }] }` with no `repair`.
-**Acceptance:** one fixture and one test per `CatalogIssueCode`, including the four added in this decision (`unknown-dataset-geography`, `unknown-dataset-metric`, `unknown-parent-geography`, `cyclic-geography-hierarchy`); `resolveOverallStatus`-equivalent precedence (`invalid` over `mismatch` when both present) tested; no `repair` computed for `invalid-catalog-schema` or `cyclic-geography-hierarchy`; a 3-deep valid `parentId` chain (no cycle) is confirmed to validate cleanly, so the cycle check doesn't false-positive on legitimate hierarchy depth.
+**Demo:** the sample fixture validates to `{ status: 'valid' }`; a fixture with a duplicate metric id returns `{ status: 'invalid', issues: [{ code: 'duplicate-metric-id' }] }` with no `repair`; a fixture whose join references a non-existent geography returns `{ status: 'mismatch', issues: [{ code: 'unknown-join-geography', repair: [{ kind: 'allowed-values', values: [...] }] }] }`; a fixture whose `Dataset.metricIds` names a metric not in `catalog.metrics` returns `unknown-dataset-metric`; a fixture with `geoA.parentId = 'geoB'` and `geoB.parentId = 'geoA'` returns `{ status: 'mismatch', issues: [{ code: 'cyclic-geography-hierarchy' }] }` with no `repair`; a fixture whose `Dataset.columns` key names a metric outside that dataset's `metricIds` returns `unknown-column-metric`; a fixture whose `FilterField.sourceGeographyId` names a non-existent geography returns `unknown-filter-source-geography`; a fixture with an `'ibge:municipio'` geography parented under a `'sicar:imovel'` one returns `{ status: 'mismatch', issues: [{ code: 'incompatible-parent-codescheme' }] }` with no `repair`.
+**Acceptance:** one fixture and one test per `CatalogIssueCode`, including the four added when this decision first extended referential scope (`unknown-dataset-geography`, `unknown-dataset-metric`, `unknown-parent-geography`, `cyclic-geography-hierarchy`) and the five added in the 2026-08-19 update (`unknown-column-metric`, `unknown-filter-source-dataset`, `unknown-filter-source-geography`, `unknown-filter-metric`, `incompatible-parent-codescheme`); `resolveOverallStatus`-equivalent precedence (`invalid` over `mismatch` when both present) tested; no `repair` computed for `invalid-catalog-schema`, `cyclic-geography-hierarchy`, or `incompatible-parent-codescheme`; a 3-deep valid `parentId` chain (no cycle) is confirmed to validate cleanly, so the cycle check doesn't false-positive on legitimate hierarchy depth; two geographies sharing the same codeScheme namespace prefix at different `level`s (e.g. `'ibge:uf'` parenting `'ibge:municipio'`) validate cleanly, so the codeScheme check doesn't false-positive on same-organization granularity changes; a Zod issue path with a nested array index (e.g. `datasets[2].metricIds[0]`) renders to the same `subject.path` shape the Ajv implementation produced.
 
 ### Phase 4 — Introspection surface and JSON Schema export
 
 Implement `getCatalogIntrospection` and `getCatalogJSONSchema` (D6), both exported from `src/index.ts`.
 
-**Demo:** `getCatalogIntrospection(catalogWithPermissions)` returns a catalog with no `permissions` key; `getCatalogJSONSchema()` returns an object reference-equal (or deep-equal) to the imported `catalog.schema.json`.
-**Acceptance:** test asserts `permissions` is absent from introspection output even when present on input; a snapshot test on `getCatalogJSONSchema()`'s output guards against accidental schema drift.
+**Demo:** `getCatalogIntrospection(catalogWithPermissions)` (no options) returns a catalog with no `permissions` key, matching today's behavior; `getCatalogIntrospection(catalogWithPermissions, { includePermissions: true })` returns `permissions` intact; `getCatalogIntrospection(catalogWithSensitiveField, { includePermissions: true })` still omits the `sensible: true` field — the option only affects `permissions`; `getCatalogJSONSchema()` returns an object deep-equal to the schema derived via `z.toJSONSchema` (D14).
+**Acceptance:** test asserts `permissions` is absent by default and present only when `includePermissions: true` is passed; test asserts sensitive-field stripping is unaffected by `options` in either state; a snapshot test on `getCatalogJSONSchema()`'s output guards against accidental schema drift.
 
 ### Phase 5 — Docs and package workflow close-out
 
@@ -571,9 +594,10 @@ This plan's package (`@ttoss/geovis-catalog`) and its exports (`Catalog`, `catal
 
 - **Catalog governance** (PRD-004's own open question): who approves catalog entries and how `permissions` integrates with application auth is explicitly out of scope — the application is responsible for enforcing its own authorization logic.
 - **`codeScheme` as a controlled vocabulary** (D7): v1 leaves `codeScheme`/`Dataset.source` as free-form strings for maximum compatibility. Whether a later version ships a registry of well-known values (`ibge:municipio`, `sicar:imovel`, …) with validation/repair — so a typo like `ibge:municipios` becomes an `allowed-values` repair — is deferred; the string field is forward-compatible with that addition.
-- **Cross-`codeScheme` join validation** (D7): declaring `codeScheme` opens a future integrity check ("a join between two geographies of incompatible code schemes is a `mismatch`"). D5's join check stays id/field-level in v1; this is a Should-item extension, not a Must.
+- ~~**Cross-`codeScheme` join validation** (D7)~~ — resolved by the 2026-08-19 D5 update: a `parentId` link between geographies whose `codeScheme` namespace prefixes differ is `incompatible-parent-codescheme`.
 - ~~**`Dataset.temporal.start`/`end` date-format enforcement**~~ — superseded by D10, which regex-validates grain and period tokens.
 - ~~**Schema source of truth**~~ — resolved by D14: Zod, with the JSON Schema document derived from it.
+- **`Dataset.collectionId` referential check** (D13): `Dataset.collectionId` → `Catalog.collections[]` is not yet checked by `validateCatalog`, and `Catalog.collections[]` itself was never added to the D4 `Catalog` interface text in this plan. Both need doing together before this check can exist; deliberately left out of the 2026-08-19 D5 update to keep that update to referential checks the interface already supports.
 - **Sensitivity beyond the catalog** (D12): `sensitive` governs what the catalog itself discloses (introspection payload, filter domains). Whether the same declaration should drive the application's own rendered payloads — today the gateway's job in both pilots — is a product decision this package does not make.
 
 ## Decisions confirmed with the user (2026-07-23)
