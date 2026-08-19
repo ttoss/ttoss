@@ -1,6 +1,7 @@
 import type maplibregl from 'maplibre-gl';
 
 import type { VisualizationSpec } from '../../spec/types';
+import { planCrossfades, runCrossfades } from './crossfade';
 import {
   resolveLegendFillColorExpression,
   stripUndefinedPaint,
@@ -60,11 +61,17 @@ const removeStaleSources = (
   }
 };
 
-/** Adds new sources and updates GeoJSON source data when the data reference changes. */
+/**
+ * Adds new sources and updates GeoJSON source data when the data reference
+ * changes. Sources in `deferredSourceIds` are skipped for the `setData` update:
+ * a crossfade owns their swap and commits the new data on completion so the old
+ * data stays rendered (and thus fades out) for the duration of the animation.
+ */
 const upsertSources = (
   map: maplibregl.Map,
   spec: VisualizationSpec,
-  previousSpec: VisualizationSpec | null
+  previousSpec: VisualizationSpec | null,
+  deferredSourceIds: Set<string>
 ): void => {
   for (const source of spec.sources) {
     if (!map.getSource(source.id)) {
@@ -77,6 +84,7 @@ const upsertSources = (
       continue;
     }
     if (source.type !== 'geojson') continue;
+    if (deferredSourceIds.has(source.id)) continue;
     const prevSource = previousSpec?.sources.find((s) => {
       return s.id === source.id;
     });
@@ -251,7 +259,7 @@ export const upsertClickAnchorCompanion = (
 };
 
 /** Resolves the underlying vector-tile `source-layer` for a spec layer, falling back to its source's. */
-const resolveSourceLayerFor = (
+export const resolveSourceLayerFor = (
   spec: VisualizationSpec,
   layer: VisualizationSpec['layers'][number]
 ): string | undefined => {
@@ -422,11 +430,21 @@ export const syncSourcesAndLayers = (
   spec: VisualizationSpec,
   previousSpec: VisualizationSpec | null
 ): void => {
+  // Resolve crossfades up front so their sources can defer `setData`: the old
+  // data must stay on the map to fade out while the shadow fades the new data in.
+  const plans = previousSpec ? planCrossfades(map, spec, previousSpec) : [];
+  const deferredSourceIds = new Set(
+    plans.map((plan) => {
+      return plan.sourceId;
+    })
+  );
+
   if (previousSpec) {
     removeStaleLayers(map, spec, previousSpec);
     removeStaleSources(map, spec, previousSpec);
   }
-  upsertSources(map, spec, previousSpec);
+  upsertSources(map, spec, previousSpec, deferredSourceIds);
   upsertLayers(map, spec);
   enforceManagedLayerOrder(map, spec);
+  runCrossfades(map, spec, previousSpec);
 };

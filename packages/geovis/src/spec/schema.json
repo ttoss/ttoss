@@ -470,6 +470,24 @@
                 ]
               }
             }
+          },
+          "transition": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind"],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": ["crossfade"]
+              },
+              "durationMs": {
+                "type": "number"
+              },
+              "easing": {
+                "type": "string",
+                "enum": ["linear", "ease-out", "ease-in-out"]
+              }
+            }
           }
         }
       }
