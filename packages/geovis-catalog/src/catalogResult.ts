@@ -30,7 +30,10 @@ export type CatalogIssueCode =
   | 'unknown-dataset-metric' // mismatch: Dataset.metricIds[] references a metric id not in catalog.metrics
   | 'unknown-parent-geography' // mismatch: Geography.parentId references a geography id not in catalog.geographies
   | 'cyclic-geography-hierarchy' // mismatch: a Geography.parentId chain loops back on itself
-  | 'unsupported-map-type-geometry'; // mismatch: MapTypeCatalogEntry.supportedGeometries names a geometry the active adapter's CapabilitySet does not render
+  | 'unsupported-map-type-geometry' // mismatch: MapTypeCatalogEntry.supportedGeometries names a geometry the active adapter's CapabilitySet does not render
+  | 'duplicate-series-id' // invalid: two series share an id
+  | 'unknown-series-metric' // mismatch: Series.metricId references a metric id not in catalog.metrics
+  | 'unknown-series-geography'; // mismatch: Series.spatialGrain.geographyId references a geography id not in catalog.geographies
 
 /**
  * Maps each `CatalogIssueCode` to the `CatalogResultStatus` category it
@@ -56,6 +59,9 @@ export const CATALOG_ISSUE_CODE_STATUS: Record<
   'unknown-parent-geography': 'mismatch',
   'cyclic-geography-hierarchy': 'mismatch',
   'unsupported-map-type-geometry': 'mismatch',
+  'duplicate-series-id': 'invalid',
+  'unknown-series-metric': 'mismatch',
+  'unknown-series-geography': 'mismatch',
 };
 
 /** Precedence order used to pick one overall status when issues span categories. */
