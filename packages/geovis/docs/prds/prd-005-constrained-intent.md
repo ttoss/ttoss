@@ -22,10 +22,11 @@ AI expresses what the map should answer, never how to draw it.
 
 ### Must
 
-- Intent schema capturing analytical task, metric, geography, time, filters, and unresolved ambiguity (strategy §5.1) — Zod schema with derived JSON Schema (repo forms rule: Zod).
+- Intent schema capturing analytical task, metric, geography, time, filters, and unresolved ambiguity (strategy §5.1) — JSON Schema with hand-written TypeScript interface.
 - Validation of intents against a catalog, reporting through the PRD-001 taxonomy.
 - Analytical task vocabulary from strategy §12 (distribution, comparison, ranking, change over time, outlier detection, feature lookup, coverage).
 - Structured-output-friendly design: the JSON Schema usable directly as an LLM tool input schema.
+- Intent references a `categoryId` when the requested metric is nominal, so a categorical request is grounded in the catalog's closed category list rather than free text.
 
 ### Won't (non-goals)
 
@@ -37,5 +38,5 @@ PRD-004 (intents are validated against the catalog).
 
 ## Open questions
 
-- Whether intent supports multi-metric/bivariate requests in v1 or defers them.
+- Whether intent supports multi-metric/bivariate requests in v1 or defers them. The runtime already renders them (`MapData.dimension: 'color' | 'size'`), so this is an intent-surface decision, not an engine limitation — but the catalog's `mapTypes` still describes one metric kind per map type.
 - How intent versioning tracks catalog versioning.

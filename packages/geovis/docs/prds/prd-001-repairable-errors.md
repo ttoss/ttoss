@@ -43,5 +43,5 @@ None — this is the foundation. Accepting ADR-0001 and ADR-0002 is the entry ga
 
 ## Open questions
 
-- Final list of issue `code` values (product + engineering review).
+- Final list of issue `code` values (product + engineering review). Two more are pending from PRD-006: a filter that cannot compile to a native engine filter, and a map type the catalog declares adequate but the active adapter does not support.
 - Which policy violations block rendering vs. attach as warnings.
