@@ -16,6 +16,7 @@ const states = {
   disabled: 'x',
   focused: 'f',
   checked: 'c',
+  selected: 's',
   indeterminate: 'i',
   invalid: 'v',
   expanded: 'e',
@@ -81,9 +82,13 @@ describe('resolveInteractiveStyle', () => {
     ).toBeUndefined();
   });
 
-  // --- Selection entity flags (isSelected → checked, isIndeterminate → indeterminate) ---
+  // --- Selection flags (isSelected context-aware, isIndeterminate → indeterminate) ---
 
-  test('isSelected returns checked state', () => {
+  test('isSelected returns checked when the set declares both keys — the two-state reading wins', () => {
+    // The fixture declares `checked` and `selected` — the shape of the base
+    // theme's input backgrounds/borders. `checked` outranks `selected` there:
+    // every consumer passing `isSelected` against those sets today is a
+    // two-state control or ships the checked language (ADR-044).
     expect(resolveInteractiveStyle(states, { isSelected: true })).toBe('c');
   });
 
@@ -185,6 +190,73 @@ describe('resolveInteractiveStyle', () => {
       })
     ).toBe('e');
   });
+
+  // --- Context-aware `isSelected` (ADR-044) ---
+  // fsl-theme keeps two selection languages apart by law (families/colors.ts):
+  // `checked` — a two-state control that is on; only the `input` context may
+  // declare it — and `selected` — membership in a set; declared by
+  // `navigation`/`informational`, and by input backgrounds/borders for picker
+  // options. One RAC flag serves both, so the key is chosen per consulted
+  // token set, in an explicit order: `checked` when declared → `selected`
+  // when declared → strict miss (call-site `?? default` applies).
+
+  describe('context-aware isSelected', () => {
+    test('a set declaring `selected` and not `checked` resolves selected (navigation/informational shape)', () => {
+      const nav = { default: 'd', hover: 'h', selected: 's' };
+      expect(resolveInteractiveStyle(nav, { isSelected: true })).toBe('s');
+    });
+
+    test('a set declaring only `checked` resolves checked (input text shape)', () => {
+      const inputText = { default: 'd', checked: 'c' };
+      expect(resolveInteractiveStyle(inputText, { isSelected: true })).toBe(
+        'c'
+      );
+    });
+
+    test('a set declaring neither misses strictly — the normal fallback decides', () => {
+      const bare = { default: 'd', hover: 'h' };
+      expect(
+        resolveInteractiveStyle(bare, { isSelected: true })
+      ).toBeUndefined();
+      // The documented call-site knob, not an accidental landing:
+      expect(
+        resolveInteractiveStyle(bare, { isSelected: true }) ?? bare.default
+      ).toBe('d');
+    });
+
+    test('selected still loses to the states above it in the cascade', () => {
+      const nav = { default: 'd', selected: 's', current: 'n', disabled: 'x' };
+      expect(
+        resolveInteractiveStyle(nav, { isSelected: true, isCurrent: true })
+      ).toBe('n');
+      expect(
+        resolveInteractiveStyle(nav, { isSelected: true, isDisabled: true })
+      ).toBe('x');
+    });
+
+    test('selected still wins over focusVisible, pressed, hovered', () => {
+      const nav = {
+        default: 'd',
+        hover: 'h',
+        active: 'a',
+        focused: 'f',
+        selected: 's',
+      };
+      expect(
+        resolveInteractiveStyle(nav, {
+          isSelected: true,
+          isFocusVisible: true,
+          isPressed: true,
+          isHovered: true,
+        })
+      ).toBe('s');
+    });
+
+    test('isPressed still resolves active — the pressed collapse is retained', () => {
+      const nav = { default: 'd', active: 'a', selected: 's' };
+      expect(resolveInteractiveStyle(nav, { isPressed: true })).toBe('a');
+    });
+  });
 });
 
 /**
@@ -217,5 +289,34 @@ describe('resolveStateKey', () => {
         states[state]
       );
     }
+  });
+
+  // --- Context steering (ADR-044) ---
+
+  test('a token set steers isSelected: selected when the set declares it and not checked', () => {
+    expect(
+      resolveStateKey({ isSelected: true }, { default: 'd', selected: 's' })
+    ).toBe('selected');
+  });
+
+  test('a token set steers isSelected: checked when declared, alone or beside selected', () => {
+    expect(
+      resolveStateKey({ isSelected: true }, { default: 'd', checked: 'c' })
+    ).toBe('checked');
+    expect(
+      resolveStateKey(
+        { isSelected: true },
+        { default: 'd', selected: 's', checked: 'c' }
+      )
+    ).toBe('checked');
+  });
+
+  test('reports the two-state reading when neither key is declared or no set is in hand', () => {
+    // The bare call is how `resolveConsequenceInk` / `resolveSurfaceBoundStyle`
+    // ask — pre-ADR-044 behaviour, unchanged.
+    expect(resolveStateKey({ isSelected: true })).toBe('checked');
+    expect(resolveStateKey({ isSelected: true }, { default: 'd' })).toBe(
+      'checked'
+    );
   });
 });

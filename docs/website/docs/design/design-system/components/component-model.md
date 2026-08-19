@@ -7,7 +7,7 @@ title: Component Model
 The Component Model is the **Component Semantics Projection** — [layer 3 of the FSL architecture](/docs/design/design-system/fsl/). It derives from the [FSL Lexicon](/docs/design/design-system/fsl/fsl-lexicon) and [FSL Structural Language](/docs/design/design-system/fsl/fsl-structural-language) and must not define vocabulary that contradicts them.
 
 :::info Status: implemented in `@ttoss/fsl-ui`
-This document is the design specification for the Component Semantics Projection, now **implemented** by `@ttoss/fsl-ui`: `taxonomy.ts` (vocabulary + legality matrices), `ComponentMeta`, `ENTITY_COMPOSITION` / `ENTITY_STRUCTURE` / `ENTITY_TOKEN_MAPPING` (`packages/fsl-ui/src/tokens/projection.ts`), and contract tests that auto-validate every component against the matrices. The [Semantic Token Projection](/docs/design/design-system/design-tokens/model) (layer 4, `@ttoss/fsl-theme`) is also implemented. The **Deterministic Resolver** (layer 5) remains planned. Where this document and the shipped code diverge, the code + its contract tests are the source of truth.
+This document is the design specification for the Component Semantics Projection, now **implemented** by `@ttoss/fsl-ui`: `taxonomy.ts` (vocabulary + legality matrices), `ComponentMeta`, `ENTITY_COMPOSITION` / `ENTITY_STRUCTURE` / `ENTITY_TOKEN_MAPPING` (`packages/fsl-ui/src/tokens/projection.ts`), and contract tests that auto-validate every component against the matrices. The [Semantic Token Projection](/docs/design/design-system/design-tokens/model) (layer 4, `@ttoss/fsl-theme`) is also implemented. The **Resolution contract** (layer 5) is satisfied by distributed mechanisms — see the [FSL overview](/docs/design/design-system/fsl/). Where this document and the shipped code diverge, the code + its contract tests are the source of truth.
 :::
 
 The central rule:
@@ -18,17 +18,17 @@ The central rule:
 
 The model adopts FSL dimension names directly (no projection renames; FSL §17.1 permits renames but this profile keeps the foundation vocabulary):
 
-| FSL dimension    | Model name      | Notes                                                                                                                                                                                                                                          |
-| :--------------- | :-------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Entity Kind      | **Entity**      | Values identical; field name is `entity` in `ComponentMeta` and all `*Meta` declarations                                                                                                                                                       |
-| Structural Role  | **Structure**   | Root structural role of the component (e.g. `root`); legal values constrained per Entity via `ENTITY_STRUCTURE`                                                                                                                                |
-| Composition Role | **Composition** | Flat vocabulary; Lexicon §4 values plus three declared profile extensions (`step`, `summary`, `navigation`). Per-Entity legality via `ENTITY_COMPOSITION` in `taxonomy.ts`.                                                                    |
-| Interaction Kind | —               | **Deferred** per FSL §13.3 — not codified in this profile. See `taxonomy.ts` §Dimension Coverage for rationale and readmission criterion.                                                                                                      |
-| Evaluation       | **Evaluation**  | Values identical                                                                                                                                                                                                                               |
-| Consequence      | **Consequence** | Profile-narrowed subset — `neutral`, `committing`, `destructive` only (`CONSEQUENCES` in `taxonomy.ts`); the remaining Lexicon §6 values are rejected with recorded rationale ([Lexicon §6](/docs/design/design-system/fsl/fsl-lexicon))       |
-| State            | **State**       | Values identical; runtime-resolved by React Aria render props, not authorially declared                                                                                                                                                        |
-| Layer Role       | —               | **Absorbed** per FSL §13.3 — fully captured by the token projection's `surfaceType` (`control`/`surface`) and the CONTRACT §1 Elevation column; an independent dimension would be redundant. See `taxonomy.ts` §Dimension Coverage.            |
-| Context Class    | —               | **Deferred** per FSL §13.3 — refinement dimension (density, mode, a11y preferences) with no prototype exercising it. Readmission criterion: mode switching validated end-to-end via `@ttoss/fsl-theme`. See `taxonomy.ts` §Dimension Coverage. |
+| FSL dimension    | Model name      | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| :--------------- | :-------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Entity Kind      | **Entity**      | Values identical; field name is `entity` in `ComponentMeta` and all `*Meta` declarations                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Structural Role  | **Structure**   | Root structural role of the component (e.g. `root`); legal values constrained per Entity via `ENTITY_STRUCTURE`                                                                                                                                                                                                                                                                                                                                                                                           |
+| Composition Role | **Composition** | Flat vocabulary; Lexicon §4 values plus three declared profile extensions (`step`, `summary`, `navigation`). Per-Entity legality via `ENTITY_COMPOSITION` in `taxonomy.ts`.                                                                                                                                                                                                                                                                                                                               |
+| Interaction Kind | —               | **Deferred** per FSL §13.3 — not codified in this profile. See `taxonomy.ts` §Dimension Coverage for rationale and readmission criterion.                                                                                                                                                                                                                                                                                                                                                                 |
+| Evaluation       | **Evaluation**  | Values identical                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Consequence      | **Consequence** | Profile-narrowed subset — `neutral`, `committing`, `destructive` only (`CONSEQUENCES` in `taxonomy.ts`); the remaining [Lexicon §6](/docs/design/design-system/fsl/fsl-lexicon#6-consequence) values are rejected with recorded rationale (see [Consequence](#consequence) below)                                                                                                                                                                                                                         |
+| State            | **State**       | Values identical; runtime-resolved by React Aria render props, not authorially declared                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Layer Role       | —               | **Absorbed** per FSL §13.3 — captured by the token projection's `surfaceType` (`control`/`surface`), the elevation strata (`flat`/`raised`/`overlay`/`blocking`), and the z-index layer scale (`base`/`sticky`/`overlay`/`blocking`/`transient`), which jointly recover all six Lexicon §8 layer roles. See `taxonomy.ts` §Dimension Coverage.                                                                                                                                                            |
+| Context Class    | —               | **Deferred** per FSL §13.3 — refinement dimension (density, mode, a11y preferences) with no prototype exercising it. Readmission criterion: a component that dispatches on a context class at runtime — e.g. a density variant that changes which spacing/sizing tokens a component consumes. Mode switching shipped end-to-end in `@ttoss/fsl-theme` without any component-level dispatch, evidence that `mode` lives at the theme layer, not in `ComponentMeta`. See `taxonomy.ts` §Dimension Coverage. |
 
 ## Entity → Token UX context mapping
 
@@ -53,7 +53,7 @@ For the full `ux` role and state grammar, see the [Colors family — FSL Entity 
 
 ## ComponentExpression
 
-The model is expressed as a `ComponentExpression` — the typed semantic expression that the resolver consumes:
+The model is expressed as a `ComponentExpression` — the typed semantic expression that the resolution pipeline consumes:
 
 ```ts
 type ComponentExpression = {
@@ -97,6 +97,8 @@ Composition answers: _What slot does this instance occupy inside a larger compos
 
 Composition is a **flat vocabulary** per FSL Lexicon §4 and FSL §5.4. A composition role names the slot; legality is per Entity (not per parent component). When omitted, the component resolves tokens from its Entity default. The vocabulary is the Lexicon §4 set **plus three profile extensions** (`step`, `summary`, `navigation` — Structure-only slots), declared per FSL §17's extension model.
 
+Case discipline: the `navigation` slot (lowercase, Composition) is distinct from the `Navigation` Entity Kind — the same convention the Lexicon applies to `Structure`/`structure` (§10.12) and `Overlay`/`overlay` (§10.13). The slot names a position inside a structural composite; the Entity names what a component is.
+
 ### Composition roles
 
 The projection codifies 14 composition roles. The table shows each role's meaning and which Entities may carry it (source of truth: `ENTITY_COMPOSITION` in `taxonomy.ts`).
@@ -133,7 +135,7 @@ Example selector: `[data-scope="dialog"][data-part="actions"] [data-composition=
 
 Evaluation answers: _What emphatic or evaluative meaning does this expression carry?_
 
-Evaluation is optional. When omitted, each component applies its own documented default today; inference from Entity and composition context is the job of the **planned** Deterministic Resolver (layer 5). Add it explicitly only when the default is wrong.
+Evaluation is optional. When omitted, each component applies its own documented default — and that is the design: defaults live with the component, because that is where the knowledge lives. Add it explicitly only when the default is wrong.
 
 Legality is per Entity (source of truth: `ENTITY_EVALUATION` in `taxonomy.ts`), same as the Composition table:
 
@@ -157,7 +159,14 @@ Consequence answers: _What user-facing consequence or risk profile does this car
 
 Consequence is optional. When omitted, `neutral` is implied. Distinct from Evaluation: `negative` is evaluative meaning; `destructive` is outcome risk — both may appear simultaneously.
 
-The profile codifies three values (`CONSEQUENCES` in `taxonomy.ts`) — a deliberate narrowing of the Lexicon §6 vocabulary. `reversible`, `interruptive`, `recoverable`, and `safeDefaultRequired` are rejected with recorded rationale; see [Lexicon §6 — Profile narrowing](/docs/design/design-system/fsl/fsl-lexicon).
+The profile codifies three values (`CONSEQUENCES` in `taxonomy.ts`) — a deliberate narrowing of the [Lexicon §6](/docs/design/design-system/fsl/fsl-lexicon#6-consequence) vocabulary, declared per FSL §13.3. The remaining Lexicon terms are rejected with the following rationale:
+
+- **reversible** is the logical complement of `committing`; carrying both doubles the vocabulary without adding an expressible distinction.
+- **interruptive** is absorbed by the Entity `Overlay` — an Overlay is interruptive by kind, and non-overlay interruption has no component prototype to justify separate vocabulary.
+- **recoverable** describes a runtime outcome of failure, not an authorial meta; recovery support belongs in component API (e.g. an `onRetry` prop), not in `ComponentMeta`.
+- **safeDefaultRequired** is a derived policy: `destructive` already implies the need for a safe default, so codifying the policy separately would create a second source of truth for the same constraint.
+
+The rejections are invariants of this profile, not of FSL — a different profile may codify more of the vocabulary if its component prototypes create new distinctions.
 
 | Value           | Use for                                    |
 | :-------------- | :----------------------------------------- |
@@ -171,7 +180,7 @@ Only `Action` carries consequence — every other entity's legal set in `ENTITY_
 
 ## Interaction
 
-`Interaction Kind` is a FSL foundational dimension ([FSL Lexicon §3](/docs/design/design-system/fsl/fsl-lexicon), [FSL §5.3](/docs/design/design-system/fsl/fsl-structural-language)) that this profile does **not** currently codify. The disposition is **Deferred** per [FSL §13.3](/docs/design/design-system/fsl/fsl-structural-language).
+`Interaction Kind` is a FSL foundational dimension ([FSL Lexicon §3](/docs/design/design-system/fsl/fsl-lexicon#3-interaction-kind), [FSL §5.3](/docs/design/design-system/fsl/fsl-structural-language)) that this profile does **not** currently codify. The disposition is **Deferred** per [FSL §13.3](/docs/design/design-system/fsl/fsl-structural-language).
 
 Readmission requires a component that dispatches behaviour on `Interaction Kind` at runtime — for example, a Wizard that progresses on `navigate.step` versus a Link that follows `navigate.link`. Until such a prototype exists, the dimension carries no expressible distinction in `ComponentMeta`. See `taxonomy.ts` §Dimension Coverage for the full rationale.
 
@@ -196,11 +205,15 @@ State is not a prop passed at the expression level — it is runtime-resolved by
 | **indeterminate** | Mixed or partial selection state                                                           |
 | **expanded**      | Disclosure or select is open                                                               |
 | **current**       | Navigation item matches the current location                                               |
-| **visited**       | Link has been previously visited                                                           |
+| **visited**       | Link has been previously visited (CSS-only — browsers hide `:visited` from JS; see below)  |
 | **droptarget**    | Element is a valid target for a drag operation                                             |
 | **invalid**       | Control's value failed validation (runtime — `isInvalid`, never authorial; Lexicon §10.15) |
 
-Not all states are meaningful for every Entity — `checked` is only surfaced by selection components; `visited` only by navigation links. Legality here is React Aria's runtime concern (it only emits the render-prop for applicable primitives), not a build-time matrix.
+Not all states are meaningful for every Entity — `checked` is only surfaced by selection components. Legality here is React Aria's runtime concern (it only emits the render-prop for applicable primitives), not a build-time matrix — the declared legality source per FSL Structural Language §10.1 is **runtime resolution** — with one exception: `visited` cannot be runtime-resolved at all. Browsers hide `:visited` state from JavaScript for privacy, so no library can emit the flag; its legality source is **structural impossibility** (§10.1), declared below.
+
+### Concurrent states and resolution order
+
+React Aria may report several state flags simultaneously (an item can be selected, focused, and hovered at once). The profile resolves them through `STATE_PRIORITY` (`taxonomy.ts`) — a declared, deterministic total order, as FSL Structural Language §11.4 requires. `isSelected` resolves **context-aware**: the theme declares `selected` where a ux context means membership in a set (`navigation`, `informational`) and `checked` where a control is two-state (the `input` context), so the cascade consults the token set per colour dimension with an explicit fallback — `checked` when the set declares it, then `selected` when the set declares it, then the normal miss to `default` (fsl-ui ADR-044). The transient `isPressed` flag deliberately resolves to `active` — a semantic reservation, not a theme gap: the `pressed` token state means the **persistent** toggle-on, which `ToggleButton` reads by mapping its `isSelected` to `pressed` inline (fsl-ui ADR-042) and which the theme ships divergent from `active` on purpose; the collapse keeps the persistent state reserved for toggle semantics. Readmission criterion: a component whose **transient** press must paint differently from `active` at the token level. Two vocabulary states have no render-prop flag, for different reasons: `droptarget` because no component surfaces a drag target yet, and `visited` because no flag can ever exist — browsers hide `:visited` from JS for privacy, making it a **structural impossibility** per §10.1 rather than a pending flag; its tokens are spent through the CSS pseudo-class, outside the cascade. Per §11.4 these resolutions and absences are recorded here rather than silent.
 
 ---
 

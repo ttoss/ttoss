@@ -221,6 +221,8 @@ Every change touches some subset of these axes. Pick the subset by change kind; 
 
 Canonical trade-off record. Code references use `@adr ADR-NNN — <one-line reason>` in JSDoc, linking to the heading here.
 
+**Citation scope** — a bare `ADR-NNN` always refers to an ADR in this package's CONTRIBUTING.md. Citing another package's ADR requires the package prefix — e.g. `fsl-ui ADR-010` — because `@ttoss/fsl-theme` and `@ttoss/fsl-ui` keep independent, homonymous ID ranges. IDs are never renumbered.
+
 **Entry gate** — all three required: a reasonable alternative was rejected; the chosen path has a visible cost; a reviewer without context will propose the alternative. One or two → JSDoc on the symbol; when in doubt, prefer JSDoc.
 
 **Style** — titles, `Decision` lines, and re-litigation answers follow [Basis Form](../copilot-instructions.md#writing--basis-form). A re-litigation answer longer than one line signals wrong level — raise the principle.

@@ -59,8 +59,10 @@ export const ICON_INTENTS = [
   // "needs attention" indicator.
   'status.alert',
   // The informative mark — status that is noteworthy and carries no
-  // judgement ("in progress", "new"), the `accent` valence of the Feedback
-  // entity. Distinct from `action.help`, which is an *affordance*: help is
+  // judgement ("in progress", "new"), the `accent` emphasis of the Feedback
+  // entity (Emphasis, not a valence — FSL Lexicon §5; see the note on
+  // ENTITY_EVALUATION in taxonomy.ts). Distinct from `action.help`, which
+  // is an *affordance*: help is
   // something the user can open, this is something the system is reporting.
   // The two share the ⓘ in the default mapping and that is the theme's
   // choice, not the intents' — the opposition rule governs pairs that must

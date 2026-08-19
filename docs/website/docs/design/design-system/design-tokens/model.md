@@ -122,7 +122,7 @@ Semantic tokens:
 - remain stable across themes and modes
 - form the public API consumed by UI code
 
-> **Semantic→semantic alias exception (registered).** Two cross-cutting tokens reference the semantic layer instead of core: `semantic.focus.ring.color` and `semantic.consequence.destructive.ink` (ADR-025). Both are system-wide defaults that shadow a per-context token, and the alias exists so mode remaps carry them automatically — a core reference would freeze them in the base mode's value while the token they shadow moved. The alias is one level deep and typed (`TokenRef<semantic.*>`); adding a member to this class requires the §6 cross-cutting gate.
+> **Semantic→semantic alias exception (registered).** Five cross-cutting tokens reference the semantic layer instead of core: `semantic.focus.ring.color`, `semantic.consequence.destructive.ink` (ADR-025), and `semantic.valence.{positive,caution,negative}.ink` (ADR-029). All are system-wide defaults that shadow a per-context token, and the alias exists so mode remaps carry them automatically — a core reference would freeze them in the base mode's value while the token they shadow moved. The alias is one level deep and typed (`TokenRef<semantic.*>`); adding a member to this class requires the §6 cross-cutting gate.
 
 ### 3. Core is never consumed directly by UI code
 
@@ -161,7 +161,20 @@ Do not introduce new tokens that duplicate existing meaning.
 
 Prefer reuse before creation.
 
-> **Cross-cutting infrastructure exception.** A token is _not_ parallel vocabulary when it answers a question that the principal grammar cannot ask in a single token — typically a system-wide default that no `{ux}` owns. Canonical examples: `semantic.focus.ring.color` (system focus indicator color, used by components without an obvious `{ux}`), `semantic.overlay.scrim` (modal backdrop), `semantic.overlay.outline` (the boundary of a surface that occludes content — occlusion is neither a role nor a state and it crosses UX contexts, so the grammar cannot ask for it), `semantic.consequence.destructive.ink` (foreground for a destructive part that paints no surface — the grammar cannot combine valence with emphasis, and the filled valence contexts have no standalone ink), `semantic.valence.{positive,caution,negative}.ink` (foreground for a part that _reports_ that valence while painting no surface — the same argument as the consequence ink, which is a statement about valence rather than about destructiveness, so it generalizes to the whole valence class; ADR-029), `semantic.rail.track` (the unfilled part of a `ProgressBar`/`Meter`/`Slider` track — a rail is neither a role nor a state, it crosses `Feedback` and `Input`, and its mode behaviour is its own: it darkens in dark while every border lightens; ADR-028). They live as siblings of `semantic.colors.*`, not inside it. They **coexist with** per-context counterparts (`{ux}.{role}.border.focused`, etc.) — per-context tokens answer "how does _this_ `{ux}` vary?", cross-cutting tokens answer "what is the _system_ default?". Adding a new cross-cutting token requires the same gate as a `RawValue` exception (§8): technical necessity, JSDoc, registration.
+> **Cross-cutting tokens are a registered class, not exceptions.** Every grammar has a residual: meanings that cross its axes. A token is _not_ parallel vocabulary when it answers a question that the principal grammar cannot ask in a single token — typically a system-wide concern that no `{ux}` owns. Cross-cutting tokens live as **siblings** of `semantic.colors.*`, never inside it, and coexist with per-context counterparts (`{ux}.{role}.border.focused`, etc.): per-context tokens answer "how does _this_ `{ux}` vary?", cross-cutting tokens answer "what is the _system_ default?".
+>
+> **Cross-cutting registry** (complete as of this writing):
+>
+> | Token                                              | Question the grammar cannot ask                                                                                                      | ADR     |
+> | :------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- | :------ |
+> | `semantic.focus.ring.color`                        | system focus indicator when no `{ux}` applies                                                                                        | ADR-025 |
+> | `semantic.overlay.scrim`                           | dimming of obscured content behind a blocking layer                                                                                  | —       |
+> | `semantic.overlay.outline`                         | boundary of a surface that **occludes** content — occlusion is neither role nor state, and it crosses UX contexts                    | ADR-027 |
+> | `semantic.consequence.destructive.ink`             | foreground of a destructive part that paints no surface — the grammar cannot combine valence with emphasis                           | ADR-025 |
+> | `semantic.valence.{positive,caution,negative}.ink` | foreground of a part that _reports_ a valence while painting no surface — generalizes the consequence-ink argument                   | ADR-029 |
+> | `semantic.rail.track`                              | unfilled part of a `ProgressBar`/`Meter`/`Slider` track — crosses `Feedback` and `Input`, darkens in dark mode while borders lighten | ADR-028 |
+>
+> Adding a cross-cutting token requires the same gate as a `RawValue` exception (§8): technical necessity, JSDoc on the token, and registration in this table.
 
 ### 7. Families own their grammar, not their architecture
 
@@ -238,9 +251,11 @@ Two patterns appear in this category:
 
 Approval criteria mirror §8: technical necessity, JSDoc on the token, registration in this table. Non-CSS consumers (`useResolvedTokens`) receive the unresolved expression for these paths — that is the trade-off in exchange for a CSS-native cascade. When a non-CSS consumer of one of these tokens emerges, evaluate a per-token fallback strategy at that point rather than preemptively.
 
-### 9. ThemeTokens plural keys are intentional
+### 9. ThemeTokens naming conventions are intentional
 
 `ThemeTokens` uses `colors`, `radii`, and `breakpoints` (plural) alongside singular family names. These three are genuinely collection-typed families — each names a set of discrete, enumerable members rather than a unitary concept. The naming is an explicit convention, not an inconsistency. No migration to singular is planned.
+
+The same applies to the one registered family-name asymmetry: typography is stored as `core.font` but exposed semantically as `semantic.text`. The names differ because the layers hold different things — font primitives (families, weights, scales) versus composed text meaning (`display`, `headline`, `body`, …) — and the asymmetry is the convention, not a defect.
 
 ### 10. Tokens define meaning, not implementation
 
@@ -362,13 +377,7 @@ Family-specific validation may add stricter rules where needed.
 
 ## Change Rules
 
-Changes must preserve the model.
-
-- **Add core token** when a new raw value is needed
-- **Add semantic token** only when existing semantics cannot express the need
-- **Change semantic mapping** only if meaning stays the same
-- **Change semantic meaning** by creating a new token and deprecating the old one
-- **Remove token** only through explicit deprecation and versioned breaking change
+Changes must preserve the model. The change policy — when tokens may be added, remapped, deprecated, or removed, and how versioning applies — is defined in [Governance](./governance.md).
 
 ---
 

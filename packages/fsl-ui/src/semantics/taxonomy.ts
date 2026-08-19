@@ -39,15 +39,19 @@
 //                 │          │ per-entity matrix — legality is
 //                 │          │ runtime-resolved by RAC, not authorially
 //                 │          │ declared.
-//   Layer         │ ABSORBED │ Fully captured by two existing mechanisms:
+//   Layer         │ ABSORBED │ Fully captured by three existing mechanisms:
 //                 │          │   1. Token projection's surfaceType →
 //                 │          │      control | surface (radii, border, spacing)
 //                 │          │      See ../tokens/projection.ts.
-//                 │          │   2. CONTRACT.md §1 Elevation column →
+//                 │          │   2. Elevation strata →
 //                 │          │      flat | raised | overlay | blocking
-//                 │          │ An independent Layer dimension would be
-//                 │          │ redundant — elevation tokens already encode
-//                 │          │ layer semantics per entity.
+//                 │          │      (CONTRACT.md §1 Elevation column).
+//                 │          │   3. Z-index layer scale →
+//                 │          │      base | sticky | overlay | blocking |
+//                 │          │      transient (vars.zIndex.layer.*).
+//                 │          │ Together they recover all six Lexicon §8
+//                 │          │ layer roles; an independent Layer dimension
+//                 │          │ would be redundant.
 //   Interaction   │ DEFERRED │ Previously codified; removed after 13
 //                 │          │ components declared it and zero dispatched
 //                 │          │ behavior, coloring, or DOM attributes from
@@ -58,8 +62,14 @@
 //                 │          │ Link navigation).
 //   Context       │ DEFERRED │ Refinement dimension (density, mode, a11y
 //                 │          │ preferences). No prototype exercises it yet.
-//                 │          │ Readmission criterion: stabilisation of mode
-//                 │          │ switching validated end-to-end via @ttoss/fsl-theme.
+//                 │          │ Readmission criterion: a component that
+//                 │          │ dispatches on a context class at runtime
+//                 │          │ (e.g. a density variant that changes which
+//                 │          │ spacing/sizing tokens a component consumes).
+//                 │          │ Mode switching shipped end-to-end in
+//                 │          │ @ttoss/fsl-theme with zero component-level
+//                 │          │ dispatch — mode lives at the theme layer,
+//                 │          │ not in ComponentMeta.
 //
 // Status key (FSL §13.3):
 //   CODIFIED — Dimension is part of this profile's authorial vocabulary.
@@ -226,8 +236,8 @@ export type State = (typeof STATES)[number];
 // Each entry binds a React Aria render-prop **flag** to the token-state
 // **key** it selects. The flag/state name split is intentional: RAC exposes
 // `isHovered` / `isPressed` / `isSelected` / …, while token trees expose
-// `hover` / `active` / `checked` / …. The mapping here is the only place
-// that knows both vocabularies.
+// `hover` / `active` / `checked` / `selected` / …. The mapping here is the
+// only place that knows both vocabularies.
 //
 // Cascade rationale (each entry dominates everything below it):
 //   1. `isDisabled`       — availability overrides every other signal.
@@ -236,16 +246,40 @@ export type State = (typeof STATES)[number];
 //   3. `isExpanded`       — Disclosure state; dominates selection/focus
 //                           chrome so an open disclosure wins over hover.
 //   4. `isIndeterminate`  — tri-state supersedes plain `checked`.
-//   5. `isSelected`       — Selection entity's persistent chosen state.
+//   5. `isSelected`       — persistent chosen state. Context-aware: one RAC
+//                           flag serves two theme languages that fsl-theme
+//                           keeps apart by law (see the entry's comment).
 //   6. `isFocusVisible`   — keyboard-focus ring must beat transient
 //                           pointer states.
-//   7. `isPressed`        — transient press beats hover.
+//   7. `isPressed`        — transient pointer-down; paints `active`. The
+//                           `pressed` TOKEN state is a different meaning
+//                           that shares the word: the *persistent* toggle-on
+//                           of a `ToggleButton`, which maps its `isSelected`
+//                           to `pressed` inline (ADR-042 names that mapping
+//                           as semantics, not drift) and which the base
+//                           theme ships divergent from `active` on purpose.
+//                           The cascade keeps the transient flag on `active`
+//                           so the persistent state stays reserved for
+//                           toggle semantics. Readmission criterion: a
+//                           component whose TRANSIENT press must paint
+//                           differently from `active` at the token level
+//                           (ADR-044).
 //   8. `isHovered`        — pointer proximity.
 //   9. (default)          — implicit fallback when no flag is active.
 //
 // `default` is not an entry because it has no flag — it is the resting
 // value returned when the cascade exhausts. The helper reads `states.default`
 // after iterating.
+//
+// Two vocabulary states have no entry at all, for different reasons the
+// projection declares rather than leaves silent (FSL SL §10.1, §11.4):
+//   - `droptarget` — no component surfaces a drag-target flag yet. Pending
+//     evidence, same rule as every deferred vocabulary item.
+//   - `visited`    — **structural impossibility**, not a pending flag.
+//     Browsers hide `:visited` state from JavaScript for privacy (history
+//     sniffing), so no render-prop flag can ever exist; the state is only
+//     reachable as a CSS pseudo-class, outside this cascade. Its legality
+//     source per FSL SL §10.1 is "structural impossibility" (ADR-044).
 // ---------------------------------------------------------------------------
 
 export const STATE_PRIORITY = [
@@ -258,7 +292,20 @@ export const STATE_PRIORITY = [
   // and current (colors.md § Picking a state), and the location is what the
   // user needs to see. Both sit above the transient states below.
   { flag: 'isCurrent', state: 'current' },
-  { flag: 'isSelected', state: 'checked' },
+  // The one context-aware entry. fsl-theme's `families/colors.ts` keeps two
+  // selection languages apart by law: `checked` — a two-state control that is
+  // on (checkbox, radio, switch); only the `input` context may declare it —
+  // and `selected` — membership in a set (tab, picker option, table row);
+  // declared by `navigation`/`informational`, and by `input`
+  // backgrounds/borders for picker options. RAC exposes a single `isSelected`
+  // flag for both, so `resolveStateKey` consults the token set per dimension,
+  // in an explicit order: `checked` when the set declares it → `selected`
+  // when the set declares it → `checked`, whose miss falls through to the
+  // caller's normal fallback. `checked` outranks `selected` where a set
+  // declares both because every consumer passing `isSelected` against such a
+  // set today is a two-state control or ships the checked language —
+  // re-keying them is a product decision, not a cascade rule (ADR-044).
+  { flag: 'isSelected', state: 'checked', contextState: 'selected' },
   { flag: 'isFocusVisible', state: 'focused' },
   { flag: 'isPressed', state: 'active' },
   { flag: 'isHovered', state: 'hover' },
@@ -267,9 +314,19 @@ export const STATE_PRIORITY = [
 /** React Aria render-prop flag names driven by the cascade. */
 export type InteractiveFlag = (typeof STATE_PRIORITY)[number]['flag'];
 
-/** Token-state keys the cascade maps flags into (plus `default` fallback). */
+/**
+ * Token-state keys the cascade maps flags into (plus `default` fallback).
+ * Entries carrying a `contextState` contribute both of their keys —
+ * `selected` enters the type here — so the type stays exact whichever way
+ * the context-aware resolution lands.
+ */
 export type InteractiveStateKey =
-  (typeof STATE_PRIORITY)[number]['state'] | 'default';
+  | (typeof STATE_PRIORITY)[number]['state']
+  | Extract<
+      (typeof STATE_PRIORITY)[number],
+      { readonly contextState: string }
+    >['contextState']
+  | 'default';
 
 // ---------------------------------------------------------------------------
 // Legality Matrices
