@@ -313,6 +313,9 @@ describe('validateCatalog', () => {
           filter.sourceDatasetId !== 'dataset-demografia-municipio'
         );
       }),
+      series: (sampleCatalog.series ?? []).filter((series) => {
+        return series.spatialGrain?.geographyId !== 'geo-municipio';
+      }),
     };
     const result = validateCatalog(catalog);
     expect(result.status).toBe('valid');
@@ -401,6 +404,93 @@ describe('validateCatalog', () => {
     };
     const result = validateCatalog(catalog);
     expect(result.status).toBe('invalid');
+  });
+
+  test('duplicate-series-id: two series sharing an id fail with no repair', () => {
+    const catalog: Catalog = {
+      ...sampleCatalog,
+      series: [
+        ...(sampleCatalog.series ?? []),
+        (sampleCatalog.series ?? [])[0],
+      ],
+    };
+    const result = validateCatalog(catalog);
+
+    expect(result.status).toBe('invalid');
+    if (result.status !== 'valid') {
+      const issue = result.issues.find((candidate) => {
+        return candidate.code === 'duplicate-series-id';
+      });
+      expect(issue).toBeDefined();
+      expect(issue?.repair).toBeUndefined();
+    }
+  });
+
+  test('unknown-series-metric: a series naming a non-existent metric is a mismatch, repaired with the known ids', () => {
+    const [firstSeries, ...restSeries] = sampleCatalog.series ?? [];
+    const catalog: Catalog = {
+      ...sampleCatalog,
+      series: [{ ...firstSeries, metricId: 'does-not-exist' }, ...restSeries],
+    };
+    const result = validateCatalog(catalog);
+
+    expect(result.status).toBe('mismatch');
+    if (result.status !== 'valid') {
+      const issue = result.issues.find((candidate) => {
+        return candidate.code === 'unknown-series-metric';
+      });
+      expect(issue?.repair?.[0]).toMatchObject({
+        kind: 'allowed-values',
+        values: expect.arrayContaining(
+          sampleCatalog.metrics.map((metric) => {
+            return metric.id;
+          })
+        ),
+      });
+    }
+  });
+
+  test('unknown-series-geography: a series naming a non-existent geography is a mismatch, repaired with the known ids', () => {
+    const [firstSeries, ...restSeries] = sampleCatalog.series ?? [];
+    const catalog: Catalog = {
+      ...sampleCatalog,
+      series: [
+        {
+          ...firstSeries,
+          spatialGrain: {
+            ...firstSeries.spatialGrain,
+            geographyId: 'does-not-exist',
+          },
+        },
+        ...restSeries,
+      ],
+    };
+    const result = validateCatalog(catalog);
+
+    expect(result.status).toBe('mismatch');
+    if (result.status !== 'valid') {
+      const issue = result.issues.find((candidate) => {
+        return candidate.code === 'unknown-series-geography';
+      });
+      expect(issue?.repair?.[0]).toMatchObject({
+        kind: 'allowed-values',
+        values: expect.arrayContaining(
+          sampleCatalog.geographies.map((geography) => {
+            return geography.id;
+          })
+        ),
+      });
+    }
+  });
+
+  test('a series with no spatialGrain is unaffected by the geography check', () => {
+    const [firstSeries, ...restSeries] = sampleCatalog.series ?? [];
+    const { spatialGrain: _spatialGrain, ...seriesWithoutGrain } = firstSeries;
+    const catalog: Catalog = {
+      ...sampleCatalog,
+      series: [seriesWithoutGrain, ...restSeries],
+    };
+    expect(validateCatalog(catalog).status).toBe('valid');
   });
 
   describe('options.capabilities (mapType/adapter geometry intersection)', () => {
