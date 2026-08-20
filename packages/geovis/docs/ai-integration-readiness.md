@@ -210,22 +210,8 @@ function validateIntent(intent: unknown, catalog: Catalog): GeoVisResult {
 **Implementation:**
 
 ```typescript
-// Define the output schema the model must follow
-const intentSchema = z.object({
-  mapType: z.enum(['choropleth', 'dotDensity', 'proportionalCircles']),
-  metric: z.string().describe('Field name from catalog.metrics'),
-  geography: z.string().describe('Field name from catalog.geographies'),
-  filters: z
-    .array(
-      z.object({
-        field: z.string(),
-        op: z.enum(['=', '>', '<', 'in']),
-        value: z.union([z.string(), z.number(), z.array(z.string())]),
-      })
-    )
-    .optional(),
-  rationale: z.string().optional(),
-});
+import intentSchema from '@ttoss/geovis-catalog/intent.schema.json';
+import { validateIntent } from '@ttoss/geovis-catalog';
 
 // Pass schema + catalog to LLM
 async function generateSpec(
@@ -249,11 +235,10 @@ Available geographies: ${catalog.geographies.map((g) => g.id).join(', ')}
 User query: ${userQuery}
 
 Respond with a JSON intent matching this schema:
-${JSON.stringify(intentSchema.description)}
+${JSON.stringify(intentSchema)}
 `,
       },
     ],
-    // Use tool_choice to force structured output
     tools: [
       {
         name: 'generate_intent',
@@ -262,13 +247,11 @@ ${JSON.stringify(intentSchema.description)}
     ],
   });
 
-  // Extract and validate intent
   const intent = extractToolInput(response, 'generate_intent');
   const validation = validateIntent(intent, catalog);
 
-  if (!validation.valid) return validation;
+  if (validation.status !== 'valid') return validation;
 
-  // Pass to resolver
   return resolver.resolve(intent, catalog);
 }
 ```
