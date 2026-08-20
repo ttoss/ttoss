@@ -286,6 +286,14 @@ export interface GeovisWorkspaceSidebarSection {
 }
 
 export interface GeovisWorkspaceConfig {
+  /**
+   * Visual framing of the workspace container. `'card'` (default) draws a
+   * border, rounded corners, and background — the framed look used when the
+   * workspace stands alone (e.g. Storybook). `'bare'` drops the border and
+   * radius so the workspace fills its container edge-to-edge when embedded in
+   * an app that owns the framing.
+   */
+  appearance?: 'card' | 'bare';
   /** Per-slot overrides or hides. Omit an entry to use the slot's default. */
   slots?: Partial<Record<GeovisWorkspaceSlotName, GeovisWorkspaceSlotConfig>>;
   /** Content for the `legend` slot's default panel. */

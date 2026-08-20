@@ -248,12 +248,13 @@ appears as an always-on placeholder.
 
 ### `GeovisWorkspaceConfig`
 
-| Property       | Type                                                                  | Description                                             |
-| -------------- | --------------------------------------------------------------------- | ------------------------------------------------------- |
-| `slots`        | `Partial<Record<GeovisWorkspaceSlotName, GeovisWorkspaceSlotConfig>>` | Per-slot override/hide. Omit an entry for the default.  |
-| `legend`       | `GeovisWorkspaceLegendConfig`                                         | Content for the `legend` slot's default panel.          |
-| `leftSidebar`  | `GeovisWorkspaceLeftSidebarState`                                     | Left sidebar sections and open/closed state.            |
-| `rightSidebar` | `GeovisWorkspaceRightSidebarState`                                    | Right sidebar title, open/closed state, and detail API. |
+| Property       | Type                                                                  | Description                                                                                                        |
+| -------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `appearance`   | `'card' \| 'bare'`                                                    | Container framing. `'card'` (default) draws a border/radius/background; `'bare'` fills edge-to-edge for embedding. |
+| `slots`        | `Partial<Record<GeovisWorkspaceSlotName, GeovisWorkspaceSlotConfig>>` | Per-slot override/hide. Omit an entry for the default.                                                             |
+| `legend`       | `GeovisWorkspaceLegendConfig`                                         | Content for the `legend` slot's default panel.                                                                     |
+| `leftSidebar`  | `GeovisWorkspaceLeftSidebarState`                                     | Left sidebar sections and open/closed state.                                                                       |
+| `rightSidebar` | `GeovisWorkspaceRightSidebarState`                                    | Right sidebar title, open/closed state, and detail API.                                                            |
 
 ### `GeovisWorkspaceSlotName`
 

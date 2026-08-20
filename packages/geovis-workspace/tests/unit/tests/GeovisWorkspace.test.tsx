@@ -217,6 +217,18 @@ test('renders the GeoVis map canvas inside the main content area', () => {
   expect(screen.getByTestId('geovis-canvas')).toBeInTheDocument();
 });
 
+test('renders with "bare" appearance (no card chrome) without breaking', () => {
+  render(
+    <GeovisWorkspace
+      config={{ ...config, appearance: 'bare' }}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: Provider }
+  );
+
+  expect(screen.getByTestId('geovis-canvas')).toBeInTheDocument();
+});
+
 test('left sidebar is closed by default and shows the open button', () => {
   render(
     <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
