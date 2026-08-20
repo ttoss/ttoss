@@ -7,7 +7,6 @@ import {
   type GeovisWorkspaceConfig,
   GeovisWorkspaceProvider,
   getInitialSelection,
-  LayerListControls,
   useGeovisWorkspace,
 } from 'src';
 import { LEFT_SIDEBAR_CONTROL_CLEARANCE } from 'src/controlOffset';
@@ -95,23 +94,43 @@ const Provider = ({ children }: React.PropsWithChildren) => {
 };
 
 const config: GeovisWorkspaceConfig = {
-  controls: {
-    menus: [
+  leftSidebar: {
+    sections: [
       {
         id: 'population',
-        title: 'População',
-        items: [
-          { value: '5year-65plus', label: 'Faixa (% da pop 65+)' },
-          { value: '0-14', label: '0 a 14 anos' },
-        ],
+        header: { title: 'População' },
+        body: {
+          kind: 'variations',
+          menuId: 'population',
+          groups: [
+            {
+              id: 'population',
+              label: 'População',
+              variations: [
+                { value: '5year-65plus', label: 'Faixa (% da pop 65+)' },
+                { value: '0-14', label: '0 a 14 anos' },
+              ],
+            },
+          ],
+        },
       },
       {
         id: 'economy',
-        title: 'Economia',
-        items: [
-          { value: 'gdp', label: 'PIB' },
-          { value: 'income', label: 'Renda média' },
-        ],
+        header: { title: 'Economia' },
+        body: {
+          kind: 'variations',
+          menuId: 'economy',
+          groups: [
+            {
+              id: 'economy',
+              label: 'Economia',
+              variations: [
+                { value: 'gdp', label: 'PIB' },
+                { value: 'income', label: 'Renda média' },
+              ],
+            },
+          ],
+        },
       },
     ],
   },
@@ -207,7 +226,7 @@ test('left sidebar is closed by default and shows the open button', () => {
   expect(screen.getByRole('button', { name: 'Open menu' })).toBeInTheDocument();
 });
 
-test('clicking the open button reveals the menu groups and items', async () => {
+test('clicking the open button reveals the section tabs and items', async () => {
   render(
     <GeovisWorkspace config={config} visualizationSpec={visualizationSpec} />,
     { wrapper: Provider }
@@ -215,8 +234,17 @@ test('clicking the open button reveals the menu groups and items', async () => {
 
   await openLeftSidebar();
 
-  expect(screen.getByText('População')).toBeInTheDocument();
-  expect(screen.getByText('Economia')).toBeInTheDocument();
+  // Both sections render as tabs; the active (first) tab's body is mounted.
+  expect(screen.getByRole('button', { name: 'População' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Economia' })).toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Faixa (% da pop 65+)' })
+  ).toBeInTheDocument();
+
+  // Switch to the economy tab to reach its variations.
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'Economia' }));
+  });
   expect(screen.getByRole('button', { name: 'PIB' })).toBeInTheDocument();
   expect(
     screen.queryByRole('button', { name: 'Open menu' })
@@ -241,12 +269,25 @@ test('closing the left sidebar brings the open button back', async () => {
 test("shifts the map's layer control clear of the left sidebar while open", async () => {
   // Reads the live spec fed to `GeoVisProvider` so the test observes the exact
   // `control.offset` the workspace hands the map as the sidebar opens/closes.
+  // A `controls` slot override replaces the whole sidebar (including its
+  // built-in close button), so the probe renders its own close control via the
+  // workspace context to drive the same open/close transitions.
   const ControlOffsetProbe = () => {
     const { spec } = useGeoVis();
+    const { setLeftSidebarOpen } = useGeovisWorkspace();
     return (
-      <div data-testid="control-offset">
-        {JSON.stringify(spec.control?.offset ?? null)}
-      </div>
+      <>
+        <div data-testid="control-offset">
+          {JSON.stringify(spec.control?.offset ?? null)}
+        </div>
+        <button
+          type="button"
+          aria-label="Close menu"
+          onClick={() => {
+            return setLeftSidebarOpen({ open: false });
+          }}
+        />
+      </>
     );
   };
 
@@ -280,13 +321,16 @@ test("shifts the map's layer control clear of the left sidebar while open", asyn
 test('left sidebar starts open when initialState is "open"', () => {
   render(
     <GeovisWorkspace
-      config={{ ...config, leftSidebar: { initialState: 'open' } }}
+      config={{
+        ...config,
+        leftSidebar: { ...config.leftSidebar!, initialState: 'open' },
+      }}
       visualizationSpec={visualizationSpec}
     />,
     { wrapper: Provider }
   );
 
-  expect(screen.getByText('População')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'População' })).toBeInTheDocument();
   expect(
     screen.queryByRole('button', { name: 'Open menu' })
   ).not.toBeInTheDocument();
@@ -295,7 +339,10 @@ test('left sidebar starts open when initialState is "open"', () => {
 test('left sidebar stays closed when initialState is "closed"', () => {
   render(
     <GeovisWorkspace
-      config={{ ...config, leftSidebar: { initialState: 'closed' } }}
+      config={{
+        ...config,
+        leftSidebar: { ...config.leftSidebar!, initialState: 'closed' },
+      }}
       visualizationSpec={visualizationSpec}
     />,
     { wrapper: Provider }
@@ -312,14 +359,22 @@ test('selecting an item marks it active without affecting other groups', async (
 
   await openLeftSidebar();
 
+  // Choose PIB in the economy tab.
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'Economia' }));
+  });
   await act(async () => {
     fireEvent.click(screen.getByRole('button', { name: 'PIB' }));
   });
-
   expect(screen.getByRole('button', { name: 'PIB' })).toHaveAttribute(
     'aria-pressed',
     'true'
   );
+
+  // The population tab's variation is untouched by the economy selection.
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'População' }));
+  });
   expect(
     screen.getByRole('button', { name: 'Faixa (% da pop 65+)' })
   ).toHaveAttribute('aria-pressed', 'false');
@@ -340,6 +395,9 @@ test('calls onVariableChange with the full next selection', async () => {
   await openLeftSidebar();
 
   await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'Economia' }));
+  });
+  await act(async () => {
     fireEvent.click(screen.getByRole('button', { name: 'Renda média' }));
   });
 
@@ -351,16 +409,26 @@ test('calls onVariableChange with the full next selection', async () => {
 
 test('initializes selection from defaultValue', async () => {
   const configWithDefault: GeovisWorkspaceConfig = {
-    controls: {
-      menus: [
+    leftSidebar: {
+      sections: [
         {
           id: 'economy',
-          title: 'Economia',
-          defaultValue: 'gdp',
-          items: [
-            { value: 'gdp', label: 'PIB' },
-            { value: 'income', label: 'Renda média' },
-          ],
+          header: { title: 'Economia' },
+          body: {
+            kind: 'variations',
+            menuId: 'economy',
+            defaultValue: 'gdp',
+            groups: [
+              {
+                id: 'economy',
+                label: 'Economia',
+                variations: [
+                  { value: 'gdp', label: 'PIB' },
+                  { value: 'income', label: 'Renda média' },
+                ],
+              },
+            ],
+          },
         },
       ],
     },
@@ -395,6 +463,10 @@ test('controlled variables prop drives the active item', async () => {
 
   await openLeftSidebar();
 
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'Economia' }));
+  });
+
   expect(screen.getByRole('button', { name: 'Renda média' })).toHaveAttribute(
     'aria-pressed',
     'true'
@@ -427,7 +499,7 @@ test('right sidebar renders only when a slot has content', () => {
   ).toBeInTheDocument();
 });
 
-test('left sidebar controls are absent when controls has no menus', () => {
+test('left sidebar controls are absent when leftSidebar has no sections', () => {
   render(
     <GeovisWorkspace
       config={{ legend: { description: 'Descrição' } }}
@@ -488,7 +560,9 @@ test('right sidebar renders the legend panel from the config', async () => {
   expect(
     screen.getByText('Proporção da população total com 65 anos ou mais.')
   ).toBeInTheDocument();
-  expect(screen.getByTestId('legend-classes')).toBeInTheDocument();
+  // Spec legends are map overlays now — the legend slot no longer auto-dumps
+  // them into the right sidebar; it shows only the consumer's config.legend.
+  expect(screen.queryByTestId('legend-classes')).not.toBeInTheDocument();
   expect(screen.getByText('Fonte dos dados:')).toBeInTheDocument();
   expect(
     screen.getByText('Geometria: Distritos Municipais.')
@@ -544,7 +618,7 @@ test('hiding the legend slot suppresses it even when the spec has legends', () =
   ).not.toBeInTheDocument();
 });
 
-test('a controls slot override replaces the default menu panel and keeps the sidebar visible', async () => {
+test('a controls slot override replaces the default sidebar and keeps the sidebar visible', async () => {
   const CustomControls = () => {
     return <div data-testid="custom-controls">custom</div>;
   };
@@ -685,7 +759,7 @@ test('right sidebar starts open when initialState is "open"', () => {
   ).not.toBeInTheDocument();
 });
 
-test('getInitialSelection seeds the selection from menu defaultValues', () => {
+test('getInitialSelection seeds the selection from section defaultValues', () => {
   expect(getInitialSelection({ config })).toEqual({
     population: undefined,
     economy: undefined,
@@ -694,13 +768,23 @@ test('getInitialSelection seeds the selection from menu defaultValues', () => {
   expect(
     getInitialSelection({
       config: {
-        controls: {
-          menus: [
+        leftSidebar: {
+          sections: [
             {
               id: 'economy',
-              title: 'Economia',
-              defaultValue: 'gdp',
-              items: [{ value: 'gdp', label: 'PIB' }],
+              header: { title: 'Economia' },
+              body: {
+                kind: 'variations',
+                menuId: 'economy',
+                defaultValue: 'gdp',
+                groups: [
+                  {
+                    id: 'economy',
+                    label: 'Economia',
+                    variations: [{ value: 'gdp', label: 'PIB' }],
+                  },
+                ],
+              },
             },
           ],
         },
@@ -749,6 +833,38 @@ test('GeovisWorkspaceProvider manages left sidebar open state uncontrolled', asy
         }}
       >
         {isLeftSidebarOpen ? 'open' : 'closed'}
+      </button>
+    );
+  };
+
+  render(
+    <GeovisWorkspaceProvider config={config}>
+      <Consumer />
+    </GeovisWorkspaceProvider>,
+    { wrapper: Provider }
+  );
+
+  // No controlled prop → the provider seeds and flips its own internal state.
+  expect(screen.getByRole('button', { name: 'closed' })).toBeInTheDocument();
+
+  await act(async () => {
+    fireEvent.click(screen.getByRole('button', { name: 'closed' }));
+  });
+
+  expect(screen.getByRole('button', { name: 'open' })).toBeInTheDocument();
+});
+
+test('GeovisWorkspaceProvider manages right sidebar open state uncontrolled', async () => {
+  const Consumer = () => {
+    const { isRightSidebarOpen, setRightSidebarOpen } = useGeovisWorkspace();
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          return setRightSidebarOpen({ open: !isRightSidebarOpen });
+        }}
+      >
+        {isRightSidebarOpen ? 'open' : 'closed'}
       </button>
     );
   };
@@ -1157,60 +1273,6 @@ test('metadata panel is absent while another slot keeps the sidebar open', async
   expect(screen.queryByText(/source/)).not.toBeInTheDocument();
 });
 
-test('LayerListControls renders a visibility checkbox per layer and calls onLayerVisibilityChange on toggle', async () => {
-  const onLayerVisibilityChange = jest.fn();
-
-  const specWithLayers = {
-    ...visualizationSpec,
-    layers: [
-      {
-        id: 'districts-fill',
-        title: 'Districts',
-        visible: true,
-        activeLegendId: 'classes',
-      },
-      { id: 'roads', visible: false },
-    ],
-  };
-
-  render(
-    <GeovisWorkspace
-      config={{ slots: { controls: { component: LayerListControls } } }}
-      visualizationSpec={specWithLayers}
-      onLayerVisibilityChange={onLayerVisibilityChange}
-    />,
-    { wrapper: Provider }
-  );
-
-  await openLeftSidebar();
-
-  const districtsCheckbox = screen.getByRole('checkbox', {
-    name: 'Toggle visibility of layer districts-fill',
-  });
-  const roadsCheckbox = screen.getByRole('checkbox', {
-    name: 'Toggle visibility of layer roads',
-  });
-
-  expect(districtsCheckbox).toBeChecked();
-  expect(screen.getByText('Districts')).toBeInTheDocument();
-  expect(screen.getByText('classes')).toBeInTheDocument();
-
-  expect(roadsCheckbox).not.toBeChecked();
-  expect(screen.getByText('roads')).toBeInTheDocument();
-
-  await act(async () => {
-    fireEvent.click(districtsCheckbox);
-  });
-
-  expect(onLayerVisibilityChange).toHaveBeenCalledWith('districts-fill', false);
-
-  await act(async () => {
-    fireEvent.click(roadsCheckbox);
-  });
-
-  expect(onLayerVisibilityChange).toHaveBeenCalledWith('roads', true);
-});
-
 test('right sidebar detail API fetches on click, auto-opens, and renders the detail', async () => {
   const onFeatureSelect = jest.fn(() => {
     return Promise.resolve({ name: 'Cozinha X' });
@@ -1245,6 +1307,63 @@ test('right sidebar detail API fetches on click, auto-opens, and renders the det
   expect(onFeatureSelect).toHaveBeenCalledWith(
     expect.objectContaining({ layerId: 'kitchens', featureId: 'k1' })
   );
+});
+
+test('right sidebar closes when the selection clears (click outside), not only via the close button', async () => {
+  const onFeatureSelect = jest.fn(() => {
+    return Promise.resolve({ name: 'Cozinha X' });
+  });
+
+  // `legend.description` keeps the right sidebar populated after the selection
+  // clears, so its open state stays observable via the reopen button instead of
+  // being hidden for lack of content.
+  const configWithDetail: GeovisWorkspaceConfig = {
+    legend: { description: 'Descrição da legenda.' },
+    rightSidebar: {
+      onFeatureSelect,
+      renderDetails: ({ loading, data }) => {
+        if (loading) return <span>Carregando</span>;
+        return <span>{(data as { name: string } | null)?.name}</span>;
+      },
+    },
+  };
+
+  const { rerender } = render(
+    <GeovisWorkspace
+      config={configWithDetail}
+      visualizationSpec={{
+        ...visualizationSpec,
+        mockClick: { layerId: 'kitchens', featureId: 'k1', value: null },
+      }}
+    />,
+    { wrapper: Provider }
+  );
+
+  // Clicking a feature auto-opens the sidebar: the detail shows and the reopen
+  // button is gone.
+  expect(await screen.findByText('Cozinha X')).toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Open details' })
+  ).not.toBeInTheDocument();
+
+  // Clicking outside clears the selection (no manual close-button press).
+  rerender(
+    <GeovisWorkspace
+      config={configWithDetail}
+      visualizationSpec={{ ...visualizationSpec, mockClick: null }}
+    />
+  );
+
+  await act(async () => {});
+
+  // The detail is gone and the sidebar is closed — its reopen button is back,
+  // even though the legend description still keeps the sidebar populated. Before
+  // the fix, the open state stayed `true` here and a pushed-aside legend would
+  // never return to rest.
+  expect(screen.queryByText('Cozinha X')).not.toBeInTheDocument();
+  expect(
+    screen.getByRole('button', { name: 'Open details' })
+  ).toBeInTheDocument();
 });
 
 test('right sidebar detail API ignores clicks rejected by shouldOpen', async () => {
@@ -1334,46 +1453,6 @@ test('right sidebar detail API runs onFeatureSelect even without renderDetails',
   expect(onFeatureSelect).toHaveBeenCalledWith(
     expect.objectContaining({ layerId: 'kitchens' })
   );
-});
-
-test('left sidebar reads menus from the leftSidebar.menus alias', () => {
-  render(
-    <GeovisWorkspace
-      config={{
-        leftSidebar: {
-          initialState: 'open',
-          menus: [
-            {
-              id: 'mode',
-              title: 'Modo',
-              defaultValue: 'a',
-              items: [
-                { value: 'a', label: 'Opção A' },
-                { value: 'b', label: 'Opção B' },
-              ],
-            },
-          ],
-        },
-      }}
-      visualizationSpec={visualizationSpec}
-    />,
-    { wrapper: Provider }
-  );
-
-  expect(screen.getByText('Modo')).toBeInTheDocument();
-  expect(screen.getByText('Opção A')).toBeInTheDocument();
-});
-
-test('getInitialSelection seeds the selection from leftSidebar.menus', () => {
-  const selection = getInitialSelection({
-    config: {
-      leftSidebar: {
-        menus: [{ id: 'mode', title: 'Modo', defaultValue: 'a', items: [] }],
-      },
-    },
-  });
-
-  expect(selection).toEqual({ mode: 'a' });
 });
 
 test('right sidebar shows inspector content for renderDetails without onFeatureSelect', async () => {

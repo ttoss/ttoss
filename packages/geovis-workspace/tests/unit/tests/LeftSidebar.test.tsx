@@ -63,7 +63,9 @@ const visualizationSpec = {
   layers: [],
 };
 
-type Preview = NonNullable<GeovisWorkspaceConfig['leftSidebarPreview']>;
+type Preview = {
+  sections: NonNullable<GeovisWorkspaceConfig['leftSidebar']>['sections'];
+};
 
 /** A full two-tab preview: a flat variations list and the three filter kinds. */
 const preview: Preview = {
@@ -152,18 +154,13 @@ const preview: Preview = {
   ],
 };
 
-const config: GeovisWorkspaceConfig = {
-  leftSidebar: { initialState: 'open' },
-  leftSidebarPreview: preview,
-};
-
 const renderPreview = (
   props: Partial<React.ComponentProps<typeof GeovisWorkspace>> = {},
   previewConfig: Preview = preview
 ) => {
   return render(
     <GeovisWorkspace
-      config={{ ...config, leftSidebarPreview: previewConfig }}
+      config={{ leftSidebar: { initialState: 'open', ...previewConfig } }}
       visualizationSpec={visualizationSpec}
       {...props}
     />,
@@ -603,11 +600,16 @@ test('a variations-only preview renders without a filters tab or footer year', (
   ).not.toBeInTheDocument();
 });
 
-test('an empty preview renders just the card chrome', () => {
+test('empty sections mount no sidebar at all', () => {
   renderPreview({}, { sections: [] });
 
+  // With no sections the `controls` slot has no content, so neither the sidebar
+  // nor its reopen button mount — only the map remains.
   expect(
-    screen.getByRole('button', { name: 'Close menu' })
-  ).toBeInTheDocument();
+    screen.queryByRole('button', { name: 'Close menu' })
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'Open menu' })
+  ).not.toBeInTheDocument();
   expect(screen.queryByText('Variações')).not.toBeInTheDocument();
 });

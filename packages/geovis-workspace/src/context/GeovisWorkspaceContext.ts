@@ -1,74 +1,6 @@
 import type { MapClickInfo, RepairOption } from '@ttoss/geovis';
 import * as React from 'react';
 
-export interface GeovisWorkspaceMenuItem {
-  /** Value reported through selection and onSelect when this item is active. */
-  value: string;
-  /** Text shown for the item in the sidebar menu. */
-  label: string;
-}
-
-/**
- * A carousel group of a grouped menu: one selectable chip at the top of the
- * sidebar, holding the subset of items shown while it is the open group.
- */
-export interface GeovisWorkspaceMenuGroup {
-  /** Unique identifier of the group; used to track which chip is open. */
-  id: string;
-  /** Text shown on the group's chip in the carousel. */
-  label: string;
-  /** Items shown while this group is the open one. */
-  items: GeovisWorkspaceMenuItem[];
-}
-
-interface GeovisWorkspaceMenuBase {
-  /** Unique identifier of the menu group; keys this menu's selection. */
-  id: string;
-  /** Value of the item selected by default in this menu. */
-  defaultValue?: string;
-}
-
-/**
- * The default menu shape: a titled group whose items stack vertically in the
- * left sidebar. `items` and `groups` are mutually exclusive — a flat menu never
- * carries `groups`.
- */
-export interface GeovisWorkspaceFlatMenu extends GeovisWorkspaceMenuBase {
-  /** Title displayed above the group's items. */
-  title: string;
-  /** Selectable items within the group. */
-  items: GeovisWorkspaceMenuItem[];
-  groups?: never;
-}
-
-/**
- * A grouped menu: its items are split across carousel groups rendered as a row
- * of chips at the top of the sidebar, with only the open group's items shown
- * below. The selection stays a single value shared across every group — the
- * carousel only chooses which items are visible, never what is selected.
- * `items` and `groups` are mutually exclusive.
- */
-export interface GeovisWorkspaceGroupedMenu extends GeovisWorkspaceMenuBase {
-  /** Optional heading rendered above the carousel chips. */
-  title?: string;
-  /** The carousel groups; each becomes a chip. */
-  groups: GeovisWorkspaceMenuGroup[];
-  items?: never;
-  /**
-   * Id of the group that starts open. Defaults to the group containing
-   * `defaultValue`, falling back to the first group. Ignored when it matches
-   * no group.
-   */
-  defaultGroupId?: string;
-}
-
-/**
- * A left-sidebar menu group. Either a flat list of items (the default) or a
- * grouped/carousel menu — never both, enforced by the `never` fields.
- */
-export type GeovisWorkspaceMenu =
-  GeovisWorkspaceFlatMenu | GeovisWorkspaceGroupedMenu;
-
 export interface GeovisWorkspaceSource {
   /** Source description text. */
   label: string;
@@ -101,11 +33,6 @@ export interface GeovisWorkspaceSlotConfig {
   hidden?: boolean;
 }
 
-export interface GeovisWorkspaceControls {
-  /** Menu groups rendered by the `controls` slot's default panel. */
-  menus: GeovisWorkspaceMenu[];
-}
-
 export interface GeovisWorkspaceLegendConfig {
   /** Descriptive paragraph rendered above the legend. */
   description?: string;
@@ -120,11 +47,11 @@ export interface GeovisWorkspaceSidebarState {
 
 export interface GeovisWorkspaceLeftSidebarState extends GeovisWorkspaceSidebarState {
   /**
-   * Menu groups rendered by the `controls` slot's default panel — a
-   * convenience alias for `controls.menus` so the left sidebar can be
-   * configured in one place. When both are set, `controls.menus` wins.
+   * The zoned content of the left sidebar (`controls` slot): an icon tab bar
+   * with one tab per section, each hosting either a variation list (driving the
+   * shared selection) or a stack of filter blocks (timeline, chips, locator).
    */
-  menus?: GeovisWorkspaceMenu[];
+  sections: GeovisWorkspaceSidebarSection[];
 }
 
 /**
@@ -169,14 +96,12 @@ export interface GeovisWorkspaceRightSidebarState extends GeovisWorkspaceSidebar
 }
 
 /**
- * ─────────────────────────── Sidebar preview (opt-in) ───────────────────────
+ * ─────────────────────────────── Left sidebar ───────────────────────────────
  *
- * An experimental, config-driven redesign of the left sidebar: a vertical
- * stack of zones, each opened by a header, hosting either a variation accordion
- * (groups → variations, driving the shared selection) or a stack of filter
- * blocks (timeline, chips, locator). Opt in with
- * {@link GeovisWorkspaceConfig.leftSidebarPreview}; when unset, nothing changes
- * and the default menu panel renders as before.
+ * The config-driven left sidebar: an icon tab bar (one tab per section), each
+ * section hosting either a variation list (groups → variations, driving the
+ * shared selection) or a stack of filter blocks (timeline, chips, locator).
+ * Configure it via {@link GeovisWorkspaceLeftSidebarState.sections}.
  */
 
 /** A single selectable variation inside a variation group. */
@@ -360,35 +285,15 @@ export interface GeovisWorkspaceSidebarSection {
   body: GeovisWorkspaceSidebarBody;
 }
 
-/**
- * Opt-in spec for the experimental left-sidebar redesign. Set it on
- * {@link GeovisWorkspaceConfig.leftSidebarPreview} to replace the default menu
- * panel with this layout: an icon tab bar (one tab per {@link sections} entry),
- * a card header that mirrors the active tab (its `header` icon + title), the
- * active tab's body, and a footer.
- */
-export interface GeovisWorkspaceSidebarPreview {
-  /** The tabs, left to right; each becomes one icon in the tab bar. */
-  sections: GeovisWorkspaceSidebarSection[];
-}
-
 export interface GeovisWorkspaceConfig {
   /** Per-slot overrides or hides. Omit an entry to use the slot's default. */
   slots?: Partial<Record<GeovisWorkspaceSlotName, GeovisWorkspaceSlotConfig>>;
-  /** Content for the `controls` slot's default panel. */
-  controls?: GeovisWorkspaceControls;
   /** Content for the `legend` slot's default panel. */
   legend?: GeovisWorkspaceLegendConfig;
-  /** Left sidebar (hosts the `controls` slot) menus and open/closed state. */
+  /** Left sidebar (`controls` slot): its `sections` and open/closed state. */
   leftSidebar?: GeovisWorkspaceLeftSidebarState;
   /** Right sidebar (hosts legend/warnings/inspector/metadata) title, open/closed state, and detail API. */
   rightSidebar?: GeovisWorkspaceRightSidebarState;
-  /**
-   * Experimental opt-in: drives the redesigned left-sidebar preview (zoned:
-   * variation accordion + filters) in place of the default menu panel. When
-   * unset, nothing changes. Non-breaking — `controls`/`leftSidebar` still work.
-   */
-  leftSidebarPreview?: GeovisWorkspaceSidebarPreview;
 }
 
 /** Active item value per menu group, keyed by menu id. */
@@ -411,15 +316,6 @@ export interface GeovisWorkspaceContextValue {
   setRightSidebarOpen: ({ open }: { open: boolean }) => void;
   /** Called with the chosen `RepairOption` when a repair button is pressed. */
   onRepair?: (repair: RepairOption) => void;
-  /**
-   * Called with a layer's id and its next `visible` value when the
-   * `LayerListControls` `controls` slot variant toggles it. Only the
-   * application can rebuild `visualizationSpec` with the new value — the
-   * same delegation shape `onRepair`/`onVariableChange` already use, since
-   * `SpecPatch`'s `'layer'` target only supports `paint` properties, not
-   * arbitrary layer fields like `visible`.
-   */
-  onLayerVisibilityChange?: (layerId: string, visible: boolean) => void;
   /**
    * Whether `useGeoVis().result` has ever been `'resolved'` since this
    * workspace mounted. Shared through context (rather than each consumer
