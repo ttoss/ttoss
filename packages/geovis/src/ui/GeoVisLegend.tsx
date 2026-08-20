@@ -342,7 +342,10 @@ const GeoVisLegendBody = ({
   return (
     <div
       className={className}
-      style={{ ...buildContainerStyle(legend.position), ...extraStyle }}
+      style={{
+        ...buildContainerStyle(legend.position, legend.offset),
+        ...extraStyle,
+      }}
     >
       <GeoVisLegendHeader
         icon={legend.icon}

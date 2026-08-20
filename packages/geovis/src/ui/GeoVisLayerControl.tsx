@@ -1,3 +1,4 @@
+import { Icon } from '@ttoss/react-icons';
 import * as React from 'react';
 
 import type { LayerControlItem } from '../spec/types';
@@ -11,8 +12,7 @@ import {
   buildTriggerStyle,
   panelStyle,
   TRIGGER_SIZE,
-  triggerIconWrapStyle,
-  triggerLabelStyle,
+  triggerBadgeStyle,
 } from './GeoVisLayerControl.styles';
 
 /**
@@ -85,8 +85,8 @@ const ItemThumbnail = ({ thumbnail }: { thumbnail?: string }) => {
 const LayersIcon = () => {
   return (
     <svg
-      width="40"
-      height="40"
+      width="22"
+      height="22"
       viewBox="0 0 24 24"
       fill="currentColor"
       aria-hidden
@@ -95,6 +95,15 @@ const LayersIcon = () => {
       <path d="M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27-7.38 5.74zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16z" />
     </svg>
   );
+};
+
+/**
+ * Trigger glyph: the spec's `@ttoss/react-icons` icon when set, otherwise the
+ * built-in {@link LayersIcon}. Inherits its colour from the wrapper.
+ */
+const TriggerIcon = ({ icon }: { icon: string | undefined }) => {
+  if (!icon) return <LayersIcon />;
+  return <Icon icon={icon} style={{ display: 'block', fontSize: 22 }} />;
 };
 
 /** White checkmark shown inside an active checkbox. */
@@ -306,6 +315,9 @@ export const GeoVisLayerControl = () => {
   const label = control.label ?? 'Layers';
   const position = control.position ?? 'bottom-left';
   const trigger = control.trigger ?? 'hover';
+  const activeCount = control.items.filter((item) => {
+    return resolveItemActive(item, activeById);
+  }).length;
   const hoverHandlers = buildHoverHandlers({ trigger, setExpanded });
 
   const toggleItem = (item: LayerControlItem) => {
@@ -325,6 +337,8 @@ export const GeoVisLayerControl = () => {
       key="trigger"
       type="button"
       aria-expanded={expanded}
+      aria-label={label}
+      title={label}
       style={buildTriggerStyle(expanded)}
       onClick={() => {
         return setExpanded((prev) => {
@@ -332,10 +346,8 @@ export const GeoVisLayerControl = () => {
         });
       }}
     >
-      <span style={triggerIconWrapStyle}>
-        <LayersIcon />
-      </span>
-      <span style={triggerLabelStyle}>{label}</span>
+      <TriggerIcon icon={control.icon} />
+      {activeCount > 0 && <span style={triggerBadgeStyle}>{activeCount}</span>}
     </button>
   );
 

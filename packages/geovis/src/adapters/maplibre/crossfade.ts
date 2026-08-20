@@ -7,6 +7,8 @@ import type {
   VisualizationSpec,
 } from '../../spec/types';
 import { stripUndefinedPaint, toMaplibreLayer } from './layerTranslation';
+import { applyMapDataToSourceId } from './mapDataFeatureState';
+import { resolvePromoteIdForSource } from './sourceTranslation';
 import { resolveSourceLayerFor } from './syncSourcesAndLayers';
 
 /** Prefix for shadow layer ids. Reserved so reconcile passes never touch them. */
@@ -167,9 +169,13 @@ const addShadow = (
   }
 ): void => {
   const { layer, data, shadowLayerId, shadowSourceId, spec } = args;
+  // Match the real source's id promotion so the shadow's feature-state joins by
+  // the same key — otherwise `setFeatureState` on the shadow can't colour it.
+  const promoteId = resolvePromoteIdForSource(spec, layer.sourceId);
   map.addSource(shadowSourceId, {
     type: 'geojson',
     data: data as maplibregl.GeoJSONSourceSpecification['data'],
+    ...(promoteId ? { promoteId } : {}),
   });
   const shadowSpec = toMaplibreLayer(
     layer,
@@ -195,6 +201,69 @@ const resolveCircleBase = (layer: VisualizationLayer): number => {
 
 /** Max frames to wait for the real source to parse the new data before revealing it anyway. */
 const SETTLE_MAX_FRAMES = 120;
+
+/** Stroke opacity the real layer rests at (and the fade ramps to and from). */
+const STROKE_BASE = 1;
+
+/**
+ * Cancels any crossfade already running for the layer, adds the shadow layer
+ * holding the NEW data, takes exclusive control of both layers' opacity, and
+ * sets the start state (real layer opaque, shadow transparent). Returns the
+ * shadow ids and resolved circle base, or `null` when the real layer no longer
+ * exists and the crossfade must abort.
+ */
+const setupCrossfadeShadow = (
+  map: maplibregl.Map,
+  args: StartCrossfadeArgs
+): {
+  shadowLayerId: string;
+  shadowSourceId: string;
+  circleBase: number;
+} | null => {
+  const { layer, newData, spec } = args;
+
+  // Cancel any crossfade already running for this layer.
+  const previous = entriesFor(map).get(layer.id);
+  if (previous) previous.stop();
+
+  const shadowSourceId = `${SHADOW_SOURCE_PREFIX}${layer.id}`;
+  const shadowLayerId = `${SHADOW_LAYER_PREFIX}${layer.id}`;
+
+  // Defensive: clear any leftover shadow before recreating it.
+  removeShadow(map, shadowLayerId, shadowSourceId);
+
+  if (!map.getLayer(layer.id)) return null;
+
+  addShadow(map, { layer, data: newData, shadowLayerId, shadowSourceId, spec });
+
+  // Take exclusive control of the opacity animation: without this, MapLibre's
+  // default paint transition smears and lags the per-frame values below.
+  disableOpacityTransitions(map, layer.id);
+  disableOpacityTransitions(map, shadowLayerId);
+
+  const circleBase = resolveCircleBase(layer);
+
+  // Start: real layer (OLD data) fully visible, shadow (NEW data) transparent.
+  // Held while the shadow source parses so the new points sit at opacity 0 until
+  // the ramp begins, instead of popping in at whatever opacity the ramp reached.
+  setCircleOpacities(map, layer.id, circleBase, STROKE_BASE);
+  setCircleOpacities(map, shadowLayerId, 0, 0);
+
+  return { shadowLayerId, shadowSourceId, circleBase };
+};
+
+/** Points the real source at the NEW data (deferred by the caller until now). */
+const commitNewData = (
+  map: maplibregl.Map,
+  sourceId: string,
+  newData: StartCrossfadeArgs['newData']
+): void => {
+  const source = map.getSource(sourceId) as
+    maplibregl.GeoJSONSource | undefined;
+  if (source && typeof source.setData === 'function') {
+    source.setData(newData as maplibregl.GeoJSONSourceSpecification['data']);
+  }
+};
 
 /**
  * Starts a crossfade for one point layer.
@@ -239,48 +308,35 @@ export const startCrossfade = (
   const { layer, sourceId, newData, durationMs, easing, spec } = args;
   const entries = entriesFor(map);
 
-  // Cancel any crossfade already running for this layer.
-  const previous = entries.get(layer.id);
-  if (previous) previous.stop();
-
-  const shadowSourceId = `${SHADOW_SOURCE_PREFIX}${layer.id}`;
-  const shadowLayerId = `${SHADOW_LAYER_PREFIX}${layer.id}`;
-
-  // Defensive: clear any leftover shadow before recreating it.
-  removeShadow(map, shadowLayerId, shadowSourceId);
-
-  if (!map.getLayer(layer.id)) return;
-
-  addShadow(map, { layer, data: newData, shadowLayerId, shadowSourceId, spec });
-
-  // Take exclusive control of the opacity animation: without this, MapLibre's
-  // default paint transition smears and lags the per-frame values below.
-  disableOpacityTransitions(map, layer.id);
-  disableOpacityTransitions(map, shadowLayerId);
-
-  const circleBase = resolveCircleBase(layer);
-  const strokeBase = 1;
+  const shadow = setupCrossfadeShadow(map, args);
+  if (!shadow) return;
+  const { shadowLayerId, shadowSourceId, circleBase } = shadow;
 
   const ease = resolveEasing(easing);
-  const start = scheduler.now();
+  // Set once the shadow's new data has parsed and the fade actually begins —
+  // not at scheduling time, so a slow geojson parse can't advance the ramp
+  // before the new points can render.
+  let start = 0;
   let frame: number | undefined;
   let settleFrames = 0;
+  let readyFrames = 0;
 
-  // Start: real layer (OLD data) fully visible, shadow (NEW data) transparent.
-  setCircleOpacities(map, layer.id, circleBase, strokeBase);
-  setCircleOpacities(map, shadowLayerId, 0, 0);
-
-  /** Points the real source at the NEW data (deferred by the caller until now). */
-  const commitNewData = (): void => {
-    const source = map.getSource(sourceId) as
-      maplibregl.GeoJSONSource | undefined;
-    if (source && typeof source.setData === 'function') {
-      source.setData(newData as maplibregl.GeoJSONSourceSpecification['data']);
+  /**
+   * Paints the layer's `mapData` feature-state onto the shadow source (a copy
+   * of the NEW data) so its points fade in already coloured, instead of showing
+   * the fallback colour until the swap commits. Applied once the shadow source
+   * has parsed (its features must exist for `setFeatureState` to take).
+   */
+  const applyShadowFeatureState = (): void => {
+    for (const mapData of spec.mapData ?? []) {
+      if (mapData.mapId === sourceId) {
+        applyMapDataToSourceId(map, shadowSourceId, mapData);
+      }
     }
   };
 
   const finalize = (): void => {
-    setCircleOpacities(map, layer.id, circleBase, strokeBase);
+    setCircleOpacities(map, layer.id, circleBase, STROKE_BASE);
     removeShadow(map, shadowLayerId, shadowSourceId);
     entries.delete(layer.id);
   };
@@ -303,7 +359,7 @@ export const startCrossfade = (
 
   const stop = (): void => {
     if (frame !== undefined) scheduler.caf(frame);
-    commitNewData();
+    commitNewData(map, sourceId, newData);
     finalize();
   };
 
@@ -318,19 +374,40 @@ export const startCrossfade = (
       map,
       layer.id,
       circleBase * (1 - e),
-      strokeBase * (1 - e)
+      STROKE_BASE * (1 - e)
     );
-    setCircleOpacities(map, shadowLayerId, circleBase * e, strokeBase * e);
+    setCircleOpacities(map, shadowLayerId, circleBase * e, STROKE_BASE * e);
     if (p >= 1) {
       // Real layer is now invisible; swap its source and wait for the parse.
-      commitNewData();
+      commitNewData(map, sourceId, newData);
       settle();
       return;
     }
     frame = scheduler.raf(tick);
   };
 
-  frame = scheduler.raf(tick);
+  /**
+   * Starts the fade only once the shadow's freshly-added source has parsed its
+   * new data (so the fade-in animates over points that can actually render),
+   * capped at {@link SETTLE_MAX_FRAMES} so a source that never reports loaded
+   * still fades rather than hanging at full-old / zero-new forever.
+   */
+  const beginFadeWhenShadowReady = (): void => {
+    const loaded =
+      typeof map.isSourceLoaded !== 'function' ||
+      map.isSourceLoaded(shadowSourceId);
+    if (loaded || readyFrames >= SETTLE_MAX_FRAMES) {
+      // Colour the new points before the fade begins, now that they've parsed.
+      applyShadowFeatureState();
+      start = scheduler.now();
+      frame = scheduler.raf(tick);
+      return;
+    }
+    readyFrames += 1;
+    frame = scheduler.raf(beginFadeWhenShadowReady);
+  };
+
+  frame = scheduler.raf(beginFadeWhenShadowReady);
 };
 
 const findGeojsonData = (

@@ -636,6 +636,10 @@
         "label": {
           "type": "string"
         },
+        "icon": {
+          "type": "string",
+          "description": "Icon for the collapsed trigger button, as a @ttoss/react-icons name (e.g. 'lucide:layers'). When omitted a built-in glyph is used."
+        },
         "trigger": {
           "type": "string",
           "enum": ["hover", "click"]
@@ -825,6 +829,20 @@
           "type": "string",
           "enum": ["top-left", "top-right", "bottom-left", "bottom-right"],
           "description": "Corner position for an absolutely-positioned legend overlay."
+        },
+        "offset": {
+          "description": "Distance in pixels from the anchored map edges (with position). Defaults to 24. A number applies to both edges; an object offsets each axis independently.",
+          "anyOf": [
+            { "type": "number" },
+            {
+              "type": "object",
+              "properties": {
+                "x": { "type": "number" },
+                "y": { "type": "number" }
+              },
+              "additionalProperties": false
+            }
+          ]
         },
         "noDataLabel": {
           "type": "string",

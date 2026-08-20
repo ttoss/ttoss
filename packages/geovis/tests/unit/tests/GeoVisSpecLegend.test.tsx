@@ -267,6 +267,39 @@ describe('stacked legend overlays (shared position)', () => {
     ).toBe(true);
   });
 
+  test('the group wrapper honors the legends offset (e.g. pushed clear of a sidebar)', async () => {
+    render(
+      <GeoVisProvider
+        spec={buildSpec({
+          legends: [
+            {
+              ...legendNamed('pop', 'Population', 'bottom-right'),
+              offset: { x: 332 },
+            },
+            {
+              ...legendNamed('density', 'Density', 'bottom-right'),
+              offset: { x: 332 },
+            },
+          ],
+        })}
+      >
+        <div />
+      </GeoVisProvider>
+    );
+    await act(async () => {});
+
+    const list = await waitFor(() => {
+      const el = document.querySelector('ul[aria-label="Population"]');
+      expect(el).not.toBeNull();
+      return el as HTMLElement;
+    });
+
+    // Group wrapper = the legend body's parent; its right edge reflects offset.x.
+    const group = (list.closest('div') as HTMLElement).parentElement!;
+    expect(group.style.right).toBe('332px');
+    expect(group.style.bottom).toBe('24px');
+  });
+
   test('stacks any number of legends sharing a position (3), preserving declaration order and dividing every legend but the first', async () => {
     const onReady = jest.fn();
     render(

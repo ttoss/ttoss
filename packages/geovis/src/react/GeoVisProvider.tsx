@@ -17,6 +17,7 @@ import { GeoVisLegend } from '../ui/GeoVisLegend';
 import {
   buildContainerStyle,
   groupLegendIdsByPosition,
+  resolveLegend,
 } from '../ui/GeoVisLegend.utils';
 import {
   GeoVisClickContext,
@@ -225,6 +226,24 @@ const useSpecRejectionWarning = (result: GeoVisResult) => {
 };
 
 /**
+ * The optimistic initial `committed` state, used before a runtime exists: the
+ * resolved spec is assumed valid until the runtime's construction-time
+ * validation corrects it.
+ */
+const initialCommittedState = (
+  resolvedSpec: VisualizationSpec
+): { spec: VisualizationSpec; result: GeoVisResult } => {
+  return {
+    spec: resolvedSpec,
+    result: withPolicyWarnings({
+      status: 'resolved',
+      spec: resolvedSpec,
+      warnings: [],
+    }),
+  };
+};
+
+/**
  * Provides a GeoVis runtime context for child components.
  * Resolves the appropriate engine adapter based on the spec's engine field,
  * initializes the runtime, and keeps it in sync with spec updates.
@@ -260,14 +279,7 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
     spec: VisualizationSpec;
     result: GeoVisResult;
   }>(() => {
-    return {
-      spec: resolvedSpec,
-      result: withPolicyWarnings({
-        status: 'resolved',
-        spec: resolvedSpec,
-        warnings: [],
-      }),
-    };
+    return initialCommittedState(resolvedSpec);
   });
 
   const legendPositionGroups = React.useMemo(() => {
@@ -415,8 +427,15 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
             return <GeoVisLegend key={id} legendId={id} />;
           });
         }
+        // Legends sharing a position share one anchor, so the group wrapper
+        // carries the offset (all members get the same clearance from callers
+        // like the workspace pushing legends clear of an open sidebar).
+        const groupOffset = resolveLegend(committed.spec, ids[0])?.offset;
         return (
-          <div key={position} style={buildContainerStyle(position)}>
+          <div
+            key={position}
+            style={buildContainerStyle(position, groupOffset)}
+          >
             {ids.map((id) => {
               return <GeoVisLegend key={id} legendId={id} noPositionWrap />;
             })}

@@ -109,7 +109,8 @@ describe('GeoVisLayerControl', () => {
       expect(el).not.toBeNull();
       return el as HTMLButtonElement;
     });
-    expect(trigger.textContent).toBe('Camadas');
+    // Icon-only trigger: the label is exposed via aria-label, not text.
+    expect(trigger.getAttribute('aria-label')).toBe('Camadas');
     // Collapsed: no item yet.
     expect(findKitchenButton()).toBeNull();
 
@@ -122,6 +123,36 @@ describe('GeoVisLayerControl', () => {
     // Active by default.
     expect(item!.getAttribute('aria-pressed')).toBe('true');
     expect(item!.disabled).toBe(false);
+  });
+
+  test('renders the trigger with a spec icon when provided', async () => {
+    const spec: VisualizationSpec = {
+      engine: 'maplibre',
+      view: { center: [0, 0], zoom: 1 },
+      sources: [source],
+      layers: [{ id: 'lyr', sourceId: 'src', geometry: 'point' }],
+      control: {
+        id: 'layers',
+        icon: 'lucide:layers',
+        trigger: 'click',
+        items: [{ id: 'a', label: 'A', layers: ['lyr'] }],
+      },
+    };
+    render(
+      <GeoVisProvider spec={spec}>
+        <div />
+      </GeoVisProvider>
+    );
+    await act(async () => {});
+
+    const trigger = await waitFor(() => {
+      const el = document.querySelector('button[aria-expanded]');
+      expect(el).not.toBeNull();
+      return el as HTMLButtonElement;
+    });
+    const icon = trigger.querySelector('[data-testid="iconify-icon"]');
+    expect(icon).not.toBeNull();
+    expect(icon?.getAttribute('icon')).toBe('lucide:layers');
   });
 
   test('renders a per-item thumbnail image when provided, else the default preview', async () => {
@@ -333,7 +364,7 @@ describe('GeoVisLayerControl', () => {
       expect(el).not.toBeNull();
       return el as HTMLButtonElement;
     });
-    expect(trigger.textContent).toBe('Layers');
+    expect(trigger.getAttribute('aria-label')).toBe('Layers');
     // Anchored top-right, pushed off the edges by the default EDGE_GAP.
     const container = trigger.parentElement as HTMLElement;
     expect(container.style.top).toBe('40px');

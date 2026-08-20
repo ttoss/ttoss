@@ -215,6 +215,15 @@ export interface LegendSpec {
    */
   position?: LegendPosition;
   /**
+   * Distance in pixels from the anchored map edges (only applies with
+   * `position`). Defaults to `24`. A single number applies to both edges; pass
+   * `{ x, y }` to offset each axis independently — e.g. push the legend clear
+   * of a side panel horizontally without lifting it off the bottom edge. The
+   * anchored distance animates when it changes, so a shifting offset slides the
+   * legend across instead of teleporting.
+   */
+  offset?: number | { x?: number; y?: number };
+  /**
    * Label for the "no data" swatch rendered at the bottom of the legend.
    * When omitted no "no data" entry is shown.
    */
