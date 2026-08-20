@@ -630,6 +630,12 @@ export interface LayerControl {
   /** Text shown on the collapsed trigger button. Defaults to `'Layers'`. */
   label?: string;
   /**
+   * Icon shown on the collapsed trigger button, as a `@ttoss/react-icons` name
+   * (e.g. `'lucide:layers'`). When omitted a built-in stacked-sheets glyph is
+   * used, so the trigger looks identical without configuration.
+   */
+  icon?: string;
+  /**
    * How the panel expands to reveal its items. `'hover'` (default) expands on
    * pointer/focus enter; `'click'` toggles on trigger click. Both triggers
    * still respond to a click so touch devices can open a hover panel.

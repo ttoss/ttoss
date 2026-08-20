@@ -209,91 +209,109 @@ export const buildPolicyViolationSpec = (): VisualizationSpec => {
 export { sidebarPreviewConfig } from './GeovisWorkspace.sidebarPreview.fixture';
 
 /**
- * Grouped/carousel variant: a single menu whose 20+ variations are split across
- * six groups. The left sidebar shows a row of group tabs at the top and only
- * the open group's items below, so the list never needs to scroll. The
- * selection stays a single value shared across every group; `defaultValue`
- * ('renda-media') seeds it, and the carousel opens on the group that contains
- * it (Renda). Switching tabs only changes which items are visible.
+ * Multi-group variant: a single "Variações" tab whose 20+ variations are split
+ * across six groups (Demografia, Renda, Saúde, …). The selection stays a single
+ * value shared across every group; `defaultValue` ('renda-media') seeds it.
+ * Picking any variation recolors the map.
  */
 export const groupedWorkspaceConfig: GeovisWorkspaceConfig = {
-  controls: {
-    menus: [
+  leftSidebar: {
+    initialState: 'open',
+    sections: [
       {
         id: 'variable',
-        title: 'Variações do mapa',
-        defaultValue: 'renda-media',
-        groups: [
-          {
-            id: 'demografia',
-            label: 'Demografia',
-            items: [
-              { value: 'pop-total', label: 'População total' },
-              { value: 'densidade', label: 'Densidade demográfica' },
-              { value: 'faixa-etaria', label: 'Faixa etária' },
-              { value: 'crescimento', label: 'Crescimento populacional' },
-              { value: 'urbano-rural', label: 'Distribuição urbano/rural' },
-            ],
-          },
-          {
-            id: 'renda',
-            label: 'Renda',
-            items: [
-              { value: 'renda-media', label: 'Renda média' },
-              { value: 'renda-mediana', label: 'Renda mediana' },
-              { value: 'gini', label: 'Índice de Gini' },
-              { value: 'pobreza', label: 'Taxa de pobreza' },
-              { value: 'informalidade', label: 'Informalidade' },
-            ],
-          },
-          {
-            id: 'saude',
-            label: 'Saúde',
-            items: [
-              { value: 'leitos', label: 'Leitos por mil hab.' },
-              { value: 'mortalidade-infantil', label: 'Mortalidade infantil' },
-              { value: 'cobertura-aps', label: 'Cobertura de atenção básica' },
-              { value: 'vacinacao', label: 'Cobertura vacinal' },
-              { value: 'expectativa', label: 'Expectativa de vida' },
-            ],
-          },
-          {
-            id: 'educacao',
-            label: 'Educação',
-            items: [
-              { value: 'alfabetizacao', label: 'Taxa de alfabetização' },
-              { value: 'ideb', label: 'IDEB' },
-              { value: 'evasao', label: 'Evasão escolar' },
-              { value: 'ensino-superior', label: 'Acesso ao ensino superior' },
-              { value: 'matriculas', label: 'Matrículas por mil hab.' },
-            ],
-          },
-          {
-            id: 'trabalho',
-            label: 'Trabalho e emprego',
-            items: [
-              { value: 'desemprego', label: 'Taxa de desemprego' },
-              { value: 'ocupacao', label: 'Nível de ocupação' },
-              { value: 'carteira', label: 'Emprego com carteira' },
-              { value: 'rendimento', label: 'Rendimento do trabalho' },
-              { value: 'jornada', label: 'Jornada média' },
-            ],
-          },
-          {
-            id: 'habitacao',
-            label: 'Habitação',
-            items: [
-              { value: 'deficit', label: 'Déficit habitacional' },
-              { value: 'saneamento', label: 'Acesso a saneamento' },
-              { value: 'agua', label: 'Abastecimento de água' },
-              { value: 'energia', label: 'Acesso à energia' },
-              { value: 'adensamento', label: 'Adensamento excessivo' },
-            ],
-          },
-        ],
+        header: { title: 'Variações do mapa', icon: 'lucide:layout-list' },
+        body: {
+          kind: 'variations',
+          menuId: 'variable',
+          defaultValue: 'renda-media',
+          defaultGroupId: 'renda',
+          groups: [
+            {
+              id: 'demografia',
+              label: 'Demografia',
+              icon: 'lucide:users',
+              variations: [
+                { value: 'pop-total', label: 'População total' },
+                { value: 'densidade', label: 'Densidade demográfica' },
+                { value: 'faixa-etaria', label: 'Faixa etária' },
+                { value: 'crescimento', label: 'Crescimento populacional' },
+                { value: 'urbano-rural', label: 'Distribuição urbano/rural' },
+              ],
+            },
+            {
+              id: 'renda',
+              label: 'Renda',
+              icon: 'lucide:dollar-sign',
+              variations: [
+                { value: 'renda-media', label: 'Renda média' },
+                { value: 'renda-mediana', label: 'Renda mediana' },
+                { value: 'gini', label: 'Índice de Gini' },
+                { value: 'pobreza', label: 'Taxa de pobreza' },
+                { value: 'informalidade', label: 'Informalidade' },
+              ],
+            },
+            {
+              id: 'saude',
+              label: 'Saúde',
+              icon: 'lucide:heart-pulse',
+              variations: [
+                { value: 'leitos', label: 'Leitos por mil hab.' },
+                {
+                  value: 'mortalidade-infantil',
+                  label: 'Mortalidade infantil',
+                },
+                {
+                  value: 'cobertura-aps',
+                  label: 'Cobertura de atenção básica',
+                },
+                { value: 'vacinacao', label: 'Cobertura vacinal' },
+                { value: 'expectativa', label: 'Expectativa de vida' },
+              ],
+            },
+            {
+              id: 'educacao',
+              label: 'Educação',
+              icon: 'lucide:graduation-cap',
+              variations: [
+                { value: 'alfabetizacao', label: 'Taxa de alfabetização' },
+                { value: 'ideb', label: 'IDEB' },
+                { value: 'evasao', label: 'Evasão escolar' },
+                {
+                  value: 'ensino-superior',
+                  label: 'Acesso ao ensino superior',
+                },
+                { value: 'matriculas', label: 'Matrículas por mil hab.' },
+              ],
+            },
+            {
+              id: 'trabalho',
+              label: 'Trabalho e emprego',
+              icon: 'lucide:briefcase',
+              variations: [
+                { value: 'desemprego', label: 'Taxa de desemprego' },
+                { value: 'ocupacao', label: 'Nível de ocupação' },
+                { value: 'carteira', label: 'Emprego com carteira' },
+                { value: 'rendimento', label: 'Rendimento do trabalho' },
+                { value: 'jornada', label: 'Jornada média' },
+              ],
+            },
+            {
+              id: 'habitacao',
+              label: 'Habitação',
+              icon: 'lucide:home',
+              variations: [
+                { value: 'deficit', label: 'Déficit habitacional' },
+                { value: 'saneamento', label: 'Acesso a saneamento' },
+                { value: 'agua', label: 'Abastecimento de água' },
+                { value: 'energia', label: 'Acesso à energia' },
+                { value: 'adensamento', label: 'Adensamento excessivo' },
+              ],
+            },
+          ],
+        },
       },
     ],
   },
-  leftSidebar: { initialState: 'open' },
   rightSidebar: { title: 'Detalhes' },
 };

@@ -336,20 +336,59 @@ export const groupLegendIdsByPosition = (
   return groups;
 };
 
+const CARD_CHROME: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  width: 276,
+  backgroundColor: '#ffffff',
+  borderRadius: 14,
+  boxShadow: '0 4px 24px rgba(0,0,0,0.11)',
+  border: '1px solid rgba(0,0,0,0.07)',
+  overflow: 'hidden',
+};
+
+/**
+ * Absolute-positioning style for a positioned legend, anchored to the corner
+ * named by `position`. `offset` (when set) overrides the default edge gap — a
+ * number applies to both edges; `{ x, y }` offsets each axis independently — so
+ * a caller can push the legend clear of a side panel horizontally. The anchored
+ * distance animates so a shifting offset slides the legend across. Returns just
+ * the card chrome (no positioning) when no `position` is set.
+ */
+/**
+ * The per-edge offset overrides for a positioned legend: applies `offset` to
+ * the anchored horizontal/vertical edges named by `position`. A number applies
+ * to both axes; `{ x, y }` offsets each independently. Omits an axis whose
+ * offset is unset so the default edge gap stands.
+ */
+const resolveOffsetEdges = (
+  position: LegendPosition,
+  offset?: number | { x?: number; y?: number }
+): React.CSSProperties => {
+  const isTop = position.startsWith('top');
+  const isRight = position.endsWith('right');
+  const x = typeof offset === 'number' ? offset : offset?.x;
+  const y = typeof offset === 'number' ? offset : offset?.y;
+
+  return {
+    ...(x == null ? {} : { [isRight ? 'right' : 'left']: x }),
+    ...(y == null ? {} : { [isTop ? 'top' : 'bottom']: y }),
+  };
+};
+
 export const buildContainerStyle = (
-  position: LegendPosition | undefined
+  position: LegendPosition | undefined,
+  offset?: number | { x?: number; y?: number }
 ): React.CSSProperties => {
   const positionStyle = resolvePositionStyle(position);
+  if (!positionStyle || !position) return { ...CARD_CHROME };
+
   return {
-    ...(positionStyle ?? {}),
-    display: 'flex',
-    flexDirection: 'column',
-    width: 276,
-    backgroundColor: '#ffffff',
-    borderRadius: 14,
-    boxShadow: '0 4px 24px rgba(0,0,0,0.11)',
-    border: '1px solid rgba(0,0,0,0.07)',
-    overflow: 'hidden',
+    ...positionStyle,
+    ...resolveOffsetEdges(position, offset),
+    transition:
+      'top 0.25s ease-in-out, bottom 0.25s ease-in-out, left 0.25s ease-in-out, right 0.25s ease-in-out',
+    ...CARD_CHROME,
   };
 };
 

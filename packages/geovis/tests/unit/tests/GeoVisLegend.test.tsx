@@ -7,6 +7,7 @@ import { act, render } from '@testing-library/react';
 import { GeoVisProvider } from 'src/react/GeoVisProvider';
 import type { VisualizationSpec } from 'src/spec/types';
 import { GeoVisLegend } from 'src/ui/GeoVisLegend';
+import { buildContainerStyle } from 'src/ui/GeoVisLegend.utils';
 
 jest.mock('src/adapters/maplibre/MapLibreAdapter', () => {
   return {
@@ -1209,5 +1210,40 @@ describe('GeoVisLegend — proportional circles default formatter', () => {
       // Await for any pending state updates from GeoVisProvider
     });
     expect(getByText('≥ 500000 ppl')).toBeTruthy();
+  });
+});
+
+describe('buildContainerStyle — offset', () => {
+  test('returns card chrome only (no positioning) when position is undefined', () => {
+    const style = buildContainerStyle(undefined);
+    expect(style.position).toBeUndefined();
+    expect(style.width).toBe(276);
+  });
+
+  test('keeps the default edge gaps when no offset is given', () => {
+    const style = buildContainerStyle('bottom-right');
+    expect(style.position).toBe('absolute');
+    expect(style.right).toBe(24);
+    expect(style.bottom).toBe(24);
+  });
+
+  test('a numeric offset overrides both anchored edges', () => {
+    const style = buildContainerStyle('bottom-right', 100);
+    expect(style.right).toBe(100);
+    expect(style.bottom).toBe(100);
+    expect(style.transition).toContain('right');
+  });
+
+  test('an axis offset overrides only that edge, preserving the other default', () => {
+    const style = buildContainerStyle('bottom-right', { x: 332 });
+    expect(style.right).toBe(332);
+    // y omitted → bottom keeps the default gap.
+    expect(style.bottom).toBe(24);
+  });
+
+  test('resolves the correct edges for a top-left anchor', () => {
+    const style = buildContainerStyle('top-left', { x: 40, y: 12 });
+    expect(style.left).toBe(40);
+    expect(style.top).toBe(12);
   });
 });

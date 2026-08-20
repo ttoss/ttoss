@@ -137,7 +137,7 @@ const DrawGeojsonPoints = ({ spec }: { spec: VisualizationSpec }) => {
 };
 
 const meta = {
-  title: 'GeoVis/Fixtures/DrawGeojsonPoints',
+  title: 'GeoVis/DrawGeojsonPoints',
   component: DrawGeojsonPoints,
   tags: ['autodocs'],
   argTypes: {

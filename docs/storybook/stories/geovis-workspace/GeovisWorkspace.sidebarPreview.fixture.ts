@@ -1,16 +1,16 @@
 import { type GeovisWorkspaceConfig } from '@ttoss/geovis-workspace';
 
 /**
- * Experimental preview sidebar (`leftSidebarPreview`): a card with two icon
- * tabs whose header mirrors the active tab. The "Variações" tab is a flat list
- * of icon-led variations (tagged by group) that drive the shared `variable`
- * selection (recoloring the map); the "Filtros" tab stacks three visual-only
- * controls — a timeline with a mini histogram and play/pause, emoji chips, and a
- * município locator. Mirrors the design prototype's structure; only colors are
- * rebranded.
+ * A rich left sidebar with two icon tabs whose header mirrors the active tab.
+ * The "Variações" tab is a flat list of icon-led variations (tagged by group)
+ * that drive the shared `variable` selection (recoloring the map); the "Filtros"
+ * tab stacks three visual-only controls — a timeline with a mini histogram and
+ * play/pause, emoji chips, and a município locator. Mirrors the design
+ * prototype's structure; only colors are rebranded.
  */
 export const sidebarPreviewConfig: GeovisWorkspaceConfig = {
-  leftSidebarPreview: {
+  leftSidebar: {
+    initialState: 'open',
     sections: [
       {
         id: 'variations',
@@ -270,5 +270,4 @@ export const sidebarPreviewConfig: GeovisWorkspaceConfig = {
       },
     ],
   },
-  leftSidebar: { initialState: 'open' },
 };

@@ -45,24 +45,34 @@ const sanitizeValue = (value: MapDataRow['value']): MapDataRow['value'] => {
   return typeof value === 'number' && !Number.isFinite(value) ? 0 : value;
 };
 
+/**
+ * Applies a dataset's rows to an explicit source id, rather than the dataset's
+ * own `mapId`. Lets the crossfade paint the same feature-state onto its shadow
+ * source (a copy of the new data) so the new points fade in already coloured
+ * instead of rendering with the fallback colour until the swap commits.
+ */
+export const applyMapDataToSourceId = (
+  map: maplibregl.Map,
+  sourceId: string,
+  mapData: MapData
+): void => {
+  if (!map.getSource(sourceId)) return;
+
+  const stateKey = mapData.stateKey ?? 'value';
+
+  for (const row of mapData.data) {
+    map.setFeatureState(
+      { source: sourceId, id: coerceGeometryId(row.geometryId) },
+      { [stateKey]: sanitizeValue(row.value) }
+    );
+  }
+};
+
 export const applyMapDataToSource = (
   map: maplibregl.Map,
   mapData: MapData
 ): void => {
-  if (!map.getSource(mapData.mapId)) return;
-
-  const stateKey = mapData.stateKey ?? 'value';
-
-  const applyRow = (featureId: string | number, row: MapDataRow) => {
-    map.setFeatureState(
-      { source: mapData.mapId, id: featureId },
-      { [stateKey]: sanitizeValue(row.value) }
-    );
-  };
-
-  for (const row of mapData.data) {
-    applyRow(coerceGeometryId(row.geometryId), row);
-  }
+  applyMapDataToSourceId(map, mapData.mapId, mapData);
 };
 
 /**

@@ -247,16 +247,24 @@ export const Layout = () => {
     });
   });
 
+  // `'bare'` drops the card chrome so the workspace fills its container
+  // edge-to-edge; `'card'` (default) keeps the framed look.
+  const isBare = config.appearance === 'bare';
+
   return (
     <Flex
       sx={{
         position: 'relative',
         overflow: 'hidden',
         minHeight: '440px',
-        border: 'sm',
-        borderColor: 'display.border.muted.default',
-        borderRadius: 'lg',
         backgroundColor: 'display.background.primary.default',
+        ...(isBare
+          ? {}
+          : {
+              border: 'sm',
+              borderColor: 'display.border.muted.default',
+              borderRadius: 'lg',
+            }),
       }}
     >
       <Flex sx={{ flex: 1 }}>
