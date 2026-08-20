@@ -12,7 +12,7 @@ import * as React from 'react';
 import clickedSymbolSpec from '../../../../packages/geovis/src/fixtures/clicked-symbol.json';
 
 export default {
-  title: 'GeoVis/Fixtures/CenterOnClickedSymbol',
+  title: 'GeoVis/CenterOnClickedSymbol',
   tags: ['autodocs'],
 } as Meta;
 

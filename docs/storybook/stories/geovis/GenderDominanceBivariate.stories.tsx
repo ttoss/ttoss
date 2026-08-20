@@ -22,7 +22,7 @@ import {
 } from './helpers/map-story-helpers';
 
 export default {
-  title: 'GeoVis/Fixtures/GenderDominanceBivariate',
+  title: 'GeoVis/GenderDominanceBivariate',
   tags: ['autodocs'],
 } as Meta;
 

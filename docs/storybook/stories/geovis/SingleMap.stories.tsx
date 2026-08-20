@@ -6,7 +6,7 @@ import { GeoVisFixtureStory } from './GeoVisFixtureStory';
 import { computeBbox } from './helpers/map-story-helpers';
 
 export default {
-  title: 'GeoVis/Fixtures/SingleMap',
+  title: 'GeoVis/SingleMap',
   tags: ['autodocs'],
 } as Meta;
 
