@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.17.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.16.0...@ttoss/geovis@0.17.0) (2026-08-19)
+
+### Features
+
+- **geovis-workspace:** tab-based preview sidebar with time-lapse tim… ([#1200](https://github.com/ttoss/ttoss/issues/1200)) ([9880b1c](https://github.com/ttoss/ttoss/commit/9880b1cd5cf80857cdc5a198415cd25e7ead4ca1))
+
 # 0.16.0 (2026-08-11)
 
 - Audit border contrast per mode; correct the focus-token guidance (#1184) ([07e6da4](https://github.com/ttoss/ttoss/commit/07e6da4fd35fc93ea0d79c79c35fe9c4a3a50746)), closes [#1184](https://github.com/ttoss/ttoss/issues/1184) [#4](https://github.com/ttoss/ttoss/issues/4) [#3](https://github.com/ttoss/ttoss/issues/3) [#3](https://github.com/ttoss/ttoss/issues/3) [#2](https://github.com/ttoss/ttoss/issues/2) [#1](https://github.com/ttoss/ttoss/issues/1) [hi#contrast](https://github.com/hi/issues/contrast)
