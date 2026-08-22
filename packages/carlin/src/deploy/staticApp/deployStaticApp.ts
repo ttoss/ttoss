@@ -2,6 +2,7 @@ import { deploy } from '../cloudformation.core';
 import { handleDeployError, handleDeployInitialization } from '../utils';
 import { getStaticAppBucket } from './getStaticAppBucket';
 import { invalidateCloudFront } from './invalidateCloudFront';
+import { type ResponseHeader } from './responseHeaders';
 import { getStaticAppTemplate } from './staticApp.template';
 import { uploadBuiltAppToS3 } from './uploadBuiltAppToS3';
 
@@ -21,6 +22,8 @@ export const deployStaticApp = async ({
   appendIndexHtml,
   buildFolder,
   cloudfront,
+  responseHeaders,
+  responseHeadersPolicy,
   spa,
   hostedZoneName,
   region,
@@ -32,6 +35,8 @@ export const deployStaticApp = async ({
   appendIndexHtml?: boolean;
   buildFolder?: string;
   cloudfront?: boolean;
+  responseHeaders?: ResponseHeader[];
+  responseHeadersPolicy?: string;
   spa?: boolean;
   hostedZoneName?: string;
   region: string;
@@ -48,6 +53,8 @@ export const deployStaticApp = async ({
       aliases,
       appendIndexHtml,
       cloudfront,
+      responseHeaders,
+      responseHeadersPolicy,
       spa,
       hostedZoneName,
       region,
