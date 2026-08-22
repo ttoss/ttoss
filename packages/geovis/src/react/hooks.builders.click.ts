@@ -10,6 +10,7 @@ import type { GeoVisRuntime } from '../runtime/createRuntime';
 import type { MapClickInfo } from './contexts';
 import {
   coerceFeatureStateValue,
+  queryLayerFeatures,
   TRACKED_FIELD_SEP,
   TRACKED_RECORD_SEP,
 } from './hooks.builders';
@@ -82,10 +83,8 @@ export const attachClickDismissListeners = ({
   dismissSelection: () => void;
 }): (() => void) => {
   const handleOutsideClick = (event: MapMouseEvent) => {
-    const hits = map.queryRenderedFeatures(event.point, {
-      layers: trackedLayerIds,
-    });
-    if (!hits || hits.length === 0) {
+    const hits = queryLayerFeatures(map, event.point, trackedLayerIds);
+    if (hits.length === 0) {
       dismissSelection();
     }
   };

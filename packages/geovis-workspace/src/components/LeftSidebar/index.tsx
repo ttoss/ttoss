@@ -4,7 +4,6 @@ import * as React from 'react';
 
 import type {
   GeovisWorkspaceSidebarFilterBlock,
-  GeovisWorkspaceSidebarPreview,
   GeovisWorkspaceSidebarSection,
   GeovisWorkspaceSidebarVariationsBody,
 } from '../../context/GeovisWorkspaceContext';
@@ -255,22 +254,21 @@ const TabContent = ({
 };
 
 /**
- * The experimental preview left sidebar: a single ivory card with a header that
- * mirrors the active tab (its icon + title + a close button), an icon tab bar
- * (one tab per section), the active tab's body, and a footer showing the active
- * variation and current timeline value. The variations tab drives the shared
- * selection; the
- * filter controls are visual-only, holding their state locally or lifted here
- * for the badge/footer.
+ * The workspace's left sidebar: a single ivory card with a header that mirrors
+ * the active tab (its icon + title + a close button), an icon tab bar (one tab
+ * per section), the active tab's body, and a footer showing the active variation
+ * and current timeline value. The variations tab drives the shared selection;
+ * the filter controls are visual-only, holding their state locally or lifted
+ * here for the badge/footer.
+ *
+ * Reads its sections from `config.leftSidebar.sections`. A `controls` slot
+ * override (`config.slots.controls.component`) replaces this panel entirely.
+ * Rendered only when `Layout` determines the `controls` slot has content.
  */
-export const SidebarPreview = ({
-  preview,
-}: {
-  preview: GeovisWorkspaceSidebarPreview;
-}) => {
-  const { setLeftSidebarOpen } = useGeovisWorkspace();
+export const LeftSidebar = () => {
+  const { config, setLeftSidebarOpen } = useGeovisWorkspace();
 
-  const { sections } = preview;
+  const sections = config.leftSidebar?.sections ?? [];
   const { variationsBody, blocks, timeline, chips } = useSections(sections);
 
   const timelineState = useTimeline(timeline);
@@ -280,6 +278,9 @@ export const SidebarPreview = ({
   const [activeSectionId, setActiveSectionId] = React.useState<string>(() => {
     return sections[0]?.id ?? '';
   });
+
+  const ControlsOverride = config.slots?.controls?.component;
+  if (ControlsOverride) return <ControlsOverride />;
 
   const activeSection =
     sections.find((section) => {

@@ -118,7 +118,7 @@ const CrossfadeDemo = () => {
 };
 
 const meta = {
-  title: 'GeoVis/Fixtures/Crossfade',
+  title: 'GeoVis/Crossfade',
   component: CrossfadeDemo,
   tags: ['autodocs'],
 } satisfies Meta<typeof CrossfadeDemo>;

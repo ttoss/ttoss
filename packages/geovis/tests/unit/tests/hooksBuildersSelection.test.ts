@@ -1,4 +1,5 @@
 import type { Map as MapLibreMap, MapLayerMouseEvent } from 'maplibre-gl';
+import { queryLayerFeatures } from 'src/react/hooks.builders';
 import {
   buildHandleClick,
   dispatchClearSelection,
@@ -206,5 +207,37 @@ describe('buildHandleClick', () => {
     expect(setClick).toHaveBeenCalledWith(
       expect.objectContaining({ featureLngLat: undefined })
     );
+  });
+});
+
+describe('queryLayerFeatures', () => {
+  const makeMap = (existingIds: string[]) => {
+    const queryRenderedFeatures = jest.fn(() => {
+      return [{ id: 'f1' }];
+    });
+    const map = {
+      getLayer: jest.fn((id: string) => {
+        return existingIds.includes(id) ? { id } : undefined;
+      }),
+      queryRenderedFeatures,
+    } as unknown as MapLibreMap;
+    return { map, queryRenderedFeatures };
+  };
+
+  test('skips the query and returns [] when no requested layer exists', () => {
+    const { map, queryRenderedFeatures } = makeMap([]);
+    const result = queryLayerFeatures(map, { x: 1, y: 2 }, ['a', 'b']);
+    expect(result).toEqual([]);
+    expect(queryRenderedFeatures).not.toHaveBeenCalled();
+  });
+
+  test('queries only the layers currently present in the style', () => {
+    const { map, queryRenderedFeatures } = makeMap(['a']);
+    const result = queryLayerFeatures(map, { x: 1, y: 2 }, ['a', 'missing']);
+    expect(queryRenderedFeatures).toHaveBeenCalledWith(
+      { x: 1, y: 2 },
+      { layers: ['a'] }
+    );
+    expect(result).toEqual([{ id: 'f1' }]);
   });
 });

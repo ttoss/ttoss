@@ -23,7 +23,7 @@ import {
 } from './helpers/map-story-helpers';
 
 export default {
-  title: 'GeoVis/Fixtures/InvalidRawCountChoropleth',
+  title: 'GeoVis/InvalidRawCountChoropleth',
   tags: ['autodocs'],
 } as Meta;
 

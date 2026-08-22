@@ -22,8 +22,9 @@ Interactive examples are available on [Storybook](https://storybook.ttoss.dev/).
 ## Usage
 
 The parent owns the selection state and derives the next `visualizationSpec`
-from it, so picking a menu item recolors the map. Seed the initial selection
-with `getInitialSelection` (reads each menu's `defaultValue`).
+from it, so picking a variation recolors the map. The left sidebar is driven by
+`config.leftSidebar.sections`; seed the initial selection with
+`getInitialSelection` (reads each `variations` section's `defaultValue`).
 
 ```tsx
 import { type VisualizationSpec } from '@ttoss/geovis';
@@ -35,16 +36,27 @@ import {
 import * as React from 'react';
 
 const config: GeovisWorkspaceConfig = {
-  controls: {
-    menus: [
+  leftSidebar: {
+    initialState: 'open',
+    sections: [
       {
         id: 'variable',
-        title: 'Variável',
-        defaultValue: 'rate',
-        items: [
-          { value: 'rate', label: 'Taxa cumulativa' },
-          { value: 'range', label: 'Faixa (% da pop 65+)' },
-        ],
+        header: { title: 'Variável', icon: 'lucide:layers' },
+        body: {
+          kind: 'variations',
+          menuId: 'variable',
+          defaultValue: 'rate',
+          groups: [
+            {
+              id: 'metrics',
+              label: 'Métricas',
+              variations: [
+                { value: 'rate', label: 'Taxa cumulativa' },
+                { value: 'range', label: 'Faixa (% da pop 65+)' },
+              ],
+            },
+          ],
+        },
       },
     ],
   },
@@ -79,44 +91,29 @@ export const Example = () => {
 ```
 
 `variables` and `onVariableChange` are optional: omit both to let the workspace
-manage the selection internally (seeded from `defaultValue`). Provide them to
-control it from the parent — required when the selection must drive the
-`visualizationSpec`. Selection is per menu group: choosing an item only affects
-its own group. Read the current selection anywhere inside the workspace with
-`useGeovisWorkspace()`.
+manage the selection internally (seeded from each `variations` section's
+`defaultValue`). Provide them to control it from the parent — required when the
+selection must drive the `visualizationSpec`. Selection is keyed by each
+control's `menuId`: choosing a variation only affects its own key. Read the
+current selection anywhere inside the workspace with `useGeovisWorkspace()`.
 
-### Grouped menus
+## Left sidebar
 
-When a menu has many items, split them into a carousel instead of one long
-list: give the menu `groups` (each a labelled tab) in place of `items`. Only the
-open group's items show, and the open group follows the selection so the active
-item is never hidden. The selection stays a single value shared across groups.
+The left sidebar renders as a card with an icon **tab bar** — one tab per
+`leftSidebar.sections` entry — a header mirroring the active tab, the active
+tab's body, and a footer. Each section's `body` is one of two kinds:
 
-```typescript
-const config: GeovisWorkspaceConfig = {
-  controls: {
-    menus: [
-      {
-        id: 'variable',
-        title: 'Variável',
-        defaultValue: 'rate',
-        groups: [
-          {
-            id: 'demografia',
-            label: 'Demografia',
-            items: [{ value: 'rate', label: 'Taxa cumulativa' }],
-          },
-          {
-            id: 'renda',
-            label: 'Renda',
-            items: [{ value: 'gini', label: 'Índice de Gini' }],
-          },
-        ],
-      },
-    ],
-  },
-};
-```
+- **`variations`** — a flat list of selectable rows (grouped only for ordering)
+  that drive the shared selection (`selection[menuId]`), recoloring the map.
+- **`filters`** — a stack of collapsible blocks, each wrapping one control:
+  a **timeline** (numeric range with an optional histogram and play/pause; drives
+  `selection[menuId]` when it declares one, otherwise visual-only), **chips**
+  (visual-only toggle chips whose active count shows as a tab badge), or a
+  **locator** (visual-only search box).
+
+A `timeline` that declares a `menuId` publishes its `defaultValue ?? min` to the
+shared selection on mount, so an uncontrolled parent learns the initial value
+without moving the slider.
 
 ## Slots
 
@@ -128,18 +125,18 @@ only a slot's _content_ is configurable:
 | Slot        | Region        | Default panel                                                                       |
 | ----------- | ------------- | ----------------------------------------------------------------------------------- |
 | `map`       | Main area     | The GeoVis canvas.                                                                  |
-| `controls`  | Left sidebar  | Menu groups from `config.controls`.                                                 |
+| `controls`  | Left sidebar  | Sections from `config.leftSidebar.sections`.                                        |
 | `legend`    | Right sidebar | Description/sources from `config.legend` plus the spec's legends.                   |
 | `warnings`  | Right sidebar | Issues from `useGeoVis().result` — see [Warnings and repair](#warnings-and-repair). |
 | `inspector` | Right sidebar | The clicked feature from `useGeoVisClick()`, with a dismiss button.                 |
 | `metadata`  | Right sidebar | The spec's `mapType` and source count — see [Metadata](#metadata).                  |
 
 A sidebar renders only when at least one of its slots has content — an
-override component, or (for `controls`/`legend`/`metadata`) non-empty config,
-a spec-resolved legend, or (for `metadata`) a spec with a `mapType` or at
-least one source. Use `config.slots` to hide a slot or replace its default
-panel with a custom component, which gets the same runtime access
-(`useGeoVis()`, `useGeoVisClick()`, `useGeoVisHover()`) as the default it
+override component, or (for `controls`) at least one section, (for `legend`)
+a `description`/`sources` or a spec-resolved legend, or (for `metadata`) a spec
+with a `mapType` or at least one source. Use `config.slots` to hide a slot or
+replace its default panel with a custom component, which gets the same runtime
+access (`useGeoVis()`, `useGeoVisClick()`, `useGeoVisHover()`) as the default it
 replaces:
 
 ```tsx
@@ -237,58 +234,27 @@ pluralized source count. It renders nothing — and contributes no content
 toward showing the right sidebar — when the spec has neither, so it never
 appears as an always-on placeholder.
 
-## Layer list controls
-
-`LayerListControls` is an opt-in, publicly exported alternative to the
-`controls` slot's default menu panel: one row per `visualizationSpec.layers`
-entry with a visibility checkbox and its `activeLegendId`, reading
-`useGeoVis().spec.layers` instead of `config.controls.menus`. Enable it via
-`config.slots.controls`, and rebuild `visualizationSpec` with the toggled
-layer's `visible` field from `onLayerVisibilityChange` — the workspace never
-mutates the spec itself, the same delegation `onVariableChange` and
-`onRepair` already use:
-
-```tsx
-import { GeovisWorkspace, LayerListControls } from '@ttoss/geovis-workspace';
-
-<GeovisWorkspace
-  config={{ slots: { controls: { component: LayerListControls } } }}
-  visualizationSpec={visualizationSpec}
-  onLayerVisibilityChange={(layerId, visible) => {
-    setVisualizationSpec((spec) => {
-      return {
-        ...spec,
-        layers: spec.layers.map((layer) => {
-          return layer.id === layerId ? { ...layer, visible } : layer;
-        }),
-      };
-    });
-  }}
-/>;
-```
-
 ## API
 
 ### `GeovisWorkspace` props
 
-| Prop                      | Type                                          | Description                                                                                            |
-| ------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `config`                  | `GeovisWorkspaceConfig`                       | Describes the slots. Required.                                                                         |
-| `visualizationSpec`       | `VisualizationSpec`                           | GeoVis spec rendered in the main map area. Required.                                                   |
-| `variables`               | `Record<string, string \| undefined>`         | Controlled selection per menu group. Omit for uncontrolled.                                            |
-| `onVariableChange`        | `(variables) => void`                         | Called with the full next selection when an item is picked.                                            |
-| `onRepair`                | `(repair: RepairOption) => void`              | Called with the chosen repair when a repair button is pressed. Omit to render repair buttons disabled. |
-| `onLayerVisibilityChange` | `(layerId: string, visible: boolean) => void` | Called with a layer's id and its next `visible` value when `LayerListControls` toggles it.             |
+| Prop                | Type                                  | Description                                                                                            |
+| ------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `config`            | `GeovisWorkspaceConfig`               | Describes the slots. Required.                                                                         |
+| `visualizationSpec` | `VisualizationSpec`                   | GeoVis spec rendered in the main map area. Required.                                                   |
+| `variables`         | `Record<string, string \| undefined>` | Controlled selection keyed by each control's `menuId`. Omit for uncontrolled.                          |
+| `onVariableChange`  | `(variables) => void`                 | Called with the full next selection when a variation is picked or the timeline advances.               |
+| `onRepair`          | `(repair: RepairOption) => void`      | Called with the chosen repair when a repair button is pressed. Omit to render repair buttons disabled. |
 
 ### `GeovisWorkspaceConfig`
 
-| Property       | Type                                                                  | Description                                             |
-| -------------- | --------------------------------------------------------------------- | ------------------------------------------------------- |
-| `slots`        | `Partial<Record<GeovisWorkspaceSlotName, GeovisWorkspaceSlotConfig>>` | Per-slot override/hide. Omit an entry for the default.  |
-| `controls`     | `GeovisWorkspaceControls`                                             | Content for the `controls` slot's default panel.        |
-| `legend`       | `GeovisWorkspaceLegendConfig`                                         | Content for the `legend` slot's default panel.          |
-| `leftSidebar`  | `GeovisWorkspaceLeftSidebarState`                                     | Left sidebar menus and open/closed state.               |
-| `rightSidebar` | `GeovisWorkspaceRightSidebarState`                                    | Right sidebar title, open/closed state, and detail API. |
+| Property       | Type                                                                  | Description                                                                                                        |
+| -------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `appearance`   | `'card' \| 'bare'`                                                    | Container framing. `'card'` (default) draws a border/radius/background; `'bare'` fills edge-to-edge for embedding. |
+| `slots`        | `Partial<Record<GeovisWorkspaceSlotName, GeovisWorkspaceSlotConfig>>` | Per-slot override/hide. Omit an entry for the default.                                                             |
+| `legend`       | `GeovisWorkspaceLegendConfig`                                         | Content for the `legend` slot's default panel.                                                                     |
+| `leftSidebar`  | `GeovisWorkspaceLeftSidebarState`                                     | Left sidebar sections and open/closed state.                                                                       |
+| `rightSidebar` | `GeovisWorkspaceRightSidebarState`                                    | Right sidebar title, open/closed state, and detail API.                                                            |
 
 ### `GeovisWorkspaceSlotName`
 
@@ -303,45 +269,40 @@ breaking.
 | `component` | `React.ComponentType` | Replaces the slot's default panel. Gets the same runtime access.   |
 | `hidden`    | `boolean`             | Hides the slot's region entirely instead of rendering its default. |
 
-### `GeovisWorkspaceControls`
+### `GeovisWorkspaceLeftSidebarState`
 
-| Property | Type                    | Description                                |
-| -------- | ----------------------- | ------------------------------------------ |
-| `menus`  | `GeovisWorkspaceMenu[]` | Menu groups rendered by the default panel. |
+| Property       | Type                              | Description                                          |
+| -------------- | --------------------------------- | ---------------------------------------------------- |
+| `initialState` | `'open' \| 'closed'`              | Whether the sidebar starts open. Defaults to closed. |
+| `sections`     | `GeovisWorkspaceSidebarSection[]` | The sidebar's tabs, left to right.                   |
 
-### `GeovisWorkspaceMenu`
+### `GeovisWorkspaceSidebarSection`
 
-A menu is either **flat** (a titled list of items) or **grouped** (its items
-split across a carousel of tabs, with only the open group's items shown).
-`items` and `groups` are mutually exclusive.
+| Property | Type                                            | Description                                     |
+| -------- | ----------------------------------------------- | ----------------------------------------------- |
+| `id`     | `string`                                        | Unique section id.                              |
+| `header` | `{ title; icon?; iconColor?; iconBackground? }` | The tab/header icon chip and title.             |
+| `body`   | `variations` \| `filters`                       | The section's content, discriminated by `kind`. |
 
-| Property         | Type                                 | Description                                                                   |
-| ---------------- | ------------------------------------ | ----------------------------------------------------------------------------- |
-| `id`             | `string`                             | Unique menu identifier; keys this menu's selection.                           |
-| `defaultValue`   | `string`                             | Item selected by default.                                                     |
-| `title`          | `string`                             | Heading above the items (flat) or above the tabs (grouped — optional here).   |
-| `items`          | `{ value: string; label: string }[]` | Flat menu: selectable items.                                                  |
-| `groups`         | `GeovisWorkspaceMenuGroup[]`         | Grouped menu: carousel groups, one tab each.                                  |
-| `defaultGroupId` | `string`                             | Grouped menu: group open first. Defaults to the group holding `defaultValue`. |
+A **`variations`** body (`kind: 'variations'`) has a `menuId` (the selection
+key it drives), an optional `defaultValue`, and `groups` — each group
+`{ id, label, icon?, color?, variations: [{ value, label, icon? }] }`; the
+groups are flattened into one ordered list. A **`filters`** body
+(`kind: 'filters'`) has `blocks` — each block
+`{ id, title, icon?, defaultOpen?, control }`, where `control` is a `timeline`
+(`{ kind, menuId?, min, max, step?, defaultValue?, histogram?, unitLabel? }`),
+`chips` (`{ kind, options, multiple?, defaultSelected? }`), or `locator`
+(`{ kind, placeholder?, minChars?, options }`).
 
-### `GeovisWorkspaceMenuGroup`
+### `GeovisWorkspaceRightSidebarState`
 
-| Property | Type                                 | Description                            |
-| -------- | ------------------------------------ | -------------------------------------- |
-| `id`     | `string`                             | Unique group id (tracks the open tab). |
-| `label`  | `string`                             | Text on the group's tab.               |
-| `items`  | `{ value: string; label: string }[]` | Items shown while the group is open.   |
-
-### `GeovisWorkspaceSidebarState` / `GeovisWorkspaceLeftSidebarState` / `GeovisWorkspaceRightSidebarState`
-
-| Property          | Type                                                     | Description                                                                                     |
-| ----------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `initialState`    | `'open' \| 'closed'`                                     | Whether the sidebar starts open. Defaults to `'closed'`.                                        |
-| `menus`           | `GeovisWorkspaceMenu[]`                                  | Left sidebar only: alias for `controls.menus`. `controls.menus` wins when both are set.         |
-| `title`           | `string`                                                 | Right sidebar only: title shown at the top.                                                     |
-| `shouldOpen`      | `(info: MapClickInfo) => boolean`                        | Right sidebar only: gate deciding whether a click drives the inspector. Defaults to accepting.  |
-| `onFeatureSelect` | `(info: MapClickInfo) => Promise<unknown>`               | Right sidebar only: fetches the clicked feature's detail; its promise drives `renderDetails`.   |
-| `renderDetails`   | `(state: GeovisWorkspaceDetailState) => React.ReactNode` | Right sidebar only: renders the `inspector` slot from the `loading`/`error`/`data` fetch state. |
+| Property          | Type                                                     | Description                                                                            |
+| ----------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `initialState`    | `'open' \| 'closed'`                                     | Whether the sidebar starts open. Defaults to `'closed'`.                               |
+| `title`           | `string`                                                 | Title shown at the top.                                                                |
+| `shouldOpen`      | `(info: MapClickInfo) => boolean`                        | Gate deciding whether a click drives the inspector. Defaults to accepting every click. |
+| `onFeatureSelect` | `(info: MapClickInfo) => Promise<unknown>`               | Fetches the clicked feature's detail; its promise drives `renderDetails`.              |
+| `renderDetails`   | `(state: GeovisWorkspaceDetailState) => React.ReactNode` | Renders the `inspector` slot from the `loading`/`error`/`data` fetch state.            |
 
 ### `GeovisWorkspaceLegendConfig`
 

@@ -49,10 +49,14 @@ const makeMapMock = ({ sourceLoaded = true } = {}) => {
     getSource: jest.fn((id: string) => {
       return sources.has(id) ? { id, setData } : undefined;
     }),
-    isSourceLoaded: jest.fn(() => {
-      return sourceLoaded;
+    isSourceLoaded: jest.fn((id: string) => {
+      // The freshly-added shadow source parses instantly in tests; only the
+      // real source's parse timing is exercised via `sourceLoaded`, so the
+      // shadow-ready gate never blocks the fade from starting.
+      return id.startsWith('__xf-src-') ? true : sourceLoaded;
     }),
     setPaintProperty: jest.fn(),
+    setFeatureState: jest.fn(),
   };
   return { map, layers, sources, setData };
 };
@@ -124,6 +128,22 @@ const buildSpec = (
           ? { transition: { kind: 'crossfade', durationMs: 400 } }
           : {}),
       } as VisualizationSpec['layers'][number],
+    ],
+  };
+};
+
+/** A spec whose point layer is coloured by a `mapData` feature-state join. */
+const buildSpecWithMapData = (data: GeoJSONData): VisualizationSpec => {
+  const spec = buildSpec(data);
+  return {
+    ...spec,
+    mapData: [
+      {
+        mapDataId: 'stores-status',
+        mapId: 'stores-src',
+        joinKey: 'code',
+        data: [{ geometryId: 'k1', value: 'open' }],
+      },
     ],
   };
 };
@@ -216,7 +236,8 @@ describe('runCrossfades — crossfade point layer with changed data', () => {
     expect(lastPaintValue(map, '__xf-stores', 'circle-opacity')).toBe(0);
     expect(lastPaintValue(map, '__xf-stores', 'circle-stroke-opacity')).toBe(0);
 
-    // Drive to completion.
+    // First frame waits for the shadow's new data to parse; then drive to end.
+    advance(0); // shadow ready → fade begins
     advance(200); // p = 0.5
     advance(200); // p = 1
 
@@ -247,6 +268,7 @@ describe('runCrossfades — settle waits for the new data to parse', () => {
       scheduler
     );
 
+    advance(0); // shadow ready → fade begins
     advance(400); // reaches p = 1 → commits new data, enters settle
 
     // Source still parsing: the real layer stays hidden and the shadow stays.
@@ -273,6 +295,7 @@ describe('runCrossfades — settle waits for the new data to parse', () => {
       scheduler
     );
 
+    advance(0); // shadow ready → fade begins
     advance(400); // completion → settle begins
     // Never reports loaded; drive well past the ceiling.
     for (let i = 0; i < 130; i++) advance(0);
@@ -294,11 +317,87 @@ describe('runCrossfades — settle waits for the new data to parse', () => {
       scheduler
     );
 
+    advance(0); // no isSourceLoaded → shadow treated as ready → fade begins
     advance(200);
     advance(200);
 
     expect(map.removeLayer).toHaveBeenCalledWith('__xf-stores');
     expect(lastPaintValue(map, 'stores', 'circle-opacity')).toBe(0.8);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// runCrossfades — the fade-in waits for the shadow's new data to parse
+// ---------------------------------------------------------------------------
+
+describe('runCrossfades — fade-in waits for the shadow source to parse', () => {
+  test('holds the shadow at zero opacity until its new data reports loaded', () => {
+    const { map } = makeMapMock();
+    // Control when the freshly-added shadow source finishes parsing so we can
+    // assert the ramp does not advance while it is still loading (otherwise the
+    // new points pop in at whatever opacity the ramp had already reached).
+    let shadowLoaded = false;
+    map.isSourceLoaded.mockImplementation((id: string) => {
+      return id.startsWith('__xf-src-') ? shadowLoaded : true;
+    });
+    const { scheduler, advance } = makeScheduler();
+
+    runCrossfades(
+      map as unknown as Parameters<typeof runCrossfades>[0],
+      buildSpec(dataB),
+      buildSpec(dataA),
+      scheduler
+    );
+
+    // Shadow still parsing: advancing time must NOT ramp opacity — the real
+    // layer stays fully visible, the shadow stays hidden.
+    advance(200);
+    advance(200);
+    expect(lastPaintValue(map, 'stores', 'circle-opacity')).toBe(0.8);
+    expect(lastPaintValue(map, '__xf-stores', 'circle-opacity')).toBe(0);
+    expect(map.removeLayer).not.toHaveBeenCalledWith('__xf-stores');
+
+    // Shadow finishes parsing → the fade begins from now and ramps in.
+    shadowLoaded = true;
+    advance(0); // ready → fade begins
+    advance(200); // p = 0.5
+    expect(
+      lastPaintValue(map, '__xf-stores', 'circle-opacity')
+    ).toBeGreaterThan(0);
+    expect(lastPaintValue(map, 'stores', 'circle-opacity')).toBeLessThan(0.8);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// runCrossfades — the shadow inherits the layer's feature-state colours
+// ---------------------------------------------------------------------------
+
+describe('runCrossfades — colours the shadow via the layer feature-state', () => {
+  test('promotes the shadow source id and applies mapData feature-state to it', () => {
+    const { map } = makeMapMock();
+    const { scheduler, advance } = makeScheduler();
+
+    runCrossfades(
+      map as unknown as Parameters<typeof runCrossfades>[0],
+      buildSpecWithMapData(dataB),
+      buildSpecWithMapData(dataA),
+      scheduler
+    );
+
+    // The shadow source is created with the real source's id promotion so its
+    // feature-state joins by the same key.
+    expect(map.addSource).toHaveBeenCalledWith(
+      '__xf-src-stores',
+      expect.objectContaining({ data: dataB, promoteId: 'code' })
+    );
+
+    // Once the shadow parses, the fade begins and the new points are coloured
+    // via the same mapData — so they fade in coloured, not as the fallback.
+    advance(0); // shadow ready → fade begins + shadow feature-state applied
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: '__xf-src-stores', id: 'k1' },
+      { value: 'open' }
+    );
   });
 });
 
@@ -412,7 +511,7 @@ describe('startCrossfade — edge cases', () => {
     return spec.layers[0];
   };
 
-  test('durationMs <= 0 completes on the first frame', () => {
+  test('durationMs <= 0 completes as soon as the fade begins', () => {
     const { map, setData } = makeMapMock();
     const { scheduler, advance } = makeScheduler();
     startCrossfade(
@@ -427,6 +526,7 @@ describe('startCrossfade — edge cases', () => {
       },
       scheduler
     );
+    advance(0); // shadow ready → fade begins
     advance(0); // p resolves to 1 immediately
     expect(setData).toHaveBeenCalledWith(dataB);
     expect(lastPaintValue(map, 'stores', 'circle-opacity')).toBe(0.8);

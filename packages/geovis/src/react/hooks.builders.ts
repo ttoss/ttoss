@@ -1,8 +1,33 @@
-import type { Map as MapLibreMap, MapLayerMouseEvent } from 'maplibre-gl';
+import type {
+  Map as MapLibreMap,
+  MapGeoJSONFeature,
+  MapLayerMouseEvent,
+  PointLike,
+} from 'maplibre-gl';
 import type * as React from 'react';
 
 import type { VisualizationSpec } from '../spec/types';
 import type { MapHoverInfo } from './contexts';
+
+/**
+ * `map.queryRenderedFeatures` throws when any id in its `layers` option is
+ * absent from the current style — which happens when a tracked layer is
+ * toggled out (e.g. a spec that swaps layers by "mode"). This filters the ids
+ * to those still present so a transient absence never crashes a hover/click
+ * handler, and short-circuits to `[]` when none remain (an empty `layers`
+ * array would otherwise query every layer in the style).
+ */
+export const queryLayerFeatures = (
+  map: MapLibreMap,
+  geometry: PointLike | [PointLike, PointLike],
+  layerIds: string[]
+): MapGeoJSONFeature[] => {
+  const layers = layerIds.filter((id) => {
+    return map.getLayer(id) != null;
+  });
+  if (layers.length === 0) return [];
+  return map.queryRenderedFeatures(geometry, { layers });
+};
 
 // ASCII control characters chosen as internal separators so arbitrary
 // characters in layer/source IDs (e.g. ':' in URL-based IDs) cannot corrupt
@@ -106,8 +131,7 @@ export const buildHandleMove = ({
     // to disambiguate when multiple tracked layers overlap at the cursor.
     const delegatedFeature = event.features?.[0];
     const feature =
-      delegatedFeature ??
-      map.queryRenderedFeatures(event.point, { layers: [layerId] })[0];
+      delegatedFeature ?? queryLayerFeatures(map, event.point, [layerId])[0];
     if (!feature || feature.id == null) {
       clearHover(map, setHover, prevHoveredState);
       return;
@@ -196,9 +220,11 @@ export const buildHandleWindowFocus = ({
     const canvasPoint = lastPointRef.current;
     if (!canvasPoint) return;
 
-    const hits = map.queryRenderedFeatures([canvasPoint.x, canvasPoint.y], {
-      layers: trackedLayerIds,
-    });
+    const hits = queryLayerFeatures(
+      map,
+      [canvasPoint.x, canvasPoint.y],
+      trackedLayerIds
+    );
     const feature = hits[0];
     if (!feature || feature.id == null) {
       clearHover(map, setHover, prevHoveredState);
@@ -351,13 +377,11 @@ export const buildHandleGlobalCursor = ({
   pointHovering,
 }: BuildHandleGlobalCursorParams) => {
   return (event: { point: { x: number; y: number } }) => {
-    const hits =
-      pointerLayerIds.size > 0
-        ? map.queryRenderedFeatures(
-            [event.point.x, event.point.y] as [number, number],
-            { layers: [...pointerLayerIds] }
-          )
-        : [];
+    const hits = queryLayerFeatures(
+      map,
+      [event.point.x, event.point.y] as [number, number],
+      [...pointerLayerIds]
+    );
     if (hits.length > 0) {
       map.getCanvas().style.cursor = 'pointer';
       const feature = hits[0];
@@ -374,13 +398,11 @@ export const buildHandleGlobalCursor = ({
       map.getCanvas().style.cursor = 'default';
       if (pointHovering.current) {
         pointHovering.current = false;
-        const polygonHits =
-          trackedLayerIds.length > 0
-            ? map.queryRenderedFeatures(
-                [event.point.x, event.point.y] as [number, number],
-                { layers: trackedLayerIds }
-              )
-            : [];
+        const polygonHits = queryLayerFeatures(
+          map,
+          [event.point.x, event.point.y] as [number, number],
+          trackedLayerIds
+        );
         if (polygonHits.length === 0) setHover(null);
       }
     }
