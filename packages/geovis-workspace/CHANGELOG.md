@@ -3,6 +3,53 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.9.0...@ttoss/geovis-workspace@0.10.0) (2026-08-22)
+
+- Feat/geovis workspace layout (#1201) ([22e2501](https://github.com/ttoss/ttoss/commit/22e2501eb886c16e303f23041b6cc5fa80512850)), closes [#1201](https://github.com/ttoss/ttoss/issues/1201)
+
+### BREAKING CHANGES
+
+- `config.controls`, `config.leftSidebar.menus`,
+  `config.leftSidebarPreview`, `LayerListControls`, `onLayerVisibilityChange`,
+  and the `GeovisWorkspaceMenu`/`GeovisWorkspaceControls` types are removed.
+  Configure the left sidebar via `config.leftSidebar.sections`.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+- feat(geovis): crossfade transition, prototype legend/control restyle
+
+Add a `crossfade` layer transition and align the legend and layer control
+with the design prototype.
+
+- Crossfade: on a geojson `data` change a shadow layer holds the NEW data and
+  fades in while the real layer keeps the OLD data and fades out, avoiding the
+  new-source parse flash. The fade only begins once the shadow source has
+  parsed, and the shadow is painted with the layer's `mapData` feature-state so
+  new points fade in already coloured (no white-then-coloured pop).
+- Legend: prototype card styling with an optional icon chip, footer value, and
+  a `position` offset that animates so the legend can slide clear of a panel.
+- Layer control: prototype trigger button with an optional `control.icon` and a
+  count badge. New spec fields land in `schema.json` and the `types`.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+- chore(storybook): flatten geovis story titles and add crossfade story
+
+Drop the `Basemap`/`Fixtures`/`View` subfolders so every geovis story sits at
+the top level of the sidebar, and refresh the crossfade demo story.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+- feat(geovis-workspace): add appearance card|bare option
+
+`config.appearance` controls the workspace container framing: `'card'`
+(default) keeps the border/radius/background for standalone use (e.g.
+Storybook); `'bare'` drops the border and radius so the workspace fills its
+container edge-to-edge when embedded in an app that owns the framing. Removes
+the need for consumers to strip the card chrome with brittle CSS.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
 # [0.9.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.8.0...@ttoss/geovis-workspace@0.9.0) (2026-08-19)
 
 ### Features
