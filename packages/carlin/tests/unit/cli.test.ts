@@ -398,3 +398,33 @@ describe('upload-source-maps option', () => {
     expect(argv.uploadSourceMaps).toEqual(true);
   });
 });
+
+describe('response headers options', () => {
+  test('should not define response headers by default', async () => {
+    const argv = await parseCli('deploy static-app', {});
+    expect(argv.responseHeaders).toEqual([]);
+    expect(argv.responseHeadersPolicy).toBeUndefined();
+  });
+
+  test('should accept response-headers option', async () => {
+    const argv = await parseCli(
+      'deploy static-app --cloudfront --response-headers.x-custom=some-value',
+      {}
+    );
+
+    expect(argv.responseHeaders).toEqual([
+      { header: 'x-custom', override: true, value: 'some-value' },
+    ]);
+  });
+
+  test('should accept response-headers-policy option', async () => {
+    const responseHeadersPolicy = '67f7725c-6f97-4210-82d7-5512b31e9d03';
+
+    const argv = await parseCli(
+      `deploy static-app --cloudfront --response-headers-policy=${responseHeadersPolicy}`,
+      {}
+    );
+
+    expect(argv.responseHeadersPolicy).toEqual(responseHeadersPolicy);
+  });
+});

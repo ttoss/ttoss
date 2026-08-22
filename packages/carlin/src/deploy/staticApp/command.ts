@@ -7,6 +7,7 @@ import { addGroupToOptions } from '../../utils';
 import { destroyCloudFormation } from '../cloudformation';
 import { deployStaticApp } from './deployStaticApp';
 import { defaultBuildFolders } from './findDefaultBuildFolder';
+import { parseResponseHeaders } from './responseHeaders';
 
 export const options = {
   acm: {
@@ -56,6 +57,17 @@ export const options = {
     hidden: true,
     type: 'string',
   },
+  'response-headers': {
+    coerce: parseResponseHeaders,
+    default: [],
+    describe:
+      'Headers added by CloudFront to every response sent to viewers. Pass an object whose keys are header names and values are header values.',
+  },
+  'response-headers-policy': {
+    describe:
+      'The id of an existing CloudFront response headers policy, or the name of the exported variable whose value is the id, that will be associated to the distribution instead of the default one.',
+    type: 'string',
+  },
   'skip-upload': {
     default: false,
     describe:
@@ -95,6 +107,36 @@ export const deployStaticAppCommand: CommandModule<
     return (
       yargs
         .options(addGroupToOptions(options, 'Deploy Static App Options'))
+        /**
+         * `implies` and `conflicts` cannot be used for these checks because
+         * `cloudfront` and `response-headers` have default values, which yargs
+         * considers as provided.
+         */
+        .check(({ cloudfront, responseHeaders, responseHeadersPolicy }) => {
+          const hasResponseHeaders = responseHeaders?.length > 0;
+
+          if (hasResponseHeaders && responseHeadersPolicy) {
+            throw new Error(
+              'The response-headers and response-headers-policy options are mutually exclusive. The distribution takes a single response headers policy.'
+            );
+          }
+
+          /**
+           * Response headers are applied by CloudFront, so a bucket only
+           * deploy has nothing to attach them to.
+           */
+          if (!cloudfront && (hasResponseHeaders || responseHeadersPolicy)) {
+            throw new Error(
+              `The ${
+                hasResponseHeaders
+                  ? 'response-headers'
+                  : 'response-headers-policy'
+              } option requires the cloudfront option.`
+            );
+          }
+
+          return true;
+        })
         /**
          * CloudFront triggers can be only in US East (N. Virginia) Region.
          * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html#lambda-requirements-cloudfront-triggers

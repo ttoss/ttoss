@@ -1,3 +1,8 @@
+/**
+ * `getCloudFrontTemplate` is a single CloudFormation template literal, which
+ * these rules were not written for.
+ */
+/* eslint-disable complexity, max-lines, max-lines-per-function */
 import type {
   CloudFormationTemplate,
   Output,
@@ -6,6 +11,10 @@ import type {
 
 import { getPackageVersion } from '../../utils';
 import { BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_ARN_EXPORTED_NAME } from '../baseStack/config';
+import {
+  getResponseHeadersPolicyConfig,
+  type ResponseHeader,
+} from './responseHeaders';
 
 const PACKAGE_VERSION = getPackageVersion();
 
@@ -15,6 +24,9 @@ export const CLOUDFRONT_DISTRIBUTION_LOGICAL_ID = 'CloudFrontDistribution';
 
 export const CLOUDFRONT_ORIGIN_ACCESS_CONTROL_LOGICAL_ID =
   'OriginAccessControl';
+
+export const CLOUDFRONT_RESPONSE_HEADERS_POLICY_LOGICAL_ID =
+  'ResponseHeadersPolicy';
 
 export const ROUTE_53_RECORD_SET_GROUP_LOGICAL_ID = 'Route53RecordSetGroup';
 
@@ -38,8 +50,50 @@ const ORIGIN_REQUEST_POLICY_ID = '88a5eaf4-2fd4-4709-b370-b4c650ea3fcf';
  * Name: CORS-with-preflight-and-SecurityHeadersPolicy
  * ID: eaab4381-ed33-4a86-88ca-d9558dc6cd63
  * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-response-headers-policies.html
+ *
+ * Used when neither the `responseHeaders` nor the `responseHeadersPolicy`
+ * option is defined. Its settings are reproduced in
+ * `BASELINE_RESPONSE_HEADERS_CONFIG` for the policy created by the
+ * `responseHeaders` option.
  */
-const ORIGIN_RESPONSE_POLICY_ID = 'eaab4381-ed33-4a86-88ca-d9558dc6cd63';
+export const ORIGIN_RESPONSE_POLICY_ID = 'eaab4381-ed33-4a86-88ca-d9558dc6cd63';
+
+/**
+ * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-responseheaderspolicy.html
+ */
+const RESPONSE_HEADERS_POLICY_ID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+/**
+ * The distribution takes a single response headers policy id, so the three
+ * sources are mutually exclusive:
+ *
+ * 1. `responseHeadersPolicy`: an existing policy id, or the name of an
+ *    exported value whose value is a policy id.
+ * 1. `responseHeaders`: the policy created by this template.
+ * 1. Neither: the managed policy used by every deploy so far.
+ */
+const getResponseHeadersPolicyId = ({
+  responseHeaders = [],
+  responseHeadersPolicy,
+}: {
+  responseHeaders?: ResponseHeader[];
+  responseHeadersPolicy?: string;
+}) => {
+  if (responseHeadersPolicy) {
+    return RESPONSE_HEADERS_POLICY_ID_REGEX.test(responseHeadersPolicy)
+      ? responseHeadersPolicy
+      : { 'Fn::ImportValue': responseHeadersPolicy };
+  }
+
+  if (responseHeaders.length > 0) {
+    return {
+      'Fn::GetAtt': [CLOUDFRONT_RESPONSE_HEADERS_POLICY_LOGICAL_ID, 'Id'],
+    };
+  }
+
+  return ORIGIN_RESPONSE_POLICY_ID;
+};
 
 const getBucketStaticWebsiteTemplate = ({
   spa,
@@ -113,6 +167,8 @@ const getCloudFrontTemplate = ({
   acm,
   aliases = [],
   appendIndexHtml,
+  responseHeaders = [],
+  responseHeadersPolicy,
   spa,
   hostedZoneName,
 }: {
@@ -120,6 +176,8 @@ const getCloudFrontTemplate = ({
   aliases?: string[];
   appendIndexHtml?: boolean;
   cloudfront: true;
+  responseHeaders?: ResponseHeader[];
+  responseHeadersPolicy?: string;
   spa?: boolean;
   hostedZoneName?: string;
   region: string;
@@ -228,7 +286,10 @@ const getCloudFrontTemplate = ({
              * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-defaultcachebehavior.html#cfn-cloudfront-distribution-defaultcachebehavior-cachepolicyid
              */
             CachePolicyId: CACHE_POLICY_ID,
-            ResponseHeadersPolicyId: ORIGIN_RESPONSE_POLICY_ID,
+            ResponseHeadersPolicyId: getResponseHeadersPolicyId({
+              responseHeaders,
+              responseHeadersPolicy,
+            }),
             TargetOriginId: { Ref: STATIC_APP_BUCKET_LOGICAL_ID },
             ViewerProtocolPolicy: 'redirect-to-https',
           },
@@ -277,6 +338,18 @@ const getCloudFrontTemplate = ({
         },
       },
     },
+    ...(responseHeaders.length > 0
+      ? {
+          [CLOUDFRONT_RESPONSE_HEADERS_POLICY_LOGICAL_ID]: {
+            Type: 'AWS::CloudFront::ResponseHeadersPolicy',
+            Properties: {
+              ResponseHeadersPolicyConfig: getResponseHeadersPolicyConfig({
+                responseHeaders,
+              }),
+            },
+          },
+        }
+      : {}),
   };
 
   if (acm) {
@@ -439,6 +512,8 @@ export const getStaticAppTemplate = ({
   aliases,
   appendIndexHtml,
   cloudfront,
+  responseHeaders,
+  responseHeadersPolicy,
   spa,
   hostedZoneName,
   region,
@@ -447,6 +522,8 @@ export const getStaticAppTemplate = ({
   aliases?: string[];
   appendIndexHtml?: boolean;
   cloudfront?: boolean;
+  responseHeaders?: ResponseHeader[];
+  responseHeadersPolicy?: string;
   spa?: boolean;
   hostedZoneName?: string;
   region: string;
@@ -457,6 +534,8 @@ export const getStaticAppTemplate = ({
       aliases,
       appendIndexHtml,
       cloudfront,
+      responseHeaders,
+      responseHeadersPolicy,
       spa,
       hostedZoneName,
       region,
