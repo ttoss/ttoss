@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/ttoss/ttoss/compare/carlin@2.0.0...carlin@2.1.0) (2026-08-22)
+
+### Features
+
+- **carlin:** add response headers options to deploy static-app ([#1203](https://github.com/ttoss/ttoss/issues/1203)) ([5014a32](https://github.com/ttoss/ttoss/commit/5014a32c7ab032fcd1ab121bf2e07218dfaa55e4))
+
 # 2.0.0 (2026-08-11)
 
 - feat(carlin)!: exclude source maps from the static-app S3 upload by default (#1196) ([b37f275](https://github.com/ttoss/ttoss/commit/b37f27533cccaea1ed28ddd79e6bf4cacb81032e)), closes [#1196](https://github.com/ttoss/ttoss/issues/1196)

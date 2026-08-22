@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.1.0](https://github.com/ttoss/ttoss/compare/@docs/website@7.0.1...@docs/website@7.1.0) (2026-08-22)
+
+### Features
+
+- **carlin:** add response headers options to deploy static-app ([#1203](https://github.com/ttoss/ttoss/issues/1203)) ([5014a32](https://github.com/ttoss/ttoss/commit/5014a32c7ab032fcd1ab121bf2e07218dfaa55e4))
+
 ## [7.0.1](https://github.com/ttoss/ttoss/compare/@docs/website@7.0.0...@docs/website@7.0.1) (2026-08-16)
 
 **Note:** Version bump only for package @docs/website
