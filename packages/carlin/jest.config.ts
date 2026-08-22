@@ -6,10 +6,10 @@ const config = jestConfig({
   coveragePathIgnorePatterns: ['<rootDir>/tests/'],
   coverageThreshold: {
     global: {
-      statements: 71.45,
-      branches: 61.25,
-      lines: 71.37,
-      functions: 74.2,
+      statements: 72.15,
+      branches: 62.9,
+      lines: 72.05,
+      functions: 74.8,
     },
   },
   moduleNameMapper: {
