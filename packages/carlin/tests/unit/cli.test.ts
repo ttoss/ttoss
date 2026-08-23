@@ -428,3 +428,21 @@ describe('response headers options', () => {
     expect(argv.responseHeadersPolicy).toEqual(responseHeadersPolicy);
   });
 });
+
+describe('viewer request function option', () => {
+  test('should not define a viewer request function by default', async () => {
+    const argv = await parseCli('deploy static-app', {});
+    expect(argv.viewerRequestFunctionCode).toBeUndefined();
+  });
+
+  test('should accept viewer-request-function-code option', async () => {
+    const viewerRequestFunctionCode = './cloudfront/viewerRequest.js';
+
+    const argv = await parseCli(
+      `deploy static-app --cloudfront --viewer-request-function-code=${viewerRequestFunctionCode}`,
+      {}
+    );
+
+    expect(argv.viewerRequestFunctionCode).toEqual(viewerRequestFunctionCode);
+  });
+});

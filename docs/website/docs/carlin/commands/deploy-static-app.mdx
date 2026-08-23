@@ -129,6 +129,11 @@ carlin deploy static-app --append-index-html
 
 **Use case**: Clean URLs without `.html` extension
 
+**Conflicts with**: `--viewer-request-function-code`. A cache behavior takes a
+single viewer request function, and this option associates the shared one carlin
+keeps in the base stack. A function of your own calls the `appendIndexHtml`
+helper instead.
+
 ### --spa
 
 Enable Single Page Application (SPA) mode.
@@ -213,6 +218,56 @@ takes the policy as given and adds nothing to it.
 
 **Requires**: `--cloudfront`. **Conflicts with**: `--response-headers`. A cache
 behavior takes a single response headers policy.
+
+### --viewer-request-function-code
+
+Path to a file whose code runs as the [CloudFront viewer request function](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-functions.html)
+of the distribution, for logic that has to run before CloudFront looks the
+request up in the cache — rewriting a URI, or answering a request outright.
+
+```typescript
+import { defineConfig } from 'carlin/config';
+
+export default defineConfig({
+  cloudfront: true,
+  viewerRequestFunctionCode: './cloudfront/viewerRequest.js',
+});
+```
+
+The file must declare a `function handler(event)`, which is the entry point
+CloudFront calls. carlin injects an `appendIndexHtml(request)` helper into the
+function, holding the same logic as [`--append-index-html`](#--append-index-html),
+so a site that needs both calls it where it belongs:
+
+```javascript
+function handler(event) {
+  var request = event.request;
+  var accept = request.headers.accept ? request.headers.accept.value : '';
+
+  if (accept.includes('text/markdown')) {
+    request.uri = request.uri.replace(/\/$/, '') + '.md';
+    return request;
+  }
+
+  return appendIndexHtml(request);
+}
+```
+
+Order is yours to choose at the call site, and it matters: a function rewriting
+`/docs/guide` to `/docs/guide.md` has to run before the index appending, which
+would otherwise turn the URI into `/docs/guide/index.html` first.
+
+The rewritten URI is what CloudFront looks up in the cache, so each branch gets
+its own cache entry with no cache policy change. Pair the example above with
+`responseHeaders: { vary: 'accept' }` so caches downstream key on the header the
+function reads.
+
+**Requires**: `--cloudfront`. **Conflicts with**: `--append-index-html`.
+
+**Constraints**: CloudFront runs the code on the `cloudfront-js-2.0` runtime,
+with no network, filesystem, timers or dynamic evaluation, and no access to the
+request body. The composed function — your code plus the injected helper — must
+stay under 10 KB, which carlin checks before deploying.
 
 ### --skip-upload
 
