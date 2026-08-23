@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/ttoss/ttoss/compare/carlin@2.1.0...carlin@2.2.0) (2026-08-23)
+
+### Features
+
+- **carlin:** add viewer request function option to deploy static-app ([#1204](https://github.com/ttoss/ttoss/issues/1204)) ([7edd029](https://github.com/ttoss/ttoss/commit/7edd029faf2d16e2bb1b75646ea512ea7c860b72))
+
 # [2.1.0](https://github.com/ttoss/ttoss/compare/carlin@2.0.0...carlin@2.1.0) (2026-08-22)
 
 ### Features
