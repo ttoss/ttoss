@@ -101,9 +101,34 @@ export const BASELINE_RESPONSE_HEADERS_CONFIG = {
   },
 } as const;
 
+/**
+ * The headers of `BASELINE_RESPONSE_HEADERS_CONFIG.CorsConfig` expressed as
+ * custom headers.
+ *
+ * CloudFront's CORS handling owns `Vary`: with a `CorsConfig` in the policy it
+ * sends `Vary: Origin` on a plain request and removes `Vary` altogether on a
+ * cross-origin one, so a caller-defined `Vary` only survives when the policy
+ * has no `CorsConfig`. The baseline allows a static `*`, which nothing varies
+ * by, so the same headers can be emitted as custom headers and the caller's
+ * `Vary` becomes both true and stable.
+ *
+ * `Access-Control-Allow-Credentials` is omitted because the baseline sets it
+ * to `false`, which is the absence of the header, and `Access-Control-Max-Age`
+ * because the baseline doesn't set it.
+ */
+const CORS_AS_CUSTOM_HEADERS = [
+  { header: 'access-control-allow-origin', value: '*' },
+  {
+    header: 'access-control-allow-methods',
+    value: 'DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT',
+  },
+  { header: 'access-control-allow-headers', value: '*' },
+  { header: 'access-control-expose-headers', value: '*' },
+];
+
 type ResponseHeadersPolicyConfig = {
   Comment: unknown;
-  CorsConfig: unknown;
+  CorsConfig?: unknown;
   CustomHeadersConfig: {
     Items: { Header: string; Override: boolean; Value: string }[];
   };
@@ -206,6 +231,26 @@ export const getResponseHeadersPolicyConfig = ({
     }
   }
 
+  /**
+   * A `CorsConfig` makes CloudFront manage `Vary` itself, which silently
+   * discards a user-defined one, so the CORS headers move to
+   * `CustomHeadersConfig` when `vary` is defined. The one behavior lost is the
+   * automatic `OPTIONS` preflight response of `CorsConfig`; simple
+   * cross-origin requests, which is what a static app serves, don't preflight.
+   */
+  const definesVary = responseHeaders.some(({ header }) => {
+    return header.toLowerCase() === 'vary';
+  });
+
+  const customHeaders = definesVary
+    ? [
+        ...responseHeaders,
+        ...CORS_AS_CUSTOM_HEADERS.map(({ header, value }) => {
+          return { header, override: true, value };
+        }),
+      ]
+    : responseHeaders;
+
   return {
     Comment: {
       'Fn::Sub': [
@@ -213,9 +258,11 @@ export const getResponseHeadersPolicyConfig = ({
         { Project: { Ref: 'Project' } },
       ],
     },
-    CorsConfig: BASELINE_RESPONSE_HEADERS_CONFIG.CorsConfig,
+    ...(definesVary
+      ? {}
+      : { CorsConfig: BASELINE_RESPONSE_HEADERS_CONFIG.CorsConfig }),
     CustomHeadersConfig: {
-      Items: responseHeaders.map(({ header, value, override }) => {
+      Items: customHeaders.map(({ header, value, override }) => {
         return {
           Header: header,
           Override: override,

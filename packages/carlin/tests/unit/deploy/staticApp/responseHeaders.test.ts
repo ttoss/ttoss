@@ -132,6 +132,79 @@ describe('getResponseHeadersPolicyConfig', () => {
     }
   );
 
+  /**
+   * CloudFront's CORS handling owns Vary, so a user-defined one only reaches
+   * the viewer when the policy has no CorsConfig.
+   */
+  test('should express CORS as custom headers when vary is defined', () => {
+    const config = getResponseHeadersPolicyConfig({
+      responseHeaders: parseResponseHeaders({ vary: 'Accept' }),
+    });
+
+    expect(config).not.toHaveProperty('CorsConfig');
+
+    expect(config.CustomHeadersConfig.Items).toEqual([
+      { Header: 'vary', Override: true, Value: 'Accept' },
+      { Header: 'access-control-allow-origin', Override: true, Value: '*' },
+      {
+        Header: 'access-control-allow-methods',
+        Override: true,
+        Value: 'DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT',
+      },
+      { Header: 'access-control-allow-headers', Override: true, Value: '*' },
+      { Header: 'access-control-expose-headers', Override: true, Value: '*' },
+    ]);
+  });
+
+  test('should match vary case-insensitively', () => {
+    const config = getResponseHeadersPolicyConfig({
+      responseHeaders: parseResponseHeaders({ Vary: 'Accept' }),
+    });
+
+    expect(config).not.toHaveProperty('CorsConfig');
+  });
+
+  /**
+   * The regression guard for every deploy that doesn't define vary.
+   */
+  test('should keep CorsConfig when vary is not defined', () => {
+    const config = getResponseHeadersPolicyConfig({
+      responseHeaders: parseResponseHeaders({ 'x-robots-tag': 'noindex' }),
+    });
+
+    expect(config.CorsConfig).toEqual(
+      BASELINE_RESPONSE_HEADERS_CONFIG.CorsConfig
+    );
+
+    expect(config.CustomHeadersConfig.Items).toEqual([
+      { Header: 'x-robots-tag', Override: true, Value: 'noindex' },
+    ]);
+  });
+
+  test('should keep the security headers when vary is defined', () => {
+    const config = getResponseHeadersPolicyConfig({
+      responseHeaders: parseResponseHeaders({ vary: 'Accept' }),
+    });
+
+    expect(config.SecurityHeadersConfig).toEqual(
+      BASELINE_RESPONSE_HEADERS_CONFIG.SecurityHeadersConfig
+    );
+  });
+
+  test('should keep the defined override of a vary in the array form', () => {
+    const config = getResponseHeadersPolicyConfig({
+      responseHeaders: parseResponseHeaders([
+        { header: 'vary', override: false, value: 'Accept' },
+      ]),
+    });
+
+    expect(config.CustomHeadersConfig.Items[0]).toEqual({
+      Header: 'vary',
+      Override: false,
+      Value: 'Accept',
+    });
+  });
+
   test('should not add SecurityHeadersConfig when every baseline header is replaced', () => {
     const config = getResponseHeadersPolicyConfig({
       responseHeaders: parseResponseHeaders({

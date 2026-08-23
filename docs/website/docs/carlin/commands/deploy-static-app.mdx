@@ -194,6 +194,12 @@ of the security headers above replaces the managed value with yours. The CORS
 headers are configured as a unit and cannot be replaced individually — use
 `--response-headers-policy` when you need to change them.
 
+Defining `vary` is the exception. CloudFront's CORS handling manages `Vary`
+itself and would discard yours, so carlin sends the same CORS headers as custom
+headers instead and your `Vary` reaches the viewer. The distribution then stops
+answering `OPTIONS` preflight requests on its own, which the simple cross-origin
+requests a static app serves never send.
+
 Changing headers updates the distribution, which takes a few minutes to reach
 every edge location. No invalidation is needed: the headers are applied to
 cache hits too.
