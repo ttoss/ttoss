@@ -94,6 +94,11 @@ export const options = {
     require: false,
     type: 'boolean',
   },
+  'viewer-request-function-code': {
+    describe:
+      'Path to a file whose code runs as the CloudFront viewer request function of the distribution. The file must declare a `function handler(event)`, and may call the `appendIndexHtml(request)` helper carlin injects.',
+    type: 'string',
+  },
 } as const;
 
 export const deployStaticAppCommand: CommandModule<
@@ -132,6 +137,37 @@ export const deployStaticAppCommand: CommandModule<
                   ? 'response-headers'
                   : 'response-headers-policy'
               } option requires the cloudfront option.`
+            );
+          }
+
+          return true;
+        })
+        .check(({ appendIndexHtml, cloudfront, viewerRequestFunctionCode }) => {
+          if (!viewerRequestFunctionCode) {
+            return true;
+          }
+
+          /**
+           * A cache behavior takes a single viewer request function, and the
+           * shared base stack one is what append-index-html associates. The app
+           * supplied function gets the same behavior by calling the
+           * `appendIndexHtml` helper carlin injects.
+           *
+           * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-function-restrictions-all.html
+           */
+          if (appendIndexHtml) {
+            throw new Error(
+              'The append-index-html and viewer-request-function-code options are mutually exclusive. A cache behavior takes a single viewer request function. Call `appendIndexHtml(request)` from your function instead, which carlin injects for you.'
+            );
+          }
+
+          /**
+           * The function is associated to a cache behavior, so a bucket only
+           * deploy has nothing to attach it to.
+           */
+          if (!cloudfront) {
+            throw new Error(
+              'The viewer-request-function-code option requires the cloudfront option.'
             );
           }
 

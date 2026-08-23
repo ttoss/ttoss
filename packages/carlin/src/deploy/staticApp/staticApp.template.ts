@@ -15,6 +15,10 @@ import {
   getResponseHeadersPolicyConfig,
   type ResponseHeader,
 } from './responseHeaders';
+import {
+  FUNCTION_RUNTIME,
+  getViewerRequestFunctionCode,
+} from './viewerRequestFunction';
 
 const PACKAGE_VERSION = getPackageVersion();
 
@@ -27,6 +31,9 @@ export const CLOUDFRONT_ORIGIN_ACCESS_CONTROL_LOGICAL_ID =
 
 export const CLOUDFRONT_RESPONSE_HEADERS_POLICY_LOGICAL_ID =
   'ResponseHeadersPolicy';
+
+export const CLOUDFRONT_VIEWER_REQUEST_FUNCTION_LOGICAL_ID =
+  'ViewerRequestFunction';
 
 export const ROUTE_53_RECORD_SET_GROUP_LOGICAL_ID = 'Route53RecordSetGroup';
 
@@ -171,6 +178,7 @@ const getCloudFrontTemplate = ({
   responseHeadersPolicy,
   spa,
   hostedZoneName,
+  viewerRequestFunctionCode,
 }: {
   acm?: string;
   aliases?: string[];
@@ -181,6 +189,7 @@ const getCloudFrontTemplate = ({
   spa?: boolean;
   hostedZoneName?: string;
   region: string;
+  viewerRequestFunctionCode?: string;
 }): CloudFormationTemplate => {
   const template: CloudFormationTemplate = {
     AWSTemplateFormatVersion: '2010-09-09',
@@ -453,7 +462,68 @@ const getCloudFrontTemplate = ({
     {}
   );
 
-  if (appendIndexHtml) {
+  /**
+   * A cache behavior takes a single viewer request function, so the app
+   * supplied one replaces the shared base stack one instead of being appended
+   * to it. `appendIndexHtml` is available to the app code as a helper, which is
+   * why the two options are mutually exclusive.
+   *
+   * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-function-restrictions-all.html
+   */
+  if (appendIndexHtml && viewerRequestFunctionCode) {
+    throw new Error(
+      'The append-index-html and viewer-request-function-code options are mutually exclusive. A cache behavior takes a single viewer request function. Call `appendIndexHtml(request)` from your function instead, which carlin injects for you.'
+    );
+  }
+
+  if (viewerRequestFunctionCode) {
+    template.Resources[CLOUDFRONT_VIEWER_REQUEST_FUNCTION_LOGICAL_ID] = {
+      Type: 'AWS::CloudFront::Function',
+      Properties: {
+        /**
+         * Function names must be unique per AWS account. Static app deploys are
+         * always in us-east-1, so the stack name cannot collide with a
+         * same-named stack in another region.
+         */
+        Name: { Ref: 'AWS::StackName' },
+        FunctionConfig: {
+          Comment: {
+            'Fn::Sub': [
+              'Viewer request function for the ${Project} project.',
+              { Project: { Ref: 'Project' } },
+            ],
+          },
+          Runtime: FUNCTION_RUNTIME,
+        },
+        FunctionCode: getViewerRequestFunctionCode({
+          code: viewerRequestFunctionCode,
+        }),
+        AutoPublish: true,
+      },
+    };
+  }
+
+  const viewerRequestFunctionArn = (() => {
+    if (viewerRequestFunctionCode) {
+      return {
+        'Fn::GetAtt': [
+          CLOUDFRONT_VIEWER_REQUEST_FUNCTION_LOGICAL_ID,
+          'FunctionMetadata.FunctionARN',
+        ],
+      };
+    }
+
+    if (appendIndexHtml) {
+      return {
+        'Fn::ImportValue':
+          BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_ARN_EXPORTED_NAME,
+      };
+    }
+
+    return undefined;
+  })();
+
+  if (viewerRequestFunctionArn) {
     if (!template.Resources[CLOUDFRONT_DISTRIBUTION_LOGICAL_ID].Properties) {
       template.Resources[CLOUDFRONT_DISTRIBUTION_LOGICAL_ID].Properties = {};
     }
@@ -467,10 +537,7 @@ const getCloudFrontTemplate = ({
          */
         {
           EventType: 'viewer-request',
-          FunctionARN: {
-            'Fn::ImportValue':
-              BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_ARN_EXPORTED_NAME,
-          },
+          FunctionARN: viewerRequestFunctionArn,
         },
       ];
   }
@@ -517,6 +584,7 @@ export const getStaticAppTemplate = ({
   spa,
   hostedZoneName,
   region,
+  viewerRequestFunctionCode,
 }: {
   acm?: string;
   aliases?: string[];
@@ -527,6 +595,7 @@ export const getStaticAppTemplate = ({
   spa?: boolean;
   hostedZoneName?: string;
   region: string;
+  viewerRequestFunctionCode?: string;
 }): CloudFormationTemplate => {
   if (cloudfront) {
     return getCloudFrontTemplate({
@@ -539,6 +608,7 @@ export const getStaticAppTemplate = ({
       spa,
       hostedZoneName,
       region,
+      viewerRequestFunctionCode,
     });
   }
 

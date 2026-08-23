@@ -8,11 +8,16 @@ import {
   CLOUDFRONT_DISTRIBUTION_LOGICAL_ID,
   CLOUDFRONT_ORIGIN_ACCESS_CONTROL_LOGICAL_ID,
   CLOUDFRONT_RESPONSE_HEADERS_POLICY_LOGICAL_ID,
+  CLOUDFRONT_VIEWER_REQUEST_FUNCTION_LOGICAL_ID,
   getStaticAppTemplate,
   ORIGIN_RESPONSE_POLICY_ID,
   ROUTE_53_RECORD_SET_GROUP_LOGICAL_ID,
   STATIC_APP_BUCKET_LOGICAL_ID,
 } from 'src/deploy/staticApp/staticApp.template';
+import {
+  APPEND_INDEX_HTML_HELPER,
+  FUNCTION_RUNTIME,
+} from 'src/deploy/staticApp/viewerRequestFunction';
 
 jest.mock('src/utils', () => {
   const PACKAGE_VERSION = '10.40.23';
@@ -260,5 +265,126 @@ describe('response headers', () => {
     expect(template.Resources).not.toHaveProperty(
       CLOUDFRONT_RESPONSE_HEADERS_POLICY_LOGICAL_ID
     );
+  });
+});
+
+describe('viewer request function', () => {
+  const viewerRequestFunctionCode = `function handler(event) {
+  return appendIndexHtml(event.request);
+}`;
+
+  const getFunctionAssociations = (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    template: any
+  ) => {
+    return template.Resources[CLOUDFRONT_DISTRIBUTION_LOGICAL_ID].Properties
+      .DistributionConfig.DefaultCacheBehavior.FunctionAssociations;
+  };
+
+  test('should create a per app function and associate it', () => {
+    const template = getStaticAppTemplate({
+      region,
+      cloudfront: true,
+      viewerRequestFunctionCode,
+    });
+
+    const resource =
+      template.Resources[CLOUDFRONT_VIEWER_REQUEST_FUNCTION_LOGICAL_ID];
+
+    expect(resource.Type).toEqual('AWS::CloudFront::Function');
+    expect(resource.Properties?.AutoPublish).toEqual(true);
+    expect(resource.Properties?.Name).toEqual({ Ref: 'AWS::StackName' });
+    expect(resource.Properties?.FunctionConfig.Runtime).toEqual(
+      FUNCTION_RUNTIME
+    );
+
+    expect(getFunctionAssociations(template)).toEqual([
+      {
+        EventType: 'viewer-request',
+        FunctionARN: {
+          'Fn::GetAtt': [
+            CLOUDFRONT_VIEWER_REQUEST_FUNCTION_LOGICAL_ID,
+            'FunctionMetadata.FunctionARN',
+          ],
+        },
+      },
+    ]);
+  });
+
+  test('should inject the appendIndexHtml helper into the function code', () => {
+    const template = getStaticAppTemplate({
+      region,
+      cloudfront: true,
+      viewerRequestFunctionCode,
+    });
+
+    expect(
+      template.Resources[CLOUDFRONT_VIEWER_REQUEST_FUNCTION_LOGICAL_ID]
+        .Properties?.FunctionCode
+    ).toEqual(`${APPEND_INDEX_HTML_HELPER}\n\n${viewerRequestFunctionCode}\n`);
+  });
+
+  /**
+   * A cache behavior takes a single viewer request function, so a config that
+   * would need two associations must fail at synth time.
+   */
+  test('should throw when combined with appendIndexHtml', () => {
+    return expect(() => {
+      return getStaticAppTemplate({
+        region,
+        cloudfront: true,
+        appendIndexHtml: true,
+        viewerRequestFunctionCode,
+      });
+    }).toThrow('mutually exclusive');
+  });
+
+  test('should replace the shared base stack function instead of appending to it', () => {
+    const template = getStaticAppTemplate({
+      region,
+      cloudfront: true,
+      viewerRequestFunctionCode,
+    });
+
+    expect(getFunctionAssociations(template)).toHaveLength(1);
+    expect(JSON.stringify(template)).not.toContain(
+      BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_ARN_EXPORTED_NAME
+    );
+  });
+
+  test('should not create the function nor associate one when unset', () => {
+    const template = getStaticAppTemplate({ region, cloudfront: true });
+
+    expect(template.Resources).not.toHaveProperty(
+      CLOUDFRONT_VIEWER_REQUEST_FUNCTION_LOGICAL_ID
+    );
+    expect(getFunctionAssociations(template)).toBeUndefined();
+  });
+
+  /**
+   * An appendIndexHtml deploy keeps importing the shared base stack function
+   * and gains no per app resource, so it deploys as it did before this option
+   * existed.
+   */
+  test('should not create a per app function for an appendIndexHtml deploy', () => {
+    const template = getStaticAppTemplate({
+      region,
+      cloudfront: true,
+      appendIndexHtml: true,
+    });
+
+    expect(template.Resources).not.toHaveProperty(
+      CLOUDFRONT_VIEWER_REQUEST_FUNCTION_LOGICAL_ID
+    );
+
+    expect(getFunctionAssociations(template)).toEqual([
+      {
+        EventType: 'viewer-request',
+        FunctionARN: {
+          'Fn::ImportValue':
+            BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_ARN_EXPORTED_NAME,
+        },
+      },
+    ]);
   });
 });

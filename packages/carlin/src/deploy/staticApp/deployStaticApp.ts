@@ -5,6 +5,7 @@ import { invalidateCloudFront } from './invalidateCloudFront';
 import { type ResponseHeader } from './responseHeaders';
 import { getStaticAppTemplate } from './staticApp.template';
 import { uploadBuiltAppToS3 } from './uploadBuiltAppToS3';
+import { readViewerRequestFunctionCode } from './viewerRequestFunction';
 
 const logPrefix = 'static-app';
 
@@ -29,6 +30,7 @@ export const deployStaticApp = async ({
   region,
   skipUpload,
   uploadSourceMaps,
+  viewerRequestFunctionCode,
 }: {
   acm?: string;
   aliases?: string[];
@@ -42,6 +44,11 @@ export const deployStaticApp = async ({
   region: string;
   skipUpload?: boolean;
   uploadSourceMaps?: boolean;
+  /**
+   * Path to the file holding the viewer request function code, read here so the
+   * template receives the source.
+   */
+  viewerRequestFunctionCode?: string;
 }) => {
   try {
     const { stackName } = await handleDeployInitialization({ logPrefix });
@@ -58,6 +65,9 @@ export const deployStaticApp = async ({
       spa,
       hostedZoneName,
       region,
+      viewerRequestFunctionCode: viewerRequestFunctionCode
+        ? readViewerRequestFunctionCode({ filePath: viewerRequestFunctionCode })
+        : undefined,
     });
 
     const bucket = await getStaticAppBucket({ stackName });

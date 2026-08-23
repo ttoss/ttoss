@@ -239,3 +239,41 @@ describe('response headers options', () => {
     ).rejects.toThrow('mutually exclusive');
   });
 });
+
+describe('viewer request function option', () => {
+  const viewerRequestFunctionCode = './cloudfront/viewerRequest.js';
+
+  /**
+   * A cache behavior takes a single viewer request function, so a config that
+   * would need two associations must fail before the deploy.
+   */
+  test('should throw when combined with append-index-html', () => {
+    return expect(
+      parseArgs(
+        `static-app --cloudfront --append-index-html --viewer-request-function-code=${viewerRequestFunctionCode}`
+      )
+    ).rejects.toThrow('mutually exclusive');
+  });
+
+  /**
+   * The function is associated to a cache behavior, so a bucket only deploy has
+   * nothing to attach it to.
+   */
+  test('should throw when defined without cloudfront', () => {
+    return expect(
+      parseArgs(
+        `static-app --viewer-request-function-code=${viewerRequestFunctionCode}`
+      )
+    ).rejects.toThrow('requires the cloudfront option');
+  });
+
+  test('should pass the option to deployStaticApp', async () => {
+    await parseArgs(
+      `static-app --cloudfront --viewer-request-function-code=${viewerRequestFunctionCode}`
+    );
+
+    expect(deployStaticApp).toHaveBeenCalledWith(
+      expect.objectContaining({ viewerRequestFunctionCode })
+    );
+  });
+});
