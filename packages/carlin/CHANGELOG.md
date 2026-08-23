@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.1](https://github.com/ttoss/ttoss/compare/carlin@2.2.0...carlin@2.2.1) (2026-08-23)
+
+### Bug Fixes
+
+- **carlin:** honor a caller-defined Vary in static app response headers ([#1205](https://github.com/ttoss/ttoss/issues/1205)) ([4758429](https://github.com/ttoss/ttoss/commit/47584295344ebbaf6aa885e3578d932fecf5f724))
+
 # [2.2.0](https://github.com/ttoss/ttoss/compare/carlin@2.1.0...carlin@2.2.0) (2026-08-23)
 
 ### Features
