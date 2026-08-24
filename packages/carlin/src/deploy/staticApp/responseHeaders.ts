@@ -101,31 +101,6 @@ export const BASELINE_RESPONSE_HEADERS_CONFIG = {
   },
 } as const;
 
-/**
- * The headers of `BASELINE_RESPONSE_HEADERS_CONFIG.CorsConfig` expressed as
- * custom headers.
- *
- * CloudFront's CORS handling owns `Vary`: with a `CorsConfig` in the policy it
- * sends `Vary: Origin` on a plain request and removes `Vary` altogether on a
- * cross-origin one, so a caller-defined `Vary` only survives when the policy
- * has no `CorsConfig`. The baseline allows a static `*`, which nothing varies
- * by, so the same headers can be emitted as custom headers and the caller's
- * `Vary` becomes both true and stable.
- *
- * `Access-Control-Allow-Credentials` is omitted because the baseline sets it
- * to `false`, which is the absence of the header, and `Access-Control-Max-Age`
- * because the baseline doesn't set it.
- */
-const CORS_AS_CUSTOM_HEADERS = [
-  { header: 'access-control-allow-origin', value: '*' },
-  {
-    header: 'access-control-allow-methods',
-    value: 'DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT',
-  },
-  { header: 'access-control-allow-headers', value: '*' },
-  { header: 'access-control-expose-headers', value: '*' },
-];
-
 type ResponseHeadersPolicyConfig = {
   Comment: unknown;
   CorsConfig?: unknown;
@@ -232,24 +207,23 @@ export const getResponseHeadersPolicyConfig = ({
   }
 
   /**
-   * A `CorsConfig` makes CloudFront manage `Vary` itself, which silently
-   * discards a user-defined one, so the CORS headers move to
-   * `CustomHeadersConfig` when `vary` is defined. The one behavior lost is the
-   * automatic `OPTIONS` preflight response of `CorsConfig`; simple
-   * cross-origin requests, which is what a static app serves, don't preflight.
+   * A `CorsConfig` makes CloudFront manage `Vary` itself — it sends
+   * `Vary: Origin` on a plain request and drops `Vary` on a cross-origin one —
+   * so a user-defined `Vary` only reaches the viewer when the policy has none.
+   *
+   * The CORS headers then come from the bucket, which the static app template
+   * configures for CORS on both of its branches, reached through the
+   * `Managed-CORS-S3Origin` origin request policy that forwards `Origin` and
+   * the `Access-Control-Request-*` headers. S3 answers preflight itself, so
+   * `OPTIONS` keeps working too.
+   *
+   * They cannot be synthesized in `CustomHeadersConfig` instead: CloudFront
+   * rejects a policy that names a header it manages itself, failing the deploy
+   * with a 400.
    */
   const definesVary = responseHeaders.some(({ header }) => {
     return header.toLowerCase() === 'vary';
   });
-
-  const customHeaders = definesVary
-    ? [
-        ...responseHeaders,
-        ...CORS_AS_CUSTOM_HEADERS.map(({ header, value }) => {
-          return { header, override: true, value };
-        }),
-      ]
-    : responseHeaders;
 
   return {
     Comment: {
@@ -262,7 +236,7 @@ export const getResponseHeadersPolicyConfig = ({
       ? {}
       : { CorsConfig: BASELINE_RESPONSE_HEADERS_CONFIG.CorsConfig }),
     CustomHeadersConfig: {
-      Items: customHeaders.map(({ header, value, override }) => {
+      Items: responseHeaders.map(({ header, value, override }) => {
         return {
           Header: header,
           Override: override,

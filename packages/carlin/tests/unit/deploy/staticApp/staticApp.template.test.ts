@@ -5,6 +5,7 @@ import {
   parseResponseHeaders,
 } from 'src/deploy/staticApp/responseHeaders';
 import {
+  BUCKET_CORS_CONFIGURATION,
   CLOUDFRONT_DISTRIBUTION_LOGICAL_ID,
   CLOUDFRONT_ORIGIN_ACCESS_CONTROL_LOGICAL_ID,
   CLOUDFRONT_RESPONSE_HEADERS_POLICY_LOGICAL_ID,
@@ -386,5 +387,95 @@ describe('viewer request function', () => {
         },
       },
     ]);
+  });
+});
+
+/**
+ * A policy that defines `vary` has no CorsConfig, so CloudFront stops
+ * synthesizing the CORS headers and forwards whatever the origin sends. The
+ * bucket has to answer CORS itself for that to be a wash, on both template
+ * branches.
+ */
+test.each([[true], [false]])(
+  'should configure the bucket for CORS with cloudfront=%p',
+  (cloudfront) => {
+    const template = getStaticAppTemplate({ region, cloudfront });
+
+    expect(
+      template.Resources[STATIC_APP_BUCKET_LOGICAL_ID].Properties
+        .CorsConfiguration
+    ).toEqual(BUCKET_CORS_CONFIGURATION);
+  }
+);
+
+/**
+ * The origin can only serve reads, so advertising the write methods of the
+ * managed policy would be fiction.
+ */
+test('should allow only the methods the bucket serves', () => {
+  expect(BUCKET_CORS_CONFIGURATION.CorsRules[0].AllowedMethods).toEqual([
+    'GET',
+    'HEAD',
+  ]);
+});
+
+describe('acm', () => {
+  const getDistributionConfig = (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    template: any
+  ) => {
+    return template.Resources[CLOUDFRONT_DISTRIBUTION_LOGICAL_ID].Properties
+      .DistributionConfig;
+  };
+
+  const acmArn =
+    'arn:aws:acm:us-east-1:123456789012:certificate/abcdef01-2345-6789-abcd-ef0123456789';
+
+  test('should take the certificate arn as given', () => {
+    const aliases = [faker.internet.domainName()];
+
+    const distributionConfig = getDistributionConfig(
+      getStaticAppTemplate({ region, cloudfront: true, acm: acmArn, aliases })
+    );
+
+    expect(distributionConfig.Aliases).toEqual(aliases);
+    expect(distributionConfig.ViewerCertificate).toEqual({
+      AcmCertificateArn: acmArn,
+      MinimumProtocolVersion: 'TLSv1.2_2021',
+      SslSupportMethod: 'sni-only',
+    });
+  });
+
+  test('should import the certificate arn when it is an exported name', () => {
+    const acm = faker.word.words().replace(/\s/g, '');
+
+    const distributionConfig = getDistributionConfig(
+      getStaticAppTemplate({ region, cloudfront: true, acm })
+    );
+
+    expect(distributionConfig.ViewerCertificate.AcmCertificateArn).toEqual({
+      'Fn::ImportValue': acm,
+    });
+  });
+
+  /**
+   * `aliases` defaults to an empty list, which is truthy, so the
+   * `AWS::NoValue` fallback of the template is unreachable and the
+   * distribution gets an empty `Aliases`.
+   */
+  test('should set an empty aliases list when none are defined', () => {
+    const distributionConfig = getDistributionConfig(
+      getStaticAppTemplate({ region, cloudfront: true, acm: acmArn })
+    );
+
+    expect(distributionConfig.Aliases).toEqual([]);
+  });
+
+  test('should not set a certificate without acm', () => {
+    const distributionConfig = getDistributionConfig(
+      getStaticAppTemplate({ region, cloudfront: true })
+    );
+
+    expect(distributionConfig).not.toHaveProperty('ViewerCertificate');
   });
 });

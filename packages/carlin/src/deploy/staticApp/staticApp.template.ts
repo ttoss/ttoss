@@ -40,6 +40,27 @@ export const ROUTE_53_RECORD_SET_GROUP_LOGICAL_ID = 'Route53RecordSetGroup';
 export const ERROR_DOCUMENT = '404/index.html';
 
 /**
+ * CORS of the bucket the distribution serves from.
+ *
+ * The origin is what answers CORS whenever the response headers policy has no
+ * `CorsConfig` — which is the case when the `responseHeaders` option defines
+ * `vary`, since CloudFront's CORS handling owns `Vary`. `AllowedMethods` is
+ * limited to what the bucket can serve; advertising the write methods of the
+ * managed policy would be fiction.
+ */
+export const BUCKET_CORS_CONFIGURATION = {
+  CorsRules: [
+    {
+      AllowedHeaders: ['*'],
+      AllowedMethods: ['GET', 'HEAD'],
+      AllowedOrigins: ['*'],
+      Id: 'OpenCors',
+      MaxAge: 600,
+    },
+  ],
+} as const;
+
+/**
  * Name: Managed-CachingDisabled
  * ID: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
  * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html
@@ -113,17 +134,7 @@ const getBucketStaticWebsiteTemplate = ({
       [STATIC_APP_BUCKET_LOGICAL_ID]: {
         Type: 'AWS::S3::Bucket',
         Properties: {
-          CorsConfiguration: {
-            CorsRules: [
-              {
-                AllowedHeaders: ['*'],
-                AllowedMethods: ['GET'],
-                AllowedOrigins: ['*'],
-                Id: 'OpenCors',
-                MaxAge: 600,
-              },
-            ],
-          },
+          CorsConfiguration: BUCKET_CORS_CONFIGURATION,
           PublicAccessBlockConfiguration: {
             BlockPublicPolicy: false,
           },
@@ -197,6 +208,7 @@ const getCloudFrontTemplate = ({
       [STATIC_APP_BUCKET_LOGICAL_ID]: {
         Type: 'AWS::S3::Bucket',
         Properties: {
+          CorsConfiguration: BUCKET_CORS_CONFIGURATION,
           PublicAccessBlockConfiguration: {
             BlockPublicPolicy: false,
           },

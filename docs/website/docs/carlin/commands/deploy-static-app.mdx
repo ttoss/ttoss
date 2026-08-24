@@ -195,10 +195,14 @@ headers are configured as a unit and cannot be replaced individually — use
 `--response-headers-policy` when you need to change them.
 
 Defining `vary` is the exception. CloudFront's CORS handling manages `Vary`
-itself and would discard yours, so carlin sends the same CORS headers as custom
-headers instead and your `Vary` reaches the viewer. The distribution then stops
-answering `OPTIONS` preflight requests on its own, which the simple cross-origin
-requests a static app serves never send.
+itself — it sends `Vary: Origin` on a plain request and drops `Vary` on a
+cross-origin one — so the policy carlin creates leaves the CORS configuration
+out and your `Vary` reaches the viewer as written. CORS keeps working: the
+bucket the distribution serves from is configured for CORS, and the
+`Managed-CORS-S3Origin` origin request policy forwards `Origin` and the
+`Access-Control-Request-*` headers to it, so S3 answers both simple and
+preflight requests. It allows `GET` and `HEAD`, the methods it can serve, rather
+than the full set the managed policy advertises.
 
 Changing headers updates the distribution, which takes a few minutes to reach
 every edge location. No invalidation is needed: the headers are applied to
