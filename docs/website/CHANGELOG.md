@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.2.2](https://github.com/ttoss/ttoss/compare/@docs/website@7.2.1...@docs/website@7.2.2) (2026-08-24)
+
+### Bug Fixes
+
+- **carlin:** build a valid response headers policy when vary is defined ([#1206](https://github.com/ttoss/ttoss/issues/1206)) ([12abe77](https://github.com/ttoss/ttoss/commit/12abe773a8832ba046627faa9c90c859bba958ff))
+
 ## [7.2.1](https://github.com/ttoss/ttoss/compare/@docs/website@7.2.0...@docs/website@7.2.1) (2026-08-23)
 
 ### Bug Fixes
