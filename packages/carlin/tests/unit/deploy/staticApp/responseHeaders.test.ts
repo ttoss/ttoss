@@ -134,9 +134,10 @@ describe('getResponseHeadersPolicyConfig', () => {
 
   /**
    * CloudFront's CORS handling owns Vary, so a user-defined one only reaches
-   * the viewer when the policy has no CorsConfig.
+   * the viewer when the policy has no CorsConfig. The CORS headers then come
+   * from the bucket, which the static app template configures for CORS.
    */
-  test('should express CORS as custom headers when vary is defined', () => {
+  test('should drop CorsConfig when vary is defined', () => {
     const config = getResponseHeadersPolicyConfig({
       responseHeaders: parseResponseHeaders({ vary: 'Accept' }),
     });
@@ -145,16 +146,30 @@ describe('getResponseHeadersPolicyConfig', () => {
 
     expect(config.CustomHeadersConfig.Items).toEqual([
       { Header: 'vary', Override: true, Value: 'Accept' },
-      { Header: 'access-control-allow-origin', Override: true, Value: '*' },
-      {
-        Header: 'access-control-allow-methods',
-        Override: true,
-        Value: 'DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT',
-      },
-      { Header: 'access-control-allow-headers', Override: true, Value: '*' },
-      { Header: 'access-control-expose-headers', Override: true, Value: '*' },
     ]);
   });
+
+  /**
+   * CloudFront rejects a policy whose CustomHeadersConfig names a header it
+   * manages itself, so synthesizing the CORS headers there fails the deploy
+   * with a 400 rather than replacing CorsConfig.
+   */
+  test.each([[{ vary: 'Accept' }], [{ 'x-custom': 'some-value' }]])(
+    'should never put a CORS header in CustomHeadersConfig for %p',
+    (responseHeaders) => {
+      const config = getResponseHeadersPolicyConfig({
+        responseHeaders: parseResponseHeaders(responseHeaders),
+      });
+
+      const corsHeaders = config.CustomHeadersConfig.Items.filter(
+        ({ Header }) => {
+          return Header.toLowerCase().startsWith('access-control-');
+        }
+      );
+
+      expect(corsHeaders).toEqual([]);
+    }
+  );
 
   test('should match vary case-insensitively', () => {
     const config = getResponseHeadersPolicyConfig({
