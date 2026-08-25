@@ -20,6 +20,7 @@ export type CatalogIssueCode =
   | 'duplicate-dataset-id'
   | 'duplicate-geography-id'
   | 'duplicate-filter-id' // invalid: two filters share an id
+  | 'duplicate-collection-id' // invalid: two collections share an id
   | 'duplicate-dataset-field-name' // invalid: two fields on the same Dataset share a name
   | 'unknown-filter-dataset' // mismatch: FilterField.sourceDatasetId references a dataset id not in catalog.datasets
   | 'unknown-filter-geography' // mismatch: FilterField.sourceGeographyId references a geography id not in catalog.geographies
@@ -28,6 +29,7 @@ export type CatalogIssueCode =
   | 'unknown-join-geography' // mismatch: join references a geography id not in catalog.geographies
   | 'unknown-dataset-geography' // mismatch: Dataset.geographyIds[] references a geography id not in catalog.geographies
   | 'unknown-dataset-metric' // mismatch: Dataset.metricIds[] references a metric id not in catalog.metrics
+  | 'unknown-dataset-collection' // mismatch: Dataset.collectionId references a collection id not in catalog.collections
   | 'unknown-parent-geography' // mismatch: Geography.parentId references a geography id not in catalog.geographies
   | 'cyclic-geography-hierarchy' // mismatch: a Geography.parentId chain loops back on itself
   | 'unsupported-map-type-geometry' // mismatch: MapTypeCatalogEntry.supportedGeometries names a geometry the active adapter's CapabilitySet does not render
@@ -48,6 +50,7 @@ export const CATALOG_ISSUE_CODE_STATUS: Record<
   'duplicate-dataset-id': 'invalid',
   'duplicate-geography-id': 'invalid',
   'duplicate-filter-id': 'invalid',
+  'duplicate-collection-id': 'invalid',
   'duplicate-dataset-field-name': 'invalid',
   'unknown-filter-dataset': 'mismatch',
   'unknown-filter-geography': 'mismatch',
@@ -56,6 +59,7 @@ export const CATALOG_ISSUE_CODE_STATUS: Record<
   'unknown-join-geography': 'mismatch',
   'unknown-dataset-geography': 'mismatch',
   'unknown-dataset-metric': 'mismatch',
+  'unknown-dataset-collection': 'mismatch',
   'unknown-parent-geography': 'mismatch',
   'cyclic-geography-hierarchy': 'mismatch',
   'unsupported-map-type-geometry': 'mismatch',

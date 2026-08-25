@@ -1,6 +1,7 @@
 import { getCatalogJSONSchema } from 'src/introspection';
 import {
   catalogSchema,
+  collectionSchema,
   datasetFieldSchema,
   datasetSchema,
   filterFieldSchema,
@@ -8,6 +9,7 @@ import {
   joinSchema,
   mapTypeCatalogEntrySchema,
   metricSchema,
+  temporalFieldsSchema,
 } from 'src/schema/catalog';
 
 import { sampleCatalog } from '../fixtures/sampleCatalog';
@@ -22,6 +24,7 @@ import { sampleCatalog } from '../fixtures/sampleCatalog';
 const CATALOG_KEYS = [
   'version',
   'domain',
+  'collections',
   'datasets',
   'metrics',
   'geographies',
@@ -34,7 +37,8 @@ const CATALOG_KEYS = [
 
 const METRIC_KEYS = [
   'id',
-  'label',
+  'title',
+  'slug',
   'description',
   'aliases',
   'unit',
@@ -46,25 +50,42 @@ const METRIC_KEYS = [
 
 const DATASET_KEYS = [
   'id',
-  'label',
+  'title',
+  'slug',
   'description',
   'aliases',
   'geographyIds',
   'metricIds',
-  'source',
+  'collectionId',
   'temporal',
   'spatial',
   'artifact',
   'columns',
   'fields',
+  'generatedBy',
+  'provenance',
+  'access',
   'sensible',
 ].sort();
 
-const DATASET_FIELD_KEYS = ['name', 'label', 'sensible'].sort();
+const DATASET_FIELD_KEYS = ['name', 'title', 'role', 'unit', 'sensible'].sort();
+
+const COLLECTION_KEYS = [
+  'id',
+  'title',
+  'slug',
+  'description',
+  'organization',
+  'sourceUrl',
+  'publicReferenceUrl',
+  'aliases',
+  'tags',
+].sort();
 
 const GEOGRAPHY_KEYS = [
   'id',
-  'label',
+  'title',
+  'slug',
   'description',
   'aliases',
   'kind',
@@ -79,7 +100,8 @@ const JOIN_KEYS = ['from', 'to', 'on', 'cardinality'].sort();
 
 const FILTER_FIELD_KEYS = [
   'id',
-  'label',
+  'title',
+  'slug',
   'description',
   'aliases',
   'property',
@@ -99,6 +121,8 @@ const MAP_TYPE_CATALOG_ENTRY_KEYS = [
   'metricKinds',
 ].sort();
 
+const TEMPORAL_FIELDS_KEYS = ['instant', 'start', 'end', 'recorded'].sort();
+
 describe('Zod schema / Catalog type parity', () => {
   test('top-level Catalog properties match the schema', () => {
     expect(Object.keys(catalogSchema.shape).sort()).toEqual(CATALOG_KEYS);
@@ -112,10 +136,14 @@ describe('Zod schema / Catalog type parity', () => {
     expect(Object.keys(datasetSchema.shape).sort()).toEqual(DATASET_KEYS);
   });
 
-  test('DatasetField properties match the schema (D12)', () => {
+  test('DatasetField properties match the schema (D12, D16)', () => {
     expect(Object.keys(datasetFieldSchema.shape).sort()).toEqual(
       DATASET_FIELD_KEYS
     );
+  });
+
+  test('Collection properties match the schema (D13, D16)', () => {
+    expect(Object.keys(collectionSchema.shape).sort()).toEqual(COLLECTION_KEYS);
   });
 
   test('Geography properties match the schema', () => {
@@ -135,6 +163,12 @@ describe('Zod schema / Catalog type parity', () => {
   test('MapTypeCatalogEntry properties match the schema', () => {
     expect(Object.keys(mapTypeCatalogEntrySchema.shape).sort()).toEqual(
       MAP_TYPE_CATALOG_ENTRY_KEYS
+    );
+  });
+
+  test('TemporalFields properties match the schema (D16)', () => {
+    expect(Object.keys(temporalFieldsSchema.shape).sort()).toEqual(
+      TEMPORAL_FIELDS_KEYS
     );
   });
 });
@@ -196,11 +230,11 @@ describe('catalog schema validation', () => {
     expect(distanceMetric).toBeDefined();
   });
 
-  test('a dataset with a `source` value validates (D7 provenance)', () => {
-    const datasetWithSource = sampleCatalog.datasets.find((dataset) => {
-      return dataset.source === 'ibge';
+  test('a dataset with a `collectionId` value validates (D13 provenance)', () => {
+    const datasetWithCollection = sampleCatalog.datasets.find((dataset) => {
+      return dataset.collectionId === 'ibge';
     });
-    expect(datasetWithSource).toBeDefined();
+    expect(datasetWithCollection).toBeDefined();
   });
 
   test('a geography hierarchy with level/parentId/codeScheme/resolution validates (D7)', () => {
@@ -323,23 +357,173 @@ describe('Geography.cameraFraming (D5)', () => {
   });
 });
 
-describe('Temporal.field (D2)', () => {
-  test('a dataset can name the column carrying temporal values', () => {
+describe('Temporal.field / TemporalFields (D2, D16)', () => {
+  test('a dataset can name the column carrying an instant temporal value', () => {
     const demografia = sampleCatalog.datasets.find((dataset) => {
       return dataset.id === 'dataset-demografia-municipio';
     });
-    expect(demografia?.temporal?.field).toBe('ano_referencia');
+    expect(demografia?.temporal?.field).toEqual({
+      instant: 'ano_referencia',
+    });
+  });
+
+  test('start and end together validate', () => {
+    expect(
+      temporalFieldsSchema.safeParse({
+        start: 'dt_internacao',
+        end: 'dt_alta',
+      }).success
+    ).toBe(true);
+  });
+
+  test('instant together with start/end fails validation', () => {
+    expect(
+      temporalFieldsSchema.safeParse({
+        instant: 'data_referencia',
+        start: 'dt_internacao',
+        end: 'dt_alta',
+      }).success
+    ).toBe(false);
+  });
+
+  test('start without end (or vice versa) fails validation', () => {
+    expect(
+      temporalFieldsSchema.safeParse({ start: 'dt_internacao' }).success
+    ).toBe(false);
+    expect(temporalFieldsSchema.safeParse({ end: 'dt_alta' }).success).toBe(
+      false
+    );
+  });
+
+  test('an empty TemporalFields fails validation — at least one role must be named', () => {
+    expect(temporalFieldsSchema.safeParse({}).success).toBe(false);
+  });
+
+  test('recorded may accompany instant, modeling bitemporal data', () => {
+    expect(
+      temporalFieldsSchema.safeParse({
+        instant: 'data_referencia',
+        recorded: 'dt_processamento',
+      }).success
+    ).toBe(true);
   });
 });
 
-describe('Dataset.fields[] (D12)', () => {
+describe('Temporal.updateFrequency / .timezone (D16)', () => {
+  test('a dataset can declare its update cadence and timezone', () => {
+    const demografia = sampleCatalog.datasets.find((dataset) => {
+      return dataset.id === 'dataset-demografia-municipio';
+    });
+    expect(demografia?.temporal?.updateFrequency).toBe('annual');
+    expect(demografia?.temporal?.timezone).toBe('America/Sao_Paulo');
+  });
+});
+
+describe('Spatial.coverage / .precision / .srid (D16)', () => {
+  test('a dataset can declare coverage, precision, and srid', () => {
+    const demografia = sampleCatalog.datasets.find((dataset) => {
+      return dataset.id === 'dataset-demografia-municipio';
+    });
+    expect(demografia?.spatial?.coverage).toBe('exhaustive');
+    expect(demografia?.spatial?.precision).toBe('not_applicable');
+    expect(demografia?.spatial?.srid).toBe(4674);
+  });
+
+  test('Spatial.field accepts a composite key as a string array', () => {
+    const imoveis = sampleCatalog.datasets.find((dataset) => {
+      return dataset.id === 'dataset-imoveis-rurais';
+    });
+    expect(imoveis?.spatial?.field).toEqual(['cod_uf', 'cod_imovel']);
+  });
+});
+
+describe('id/slug/title convention (D16)', () => {
+  test('a slug must be kebab-case', () => {
+    const demografia = sampleCatalog.datasets.find((dataset) => {
+      return dataset.id === 'dataset-demografia-municipio';
+    });
+    expect(
+      datasetSchema.safeParse({ ...demografia, slug: 'not_kebab_case' }).success
+    ).toBe(false);
+    expect(
+      datasetSchema.safeParse({ ...demografia, slug: 'Municipios-Contorno' })
+        .success
+    ).toBe(false);
+    expect(
+      datasetSchema.safeParse({ ...demografia, slug: 'municipios-contorno' })
+        .success
+    ).toBe(true);
+  });
+
+  test('slug is optional', () => {
+    const demografia = sampleCatalog.datasets.find((dataset) => {
+      return dataset.id === 'dataset-demografia-municipio';
+    });
+    const { slug: _slug, ...withoutSlug } = demografia!;
+    expect(datasetSchema.safeParse(withoutSlug).success).toBe(true);
+  });
+
+  test('spatial.grain and Series.spatialGrain keep `label`, not `title`', () => {
+    const demografia = sampleCatalog.datasets.find((dataset) => {
+      return dataset.id === 'dataset-demografia-municipio';
+    });
+    const series = sampleCatalog.series?.[0];
+    expect(demografia?.spatial?.extent?.[0].label).toBe('São Paulo');
+    expect(series?.spatialGrain?.label).toBe('Município');
+  });
+});
+
+describe('Collection (D13, D16)', () => {
+  test('a catalog can declare a collections registry', () => {
+    const ibge = sampleCatalog.collections?.find((collection) => {
+      return collection.id === 'ibge';
+    });
+    expect(ibge).toMatchObject({
+      id: 'ibge',
+      title: 'IBGE',
+      slug: 'ibge',
+      organization: 'Instituto Brasileiro de Geografia e Estatística (IBGE)',
+      tags: expect.arrayContaining(['ibge']),
+    });
+  });
+
+  test('a collection requires only id, title and description', () => {
+    expect(
+      collectionSchema.safeParse({
+        id: 'dados-primarios',
+        title: 'Dados Primários',
+        description: 'Datasets coletados diretamente pela equipe.',
+      }).success
+    ).toBe(true);
+  });
+
+  test('a collection missing description fails', () => {
+    expect(
+      collectionSchema.safeParse({ id: 'dados-primarios', title: 'X' }).success
+    ).toBe(false);
+  });
+
+  test('a catalog omitting collections still validates', () => {
+    const { collections: _collections, ...withoutCollections } = sampleCatalog;
+    expect(catalogSchema.safeParse(withoutCollections).success).toBe(true);
+  });
+});
+
+describe('Dataset.fields[] (D12, D16)', () => {
   const demografia = sampleCatalog.datasets.find((dataset) => {
     return dataset.id === 'dataset-demografia-municipio';
   });
 
-  test('a dataset can declare per-column field metadata', () => {
+  test('a dataset can declare per-column field metadata, including role and unit', () => {
     expect(demografia?.fields).toEqual(
-      expect.arrayContaining([{ name: 'populacao', label: 'População' }])
+      expect.arrayContaining([
+        { name: 'populacao', title: 'População', role: 'identifier' },
+        {
+          name: 'densidade',
+          title: 'Densidade Populacional',
+          unit: 'hab/km²',
+        },
+      ])
     );
   });
 
@@ -348,7 +532,7 @@ describe('Dataset.fields[] (D12)', () => {
     expect(datasetSchema.safeParse(withoutFields).success).toBe(true);
   });
 
-  test('a field with sensible: true requires a label', () => {
+  test('a field with sensible: true requires a title', () => {
     expect(
       datasetFieldSchema.safeParse({ name: 'renda_domicilio', sensible: true })
         .success
@@ -356,13 +540,13 @@ describe('Dataset.fields[] (D12)', () => {
     expect(
       datasetFieldSchema.safeParse({
         name: 'renda_domicilio',
-        label: 'Renda Domiciliar',
+        title: 'Renda Domiciliar',
         sensible: true,
       }).success
     ).toBe(true);
   });
 
-  test('a field with sensible: false or omitted does not require a label', () => {
+  test('a field with sensible: false or omitted does not require a title', () => {
     expect(datasetFieldSchema.safeParse({ name: 'populacao' }).success).toBe(
       true
     );
@@ -370,6 +554,52 @@ describe('Dataset.fields[] (D12)', () => {
       datasetFieldSchema.safeParse({ name: 'populacao', sensible: false })
         .success
     ).toBe(true);
+  });
+
+  test('an unknown role fails validation', () => {
+    expect(
+      datasetFieldSchema.safeParse({ name: 'populacao', role: 'not-a-role' })
+        .success
+    ).toBe(false);
+  });
+});
+
+describe('Dataset.generatedBy / .provenance / .access (D16)', () => {
+  const demografia = sampleCatalog.datasets.find((dataset) => {
+    return dataset.id === 'dataset-demografia-municipio';
+  });
+
+  test('a dataset can declare its generating script, provenance, and access classification', () => {
+    expect(demografia?.generatedBy).toBe(
+      'scripts/generate-demografia-municipio.mjs'
+    );
+    expect(demografia?.provenance).toEqual({
+      url: 'https://servicodados.ibge.gov.br/api/v3/agregados/4709',
+      notes: 'Censo 2022, agregado 4709.',
+    });
+    expect(demografia?.access).toEqual({
+      level: 'public',
+      containsPersonalData: false,
+    });
+  });
+
+  test('access.level rejects a value outside public/restricted', () => {
+    expect(
+      datasetSchema.safeParse({
+        ...demografia,
+        access: { level: 'secret', containsPersonalData: false },
+      }).success
+    ).toBe(false);
+  });
+
+  test('all three fields are optional — a dataset omitting them still validates', () => {
+    const {
+      generatedBy: _generatedBy,
+      provenance: _provenance,
+      access: _access,
+      ...withoutGovernance
+    } = demografia!;
+    expect(datasetSchema.safeParse(withoutGovernance).success).toBe(true);
   });
 });
 
@@ -386,8 +616,11 @@ describe('getCatalogJSONSchema', () => {
     expect(Object.keys(jsonSchema.$defs as object).sort()).toEqual([
       'CameraFraming',
       'CodedRef',
+      'Collection',
       'Dataset',
+      'DatasetAccess',
       'DatasetField',
+      'DatasetProvenance',
       'Dimension',
       'FilterField',
       'Geography',
@@ -401,6 +634,7 @@ describe('getCatalogJSONSchema', () => {
       'SpatialGrain',
       'SpatialGrainRef',
       'Temporal',
+      'TemporalFields',
     ]);
     expect(jsonSchema.additionalProperties).toBe(false);
   });

@@ -43,7 +43,7 @@ test('the Zod schemas are public, so downstream packages compose rather than re-
 test('Catalog and its sub-shapes are part of the public contract', () => {
   const metric: Metric = {
     id: 'metric-populacao',
-    label: 'População',
+    title: 'População',
     description: 'População total residente.',
     kind: 'count' satisfies MetricKind,
     nullPolicy: 'zero',
@@ -51,7 +51,7 @@ test('Catalog and its sub-shapes are part of the public contract', () => {
 
   const geography: Geography = {
     id: 'geo-municipio',
-    label: 'Município',
+    title: 'Município',
     description: 'Municípios brasileiros.',
     kind: 'administrative' satisfies GeographyKind,
     level: 2,
@@ -61,17 +61,17 @@ test('Catalog and its sub-shapes are part of the public contract', () => {
 
   const datasetField: DatasetField = {
     name: 'populacao_total',
-    label: 'População total',
+    title: 'População total',
     sensible: false,
   };
 
   const dataset: Dataset = {
     id: 'dataset-demografia',
-    label: 'Demografia',
+    title: 'Demografia',
     description: 'Dados demográficos.',
     geographyIds: [geography.id],
     metricIds: [metric.id],
-    source: 'ibge',
+    collectionId: 'ibge',
     fields: [datasetField],
     spatial: {
       dimensionStatus: 'described',
@@ -94,7 +94,7 @@ test('Catalog and its sub-shapes are part of the public contract', () => {
 
   const filterField: FilterField = {
     id: 'filter-regiao',
-    label: 'Região',
+    title: 'Região',
     property: 'regiao',
     kind: 'categorical',
     sourceGeographyId: geography.id,

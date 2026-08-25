@@ -8,15 +8,52 @@ import type { Catalog } from 'src/schema/types';
  * with `categories`, a SICAR rural-parcel geography, a POI collection, a
  * demografia dataset with a density metric and a named temporal `field`, an
  * infrastructure dataset with a distance metric, and an IPEA socioeconomic
- * dataset using the index/ratio/rate kinds.
+ * dataset using the index/ratio/rate kinds. Also exercises the D16 additions
+ * absorbed from `dataset_catalogue.json`: `title`/`slug`, `Collection.tags`,
+ * `Dataset.generatedBy`/`.provenance`/`.access`, `DatasetField.role`/`.unit`,
+ * and `Temporal.updateFrequency`/`.timezone`/structured `.field`.
  */
 export const sampleCatalog: Catalog = {
   version: '2026-Q3',
   domain: 'br',
+  collections: [
+    {
+      id: 'ibge',
+      title: 'IBGE',
+      slug: 'ibge',
+      description:
+        'Datasets geográficos e demográficos do Instituto Brasileiro de Geografia e Estatística.',
+      organization: 'Instituto Brasileiro de Geografia e Estatística (IBGE)',
+      sourceUrl: 'https://www.ibge.gov.br',
+      publicReferenceUrl: 'https://servicodados.ibge.gov.br',
+      tags: ['ibge', 'geografia', 'demografia', 'brasil', 'dados-publicos'],
+    },
+    {
+      id: 'ipea',
+      title: 'IPEA',
+      slug: 'ipea',
+      description:
+        'Datasets socioeconômicos do Instituto de Pesquisa Econômica Aplicada.',
+      organization: 'Instituto de Pesquisa Econômica Aplicada (IPEA)',
+      sourceUrl: 'https://www.ipea.gov.br',
+      tags: ['ipea', 'vulnerabilidade-social', 'dados-publicos'],
+    },
+    {
+      id: 'sicar',
+      title: 'SICAR',
+      slug: 'sicar',
+      description:
+        'Base geográfica do Sistema Nacional de Cadastro Ambiental Rural.',
+      organization: 'Serviço Florestal Brasileiro (SFB) — SICAR',
+      sourceUrl: 'https://consulta.car.gov.br/geoservices',
+      tags: ['sicar', 'car', 'imoveis-rurais', 'dados-publicos'],
+    },
+  ],
   geographies: [
     {
       id: 'geo-uf',
-      label: 'Unidade da Federação',
+      title: 'Unidade da Federação',
+      slug: 'unidade-da-federacao',
       description:
         'Estados e o Distrito Federal, conforme a malha territorial do IBGE.',
       kind: 'administrative',
@@ -30,7 +67,8 @@ export const sampleCatalog: Catalog = {
     },
     {
       id: 'geo-municipio',
-      label: 'Município',
+      title: 'Município',
+      slug: 'municipio',
       description:
         'Municípios brasileiros, conforme a malha territorial do IBGE.',
       kind: 'administrative',
@@ -40,7 +78,7 @@ export const sampleCatalog: Catalog = {
     },
     {
       id: 'geo-h3-grid',
-      label: 'Malha H3 (resolução 8)',
+      title: 'Malha H3 (resolução 8)',
       description: 'Malha de indexação espacial hexagonal, resolução 8.',
       kind: 'grid',
       codeScheme: 'h3',
@@ -48,14 +86,14 @@ export const sampleCatalog: Catalog = {
     },
     {
       id: 'geo-sicar-imovel',
-      label: 'Imóvel Rural (CAR)',
+      title: 'Imóvel Rural (CAR)',
       description: 'Perímetro de imóveis rurais cadastrados no SICAR.',
       kind: 'custom',
       codeScheme: 'sicar:imovel',
     },
     {
       id: 'geo-poi-equipamentos',
-      label: 'Equipamentos Urbanos',
+      title: 'Equipamentos Urbanos',
       description: 'Pontos de interesse: hospitais, escolas e postos de saúde.',
       kind: 'poi',
     },
@@ -63,73 +101,50 @@ export const sampleCatalog: Catalog = {
   metrics: [
     {
       id: 'metric-populacao',
-      label: 'População',
+      title: 'População',
+      slug: 'populacao',
       description: 'População total residente.',
       kind: 'count',
       nullPolicy: 'zero',
     },
     {
-      id: 'metric-taxa-alfabetizacao',
-      label: 'Taxa de Alfabetização',
-      description: 'Percentual da população alfabetizada.',
-      unit: '%',
-      kind: 'rate',
-      formatter: 'percent',
-      nullPolicy: 'hide',
-    },
-    {
-      id: 'metric-razao-urbano-rural',
-      label: 'Razão Urbano/Rural',
-      description: 'Razão entre população urbana e rural.',
-      kind: 'ratio',
-      nullPolicy: 'hide',
-    },
-    {
-      id: 'metric-idh',
-      label: 'IDH',
-      description: 'Índice de Desenvolvimento Humano.',
-      aliases: ['índice de desenvolvimento humano'],
-      kind: 'index',
-      nullPolicy: 'hide',
-    },
-    {
       id: 'metric-densidade-populacional',
-      label: 'Densidade Populacional',
-      description: 'População por área.',
+      title: 'Densidade Populacional',
       unit: 'hab/km²',
+      description: 'População por área.',
       kind: 'density',
       nullPolicy: 'hide',
     },
     {
       id: 'metric-distancia-hospital',
-      label: 'Distância ao Hospital mais Próximo',
-      description: 'Distância em linha reta até o hospital mais próximo.',
+      title: 'Distância ao Hospital mais Próximo',
       unit: 'km',
+      description: 'Distância até hospital mais próximo.',
       kind: 'distance',
       formatter: 'number',
       nullPolicy: 'explain',
     },
     {
       id: 'metric-classe-uso-solo',
-      label: 'Classe de Uso do Solo',
+      title: 'Classe de Uso do Solo',
       description: 'Classificação categórica do uso predominante do solo.',
       kind: 'nominal',
       categories: [
         {
           id: 'urbano',
-          label: 'Urbano',
+          title: 'Urbano',
           order: 1,
           colorToken: 'display.categorical.1',
         },
         {
           id: 'rural',
-          label: 'Rural',
+          title: 'Rural',
           order: 2,
           colorToken: 'display.categorical.2',
         },
         {
           id: 'preservacao',
-          label: 'Área de Preservação',
+          title: 'Área de Preservação',
           order: 3,
           colorToken: 'display.categorical.3',
         },
@@ -140,14 +155,27 @@ export const sampleCatalog: Catalog = {
   datasets: [
     {
       id: 'dataset-demografia-municipio',
-      label: 'Demografia Municipal',
+      title: 'Demografia Municipal',
+      slug: 'demografia-municipal',
       description: 'População e densidade populacional por município.',
       geographyIds: ['geo-municipio'],
       metricIds: ['metric-populacao', 'metric-densidade-populacional'],
-      source: 'ibge',
+      collectionId: 'ibge',
+      generatedBy: 'scripts/generate-demografia-municipio.mjs',
+      provenance: {
+        url: 'https://servicodados.ibge.gov.br/api/v3/agregados/4709',
+        notes: 'Censo 2022, agregado 4709.',
+      },
+      access: {
+        level: 'public',
+        containsPersonalData: false,
+      },
       spatial: {
         dimensionStatus: 'described',
         spatialGeometry: 'polygon',
+        coverage: 'exhaustive',
+        precision: 'not_applicable',
+        srid: 4674,
         extent: [
           { code: '35', label: 'São Paulo' },
           { code: '31', label: 'Minas Gerais' },
@@ -158,26 +186,32 @@ export const sampleCatalog: Catalog = {
         temporalGrain: 'P1Y',
         extent: [{ start: '2010-01-01', end: '2022-12-31' }],
         temporalHistory: 'snapshot',
-        field: 'ano_referencia',
+        updateFrequency: 'annual',
+        timezone: 'America/Sao_Paulo',
+        field: { instant: 'ano_referencia' },
       },
       columns: {
         'metric-populacao': 'populacao',
         'metric-densidade-populacional': 'densidade',
       },
       fields: [
-        { name: 'populacao', label: 'População' },
-        { name: 'densidade', label: 'Densidade Populacional' },
-        { name: 'ano_referencia', label: 'Ano de Referência' },
+        { name: 'populacao', title: 'População', role: 'identifier' },
+        {
+          name: 'densidade',
+          title: 'Densidade Populacional',
+          unit: 'hab/km²',
+        },
+        { name: 'ano_referencia', title: 'Ano de Referência' },
         {
           name: 'renda_domicilio',
-          label: 'Renda Domiciliar',
+          title: 'Renda Domiciliar',
           sensible: true,
         },
       ],
     },
     {
       id: 'dataset-perfil-socioeconomico',
-      label: 'Perfil Socioeconômico',
+      title: 'Perfil Socioeconômico',
       description: 'Indicadores socioeconômicos por UF e município.',
       geographyIds: ['geo-uf', 'geo-municipio'],
       metricIds: [
@@ -185,7 +219,7 @@ export const sampleCatalog: Catalog = {
         'metric-razao-urbano-rural',
         'metric-taxa-alfabetizacao',
       ],
-      source: 'ipea',
+      collectionId: 'ipea',
       spatial: {
         dimensionStatus: 'described',
         spatialGeometry: 'polygon',
@@ -194,11 +228,12 @@ export const sampleCatalog: Catalog = {
         dimensionStatus: 'described',
         temporalGrain: 'P1Y',
         temporalHistory: 'revised',
+        updateFrequency: 'irregular',
       },
     },
     {
       id: 'dataset-infra-distancias',
-      label: 'Distâncias a Equipamentos Urbanos',
+      title: 'Distâncias a Equipamentos Urbanos',
       description:
         'Distância de cada ponto de interesse ao hospital mais próximo.',
       geographyIds: ['geo-poi-equipamentos'],
@@ -206,6 +241,7 @@ export const sampleCatalog: Catalog = {
       spatial: {
         dimensionStatus: 'described',
         spatialGeometry: 'point',
+        precision: 'rooftop',
       },
       temporal: {
         dimensionStatus: 'unknown',
@@ -213,11 +249,11 @@ export const sampleCatalog: Catalog = {
     },
     {
       id: 'dataset-uso-solo-h3',
-      label: 'Uso do Solo (Grade H3)',
+      title: 'Uso do Solo (Grade H3)',
       description: 'População estimada por célula da malha H3.',
       geographyIds: ['geo-h3-grid'],
       metricIds: ['metric-populacao', 'metric-classe-uso-solo'],
-      source: 'ibge',
+      collectionId: 'ibge',
       spatial: {
         dimensionStatus: 'described',
         spatialGeometry: 'polygon',
@@ -229,14 +265,15 @@ export const sampleCatalog: Catalog = {
     },
     {
       id: 'dataset-imoveis-rurais',
-      label: 'Imóveis Rurais (CAR)',
+      title: 'Imóveis Rurais (CAR)',
       description: 'Distância de cada imóvel rural ao hospital mais próximo.',
       geographyIds: ['geo-sicar-imovel'],
       metricIds: ['metric-distancia-hospital'],
-      source: 'sicar',
+      collectionId: 'sicar',
       spatial: {
         dimensionStatus: 'described',
         spatialGeometry: 'polygon',
+        field: ['cod_uf', 'cod_imovel'],
       },
       temporal: {
         dimensionStatus: 'not_applicable',
@@ -247,33 +284,7 @@ export const sampleCatalog: Catalog = {
     {
       id: 'series-populacao-municipio-anual',
       metricId: 'metric-populacao',
-      spatialGrain: {
-        geographyId: 'geo-municipio',
-        label: 'Município',
-      },
-      temporalGrain: 'P1Y',
-      dimensions: [
-        {
-          id: 'dim-sexo',
-          label: 'Sexo',
-          kind: 'categorical',
-          property: 'sexo',
-        },
-        {
-          id: 'dim-faixa-etaria',
-          label: 'Faixa Etária',
-          kind: 'categorical',
-          property: 'faixa_etaria',
-        },
-      ],
-    },
-    {
-      id: 'series-densidade-h3-anual',
-      metricId: 'metric-densidade-populacional',
-      spatialGrain: {
-        geographyId: 'geo-h3-grid',
-        label: 'Grade H3 (8)',
-      },
+      spatialGrain: { geographyId: 'geo-municipio', label: 'Município' },
       temporalGrain: 'P1Y',
     },
   ],
@@ -317,7 +328,8 @@ export const sampleCatalog: Catalog = {
   filters: [
     {
       id: 'filter-regiao',
-      label: 'Região',
+      title: 'Região',
+      slug: 'regiao',
       description: 'Macrorregião do IBGE a que o município pertence.',
       aliases: ['macrorregiao'],
       property: 'regiao',
@@ -329,7 +341,7 @@ export const sampleCatalog: Catalog = {
     },
     {
       id: 'filter-ano',
-      label: 'Ano de referência',
+      title: 'Ano de referência',
       property: 'ano',
       kind: 'temporal',
       sourceDatasetId: 'dataset-demografia-municipio',
@@ -338,7 +350,7 @@ export const sampleCatalog: Catalog = {
     },
     {
       id: 'filter-populacao',
-      label: 'População',
+      title: 'População',
       property: 'populacao',
       kind: 'numeric',
       sourceDatasetId: 'dataset-demografia-municipio',
@@ -348,7 +360,7 @@ export const sampleCatalog: Catalog = {
     },
     {
       id: 'filter-distancia-hospital',
-      label: 'Distância ao hospital',
+      title: 'Distância ao hospital',
       description:
         'Bounds are unknown until the rural-property rows are loaded.',
       property: 'distancia_hospital',

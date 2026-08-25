@@ -91,7 +91,7 @@ const resolveSource = ({
     return {
       kind: 'geography',
       id: filter.sourceGeographyId,
-      label: geography?.label ?? filter.sourceGeographyId,
+      label: geography?.title ?? filter.sourceGeographyId,
     };
   }
 
@@ -100,7 +100,7 @@ const resolveSource = ({
     return candidate.id === datasetId;
   });
 
-  return { kind: 'dataset', id: datasetId, label: dataset?.label ?? datasetId };
+  return { kind: 'dataset', id: datasetId, label: dataset?.title ?? datasetId };
 };
 
 /**
@@ -123,7 +123,7 @@ export const getFilterControls = (catalog: Catalog): FilterControl[] => {
 
     return {
       id: filter.id,
-      label: filter.label,
+      label: filter.title,
       description: filter.description,
       kind: filter.kind,
       control: resolveControlKind({

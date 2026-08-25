@@ -178,6 +178,55 @@ Phase 0 is a new entry gate this revision adds: it touches `@ttoss/geovis`, not 
 
 R4's exit criterion ("an AI can only reference catalog entries; the resolver produces a valid map or a structured failure — never a guess") is met once this plan's Phase 3 ships: Phases 4–5 are the Should item and hardening, not gating.
 
+## Durable decisions — architecture ratified for continuation (2026-08-24)
+
+Basis: `docs/plans/exploration-deterministic-resolve.md` (§1–§10, P1–P4 rigor) + ARCHER ADP. Supersedes D2/D3's single-`resolve()` framing below where noted; D2's `resolveSpecFromMapType` export gate (Phase 0) is unchanged and still required.
+
+### D16 — `resolve()` splits into `plan()` + `bind()`, `resolve()` kept as their composition
+
+`plan(intent, grounding, capabilities, options?)` covers everything decidable without data rows; `bind(plan, data)` is the only path that can emit `insufficient-data`. `resolve()` stays the composed convenience export — no PRD-006 surface is removed, so D3's literal `resolve(intent, catalog, data)` signature still works, it now runs as `bind(plan(intent, fromCatalog(catalog), capabilities), data)` under the hood. This lets `resolveWithRepair`'s fixpoint loop run entirely against `plan()` per round, never re-reading `data` until the final `bind()`.
+
+### D17 — `capabilities: CapabilitySet` is a required parameter of `plan()`
+
+Same correction class as D3's own data-parameter fix: `uncompilable-filter` and `map-type-unsupported-by-adapter` are undecidable without it. Every caller supplies the active adapter's `CapabilitySet` (`adapter.getCapabilities()`, already synchronous today). Two new resolve-time issue codes close PRD-001's pending debt: `uncompilable-filter` (repair = adapter's supported operator subset) and `map-type-unsupported-by-adapter` (repair = allowed-values over `Catalog.mapTypes ∩ CapabilitySet`).
+
+### D18 — Grounding surface: `GroundingSource`, `fromCatalog` the sole constructor
+
+`plan()`/`resolve()` take `grounding: GroundingSource` rather than a literal `Catalog` parameter. `fromCatalog(catalog)` is the only exported constructor (type-only export of the interface), preserving anti-hallucination (a catalog-free or data-inferred grounding source is rejected) while keeping task-rule logic testable independent of a catalog fixture. No second `GroundingSource` implementation ships before PRD-007 produces evidence one is needed — until then this is equivalent to a mandatory-catalog signature in practice.
+
+### D19 — Repair scope: ship `applyRepair`, tiered `resolveWithRepair`, and the two new resolve-time checks together
+
+`applyRepair<T>(input: T, repair: RepairOption): T` is generic and total; no new fields on `RepairOption` (the path-is-relative-to-producer rule is documentation + tests, not a type change). `resolveWithRepair(intent, grounding, data, { maxRounds, policy })` runs a fixpoint loop bounded by **both** `maxRounds` and strict shrinkage of the issue multiset (an unchanged or grown issue set aborts and returns the last result — neither guard alone suffices, since a repair could oscillate between two issues of equal count).
+
+Auto-apply tiers, keyed by issue code and exhaustiveness-tested (every `CatalogIssueCode`/`ResolveResultStatus` code classified into exactly one tier — this is the actual B3 deliverable, not a table):
+
+- `auto` — silent (e.g. schema-version fix).
+- `auto-single` — `allowed-values` with exactly one ranked candidate (ranking: similarity-to-rejected-value, ties broken lexicographically).
+- `ask` — ≥2 candidates or `needs-clarification`; never auto-applied. `stale-catalog-packet` (`intent.catalogVersion ≠ catalog.version`) is ask-tier by construction — its repair is a protocol step ("re-read the index"), never a substitution.
+- `never` — `sensitive-filter-field`, `policy-violation`; no repair offered at all.
+
+Every applied repair is recorded in `applied[]` and the resolution trace — a silent correction is never invisible to the human-facing surface.
+
+### D20 — Model-facing catalog payload: `buildCatalogPacket`, sparse projection (A5)
+
+`buildCatalogPacket(catalog, scope?)` is a pure, library-exported projection to a new `CatalogPacket` type — versioned, sparse, aggregate-only (`metrics[].geographyIds`, `ambiguousPairs` instead of quadratic `pairs[]`), structurally the same discipline `ContextPacket` already applies to `VisualizationSpec` one layer down. Byte-identity for a fixed `(catalog, scope)` is a projection-test obligation (sorted arrays by id, fixed key order), not a runtime check — this is what lets the packet sit at a prompt's cache-stable prefix. `getCatalogIntrospection`'s sensible-stripping (D6/D12 in PRD-004's plan) stays unconditional across this new surface too — no opt-out.
+
+`scope` is threaded through both `buildCatalogPacket` and `fromCatalog` but ignored in v1 (reserved for multi-tenant packet narrowing, tracked as an open question below) — added now because adding an unused parameter is cheap and removing one after evals/traces reference it is not.
+
+`getCatalogIntrospection`'s signature becomes detail-only (its current full-minus-permissions shape stays for that role); this is a breaking change to a shipped export and ships in the same PR as `buildCatalogPacket`, not before or after.
+
+### D21 — PRD-004 is closed, not blocked by PRD-005/006
+
+PRD-004's own open questions (governance/permissions, `codeScheme` registry, `Dataset.collectionId` referential check) are carried-forward, not blockers: no PRD-005/006 plan item requires them resolved first, and both already treat `Catalog`/`validateCatalog`/`getCatalogIntrospection` as a stable foundation, not something to reopen. PRD-006 Phase 1 ships without touching `validateCatalog`.
+
+### Still open — requires authority outside this plan
+
+- **`maxRounds` default / `warnOn` thresholds** — cannot be fixed without PRD-007 evaluation data. Ship `maxRounds: 3` as a documented placeholder, explicitly revised once PRD-007 measures otherwise.
+- **`intent.rationale` keep-or-drop** — depends on whether PRD-007's trace/eval harness reads it. Default: keep it optional and unread by `plan()`/`bind()` (zero resolver cost either way); defer removal to whoever builds that harness.
+- **Ask-tier re-prompt location** (same request vs. next turn) — a latency/UX product choice belonging to the calling application, not this package.
+- **Catalog governance** (who approves entries, how `permissions` integrates with application auth) — unchanged product/org authority, PRD-004's own carried-forward question.
+- **Scope-based packet narrowing (multi-tenant)** — reserved, not owned by anyone yet; the `scope` parameter is threaded through unused until a real boundary is introduced.
+
 ## Open questions carried forward (not resolved by this plan)
 
 - Concrete `allowedMetricKinds`/`warnOn` threshold values in `TASK_RULES` are left as a Phase-1 implementation-time judgment call, reviewed against real fixtures rather than fixed in this planning document.
