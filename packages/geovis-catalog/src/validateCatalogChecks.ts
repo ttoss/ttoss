@@ -1,15 +1,5 @@
-import type { CapabilitySet } from '@ttoss/geovis';
-
 import type { CatalogIssue } from './catalogResult';
 import type { Catalog } from './schema/types';
-import {
-  checkDatasetReferences,
-  checkFilterReferences,
-  checkGeographyHierarchy,
-  checkJoinReferences,
-  checkMapTypeCapabilities,
-  checkSeriesReferences,
-} from './validate-references';
 
 export const formatIssuePath = (path: ReadonlyArray<PropertyKey>): string => {
   if (path.length === 0) return '(root)';
@@ -121,22 +111,6 @@ export const checkDuplicateDatasetFieldNames = (
   }
 
   return issues;
-};
-
-export const checkCatalogIssues = (
-  catalog: Catalog,
-  capabilities: CapabilitySet | undefined
-): CatalogIssue[] => {
-  return [
-    ...checkDuplicateIds(catalog),
-    ...checkDuplicateDatasetFieldNames(catalog),
-    ...checkFilterReferences(catalog),
-    ...checkJoinReferences(catalog),
-    ...checkDatasetReferences(catalog),
-    ...checkGeographyHierarchy(catalog),
-    ...checkSeriesReferences(catalog),
-    ...checkMapTypeCapabilities(catalog, capabilities),
-  ];
 };
 
 // Re-export from validate-references for convenience

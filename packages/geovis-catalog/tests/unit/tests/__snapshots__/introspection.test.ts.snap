@@ -802,9 +802,6 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
     "Temporal": {
       "additionalProperties": false,
       "properties": {
-        "anchor": {
-          "type": "string",
-        },
         "dimensionStatus": {
           "enum": [
             "described",
