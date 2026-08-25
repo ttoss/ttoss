@@ -8,8 +8,8 @@ import type { Catalog } from 'src/schema/types';
  * with `categories`, a SICAR rural-parcel geography, a POI collection, a
  * demografia dataset with a density metric and a named temporal `field`, an
  * infrastructure dataset with a distance metric, and an IPEA socioeconomic
- * dataset using the index/ratio/rate kinds. Also exercises the D16 additions
- * absorbed from `dataset_catalogue.json`: `title`/`slug`, `Collection.tags`,
+ * dataset. Also exercises the D16 additions absorbed from
+ * `dataset_catalogue.json`: `title`/`slug`, `Collection.tags`,
  * `Dataset.generatedBy`/`.provenance`/`.access`, `DatasetField.role`/`.unit`,
  * and `Temporal.updateFrequency`/`.timezone`/structured `.field`.
  */
@@ -214,11 +214,7 @@ export const sampleCatalog: Catalog = {
       title: 'Perfil Socioeconômico',
       description: 'Indicadores socioeconômicos por UF e município.',
       geographyIds: ['geo-uf', 'geo-municipio'],
-      metricIds: [
-        'metric-idh',
-        'metric-razao-urbano-rural',
-        'metric-taxa-alfabetizacao',
-      ],
+      metricIds: ['metric-populacao'],
       collectionId: 'ipea',
       spatial: {
         dimensionStatus: 'described',
