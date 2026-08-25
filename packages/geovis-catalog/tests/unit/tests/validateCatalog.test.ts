@@ -62,7 +62,7 @@ describe('validateCatalog', () => {
           ...firstDataset,
           fields: [
             ...(firstDataset.fields ?? []),
-            { name: 'populacao', label: 'Duplicado' },
+            { name: 'populacao', title: 'Duplicado' },
           ],
         },
         ...restDatasets,
@@ -194,6 +194,59 @@ describe('validateCatalog', () => {
         })
       ).toBe(true);
     }
+  });
+
+  test('unknown-dataset-collection: a dataset naming a non-existent collection is a mismatch', () => {
+    const catalog: Catalog = {
+      ...sampleCatalog,
+      datasets: [
+        {
+          ...sampleCatalog.datasets[0],
+          collectionId: 'does-not-exist',
+        },
+        ...sampleCatalog.datasets.slice(1),
+      ],
+    };
+    const result = validateCatalog(catalog);
+    expect(result.status).toBe('mismatch');
+    if (result.status !== 'valid') {
+      const issue = result.issues.find((i) => {
+        return i.code === 'unknown-dataset-collection';
+      });
+      expect(issue).toBeDefined();
+      expect(issue?.repair?.[0].kind).toBe('allowed-values');
+    }
+  });
+
+  test('duplicate-collection-id: two collections sharing an id fail with no repair', () => {
+    const catalog: Catalog = {
+      ...sampleCatalog,
+      collections: [
+        ...(sampleCatalog.collections ?? []),
+        { ...(sampleCatalog.collections ?? [])[0] },
+      ],
+    };
+    const result = validateCatalog(catalog);
+    expect(result.status).toBe('invalid');
+    if (result.status !== 'valid') {
+      const issue = result.issues.find((i) => {
+        return i.code === 'duplicate-collection-id';
+      });
+      expect(issue).toBeDefined();
+      expect(issue?.repair).toBeUndefined();
+    }
+  });
+
+  test('a catalog with no collections and no collectionId references is unaffected by collection checks', () => {
+    const { collections: _collections, ...rest } = sampleCatalog;
+    const catalogWithoutCollections: Catalog = {
+      ...rest,
+      datasets: rest.datasets.map((dataset) => {
+        const { collectionId: _collectionId, ...withoutCollectionId } = dataset;
+        return withoutCollectionId;
+      }),
+    };
+    expect(validateCatalog(catalogWithoutCollections).status).toBe('valid');
   });
 
   test('unknown-parent-geography: a geography whose parentId names nothing is a mismatch', () => {
@@ -491,6 +544,11 @@ describe('validateCatalog', () => {
       series: [seriesWithoutGrain, ...restSeries],
     };
     expect(validateCatalog(catalog).status).toBe('valid');
+  });
+
+  test('a catalog with no series is unaffected by the series checks', () => {
+    const { series: _series, ...catalogWithoutSeries } = sampleCatalog;
+    expect(validateCatalog(catalogWithoutSeries).status).toBe('valid');
   });
 
   describe('options.capabilities (mapType/adapter geometry intersection)', () => {

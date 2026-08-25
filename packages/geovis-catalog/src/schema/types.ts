@@ -5,7 +5,12 @@ import type {
   cameraFramingSchema,
   catalogSchema,
   codedRefSchema,
+  collectionSchema,
+  coverageSchema,
+  datasetAccessSchema,
+  datasetFieldRoleSchema,
   datasetFieldSchema,
+  datasetProvenanceSchema,
   datasetSchema,
   dimensionSchema,
   filterDomainSchema,
@@ -21,15 +26,18 @@ import type {
   metricCategorySchema,
   metricKindSchema,
   metricSchema,
+  precisionSchema,
   presenceSchema,
   seriesSchema,
   spatialGeometrySchema,
   spatialGrainRefSchema,
   spatialGrainSchema,
   spatialSchema,
+  temporalFieldsSchema,
   temporalGrainSchema,
   temporalHistorySchema,
   temporalSchema,
+  updateFrequencySchema,
 } from './catalog';
 
 /**
@@ -54,14 +62,29 @@ export type Interval = z.infer<typeof intervalSchema>;
 /** Reference to a coded geography value, e.g. IBGE municipality '3304557'. */
 export type CodedRef = z.infer<typeof codedRefSchema>;
 
+/** An institutional data source, referenced by `Dataset.collectionId` (D13). */
+export type Collection = z.infer<typeof collectionSchema>;
+
 /** History/update pattern for temporal data (D10). */
 export type TemporalHistory = z.infer<typeof temporalHistorySchema>;
 
-/** Temporal dimension — when/how a dataset is measured (D10). */
+/** Update cadence — with what frequency new data arrives (D16). Independent of `TemporalGrain`. */
+export type UpdateFrequency = z.infer<typeof updateFrequencySchema>;
+
+/** Column(s) carrying temporal values — `instant` xor `start`+`end`, plus optional `recorded` (D16). */
+export type TemporalFields = z.infer<typeof temporalFieldsSchema>;
+
+/** Temporal dimension — when/how a dataset is measured (D10, D16). */
 export type Temporal = z.infer<typeof temporalSchema>;
 
 /** Spatial geometry type extended with grid support (D10). */
 export type SpatialGeometry = z.infer<typeof spatialGeometrySchema>;
+
+/** How completely `Spatial.extent` is populated with data (D16). */
+export type Coverage = z.infer<typeof coverageSchema>;
+
+/** Positional precision of point/geocoded data (D16). */
+export type Precision = z.infer<typeof precisionSchema>;
 
 /** Spatial grain as code scheme + code in a data dictionary (D8 — seam binding). */
 export type SpatialGrain = z.infer<typeof spatialGrainSchema>;
@@ -69,7 +92,7 @@ export type SpatialGrain = z.infer<typeof spatialGrainSchema>;
 /** Spatial grain reference as FK into `catalog.geographies` (D8 — seam binding). */
 export type SpatialGrainRef = z.infer<typeof spatialGrainRefSchema>;
 
-/** Spatial dimension — where/how a dataset is located (D10). */
+/** Spatial dimension — where/how a dataset is located (D10, D16). */
 export type Spatial = z.infer<typeof spatialSchema>;
 
 /** Dimension for metric slicing — distinct from spatial/temporal (D10). */
@@ -90,8 +113,17 @@ export type MetricCategory = z.infer<typeof metricCategorySchema>;
 /** A measure/indicator carried by one or more datasets. */
 export type Metric = z.infer<typeof metricSchema>;
 
-/** Per-column metadata for a `Dataset`, including per-field sensitivity (D12). */
+/** Role a `DatasetField` plays in its dataset — identifier, geometry, or join column (D16). */
+export type DatasetFieldRole = z.infer<typeof datasetFieldRoleSchema>;
+
+/** Per-column metadata for a `Dataset`, including per-field sensitivity (D12) and role (D16). */
 export type DatasetField = z.infer<typeof datasetFieldSchema>;
+
+/** Per-dataset acquisition detail, finer-grained than `Collection` (D16). */
+export type DatasetProvenance = z.infer<typeof datasetProvenanceSchema>;
+
+/** Structured LGPD/governance classification for a `Dataset`, alongside the coarser `sensible` flag (D16). */
+export type DatasetAccess = z.infer<typeof datasetAccessSchema>;
 
 /** A data collection, its spatio-temporal dimensions, and its artifact (D9, D10). */
 export type Dataset = z.infer<typeof datasetSchema>;

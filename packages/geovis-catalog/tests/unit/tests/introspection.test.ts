@@ -40,7 +40,9 @@ describe('getCatalogIntrospection', () => {
     });
 
     expect(demografia?.fields).toEqual(
-      expect.arrayContaining([{ name: 'populacao', label: 'População' }])
+      expect.arrayContaining([
+        { name: 'populacao', title: 'População', role: 'identifier' },
+      ])
     );
     expect(
       demografia?.fields?.some((field) => {
@@ -68,8 +70,13 @@ describe('getCatalogJSONSchema', () => {
     expect(jsonSchema.required).toEqual(
       expect.arrayContaining(
         Object.keys(sampleCatalog).filter((key) => {
-          // domain, permissions, and series are optional fields
-          return key !== 'domain' && key !== 'permissions' && key !== 'series';
+          // domain, collections, permissions, and series are optional fields
+          return (
+            key !== 'domain' &&
+            key !== 'collections' &&
+            key !== 'permissions' &&
+            key !== 'series'
+          );
         })
       )
     );

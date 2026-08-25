@@ -58,9 +58,57 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
       ],
       "type": "object",
     },
+    "Collection": {
+      "additionalProperties": false,
+      "properties": {
+        "aliases": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "description": {
+          "type": "string",
+        },
+        "id": {
+          "type": "string",
+        },
+        "organization": {
+          "type": "string",
+        },
+        "publicReferenceUrl": {
+          "type": "string",
+        },
+        "slug": {
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "type": "string",
+        },
+        "sourceUrl": {
+          "type": "string",
+        },
+        "tags": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "title": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+      ],
+      "type": "object",
+    },
     "Dataset": {
       "additionalProperties": false,
       "properties": {
+        "access": {
+          "$ref": "#/$defs/DatasetAccess",
+        },
         "aliases": {
           "items": {
             "type": "string",
@@ -89,6 +137,9 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
           ],
           "type": "object",
         },
+        "collectionId": {
+          "type": "string",
+        },
         "columns": {
           "additionalProperties": {
             "type": "string",
@@ -107,6 +158,9 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
           },
           "type": "array",
         },
+        "generatedBy": {
+          "type": "string",
+        },
         "geographyIds": {
           "items": {
             "type": "string",
@@ -116,19 +170,20 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
         "id": {
           "type": "string",
         },
-        "label": {
-          "type": "string",
-        },
         "metricIds": {
           "items": {
             "type": "string",
           },
           "type": "array",
         },
+        "provenance": {
+          "$ref": "#/$defs/DatasetProvenance",
+        },
         "sensible": {
           "type": "boolean",
         },
-        "source": {
+        "slug": {
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
           "type": "string",
         },
         "spatial": {
@@ -137,32 +192,81 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
         "temporal": {
           "$ref": "#/$defs/Temporal",
         },
+        "title": {
+          "type": "string",
+        },
       },
       "required": [
         "id",
-        "label",
+        "title",
         "description",
         "geographyIds",
         "metricIds",
       ],
       "type": "object",
     },
+    "DatasetAccess": {
+      "additionalProperties": false,
+      "properties": {
+        "containsPersonalData": {
+          "type": "boolean",
+        },
+        "level": {
+          "enum": [
+            "public",
+            "restricted",
+          ],
+          "type": "string",
+        },
+        "notes": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "level",
+        "containsPersonalData",
+      ],
+      "type": "object",
+    },
     "DatasetField": {
       "additionalProperties": false,
       "properties": {
-        "label": {
+        "name": {
           "type": "string",
         },
-        "name": {
+        "role": {
+          "enum": [
+            "identifier",
+            "geometry",
+            "join",
+          ],
           "type": "string",
         },
         "sensible": {
           "type": "boolean",
         },
+        "title": {
+          "type": "string",
+        },
+        "unit": {
+          "type": "string",
+        },
       },
       "required": [
         "name",
       ],
+      "type": "object",
+    },
+    "DatasetProvenance": {
+      "additionalProperties": false,
+      "properties": {
+        "notes": {
+          "type": "string",
+        },
+        "url": {
+          "type": "string",
+        },
+      },
       "type": "object",
     },
     "Dimension": {
@@ -188,16 +292,20 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
           ],
           "type": "string",
         },
-        "label": {
+        "property": {
           "type": "string",
         },
-        "property": {
+        "slug": {
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "type": "string",
+        },
+        "title": {
           "type": "string",
         },
       },
       "required": [
         "id",
-        "label",
+        "title",
         "kind",
         "property",
       ],
@@ -239,9 +347,6 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
           ],
           "type": "string",
         },
-        "label": {
-          "type": "string",
-        },
         "metricId": {
           "type": "string",
         },
@@ -271,16 +376,23 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
         "sensible": {
           "type": "boolean",
         },
+        "slug": {
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "type": "string",
+        },
         "sourceDatasetId": {
           "type": "string",
         },
         "sourceGeographyId": {
           "type": "string",
         },
+        "title": {
+          "type": "string",
+        },
       },
       "required": [
         "id",
-        "label",
+        "title",
         "property",
         "kind",
         "operators",
@@ -318,9 +430,6 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
           ],
           "type": "string",
         },
-        "label": {
-          "type": "string",
-        },
         "level": {
           "type": "number",
         },
@@ -330,10 +439,17 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
         "resolution": {
           "type": "string",
         },
+        "slug": {
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "type": "string",
+        },
+        "title": {
+          "type": "string",
+        },
       },
       "required": [
         "id",
-        "label",
+        "title",
         "description",
       ],
       "type": "object",
@@ -479,9 +595,6 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
           ],
           "type": "string",
         },
-        "label": {
-          "type": "string",
-        },
         "nullPolicy": {
           "enum": [
             "hide",
@@ -490,13 +603,20 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
           ],
           "type": "string",
         },
+        "slug": {
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "type": "string",
+        },
+        "title": {
+          "type": "string",
+        },
         "unit": {
           "type": "string",
         },
       },
       "required": [
         "id",
-        "label",
+        "title",
         "description",
         "kind",
         "nullPolicy",
@@ -512,16 +632,20 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
         "id": {
           "type": "string",
         },
-        "label": {
-          "type": "string",
-        },
         "order": {
           "type": "number",
+        },
+        "slug": {
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "type": "string",
+        },
+        "title": {
+          "type": "string",
         },
       },
       "required": [
         "id",
-        "label",
+        "title",
       ],
       "type": "object",
     },
@@ -570,6 +694,15 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
     "Spatial": {
       "additionalProperties": false,
       "properties": {
+        "coverage": {
+          "enum": [
+            "exhaustive",
+            "partial",
+            "sample",
+            "unknown",
+          ],
+          "type": "string",
+        },
         "dimensionStatus": {
           "enum": [
             "described",
@@ -585,6 +718,29 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
           "type": "array",
         },
         "field": {
+          "anyOf": [
+            {
+              "type": "string",
+            },
+            {
+              "items": {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          ],
+        },
+        "precision": {
+          "enum": [
+            "rooftop",
+            "parcel",
+            "street",
+            "postal_centroid",
+            "locality_centroid",
+            "admin_centroid",
+            "not_applicable",
+            "unknown",
+          ],
           "type": "string",
         },
         "spatialGeometry": {
@@ -599,6 +755,9 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
         },
         "spatialGrain": {
           "$ref": "#/$defs/SpatialGrain",
+        },
+        "srid": {
+          "type": "number",
         },
       },
       "required": [
@@ -643,6 +802,9 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
     "Temporal": {
       "additionalProperties": false,
       "properties": {
+        "anchor": {
+          "type": "string",
+        },
         "dimensionStatus": {
           "enum": [
             "described",
@@ -658,7 +820,7 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
           "type": "array",
         },
         "field": {
-          "type": "string",
+          "$ref": "#/$defs/TemporalFields",
         },
         "periods": {
           "items": {
@@ -709,10 +871,46 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
           ],
           "type": "string",
         },
+        "timezone": {
+          "type": "string",
+        },
+        "updateFrequency": {
+          "enum": [
+            "real_time",
+            "daily",
+            "weekly",
+            "monthly",
+            "quarterly",
+            "annual",
+            "irregular",
+            "on_demand",
+            "static",
+            "unknown",
+          ],
+          "type": "string",
+        },
       },
       "required": [
         "dimensionStatus",
       ],
+      "type": "object",
+    },
+    "TemporalFields": {
+      "additionalProperties": false,
+      "properties": {
+        "end": {
+          "type": "string",
+        },
+        "instant": {
+          "type": "string",
+        },
+        "recorded": {
+          "type": "string",
+        },
+        "start": {
+          "type": "string",
+        },
+      },
       "type": "object",
     },
   },
@@ -720,6 +918,12 @@ exports[`getCatalogJSONSchema matches the committed schema shape (guards against
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "properties": {
+    "collections": {
+      "items": {
+        "$ref": "#/$defs/Collection",
+      },
+      "type": "array",
+    },
     "datasets": {
       "items": {
         "$ref": "#/$defs/Dataset",
