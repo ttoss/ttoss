@@ -8,6 +8,9 @@ import { GeoVisProvider } from 'src/react/GeoVisProvider';
 import type { VisualizationSpec } from 'src/spec/types';
 import { GeoVisLegend } from 'src/ui/GeoVisLegend';
 
+// This suite mounts GeoVisProvider through `await act(async () => ...)` in
+// every test (~20 in this file); on slower/CI runners the accumulated async
+// render+effect flushes can exceed Jest's default 5s per-test timeout.
 jest.setTimeout(30000);
 
 jest.mock('src/adapters/maplibre/MapLibreAdapter', () => {
