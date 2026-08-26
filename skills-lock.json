@@ -1,12 +1,6 @@
 {
   "version": 1,
   "skills": {
-    "grill-me": {
-      "source": "vechain/vechain-ai-skills",
-      "sourceType": "github",
-      "skillPath": "skills/grill-me/SKILL.md",
-      "computedHash": "fce5231783cc0feea5a8d3ef6d726597390f74ddb8ca509e3a1efa7895bc3937"
-    },
     "guardian": {
       "source": "ttoss/skills",
       "sourceType": "github",
