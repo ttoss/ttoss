@@ -1,4 +1,4 @@
-import type { CatalogIssue } from './catalogResult';
+import type { CatalogIssue, CatalogIssueCode } from './catalogResult';
 import type { Catalog } from './schema/types';
 
 export const formatIssuePath = (path: ReadonlyArray<PropertyKey>): string => {
@@ -23,66 +23,80 @@ const findDuplicateIndexes = (
   return duplicateIndexes;
 };
 
+/**
+ * One catalog collection whose entries must carry unique ids (D5). Every
+ * entry below is the same shape — label, path, code, and how to read the
+ * collection off the catalog — the axis the pre-refactor duplicate-id checks
+ * had already made visible by repeating.
+ */
+const DUPLICATE_ID_CHECKS: ReadonlyArray<{
+  code: CatalogIssueCode;
+  label: string;
+  path: string;
+  items: (catalog: Catalog) => ReadonlyArray<{ id: string }>;
+}> = [
+  {
+    code: 'duplicate-metric-id',
+    label: 'metric',
+    path: 'metrics',
+    items: (catalog) => {
+      return catalog.metrics;
+    },
+  },
+  {
+    code: 'duplicate-dataset-id',
+    label: 'dataset',
+    path: 'datasets',
+    items: (catalog) => {
+      return catalog.datasets;
+    },
+  },
+  {
+    code: 'duplicate-geography-id',
+    label: 'geography',
+    path: 'geographies',
+    items: (catalog) => {
+      return catalog.geographies;
+    },
+  },
+  {
+    code: 'duplicate-filter-id',
+    label: 'filter',
+    path: 'filters',
+    items: (catalog) => {
+      return catalog.filters;
+    },
+  },
+  {
+    code: 'duplicate-collection-id',
+    label: 'collection',
+    path: 'collections',
+    items: (catalog) => {
+      return catalog.collections ?? [];
+    },
+  },
+  {
+    code: 'duplicate-series-id',
+    label: 'series',
+    path: 'series',
+    items: (catalog) => {
+      return catalog.series ?? [];
+    },
+  },
+];
+
 export const checkDuplicateIds = (catalog: Catalog): CatalogIssue[] => {
-  const issues: CatalogIssue[] = [];
-
-  for (const index of findDuplicateIndexes(catalog.metrics)) {
-    const id = catalog.metrics[index].id;
-    issues.push({
-      code: 'duplicate-metric-id',
-      subject: { path: `metrics[${index}].id`, id },
-      message: `metric id '${id}' is declared more than once`,
+  return DUPLICATE_ID_CHECKS.flatMap(({ code, label, path, items }) => {
+    const entries = items(catalog);
+    return findDuplicateIndexes(entries).map((index) => {
+      const id = entries[index].id;
+      return {
+        code,
+        subject: { path: `${path}[${index}].id`, id },
+        message: `${label} id '${id}' is declared more than once`,
+      };
     });
-  }
-
-  for (const index of findDuplicateIndexes(catalog.datasets)) {
-    const id = catalog.datasets[index].id;
-    issues.push({
-      code: 'duplicate-dataset-id',
-      subject: { path: `datasets[${index}].id`, id },
-      message: `dataset id '${id}' is declared more than once`,
-    });
-  }
-
-  for (const index of findDuplicateIndexes(catalog.geographies)) {
-    const id = catalog.geographies[index].id;
-    issues.push({
-      code: 'duplicate-geography-id',
-      subject: { path: `geographies[${index}].id`, id },
-      message: `geography id '${id}' is declared more than once`,
-    });
-  }
-
-  for (const index of findDuplicateIndexes(catalog.filters)) {
-    const id = catalog.filters[index].id;
-    issues.push({
-      code: 'duplicate-filter-id',
-      subject: { path: `filters[${index}].id`, id },
-      message: `filter id '${id}' is declared more than once`,
-    });
-  }
-
-  const collections = catalog.collections ?? [];
-  for (const index of findDuplicateIndexes(collections)) {
-    const id = collections[index].id;
-    issues.push({
-      code: 'duplicate-collection-id',
-      subject: { path: `collections[${index}].id`, id },
-      message: `collection id '${id}' is declared more than once`,
-    });
-  }
-
-  const series = catalog.series ?? [];
-  for (const index of findDuplicateIndexes(series)) {
-    const id = series[index].id;
-    issues.push({
-      code: 'duplicate-series-id',
-      subject: { path: `series[${index}].id`, id },
-      message: `series id '${id}' is declared more than once`,
-    });
-  }
-
-  return issues;
+  });
 };
 
 export const checkDuplicateDatasetFieldNames = (
@@ -121,4 +135,4 @@ export {
   checkJoinReferences,
   checkMapTypeCapabilities,
   checkSeriesReferences,
-} from './validate-references';
+} from './validateReferences';
