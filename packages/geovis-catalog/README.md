@@ -121,6 +121,109 @@ const introspection = getCatalogIntrospection(catalog);
 const schema = getCatalogJSONSchema();
 ```
 
+## `AnalyticalIntent` and `validateIntent` (PRD-005)
+
+`AnalyticalIntent` is the compact, catalog-grounded surface a model emits instead of a full `VisualizationSpec` — it names _what_ to answer (a task, a metric, a geography), never _how_ to draw it. `validateIntent(intent, catalog)` parses it with `intentSchema` (D1) and grounds every reference against the same `Catalog` `validateCatalog` accepts, returning an `IntentResult`.
+
+```ts
+import { INTENT_SCHEMA_VERSION, validateIntent } from '@ttoss/geovis-catalog';
+
+const result = validateIntent(
+  {
+    schemaVersion: INTENT_SCHEMA_VERSION,
+    analyticalTask: 'distribution',
+    metricId: 'metric-populacao',
+    geographyId: 'geo-municipio',
+  },
+  catalog
+);
+
+if (result.status === 'valid') {
+  // result.datasetId is always resolved — supplied and confirmed, or
+  // inferred as the single dataset whose metricIds/geographyIds carry
+  // both requested ids.
+} else {
+  // result.issues[].code / .message / .repair
+}
+```
+
+### `AnalyticalTask` — the nine-task vocabulary
+
+| Task                    | Question it answers                                                                     |
+| ----------------------- | --------------------------------------------------------------------------------------- |
+| `distribution`          | How is this metric spread across the geography?                                         |
+| `comparison`            | How does this metric compare across features?                                           |
+| `ranking`               | Which features rank highest/lowest?                                                     |
+| `change-over-time`      | How did this metric change across a time range?                                         |
+| `outlier-detection`     | Which features are anomalous?                                                           |
+| `feature-lookup`        | Where is this specific feature?                                                         |
+| `coverage`              | Which areas have/lack this feature?                                                     |
+| `composition`           | What is the categorical breakdown across the geography?                                 |
+| `normalized-comparison` | How does this metric compare once divided by a denominator (e.g. per 100k inhabitants)? |
+
+The first seven come from strategy §12; `composition`/`normalized-comparison` were added on the evidence of a real production catalogue (see `docs/plans/plan-prd-005-constrained-intent.md` D2/D9) — growing this vocabulary is the _only_ way to add a task, since `resolve()`'s extension points (PRD-006 plan D5) can only narrow or override existing entries, never introduce new ones.
+
+### `AnalyticalIntent` fields
+
+| Field                 | Type               | Required      | Notes                                                                                                                                                                                                                        |
+| --------------------- | ------------------ | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `schemaVersion`       | `number`           | yes           | Must equal `INTENT_SCHEMA_VERSION` (currently `1`); a mismatch is `invalid-intent-schema-version` with a `set-value` repair.                                                                                                 |
+| `analyticalTask`      | `AnalyticalTask`   | yes           | One of the nine tasks above.                                                                                                                                                                                                 |
+| `metricId`            | `string`           | yes           | Grounded against `Catalog.metrics[].id`.                                                                                                                                                                                     |
+| `geographyId`         | `string`           | yes           | Grounded against `Catalog.geographies[].id`.                                                                                                                                                                                 |
+| `datasetId`           | `string`           | no            | Disambiguates when more than one dataset carries the same `metricId`+`geographyId`; inferred automatically when omitted and unambiguous.                                                                                     |
+| `categoryId`          | `string`           | conditionally | Required when the resolved `metricId`'s `kind` is `'nominal'`, grounded against that metric's `categories[].id`. Inert (no check) on a non-nominal metric.                                                                   |
+| `denominatorMetricId` | `string`           | conditionally | Required by the `'normalized-comparison'` task (enforced by the resolver, not here); grounded against `Catalog.metrics[].id` like `metricId`, and rejected if it equals `metricId`.                                          |
+| `time`                | `{ start?, end? }` | no            | Each bound accepts an ISO date (`YYYY-MM-DD`) or a full ISO datetime. Range plausibility against a dataset's `Temporal.extent` is a resolver-time concern, not checked here.                                                 |
+| `filters`             | `IntentFilter[]`   | no            | Each `field` grounds against `Catalog.filters[].id`, scoped to the resolved `datasetId`/`geographyId`; each `op` is one of `layerFilterOperatorSchema`'s values, further restricted to that `FilterField`'s own `operators`. |
+| `rationale`           | `string`           | no            | Matches the `rationale` field `@ttoss/geovis`'s ADR-0003 action vocabulary already uses.                                                                                                                                     |
+
+### `IntentResultStatus` and `IntentIssueCode`
+
+| Status                | Codes                                                                                                                                                                                                                                                    |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `invalid`             | `invalid-intent-schema`, `invalid-intent-schema-version`                                                                                                                                                                                                 |
+| `mismatch`            | `unknown-metric`, `unknown-category`, `unknown-denominator-metric`, `unknown-geography`, `dataset-metric-mismatch`, `dataset-geography-mismatch`, `no-matching-dataset`, `unknown-filter-field`, `sensitive-filter-field`, `unsupported-filter-operator` |
+| `needs-clarification` | `ambiguous-dataset`                                                                                                                                                                                                                                      |
+
+`needs-clarification` is PRD-005's "ambiguity is representable" Must item made concrete: when more than one dataset carries the requested `metricId`+`geographyId`, `validateIntent` reports every candidate via `repair` instead of silently picking one. `invalid` takes precedence over `mismatch`, which takes precedence over `needs-clarification`, when a single intent has issues in more than one category.
+
+```ts
+// mismatch — unresolved reference
+validateIntent({ ...intent, metricId: 'does-not-exist' }, catalog);
+// { status: 'mismatch', issues: [{ code: 'unknown-metric', repair: [...] }] }
+
+// needs-clarification — ambiguous dataset
+validateIntent(
+  { ...intent, datasetId: undefined },
+  catalogWithTwoJoinableDatasets
+);
+// { status: 'needs-clarification', issues: [{ code: 'ambiguous-dataset', repair: [...] }] }
+
+// mismatch — categorical metric without a categoryId
+validateIntent({ ...intent, metricId: 'metric-classe-uso-solo' }, catalog);
+// { status: 'mismatch', issues: [{ code: 'unknown-category', repair: [...] }] }
+
+// mismatch — an operator the field doesn't support
+validateIntent(
+  { ...intent, filters: [{ field: 'filter-regiao', op: 'gt', value: 'x' }] },
+  catalog
+);
+// { status: 'mismatch', issues: [{ code: 'unsupported-filter-operator', repair: [...] }] }
+```
+
+### `getIntentJSONSchema`
+
+```ts
+import { getIntentJSONSchema } from '@ttoss/geovis-catalog';
+
+// Directly usable as an LLM structured-output or function-calling
+// `input_schema` — see docs/ai-integration-readiness.md's Pattern 2.
+const schema = getIntentJSONSchema();
+```
+
+Derived from `intentSchema` via `z.toJSONSchema`, the same way `getCatalogJSONSchema()` derives the catalog's document — no hand-maintained `intent.schema.json` file exists anywhere in this package.
+
 ## `id` / `slug` / `title` naming convention (D16)
 
 Every named entity (`Metric`, `MetricCategory`, `Dataset`, `DatasetField`, `Geography`, `Collection`, `Dimension`, `FilterField`) follows the same three-field convention, absorbed from the pilot applications' own data dictionaries:
