@@ -1,0 +1,171 @@
+# @ttoss/geovis
+
+> Schema-driven geovisualization: a JSON `VisualizationSpec` describes sources/layers/legends, a MapLibre engine adapter renders it. Two companion packages extend it: `@ttoss/geovis-workspace` (slot-based React UI shell) and `@ttoss/geovis-catalog` (trusted metadata contract for AI-driven map generation).
+
+This file is the LLM-facing guide across all three packages — use it to find the right entry point fast instead of reading each 1000+ line README end to end. It covers: building a map by hand (spec, runtime, React layer), driving a live map as an AI agent (`dispatch`, context packet), validating a generation request against curated metadata before it hallucinates (catalog), and assembling a full workspace UI around a map. Full field tables and runnable examples live in each package's `README.md` — linked from every section below.
+
+---
+
+## Entry points
+
+```ts
+import {
+  GeoVisCanvas, GeoVisProvider, GeoVisLegend, GeoVisHoverTooltip, GeoVisMarker,
+  useGeoVis, useGeoVisHover, useGeoVisClick, useDismissGeoVisClick, useMapData,
+  validateSpec, createRuntime,
+  createBoundaryGroup, appendBoundaryGroup, toggleBoundaryGroup, customizeBoundaryGroup, useBoundaryToggle,
+} from '@ttoss/geovis';
+
+import {
+  GeovisWorkspace, LayerListControls, getInitialSelection, useGeovisWorkspace,
+} from '@ttoss/geovis-workspace';
+
+import {
+  validateCatalog, getCatalogIntrospection, getCatalogJSONSchema, generateContextDigest,
+  computeFilterDomain, getFilterControls,
+  catalogSchema, metricSchema, datasetSchema,
+} from '@ttoss/geovis-catalog';
+```
+
+Peer deps: `geovis` needs `maplibre-gl` + `@ttoss/ui`; `geovis-workspace` needs `@ttoss/geovis` + `@ttoss/ui` + `@ttoss/react-i18n` + `react`; `geovis-catalog` depends on `@ttoss/geovis` for spec shape (build-time/authoring only — not a runtime dependency of the deployed app).
+
+---
+
+## Getting started — minimal map
+
+```tsx
+import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
+
+const spec = {
+  engine: 'maplibre',
+  view: { center: [-46.6, -23.5], zoom: 10 },
+  sources: [{ id: 'points', type: 'geojson', data: { type: 'FeatureCollection', features: [] } }],
+  layers: [{ id: 'points-layer', sourceId: 'points', geometry: 'point' }],
+};
+
+const MyMap = () => (
+  <GeoVisProvider spec={spec}>
+    <GeoVisCanvas viewId="main" style={{ width: '100%', height: '400px' }} />
+  </GeoVisProvider>
+);
+```
+
+`GeoVisProvider` resolves the adapter from `spec.engine`, mounts `createRuntime`, and keeps it synced with spec prop changes. Full spec reference (all fields, paint types, choropleth/dotDensity/proportionalCircles examples): [`packages/geovis/README.md`](README.md).
+
+---
+
+## Package map
+
+| Package | Role | When to reach for it |
+| --- | --- | --- |
+| `@ttoss/geovis` | Core: spec types, JSON Schema validation, MapLibre adapter, React provider/hooks, AI action surface. | Rendering any map, or building the primitives another layer composes. |
+| `@ttoss/geovis-workspace` | Slot-based UI shell (`map`/`controls`/`legend`/`warnings`/`inspector`/`metadata`) around a `geovis` spec. | You need a full app screen (controls sidebar + legend + inspector), not just a canvas. |
+| `@ttoss/geovis-catalog` | Machine-facing metadata contract (metrics, datasets, geographies, joins, map types) an AI/builder validates a generation request against **before** producing a spec. | An AI agent (in-repo or cloud) is generating specs from a natural-language intent and must be constrained to what actually exists. |
+
+Dependency direction: `geovis-catalog` → `geovis` (spec-shape/map-type-adequacy examples) → nothing. `geovis-workspace` → `geovis`. Neither companion package depends on the other.
+
+---
+
+## Spec architecture (`@ttoss/geovis`)
+
+`VisualizationSpec` = `engine` + `sources[]` + `layers[]`, plus optional `view`, `basemap`, `legends[]`, `mapData[]`, `viewPresets[]`, `control`, `mapType`. Layers reference sources by id; legends attach to layers via `activeLegendId`; `mapType: 'choropleth' | 'dotDensity' | 'proportionalCircles'` auto-generates layers+legends from `mapData` (idempotent resolver, runs in both `GeoVisProvider` and `createRuntime.update()`).
+
+Layering inside the package:
+
+```
+spec/     — types, JSON schema, validateSpec, mapType auto-configuration
+runtime/  — createRuntime (engine-agnostic mediator) + EngineAdapter interface
+adapters/ — maplibre/ (only adapter today)
+react/    — GeoVisProvider/GeoVisCanvas, contexts, hooks
+ui/       — GeoVisLegend, GeoVisHoverTooltip, GeoVisMarker
+```
+
+Full field tables: [`VisualizationSpec`](README.md#visualizationspec) · [`LegendSpec`](README.md#legendspec) · [`VisualizationLayer`](README.md#visualizationlayer) · [mapType auto-configuration](README.md#maptype-auto-configuration) · [Boundary Groups](README.md#boundary-groups) · [Layer Control](README.md#layer-control).
+
+## Data-driven maps
+
+GeoJSON sources hold geometry only; `mapData[]` entries hold per-feature values joined at runtime via `setFeatureState` — no source re-parse on data updates. `dimension: 'color' | 'size'` + `stateKey` let two datasets coexist on one source (bivariate maps) without collision. Details, fallback-chain, and the `stateKey` collision case: [README § Data-driven maps](README.md#data-driven-maps) · [README § Bivariate Maps](README.md#bivariate-maps).
+
+## AI Action Surface (`dispatch`) — primary interface for agents
+
+`runtime.dispatch(action)` is the recommended way for an AI (or human control) to steer a **live** map — a closed, typed vocabulary validated against the current spec before compiling to the same patch mechanisms `applyPatch` uses. Prefer it over hand-written patches: targets stable ids, rejects unknowns with a repairable result, every call (accepted or rejected) is recorded on the action log.
+
+Implemented actions (v1): `toggle-layer`, `select-feature`, `set-map-data`, `set-filter`, `set-view-preset`.
+
+```ts
+runtime.dispatch({ type: 'toggle-layer', layerId: 'regions-layer', rationale: '...' });
+runtime.getActionLog();      // every accepted/rejected action with rationale, for audit
+runtime.getContextPacket();  // versioned, metadata-only summary — ids only, never geometry/rows
+```
+
+`getContextPacket()` ([ADR-0004](https://github.com/ttoss/ttoss/blob/main/packages/geovis/docs/adr/0004-ai-context-packet.md)) is what an agent reads to decide its next `dispatch` call without seeing the full spec. Full action reference, `allowedActions` filtering, and the ADR: [README § AI Action Surface](README.md#ai-action-surface-dispatch).
+
+## Spec Validation
+
+`validateSpec(input, capabilities?)` validates a raw value against the JSON Schema plus referential rules (unknown ids, duplicate ids, threshold ordering) in one pass — returns every issue found, never just the first, so a repair loop can fix everything in one round trip. `GeoVisIssue` carries `code` + `subject` + `message` + an optional `repair` (only when the correct alternative is already known, never guessed). Full status/code table: [README § Spec Validation](README.md#spec-validation) · [Capabilities](README.md#capabilities-capabilityset).
+
+## Applying Patches
+
+`applyPatch` is the low-level escape hatch (`target: 'layer' | 'source' | 'mapData'`, `op: 'replace' | 'add' | 'remove'`) for updates `dispatch` doesn't cover yet. `view`/`style` changes always need full `update(spec)`. Full reference: [README § Applying Patches](README.md#applying-patches).
+
+---
+
+## Trusted Catalog (`@ttoss/geovis-catalog`)
+
+Curated, machine-facing metadata describing what is **mappable** — metrics, datasets, geographies, joins, map types, filters — so a generation request can be rejected before it hallucinates a reference that doesn't exist. Nothing in the catalog is raw data.
+
+```ts
+import { validateCatalog, getCatalogIntrospection, getCatalogJSONSchema, generateContextDigest } from '@ttoss/geovis-catalog';
+
+const result = validateCatalog(catalog, { capabilities: adapter.getCapabilities() });
+// { status: 'valid', catalog } | { status: <failure>, issues }
+
+const introspection = getCatalogIntrospection(catalog); // sensitive fields stripped — safe for a model
+const schema = getCatalogJSONSchema();                  // structured-output / function-calling input_schema
+const digest = generateContextDigest(catalog);           // static pre-generation grounding artifact for a cloud agent
+```
+
+Zod is the single source of truth: `validateCatalog` parses with it, `getCatalogJSONSchema()` derives from the same schemas, so the published schema can never drift from what's enforced.
+
+**Language** (don't conflate these — see [`CONTEXT.md`](../geovis-catalog/CONTEXT.md) for full definitions):
+
+- **Catalog** — one org/app's instance of the contract (not the schema itself).
+- **Context Digest** — pre-generation grounding, `generateContextDigest(catalog)`, regenerated at build time, handed to an agent *before* it produces a spec.
+- **ContextPacket** — a *different* concept, defined in `@ttoss/geovis` — post-generation, metadata-only summary of an already-resolved spec. Never use one term for the other.
+- **Cloud agent** — an LLM agent external to the app's codebase, no filesystem access, context only via what's explicitly handed to it (e.g. the Context Digest) — distinct from an in-repo dev subagent.
+
+Entity fields follow a uniform `id` (programmatic key) / `title` (human name) / `slug` (kebab-case, optional) convention (D16) — `label` survives only on `SpatialGrain.label` and UI-facing render descriptors (`getFilterControls` output), which sit outside the entity-naming convention on purpose. Full contract tables (`Metric`, `Dataset`, `Geography`, `Collection`, `Join`, `Series`, `FilterField`, `MapTypeCatalogEntry`) and issue-code table: [`packages/geovis-catalog/README.md`](../geovis-catalog/README.md).
+
+---
+
+## Workspace (`@ttoss/geovis-workspace`)
+
+Slot-based screen around a `geovis` spec — six named slots (`map`, `controls`, `legend`, `warnings`, `inspector`, `metadata`), each with a runtime-bound default panel, individually hideable or replaceable via `config.slots`.
+
+```tsx
+import { GeovisWorkspace, getInitialSelection } from '@ttoss/geovis-workspace';
+
+<GeovisWorkspace
+  config={config}                    // slots, controls.menus, legend, leftSidebar, rightSidebar
+  visualizationSpec={visualizationSpec}
+  variables={selection}              // controlled selection; omit for uncontrolled
+  onVariableChange={setSelection}
+  onRepair={(repair) => setSpec((s) => applyRepair(s, repair))}   // wires warnings-slot repair buttons
+  onLayerVisibilityChange={(id, visible) => { /* rebuild spec */ }}
+/>
+```
+
+The `warnings` slot renders every issue on `useGeoVis().result` (resolved → non-blocking `warnings`; other status → blocking `issues`), each with translated message + repair buttons. The parent always owns spec mutation — the workspace never mutates the spec itself, same delegation pattern as `onVariableChange`/`onLayerVisibilityChange`. Full slot table, sidebar config, and detail-fetch API (`onFeatureSelect`/`renderDetails`): [`packages/geovis-workspace/README.md`](../geovis-workspace/README.md).
+
+---
+
+## Reference index
+
+- [`packages/geovis/README.md`](README.md) — full `VisualizationSpec`/`LegendSpec`/`VisualizationLayer` field tables, paint examples, `SizeBy` range×transform reference, full API (`GeoVisProvider`, hooks, `GeoVisLegend`/`GeoVisHoverTooltip`/`GeoVisMarker`, boundary groups)
+- [`packages/geovis/CLAUDE.md`](CLAUDE.md) — architecture map, module layering, test commands, coverage workflow
+- [`packages/geovis/docs/adr/`](docs/adr/) — ADRs, incl. [ADR-0001](https://github.com/ttoss/ttoss/blob/main/packages/geovis/docs/adr/0001-nothing-renders-on-failure.md) (nothing renders on failure), [ADR-0003](https://github.com/ttoss/ttoss/blob/main/packages/geovis/docs/adr/0003-semantic-action-surface.md) (semantic action surface), [ADR-0004](https://github.com/ttoss/ttoss/blob/main/packages/geovis/docs/adr/0004-ai-context-packet.md) (AI context packet)
+- [`packages/geovis-workspace/README.md`](../geovis-workspace/README.md) — full slot/config/prop tables
+- [`packages/geovis-catalog/README.md`](../geovis-catalog/README.md) — full catalog contract, issue codes, filter-UI helpers
+- [`packages/geovis-catalog/CONTEXT.md`](../geovis-catalog/CONTEXT.md) — domain vocabulary (Catalog vs Context Digest vs ContextPacket vs Cloud agent)
+- [`packages/geovis-catalog/docs/DECISIONS.md`](../geovis-catalog/docs/DECISIONS.md) — D-numbered design decisions referenced throughout both READMEs (D8, D12, D13, D16, …)
+- [Product Development Principles](https://ttoss.dev/docs/product/product-development/principles)
