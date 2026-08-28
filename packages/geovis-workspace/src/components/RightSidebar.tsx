@@ -1,4 +1,3 @@
-import { GeoVisLegend, useGeoVis } from '@ttoss/geovis';
 import { useI18n } from '@ttoss/react-i18n';
 import { Box, Flex, Heading, IconButton, Link, Text } from '@ttoss/ui';
 import type * as React from 'react';
@@ -11,19 +10,20 @@ import { useGeovisWorkspace } from '../hooks/useGeovisWorkspace';
 import { messages } from '../messages';
 import { RIGHT_SIDEBAR_SLOTS } from '../slots';
 import { InspectorSlot } from './InspectorPanel';
+import { COLOR, FONT_HEAD } from './LeftSidebar/theme';
 import { MetadataPanel } from './MetadataPanel';
 import { WarningsPanel } from './WarningsPanel';
 
 /** Renders one data-source entry, as an external link when `href` is set. */
 const SourceItem = ({ label, href }: GeovisWorkspaceSource) => {
   return (
-    <Box as="li" sx={{ fontSize: 'xs', color: '#6b7280', lineHeight: 'base' }}>
+    <Box as="li" sx={{ fontSize: 'xs', color: '#7A716D', lineHeight: 'base' }}>
       {href ? (
         <Link
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          sx={{ color: '#4338ca', textDecoration: 'underline' }}
+          sx={{ color: '#A23228', textDecoration: 'underline' }}
         >
           {label}
         </Link>
@@ -34,33 +34,16 @@ const SourceItem = ({ label, href }: GeovisWorkspaceSource) => {
   );
 };
 
-/** Renders every top-level legend the committed spec resolves, in declaration order. */
-const RuntimeLegends = () => {
-  const { spec } = useGeoVis();
-
-  const legends = spec.legends ?? [];
-  if (legends.length === 0) return null;
-
-  return (
-    <Flex sx={{ flexDirection: 'column', gap: '2' }}>
-      {legends.map((legend) => {
-        return (
-          <GeoVisLegend key={legend.id} legendId={legend.id} noPositionWrap />
-        );
-      })}
-    </Flex>
-  );
-};
-
 /** Empty default for right-sidebar slots without a default panel yet. */
 const EmptyPanel = () => {
   return null;
 };
 
 /**
- * Default content of the `legend` slot: an optional description, the spec's
- * runtime-resolved legends and a list of data sources. Each block renders
- * only when present.
+ * Default content of the `legend` slot: an optional description and a list of
+ * data sources, both taken from `config.legend`. Each block renders only when
+ * the consumer provides it. Spec legends are NOT auto-rendered here — they are
+ * map overlays; the right sidebar shows only consumer-configured content.
  */
 const LegendPanel = () => {
   const { config } = useGeovisWorkspace();
@@ -69,18 +52,16 @@ const LegendPanel = () => {
   return (
     <Flex sx={{ flexDirection: 'column', gap: '4' }}>
       {description && (
-        <Text sx={{ fontSize: 'sm', color: '#374151', lineHeight: 'base' }}>
+        <Text sx={{ fontSize: 'sm', color: '#524945', lineHeight: 'base' }}>
           {description}
         </Text>
       )}
-
-      <RuntimeLegends />
 
       {sources && (
         <Box>
           {sources.title && (
             <Text
-              sx={{ fontSize: 'sm', fontWeight: 'semibold', color: '#6b7280' }}
+              sx={{ fontSize: 'sm', fontWeight: 'semibold', color: '#7A716D' }}
             >
               {sources.title}
             </Text>
@@ -131,63 +112,94 @@ export const RightSidebar = () => {
   return (
     <Flex
       sx={{
-        position: 'relative',
         flexDirection: 'column',
-        gap: '4',
         // Fills the full-width overlay on mobile; fixed panel on larger screens.
-        width: ['100%', '256px'],
+        // Matches the left sidebar preview width so both panels read alike.
+        width: ['100%', '308px'],
         height: '100%',
         flexShrink: 0,
-        paddingX: '4',
-        paddingTop: '5',
-        paddingBottom: '4',
-        backgroundColor: '#ffffff',
-        borderLeft: '1px solid #e5e7eb',
-        overflowY: 'auto',
+        overflow: 'hidden',
+        // Prototype card: warm ivory surface, hairline border, soft shadow,
+        // rounded on larger screens; flush full-screen panel on mobile.
+        backgroundColor: COLOR.surface,
+        border: `1px solid ${COLOR.border}`,
+        borderRadius: [0, '16px'],
+        boxShadow: ['none', '0 8px 40px rgba(0,0,0,0.14)'],
       }}
     >
-      <IconButton
-        icon="lucide:chevron-right"
-        aria-label={formatMessage(messages.closeDetails)}
-        onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
-          // Release focus before the sidebar hides itself (aria-hidden), so a
-          // focused element is never hidden from assistive technology.
-          event.currentTarget.blur();
-          setRightSidebarOpen({ open: false });
-        }}
+      {/* Fixed header: display title + close, divided from the scrolling body. */}
+      <Flex
         sx={{
-          position: 'absolute',
-          top: '3',
-          right: '3',
-          color: '#6b7280',
-          backgroundColor: 'transparent',
-          borderRadius: 'md',
-          '&:hover': {
-            color: '#4338ca',
-          },
-        }}
-      />
-
-      <Heading
-        as="h3"
-        sx={{
-          margin: 0,
-          fontSize: 'xs',
-          fontWeight: 'semibold',
-          textTransform: 'uppercase',
-          letterSpacing: '0.08em',
-          color: '#6b7280',
+          flexShrink: 0,
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '10px',
+          paddingX: '20px',
+          paddingY: '16px',
+          borderBottom: `1px solid ${COLOR.border}`,
         }}
       >
-        {config.rightSidebar?.title ?? formatMessage(messages.detailsTitle)}
-      </Heading>
+        <Heading
+          as="h3"
+          sx={{
+            margin: 0,
+            fontFamily: FONT_HEAD,
+            fontWeight: 600,
+            fontSize: '15px',
+            letterSpacing: '0.06em',
+            textTransform: 'uppercase',
+            color: COLOR.textStrong,
+          }}
+        >
+          {config.rightSidebar?.title ?? formatMessage(messages.detailsTitle)}
+        </Heading>
 
-      {RIGHT_SIDEBAR_SLOTS.map((slot) => {
-        if (config.slots?.[slot]?.hidden === true) return null;
-        const Override = config.slots?.[slot]?.component;
-        const DefaultPanel = DEFAULT_PANELS[slot];
-        return Override ? <Override key={slot} /> : <DefaultPanel key={slot} />;
-      })}
+        <IconButton
+          icon="lucide:x"
+          aria-label={formatMessage(messages.closeDetails)}
+          onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+            // Release focus before the sidebar hides itself (aria-hidden), so a
+            // focused element is never hidden from assistive technology.
+            event.currentTarget.blur();
+            setRightSidebarOpen({ open: false });
+          }}
+          sx={{
+            width: '28px',
+            height: '28px',
+            minWidth: 'auto',
+            flexShrink: 0,
+            color: COLOR.textGhost,
+            backgroundColor: 'transparent',
+            boxShadow: 'none',
+            borderRadius: 'md',
+            '&:hover': { color: COLOR.textMuted, backgroundColor: COLOR.fill },
+          }}
+        />
+      </Flex>
+
+      {/* Scrolling body: the stacked slots. */}
+      <Flex
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          flexDirection: 'column',
+          gap: '4',
+          paddingX: '4',
+          paddingY: '4',
+          overflowY: 'auto',
+        }}
+      >
+        {RIGHT_SIDEBAR_SLOTS.map((slot) => {
+          if (config.slots?.[slot]?.hidden === true) return null;
+          const Override = config.slots?.[slot]?.component;
+          const DefaultPanel = DEFAULT_PANELS[slot];
+          return Override ? (
+            <Override key={slot} />
+          ) : (
+            <DefaultPanel key={slot} />
+          );
+        })}
+      </Flex>
     </Flex>
   );
 };

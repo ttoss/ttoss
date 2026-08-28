@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/fsl-ui",
-  "version": "0.2.11",
+  "version": "0.4.1",
   "description": "Semantic, token-native component library for the ttoss ecosystem. Built on React Aria Components with @ttoss/fsl-theme tokens.",
   "repository": {
     "type": "git",
@@ -32,10 +32,10 @@
     "react-aria-components": "~1.19.0"
   },
   "devDependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "@ttoss/config": "workspace:^",
-    "@ttoss/forms": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@types/jest-axe": "^3.5.9",
     "@types/node": "^24.12.0",

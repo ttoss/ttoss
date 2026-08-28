@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/geovis-workspace",
-  "version": "0.6.0",
+  "version": "0.10.0",
   "description": "React component that combines a menu and canvas map interactions.",
   "keywords": [
     "react",
@@ -36,6 +36,7 @@
     "@ttoss/geovis": "workspace:^",
     "@ttoss/i18n-cli": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "@types/react": "^19.2.14",
@@ -46,6 +47,7 @@
   "peerDependencies": {
     "@ttoss/geovis": "workspace:^",
     "@ttoss/react-i18n": "workspace:^",
+    "@ttoss/react-icons": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "react": ">=16.8.0"
   },

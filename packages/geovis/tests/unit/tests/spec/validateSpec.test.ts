@@ -23,6 +23,58 @@ describe('validateSpec', () => {
     expect(result.status).toBe('resolved');
   });
 
+  test('accepts a point layer declaring a crossfade transition', () => {
+    const result = validateSpec({
+      engine: 'maplibre',
+      view: { center: [0, 0], zoom: 1 },
+      sources: [
+        {
+          id: 'points',
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: [] },
+        },
+      ],
+      layers: [
+        {
+          id: 'points-dots',
+          sourceId: 'points',
+          geometry: 'point',
+          transition: {
+            kind: 'crossfade',
+            durationMs: 600,
+            easing: 'ease-out',
+          },
+        },
+      ],
+    });
+
+    expect(result.status).toBe('resolved');
+  });
+
+  test('rejects a transition with an unknown kind', () => {
+    const result = validateSpec({
+      engine: 'maplibre',
+      view: { center: [0, 0], zoom: 1 },
+      sources: [
+        {
+          id: 'points',
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: [] },
+        },
+      ],
+      layers: [
+        {
+          id: 'points-dots',
+          sourceId: 'points',
+          geometry: 'point',
+          transition: { kind: 'wipe' },
+        },
+      ],
+    });
+
+    expect(result.status).toBe('invalid');
+  });
+
   test('returns issues for an invalid spec', () => {
     const result = validateSpec({ title: 'missing required fields' });
 

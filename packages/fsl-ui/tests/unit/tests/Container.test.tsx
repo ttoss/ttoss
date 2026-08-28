@@ -31,6 +31,7 @@ describe('Container', () => {
 
   test.each<[ContainerSize, string]>([
     ['surface', vars.sizing.surface.maxWidth],
+    ['card', vars.sizing.surface.card],
     ['reading', vars.sizing.measure.reading],
   ])('size=%s caps inline size from the sizing scale', (size, css) => {
     render(<Container size={size} />);

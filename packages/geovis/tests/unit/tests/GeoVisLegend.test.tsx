@@ -7,6 +7,7 @@ import { act, render } from '@testing-library/react';
 import { GeoVisProvider } from 'src/react/GeoVisProvider';
 import type { VisualizationSpec } from 'src/spec/types';
 import { GeoVisLegend } from 'src/ui/GeoVisLegend';
+import { buildContainerStyle } from 'src/ui/GeoVisLegend.utils';
 
 // This suite mounts GeoVisProvider through `await act(async () => ...)` in
 // every test (~20 in this file); on slower/CI runners the accumulated async
@@ -59,6 +60,111 @@ describe('GeoVisLegend', () => {
     });
 
     expect(container.firstChild).toBeNull();
+  });
+
+  test('renders an icon chip, description, and footer value from the spec', async () => {
+    const spec: VisualizationSpec = {
+      ...baseSpec,
+      legends: [
+        {
+          id: 'farms',
+          title: 'Farms',
+          subtitle: 'Registered rural properties',
+          icon: 'lucide:tractor',
+          iconColor: '#0e9e6e',
+          footerValue: '2024',
+          reference: 'Source: IBGE',
+          colorBy: {
+            type: 'categorical',
+            property: 'status',
+            mapping: { open: '#16a34a' },
+          },
+        },
+      ],
+    };
+
+    const { container } = render(
+      <ChakraProvider value={defaultSystem}>
+        <GeoVisProvider spec={spec}>
+          <GeoVisLegend legendId="farms" />
+        </GeoVisProvider>
+      </ChakraProvider>
+    );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
+    // Icon chip renders the iconify glyph with the requested name.
+    const icon = container.querySelector('[data-testid="iconify-icon"]');
+    expect(icon).not.toBeNull();
+    expect(icon?.getAttribute('icon')).toBe('lucide:tractor');
+
+    // Description (subtitle) and footer value are shown.
+    expect(container.textContent).toContain('Registered rural properties');
+    expect(container.textContent).toContain('2024');
+  });
+
+  test('renders a header with only a subtitle (no icon, no title)', async () => {
+    const spec: VisualizationSpec = {
+      ...baseSpec,
+      legends: [
+        {
+          id: 'farms',
+          subtitle: 'Description only, no title or icon',
+          colorBy: {
+            type: 'categorical',
+            property: 'status',
+            mapping: { open: '#16a34a' },
+          },
+        },
+      ],
+    };
+
+    const { container } = render(
+      <GeoVisProvider spec={spec}>
+        <GeoVisLegend legendId="farms" />
+      </GeoVisProvider>
+    );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
+    expect(container.textContent).toContain(
+      'Description only, no title or icon'
+    );
+    // No title row renders, so there is no iconify chip.
+    expect(container.querySelector('[data-testid="iconify-icon"]')).toBeNull();
+  });
+
+  test('renders a footer value without a reference', async () => {
+    const spec: VisualizationSpec = {
+      ...baseSpec,
+      legends: [
+        {
+          id: 'farms',
+          footerValue: '2024',
+          colorBy: {
+            type: 'categorical',
+            property: 'status',
+            mapping: { open: '#16a34a' },
+          },
+        },
+      ],
+    };
+
+    const { container } = render(
+      <GeoVisProvider spec={spec}>
+        <GeoVisLegend legendId="farms" />
+      </GeoVisProvider>
+    );
+
+    await act(async () => {
+      // Await for any pending state updates from GeoVisProvider
+    });
+
+    expect(container.textContent).toContain('2024');
   });
 
   test('renders categorical swatches from explicit mapping', async () => {
@@ -560,8 +666,8 @@ describe('GeoVisLegend — reference field', () => {
     expect(link).not.toBeNull();
     expect(link?.textContent).toBe('IBGE Censo');
     expect(link?.getAttribute('href')).toBe('https://ibge.gov.br');
-    // The surrounding paragraph should contain the full text
-    const para = container.querySelector('p:last-child');
+    // The surrounding footer text should contain the full reference.
+    const para = link?.closest('span');
     expect(para?.textContent).toContain('Source:');
     expect(para?.textContent).toContain('2022');
   });
@@ -591,7 +697,11 @@ describe('GeoVisLegend — reference field', () => {
       // Await for any pending state updates from GeoVisProvider
     });
 
-    expect(container.querySelector('p:last-child')).toBeNull();
+    // With no reference and no footerValue, no footer section renders — the
+    // swatch list is the card's last child.
+    const list = container.querySelector('ul');
+    expect(list).not.toBeNull();
+    expect(list?.parentElement?.lastElementChild).toBe(list);
   });
 
   test('sourceNode prop takes precedence over spec reference string', async () => {
@@ -1105,5 +1215,40 @@ describe('GeoVisLegend — proportional circles default formatter', () => {
       // Await for any pending state updates from GeoVisProvider
     });
     expect(getByText('≥ 500000 ppl')).toBeTruthy();
+  });
+});
+
+describe('buildContainerStyle — offset', () => {
+  test('returns card chrome only (no positioning) when position is undefined', () => {
+    const style = buildContainerStyle(undefined);
+    expect(style.position).toBeUndefined();
+    expect(style.width).toBe(276);
+  });
+
+  test('keeps the default edge gaps when no offset is given', () => {
+    const style = buildContainerStyle('bottom-right');
+    expect(style.position).toBe('absolute');
+    expect(style.right).toBe(24);
+    expect(style.bottom).toBe(24);
+  });
+
+  test('a numeric offset overrides both anchored edges', () => {
+    const style = buildContainerStyle('bottom-right', 100);
+    expect(style.right).toBe(100);
+    expect(style.bottom).toBe(100);
+    expect(style.transition).toContain('right');
+  });
+
+  test('an axis offset overrides only that edge, preserving the other default', () => {
+    const style = buildContainerStyle('bottom-right', { x: 332 });
+    expect(style.right).toBe(332);
+    // y omitted → bottom keeps the default gap.
+    expect(style.bottom).toBe(24);
+  });
+
+  test('resolves the correct edges for a top-left anchor', () => {
+    const style = buildContainerStyle('top-left', { x: 40, y: 12 });
+    expect(style.left).toBe(40);
+    expect(style.top).toBe(12);
   });
 });

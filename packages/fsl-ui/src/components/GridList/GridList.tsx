@@ -9,13 +9,17 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
-import { buildChoosableRowStyle } from '../../tokens/choosableRow';
-import { focusRingOutline } from '../../tokens/focusRing';
+import { buildChoosableRowInteractiveStyle } from '../../tokens/choosableRow';
+import {
+  buildCollectionContainerStyle,
+  resolveCollectionRowBackground,
+} from '../../tokens/collectionRow';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import {
   SELECTION_BOX_BASE,
   SELECTION_CONTROL,
 } from '../../tokens/selectionControl';
+import { publishSurface } from '../../tokens/surfaceScope';
 import { Icon } from '../Icon';
 
 // ---------------------------------------------------------------------------
@@ -54,37 +58,48 @@ type InputColors = typeof vars.colors.input.primary;
 /** Row (item) chrome — reflects the `selected` set-membership State. */
 const buildRowStyle = ({
   c,
+  containerBackground,
   isSelected,
   isHovered,
   isFocusVisible,
   isDisabled,
 }: {
   c: InputColors;
+  containerBackground: string | undefined;
   isSelected?: boolean;
   isHovered?: boolean;
   isFocusVisible?: boolean;
   isDisabled?: boolean;
 }): React.CSSProperties => {
   return {
-    ...buildChoosableRowStyle(),
+    // The row paints its resolved fill and publishes its *resting* one —
+    // transient states and the selection voice do not republish (§3.4, see
+    // Table's row). Spread order: the dynamic paint wins. The resting fill
+    // borrows the container's own colour, not `input.primary`'s (F-055,
+    // `resolveCollectionRowBackground`) — the dark alternate remaps the
+    // entity's own default to a filled-box value that only coincides with
+    // the container in light.
+    ...publishSurface(containerBackground),
+    ...buildChoosableRowInteractiveStyle({
+      isDisabled,
+      isFocusVisible,
+      opacity: isDisabled ? vars.opacity.disabled : undefined,
+      backgroundColor: resolveCollectionRowBackground({
+        itemBackground: c?.background,
+        containerBackground,
+        flags: { isDisabled, isSelected, isHovered },
+      }),
+      color:
+        resolveInteractiveStyle(c?.text, {
+          isDisabled,
+          isSelected,
+          isHovered,
+        }) ?? c?.text?.default,
+    }),
     // A GridList row holds a selection control beside its content, so it is the
     // one member that also needs an inline gap. The row's box is still the
     // shared one — only the extra child is local.
     gap: vars.spacing.gap.inline.sm,
-    cursor: isDisabled ? 'not-allowed' : 'pointer',
-    opacity: isDisabled ? vars.opacity.disabled : undefined,
-    transitionProperty: 'background-color, color',
-    transitionDuration: vars.motion.feedback.duration,
-    transitionTimingFunction: vars.motion.feedback.easing,
-    backgroundColor: resolveInteractiveStyle(c?.background, {
-      isDisabled,
-      isSelected,
-      isHovered,
-    }),
-    color:
-      resolveInteractiveStyle(c?.text, { isDisabled, isSelected, isHovered }) ??
-      c?.text?.default,
-    outline: focusRingOutline(isFocusVisible),
   };
 };
 
@@ -187,25 +202,12 @@ export const GridList = <T extends object = object>({
   children,
   ...props
 }: GridListProps<T>) => {
-  const surface = vars.colors.informational.primary;
-
   return (
     <RACGridList
       {...props}
       data-scope="grid-list"
       data-part="root"
-      style={{
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: vars.spacing.gap.stack.xs,
-        padding: vars.spacing.inset.surface.sm,
-        borderRadius: vars.radii.surface,
-        borderWidth: vars.border.outline.surface.width,
-        borderStyle: vars.border.outline.surface.style,
-        borderColor: surface?.border?.default ?? 'transparent',
-        backgroundColor: surface?.background?.default,
-      }}
+      style={buildCollectionContainerStyle()}
     >
       {children}
     </RACGridList>
@@ -238,6 +240,8 @@ export type GridListItemProps = Omit<
  */
 export const GridListItem = ({ children, ...props }: GridListItemProps) => {
   const c = vars.colors.input.primary;
+  const containerBackground =
+    vars.colors.informational.primary.background?.default;
 
   return (
     <RACGridListItem
@@ -247,6 +251,7 @@ export const GridListItem = ({ children, ...props }: GridListItemProps) => {
       style={({ isSelected, isHovered, isFocusVisible, isDisabled }) => {
         return buildRowStyle({
           c,
+          containerBackground,
           isSelected,
           isHovered,
           isFocusVisible,

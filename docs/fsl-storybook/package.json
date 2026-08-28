@@ -1,6 +1,6 @@
 {
   "name": "@docs/fsl-storybook",
-  "version": "0.1.6",
+  "version": "0.3.1",
   "private": true,
   "description": "FSL Storybook — the dedicated component catalog for @ttoss/fsl-ui and @ttoss/fsl-theme: every public component with variant stories, organized by FSL entity, browsable in both modes and themes, with a machine-readable AI surface (component manifests + llms.txt).",
   "repository": {
@@ -12,12 +12,13 @@
   "author": "Ennio Lopes <enniolopes@gmail.com>",
   "type": "module",
   "scripts": {
-    "build": "storybook build --quiet && pnpm run generate-llms",
+    "build": "tsc --noEmit -p tsconfig.json && storybook build --quiet && pnpm run generate-llms",
     "deploy": "carlin deploy static-app",
     "dev": "storybook dev -p 6007",
     "generate-llms": "storybook-llms-extractor --config llms.config.mjs",
     "start": "storybook dev -p 6007",
-    "storybook": "storybook dev -p 6007"
+    "storybook": "storybook dev -p 6007",
+    "visual-signoff": "node scripts/visual-signoff.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",

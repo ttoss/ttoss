@@ -8,7 +8,7 @@ import singleMapSpec from '../../../../packages/geovis/src/fixtures/single-map.j
 import { computeBbox, MapLabel } from './helpers/map-story-helpers';
 
 export default {
-  title: 'GeoVis/View/ZoomLimits',
+  title: 'GeoVis/ZoomLimits',
   tags: ['autodocs'],
 } as Meta;
 

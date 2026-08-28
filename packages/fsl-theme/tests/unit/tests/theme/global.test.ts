@@ -7,8 +7,10 @@
  * @see /docs/website/docs/design/design-system/design-tokens/validation.md#global-validation
  */
 
+import { toFlatTokens } from '../../../../src/css';
 import { flattenObject, isTokenRef } from '../../../../src/roots/helpers';
 import { TOKEN_PATH_REGISTRY } from '../../../../src/roots/tokenRegistry';
+import { bruttal } from '../../../../src/themes/bruttal';
 import {
   themeAltFlatToTest,
   themeFlatToTest,
@@ -144,6 +146,32 @@ describe('Semantic contract: alternate is semantic-only', () => {
     expect(themeToTest.alternate.semantic).toBeDefined();
     expect('core' in themeToTest.alternate).toBe(false);
   });
+
+  // model.md § Modes: "semantic token names do not change; semantic token
+  // references may point to different core tokens" — a mode REMAPS what the
+  // base declares, it never adds a leaf of its own. The failure mode is
+  // silent and one-sided: `vars` mirrors the base shape, so an alt-only leaf
+  // emits a CSS custom property no component can ever reference — the value
+  // ships, nothing reads it, and the contrast suite audits a pair the
+  // renderer does not produce. F-043's first fix did exactly this
+  // (`action.secondary.text.active` declared only in the dark alternate) and
+  // looked green everywhere except the actual screen.
+  test.each([
+    ['default', themeToTest],
+    ['bruttal', bruttal],
+  ])(
+    '%s: the alternate only remaps leaves the base declares',
+    (_label, bundle) => {
+      if (!bundle.alternate) return;
+      const base = toFlatTokens(bundle.base);
+      const altOnly = Object.keys(
+        flattenObject({ semantic: bundle.alternate.semantic })
+      ).filter((path) => {
+        return !(path in base);
+      });
+      expect(altOnly).toEqual([]);
+    }
+  );
 });
 
 // ---------------------------------------------------------------------------

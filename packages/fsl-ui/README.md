@@ -10,7 +10,7 @@ Components are not visual variants of widgets — they are executable expression
 pnpm add @ttoss/fsl-ui @ttoss/fsl-theme react-aria-components
 ```
 
-Peer dependencies: `react >= 18`, `react-dom >= 18`. The package is ESM-only, ships `sideEffects: false`, and tree-shakes: a Button-only import costs ≈ 2.3 KB minified before shared dependencies (React Aria Components is the dominant cost and is shared across every component you use).
+Peer dependencies: `react >= 18`, `react-dom >= 18`. The package is ESM-only, ships `sideEffects: false`, and tree-shakes: a Button-only import costs ≈ 3.8 KB minified before shared dependencies (`pnpm run verify:treeshake` prints the current figure) (React Aria Components is the dominant cost and is shared across every component you use).
 
 ## Quickstart
 
@@ -49,7 +49,7 @@ with `aria-label` then required by the type system.
 Three props carry the semantic model everywhere:
 
 - `evaluation` — authorial emphasis (`primary`, `muted`, `negative`, …). Data-entry components (`TextField`, `Select`, `Checkbox`, …) intentionally have none: validation is the runtime `isInvalid` state, never a color prop.
-- `consequence` — effect on state (`neutral`, `committing`, `destructive`). It drives mechanism: a `destructive` `ConfirmationDialog` requires a two-click armed confirmation.
+- `consequence` — effect on state (`neutral`, `committing`, `destructive`). It drives mechanism: a `destructive` `ConfirmationDialog` requires a two-click armed confirmation. It carries colour in one case — on the quiet rung (`evaluation="muted"`), which paints no fill and so has nowhere else to say it, a `destructive` action tints its ink. A destructive _peer_ among siblings keeps its rung and sets `consequence`; a destructive _command_ that should be the loudest thing on the surface is `evaluation="negative"`.
 - `composition` — the slot an element plays inside a parent (`primaryAction`, `dismissAction`, …). `DialogActions` reorders its children by it per platform convention.
 
 Flow-critical labels are required props with no English defaults — `ConfirmationDialog` and `WizardNavigation` force the caller to supply localized copy (see `CONTRIBUTING.md` §6).
@@ -85,6 +85,67 @@ button, `NumberField`'s steppers, `ComboBox`'s chevron — split it in two:
 `data-part="frame"` paints and holds the adornments, and `data-part="control"` is
 the element you operate. `control` names the operated element on every field, so
 a selector that types into one always resolves something typeable.
+
+### Toasts
+
+Create the queue once, mount one region at the root, and report from anywhere:
+
+```tsx
+export const toastQueue = createToastQueue();
+
+// at the root, once
+<ToastRegion queue={toastQueue} />;
+
+// anywhere
+toastQueue.add(
+  { title: 'Changes published', evaluation: 'positive' },
+  { timeout: 5000 }
+);
+```
+
+The `evaluation` picks the valence and the valence brings its own glyph, so the
+outcome survives a reader who does not see the fill. `primary` is the neutral
+voice and carries no mark — it reports without claiming a status.
+
+Two rules belong to the queue rather than to the call site, because a call site
+is the worst place to remember them. A supplied `timeout` is a **floor**: short
+values are raised to 5s, and omitting it means the toast stays until dismissed
+(React Aria pauses every timer while the region is hovered or focused). And a
+toast carrying an `actionLabel` **never auto-dismisses** — an offer that expires
+on a timer cannot be taken.
+
+```tsx
+toastQueue.add({
+  title: 'Message archived',
+  actionLabel: undoLabel, // caller-localized, like every string here
+  onAction: restoreMessage, // pressing it dismisses, unless
+  // shouldCloseOnAction: false
+});
+```
+
+### Standing reports
+
+A toast ends on a timer or a dismissal. When the thing you are reporting ends
+instead when the **condition** ends — read-only mode, a failed sync, a
+maintenance window — that is `InlineAlert`, and it lives in the flow:
+
+```tsx
+<InlineAlert evaluation="caution" title="Read-only mode">
+  Scheduled maintenance until 22:00.
+</InlineAlert>
+```
+
+The two are the Feedback entity's two postures, and the split is FSL's own
+(`status.interruptive` / `status.passive`, Lexicon §3). It decides the colour
+without a prop: an interrupting report earns a voiced fill, a standing one keeps
+a quiet ground in **every** evaluation and carries its valence in a leading mark
+— the glyph's shape first, its ink second. So a `negative` alert is not a red
+box, and it announces politely rather than interrupting: `role="status"` and
+nothing else, which is silent on mount and announced when inserted.
+
+It takes one action, the way out of the condition, as your own `Button` —
+`evaluation="primary"`, which is the only rung with real separation against that
+ground in both modes.
 
 ## Customization
 

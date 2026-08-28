@@ -1,7 +1,7 @@
 import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
 
-import { FOCUS_RING_INSET } from './focusRing';
+import { FOCUS_RING_INSET, focusRingOutline } from './focusRing';
 
 /**
  * Geometry of a **choosable row** — one line in a list the user picks from.
@@ -91,5 +91,51 @@ export const buildChoosableRowStyle = (): React.CSSProperties => {
     borderRadius: CHOOSABLE_ROW.radius,
     outlineOffset: CHOOSABLE_ROW.focusOffset,
     ...CHOOSABLE_ROW.text,
+  };
+};
+
+/**
+ * The interactive skeleton every choosable row repeats around its colours:
+ * the shared box, the pointer/disabled affordance, the feedback transition
+ * triple, and the inset focus ring. The colour *values* stay with the caller —
+ * they come from the entity (a Menu row resolves through the published
+ * surface and the consequence ink, a Select option through the plain cascade,
+ * a Collection row through `resolveCollectionRowBackground`) — but the
+ * skeleton those values land in is one decision, made here.
+ *
+ * `SelectItem`/`ComboBoxItem` pass a fill resolved from
+ * `input.primary.background` *without* routing through the collection-row
+ * borrow: that is sound only while the picker popover's published fill equals
+ * `input.primary.background.default` (which the base theme holds in both
+ * modes). If a theme breaks that equality, the option rows must move onto the
+ * same borrow the Collection members use — the coupling is stated here so it
+ * fails as a known constraint, not a surprise.
+ */
+export const buildChoosableRowInteractiveStyle = ({
+  isDisabled,
+  isFocusVisible,
+  backgroundColor,
+  color,
+  opacity,
+}: {
+  isDisabled?: boolean;
+  isFocusVisible?: boolean;
+  /** Caller-resolved fill for the current flags. */
+  backgroundColor: string | undefined;
+  /** Caller-resolved ink for the current flags. */
+  color: string | undefined;
+  /** Disabled dimming, when the row's idiom uses it (`Menu`'s does not). */
+  opacity?: string | number;
+}): React.CSSProperties => {
+  return {
+    ...buildChoosableRowStyle(),
+    cursor: isDisabled ? 'not-allowed' : 'pointer',
+    opacity,
+    transitionProperty: 'background-color, color',
+    transitionDuration: vars.motion.feedback.duration,
+    transitionTimingFunction: vars.motion.feedback.easing,
+    backgroundColor,
+    color,
+    outline: focusRingOutline(isFocusVisible),
   };
 };

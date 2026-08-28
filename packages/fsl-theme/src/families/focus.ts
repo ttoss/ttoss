@@ -12,17 +12,20 @@
  * system-wide focus default — coexists with the per-context
  * `{ux}.{role}.border.focused` tokens; they are not duplicates.
  *
- * Decision rule — which focus colour to use:
+ * **The ring indicates; the per-context border tints.** They are layers, not
+ * alternatives, and every focusable component uses both. The ring is drawn on
+ * every entity alike and is floated off the control by `ring.offset`, so the
+ * surface it must contrast against is the stratum behind the component rather
+ * than the component's own fill — which is what lets one system-wide colour
+ * serve a near-black pill and a near-white one. `{ux}.{role}.border.focused`
+ * re-tints the component's own edge underneath it and carries no indication
+ * duty of its own.
  *
- * | The component is… | Use |
- * | :--- | :--- |
- * | an `Action` / `Input` / `Navigation` / `Feedback` (clear FSL Entity Kind) | `{ux}.{role}.border.focused` (per-context) |
- * | an `Informational` surface made interactive (focusable Card, profile chip, custom widget) | `semantic.focus.ring.color` (system default) |
- * | an `Input` with `negative` or `caution` valence where focus must inherit the valence | `input.{negative|caution}.border.focused` (overrides the system default) |
+ * One case inverts the emphasis: an `Input` with a `negative`/`caution` valence
+ * keeps that valence in its border while focused, because dropping it would
+ * make focusing an invalid field look like fixing it. The ring is unchanged.
  *
- * Per-context tokens answer "how does *this* `{ux}` look when focused?".
- * `focus.ring.color` answers "what is the *system* default when no `{ux}` applies?".
- * Pick by which question the component is asking — never both.
+ * @see colors.md § Focus color — the ring indicates, the border tints
  *
  * @example
  * ```css
@@ -31,7 +34,7 @@
  *   outline-width: var(--tt-focus-ring-width);
  *   outline-style: var(--tt-focus-ring-style);
  *   outline-color: var(--tt-focus-ring-color);
- *   outline-offset: 2px;
+ *   outline-offset: var(--tt-focus-ring-offset);
  * }
  *
  * // Input in error — negative valence overrides the default
@@ -48,6 +51,19 @@ import type { TokenRef } from './primitives';
 
 export interface SemanticFocus {
   ring: SemanticBorderOutline & {
+    /**
+     * Gap between the control's edge and the ring, rendered as
+     * `outline-offset`.
+     *
+     * Floating the ring keeps it legible against the control's own fill — a
+     * flush ring drowns on a filled button — and it is what makes the ring's
+     * contrast a pairing against the *page* rather than against the control.
+     *
+     * A row inside a clipped or scrolling container has nowhere to put the
+     * gap and insets the ring by its own width instead; that is a component
+     * decision derived from `width`, not a second token.
+     */
+    offset: TokenRef<`core.border.${string}`>;
     /**
      * System-wide focus ring colour — cross-cutting infrastructure (model.md §6).
      *

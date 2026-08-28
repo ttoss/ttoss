@@ -9,7 +9,7 @@ import type { Bbox } from './helpers/map-story-helpers';
 import { FitBoundsToBbox } from './helpers/map-story-helpers';
 
 export default {
-  title: 'GeoVis/Fixtures/MapWithSidePanel',
+  title: 'GeoVis/MapWithSidePanel',
   tags: ['autodocs'],
 } as Meta;
 

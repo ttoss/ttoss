@@ -41,6 +41,34 @@ describe('Tabs', () => {
     );
   });
 
+  test('a selected tab keeps the current color even when disabled', () => {
+    // `disabled` outranks `current` in the STATE_PRIORITY cascade, but the
+    // selected tab still sources the visible panel while disabled — Tab
+    // masks the flag so the location ink cannot be shadowed.
+    render(
+      <Tabs isDisabled>
+        <TabList aria-label="Sections">
+          <Tab id="a">Overview</Tab>
+          <Tab id="b">Details</Tab>
+        </TabList>
+        <TabPanel id="a">Overview content</TabPanel>
+        <TabPanel id="b">Details content</TabPanel>
+      </Tabs>
+    );
+    const first = screen.getByRole('tab', { name: 'Overview' });
+    expect(first).toHaveAttribute('aria-selected', 'true');
+    expect(first).toHaveAttribute('aria-disabled', 'true');
+    expect(first.style.color).toBe(
+      vars.colors.navigation.primary.text?.current ??
+        vars.colors.navigation.primary.text?.default
+    );
+    // A non-selected disabled tab still reads the disabled ink.
+    const second = screen.getByRole('tab', { name: 'Details' });
+    expect(second.style.color).toBe(
+      vars.colors.navigation.primary.text?.disabled
+    );
+  });
+
   test('selecting a tab shows its panel', async () => {
     const user = userEvent.setup();
     renderTabs();

@@ -1,7 +1,17 @@
-import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
 
 import type { ComponentMeta } from '../../semantics';
+import type {
+  BoxAlignment,
+  BoxDistribution,
+  GapScaleStep,
+} from '../../tokens/gapScale';
+import {
+  FLEX_ALIGN,
+  FLEX_JUSTIFY,
+  INLINE_GAP,
+  STACK_GAP,
+} from '../../tokens/gapScale';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -25,43 +35,13 @@ export const stackMeta = {
 export type StackDirection = 'vertical' | 'horizontal';
 
 /** A step of the gap scale. */
-export type StackGap = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+export type StackGap = GapScaleStep;
 
 /** Cross-axis alignment. */
-export type StackAlign = 'start' | 'center' | 'end' | 'stretch';
+export type StackAlign = BoxAlignment;
 
 /** Main-axis distribution. */
-export type StackJustify = 'start' | 'center' | 'end' | 'between';
-
-const GAP_STACK: Record<StackGap, string> = {
-  xs: vars.spacing.gap.stack.xs,
-  sm: vars.spacing.gap.stack.sm,
-  md: vars.spacing.gap.stack.md,
-  lg: vars.spacing.gap.stack.lg,
-  xl: vars.spacing.gap.stack.xl,
-};
-
-const GAP_INLINE: Record<StackGap, string> = {
-  xs: vars.spacing.gap.inline.xs,
-  sm: vars.spacing.gap.inline.sm,
-  md: vars.spacing.gap.inline.md,
-  lg: vars.spacing.gap.inline.lg,
-  xl: vars.spacing.gap.inline.xl,
-};
-
-const ALIGN: Record<StackAlign, string> = {
-  start: 'flex-start',
-  center: 'center',
-  end: 'flex-end',
-  stretch: 'stretch',
-};
-
-const JUSTIFY: Record<StackJustify, string> = {
-  start: 'flex-start',
-  center: 'center',
-  end: 'flex-end',
-  between: 'space-between',
-};
+export type StackJustify = BoxDistribution;
 
 /** Props for the Stack component. */
 export interface StackProps extends Omit<
@@ -132,9 +112,9 @@ export const Stack = ({
         {
           display: 'flex',
           flexDirection: isHorizontal ? 'row' : 'column',
-          gap: isHorizontal ? GAP_INLINE[gap] : GAP_STACK[gap],
-          alignItems: ALIGN[align],
-          justifyContent: JUSTIFY[justify],
+          gap: isHorizontal ? INLINE_GAP[gap] : STACK_GAP[gap],
+          alignItems: FLEX_ALIGN[align],
+          justifyContent: FLEX_JUSTIFY[justify],
           flexWrap: wrap ? 'wrap' : 'nowrap',
         } as React.CSSProperties
       }

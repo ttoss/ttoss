@@ -16,8 +16,13 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
+import {
+  buildCollectionContainerEdge,
+  resolveCollectionRowBackground,
+} from '../../tokens/collectionRow';
 import { FOCUS_RING_INSET, focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import { publishSurface } from '../../tokens/surfaceScope';
 import { Icon } from '../Icon';
 
 /**
@@ -119,11 +124,7 @@ export const Table = (props: TableProps) => {
         inlineSize: '100%',
         borderCollapse: 'separate',
         borderSpacing: 0,
-        borderRadius: vars.radii.surface,
-        borderWidth: vars.border.outline.surface.width,
-        borderStyle: vars.border.outline.surface.style,
-        borderColor: surface?.border?.default ?? 'transparent',
-        backgroundColor: surface?.background?.default,
+        ...buildCollectionContainerEdge(),
         color: surface?.text?.default,
       }}
     />
@@ -256,6 +257,8 @@ export const TableRow = <T extends object = object>(
   props: TableRowProps<T>
 ) => {
   const c: InputColors = vars.colors.input.primary;
+  const containerBackground =
+    vars.colors.informational.primary.background?.default;
 
   return (
     <RACRow
@@ -282,10 +285,24 @@ export const TableRow = <T extends object = object>(
           transitionProperty: 'background-color, color',
           transitionDuration: vars.motion.feedback.duration,
           transitionTimingFunction: vars.motion.feedback.easing,
-          backgroundColor: resolveInteractiveStyle(c?.background, {
-            isDisabled,
-            isSelected,
-            isHovered: isHovered && selectionMode !== 'none',
+          // The row paints its resolved fill and publishes its *resting* one
+          // (CONTRACT §3.4): transient row states do not republish — measured,
+          // the dark row hover fill fails the destructive ink's floor — and a
+          // selection fill is a voice besides. The spread order makes the
+          // dynamic paint win while the publication stays at rest. The
+          // resting fill borrows the container's own colour, not
+          // `input.primary`'s (F-055, `resolveCollectionRowBackground`) — the
+          // dark alternate remaps the entity's own default to a filled-box
+          // value that only coincides with the container in light.
+          ...publishSurface(containerBackground),
+          backgroundColor: resolveCollectionRowBackground({
+            itemBackground: c?.background,
+            containerBackground,
+            flags: {
+              isDisabled,
+              isSelected,
+              isHovered: isHovered && selectionMode !== 'none',
+            },
           }),
           color: resolveInteractiveStyle(c?.text, {
             isDisabled,

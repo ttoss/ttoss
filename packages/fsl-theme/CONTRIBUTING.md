@@ -221,6 +221,8 @@ Every change touches some subset of these axes. Pick the subset by change kind; 
 
 Canonical trade-off record. Code references use `@adr ADR-NNN — <one-line reason>` in JSDoc, linking to the heading here.
 
+**Citation scope** — a bare `ADR-NNN` always refers to an ADR in this package's CONTRIBUTING.md. Citing another package's ADR requires the package prefix — e.g. `fsl-ui ADR-010` — because `@ttoss/fsl-theme` and `@ttoss/fsl-ui` keep independent, homonymous ID ranges. IDs are never renumbered.
+
 **Entry gate** — all three required: a reasonable alternative was rejected; the chosen path has a visible cost; a reviewer without context will propose the alternative. One or two → JSDoc on the symbol; when in doubt, prefer JSDoc.
 
 **Style** — titles, `Decision` lines, and re-litigation answers follow [Basis Form](../copilot-instructions.md#writing--basis-form). A re-litigation answer longer than one line signals wrong level — raise the principle.
@@ -553,7 +555,7 @@ Tags: sizing, spacing, density, responsiveness, geometry, governance, reverted
 Decision: introduce **density** (`compact | comfortable | spacious`, default `comfortable`) as a theme **projection axis** — a `data-tt-density` attribute that remaps the semantic geometry tokens (`sizing.hit.*`, `spacing.inset.control.*`, control type step) to different core steps, exactly as `data-tt-mode` remaps colour. Components are unchanged (they already read the semantic tokens). Two coupled geometry rulings: (1) **control geometry does not use the container-fluid engine** — `spacing.inset.control.*` must resolve from a non-`cqi` scale (rem-anchored), because a control must not grow taller because the window is wider; container-fluidity (`cqi`) stays for _layout_ spacing/sizing only. (2) **hit is a floor, not the visual size** (sizing.md): the visible control height comes from control inset + type; `hit.*` only guarantees the ergonomic minimum.
 Rejected: a `size` prop on controls (arbitrary, breaks "no size" doctrine and meaning-first); a component-per-density (explosion — the Studio proved it does not scale, it hand-rolled 38 control selectors); making control insets `cqi`-fluid (the current state — a Button resolves to ~44px on a wide surface because `inset.control.sm = {core.spacing.3}` rides the fluid engine).
 Cost: a third projection axis in the emitter/runtime (`data-tt-density` blocks + a provider), and control insets move off the shared `core.spacing` engine onto a non-fluid control-spacing scale; pointer-coarse overrides still win for touch a11y regardless of density.
-Anchors: `src/baseTheme.ts` › `core.sizing.hit.*` / `semantic.spacing.inset.control.*`, `docs/website/docs/design/design-system/design-tokens/families/sizing.md`, `packages/fsl-ui/INTERNAL/EVOLUTION.md` §3 (D2), `packages/fsl-ui/src/tokens/CONTRACT.md` §4.
+Anchors: `src/baseTheme.ts` › `core.sizing.hit.*` / `semantic.spacing.inset.control.*`, `docs/website/docs/design/design-system/design-tokens/families/sizing.md`, `EVOLUTION.md` §3 (D2) — retired to git history 2026-08-06, read it with `git log --follow -- packages/fsl-ui/INTERNAL/EVOLUTION.md` — and `packages/fsl-ui/src/tokens/CONTRACT.md` §4.
 
 Re-litigation answers:
 
@@ -707,3 +709,490 @@ Re-litigation answers:
   is the fluidity ADR-022 removed; and a validated equality would forbid a theme
   from choosing a control inset the engine's bound does not happen to hit. The
   agreement between the two scales is a base-theme choice, and the docs say so.
+
+### ADR-024: The border pairing is audited per mode, and the inventory is split by the rule that made it unreadable
+
+Status: accepted (2026-07-31)
+Tags: colors, contrast, validation, dark mode, F-027, F-036, ADR-015
+
+Decision: the border-vs-background guard iterates every supported mode (not the
+base bundle alone), and its known-violations list splits into two asserted sets —
+**mirrored** (border resolves to its own background) and **soft** (border differs
+and is still below AA Large by design) — with `disabled` contexts excluded
+outright. A third guard pairs a part's ink against the surface it actually
+renders on when that surface belongs to another role.
+
+`colors.md` has always required that "any supported mode fails the same required
+pairings" (Error #4). The text pairing implemented it; the border pairing did
+not, and the dark alternate ran unaudited for as long as it has existed. It hid
+one class of defect the whole time: the alternate remaps references by hand, so
+it can remap a role's `background` subtree and leave its `border` subtree at base
+values. That is not hypothetical — it is what the first run of this guard found
+(see the ROADMAP entry for the four remaps it forced).
+
+The split is what makes the per-mode inventory reviewable rather than a paste.
+A single below-threshold list is ~95 names per mode, two thirds of which are
+`border === background` and carry no judgement; the entries that do carry one
+are invisible among them. Splitting also makes the guard **stronger**: a role
+that stops mirroring its background but stays under 3:1 changes no ratio and was
+previously undetectable, because both states satisfy "below AA Large" — the
+single case where the old inventory could not tell a design from a regression.
+
+Rejected: paste the dark contexts into the existing set — F-027's own objection,
+a guard that documents nothing and freezes whatever dark happens to be; derive
+the alternate's inventory from the base's — the alternate is authored by hand, so
+a derived list asserts the wrong thing and hides exactly the divergences this
+exists to catch; let `fsl-ui` own the cross-role assertion — it cannot resolve
+colours in jsdom, and the theme owns both ends of the pairing.
+Cost: four inventories instead of two, and a reviewer must read the two rules
+before concluding that an absent context is unguarded rather than exempt.
+Anchors: `tests/unit/tests/theme/families/colors.test.ts`,
+`docs/.../families/colors.md#validation`, `docs/fsl-studio/FRICTION.md` F-027/F-036.
+
+Re-litigation answers:
+
+- "Why is `disabled` gone from the border inventory?" → WCAG 2.2 §1.4.3 exempts
+  disabled UI, and the text pairing beside it always assumed that. The border
+  pairing was enshrining ~14 contexts per bundle that no rule ever wanted.
+- "Can the mirrored set be inferred instead of listed?" → no. Inferring it means
+  a role silently gaining or losing its edge produces no delta in either
+  direction, which is the regression the split exists to catch.
+- "Why do the strata appear in the cross-role pairing and not one page token?" →
+  because a raised or overlay surface is `background` + `elevation.tonal.*`, a
+  composite no colour token names (`colors.md` › Stacking informational
+  surfaces). Pairing against the page alone verifies the easiest of the three.
+- "Does the alternate now need a full parallel inventory per bundle?" → no. Each
+  variant declares an explicit delta over the base list, so a reviewer reads what
+  differs, and the deltas are asserted in both directions like the lists are.
+
+### ADR-025: The quiet destructive ink is a cross-cutting token, minted where model.md §6 says system-wide defaults live
+
+Status: accepted (2026-08-04)
+Tags: colors, cross-cutting, consequence, model §6, F-029, refines fsl-ui ADR-028
+
+Decision: `semantic.consequence.destructive.ink` — a cross-cutting sibling of
+`focus` and `overlay` — holds the foreground for a destructive part that paints
+no surface of its own. The base theme aliases it to
+`{semantic.colors.informational.negative.text.default}` (a semantic→semantic
+reference, the same shape and the same "mode overrides remap it automatically"
+rationale as `focus.ring.color`), so both modes and both bundles resolve today's
+exact values. `@ttoss/fsl-ui`'s `resolveConsequenceInk` is the sole consumer and
+owns the behavioural bounds (which rung, which states — its CONTRACT §3.3).
+
+The day before, fsl-ui ADR-028 shipped the same behaviour by reading
+`informational.negative.text.default` **directly from the component layer** — a
+cross-ux read, licensed and guarded, but a precedent the entity→ux alignment
+had never had. Re-reading the model showed the question was already answered:
+§6 names the exact criterion ("a question the principal grammar cannot ask in a
+single token — a system-wide default that no `{ux}` owns") and the F-029
+analysis had already proven both halves — the grammar cannot combine valence
+with emphasis, and in `action`/`feedback` the valence `text` is the label on a
+fill, occupied. The structural twin is the focus ring: both render against the
+stratum behind the component rather than a fill of their own (the ring floats
+off the edge; the quiet rung's fill _is_ the stratum), which is what lets one
+system-wide colour serve everything, and why `SemanticFocus.ring.color` is even
+_typed_ `TokenRef<semantic.*>` for exactly this aliasing pattern.
+
+§6's gate, answered: **necessity** — the F-029 record (measured, both modes,
+both bundles); **JSDoc** — on the family and the token; **registration** — the
+§6 canonical-examples list, `colors.md` § Cross-cutting, the quick reference,
+and `TOKEN_PATH_REGISTRY` (`--tt-consequence-*`, DTCG `color`), whose coverage
+test fails if the registry entry is missing. `committing` deliberately gets no
+token: no visual projection exists and no consumer waits — evidence, not
+symmetry.
+
+What this buys over the direct read, stated as the trade it is: the entity→ux
+alignment goes back to having **zero** exceptions (the licensed-crossing
+apparatus in fsl-ui's contract test becomes ordinary cross-cutting consumption,
+like the ring); the contrast inventory pairs **the token components actually
+render** instead of its referent, so a theme that repoints the alias is audited
+on what ships; and a theme gains the freedom to retune the quiet destructive
+ink without touching validation messages — while the default alias keeps them
+identical, which is the right default because both are the standalone negative
+valence ink. The cost is one registered token (MINOR per governance.md) and a
+required member on `ThemeTokens.semantic` — additive for every `overrides`/
+`extends`-authored theme (bruttal included); a hypothetical complete-`base`
+theme gains a one-line member, the same class of addition as `focus.ring.offset`
+(F-020).
+
+Rejected: keeping the component-layer read (works, guarded, but spends a
+constitutional exception §6 exists to make unnecessary — and pins the ink to
+the validation message's token in every theme, a coupling nothing demands);
+`action.muted.text.destructive` (consequence is not a State — Lexicon §11.2
+keeps the axes disjoint, and the state axis is runtime while consequence is
+authorial); a `destructive` entry inside `semantic.colors.*` (§6 places
+cross-cutting tokens as siblings, not inside the grammar they escape); a
+`committing` twin (unconsumed vocabulary).
+
+Anchors: `src/families/consequence.ts`, `src/baseTheme.ts` (the alias),
+`src/roots/tokenRegistry.ts`, `colors.test.ts` → `quiet destructive control`
+(pairs the token, both bundles, both modes), model.md §6, colors.md
+§ Cross-cutting, fsl-ui `tokens/consequenceInk.ts` + CONTRACT §3.3.
+
+Re-litigation answers:
+
+- "Why does the alias point at `informational.negative.text` and not at a core
+  red?" → so the standalone negative valence ink has one source by default:
+  retune it and the validation message and the destructive ink move together,
+  which is what a theme author expects. Repointing is the opt-out, not the
+  default.
+- "Why not let fsl-ui keep reading the informational token, since the values
+  are identical?" → because _which token a component renders_ is the thing the
+  inventory audits and the thing a theme retunes. A borrowed token couples two
+  meanings behind one name; §6 exists so the system never has to choose between
+  coupling and a grammar violation.
+- "Does `neutral`/`committing` ever get a token?" → on evidence: a consumer
+  with a visual projection that survives measurement. Symmetry is not evidence.
+
+### ADR-026: The text pairing audits the ink a component actually renders; a mode only remaps
+
+Status: accepted (2026-08-04)
+Tags: colors, contrast, validation, modes, F-043, companion:ADR-024
+
+Two decisions, found as one defect (F-043: an open menu's `secondary` trigger
+rendering its label at 1.45:1 in dark for as long as the menu stays open).
+
+**First: the text pairing pairs the effective ink.** `colors.md` pairing #1
+already defined "corresponding" as _where the part renders, not who owns the
+token_ — and the component contract renders an ink for **every** background
+state, because call sites fall back (`resolveInteractiveStyle(...) ??
+text.default`; the selection mark resolves `indeterminate → checked →
+default`). The extractor paired same-state declarations only and skipped when
+the ink side was absent, so it audited a pair nobody renders and skipped the
+pair everyone does — the exact mirror of the deletion trap the fsl-ui CLAUDE.md
+names, and ADR-024's border finding one dimension over. The extractor now walks
+every declared `background.<state>` and pairs the declared state's ink or its
+documented fallback chain. 192 previously unaudited pairs entered the suite;
+seven failed, in three classes:
+
+- `input.{negative,positive,muted}.text.indeterminate` (both modes): the mark's
+  chain passes through `checked`, whose `neutral.0` belongs to the _filled_
+  checked box — on the light indeterminate fill it lands at 1.4–1.9:1. Each
+  role now declares the indeterminate ink in base (the valence's own dark
+  step, hue kept), which both modes inherit.
+- `action.secondary.text.active` (dark): the alternate inverts the engaged
+  fill to light and had inverted the ink for `pressed` but not `active`.
+- `informational.{valence}.background.selected` (dark): the alternate remaps
+  the valence _text_ to light inks while `background.selected` inherited the
+  base's light tint — ink and fill met at 1.0:1. The alternate now maps
+  selected to the monochrome step the neutral roles already use, with the
+  edge lightening to `.300` (the same move this alternate makes on negative's
+  active/focused and accent's hover).
+
+**Second: a mode only remaps.** The first fix for `text.active` was declared
+in the dark alternate alone — and the suite went green while the screen did
+not change, because `vars` mirrors the **base** shape: an alt-only leaf emits
+a CSS custom property no component can reference. `model.md` § Modes already
+states it ("semantic token names do not change; references may point to
+different core tokens"); it is now enforced — `global.test.ts` fails any
+bundle whose alternate declares a path the base does not, and the scan that
+motivated it found exactly one violation in the whole theme: the fix itself.
+`action.secondary.text.active` is therefore declared in base (`neutral.1000` —
+the fill darkens a step on the press and the ink firms with it, and Warning #1
+requires it to differ from `default`) and remapped in dark.
+
+Verified: two seeded mutations (a removed indeterminate ink; the removed
+`active` ink) each fail the suite in every affected bundle and mode; the
+structural guard fails on the alt-only shape it was written for; and the open
+menu's trigger label reads `rgb(22,22,22)` on `rgb(208,208,208)` in dark in
+Chromium, where it read `rgb(248,248,248)` before.
+
+Rejected: a lower floor for glyph-carried states (`checked`/`indeterminate`
+render the selection mark, arguably non-text at 3:1) — the registry defines
+the `text` dimension as "readable foreground, labels, and **text-like
+icons**", pairing #1 exempts only `*.muted.*`, and a selected row _does_ put
+running text on `background.checked`, so the stricter floor governs; reader-
+aware pairing (skip combinations no component renders today) — the suite has
+always audited the declared grammar, and a pair that fails only until someone
+reads it is a landmine, not a saving.
+
+Anchors: `colors.test.ts` (`extractTextBackgroundPairs`), `global.test.ts`
+("the alternate only remaps"), `src/baseTheme.ts` (the seven values),
+colors.md § Validation (the effective-pair bullet and the new mode error),
+`docs/fsl-studio/FRICTION.md` F-043.
+
+Re-litigation answers:
+
+- "Why does `text.active` exist in base if light never needed it?" → because
+  the leaf must exist for any mode to remap it — that is what "modes remap"
+  means, and the guard now enforces it. Light gains a one-step firmer press
+  ink it never had a complaint about; dark gains the legible label it owed.
+- "Should the indeterminate mark really meet 4.5:1?" → the dimension's own
+  definition folds text-like icons into `text`, and the fix costs one dark
+  step per valence. If a future case genuinely needs the non-text floor, that
+  is a registry discussion about a `glyph` dimension, not a threshold carve-out
+  in the guard.
+
+### ADR-027: A surface that occludes gets a cross-cutting boundary; the anchored inset is its own fixed step
+
+Status: accepted (2026-08-04)
+Tags: colors, spacing, cross-cutting, overlay, F-044, F-045, closes:F-044, closes:F-045
+
+Two tokens, one root cause: **`elevation` is the only family that knows a
+surface floats.** Every geometry and colour family treats "surface" as one
+thing — `radii.surface`, `outline.surface`, `inset.surface`,
+`informational.{role}.border` — while `elevation` alone distinguishes four
+strata. So an occluding surface inherited the edge and the padding of an
+embedded one, and the P3 Overlay round measured both.
+
+**`semantic.overlay.outline`** — the boundary of a surface that covers content.
+Cross-cutting per model.md §6, sibling of `scrim`, and the family is already
+the right home: `scrim` is what an occluding surface puts _behind_ itself, this
+is what it puts _around_ itself. The §6 gate: occlusion is neither a `role`
+(emphasis/valence) nor a `state` (runtime), and it **crosses UX contexts** — a
+Menu is `informational`, a Toast is `feedback`, and both cover content — so the
+grammar cannot ask for it in a single token. Registration needed no registry
+change: `semantic.overlay.` already maps to `--tt-overlay-` with DTCG `color`.
+
+`colors.md` § Stacking already assigned the duty this meets: the surface
+outline is the **secondary separator** and owes _"≥ 3:1 contrast against the
+adjacent background … even when shadow is suppressed (high-contrast
+preferences, print)"_. `{ux}.{role}.border.default` cannot carry it because it
+carries the opposite duty — an embedded card's decorative edge and a divider,
+where a hairline is deliberate and listed in the border pairing's accepted-soft
+inventory. Measured, that hairline read **1.31:1 light / 1.67:1 dark** against
+the page, so with shadows suppressed a menu was an unbounded rectangle.
+
+The value is one token per mode, and that is a measurement rather than a
+convenience: light `neutral.500`, dark `neutral.300` each clear 3:1 against
+_every_ stratum an overlay can land on. A per-stratum family was the first
+design and the measurement retired it — nothing needed per-stratum granularity.
+
+**`semantic.spacing.inset.surface.xs`** — the anchored / row-framing step.
+`inset.surface`'s tightest step was 16–24px and every anchored overlay read it:
+a menu's gutter was 24px around fixed 32px rows (34% of the surface's height),
+a tooltip's 24/36px for one line, against an 8px reference. No vocabulary grew
+— `spacing.md` already lists `xs` and `gap.stack.xs` ships. **Fixed, not
+fluid**, and that is ADR-022's own argument one scale out: the step's whole
+outcome is its relationship to fixed-height children, and measured before the
+change the gutter moved 16px → 24px across viewports while every row stayed
+exactly 32.0px. It therefore joins `inset.control` in the fixed-px contract
+rather than the fluid aliasing one — the guard was renamed to say so.
+
+Guards: the cross-role inventory gains **"occluding boundary"** — a
+cross-stratum pair, which is precisely why the same-role border extractor
+structurally could not see the defect (it evaluates an edge against its own
+role's fill and lists the result as accepted-soft: correct for what it audits,
+blind to the pair that carries the signal). The ordering guard gains `xs < sm`,
+compared at the engine's floor because the two sides now have different shapes.
+
+Rejected: retuning `informational.primary.border.default` to clear 3:1 (one
+token, but it darkens every card edge in the system to fix a different class's
+problem — and it would make the accepted-soft inventory self-contradictory);
+`elevation.edge.*` as a per-stratum companion to `tonal` (defensible, and the
+measurement showed the granularity is unused — one value per mode covers every
+stratum, so this would be membership guessing); making the overlays read
+`elevation.tonal.*` for their fill (they should, and it is filed separately as
+F-048 — but it reaches 1.67:1 at best in dark and nothing at all in light, so
+it cannot close F-044 and it changes what `evaluation` means on Overlay);
+retuning `inset.surface.sm` instead of adding `xs` (`Box`/`Surface` publish
+`sm` as a caller-facing step — retuning it changes an API surface to fix a
+different class).
+
+Cost: two registered semantic tokens (MINOR per governance.md), one of them a
+new required member on `SemanticOverlay` and one on the shared `InsetSteps` —
+additive for every `overrides`/`extends`-authored theme, a one-line addition
+for a hypothetical complete-`base` theme, the same class as `focus.ring.offset`
+(F-020) and `consequence` (ADR-025).
+
+Anchors: `src/families/overlay.ts`, `src/families/spacing.ts`,
+`src/baseTheme.ts` (both values + the dark remap), `colors.test.ts`
+("occluding boundary"), `spacing.test.ts` (the fixed-inset contract),
+colors.md § Stacking + § Cross-cutting, model.md §6, spacing.md,
+`docs/fsl-studio/FRICTION.md` F-044/F-045.
+
+Re-litigation answers:
+
+- "Why is the boundary not evaluation-driven?" → it says "your content resumes
+  here", which is infrastructure, the same argument that gives the focus ring
+  one colour. And nothing is lost: measured, all three informational roles
+  resolved the _same_ border value in both modes, so `evaluation` never varied
+  an overlay's edge.
+- "Why does a Dialog still pad at `md`?" → it frames content, not rows. The
+  discriminant for `xs` is whether the padding gutters children that carry
+  their own inset, not whether the surface floats.
+- "Is `xs` the same value as `inset.control.sm`?" → yes, deliberately: a gutter
+  beside a control is the control's own step, which is what keeps the
+  edge-to-text distance close to the reference's.
+
+### ADR-028: A rail gets a cross-cutting address; `semantic.rail.track` replaces two borrows
+
+Status: accepted (2026-08-05)
+Tags: colors, cross-cutting, feedback, input, P3, F-050, F-051, closes:F-051
+
+Decision: `semantic.rail.track` — the unfilled part of a `ProgressBar`/`Meter`/
+`Slider` track — joins `focus`/`overlay`/`consequence` as a sibling
+cross-cutting family (model.md §6). `ProgressBar` and `Meter` now read it
+instead of `feedback.muted.background` (F-050's fix); `Slider` reads it
+instead of `input.primary.background.disabled`, retiring the one borrow F-050
+could not close because it belongs to a different entity.
+
+**The §6 gate.** A rail is neither a `role` (emphasis/valence) nor a `state`
+(runtime), and it crosses UX contexts exactly the way `overlay.outline` does:
+`ProgressBar`/`Meter` are `Feedback`, `Slider` is `Input`, and all three need
+the same neutral pill. The reference (`@adobe/spectrum-tokens@14.15.0`) agrees
+by construction — `track-color` is its own token, aliased to a private grey
+step rather than to any role's dimension — because a rail's mode behaviour is
+its own: it **darkens** in dark (`rgb(218,218,218)` → `rgb(57,57,57)`) while
+every `{ux}.{role}.border.*` in this system **lightens** on the same canvas.
+No single existing token could serve both directions, which is the technical
+necessity §6 (and §8's parallel `RawValue` gate) asks for before minting one.
+
+**Values, measured.** Light: `core.colors.neutral.200` (`#e1e1e1`) — 7 units
+per channel off the reference's `rgb(218,218,218)`, the closest step (the next
+candidate, `neutral.300`, sits 10 off). This is the half F-050 left owing:
+the borrowed `feedback.muted.background` sat at `neutral.100`, 1.14:1 against
+the page against the reference's own 1.40:1; `neutral.200` moves the
+separation to ~1.31:1, closer without reaching for a value the ramp does not
+have. Dark: `core.colors.neutral.700` (`#3d3d3d`) — the same step F-050 already
+found 4 units off the reference's `rgb(57,57,57)`, kept rather than replaced,
+because F-050 had already found the right dark answer; only the light half and
+the address needed fixing.
+
+**Why the dark value coincides with `feedback.muted.background`'s, and that is
+not a residual borrow.** `Slider`'s dark rail moves from
+`input.primary.background.disabled` (`neutral.900`) to `neutral.700` — a real,
+measured change, and the one that matters: an empty `Slider` rail no longer
+means "disabled" in the token model. `ProgressBar`/`Meter`'s dark rail keeps
+the same rendered value it had after F-050, because that value was already
+right; what moved for them is the _address_ they read, not the pixel — the
+component no longer names a `Feedback`-role token to get a value every rail
+needs. `rail.test.ts` pins this precisely: the dedicated address differs from
+`input.primary.background.disabled` in both modes (Slider's actual defect),
+and from `feedback.muted.background` in light (the half that had a numeric gap
+to close); it does not assert dark inequality against `feedback.muted.background`,
+because asserting a coincidence would be pinning an artifact of ADR-033's
+already-correct choice, not a defect.
+
+**Reuse, not growth, at the component side.** `src/tokens/rail.ts` (fsl-ui)
+renames its `FEEDBACK_RAIL_FILL` constant to `RAIL_FILL` — it is no longer
+`Feedback`-specific — and `Slider` reads it instead of deriving its rail from
+`c?.background?.disabled`. No new component-side vocabulary: one existing
+constant now serves all three consumers, which is what "one silhouette, one
+answer" (ADR-033) always implied once the colour half caught up to the
+geometry half.
+
+Guarded from both sides, same shape as `overlay.outline`'s guard in ADR-027:
+`rail.test.ts` (this package) pins the resolved values and the two inequalities
+above, in every mode of every bundle; fsl-ui's `rail.test.tsx` pins that each
+component reads the shared constant by comparing the `var()` reference itself
+— not the resolved colour — so a refactor that reached either old address by a
+different path still fails even where the rendered pixel would not change.
+
+Rejected: waiting past the version boundary, ADR-033's own recommendation when
+F-051 was only analysis — no longer applicable once the owner asked for a
+ruling on both F-051 and F-052 in the same pass (`docs/fsl-studio/FRICTION.md`);
+a per-stratum `rail` family (`raised`/`overlay`/`blocking` companions) — a rail
+does not stratify, only two modes, so a flat family is one value per mode, not
+a ramp; retuning `feedback.muted.background`'s dark value instead of minting a
+new address — it already sits 4 units off the reference and three other
+consumers (`Badge`, `StatusLight`'s neutral chip, the row family) would move
+with it for no reason tied to a rail.
+
+Cost: one registered semantic token (MINOR per governance.md), a new required
+member on the `ThemeTokens['semantic']` tree — additive for every
+`overrides`/`extends`-authored theme, the same class `focus.ring.offset`
+(F-020), `consequence` (ADR-025) and `overlay.outline` (ADR-027) already cost.
+
+Anchors: `src/families/rail.ts`, `src/baseTheme.ts` (both values + the dark
+remap), `src/roots/tokenRegistry.ts`, `tests/unit/tests/theme/families/rail.test.ts`,
+model.md §6, `docs/fsl-studio/FRICTION.md` F-050/F-051, fsl-ui ADR-036.
+
+Re-litigation answers:
+
+- "Why not just retune `feedback.muted.background`'s light value?" → that
+  token has three other readers (`Badge`, `StatusLight`, the row family) with
+  no rail-shaped reason to move; a dedicated address changes exactly the one
+  thing that needed to change.
+- "Should this be `semantic.colors.rail.*` instead, inside the colour grammar?"
+  → no — §6's own text places cross-cutting tokens as siblings of
+  `semantic.colors.*`, not inside it, and `focus`/`overlay`/`consequence` are
+  already there for the same reason: they answer a question the `{ux}.{role}`
+  grammar cannot ask in one token.
+- "Does `bruttal` need its own `rail` override?" → no, the same way it needs
+  none for `overlay`/`focus`: it drifts brand colour, radii and elevation only
+  (`themes/bruttal.ts`) and inherits every other family from the base via
+  `deepMerge`.
+
+### ADR-029: The standalone valence inks get a cross-cutting family; `consequence.destructive.ink` was a family of one
+
+Status: accepted (2026-08-12)
+Tags: colors, cross-cutting, valence, model §6, generalizes:ADR-025, fsl-ui InlineAlert
+
+Decision: `semantic.valence.{positive,caution,negative}.ink` — a cross-cutting sibling of `focus`, `overlay`, `consequence` and `rail` — holds the foreground for a part that **reports** a valence while painting no surface of its own; each member aliases `{semantic.colors.informational.{valence}.text.default}`, so no core value is minted and both modes remap for free.
+Rejected: a fourth one-off token per consumer — repeats ADR-025's shape for the third time and leaves the next valence to rediscover it; a tinted `feedback.{valence}` fill family — 4 roles × 3 dimensions × 2 modes to say what one ink says, and `colors.md` § Picking a role forbids the emphasis-plus-valence path it would need; letting the component read `informational.{valence}.text` directly — the licensed cross-ux crossing ADR-025 retired three days after shipping it; collapsing `consequence.destructive.ink` into `valence.negative.ink` — deletes the FSL §10.5 distinction to resolve a value coincidence.
+Cost: a fourth cross-cutting family in a model that prizes a small registry, and `negative` now has two addresses resolving one value — a reviewer will read that as duplication until §10.5 is quoted.
+Anchors: `src/families/valence.ts`, `src/baseTheme.ts`, `src/roots/tokenRegistry.ts`, `docs/.../design-tokens/model.md#6-no-parallel-vocabulary`, `docs/.../families/colors.md#cross-cutting-tokens-siblings-of-semanticcolors`.
+
+**What problem exists.** A `Feedback` part that reports an outcome while painting nothing has no lawful ink. `colors.md` § Picking a role states the loudness ladder is a ladder only where the valence's `text` is a standalone ink — true in `input`/`informational`, false in `action`/`feedback`, where the valence ships filled and `text` is the label _on_ that fill. The consumer that forced it: `InlineAlert`, the `status.passive` counterpart of `Toast` (FSL Lexicon §3), whose surface is `feedback.muted` and whose valence therefore lives in a mark rather than in a fill. With no valence ink the four states differ only by glyph shape — two grey boxes — which fails the north star's "visually refined out of the box" before it reaches a reviewer.
+
+**Why reuse is not enough.** Measured, not assumed: `action.negative.text` and `feedback.negative.text` are `#ffffff` in both modes (ADR-021 chose deep filled valences; the `text` dimension became the on-fill label). Combining valence with emphasis is the ❌ example in that same section. `informational.{valence}.text` holds the inks — but reaching for them from a `Feedback` component is the cross-ux read ADR-025 licensed and then retired, and `components.contract.test.tsx` now fails any component that reaches for `informational.negative` by hand.
+
+**Why a family rather than a fifth sibling.** ADR-025's own §6 rationale — _"the grammar cannot combine valence with emphasis, and the filled valence contexts have no standalone ink"_ — is a statement about **valence**, not about **destructiveness**. It is true of `positive` and `caution` verbatim. That token was a family of one wherever a family was warranted; this ADR does not add a concept, it finishes one. The residual lesson of ADR-025 was "search the model for the mechanism that makes the exception unnecessary before licensing it"; the residual lesson here is one step earlier — when a cross-cutting token is minted for one member of a closed set, ask whether the set is the unit.
+
+**Why `valence.negative.ink` ≠ `consequence.destructive.ink`, although they resolve alike.** FSL Lexicon §10.5 keeps `negative` (Evaluation — authorial valence, "what is being reported") apart from `destructive` (Consequence — effect on state, "what this interaction does"), and §10.15 mirrors the split one dimension over. The two tokens answer different questions and a theme may repoint one without the other: a product wanting "Delete" rows louder than error reports needs both addresses to exist. They coincide in this theme by choice. Collapsing them is the mirror of the static-ink proposal ADR-025 retracted — resolving a naming coincidence by deleting a distinction.
+
+**Three members, not five.** `role` is a discriminated union of Emphasis and Valence, and the artefact that owns the classification settles it: **FSL Lexicon §5** lists `accent` in the Emphasis class and defines it as _"a deliberately differentiated emphasis … Not just 'more colorful'; accent is semantic divergence"_. A valence is a judgement about **outcome**; `accent` claims attention without claiming one, so there is nothing for a valence ink to say and it takes no member here.
+
+**Corrected 2026-08-12, before this ADR was a day old.** The first draft called this an open disagreement between artefacts and cited `model.md` §11 as giving the **family doc** precedence. §11 says the opposite — it ranks the Lexicon **first**, `Types.ts` second, family docs **last** — and on this question all three agree: the Lexicon classes `accent` as Emphasis, `Types.ts` calls `feedback.accent` _"noteworthy but carries no judgement"_ (which is a statement that it is not a valence), and `colors.md` § Role Coverage lists it under Emphasis. The only divergence was a **comment** in fsl-ui's `taxonomy.ts` calling it "the informative valence", which §11 makes a defect in the lower-priority artefact rather than a live conflict; it is fixed. The conclusion did not move, but the justification was load-bearing and inverted: had the Lexicon gone the other way, the stated rule would have produced the wrong answer.
+
+Measurement agrees with the doctrine, which is the second half of the package's own test. The only plausible ink for a coloured informative mark is `feedback.accent.background.default` (`brand.500`, mode-stable) — it measures 4.22:1 against the quiet ground in light and **2.26:1 in dark**, under the floor. `accent` does have a colour in `feedback`, but as a _voiced fill_ (the activity rail), never as a standalone ink.
+
+**What impact exists.** Purely additive — one new semantic family, no existing token moved, no rendered pixel changed anywhere today. MINOR per `governance.md` § Versioning. `bruttal` needs no override, for the same reason it needs none for `overlay`/`focus`/`rail`.
+
+**Measured, all 24 pairs, before deciding.** Each valence ink against every stratum a mark can land on (`INFORMATIONAL_STRATA`) plus the quiet Feedback surface it actually sits on (`feedback.muted.background.default` — `neutral.100` light, `neutral.700` dark):
+
+| Surface (light)               | positive | caution | negative |
+| ----------------------------- | -------: | ------: | -------: |
+| `neutral.0` (page + 3 tonal)  |   9.11:1 |  8.67:1 |  10.02:1 |
+| `neutral.100` (quiet surface) |   7.99:1 |  7.61:1 |   8.79:1 |
+
+| Surface (dark)                         | positive | caution | negative |
+| -------------------------------------- | -------: | ------: | -------: |
+| `neutral.900` (page)                   |  12.89:1 | 13.73:1 |   9.53:1 |
+| `neutral.800` (tonal raised)           |  10.78:1 | 11.48:1 |   7.97:1 |
+| `neutral.700` (tonal overlay/blocking) |   7.74:1 |  8.24:1 |   5.72:1 |
+| `neutral.700` (quiet surface)          |   7.74:1 |  8.24:1 |   5.72:1 |
+
+Every pair clears **AA Normal (4.5:1)** — not merely the 3:1 non-text floor a glyph would owe — so the family is safe for a valence-inked line of copy, not only for a mark. Worst case is `negative` on the dark `neutral.700` step at 5.72:1, which is the figure ADR-025's inventory already reports, because that member _is_ that token. Only `positive` and `caution` are genuinely new pairs, and both are more legible than the member already in the suite.
+
+**The dark alternate corroborates rather than obstructs.** It drops the light valence tint entirely — `informational.{positive,caution,negative}.background.default` all remap to `neutral.900` — and keeps only the border and the ink. The theme already commits to ink-plus-edge as the way a valence speaks on a quiet surface in that mode; this token gives that commitment an address instead of leaving each component to find it.
+
+**§6's gate, answered.** **Necessity** — the measurement above plus the F-029 record it generalizes; the question crosses `ux` (a mark is `feedback`, a summary is `informational`, a message is `input`) so the per-context grammar cannot express it. **JSDoc** — on the family, on the per-valence interface, and on each `ink`. **Registration** — `TOKEN_PATH_REGISTRY` (`--tt-valence-*`, DTCG `color`, whose coverage test fails if the entry is missing), §6's canonical-examples list, `colors.md` § Cross-cutting, and the quick reference.
+
+Guarded from both sides, the shape ADR-027/ADR-028 established: `valence.test.ts` pins the resolved values per mode per bundle and pins that `valence.negative.ink` and `consequence.destructive.ink` are separately declared addresses (asserting the coincidence is deliberate, never that one derives from the other); `colors.test.ts` gains the cross-role entry `passive status mark` — each ink against the strata plus the quiet Feedback surface, at AA Normal, per bundle and per mode.
+
+Re-litigation answers:
+
+- "This duplicates `consequence.destructive.ink`." → It generalizes it. `negative` coincides in value; the questions differ per FSL §10.5, and a theme may split them.
+- "Then delete `consequence.destructive.ink` and point `resolveConsequenceInk` here." → That deletes the §10.5 distinction to save one alias; the ink a destructive _command_ borrows is not the ink an error _report_ carries, even when a theme paints them alike.
+- "Why no `accent`/informative member?" → FSL Lexicon §5 puts `accent` in the Emphasis class, and §11 makes the Lexicon the authority on identity. Settled, not open; a coloured informative mark would fail the dark floor anyway (2.26:1).
+- "ADR-021's title calls `feedback.accent` 'the informative valence'." → Loose wording in a title, kept because ADRs are append-only. The rung is Emphasis; what ADR-021 shipped — a filled informative surface — is unaffected, since that colour is a voice and not an ink.
+- "Why not `semantic.colors.valence.*`, inside the colour grammar?" → §6 places cross-cutting tokens as siblings of `semantic.colors.*`, not inside it — same as `focus`/`overlay`/`consequence`/`rail`.
+- "Should a filled surface use this ink?" → No. There the fill is the voice and `{ux}.{valence}.background` owns it; this ink is for a part that paints nothing.
+
+### ADR-030: The quiet Feedback ground is the page's own colour, not a grey step
+
+Status: accepted (2026-08-12)
+Tags: colors, feedback, stacking, muted, fsl-ui ADR-043, closes:F-066
+
+Decision: `semantic.colors.feedback.muted.background.default` remaps from `core.colors.neutral.100` to `core.colors.neutral.0` in the base and from `neutral.700` to `neutral.900` in the dark alternate — the page's own colour in each mode — so a quiet Feedback surface shares the page's background and pays its separation in the edge, which is what `colors.md` § Stacking requires of every contained surface.
+Rejected: leaving it and letting the consumer paint the page colour itself — a component cannot reach `informational.*` from the Feedback row, and inventing a second "page" address is the extra colour bucket Rule #4 forbids; giving the consumer a lighter grey step — the same defect one shade weaker, and § Stacking bans paying separation in colour at all; a new `feedback.page` role — parallel vocabulary for a value `muted` already means.
+Cost: a visible change for the one consumer that reads this token, and the dark border inventory reclassifies — `feedback.muted.default` leaves the soft list because its own edge now sits on the canvas instead of a near-identical grey, and `feedback.muted.focused` leaves it in the blue palette but stays in `bruttal`, whose brown ramp is flatter.
+Anchors: `src/baseTheme.ts`, `src/families/colors.ts`, `tests/unit/tests/theme/families/colors.test.ts`, `docs/.../families/colors.md#stacking-informational-surfaces`, `docs/fsl-studio/FRICTION.md` F-066.
+
+**What problem exists.** The owner's review of the first Feedback surface to use this token: _"esse cinza de fundo, me remete a muted, ou algo amador, não me remete a alto padrão de design"_. Literally correct — the surface was painting the `muted` rung as a grey **step**, and a flat grey box reads as disabled or placeholder. FSL Lexicon §10.6 keeps `muted` apart from `disabled` as _meaning_; nothing kept them apart visually.
+
+**Why reuse is not enough, and why this is a defect rather than a taste.** Two written rules already said the value was wrong. `colors.md` defines the `muted` idiom as **"the surface's own colour"** — the Action ladder's third rung paints exactly that and carries no visible edge at rest. And § Stacking states that the page and every contained surface resolve the **same** background token, with differentiation paid in _"elevation first, border second, never in colour"_. A standing report in the flow is a contained surface. At `neutral.100` this token broke both.
+
+**Why nobody noticed for so long.** It had no consumer for the arrangement that exposes it. The value was chosen when the token was a **chip** fill, where a grey step is right; chips then moved to `informational` (F-010/F-053) and the rail moved to `semantic.rail.track` (ADR-028). What remained read `feedback.muted.text` only — `ProgressBar`/`Meter`'s value label — so the background sat unread until `InlineAlert` painted a surface with it.
+
+**What impact exists.** One reader of the background (fsl-ui `InlineAlert`); `ProgressBar`/`Meter` read the `text` dimension and are untouched. `rail.test.ts`'s inequality against this token still holds in light (`neutral.200` vs `neutral.0`). The "roles within a context are distinguishable" invariant still passes in both modes. The `feedback.muted.text ↔ background` pairing improves (the ink now sits on the page rather than on a grey step). Semantic mapping changed, meaning unchanged — MINOR per `governance.md` § Versioning.
+
+**What it unlocks, and this is the half that makes it more than a value tune.** With the ground on the page, a valence **border** becomes Required Pairing #2 — a border against the adjacent surface, the pair the theme audits for every role — instead of the border-against-another-family's-fill pair F-050/F-055/F-057 each got wrong. That is what let fsl-ui ADR-043 move the valence onto the edge and reach the reference's own design. Measured against the page, every Feedback evaluation's own border clears the 3:1 floor in both modes; `colors.test.ts`'s border inventory reports the figures.
+
+Re-litigation answers:
+
+- "A quiet surface with the page's background is invisible." → It is, until it takes an edge. That is § Stacking's point: separation is the border's job, and every Feedback role ships one that clears 3:1 against the page.
+- "Should `informational.muted` move too?" → No. That role is a _content_ surface with its own strata and existing consumers; this ADR is scoped to the token whose meaning is "quiet feedback" and whose only reader asked for the page.
+- "Why not `neutral.50` — nearly the page, but not it?" → § Stacking forbids paying separation in colour at all, and a near-page grey is the same decision at lower contrast.

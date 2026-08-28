@@ -2,6 +2,7 @@ import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
 
 import type { ComponentMeta } from '../../semantics';
+import { publishSurface } from '../../tokens/surfaceScope';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -40,8 +41,11 @@ export type BoxBorder = 'none' | 'muted' | 'strong';
 /** Inline size (`width`) from the sizing behavior keywords. */
 export type BoxWidth = 'auto' | 'full' | 'fit';
 
-/** Maximum inline size — a structural surface cap or the readability measure. */
-export type BoxMaxWidth = 'none' | 'surface' | 'reading';
+/**
+ * Maximum inline size — a structural surface cap, the narrow centered-card
+ * cap, or the readability measure.
+ */
+export type BoxMaxWidth = 'none' | 'surface' | 'card' | 'reading';
 
 const PADDING: Record<BoxPadding, string> = {
   none: '0',
@@ -54,6 +58,17 @@ const BACKGROUND: Record<BoxBackground, string | undefined> = {
   none: 'transparent',
   primary: vars.colors.informational.primary.background?.default,
   muted: vars.colors.informational.muted.background?.default,
+};
+
+/**
+ * `none` stays a plain transparent layout box. A painted Box is a hosting
+ * surface and publishes itself (CONTRACT §3.4) — but only the page-like
+ * primary voice: `muted` is a voiced fill, and the inventory shows the
+ * destructive ink failing against it in dark.
+ */
+const boxBackgroundStyle = (background: BoxBackground): React.CSSProperties => {
+  if (background === 'primary') return publishSurface(BACKGROUND[background]);
+  return { background: BACKGROUND[background] };
 };
 
 const RADIUS: Record<BoxRadius, string> = {
@@ -80,6 +95,7 @@ const WIDTH: Record<BoxWidth, string> = {
 const MAX_WIDTH: Record<BoxMaxWidth, string | undefined> = {
   none: undefined,
   surface: vars.sizing.surface.maxWidth,
+  card: vars.sizing.surface.card,
   reading: vars.sizing.measure.reading,
 };
 
@@ -142,9 +158,11 @@ export interface BoxProps extends Omit<
   width?: BoxWidth;
   /**
    * Maximum inline size. `surface` caps at the structural surface width;
-   * `reading` caps at the readability measure (long-form text). Pair with
-   * `marginInline` centering via a parent `Stack`/`Grid` — Box does not center
-   * itself.
+   * `card` caps at the narrow centered-card width (an auth form, a
+   * standalone confirmation page — smaller than `surface`, wider than most
+   * form controls); `reading` caps at the readability measure (long-form
+   * text). Pair with `marginInline` centering via a parent `Stack`/`Grid` —
+   * Box does not center itself.
    * @default 'none'
    */
   maxWidth?: BoxMaxWidth;
@@ -204,7 +222,7 @@ export const Box = ({
           boxSizing: 'border-box',
           paddingBlock: PADDING[paddingBlock ?? padding],
           paddingInline: PADDING[paddingInline ?? padding],
-          background: BACKGROUND[background],
+          ...boxBackgroundStyle(background),
           borderRadius: RADIUS[radius],
           ...borderStyleFor(border),
           width: WIDTH[width],

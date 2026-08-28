@@ -2,16 +2,20 @@ import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
+import { voicedSurface } from '../../tokens/surfaceScope';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
 //
 // Entity = Structure → CONTRACT.md §1 row: colors `informational`, radii
 // `surface`, border `outline.surface`, spacing `inset.surface`, elevation
-// `surface`/`tonal`. Surface is the depth-bearing container primitive: a
+// `surface`. Surface is the depth-bearing container primitive: a
 // non-interactive region that expresses a surface stratum (flat → raised →
-// overlay → blocking) by pairing the elevation shadow recipe with the tonal
-// surface colour at that depth. It reads no interactive State.
+// overlay → blocking) by the paired elevation shadow recipe alone — the same
+// fill-by-evaluation rule every occluding overlay in the package already
+// uses (F-048, fsl-ui ADR-037). `elevation.tonal` stays defined in the theme
+// but unread here; it is opt-in for a future colourless elevation cue. It
+// reads no interactive State.
 //
 // Structure carries Evaluation `{primary|muted}`: the hairline boundary
 // consumes `vars.colors.informational[evaluation]`, so the prop earns its
@@ -40,9 +44,17 @@ export interface SurfaceProps extends Omit<
    * Elevation stratum. `flat` sits flush with the page (no shadow); `raised`
    * is the default card/panel depth; `overlay` floats above raised content;
    * `blocking` is the strongest in-flow depth (dialog bodies). Depth is
-   * carried by the paired shadow recipe *and* the tonal surface colour, so it
-   * reads correctly in both light and dark (dark depth is the tonal step —
-   * shadows go invisible on a near-black canvas).
+   * carried by the paired shadow recipe alone, at every level, the same rule
+   * every occluding surface in the package already uses (`Menu`/`Popover`/
+   * `Tooltip`/`Dialog`/`Drawer`/`Toast` read only `elevation.surface[level]`
+   * for shadow and `informational.{evaluation}.background.default` for
+   * fill — F-048). Accepted cost: a shadow that is suppressed
+   * (`forced-colors`, print) leaves no other depth cue on `Surface`; the
+   * hairline boundary (`informational.{evaluation}.border.default`) is
+   * unchanged by this and does not stand in for it — ADR-031 already
+   * classifies `Surface` as an *embedded* surface that owes no occluding
+   * ≥3:1 edge duty in that scenario, so this is a pre-existing, already-
+   * characterized gap, not a new one.
    * @default 'raised'
    */
   level?: SurfaceLevel;
@@ -74,16 +86,22 @@ const PADDING_BY_KEY: Record<SurfacePadding, string> = {
 const SURFACE_TEXT = vars.colors.informational.primary.text?.default;
 
 /**
- * The surface's background colour. Raised strata read the tonal surface colour
- * (the "colour at depth"); `flat` — or a theme that ships no tonal group — is
- * canvas, so it falls back to the primary informational background.
+ * The surface's background colour. Every level reads the same
+ * `informational.{evaluation}.background.default` fill the six occluding
+ * overlay components (`Menu`/`Popover`/`Tooltip`/`Dialog`/`Drawer`/`Toast`)
+ * already use — F-048: `evaluation` used to drive only the edge at
+ * `raised`/`overlay`/`blocking`, while `elevation.tonal[level]` silently
+ * owned the fill regardless of `evaluation`, so a `Surface` and a real
+ * overlay declaring the same stratum painted different colours in dark
+ * (`#3d3d3d` vs `#161616`, measured). `elevation.tonal` stays in the theme,
+ * opt-in for a future consumer that wants a colourless elevation cue — this
+ * component no longer reads it, and depth is carried by the paired shadow
+ * recipe alone (`elevation.surface[level]`, unchanged).
  */
-const backgroundFor = (level: SurfaceLevel): string | undefined => {
-  const tonal = vars.elevation.tonal;
-  if (level === 'flat' || tonal === undefined) {
-    return vars.colors.informational.primary.background?.default;
-  }
-  return tonal[level];
+const backgroundFor = (
+  evaluation: EvaluationsFor<'Structure'>
+): string | undefined => {
+  return vars.colors.informational[evaluation]?.background?.default;
 };
 
 /** The hairline boundary colour for the given evaluation. */
@@ -101,9 +119,9 @@ const borderColorFor = (
  * Entity = Structure. Use it wherever a region needs to read as a distinct
  * surface: cards, panels, sheets, the body of a dialog. Pick the `level` by
  * how the surface should sit relative to the page, not by how it should look —
- * the theme decides the shadow and tonal treatment per mode. Non-interactive:
- * it owns no hover/focus chrome; interactivity belongs to the controls placed
- * inside it.
+ * the theme decides the shadow recipe per mode; the fill is `evaluation`'s
+ * concern at every level. Non-interactive: it owns no hover/focus chrome;
+ * interactivity belongs to the controls placed inside it.
  *
  * @example
  * ```tsx
@@ -132,7 +150,14 @@ export const Surface = ({
           boxSizing: 'border-box',
           padding: PADDING_BY_KEY[padding],
           color: SURFACE_TEXT,
-          background: backgroundFor(level),
+          // A hosting surface publishes itself, but only the page-like
+          // `primary` voice is a stratum (CONTRACT §3.4) — the same rule
+          // `Menu`/`Popover`/`Dialog`/`Drawer` apply to this exact fill, now
+          // that Surface reads it too. A `muted`/other-voiced Surface keeps
+          // its voice and does not publish, so a quiet control nested in the
+          // (default) `evaluation="muted"` Surface still falls back to its
+          // own already-audited token instead of an unaudited pairing.
+          ...voicedSurface({ evaluation, color: backgroundFor(evaluation) }),
           boxShadow: vars.elevation.surface[level],
           borderRadius: vars.radii.surface,
           borderWidth: vars.border.outline.surface.width,

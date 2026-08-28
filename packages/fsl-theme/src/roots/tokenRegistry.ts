@@ -151,6 +151,11 @@ export const TOKEN_PATH_REGISTRY: readonly TokenPathEntry[] = [
     cssPrefix: '--tt-core-border-style-',
   },
   {
+    path: 'core.border.offset.',
+    cssPrefix: '--tt-core-border-offset-',
+    dtcgType: 'dimension',
+  },
+  {
     path: 'core.opacity.',
     cssPrefix: '--tt-core-opacity-',
     dtcgType: 'number',
@@ -204,6 +209,13 @@ export const TOKEN_PATH_REGISTRY: readonly TokenPathEntry[] = [
   },
   { path: 'semantic.focus.', cssPrefix: '--tt-focus-' },
   { path: 'semantic.overlay.', cssPrefix: '--tt-overlay-', dtcgType: 'color' },
+  {
+    path: 'semantic.consequence.',
+    cssPrefix: '--tt-consequence-',
+    dtcgType: 'color',
+  },
+  { path: 'semantic.valence.', cssPrefix: '--tt-valence-', dtcgType: 'color' },
+  { path: 'semantic.rail.', cssPrefix: '--tt-rail-', dtcgType: 'color' },
   { path: 'semantic.border.', cssPrefix: '--tt-border-' },
   {
     path: 'semantic.opacity.',

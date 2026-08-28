@@ -103,13 +103,15 @@ const SidebarOverlay = ({
         // Full-width (whole workspace) on mobile; sized to its child on larger
         // screens so the sidebar becomes a full-screen panel on phones.
         width: ['100%', 'auto'],
+        // Inset on larger screens so the sidebar floats as a card; flush
+        // full-screen on mobile. The sidebar itself carries the drop shadow.
+        padding: [0, '3'],
         zIndex: 2,
         transform: open ? 'translateX(0)' : hiddenTransform,
         opacity: open ? 1 : 0,
         visibility: open ? 'visible' : 'hidden',
-        boxShadow: open ? 'lg' : 'none',
         transition:
-          'transform 0.25s ease-in-out, opacity 0.2s ease-in-out, visibility 0.25s ease-in-out, box-shadow 0.25s ease-in-out',
+          'transform 0.25s ease-in-out, opacity 0.2s ease-in-out, visibility 0.25s ease-in-out',
       }}
     >
       {children}
@@ -245,33 +247,44 @@ export const Layout = () => {
     });
   });
 
+  // `'bare'` drops the card chrome so the workspace fills its container
+  // edge-to-edge; `'card'` (default) keeps the framed look.
+  const isBare = config.appearance === 'bare';
+
   return (
     <Flex
       sx={{
         position: 'relative',
         overflow: 'hidden',
         minHeight: '440px',
-        border: 'sm',
-        borderColor: 'display.border.muted.default',
-        borderRadius: 'lg',
         backgroundColor: 'display.background.primary.default',
+        ...(isBare
+          ? {}
+          : {
+              border: 'sm',
+              borderColor: 'display.border.muted.default',
+              borderRadius: 'lg',
+            }),
       }}
     >
       <Flex sx={{ flex: 1 }}>
         <MapSlot />
       </Flex>
 
-      {hasLeftSidebar && (
-        <SidebarOverlay side="left" open={isLeftSidebarOpen}>
-          <LeftSidebar />
-        </SidebarOverlay>
-      )}
+      {/* Both overlays stay mounted; visibility is gated through `open`, not by
+          conditionally rendering the overlay. Unmounting on `has*Sidebar` would
+          remove the node the instant its slots lose content (e.g. the inspector
+          clearing on an outside click), skipping the slide-out transition and
+          making the sidebar vanish abruptly. Keeping it mounted lets `open` fall
+          to `false` and the overlay animate closed. The reopen buttons stay
+          gated on content — an empty sidebar has nothing to reopen. */}
+      <SidebarOverlay side="left" open={hasLeftSidebar && isLeftSidebarOpen}>
+        <LeftSidebar />
+      </SidebarOverlay>
 
-      {hasRightSidebar && (
-        <SidebarOverlay side="right" open={isRightSidebarOpen}>
-          <RightSidebar />
-        </SidebarOverlay>
-      )}
+      <SidebarOverlay side="right" open={hasRightSidebar && isRightSidebarOpen}>
+        <RightSidebar />
+      </SidebarOverlay>
 
       {hasLeftSidebar && <OpenLeftSidebarButton />}
 

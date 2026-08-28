@@ -57,7 +57,7 @@ Each entry contains:
 
 ---
 
-# 1. Entity Kind
+## 1. Entity Kind {#1-entity-kind}
 
 Entity Kind answers:
 
@@ -93,7 +93,7 @@ Entity Kinds are **pairwise disjoint** in the core lexicon.
 
 ---
 
-# 2. Structural Role
+## 2. Structural Role {#2-structural-role}
 
 Structural Role answers:
 
@@ -147,7 +147,7 @@ The same structural role may lawfully appear under different entities.
 
 ---
 
-# 3. Interaction Kind
+## 3. Interaction Kind {#3-interaction-kind}
 
 Interaction Kind answers:
 
@@ -184,7 +184,7 @@ Interaction Kind is fundamental because interactive meaning cannot be recovered 
 
 ---
 
-# 4. Composition Role
+## 4. Composition Role {#4-composition-role}
 
 Composition Role answers:
 
@@ -216,7 +216,7 @@ This distinction is mandatory.
 
 ---
 
-# 5. Evaluation {#5-evaluation}
+## 5. Evaluation {#5-evaluation}
 
 Evaluation answers:
 
@@ -252,7 +252,7 @@ Evaluation is a **discriminated union** of two decision classes — an expressio
 
 ---
 
-# 6. Consequence
+## 6. Consequence {#6-consequence}
 
 Consequence answers:
 
@@ -280,33 +280,18 @@ Consequence exists because some meanings materially shape user experience and ri
 
 ### Profile narrowing (per FSL §13.3)
 
-A component-semantics profile may codify a narrower subset of this vocabulary
-when the broader terms collapse into one of the narrower ones or into another
-dimension. The `@ttoss/fsl-ui` profile (see
-[`component-model.md`](/docs/design/design-system/components/component-model) —
-implemented in `packages/fsl-ui/src/semantics/taxonomy.ts`) codifies three
-values — **neutral**, **committing**, **destructive** — rejecting the others
-with explicit rationale:
-
-- **reversible** is the logical complement of `committing`; carrying both
-  doubles the vocabulary without adding an expressible distinction.
-- **interruptive** is absorbed by the Entity `Overlay` — an Overlay is
-  interruptive by kind, and non-overlay interruption has no component
-  prototype to justify separate vocabulary.
-- **recoverable** describes a runtime outcome of failure, not an authorial
-  meta; recovery support belongs in component API (e.g. an `onRetry` prop),
-  not in `ComponentMeta`.
-- **safeDefaultRequired** is a derived policy: `destructive` already implies
-  the need for a safe default, so codifying the policy separately would
-  create a second source of truth for the same constraint.
-
-The rejections are invariants of the profile, not of FSL — a different
-profile may legitimately codify more of the vocabulary if its component
-prototypes create new distinctions.
+A projection profile may codify a narrower subset of this vocabulary when the
+broader terms collapse into one of the narrower ones or into another dimension.
+A narrowing is lawful only when it is declared and justified, term by term, in
+the profile's own artifact — and it binds that profile, not FSL: a different
+profile may codify more of the vocabulary if its prototypes create new
+distinctions. The shipped component profile narrows this dimension to three
+values; its declaration and rationale live in the
+[Component Model — Consequence](/docs/design/design-system/components/component-model#consequence).
 
 ---
 
-# 7. State
+## 7. State {#7-state}
 
 State answers:
 
@@ -342,7 +327,7 @@ Not every state is meaningful for every interaction kind.
 
 ---
 
-# 8. Layer Role
+## 8. Layer Role {#8-layer-role}
 
 Layer Role answers:
 
@@ -368,7 +353,7 @@ Layer Role is semantic layering, not raw stack arithmetic.
 
 ---
 
-# 9. Context Class
+## 9. Context Class {#9-context-class}
 
 Context Class answers:
 
@@ -395,11 +380,11 @@ It refines what already exists.
 
 ---
 
-# 10. Critical ambiguity resolutions
+## 10. Critical ambiguity resolutions
 
 This section records the most important foundational distinctions that the lexicon is intended to stabilize.
 
-## 10.1 Action vs primaryAction
+### 10.1 Action vs primaryAction
 
 - **Action** is an Entity Kind.
 - **primaryAction** is a Composition Role.
@@ -407,7 +392,7 @@ This section records the most important foundational distinctions that the lexic
 One says what the thing **is**.
 The other says what role it plays **in a composition**.
 
-## 10.2 Selection vs toggle.binary vs select.single
+### 10.2 Selection vs toggle.binary vs select.single
 
 - **Selection** is an Entity Kind.
 - **toggle.binary** and **select.single** are Interaction Kinds.
@@ -415,24 +400,24 @@ The other says what role it plays **in a composition**.
 One says what kind of entity it is.
 The other says how that entity is being interacted with.
 
-## 10.3 label vs title
+### 10.3 label vs title
 
 - **label** identifies an immediate thing.
 - **title** introduces a larger semantic unit.
 
-## 10.4 description vs status
+### 10.4 description vs status
 
 - **description** explains.
 - **status** communicates current condition or outcome.
 
-## 10.5 negative vs destructive
+### 10.5 negative vs destructive
 
 - **negative** is Evaluation.
 - **destructive** is Consequence.
 
 A thing can be negative without being destructive.
 
-## 10.6 muted vs disabled
+### 10.6 muted vs disabled
 
 - **muted** is Evaluation.
 - **disabled** is State.
@@ -440,12 +425,12 @@ A thing can be negative without being destructive.
 A thing can be muted and still interactive.
 A disabled thing is unavailable for normal interaction.
 
-## 10.7 overlay vs blocking
+### 10.7 overlay vs blocking
 
 - **overlay** is Layer Role.
 - **blocking** is a stronger Layer Role that captures or prevents interaction with the obscured context.
 
-## 10.8 dismiss vs dismissAction vs closeTrigger
+### 10.8 dismiss vs dismissAction vs closeTrigger
 
 - **dismiss** is Interaction Kind.
 - **dismissAction** is Composition Role.
@@ -455,7 +440,7 @@ These must never be collapsed.
 
 ---
 
-## 10.9 title vs heading
+### 10.9 title vs heading
 
 - **title** is a Structural Role — the topological function of a part that introduces its entity or surface.
 - **heading** is a Composition Role — the relational function of that same part within a larger composite.
@@ -464,7 +449,7 @@ A single part may lawfully carry both: `structure: title` (what it is topologica
 
 ---
 
-## 10.10 status.interruptive vs interruptive
+### 10.10 status.interruptive vs interruptive
 
 - **status.interruptive** is an Interaction Kind — the mode of semantic operation of a status-communicating entity that operates in an interruptive way.
 - **interruptive** is a Consequence — the user-facing impact profile of an interaction.
@@ -473,7 +458,7 @@ They model different dimensions and may lawfully co-exist. `status.interruptive`
 
 ---
 
-## 10.11 content (Structural Role) — resolved against earlier UX-context overlap
+### 10.11 content (Structural Role) — resolved against earlier UX-context overlap
 
 `content` is a **Structural Role** (§2): the main carried content of an entity or composite — a topological part descriptor (e.g. the body region of a Disclosure or the inner slot of a Collection).
 
@@ -483,7 +468,7 @@ Operational rule: `content` names a Structural Role only. The token UX family is
 
 ---
 
-## 10.12 Structure (Entity Kind) vs Structural Role (dimension)
+### 10.12 Structure (Entity Kind) vs Structural Role (dimension)
 
 - **`Structure`** (capitalized) is an **Entity Kind** (§1) — an entity whose primary meaning is organizing, supporting, grouping, separating, or framing content and interaction (dividers, layouts, groups).
 - **Structural Role** is the name of a **dimension** (§2). Its canonical field in the expression is lowercase `structure`, and its lexical values are terms like `root`, `control`, `surface`, `label`, `item`.
@@ -494,7 +479,7 @@ Implementations should preserve the case distinction in every artifact that name
 
 ---
 
-## 10.13 Overlay (Entity Kind) vs overlay (Layer Role)
+### 10.13 Overlay (Entity Kind) vs overlay (Layer Role)
 
 - **`Overlay`** (capitalized) is an **Entity Kind** (§1) — an entity whose primary meaning is temporary layered presentation.
 - **`overlay`** (lowercase) is a **Layer Role** (§8) — a semantic layering role occupied by an expression above the base interface.
@@ -503,9 +488,9 @@ An Overlay entity typically occupies the `overlay` or `blocking` Layer Role, but
 
 ---
 
-## 10.14 `popup.*` (removed from the core) — projection-specific
+### 10.14 `popup.*` (removed from the core) — projection-specific
 
-Earlier drafts of the FSL Interaction Kind vocabulary included `popup.listbox`, `popup.grid`, `popup.tree`, and `popup.dialog`. These were removed from the core lexicon because they smuggled projection-specific semantics (ARIA composite-widget patterns) into a foundational dimension, violating §3.1 ("Structure must remain smaller than projections") and §12.1 ("No projection-specific term may be treated as foundational").
+Earlier drafts of the FSL Interaction Kind vocabulary included `popup.listbox`, `popup.grid`, `popup.tree`, and `popup.dialog`. These were removed from the core lexicon because they smuggled projection-specific semantics (ARIA composite-widget patterns) into a foundational dimension, violating [Structural Language §3.1](./fsl-structural-language.md) ("Structure must remain smaller than projections") and rule 1 of §12 below ("No projection-specific term may be treated as foundational").
 
 The meaning those terms carried is recovered at the correct layers:
 
@@ -517,7 +502,7 @@ Operational rule: the core Interaction Kind vocabulary contains no `popup.*` ter
 
 ---
 
-## 10.15 invalid vs negative
+### 10.15 invalid vs negative
 
 - **invalid** is a State — the runtime outcome of validating the user's data.
 - **negative** is an Evaluation — authorial valence chosen when the expression is written.
@@ -526,15 +511,15 @@ A control becomes `invalid` because of what the user entered; it is voiced `nega
 
 ---
 
-# 11. Core disjointness
+## 11. Core disjointness
 
 The following disjointness rules are normative in the core lexicon.
 
-## 11.1 Entity Kind
+### 11.1 Entity Kind
 
 All Entity Kinds are pairwise disjoint.
 
-## 11.2 Evaluation vs State vs Consequence
+### 11.2 Evaluation vs State vs Consequence
 
 These dimensions are disjoint by kind of meaning:
 
@@ -542,7 +527,7 @@ These dimensions are disjoint by kind of meaning:
 - State = current condition
 - Consequence = user-facing outcome/risk profile
 
-## 11.3 Structural Role vs Composition Role
+### 11.3 Structural Role vs Composition Role
 
 These dimensions serve different semantic purposes and must not be confused.
 
@@ -553,13 +538,13 @@ These dimensions serve different semantic purposes and must not be confused.
 
 Example: `leadingAdornment` in a Structural Role describes a part's topology. The same term in the Composition dimension designates the slot where a leading adornment part belongs in the whole.
 
-## 11.4 Layer Role vs Entity Kind
+### 11.4 Layer Role vs Entity Kind
 
 A Layer Role must never be used as if it were an Entity Kind.
 
 ---
 
-# 12. Downstream discipline
+## 12. Downstream discipline
 
 The FSL Lexicon is foundational.
 
@@ -572,7 +557,7 @@ Therefore:
 
 ---
 
-# 13. Final statement
+## 13. Final statement
 
 This document is the normative dictionary of the FSL core.
 

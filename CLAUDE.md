@@ -79,11 +79,11 @@ All React packages follow a **context-first** pattern — applications configure
 
 **Foundation packages** (always `peerDependencies`, never `dependencies`):
 
-- `@ttoss/ui` — core components (`Box`, `Button`, `Flex`, `Text`, etc.) with `sx` prop for theme tokens
+- `@ttoss/ui` — core components (`Box`, `Button`, `Flex`, `Text`, etc.) with `sx` prop for theme tokens — **legacy** alongside `@ttoss/forms` (owner ruling 2026-07-26): maintain existing consumers only; new UI work targets `@ttoss/fsl-ui` + `@ttoss/fsl-theme`, which take no form-library dependency
 - `@ttoss/theme` — design tokens (colors, spacing, typography)
 - `@ttoss/react-i18n` — i18n via `useI18n()` / `defineMessages`
 - `@ttoss/react-notifications` — notifications via `useNotifications()`
-- `@ttoss/forms` — form management with validation
+- `@ttoss/forms` — form management with validation (legacy — see `@ttoss/ui` note)
 
 ```typescript
 // ✅ Correct: consume context

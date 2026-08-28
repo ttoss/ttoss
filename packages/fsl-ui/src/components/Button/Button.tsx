@@ -1,9 +1,5 @@
-import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
-import {
-  Button as RACButton,
-  type ButtonProps as RACButtonProps,
-} from 'react-aria-components';
+import type { ButtonProps as RACButtonProps } from 'react-aria-components';
 
 import type {
   ComponentMeta,
@@ -11,14 +7,11 @@ import type {
   ConsequencesFor,
   EvaluationsFor,
 } from '../../semantics';
-import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import {
   type ActionIconPlacement,
   type ActionLabellingProps,
-  ActionTriggerContent,
-  buildActionTriggerStyle,
+  ActionTriggerRoot,
   COMMAND_SILHOUETTE,
-  useIsGroupedActionTrigger,
 } from '../ActionTrigger/anatomy';
 import type { IconProps } from '../Icon';
 
@@ -55,8 +48,10 @@ export interface ButtonOwnProps extends Omit<
    * `data-consequence` on the DOM so host integrations (confirm wrappers,
    * telemetry, undo/redo hooks) and tests can observe the contract.
    *
-   * NOT used for coloring — visual distinction (if any) is a theme /
-   * host-CSS concern, matching the same contract as `MenuItem`.
+   * Carries colour in exactly one case: `destructive` on the **quiet** rung
+   * (`evaluation="muted"`) tints the ink, because a part that paints no fill
+   * has nowhere else to say it — see {@link resolveConsequenceInk}. On every
+   * filled rung the fill is the voice and `evaluation` owns it.
    *
    * @default 'neutral'
    */
@@ -148,56 +143,19 @@ export const Button = ({
   'data-scope': dataScope = 'button',
   ...props
 }: ButtonProps) => {
-  const colors = vars.colors.action[evaluation];
-  const hasIcon = icon !== undefined;
-  const isIconOnly = hasIcon && children === undefined;
-  const isGrouped = useIsGroupedActionTrigger();
-
   return (
-    <RACButton
+    <ActionTriggerRoot
       {...props}
-      data-scope={dataScope}
-      data-part="root"
-      data-evaluation={evaluation}
-      data-consequence={consequence}
-      data-composition={composition}
-      data-icon-placement={hasIcon ? iconPlacement : undefined}
-      style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => {
-        return buildActionTriggerStyle({
-          silhouette: COMMAND_SILHOUETTE,
-          hasIcon,
-          isIconOnly,
-          isDisabled,
-          isFocusVisible,
-          isGrouped,
-          colors: {
-            background: resolveInteractiveStyle(colors?.background, {
-              isHovered,
-              isPressed,
-              isDisabled,
-            }),
-            border: resolveInteractiveStyle(colors?.border, {
-              isDisabled,
-              isFocusVisible,
-            }),
-            text:
-              resolveInteractiveStyle(colors?.text, {
-                isHovered,
-                isPressed,
-                isDisabled,
-              }) ?? colors?.text?.default,
-          },
-        });
-      }}
+      silhouette={COMMAND_SILHOUETTE}
+      evaluation={evaluation}
+      consequence={consequence}
+      composition={composition}
+      icon={icon}
+      iconPlacement={iconPlacement}
+      dataScope={dataScope}
     >
-      <ActionTriggerContent
-        dataScope={dataScope}
-        icon={icon}
-        iconPlacement={iconPlacement}
-      >
-        {children}
-      </ActionTriggerContent>
-    </RACButton>
+      {children}
+    </ActionTriggerRoot>
   );
 };
 Button.displayName = buttonMeta.displayName;

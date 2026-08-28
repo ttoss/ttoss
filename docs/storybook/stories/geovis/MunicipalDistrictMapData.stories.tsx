@@ -246,7 +246,7 @@ const resolveNormalization = ({
 };
 
 export default {
-  title: 'GeoVis/Fixtures/MunicipalDistrictMapData',
+  title: 'GeoVis/MunicipalDistrictMapData',
   tags: ['autodocs'],
   argTypes: {
     year: {

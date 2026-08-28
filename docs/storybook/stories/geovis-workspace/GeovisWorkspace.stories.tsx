@@ -8,7 +8,6 @@ import {
   GeovisWorkspace,
   type GeovisWorkspaceConfig,
   getInitialSelection,
-  LayerListControls,
 } from '@ttoss/geovis-workspace';
 import { Box, Button, Flex, Text } from '@ttoss/ui';
 import * as React from 'react';
@@ -17,38 +16,63 @@ import {
   buildBrokenSpec,
   buildPolicyViolationSpec,
   buildSpec,
+  groupedWorkspaceConfig,
+  sidebarPreviewConfig,
 } from './GeovisWorkspace.fixtures';
 
 /**
- * Workspace config. The left sidebar exposes two menu groups whose selection
+ * Workspace config. The left sidebar exposes two variation tabs whose selection
  * drives the choropleth: `variable` picks the metric (and its color scale),
  * `age` picks the cohort whose values are rendered.
  */
 const workspaceConfig: GeovisWorkspaceConfig = {
-  controls: {
-    menus: [
+  leftSidebar: {
+    sections: [
       {
         id: 'variable',
-        title: 'Variável',
-        defaultValue: 'cumulative-rate',
-        items: [
-          { value: 'cumulative-rate', label: 'taxa cumulativa (% do total)' },
-          {
-            value: 'cumulative-proportion',
-            label: 'proporção cumulativa (% da pop 65+)',
-          },
-          { value: 'range', label: 'faixa (% da pop 65+)' },
-        ],
+        header: { title: 'Variável', icon: 'lucide:layers' },
+        body: {
+          kind: 'variations',
+          menuId: 'variable',
+          defaultValue: 'cumulative-rate',
+          groups: [
+            {
+              id: 'metrics',
+              label: 'Métricas',
+              variations: [
+                {
+                  value: 'cumulative-rate',
+                  label: 'Taxa cumulativa (% do total)',
+                },
+                {
+                  value: 'cumulative-proportion',
+                  label: 'Proporção cumulativa (% da pop 65+)',
+                },
+                { value: 'range', label: 'Faixa (% da pop 65+)' },
+              ],
+            },
+          ],
+        },
       },
       {
         id: 'age',
-        title: 'Faixa etária',
-        defaultValue: '65-plus',
-        items: [
-          { value: '65-plus', label: '65 anos ou mais' },
-          { value: '70-plus', label: '70 anos ou mais' },
-          { value: '75-plus', label: '75 anos ou mais' },
-        ],
+        header: { title: 'Faixa etária', icon: 'lucide:users' },
+        body: {
+          kind: 'variations',
+          menuId: 'age',
+          defaultValue: '65-plus',
+          groups: [
+            {
+              id: 'cohorts',
+              label: 'Coortes',
+              variations: [
+                { value: '65-plus', label: '65 anos ou mais' },
+                { value: '70-plus', label: '70 anos ou mais' },
+                { value: '75-plus', label: '75 anos ou mais' },
+              ],
+            },
+          ],
+        },
       },
     ],
   },
@@ -62,7 +86,7 @@ const workspaceConfig: GeovisWorkspaceConfig = {
  * config, so they stay in sync with the map by construction.
  */
 const legendWorkspaceConfig: GeovisWorkspaceConfig = {
-  controls: workspaceConfig.controls,
+  leftSidebar: workspaceConfig.leftSidebar,
   rightSidebar: { title: 'POPULAÇÃO 65+ COMO % DA POPULAÇÃO TOTAL' },
   legend: {
     description:
@@ -81,7 +105,7 @@ const legendWorkspaceConfig: GeovisWorkspaceConfig = {
 };
 
 /**
- * Custom `controls` slot panel that replaces the default menu list. Reads the
+ * Custom `controls` slot panel that replaces the default sidebar. Reads the
  * live spec through `useGeoVis()` — the same runtime access the default panel
  * gets — to show it is not limited to config-driven content.
  */
@@ -141,7 +165,7 @@ const meta: Meta<typeof GeovisWorkspace> = {
     docs: {
       description: {
         component:
-          'Composes a left sidebar (menu groups), a GeoVis map in the main area, and an optional right sidebar — the sidebars driven by `config` and the map driven by `visualizationSpec`. The parent owns the selection state and derives the next `visualizationSpec` from it, so picking a variable or an age range recolors the map live.',
+          'Composes a left sidebar (config-driven `sections`), a GeoVis map in the main area, and an optional right sidebar — the sidebars driven by `config` and the map driven by `visualizationSpec`. The parent owns the selection state and derives the next `visualizationSpec` from it, so picking a variable or an age range recolors the map live.',
       },
     },
   },
@@ -187,7 +211,7 @@ export const LeftSidebarOnly: Story = {
     return (
       <WorkspaceStory
         config={{
-          controls: workspaceConfig.controls,
+          leftSidebar: workspaceConfig.leftSidebar,
           slots: { metadata: { hidden: true } },
         }}
       />
@@ -196,8 +220,8 @@ export const LeftSidebarOnly: Story = {
 };
 
 /**
- * The `controls` slot renders a custom component instead of the default menu
- * list (`config.slots.controls.component`), while still reading the live
+ * The `controls` slot renders a custom component instead of the default sidebar
+ * (`config.slots.controls.component`), while still reading the live
  * GeoVis spec through `useGeoVis()` — the same runtime access the default
  * panel it replaces gets.
  */
@@ -318,20 +342,21 @@ export const InspectFeature: Story = {
 };
 
 /**
- * Drives the layer-list variant: holds per-layer visibility state, rebuilds
- * the spec with each layer's `visible` field set from it, and passes
- * `onLayerVisibilityChange` down so `LayerListControls`'s checkboxes can
- * update that state — the same delegation shape `onVariableChange` and
- * `onRepair` already use, since only the application can rebuild
- * `visualizationSpec` with a layer's new `visible` value.
+ * Drives the layer-control-clearance variant: builds a spec that carries the
+ * map's own `control` (the layer-toggle button anchored bottom-left) alongside
+ * a togglable outline layer, and starts with the left sidebar open so the
+ * shift is visible immediately.
  */
-const LayerListVariantStory = () => {
-  const [layerVisibility, setLayerVisibility] = React.useState<
-    Record<string, boolean>
-  >({});
+const LayerControlClearsSidebarStory = () => {
+  const [selection, setSelection] = React.useState(() => {
+    return getInitialSelection({ config: workspaceConfig });
+  });
 
-  const visualizationSpec = React.useMemo(() => {
-    const spec = buildSpec({ variable: 'cumulative-rate', age: '65-plus' });
+  const visualizationSpec = React.useMemo<VisualizationSpec>(() => {
+    const spec = buildSpec({
+      variable: selection.variable ?? 'cumulative-rate',
+      age: selection.age ?? '65-plus',
+    });
 
     const outlineLayer: VisualizationSpec['layers'][number] = {
       id: 'regions-outline',
@@ -342,42 +367,46 @@ const LayerListVariantStory = () => {
 
     return {
       ...spec,
-      layers: [...spec.layers, outlineLayer].map((layer) => {
-        return { ...layer, visible: layerVisibility[layer.id] ?? true };
-      }),
+      layers: [...spec.layers, outlineLayer],
+      // The map's own layer-toggle control, anchored to the same bottom-left
+      // corner the left sidebar opens over. `GeoVisProvider` auto-mounts it.
+      control: {
+        id: 'layers',
+        label: 'Camadas',
+        position: 'bottom-left',
+        trigger: 'click',
+        items: [
+          { id: 'fill', label: 'Preenchimento', layers: ['regions-fill'] },
+          { id: 'outline', label: 'Contorno', layers: ['regions-outline'] },
+        ],
+      },
     };
-  }, [layerVisibility]);
-
-  const handleLayerVisibilityChange = (layerId: string, visible: boolean) => {
-    setLayerVisibility((current) => {
-      return { ...current, [layerId]: visible };
-    });
-  };
+  }, [selection]);
 
   return (
     <GeovisWorkspace
       config={{
-        slots: { controls: { component: LayerListControls } },
-        leftSidebar: { initialState: 'open' },
+        ...workspaceConfig,
+        leftSidebar: { ...workspaceConfig.leftSidebar, initialState: 'open' },
       }}
       visualizationSpec={visualizationSpec}
-      onLayerVisibilityChange={handleLayerVisibilityChange}
+      variables={selection}
+      onVariableChange={setSelection}
     />
   );
 };
 
 /**
- * The `controls` slot renders `LayerListControls` instead of the default menu
- * list — one row per `spec.layers` entry with a visibility checkbox and its
- * `activeLegendId`, reading the live spec via `useGeoVis()` rather than
- * `config.controls.menus`. Toggling a checkbox calls `onLayerVisibilityChange`,
- * which this story uses to rebuild the spec with that layer's `visible` field
- * flipped — the map updates immediately since the maplibre adapter reads
- * `visible` on every full spec update.
+ * The map carries its own `control` — the layer-toggle button anchored to the
+ * bottom-left corner. The left sidebar opens over that same corner, so the
+ * workspace shifts the control clear of it while the sidebar is open: its
+ * `control.offset.x` grows to slide the button right along the bottom edge,
+ * and snaps back when the sidebar closes. The story starts with the sidebar
+ * open (button already clear); close and reopen the menu to watch it slide.
  */
-export const LayerListVariant: Story = {
+export const LayerControlClearsSidebar: Story = {
   render: () => {
-    return <LayerListVariantStory />;
+    return <LayerControlClearsSidebarStory />;
   },
 };
 
@@ -393,5 +422,101 @@ export const LayerListVariant: Story = {
 export const MetadataDefaultPanel: Story = {
   render: () => {
     return <WorkspaceStory config={workspaceConfig} />;
+  },
+};
+
+/** The three demo color scales this fixture builder knows how to render. */
+const KNOWN_VARIABLES = [
+  'cumulative-rate',
+  'cumulative-proportion',
+  'range',
+] as const;
+
+/**
+ * Drives the grouped/carousel variant: holds the single shared selection and
+ * derives the map spec from it. The 20 grouped values are demo labels, so each
+ * one is mapped deterministically onto one of the three real color scales
+ * `buildSpec` knows — enough to see the map recolor as different variations are
+ * picked across groups.
+ */
+const GroupedControlsStory = () => {
+  const [selection, setSelection] = React.useState(() => {
+    return getInitialSelection({ config: groupedWorkspaceConfig });
+  });
+
+  const visualizationSpec = React.useMemo(() => {
+    const selected = selection.variable ?? 'pop-total';
+
+    const index =
+      [...selected].reduce((sum, char) => {
+        return sum + char.charCodeAt(0);
+      }, 0) % KNOWN_VARIABLES.length;
+
+    return buildSpec({ variable: KNOWN_VARIABLES[index], age: '65-plus' });
+  }, [selection]);
+
+  return (
+    <GeovisWorkspace
+      config={groupedWorkspaceConfig}
+      visualizationSpec={visualizationSpec}
+      variables={selection}
+      onVariableChange={setSelection}
+    />
+  );
+};
+
+/**
+ * The left sidebar's "Variações" tab groups 20+ variations across six groups
+ * (Demografia, Renda, Saúde, Educação, …). `defaultValue` ('renda-media') seeds
+ * the shared selection; picking any variation recolors the map.
+ */
+export const GroupedControls: Story = {
+  render: () => {
+    return <GroupedControlsStory />;
+  },
+};
+
+/**
+ * Drives the rich sidebar: seeds the shared `variable` selection from the
+ * config's default variation and maps whichever variation is picked onto one of
+ * the three real color scales `buildSpec` knows, so the map recolors as
+ * variations are chosen. The Filtros tab's controls (timeline, chips, locator)
+ * are visual-only for now.
+ */
+const SidebarPreviewStory = () => {
+  const [selection, setSelection] = React.useState({ variable: 'farms' });
+
+  const visualizationSpec = React.useMemo(() => {
+    const selected = selection.variable ?? 'farms';
+
+    const index =
+      [...selected].reduce((sum, char) => {
+        return sum + char.charCodeAt(0);
+      }, 0) % KNOWN_VARIABLES.length;
+
+    return buildSpec({ variable: KNOWN_VARIABLES[index], age: '65-plus' });
+  }, [selection]);
+
+  return (
+    <GeovisWorkspace
+      config={sidebarPreviewConfig}
+      visualizationSpec={visualizationSpec}
+      variables={selection}
+      onVariableChange={setSelection}
+    />
+  );
+};
+
+/**
+ * A rich left sidebar with two icon tabs whose header mirrors the active tab.
+ * The "Variações" tab is a flat list of icon-led variations (tagged by group)
+ * that recolor the map through the shared selection; the "Filtros" tab has a
+ * timeline with play/pause, emoji chips (their count shown as a tab badge), and
+ * a município locator. The filter controls are visual-only for now (local
+ * state, not yet wired to the map).
+ */
+export const RichLeftSidebar: Story = {
+  render: () => {
+    return <SidebarPreviewStory />;
   },
 };

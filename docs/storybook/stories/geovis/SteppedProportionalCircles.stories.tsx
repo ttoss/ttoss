@@ -3,7 +3,7 @@ import type { VisualizationSpec } from '@ttoss/geovis';
 import { GeoVisCanvas, GeoVisLegend, GeoVisProvider } from '@ttoss/geovis';
 
 export default {
-  title: 'GeoVis/Fixtures/SteppedProportionalCircles',
+  title: 'GeoVis/SteppedProportionalCircles',
   tags: ['autodocs'],
 } as Meta;
 

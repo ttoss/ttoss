@@ -6,7 +6,7 @@ import geojsonUrlMapSpec from '../../../../packages/geovis/src/fixtures/geojson-
 import { FitBoundsToUrlSource } from './helpers/map-story-helpers';
 
 export default {
-  title: 'GeoVis/Fixtures/GeoJsonUrlMap',
+  title: 'GeoVis/GeoJsonUrlMap',
   tags: ['autodocs'],
 } as Meta;
 

@@ -4,8 +4,8 @@ title: Icon
 
 # Icon
 
-:::caution Status: specification — partially implemented (internal)
-`@ttoss/fsl-ui` ships an **internal** Icon layer (`src/components/Icon/`) that implements a **subset** of this contract: Iconify is the official glyph provider (default set: Lucide), consumed via intents (`icon.{family}.{intent}`) registered offline. It is not yet a public component or a standalone `@ttoss/fsl-icon` package, and it covers only the intents shipped components use today — the full canonical registry below is the target, not the current surface. See `@ttoss/fsl-ui` CONTRIBUTING ADR-005. Enforcement described as "compile time / build time" is the intended shape, not shipped behaviour.
+:::info Status: public component in `@ttoss/fsl-ui`
+`Icon` is a **public export** of `@ttoss/fsl-ui` (ADR-010): Iconify is the official glyph provider (default set: Lucide), consumed via intents (`icon.{family}.{intent}`) registered offline — no runtime API fetch. The standalone `@ttoss/fsl-icon` package remains **deferred**; the semantic layer (`intents.ts` + `glyphs.ts`) stays free of React and token imports so it can be lifted out whole. The registry below is the **shipped** vocabulary and grows on component demand (see Change Rules). See `@ttoss/fsl-ui` CONTRIBUTING ADR-005 and ADR-010.
 :::
 
 **Entity: Structure**
@@ -60,46 +60,40 @@ icon.{family}.{intent}
 
 ### Families
 
-| Family       | Meaning                                 |
-| :----------- | :-------------------------------------- |
-| `action`     | Direct user actions                     |
-| `navigation` | Movement and wayfinding                 |
-| `disclosure` | Expand/collapse                         |
-| `visibility` | Show/hide                               |
-| `selection`  | Checkbox/radio-like control states      |
-| `status`     | Foundation status indicators            |
-| `object`     | Minimal cross-product object references |
+| Family       | Meaning                                                          |
+| :----------- | :--------------------------------------------------------------- |
+| `action`     | Direct user actions                                              |
+| `navigation` | Movement and wayfinding                                          |
+| `disclosure` | Expand/collapse                                                  |
+| `selection`  | Checkbox/radio-like control states                               |
+| `status`     | Foundation status indicators                                     |
+| `visibility` | Show/hide — named by the contract, no shipped intents yet        |
+| `object`     | Minimal cross-product object references — no shipped intents yet |
 
 ---
 
 ## Canonical Intent Registry
 
-This registry is the stable public API of the Icon component. Every implementation must support **all** of these intents. Themes must provide a glyph for each.
+This registry is the stable public API of the Icon component — the **shipped** vocabulary, mirrored from `ICON_INTENTS` in `packages/fsl-ui/src/components/Icon/intents.ts` (on divergence, the code wins). Themes must provide a glyph for each. The registry **grows on demand**: an intent is admitted when a shipped component needs it, never speculatively — and it shrinks never (see Change Rules).
 
 ### action
 
-| Intent     | Meaning                                                                |
-| :--------- | :--------------------------------------------------------------------- |
-| `add`      | Introduce a new item, value, or entry into the current context         |
-| `edit`     | Modify an existing item or enter editing mode                          |
-| `copy`     | Duplicate content without removing the source                          |
-| `paste`    | Insert previously copied content                                       |
-| `search`   | Initiate search or represent search as primary action                  |
-| `download` | Move content from system to user's device                              |
-| `upload`   | Send content from user's device into the system                        |
-| `share`    | Distribute or expose content to other users or channels                |
-| `refresh`  | Reload or request updated content                                      |
-| `close`    | Dismiss a UI surface without implying deletion                         |
-| `clear`    | Remove current input, filter, or selection without deleting the entity |
-| `delete`   | Permanently remove an item or stored value                             |
+| Intent           | Meaning                                                               |
+| :--------------- | :-------------------------------------------------------------------- |
+| `close`          | Dismiss a UI surface without implying deletion                        |
+| `search`         | Initiate search or represent search as primary action                 |
+| `increment`      | Step a value up                                                       |
+| `decrement`      | Step a value down                                                     |
+| `sortAscending`  | Sort a collection column in ascending order                           |
+| `sortDescending` | Sort a collection column in descending order                          |
+| `more`           | Additional actions behind a trigger — the overflow affordance         |
+| `help`           | Explanatory content behind a trigger — the contextual-help affordance |
 
 ### navigation
 
-| Intent     | Meaning                                                                 |
-| :--------- | :---------------------------------------------------------------------- |
-| `back`     | Move to the previous location in a logical sequence (not absolute left) |
-| `forward`  | Move to the next location in a logical sequence (not absolute right)    |
-| `external` | Navigate outside the current app context                                |
+| Intent | Meaning                                                                             |
+| :----- | :---------------------------------------------------------------------------------- |
+| `menu` | Reveal a navigation region that has no room to stand on its own (temporary sidebar) |
 
 ### disclosure
 
@@ -108,40 +102,20 @@ This registry is the stable public API of the Icon component. Every implementati
 | `expand`   | Reveal hidden or collapsed content |
 | `collapse` | Hide previously revealed content   |
 
-### visibility
-
-| Intent | Meaning                     |
-| :----- | :-------------------------- |
-| `show` | Make hidden content visible |
-| `hide` | Conceal visible content     |
-
 ### selection
 
 | Intent          | Meaning                   |
 | :-------------- | :------------------------ |
 | `checked`       | Affirmative checked state |
-| `unchecked`     | Unselected state          |
 | `indeterminate` | Mixed or partial state    |
 
 ### status
 
-| Intent    | Meaning                                  |
-| :-------- | :--------------------------------------- |
-| `success` | Positive outcome or confirmed completion |
-| `warning` | Caution or attention needed              |
-| `error`   | Failure or blocking problem              |
-| `info`    | Neutral informational context            |
-
-### object
-
-| Intent       | Meaning                                       |
-| :----------- | :-------------------------------------------- |
-| `user`       | Person, account, or profile reference         |
-| `calendar`   | Date or scheduling context                    |
-| `attachment` | Attached file or supporting material          |
-| `settings`   | General settings or configuration entry point |
-
-> `object.*` is intentionally narrow. Domain-specific object semantics belong in patterns, applications, or controlled extensions.
+| Intent    | Meaning                                                                                                                           |
+| :-------- | :-------------------------------------------------------------------------------------------------------------------------------- |
+| `success` | Positive outcome or confirmed completion                                                                                          |
+| `alert`   | Needs attention — the invalid-field mark and any caution indicator                                                                |
+| `info`    | Noteworthy, judgement-free status ("in progress", "new") — a system report, distinct from the `action.help` affordance (an offer) |
 
 ---
 
@@ -205,8 +179,8 @@ A flat mapping from intent to glyph. The glyph is a renderable unit: an inline S
 
 ```text
 theme glyph mapping:
-  action.add       → (plus glyph)
-  action.search    → (magnifying glass glyph)
+  action.close      → (x glyph)
+  action.search     → (magnifying glass glyph)
   disclosure.expand → (chevron-down glyph)
   selection.checked → (check glyph)
   ...every intent must be mapped
@@ -236,7 +210,7 @@ The theme decides. The contract enforces completeness and meaning, not format.
 
 Icon intents express **meaning**, not glyph appearance.
 
-Valid: `icon.action.search`, `icon.navigation.back`, `icon.status.error`
+Valid: `icon.action.search`, `icon.navigation.menu`, `icon.status.alert`
 
 Invalid: `icon.chevron-left`, `icon.close-filled`, `icon.magnifying-glass`
 
@@ -250,18 +224,19 @@ Intents must not encode placement (`leading`, `trailing`, `only`, `toolbar`). Pl
 
 ### 4. No parallel state language
 
-Icon must not duplicate state meaning owned by colors, borders, motion, or component API state. `icon.status.warning` is valid. `icon.warning.hovered.primary.outlined` is not.
+Icon must not duplicate state meaning owned by colors, borders, motion, or component API state. `icon.status.alert` is valid. `icon.alert.hovered.primary.outlined` is not.
 
 ### 5. Oppositions must be explicit
 
 These pairs must never collapse to the same resolved glyph:
 
-- `back` ≠ `forward`
 - `expand` ≠ `collapse`
-- `show` ≠ `hide`
-- `checked` ≠ `unchecked` ≠ `indeterminate`
-- `success` ≠ `warning` ≠ `error` (pairwise)
-- `info` ≠ `error`
+- `checked` ≠ `indeterminate`
+- `increment` ≠ `decrement`
+- `sortAscending` ≠ `sortDescending`
+- `success` ≠ `alert`
+
+An offer is not a report: `action.help` and `status.info` may share a glyph (the default mapping's ⓘ), because the opposition rule governs pairs that must never be confused with each other — that is the theme's choice, not the intents'.
 
 ### 6. Semantic naming, not metaphor
 
@@ -288,7 +263,7 @@ Applications may extend the canonical registry with domain-specific intents.
 ```text
 // Application extension example:
 canonical intents         + app intents
-icon.action.add             icon.product.cart
+icon.action.close           icon.product.cart
 icon.action.search          icon.product.wishlist
 icon.status.success         icon.product.inventory
 ...                         ...
@@ -302,15 +277,11 @@ icon.status.success         icon.product.inventory
 
 - Any canonical intent missing from a theme glyph mapping
 - Any opposition pair resolving to the same glyph:
-  - `navigation.back` = `navigation.forward`
   - `disclosure.expand` = `disclosure.collapse`
-  - `visibility.show` = `visibility.hide`
-  - `selection.checked` = `selection.unchecked`
   - `selection.checked` = `selection.indeterminate`
-  - `status.success` = `status.warning`
-  - `status.success` = `status.error`
-  - `status.warning` = `status.error`
-  - `status.info` = `status.error`
+  - `action.increment` = `action.decrement`
+  - `action.sortAscending` = `action.sortDescending`
+  - `status.success` = `status.alert`
 
 ### Warnings (should warn)
 

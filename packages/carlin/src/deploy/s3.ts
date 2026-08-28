@@ -154,10 +154,12 @@ export const uploadDirectoryToS3 = async ({
   bucket,
   bucketKey = '',
   directory,
+  uploadSourceMaps = false,
 }: {
   bucket: string;
   bucketKey?: string;
   directory: string;
+  uploadSourceMaps?: boolean;
 }) => {
   log.info(
     logPrefix,
@@ -174,16 +176,37 @@ export const uploadDirectoryToS3 = async ({
     throw new Error(`Directory ${directory}/ has no files.`);
   }
 
+  /**
+   * Source maps expose the application's original source, and the bucket this
+   * uploads to is public, so they are excluded unless explicitly requested.
+   *
+   * This runs AFTER the empty-directory check on purpose: that error means
+   * "the build folder is probably wrong", and a directory containing only
+   * source maps must not borrow it to say something else.
+   */
+  const files = uploadSourceMaps
+    ? allFiles
+    : allFiles.filter((file) => {
+        return !file.endsWith('.map');
+      });
+
+  if (files.length !== allFiles.length) {
+    log.info(
+      logPrefix,
+      `Skipping ${allFiles.length - files.length} source map file(s). Pass --upload-source-maps to include them.`
+    );
+  }
+
   const GROUP_MAX_LENGTH = 63;
 
-  const numberOfGroups = Math.ceil(allFiles.length / GROUP_MAX_LENGTH);
+  const numberOfGroups = Math.ceil(files.length / GROUP_MAX_LENGTH);
 
   /**
    * Divide all files and create "numberOfGroups" groups of files whose max
    * length is GROUP_MAX_LENGTH.
    */
 
-  const aoaOfFiles = allFiles.reduce<string[][]>((acc, file, index) => {
+  const aoaOfFiles = files.reduce<string[][]>((acc, file, index) => {
     const groupIndex = index % numberOfGroups;
     if (!acc[groupIndex]) {
       acc[groupIndex] = [];
@@ -321,6 +344,17 @@ export const deleteS3Directory = async ({
  * Delete old S3 files based on retention period.
  * Files older than the specified number of days will be deleted.
  */
+/**
+ * These three exemptions are pre-existing: the function is unchanged by the
+ * commit that added them, and it violates the same rules on `main`. They only
+ * surface now because lint-staged lints whole files that appear in the diff,
+ * and an unrelated change elsewhere in this file put it there.
+ *
+ * Do not read this as a licence to grow the function. Tracked for a proper
+ * refactor — deletion logic should not be restructured inside a PR about
+ * something else.
+ */
+/* eslint-disable complexity, max-depth, max-lines-per-function */
 export const deleteOldS3Files = async ({
   bucket,
   continuationToken,
@@ -432,3 +466,4 @@ export const deleteOldS3Files = async ({
     throw error;
   }
 };
+/* eslint-enable complexity, max-depth, max-lines-per-function */

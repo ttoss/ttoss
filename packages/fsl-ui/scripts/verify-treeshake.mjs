@@ -36,7 +36,7 @@ const COMPOSITE_MARKERS = [
 ];
 
 // Byte budget for the minified Button-only bundle (externals excluded).
-// Measured ~1.8 KB from src at the time of writing; generous headroom
+// The probe prints the measured size on every run; generous headroom
 // before the probe complains — a jump past this means the barrel stopped
 // shaking.
 const BUDGET_BYTES = 16_000;

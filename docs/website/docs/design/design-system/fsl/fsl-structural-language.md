@@ -65,16 +65,16 @@ The semantic architecture is composed of five layers:
 2. **FSL Structural Language**  
    The formal structure of valid semantic expressions.
 
-3. **Component Semantics Projection** _(implemented)_  
-   The component model derived from FSL. Specified by `component-model.md`; realized by `@ttoss/fsl-ui` (`taxonomy.ts` — vocabulary + legality matrices + contract tests).
+3. **Component Semantics Projection**  
+   The component model derived from FSL. Specified by the [Component Model](/docs/design/design-system/components/component-model).
 
-4. **Semantic Token Projection** _(implemented)_  
-   The semantic token model derived from FSL. Realized by the design tokens documentation and `Types.ts` (`@ttoss/fsl-theme`).
+4. **Semantic Token Projection**  
+   The semantic token model derived from FSL. Specified by the [design tokens documentation](/docs/design/design-system/design-tokens/model).
 
-5. **Deterministic Resolver** _(planned)_  
-   The engine that parses, normalizes, validates, projects, and explains semantic outputs. This document (§14) specifies its interface; no such tooling exists yet.
+5. **Resolution contract**  
+   The obligation that every resolution function (validate, normalize, resolve, project, explain) has a declared owner. Defined in §14.
 
-This document defines only layer 2.
+This document defines only layer 2. It defines structure, not delivery state — the implementation status of each layer is tracked in the [FSL overview](./index.md).
 
 ---
 
@@ -165,17 +165,7 @@ This document defines their structural role in the language.
 
 The semantic identity of the thing.
 
-Expected lexical values (the complete Entity Kind registry is normative in the Lexicon §1):
-
-- Action
-- Input
-- Selection
-- Collection
-- Overlay
-- Navigation
-- Disclosure
-- Feedback
-- Structure
+**Vocabulary:** [Lexicon §1 — Entity Kind](./fsl-lexicon.md#1-entity-kind) (the normative registry; this document never re-enumerates it).
 
 Entity is the strongest identity dimension.
 It must not be redefined by context.
@@ -192,18 +182,7 @@ The Entity Kind `Structure` (capitalized) is distinct from the Structural Role d
 
 The semantic topology of the thing or part.
 
-Examples of expected lexical values:
-
-- root
-- control
-- label
-- title
-- description
-- status
-- item
-- backdrop
-- trigger
-- actions
+**Vocabulary:** [Lexicon §2 — Structural Role](./fsl-lexicon.md#2-structural-role).
 
 Structure describes part function, not identity.
 
@@ -215,25 +194,11 @@ Structure describes part function, not identity.
 
 Interaction describes the mode of user-system semantic operation.
 
-Examples of expected lexical values:
-
-- command
-- confirm
-- dismiss
-- entry.text
-- entry.value
-- select.single
-- select.multi
-- toggle.binary
-- toggle.tristate
-- navigate.link
-- disclose.toggle
-- status.passive
-- status.interruptive
+**Vocabulary:** [Lexicon §3 — Interaction Kind](./fsl-lexicon.md#3-interaction-kind).
 
 > `popup.*` composite terms (listbox/grid/tree/dialog) are intentionally **not** foundational — they belong to the Web/ARIA Projection Profile. The trigger carries `disclose.toggle`; the revealed surface is modeled as its own Entity expression. See FSL Lexicon §10.14.
 
-Interaction is required because real interface structures cannot be disambiguated safely from identity and structure alone.
+Interaction is a foundational dimension because real interface structures cannot be disambiguated safely from identity and structure alone. (A profile may still defer codifying it — see §13.3.)
 
 ---
 
@@ -243,19 +208,7 @@ Interaction is required because real interface structures cannot be disambiguate
 
 Composition expresses relational semantics.
 
-Examples of expected lexical values:
-
-- primaryAction
-- secondaryAction
-- dismissAction
-- heading
-- body
-- status
-- control
-- label
-- description
-- supporting
-- selection
+**Vocabulary:** [Lexicon §4 — Composition Role](./fsl-lexicon.md#4-composition-role).
 
 Composition refines meaning relationally.  
 It does not replace entity identity.
@@ -268,15 +221,7 @@ It does not replace entity identity.
 
 Evaluation expresses semantic emphasis or valence.
 
-Examples of expected lexical values:
-
-- primary
-- secondary
-- accent
-- muted
-- positive
-- caution
-- negative
+**Vocabulary:** [Lexicon §5 — Evaluation](./fsl-lexicon.md#5-evaluation) (a discriminated union of emphasis and valence — an expression carries one class or the other, never both).
 
 Evaluation is foundational because meaning like “negative” or “muted” must exist before token color or visual realization is chosen.
 
@@ -288,15 +233,7 @@ Evaluation is foundational because meaning like “negative” or “muted” mu
 
 Consequence expresses interaction-critical semantics such as risk, reversibility, or interruption.
 
-Examples of expected lexical values:
-
-- neutral
-- reversible
-- committing
-- destructive
-- interruptive
-- recoverable
-- safeDefaultRequired
+**Vocabulary:** [Lexicon §6 — Consequence](./fsl-lexicon.md#6-consequence).
 
 Consequence exists because some semantics materially shape interaction design and user experience while remaining deeper than styling.
 
@@ -306,22 +243,7 @@ Consequence exists because some semantics materially shape interaction design an
 
 **Question answered:** What semantic or interactional state is active?
 
-Examples of expected lexical values:
-
-- default
-- hover
-- active
-- focused
-- disabled
-- selected
-- pressed
-- checked
-- indeterminate
-- invalid
-- expanded
-- current
-- visited
-- droptarget
+**Vocabulary:** [Lexicon §7 — State](./fsl-lexicon.md#7-state).
 
 State is governed by legality.  
 Not every state is legal for every interaction type.
@@ -332,14 +254,7 @@ Not every state is legal for every interaction type.
 
 **Question answered:** What semantic layer role does this thing occupy?
 
-Examples of expected lexical values:
-
-- base
-- sticky
-- raised
-- overlay
-- blocking
-- transient
+**Vocabulary:** [Lexicon §8 — Layer Role](./fsl-lexicon.md#8-layer-role).
 
 Layer is semantic layering, not raw z-index.
 
@@ -351,15 +266,7 @@ Layer is semantic layering, not raw z-index.
 
 Context is a controlled refinement dimension.
 
-Expected context classes include:
-
-- composition
-- environment
-- interactionEnvironment
-- mode
-- density
-- accessibilityPreference
-- platformCondition
+**Vocabulary:** [Lexicon §9 — Context Class](./fsl-lexicon.md#9-context-class).
 
 Context may refine meaning but must not redefine foundational identity.
 
@@ -449,7 +356,7 @@ Example shape:
 
 A qualified expression after lawful contextual refinement and normalization.
 
-This is the form consumed by downstream projection profiles and the deterministic resolver.
+This is the form consumed by downstream projection profiles and the resolution mechanisms that fulfill §14.
 
 ---
 
@@ -513,59 +420,38 @@ That is a projection concern, not a core language concern.
 
 ---
 
-# 10. Mandatory legality matrices
+# 10. Legality obligations and matrices
 
-The Structural Language requires the following legality matrices.
+Well-formedness (§8) is checked per expression. Legality is checked per **combination** — and the language requires every legality decision to have a declared owner. The foundational layer defines the obligation here; the actual values — which combinations are legal — are the responsibility of each Projection Profile.
 
-These matrices are required artifacts. The foundational layer defines their structure here. Their actual values — which combinations are legal — are the responsibility of each Projection Profile.
+## 10.1 The legality obligation
 
-## 10.1 Entity × Structure
+For every pair of **codified** dimensions whose combination can be invalid, a Projection Profile must declare exactly one legality source:
 
-Defines which structures are legal for each entity kind.
+- **Authorial matrix** — an explicit matrix artifact (e.g. Entity × Structure).
+- **Runtime resolution** — a named runtime mechanism resolves legality (e.g. a platform layer that only surfaces applicable states). The profile must name the mechanism.
+- **Structural impossibility** — the combination cannot be expressed in the profile's surface, and the profile says so.
 
-Example:
+A Projection Profile is incomplete if any pair of its codified dimensions lacks a declared legality source.
 
-- `Overlay × backdrop` may be legal
-- `Action × backdrop` is generally illegal
+## 10.2 Non-codified dimensions
 
-## 10.2 Entity × Interaction
+Legality obligations follow the dimension's disposition (§13.3):
 
-Defines which interaction kinds are legal for each entity kind.
+- an **absorbed** dimension's legality must be recoverable from the absorbing mechanism;
+- a **deferred** dimension carries no legality obligation until readmission.
 
-Example:
+## 10.3 Canonical matrices
 
-- `Selection × toggle.tristate` may be legal
-- `Feedback × entry.text` is illegal
+These matrices are the canonical illustrations of the obligation. Which of them a profile owes depends on which dimensions it codifies — they are examples, not a fixed checklist:
 
-## 10.3 Interaction × State
+- **Entity × Structure** — which structures are legal for each entity kind (`Overlay × backdrop` may be legal; `Action × backdrop` is generally illegal).
+- **Entity × Interaction** — which interaction kinds are legal for each entity kind (`Selection × toggle.tristate` may be legal; `Feedback × entry.text` is illegal).
+- **Interaction × State** — which states are legal for each interaction kind (`toggle.tristate` allows `indeterminate`; `navigate.link` may allow `visited`; `command` does not generally allow `checked`).
+- **Structure × Layer** — which layer roles are meaningful for which structural roles (`backdrop × blocking` may be legal; `label × blocking` is generally not).
+- **Composition × Refinement** — what refinements are legal under each composition role (`dismissAction` may lawfully bias downstream evaluation or consequence handling; no composition role may redefine entity identity).
 
-Defines which states are legal for each interaction kind.
-
-Example:
-
-- `toggle.tristate` allows `indeterminate`
-- `navigate.link` may allow `visited`
-- `command` does not generally allow `checked`
-
-## 10.4 Structure × Layer
-
-Defines which layer roles are meaningful for which structural roles.
-
-Example:
-
-- `backdrop × blocking` may be legal
-- `label × blocking` is generally not legal
-
-## 10.5 Composition × Refinement
-
-Defines what refinements are legal under each composition role.
-
-Example:
-
-- `dismissAction` may lawfully bias downstream evaluation or consequence handling
-- no composition role may redefine entity identity
-
-Each Projection Profile is incomplete if it does not define values for all applicable matrices.
+Profiles have lawfully needed matrices this list does not name — Entity × Evaluation, Entity × Composition, Entity × Consequence — and future profiles may need others. Conformance is measured against the obligation in §10.1, not against this list.
 
 ---
 
@@ -614,6 +500,12 @@ Normalization must not:
 - bypass legality
 - hide ambiguity that should instead be rejected
 - smuggle in projection-specific terms into the foundational layer
+
+## 11.4 Concurrent activation
+
+Every dimension in an expression is single-valued (§6.1) — but at runtime an environment may activate several State terms simultaneously (an item can be at once selected, focused, and hovered). A profile that must resolve concurrent activations into a single term must declare a **deterministic, total resolution order**.
+
+A resolution order that collapses Lexicon-distinct terms into one (for example, resolving a selection activation to `checked`) is a **lossy projection decision**. It is held to the same standard §13.3 applies to absorbed dimensions: declared, justified, and either recoverable from the resolving mechanism or carrying an explicit readmission criterion. A profile may not collapse distinct terms silently.
 
 ---
 
@@ -699,35 +591,25 @@ A disposition is legal only if it preserves foundational meaning. A profile may 
 
 ---
 
-# 14. Deterministic resolver interface
+# 14. Resolution contract
 
-The Structural Language is not the resolver.
-But it must define the interface the resolver depends on.
+The Structural Language does not require a resolution engine. It requires that resolution be lawful — and it defines that requirement as a contract.
 
-The resolver must consume:
+The choice of meaning is not deterministic: authors choose terms, context refines them, taste exists. What must be deterministic is the projection of a chosen expression into its result. The contract governs only that projection.
 
-- a semantic expression
-- active lexical registries
-- legality matrices
-- normalization rules
-- contextual refinement inputs
-- a selected projection profile
+A conforming system must provide the following resolution functions, and must name the owner of each:
 
-The resolver must output:
+- **Validate** — deliver a legality verdict from the declared legality sources (§9, §10)
+- **Normalize** — apply lawful defaults, inference, and canonicalization (§11)
+- **Resolve** — reduce concurrent activations through a declared, total order (§11.4)
+- **Project** — translate the refined expression into a projection profile's form (§13)
+- **Explain** — make every verdict and projection derivable from declared sources, not local interpretation
 
-- the normalized expression
-- legality verdict
-- projected semantic form
-- explanation trace
+The contract's inputs are: a semantic expression, the active lexical registries, the declared legality sources, the normalization rules, contextual refinement inputs, and a selected projection profile. Its outputs are: the normalized expression, a legality verdict, the projected semantic form, and an explanation.
 
-The Structural Language therefore guarantees that the resolver has:
+A single resolver engine that performs every function is one lawful fulfillment of this contract. A pipeline of distributed mechanisms, each owning one function, is another.
 
-- typed semantic inputs
-- lawful normalization rules
-- explicit legality boundaries
-- projection hooks
-
-This is what makes automatic token resolution possible.
+What makes token resolution deterministic is that every resolution function has a declared owner — not that one program performs them all.
 
 ---
 
@@ -737,7 +619,7 @@ A system conforms to the FSL Structural Language only if it:
 
 1. uses the FSL Lexicon as its foundational vocabulary
 2. forms expressions in the canonical shape defined here
-3. implements the mandatory legality matrices
+3. meets the legality obligations of §10
 4. implements normalization explicitly
 5. treats context as lawful refinement, not free reinterpretation
 6. uses Projection Profiles for all downstream derivation
@@ -760,23 +642,7 @@ This is a legal minimal expression if `Action × control` is legal.
 
 ---
 
-## 16.2 Confirming primary action
-
-```txt id="44ngyw"
-{
-  entity: Action,
-  structure: control,
-  interaction: confirm,
-  composition: primaryAction,
-  evaluation: primary
-}
-```
-
-This is a qualified expression.
-
----
-
-## 16.3 Destructive dismissive overlay flow
+## 16.2 Destructive dismissive overlay flow
 
 ```txt id="4rn11t"
 {
@@ -796,7 +662,7 @@ This is valid only if:
 
 ---
 
-## 16.4 Tri-state selection control
+## 16.3 Tri-state selection control
 
 ```txt id="4l3qcb"
 {
@@ -808,25 +674,6 @@ This is valid only if:
 ```
 
 This expression exists specifically to prove that the language can represent semantics that cannot be safely reduced to “selected or not”.
-
----
-
-## 16.5 Navigation item
-
-```txt id="e8l59q"
-{
-  entity: Navigation,
-  structure: item,
-  interaction: navigate.link,
-  state: current
-}
-```
-
-This is valid only if:
-
-- `Navigation × item` is legal
-- `navigate.link` is legal for `Navigation`
-- `current` is legal for `navigate.link`
 
 ---
 
@@ -853,24 +700,13 @@ A Projection Profile may introduce new names for foundational dimensions when th
 2. The foundational vocabulary is preserved in meaning.
 3. The projection name does not introduce new semantic content that belongs in the foundational layer.
 
-Example: a Component Semantics Projection could rename the `Entity` dimension to `Responsibility` — values identical, only the dimension name changes to fit the component model. (The shipped `@ttoss/fsl-ui` profile chose **not** to rename: it keeps the foundation names — see `component-model.md` §FSL dimension mapping.)
+Example: a Component Semantics Projection could rename the `Entity` dimension to `Responsibility` — values identical, only the dimension name changes to fit the component model. A profile may equally choose to keep the foundation names; keeping them is the default posture.
 
 ---
 
 # 18. Final statement
 
-The FSL Structural Language is the formal structure of the foundational semantic language.
-
-It turns the Lexicon into a real language by defining:
-
-- the foundational dimensions
-- the canonical expression form
-- legality
-- normalization
-- contextual refinement
-- projection interfaces
-
-It is intentionally small.
+The FSL Structural Language is the formal structure of the foundational semantic language — it turns the Lexicon into a real language.
 
 Its purpose is not to solve tokens or components directly.
-Its purpose is to make it possible for both to derive from the same semantic language, and for the eventual resolver to operate deterministically rather than through local interpretation.
+Its purpose is to make it possible for both to derive from the same semantic language, and for resolution to operate deterministically through declared owners rather than local interpretation.

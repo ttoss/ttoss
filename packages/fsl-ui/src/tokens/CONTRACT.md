@@ -44,10 +44,11 @@ type FooEvaluation = EvaluationsFor<(typeof fooMeta)['entity']>;
 ```
 
 `evaluation` and `consequence` are orthogonal: `consequence: 'destructive'`
-(FSL §6) drives the interaction _mechanism_ (e.g. ConfirmationDialog arming);
-`evaluation: 'negative'` drives the adverse _color voice_. A destructive
-action typically pairs both, but neither implies the other — see §6 and
-ENTITY_CONSEQUENCE in `taxonomy.ts`.
+(FSL §6) drives the interaction _mechanism_ (e.g. ConfirmationDialog arming) and,
+on a part that paints no fill, the ink that carries its valence (§3.3);
+`evaluation: 'negative'` drives the adverse _color voice_ — the filled red
+command. A destructive action may pair both, but neither implies the other —
+see §6 and ENTITY_CONSEQUENCE in `taxonomy.ts`.
 
 ### Step 3 — Read token paths from §1
 
@@ -63,29 +64,56 @@ the current combination of React Aria state booleans.
 
 ## §1 — Entity → Token Map
 
-A component MUST use ONLY tokens from its Entity row.
+A **part** MUST read only the token row of the entity it embodies. For a
+single-identity component that is its own row; a composite that hosts a part of
+another entity (Toast's action button is an Action part) reads that entity's row
+for that part. Composition changes which row applies — it never licenses mixing
+rows within one part.
 
-| Entity         | Colors          | Radii                      | Border                        | Sizing | Spacing         | Typography               | Motion       | Elevation        |
-| -------------- | --------------- | -------------------------- | ----------------------------- | ------ | --------------- | ------------------------ | ------------ | ---------------- |
-| **Action**     | `action`        | `action`                   | `outline.control`             | `hit`  | `inset.control` | `action`                 | `feedback`   | `flat`           |
-| **Input**      | `input`         | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Selection**  | `input`         | `control`                  | `outline.control`, `selected` | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Navigation** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`   | `flat`           |
-| **Disclosure** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `transition` | `flat`           |
-| **Overlay**    | `informational` | `surface`                  | `outline.surface`             | —      | `inset.surface` | `title`, `body`, `label` | `transition` | `overlay`        |
-| **Feedback**   | `feedback`      | `surface`, `round` (rails) | `outline.surface`             | —      | `inset.surface` | `body`, `label`          | `feedback`   | `raised`         |
-| **Collection** | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `body`, `label`          | —            | `flat`, `raised` |
-| **Structure**  | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `title`, `body`, `label` | —            | `flat`, `raised` |
+Colors are the mechanically enforced column: the contract suite audits every
+rendered color read against the row. The other columns record each entity's
+silhouette. One axis is orthogonal by design: **motion binds to the movement's
+purpose, not the entity** — `feedback` acknowledges an interaction on the
+element itself, `transition` carries content entering or leaving — so the Motion
+column lists the purposes an entity's movements have, and a read outside it is
+wrong unless the movement's purpose says otherwise.
+
+| Entity         | Colors          | Radii                      | Border                        | Sizing | Spacing         | Typography               | Motion                                | Elevation        |
+| -------------- | --------------- | -------------------------- | ----------------------------- | ------ | --------------- | ------------------------ | ------------------------------------- | ---------------- |
+| **Action**     | `action`        | `action`                   | `outline.control`             | `hit`  | `inset.control` | `action`                 | `feedback`                            | `flat`           |
+| **Input**      | `input`         | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`                            | `flat`           |
+| **Selection**  | `input`         | `control`                  | `outline.control`, `selected` | `hit`  | `inset.control` | `label`                  | `feedback`                            | `flat`           |
+| **Navigation** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `feedback`                            | `flat`           |
+| **Disclosure** | `navigation`    | `control`                  | `outline.control`             | `hit`  | `inset.control` | `label`                  | `transition`                          | `flat`           |
+| **Overlay**    | `informational` | `surface`                  | `outline.surface`             | —      | `inset.surface` | `title`, `body`, `label` | `transition`                          | `overlay`        |
+| **Feedback**   | `feedback`      | `surface`, `round` (rails) | `outline.surface`             | —      | `inset.surface` | `title`, `body`, `label` | `feedback`, `transition` (enter/exit) | `raised`         |
+| **Collection** | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `body`, `label`          | —                                     | `flat`, `raised` |
+| **Structure**  | `informational` | `surface`                  | `outline.surface`, `divider`  | —      | `inset.surface` | `title`, `body`, `label` | —                                     | `flat`, `raised` |
 
 **Cross-cutting** (apply to ALL interactive entities — not in the table because they are entity-agnostic):
 
-| Token family     | Path                                          |
-| ---------------- | --------------------------------------------- | ------ | ------- | -------- | ----------- |
-| Focus ring       | `vars.focus.ring.width` / `.style` / `.color` |
-| Disabled opacity | `vars.opacity.disabled`                       |
-| Scrim opacity    | `vars.opacity.scrim`                          |
-| Scrim color      | `vars.overlay.scrim`                          |
-| Z-Index          | `vars.zIndex.layer.{base                      | sticky | overlay | blocking | transient}` |
+| Token family       | Path                                                                                                                                                     |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Focus ring         | `vars.focus.ring.width` / `.style` / `.color` / `.offset`                                                                                                |
+| Consequence ink    | `vars.consequence.destructive.ink` — read via `resolveConsequenceInk` only (§3.3)                                                                        |
+| Valence ink        | `vars.valence.{positive\|caution\|negative}.ink` — for a part that **reports** an outcome and paints no surface; read via `passiveStatus.ts` only (§1.2) |
+| Occluding boundary | `vars.overlay.outline` — the edge of a surface that **covers** content (§3.5)                                                                            |
+| Rail fill          | `vars.rail.track` — the unfilled part of a `ProgressBar`/`Meter`/`Slider` track (§3.6)                                                                   |
+| Disabled opacity   | `vars.opacity.disabled`                                                                                                                                  |
+| Scrim opacity      | `vars.opacity.scrim`                                                                                                                                     |
+| Scrim color        | `vars.overlay.scrim`                                                                                                                                     |
+| Z-Index            | `vars.zIndex.layer.{base,sticky,overlay,blocking,transient}`                                                                                             |
+
+**The Typography column is data, and it is constrained.** It lives in
+`tokens/projection.ts` alongside the Colors column rather than only in this
+table, because a legality claim that only prose carries cannot fail. Contract
+invariant **#16** binds it to the taxonomy: an entity whose `ENTITY_STRUCTURE`
+declares **both** `title` and `body` must carry `title` here. It has to, because
+no `label.*` step can outrank `body.md` — every step of that family is weight
+400 and the largest merely ties it — so such an entity would type an inverted
+heading by construction. `Feedback` was that case: it could name a `title` part
+and not type one, and both `Toast` and `InlineAlert` shipped a 16px/400 title
+over an 18px/400 body before anyone measured it (F-064).
 
 ### §1.1 — Mapping Rationale
 
@@ -125,6 +153,60 @@ This means the full §1 row for any entity is determined by two decisions:
 
 1. **Cognitive mode** → Colors column
 2. **Surface type** → all other columns (except Typography, Motion, and Elevation which have entity-specific assignments)
+
+### §1.2 — Feedback has two postures, and the Interaction Kind picks which (ADR-043)
+
+The §1 row says a Feedback part reads `colors.feedback`. It does not say _which
+rung_, and for this entity that is a semantic decision rather than an authorial
+one. FSL Lexicon §3 already names the axis:
+
+| Interaction Kind      | Meaning (Lexicon §3)                                   | Posture                                                                                        | Member                       |
+| :-------------------- | :----------------------------------------------------- | :--------------------------------------------------------------------------------------------- | :--------------------------- |
+| `status.interruptive` | "interrupts, escalates, or demands immediate handling" | the **voiced fill** — `feedback.{evaluation}` paints the surface, the label is its on-fill ink | `Toast`                      |
+| `status.passive`      | "informs without demanding immediate user action"      | the **quiet rung** — `feedback.muted` paints the surface, the valence lives in a mark          | `InlineAlert`, `StatusLight` |
+
+This is a **stated law, not a declared dimension**: `Interaction` is DEFERRED in
+`taxonomy.ts` and nothing dispatches on it at runtime — each member fixes its own
+posture in its own source. Do not add `interaction` to a `*Meta`; the readmission
+criterion is unchanged (a runtime that branches on it).
+
+Two rules follow, and both are load-bearing:
+
+- **The ground is the page; the EDGE carries the evaluation; the MARK adds the
+  valence ink.** That is § Stacking's own order — a contained surface shares the
+  page's background and pays separation in _"elevation first, border second,
+  never in colour"_ — so the ground reads `feedback.muted.background` (the page's
+  colour, fsl-theme ADR-030), the edge reads `feedback.{evaluation}.border`, and
+  the mark reads `vars.valence.{positive|caution|negative}.ink` with its glyph's
+  **shape** carrying the valence for WCAG 1.4.1. Against a page-coloured ground
+  the edge is Required Pairing #2, the pair the theme audits for every role — not
+  the border-against-another-family's-fill pair F-050/F-055/F-057 each got wrong,
+  which is what an earlier revision of this section wrongly feared here. **A
+  valence fill is still forbidden:** the ground never takes one. The shared
+  posture lives in `src/tokens/passiveStatus.ts` — never tuned per component.
+- **A passive surface may host real `action.*` children; an interruptive one may
+  not.** On a quiet neutral the page's palette is correct, so actions are
+  caller-supplied `Button`/`Link` children and no cross-ux read occurs. On a
+  voiced fill an `action.*` control would arrive with the page's colours on top of
+  a saturated surface, which is why `Toast` dresses its own triggers from
+  `feedback.*` (ADR-040). Inside a passive surface the action is `primary` — the
+  only rung with measured separation against it in both modes (F-063).
+
+`primary` is the passive posture's neutral voice and carries **no mark**: it
+claims no outcome, the same rule `Toast` applies to its own neutral rung. It is
+not edgeless, though — its own border is the strong neutral, which is what keeps
+a judgement-free report a deliberate box rather than a ghost on the page, and it
+is what the reference gives its own neutral variant. `accent` takes the info
+glyph with the prose ink, because `accent` is Emphasis in `colors.md` § Role
+Coverage and therefore has no valence ink — its **edge** still carries the brand
+step, which is where its "semantic divergence" (FSL Lexicon §5) becomes visible.
+
+**A report always has a body.** A title _introduces_ something; with nothing to
+introduce it is the message, not a title. So a Feedback surface with both parts
+makes its body **required**, which is the whole of that rule — the same
+resolve-by-type move the field envelope makes for its two authoring shapes.
+Without it, one-line reports render at two different type steps depending on
+which prop the caller reached for.
 
 ---
 
@@ -174,12 +256,16 @@ Example: `vars.border.outline.control.width`, `vars.border.outline.control.style
 ### Sizing (interactive entities)
 
 ```
-vars.sizing.hit.{step}
+vars.sizing.hit
 ```
 
-Standard step for all interactive components: **`base`**.  
-`min` and `prominent` are reserved for components with a distinct semantic identity (e.g. compact toolbar action, prominent CTA).  
-Hit targets are ergonomic minimums — CSS automatically responds to `@media (any-pointer: coarse)`.
+A single leaf, no steps (§4): one ergonomic floor per pointer profile, never a
+visual size — apply via `min-height` / `min-width`, and let inset + type produce
+the visible control size. The former `base`/`min`/`prominent` ramp is gone
+(fsl-theme ADR-020: only `base` was ever consumed). CSS automatically responds
+to `@media (any-pointer: coarse)` — the coarse floor is injected by the theme's
+output layer, no component code needed. Glyph sizes are a separate subtree:
+`vars.sizing.icon.{text|sm|md|lg}` (§9).
 
 ### Spacing
 
@@ -233,14 +319,48 @@ order defined by `STATE_PRIORITY` in
 first:
 
 ```
-disabled > invalid > expanded > indeterminate > selected
+disabled > invalid > expanded > indeterminate > current > selected
         > focusVisible > pressed > hovered > default
 ```
 
 `STATE_PRIORITY` is the single source of truth for this cascade. Do **not**
 duplicate the order in component code — use `resolveInteractiveStyle` (§3.1).
 The tuple also binds each React Aria flag to the token-state key it selects
-(e.g. `isSelected → checked`, `isPressed → active`, `isHovered → hover`).
+(e.g. `isPressed → active`, `isHovered → hover`).
+
+One binding is **context-aware** (ADR-044). `isSelected` serves two theme
+languages that fsl-theme's `families/colors.ts` keeps apart by law: `checked`
+(a two-state control that is on — only the `input` context may declare it)
+and `selected` (membership in a set — declared by `navigation` and
+`informational`, and by `input` backgrounds/borders for picker options). Per
+consulted token set, the resolution order is explicit and deterministic:
+
+```
+checked  — when the consulted set declares it
+selected — when the set declares that instead
+miss     — `undefined`, so the call site's `?? states.default` applies
+```
+
+Input/Selection controls therefore land on `checked` by declaration — never
+by accident of an undeclared key silently falling to `default` — while
+navigation/informational sets reach the theme's `selected` tokens. Where a
+set declares both (input backgrounds/borders), `checked` wins: every consumer
+passing `isSelected` against those sets ships the two-state language today.
+
+The transient `isPressed` flag stays collapsed into `active` (ADR-044) — a
+semantic reservation, not a gap in the theme. The `pressed` token state
+carries a different meaning that shares the word: the **persistent**
+toggle-on, which `ToggleButton` reads inline by mapping its `isSelected` to
+`pressed` (ADR-042 names that mapping as semantics, not drift), and which
+the base theme ships divergent from `active` for exactly that reason.
+Mapping the momentary pointer-down to `active` keeps the persistent state
+reserved for toggle semantics. Readmission criterion: a component whose
+**transient** press must paint differently from `active` at the token
+level. And two states have no render-prop flag at all: `droptarget` because
+no component surfaces a drag target yet (pending evidence), `visited`
+because browsers hide `:visited` from JavaScript for privacy — a
+**structural impossibility** per FSL Structural Language §10.1, not a
+pending flag.
 
 Template (React Aria pattern, background / border / text dimensions):
 
@@ -312,6 +432,182 @@ a product decision rather than a side effect of the tuple's order, and
 `tests/unit/tests/fieldEnvelope.test.tsx` fails if a call site stops passing
 `isInvalid` and lets hover win.
 
+### §3.3 — Parts that paint no surface borrow the stratum's ink
+
+> **A part that paints no surface of its own takes its ink from the surface it
+> renders on. When that part carries a valence, `consequence` is what selects
+> it — not `evaluation`.**
+
+§3.2 is the first instance of this and the field family is where it was found;
+the rule is the general form. The quiet rung (`muted`) is the system's idiom for
+"no fill" — an opaque surface-coloured token, never `transparent`, so every
+pairing stays auditable. A control on that rung has nowhere to say "this
+deletes something" except the ink.
+
+Reaching for `evaluation="negative"` instead fills the control solid red,
+because in `action` the valence **is** the filled destructive command. That is a
+different claim: a filled red button is the loudest thing on the surface, while
+a destructive menu row is a peer of "Duplicate" and "Rename". The mismatch is
+F-029, and it existed because `consequence` drove mechanism only, so authors
+substituted the one axis with a visual projection.
+
+Implemented once, in `tokens/consequenceInk.ts`:
+
+|                |                                                                        |
+| -------------- | ---------------------------------------------------------------------- |
+| **Applies to** | `evaluation === 'muted'` and `consequence === 'destructive'`           |
+| **Paints**     | `color` only — and, through `currentColor`, any `Icon` inside the part |
+| **Reads**      | `vars.consequence.destructive.ink` (§1 cross-cutting table)            |
+| **Yields at**  | `disabled`, `active`, `expanded` (`TINT_YIELDS_TO`)                    |
+
+The ink is a **cross-cutting token** (model.md §6, fsl-theme ADR-025), the same
+mechanism as the focus ring — and the analogy is structural, not cosmetic: both
+render against the stratum behind the component rather than a fill of their own
+(the ring because it floats off the edge, this ink because the quiet rung's
+fill _is_ the stratum), which is what lets one system-wide colour serve
+everything. The base theme aliases it to the standalone negative valence ink;
+a theme may repoint it without touching validation messages. No entity row is
+crossed: the read is licensed by the §1 cross-cutting table like the ring's.
+
+Ink only: the quiet rung's border mirrors its background by construction, so
+tinting the edge would invent an outlined-destructive language the system does
+not have. It yields at the engaged states because the quiet rung materialises a
+real fill there and the theme lifts its _own_ ink to clear it — a fixed valence
+ink measures 2.65:1 against the dark alternate's engaged fill. It yields when
+disabled because unavailability outranks valence.
+
+Every surface the tint can land on is enumerated and measured in fsl-theme's
+cross-role inventory (`colors.test.ts` → `quiet destructive control`), which
+pairs **the token itself**, so a theme that repoints the alias is audited on
+what components actually render. Unlike the ring the read is conditional (one
+rung, a yield set), so it is confined to the helper where those bounds live: a
+component that emits `data-consequence` and paints from `vars.colors.action`
+**must** resolve its ink through `resolveConsequenceInk`, and no component
+reads `vars.consequence` or another family's negative ink directly —
+`components.contract.test.tsx` fails otherwise.
+
+### §3.4 — The surface contract: hosts publish, the quiet rung follows
+
+> **The element that paints a hosting surface publishes it; the quiet rung's
+> resting fill and edge read the published surface, with their own tokens as
+> the fallback.**
+
+`colors.md` § Stacking informational surfaces makes the effective colour under
+a control a **composite no colour token can name** — the page and every
+contained surface share one background token, and depth is paid in shadow or
+in another family's fill (a table row paints `input.primary`). Only the
+element that painted the surface knows the result.
+The quiet rung (`muted`) paints "the surface's own colour" as an opaque token —
+byte-identical to the page and to every overlay, and wrong on every other
+surface: measured in the Studio, dark, a quiet row action painted `#161616` on
+a `#3d3d3d` table row — a black pill in every row (F-024).
+
+The owner ruling stands unchanged: **a component always paints** — no
+`transparent`, no omitted background, and the theme's own `muted.text ↔
+background` pairs stay in the suite. What moves is where the surface is known.
+Implemented once, in `tokens/surfaceScope.ts`:
+
+|                |                                                                                                      |
+| -------------- | ---------------------------------------------------------------------------------------------------- |
+| **Publishers** | parts hosting arbitrary content spread `publishSurface(restingFill)` — the fill plus `--fsl-surface` |
+| **Consumers**  | quiet-capable Action call sites resolve `background`/`border` via `resolveSurfaceBoundStyle`         |
+| **Reads as**   | `var(--fsl-surface, <the rung's own token>)` — outside a publisher, nothing changes                  |
+| **Bounds**     | resting state only, on both sides; the muted rung only; voiced fills never publish                   |
+
+The bounds are each load-bearing, and each is measured rather than stylistic.
+The consumer's **engaged fills** (`hover`/`active`/`pressed`/`expanded`) stay
+absolute — they are how a quiet control materialises. The publisher's
+**transient states do not republish** — a row paints its hover fill but keeps
+publishing its resting one, because the dark row hover measures 2.65:1
+against the destructive ink. The **selection fill is a voice, not a
+stratum** — in dark it inverts to near-white, 1.5:1 against the muted ink.
+**Feedback fills and non-primary informational fills are voices too**: a
+toast's red and a muted Menu's grey are not strata the quiet inks are audited
+against, so only the page-like `primary` voice publishes — `Surface` included,
+now that it reads the same `informational.{evaluation}.background` fill the
+overlays do (F-048/ADR-037): a `muted` (default) `Surface` keeps its own
+voice and does not publish, same as a `muted` `Menu`.
+
+`--fsl-surface` lives in the §7 host-facing namespace on purpose: a **host
+application** that paints its own surface can publish the same property and
+every quiet control inside it follows, with zero fsl-ui changes.
+
+Legibility is guarded where the values live: fsl-theme's cross-role inventory
+(`colors.test.ts` → `quiet control on published surfaces`) pairs the quiet ink
+against every publishable surface, at the rung's own floor, in every bundle
+and both modes — and the excluded selection fill is excluded _because it fails
+there_, which the entry states.
+
+### §3.5 — A surface that occludes owes a boundary
+
+> **A surface that covers content draws `vars.overlay.outline`. A surface that
+> sits in the flow keeps its role's hairline.**
+
+`colors.md` § Stacking orders the separators — `elevation` first, the surface
+outline second, `elevation.tonal` third — and states the second one's duty in
+its own words: _"a 1px outline at ≥ 3:1 contrast against the adjacent
+background guarantees a perceptual edge **even when shadow is suppressed
+(high-contrast preferences, print)**"_. An overlay's fill is byte-identical to
+the page by design (one background token for the page and everything on it), so
+`elevation` and that outline are all it has — and under `forced-colors` or print
+the shadow is gone.
+
+`{ux}.{role}.border.default` cannot carry that duty because it already carries
+the opposite one: an embedded card's decorative edge and a divider inside
+content, where a near-invisible hairline is deliberate — it is a listed member
+of the border pairing's accepted-**soft** inventory. Measured before this
+shipped, that hairline read **1.31:1 in light and 1.67:1 in dark** against the
+page it was meant to separate from, so a menu with shadows suppressed was an
+unbounded rectangle of page-coloured text (F-044).
+
+|                 |                                                                                                              |
+| --------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Occludes**    | popover, menu, tooltip, dialog panel, drawer panel, toast → `vars.overlay.outline` (via `OCCLUDING_OUTLINE`) |
+| **In the flow** | `Surface`, `Box`, dividers, field frames → `{ux}.{role}.border.*`, unchanged                                 |
+| **Not a voice** | the boundary is one system colour, like the focus ring — `evaluation` keeps driving fill and ink             |
+
+The last row costs nothing that existed: measured across both modes,
+`informational.{primary,secondary,muted}.border.default` all resolved the
+**same** value, so an Overlay's `evaluation` never varied its edge.
+
+Guarded on both sides. fsl-theme's cross-role inventory pairs the token against
+every stratum an overlay can land on ("occluding boundary") — a cross-stratum
+pair, which is why the same-role border extractor structurally could not see the
+defect. `tests/unit/tests/occludingSurface.test.tsx` pins which token each
+surface reads, **including that an embedded surface does not** — without that
+half, "put the boundary everywhere" would pass, and that is the theme-wide
+retune this contract exists to avoid.
+
+### §3.6 — A rail's fill is cross-cutting infrastructure, not a borrow
+
+> **The unfilled part of a `ProgressBar`/`Meter`/`Slider` track reads
+> `vars.rail.track`. No component reads a role's background or a state token
+> to paint one.**
+
+Before this token existed, every consumer that needed a rail borrowed a token
+whose meaning was something else: `ProgressBar`/`Meter` took
+`feedback.muted.background` (a role's own resting fill, F-050's fix — a better
+borrow than the `muted.border` that shipped broken, but still a borrow), and
+`Slider` took `input.primary.background.disabled` — a **state** used as a
+**part**, so an empty `Slider` rail meant "disabled" in the token model
+(F-051). `vars.rail.track` is the dedicated address, minted the same way
+`vars.overlay.outline` was (fsl-theme ADR-028): a rail crosses UX contexts
+(`Feedback` ×2, `Input` ×1) and its mode behaviour is its own — it **darkens**
+in dark while every `{ux}.{role}.border.*` lightens — so no existing token in
+the grammar could carry both directions.
+
+|                 |                                                                                  |
+| --------------- | -------------------------------------------------------------------------------- |
+| **Reads**       | `RAIL_FILL` (`src/tokens/rail.ts`) → `vars.rail.track`                           |
+| **Consumers**   | `ProgressBar`, `Meter` (`Feedback`), `Slider` (`Input`)                          |
+| **Not a voice** | one system colour per mode, like the rail's siblings — no `evaluation` drives it |
+
+Guarded on both sides. fsl-theme's `rail.test.ts` pins the resolved value in
+every mode of every bundle and that it differs from the tokens it replaced;
+`tests/unit/tests/rail.test.tsx` pins that all three components read the same
+`RAIL_FILL` constant, comparing the `var()` reference itself so a refactor
+that reaches either old borrow by a different path still fails.
+
 ---
 
 ## §4 — Standard Step Rule
@@ -348,7 +644,7 @@ Every component root MUST carry the identity attributes (`data-scope`, `data-par
 | `data-scope`       | every element                                   | `kebab-case(meta.displayName)` — e.g. `"button"`, `"dialog"`        | Always.                                                                                                                                                                                                                                                                                                                  |
 | `data-part`        | every element                                   | `meta.structure` — e.g. `"root"`, `"label"`, `"control"`            | Always.                                                                                                                                                                                                                                                                                                                  |
 | `data-evaluation`  | parts that consume evaluation tokens            | `EvaluationsFor<E>` — e.g. `"primary"`, `"negative"`                | When the part renders evaluation-dependent colors.                                                                                                                                                                                                                                                                       |
-| `data-consequence` | leaf Action elements that declare an effect     | `ConsequencesFor<E>` — `"neutral" \| "committing" \| "destructive"` | When the component accepts a `consequence` prop (`Button`, `MenuItem`, `FormSubmit`).                                                                                                                                                                                                                                    |
+| `data-consequence` | leaf Action elements that declare an effect     | `ConsequencesFor<E>` — `"neutral" \| "committing" \| "destructive"` | When the component accepts a `consequence` prop (`Button`, `ActionButton`, `MenuItem`, `FormSubmit`). `ConfirmationDialog` also emits it on its Overlay root (`data-scope="confirmation-dialog"`), so hosts and tests can address the whole confirming surface by consequence.                                           |
 | `data-composition` | leaves that play a parent slot                  | `CompositionsFor<E>` — e.g. `"primaryAction"`                       | When the component accepts a `composition` prop. Read at runtime by composites (e.g. `DialogActions` reorders by it).                                                                                                                                                                                                    |
 | `data-platform`    | `DialogActions` only                            | `"ios" \| "windows"`                                                | Always on `DialogActions`. Reflects the active ordering convention.                                                                                                                                                                                                                                                      |
 | `data-pending`     | `FormSubmit` only                               | `"true"` (omitted otherwise)                                        | While `isPending` is `true`. Lets host CSS/tests show spinner without re-wiring the disabled path.                                                                                                                                                                                                                       |
@@ -457,10 +753,11 @@ import { ENTITY_EVALUATION } from '@ttoss/fsl-ui/semantics';
 const valid = ENTITY_EVALUATION['Action'];
 // → ['primary', 'secondary', 'accent', 'muted', 'negative']
 //
-// Note: 'negative' on Action is the adverse color *voice*. It does not
-// imply behavior — effect-on-state is expressed separately through
-// `consequence: 'destructive'` (see ENTITY_CONSEQUENCE), which drives
-// interaction mechanics (e.g. ConfirmationDialog arming).
+// Note: 'negative' on Action is the adverse color *voice* — the filled red
+// command. It does not imply behavior: effect-on-state is expressed
+// separately through `consequence: 'destructive'` (see ENTITY_CONSEQUENCE),
+// which drives interaction mechanics (e.g. ConfirmationDialog arming) and,
+// on the quiet rung alone, the ink that carries the valence (§3.3).
 ```
 
 ---
@@ -520,18 +817,20 @@ Rules (enforced by the contract tests):
 
 Registered knobs:
 
-| Knob                            | Component     | Fallback               |
-| ------------------------------- | ------------- | ---------------------- |
-| `--fsl-combo-box-max-height`    | `ComboBox`    | `min(20rem, 60vh)`     |
-| `--fsl-combo-box-popover-width` | `ComboBox`    | `var(--trigger-width)` |
-| `--fsl-form-label-width`        | `Form`        | `max-content`          |
-| `--fsl-dialog-max-width`        | `DialogModal` | `min(500px, 90vw)`     |
-| `--fsl-dialog-max-height`       | `DialogModal` | `90vh`                 |
-| `--fsl-menu-min-width`          | `Menu`        | `12rem`                |
-| `--fsl-menu-max-width`          | `Menu`        | `min(320px, 90vw)`     |
-| `--fsl-popover-max-width`       | `Popover`     | `min(320px, 90vw)`     |
-| `--fsl-select-popover-width`    | `Select`      | `var(--trigger-width)` |
-| `--fsl-tooltip-max-width`       | `Tooltip`     | `min(280px, 90vw)`     |
+| Knob                            | Component                        | Fallback               |
+| ------------------------------- | -------------------------------- | ---------------------- |
+| `--fsl-combo-box-max-height`    | `ComboBox`                       | `min(20rem, 60vh)`     |
+| `--fsl-combo-box-popover-width` | `ComboBox`                       | `var(--trigger-width)` |
+| `--fsl-form-label-width`        | `Form`                           | `max-content`          |
+| `--fsl-dialog-max-width`        | `DialogModal`                    | `min(500px, 90vw)`     |
+| `--fsl-dialog-min-width`        | `DialogModal`                    | `min(288px, 90vw)`     |
+| `--fsl-dialog-max-height`       | `DialogModal`                    | `90vh`                 |
+| `--fsl-menu-min-width`          | `Menu`                           | `12rem`                |
+| `--fsl-menu-max-width`          | `Menu`                           | `min(320px, 90vw)`     |
+| `--fsl-popover-max-width`       | `Popover`                        | `min(320px, 90vw)`     |
+| `--fsl-select-popover-width`    | `Select`                         | `var(--trigger-width)` |
+| `--fsl-tooltip-max-width`       | `Tooltip`                        | `min(280px, 90vw)`     |
+| `--fsl-track-max-width`         | `ProgressBar`, `Meter`, `Slider` | `none`                 |
 
 ### Upstream custom properties — a named allowlist (ADR-023)
 
@@ -565,7 +864,8 @@ source check that nothing assigns an allowlisted name.
 ## §8 — Full Example: Button (Entity = Action)
 
 `entity: 'Action'` → §1 row: colors=`action`, radii=`action`, border=`outline.control`,
-sizing=`hit`, spacing=`inset.control.md`, typography=`action.md`, motion=`feedback`, elevation=`flat`.
+sizing=`hit`, spacing=`inset.action.block` (block) + `inset.control.lg` (inline),
+typography=`action.md`, motion=`feedback`, elevation=`flat`.
 
 **Two silhouettes inside the Action row.** The row above lists the _command_
 tokens (`radii.action`, `text.action`, `inset.action.block`) that `Button`
@@ -625,9 +925,9 @@ export const Button = ({ evaluation = 'primary', ...props }: ButtonProps) => {
         borderWidth: vars.border.outline.control.width,
         borderStyle: vars.border.outline.control.style,
         minHeight: vars.sizing.hit,
-        paddingBlock: vars.spacing.inset.control.md,
-        paddingInline: vars.spacing.inset.control.md,
-        ...(vars.text.label.md as React.CSSProperties),
+        paddingBlock: vars.spacing.inset.action.block,
+        paddingInline: vars.spacing.inset.control.lg,
+        ...(vars.text.action.md as React.CSSProperties),
         transitionDuration: vars.motion.feedback.duration,
         transitionTimingFunction: vars.motion.feedback.easing,
         transitionProperty: 'background-color, border-color, color',
@@ -684,5 +984,7 @@ Rules:
    hit targets); a glyph legitimately scales with its context.
 4. **Decorative by default** (`aria-hidden`). Pass `label` only when the icon
    is the sole carrier of meaning — and pass caller-localized copy (§6/i18n).
-5. Icon is **internal** — never re-export it from `src/index.ts`. It is the
-   seed of a future standalone `@ttoss/fsl-icon` package.
+5. Icon is a **public export** of `src/index.ts` (ADR-010). Its semantic
+   layer (`intents.ts` + `glyphs.ts`) stays free of React and token imports
+   so it can be lifted whole into a future standalone `@ttoss/fsl-icon`
+   package.

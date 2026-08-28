@@ -1,3 +1,8 @@
+/**
+ * `getCloudFrontTemplate` is a single CloudFormation template literal, which
+ * these rules were not written for.
+ */
+/* eslint-disable complexity, max-lines, max-lines-per-function */
 import type {
   CloudFormationTemplate,
   Output,
@@ -6,6 +11,14 @@ import type {
 
 import { getPackageVersion } from '../../utils';
 import { BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_ARN_EXPORTED_NAME } from '../baseStack/config';
+import {
+  getResponseHeadersPolicyConfig,
+  type ResponseHeader,
+} from './responseHeaders';
+import {
+  FUNCTION_RUNTIME,
+  getViewerRequestFunctionCode,
+} from './viewerRequestFunction';
 
 const PACKAGE_VERSION = getPackageVersion();
 
@@ -16,9 +29,36 @@ export const CLOUDFRONT_DISTRIBUTION_LOGICAL_ID = 'CloudFrontDistribution';
 export const CLOUDFRONT_ORIGIN_ACCESS_CONTROL_LOGICAL_ID =
   'OriginAccessControl';
 
+export const CLOUDFRONT_RESPONSE_HEADERS_POLICY_LOGICAL_ID =
+  'ResponseHeadersPolicy';
+
+export const CLOUDFRONT_VIEWER_REQUEST_FUNCTION_LOGICAL_ID =
+  'ViewerRequestFunction';
+
 export const ROUTE_53_RECORD_SET_GROUP_LOGICAL_ID = 'Route53RecordSetGroup';
 
 export const ERROR_DOCUMENT = '404/index.html';
+
+/**
+ * CORS of the bucket the distribution serves from.
+ *
+ * The origin is what answers CORS whenever the response headers policy has no
+ * `CorsConfig` — which is the case when the `responseHeaders` option defines
+ * `vary`, since CloudFront's CORS handling owns `Vary`. `AllowedMethods` is
+ * limited to what the bucket can serve; advertising the write methods of the
+ * managed policy would be fiction.
+ */
+export const BUCKET_CORS_CONFIGURATION = {
+  CorsRules: [
+    {
+      AllowedHeaders: ['*'],
+      AllowedMethods: ['GET', 'HEAD'],
+      AllowedOrigins: ['*'],
+      Id: 'OpenCors',
+      MaxAge: 600,
+    },
+  ],
+} as const;
 
 /**
  * Name: Managed-CachingDisabled
@@ -38,8 +78,50 @@ const ORIGIN_REQUEST_POLICY_ID = '88a5eaf4-2fd4-4709-b370-b4c650ea3fcf';
  * Name: CORS-with-preflight-and-SecurityHeadersPolicy
  * ID: eaab4381-ed33-4a86-88ca-d9558dc6cd63
  * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-response-headers-policies.html
+ *
+ * Used when neither the `responseHeaders` nor the `responseHeadersPolicy`
+ * option is defined. Its settings are reproduced in
+ * `BASELINE_RESPONSE_HEADERS_CONFIG` for the policy created by the
+ * `responseHeaders` option.
  */
-const ORIGIN_RESPONSE_POLICY_ID = 'eaab4381-ed33-4a86-88ca-d9558dc6cd63';
+export const ORIGIN_RESPONSE_POLICY_ID = 'eaab4381-ed33-4a86-88ca-d9558dc6cd63';
+
+/**
+ * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-responseheaderspolicy.html
+ */
+const RESPONSE_HEADERS_POLICY_ID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+/**
+ * The distribution takes a single response headers policy id, so the three
+ * sources are mutually exclusive:
+ *
+ * 1. `responseHeadersPolicy`: an existing policy id, or the name of an
+ *    exported value whose value is a policy id.
+ * 1. `responseHeaders`: the policy created by this template.
+ * 1. Neither: the managed policy used by every deploy so far.
+ */
+const getResponseHeadersPolicyId = ({
+  responseHeaders = [],
+  responseHeadersPolicy,
+}: {
+  responseHeaders?: ResponseHeader[];
+  responseHeadersPolicy?: string;
+}) => {
+  if (responseHeadersPolicy) {
+    return RESPONSE_HEADERS_POLICY_ID_REGEX.test(responseHeadersPolicy)
+      ? responseHeadersPolicy
+      : { 'Fn::ImportValue': responseHeadersPolicy };
+  }
+
+  if (responseHeaders.length > 0) {
+    return {
+      'Fn::GetAtt': [CLOUDFRONT_RESPONSE_HEADERS_POLICY_LOGICAL_ID, 'Id'],
+    };
+  }
+
+  return ORIGIN_RESPONSE_POLICY_ID;
+};
 
 const getBucketStaticWebsiteTemplate = ({
   spa,
@@ -52,17 +134,7 @@ const getBucketStaticWebsiteTemplate = ({
       [STATIC_APP_BUCKET_LOGICAL_ID]: {
         Type: 'AWS::S3::Bucket',
         Properties: {
-          CorsConfiguration: {
-            CorsRules: [
-              {
-                AllowedHeaders: ['*'],
-                AllowedMethods: ['GET'],
-                AllowedOrigins: ['*'],
-                Id: 'OpenCors',
-                MaxAge: 600,
-              },
-            ],
-          },
+          CorsConfiguration: BUCKET_CORS_CONFIGURATION,
           PublicAccessBlockConfiguration: {
             BlockPublicPolicy: false,
           },
@@ -113,16 +185,22 @@ const getCloudFrontTemplate = ({
   acm,
   aliases = [],
   appendIndexHtml,
+  responseHeaders = [],
+  responseHeadersPolicy,
   spa,
   hostedZoneName,
+  viewerRequestFunctionCode,
 }: {
   acm?: string;
   aliases?: string[];
   appendIndexHtml?: boolean;
   cloudfront: true;
+  responseHeaders?: ResponseHeader[];
+  responseHeadersPolicy?: string;
   spa?: boolean;
   hostedZoneName?: string;
   region: string;
+  viewerRequestFunctionCode?: string;
 }): CloudFormationTemplate => {
   const template: CloudFormationTemplate = {
     AWSTemplateFormatVersion: '2010-09-09',
@@ -130,6 +208,7 @@ const getCloudFrontTemplate = ({
       [STATIC_APP_BUCKET_LOGICAL_ID]: {
         Type: 'AWS::S3::Bucket',
         Properties: {
+          CorsConfiguration: BUCKET_CORS_CONFIGURATION,
           PublicAccessBlockConfiguration: {
             BlockPublicPolicy: false,
           },
@@ -228,7 +307,10 @@ const getCloudFrontTemplate = ({
              * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-defaultcachebehavior.html#cfn-cloudfront-distribution-defaultcachebehavior-cachepolicyid
              */
             CachePolicyId: CACHE_POLICY_ID,
-            ResponseHeadersPolicyId: ORIGIN_RESPONSE_POLICY_ID,
+            ResponseHeadersPolicyId: getResponseHeadersPolicyId({
+              responseHeaders,
+              responseHeadersPolicy,
+            }),
             TargetOriginId: { Ref: STATIC_APP_BUCKET_LOGICAL_ID },
             ViewerProtocolPolicy: 'redirect-to-https',
           },
@@ -277,6 +359,18 @@ const getCloudFrontTemplate = ({
         },
       },
     },
+    ...(responseHeaders.length > 0
+      ? {
+          [CLOUDFRONT_RESPONSE_HEADERS_POLICY_LOGICAL_ID]: {
+            Type: 'AWS::CloudFront::ResponseHeadersPolicy',
+            Properties: {
+              ResponseHeadersPolicyConfig: getResponseHeadersPolicyConfig({
+                responseHeaders,
+              }),
+            },
+          },
+        }
+      : {}),
   };
 
   if (acm) {
@@ -380,7 +474,68 @@ const getCloudFrontTemplate = ({
     {}
   );
 
-  if (appendIndexHtml) {
+  /**
+   * A cache behavior takes a single viewer request function, so the app
+   * supplied one replaces the shared base stack one instead of being appended
+   * to it. `appendIndexHtml` is available to the app code as a helper, which is
+   * why the two options are mutually exclusive.
+   *
+   * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-function-restrictions-all.html
+   */
+  if (appendIndexHtml && viewerRequestFunctionCode) {
+    throw new Error(
+      'The append-index-html and viewer-request-function-code options are mutually exclusive. A cache behavior takes a single viewer request function. Call `appendIndexHtml(request)` from your function instead, which carlin injects for you.'
+    );
+  }
+
+  if (viewerRequestFunctionCode) {
+    template.Resources[CLOUDFRONT_VIEWER_REQUEST_FUNCTION_LOGICAL_ID] = {
+      Type: 'AWS::CloudFront::Function',
+      Properties: {
+        /**
+         * Function names must be unique per AWS account. Static app deploys are
+         * always in us-east-1, so the stack name cannot collide with a
+         * same-named stack in another region.
+         */
+        Name: { Ref: 'AWS::StackName' },
+        FunctionConfig: {
+          Comment: {
+            'Fn::Sub': [
+              'Viewer request function for the ${Project} project.',
+              { Project: { Ref: 'Project' } },
+            ],
+          },
+          Runtime: FUNCTION_RUNTIME,
+        },
+        FunctionCode: getViewerRequestFunctionCode({
+          code: viewerRequestFunctionCode,
+        }),
+        AutoPublish: true,
+      },
+    };
+  }
+
+  const viewerRequestFunctionArn = (() => {
+    if (viewerRequestFunctionCode) {
+      return {
+        'Fn::GetAtt': [
+          CLOUDFRONT_VIEWER_REQUEST_FUNCTION_LOGICAL_ID,
+          'FunctionMetadata.FunctionARN',
+        ],
+      };
+    }
+
+    if (appendIndexHtml) {
+      return {
+        'Fn::ImportValue':
+          BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_ARN_EXPORTED_NAME,
+      };
+    }
+
+    return undefined;
+  })();
+
+  if (viewerRequestFunctionArn) {
     if (!template.Resources[CLOUDFRONT_DISTRIBUTION_LOGICAL_ID].Properties) {
       template.Resources[CLOUDFRONT_DISTRIBUTION_LOGICAL_ID].Properties = {};
     }
@@ -394,10 +549,7 @@ const getCloudFrontTemplate = ({
          */
         {
           EventType: 'viewer-request',
-          FunctionARN: {
-            'Fn::ImportValue':
-              BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_ARN_EXPORTED_NAME,
-          },
+          FunctionARN: viewerRequestFunctionArn,
         },
       ];
   }
@@ -439,17 +591,23 @@ export const getStaticAppTemplate = ({
   aliases,
   appendIndexHtml,
   cloudfront,
+  responseHeaders,
+  responseHeadersPolicy,
   spa,
   hostedZoneName,
   region,
+  viewerRequestFunctionCode,
 }: {
   acm?: string;
   aliases?: string[];
   appendIndexHtml?: boolean;
   cloudfront?: boolean;
+  responseHeaders?: ResponseHeader[];
+  responseHeadersPolicy?: string;
   spa?: boolean;
   hostedZoneName?: string;
   region: string;
+  viewerRequestFunctionCode?: string;
 }): CloudFormationTemplate => {
   if (cloudfront) {
     return getCloudFrontTemplate({
@@ -457,9 +615,12 @@ export const getStaticAppTemplate = ({
       aliases,
       appendIndexHtml,
       cloudfront,
+      responseHeaders,
+      responseHeadersPolicy,
       spa,
       hostedZoneName,
       region,
+      viewerRequestFunctionCode,
     });
   }
 

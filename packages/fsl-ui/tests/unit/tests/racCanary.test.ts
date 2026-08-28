@@ -3,7 +3,7 @@
  *
  * `Toast` consumes `UNSTABLE_Toast*` exports, which React Aria may rename
  * or remove in ANY minor release — that is what the prefix means. The
- * dependency is therefore pinned to `~1.9.0` (patch-only) in package.json.
+ * dependency is therefore pinned to `~1.19.0` (patch-only) in package.json.
  *
  * If this test fails after a react-aria-components upgrade:
  *   1. Check the RAC release notes for the Toast stabilization / rename.
@@ -18,6 +18,9 @@ const CONSUMED_UNSTABLE_EXPORTS = [
   'UNSTABLE_ToastContent',
   'UNSTABLE_ToastQueue',
   'UNSTABLE_ToastRegion',
+  // ADR-040: the action trigger dismisses through the region's state, since
+  // `QueuedToast` exposes no `close()` of its own.
+  'UNSTABLE_ToastStateContext',
 ] as const;
 
 describe('react-aria-components UNSTABLE canary (ADR-003)', () => {

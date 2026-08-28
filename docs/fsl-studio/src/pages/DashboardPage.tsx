@@ -2,11 +2,11 @@ import { datavizVars } from '@ttoss/fsl-theme/dataviz';
 import { vars } from '@ttoss/fsl-theme/vars';
 import type { SortDescriptor } from '@ttoss/fsl-ui';
 import {
-  Badge,
   Code,
   Grid,
   Heading,
   Stack,
+  StatusLight,
   Surface,
   Table,
   TableBody,
@@ -136,14 +136,14 @@ const KpiTiles = () => {
                 <Text variant="label-sm" tone="muted">
                   {kpi.label}
                 </Text>
-                <Badge
+                <StatusLight
                   evaluation={
                     kpi.deltaTone === 'positive' ? 'positive' : 'negative'
                   }
                   numeric="tabular"
                 >
                   {kpi.delta}
-                </Badge>
+                </StatusLight>
               </Stack>
               <Text variant="display-sm" numeric="tabular">
                 {kpi.value}
@@ -207,7 +207,9 @@ const RecentDeploys = () => {
             <TableRow key={deploy.id} id={deploy.id}>
               <TableCell>{deploy.project}</TableCell>
               <TableCell>
-                <Badge evaluation={status.evaluation}>{status.label}</Badge>
+                <StatusLight evaluation={status.evaluation}>
+                  {status.label}
+                </StatusLight>
               </TableCell>
               <TableCell>
                 <Code>{`${deploy.branch}@${deploy.commit}`}</Code>

@@ -371,6 +371,11 @@ export const baseTheme: ThemeTokens = {
         dotted: 'dotted',
         none: 'none',
       },
+      // Agrees with `width.focused` here by choice, not by contract — the two
+      // are independent tokens a theme retunes for different reasons.
+      offset: {
+        focused: '2px',
+      },
     },
 
     // -- Opacity ------------------------------------------------------------
@@ -505,7 +510,16 @@ export const baseTheme: ThemeTokens = {
             disabled: '{core.colors.neutral.500}',
             // The engaged fill is dark — its label inverts with it.
             pressed: '{core.colors.neutral.0}',
-            // hover/active/focused: all neutral.900 — omitted
+            // Declared in base so the leaf exists for the dark alternate to
+            // remap — `vars` mirrors the base shape, so a mode may only remap
+            // states, never add them (model.md § Modes; the structural guard
+            // in global.test.ts holds this). Here the fill darkens a step on
+            // the press and the ink firms with it; in dark the fill inverts
+            // to light and this leaf takes the dark ink that keeps the label
+            // legible for as long as an anchored overlay holds the press
+            // (F-043's 1.45:1).
+            active: '{core.colors.neutral.1000}',
+            // hover/focused: neutral.900 — omitted
           },
         },
         accent: {
@@ -706,6 +720,11 @@ export const baseTheme: ThemeTokens = {
             default: '{core.colors.red.700}',
             disabled: '{core.colors.neutral.500}',
             checked: '{core.colors.neutral.0}',
+            // The mark resolves indeterminate → checked → default, and
+            // `checked`'s neutral.0 belongs to the *filled* red.700 box — on
+            // the light red.300 indeterminate fill it lands at 1.9:1. The
+            // valence's own dark step keeps the hue and clears AA (F-043).
+            indeterminate: '{core.colors.red.900}',
           },
         },
         positive: {
@@ -729,6 +748,9 @@ export const baseTheme: ThemeTokens = {
             default: '{core.colors.green.700}',
             disabled: '{core.colors.neutral.500}',
             checked: '{core.colors.neutral.0}',
+            // Same shape as negative: checked's neutral.0 is the filled box's
+            // ink; the light green.300 indeterminate fill needs the dark step.
+            indeterminate: '{core.colors.green.900}',
           },
         },
         caution: {
@@ -778,6 +800,9 @@ export const baseTheme: ThemeTokens = {
             default: '{core.colors.neutral.700}',
             disabled: '{core.colors.neutral.500}',
             checked: '{core.colors.neutral.0}',
+            // checked's neutral.0 sits on the neutral.500 filled box; the
+            // indeterminate fill is neutral.300, where it lands at 1.5:1.
+            indeterminate: '{core.colors.neutral.900}',
           },
         },
       },
@@ -971,7 +996,15 @@ export const baseTheme: ThemeTokens = {
           },
         },
         muted: {
-          background: { default: '{core.colors.neutral.100}' },
+          // The page's own colour, not a grey step — `colors.md` defines the
+          // `muted` idiom as "the surface's own colour", and § Stacking has the
+          // page and every contained surface resolve the SAME background, with
+          // differentiation paid in elevation and border. A quiet Feedback
+          // surface in the flow is exactly that case; at `neutral.100` it read
+          // as a grey chip, which is what this token was originally for (a chip
+          // fill) before chips moved to `informational` and the rail moved to
+          // `semantic.rail.track` (ADR-028). See ADR-030.
+          background: { default: '{core.colors.neutral.0}' },
           border: {
             default: '{core.colors.neutral.300}',
             focused: '{core.colors.brand.500}',
@@ -1402,6 +1435,15 @@ export const baseTheme: ThemeTokens = {
         // above gap.stack at the default step so containers visibly enclose
         // their sequential children.
         surface: {
+          // The anchored/row-framing step, and the one member of this group
+          // that is FIXED: its outcome is the relationship to fixed-height
+          // children, so a fluid value would make that relationship
+          // container-fluid (ADR-022's argument one context over — see the
+          // family type for the measurement). Same core step as
+          // `inset.control.sm`, and deliberately so: a gutter beside a control
+          // is the control's own step, which is what keeps a menu's
+          // edge-to-text distance close to the reference's.
+          xs: '{core.spacing.fixed.1}',
           sm: '{core.spacing.4}',
           md: '{core.spacing.6}',
           lg: '{core.spacing.8}',
@@ -1471,6 +1513,7 @@ export const baseTheme: ThemeTokens = {
       },
       surface: {
         maxWidth: '{core.sizing.ramp.layout.5}',
+        card: '{core.sizing.ramp.layout.1}',
       },
       viewport: {
         height: {
@@ -1520,9 +1563,49 @@ export const baseTheme: ThemeTokens = {
       ring: {
         width: '{core.border.width.focused}',
         style: '{core.border.style.solid}',
+        offset: '{core.border.offset.focused}',
         // References the semantic accent focused border so mode overrides
         // remap focus color automatically (e.g. brand.300 in dark mode).
         color: '{semantic.colors.action.accent.border.focused}',
+      },
+    },
+
+    consequence: {
+      destructive: {
+        // The standalone negative valence ink — the same source the
+        // validation message reads, referenced semantically (like
+        // focus.ring.color) so the dark alternate's remap of that token
+        // carries this one with it. A theme may repoint the alias without
+        // touching validation messages.
+        ink: '{semantic.colors.informational.negative.text.default}',
+      },
+    },
+
+    // -- Valence ------------------------------------------------------------
+    // The standalone valence inks, for a part that *reports* an outcome while
+    // painting no surface of its own (a status mark on a quiet surface, a
+    // summary line). Each aliases the ink its own ux already ships, referenced
+    // semantically — like focus.ring.color and consequence.destructive.ink —
+    // so the dark alternate's remap of those tokens carries these with it and
+    // no new core value is minted.
+    //
+    // `negative` resolves the same value as consequence.destructive.ink today.
+    // That is a choice, not an identity: FSL Lexicon §10.5 keeps `negative`
+    // (reported outcome) apart from `destructive` (effect on state), and a
+    // theme may repoint one without the other. See families/valence.ts.
+    //
+    // No `accent`/`primary` member: those are Emphasis roles, not valences
+    // (colors.md § Role Coverage), and an emphasis rung has no outcome for an
+    // ink to carry.
+    valence: {
+      positive: {
+        ink: '{semantic.colors.informational.positive.text.default}',
+      },
+      caution: {
+        ink: '{semantic.colors.informational.caution.text.default}',
+      },
+      negative: {
+        ink: '{semantic.colors.informational.negative.text.default}',
       },
     },
 
@@ -1533,6 +1616,19 @@ export const baseTheme: ThemeTokens = {
       // RawValue rationale: rgba() composing a token ref cannot be expressed
       // as a single TokenRef — see model.md §8 RawValue inventory.
       scrim: 'rgba(0, 0, 0, {semantic.opacity.scrim})',
+      // Boundary of an occluding surface. neutral.500 clears the ≥3:1
+      // separator floor against every stratum an overlay can land on in this
+      // mode — the pairing that proves it is `colors.test.ts` › "occluding
+      // boundary", which also reports the ratios.
+      outline: '{core.colors.neutral.500}',
+    },
+
+    // -- Rail -----------------------------------------------------------------
+    rail: {
+      // The unfilled part of a ProgressBar/Meter/Slider track (F-050/F-051).
+      // neutral.200 — see `families/rail.ts` for the reference delta and why
+      // this is the half F-050 left owing.
+      track: '{core.colors.neutral.200}',
     },
 
     // -- Opacity ------------------------------------------------------------
@@ -1655,6 +1751,12 @@ export const darkAlternate: ModeOverride = {
           text: {
             default: '{core.colors.neutral.50}',
             disabled: '{core.colors.neutral.500}',
+            // The engaged fills invert to light (neutral.300 above), so the
+            // ink inverts with them — `pressed` (the held toggle) always had
+            // this; `active` (the momentary press, held for as long as an
+            // anchored overlay stays open) was missed, leaving the resting
+            // near-white ink on the light fill at 1.45:1 (F-043).
+            active: '{core.colors.neutral.900}',
             pressed: '{core.colors.neutral.900}',
           },
         },
@@ -1753,6 +1855,12 @@ export const darkAlternate: ModeOverride = {
             selected: '{core.colors.neutral.300}', // base neutral.1000 vanishes on dark
             checked: '{core.colors.neutral.0}',
             indeterminate: '{core.colors.neutral.0}',
+            // The engaged fill lifts to neutral.500 here, which the base edge
+            // (also neutral.500) then matched exactly — a pressed or expanded
+            // field lost its edge in this mode while keeping it in the base.
+            // Same step hover/active already take above.
+            pressed: '{core.colors.neutral.300}',
+            expanded: '{core.colors.neutral.300}',
           },
           text: {
             default: '{core.colors.neutral.0}',
@@ -1809,7 +1917,20 @@ export const darkAlternate: ModeOverride = {
             default: '{core.colors.neutral.900}',
             disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
           },
-          border: { default: '{core.colors.red.500}' },
+          border: {
+            default: '{core.colors.red.500}',
+            // The base cascade darkens the edge on interaction (red.500 →
+            // red.700) because it sits on a light red fill. Here the fill is
+            // the dark canvas, so darkening weakens the edge instead — it fell
+            // under the border pairing floor while resting cleared it, i.e. an
+            // invalid field went quieter the moment it was focused. Inverted to
+            // the step this alternate already picked for the same problem at
+            // `input.primary.border.invalid`.
+            active: '{core.colors.red.300}',
+            expanded: '{core.colors.red.300}',
+            focused: '{core.colors.red.300}',
+            pressed: '{core.colors.red.300}',
+          },
           text: { default: '{core.colors.red.300}' },
         },
         positive: {
@@ -1838,6 +1959,11 @@ export const darkAlternate: ModeOverride = {
             default: '{core.colors.neutral.500}',
             active: '{core.colors.neutral.300}',
             selected: '{core.colors.neutral.300}',
+            // Engaged states keep the resting fill and move only the edge, so
+            // the base's darkening step lands on the dark fill and recedes.
+            // Same inversion as the three states above.
+            expanded: '{core.colors.neutral.300}',
+            pressed: '{core.colors.neutral.300}',
           },
           text: { default: '{core.colors.neutral.300}' },
         },
@@ -1893,24 +2019,52 @@ export const darkAlternate: ModeOverride = {
           background: {
             default: '{core.colors.neutral.900}',
             disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+            // The base's selected tint is the light green.300, which is also
+            // where this role's *ink* remaps on dark — inherited, the pair
+            // closes to 1:1 (F-043). The monochrome selected step the neutral
+            // roles already use keeps the light valence ink legible on it.
+            selected: '{core.colors.neutral.700}',
           },
-          border: { default: '{core.colors.green.500}' },
+          border: {
+            default: '{core.colors.green.500}',
+            // The inherited green.700 edge sinks against the neutral.700
+            // selected fill. Engaging lightens the edge on dark — the same
+            // move this alternate makes on negative's active/focused and on
+            // accent's hover — and .300 also keeps it distinct from the
+            // resting .500.
+            selected: '{core.colors.green.300}',
+          },
           text: { default: '{core.colors.green.300}' },
         },
         caution: {
           background: {
             default: '{core.colors.neutral.900}',
             disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+            // Same remap as positive — see the comment there.
+            selected: '{core.colors.neutral.700}',
           },
-          border: { default: '{core.colors.yellow.500}' },
+          border: {
+            default: '{core.colors.yellow.500}',
+            selected: '{core.colors.yellow.300}',
+          },
           text: { default: '{core.colors.yellow.300}' },
         },
         negative: {
           background: {
             default: '{core.colors.neutral.900}',
             disabled: '{core.colors.neutral.700}', // neutral.100 is near-white on dark
+            // Same remap as positive — see the comment there.
+            selected: '{core.colors.neutral.700}',
           },
-          border: { default: '{core.colors.red.500}' },
+          border: {
+            default: '{core.colors.red.500}',
+            // Same inversion as `input.negative.border` — the base darkens the
+            // edge on interaction against a light red fill; here it sits on the
+            // dark canvas, so it lightens instead.
+            active: '{core.colors.red.300}',
+            focused: '{core.colors.red.300}',
+            selected: '{core.colors.red.300}',
+          },
           text: { default: '{core.colors.red.300}' },
         },
         // Full remap: base brand.50/100/200 backgrounds are near-white and fail on dark pages.
@@ -1923,8 +2077,13 @@ export const darkAlternate: ModeOverride = {
           },
           border: {
             default: '{core.colors.brand.300}',
-            hover: '{core.colors.brand.400}',
-            active: '{core.colors.brand.400}',
+            // Engaging lifts the fill a step (brand.900 → brand.700), so the
+            // edge must lift with it or the cascade inverts: brand.400 moved
+            // *down* the ramp while the fill moved up, and the pair closed to
+            // under the border pairing floor. brand.200 keeps the edge one step
+            // clear of the resting brand.300 it must also differ from.
+            hover: '{core.colors.brand.200}',
+            active: '{core.colors.brand.200}',
             // brand.100 for focused — must differ from default (brand.300) for state distinguishability
             focused: '{core.colors.brand.100}',
             disabled: '{core.colors.neutral.700}',
@@ -1954,7 +2113,11 @@ export const darkAlternate: ModeOverride = {
           text: { default: '{core.colors.neutral.0}' },
         },
         muted: {
-          background: { default: '{core.colors.neutral.700}' },
+          // The canvas, mirroring the base's page colour (ADR-030). At
+          // `neutral.700` a quiet Feedback surface was a lifted grey block on a
+          // near-black page — the same "grey chip" reading the base had, one
+          // mode over.
+          background: { default: '{core.colors.neutral.900}' },
           border: { default: '{core.colors.neutral.500}' },
           text: { default: '{core.colors.neutral.300}' },
         },
@@ -2042,8 +2205,11 @@ export const darkAlternate: ModeOverride = {
             hover: '{core.colors.brand.400}',
             active: '{core.colors.brand.300}',
             focused: '{core.colors.brand.400}',
-            selected: '{core.colors.brand.400}',
-            current: '{core.colors.brand.400}',
+            // `selected` and `current` are the only two states here that fill
+            // with brand.700, so their edge is read against the marker rather
+            // than the page and needs the same lift the fill took.
+            selected: '{core.colors.brand.200}',
+            current: '{core.colors.brand.200}',
           },
           text: {
             default: '{core.colors.brand.300}',
@@ -2071,7 +2237,12 @@ export const darkAlternate: ModeOverride = {
             active: '{core.colors.neutral.500}',
             focused: '{core.colors.brand.400}',
             selected: '{core.colors.neutral.300}',
-            current: '{core.colors.brand.500}',
+            // Was brand.500 — the step the base picked to clear the indicator
+            // floor against a light page. Its two siblings here (`focused`, and
+            // `text.current` below) were already lifted for the dark canvas and
+            // this one was not, so the current-page marker sat under the floor
+            // in this mode alone.
+            current: '{core.colors.brand.400}',
           },
           text: {
             default: '{core.colors.neutral.500}',
@@ -2102,6 +2273,20 @@ export const darkAlternate: ModeOverride = {
         overlay: '{core.colors.neutral.700}',
         blocking: '{core.colors.neutral.700}',
       },
+    },
+    overlay: {
+      // The boundary inverts with the canvas: light mode needs a dark hairline
+      // to bound a light surface, dark mode a light one. neutral.300 is the
+      // step that clears the ≥3:1 separator floor against every stratum in
+      // this mode, including the tonal lifts an overlay lands on — the
+      // "occluding boundary" pairing reports the ratios.
+      outline: '{core.colors.neutral.300}',
+    },
+    rail: {
+      // A rail darkens in dark while a border lightens (`families/rail.ts`) —
+      // the opposite direction of `outline` just above. neutral.700 is the
+      // same step F-050 already found closest to the reference here.
+      track: '{core.colors.neutral.700}',
     },
   },
 };

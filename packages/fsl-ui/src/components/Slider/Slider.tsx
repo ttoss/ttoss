@@ -10,7 +10,14 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
+import { fslVar } from '../../tokens/escapeHatch';
 import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
+import {
+  buildRailLabelRowStyle,
+  RAIL_FILL,
+  RAIL_ROOT_STYLE,
+  TRACK_RAIL,
+} from '../../tokens/rail';
 import { SELECTION_CONTROL } from '../../tokens/selectionControl';
 
 // ---------------------------------------------------------------------------
@@ -43,13 +50,14 @@ export const sliderMeta = {
   structure: 'root',
 } as const satisfies ComponentMeta<'Input'>;
 
-// Rail thickness (CONTRIBUTING §4 layout-literal rule): geometry of the rail,
-// not a semantic token — 6px, matching the pill rails `ProgressBar` and
-// `Meter` adopted in P3 slice 3 (deliberately kept over S2's 4px: the three
-// rails are one internal decision). The visible handle takes the shared
+// Rail thickness comes from the shared rail (`TRACK_RAIL`) — the third copy of
+// P3 slice 3's "three rails, one answer" ruling, which had been written out as
+// `'0.375rem'` here and `'6px'` twice in `Feedback` (deliberately kept over
+// S2's 4px: the three rails are one internal decision). Only the thickness is
+// shared: `RAIL_BASE` clips its fill, and this rail must not — the thumb
+// overflows it on purpose. The visible handle takes the shared
 // selection-control scale (18px) so it reads as a grabbable knob on the rail;
 // its *interactive* box is `sizing.hit` — see the thumb below.
-const TRACK_THICKNESS = '0.375rem';
 
 type InputColors = typeof vars.colors.input.primary;
 
@@ -59,15 +67,23 @@ type SliderFillState = {
   getThumbPercent: (index: number) => number;
 };
 
-/** The rail the thumb travels along. */
-const buildTrackStyle = (c: InputColors): React.CSSProperties => {
+/**
+ * The rail the thumb travels along.
+ *
+ * The fill is the cross-cutting `RAIL_FILL` (`semantic.rail.track`) every
+ * rail shares, not `c?.background?.disabled` — that borrow made an empty
+ * `Slider` mean "disabled" in the token model (F-051). `Slider`'s own
+ * `background` states (`checked`/`default`) are unaffected; only the rail
+ * behind the fill moved off the borrowed state token.
+ */
+const buildTrackStyle = (): React.CSSProperties => {
   return {
     boxSizing: 'border-box',
     position: 'relative',
     inlineSize: '100%',
-    blockSize: TRACK_THICKNESS,
+    blockSize: TRACK_RAIL.thickness,
     borderRadius: vars.radii.round,
-    backgroundColor: c?.background?.disabled ?? c?.background?.default,
+    backgroundColor: RAIL_FILL,
   };
 };
 
@@ -189,24 +205,16 @@ export const Slider = <T extends number | number[] = number>({
       {...props}
       data-scope="slider"
       data-part="root"
-      style={{
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: vars.spacing.gap.stack.xs,
-      }}
+      style={RAIL_ROOT_STYLE}
     >
       {(label != null || showOutput) && (
         <div
           data-scope="slider"
           data-part="labelRow"
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'baseline',
-            color: c?.text?.default,
-            ...(vars.text.label.md as React.CSSProperties),
-          }}
+          // The shared row, with Input's own quiet text — the ink is the
+          // parametrized axis, not a normalized colour (Feedback's rails
+          // read their entity's quiet text instead).
+          style={buildRailLabelRowStyle({ ink: c?.text?.default })}
         >
           {label != null && (
             <RACLabel data-scope="slider" data-part="label">
@@ -230,11 +238,15 @@ export const Slider = <T extends number | number[] = number>({
           // thumb, and the same block size a field control clears.
           blockSize: vars.sizing.hit,
           inlineSize: '100%',
+          // Host knob (CONTRACT.md §7), shared with `ProgressBar`/`Meter`'s
+          // rail (F-052) — unset by default, so this row fills its container
+          // exactly as before.
+          maxWidth: fslVar('--fsl-track-max-width', TRACK_RAIL.maxWidth),
         }}
       >
         {({ state }) => {
           return (
-            <div style={buildTrackStyle(c)}>
+            <div style={buildTrackStyle()}>
               <div
                 data-scope="slider"
                 data-part="fill"

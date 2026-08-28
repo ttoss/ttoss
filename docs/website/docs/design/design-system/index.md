@@ -64,6 +64,7 @@ Single navigation table for all foundational design-system documents. Open the f
 | [`design-tokens/quick-reference.md`](./design-tokens/quick-reference.md) | Intent → token cheatsheet for quick selection.                                                    |
 | [`design-tokens/model.md`](./design-tokens/model.md)                     | Architectural contract: invariants, RawValue exception inventory, FSL → token grammar projection. |
 | [`design-tokens/modes.md`](./design-tokens/modes.md)                     | How modes (light/dark/etc.) remap semantic references without mutating core values.               |
+| [`design-tokens/theme-authoring.md`](./design-tokens/theme-authoring.md) | How to design and review a theme — owns the Theme Brief and Formal Style Profile formats.         |
 | [`design-tokens/governance.md`](./design-tokens/governance.md)           | Public-contract rules: deprecation, naming, additions, removals.                                  |
 | [`design-tokens/validation.md`](./design-tokens/validation.md)           | Build-time and runtime validation of the token contract.                                          |
 

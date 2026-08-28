@@ -32,3 +32,27 @@ export const ReadingMeasure: Story = {
     );
   },
 };
+
+/**
+ * `maxWidth="card"` caps at the narrow centered-card width (FRICTION F-004)
+ * — an auth form, a standalone confirmation page — narrower than `surface`,
+ * wider than most single form controls.
+ */
+export const CardWidth: Story = {
+  render: () => {
+    return (
+      <Box
+        maxWidth="card"
+        padding="md"
+        background="muted"
+        radius="surface"
+        border="muted"
+      >
+        <Text>
+          A box capped at the narrow centered-card width — the step between
+          `reading` and `surface`.
+        </Text>
+      </Box>
+    );
+  },
+};

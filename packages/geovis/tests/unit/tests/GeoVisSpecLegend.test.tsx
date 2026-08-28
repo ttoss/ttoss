@@ -255,9 +255,49 @@ describe('stacked legend overlays (shared position)', () => {
     expect(popGroup!.style.right).toBe('24px');
     expect(popGroup!.style.bottom).toBe('24px');
 
-    // Only the second legend in declaration order gets a leading divider.
-    const dividers = popGroup!.querySelectorAll('div[aria-hidden="true"]');
-    expect(dividers).toHaveLength(1);
+    // Each legend is its own card; every card but the first is spaced from the
+    // one above via a top margin (no internal divider).
+    const bodies = Array.from(popGroup!.children) as HTMLElement[];
+    expect(bodies).toHaveLength(2);
+    expect(bodies[0].style.marginTop).toBe('');
+    expect(
+      bodies.slice(1).every((b) => {
+        return b.style.marginTop === '8px';
+      })
+    ).toBe(true);
+  });
+
+  test('the group wrapper honors the legends offset (e.g. pushed clear of a sidebar)', async () => {
+    render(
+      <GeoVisProvider
+        spec={buildSpec({
+          legends: [
+            {
+              ...legendNamed('pop', 'Population', 'bottom-right'),
+              offset: { x: 332 },
+            },
+            {
+              ...legendNamed('density', 'Density', 'bottom-right'),
+              offset: { x: 332 },
+            },
+          ],
+        })}
+      >
+        <div />
+      </GeoVisProvider>
+    );
+    await act(async () => {});
+
+    const list = await waitFor(() => {
+      const el = document.querySelector('ul[aria-label="Population"]');
+      expect(el).not.toBeNull();
+      return el as HTMLElement;
+    });
+
+    // Group wrapper = the legend body's parent; its right edge reflects offset.x.
+    const group = (list.closest('div') as HTMLElement).parentElement!;
+    expect(group.style.right).toBe('332px');
+    expect(group.style.bottom).toBe('24px');
   });
 
   test('stacks any number of legends sharing a position (3), preserving declaration order and dividing every legend but the first', async () => {
@@ -304,8 +344,14 @@ describe('stacked legend overlays (shared position)', () => {
       bodies.indexOf(listC.closest('div') as HTMLElement)
     );
 
-    // First legend gets no leading divider; the other two do (N legends ⇒ N-1 dividers).
-    expect(group.querySelectorAll('div[aria-hidden="true"]')).toHaveLength(2);
+    // First legend gets no top margin; the other two are spaced from the card
+    // above (N legends ⇒ N-1 spaced cards).
+    expect((bodies[0] as HTMLElement).style.marginTop).toBe('');
+    expect(
+      (bodies.slice(1) as HTMLElement[]).every((b) => {
+        return b.style.marginTop === '8px';
+      })
+    ).toBe(true);
   });
 
   test('legends with different positions never share a group, even when both are positioned', async () => {

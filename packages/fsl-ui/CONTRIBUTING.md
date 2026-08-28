@@ -311,7 +311,7 @@ Then add `ENTITY_TOKEN_MAPPING[MyEntity]` in `src/tokens/projection.ts` and the 
 - `taxonomy.ts` imports nothing. `src/semantics/` never learns colors, `vars`, or CSS.
 - Types derive from arrays via `(typeof X)[number]` — never a standalone union.
 - Components consume only `vars.*`. No hex/rgb literals. No `var(--tt-*, fallback)`. Host knobs use `--fsl-*` custom properties **only** through `fslVar` and always with a fallback (CONTRACT.md §7 / ADR-002). Contract tests enforce.
-- **Layout-literal rule.** A layout literal (`12rem`, `500px`, `1.2s`, `40%`, …) is allowed only as a **named module-level constant with a justification comment** (the `TRACK_W` pattern in `Switch.tsx`). Magic inline literals in style objects are forbidden — a reviewer must be able to ask "why this number?" and find the answer next to the name. Focus-ring `outlineOffset` micro-nudges (`'2px'`, `'-1px'`) are the sole tolerated inline exception.
+- **Layout-literal rule.** A layout literal (`12rem`, `500px`, `1.2s`, `40%`, …) is allowed only as a **named module-level constant with a justification comment** (the `TRACK_W` pattern in `Switch.tsx`). Magic inline literals in style objects are forbidden — a reviewer must be able to ask "why this number?" and find the answer next to the name. That includes `outlineOffset`: no component source may write an `outlineOffset` literal (forms round R2 class guard — a literal that happens to match a constant is indistinguishable from one that tracks it until the theme changes the ring's thickness).
 - **Logical CSS properties only.** `insetInlineStart`, `marginBlockEnd`, `paddingInline`, … — never `left`, `top`, `marginRight`, `borderLeftWidth`, etc. RTL correctness is a contract-test invariant.
 - Every `animation:` references a name from `ANIMATION_NAMES` (`src/tokens/keyframes.ts`), whose `@keyframes` ships via `ensureKeyframes()` — never a bare string (contract invariant #8).
 - State-dependent colors go through `resolveInteractiveStyle`. Structural tokens (`radii`, `border.*`, `sizing`, `spacing`, `typography`, `motion`) are literal `vars.*` reads.
@@ -342,7 +342,9 @@ When adding a component, classify every string it renders into 1–3 before writ
 
 ## 7 — Decisions (ADRs)
 
-Canonical trade-off record for this package, mirroring the `@ttoss/fsl-theme` convention: IDs sequential, never reused; append only; superseded entries keep their ID with `Status: superseded-by:ADR-NNN`. Search here before re-litigating a decision.
+Canonical trade-off record for this package, mirroring the `@ttoss/fsl-theme` convention: IDs sequential, never reused; append only; superseded entries keep their ID with `Status: superseded-by:ADR-NNN`. Search here before re-litigating a decision. IDs 016–021 were never allocated (the numbering jumped; the gap is fact, not lost history) and 024 was reserved then released unused (see the note at ADR-023) — unused IDs stay unused.
+
+**Citation scope** — a bare `ADR-NNN` always refers to an ADR in this package's CONTRIBUTING.md. Citing another package's ADR requires the package prefix — e.g. `fsl-theme ADR-029` — because `@ttoss/fsl-theme` and `@ttoss/fsl-ui` keep independent, homonymous ID ranges. IDs are never renumbered.
 
 ### ADR-001: All user-facing copy is caller-supplied; flow-critical labels are required props
 
@@ -376,7 +378,7 @@ Anchors: `package.json` (`react-aria-components`), `tests/unit/tests/racCanary.t
 
 ### ADR-004: `@ttoss/forms` interop is a documented recipe, not an adapter entry point
 
-Status: accepted (2026-07-15)
+Status: superseded-by:ADR-027 (2026-08-02)
 Tags: forms, integration, react-hook-form
 
 Decision: fsl-ui controls connect to the monorepo's form standard (`@ttoss/forms` = react-hook-form + Zod) through the plain react-hook-form `Controller`, mapping `field.value/onChange/onBlur` and `fieldState.invalid` onto the controls' controlled props (`isInvalid`, `value`, `onChange`). The pattern lives as an integration test (`tests/unit/tests/formsBridge.test.tsx`) that consumes `@ttoss/forms` as a devDependency — no `@ttoss/fsl-ui/forms` entry ships.
@@ -431,11 +433,11 @@ Anchors: `src/components/Slider/Slider.tsx`, ROADMAP Slider row, `src/semantics/
 Status: accepted (2026-07-18)
 Tags: presentational-layer, structure, escape-hatch, composition, governance
 
-Context: FSL Studio — the first real consumer — needed **827 lines of `studio.css`** with zero token redefinitions and zero library overrides (measured, EVOLUTION.md §1). The CSS filled a _vacuum_: the package shipped 34 interactive controls but nothing for composition (no `Box`/`Grid`/`Container`), so every shell, layout, and one-off region had no library answer and fell to raw CSS. The doctrine simultaneously forbade variation (§4 "no size prop") and free escape (§7 host-knobs only for composites), leaving no way to express a padded/sized/grouped region.
+Context: FSL Studio — the first real consumer — needed **827 lines of `studio.css`** with zero token redefinitions and zero library overrides (measured; EVOLUTION.md §1, retired — see Anchors below). The CSS filled a _vacuum_: the package shipped 34 interactive controls but nothing for composition (no `Box`/`Grid`/`Container`), so every shell, layout, and one-off region had no library answer and fell to raw CSS. The doctrine simultaneously forbade variation (§4 "no size prop") and free escape (§7 host-knobs only for composites), leaving no way to express a padded/sized/grouped region.
 Decision: ship a **presentational layer** — `Box` (generic block escape hatch), `Grid` (2D), `Container` (page shell), alongside the existing `Stack`/`Surface`/`Text`/`Heading` — all Entity = `Structure`. The escape hatch is real but **token-constrained**: every visual prop accepts _only_ a token key (`padding="md"`, `background="muted"`, `radius="surface"`, `columns={3}`, `maxWidth="reading"`) — never a raw `style`/`className`/hex/px. Layout _behaviour_ keywords that are not design tokens (flex/grid alignment, `auto`/`100%`/`fit-content`, `text-align`, `tabular-nums`) are allowed as literals, exactly as `Stack` already maps `align`/`justify` to flex keywords. This supersedes "no style at all": expressive enough to compose any app layout, constrained enough that no arbitrary value can enter a consumer.
 Rejected: a free `style`/`className` prop (re-admits arbitrary hex/px — the exact drift the token contract exists to prevent); a component-per-layout explosion (does not scale — the Studio proved 38 hand-rolled selectors); leaving composition to host CSS (the status quo that produced 827 lines); a `weight` prop on Text/Heading (weight belongs to the type-scale step — a free weight knob is the same "no size prop" violation §4 forbids).
 Cost: a broader public surface (four+ layout primitives) and a standing judgement call at review time — "is this prop a token key or a layout keyword?" (the contract tests still forbid hex/rgb/`var(--tt-*,fallback)` in every component source, which catches the dangerous cases). `Box` overlaps `Surface` on padding/background/border, disambiguated by intent: `Surface` bears elevation/depth; `Box` is a plain container.
-Anchors: `src/components/{Box,Grid,Container,Stack,Surface,Text,Heading}`, `src/tokens/CONTRACT.md` §4/§7, `packages/fsl-ui/INTERNAL/EVOLUTION.md` §3 (D1).
+Anchors: `src/components/{Box,Grid,Container,Stack,Surface,Text,Heading}`, `src/tokens/CONTRACT.md` §4/§7, `EVOLUTION.md` §3 (D1) — that file was retired to git history 2026-08-06, so read it with `git log --follow -- packages/fsl-ui/INTERNAL/EVOLUTION.md`.
 
 Re-litigation answers:
 
@@ -531,9 +533,11 @@ Decision: **we do not add a component.** `Toolbar` already is that cluster — s
 
 Rejected: a new `ActionGroup`/`ActionButtonGroup` component (two identities, one role — and it would have to forbid the mixed controls a real bar carries: a `Select` for a filter, a `Separator` between clusters); keeping the painted bar behind a `variant`/`hasChrome` prop (a visual axis as an author decision, which CONTRACT §4 gives to the theme, and the composition already exists); `density`/`isJustified` from the reference (real patterns, no consumer yet — readmission criterion: a segmented view-switch that needs its options nearly touching, or a mobile bar whose controls must divide the width); the adaptive column `ButtonGroup` has (a toolbar that overflows moves its tail into an overflow menu — `ActionMenu`, queue item ⑤ — it does not restack; columnising a formatting strip turns a bar into a wall).
 
-Cost: a **breaking change** for anything that passed `evaluation` to `Toolbar` or relied on its bar (pre-1.0, no consumers in the repo; the Studio never used it). A bar that wants chrome now needs one more element. And the realignment exposed that the component does not implement the APG toolbar's single-tab-stop requirement — `useToolbar` supplies the arrow keys but cannot manage arbitrary children's `tabindex` — which was silently claimed in three places and is now documented and asserted instead (F-028).
+Cost: a **breaking change** for anything that passed `evaluation` to `Toolbar` or relied on its bar (pre-1.0, no consumers in the repo; the Studio never used it). A bar that wants chrome now needs one more element. And the realignment exposed what was read, at the time, as the component not implementing the APG toolbar's single-tab-stop requirement — `useToolbar` supplies the arrow keys but cannot manage arbitrary children's `tabindex` — which had been silently claimed in three places; the claim was removed and asserted-against instead (F-028).
 
-Anchors: `src/components/Toolbar/Toolbar.tsx`, `src/components/ActionTrigger/anatomy.tsx` (`buildActionGroupStyle`), `src/components/ToggleButtonGroup/ToggleButtonGroup.tsx`, `docs/fsl-studio/FRICTION.md` F-028, ROADMAP P3 Slice 4 ④.
+**Corrected 2026-08-05: the single-tab-stop claim was right after all, and the removal was the wrong fix for a test-harness gap.** `useToolbar` (`react-aria` `private/toolbar/useToolbar.js`) never needed to manage a child's `tabindex` to get one tab stop — on a `Tab` keydown it calls a generic, DOM-walking focus manager (`createFocusManager` → `getFocusableTreeWalker`, which finds tabbable descendants by walking the DOM subtree, not by any child registering itself) to jump focus to the toolbar's first/last tabbable descendant, then leaves the keydown's native default action to carry Tab onward from there — landing outside the toolbar in one observable step, for _any_ child, cooperative or not. `@testing-library/user-event`'s `tab()` cannot see this: its `keydown.js` behaviour computes the Tab destination from the element the event was dispatched _to_, not from `document.activeElement` after the toolbar's own keydown handler has already moved it — so the 2026-07-25 test asserting "every control is still its own tab stop" was a false negative produced by the test harness, not a defect in the shipped component. Verified three ways: reading `useToolbar`'s source line by line; a `fireEvent.keyDown`-driven jsdom test (bypasses user-event's simulation) proving the jump lands on the last/first tabbable descendant across a plain host `<button>` and an fsl-ui `Select`; and a real Chromium session (Playwright, driving Storybook's `KeyboardInvestigation` story) confirming Tab enters once, exits once from any position (forward and Shift+Tab), and arrow keys still walk every control including the host `<button>` and the `Select`. Nothing in `Toolbar.tsx` changed — the mechanism was always upstream's, per the original backlog's preferred outcome ("upstream fixes `useToolbar`… it owns the keyboard model"), it had simply already happened by the time this was measured with the wrong tool.
+
+Anchors: `src/components/Toolbar/Toolbar.tsx`, `src/components/ActionTrigger/anatomy.tsx` (`buildActionGroupStyle`), `src/components/ToggleButtonGroup/ToggleButtonGroup.tsx`, `tests/unit/tests/Toolbar.test.tsx`, `docs/fsl-studio/FRICTION.md` F-028, ROADMAP P3 Slice 4 ④.
 
 Re-litigation answers:
 
@@ -541,6 +545,7 @@ Re-litigation answers:
 - "A toolbar with no background looks unfinished." → measure it against the page it sits on. The chrome that read as "finished" was a card, and the controls inside it lost their own edges to it. Compose `Surface` when the bar genuinely floats.
 - "Why does `ToggleButtonGroup` stay `inline-flex` when the other two are block-level?" → a segmented control is an object sized by its options; a command row and a toolbar are bands across their container. That is the one parameter `buildActionGroupStyle` takes.
 - "Should `Toolbar` collapse like `ButtonGroup`?" → no. Its overflow answer is an overflow menu, not a second axis.
+- "Is `Toolbar` a single tab stop?" → yes, verified in a real browser (F-028, corrected 2026-08-05). `user.tab()` in the jsdom suite cannot show it; `fireEvent.keyDown` and a Chromium session can.
 
 ### ADR-015: `ActionMenu` ships as a composite (the overflow affordance is a convention); a menu row's resting rung is `muted`
 
@@ -673,7 +678,7 @@ Re-litigation answers:
 Status: accepted (2026-07-26)
 Tags: input, field, form, context, a11y, i18n, P3, forms
 
-> ADR-024 (the validation language) is reserved for forms item F. Numbers are allocated when a decision is planned, not when it lands.
+> ADR-024 was reserved for forms item F, which closed 2026-07-29 needing no architectural decision (FORMS.md: the validation language collapsed to a single branch in one function). The ID stays unused — numbers are never reallocated.
 
 Context: forms item B1. Label layout and the necessity convention are one product decision, not a per-field one — a form where some labels sit above and others beside, or where one field marks required and the next does not, is a form nobody proofread. The reference system puts exactly these on its `<Form>` (`labelPosition`, `labelAlign`, `necessityIndicator`, `size`) and has each field inherit them, which is also this ecosystem's own pattern: applications configure once at the root, packages consume context, and no visual prop travels down a tree.
 
@@ -725,3 +730,1474 @@ Re-litigation answers:
 - "Why is the submitted value masked rather than raw digits?" → the field submits what the user sees, which is what every server-side Brazilian-format consumer already parses; a hidden raw twin doubles the FormData surface for a one-line strip at the boundary. Reverse it only with a consumer whose backend rejects masked input and cannot strip.
 - "Why no `br.currency`?" → it is not a fixed pattern (see (2)); adding it to this registry would re-implement Intl badly. `NumberField` is the answer, documented in the registry header.
 - "Why does the glyph not render on `RadioGroup`/`CheckboxGroup`/`Switch`?" → no field box to sit in: the groups' members mark themselves and `Switch`'s control _is_ the mark. Their message carries the valence — the named-exception rows in the class guard.
+
+### ADR-027: The form bridge names its upstreams directly; fsl-ui takes no form-library dependency
+
+Status: accepted (2026-08-02)
+Tags: forms, integration, react-hook-form, supersedes:ADR-004, F-005
+
+Decision: the react-hook-form recipe imports `react-hook-form`, `zod` and
+`@hookform/resolvers/zod` by name. `@ttoss/forms` leaves this package entirely,
+including as a devDependency.
+
+ADR-004's substance survives untouched — the bridge is a documented recipe
+living as an integration test, no adapter entry ships, and consumers wire
+`Controller` by hand. What it got wrong is one line: it named `@ttoss/forms` as
+"the monorepo's form standard" and therefore as the import site. That package
+has a single entry which also exports the legacy `FormField*` suite, carrying
+`@ttoss/ui`, `@ttoss/components` and `@ttoss/react-i18n` as peers — so an app
+following the documented recipe inherited the entire legacy stack to obtain four
+re-exported symbols (F-005).
+
+**The premise also expired.** `@ttoss/forms` is legacy alongside `@ttoss/ui` and
+is being discontinued (owner ruling, `INTERNAL/FORMS.md` § Ground rules), and
+fsl-ui takes no form-library dependency ever. The bridge is not how fsl-ui does
+validation — React Aria's native validation is the default and needs no library
+at all, which is what the Studio runs on. This recipe exists for an app that
+_already_ runs react-hook-form, and such an app has those packages directly.
+
+Rejected: keep importing from `@ttoss/forms` and document the peer cost — the
+cost is unavoidable at the import, not a documentation problem; add a lean
+subpath (`@ttoss/forms/core`) — changes a package that is being discontinued, to
+serve a re-export nobody needs once the recipe names its upstreams.
+Cost: one more devDependency here (`@hookform/resolvers`), where a single
+workspace import used to cover three.
+Anchors: `tests/unit/tests/formsBridge.test.tsx`, `INTERNAL/FORMS.md`,
+`docs/fsl-studio/FRICTION.md` F-005.
+
+Re-litigation answers:
+
+- "Should fsl-ui ship a react-hook-form adapter now?" → no, and less than
+  before: the default path uses no form library, so an adapter would serve a
+  minority integration.
+- "Does this make react-hook-form a dependency of fsl-ui?" → no. It is a
+  devDependency of the test that proves the recipe; the package ships no import
+  of it.
+
+### ADR-028: A part that paints no surface borrows the stratum's ink; `consequence` selects it
+
+Status: accepted (2026-08-03)
+Tags: colors, taxonomy, consequence, F-029, closes:F-029
+
+Decision: **a part that paints no surface of its own takes its ink from the
+surface it renders on, and when that part carries a valence, `consequence` is
+what selects it.** Implemented once in `tokens/consequenceInk.ts`, written into
+`CONTRACT.md` §3.3, and bounded three ways: the quiet rung only
+(`evaluation="muted"`, which `colors.md` names as the system's idiom for "no
+fill"), the `color` dimension only, and yielding to the host's own cascade at
+`disabled`, `active` and `expanded`.
+
+This is not a new idea in the system. §3.2's validation message has always read
+`input.negative.text` and rendered on whatever informational surface the form
+sits on; F-036 built the contrast inventory that makes such a pairing
+verifiable. ADR-028 is that pattern stated as a rule and given a second family.
+
+**The 2026-08-02 governance recommendation is retracted.** It proposed splitting
+"static ink on a coloured fill" out of `{ux}.{valence}.text`, freeing the
+dimension to be the standalone valence ink the loudness ladder promises. Stress-
+tested against a second theme, it is circular: the ink is only static while the
+fill is known, and `action.primary` (neutral.1000 light / neutral.0 dark),
+`action.accent` (brand.500) and `feedback.caution` (a yellow) do not share one.
+The split immediately needs per-role on-fill ink — one token per role per mode —
+which is `{ux}.{role}.text` renamed, at the cost of every published Action and
+Feedback label.
+
+What shipped is the proposal's own alternatives (a) and (b), which it costed in
+a line each and dismissed. Neither works alone. (b) supplies the licence, (a)
+supplies the trigger. (a)'s objection — "a fourth axis on a three-axis token
+path" — does not apply, because nothing is added to the path:
+`informational.negative.text.default` already exists, and `consequence` is
+already declared per entity, already emitted as `data-consequence`, already
+driving `ConfirmationDialog`'s arming. It gains reach, not vocabulary. (b)'s
+objection — "it weakens the entity→ux alignment the contract test enforces" —
+was real, and is answered by making the crossing **licensed and singular**: the
+read lives in one module, and the contract suite fails any component that
+reaches for `informational.negative` by hand, or that emits `data-consequence`,
+paints from `vars.colors.action`, and does not route its ink through that
+module. `Menu.tsx` would previously have passed such a read by coincidence,
+because it declares an Overlay part and the alignment test unions the contexts.
+
+The engaged-state bound is measured, not stylistic. `action.muted` materialises
+a real fill on engagement and the theme lifts its own ink to clear it — in the
+dark alternate the fill is `neutral.500` and the muted ink goes pure white. A
+fixed valence ink cannot follow: rest reads 10.02 light / 9.53 dark and hover
+9.43 / 5.72, while the engaged fill reads **2.65**, under every floor. `disabled`
+yields for a different reason — unavailability outranks valence, the same ground
+WCAG 2.2 §1.4.3 exempts it on.
+
+Enabling refactor: `resolveStateKey` is split out of `resolveInteractiveStyle`,
+so "which state is the host painting" has one answer derived from
+`STATE_PRIORITY` rather than two readers guessing whether `isPressed` means
+`active` or `pressed`. No behaviour change.
+
+Rejected: the static-ink split (circular, see above); a `negativeQuiet`
+evaluation (grows the taxonomy for one case and reads as a variant axis the
+system does not have); `action.negative.textOnSurface` (a dimension-registry
+change — governance — for what an existing token already holds); tinting the
+border too (the quiet rung's border mirrors its background by construction, so
+this invents an outlined-destructive language and needs its own non-text
+pairing); extending the tint to `secondary` (the rule is "paints no surface",
+and `colors.md` gives that meaning to `muted` alone — widening later is
+additive, retracting is breaking).
+
+Cost: `consequence` is no longer colour-free, which four JSDoc blocks and
+`llms.txt` asserted. Every one of them is corrected rather than left ambiguous,
+because "drives mechanism, not colour" was load-bearing guidance. The rule's
+surface inventory is now a thing fsl-theme must keep passing — a theme that
+retunes `action.muted`'s hover fill will fail `quiet destructive control` before
+it ships, which is the intent.
+
+Anchors: `src/tokens/consequenceInk.ts`, `src/tokens/CONTRACT.md` §3.3,
+`tests/unit/tests/consequenceInk.test.ts`,
+`tests/unit/tests/components.contract.test.tsx` (§4c),
+`packages/fsl-theme/tests/unit/tests/theme/families/colors.test.ts`
+(`quiet destructive control`), `docs/fsl-studio/FRICTION.md` F-029.
+
+Re-litigation answers:
+
+- "Why not just let authors use `evaluation="negative"` on a menu row?" → it
+  fills the row solid red. In `action` the valence **is** the filled destructive
+  command; a menu row is a peer of "Duplicate" and "Rename". Both shapes are
+  real and the system now expresses both.
+- "Does this mean `consequence` is a colour prop?" → no. It carries colour in
+  exactly one case, on the one rung that has no surface to carry it. On every
+  filled rung the fill is the voice and `evaluation` owns it.
+- "Why does the tint disappear when I press the row?" → the quiet rung paints a
+  real fill there and the theme raises its own ink to clear it; the valence ink
+  measures 2.65:1 against that fill. The press lasts a moment and the row is
+  already tinted at rest and on hover.
+- "Can a Structure or Feedback part use this?" → not today. The helper is scoped
+  to parts that read `vars.colors.action`, because that is where the evidence
+  is. A second family needs a consumer and its own inventory entry.
+
+### ADR-029: The consequence ink moves to the cross-cutting token; the licensed crossing retires
+
+Status: accepted (2026-08-04)
+Tags: colors, consequence, cross-cutting, refines:ADR-028, fsl-theme ADR-025
+
+Decision: `resolveConsequenceInk` reads `vars.consequence.destructive.ink` —
+the cross-cutting token fsl-theme ADR-025 mints under model.md §6 — instead of
+`vars.colors.informational.negative.text.default`. Everything behavioural in
+ADR-028 stands unchanged: the rule ("a part that paints no surface takes its
+ink from the surface it renders on; `consequence` selects it"), the bounds (the
+quiet rung, `color` only, yielding at `disabled`/`active`/`expanded`), the
+measurements, the consumers, the retraction of the static-ink split. What
+changes is the **address** of the ink, and with it the one cost ADR-028
+conceded without an answer.
+
+ADR-028 answered the entity→ux objection by making the crossing licensed and
+singular. That was the right mitigation and the wrong final state: model.md §6
+already provides the mechanism for exactly this question — "a system-wide
+default that no `{ux}` owns" — with the focus ring as the typed precedent, and
+the ring is this ink's structural twin (both render against the stratum, not a
+fill; that is why one system-wide colour serves). Read through §6, the day-old
+"unprecedented cross-ux read" was a cross-cutting token that hadn't been minted
+yet. Minting it means the §1 alignment goes back to zero exceptions, the
+contract test's job simplifies from "keep the crossing singular" to "keep the
+conditional read inside the helper that owns its bounds", and a theme can
+retune the destructive ink without touching validation messages (the base alias
+keeps them identical by default).
+
+Resolved values are byte-identical in both modes and both bundles — the token
+aliases the exact source the helper read before — so no visual change, no
+measurement invalidated, no Studio or story edit. fsl-theme's `quiet
+destructive control` inventory now pairs the token itself, auditing what
+components actually render even after a theme repoints the alias.
+
+Rejected: leaving ADR-028's read in place (guarded, but spends a constitutional
+exception the model prices at one registered token); widening component access
+to `vars.consequence.*` (the read stays confined to the helper — unlike the
+ring it is conditional, and the bounds live where the condition does).
+
+Cost: none at the component surface; fsl-ui's floor version of `@ttoss/fsl-theme`
+must include the token, which the workspace guarantees and the `vars` typing
+enforces at compile time.
+
+Anchors: `src/tokens/consequenceInk.ts`, `src/tokens/CONTRACT.md` §1
+(cross-cutting table) + §3.3, `tests/unit/tests/components.contract.test.tsx`
+(§4c), fsl-theme ADR-025, model.md §6, colors.md § Cross-cutting.
+
+Re-litigation answers:
+
+- "Is this a behaviour change?" → no. Same resolved hex in every mode and
+  bundle; only the CSS custom property a component emits changes
+  (`--tt-consequence-destructive-ink`). Hosts targeting the old var name in
+  overrides were targeting a token no component documented reading.
+- "Why keep the helper if the token is now lawful to read?" → the ring is
+  unconditional; this ink is not. The helper owns the rung and the yield set,
+  and §4c fails any component that reads the token directly.
+
+### ADR-030: The surface contract — hosts publish what they paint; the quiet rung follows at rest
+
+Status: accepted (2026-08-04)
+Tags: colors, surfaces, F-024, CONTRACT §3.4, closes:F-024
+
+Decision: the element that paints a **hosting surface** publishes it on
+`--fsl-surface` (`publishSurface(fill)` — the fill plus its publication), and
+the quiet rung's resting `background`/`border` read
+`var(--fsl-surface, <own token>)` (`resolveSurfaceBoundStyle`). Outside a
+publisher nothing changes — the fallback is the exact value the rung painted
+before. Inside one, the control borrows the real composite the cascade
+produced, which is always one of the opaque values fsl-theme audits.
+
+The owner ruling (2026-07-29) is kept whole, not relaxed: a component always
+paints; no `transparent`; no omitted background; every declared token stays an
+auditable hex; the theme's own `muted.text ↔ background` pairs stay in the
+suite untouched. What the ruling called the lawful fix — "a stratum-aware
+opaque value" — turned out to be impossible to mint **in the theme**, by the
+theme's own doctrine: `colors.md` § Stacking pays depth in `elevation.tonal.*`
+over one shared background token, so the effective surface is a composite "no
+colour token names or can name" (F-024's 2026-07-29 analysis). And the
+consumer that finally fired shows the class is wider than tonal strata anyway:
+the Studio's table row paints `input.primary` — another family's fill — under
+the quiet `Remove`. Only the painter knows the surface. So the stratum-aware
+value lives where the knowledge lives: published by the painter, consumed by
+the rung, opaque end to end.
+
+Bounds, each load-bearing:
+
+- **Resting state only.** Engaged fills are how a quiet control materialises;
+  they stay absolute.
+- **The muted rung only.** Every other rung's fill is its voice.
+- **A publisher's transient states do not republish.** The first draft had
+  rows publish whatever fill the render resolved — elegant, and the inventory
+  killed it: the dark row hover fill measures 2.65:1 against the destructive
+  ink. A row paints its resolved fill and publishes its resting one (spread
+  order does the work).
+- **Selection fills never publish.** A selected row inverts to near-white in
+  dark, where the muted ink measures 1.5–1.8:1 — seeded into the inventory as
+  a mutation and caught. A quiet control on a selected row keeps its own
+  legible pill (today's rendering).
+- **Voiced fills never publish.** A toast's red, and a Menu's or Box's
+  non-primary informational fill, are voices — the dark muted fill fails the
+  destructive ink's floor. Only the page-like `primary` voice and Surface's
+  tonal strata publish.
+
+`--fsl-surface` deliberately sits in the §7 host-facing namespace: a host
+application that paints its own panel publishes the same property and every
+quiet control inside follows, with no fsl-ui change.
+
+Guards: fsl-theme's cross-role inventory gains `quiet control on published
+surfaces` — the quiet ink against every publishable surface (the
+informational strata and the row family's resting fill), at the rung's own
+floor, per bundle and per mode — and the destructive-ink entry gains the row
+surface for the same reason.
+fsl-ui's `surfaceScope` suite pins both halves: publishers publish what they
+painted, consumers read the var at rest and their own fills everywhere else.
+
+Rejected: minting the value in the theme (cannot be expressed — see above);
+`transparent` or omission (the ruling, twice over); publishing from Feedback
+fills and selection fills (measured illegible — the exclusions are the design);
+re-scoping the `--tt-colors-action-muted-*` theme variables per subtree (a
+component doing the theme's job, N variables where one property suffices, and
+`--tt-` fallbacks are forbidden by contract test); extending the ink to follow
+the surface as well (an ink needs a _pairing_, not a variable — the inventory
+is what makes the fill-follow lawful, and no equivalent exists for arbitrary
+host inks).
+
+Cost: `Surface` and painted `Box` now emit `backgroundColor` + the property
+where they emitted a `background` shorthand — behaviour-identical, assert-
+visible. The publisher list is a convention future surface components must
+join (CONTRACT §3.4 states it; the surfaceScope suite holds the ones that
+exist). The known limit stays known: on a mid-tone host surface the rung's
+absolute hover fill can coincide with the host (dark row hover), where hover
+feedback is carried by the cursor and the press step — unchanged from before.
+
+Anchors: `src/tokens/surfaceScope.ts`, CONTRACT §3.4,
+`tests/unit/tests/surfaceScope.test.tsx`, fsl-theme `colors.test.ts`
+(`quiet control on published surfaces`), `docs/fsl-studio/FRICTION.md` F-024.
+
+Re-litigation answers:
+
+- "Why does the quiet control still show a pill on a selected row?" → because
+  the alternative is worse and measured: the selection fill inverts, the muted
+  ink fails against it, and an illegible control is a worse outcome than a
+  visible chip. The selection fill is a voice.
+- "Can a host make its own panel behave like a stratum?" → yes — publish
+  `--fsl-surface: <your fill>` on the panel. That is why the property lives in
+  the host-facing namespace.
+- "Why not follow the surface on hover too?" → the hover fill is the rung
+  _materialising_ — the affordance itself. Following the surface there would
+  make a quiet control permanently invisible.
+
+### ADR-031: The two kinds of surface — occluding and embedded — and what each owes
+
+Status: accepted (2026-08-04)
+Tags: colors, spacing, overlay, P3, F-044, F-045, F-046, F-047, closes:F-044, closes:F-045, closes:F-046, closes:F-047
+
+Decision: the package distinguishes a surface that **covers content** from one
+that sits **in the flow**, and the distinction drives three things — the edge,
+the padding, and the size envelope (CONTRACT §3.5, and §3.4's companion step).
+
+|         | Occluding                                                                                                            | Embedded                                 |
+| ------- | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| Members | popover, menu, tooltip, dialog panel, drawer panel, toast                                                            | `Surface`, `Box`, dividers, field frames |
+| Edge    | `vars.overlay.outline` via `OCCLUDING_OUTLINE`                                                                       | `{ux}.{role}.border.*`, unchanged        |
+| Padding | `inset.surface.xs` (fixed, anchored) — except `Dialog` and `Toast`, which frame prose rather than rows and keep `md` | `inset.surface.{sm,md,lg}` (fluid)       |
+| Size    | a floor as well as a ceiling                                                                                         | caller-chosen                            |
+
+**The root cause behind all four findings is one sentence: `elevation` is the
+only family that knows a surface floats.** Every other family treats "surface"
+as one thing, so an occluding surface inherited an embedded one's hairline
+(F-044), its page-scaled and fluid padding (F-045), and had no shared notion of
+a size envelope at all, which is why each component invented its own literals
+(F-046, F-047).
+
+What each finding cost, measured rather than argued:
+
+- **F-044** — an overlay's fill is byte-identical to the page by design, and its
+  only edge read **1.31:1 light / 1.67:1 dark** against that page, while
+  `colors.md` § Stacking assigns exactly that edge a ≥3:1 duty _"even when
+  shadow is suppressed (high-contrast preferences, print)"_. Under
+  `forced-colors` a menu was an unbounded rectangle of page-coloured text. The
+  fix is a cross-cutting token (fsl-theme ADR-027), not a retune of every
+  `informational` edge — and it costs nothing that existed: all three
+  informational roles resolved the _same_ border value in both modes, so
+  `evaluation` never varied an overlay's edge.
+- **F-045** — the menu's gutter was 24px around fixed 32px rows (34% of the
+  surface's height); after, 6px and 13%, and the surface fell 146px → 110px for
+  the same three rows. The mechanism half is ADR-022's own ruling one scale out:
+  the gutter moved 16 → 24px across viewports while every row stayed 32.0px.
+- **F-046** — `Dialog` had a max width and height and no minimum, so a short
+  confirm collapsed to its content and the action row became the widest thing
+  in it. `--fsl-dialog-min-width` now ships beside the two knobs it pairs with,
+  defaulting to the reference's 288px.
+- **F-047** — `Tooltip` capped at 280px against a 160px desktop reference. It
+  takes **200px**, the reference's mobile value, because our label type is a
+  step larger than theirs, so the same phrase needs the wider of their two
+  numbers to hold the same line count.
+
+Guarded by `tests/unit/tests/occludingSurface.test.tsx`, which pins **both**
+sides of the discriminant: every occluding surface reads the boundary, and an
+embedded one does not. Without the second half, "put the boundary everywhere"
+would pass — and that is exactly the theme-wide retune this contract exists to
+avoid.
+
+Verified in Chromium off the fsl Storybook, both modes: menu 192×110 with a
+`rgb(111,111,111)` boundary in light and `rgb(208,208,208)` in dark, tooltip a
+bounded hint chip instead of a white slab, Dialog unchanged at its `md` inset.
+
+Rejected: a `size` prop on the overlays (CONTRACT §4 — a different envelope is
+a different semantic identity, and these are the same one); per-component
+boundary colours (the boundary is infrastructure, one system colour, like the
+ring); giving `Tooltip` `inset.control.md` on the inline axis to match the
+reference's 6/12 pair (an entity-row violation — Overlay's §1 row is
+`inset.surface`, and the reference's own anchored padding is uniform anyway).
+
+Cost: the six occluding components stop reading their role's border. That is a
+visible change (the edge is now defined rather than nearly invisible) and it is
+the point; nothing about the `evaluation` prop's other duties moves.
+
+Anchors: `src/tokens/occludingSurface.ts`, `src/tokens/CONTRACT.md` §3.5 + §1
+cross-cutting table, `tests/unit/tests/occludingSurface.test.tsx`, fsl-theme
+ADR-027, `docs/fsl-studio/FRICTION.md` F-044…F-047.
+
+Re-litigation answers:
+
+- "Should `Surface level="overlay"` take the boundary?" → no, and that is the
+  discriminant working: `Surface` is the embedded primitive. A host that wants
+  a floating panel composes `Popover`/`Drawer`, which occlude by construction.
+- "Why does the Dialog keep 36px?" → it frames prose and a title, not rows. The
+  anchored step is for a gutter beside children that carry their own inset.
+- "What about the overlays painting the flat stratum's fill?" → real, separate,
+  and filed as F-048: `Surface` reads `elevation.tonal.*` and no overlay does,
+  so two components claiming the same stratum paint different colours in dark.
+  It cannot close F-044 (1.67:1 at best) and it changes what `evaluation` drives
+  on an Overlay, so it is its own decision.
+
+**Addendum 2026-08-06 — F-054 closed, `Toast` named as a second `md`
+exception.** F-054 filed two things together, both this table's own
+contradiction: `Toast` reads `inset.surface.md` while this table's original
+text named `Dialog` as the sole exception, with `Toast` still listed among
+the plain `xs` members. Measured in Chromium: forcing `ToastRegion` to the
+reference's desktop `toast-maximum-width` (336px) wraps a real description
+("Check the build log for details.") from one line to two — the same
+type-runs-a-step-larger relationship F-021/F-047 already established, now
+verified for Toast's own copy. So both halves close the same way: the code
+was right and the table was incomplete. `Toast` frames a title + description
+the way `Dialog` frames prose — neither is a row-framer — and the table above
+now says so. `TOAST_REGION_MAX_WIDTH` stays `420px` at every viewport,
+deliberately, with the wrap measurement recorded next to the constant.
+
+### ADR-032: The Overlay family's behaviour is a published promise, so it is pinned as wiring; modality is asserted as reachability, not as `aria-modal`
+
+Status: accepted (2026-08-05)
+Tags: a11y, overlay, behaviour, P3, review-round-2, F-049
+
+Decision: the Overlay family's **behavioural** contract — dismiss semantics,
+focus containment, and the APG contract each role publishes — is guarded by
+`tests/unit/tests/overlayBehaviour.test.tsx`, which asserts the _wiring_ our
+composites own rather than React Aria's correctness, and asserts **modality as
+whether outside content is still reachable by assistive technology** rather than
+as the presence of `aria-modal`.
+
+Round 2 of the P3 component review measured this half and **found no defect**:
+every member already holds its promise. That is the reason the file exists. Each
+component's JSDoc tells a consumer the surface dismisses, contains focus, or
+never takes it, and until now nothing failed if a refactor took that away —
+the same class as the geometry promises Round 1 found unguarded, one dimension
+over. A behavioural contract nobody can break by accident is not a contract; it
+is a coincidence that currently holds.
+
+What only this suite pins, member by member:
+
+| Contract                                          | Members                             | The regression it catches                                                   |
+| ------------------------------------------------- | ----------------------------------- | --------------------------------------------------------------------------- |
+| Outside content leaves the accessibility tree     | Menu, DialogModal, Drawer, Popover  | a surface handed `isNonModal`, or a portal swapped in for `ModalOverlay`    |
+| Escape dismisses and focus returns to the trigger | Drawer, Popover, ConfirmationDialog | the three members `keyboard.test.tsx` never reached                         |
+| An outside press light-dismisses                  | Popover                             | a `Popover` that starts behaving like a modal prompt                        |
+| Tab cycles inside the surface                     | Popover                             | focus escaping into a page the reader can no longer see                     |
+| Dismissal never commits the effect                | ConfirmationDialog                  | an abandoned destructive confirmation that fires `onConfirm` anyway         |
+| `aria-controls` resolves to the menu itself       | Menu                                | the trigger pointing at the surface wrapper instead of the list (see F-049) |
+| The surface's name resolves to rendered text      | Dialog, Drawer                      | a dangling `aria-labelledby`, which an attribute assertion cannot see       |
+| The hint describes its trigger and is no tab stop | Tooltip                             | interactive content migrating into a surface that cannot be reached         |
+
+**Modality is asserted as reachability because no member carries `aria-modal`.**
+React Aria hides the rest of the tree with `ariaHideOutside` instead, which is
+the more robust mechanism and the one the reference ships. A contributor reading
+APG will look for `aria-modal`, not find it, and "fix" it; the assertion is
+written so that the _outcome_ is pinned and the mechanism stays upstream's to
+choose. This is the unstated invariant the round's measurement surfaced.
+
+Three discriminants are asserted from the other side, as in ADR-031's guard: a
+Tooltip must **not** blank the page, a modal prompt must **not** light-dismiss,
+and a Tooltip must **never** hold focus. Without them, "make every overlay modal
+and dismissable" would pass, which is the family-wide flattening this avoids.
+
+Rejected: asserting `aria-modal` (fails on a correct implementation — see
+above); a per-component behaviour test per member (the contract is a family
+relation, and eight files would restate the same setup and hide which member
+diverged); publishing the behavioural contract in `CONTRACT.md` (§1–§7 are the
+token contract; behaviour has no token to name, and the suite is the readable
+statement of it).
+
+Cost: one more integration suite on real timers (+17 tests, ~4s) and a second
+place — beside `keyboard.test.tsx` — where an Overlay interaction may be
+asserted. The boundary between them is stated in the suite header: `keyboard`
+owns key-by-key navigation within a member, `overlayBehaviour` owns the family
+relation and the discriminants.
+
+Anchors: `tests/unit/tests/overlayBehaviour.test.tsx`,
+`tests/unit/tests/keyboard.test.tsx`, `docs/fsl-studio/FRICTION.md` F-049,
+`INTERNAL/ROADMAP.md` §P3 round 2.
+
+Re-litigation answers:
+
+- "Our dialogs are missing `aria-modal` — bug?" → no. Outside content is hidden
+  with `aria-hidden`; the suite pins that outcome. Adding `aria-modal` on top
+  duplicates the guarantee and reintroduces the VoiceOver bugs upstream avoids.
+- "Why does a Menu popover announce as a dialog?" → upstream default (RAC 1.19
+  renders `role="dialog"` on any popover not marked `isNonModal`), matched by the
+  reference. F-049 records it with a readmission criterion.
+- "Should `keyboard.test.tsx` absorb this?" → no. That suite is per-member key
+  handling; this one is the family relation, and its discriminants only make
+  sense read together.
+
+### ADR-033: A rail is one silhouette in `src/tokens/rail.ts`, and its fill is the entity's quiet **surface** — not its border
+
+Status: accepted (2026-08-05)
+Tags: colors, spacing, feedback, input, P3, review-round-3, F-050, F-051, F-052, closes:F-050
+
+Decision: the thin pill track a value travels along — `ProgressBar`'s activity
+bar, `Meter`'s level bar, `Slider`'s range track — is stated once in
+`src/tokens/rail.ts` (`TRACK_RAIL`, `RAIL_BASE`, `FEEDBACK_RAIL_FILL`), and the
+two `Feedback` rails read `feedback.muted.background.default` rather than
+`feedback.muted.border.default`.
+
+**The colour half fixed a blocker.** The rail read the entity's quiet _border_,
+which the dark alternate remaps **lighter** — correct for an edge on a dark
+canvas — landing on `neutral.500`, which is also
+`feedback.primary.background.default` in dark. Measured **1.00:1**:
+`<ProgressBar evaluation="primary" value={40} />` painted a uniform grey rail
+with no visible fill, in both the base and `bruttal` bundles. Only the
+achromatic evaluation was affected, and that asymmetry is the finding's own
+evidence: the other four fills sit at 1.02–1.04:1 against the old rail and stay
+perfectly legible, because a contrast ratio measures luminance and they differ
+in hue. `primary` is the one evaluation where luminance is the only channel.
+
+So the rule pinned is **identity, not contrast**. How much a fill must differ
+from its rail is a design judgement the reference itself does not hold
+uniformly (its own dark accent-on-track measures 2.56:1), but a fill that
+resolves to the rail's own value renders nothing, in any theme.
+
+**Reuse, not growth.** `feedback.muted.background` is what both the family docs
+and `baseTheme`'s own `feedback` comment already called the rail — _"`muted`
+stays a tinted neutral surface — the rail/track color for Feedback fills
+(ProgressBar, Meter)"_. The code had diverged from a ruling written in two
+places, which `CLAUDE.md`'s own rule says to read before deciding anything. Dark
+lands on `neutral.700` (`#3d3d3d`), four units off the reference's dark track
+(`rgb(57,57,57)`), and the reference confirms the direction: a rail **darkens**
+in dark while a border lightens.
+
+**The geometry half retires three copies of one ruling.** P3 slice 3 decided
+"three rails, one answer" and the answer was then written out three times in two
+units — `'6px'` in `ProgressBar`, `'6px'` in `Meter`, `'0.375rem'` in `Slider`.
+`TRACK_RAIL.thickness` is now the single source. `TRACK_RAIL.minWidth` adds the
+floor the reference sets (48px) and we had none of: a rail is `width: 100%`, so
+in a narrow cell it collapsed toward zero while the component still rendered —
+F-046's shape one family over. The 768px **ceiling** was deliberately not taken;
+it is authorial, it needs a default width to pair with, and F-052 records it.
+
+`RAIL_BASE` is shared by the two `Feedback` rails only, and the guard asserts
+why: it clips its fill to the pill, which is right for a bar and wrong for
+`Slider`, whose thumb overflows the rail on purpose. `Slider` takes the
+thickness and nothing else — its rail colour is still a borrow
+(`input.primary.background.disabled`, a _state_ standing in for a _part_), which
+is F-051's open half.
+
+Guarded twice, because the two claims live in different packages. fsl-ui
+`rail.test.tsx` pins **which token** each part reads, from both sides — the
+quiet surface is read and the quiet border is not — since asserting only the
+first would let a refactor reach the border by another path. fsl-theme's colour
+suite pins **the values differ**, which only resolved tokens can see: no
+`feedback` role's resting fill may equal the rail, in every mode of every
+bundle. That guard was verified to fail on injection, reproducing the shipped
+defect verbatim (`feedback.primary.background.default == rail (#6f6f6f)`) in
+both bundles' dark alternate.
+
+Rejected: a dedicated rail token now (F-051's option (a) — it is the right end
+state and the analysis is written, but nothing about it is urgent once the
+user-visible half is closed and guarded, and it changes fsl-theme's published
+surface); retuning the dark alternate's `feedback.primary.background`
+(`neutral.500` is deliberate there — the filled neutral chip must stand off the
+dark strata, with a documented 5.0:1 against its own ink, and `Badge`/
+`StatusLight` read it); a contrast threshold on the fill/rail pair (the
+reference does not hold one, and a bar's value is also published as text).
+
+Cost: in light the rail is quieter than the reference's — **1.14:1** against the
+page versus their 1.40:1 — so a bar's total extent reads more faintly than
+before. That is the half a dedicated address would recover, and it is stated in
+F-050 rather than absorbed.
+
+Anchors: `src/tokens/rail.ts`, `tests/unit/tests/rail.test.tsx`,
+`packages/fsl-theme/tests/unit/tests/theme/families/colors.test.ts`
+(§"a Feedback fill differs from the rail behind it"),
+`docs/fsl-studio/FRICTION.md` F-050…F-052, `INTERNAL/ROADMAP.md` §P3 round 3.
+
+Re-litigation answers:
+
+- "Why not give the rail its own token?" → it should have one; F-051 costs the
+  options and recommends it at the version boundary. The reuse closes the
+  defect today without changing another package's public surface.
+- "The other four fills measured ~1.03:1 too — why were they fine?" → hue.
+  Contrast ratio is luminance-only, so it understates a chromatic pair. The
+  screenshots are in the round entry; only `primary` was invisible.
+- "Should `Slider` spread `RAIL_BASE`?" → no, and the guard says so: the base
+  clips, and the Slider thumb must overflow its rail.
+
+### ADR-034: A Collection row's resting fill borrows the container's colour, not its own entity's idiom
+
+Status: accepted (2026-08-06)
+Tags: colors, collection, selection, P3, review-round-4, F-055, closes:F-055
+
+Decision: `GridListItem`, `ListBoxItem` and `TableRow` — the three Selection
+entities ADR-007 splits out of a Collection container — read their resting
+background through `resolveCollectionRowBackground` (`src/tokens/collectionRow.ts`),
+which overrides only the `default` key of `input.primary.background` with the
+hosting container's own resolved background before running the state cascade.
+Hover, active, selected and checked keep exactly the values they had — only
+the row's rest state changes, from the entity's own idiom to the container's.
+
+**The finding.** All three called `resolveInteractiveStyle(c?.background, flags)`
+with `c = vars.colors.input.primary`; with every flag `false` at rest that
+returns `input.primary.background.default` unconditionally. Measured in
+Chromium, both modes: in light that value is `core.colors.neutral.0`, byte-
+identical to the container's `informational.primary.background.default` — the
+row read flush against its container, correctly, and correctly by luck. The
+dark alternate remaps `input.primary.background.default` to `neutral.700` (a
+text field's filled-box look) while the container stays `neutral.900` — every
+row in `GridList`/`ListBox`/`Table` rendered a solid lighter block, at rest,
+with no hover or selection. The reference has no "row background, resting"
+token — `table-row-hover-color`/`-opacity` and `table-selected-row-background-*`
+exist; nothing for the unselected, unhovered state, because rows are
+transparent at rest by construction there.
+
+**Why not the `MenuItem`/ADR-015 fix.** That defect was identical in shape —
+a row painted a filled default it should not have — and closed by moving
+`MenuItem`'s default `evaluation` from `primary` to `muted`, because
+`action.muted.background.default` happens to equal the popover's own fill in
+both modes. `Selection` has no `evaluation` dimension to swap
+(`ENTITY_EVALUATION.Selection = []`, CONTRIBUTING §1), and no `input.*` role's
+`default` matches `informational.primary.background`'s dark value either —
+checked, this is F-051's shape one family over: the model has no address for
+"the container's own colour, read from inside an item that belongs to a
+different entity."
+
+**The fix is composition, not a new token.** The container's background is
+already in scope at every call site — the root component (`GridList`,
+`ListBox`, `Table`) reads the identical token to publish its own surface via
+`publishSurface`, and the item components now read the same static token
+directly. `resolveCollectionRowBackground` is the one place that override
+happens, so a future Collection member composes it instead of re-deriving the
+rule. `publishSurface`'s own call at each row moved from the item's own
+`c?.background?.default` to `containerBackground` to match — the published
+value must be what actually renders, per CONTRACT §3.4.
+
+Guarded from both sides in `tests/unit/tests/collectionRow.test.tsx`: the
+resting read matches the container, and the entity's own `default` is
+asserted **not** reached — without the second half, a refactor that
+reintroduced `c?.background?.default` at rest would pass the first assertion
+by coincidence in light and still be wrong in dark.
+
+Verified in Chromium: `Table`'s dark row fill went from `rgb(61,61,61)` to
+`rgb(22,22,22)` on its `rgb(22,22,22)` container; `GridList`/`ListBox` the
+same. Screenshotted both modes: rows sit flush against the surface at rest,
+the `checked` white pill and hover tint are unchanged.
+
+Rejected: a dedicated `semantic.rail`-style cross-cutting token for "no fill
+inside an Overlay's/Collection's own item" (F-051's own recommendation is
+already the registered analogue for the rail; this defect closes with data
+already in scope, so a new registration is not the minimal fix — revisit
+together with F-051 at the version boundary if a third shape needing the same
+address turns up); giving `Selection` an `evaluation` dimension solely to
+reach `muted` (nominal vocabulary growth for a mechanism `resolveCollectionRowBackground`
+already provides without it — the evidence rule); leaving it — the dark
+defect is real and visible, not a taste judgement call.
+
+Anchors: `src/tokens/collectionRow.ts`, `src/components/GridList/GridList.tsx`,
+`src/components/ListBox/ListBox.tsx`, `src/components/Table/Table.tsx`,
+`tests/unit/tests/collectionRow.test.tsx`, `docs/fsl-studio/FRICTION.md` F-055,
+`INTERNAL/ROADMAP.md` §P3 round 4.
+
+Re-litigation answers:
+
+- "Isn't this the same fix as ADR-015?" → same defect shape, different
+  mechanism. ADR-015 swapped which role's colours the row reads by changing
+  an `evaluation` prop that exists on `Action`. `Selection` has no such prop,
+  so the override happens once, inside the cascade, at the one key that was
+  wrong.
+- "Why not add a `Selection` `muted` idiom instead?" → there is no consumer
+  demanding a second Selection appearance — the row still reads
+  `input.primary` for every non-resting state. Only the resting key was wrong.
+- "Does this contradict `muted` being the system's 'no fill' idiom?" → no —
+  it implements the same idiom (rest = the surface's own colour) by the only
+  mechanism available to an entity that carries no emphasis dimension.
+
+### ADR-035: P3 review round 7 (Structure) — one component-by-component pass across 18+ members, one filed finding, zero code changes
+
+Status: accepted (2026-08-06)
+Tags: P3, review-round-7, structure, F-057
+
+Decision: round 7 covered the Structure entity's full published surface —
+`AppShell`, `Badge`, `Box`, `ButtonGroup`, `Code`, `Container`, `Grid`,
+`Group`, `Heading`, `Icon`, `List`, `Separator`, `Stack`, `Surface`, `Text`,
+`Toolbar`, `Wizard`, the `Tabs` panel and the `Form` field-row — against the
+same instrument as rounds 1/3/4: `@adobe/spectrum-tokens@14.15.0` flattened
+to resolved values, and a Chromium probe over the fsl Storybook at
+390/640/900/1280/1920, both modes, dumping every `[data-part]`'s box and
+colour. This is the largest round by member count and the one with the
+fewest defects: every member but one measured clean, several because prior
+rounds' fixes already reach them (`Box`/`Container`/`Group`/`Toolbar` publish
+or read `publishSurface`; the `Tabs` panel and `Code` were already named
+"right" in ADR-031's own inset audit; `List` shipped this session cycle with
+no colour opinion to be wrong about).
+
+**The one finding — F-057, `Surface`'s elevated boundary — is filed, not
+fixed, and the attempted-and-reverted repair is itself the evidence worth
+keeping.** `Surface`'s edge reads a fixed `informational.{evaluation}.border.default`
+regardless of `level`; its fill reads `elevation.tonal[level]`. In the dark
+alternate, `overlay` and `blocking` both resolve `tonal` to `neutral.700`,
+which is _also_ the dark value of every `informational.*.border.default` —
+so the boundary and the fill are byte-identical at exactly the two highest
+strata. Measured in Chromium, `structure-surface--levels`, dark: **1.00:1**
+border-vs-fill at `overlay` and `blocking`; `raised`/`flat` unaffected. Light
+is unaffected too — every tonal level shares `neutral.0` there by design (the
+theme's own comment: elevation is carried by shadow in light).
+
+**Why it was not fixed here, stated as a measurement rather than a refusal.**
+The direct repair — extend the dark ramp to three distinct, progressively
+lighter steps (`raised: 800, overlay: 600, blocking: 500`, continuing the
+direction `baseTheme.ts`'s own comment already states) — was implemented,
+guarded (`elevation.test.ts` gained a "tonal ramp never lands on the
+informational border step" assertion, verified to fail on the pre-fix
+values), and then **reverted**: it passes that guard and breaks three
+unrelated cross-role legibility pairings in `colors.test.ts` ("validation
+message", "focus ring", "quiet destructive control" legible on every
+informational stratum) in both bundles — measured **4.12:1** against the new
+`neutral.600` overlay step and **2.65:1** against `neutral.500` blocking,
+both under those pairings' 4.5:1 floor. Those inks are tuned against
+`neutral.700` specifically; lightening the fill to clear the border
+collision moves it further from the value the ink contract depends on. No
+single existing ramp step satisfies both contracts for both strata at once.
+
+**This is F-051's shape, one family over, and is documented as such rather
+than re-argued from scratch.** F-051 found the rail borrowing a token whose
+meaning was something else because the model has no dedicated address for
+"the unfilled part of a track". F-057 finds `Surface`'s elevated boundary
+borrowing the _flat card's_ edge token — never designed to track a rising
+tonal fill — for the identical reason: no address exists for "the boundary
+of a surface at a tonal depth". Costed options and the recommendation
+(a cross-cutting `semantic.elevation.edge.*`, sibling of `tonal`, at the
+version boundary) are in `docs/fsl-studio/FRICTION.md` F-057, not repeated
+here.
+
+**Method note, since the failed repair is the round's most useful output.**
+"Instrument first" cuts both ways: the same discipline that writes the guard
+before the value also means testing the value against _every_ guard it could
+plausibly touch before calling a fix minimal. A change that satisfies the
+suite it was written for and silently fails a suite three files away is not
+a smaller version of the right fix — it is evidence that the two suites are
+guarding a genuine tension in the model, which is exactly what got written
+down instead of shipped.
+
+No source files changed; `pnpm run test` (fsl-ui, unaffected) and fsl-theme's
+full suite (1228/1228, after the revert) both green, coverage unchanged on
+both packages.
+
+Anchors: `docs/fsl-studio/FRICTION.md` F-057, F-051, F-048; `INTERNAL/ROADMAP.md`
+§P3 round 7; `packages/fsl-theme/tests/unit/tests/theme/families/elevation.test.ts`
+(guard written and reverted, per the finding above — the _shape_ of the guard
+this fix needs is recorded in F-057's entry for whoever builds the cross-
+cutting token); `packages/fsl-theme/tests/unit/tests/theme/families/colors.test.ts`
+("Color contrast — cross-role text pairings").
+
+Re-litigation answers:
+
+- "Why file a finding with no guard, unlike every prior round?" → a guard
+  for a value that does not exist yet has nothing to pin. The guard this
+  needs is the one written and reverted here (assert no tonal stratum equals
+  the informational border step) — it belongs beside whichever token
+  F-057's (a) ships, not as a standing assertion against values known not to
+  satisfy it.
+- "Does the reverted commit's diff exist anywhere?" → no — reverted in the
+  same working session before any commit, per the instrument-before-value
+  rule: the numbers it produced are preserved in F-057 and here, which is
+  the artefact that matters, not the rejected diff.
+
+### ADR-036: A rail's fill moves to the cross-cutting `semantic.rail.track`; its ceiling ships as a host knob, unset by default
+
+Status: accepted (2026-08-05)
+Tags: colors, spacing, feedback, input, P3, F-051, F-052, closes:F-051, closes:F-052
+
+Decision: two findings ADR-033 left open, ruled together because both are the
+rail's own address — one for colour, one for width.
+
+**F-051 — the colour half.** `ProgressBar`/`Meter`/`Slider` now read
+`RAIL_FILL` (`src/tokens/rail.ts`) → `vars.rail.track`, the cross-cutting
+token fsl-theme ADR-028 mints for exactly this address (model.md §6, sibling
+of `focus`/`overlay`/`consequence`). Before it existed, `ProgressBar`/`Meter`
+read `feedback.muted.background` (ADR-033's own fix — a better borrow than
+the `muted.border` that shipped broken, but still a borrow) and `Slider` read
+`input.primary.background.disabled`, a **state** standing in for a **part**,
+so an empty `Slider` rail meant "disabled" in the token model. All three now
+read the same address; `Slider`'s `buildTrackStyle` drops its `InputColors`
+parameter entirely, since the rail no longer varies with the entity's colour
+tree at all.
+
+**Why this was ADR-033's own recommendation, not a new idea.** ADR-033 named
+"(a) a dedicated rail token, at the version boundary" as the right end state
+and declined to build it because nothing about it was urgent once F-050's
+blocker was closed. The owner delegated a ruling on both findings this round;
+"nothing urgent" is not "wrong", and the analysis ADR-033 and F-051 wrote is
+what this ADR executes.
+
+**F-052 — the width half, ceiling only.** `TRACK_RAIL.maxWidth` defaults to
+`'none'`, read through `--fsl-track-max-width` via `fslVar` — the same
+sanctioned escape hatch `--fsl-dialog-min-width` uses (ADR-031/CONTRACT §7),
+for the same reason: the reference's own 768px cap is authorial, and hard-
+capping every rail by default is a breaking layout change for any consumer
+currently filling a wide container. Unset, `maxWidth` resolves to `none` and
+`width: 100%` behaves exactly as before this knob existed; a host that wants
+the reference's ceiling sets `--fsl-track-max-width: 768px` on `[data-scope]`
+and gets it with no code change. The floor (`TRACK_RAIL.minWidth`, 48px)
+ADR-033 already shipped is unaffected — this ADR only adds the other end of
+the envelope, and only as an opt-in.
+
+**`Meter` does not get the reference's `meter-default-width` (192px).**
+Read from the flattened `@adobe/spectrum-tokens@14.15.0` data directly rather
+than assumed: `progress-bar-minimum-width`/`-maximum-width` exist and nothing
+named `progress-bar-default-width` does, while `meter-minimum-width`/
+`-maximum-width` **and** `meter-default-width`/`meter-width` (192px desktop /
+240px mobile, `meter-default-width` aliasing `meter-width`) all exist. So the
+reference itself draws the line F-052 asked about: `ProgressBar` is meant to
+fill whatever length hosts it end to end; `Meter`, a static gauge rather than
+an in-flow activity bar, additionally has an intrinsic size when nothing
+constrains it. **Not adopted here.** Defaulting `Meter` to a fixed width is
+the same class of breaking change the ceiling knob was written to avoid —
+every existing `Meter` currently fills its container — and this package
+already has a composition-level way to give any block a fixed width
+(`Box`/`Container`, CONTRACT §7.1) without adding a second, component-level
+mechanism for the identical outcome. `ProgressBar`/`Meter`/`Slider` keep one
+silhouette (ADR-033's ruling); a `Meter`-only default width would be the first
+exception to it for a capability the package already has another way to
+reach.
+
+Guarded from both sides, same shape as every prior cross-cutting token:
+`packages/fsl-theme/tests/unit/tests/theme/families/rail.test.ts` pins the
+resolved value and that it no longer collapses onto either borrow, in every
+mode of every bundle; `tests/unit/tests/rail.test.tsx` (this package) pins
+that all three components read the identical `RAIL_FILL` constant — comparing
+the `var()` reference itself, not a resolved colour, so a refactor that
+reaches either old borrow by a different path still fails — and that the
+`--fsl-track-max-width` knob is unset by default and shared by name across all
+three.
+
+Rejected: a `size`/`maxWidth` prop on the three components (CONTRACT §4 — the
+same rejection ADR-031 already made for the overlays: a different envelope is
+a different semantic identity, and a knob is the sanctioned channel for host-
+owned geometry on a component that exposes no `style`); hard-capping at 768px
+by default (breaking, and no measurement forces the choice — F-052's own
+text); a `Meter`-only default width (above); waiting for the version boundary
+(superseded by the owner's explicit delegation this round).
+
+Cost: one renamed internal constant (`FEEDBACK_RAIL_FILL` → `RAIL_FILL`, not
+exported from the package's public surface, so no consumer-facing break); one
+registered host knob (`--fsl-track-max-width`, MINOR per governance.md, same
+class as `--fsl-dialog-min-width`); `Slider`'s rail is no longer visually
+"disabled-tinted" in dark mode outside the `disabled` state — the fix's actual
+intent, not a regression.
+
+Anchors: `src/tokens/rail.ts`, `src/components/ProgressBar/ProgressBar.tsx`,
+`src/components/Meter/Meter.tsx`, `src/components/Slider/Slider.tsx`,
+`src/tokens/CONTRACT.md` §1 cross-cutting table, §3.6, §7 knob table,
+`tests/unit/tests/rail.test.tsx`, fsl-theme `src/families/rail.ts` + ADR-028,
+`docs/fsl-studio/FRICTION.md` F-051/F-052.
+
+Re-litigation answers:
+
+- "Why does `Slider`'s dark rail render the same pixel as before, if the
+  borrow was the defect?" → `ProgressBar`/`Meter`'s dark rail happens to
+  render the same pixel too (ADR-028 kept ADR-033's already-correct dark
+  value); `Slider`'s does **not** — it moves from `neutral.900`
+  (`input.primary.background.disabled`) to `neutral.700`
+  (`semantic.rail.track`), which is the actual defect this ADR closes.
+- "Should `Slider` get its own `--fsl-slider-track-max-width` knob instead of
+  sharing `--fsl-track-max-width`?" → no — the three components are one
+  silhouette by ADR-033's own ruling, and a shared knob name is what lets one
+  host rule cap all three without three near-identical selectors.
+- "Why rule on F-052's `Meter` question here instead of filing it separately?"
+  → the owner asked for both findings resolved in the same pass, and the two
+  are the same address (a rail's width envelope) — ruling on the ceiling
+  without reading the reference's own default-width asymmetry would have been
+  the "assume, don't measure" mistake this package's `CLAUDE.md` exists to
+  prevent.
+
+### ADR-037: `Surface` takes the overlays' fill rule; `elevation.tonal` stays opt-in
+
+Status: accepted (2026-08-06)
+Tags: colors, structure, elevation, P3, F-048, F-057, closes:F-048, closes:F-057
+
+Decision: **`Surface` reads `vars.colors.informational[evaluation].background.
+default` for its fill at every level, the same expression `Menu`/`Popover`/
+`Dialog`/`Drawer` already apply via `voicedSurface`, instead of
+`vars.elevation.tonal[level]`.** `backgroundFor` takes `evaluation`, not
+`level`; the call site swaps `publishSurface(backgroundFor(level))` for
+`voicedSurface({ evaluation, color: backgroundFor(evaluation) })`. Depth is
+now carried by the paired shadow recipe alone, at every level — `Surface` no
+longer reads `elevation.tonal`, which stays defined in the theme (and its own
+tests unchanged) as an opt-in address for a future consumer that wants a
+colourless elevation cue.
+
+**Why F-048's own option (b), not (a).** The entry costed both: (a) move the
+six occluding overlays onto `tonal`, so a stratum's tonal step is what
+`evaluation` stops driving; (b) give `Surface` the overlays' fill rule instead.
+(a) was measured, in the entry that filed it, to raise a dark overlay's
+separation from the page from 1.00:1 to only 1.67:1 — still under the ≥3:1
+`colors.md` § Stacking requires for an occluding edge, so it would not have
+closed F-044 either, and it does nothing in light. It would also have
+multiplied `tonal`'s consumer count from one to seven in the same round F-057
+found `tonal`'s dark values colliding byte-for-byte with `Surface`'s own fixed
+border at `overlay`/`blocking` — widening a family already in that state
+compounds a known problem rather than fixing one. (b) costs nothing that
+exists (five components keep the fill rule they already have) and removes the
+inconsistency from the one component that diverges from it.
+
+**Measured, Chromium, `structure-surface--evaluations` vs `overlay-dialog
+--default`, both at `evaluation="primary"`:** dark, before — `Surface
+level="overlay"` `#3d3d3d`, `Dialog` panel `#161616` (two components declaring
+the same stratum, different colours). After — both `#161616`, byte-identical.
+`evaluation="muted"` now resolves `#6f6f6f`, matching a `muted` `Menu`'s own
+fill (previously `Surface`'s fill never varied with `evaluation` at all for
+`raised`/`overlay`/`blocking`).
+
+**`voicedSurface`, not unconditional `publishSurface`, and the reason is a
+second audit gap the fill change would otherwise have opened.** Before this
+ADR, `Surface` always published (`publishSurface`, unconditional) because its
+fill — `tonal[level]` or the `flat` fallback — was always one of the values
+`colors.test.ts`'s cross-role inventory already lists as a publishable
+stratum, regardless of `evaluation`. Once the fill depends on `evaluation`,
+publishing unconditionally would publish `informational.muted.background.
+default` on every default (`evaluation="muted"`) `Surface` — a value the
+inventory does not audit as a publishable surface for the quiet ink, an
+unaudited pairing this package's own `CLAUDE.md` names as the exact failure
+mode a colour change owes an explicit replacement assertion against. Reading
+`Surface` through `voicedSurface` instead — the same helper `Menu` already
+uses for this fill — keeps the published set exactly what it was: only the
+page-like `primary` voice, already covered by `CROSS_ROLE_TEXT_PAIRINGS` →
+`INFORMATIONAL_STRATA` in fsl-theme's suite.
+
+**F-057 closes as a side effect, not by any of its own three costed options.**
+That entry's collision was the border (`informational.{evaluation}.border.
+default`, unchanged by this ADR) sitting against a _different_ family's fill
+(`tonal`); once the fill reads the border's own role's `background`, the pair
+becomes exactly the one `extractBorderBackgroundPairs` (`colors.test.ts`)
+already audits for every other `informational` role, in both modes. Measured,
+dark, `overlay`/`blocking` (level-independent within a mode): `muted` —
+`#6f6f6f` fill vs `#3d3d3d` border, **2.16:1** (was 1.00:1); `primary` —
+`#161616` vs `#3d3d3d`, **1.67:1** (was 1.00:1). Neither clears 3:1, and
+neither needs to — `Surface` is an _embedded_ surface (ADR-031) and owes no
+occluding-boundary duty — but the **mirrored** collision F-057 named is gone
+in both evaluations, with no change to `elevation.tonal`'s ramp and no repeat
+of the ink-legibility breakage that repair attempt caused.
+
+Guarded from both sides in `tests/unit/tests/Surface.test.tsx` (the fill
+reads `informational[evaluation].background.default` at every level and
+never `elevation.tonal`, verified to fail on revert) and
+`tests/unit/tests/surfaceScope.test.tsx` (a `primary` `Surface` publishes; a
+`muted` one does not, mirroring `Menu`'s own two cases in the same file).
+
+Rejected: option (a) from F-048 (above); a `size`-style prop or per-component
+override for the fill (CONTRACT §4 — the fill is `evaluation`'s concern, not
+a second knob for the same identity); repairing `elevation.tonal`'s dark ramp
+to clear F-057 directly (the exact attempt F-057 already recorded as reverted
+for breaking three ink-legibility pairings — superseded here rather than
+retried).
+
+Cost: a Storybook story (`Structure/Surface` → `Levels`) that showed the four
+levels as four visibly different tints now shows four identical fills
+differing only by shadow — its own doc comment was rewritten to say so rather
+than leave the stale claim, and a new `Evaluations` story demonstrates the
+fill actually responding to `evaluation`. `elevation.tonal` has no consumer
+left in this package (a comment-only note, not a behaviour change, since
+nothing was reading it that this ADR did not just stop).
+
+Anchors: `src/components/Surface/Surface.tsx`, `src/tokens/surfaceScope.ts`,
+`src/tokens/CONTRACT.md` §3.4, `tests/unit/tests/Surface.test.tsx`,
+`tests/unit/tests/surfaceScope.test.tsx`,
+`docs/fsl-storybook/stories/structure/Surface.stories.tsx`,
+`docs/fsl-studio/FRICTION.md` F-048/F-057.
+
+Re-litigation answers:
+
+- "Doesn't `Surface` lose a depth cue in `forced-colors`/print, now that fill
+  never varies with `level`?" → yes, and it is an accepted, pre-existing gap
+  rather than a new one: `Surface`'s hairline boundary
+  (`informational.{evaluation}.border.default`) is unchanged by this ADR and
+  does not stand in for the missing tonal step, but ADR-031 already
+  classifies `Surface` as _embedded_, not _occluding_, and owing no ≥3:1
+  edge-even-when-shadow-is-suppressed duty in the first place — so this ADR
+  characterizes a gap ADR-031 already scoped `Surface` out of, rather than
+  opening one.
+- "Should `elevation.tonal` be deleted, since nothing reads it?" → no — it is
+  documented as optional in `elevation.ts` itself (`Omit when the product
+does not use tonal elevation`), and deleting a defined family is a
+  different, larger decision than retiring its one consumer.
+- "Why not also give `Menu`/`Popover`/etc. a comment pointing back here?" →
+  they were already right; the JSDoc updates belong to `Surface`, the
+  component whose contract changed, per this package's own rule that a stale
+  claim is fixed where the claim was made.
+
+### ADR-038: `StatusLight` takes its own silhouette — a dot plus a label, no fill; `Badge` keeps the pill
+
+Status: accepted (2026-08-05)
+Tags: colors, geometry, feedback, structure, P3, F-053, closes:F-053
+
+Decision: **`StatusLight` renders a small coloured dot plus a text label on
+the page's own background, with no fill of its own — the reference's and
+Chakra's form for this member.** `Badge` is unaffected: it keeps `CHIP_BOX`,
+and is now that token's sole reader. Implemented in `src/tokens/statusLight.ts`
+(`STATUS_LIGHT_DOT`, `STATUS_LIGHT_ROOT`, `STATUS_LIGHT_DOT_STYLE`,
+`STATUS_LIGHT_LABEL`) and wired into `StatusLight.tsx` as two parts,
+`data-part="dot"` and `data-part="label"`, under the existing root.
+
+**This is the second half of F-040, which is the entry's own words.** That
+finding fixed the two chip names to match both reference systems —
+`StatusLight` valence-bearing, `Badge` descriptive — and left them sharing one
+box, "differing in what the colour is saying". F-053 measured that the
+resulting pair is distinguishable only by which colour family it reads: a
+`Badge` and a `StatusLight` painted from equivalent neutral rungs are the same
+object. The reference does not leave the two as colour variants of one shape
+— `StatusLight` is a dot (`status-light-dot-size-medium`, 10px) plus a 6px
+gap and a label with no fill at all, and Chakra 3 draws the identical line
+under different names (`Status` is a dot; `Badge` is the filled chip).
+Adopting the reference's form finishes what F-040 started rather than
+restating it: the names have been right since 2026-08-02, and this is the
+silhouette catching up to them.
+
+**Where the three numbers came from, and why only two shipped literally.**
+Read from `@adobe/spectrum-tokens@14.15.0`'s desktop set, the same instrument
+P3 rounds 3–7 used: `status-light-dot-size-medium` (10px, `0.625rem`) and
+`status-light-text-to-visual-100` (6px, `0.375rem`, the dot-to-label gap) ship
+as literals in `STATUS_LIGHT_DOT`. `status-light-top-to-dot-medium` (11px)
+does not: it is a vertical-centring pad the reference's own layout tool needs
+to align a fixed dot against a text baseline without flexbox. `STATUS_LIGHT_
+ROOT` is `display: inline-flex; align-items: center`, which centres the dot
+against the label's line box directly — verified in Chromium, both modes,
+against our own label type (`label.sm`, one step larger than the reference's
+per F-021): the dot sits visually centred with no separate offset.
+
+**The dot's colour and radius are the entity's own existing tokens, not new
+ones.** `radii.round` (`core.radii.full`) is already the Feedback row's second
+radius in CONTRACT.md §1 (`surface`, `round` — the rail silhouette's own
+value), so a circular dot reads vocabulary the entity already has.
+`feedback.{evaluation}.background.default` is the exact address the old pill
+read for its fill; the valence colour moves onto a smaller shape, it does not
+become a different token.
+
+**The label's ink is the page's own default text, not the feedback valence.**
+The reference publishes no `status-light-text` colour token at all — the dot
+alone carries the valence in every reference measurement taken. `informational
+.primary.text.default` is the address `Surface`/`Code` already use for text
+sitting directly on the page; reading it here rather than `feedback.
+{evaluation}.text` keeps the valence claim on the one part built to carry it
+and avoids painting the label a colour the reference never specifies.
+
+**Accepted cost: a visible break on every existing `StatusLight` consumer,
+inside this package and in the Studio.** The pill is gone from `DashboardPage`
+(KPI deltas, the deploy-status table column) and `BillingPage` (the plan
+status), and from every `StatusLight` Storybook story. None of those sites
+depended on the pill's fixed box for row alignment — each is an inline flex
+row (`align="center"`, `gap`), and the new inline-flex dot+label shape fills
+that role identically — so no consumer _code_ changed, but every one of them
+now _looks_ different. That is the cost F-053 named and did not hide: "the
+names are right" was doing all the work until this ADR.
+
+Rejected: keeping the pill and finding "some other differentiator" (F-053's
+own alternative) — costed and dropped, because the reference and Chakra both
+independently reach for form, not a second colour axis, and inventing a third
+differentiator when two systems already agree on one is exactly the kind of
+divergence this package's `CLAUDE.md` asks to be evidenced before it ships;
+a component-owned `src/components/StatusLight/geometry.ts` instead of a
+`src/tokens/statusLight.ts` — rejected on the same reasoning `rail.ts`/
+`chipBox.ts` apply: no other Feedback-entity member (`ProgressBar`, `Meter`
+are rails; `Toast` is neither) is a plausible second consumer today, but the
+geometry names a physical object rather than one component's private detail,
+and the cross-cutting layer is where this package's other single-purpose
+silhouettes already live; carrying `status-light-top-to-dot-medium` forward as
+a literal padding value — rejected because it duplicates what `align-items:
+center` already delivers and would need re-deriving by hand against any
+future label-type change, where the flexbox rule tracks it for free.
+
+Cost: one breaking visual change across every `StatusLight` consumer (stated
+above); `CHIP_BOX` drops to one reader, which is a comment-only change to that
+module's own doc, not a behaviour change for `Badge`.
+
+Anchors: `src/tokens/statusLight.ts`, `src/components/StatusLight/
+StatusLight.tsx`, `src/components/Badge/Badge.tsx`, `src/tokens/chipBox.ts`,
+`tests/unit/tests/StatusLight.test.tsx`, `tests/unit/tests/Badge.test.tsx`,
+`docs/fsl-storybook/stories/feedback/StatusLight.stories.tsx`,
+`docs/fsl-storybook/stories/structure/Badge.stories.tsx`,
+`docs/fsl-studio/FRICTION.md` F-053/F-040.
+
+Re-litigation answers:
+
+- "Why does the label not carry the evaluation's colour at all?" → the
+  reference ships no colour token for it, and painting it from
+  `feedback.*.text` would put the valence claim in two places for no reading
+  benefit — the dot already carries it, unambiguously, at a glance.
+- "Doesn't losing the fill make `StatusLight` harder to notice in a dense
+  table?" → the reference's own answer to density is the dot's size, not a
+  fill; nothing measured argues our tables are denser than the reference's.
+  A component that wants a filled pill for pure category labelling has one —
+  `Badge` — and this ADR is exactly the ruling that keeps that shape from
+  meaning two different things.
+- "Why 10px/6px and not our own retune?" → no measurement argued for a
+  different number, and the reference's own values already read cleanly
+  against our larger type once flexbox handles the centring; retuning without
+  a measured reason would be the same "assume, don't measure" mistake F-047
+  avoided by taking the reference's mobile value with a stated reason.
+
+### ADR-039: A named `card` width step, aliasing `core.sizing.ramp.layout.1`
+
+Status: accepted (2026-08-05)
+Tags: sizing, structure, fsl-theme, P3, F-004, closes:F-004
+
+Decision: **`fsl-theme` gains `semantic.sizing.surface.card`, aliasing
+`core.sizing.ramp.layout.1`; `Box.maxWidth` and `Container.size` both gain a
+`'card'` step reading it.** This is the last open finding of the P3 round —
+owner ruling delegated, same as F-051/F-052/F-053/F-048/F-028 before it — and
+it closes the width vocabulary's one remaining gap: a narrow, standalone
+centered card (an auth form, a confirmation page) had no in-system cap
+between `reading` (a line-length contract, not a container width) and
+`surface` (the page-shell cap, ~2–3× too wide for one card).
+
+**Reuse before creation, measured rather than assumed.** `sizing.md` already
+states the pattern semantic fluid tokens must follow — alias a
+`core.sizing.ramp.layout` step, never define a new `clamp()` — and
+`model.md` §6 gates any vocabulary growth on reuse-before-creation cutting
+both ways: a free step is only a fit if nothing else already means something
+different at that address. Checked all six `layout` steps for a consumer
+before picking one: only `layout.5` had one (`surface.maxWidth`), so
+`layout.1` through `layout.4` and `layout.6` were all free candidates, not
+just the obvious floor match. `layout.1` — `clamp(320px, 40cqi, 480px)` — won
+on the numbers the finding itself supplied (~20–26rem / 320–416px): its floor
+(320px) is the target range's own floor exactly; its ceiling (480px)
+overshoots the target's 416px top by one ramp step of headroom, which is the
+closest available fit and strictly smaller than reusing `layout.2` (`clamp(
+384px, 50cqi, 640px)`, whose floor already sits inside the target range and
+whose ceiling is 224px past it — a worse fit on both ends). No `layout.7` was
+minted, and no theme-specific override was needed: `bruttal` does not touch
+`sizing` at all, so it inherits `card` from `baseTheme.ts` the same way it
+already inherits `overlay`/`focus`/`rail`.
+
+**Where the two Box/Container tokens differ from `surface`, restated in the
+prop doc so the choice reads as one sentence.** `surface` caps a page shell;
+`card` caps a single object on the page; `reading` caps a line length, not a
+container. Nothing about `Box`'s or `Container`'s existing contract changed
+— `card` is an additive union member with its own `MAX_WIDTH` map entry, read
+the same way `surface`/`reading` already are.
+
+**Guarded on both sides.** `fsl-theme`'s `sizing.test.ts` asserts `surface
+.card` resolves inside `core.sizing.ramp.layout.*` (the same warning-class
+guard `surface.maxWidth` already has) and that it is distinct from both
+`surface.maxWidth` and `measure.reading` — verified to fail by temporarily
+pointing `card` at `layout.5` and confirming the distinctness assertion
+breaks before reverting. `fsl-ui`'s `Box.test.tsx`/`Container.test.tsx` each
+gained a `'card'` case in their existing `maxWidth`/`size` table-driven tests.
+
+**Consumer switched, evidence rather than a synthetic story alone.** The
+Studio's `LoginPage` — the real auth card this finding was measured
+against — hand-rolled `min(24rem, calc(100% - 2rem))` on a bare `div`,
+exactly the workaround FRICTION F-004 described. That `div` is replaced with
+`<Container size="card" gutter="none">`; verified in Chromium at
+390/900/1280px, both modes: a narrow centered card, not a full-width one, in
+both light and dark. The page's _other_ bespoke rule — a `div` centering the
+whole page on the viewport's block axis, because no primitive fills the
+viewport block size — is untouched: it is a different axis than this ADR's
+scope, was never itself the width gap F-004 filed, and stays a bespoke rule
+until something files it.
+
+Rejected: `Grid`-level column caps (the finding's own option (b)) — this is
+the workaround the finding already named as insufficient for a standalone
+card page (it needs a companion panel to avoid spanning the page), so
+building it would not have closed the gap it was proposed against; a new
+`core.sizing.ramp.layout.7` sized exactly to 20–26rem — rejected because
+`layout.1` already clears the target's floor exactly and its ceiling
+overshoot is smaller than any other free step's, so a seventh rung would
+grow the ramp to solve a problem `layout.1` already solves, the model.md §6
+violation this ADR exists to avoid.
+
+---
+
+### ADR-040: `Toast` takes the complete Feedback anatomy — a valence glyph, a single action, and a dismissal contract the queue owns
+
+Status: accepted (2026-08-06)
+Tags: feedback, toast, a11y, icons, react-aria, P3, opens:F-058, opens:F-059
+
+Context: P3's visual sign-off round put `Toast` beside the reference system's
+member-by-member and the comparison came back split. The **language** matched
+already — the filled valences are Spectrum-derived by construction, the
+close trigger, the queue, the raised surface and the region's placement are
+all in the same idiom, and the two places the geometry diverges (`420px`
+instead of the 336px desktop cap; `inset.surface.md` instead of the occluding
+`xs`) are both measured and recorded under F-054. The **anatomy** did not. The
+reference gives `info`/`positive`/`negative` an icon, offers an optional
+action, and clamps `timeout` to a reading-time floor. This package's toast had
+none of the three, and the first of them is not a matter of taste: a toast
+that separates "saved" from "failed" by fill alone fails WCAG 1.4.1, which is
+the conclusion this package already drew one family over when it shipped
+`FieldInvalidGlyph` so an invalid field is not red-only.
+
+Decision, part one: **each valence that claims an outcome carries a glyph, and
+`primary` deliberately does not.** `TOAST_VALENCE_GLYPH` maps `accent` →
+`status.info`, `positive` → `status.success`, `caution`/`negative` →
+`status.alert`, and `primary` → nothing. `primary` is the Feedback context's
+_neutral_ voice (`neutral.800`, an informational grey), so there is no outcome
+for a mark to reinforce and an icon there would claim a status the toast is
+not making — the reference's `neutral` ships bare for the same reason.
+`status.info` is the round's one registry addition, admitted under
+icon-system.md's change rule because a component needs the meaning: `accent`
+is the informative valence P3 Slice 3 added, and it is what the reference
+calls its `info` toast. It shares the ⓘ with `action.help` in the default
+mapping, which the opposition rule permits — that rule governs pairs that must
+never be confused with each other, and an _offer_ the user can open is not a
+_report_ the system is making. `caution` and `negative` share the triangle:
+1.4.1 asks that colour not be the sole carrier, which the mark plus the
+caller's own copy satisfies, and a third status glyph has no consumer yet
+(readmission: a product shipping both side by side that needs them told apart
+at a glance).
+
+The glyph aligns by consuming Icon's own documented optical rule rather than a
+centring wrapper. The `glyph` part declares `text.label.md` — the title's type
+— and asks for `size="text"`, so the mark resolves at 1em of the title and its
+line box is a line of the title. Measured in Chromium at 1280px: the glyph
+ink's top and the title's top differ by **0.00px** under the root's
+`flex-start`, with no offset anywhere in the component. The reference reaches
+the same result with a `CenterBaseline` wrapper it had to build.
+
+Decision, part two: **a toast may carry one action, dressed by the surface it
+sits on.** `actionLabel`/`onAction`/`shouldCloseOnAction` on the queued
+content; the trigger is an outline silhouette whose edge and ink are both
+`feedback.{evaluation}.text.default` — the same neutral the title is set in.
+That is not a style preference. The "entity → ux-context alignment" contract
+test binds a file's colour reads to the entities it declares, and this file
+declares Feedback only, so `action.*` is not reachable from here; it is also
+the right answer visually, since an Action-palette button would arrive with
+the page's colours on top of a saturated red. The reference needs a
+`staticColor="white"` escape to land the same silhouette; ours falls out of
+the surface's own palette, so no static-colour concept is required. The
+trigger takes `text.action.md` (semibold) against the title's `label.md`
+(regular) — P3 Slice 3's weight-contrast rhythm, which also stops a one-word
+command reading as a second title.
+
+It sits **under the message and outside the announced region**. React Aria
+puts `role="alert"` on the content, so a button inside it would be read as
+part of the sentence; the `content` column wraps the alert and the action as
+siblings, at `gap.stack.sm` — one step above the `xs` that holds title and
+description together, because those two are one utterance and the action is
+not. Verified in Chromium: at `xs` the button crowds the title on the
+description-less shape ("Undo"), which is the common actionable toast.
+Dismissal goes through the region's state (`UNSTABLE_ToastStateContext`, the
+fifth `UNSTABLE_` export the ADR-003 canary now lists) because `QueuedToast`
+carries no `close()` — the same route React Aria wires the close button
+through.
+
+Decision, part three: **the dismissal contract belongs to the queue, not to
+the call site.** `createToastQueue` returns a `ToastQueue` subclass whose
+`add` runs `resolveToastOptions`: an actionable toast has its `timeout`
+cleared unconditionally, and any other supplied timeout is raised to
+`TOAST_MIN_TIMEOUT` (5000). Both rules are accessibility floors that a call
+site is structurally bad at remembering — the caller knows the message but not
+the reader. The floor is the reference's own (`Math.max(options.timeout,
+5000)`); its web-component line publishes 6000 with a per-120-words increment,
+and we take the lower because the clamp is not the whole mechanism: React Aria
+pauses every visible timer while the region is hovered or focused, so 5000
+bounds _unattended_ display rather than reading time. The actionable
+exemption is WCAG 2.2.1 read literally — an offer that expires on a timer
+cannot be taken — and it is the one place the queue refuses what the caller
+asked for, because the alternative is shipping a broken affordance quietly.
+The package's own story was the proof the rule was needed: it fired a toast at
+`timeout: 4000`, under both published floors, and nothing said so.
+
+Measured, and one intended change was reverted by its own measurement. The
+trailing inset looked like the reference's clearest remaining correction
+(`paddingStart: 16` / `paddingEnd: 8`, on the reasoning that the close
+trigger's box already carries breathing room on that edge). The effect is real
+here — at 1280px the leading edge sits 37px from the glyph's ink and the
+trailing edge 41.7px from the close trigger's ink, so the trailing side reads
+4.7px heavy — but stepping the trailing inset to `inset.surface.sm`
+**overshoots to 29.7px, 7.3px light**. No step on the ladder lands it
+symmetric, because the correction owed is half the trigger's internal inset
+and the ladder has no half-step there. The uniform value stays, the residual
+is F-058, and a test now asserts the uniformity so the next "obvious"
+asymmetry has to re-measure before it lands. Every valence was verified in
+Chromium at 1280px in both modes, actionable and not, short and wrapping.
+
+Rejected: a `placement` prop on `ToastRegion` (the reference ships four; a
+product whose toasts appear bottom-end on one screen and top-center on the
+next has two notification systems — CONTRACT §4 gives visual axes to the
+theme, and the trailing bottom corner is where a transient report is furthest
+from both the content being read and the primary actions being reached for);
+collapsing the stack into an expandable pile as the reference does (real
+behaviour, no consumer yet — `maxVisibleToasts` already bounds the column, and
+the expand affordance brings its own keyboard contract; readmission: a product
+that routinely queues more toasts than the region can show); a single-string
+`children` matching the reference's content shape (ours is title + description
+because React Aria's `useToast` labels the surface by the title and describes
+it by the description — the two-slot shape is what makes `aria-labelledby`/
+`aria-describedby` land, and ADR-031 already records that Toast frames prose
+the way Dialog does); giving the triggers a hover fill (`FeedbackColorStates`
+admits `default | focused | disabled` only, FSL §7 — the cascade returns the
+resting value at every pointer state, which is F-059 and a theme-level
+question, not one to work around inside a component).
+
+---
+
+### ADR-041: The field frame owns its interior — the browser's duplicate in-field controls are suppressed at the anatomy, by part rather than by component
+
+Status: accepted (2026-08-06)
+Tags: fields, anatomy, css, chromium, F-060, closes:F-060
+
+Context: F-060, reported from a product screen — a `SearchField` with text
+renders **two ✕**. A field in this package is a frame that owns its interior:
+`ICON_SLOT_STYLE` places the leading glyph, `FieldInvalidGlyph` the invalid
+mark, `EMBEDDED_TRIGGER` the clear button and the steppers, and the `<input>`
+inside is borderless and carries the value alone. But an `<input>` also brings
+controls decided by its `type`, drawn by the browser into that same box, and
+nothing reconciled the two. `SearchField`'s input is `type="search"` — React
+Aria's `useSearchField` sets it, and correctly, since the type carries the
+Escape-clears behaviour — so Chromium paints `::-webkit-search-cancel-button`
+beside the clear button the anatomy already drew.
+
+Decision: **a stylesheet, injected by the shared value builder, suppresses the
+UA decorations that duplicate an adornment the anatomy draws — and only
+those.** `src/tokens/nativeFieldDecorations.ts` follows `keyframes.ts`'s
+mechanism exactly (one `<style>` per document, SSR-safe, idempotent, tolerant
+of a second copy of the package) because the two share the same constraint:
+CSS this package needs that an inline `style` object cannot express. It is a
+separate module and a separate element from `keyframes.ts` because that
+module's contents are governed by `ANIMATION_NAMES` and contract invariant #8,
+which have nothing to say about this; one export should not stand behind two
+unrelated invariants.
+
+Three choices inside it are the decision.
+
+**The inclusion rule is duplication, not tidiness.** Suppressed:
+`::-webkit-search-cancel-button` (duplicates the clear button),
+`::-webkit-search-decoration` and `::-webkit-search-results-button`
+(duplicate the leading `action.search` glyph). Left to the browser:
+`::-webkit-calendar-picker-indicator`, the spin buttons, the password reveal —
+each is the _only_ affordance for its type, and this package ships no
+replacement for any of them, so removing one would take away function rather
+than a duplicate. Measured, not assumed: `type="date"` was confirmed to render
+its indicator inside our frame today, and it stays. A component that grows its
+own version of one of those adds a row to the table in the module header.
+
+**It is keyed to the part, not to `SearchField`.** Read from the rendered DOM
+in Chromium, `search-field` is the only control in the package carrying a
+decorated type; `NumberField` is `type="text"` with `inputmode="numeric"`
+(React Aria supplies the spinbutton semantics, so the native steppers never
+appear) and `TextField`/`ComboBox` are `type="text"`. But `TextField` passes a
+caller's `type` straight through, so `<TextField type="search">` is the same
+defect one prop away. The selector is the package's own attribute contract
+(CONTRACT §5) — `[data-scope][data-part='control']`, both attributes on the
+same element — so the next field to acquire a decorated type is covered
+before it is written. The stated consequence: a `TextField type="search"` has
+no clear button at all, because the anatomy draws none there. That is the
+intended reading — a search box is `SearchField`.
+
+**The call site is `buildFieldValueStyle`, the one place every field control
+passes through.** A per-component call would be one more thing to remember on
+the next field, and forgetting it is precisely how this shipped; a unit test
+now asserts that the injection lives in the shared builder and that no
+component calls it directly.
+
+Rejected: `appearance: none` on the input — tried first, because it would have
+been an inline one-liner needing no new mechanism, and **screenshotted as not
+working**: current Chromium keeps the cancel button through it. A rule scoped
+to `[data-scope='search-field']` — fixes the instance and not the bug, and
+leaves the `TextField type="search"` path open. Removing `type="search"` from
+the input — it is React Aria's, it carries real behaviour, and overriding it
+would trade a cosmetic duplicate for a functional regression. Shipping a real
+CSS file with the package — the package's whole styling model is inline
+`vars.*` reads, and one `<style>` for what inline styles cannot express is the
+established exception, not a new direction.
+
+### ADR-042: A styling decision is stated once — the E2 consolidation rule and its shared-source map
+
+Status: accepted (2026-08-06)
+Tags: architecture, tokens, anatomy, refactor, E2, harmonization
+
+Context: the E2 stage of the harmonization program (ROADMAP § "Route to the
+visual sign-off"). jscpd found 22 exact clones (~384 lines) and a semantic
+read of every component found the same shape behind them: a decision an ADR
+had already made — a silhouette, a cascade, a chrome sextet, a scale map —
+restated per component, where the next change has to land N times to stay in
+sync. That is the F-056 class, program-wide. The owner's basis-form directive
+rules the response: recurring restatement means the abstraction is missing,
+so build the shared source, never a per-file exception.
+
+Decision: **no styling decision may be restated per file.** Each family of
+restatements got (or joined) its one shared source, colours staying with the
+caller (the entity decides colour; the shared source decides everything the
+entity does not): `overlayMotion` (modal phase + scrim), `selectionControl`
+(mark cascade, label ink, option row), `rail` (root/labelRow/track/fill
+envelope), `ActionTriggerRoot` + `resolveActionTriggerColors` (the plain
+trigger, whole), `choosableRow` (interactive skeleton), `collectionRow`
+(container chrome + edge), `occludingSurface` (the six occluders' chrome),
+`hostedTrigger` (a trigger dressed by its host), `gapScale` (step→token and
+keyword maps), `stylesheetInjection` (inject-once plumbing), and the
+committed-actions row in the trigger anatomy. Membership is not enumerated
+here on purpose — `grep -rl 'tokens/<module>' src/` answers it; this entry
+records the rule and where the pattern lives.
+
+The gate every extraction passed: suites at 100, and a full 358-frame
+Chromium recapture (light+dark, fresh server) byte-compared against a
+pre-E2 baseline — differences above the measured same-code capture noise
+are treated as regressions. The gate's one real catch was not a regression
+but a pre-existing race it exposed (F-061).
+
+Rejected: per-component copies with review discipline (seven P3 rounds
+proved the discipline finds the drift only after it ships); normalizing the
+real divergences into the shared sources (a toggle's `isSelected → pressed`
+cascade, `Slider`'s unclipped track, `Tooltip`'s unpublished fill, Menu's
+no-opacity disabled idiom are semantics, not drift — they stay at their
+callers, named); DOM-attribute byte-parity as the gate (property order
+inside `style` is not rendering; pixel parity is the contract).
+
+Cost: one more indirection per component read path, and a judgement call at
+review time — "is this divergence semantics or drift?" — which each shared
+source's constraint comment now answers for its own family.
+
+Re-litigation answers: "why not one mega-builder per entity?" — the shared
+sources cut across entities exactly where the physical thing is the same
+(a row, a ring, a scrim) and stop where semantics differ; an entity-keyed
+mega-builder would re-encode the entity in a second place and drift against
+the CONTRACT §1 row. "Why do colours never move into the shared sources?" —
+because the entity→ux mapping is the projection's load-bearing edge
+(CONTRACT §1); a shared source that resolved colours would need the entity,
+and then it is the mega-builder.
+
+### ADR-043: `status.passive` is the law that assigns a Feedback surface its posture; the valence lives in a mark, never in the box
+
+Status: accepted (2026-08-12)
+Tags: feedback, inline-alert, status.passive, a11y, live-region, valence, consumes:fsl-theme-ADR-029, closes:F-062, opens:F-063, closes:F-064, corrects:ADR-040-title-type
+
+Decision: FSL Lexicon §3's `status.passive` / `status.interruptive` split is adopted as a **stated law** rather than as a readmitted dimension, and it assigns each Feedback member its colour posture: an interruptive report earns a voiced fill (`Toast`), a passive one paints the quiet rung (`feedback.muted`) and carries its valence in a dedicated **mark** — glyph shape first, `semantic.valence.{valence}.ink` second — never in the root's fill or edge.
+Rejected: readmitting the `Interaction` dimension — nothing dispatches on it at runtime, which is what killed it the first time after 13 nominal declarations; the valence on the root's border (matching the reference's `fillStyle="border"` silhouette) — costs a part reading two roles with no precedent, owes a new border-against-fill pair in dark, and would make two members of one posture say the same thing with different devices, the F-025/F-053 shape; a tinted `feedback.{valence}` fill family — F-062 shows tinted is the reference's opt-in, and CONTRACT §4 forbids shipping its three fill styles as a prop; `role="alert"` as the reference uses — assertive on a report that is often true at mount.
+Cost: the passive posture is visibly quieter than the reference's bordered box, and `evaluation` drives exactly one thing today (the mark), so a reviewer will read the prop as thin until the mark's ink is seen in both modes; and a caller passing `evaluation="secondary"` to an action inside the surface gets a dark-only silent failure (F-063).
+Anchors: `src/tokens/passiveStatus.ts`, `src/components/InlineAlert/`, `src/components/StatusLight/StatusLight.tsx`, `src/tokens/CONTRACT.md` §1, `packages/fsl-theme/CONTRIBUTING.md` ADR-029, `docs/fsl-studio/FRICTION.md` F-062/F-063.
+
+**Context: the gap was an entity's vocabulary narrowed by its first member.** `Toast` is the only surface-sized Feedback member, and it is interruptive by nature, so its needs became the entity's rules: `ENTITY_EVALUATION.Feedback` omits `muted` on the argument that "a muted toast would defeat the purpose of feedback" — correct for the interruptive member, generalized to the whole entity. Meanwhile `colors.md` § Role Coverage marks `feedback.muted` ✓ and its JSDoc describes it as "quiet feedback that should not steal attention", which is `status.passive` stated in the theme. The taxonomy and the family doc disagreed, and the missing component was the reason nobody noticed.
+
+**Why the law is stated and not declared.** `taxonomy.ts` records `Interaction` as DEFERRED with a readmission criterion: "a component that actually dispatches on `InteractionKind` at runtime". This pair does not meet it. `Toast` and `InlineAlert` are two components, each fixing its own posture in its own source; nothing reads a value and branches. Declaring `interaction: 'status.passive'` on a meta would be the nominal vocabulary that killed the dimension after 13 components carried it and zero dispatched from it. So the split lives where a law belongs — here and in CONTRACT §1 — and buys what it should buy: it explains _why_ two members of one entity paint differently, instead of leaving two unrelated component decisions.
+
+**The posture, and what of it is actually shared.** `src/tokens/passiveStatus.ts` holds two things: the valence→glyph map, and `resolveValenceInk` — the one place `vars.valence.*.ink` is read, with its bounds, the way `resolveConsequenceInk` bounds the destructive ink. The two-consumer gate is met by the glyph map, and the second consumer is **`Toast`**: it had resolved a byte-identical map independently, so the extraction is ADR-042's consolidation rule rather than a new abstraction. The ink's read is confined for a different reason and needs no second consumer — a cross-cutting token is legible only with its bounds (ADR-029).
+
+**Corrected during implementation: `StatusLight` is not a consumer.** The draft of this ADR claimed it as the second one, on the grounds that it already puts the valence in a mark on a neutral ground. It does — but it expresses that mark as a **filled dot** (`feedback.{evaluation}.background.default`, a `background` read for a filled shape) where a surface-scale member expresses it as an **inked glyph** (a `text` read). Different dimensions, so different addresses and no shared value; extracting one would have moved a chip's fill onto a surface's ink. `StatusLight` is the chip-scale member of the posture and obeys its law, sharing the _rule_ (CONTRACT §1.2) and none of the code. The passive **surface** itself — fill, edge, prose ink — is likewise not extracted: `InlineAlert` is its only reader, and a shared source with one consumer is the nominal extraction F-053 and F-058 both refuse. It moves into the module when `FormErrorSummary` (ROADMAP B3b) becomes the second reader. `ProgressBar`/`Meter` are the mirror rule already in the codebase (quiet track, valence fill).
+
+**Why the mark and not the box, decided on cost rather than on taste.** Four things separate them, and three favour the mark. Every part stays single-role, so no ruling is needed about a part reading two roles of its own ux. The mark's ink is a pair the contrast inventory already models (ink against a stratum, the `consequence.destructive.ink` shape); a valence border against a `feedback.muted` **fill** is a border-against-another-family's-fill pair, which is precisely the class F-050, F-055 and F-057 each got wrong. WCAG 1.4.1 is carried by the glyph's **shape** — an info circle, a check, a triangle are distinguishable without colour — with the ink as reinforcement rather than as the sole carrier, which is stronger than the reference, whose glyph relies on being coloured. And the loudness axis scales: one address serves the dot, this mark, and `FormErrorSummary`'s, which is the `CHOOSABLE_ROW` lesson ("never tune a row per component") applied to colour. The fourth thing — matching the reference's silhouette — is the one the mark loses, and F-040's naming lesson is about _names_, not about copying a box.
+
+**A component, not a composite, and that was an iteration.** The first pass had sub-parts with their own metas behind a `createPresenceScope`. Nothing justified it: there is no shared state, and no consumer for an unusual arrangement, so the one-line form (`title` + `children` + `actions`) is the whole API and the parts are **internal** per ADR-008 — addressable by `data-part`, claiming no role, growing no vocabulary. One meta, one DOM fixture. The shared decision lives in `src/tokens/`, which is how `disclosureAnatomy.ts` already serves two composites that keep their own scopes.
+
+**The live region needed less code than it looked, and this is the part most likely to be re-litigated.** `role="status"` alone is correct in both directions, because a live region **does not announce content that was already present when it was registered** — only mutations after it. Mounted with the page it is therefore silent, and inserted in response to an action it announces politely. So no "did I mount after first paint?" detection exists, and two things are deliberately absent: `aria-live` alongside `role="status"` (the role already implies polite; both together double-announce on some AT), and `aria-labelledby` on the root (a name on a live region competes with the content it is announcing). The reference reaches for `role="alert"` plus `autoFocus`, which is right for a report that always follows an action and wrong for one that is often true at mount. **This is the one claim in this ADR that jsdom cannot settle** — see the obligations below.
+
+**One action, and it is `primary`.** Actions are caller-supplied children, which is what lets a passive surface host real `action.*` controls at all: on a quiet neutral the page's palette is correct, the inverse of the argument ADR-040 makes for re-dressing `Toast`'s own triggers on a saturated fill. Measured (F-063), only `primary` carries real separation against this surface in both modes; `secondary` resolves the surface's own value in dark on fill _and_ edge. So the rule is stated semantically, mirroring `Toast`'s "one action": the action is **the primary path out of the condition**. `evaluation="secondary"` inside the surface is a documented dark-only failure until F-063's option (a) lands.
+
+**No dismiss in v1.** Neither Spectrum version has one, the consumer did not ask for one, and adding one is the only piece that would need the surface to publish itself (§3.4). Readmission: a real consumer **plus** F-063 option (a) — narrowing "Feedback fills are voices" to "Feedback _valence_ fills are voices", since `muted` is the entity's no-fill rung and therefore a stratum. Both needs are the same publisher change, so they are measured once.
+
+**`evaluation` is thin today, and the thinness is the honest symptom.** It selects the mark's glyph and the mark's ink, and nothing else — the surface is fixed. When `subtleFill` ever has a consumer it would also select the fill; it does not have one. `primary` carries no glyph at all, following `Toast`'s rule that the neutral voice claims no outcome, and `accent` takes the info glyph with the prose ink because `accent` is Emphasis in `colors.md` § Role Coverage and therefore has no valence ink (fsl-theme ADR-029 records the artefact disagreement rather than pre-empting it).
+
+**Amended 2026-08-12 by the visual sign-off, which found two defects the unit suites could not.** Captured in Chromium off the fsl Storybook at 1280px, both modes, then measured rather than eyeballed.
+
+The first is not this component's and is the more interesting: **a Feedback surface could name a title but not type one.** `ENTITY_STRUCTURE.Feedback` declares `title` and `body` as legal parts while the §1 typography column read `body, label`, so both `Toast` and this component typed their title from `label.md` — measured, a **16px/400 title over an 18px/400 body**, smaller _and_ no heavier than the prose it introduces. No component choice could have avoided it: every `label.*` step is weight 400 and the largest (`label.lg`) merely ties `body.md`. `Dialog` never had the defect because `Overlay` carries `title`. Fixed at the row: `Feedback` gains `title`, both components read `title.sm` (20px/500 at 1280 against the body's 18px/400), and F-064 records it.
+
+**The root was that only one column of §1 was data.** Colours are machine-audited and have been corrected many times; typography lived in a prose table, and its one contradiction survived two components and a review round. So the column moved into `tokens/projection.ts` beside the Colors column, and **contract invariant #16** now binds it to the taxonomy: an entity declaring both `title` and `body` must carry `title` in its typography set. Verified as a real tripwire rather than a tautology — reverting only `Feedback`'s entry fails exactly one test and no other.
+
+The second is this component's: **the box was 55% air.** `inset.surface.md` put 36px of inset around 59px of ink, a 133px-tall surface for two short lines. ADR-031 hands every embedded surface the fluid ladder without naming a rung, so this component copied the rung `Toast` picked — and `Toast` picked it inside a 420px cap (F-058), where the proportion holds. At content-column width the same step reads as page padding on a component. Now `sm`: 24px, a 114px box, and the offset against the reference's 16px is the one step this package's type ladder already carries over it (F-021/F-047). `Toast` keeps `md`, measured and unchanged.
+
+**Checked and left alone:** the `primary` card's text column sits left of its valenced siblings, because with no mark there is no mark column. The reference does the same (its `neutral` ships no icon), and reserving a column for an absent mark is a spacer with no meaning.
+
+**Amended again 2026-08-12 by the owner's eye, and it reversed a decision this ADR had costed.** Two objections, both correct, both rooted in one value. _"Esses tamanhos de letras serem diferentes só por causa da quantidade de texto"_ — not the volume, the **slot**: a one-line report typed at the title step when passed as `title` and at the body step when passed as `children`, semantically identical content at two sizes with nothing telling the caller which to reach for. A title _introduces_ something; with nothing to introduce it is the message. So `children` is now **required**, which is the whole of the rule and the same resolve-by-type move the field envelope makes — `<InlineAlert title="Connected" />` is a compile error, and an earlier revision of the `Shapes` story shipped it as if it were a feature.
+
+_"Esse cinza de fundo, me remete a muted, ou algo amador"_ — literally correct, and two written rules already said so. `colors.md` defines the `muted` idiom as "the surface's own colour", and § Stacking has a contained surface share the page's background, paying separation _"elevation first, border second, never in colour"_. The ground was a grey **step**, which reads as disabled (Lexicon §10.6 separates those two as meaning; nothing separated them visually). fsl-theme ADR-030 retunes the token to the page's colour; F-066 records why an orphaned value went unaudited that long.
+
+**And that reversed this ADR's own (β) ruling on the edge.** (β) kept the valence off the border because a valence border against _this surface_ was the cross-family border-against-another-role's-fill pair F-050/F-055/F-057 each got wrong. **That reasoning was contingent on the grey ground.** Against the page it is Required Pairing #2 — the pair the theme audits for every role — and measured, every evaluation's own border clears 3:1 in both modes. So the edge now carries the evaluation (`resolveEvaluationEdge`), the mark keeps the valence ink, and the ground keeps the one prohibition that still holds: **no valence fill, ever**. The design lands on the reference's own — a page-coloured card with a coloured edge and a coloured mark — reached from § Stacking rather than by copying it.
+
+The residual lesson is about the shape of the mistake, not the values: **a costed rejection inherits every assumption of the state it was costed against.** (β)'s cost analysis was sound and its conclusion was right _for a grey ground_. When the ground moved, the rejection needed re-costing rather than citing — and what triggered the re-costing was an eye, because no contrast inventory can report that a legible grey box looks cheap.
+
+**Outstanding before the component is done**, stated rather than implied: the live-region behaviour must be verified with a real screen reader in both arrangements (mounted with the page, inserted after an action) — jsdom and `jest-axe` cannot observe announcement; and the mark's ink must be seen in Chromium at the package's five widths in both modes, since "quieter than the reference" is the accepted cost and only the browser can say whether it is quiet enough.
+
+Re-litigation answers:
+
+- "Just readmit `Interaction` — the lexicon has the terms." → Nothing dispatches on it; that is exactly why it was deferred. A law in prose costs nothing and says the same thing.
+- "Match the reference: put the valence on the border." → Costs a ruling, a new dark pair in the class we keep getting wrong, and makes `StatusLight` and this component disagree on how a valence speaks.
+- "Why is a passive report not `role="alert"`?" → Assertive announcement of a condition that is often true at mount interrupts the page. The reference's `autoFocus` is the tell that its InlineAlert always follows an action.
+- "Add `aria-live="polite"` for safety." → `role="status"` already implies it; both together double-announce.
+- "Can the title be an `<h3>`?" → Not by default — only the app knows the correct level, and a wrong one is worse than none. `Toast` sets the precedent: a Feedback title is text.
+- "Why can't the actions be `secondary`?" → Measured: in dark that rung resolves this surface's own value on fill and edge (F-063). Use `primary`; that is also the semantic claim.
+
+### ADR-044: `isSelected` resolves context-aware — `checked` where the set declares it, `selected` where the set speaks set membership; `visited` is a structural impossibility
+
+Status: accepted (2026-08-15)
+Tags: taxonomy, state-cascade, tokens, selection, visited, consumes:fsl-theme-selected-tokens, owner-decision-2026-08-15
+
+Decision: the `isSelected` entry of `STATE_PRIORITY` no longer maps to a fixed key. Per consulted token set (per colour dimension), the resolution order is explicit and deterministic: **`checked` when the set declares it → `selected` when the set declares that instead → the strict miss** (`undefined`, so the call site's `?? states.default` applies). The tuple entry carries both keys (`state: 'checked'`, `contextState: 'selected'`); `resolveStateKey` takes the token set as an optional second argument and `resolveInteractiveStyle` passes its own. Bare `resolveStateKey(flags)` calls (the consequence ink, the surface scope) keep reporting `checked` — their pre-existing reading, and neither branches on the `checked`/`selected` pair. Alongside: the transient `isPressed` flag stays collapsed into `active` — a semantic reservation, not missing theme evidence: the `pressed` token state means the **persistent** toggle-on, which `ToggleButton` reads inline by mapping its `isSelected` to `pressed` (ADR-042 names that mapping as semantics, not drift) and which the base theme ships divergent from `active` on purpose; the collapse keeps the persistent state reserved for toggle semantics (readmission criterion: a component whose **transient** press must paint differently from `active` at the token level), and `visited` is reclassified — its legality source per FSL Structural Language §10.1 is **structural impossibility**, not "no flag yet": browsers hide `:visited` state from JavaScript for privacy, so no render-prop flag can ever exist. `droptarget` remains the pending-evidence case (no component surfaces a drag target).
+Rejected: keeping `isSelected → checked` fixed — the token projection is the authority the profile already declared, and fsl-theme ships `selected` with distinguishing laws (`families/colors.ts`: `checked` = "two-state control that is on", `selected` = "one of many in a set"); a fixed mapping makes every one of those tokens unreachable. Mapping `isSelected → selected` first, falling back to `checked` — the approved decision's literal ordering, rejected on measurement (below): it repaints every current consumer. A second cascade flag (`isChecked`) splitting the two languages at the call site — grows the exported flag vocabulary and forces a per-component migration to deliver what token introspection already discriminates, and the set-membership consumers it would re-key (rows, options) ship the checked language today; re-keying them is a product decision to take with the theme's picker-option tokens in hand, not a cascade side effect.
+Cost: `resolveStateKey`'s answer now depends on which token set is in hand — two calls with the same flags can name different keys, which is the point but must be read; and the `selected` path is latent capability with **zero visual diff today** (verified consumer-by-consumer below), so nothing exercises it until a navigation/informational consumer passes `isSelected` — a token that nothing reads looks identical to one that resolves wrongly, and only that first consumer will say which we shipped.
+Anchors: `src/semantics/taxonomy.ts` (`STATE_PRIORITY`, `InteractiveStateKey`), `src/tokens/resolveInteractiveStyle.ts`, `src/tokens/CONTRACT.md` §3, `tests/unit/tests/resolveInteractiveStyle.test.ts`, `packages/fsl-theme/src/families/colors.ts` (the state interfaces' laws), `docs/website/docs/design/design-system/components/component-model.md` § State.
+
+**Context: two projections disagreed, and the token projection wins.** fsl-theme's base theme declares `selected` as a colour state in the `navigation` and `informational` ux contexts, with JSDoc laws distinguishing it from `checked` (set membership vs a two-state control that is on). The cascade mapped `isSelected → checked` unconditionally, so every `selected` token the theme shipped was unreachable from a render-prop — the "token that nothing reads looks identical to a token that does not exist" trap this package's CLAUDE.md names.
+
+**The approved ordering was inverted on measured evidence, and the inversion is the faithful reading.** The owner decision stated "selected when the consulted token set declares it, falling back to checked when it does not (input/Selection controls)" — a rule whose premise is that input sets do not declare `selected`. Measured against `vars` (the runtime projection of the base theme): `input.{primary,secondary,muted}.background` and `.border` declare **both** `selected` and `checked` — the theme's `selected` in the input context serves picker options and segments, by its own law — while only `input.*.text` lacks `selected`. Every component that passes `isSelected` into the cascade today consults `vars.colors.input.primary` (marks via `selectionControl.ts`; rows and options via `collectionRow.ts` and their own dimensions). Under the literal selected-first ordering, a checkbox mark's box would repaint from the checked fill (`neutral.1000`) to the selected fill (`neutral.100`) while its glyph ink — a `text` read, where `selected` is undeclared — stayed the checked white: an invisible glyph, and the same tear on every row and option. That directly contradicts the decision's own stated outcome that input/Selection controls land on `checked`. With `checked` taking precedence, both stated outcomes hold simultaneously: input-context sets land on `checked` by declaration, navigation/informational sets (which cannot declare `checked` — `NavigationColorStates`/`InformationalColorStates` carry no such member) land on `selected`, and the both-declared case resolves to the language every present consumer ships. A costed ordering inherits every assumption of the state it was costed against (ADR-043's residual lesson); the assumption moved, the ordering moved with it.
+
+**What changes visually: nothing, today.** Consumer-by-consumer: `Checkbox`, `RadioGroup`, `Switch`, `GridList`'s selection box (all through `buildSelectionMarkStyle`, consulting `input.primary.background/border` — both declare `checked`), `Table` rows, `ListBox`/`Select`/`ComboBox` options, `GridList` rows, `TagGroup` (consulting `input.primary`, where every dimension they pass `isSelected` against declares `checked`) — all resolve exactly what they resolved before. `Tabs` re-keys `isSelected` as `isCurrent` (navigation) and `ToggleButton` hand-maps `isSelected → pressed` on action tokens (ADR-042 names both as semantics, not drift) — neither touches this entry. The change is latent capability: the first navigation/informational consumer that passes `isSelected` reaches the theme's `selected` tokens with no further mechanism.
+
+**Why `visited` moved legality classes.** The previous record ("no render-prop flag in the cascade") groups it with `droptarget` as pending evidence — implying a flag could arrive. It cannot: the CSS `:visited` privacy model hides visited state from JavaScript (history sniffing), so no runtime library can expose the flag, and FSL Structural Language §10.1's third legality source — the combination cannot be expressed in the profile's surface, and the profile says so — is the accurate one. Saying so is the whole change; `visited` styling remains reachable as a CSS pseudo-class outside the cascade, which is where the theme's `visited` tokens are spent.
+
+Re-litigation answers:
+
+- "The owner said selected-first; implement what was signed." → The decision also said input/Selection controls land on `checked`, and its investigation clause asked for the consumer-by-consumer before/after. The two clauses conflict only because the premise ("input sets don't declare `selected`") is false at the vars level; `checked`-first is the unique ordering under which every stated outcome of the decision holds.
+- "Split the languages with a second flag instead of introspection." → Costed and rejected above: an exported-vocabulary change plus a consumer migration, to reach a discrimination the declared keys already make — and the components it would re-key are a product decision, not this one.
+- "Make the picker options and rows use `selected` now — the theme ships the tokens for them." → It does, and that is the follow-up this ADR deliberately does not take: it changes shipped looks (rows and options render the checked language today) and owes a visual pass in both modes. The cascade no longer stands in its way; take it as its own decision with its own captures.
+- "Why does the bare `resolveStateKey(flags)` still say `checked`?" → Its two callers key on `disabled`/`active`/`expanded`/`default` only, so the pair is indistinguishable to them; reporting the two-state reading preserves their pre-ADR-044 behaviour byte-for-byte, and a caller that ever needs the distinction has the second parameter.

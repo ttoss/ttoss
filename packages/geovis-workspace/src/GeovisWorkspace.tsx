@@ -1,12 +1,17 @@
 import type { RepairOption, VisualizationSpec } from '@ttoss/geovis';
 import { GeoVisProvider } from '@ttoss/geovis';
 import { Box } from '@ttoss/ui';
+import * as React from 'react';
 
 import { Layout } from './components/Layout';
 import {
   type GeovisWorkspaceConfig,
   type GeovisWorkspaceSelection,
 } from './context/GeovisWorkspaceContext';
+import {
+  applyLeftSidebarControlOffset,
+  applyRightSidebarLegendOffset,
+} from './controlOffset';
 import {
   GeovisWorkspaceProvider,
   type GeovisWorkspaceProviderProps,
@@ -47,12 +52,6 @@ export interface GeovisWorkspaceProps {
    * disabled rather than absent.
    */
   onRepair?: (repair: RepairOption) => void;
-  /**
-   * Called with a layer's id and its next `visible` value when the
-   * `LayerListControls` `controls` slot variant toggles it. Rebuild
-   * `visualizationSpec` with that layer's `visible` field updated.
-   */
-  onLayerVisibilityChange?: (layerId: string, visible: boolean) => void;
 }
 
 /**
@@ -65,26 +64,55 @@ export const GeovisWorkspace = ({
   variables,
   onVariableChange,
   onRepair,
-  onLayerVisibilityChange,
 }: GeovisWorkspaceProps) => {
+  // Owned here (rather than only inside the provider) so the spec fed to
+  // `GeoVisProvider` can react to them: while a sidebar is open the map overlay
+  // sharing its corner is shifted clear of it, since an opening sidebar
+  // (z-index 2) otherwise covers the overlay (z-index 1). The left sidebar
+  // shifts the layer control; the right sidebar shifts a right-anchored legend.
+  const [isLeftSidebarOpen, setIsLeftSidebarOpen] = React.useState(() => {
+    return config.leftSidebar?.initialState === 'open';
+  });
+
+  const [isRightSidebarOpen, setIsRightSidebarOpen] = React.useState(() => {
+    return config.rightSidebar?.initialState === 'open';
+  });
+
+  const spec = React.useMemo(() => {
+    const withControlOffset = applyLeftSidebarControlOffset({
+      spec: visualizationSpec,
+      leftSidebarOpen: isLeftSidebarOpen,
+    });
+    return applyRightSidebarLegendOffset({
+      spec: withControlOffset,
+      rightSidebarOpen: isRightSidebarOpen,
+    });
+  }, [visualizationSpec, isLeftSidebarOpen, isRightSidebarOpen]);
+
   return (
-    <GeoVisProvider spec={visualizationSpec}>
-      {/* `GeoVisProvider` auto-mounts any spec legend that declares a
-          `position` as an absolutely-positioned overlay, anchored to the
-          nearest positioned ancestor. This Box is that ancestor, so those
-          overlays stay confined to the workspace instead of escaping into
-          whatever container the host application renders it in. */}
-      <Box sx={{ position: 'relative' }}>
+    // `GeoVisProvider` auto-mounts any spec legend (or the layer `control`)
+    // that declares a `position` as an absolutely-positioned overlay, rendered
+    // as a sibling of its `children` and anchored to the nearest positioned
+    // ancestor. This Box must therefore *wrap* `GeoVisProvider` — not sit
+    // inside it — so it becomes that ancestor: the overlays stay confined to
+    // the workspace (aligned to the map area, e.g. the layer control at the
+    // map's bottom-left) instead of escaping to whatever container the host
+    // application renders it in.
+    <Box sx={{ position: 'relative' }}>
+      <GeoVisProvider spec={spec}>
         <GeovisWorkspaceProviderWithRuntime
           config={config}
           selection={variables}
           onSelectionChange={onVariableChange}
           onRepair={onRepair}
-          onLayerVisibilityChange={onLayerVisibilityChange}
+          isLeftSidebarOpen={isLeftSidebarOpen}
+          onLeftSidebarOpenChange={setIsLeftSidebarOpen}
+          isRightSidebarOpen={isRightSidebarOpen}
+          onRightSidebarOpenChange={setIsRightSidebarOpen}
         >
           <Layout />
         </GeovisWorkspaceProviderWithRuntime>
-      </Box>
-    </GeoVisProvider>
+      </GeoVisProvider>
+    </Box>
   );
 };

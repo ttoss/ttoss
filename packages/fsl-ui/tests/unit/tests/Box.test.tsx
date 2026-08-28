@@ -9,7 +9,6 @@ import { render } from '@testing-library/react';
 import { vars } from '@ttoss/fsl-theme/vars';
 import {
   Box,
-  type BoxBackground,
   type BoxBorder,
   type BoxMaxWidth,
   type BoxPadding,
@@ -60,13 +59,27 @@ describe('Box', () => {
     expect(el?.style.paddingInline).toBe(vars.spacing.inset.surface.lg);
   });
 
-  test.each<[BoxBackground, string]>([
-    ['none', 'transparent'],
-    ['primary', vars.colors.informational.primary.background!.default],
-    ['muted', vars.colors.informational.muted.background!.default],
-  ])('background=%s reads the informational palette', (background, css) => {
-    render(<Box background={background} />);
+  test('background=none stays a transparent layout box and publishes nothing', () => {
+    render(<Box background="none" />);
+    expect(root()?.style.background).toBe('transparent');
+    expect(root()?.style.getPropertyValue('--fsl-surface')).toBe('');
+  });
+
+  test('background=primary paints the page voice and publishes it (CONTRACT §3.4)', () => {
+    const css = vars.colors.informational.primary.background!.default;
+    render(<Box background="primary" />);
+    expect(root()?.style.backgroundColor).toBe(css);
+    expect(root()?.style.getPropertyValue('--fsl-surface')).toBe(css);
+  });
+
+  test('background=muted paints its voice without publishing it', () => {
+    // A voiced fill is not a stratum: the destructive ink fails against the
+    // dark muted fill (the inventory holds the measurement), so quiet
+    // controls inside keep their own fills.
+    const css = vars.colors.informational.muted.background!.default;
+    render(<Box background="muted" />);
     expect(root()?.style.background).toBe(css);
+    expect(root()?.style.getPropertyValue('--fsl-surface')).toBe('');
   });
 
   test.each<[BoxRadius, string]>([
@@ -109,6 +122,7 @@ describe('Box', () => {
 
   test.each<[BoxMaxWidth, string]>([
     ['surface', vars.sizing.surface.maxWidth],
+    ['card', vars.sizing.surface.card],
     ['reading', vars.sizing.measure.reading],
   ])('maxWidth=%s caps inline size from the sizing scale', (mw, css) => {
     render(<Box maxWidth={mw} />);

@@ -9,6 +9,7 @@ import {
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { fslVar } from '../../tokens/escapeHatch';
+import { buildOccludingSurfaceStyle } from '../../tokens/occludingSurface';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -93,15 +94,18 @@ export const Popover = ({
             '--fsl-popover-max-width',
             POPOVER_MAX_WIDTH_DEFAULT
           ),
-          borderRadius: vars.radii.surface,
-          borderWidth: vars.border.outline.surface.width,
-          borderStyle: vars.border.outline.surface.style,
-          borderColor: colors?.border?.default,
-          backgroundColor: colors?.background?.default,
+          // Occluding chrome (CONTRACT §3.5/§3.4): boundary, published voiced
+          // fill, overlay elevation — one builder across the six occluders.
+          ...buildOccludingSurfaceStyle({
+            evaluation,
+            colors,
+            elevation: 'overlay',
+            fill: 'voiced',
+          }),
           color: colors?.text?.default,
-          boxShadow: vars.elevation.surface.overlay,
-          padding: vars.spacing.inset.surface.md,
-          outline: 'none',
+          // An anchored surface is not a page panel (F-045): the reference
+          // pads a popover at one tight step, not at the dialog's.
+          padding: vars.spacing.inset.surface.sm,
           ...(vars.text.body.md as React.CSSProperties),
           zIndex: vars.zIndex.layer.overlay,
         } as React.CSSProperties

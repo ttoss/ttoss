@@ -9,7 +9,6 @@ import {
   type GeovisWorkspaceConfig,
   type GeovisWorkspaceSlotName,
 } from './context/GeovisWorkspaceContext';
-import { resolveMenus } from './menus';
 import { getResultIssues, isColdStart } from './warnings';
 
 /** Right-sidebar slots, stacked in this fixed order (ADR-0002). */
@@ -43,20 +42,20 @@ export const getSlotOverride = ({
 };
 
 const hasControlsDefaultContent = (config: GeovisWorkspaceConfig): boolean => {
-  return resolveMenus(config).length > 0;
+  // The left sidebar renders when its sections drive the `controls` slot.
+  return (config.leftSidebar?.sections?.length ?? 0) > 0;
 };
 
 const hasLegendDefaultContent = ({
   config,
-  spec,
 }: {
   config: GeovisWorkspaceConfig;
-  spec: VisualizationSpec;
 }): boolean => {
+  // Spec legends are map overlays, not right-sidebar content — the `legend`
+  // slot's default panel shows only consumer-provided description/sources.
   if (config.legend?.description) return true;
   if (config.legend?.sources) return true;
-  const legendCount = spec.legends?.length ?? 0;
-  return legendCount > 0;
+  return false;
 };
 
 const hasWarningsDefaultContent = ({

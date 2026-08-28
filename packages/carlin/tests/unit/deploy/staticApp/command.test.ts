@@ -1,14 +1,14 @@
+import { faker } from '@ttoss/test-utils/faker';
+import AWS from 'aws-sdk';
+import { CLOUDFRONT_REGION } from 'src/config';
+import { destroyCloudFormation } from 'src/deploy/cloudformation';
+import { deployStaticAppCommand } from 'src/deploy/staticApp/command';
+import { deployStaticApp } from 'src/deploy/staticApp/deployStaticApp';
+import yargs from 'yargs';
+
 jest.mock('src/deploy/cloudformation');
 
 jest.mock('src/deploy/staticApp/deployStaticApp');
-
-import { CLOUDFRONT_REGION } from 'src/config';
-import { deployStaticApp } from 'src/deploy/staticApp/deployStaticApp';
-import { deployStaticAppCommand } from 'src/deploy/staticApp/command';
-import { destroyCloudFormation } from 'src/deploy/cloudformation';
-import { faker } from '@ttoss/test-utils/faker';
-import AWS from 'aws-sdk';
-import yargs from 'yargs';
 
 const cli = yargs().command(deployStaticAppCommand);
 
@@ -144,5 +144,136 @@ describe('should set cloudfront', () => {
     ];
 
     return expect(testHelper(options, false)).resolves.toBeTruthy();
+  });
+});
+
+/**
+ * `parse` passes the options as the yargs context, which skips `coerce` and
+ * the checks, so these tests parse a command line instead.
+ */
+const parseArgs = (args: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return new Promise<any>((resolve, reject) => {
+    cli.parse(args, {}, (err, argv) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(argv);
+    });
+  });
+};
+
+describe('response headers options', () => {
+  const responseHeadersPolicyId = '67f7725c-6f97-4210-82d7-5512b31e9d03';
+
+  test('should default response-headers to an empty list', async () => {
+    const argv = await parseArgs('static-app');
+    expect(argv.responseHeaders).toEqual([]);
+    expect(argv.responseHeadersPolicy).toBeUndefined();
+  });
+
+  test('should parse the response-headers object into a list', async () => {
+    const argv = await parseArgs(
+      'static-app --cloudfront --response-headers.x-custom=some-value'
+    );
+
+    expect(argv.responseHeaders).toEqual([
+      { header: 'x-custom', override: true, value: 'some-value' },
+    ]);
+
+    expect(deployStaticApp).toHaveBeenCalledWith(
+      expect.objectContaining({
+        responseHeaders: [
+          { header: 'x-custom', override: true, value: 'some-value' },
+        ],
+      })
+    );
+  });
+
+  test('should accept response-headers-policy', async () => {
+    const argv = await parseArgs(
+      `static-app --cloudfront --response-headers-policy=${responseHeadersPolicyId}`
+    );
+
+    expect(argv.responseHeadersPolicy).toEqual(responseHeadersPolicyId);
+  });
+
+  test('should throw for an invalid header name', () => {
+    return expect(
+      parseArgs('static-app --cloudfront --response-headers.x:custom=value')
+    ).rejects.toThrow('is not a valid HTTP header name');
+  });
+
+  test('should throw for a header of the CORS configuration', () => {
+    return expect(
+      parseArgs(
+        'static-app --cloudfront --response-headers.access-control-allow-origin="*"'
+      )
+    ).rejects.toThrow('response-headers-policy');
+  });
+
+  /**
+   * Response headers are applied by CloudFront, so a bucket only deploy has
+   * nothing to attach them to.
+   */
+  test('should throw when response-headers is defined without cloudfront', () => {
+    return expect(
+      parseArgs('static-app --response-headers.x-custom=some-value')
+    ).rejects.toThrow('requires the cloudfront option');
+  });
+
+  test('should throw when response-headers-policy is defined without cloudfront', () => {
+    return expect(
+      parseArgs(
+        `static-app --response-headers-policy=${responseHeadersPolicyId}`
+      )
+    ).rejects.toThrow('requires the cloudfront option');
+  });
+
+  test('should throw when both response headers options are defined', () => {
+    return expect(
+      parseArgs(
+        `static-app --cloudfront --response-headers.x-custom=some-value --response-headers-policy=${responseHeadersPolicyId}`
+      )
+    ).rejects.toThrow('mutually exclusive');
+  });
+});
+
+describe('viewer request function option', () => {
+  const viewerRequestFunctionCode = './cloudfront/viewerRequest.js';
+
+  /**
+   * A cache behavior takes a single viewer request function, so a config that
+   * would need two associations must fail before the deploy.
+   */
+  test('should throw when combined with append-index-html', () => {
+    return expect(
+      parseArgs(
+        `static-app --cloudfront --append-index-html --viewer-request-function-code=${viewerRequestFunctionCode}`
+      )
+    ).rejects.toThrow('mutually exclusive');
+  });
+
+  /**
+   * The function is associated to a cache behavior, so a bucket only deploy has
+   * nothing to attach it to.
+   */
+  test('should throw when defined without cloudfront', () => {
+    return expect(
+      parseArgs(
+        `static-app --viewer-request-function-code=${viewerRequestFunctionCode}`
+      )
+    ).rejects.toThrow('requires the cloudfront option');
+  });
+
+  test('should pass the option to deployStaticApp', async () => {
+    await parseArgs(
+      `static-app --cloudfront --viewer-request-function-code=${viewerRequestFunctionCode}`
+    );
+
+    expect(deployStaticApp).toHaveBeenCalledWith(
+      expect.objectContaining({ viewerRequestFunctionCode })
+    );
   });
 });

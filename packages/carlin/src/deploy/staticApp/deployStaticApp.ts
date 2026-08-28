@@ -2,8 +2,10 @@ import { deploy } from '../cloudformation.core';
 import { handleDeployError, handleDeployInitialization } from '../utils';
 import { getStaticAppBucket } from './getStaticAppBucket';
 import { invalidateCloudFront } from './invalidateCloudFront';
+import { type ResponseHeader } from './responseHeaders';
 import { getStaticAppTemplate } from './staticApp.template';
 import { uploadBuiltAppToS3 } from './uploadBuiltAppToS3';
+import { readViewerRequestFunctionCode } from './viewerRequestFunction';
 
 const logPrefix = 'static-app';
 
@@ -21,20 +23,32 @@ export const deployStaticApp = async ({
   appendIndexHtml,
   buildFolder,
   cloudfront,
+  responseHeaders,
+  responseHeadersPolicy,
   spa,
   hostedZoneName,
   region,
   skipUpload,
+  uploadSourceMaps,
+  viewerRequestFunctionCode,
 }: {
   acm?: string;
   aliases?: string[];
   appendIndexHtml?: boolean;
   buildFolder?: string;
   cloudfront?: boolean;
+  responseHeaders?: ResponseHeader[];
+  responseHeadersPolicy?: string;
   spa?: boolean;
   hostedZoneName?: string;
   region: string;
   skipUpload?: boolean;
+  uploadSourceMaps?: boolean;
+  /**
+   * Path to the file holding the viewer request function code, read here so the
+   * template receives the source.
+   */
+  viewerRequestFunctionCode?: string;
 }) => {
   try {
     const { stackName } = await handleDeployInitialization({ logPrefix });
@@ -46,9 +60,14 @@ export const deployStaticApp = async ({
       aliases,
       appendIndexHtml,
       cloudfront,
+      responseHeaders,
+      responseHeadersPolicy,
       spa,
       hostedZoneName,
       region,
+      viewerRequestFunctionCode: viewerRequestFunctionCode
+        ? readViewerRequestFunctionCode({ filePath: viewerRequestFunctionCode })
+        : undefined,
     });
 
     const bucket = await getStaticAppBucket({ stackName });
@@ -59,7 +78,12 @@ export const deployStaticApp = async ({
      */
     if (bucket) {
       if (!skipUpload) {
-        await uploadBuiltAppToS3({ buildFolder, bucket, cloudfront });
+        await uploadBuiltAppToS3({
+          buildFolder,
+          bucket,
+          cloudfront,
+          uploadSourceMaps,
+        });
       }
 
       const { Outputs } = await deploy({ params, template });
@@ -79,7 +103,12 @@ export const deployStaticApp = async ({
         throw new Error(`Cannot find bucket at ${stackName}.`);
       }
 
-      await uploadBuiltAppToS3({ buildFolder, bucket: newBucket, cloudfront });
+      await uploadBuiltAppToS3({
+        buildFolder,
+        bucket: newBucket,
+        cloudfront,
+        uploadSourceMaps,
+      });
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {

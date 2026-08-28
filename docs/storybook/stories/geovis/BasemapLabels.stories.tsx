@@ -32,7 +32,7 @@ const BasemapLabelsDemo = ({ labels }: { labels: boolean }) => {
 };
 
 const meta = {
-  title: 'GeoVis/Basemap/Labels',
+  title: 'GeoVis/Labels',
   component: BasemapLabelsDemo,
   tags: ['autodocs'],
   argTypes: {

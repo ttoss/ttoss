@@ -119,7 +119,14 @@ export const Breadcrumb = ({ href, children, ...props }: BreadcrumbProps) => {
                 aria-current="page"
                 style={{
                   ...(vars.text.label.md as React.CSSProperties),
-                  color: colors?.text?.current ?? colors?.text?.default,
+                  // The current crumb reads the `current` state through the
+                  // cascade (resolveInteractiveStyle's header; Link.tsx
+                  // precedent) — no other flag applies to a non-interactive
+                  // crumb, so nothing can shadow it.
+                  color:
+                    resolveInteractiveStyle(colors?.text, {
+                      isCurrent: true,
+                    }) ?? colors?.text?.default,
                 }}
               >
                 {children}

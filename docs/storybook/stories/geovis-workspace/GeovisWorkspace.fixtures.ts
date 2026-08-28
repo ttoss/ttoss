@@ -1,4 +1,5 @@
 import type { VisualizationSpec } from '@ttoss/geovis';
+import { type GeovisWorkspaceConfig } from '@ttoss/geovis-workspace';
 
 type Position = [number, number];
 
@@ -127,13 +128,11 @@ export const buildSpec = ({
     legends: Object.entries(VARIABLES).map(([id, config]) => {
       return {
         id,
-        // Only the active legend gets a `position`, so `GeoVisProvider` mounts
-        // exactly one on-map legend overlay (the corner box) instead of
-        // stacking every legend in the registry. Overlaying it lets us verify
-        // the workspace sidebars render above the map's own legend.
-        ...(id === variable
-          ? { title: config.title, position: 'bottom-right' as const }
-          : {}),
+        // No legend gets a `position`, so `GeoVisProvider` mounts no on-map
+        // legend overlay. The registry stays so the layer's `activeLegendId`
+        // still resolves its colors from it; only the corner-box overlay is
+        // removed.
+        ...(id === variable ? { title: config.title } : {}),
         colorBy: {
           type: 'quantitative' as const,
           property: 'value',
@@ -205,4 +204,114 @@ export const buildPolicyViolationSpec = (): VisualizationSpec => {
       normalizedLabel: 'per 1,000 residents',
     },
   };
+};
+
+export { sidebarPreviewConfig } from './GeovisWorkspace.sidebarPreview.fixture';
+
+/**
+ * Multi-group variant: a single "Variações" tab whose 20+ variations are split
+ * across six groups (Demografia, Renda, Saúde, …). The selection stays a single
+ * value shared across every group; `defaultValue` ('renda-media') seeds it.
+ * Picking any variation recolors the map.
+ */
+export const groupedWorkspaceConfig: GeovisWorkspaceConfig = {
+  leftSidebar: {
+    initialState: 'open',
+    sections: [
+      {
+        id: 'variable',
+        header: { title: 'Variações do mapa', icon: 'lucide:layout-list' },
+        body: {
+          kind: 'variations',
+          menuId: 'variable',
+          defaultValue: 'renda-media',
+          defaultGroupId: 'renda',
+          groups: [
+            {
+              id: 'demografia',
+              label: 'Demografia',
+              icon: 'lucide:users',
+              variations: [
+                { value: 'pop-total', label: 'População total' },
+                { value: 'densidade', label: 'Densidade demográfica' },
+                { value: 'faixa-etaria', label: 'Faixa etária' },
+                { value: 'crescimento', label: 'Crescimento populacional' },
+                { value: 'urbano-rural', label: 'Distribuição urbano/rural' },
+              ],
+            },
+            {
+              id: 'renda',
+              label: 'Renda',
+              icon: 'lucide:dollar-sign',
+              variations: [
+                { value: 'renda-media', label: 'Renda média' },
+                { value: 'renda-mediana', label: 'Renda mediana' },
+                { value: 'gini', label: 'Índice de Gini' },
+                { value: 'pobreza', label: 'Taxa de pobreza' },
+                { value: 'informalidade', label: 'Informalidade' },
+              ],
+            },
+            {
+              id: 'saude',
+              label: 'Saúde',
+              icon: 'lucide:heart-pulse',
+              variations: [
+                { value: 'leitos', label: 'Leitos por mil hab.' },
+                {
+                  value: 'mortalidade-infantil',
+                  label: 'Mortalidade infantil',
+                },
+                {
+                  value: 'cobertura-aps',
+                  label: 'Cobertura de atenção básica',
+                },
+                { value: 'vacinacao', label: 'Cobertura vacinal' },
+                { value: 'expectativa', label: 'Expectativa de vida' },
+              ],
+            },
+            {
+              id: 'educacao',
+              label: 'Educação',
+              icon: 'lucide:graduation-cap',
+              variations: [
+                { value: 'alfabetizacao', label: 'Taxa de alfabetização' },
+                { value: 'ideb', label: 'IDEB' },
+                { value: 'evasao', label: 'Evasão escolar' },
+                {
+                  value: 'ensino-superior',
+                  label: 'Acesso ao ensino superior',
+                },
+                { value: 'matriculas', label: 'Matrículas por mil hab.' },
+              ],
+            },
+            {
+              id: 'trabalho',
+              label: 'Trabalho e emprego',
+              icon: 'lucide:briefcase',
+              variations: [
+                { value: 'desemprego', label: 'Taxa de desemprego' },
+                { value: 'ocupacao', label: 'Nível de ocupação' },
+                { value: 'carteira', label: 'Emprego com carteira' },
+                { value: 'rendimento', label: 'Rendimento do trabalho' },
+                { value: 'jornada', label: 'Jornada média' },
+              ],
+            },
+            {
+              id: 'habitacao',
+              label: 'Habitação',
+              icon: 'lucide:home',
+              variations: [
+                { value: 'deficit', label: 'Déficit habitacional' },
+                { value: 'saneamento', label: 'Acesso a saneamento' },
+                { value: 'agua', label: 'Abastecimento de água' },
+                { value: 'energia', label: 'Acesso à energia' },
+                { value: 'adensamento', label: 'Adensamento excessivo' },
+              ],
+            },
+          ],
+        },
+      },
+    ],
+  },
+  rightSidebar: { title: 'Detalhes' },
 };

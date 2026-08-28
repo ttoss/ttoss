@@ -18,6 +18,7 @@ import {
   toMaplibreSource,
 } from './sourceTranslation';
 import {
+  enforceManagedLayerOrder,
   reapplyLayerPaint,
   upsertClickAnchorCompanion,
   upsertOutlineCompanions,
@@ -56,6 +57,7 @@ const applyLayerAdd = (
     ...viewState.spec,
     layers: [...viewState.spec.layers, newLayer],
   };
+  enforceManagedLayerOrder(map, viewState.spec);
 };
 
 const applyLayerRemove = (
