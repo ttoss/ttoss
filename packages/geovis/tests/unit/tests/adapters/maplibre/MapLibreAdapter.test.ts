@@ -52,6 +52,9 @@ const makeMapMock = () => {
     on: jest.fn(),
     once: jest.fn(),
     remove: jest.fn(),
+    getCanvasContainer: jest.fn(() => {
+      return { addEventListener: jest.fn(), removeEventListener: jest.fn() };
+    }),
     addControl: jest.fn(),
     addSource: jest.fn(),
     addLayer: jest.fn(),
@@ -1852,5 +1855,36 @@ describe('basemap.labels — symbol layer visibility', () => {
       'visibility',
       'none'
     );
+  });
+});
+
+describe('createMapLibreAdapter — attributionControlEnabled', () => {
+  const mountWith = (attributionControlEnabled?: boolean) => {
+    jest.mocked(maplibregl.Map).mockImplementation(() => {
+      return makeMapMock() as never;
+    });
+
+    createMapLibreAdapter().mount(
+      makeContainer(),
+      { ...makeSpec(), attributionControlEnabled },
+      'view'
+    );
+
+    return jest.mocked(maplibregl.Map).mock.calls[0]?.[0];
+  };
+
+  test('leaves MapLibre to mount its own control when the spec is silent', () => {
+    // Absent rather than `true`: passing `attributionControl: true` would also
+    // produce a control, but through a different MapLibre code path. Saying
+    // nothing is what guarantees the untouched default.
+    expect(mountWith()).not.toHaveProperty('attributionControl');
+  });
+
+  test('keeps the control on an explicit true', () => {
+    expect(mountWith(true)).not.toHaveProperty('attributionControl');
+  });
+
+  test('suppresses the control on an explicit false', () => {
+    expect(mountWith(false)).toMatchObject({ attributionControl: false });
   });
 });

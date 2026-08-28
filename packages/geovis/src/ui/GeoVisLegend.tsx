@@ -58,6 +58,12 @@ export interface GeoVisLegendProps {
    * legend sharing a position inside one grouped overlay container.
    */
   noPositionWrap?: boolean;
+  /**
+   * When true, the card drops its fixed width and fills its container. Used by
+   * the compact legend panel, which spans the map from side to side — without
+   * this the card would keep its own width inside that full-width panel.
+   */
+  stretch?: boolean;
 }
 
 const useGeoVisLegend = (spec: VisualizationSpec, legendId: string) => {
@@ -381,6 +387,7 @@ export const GeoVisLegend = ({
   className,
   sourceNode,
   noPositionWrap = false,
+  stretch = false,
 }: GeoVisLegendProps) => {
   const { spec } = useGeoVis();
 
@@ -428,6 +435,13 @@ export const GeoVisLegend = ({
 
   const referenceContent = buildReferenceContent(sourceNode, effectiveLegend);
 
+  // `marginTop` separates stacked cards; `width` lets the card fill a panel
+  // that is itself wider than the card's own fixed width.
+  const extraStyle: React.CSSProperties = {
+    ...(isFirstInPositionGroup ? {} : { marginTop: 8 }),
+    ...(stretch ? { width: '100%' } : {}),
+  };
+
   return (
     <GeoVisLegendBody
       className={className}
@@ -435,7 +449,7 @@ export const GeoVisLegend = ({
       items={items}
       circleItems={circleItems}
       referenceContent={referenceContent}
-      extraStyle={isFirstInPositionGroup ? undefined : { marginTop: 8 }}
+      extraStyle={extraStyle}
     />
   );
 };

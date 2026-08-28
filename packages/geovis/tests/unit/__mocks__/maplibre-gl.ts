@@ -64,6 +64,9 @@ const MapMock = jest.fn().mockImplementation(() => {
     getCanvas: jest.fn(() => {
       return { style: {} };
     }),
+    getCanvasContainer: jest.fn(() => {
+      return { addEventListener: jest.fn(), removeEventListener: jest.fn() };
+    }),
     getContainer: jest.fn(() => {
       return { clientWidth: 800, clientHeight: 520 };
     }),

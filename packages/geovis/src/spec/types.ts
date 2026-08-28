@@ -573,6 +573,19 @@ export interface VisualizationSpec {
   legendEnabled?: boolean;
 
   /**
+   * Controls whether MapLibre's attribution control — the round button in the
+   * map's bottom-right corner that expands into the basemap credits — is
+   * mounted. Defaults to `true`.
+   *
+   * Set it to `false` only when the application renders the same credits
+   * somewhere else: basemap and source licences (OpenStreetMap's among them)
+   * generally require attribution to stay visible, and hiding the control does
+   * not lift that obligation. Each source's own `attribution` string is
+   * unaffected — it simply has no built-in surface left to appear on.
+   */
+  attributionControlEnabled?: boolean;
+
+  /**
    * Internal marker set by `resolveSpecFromMapType` to prevent double-resolution.
    * Consumers should not set this field directly.
    */

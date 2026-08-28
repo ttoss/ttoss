@@ -22,6 +22,7 @@ import {
   reapplyAllMapData,
   removeMapDataFromSource,
 } from './mapDataFeatureState';
+import { silenceNonCancelableTouchMove } from './nonCancelableTouchMove';
 import { applyLayerPatch, applySourcePatch } from './patchDispatch';
 import { applySelectionToMap } from './selection';
 import { toMaplibreSource } from './sourceTranslation';
@@ -138,6 +139,12 @@ const createMap = (
     minZoom: view.maxZoomOut,
     pitch: view.pitch ?? 0,
     bearing: view.bearing ?? 0,
+    // MapLibre mounts its attribution control unless this option is `false`, so
+    // every spec that stays silent keeps the button. Only an explicit opt-out
+    // removes it — see the field's own note on what the caller then owes.
+    ...(spec.attributionControlEnabled === false
+      ? { attributionControl: false as const }
+      : {}),
   });
   map.addControl(
     new maplibregl.NavigationControl({
@@ -147,6 +154,7 @@ const createMap = (
       showCompass: true,
     })
   );
+  silenceNonCancelableTouchMove(map);
   return { map, style };
 };
 
