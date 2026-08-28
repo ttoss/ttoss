@@ -49,6 +49,26 @@ export interface CoreSpacingSteps {
 }
 
 interface InsetSteps {
+  /**
+   * The **anchored/row-framing** step — the tightest surface inset, for a
+   * container whose padding is a gutter beside its own children rather than a
+   * margin around arbitrary content: an anchored popover, menu, tooltip, or a
+   * list container framing rows that carry their own `inset.control`.
+   *
+   * **Fixed, for ADR-022's reason one context over.** The steps below ride the
+   * fluid engine, which is right for a page-level surface — its padding scales
+   * with the page. This step's whole visual outcome is its *relationship to
+   * fixed-height children*, so a fluid value makes that relationship
+   * container-fluid: measured before this existed, a menu's gutter moved
+   * 16px → 24px from 390 to 1920 while every row stayed exactly 32.0px
+   * (F-045). References `core.spacing.fixed.*`, like `inset.control` and for
+   * the same reason.
+   *
+   * Do not reach for it on a page-level surface — that is `sm` and up. The
+   * discriminant is whether the padding frames *content* (scale it) or
+   * *controls* (hold it).
+   */
+  xs: CoreSpacingRef;
   /** Compact step — tight controls / dense surfaces. */
   sm: CoreSpacingRef;
   /** Default step — standard controls and surfaces. Pick this when no other step applies. */
@@ -74,9 +94,9 @@ interface ControlInsetSteps {
   /** Compact step — the field family's block inset. */
   sm: CoreSpacingRef;
   /** Default step — the field family's inline inset. */
-  md: RawValue;
+  md: CoreSpacingRef;
   /** Roomy step — a command trigger's inline inset. */
-  lg: RawValue;
+  lg: CoreSpacingRef;
 }
 
 interface GapStackSteps {

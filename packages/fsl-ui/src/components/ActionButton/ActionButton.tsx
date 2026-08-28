@@ -1,9 +1,5 @@
-import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
-import {
-  Button as RACButton,
-  type ButtonProps as RACButtonProps,
-} from 'react-aria-components';
+import type { ButtonProps as RACButtonProps } from 'react-aria-components';
 
 import type {
   ComponentMeta,
@@ -11,13 +7,10 @@ import type {
   ConsequencesFor,
   EvaluationsFor,
 } from '../../semantics';
-import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import {
   type ActionIconPlacement,
   type ActionLabellingProps,
-  ActionTriggerContent,
-  buildActionTriggerStyle,
-  useIsGroupedActionTrigger,
+  ActionTriggerRoot,
   UTILITY_SILHOUETTE,
 } from '../ActionTrigger/anatomy';
 import type { IconProps } from '../Icon';
@@ -53,15 +46,21 @@ export interface ActionButtonOwnProps extends Omit<
    * announces itself with a quiet fill, not with the authority of a command.
    *
    * Use `muted` for the **quiet** posture — a toolbar control that shows no
-   * fill until hovered. Use `negative` for a destructive row action; pair it
-   * with `consequence="destructive"` so a confirm wrapper can dispatch on it.
+   * fill until hovered. Use `negative` when the destructive action is the
+   * loud one on the surface and should read as a filled red command; for a
+   * destructive control that sits as a *peer* among its siblings, keep the
+   * rung and set `consequence="destructive"`, which tints the ink instead.
+   * Either way `consequence` is what a confirm wrapper dispatches on.
    * @default 'secondary'
    */
   evaluation?: EvaluationsFor<(typeof actionButtonMeta)['entity']>;
   /**
    * Effect on state this action produces. Emitted as `data-consequence` for
-   * host integrations and tests; never used for coloring (that is
-   * `evaluation`).
+   * host integrations and tests.
+   *
+   * Carries colour in exactly one case: `destructive` on the **quiet** rung
+   * (`evaluation="muted"`) tints the ink — see {@link resolveConsequenceInk}.
+   * On every filled rung the fill is the voice and `evaluation` owns it.
    * @default 'neutral'
    */
   consequence?: ConsequencesFor<(typeof actionButtonMeta)['entity']>;
@@ -156,56 +155,19 @@ export const ActionButton = ({
   'data-scope': dataScope = 'action-button',
   ...props
 }: ActionButtonProps) => {
-  const colors = vars.colors.action[evaluation];
-  const hasIcon = icon !== undefined;
-  const isIconOnly = hasIcon && children === undefined;
-  const isGrouped = useIsGroupedActionTrigger();
-
   return (
-    <RACButton
+    <ActionTriggerRoot
       {...props}
-      data-scope={dataScope}
-      data-part="root"
-      data-evaluation={evaluation}
-      data-consequence={consequence}
-      data-composition={composition}
-      data-icon-placement={hasIcon ? iconPlacement : undefined}
-      style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => {
-        return buildActionTriggerStyle({
-          silhouette: UTILITY_SILHOUETTE,
-          hasIcon,
-          isIconOnly,
-          isDisabled,
-          isFocusVisible,
-          isGrouped,
-          colors: {
-            background: resolveInteractiveStyle(colors?.background, {
-              isHovered,
-              isPressed,
-              isDisabled,
-            }),
-            border: resolveInteractiveStyle(colors?.border, {
-              isDisabled,
-              isFocusVisible,
-            }),
-            text:
-              resolveInteractiveStyle(colors?.text, {
-                isHovered,
-                isPressed,
-                isDisabled,
-              }) ?? colors?.text?.default,
-          },
-        });
-      }}
+      silhouette={UTILITY_SILHOUETTE}
+      evaluation={evaluation}
+      consequence={consequence}
+      composition={composition}
+      icon={icon}
+      iconPlacement={iconPlacement}
+      dataScope={dataScope}
     >
-      <ActionTriggerContent
-        dataScope={dataScope}
-        icon={icon}
-        iconPlacement={iconPlacement}
-      >
-        {children}
-      </ActionTriggerContent>
-    </RACButton>
+      {children}
+    </ActionTriggerRoot>
   );
 };
 ActionButton.displayName = actionButtonMeta.displayName;

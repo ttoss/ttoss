@@ -373,6 +373,43 @@ export interface VisualizationLayer {
    * value. Gated by `CapabilitySet.dataFeatures.filter` per source type.
    */
   filter?: LayerFilter;
+  /**
+   * Opt-in animated transition applied when this layer's source `data` changes
+   * between two specs. Only honoured for `point` (circle) layers backed by a
+   * `geojson` source; ignored otherwise. When declared, the adapter fades the
+   * OLD points out while the NEW points fade in, instead of swapping data
+   * instantly. Omit it to keep the instant `setData` behaviour.
+   *
+   * @example
+   * ```ts
+   * const layer: VisualizationLayer = {
+   *   id: 'stores',
+   *   sourceId: 'stores-src',
+   *   geometry: 'point',
+   *   transition: { kind: 'crossfade', durationMs: 600, easing: 'ease-in-out' },
+   * };
+   * ```
+   */
+  transition?: LayerTransition;
+}
+
+/**
+ * Declarative, engine-agnostic animated transition for a `VisualizationLayer`.
+ * `'crossfade'` is the only kind in v1 and applies exclusively to point
+ * (circle) layers whose `geojson` source `data` reference changes.
+ *
+ * @example
+ * ```ts
+ * const transition: LayerTransition = { kind: 'crossfade', durationMs: 400 };
+ * ```
+ */
+export interface LayerTransition {
+  /** Discriminator. `'crossfade'` fades old points out while new points fade in. */
+  kind: 'crossfade';
+  /** Total fade duration in milliseconds. @default 400 */
+  durationMs?: number;
+  /** Easing curve applied to the fade progress. @default 'ease-out' */
+  easing?: 'linear' | 'ease-out' | 'ease-in-out';
 }
 
 /** Comparison used by a `LayerFilter` — a closed set mapped to native engine filter expressions. */
@@ -582,12 +619,22 @@ export interface LayerControl {
    */
   position?: LegendPosition;
   /**
-   * Distance in pixels from the two anchored map edges. Defaults to `40`.
-   * Increase it to clear map chrome (e.g. MapLibre's attribution) or app UI.
+   * Distance in pixels from the anchored map edges. Defaults to `40`. A single
+   * number applies to both edges; pass `{ x, y }` to offset each axis
+   * independently (each falling back to `40` when omitted) — e.g. push the
+   * control clear of a side panel horizontally without lifting it off the
+   * bottom edge. Increase it to clear map chrome (e.g. MapLibre's attribution)
+   * or app UI.
    */
-  offset?: number;
+  offset?: number | { x?: number; y?: number };
   /** Text shown on the collapsed trigger button. Defaults to `'Layers'`. */
   label?: string;
+  /**
+   * Icon shown on the collapsed trigger button, as a `@ttoss/react-icons` name
+   * (e.g. `'lucide:layers'`). When omitted a built-in stacked-sheets glyph is
+   * used, so the trigger looks identical without configuration.
+   */
+  icon?: string;
   /**
    * How the panel expands to reveal its items. `'hover'` (default) expands on
    * pointer/focus enter; `'click'` toggles on trigger click. Both triggers

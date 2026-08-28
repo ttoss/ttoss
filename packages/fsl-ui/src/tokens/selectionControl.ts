@@ -1,7 +1,8 @@
 import { vars } from '@ttoss/fsl-theme/vars';
 import type * as React from 'react';
 
-import { FOCUS_RING_OFFSET } from './focusRing';
+import { FOCUS_RING_OFFSET, focusRingOutline } from './focusRing';
+import { resolveInteractiveStyle } from './resolveInteractiveStyle';
 
 /**
  * Geometry of a **selection control** — the mark the user toggles: a
@@ -107,3 +108,145 @@ export const SELECTION_GROUP_STYLE = {
   flexDirection: 'column',
   gap: vars.spacing.gap.stack.sm,
 } satisfies React.CSSProperties;
+
+/**
+ * The colour subtree a selection control resolves its chrome from — the
+ * Selection entity's CONTRACT.md §1 row names `input.primary`. The alias
+ * keeps the builders' signatures honest about which dimensions they read.
+ */
+export type SelectionColors = typeof vars.colors.input.primary;
+
+/**
+ * Render-prop flags a selection mark resolves colour from. A host without one
+ * of these states simply never sets its flag — `resolveInteractiveStyle`
+ * treats an unset flag exactly like an absent one, so the shared cascade
+ * costs a two-state host nothing.
+ */
+export interface SelectionMarkFlags {
+  isSelected?: boolean;
+  isIndeterminate?: boolean;
+  isInvalid?: boolean;
+  isDisabled?: boolean;
+  isHovered?: boolean;
+  isPressed?: boolean;
+  isFocusVisible?: boolean;
+}
+
+/**
+ * State-dependent chrome of a selection **mark** — the leaves a
+ * `SELECTION_BOX_BASE`-shaped `base` leaves open. The cascade had been
+ * written out once per mark and the copies agreed only by discipline; this
+ * is the single statement.
+ *
+ * The split between the two colour cascades is deliberate and must not be
+ * "completed": `background` reacts to hover/press but never to focus — the
+ * ring carries focus, and a `focused` key would otherwise pre-empt the hover
+ * fill — while `border` reacts to focus but never to hover/press. The same
+ * division `Field`'s anatomy fixes for field chrome.
+ *
+ * `selectedBorderWidth` is the one structural state change: a mark whose
+ * border thickens when checked or indeterminate passes the `outline.selected`
+ * width and gets the switch against `outline.control`'s resting width; a
+ * mark whose border never moves omits it, and whatever width `base` declares
+ * stands.
+ */
+export const buildSelectionMarkStyle = ({
+  base,
+  colors,
+  flags,
+  selectedBorderWidth,
+}: {
+  base: React.CSSProperties;
+  colors: SelectionColors;
+  flags: SelectionMarkFlags;
+  selectedBorderWidth?: string;
+}): React.CSSProperties => {
+  const {
+    isSelected,
+    isIndeterminate,
+    isInvalid,
+    isDisabled,
+    isHovered,
+    isPressed,
+    isFocusVisible,
+  } = flags;
+
+  return {
+    ...base,
+    ...(selectedBorderWidth !== undefined && {
+      borderWidth:
+        isSelected || isIndeterminate
+          ? selectedBorderWidth
+          : vars.border.outline.control.width,
+    }),
+    backgroundColor: resolveInteractiveStyle(colors.background, {
+      isDisabled,
+      isInvalid,
+      isSelected,
+      isIndeterminate,
+      isHovered,
+      isPressed,
+    }),
+    borderColor: resolveInteractiveStyle(colors.border, {
+      isDisabled,
+      isInvalid,
+      isSelected,
+      isIndeterminate,
+      isFocusVisible,
+    }),
+    outline: focusRingOutline(isFocusVisible),
+  };
+};
+
+/**
+ * Ink of a selection control's label — invalid dominates disabled dominates
+ * default. Resolved by hand rather than through `resolveInteractiveStyle`
+ * because the order is the point: the canonical cascade puts `disabled` above
+ * `invalid`, the label deliberately inverts them, and routing this through
+ * the helper would flip a rendered colour.
+ */
+export const resolveSelectionLabelInk = ({
+  text,
+  isInvalid,
+  isDisabled,
+}: {
+  text: SelectionColors['text'];
+  isInvalid?: boolean;
+  isDisabled?: boolean;
+}): string | undefined => {
+  if (isInvalid) return text?.invalid;
+  if (isDisabled) return text?.disabled;
+  return text?.default;
+};
+
+/**
+ * The row a selection option renders: mark beside label, centred, at least a
+ * hit target tall, on the control's label type. Disabled state dims and
+ * re-cursors the **row** — mark, label and gap alike — which is why it
+ * resolves here and not per part. Ink stays with the caller: one host tints
+ * the whole line, another only its label part.
+ *
+ * `supportGrid` is the two-column variant for a row whose supporting copy
+ * stacks beside the mark: the mark holds its own column and `start`
+ * alignment keeps it on the label's first line instead of floating to the
+ * middle of a two-line description.
+ */
+export const buildSelectionOptionRowStyle = ({
+  isDisabled,
+  supportGrid,
+}: {
+  isDisabled?: boolean;
+  supportGrid?: boolean;
+}): React.CSSProperties => {
+  return {
+    boxSizing: 'border-box',
+    display: supportGrid ? 'grid' : 'inline-flex',
+    gridTemplateColumns: supportGrid ? 'auto 1fr' : undefined,
+    alignItems: supportGrid ? 'start' : 'center',
+    gap: vars.spacing.gap.inline.sm,
+    minHeight: vars.sizing.hit,
+    cursor: isDisabled ? 'not-allowed' : 'pointer',
+    opacity: isDisabled ? vars.opacity.disabled : undefined,
+    ...(vars.text.label.md as React.CSSProperties),
+  } as React.CSSProperties;
+};

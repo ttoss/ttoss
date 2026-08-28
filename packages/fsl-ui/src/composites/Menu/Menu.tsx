@@ -17,10 +17,12 @@ import type {
   ConsequencesFor,
   EvaluationsFor,
 } from '../../semantics';
-import { buildChoosableRowStyle } from '../../tokens/choosableRow';
+import { buildChoosableRowInteractiveStyle } from '../../tokens/choosableRow';
+import { resolveConsequenceInk } from '../../tokens/consequenceInk';
 import { fslVar } from '../../tokens/escapeHatch';
-import { focusRingOutline } from '../../tokens/focusRing';
+import { buildOccludingSurfaceStyle } from '../../tokens/occludingSurface';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import { resolveSurfaceBoundStyle } from '../../tokens/surfaceScope';
 import { createPresenceScope } from '../scope';
 
 // Layout constants (CONTRIBUTING §4 layout-literal rule) — popover surface
@@ -172,14 +174,16 @@ export const Menu = <T extends object>({
             // [data-scope="menu"][data-part="root"].
             minWidth: fslVar('--fsl-menu-min-width', MENU_MIN_WIDTH_DEFAULT),
             maxWidth: fslVar('--fsl-menu-max-width', MENU_MAX_WIDTH_DEFAULT),
-            borderRadius: vars.radii.surface,
-            borderWidth: vars.border.outline.surface.width,
-            borderStyle: vars.border.outline.surface.style,
-            borderColor: colors?.border?.default,
-            backgroundColor: colors?.background?.default,
+            // Occluding chrome (CONTRACT §3.5/§3.4): boundary, published
+            // voiced fill, overlay elevation — one builder across the six
+            // occluders.
+            ...buildOccludingSurfaceStyle({
+              evaluation,
+              colors,
+              elevation: 'overlay',
+              fill: 'voiced',
+            }),
             color: colors?.text?.default,
-            boxShadow: vars.elevation.surface.overlay,
-            outline: 'none',
             overflow: 'auto',
             zIndex: vars.zIndex.layer.overlay,
           } as React.CSSProperties
@@ -194,7 +198,11 @@ export const Menu = <T extends object>({
             {
               boxSizing: 'border-box',
               outline: 'none',
-              padding: vars.spacing.inset.surface.sm,
+              // The anchored/row-framing step (CONTRACT §3.4 companion,
+              // F-045): a gutter beside rows that carry their own
+              // `inset.control`, fixed so the relationship to those fixed-height
+              // rows does not drift with the viewport.
+              padding: vars.spacing.inset.surface.xs,
               display: 'flex',
               flexDirection: 'column',
               ...(vars.text.label.md as React.CSSProperties),
@@ -256,10 +264,10 @@ export interface MenuItemProps extends Omit<
    * open menu.
    *
    * Reach for another rung only to make one row *louder* than its siblings (a
-   * primary "Create…" at the top of a menu). Note that `negative` fills the row
-   * red rather than tinting its ink — see F-029 before using it to mark a
-   * destructive row; `consequence="destructive"` is the semantic marker and
-   * carries no colour.
+   * primary "Create…" at the top of a menu). To mark a **destructive** row,
+   * leave this alone and set `consequence` — `negative` fills the row solid red
+   * because in `action` the valence is the *filled* destructive command, which
+   * is a different thing from a peer row that happens to delete something.
    *
    * @default 'muted'
    */
@@ -269,8 +277,12 @@ export interface MenuItemProps extends Omit<
    *
    * Emitted as `data-consequence` on the rendered element so callers, tests,
    * and host integrations (confirm wrappers, telemetry) can observe the
-   * contract. This component does **not** alter colors based on consequence;
-   * visual distinction (if any) is a theme / CSS layer concern.
+   * contract.
+   *
+   * `destructive` also tints the row's ink — see
+   * {@link resolveConsequenceInk} for the rule and its bounds. The row keeps
+   * the quiet rung's geometry and fill; only the ink (and, through
+   * `currentColor`, any `Icon` inside it) carries the valence.
    *
    * @default 'neutral'
    */
@@ -313,25 +325,28 @@ export const MenuItem = ({
       data-consequence={consequence}
       data-composition={composition}
       style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => {
-        return {
-          ...buildChoosableRowStyle(),
-          cursor: isDisabled ? 'not-allowed' : 'pointer',
-          transitionDuration: vars.motion.feedback.duration,
-          transitionTimingFunction: vars.motion.feedback.easing,
-          transitionProperty: 'background-color, color',
-          backgroundColor: resolveInteractiveStyle(colors?.background, {
-            isHovered,
-            isPressed,
-            isDisabled,
+        const flags = { isDisabled, isHovered, isPressed };
+        return buildChoosableRowInteractiveStyle({
+          isDisabled,
+          isFocusVisible,
+          // No disabled opacity: a menu row's disabled affordance is its ink.
+          // The quiet row's resting fill follows the published surface
+          // (§3.4) — inside this Menu's own popover that is the identical
+          // value, so the read matters when a host portals rows elsewhere.
+          backgroundColor: resolveSurfaceBoundStyle({
+            evaluation,
+            states: colors?.background,
+            flags,
           }),
-          color:
-            resolveInteractiveStyle(colors?.text, {
-              isHovered,
-              isPressed,
-              isDisabled,
-            }) ?? colors?.text?.default,
-          outline: focusRingOutline(isFocusVisible),
-        } as React.CSSProperties;
+          color: resolveConsequenceInk({
+            consequence,
+            evaluation,
+            flags,
+            ink:
+              resolveInteractiveStyle(colors?.text, flags) ??
+              colors?.text?.default,
+          }),
+        }) as React.CSSProperties;
       }}
     >
       {children}

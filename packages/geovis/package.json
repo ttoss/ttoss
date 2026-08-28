@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/geovis",
-  "version": "0.15.0",
+  "version": "0.18.0",
   "description": "Geovisualization components for React applications.",
   "keywords": [
     "Geovis",
@@ -41,6 +41,7 @@
   "devDependencies": {
     "@emotion/react": "^11.14.0",
     "@ttoss/config": "workspace:^",
+    "@ttoss/react-icons": "workspace:^",
     "@ttoss/test-utils": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "@types/jest": "^30.0.0",
@@ -53,6 +54,7 @@
     "tsdown": "^0.22.2"
   },
   "peerDependencies": {
+    "@ttoss/react-icons": "workspace:^",
     "@ttoss/ui": "workspace:^",
     "maplibre-gl": ">=5.0.0",
     "react": ">=16.8.0",

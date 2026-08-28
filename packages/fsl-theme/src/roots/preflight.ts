@@ -32,9 +32,9 @@ body {
 }
 
 body {
-  font-family: var(--tt-text-body-md-font-family, system-ui, sans-serif);
-  font-size: var(--tt-text-body-md-font-size);
-  line-height: var(--tt-text-body-md-line-height);
+  font-family: var(--tt-text-body-md-fontFamily, system-ui, sans-serif);
+  font-size: var(--tt-text-body-md-fontSize);
+  line-height: var(--tt-text-body-md-lineHeight);
   color: var(--tt-colors-informational-primary-text-default);
   background-color: var(--tt-colors-informational-primary-background-default);
   -webkit-font-smoothing: antialiased;

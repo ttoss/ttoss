@@ -32,18 +32,22 @@ const buildContainerStyle = (alignTop: boolean): React.CSSProperties => {
 
 /**
  * Absolute-positioning style for the whole control, anchored to the map corner
- * named by `position`. `offset` (when set) overrides the default edge gap.
+ * named by `position`. `offset` (when set) overrides the default edge gap — a
+ * number applies to both edges; `{ x, y }` offsets each axis independently
+ * (each falling back to {@link EDGE_GAP}), so callers can push the control
+ * clear of a side panel horizontally without lifting it off the bottom edge.
  */
 export const buildOuterStyle = ({
   position,
   offset,
 }: {
   position: LegendPosition;
-  offset?: number;
+  offset?: number | { x?: number; y?: number };
 }): React.CSSProperties => {
   const isTop = position.startsWith('top');
   const isRight = position.endsWith('right');
-  const gap = offset ?? EDGE_GAP;
+  const xGap = (typeof offset === 'number' ? offset : offset?.x) ?? EDGE_GAP;
+  const yGap = (typeof offset === 'number' ? offset : offset?.y) ?? EDGE_GAP;
   return {
     ...resolvePositionStyle(position),
     ...buildContainerStyle(isTop),
@@ -52,62 +56,64 @@ export const buildOuterStyle = ({
     // control floating over it. Same shared overlay z-index as the legend and
     // hover tooltip (resolvePositionStyle), restated here for clarity.
     zIndex: OVERLAY_Z_INDEX,
-    // Push the trigger off the anchored edges.
-    [isTop ? 'top' : 'bottom']: gap,
-    [isRight ? 'right' : 'left']: gap,
+    // Push the trigger off the anchored edges (x → left/right, y → top/bottom).
+    [isTop ? 'top' : 'bottom']: yGap,
+    [isRight ? 'right' : 'left']: xGap,
+    // Animate a changed anchor distance so a shifting `offset` (e.g. a
+    // workspace pushing the control clear of an opening side panel) slides the
+    // control across instead of teleporting it. Matches the sidebar's own
+    // `0.25s ease-in-out` slide, so the two move together. Only fires on
+    // change, so the initial mount is not animated.
+    transition:
+      'top 0.25s ease-in-out, bottom 0.25s ease-in-out, left 0.25s ease-in-out, right 0.25s ease-in-out',
   };
 };
 
-// Square trigger — modelled on Google Maps' "Layers" button, but showing a
-// layers icon (stacked sheets) centred above a label strip along the bottom
-// rather than a map preview. Larger and bolder than a text pill so it stands
-// out against the map.
+// Item-card / thumbnail size in the expanded panel (unchanged — the panel
+// "options" keep their Google-Maps-style square previews).
 export const TRIGGER_SIZE = 64;
+
+// Compact square trigger — a floating icon-only button (no label strip),
+// matching the geovis-workspace prototype's layers button: rounded, white, a
+// soft drop shadow, and a count badge in the corner.
+const TRIGGER_BUTTON_SIZE = 52;
 
 export const buildTriggerStyle = (expanded: boolean): React.CSSProperties => {
   return {
-    backgroundColor: '#ffffff',
-    border: 'none',
-    borderRadius: 8,
-    boxShadow: expanded ? `0 0 0 2px ${ACCENT}, ${CARD_SHADOW}` : CARD_SHADOW,
+    alignItems: 'center',
+    backgroundColor: expanded ? HOVER_BG : '#ffffff',
+    border: `1px solid ${expanded ? 'rgba(0,0,0,0.18)' : 'rgba(0,0,0,0.08)'}`,
+    borderRadius: 14,
+    boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+    color: TEXT,
     cursor: 'pointer',
-    display: 'block',
-    height: TRIGGER_SIZE,
-    overflow: 'hidden',
+    display: 'flex',
+    height: TRIGGER_BUTTON_SIZE,
+    justifyContent: 'center',
     padding: 0,
     position: 'relative',
-    width: TRIGGER_SIZE,
+    width: TRIGGER_BUTTON_SIZE,
   };
 };
 
-export const triggerLabelStyle: React.CSSProperties = {
-  backgroundColor: 'rgba(255,255,255,0.92)',
-  bottom: 0,
-  color: TEXT,
-  fontFamily: FONT,
-  fontSize: 11,
-  fontWeight: 600,
-  left: 0,
-  lineHeight: '15px',
-  overflow: 'hidden',
-  padding: '1px 3px',
-  position: 'absolute',
-  right: 0,
-  textAlign: 'center',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-};
-
-// Centres the layers icon in the square trigger, reserving room at the bottom
-// for the absolutely-positioned label strip so the icon doesn't sit under it.
-export const triggerIconWrapStyle: React.CSSProperties = {
+// Count of active items, pinned to the trigger's top-right corner.
+export const triggerBadgeStyle: React.CSSProperties = {
   alignItems: 'center',
-  color: ACCENT,
+  backgroundColor: TEXT_MUTED,
+  border: '1px solid #ffffff',
+  borderRadius: 999,
+  color: '#ffffff',
   display: 'flex',
-  height: '100%',
+  fontFamily: FONT,
+  fontSize: 9,
+  fontWeight: 600,
+  height: 16,
   justifyContent: 'center',
-  paddingBottom: 6,
-  width: '100%',
+  minWidth: 16,
+  padding: '0 4px',
+  position: 'absolute',
+  right: -5,
+  top: -5,
 };
 
 // The expanded panel is a horizontal strip of item "cards", each mirroring the

@@ -133,3 +133,4 @@ github-app/
 **/i18n/unused/
 tsup.config.bundled*.mjs
 .playwright-mcp/
+visual-signoff/

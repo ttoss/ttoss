@@ -13,9 +13,12 @@ import {
 
 import { Icon } from '../../components/Icon';
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
-import { FOCUS_RING_INSET, focusRingOutline } from '../../tokens/focusRing';
-import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
-import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import {
+  buildDisclosureContainerStyle,
+  buildDisclosureIndicatorStyle,
+  buildDisclosurePanelBodyStyle,
+  buildDisclosureTriggerStyle,
+} from '../../tokens/disclosureAnatomy';
 import { createCompositeScope } from '../scope';
 
 // ---------------------------------------------------------------------------
@@ -122,20 +125,9 @@ export const Disclosure = ({
         data-scope="disclosure"
         data-part="root"
         data-evaluation={evaluation}
-        style={
-          {
-            boxSizing: 'border-box',
-            display: 'flex',
-            flexDirection: 'column',
-            borderWidth: vars.border.outline.control.width,
-            borderStyle: vars.border.outline.control.style,
-            borderColor:
-              vars.colors.navigation[evaluation]?.border?.default ??
-              'transparent',
-            borderRadius: vars.radii.surface,
-            overflow: 'hidden',
-          } as React.CSSProperties
-        }
+        style={buildDisclosureContainerStyle(
+          vars.colors.navigation[evaluation]?.border?.default
+        )}
       >
         {children}
       </RACDisclosure>
@@ -197,38 +189,17 @@ export const DisclosureTrigger = ({
         data-scope="disclosure"
         data-part="trigger"
         style={({ isHovered, isPressed, isDisabled, isFocusVisible }) => {
-          const flags = {
-            isHovered,
-            isPressed,
-            isDisabled,
-            isFocusVisible,
-            isExpanded,
-          } as const;
-
-          return {
-            boxSizing: 'border-box',
-            width: '100%',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: vars.spacing.gap.inline.sm,
-            minHeight: vars.sizing.hit,
-            paddingBlock: vars.spacing.inset.control.md,
-            paddingInline: vars.spacing.inset.control.md,
-            border: 'none',
-            background: 'none',
-            backgroundColor: resolveInteractiveStyle(c?.background, flags),
-            color: resolveInteractiveStyle(c?.text, flags) ?? c?.text?.default,
-            cursor: isDisabled ? 'not-allowed' : 'pointer',
-            opacity: isDisabled ? vars.opacity.disabled : undefined,
-            ...(vars.text.label.md as React.CSSProperties),
-            textAlign: 'start',
-            transitionProperty: 'background-color, color',
-            transitionDuration: vars.motion.transition.enter.duration,
-            transitionTimingFunction: vars.motion.transition.enter.easing,
-            outline: focusRingOutline(isFocusVisible),
-            outlineOffset: FOCUS_RING_INSET,
-          } as React.CSSProperties;
+          return buildDisclosureTriggerStyle({
+            background: c?.background,
+            text: c?.text,
+            flags: {
+              isHovered,
+              isPressed,
+              isDisabled,
+              isFocusVisible,
+              isExpanded,
+            },
+          });
         }}
       >
         <span data-scope="disclosure" data-part="label" style={{ flex: 1 }}>
@@ -240,19 +211,7 @@ export const DisclosureTrigger = ({
           data-scope="disclosure"
           data-part="indicator"
           aria-hidden
-          style={
-            {
-              ...ICON_SLOT_STYLE,
-              transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
-              transitionProperty: 'transform',
-              transitionDuration: isExpanded
-                ? vars.motion.transition.enter.duration
-                : vars.motion.transition.exit.duration,
-              transitionTimingFunction: isExpanded
-                ? vars.motion.transition.enter.easing
-                : vars.motion.transition.exit.easing,
-            } as React.CSSProperties
-          }
+          style={buildDisclosureIndicatorStyle(isExpanded)}
         >
           <Icon intent="disclosure.collapse" />
         </span>
@@ -303,16 +262,10 @@ export const DisclosurePanel = ({
       style={{ boxSizing: 'border-box' } as React.CSSProperties}
     >
       <div
-        style={
-          {
-            boxSizing: 'border-box',
-            paddingBlock: vars.spacing.inset.control.md,
-            paddingInline: vars.spacing.inset.control.md,
-            backgroundColor: c?.background?.default,
-            color: c?.text?.default,
-            ...(vars.text.body.md as React.CSSProperties),
-          } as React.CSSProperties
-        }
+        style={buildDisclosurePanelBodyStyle({
+          background: c?.background?.default,
+          text: c?.text?.default,
+        })}
       >
         {children}
       </div>

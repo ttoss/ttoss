@@ -7,10 +7,11 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
-import { focusRingOutline } from '../../tokens/focusRing';
 import { ICON_SLOT_STYLE } from '../../tokens/iconSlot';
-import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 import {
+  buildSelectionMarkStyle,
+  buildSelectionOptionRowStyle,
+  resolveSelectionLabelInk,
   SELECTION_BOX_BASE,
   SELECTION_CONTROL,
 } from '../../tokens/selectionControl';
@@ -58,56 +59,9 @@ const BOX_STYLE_STATIC = {
   borderRadius: SELECTION_CONTROL.checkboxRadius,
 } satisfies React.CSSProperties;
 
-/** Box (selectionControl) style — the visual checkbox square. */
-const buildBoxStyle = ({
-  c,
-  isSelected,
-  isIndeterminate,
-  isInvalid,
-  isDisabled,
-  isHovered,
-  isPressed,
-  isFocusVisible,
-}: {
-  c: InputColors;
-  isSelected?: boolean;
-  isIndeterminate?: boolean;
-  isInvalid?: boolean;
-  isDisabled?: boolean;
-  isHovered?: boolean;
-  isPressed?: boolean;
-  isFocusVisible?: boolean;
-}): React.CSSProperties => {
-  const checkedLike = isSelected || isIndeterminate;
-  return {
-    ...BOX_STYLE_STATIC,
-    borderWidth: checkedLike
-      ? vars.border.outline.selected.width
-      : vars.border.outline.control.width,
-    backgroundColor: resolveInteractiveStyle(c?.background, {
-      isDisabled,
-      isInvalid,
-      isSelected,
-      isIndeterminate,
-      isHovered,
-      isPressed,
-    }),
-    borderColor: resolveInteractiveStyle(c?.border, {
-      isDisabled,
-      isInvalid,
-      isSelected,
-      isIndeterminate,
-      isFocusVisible,
-    }),
-    outline: focusRingOutline(isFocusVisible),
-  };
-};
-
 /**
- * The row the box and its copy sit in. Supporting copy turns it into a
- * two-column grid: the box holds its column, the copy stacks in the next one,
- * and `start` alignment keeps the box on the label's first line instead of
- * floating to the middle of a two-line description.
+ * The row the box and its copy sit in — the shared option row, with the
+ * supporting-copy grid switched by `hasSupport`.
  */
 const buildCheckboxRowStyle = ({
   c,
@@ -131,15 +85,7 @@ const buildCheckboxRowStyle = ({
     // read as a caption for whatever shared its grid row — measured in the
     // Studio's settings form, where it sat beside the Save button.
     ...fieldSideColumn(labelPosition, 'control'),
-    boxSizing: 'border-box',
-    display: hasSupport ? 'grid' : 'inline-flex',
-    gridTemplateColumns: hasSupport ? 'auto 1fr' : undefined,
-    alignItems: hasSupport ? 'start' : 'center',
-    gap: vars.spacing.gap.inline.sm,
-    minHeight: vars.sizing.hit,
-    cursor: isDisabled ? 'not-allowed' : 'pointer',
-    opacity: isDisabled ? vars.opacity.disabled : undefined,
-    ...(vars.text.label.md as React.CSSProperties),
+    ...buildSelectionOptionRowStyle({ isDisabled, supportGrid: hasSupport }),
     color: isDisabled ? text?.disabled : text?.default,
   } as React.CSSProperties;
 };
@@ -155,21 +101,6 @@ const resolveIndicatorColor = ({
   return isIndeterminate
     ? (text?.indeterminate ?? text?.checked ?? text?.default)
     : (text?.checked ?? text?.default);
-};
-
-/** Label color — invalid dominates disabled dominates default. */
-const resolveLabelColor = ({
-  text,
-  isInvalid,
-  isDisabled,
-}: {
-  text: InputColors['text'];
-  isInvalid?: boolean;
-  isDisabled?: boolean;
-}): string | undefined => {
-  if (isInvalid) return text?.invalid;
-  if (isDisabled) return text?.disabled;
-  return text?.default;
 };
 
 /**
@@ -355,15 +286,19 @@ export const Checkbox = ({
               data-scope="checkbox"
               data-part="selectionControl"
               aria-hidden
-              style={buildBoxStyle({
-                c,
-                isSelected,
-                isIndeterminate,
-                isInvalid,
-                isDisabled,
-                isHovered,
-                isPressed,
-                isFocusVisible,
+              style={buildSelectionMarkStyle({
+                base: BOX_STYLE_STATIC,
+                colors: c,
+                flags: {
+                  isSelected,
+                  isIndeterminate,
+                  isInvalid,
+                  isDisabled,
+                  isHovered,
+                  isPressed,
+                  isFocusVisible,
+                },
+                selectedBorderWidth: vars.border.outline.selected.width,
               })}
             >
               {/* indicator — checkmark or dash */}
@@ -403,7 +338,11 @@ export const Checkbox = ({
                 errorMessage={errorMessage}
                 isInvalid={isInvalid}
                 isRequired={isRequired}
-                labelColor={resolveLabelColor({ text, isInvalid, isDisabled })}
+                labelColor={resolveSelectionLabelInk({
+                  text,
+                  isInvalid,
+                  isDisabled,
+                })}
               >
                 {children}
               </CheckboxSupportingCopy>
@@ -413,7 +352,11 @@ export const Checkbox = ({
                   data-scope="checkbox"
                   data-part="label"
                   style={{
-                    color: resolveLabelColor({ text, isInvalid, isDisabled }),
+                    color: resolveSelectionLabelInk({
+                      text,
+                      isInvalid,
+                      isDisabled,
+                    }),
                   }}
                 >
                   {children}

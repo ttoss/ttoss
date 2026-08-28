@@ -230,7 +230,6 @@ export const Tab = (props: TabProps) => {
         isFocusVisible,
         isSelected,
       }) => {
-        const selectedColor = colors?.text?.current ?? colors?.text?.default;
         return {
           boxSizing: 'border-box',
           position: 'relative',
@@ -243,13 +242,22 @@ export const Tab = (props: TabProps) => {
           transitionDuration: vars.motion.feedback.duration,
           transitionTimingFunction: vars.motion.feedback.easing,
           transitionProperty: 'color',
-          color: isSelected
-            ? selectedColor
-            : resolveInteractiveStyle(colors?.text, {
-                isHovered,
-                isPressed,
-                isDisabled,
-              }),
+          color:
+            resolveInteractiveStyle(colors?.text, {
+              // The selected tab is the user's present location in the set —
+              // it sources the visible panel — so it reads the `current`
+              // state through the cascade rather than a hand-rolled ternary
+              // (resolveInteractiveStyle's header; Link.tsx precedent).
+              isCurrent: isSelected,
+              // `disabled` outranks `current` in STATE_PRIORITY, but the
+              // selected tab has always kept the `current` ink even when
+              // disabled (reachable via `<Tabs isDisabled>` or a controlled
+              // selectedKey naming a disabled tab) — mask the flag so it
+              // cannot shadow.
+              isDisabled: isDisabled && !isSelected,
+              isHovered,
+              isPressed,
+            }) ?? colors?.text?.default,
           outline: focusRingOutline(isFocusVisible),
           outlineOffset: FOCUS_RING_OFFSET,
         } as React.CSSProperties;

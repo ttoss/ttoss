@@ -109,7 +109,8 @@ describe('GeoVisLayerControl', () => {
       expect(el).not.toBeNull();
       return el as HTMLButtonElement;
     });
-    expect(trigger.textContent).toBe('Camadas');
+    // Icon-only trigger: the label is exposed via aria-label, not text.
+    expect(trigger.getAttribute('aria-label')).toBe('Camadas');
     // Collapsed: no item yet.
     expect(findKitchenButton()).toBeNull();
 
@@ -122,6 +123,36 @@ describe('GeoVisLayerControl', () => {
     // Active by default.
     expect(item!.getAttribute('aria-pressed')).toBe('true');
     expect(item!.disabled).toBe(false);
+  });
+
+  test('renders the trigger with a spec icon when provided', async () => {
+    const spec: VisualizationSpec = {
+      engine: 'maplibre',
+      view: { center: [0, 0], zoom: 1 },
+      sources: [source],
+      layers: [{ id: 'lyr', sourceId: 'src', geometry: 'point' }],
+      control: {
+        id: 'layers',
+        icon: 'lucide:layers',
+        trigger: 'click',
+        items: [{ id: 'a', label: 'A', layers: ['lyr'] }],
+      },
+    };
+    render(
+      <GeoVisProvider spec={spec}>
+        <div />
+      </GeoVisProvider>
+    );
+    await act(async () => {});
+
+    const trigger = await waitFor(() => {
+      const el = document.querySelector('button[aria-expanded]');
+      expect(el).not.toBeNull();
+      return el as HTMLButtonElement;
+    });
+    const icon = trigger.querySelector('[data-testid="iconify-icon"]');
+    expect(icon).not.toBeNull();
+    expect(icon?.getAttribute('icon')).toBe('lucide:layers');
   });
 
   test('renders a per-item thumbnail image when provided, else the default preview', async () => {
@@ -333,7 +364,7 @@ describe('GeoVisLayerControl', () => {
       expect(el).not.toBeNull();
       return el as HTMLButtonElement;
     });
-    expect(trigger.textContent).toBe('Layers');
+    expect(trigger.getAttribute('aria-label')).toBe('Layers');
     // Anchored top-right, pushed off the edges by the default EDGE_GAP.
     const container = trigger.parentElement as HTMLElement;
     expect(container.style.top).toBe('40px');
@@ -348,6 +379,127 @@ describe('GeoVisLayerControl', () => {
       trigger.click();
     });
     expect(findKitchenButton()!.getAttribute('aria-pressed')).toBe('false');
+  });
+
+  test('per-axis `offset` pushes each edge independently, defaulting the omitted axis', async () => {
+    const spec: VisualizationSpec = {
+      engine: 'maplibre',
+      view: { center: [0, 0], zoom: 1 },
+      sources: [source],
+      layers: [{ id: 'cozinhas-pts', sourceId: 'src', geometry: 'point' }],
+      control: {
+        id: 'layers',
+        position: 'bottom-left',
+        trigger: 'click',
+        // Only `x` is set: the control clears a left panel horizontally while
+        // `y` falls back to the default EDGE_GAP on the bottom edge.
+        offset: { x: 320 },
+        items: [
+          { id: 'kitchens', label: 'Kitchens', layers: ['cozinhas-pts'] },
+        ],
+      },
+    };
+    render(
+      <GeoVisProvider spec={spec}>
+        <SpecProbe />
+      </GeoVisProvider>
+    );
+    await act(async () => {});
+
+    const trigger = await waitFor(() => {
+      const el = document.querySelector('button[aria-expanded]');
+      expect(el).not.toBeNull();
+      return el as HTMLButtonElement;
+    });
+    const container = trigger.parentElement as HTMLElement;
+    expect(container.style.left).toBe('320px');
+    expect(container.style.bottom).toBe('40px');
+    // A shifting offset slides the control across instead of teleporting it.
+    expect(container.style.transition).toContain('left 0.25s ease-in-out');
+  });
+
+  test('a numeric `offset` pushes both anchored edges by the same distance', async () => {
+    const spec: VisualizationSpec = {
+      engine: 'maplibre',
+      view: { center: [0, 0], zoom: 1 },
+      sources: [source],
+      layers: [{ id: 'cozinhas-pts', sourceId: 'src', geometry: 'point' }],
+      control: {
+        id: 'layers',
+        position: 'bottom-left',
+        trigger: 'click',
+        offset: 16,
+        items: [
+          { id: 'kitchens', label: 'Kitchens', layers: ['cozinhas-pts'] },
+        ],
+      },
+    };
+    render(
+      <GeoVisProvider spec={spec}>
+        <SpecProbe />
+      </GeoVisProvider>
+    );
+    await act(async () => {});
+
+    const trigger = await waitFor(() => {
+      const el = document.querySelector('button[aria-expanded]');
+      expect(el).not.toBeNull();
+      return el as HTMLButtonElement;
+    });
+    const container = trigger.parentElement as HTMLElement;
+    expect(container.style.left).toBe('16px');
+    expect(container.style.bottom).toBe('16px');
+  });
+
+  test('re-applies a changed `offset` across spec prop updates (open→close→open)', async () => {
+    const make = (offset?: { x?: number; y?: number }): VisualizationSpec => {
+      return {
+        engine: 'maplibre',
+        view: { center: [0, 0], zoom: 1 },
+        sources: [source],
+        layers: [{ id: 'cozinhas-pts', sourceId: 'src', geometry: 'point' }],
+        control: {
+          id: 'layers',
+          position: 'bottom-left',
+          trigger: 'click',
+          ...(offset ? { offset } : {}),
+          items: [
+            { id: 'kitchens', label: 'Kitchens', layers: ['cozinhas-pts'] },
+          ],
+        },
+      };
+    };
+
+    const left = () => {
+      const el = document.querySelector(
+        'button[aria-expanded]'
+      ) as HTMLButtonElement;
+      return (el.parentElement as HTMLElement).style.left;
+    };
+
+    const { rerender } = render(
+      <GeoVisProvider spec={make({ x: 320 })}>
+        <SpecProbe />
+      </GeoVisProvider>
+    );
+    await act(async () => {});
+    expect(left()).toBe('320px');
+
+    rerender(
+      <GeoVisProvider spec={make()}>
+        <SpecProbe />
+      </GeoVisProvider>
+    );
+    await act(async () => {});
+    expect(left()).toBe('40px');
+
+    rerender(
+      <GeoVisProvider spec={make({ x: 320 })}>
+        <SpecProbe />
+      </GeoVisProvider>
+    );
+    await act(async () => {});
+    expect(left()).toBe('320px');
   });
 
   test('highlights an item row on pointer enter and clears it on leave', async () => {

@@ -48,11 +48,11 @@ Data Visualization does **not** govern:
 - chart type selection
 - chart-specific configuration
 - visualization libraries or rendering APIs
-- multi-view composition
+- multi-view or dashboard composition
 - tooltip behavior
 - labeling strategies
 - statistical transformations
-- basemap design systems
+- basemap design or complete cartographic systems
 - map projection, tiling, or generalization logic
 
 These concerns belong to the pattern and implementation layers.
@@ -166,18 +166,6 @@ Instead:
 The geospatial contract is therefore contextual, not a separate visual language.
 
 ---
-
-## What This Category Does Not Do
-
-This category intentionally does not attempt to:
-
-- model every visualization technique
-- encode chart-specific semantics
-- replace chart or map libraries
-- define dashboard composition rules
-- define complete cartographic systems
-
-Its job is to provide a stable semantic layer for recurring analytical meaning.
 
 ## Consumption Model
 

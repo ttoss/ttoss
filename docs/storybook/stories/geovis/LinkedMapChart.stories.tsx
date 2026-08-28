@@ -8,7 +8,7 @@ import linkedMapChartSpec from '../../../../packages/geovis/src/fixtures/linked-
 import { computeBbox, FitBoundsToBbox } from './helpers/map-story-helpers';
 
 export default {
-  title: 'GeoVis/Fixtures/LinkedMapChart',
+  title: 'GeoVis/LinkedMapChart',
   tags: ['autodocs'],
 } as Meta;
 

@@ -470,6 +470,24 @@
                 ]
               }
             }
+          },
+          "transition": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind"],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": ["crossfade"]
+              },
+              "durationMs": {
+                "type": "number"
+              },
+              "easing": {
+                "type": "string",
+                "enum": ["linear", "ease-out", "ease-in-out"]
+              }
+            }
           }
         }
       }
@@ -602,11 +620,25 @@
           "enum": ["top-left", "top-right", "bottom-left", "bottom-right"]
         },
         "offset": {
-          "type": "number",
-          "description": "Distance in pixels from the two anchored map edges. Defaults to 40."
+          "description": "Distance in pixels from the anchored map edges. Defaults to 40. A number applies to both edges; an object offsets each axis independently.",
+          "anyOf": [
+            { "type": "number" },
+            {
+              "type": "object",
+              "properties": {
+                "x": { "type": "number" },
+                "y": { "type": "number" }
+              },
+              "additionalProperties": false
+            }
+          ]
         },
         "label": {
           "type": "string"
+        },
+        "icon": {
+          "type": "string",
+          "description": "Icon for the collapsed trigger button, as a @ttoss/react-icons name (e.g. 'lucide:layers'). When omitted a built-in glyph is used."
         },
         "trigger": {
           "type": "string",
@@ -775,6 +807,18 @@
           "type": "string",
           "description": "Secondary description rendered below the title."
         },
+        "icon": {
+          "type": "string",
+          "description": "Icon rendered in a tinted chip beside the title, as a @ttoss/react-icons name (e.g. 'lucide:tractor')."
+        },
+        "iconColor": {
+          "type": "string",
+          "description": "Accent color for the icon chip. Defaults to the legend's first swatch color."
+        },
+        "footerValue": {
+          "type": "string",
+          "description": "Short value shown at the far right of the legend footer, e.g. a reference year."
+        },
         "labelFormat": {
           "$ref": "#/$defs/LabelFormatSpec"
         },
@@ -785,6 +829,20 @@
           "type": "string",
           "enum": ["top-left", "top-right", "bottom-left", "bottom-right"],
           "description": "Corner position for an absolutely-positioned legend overlay."
+        },
+        "offset": {
+          "description": "Distance in pixels from the anchored map edges (with position). Defaults to 24. A number applies to both edges; an object offsets each axis independently.",
+          "anyOf": [
+            { "type": "number" },
+            {
+              "type": "object",
+              "properties": {
+                "x": { "type": "number" },
+                "y": { "type": "number" }
+              },
+              "additionalProperties": false
+            }
+          ]
         },
         "noDataLabel": {
           "type": "string",

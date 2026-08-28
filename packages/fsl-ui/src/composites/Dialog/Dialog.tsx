@@ -11,8 +11,15 @@ import {
   type ModalOverlayProps as RACModalOverlayProps,
 } from 'react-aria-components';
 
+import { buildActionRowStyle } from '../../components/ActionTrigger/anatomy';
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { fslVar } from '../../tokens/escapeHatch';
+import { buildOccludingSurfaceStyle } from '../../tokens/occludingSurface';
+import {
+  buildScrimStyle,
+  resolveTransitionPhase,
+  surfacePhaseTransition,
+} from '../../tokens/overlayMotion';
 import { createPresenceScope } from '../scope';
 
 // ---------------------------------------------------------------------------
@@ -170,53 +177,28 @@ type InformationalColors =
 // Hosts override via the §7 escape hatches below, not by editing these.
 const DIALOG_MAX_WIDTH_DEFAULT = 'min(500px, 90vw)';
 const DIALOG_MAX_HEIGHT_DEFAULT = '90vh';
+// A floor as well as a ceiling: with only a maximum, a dialog whose body is one
+// short sentence collapses to its content and the action row becomes the widest
+// thing in it — the `ConfirmationDialog` shape exactly. 288px is the
+// reference's own minimum for both its standard and its alert dialog, and it
+// stays inside the 90vw clamp on a 320px viewport (F-046).
+const DIALOG_MIN_WIDTH_DEFAULT = 'min(288px, 90vw)';
 
-/**
- * The active enter/exit motion spec, or `null` when the surface is at rest.
- * Collapses the repeated `transition[isEntering ? 'enter' : 'exit']` lookups
- * into a single resolution the style builders read from.
- */
-const resolveTransitionPhase = ({
-  isEntering,
-  isExiting,
-}: {
-  isEntering?: boolean;
-  isExiting?: boolean;
-}): { duration: string; easing: string } | null => {
-  if (isEntering) return vars.motion.transition.enter;
-  if (isExiting) return vars.motion.transition.exit;
-  return null;
-};
-
-/** Scrim backdrop style — dims + centers, fades on enter/exit. */
-const buildBackdropStyle = ({
-  isEntering,
-  isExiting,
-}: {
-  isEntering?: boolean;
-  isExiting?: boolean;
-}): React.CSSProperties => {
-  const phase = resolveTransitionPhase({ isEntering, isExiting });
-  return {
-    position: 'fixed',
-    inset: 0,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: vars.zIndex.layer.blocking,
-    backgroundColor: vars.overlay.scrim,
-    transition: phase ? `opacity ${phase.duration} ${phase.easing}` : undefined,
-    opacity: isExiting ? 0 : 1,
-  };
+/** A dialog's scrim centres the surface on both axes. */
+const DIALOG_SURFACE_PLACEMENT: React.CSSProperties = {
+  alignItems: 'center',
+  justifyContent: 'center',
 };
 
 /** Modal surface style — the blocking card; scales + fades on enter/exit. */
 const buildModalSurfaceStyle = ({
   colors,
+  evaluation,
   isEntering,
   isExiting,
 }: {
   colors: InformationalColors;
+  evaluation: EvaluationsFor<'Overlay'>;
   isEntering?: boolean;
   isExiting?: boolean;
 }): React.CSSProperties => {
@@ -225,19 +207,19 @@ const buildModalSurfaceStyle = ({
   return {
     boxSizing: 'border-box',
     // Host knobs (CONTRACT.md §7): override via CSS on [data-scope="dialog"].
+    minWidth: fslVar('--fsl-dialog-min-width', DIALOG_MIN_WIDTH_DEFAULT),
     maxWidth: fslVar('--fsl-dialog-max-width', DIALOG_MAX_WIDTH_DEFAULT),
     maxHeight: fslVar('--fsl-dialog-max-height', DIALOG_MAX_HEIGHT_DEFAULT),
     overflow: 'auto',
-    borderRadius: vars.radii.surface,
-    borderWidth: vars.border.outline.surface.width,
-    borderStyle: vars.border.outline.surface.style,
-    borderColor: colors?.border?.default,
-    boxShadow: vars.elevation.surface.overlay,
-    backgroundColor: colors?.background?.default,
-    outline: 'none',
-    transition: phase
-      ? `transform ${phase.duration} ${phase.easing}, opacity ${phase.duration} ${phase.easing}`
-      : undefined,
+    // Occluding chrome (CONTRACT §3.5/§3.4): boundary, published voiced
+    // fill, overlay elevation — one builder across the six occluders.
+    ...buildOccludingSurfaceStyle({
+      evaluation,
+      colors,
+      elevation: 'overlay',
+      fill: 'voiced',
+    }),
+    transition: surfacePhaseTransition(phase),
     transform: inTransition ? 'scale(0.95)' : 'scale(1)',
     opacity: inTransition ? 0 : 1,
   };
@@ -289,7 +271,11 @@ export const DialogModal = ({
       data-scope="dialog"
       data-part="backdrop"
       style={({ isEntering, isExiting }) => {
-        return buildBackdropStyle({ isEntering, isExiting });
+        return buildScrimStyle({
+          isEntering,
+          isExiting,
+          surfacePlacement: DIALOG_SURFACE_PLACEMENT,
+        });
       }}
     >
       <RACModal
@@ -297,7 +283,12 @@ export const DialogModal = ({
         data-part="surface"
         data-evaluation={evaluation}
         style={({ isEntering, isExiting }) => {
-          return buildModalSurfaceStyle({ colors, isEntering, isExiting });
+          return buildModalSurfaceStyle({
+            colors,
+            evaluation,
+            isEntering,
+            isExiting,
+          });
         }}
       >
         {children}
@@ -528,12 +519,13 @@ export const DialogActions = ({
       data-scope="dialog"
       data-part="actions"
       data-platform={platform}
-      style={{
-        display: 'flex',
-        justifyContent: 'flex-end',
-        gap: vars.spacing.gap.inline.md,
-        marginBlockStart: vars.spacing.gap.stack.lg,
-      }}
+      // `usesFlexDefaults` keeps this row's historical shape (cross axis at
+      // the flex default, not centred) — see the builder's doc for why that
+      // divergence is preserved rather than converged here.
+      style={buildActionRowStyle({
+        topGap: vars.spacing.gap.stack.lg,
+        usesFlexDefaults: true,
+      })}
     >
       {sorted}
     </div>

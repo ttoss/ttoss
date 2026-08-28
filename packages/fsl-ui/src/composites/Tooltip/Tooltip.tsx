@@ -9,6 +9,7 @@ import {
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { fslVar } from '../../tokens/escapeHatch';
+import { buildOccludingSurfaceStyle } from '../../tokens/occludingSurface';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -21,7 +22,14 @@ import { fslVar } from '../../tokens/escapeHatch';
 // ---------------------------------------------------------------------------
 
 // Layout constant (CONTRIBUTING §4). Host-overridable via the A6 knob.
-const TOOLTIP_MAX_WIDTH_DEFAULT = 'min(280px, 90vw)';
+//
+// The reference caps a tooltip at 160px on the desktop and 200px on mobile —
+// a hint is a phrase, and a wider box invites the paragraph a tooltip cannot
+// carry (it is not focusable and vanishes on blur). 200px rather than 160px
+// because our label type is a step larger than the reference's, so the same
+// phrase needs the wider of their two values to hold the same line count
+// (F-047).
+const TOOLTIP_MAX_WIDTH_DEFAULT = 'min(200px, 90vw)';
 // Gap between the trigger and the tooltip surface.
 const TOOLTIP_OFFSET_DEFAULT = 6;
 
@@ -87,15 +95,26 @@ export const Tooltip = ({
             '--fsl-tooltip-max-width',
             TOOLTIP_MAX_WIDTH_DEFAULT
           ),
-          borderRadius: vars.radii.surface,
-          borderWidth: vars.border.outline.surface.width,
-          borderStyle: vars.border.outline.surface.style,
-          borderColor: colors?.border?.default,
-          backgroundColor: colors?.background?.default,
+          // Occluding chrome (CONTRACT §3.5). `plain`, not `voiced`: the
+          // Tooltip is the one occluder whose primary voice does not publish
+          // `--fsl-surface` — see the builder's constraint note (owner ruling
+          // pending; a tooltip hosts nothing today).
+          ...buildOccludingSurfaceStyle({
+            colors,
+            elevation: 'overlay',
+            fill: 'plain',
+          }),
+          // A tooltip is never a focus target and declared no `outline`
+          // before the shared chrome existed — `undefined` keeps the rendered
+          // attribute byte-identical (React skips undefined style keys).
+          outline: undefined,
           color: colors?.text?.default,
-          boxShadow: vars.elevation.surface.overlay,
-          paddingBlock: vars.spacing.inset.surface.sm,
-          paddingInline: vars.spacing.inset.surface.md,
+          // A hint frames one line of text, so it takes the anchored step on
+          // both axes — uniform, which is the shape the reference gives every
+          // anchored surface (`popover-padding` is one value, not a pair).
+          // Overlay's §1 row is `inset.surface`, so the inline axis stays in
+          // that scale rather than borrowing the control one (F-045).
+          padding: vars.spacing.inset.surface.xs,
           ...(vars.text.label.md as React.CSSProperties),
           transitionProperty: 'opacity',
           transitionDuration: vars.motion.transition.enter.duration,

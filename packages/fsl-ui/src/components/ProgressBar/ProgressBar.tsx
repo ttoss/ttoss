@@ -7,6 +7,12 @@ import {
 
 import type { ComponentMeta, EvaluationsFor } from '../../semantics';
 import { ANIMATION_NAMES, ensureKeyframes } from '../../tokens/keyframes';
+import {
+  buildRailFillStyle,
+  buildRailLabelRowStyle,
+  buildRailTrackStyle,
+  RAIL_ROOT_STYLE,
+} from '../../tokens/rail';
 
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
@@ -38,28 +44,12 @@ type FeedbackColors = (typeof vars.colors.feedback)[EvaluationsFor<'Feedback'>];
 // enough to read as "working", fast enough to read as "alive").
 const INDETERMINATE_FILL_WIDTH = '40%';
 const INDETERMINATE_CYCLE_DURATION = '1.2s';
-// Track thickness: a thin rail is the reference-grade activity silhouette
-// (P3 slice 3 review measured 6px in Spectrum 2); the label row above the
-// bar, not the rail, carries the reading size.
-const TRACK_THICKNESS = '6px';
-
-/** Track (body) style — the neutral rail the fill animates across. Reads the
- * `muted` evaluation (the Feedback entity's quiet surface) so the rail stays
- * neutral while the selected evaluation drives the fill. */
-const buildTrackStyle = (): React.CSSProperties => {
-  return {
-    position: 'relative',
-    overflow: 'hidden',
-    width: '100%',
-    height: TRACK_THICKNESS,
-    backgroundColor: vars.colors.feedback.muted.border?.default,
-    borderRadius: vars.radii.round,
-  };
-};
 
 /** Fill (content) style — width tracks percentage; indeterminate animates.
  * The fill is the evaluation's filled surface (`background.default`) — deep
- * valence fills and the informative `accent` brand fill. */
+ * valence fills and the informative `accent` brand fill. Envelope from the
+ * shared rail (`buildRailFillStyle`); only the value geometry and the sweep
+ * are this component's. */
 const buildFillStyle = ({
   c,
   percentage,
@@ -69,18 +59,13 @@ const buildFillStyle = ({
   percentage?: number | null;
   isIndeterminate?: boolean;
 }): React.CSSProperties => {
-  return {
-    height: '100%',
+  return buildRailFillStyle({
     width: isIndeterminate ? INDETERMINATE_FILL_WIDTH : `${percentage ?? 0}%`,
-    backgroundColor: c?.background?.default,
-    borderRadius: 'inherit',
-    transitionProperty: 'width',
-    transitionDuration: vars.motion.transition.enter.duration,
-    transitionTimingFunction: vars.motion.transition.enter.easing,
+    color: c?.background?.default,
     animation: isIndeterminate
       ? `${ANIMATION_NAMES.progressBarIndeterminate} ${INDETERMINATE_CYCLE_DURATION} linear infinite`
       : undefined,
-  };
+  });
 };
 
 // ---------------------------------------------------------------------------
@@ -145,14 +130,7 @@ export const ProgressBar = ({
       data-scope="progress-bar"
       data-part="root"
       data-evaluation={evaluation}
-      style={
-        {
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: vars.spacing.gap.stack.xs,
-        } as React.CSSProperties
-      }
+      style={RAIL_ROOT_STYLE}
     >
       {({ percentage, valueText, isIndeterminate }) => {
         return (
@@ -161,18 +139,12 @@ export const ProgressBar = ({
               <div
                 data-scope="progress-bar"
                 data-part="labelRow"
-                style={
-                  {
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'baseline',
-                    // The label row sits on the page surface, not on the
-                    // fill — filled evaluations carry neutral.0 text that
-                    // would vanish here; the entity's quiet text is correct.
-                    color: vars.colors.feedback.muted.text?.default,
-                    ...(vars.text.label.md as React.CSSProperties),
-                  } as React.CSSProperties
-                }
+                style={buildRailLabelRowStyle({
+                  // The label row sits on the page surface, not on the
+                  // fill — filled evaluations carry neutral.0 text that
+                  // would vanish here; the entity's quiet text is correct.
+                  ink: vars.colors.feedback.muted.text?.default,
+                })}
               >
                 <span data-scope="progress-bar" data-part="title">
                   {label}
@@ -193,7 +165,7 @@ export const ProgressBar = ({
             <div
               data-scope="progress-bar"
               data-part="body"
-              style={buildTrackStyle()}
+              style={buildRailTrackStyle()}
             >
               {/* Fill */}
               <div

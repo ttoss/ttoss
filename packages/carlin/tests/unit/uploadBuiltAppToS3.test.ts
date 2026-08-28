@@ -36,6 +36,7 @@ describe('uploadBuiltAppToS3', () => {
       expect(s3.uploadDirectoryToS3).toHaveBeenCalledWith({
         bucket: mockBucket,
         directory: mockDirectory,
+        uploadSourceMaps: undefined,
       });
     });
 
@@ -56,6 +57,7 @@ describe('uploadBuiltAppToS3', () => {
       expect(s3.uploadDirectoryToS3).toHaveBeenCalledWith({
         bucket: mockBucket,
         directory: mockDirectory,
+        uploadSourceMaps: undefined,
       });
     });
   });
@@ -82,6 +84,7 @@ describe('uploadBuiltAppToS3', () => {
       expect(s3.uploadDirectoryToS3).toHaveBeenCalledWith({
         bucket: mockBucket,
         directory: mockDefaultDirectory,
+        uploadSourceMaps: undefined,
       });
       expect(s3.copyRoot404To404Index).toHaveBeenCalledWith({
         bucket: mockBucket,
@@ -101,5 +104,59 @@ describe('uploadBuiltAppToS3', () => {
 
       expect(findDefaultBuildFolder.findDefaultBuildFolder).toHaveBeenCalled();
     });
+  });
+
+  /**
+   * Both branches invoke uploadDirectoryToS3 separately, so forwarding the
+   * option through only one of them would leave source maps published on some
+   * deploys and not others.
+   */
+  describe('uploadSourceMaps forwarding', () => {
+    test.each([true, false])(
+      'should forward uploadSourceMaps=%s when buildFolder is provided',
+      async (uploadSourceMaps) => {
+        jest
+          .spyOn(s3, 'getAllFilesInsideADirectory')
+          .mockResolvedValue(['file1.js']);
+        jest.spyOn(s3, 'deleteOldS3Files').mockResolvedValue(0);
+        jest.spyOn(s3, 'uploadDirectoryToS3').mockResolvedValue();
+
+        await uploadBuiltAppToS3({
+          buildFolder: mockDirectory,
+          bucket: mockBucket,
+          uploadSourceMaps,
+        });
+
+        expect(s3.uploadDirectoryToS3).toHaveBeenCalledWith({
+          bucket: mockBucket,
+          directory: mockDirectory,
+          uploadSourceMaps,
+        });
+      }
+    );
+
+    test.each([true, false])(
+      'should forward uploadSourceMaps=%s when using the default build folder',
+      async (uploadSourceMaps) => {
+        const mockDefaultDirectory = '/default/build';
+        jest
+          .spyOn(findDefaultBuildFolder, 'findDefaultBuildFolder')
+          .mockResolvedValue(mockDefaultDirectory);
+        jest.spyOn(s3, 'deleteOldS3Files').mockResolvedValue(0);
+        jest.spyOn(s3, 'uploadDirectoryToS3').mockResolvedValue();
+        jest.spyOn(s3, 'copyRoot404To404Index').mockResolvedValue();
+
+        await uploadBuiltAppToS3({
+          bucket: mockBucket,
+          uploadSourceMaps,
+        });
+
+        expect(s3.uploadDirectoryToS3).toHaveBeenCalledWith({
+          bucket: mockBucket,
+          directory: mockDefaultDirectory,
+          uploadSourceMaps,
+        });
+      }
+    );
   });
 });

@@ -34,7 +34,7 @@ describe('Tooltip', () => {
       </TooltipTrigger>
     );
     expect(getSurface()?.style.maxWidth).toBe(
-      'var(--fsl-tooltip-max-width, min(280px, 90vw))'
+      'var(--fsl-tooltip-max-width, min(200px, 90vw))'
     );
   });
 });

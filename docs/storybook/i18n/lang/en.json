@@ -92,6 +92,11 @@
     "defaultMessage": "This view feature is not supported.",
     "description": "Warnings panel: a view-level feature is not implemented by the engine adapter."
   },
+  "/iua3l": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Scroll groups forward",
+    "description": "Accessible label for the arrow that scrolls the grouped-menu carousel to later groups."
+  },
   "0tNse0": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Dismiss selection",
@@ -111,6 +116,11 @@
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Details",
     "description": "Default title shown in the right sidebar when none is set."
+  },
+  "3Jc+Ry": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Scroll groups backward",
+    "description": "Accessible label for the arrow that scrolls the grouped-menu carousel to earlier groups."
   },
   "4Kaze0": {
     "module": "@ttoss/geovis-workspace",
@@ -152,6 +162,11 @@
     "defaultMessage": "This data feature is not supported.",
     "description": "Warnings panel: a data-level feature is not implemented by the engine adapter."
   },
+  "NNlALX": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Pause",
+    "description": "Label for the timeline button that stops the auto-advancing value in the preview sidebar."
+  },
   "Ng1Mep": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "This map engine is not supported.",
@@ -171,6 +186,11 @@
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Legend thresholds must be in ascending order.",
     "description": "Warnings panel: colorBy.thresholds are not sorted."
+  },
+  "U20GSl": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Play",
+    "description": "Label for the timeline button that auto-advances the current value in the preview sidebar."
   },
   "V3z2n/": {
     "module": "@ttoss/geovis-workspace",

@@ -37,6 +37,16 @@ jest.mock('src/deploy/cloudformation', () => {
   };
 });
 
+/**
+ * Parsing runs the matched command's handler, so the static-app deploy is
+ * stubbed out — these tests are about option parsing, not deployment.
+ */
+jest.mock('src/deploy/staticApp/deployStaticApp', () => {
+  return {
+    deployStaticApp: jest.fn(),
+  };
+});
+
 jest.mock('deepmerge', () => {
   return {
     all: jest.fn(),
@@ -373,4 +383,66 @@ describe('lambda-runtime option', () => {
       expect(argv.lambdaRuntime).toEqual(runtime);
     }
   );
+});
+
+describe('upload-source-maps option', () => {
+  test('should exclude source maps by default', async () => {
+    const argv = await parseCli('deploy static-app', {});
+    expect(argv.uploadSourceMaps).toEqual(false);
+  });
+
+  test('should accept upload-source-maps option', async () => {
+    const argv = await parseCli('deploy static-app', {
+      uploadSourceMaps: true,
+    });
+    expect(argv.uploadSourceMaps).toEqual(true);
+  });
+});
+
+describe('response headers options', () => {
+  test('should not define response headers by default', async () => {
+    const argv = await parseCli('deploy static-app', {});
+    expect(argv.responseHeaders).toEqual([]);
+    expect(argv.responseHeadersPolicy).toBeUndefined();
+  });
+
+  test('should accept response-headers option', async () => {
+    const argv = await parseCli(
+      'deploy static-app --cloudfront --response-headers.x-custom=some-value',
+      {}
+    );
+
+    expect(argv.responseHeaders).toEqual([
+      { header: 'x-custom', override: true, value: 'some-value' },
+    ]);
+  });
+
+  test('should accept response-headers-policy option', async () => {
+    const responseHeadersPolicy = '67f7725c-6f97-4210-82d7-5512b31e9d03';
+
+    const argv = await parseCli(
+      `deploy static-app --cloudfront --response-headers-policy=${responseHeadersPolicy}`,
+      {}
+    );
+
+    expect(argv.responseHeadersPolicy).toEqual(responseHeadersPolicy);
+  });
+});
+
+describe('viewer request function option', () => {
+  test('should not define a viewer request function by default', async () => {
+    const argv = await parseCli('deploy static-app', {});
+    expect(argv.viewerRequestFunctionCode).toBeUndefined();
+  });
+
+  test('should accept viewer-request-function-code option', async () => {
+    const viewerRequestFunctionCode = './cloudfront/viewerRequest.js';
+
+    const argv = await parseCli(
+      `deploy static-app --cloudfront --viewer-request-function-code=${viewerRequestFunctionCode}`,
+      {}
+    );
+
+    expect(argv.viewerRequestFunctionCode).toEqual(viewerRequestFunctionCode);
+  });
 });

@@ -23,7 +23,7 @@ const buildRepairButtonSpecs = (
 ): RepairButtonSpec[] => {
   if (!repair) return [];
 
-  return repair.flatMap((option, optionIndex) => {
+  return repair.flatMap<RepairButtonSpec>((option, optionIndex) => {
     if (option.kind === 'allowed-values') {
       return option.values.map((value) => {
         return {

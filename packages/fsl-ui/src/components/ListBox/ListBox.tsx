@@ -8,9 +8,13 @@ import {
 } from 'react-aria-components';
 
 import type { ComponentMeta } from '../../semantics';
-import { buildChoosableRowStyle } from '../../tokens/choosableRow';
-import { focusRingOutline } from '../../tokens/focusRing';
+import { buildChoosableRowInteractiveStyle } from '../../tokens/choosableRow';
+import {
+  buildCollectionContainerStyle,
+  resolveCollectionRowBackground,
+} from '../../tokens/collectionRow';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
+import { publishSurface } from '../../tokens/surfaceScope';
 
 // ---------------------------------------------------------------------------
 // Semantic identities — Layer 1 (per-part entity split, ADR-007)
@@ -71,25 +75,12 @@ export const ListBox = <T extends object = object>({
   children,
   ...props
 }: ListBoxProps<T>) => {
-  const surface = vars.colors.informational.primary;
-
   return (
     <RACListBox
       {...props}
       data-scope="list-box"
       data-part="root"
-      style={{
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: vars.spacing.gap.stack.xs,
-        padding: vars.spacing.inset.surface.sm,
-        borderRadius: vars.radii.surface,
-        borderWidth: vars.border.outline.surface.width,
-        borderStyle: vars.border.outline.surface.style,
-        borderColor: surface?.border?.default ?? 'transparent',
-        backgroundColor: surface?.background?.default,
-      }}
+      style={buildCollectionContainerStyle()}
     >
       {children}
     </RACListBox>
@@ -112,6 +103,8 @@ export type ListBoxItemProps = Omit<RACListBoxItemProps, 'style' | 'className'>;
  */
 export const ListBoxItem = ({ children, ...props }: ListBoxItemProps) => {
   const c = vars.colors.input.primary;
+  const containerBackground =
+    vars.colors.informational.primary.background?.default;
 
   return (
     <RACListBoxItem
@@ -126,25 +119,30 @@ export const ListBoxItem = ({ children, ...props }: ListBoxItemProps) => {
         isSelected,
       }) => {
         return {
-          ...buildChoosableRowStyle(),
-          cursor: isDisabled ? 'not-allowed' : 'pointer',
-          opacity: isDisabled ? vars.opacity.disabled : undefined,
-          backgroundColor: resolveInteractiveStyle(c?.background, {
+          // The option paints its resolved fill and publishes its *resting*
+          // one — transient states and the selection voice do not republish
+          // (§3.4, see Table's row). Spread order: the dynamic paint wins.
+          // The resting fill borrows the container's own colour, not
+          // `input.primary`'s (F-055, `resolveCollectionRowBackground`) —
+          // the dark alternate remaps the entity's own default to a
+          // filled-box value that only coincides with the container in light.
+          ...publishSurface(containerBackground),
+          ...buildChoosableRowInteractiveStyle({
             isDisabled,
-            isSelected,
-            isHovered,
-            isPressed,
+            isFocusVisible,
+            opacity: isDisabled ? vars.opacity.disabled : undefined,
+            backgroundColor: resolveCollectionRowBackground({
+              itemBackground: c?.background,
+              containerBackground,
+              flags: { isDisabled, isSelected, isHovered, isPressed },
+            }),
+            color:
+              resolveInteractiveStyle(c?.text, {
+                isDisabled,
+                isSelected,
+                isHovered,
+              }) ?? c?.text?.default,
           }),
-          color:
-            resolveInteractiveStyle(c?.text, {
-              isDisabled,
-              isSelected,
-              isHovered,
-            }) ?? c?.text?.default,
-          outline: focusRingOutline(isFocusVisible),
-          transitionProperty: 'background-color, color',
-          transitionDuration: vars.motion.feedback.duration,
-          transitionTimingFunction: vars.motion.feedback.easing,
         } as React.CSSProperties;
       }}
     >

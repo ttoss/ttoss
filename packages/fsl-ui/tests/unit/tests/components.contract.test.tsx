@@ -36,7 +36,7 @@ import {
 } from 'src/semantics/taxonomy';
 import { CHOOSABLE_ROW } from 'src/tokens/choosableRow';
 import { FOCUS_RING_OFFSET } from 'src/tokens/focusRing';
-import { ENTITY_TOKEN_MAPPING } from 'src/tokens/projection';
+import { ENTITY_TOKEN_MAPPING, TYPE_FAMILIES } from 'src/tokens/projection';
 import { SELECTION_CONTROL } from 'src/tokens/selectionControl';
 
 import { DOM_FIXTURES } from './domFixtures';
@@ -588,6 +588,56 @@ describe('contract: entity → ux-context alignment', () => {
 });
 
 // ---------------------------------------------------------------------------
+// 4c. The consequence ink is read in exactly one module, with its bounds
+//
+// CONTRACT.md §3.3: a part that paints no surface borrows the stratum's ink,
+// and when it carries a valence `consequence` selects it. The ink is the
+// cross-cutting `vars.consequence.destructive.ink` (model.md §6) — a lawful
+// read like the focus ring's colour — but unlike the ring it is conditional
+// (one rung, a yield set), so the read is confined to `consequenceInk.ts`
+// where those bounds live, and components route through it.
+// ---------------------------------------------------------------------------
+
+describe('contract: consequence ink (§3.3)', () => {
+  const CONSEQUENCE_INK = resolve(
+    __dirname,
+    '../../../src/tokens/consequenceInk.ts'
+  );
+  const helperSource = readFileSync(CONSEQUENCE_INK, 'utf8');
+
+  test('the helper is the module that reads the destructive ink', () => {
+    expect(stripComments(helperSource)).toContain(
+      'vars.consequence.destructive.ink'
+    );
+  });
+
+  test.each(componentSources)(
+    '%s: does not read the ink outside the helper',
+    (_path, source) => {
+      const stripped = stripComments(source);
+      // Reading the token directly skips the bounds (which rung, which
+      // states) that make it legible — the helper is where they live.
+      expect(stripped).not.toContain('vars.consequence');
+      // And reaching for another family's negative ink is the F-029 shape
+      // reappearing; no component reads it for any purpose.
+      expect(stripped).not.toContain('vars.colors.informational.negative');
+    }
+  );
+
+  test.each(componentSources)(
+    '%s: an Action that declares a consequence resolves its ink through the helper',
+    (_path, source) => {
+      const stripped = stripComments(source);
+      const declaresConsequence = stripped.includes('data-consequence={');
+      const paintsAction = stripped.includes('vars.colors.action');
+      if (!declaresConsequence || !paintsAction) return;
+
+      expect(stripped).toContain('resolveConsequenceInk(');
+    }
+  );
+});
+
+// ---------------------------------------------------------------------------
 // 5. toCssVarName prefix convention
 // ---------------------------------------------------------------------------
 
@@ -670,6 +720,61 @@ describe('contract: glyph hosts centre their glyph (ICON_SLOT_STYLE)', () => {
         expect(host.style.display).toMatch(/flex$/);
         expect(host.style.alignItems).toBe('center');
         expect(host.style.justifyContent).toBe('center');
+      }
+    }
+  );
+});
+
+// ---------------------------------------------------------------------------
+// Invariant #16: an entity that can name a title over a body can type it
+//
+// `ENTITY_STRUCTURE` says which parts an entity may declare; the §1 typography
+// column says which `vars.text.*` families it may set type from. When an entity
+// declares BOTH `title` and `body`, those two parts are siblings in a hierarchy
+// — the title has to outrank the body — and the column has to be able to say so.
+//
+// It cannot say so with `label.*`. Every step of that family is weight 400, and
+// the largest (`label.lg`) merely *ties* `body.md` rather than exceeding it. So
+// an entity with both roles and no `title` family produces an inverted heading
+// by construction, not by a component's mistake: a 14–16px/400 caption above a
+// 16–18px/400 paragraph.
+//
+// That is exactly what shipped. `Feedback` declared `title` and `body` as legal
+// parts while its typography column read `body, label`, so `Toast` typed its
+// title from `label.md` and `InlineAlert` copied it — measured in Chromium at
+// 1280px: title 16px/400 over body 18px/400 (F-064). `Dialog` never had the
+// defect because `Overlay` carries `title`.
+//
+// The colour column has been audited from the start and has been corrected many
+// times; typography lived only in the prose table, and its one contradiction
+// survived two components. This invariant is the column earning the same
+// treatment — it constrains the projection against the taxonomy, so the next
+// entity that gains a `title` part gets the question asked for it.
+// ---------------------------------------------------------------------------
+
+describe('contract: a title over a body can be typed (#16)', () => {
+  const entitiesWithBoth = ENTITIES.filter((entity) => {
+    const roles: ReadonlyArray<string> = ENTITY_STRUCTURE[entity];
+    return roles.includes('title') && roles.includes('body');
+  });
+
+  test('the rule has subjects — a vacuous invariant guards nothing', () => {
+    expect(entitiesWithBoth.length).toBeGreaterThan(0);
+  });
+
+  test.each(entitiesWithBoth)(
+    '%s declares title + body, so its typography column carries `title`',
+    (entity) => {
+      const { typography } = ENTITY_TOKEN_MAPPING[entity];
+      expect(typography).toContain('title');
+    }
+  );
+
+  test.each(ENTITIES)(
+    '%s: every typography family it claims is registered',
+    (entity) => {
+      for (const family of ENTITY_TOKEN_MAPPING[entity].typography) {
+        expect(TYPE_FAMILIES).toContain(family);
       }
     }
   );

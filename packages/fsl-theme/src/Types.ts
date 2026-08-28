@@ -10,7 +10,9 @@
  *
  * Structure (post-decomposition):
  *   - Per-family types live in `./families/<family>.ts` (one file per token
- *     family, mirroring `docs/.../design-tokens/families/*.md`).
+ *     family, mirroring `docs/.../design-tokens/families/*.md` — except the
+ *     cross-cutting families (model.md §6), documented inside the pages of
+ *     the families they compose with rather than on pages of their own).
  *   - This file is the assembler: it re-exports the primitives and family
  *     types, and defines the top-level `ThemeTokens`, `ThemeBundle`,
  *     `ModeOverride`, and `SemanticTokens` contracts that consumers depend on.
@@ -64,15 +66,18 @@ import type {
   DeepPartial,
   SemanticBorder,
   SemanticColors,
+  SemanticConsequence,
   SemanticElevation,
   SemanticFocus,
   SemanticMotion,
   SemanticOpacity,
   SemanticOverlay,
   SemanticRadii,
+  SemanticRail,
   SemanticSizing,
   SemanticSpacing,
   SemanticText,
+  SemanticValence,
   SemanticZIndex,
 } from './families';
 
@@ -133,6 +138,23 @@ export interface ThemeTokens {
     border: SemanticBorder;
     focus: SemanticFocus;
     overlay: SemanticOverlay;
+    /**
+     * Cross-cutting valence ink for parts that paint no surface (model.md §6).
+     * Sibling of `focus` and `overlay`.  families/consequence.ts
+     */
+    consequence: SemanticConsequence;
+    /**
+     * Cross-cutting valence ink for a part that *reports* an outcome while
+     * painting no surface (model.md §6). Sibling of
+     * `focus`/`overlay`/`consequence`; distinct from `consequence` per FSL
+     * Lexicon §10.5 (`negative` ≠ `destructive`).  families/valence.ts
+     */
+    valence: SemanticValence;
+    /**
+     * Cross-cutting fill for the unfilled part of a track (model.md §6).
+     * Sibling of `focus`/`overlay`/`consequence`.  families/rail.ts
+     */
+    rail: SemanticRail;
     opacity: SemanticOpacity;
     motion: SemanticMotion;
     zIndex: SemanticZIndex;

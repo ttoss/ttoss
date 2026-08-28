@@ -289,17 +289,6 @@ export const hasLegendContent = (
 };
 
 /**
- * Any legend past the first slot in its position group gets a top divider —
- * `GeoVisLegendBody` only reaches this check once `hasLegendContent` already
- * confirmed it has something to render, so no separate content check needed.
- */
-export const shouldShowTopDivider = (
-  isFirstInPositionGroup: boolean
-): boolean => {
-  return !isFirstInPositionGroup;
-};
-
-/**
  * Ids of every legend (top-level or per-layer) declaring the given
  * `position`, in declaration order. Used to stack same-position legends in
  * one overlay and to know which member is first (no leading divider).
@@ -347,18 +336,59 @@ export const groupLegendIdsByPosition = (
   return groups;
 };
 
+const CARD_CHROME: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  width: 276,
+  backgroundColor: '#ffffff',
+  borderRadius: 14,
+  boxShadow: '0 4px 24px rgba(0,0,0,0.11)',
+  border: '1px solid rgba(0,0,0,0.07)',
+  overflow: 'hidden',
+};
+
+/**
+ * Absolute-positioning style for a positioned legend, anchored to the corner
+ * named by `position`. `offset` (when set) overrides the default edge gap — a
+ * number applies to both edges; `{ x, y }` offsets each axis independently — so
+ * a caller can push the legend clear of a side panel horizontally. The anchored
+ * distance animates so a shifting offset slides the legend across. Returns just
+ * the card chrome (no positioning) when no `position` is set.
+ */
+/**
+ * The per-edge offset overrides for a positioned legend: applies `offset` to
+ * the anchored horizontal/vertical edges named by `position`. A number applies
+ * to both axes; `{ x, y }` offsets each independently. Omits an axis whose
+ * offset is unset so the default edge gap stands.
+ */
+const resolveOffsetEdges = (
+  position: LegendPosition,
+  offset?: number | { x?: number; y?: number }
+): React.CSSProperties => {
+  const isTop = position.startsWith('top');
+  const isRight = position.endsWith('right');
+  const x = typeof offset === 'number' ? offset : offset?.x;
+  const y = typeof offset === 'number' ? offset : offset?.y;
+
+  return {
+    ...(x == null ? {} : { [isRight ? 'right' : 'left']: x }),
+    ...(y == null ? {} : { [isTop ? 'top' : 'bottom']: y }),
+  };
+};
+
 export const buildContainerStyle = (
-  position: LegendPosition | undefined
+  position: LegendPosition | undefined,
+  offset?: number | { x?: number; y?: number }
 ): React.CSSProperties => {
   const positionStyle = resolvePositionStyle(position);
-  if (!positionStyle) return {};
+  if (!positionStyle || !position) return { ...CARD_CHROME };
+
   return {
     ...positionStyle,
-    backgroundColor: 'rgba(255,255,255,0.95)',
-    borderRadius: 6,
-    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-    padding: '8px 12px',
-    width: '16rem',
+    ...resolveOffsetEdges(position, offset),
+    transition:
+      'top 0.25s ease-in-out, bottom 0.25s ease-in-out, left 0.25s ease-in-out, right 0.25s ease-in-out',
+    ...CARD_CHROME,
   };
 };
 
@@ -371,17 +401,52 @@ export const buildReferenceContent = (
   return null;
 };
 
-export const BORDER_COLOR = '#d1d5db';
-export const MUTED_COLOR = '#6b7280';
+/* Prototype-aligned legend styling tokens. */
+export const SECTION_DIVIDER = 'rgba(0,0,0,0.06)';
+export const BORDER_COLOR = 'rgba(0,0,0,0.06)';
+export const MUTED_COLOR = '#6b7a90';
+export const TITLE_COLOR = '#1a2235';
+export const DESCRIPTION_COLOR = '#5d6b7e';
+
+/** Barlow Condensed heading stack used for the legend title. */
+export const FONT_HEAD = "'Barlow Condensed', sans-serif";
+/** JetBrains Mono stack used for the swatch labels and footer value. */
+export const FONT_MONO = "'JetBrains Mono', monospace";
+
+export const headerSectionStyle: React.CSSProperties = {
+  padding: '16px 18px 14px',
+};
+
+export const scaleSectionStyle: React.CSSProperties = {
+  padding: '14px 18px',
+};
+
+export const footerSectionStyle: React.CSSProperties = {
+  padding: '12px 18px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 10,
+};
 
 export const swatchBase: React.CSSProperties = {
   display: 'inline-block',
-  height: 12,
+  height: 14,
+  width: 14,
   marginRight: 8,
-  width: 12,
+  borderRadius: 3,
+  flexShrink: 0,
 };
 
 export const rowStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
+};
+
+/** Accent color for the icon chip and footer value: first swatch, else muted. */
+export const resolveSwatchColor = (
+  items: LegendItem[],
+  legend: LegendSpec
+): string => {
+  return items[0]?.color ?? legend.colorBy?.defaultColor ?? MUTED_COLOR;
 };

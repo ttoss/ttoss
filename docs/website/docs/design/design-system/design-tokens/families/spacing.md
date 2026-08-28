@@ -106,8 +106,8 @@ Semantic spacing is anchored in **layout physics**, not UX categories.
 ```
 
 - `pattern`: `inset`, `gap`, `gutter`, `separation`
-- `context`: `control`, `surface`, `stack`, `inline`, `page`, `section`, `interactive`
-- `step`: `xs`, `sm`, `md`, `lg`, `xl`, `min`
+- `context`: `control`, `action`, `surface`, `stack`, `inline`, `page`, `section`, `interactive`
+- `step`: `xs`, `sm`, `md`, `lg`, `xl`, `min`, `block`
 
 `step` is only used in some cases.
 
@@ -123,7 +123,8 @@ Semantic spacing is anchored in **layout physics**, not UX categories.
 ### Canonical shapes
 
 - `inset.control.{sm|md|lg}`
-- `inset.surface.{sm|md|lg}`
+- `inset.action.block`
+- `inset.surface.{xs|sm|md|lg}`
 - `gap.stack.{xs|sm|md|lg|xl}`
 - `gap.inline.{xs|sm|md|lg|xl}`
 - `gutter.{page|section}`
@@ -136,28 +137,29 @@ Semantic spacing is anchored in **layout physics**, not UX categories.
 > guarantees is the ordering (see [validation rules](#errors-validation-must-fail-when)),
 > not the specific core step.
 
-| token                        | use when you are building…                                                                                                   | contract (must be true)                     | default mapping (base theme)                              |
-| :--------------------------- | :--------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------ | :-------------------------------------------------------- |
-| `inset.control.sm`           | compact controls                                                                                                             | fixed — a non-fluid core step (ADR-022/023) | `core.spacing.fixed.1`                                    |
-| `inset.control.md`           | default controls                                                                                                             | fixed — a non-fluid core step (ADR-022/023) | `core.spacing.fixed.2`                                    |
-| `inset.control.lg`           | large/prominent controls                                                                                                     | fixed — a non-fluid core step (ADR-022/023) | `core.spacing.fixed.4`                                    |
-| `inset.surface.sm`           | tight surfaces                                                                                                               | `inset.surface ≥ inset.control` per step    | `core.spacing.4`                                          |
-| `inset.action.block`         | Block padding of a command trigger — bounded 8–9px, so a CTA resolves ~40px on the desktop while generic controls stay ~32px |
-| `inset.surface.md`           | default surfaces                                                                                                             | `inset.surface ≥ inset.control` per step    | `core.spacing.6`                                          |
-| `inset.surface.lg`           | spacious surfaces                                                                                                            | `inset.surface ≥ inset.control` per step    | `core.spacing.8`                                          |
-| `gap.stack.xs`               | tight vertical rhythm                                                                                                        | sibling spacing via `gap`                   | `core.spacing.2`                                          |
-| `gap.stack.sm`               | medium vertical rhythm                                                                                                       | sibling spacing via `gap`                   | `core.spacing.4`                                          |
-| `gap.stack.md`               | default vertical rhythm                                                                                                      | sibling spacing via `gap`                   | `core.spacing.6`                                          |
-| `gap.stack.lg`               | roomy vertical rhythm                                                                                                        | sibling spacing via `gap`                   | `core.spacing.8`                                          |
-| `gap.stack.xl`               | section-level rhythm                                                                                                         | sibling spacing via `gap`                   | `core.spacing.12`                                         |
-| `gap.inline.xs`              | **visual-only** tight grouping (icon + label)                                                                                | never between interactive targets           | `core.spacing.1`                                          |
-| `gap.inline.sm`              | inline grouping                                                                                                              | ascending inline scale                      | `core.spacing.2`                                          |
-| `gap.inline.md`              | looser inline grouping                                                                                                       | ascending inline scale                      | `core.spacing.3`                                          |
-| `gap.inline.lg`              | spacious inline grouping                                                                                                     | ascending inline scale                      | `core.spacing.4`                                          |
-| `gap.inline.xl`              | wide inline grouping                                                                                                         | ascending inline scale                      | `core.spacing.6`                                          |
-| `gutter.page`                | page outer padding                                                                                                           | bounded, structural                         | `clamp(core.spacing.6, core.spacing.12, core.spacing.16)` |
-| `gutter.section`             | section outer padding                                                                                                        | bounded, structural; tighter than `page`    | `clamp(core.spacing.4, core.spacing.8, core.spacing.16)`  |
-| `separation.interactive.min` | dense interactive target clusters                                                                                            | only between click/tap/focusable targets    | `clamp(8px, core.spacing.3, 16px)`                        |
+| token                        | use when you are building…                                                                                                                        | contract (must be true)                                                                                 | default mapping (base theme)                              |
+| :--------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------ | :-------------------------------------------------------- |
+| `inset.control.sm`           | compact controls                                                                                                                                  | fixed — a non-fluid core step (ADR-022/023)                                                             | `core.spacing.fixed.1`                                    |
+| `inset.control.md`           | default controls                                                                                                                                  | fixed — a non-fluid core step (ADR-022/023)                                                             | `core.spacing.fixed.2`                                    |
+| `inset.control.lg`           | large/prominent controls                                                                                                                          | fixed — a non-fluid core step (ADR-022/023)                                                             | `core.spacing.fixed.4`                                    |
+| `inset.action.block`         | block padding of a command trigger — a CTA resolves taller (~40px desktop) than generic controls (~32px); inline padding stays `inset.control.lg` | bounded 8–9px range — a `clamp()` RawValue (model.md §8, ADR-021 addendum)                              | `clamp(8px, core.spacing.2, 9px)`                         |
+| `inset.surface.xs`           | anchored / row-framing surfaces — a gutter beside children that carry their own `inset.control` (popover, menu, tooltip, list container)          | **fixed** — the outcome is the relationship to fixed-height children (ADR-022's argument one scale out) | `core.spacing.fixed.1`                                    |
+| `inset.surface.sm`           | tight surfaces                                                                                                                                    | `inset.surface ≥ inset.control` per step                                                                | `core.spacing.4`                                          |
+| `inset.surface.md`           | default surfaces                                                                                                                                  | `inset.surface ≥ inset.control` per step                                                                | `core.spacing.6`                                          |
+| `inset.surface.lg`           | spacious surfaces                                                                                                                                 | `inset.surface ≥ inset.control` per step                                                                | `core.spacing.8`                                          |
+| `gap.stack.xs`               | tight vertical rhythm                                                                                                                             | sibling spacing via `gap`                                                                               | `core.spacing.2`                                          |
+| `gap.stack.sm`               | medium vertical rhythm                                                                                                                            | sibling spacing via `gap`                                                                               | `core.spacing.4`                                          |
+| `gap.stack.md`               | default vertical rhythm                                                                                                                           | sibling spacing via `gap`                                                                               | `core.spacing.6`                                          |
+| `gap.stack.lg`               | roomy vertical rhythm                                                                                                                             | sibling spacing via `gap`                                                                               | `core.spacing.8`                                          |
+| `gap.stack.xl`               | section-level rhythm                                                                                                                              | sibling spacing via `gap`                                                                               | `core.spacing.12`                                         |
+| `gap.inline.xs`              | **visual-only** tight grouping (icon + label)                                                                                                     | never between interactive targets                                                                       | `core.spacing.1`                                          |
+| `gap.inline.sm`              | inline grouping                                                                                                                                   | ascending inline scale                                                                                  | `core.spacing.2`                                          |
+| `gap.inline.md`              | looser inline grouping                                                                                                                            | ascending inline scale                                                                                  | `core.spacing.3`                                          |
+| `gap.inline.lg`              | spacious inline grouping                                                                                                                          | ascending inline scale                                                                                  | `core.spacing.4`                                          |
+| `gap.inline.xl`              | wide inline grouping                                                                                                                              | ascending inline scale                                                                                  | `core.spacing.6`                                          |
+| `gutter.page`                | page outer padding                                                                                                                                | bounded, structural                                                                                     | `clamp(core.spacing.6, core.spacing.12, core.spacing.16)` |
+| `gutter.section`             | section outer padding                                                                                                                             | bounded, structural; tighter than `page`                                                                | `clamp(core.spacing.4, core.spacing.8, core.spacing.16)`  |
+| `separation.interactive.min` | dense interactive target clusters                                                                                                                 | only between click/tap/focusable targets                                                                | `clamp(8px, core.spacing.3, 16px)`                        |
 
 ---
 
@@ -177,6 +179,11 @@ const spacing = {
       sm: 'core.spacing.fixed.1',
       md: 'core.spacing.fixed.2',
       lg: 'core.spacing.fixed.4',
+    },
+    action: {
+      // Bounded range, not a step (model.md §8): the engine's unit steps
+      // straddle the 8–9px command block inset. Inline stays inset.control.lg.
+      block: 'clamp(8px, {core.spacing.2}, 9px)',
     },
     surface: {
       sm: 'core.spacing.4',

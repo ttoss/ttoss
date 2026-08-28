@@ -52,8 +52,8 @@ const buildMockMap = (): MockMap => {
     getCanvas: jest.fn(() => {
       return canvas;
     }),
-    getLayer: jest.fn(() => {
-      return undefined;
+    getLayer: jest.fn((id: string) => {
+      return { id };
     }),
     isStyleLoaded: jest.fn(() => {
       return true;

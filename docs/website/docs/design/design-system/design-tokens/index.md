@@ -93,7 +93,7 @@ Themes and modes allow the system to vary without changing semantic meaning.
 - **Modes** remap semantic references to different core tokens — core values stay immutable
 - **Semantic token names remain stable**
 
-For details, see [Modes](./modes.md).
+For details, see [Modes](./modes.md). To design or review a theme — including the Theme Brief and Formal Style Profile formats — see [Theme Authoring](./theme-authoring.md).
 
 > **Implementation:** See [Theme Provider](/docs/design/theme-provider) for how themes and modes are configured in ttoss.
 

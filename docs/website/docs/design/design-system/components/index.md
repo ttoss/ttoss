@@ -20,13 +20,13 @@ That is the model.
 
 ## Position
 
-ttoss Components exists to keep UI **stable, reusable, and scalable** across themes, products, and implementations.
+ttoss Components exists to keep UI **stable, reusable, and scalable** across themes, products, and implementations — a stable public layer above tokens and below patterns.
 
 It is a **semantic framework first**.  
 Official component libraries are **reference implementations** of that framework.
 
 The role of ttoss Components is not to publish every possible widget.  
-Its role is to define a small, durable public layer of UI meaning.
+Its role is to define a small, durable public layer of UI meaning: few components, built well, instead of many with uneven maturity.
 
 ## What makes a ttoss component
 
@@ -146,23 +146,3 @@ Applications may create:
 These local solutions remain outside the public ttoss surface unless they later prove reusable, stable, and semantically mature enough to be promoted.
 
 This keeps ttoss flexible without weakening the public system.
-
-## Public catalog
-
-The public catalog is **small by design**.
-
-ttoss should publish **few components, built well**, instead of many components with uneven maturity.
-
-The goal is a public surface that is clear, reliable, and durable.
-
-## Definition
-
-**ttoss Components is a semantic, token-native, selective component framework.**
-
-It provides a stable public UI layer above tokens and below patterns.
-
-It standardizes reusable UI meaning.  
-It keeps the public surface small and durable.  
-It allows products to move fast through a local application layer without polluting the system.
-
-That is ttoss Components.

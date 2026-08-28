@@ -13,7 +13,7 @@ import {
 } from './helpers/map-story-helpers';
 
 export default {
-  title: 'GeoVis/Fixtures/SplitCompare',
+  title: 'GeoVis/SplitCompare',
   tags: ['autodocs'],
 } as Meta;
 

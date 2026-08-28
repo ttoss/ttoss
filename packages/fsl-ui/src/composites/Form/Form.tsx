@@ -5,6 +5,10 @@ import {
   type FormProps as RACFormProps,
 } from 'react-aria-components';
 
+import {
+  type ActionRowAlign,
+  buildActionRowStyle,
+} from '../../components/ActionTrigger/anatomy';
 import { Button, type ButtonOwnProps } from '../../components/Button/Button';
 import {
   type FieldLabelPosition,
@@ -236,19 +240,13 @@ export interface FormActionsProps extends Omit<
    * the platform convention for submit-on-the-right layouts.
    * @default 'end'
    */
-  align?: 'start' | 'end' | 'between';
+  align?: ActionRowAlign;
   /**
    * Action buttons — typically a {@link FormSubmit} plus optional reset /
    * cancel Buttons.
    */
   children?: React.ReactNode;
 }
-
-const justifyMap = {
-  start: 'flex-start',
-  end: 'flex-end',
-  between: 'space-between',
-} as const;
 
 /**
  * A horizontal row for a Form's action buttons (submit, cancel, reset).
@@ -273,13 +271,10 @@ export const FormActions = ({
       data-composition="supporting"
       style={
         {
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: justifyMap[align],
-          gap: vars.spacing.gap.inline.md,
-          marginBlockStart: vars.spacing.gap.stack.sm,
+          ...buildActionRowStyle({
+            align,
+            topGap: vars.spacing.gap.stack.sm,
+          }),
           // In a side-label form the row belongs under the controls, not under
           // the label column — the buttons act on the values, and an action row
           // starting at the label's edge reads as a third column nobody asked for.

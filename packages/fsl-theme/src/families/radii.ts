@@ -10,7 +10,7 @@ import type { CoreRadiiRef, RawValue } from './primitives';
  * Ordered: none < sm < md < lg < xl << full.
  *
  * **Never reference core radii directly from components.**
- * Components consume only semantic radii (`radii.control`, `radii.surface`, `radii.round`).
+ * Components consume only semantic radii (the `SemanticRadii` contract below).
  */
 export interface CoreRadii {
   none: RawValue;

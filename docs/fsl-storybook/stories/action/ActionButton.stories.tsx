@@ -113,6 +113,40 @@ export const Disabled: Story = {
 };
 
 /**
+ * A row action that deletes something is usually a **peer** of the actions
+ * beside it, not the loudest thing on the surface. Keep the quiet rung and say
+ * what it does with `consequence` — a part that paints no fill has nowhere else
+ * to carry a valence, so the ink carries it (CONTRACT §3.3). The glyph follows
+ * through `currentColor`; nothing else is wired.
+ *
+ * `evaluation="negative"` is the other shape and both are real: it is the
+ * filled destructive **command**, for when the action should dominate. Disabled
+ * yields the tint entirely, because unavailability outranks valence.
+ */
+export const QuietDestructive: Story = {
+  tags: ['autodocs'],
+  render: () => {
+    return (
+      <Stack direction="horizontal" gap="md" align="center">
+        <ActionButton
+          evaluation="muted"
+          consequence="destructive"
+          icon={<Icon intent="action.close" />}
+        >
+          Remove
+        </ActionButton>
+        <ActionButton evaluation="negative" consequence="destructive">
+          Delete workspace
+        </ActionButton>
+        <ActionButton evaluation="muted" consequence="destructive" isDisabled>
+          Remove
+        </ActionButton>
+      </Stack>
+    );
+  },
+};
+
+/**
  * Why the utility silhouette is the size it is: those dimensions are the
  * **field row's**, not a tuning of its own. `ActionButton` declares the same
  * `sizing.hit` + `inset.control` + `label.md` as `TextField` and `Select`, so

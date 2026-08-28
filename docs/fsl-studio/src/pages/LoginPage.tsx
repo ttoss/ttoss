@@ -1,4 +1,5 @@
 import {
+  Container,
   Form,
   FormActions,
   FormSubmit,
@@ -50,18 +51,22 @@ export const LoginPage = () => {
   return (
     /*
      * Bespoke rule (viewport centering): a standalone centered auth page has
-     * no in-system expression — Container centers inline only and no
-     * primitive fills the viewport block size (FRICTION F-004, open).
+     * no in-system expression for the block-axis half — Container centers
+     * inline only, and no primitive fills the viewport block size. Distinct
+     * from the width cap below (FRICTION F-004, which this page used to cite
+     * for both halves): that half is now closed by `Container size="card"`;
+     * this one is not filed and stays a bespoke rule.
      */
     <div
       style={{ minBlockSize: '100dvh', display: 'grid', placeItems: 'center' }}
     >
       {/*
-       * Bespoke rule (card cap): no named narrow width step exists in the
-       * sizing vocabulary — Box.maxWidth offers only surface|reading
-       * (FRICTION F-004, open).
+       * FRICTION F-004, resolved: the narrow centered-card width used to have
+       * no in-system cap (Box.maxWidth/Container.size offered only
+       * surface|reading) and this page hand-rolled `min(24rem, calc(100% -
+       * 2rem))`. `size="card"` (core.sizing.ramp.layout.1) replaces it.
        */}
-      <div style={{ inlineSize: 'min(24rem, calc(100% - 2rem))' }}>
+      <Container size="card" gutter="none">
         <Stack gap="lg">
           <Stack gap="xs" align="center">
             <Text variant="label-lg">Meridian</Text>
@@ -108,7 +113,7 @@ export const LoginPage = () => {
             </Text>
           </Stack>
         </Stack>
-      </div>
+      </Container>
     </div>
   );
 };

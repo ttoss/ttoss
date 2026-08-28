@@ -67,11 +67,28 @@ export const useFeatureDetail = (): GeovisWorkspaceDetailState | null => {
 
   const [result, setResult] = React.useState<FetchResult | null>(null);
 
+  // Whether this hook opened the sidebar for a click, so a later deselect can
+  // close it — but only when the click (not the reopen button) opened it.
+  const openedByClickRef = React.useRef(false);
+
   React.useEffect(() => {
-    if (!activeClick || !onFeatureSelect) return;
+    if (!onFeatureSelect) return;
+
+    if (!activeClick) {
+      // The selection cleared (e.g. a click outside any feature). If this hook
+      // opened the sidebar for a click, close it so the open state — and
+      // anything derived from it, like a legend pushed clear of the sidebar —
+      // returns to rest, matching the explicit close button.
+      if (openedByClickRef.current) {
+        openedByClickRef.current = false;
+        setRightSidebarOpen({ open: false });
+      }
+      return;
+    }
 
     const key = clickIdentity(activeClick);
     setRightSidebarOpen({ open: true });
+    openedByClickRef.current = true;
 
     let cancelled = false;
 

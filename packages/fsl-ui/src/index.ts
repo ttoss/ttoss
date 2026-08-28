@@ -21,10 +21,11 @@ export {
 } from './components/ActionButton/ActionButton';
 export type {
   AppShellProps,
+  AppShellSidebarVariant,
   AppShellSidebarWidth,
 } from './components/AppShell/AppShell';
 export { AppShell, appShellMeta } from './components/AppShell/AppShell';
-export type { BadgeNumeric, BadgeProps } from './components/Badge/Badge';
+export type { BadgeProps } from './components/Badge/Badge';
 export { Badge, badgeMeta } from './components/Badge/Badge';
 export type {
   BoxBackground,
@@ -123,8 +124,20 @@ export type {
 export { Heading, headingMeta } from './components/Heading/Heading';
 export type { IconIntent, IconProps, IconSize } from './components/Icon';
 export { Icon, ICON_INTENTS, iconMeta } from './components/Icon';
+export type { InlineAlertProps } from './components/InlineAlert/InlineAlert';
+export {
+  InlineAlert,
+  inlineAlertMeta,
+} from './components/InlineAlert/InlineAlert';
 export type { LinkProps } from './components/Link/Link';
 export { Link, linkMeta } from './components/Link/Link';
+export type {
+  ListGap,
+  ListItemProps,
+  ListProps,
+  ListVariant,
+} from './components/List/List';
+export { List, ListItem, listItemMeta, listMeta } from './components/List/List';
 export type {
   ListBoxItemProps,
   ListBoxProps,
@@ -176,6 +189,14 @@ export type {
   StackProps,
 } from './components/Stack/Stack';
 export { Stack, stackMeta } from './components/Stack/Stack';
+export type {
+  StatusLightNumeric,
+  StatusLightProps,
+} from './components/StatusLight/StatusLight';
+export {
+  StatusLight,
+  statusLightMeta,
+} from './components/StatusLight/StatusLight';
 export type {
   SurfaceLevel,
   SurfacePadding,
@@ -322,6 +343,8 @@ export {
   DisclosureTrigger,
   disclosureTriggerMeta,
 } from './composites/Disclosure/Disclosure';
+export type { DrawerPlacement, DrawerProps } from './composites/Drawer/Drawer';
+export { Drawer, drawerMeta } from './composites/Drawer/Drawer';
 export type {
   FormActionsProps,
   FormProps,

@@ -35,18 +35,42 @@ are undefined and components render unstyled.
   Input/Selection components have NO evaluation prop (data entry carries no
   authorial voice); validation is the runtime `invalid` STATE (`isInvalid`),
   never `evaluation="negative"`.
+  The muted rung at REST follows the surface it sits on (CONTRACT §3.4):
+  hosting surfaces (Surface, painted Box, rows, panels, popovers, the field
+  frame) publish their fill on --fsl-surface, and a quiet Action reads
+  var(--fsl-surface, <its own token>) — so a quiet control matches a raised
+  card or a table row instead of painting a page-coloured pill. Host apps can
+  publish --fsl-surface on their own panels to get the same behaviour.
+  Voiced fills never publish (selection fills, Feedback fills, non-primary
+  informational fills) — they are voices, not strata — and hosts publish
+  their RESTING fill only (transient host states do not republish).
 - consequence (prop) — effect on state: 'neutral' | 'committing' |
-  'destructive'. Drives MECHANISM (e.g. ConfirmationDialog two-click arming),
-  not color. Destructive ≠ negative color; pair them explicitly if desired.
+  'destructive'. Drives MECHANISM (e.g. ConfirmationDialog two-click arming).
+  Carries COLOR in exactly one case (CONTRACT §3.3): on the quiet rung
+  (evaluation="muted", which paints no fill) a destructive Action tints its
+  INK — Button, ActionButton, MenuItem — reading the cross-cutting
+  vars.consequence.destructive.ink (never another entity's colour tree).
+  Everywhere else the fill is the voice and evaluation owns it. So: a
+  destructive PEER among siblings keeps its rung and sets consequence; a
+  destructive COMMAND that should be the loudest thing on the surface is
+  evaluation="negative". Neither implies the other.
+- Surfaces come in two kinds, and it changes their edge and their padding:
+  OCCLUDING (popover, menu, tooltip, dialog, drawer, toast) draws
+  vars.overlay.outline — the cross-cutting boundary that clears the >=3:1
+  separator floor so the surface survives shadow suppression (CONTRACT §3.5) —
+  and pads at inset.surface.xs, the fixed anchored step. EMBEDDED (Surface,
+  Box, dividers, field frames) keeps informational.{role}.border, a deliberate
+  hairline, and the fluid inset.surface.{sm,md,lg} steps. A Dialog is the one
+  occluding surface that still pads at `md`: it frames content, not rows.
 - composition (prop on leaves) — slot the element plays inside a parent:
   'primaryAction' | 'secondaryAction' | 'dismissAction' … DialogActions
   reorders children by it per platform convention.
 - State — runtime only (hover, active, focused, disabled, checked,
   indeterminate, expanded, invalid, …). Emitted by React Aria render props;
   priority cascade: disabled > invalid > expanded > indeterminate >
-  selected > focusVisible > pressed > hovered > default.
+  current > selected > focusVisible > pressed > hovered > default.
 
-## Component catalog (all exports also ship a `*Meta` identity object)
+## Component catalog (every component with a semantic identity ships a `*Meta` object; plain re-exports — triggers, table sections, helpers — do not)
 
 Action:      Button = COMMAND silhouette (commit: submit/confirm/primary action
              of a surface; pill radius, semibold, 40px desktop).
@@ -72,6 +96,14 @@ Action:      Button = COMMAND silhouette (commit: submit/confirm/primary action
              FormSubmit (inside Form)
 Navigation:  Link, Breadcrumbs/Breadcrumb, Tabs/TabList/Tab
              (TabPanel is Structure — the content revealed by the tabs)
+             SIDEBAR / PRIMARY NAV = a `nav` landmark of `Link`s with
+             `isCurrent` on the live route — NOT Tabs. `isCurrent` sets
+             aria-current="page" and resolves navigation.{role}.text.current;
+             React Aria exposes no equivalent flag because only the app knows
+             which route is live. Tabs switch panels in place, and using them
+             for navigation forces the whole frame into one Tabs scope and
+             cannot be portaled into a Drawer (F-002/F-017/F-042, all closed
+             by this prop).
 Disclosure:  Accordion, AccordionItem, AccordionTrigger, AccordionPanel,
              Disclosure, DisclosureTrigger, DisclosurePanel (standalone single
              section — Accordion is the DisclosureGroup)
@@ -237,7 +269,18 @@ Input:       TextField, TextArea — each authored EITHER one-line
              id. Items are Selection/item (ADR-007 split, same as SelectItem).
 Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
              DialogActions, Menu, MenuTrigger, ConfirmationDialog,
-             Popover, PopoverTrigger, Tooltip, TooltipTrigger
+             Popover, PopoverTrigger, Tooltip, TooltipTrigger, Drawer
+             Drawer = a REGION of the app brought temporarily into view, not a
+             prompt: navigation on a narrow viewport, a filter panel, a detail
+             inspector. Anchored to an edge (placement=start|end|top|bottom —
+             start/end are LOGICAL, so RTL flips them) and sized from the same
+             named scale AppShell's sidebar uses (width=sm|md|lg), which is what
+             lets a sidebar become a drawer without changing width. aria-label
+             is REQUIRED (it renders a dialog; ADR-001 forbids an English
+             default). It renders its own Dialog — do NOT wrap the children in
+             one. Controlled via isOpen/onOpenChange, or put it under a
+             DialogTrigger. For an interrupting question with heading/body/
+             actions use DialogModal instead.
              ActionMenu = THE OVERFLOW MENU (a row's trailing "…", a card's
              corner menu, the tail of a toolbar that ran out of room): composes
              MenuTrigger + icon-only ActionButton + Menu. aria-label is
@@ -250,9 +293,10 @@ Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
              answer is collapsing its row to a column.
              MenuItem defaults to evaluation="muted" — a row shows NO fill until
              hovered (the quiet rung resolves to the popover's own colour). Pass
-             another rung only to make one row louder. A destructive row uses
-             consequence="destructive" (semantic marker, no colour);
-             evaluation="negative" would fill the row red (F-029).
+             another rung only to make one row louder. A destructive row keeps
+             the rung and sets consequence="destructive", which tints its ink
+             (CONTRACT §3.3); evaluation="negative" would fill the row solid red
+             — the filled destructive COMMAND, not a peer row (F-029, closed).
              ContextualHelp = the ⓘ beside a field's label: composes
              PopoverTrigger + icon-only ActionButton + Popover wrapping a bare
              dialog. aria-label REQUIRED (ADR-001); glyph fixed to
@@ -263,11 +307,58 @@ Overlay:     Dialog, DialogModal, DialogTrigger, DialogHeading, DialogBody,
              the words would join the field's accessible name). For the
              explanation too long for `description` and too rare to spend
              permanent space on. Standalone composition also works.
-Feedback:    ProgressBar, Meter, Toast, ToastRegion, createToastQueue
+Feedback:    ProgressBar, Meter, Toast, ToastRegion, createToastQueue, InlineAlert
+             THE TWO POSTURES (CONTRACT §1.2, ADR-043) — pick by WHO OWNS THE
+             LIFETIME, then the colour follows:
+               Toast       = status.interruptive. Ends on a timer or a dismissal.
+                             Floats over content, out of the flow, on a queue.
+                             VOICED FILL: feedback.{evaluation} paints the
+                             surface and dresses its own triggers.
+               InlineAlert = status.passive. Ends when the CONDITION ends.
+                             In the flow, occupies layout, idempotent (rendering
+                             it twice is one state, not two notifications),
+                             scrollable-to. GROUND = THE PAGE (feedback.muted,
+                             which resolves the page's own colour — fsl-theme
+                             ADR-030) in every evaluation; the ground NEVER takes
+                             a valence FILL. Separation is paid in the EDGE
+                             (feedback.{evaluation}.border) and the valence also
+                             speaks from a leading MARK whose glyph SHAPE carries
+                             it (WCAG 1.4.1) inked by vars.valence.{v}.ink. That
+                             order is colors.md § Stacking: elevation first,
+                             border second, never colour.
+                             props: children (REQUIRED — a title introduces a
+                             body, so `<InlineAlert title="x"/>` is a compile
+                             error), title?, actions?, evaluation?. No
+                             dismiss (neither Spectrum version has one; it needs
+                             the surface to publish itself first — F-063).
+                             role="status" and nothing else: a live region does
+                             not announce content already present when it was
+                             registered, so it is silent on mount and announces
+                             when inserted. Never add aria-live (the role implies
+                             polite) and never aria-labelledby (a name competes
+                             with the announced content). The title is TEXT, not
+                             a heading — only the host knows the outline level.
+                             ACTIONS ARE THE CALLER'S Button/Link, and they must
+                             be evaluation="primary": measured, in dark
+                             action.secondary resolves this ground's own value on
+                             fill AND edge, so a secondary button vanishes as an
+                             object (F-063).
              (Meter = static quantity in a range e.g. battery/disk;
              ProgressBar = a task in flight. Pick by "state" vs "progressing"),
-             Badge (status chip, filled: evaluation=primary|positive|caution|negative|accent,
-             numeric=tabular for counts — never a hand-rolled colored span)
+             StatusLight (status chip, filled: evaluation=primary|positive|
+             caution|negative|accent, numeric=tabular for counts — never a
+             hand-rolled colored span)
+             THREE CHIPS, pick by what the COLOUR SAYS, not by shape — they
+             share one box (`CHIP_BOX`) and differ only in meaning:
+               Badge       = descriptive label, no outcome ("Admin", "Beta",
+                             "Draft"). Structure entity, informational colours.
+                             THE DEFAULT for a role/category/attribute.
+               StatusLight = an outcome the SYSTEM reports (passing, degraded,
+                             3 errors). Feedback entity, valence colours.
+               Tag         = an item inside a TagGroup the user selects or
+                             removes. Selection entity, needs the group.
+             Names match Spectrum's (Badge / StatusLight / TagGroup) and
+             Chakra's split; they were inverted here until F-040.
 Forms:       Form publishes field layout to every field inside it as STATIC
              context — necessityIndicator='icon'|'none' (default 'icon': an
              asterisk marks the REQUIRED fields, following the reference; 'none'
@@ -337,8 +428,8 @@ Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              Heading (h1-h6 bound to the type scale: level=1..6 sets the
              element, size overrides the visual step — never a raw font-size),
              Text (copy + stat figures: variant=display-sm (stat step for KPI
-             values/prices — data, not headings)|body|label-lg|md|sm, tone=muted for
-             secondary hierarchy, as=p|span|div — never a raw font-size),
+             values/prices — data, not headings)|body-{lg,md,sm}|label-{lg,md,sm},
+             tone=muted for secondary hierarchy, as=p|span|div — never a raw font-size),
              Stack (layout rhythm: direction=vertical|horizontal picks the
              gap.stack|gap.inline family, gap=xs..xl, align, justify, wrap —
              never a raw gap; use instead of a hand-rolled flex div),
@@ -373,7 +464,27 @@ Structure:   Form, FormActions, Wizard, WizardStep, WizardSummary,
              sidebarWidth/asideWidth=sm|md|lg, sidebarLabel/asideLabel for the
              landmark names; main content as children — instead of a
              hand-rolled viewport grid; every region is a size container for
-             theme cqi scales),
+             theme cqi scales).
+             NARROW VIEWPORTS: sidebarVariant='temporary' drops the sidebar's
+             grid track and moves the panel into a Drawer, reached from a
+             trigger the shell puts at the inline start of the header row
+             (forcing a header row into existence if the host passed none).
+             It REQUIRES sidebarTriggerLabel — without a name the shell stays
+             permanent rather than hide the panel, because an unreachable
+             sidebar is worse than a scrolling one and an English default is
+             forbidden (ADR-001). Open state is uncontrolled by default;
+             isSidebarOpen + onSidebarOpenChange take it over.
+             WHICH VARIANT IS THE APP'S CALL, not the shell's — the app knows
+             its breakpoints. Same line MUI draws on its Drawer.
+             List + ListItem (content list with REAL list semantics — ul/ol +
+             li, so it announces as "list, N items". variant=plain|unordered|
+             ordered, plain is the DEFAULT and keeps ul semantics with the
+             marker hidden; gap from the stacking scale. A Stack renders a div,
+             so the same content announces as unrelated blocks — never
+             hand-roll role="list"/role="listitem" on Stacks. For a list the
+             user OPERATES — selects, reorders, acts on — use ListBox or
+             GridList: those are Collection entities with keyboard navigation,
+             this is presentation),
              Code (code text: block=true scrollable <pre> surface, block=false
              inline <code> run)
 
@@ -383,9 +494,11 @@ Icons: Icon is a PUBLIC export (ADR-010): a semantic glyph named by intent
 Decorative by default (aria-hidden); pass `label` (caller-localized) only
 when the icon is the sole carrier of meaning. Color inherits (currentColor);
 size = sm|md|lg → vars.sizing.icon.*. Intents are a curated registry
-(ICON_INTENTS): disclosure.expand/collapse, selection.checked/indeterminate,
-action.close/search/increment/decrement/sortAscending/sortDescending,
-status.success — it grows only on component/block demand. Glyphs map to
+(ICON_INTENTS): action.close, action.search, action.increment,
+action.decrement, action.sortAscending, action.sortDescending, action.more,
+action.help, disclosure.expand, disclosure.collapse, navigation.menu,
+selection.checked, selection.indeterminate, status.success, status.alert,
+status.info — it grows only on component/block demand. Glyphs map to
 Lucide via the Iconify provider, registered offline (no runtime API fetch).
 
 ## Entity → token map (a component reads ONLY its row)
@@ -398,7 +511,10 @@ Selection   → colors.input,         radii.control, motion.feedback
 Navigation  → colors.navigation,    radii.control, motion.feedback
 Disclosure  → colors.navigation,    radii.control, motion.transition
 Overlay     → colors.informational, radii.surface, motion.transition, elevation.overlay
-Feedback    → colors.feedback,      radii.surface (chips) / radii.round (rails), elevation.raised
+Feedback    → colors.feedback,      radii.surface (chips) / radii.round (rails), elevation.raised,
+            text.title (a title part) + text.body — NOT text.label for a title:
+            every label step is weight 400 and the largest only ties body.md,
+            so a label-typed title inverts (F-064, contract invariant #16)
 Collection  → colors.informational, radii.surface
 Structure   → colors.informational, radii.surface
 
@@ -410,10 +526,13 @@ Color path formula: `vars.colors.{ux}[evaluation][background|border|text][state]
 1. Composites accept NO `style`/`className`. Customize geometry via CSS
    custom-property knobs on the composite scope (fallbacks built in):
    `--fsl-dialog-max-width` (default min(500px, 90vw)),
-   `--fsl-dialog-max-height` (90vh), `--fsl-menu-min-width` (12rem),
+   `--fsl-dialog-max-height` (90vh), `--fsl-dialog-min-width` (min(288px, 90vw)),
+   `--fsl-menu-min-width` (12rem),
    `--fsl-menu-max-width` (min(320px, 90vw)),
    `--fsl-popover-max-width` (min(320px, 90vw)),
-   `--fsl-tooltip-max-width` (min(280px, 90vw)).
+   `--fsl-tooltip-max-width` (min(280px, 90vw)),
+   `--fsl-combo-box-max-height` (min(20rem, 60vh)),
+   `--fsl-track-max-width` (none — ProgressBar/Meter/Slider).
    Example: `[data-scope='dialog'] { --fsl-dialog-max-width: 720px; }`
 2. There is NO `size` prop anywhere. Different density = different
    semantic identity = different component.
@@ -433,8 +552,9 @@ Color path formula: `vars.colors.{ux}[evaluation][background|border|text][state]
 
 ## Package facts
 
-- ESM only, `sideEffects: false`, tree-shakes (Button-only import ≈ 1.8 KB
-  min before deps). Peer deps: react >= 18, react-dom >= 18.
+- ESM only, `sideEffects: false`, tree-shakes (Button-only import ≈ 3.8 KB
+  min before deps; `pnpm run verify:treeshake` prints the current figure).
+  Peer deps: react >= 18, react-dom >= 18.
 - `react-aria-components` pinned `~1.19.0` while Toast uses UNSTABLE_ APIs.
 - SSR-safe: the only DOM injection (`@keyframes` for ProgressBar) happens in
   a client-only insertion effect. Icon glyphs register into an in-memory

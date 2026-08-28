@@ -63,6 +63,10 @@ const makeMapMock = () => {
     }),
     removeLayer: jest.fn(),
     removeSource: jest.fn(),
+    moveLayer: jest.fn(),
+    getStyle: jest.fn(() => {
+      return { layers: [] };
+    }),
     isStyleLoaded: jest.fn(() => {
       return true;
     }),

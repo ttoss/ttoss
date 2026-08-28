@@ -152,10 +152,21 @@ const InviteDialog = () => {
   );
 };
 
+/**
+ * The row trigger is a *peer* of the other cells, so it keeps the quiet rung
+ * and says what it does through `consequence` — the ink turns, the fill does
+ * not (F-029). Filling it red would make every row shout. The confirm button
+ * inside the dialog is the opposite case and is authored that way: there, the
+ * destructive command is the loud one on the surface.
+ */
 const RemoveMemberAction = ({ member }: { member: Member }) => {
   return (
     <ConfirmationDialog
-      trigger={<Button evaluation="muted">Remove</Button>}
+      trigger={
+        <Button evaluation="muted" consequence="destructive">
+          Remove
+        </Button>
+      }
       title={`Remove ${member.name} from northline?`}
       confirmLabel="Remove member"
       armedLabel="Click again to confirm"
@@ -224,11 +235,7 @@ const MembersTable = ({ members }: { members: Member[] }) => {
                 </Text>
               </TableCell>
               <TableCell>
-                {/*
-                 * Descriptive role chip — the recorded F-010 pattern: Badge
-                 * with the neutral `primary` evaluation until a descriptive
-                 * Tag primitive exists.
-                 */}
+                {/* Descriptive role chip — a role is not an outcome (F-010). */}
                 <Badge>{member.role}</Badge>
               </TableCell>
               <TableCell>

@@ -24,9 +24,10 @@ const items = (
   <>
     <MenuItem id="duplicate">Duplicate</MenuItem>
     <MenuItem id="archive">Archive</MenuItem>
-    {/* `consequence` is the semantic marker a confirm wrapper dispatches on; it
-        carries no colour, and `evaluation="negative"` would fill the whole row
-        red rather than tint its ink (F-029). */}
+    {/* `consequence` is what a confirm wrapper dispatches on, and on the quiet
+        rung it also tints the row's ink (CONTRACT §3.3). `evaluation="negative"`
+        is the other shape — it fills the whole row red, which is the filled
+        destructive command rather than a peer among three (F-029). */}
     <MenuItem id="delete" consequence="destructive">
       Delete
     </MenuItem>
