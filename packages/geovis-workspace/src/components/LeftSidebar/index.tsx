@@ -3,10 +3,13 @@ import { Box, Flex, IconButton, Text } from '@ttoss/ui';
 import * as React from 'react';
 
 import type {
+  GeovisWorkspaceSelection,
   GeovisWorkspaceSidebarFilterBlock,
   GeovisWorkspaceSidebarSection,
   GeovisWorkspaceSidebarVariationsBody,
 } from '../../context/GeovisWorkspaceContext';
+import type { TimelineContextValue } from '../../context/TimelineContext';
+import { useTimelineContext } from '../../context/TimelineContext';
 import { useGeovisWorkspace } from '../../hooks/useGeovisWorkspace';
 import { messages } from '../../messages';
 import { FiltersTab } from './FiltersTab';
@@ -14,8 +17,11 @@ import { IconChip } from './IconChip';
 import { SidebarTab } from './SidebarTab';
 import { COLOR, FONT_HEAD, FONT_MONO } from './theme';
 import { useChipSelection } from './useChipSelection';
-import { useSections } from './useSections';
-import { useTimeline } from './useTimeline';
+import {
+  findActiveVariation,
+  isSectionEnabled,
+  useSections,
+} from './useSections';
 import { VariationsTab } from './VariationsTab';
 
 /** The header band: the active section's icon chip, title, and close button. */
@@ -92,11 +98,13 @@ const TabBar = ({
   sections,
   activeId,
   chipCount,
+  disabledIds,
   onSelect,
 }: {
   sections: GeovisWorkspaceSidebarSection[];
   activeId?: string;
   chipCount: number;
+  disabledIds: Set<string>;
   onSelect: (id: string) => void;
 }) => {
   return (
@@ -111,6 +119,7 @@ const TabBar = ({
     >
       {sections.map((section) => {
         const isFilters = section.body.kind === 'filters';
+        const disabled = disabledIds.has(section.id);
 
         return (
           <SidebarTab
@@ -118,7 +127,10 @@ const TabBar = ({
             icon={section.header.icon ?? 'lucide:circle'}
             label={section.header.title}
             active={section.id === activeId}
-            badge={isFilters ? chipCount : undefined}
+            // A gated section's badge would advertise a count the user cannot
+            // reach, so it goes away with the gate.
+            badge={isFilters && !disabled ? chipCount : undefined}
+            disabled={disabled}
             onClick={() => {
               onSelect(section.id);
             }}
@@ -190,26 +202,68 @@ const Footer = ({
   );
 };
 
+/**
+ * Ids of the sections whose `enabledWhen` gate is currently closed. Derived on
+ * every render: the gate reads the same selection the variations tab writes, so
+ * picking a variation opens or closes it in the same pass.
+ */
+const resolveDisabledIds = ({
+  sections,
+  selection,
+}: {
+  sections: GeovisWorkspaceSidebarSection[];
+  selection: GeovisWorkspaceSelection;
+}): Set<string> => {
+  const disabled = new Set<string>();
+
+  for (const section of sections) {
+    if (!isSectionEnabled({ section, sections, selection })) {
+      disabled.add(section.id);
+    }
+  }
+
+  return disabled;
+};
+
+/**
+ * The section whose body the card shows: the selected one, unless its gate has
+ * closed under the user — switching to a variation without a timeline while the
+ * timeline tab was open would otherwise leave its body on screen, reachable and
+ * interactive, with only its tab dimmed. With every gate closed there is
+ * nothing to fall back to, so the selection stands.
+ */
+const resolveActiveSection = ({
+  sections,
+  activeSectionId,
+  disabledIds,
+}: {
+  sections: GeovisWorkspaceSidebarSection[];
+  activeSectionId: string;
+  disabledIds: Set<string>;
+}): GeovisWorkspaceSidebarSection | undefined => {
+  const selected =
+    sections.find((section) => {
+      return section.id === activeSectionId;
+    }) ?? sections[0];
+
+  if (!selected || !disabledIds.has(selected.id)) {
+    return selected;
+  }
+
+  return (
+    sections.find((section) => {
+      return !disabledIds.has(section.id);
+    }) ?? selected
+  );
+};
+
 /** Resolves the currently-active variation from the shared selection. */
 const useActiveVariation = (
   variationsBody?: GeovisWorkspaceSidebarVariationsBody
 ) => {
   const { selection } = useGeovisWorkspace();
 
-  if (!variationsBody) {
-    return undefined;
-  }
-
-  const selectedValue =
-    selection[variationsBody.menuId] ?? variationsBody.defaultValue;
-
-  return variationsBody.groups
-    .flatMap((group) => {
-      return group.variations;
-    })
-    .find((variation) => {
-      return variation.value === selectedValue;
-    });
+  return findActiveVariation({ variationsBody, selection });
 };
 
 /** The scrollable body: renders the active section's variations or filters. */
@@ -221,7 +275,7 @@ const TabContent = ({
 }: {
   section?: GeovisWorkspaceSidebarSection;
   blocks: GeovisWorkspaceSidebarFilterBlock[];
-  timeline: ReturnType<typeof useTimeline>;
+  timeline: TimelineContextValue;
   chips: ReturnType<typeof useChipSelection>;
 }) => {
   return (
@@ -266,12 +320,21 @@ const TabContent = ({
  * Rendered only when `Layout` determines the `controls` slot has content.
  */
 export const LeftSidebar = () => {
-  const { config, setLeftSidebarOpen } = useGeovisWorkspace();
+  const { config, selection, setLeftSidebarOpen } = useGeovisWorkspace();
 
   const sections = config.leftSidebar?.sections ?? [];
-  const { variationsBody, blocks, timeline, chips } = useSections(sections);
+  const { variationsBody, blocks, timeline, chips, filtersSection } =
+    useSections(sections);
 
-  const timelineState = useTimeline(timeline);
+  const disabledIds = resolveDisabledIds({ sections, selection });
+
+  const isTimelineSectionEnabled = filtersSection
+    ? !disabledIds.has(filtersSection.id)
+    : true;
+
+  // Read, not owned: `Layout` holds it so the compact HUD can drive the same
+  // playback while this card is closed (see TimelineContext).
+  const timelineState = useTimelineContext();
   const chipsState = useChipSelection(chips);
   const activeVariation = useActiveVariation(variationsBody);
 
@@ -282,10 +345,11 @@ export const LeftSidebar = () => {
   const ControlsOverride = config.slots?.controls?.component;
   if (ControlsOverride) return <ControlsOverride />;
 
-  const activeSection =
-    sections.find((section) => {
-      return section.id === activeSectionId;
-    }) ?? sections[0];
+  const activeSection = resolveActiveSection({
+    sections,
+    activeSectionId,
+    disabledIds,
+  });
 
   return (
     <Flex
@@ -313,6 +377,7 @@ export const LeftSidebar = () => {
         sections={sections}
         activeId={activeSection?.id}
         chipCount={chipsState.selected.length}
+        disabledIds={disabledIds}
         onSelect={setActiveSectionId}
       />
 
@@ -326,7 +391,10 @@ export const LeftSidebar = () => {
       <Footer
         variationLabel={activeVariation?.label}
         value={timelineState.value}
-        showValue={Boolean(timeline)}
+        // The footer reads out the timeline's current value; while the gate is
+        // closed that value is frozen and unreachable, so showing it would
+        // suggest the map still answers to it.
+        showValue={Boolean(timeline) && isTimelineSectionEnabled}
       />
     </Flex>
   );

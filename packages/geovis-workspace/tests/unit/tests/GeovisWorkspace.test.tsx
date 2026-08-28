@@ -86,6 +86,11 @@ jest.mock('@ttoss/geovis', () => {
     GeoVisLegend: ({ legendId }: { legendId: string }) => {
       return <div data-testid={`legend-${legendId}`}>{legendId}</div>;
     },
+    // jsdom ships no `matchMedia`, so the roomy layout is what these tests
+    // assume. The compact HUD is covered in LeftSidebar.test.tsx.
+    useCompactViewport: () => {
+      return false;
+    },
   };
 });
 

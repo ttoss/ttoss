@@ -60,6 +60,16 @@ export interface GeovisWorkspaceProviderProps {
    * closed. Pair it with `isRightSidebarOpen` to control the open state.
    */
   onRightSidebarOpenChange?: (open: boolean) => void;
+  /**
+   * Whether the compact timeline HUD is showing. Decided by `GeovisWorkspace`,
+   * which needs the same flag to lift the map's layer control clear of the bar.
+   * Defaults to `false`, so the provider is usable standalone.
+   */
+  isTimelineHudVisible?: boolean;
+  /** Called when timeline playback begins — what arms the HUD. */
+  onPlaybackStart?: () => void;
+  /** Called when the HUD's close button is pressed. */
+  onTimelineHudDismiss?: () => void;
 }
 
 /**
@@ -104,6 +114,9 @@ export const GeovisWorkspaceProvider = ({
   onLeftSidebarOpenChange,
   isRightSidebarOpen: rightSidebarOpenProp,
   onRightSidebarOpenChange,
+  isTimelineHudVisible = false,
+  onPlaybackStart,
+  onTimelineHudDismiss,
 }: GeovisWorkspaceProviderProps) => {
   const isControlled = selection !== undefined;
 
@@ -172,6 +185,14 @@ export const GeovisWorkspaceProvider = ({
     [isRightControlled, onRightSidebarOpenChange]
   );
 
+  const notifyPlaybackStart = React.useCallback(() => {
+    onPlaybackStart?.();
+  }, [onPlaybackStart]);
+
+  const dismissTimelineHud = React.useCallback(() => {
+    onTimelineHudDismiss?.();
+  }, [onTimelineHudDismiss]);
+
   const value = React.useMemo(() => {
     return {
       config,
@@ -181,6 +202,9 @@ export const GeovisWorkspaceProvider = ({
       setLeftSidebarOpen,
       isRightSidebarOpen,
       setRightSidebarOpen,
+      isTimelineHudVisible,
+      dismissTimelineHud,
+      notifyPlaybackStart,
       onRepair,
       hasResolvedOnce,
     };
@@ -192,6 +216,9 @@ export const GeovisWorkspaceProvider = ({
     setLeftSidebarOpen,
     isRightSidebarOpen,
     setRightSidebarOpen,
+    isTimelineHudVisible,
+    dismissTimelineHud,
+    notifyPlaybackStart,
     onRepair,
     hasResolvedOnce,
   ]);

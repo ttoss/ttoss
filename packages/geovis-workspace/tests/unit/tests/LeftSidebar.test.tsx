@@ -50,6 +50,13 @@ jest.mock('@ttoss/geovis', () => {
     GeoVisLegend: () => {
       return null;
     },
+    // Mirrors the real hook: it only reads `matchMedia`, which `mockViewport`
+    // stubs per test, and the HUD's whole point is to be compact-only.
+    // `globalThis`, not `window` — babel rejects out-of-scope refs in a
+    // `jest.mock` factory, and only `globalThis` is on its allowed list.
+    useCompactViewport: () => {
+      return Boolean(globalThis.matchMedia?.('(max-width: 639.98px)').matches);
+    },
   };
 });
 
@@ -241,6 +248,36 @@ test('selecting a variation reports it through the shared selection', async () =
   );
 });
 
+/** The same preview with the variations list opted into auto-closing. */
+const closeOnSelectPreview: Preview = {
+  sections: preview.sections.map((section) => {
+    return section.body.kind === 'variations'
+      ? { ...section, body: { ...section.body, closeOnSelect: true } }
+      : section;
+  }),
+};
+
+test('closeOnSelect collapses the sidebar once a variation is picked', async () => {
+  const onVariableChange = jest.fn();
+  renderPreview({ onVariableChange }, closeOnSelectPreview);
+
+  await click(screen.getByRole('button', { name: 'Item A2' }));
+
+  expect(screen.getByRole('button', { name: 'Open menu' })).toBeInTheDocument();
+  // Closing rides on top of the selection, it does not replace it.
+  expect(onVariableChange).toHaveBeenCalledWith(
+    expect.objectContaining({ variable: 'a2' })
+  );
+});
+
+test('the sidebar stays open on a pick without closeOnSelect', async () => {
+  renderPreview();
+
+  await click(screen.getByRole('button', { name: 'Item A2' }));
+
+  expect(screen.queryByRole('button', { name: 'Open menu' })).toBeNull();
+});
+
 test('the timeline publishes its default year to the shared selection on mount', () => {
   const onVariableChange = jest.fn();
   renderPreview({ onVariableChange });
@@ -344,6 +381,321 @@ test('pressing play at the ceiling restarts from the minimum', async () => {
   }
 });
 
+/** The same preview with the timeline opted into closing when playback starts. */
+const closeOnPlayPreview: Preview = {
+  sections: preview.sections.map((section) => {
+    if (section.body.kind !== 'filters') {
+      return section;
+    }
+    return {
+      ...section,
+      body: {
+        ...section.body,
+        blocks: section.body.blocks.map((block) => {
+          return block.control.kind === 'timeline'
+            ? { ...block, control: { ...block.control, closeOnPlay: true } }
+            : block;
+        }),
+      },
+    };
+  }),
+};
+
+test('closeOnPlay collapses the sidebar and playback carries on behind it', async () => {
+  jest.useFakeTimers();
+  try {
+    const onVariableChange = jest.fn();
+    renderPreview({ onVariableChange }, closeOnPlayPreview);
+    await openFiltros();
+
+    await click(screen.getByRole('button', { name: 'Play' }));
+    expect(
+      screen.getByRole('button', { name: 'Open menu' })
+    ).toBeInTheDocument();
+
+    // The sidebar is gone but the time-lapse is running: 2023 → 2024.
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+    expect(onVariableChange).toHaveBeenCalledWith(
+      expect.objectContaining({ ano: '2024' })
+    );
+  } finally {
+    jest.useRealTimers();
+  }
+});
+
+test('pausing never closes the sidebar, only starting playback does', async () => {
+  jest.useFakeTimers();
+  try {
+    renderPreview({}, closeOnPlayPreview);
+    await openFiltros();
+    await click(screen.getByRole('button', { name: 'Play' }));
+    await click(screen.getByRole('button', { name: 'Open menu' }));
+
+    await click(screen.getByRole('button', { name: 'Pause' }));
+
+    expect(screen.queryByRole('button', { name: 'Open menu' })).toBeNull();
+  } finally {
+    jest.useRealTimers();
+  }
+});
+
+test('the sidebar stays open on play without closeOnPlay', async () => {
+  jest.useFakeTimers();
+  try {
+    renderPreview();
+    await openFiltros();
+
+    await click(screen.getByRole('button', { name: 'Play' }));
+
+    expect(screen.queryByRole('button', { name: 'Open menu' })).toBeNull();
+  } finally {
+    jest.useRealTimers();
+  }
+});
+
+/**
+ * Stubs `matchMedia` so `useCompactViewport` reports the compact layout, which
+ * is the only one the HUD renders in. jsdom ships no implementation, so without
+ * this the hook always answers "roomy".
+ */
+const mockViewport = (width: number) => {
+  window.matchMedia = ((query: string) => {
+    const limit = Number(/max-width:\s*([\d.]+)px/.exec(query)?.[1]);
+    return {
+      matches: width <= limit,
+      media: query,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    };
+  }) as unknown as typeof window.matchMedia;
+};
+
+/** The HUD's pause/play control, absent until the bar shows. */
+const hudPlayControl = () => {
+  const controls = screen.queryAllByRole('button', { name: /^(Play|Pause)$/ });
+  // The sidebar's own control is the first; the HUD's is the one that outlives
+  // it, so after `closeOnPlay` there is exactly one left.
+  return controls.length === 1 ? controls[0] : null;
+};
+
+describe('the compact timeline HUD', () => {
+  beforeEach(() => {
+    mockViewport(390);
+  });
+
+  test('takes over the controls when play closes the sidebar', async () => {
+    jest.useFakeTimers();
+    try {
+      const onVariableChange = jest.fn();
+      renderPreview({ onVariableChange }, closeOnPlayPreview);
+      await openFiltros();
+
+      await click(screen.getByRole('button', { name: 'Play' }));
+
+      // Sidebar gone, and a play/pause control still on screen: the HUD's.
+      expect(
+        screen.getByRole('button', { name: 'Open menu' })
+      ).toBeInTheDocument();
+      expect(hudPlayControl()).not.toBeNull();
+
+      // It drives the same playback: pausing from the HUD stops the advance.
+      act(() => {
+        jest.advanceTimersByTime(1000);
+      });
+      expect(onVariableChange).toHaveBeenCalledWith(
+        expect.objectContaining({ ano: '2023' })
+      );
+
+      await click(hudPlayControl()!);
+      onVariableChange.mockClear();
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
+      expect(onVariableChange).not.toHaveBeenCalled();
+
+      // And it stays after pausing, so play can resume from it.
+      expect(hudPlayControl()).not.toBeNull();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  test('is dismissable, and comes back on the next play', async () => {
+    jest.useFakeTimers();
+    try {
+      renderPreview({}, closeOnPlayPreview);
+      await openFiltros();
+      await click(screen.getByRole('button', { name: 'Play' }));
+
+      await click(screen.getByRole('button', { name: 'Close timeline' }));
+      expect(hudPlayControl()).toBeNull();
+
+      // Reopen the menu, play again: the bar is armed once more.
+      await click(screen.getByRole('button', { name: 'Open menu' }));
+      await click(screen.getByRole('button', { name: 'Pause' }));
+      await click(screen.getByRole('button', { name: 'Play' }));
+      expect(hudPlayControl()).not.toBeNull();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  test('never shows before playback starts', async () => {
+    renderPreview({}, closeOnPlayPreview);
+    await openFiltros();
+    await click(screen.getByRole('button', { name: 'Close menu' }));
+
+    // Sidebar closed, but nothing was played — no bar to show.
+    expect(hudPlayControl()).toBeNull();
+  });
+
+  test('its steppers move the year and stop playback', async () => {
+    jest.useFakeTimers();
+    try {
+      const onVariableChange = jest.fn();
+      renderPreview({ onVariableChange }, closeOnPlayPreview);
+      await openFiltros();
+      await click(screen.getByRole('button', { name: 'Play' }));
+
+      await click(screen.getByRole('button', { name: 'Previous step' }));
+      expect(onVariableChange).toHaveBeenLastCalledWith(
+        expect.objectContaining({ ano: '2022' })
+      );
+
+      await click(screen.getByRole('button', { name: 'Next step' }));
+      expect(onVariableChange).toHaveBeenLastCalledWith(
+        expect.objectContaining({ ano: '2023' })
+      );
+
+      // Stepping stops the auto-advance, so the year holds where it was put.
+      onVariableChange.mockClear();
+      act(() => {
+        jest.advanceTimersByTime(3000);
+      });
+      expect(onVariableChange).not.toHaveBeenCalled();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  test('its rule jumps to the year of the bar pressed', async () => {
+    jest.useFakeTimers();
+    try {
+      const onVariableChange = jest.fn();
+      renderPreview({ onVariableChange }, closeOnPlayPreview);
+      await openFiltros();
+      await click(screen.getByRole('button', { name: 'Play' }));
+
+      // Each segment carries its own step as its only accessible name.
+      await click(screen.getByRole('button', { name: '2024' }));
+
+      expect(onVariableChange).toHaveBeenLastCalledWith(
+        expect.objectContaining({ ano: '2024' })
+      );
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  /** A single timeline section, no histogram, opted into closing on play. */
+  const bareTimeline = ({
+    min,
+    max,
+    step,
+  }: {
+    min: number;
+    max: number;
+    step?: number;
+  }): Preview => {
+    return {
+      sections: [
+        {
+          id: 'filtros',
+          header: { title: 'Filtros', icon: 'lucide:filter' },
+          body: {
+            kind: 'filters',
+            blocks: [
+              {
+                id: 'periodo',
+                title: 'Linha do tempo',
+                control: {
+                  kind: 'timeline',
+                  menuId: 'ano',
+                  min,
+                  max,
+                  step,
+                  defaultValue: min,
+                  closeOnPlay: true,
+                },
+              },
+            ],
+          },
+        },
+      ],
+    };
+  };
+
+  test('still draws the rule for a timeline that declares no histogram', async () => {
+    jest.useFakeTimers();
+    try {
+      renderPreview({}, bareTimeline({ min: 2022, max: 2024 }));
+
+      await click(screen.getByRole('button', { name: 'Play' }));
+
+      // The rule comes from min/max/step, so it is there regardless — it is the
+      // count beside the year that needs histogram data.
+      expect(hudPlayControl()).not.toBeNull();
+      expect(screen.getByRole('button', { name: '2022' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '2024' })).toBeInTheDocument();
+      expect(screen.queryByText(/reg\./)).toBeNull();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  test.each([
+    ['a single step has no range to draw', { min: 2024, max: 2024 }],
+    ['too many steps would be sub-pixel', { min: 1900, max: 2026 }],
+  ])('drops the rule when %s', async (_label, range) => {
+    jest.useFakeTimers();
+    try {
+      renderPreview({}, bareTimeline(range));
+
+      await click(screen.getByRole('button', { name: 'Play' }));
+
+      // The bar is still there to pause with; only the rule is skipped.
+      expect(hudPlayControl()).not.toBeNull();
+      expect(
+        screen.queryByRole('button', { name: String(range.min) })
+      ).toBeNull();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  test('never shows above the compact breakpoint', async () => {
+    jest.useFakeTimers();
+    try {
+      mockViewport(1280);
+      renderPreview({}, closeOnPlayPreview);
+      await openFiltros();
+
+      await click(screen.getByRole('button', { name: 'Play' }));
+
+      // The sidebar still closed on play, but the roomy layout keeps its own
+      // control reachable, so no bar is added.
+      expect(
+        screen.getByRole('button', { name: 'Open menu' })
+      ).toBeInTheDocument();
+      expect(hudPlayControl()).toBeNull();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+});
+
 test('toggling and clearing chips updates the badge', async () => {
   renderPreview();
   await openFiltros();
@@ -361,6 +713,82 @@ test('toggling and clearing chips updates the badge', async () => {
 
   await click(screen.getByRole('button', { name: /Limpar 1 filtro/ }));
   expect(within(filtros).queryByText('1')).not.toBeInTheDocument();
+});
+
+/** The same preview with the chips publishing to the shared selection. */
+const publishingChipsPreview: Preview = {
+  sections: preview.sections.map((section) => {
+    if (section.body.kind !== 'filters') return section;
+    return {
+      ...section,
+      body: {
+        ...section.body,
+        blocks: section.body.blocks.map((block) => {
+          return block.control.kind === 'chips'
+            ? { ...block, control: { ...block.control, menuId: 'produtos' } }
+            : block;
+        }),
+      },
+    };
+  }),
+};
+
+test('chips with a menuId publish their ids, comma-joined', async () => {
+  const onVariableChange = jest.fn();
+  renderPreview({ onVariableChange }, publishingChipsPreview);
+  await openFiltros();
+
+  // `defaultSelected: ['x']` reaches the parent on mount, without a click.
+  expect(onVariableChange).toHaveBeenCalledWith(
+    expect.objectContaining({ produtos: 'x' })
+  );
+
+  await click(screen.getByRole('button', { name: /Chip Y/ }));
+  expect(onVariableChange).toHaveBeenLastCalledWith(
+    expect.objectContaining({ produtos: 'x,y' })
+  );
+
+  // Cleared reads as an empty string, not a missing key: the selection holds
+  // one string per menu, so "nothing selected" has to be expressible.
+  await click(screen.getByRole('button', { name: /Limpar 2 filtros/ }));
+  expect(onVariableChange).toHaveBeenLastCalledWith(
+    expect.objectContaining({ produtos: '' })
+  );
+});
+
+test('chips seed from a controlled selection, over defaultSelected', async () => {
+  const onVariableChange = jest.fn();
+  renderPreview(
+    { variables: { produtos: 'y,z' }, onVariableChange },
+    publishingChipsPreview
+  );
+  await openFiltros();
+
+  // The badge counts two — the selection's `y,z`, not `defaultSelected`'s
+  // single `x`. It is the count the chips expose; they carry no pressed state.
+  const filtros = screen.getByRole('button', { name: 'Filtros' });
+  expect(within(filtros).getByText('2')).toBeInTheDocument();
+
+  // The only publish on mount is the timeline's own default year — the chips
+  // carry their seeded value through untouched instead of rewriting it.
+  expect(onVariableChange).toHaveBeenCalledTimes(1);
+  expect(onVariableChange).toHaveBeenLastCalledWith({
+    ano: '2023',
+    produtos: 'y,z',
+  });
+});
+
+test('chips without a menuId keep the selection to themselves', async () => {
+  const onVariableChange = jest.fn();
+  renderPreview({ onVariableChange });
+  await openFiltros();
+
+  await click(screen.getByRole('button', { name: /Chip Y/ }));
+
+  // The badge counts it, but nothing about it reaches the parent.
+  expect(onVariableChange).not.toHaveBeenCalledWith(
+    expect.objectContaining({ produtos: expect.anything() })
+  );
 });
 
 test('a single-select chip filter keeps only one chip active', async () => {
@@ -612,4 +1040,398 @@ test('empty sections mount no sidebar at all', () => {
     screen.queryByRole('button', { name: 'Open menu' })
   ).not.toBeInTheDocument();
   expect(screen.queryByText('Variações')).not.toBeInTheDocument();
+});
+
+/** Adds an `enabledWhen` gate to the filters section of a given preview. */
+const gate = (source: Preview): Preview => {
+  return {
+    sections: source.sections.map((section) => {
+      return section.body.kind === 'filters'
+        ? {
+            ...section,
+            enabledWhen: { menuId: 'variable', values: ['a1'] },
+          }
+        : section;
+    }),
+  };
+};
+
+/** Gated previews; `a1` (the default variation) opens the gate, `a2` closes it. */
+const gatedPreview = gate(preview);
+const gatedCloseOnPlayPreview = gate(closeOnPlayPreview);
+
+describe('a section gated by enabledWhen', () => {
+  test('renders an inert tab, and drops the footer value, while gated', async () => {
+    const { rerender } = render(
+      <GeovisWorkspace
+        config={{ leftSidebar: { initialState: 'open', ...gatedPreview } }}
+        visualizationSpec={visualizationSpec}
+        variables={{ variable: 'a1' }}
+      />,
+      { wrapper: Provider }
+    );
+
+    // Gate open: the tab works and the footer reads the timeline's year.
+    expect(screen.getByRole('button', { name: 'Filtros' })).toBeEnabled();
+    expect(screen.getByText('2023')).toBeInTheDocument();
+
+    rerender(
+      <GeovisWorkspace
+        config={{ leftSidebar: { initialState: 'open', ...gatedPreview } }}
+        visualizationSpec={visualizationSpec}
+        variables={{ variable: 'a2' }}
+      />
+    );
+
+    const tab = screen.getByRole('button', { name: 'Filtros' });
+    expect(tab).toBeDisabled();
+
+    // Clicking it changes nothing: the header still mirrors the variations tab.
+    await click(tab);
+    expect(screen.getByText('Variações')).toBeInTheDocument();
+
+    // The footer's readout goes too — a frozen year describes nothing on screen.
+    expect(screen.queryByText('2023')).not.toBeInTheDocument();
+  });
+
+  test('falls back to an enabled section when the gate closes under it', async () => {
+    const { rerender } = render(
+      <GeovisWorkspace
+        config={{ leftSidebar: { initialState: 'open', ...gatedPreview } }}
+        visualizationSpec={visualizationSpec}
+        variables={{ variable: 'a1' }}
+      />,
+      { wrapper: Provider }
+    );
+
+    await openFiltros();
+    expect(screen.getByRole('slider')).toBeInTheDocument();
+
+    rerender(
+      <GeovisWorkspace
+        config={{ leftSidebar: { initialState: 'open', ...gatedPreview } }}
+        visualizationSpec={visualizationSpec}
+        variables={{ variable: 'a2' }}
+      />
+    );
+
+    // The filters body is gone rather than left reachable behind a dimmed tab,
+    // and the variations tab is showing in its place.
+    expect(screen.queryByRole('slider')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Item A1' })).toBeInTheDocument();
+  });
+
+  test('halts playback when the gate closes, freezing the value', async () => {
+    jest.useFakeTimers();
+    try {
+      const onVariableChange = jest.fn();
+      const props = (variable: string) => {
+        return {
+          config: {
+            leftSidebar: { initialState: 'open' as const, ...gatedPreview },
+          },
+          visualizationSpec,
+          variables: { variable },
+          onVariableChange,
+        };
+      };
+
+      const { rerender } = render(<GeovisWorkspace {...props('a1')} />, {
+        wrapper: Provider,
+      });
+
+      await openFiltros();
+      await click(screen.getByRole('button', { name: 'Play' }));
+
+      act(() => {
+        jest.advanceTimersByTime(1000);
+      });
+      expect(onVariableChange).toHaveBeenCalledWith(
+        expect.objectContaining({ ano: '2024' })
+      );
+
+      rerender(<GeovisWorkspace {...props('a2')} />);
+      onVariableChange.mockClear();
+
+      // Auto-advance stops: nothing keeps writing a year the user can no longer
+      // see or reach.
+      act(() => {
+        jest.advanceTimersByTime(5000);
+      });
+      expect(onVariableChange).not.toHaveBeenCalled();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  test('takes the compact HUD with it', async () => {
+    mockViewport(390);
+    jest.useFakeTimers();
+    try {
+      const props = (variable: string) => {
+        return {
+          config: {
+            leftSidebar: {
+              initialState: 'open' as const,
+              ...gatedCloseOnPlayPreview,
+            },
+          },
+          visualizationSpec,
+          variables: { variable },
+        };
+      };
+
+      const { rerender } = render(<GeovisWorkspace {...props('a1')} />, {
+        wrapper: Provider,
+      });
+
+      await openFiltros();
+      await click(screen.getByRole('button', { name: 'Play' }));
+      expect(hudPlayControl()).not.toBeNull();
+
+      rerender(<GeovisWorkspace {...props('a2')} />);
+
+      // Playback has started and the HUD was never dismissed, so only the gate
+      // can account for its absence here.
+      expect(hudPlayControl()).toBeNull();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+});
+
+describe('the map footer', () => {
+  const configFor = (footer: boolean) => {
+    return {
+      footer,
+      leftSidebar: { initialState: 'open' as const, ...preview },
+    };
+  };
+
+  const renderFooter = (footer: boolean, variable = 'a1') => {
+    return render(
+      <GeovisWorkspace
+        config={configFor(footer)}
+        visualizationSpec={visualizationSpec}
+        variables={{ variable }}
+      />,
+      { wrapper: Provider }
+    );
+  };
+
+  /**
+   * The sidebar's own footer names the variation too, so plain text queries
+   * cannot tell the two apart. The map footer is the only one carrying the
+   * label as a `title` — it needs one anyway, to reveal a truncated label.
+   */
+  const mapFooter = (label: string) => {
+    return screen.queryByTitle(label);
+  };
+
+  test('mounts only when config.footer is set', () => {
+    renderFooter(false);
+    expect(mapFooter('Item A1')).toBeNull();
+  });
+
+  test('names the selected variation, and follows the selection', () => {
+    const { rerender } = renderFooter(true);
+    expect(mapFooter('Item A1')).toBeInTheDocument();
+
+    rerender(
+      <GeovisWorkspace
+        config={configFor(true)}
+        visualizationSpec={visualizationSpec}
+        variables={{ variable: 'b1' }}
+      />
+    );
+
+    expect(mapFooter('Item B1')).toBeInTheDocument();
+    expect(mapFooter('Item A1')).toBeNull();
+  });
+
+  test('survives the sidebar closing', async () => {
+    renderFooter(true);
+
+    await click(screen.getByRole('button', { name: 'Close menu' }));
+
+    // The sidebar took its own footer with it; this one is what still names
+    // the view, which is the whole reason it exists.
+    expect(
+      screen.getByRole('button', { name: 'Open menu' })
+    ).toBeInTheDocument();
+    expect(mapFooter('Item A1')).toBeInTheDocument();
+  });
+
+  test('renders nothing when no variation matches the selection', () => {
+    renderFooter(true, '__no_such_variation__');
+
+    expect(mapFooter('Item A1')).toBeNull();
+    expect(mapFooter('Item B1')).toBeNull();
+  });
+});
+
+describe('the map footer position', () => {
+  const renderAt = (footer: GeovisWorkspaceConfig['footer']) => {
+    return render(
+      <GeovisWorkspace
+        config={{ footer, leftSidebar: { initialState: 'open', ...preview } }}
+        visualizationSpec={visualizationSpec}
+        variables={{ variable: 'a1' }}
+      />,
+      { wrapper: Provider }
+    );
+  };
+
+  /**
+   * Asserted through the anchoring edges rather than a class name: `left: 0`
+   * versus `right: 0` versus the centring translate is the whole difference
+   * between the three positions.
+   */
+  const styleOf = (label: string) => {
+    const node = screen.getByTitle(label);
+    return window.getComputedStyle(node);
+  };
+
+  test('centres by default, on both the boolean and an empty object', () => {
+    const { unmount } = renderAt(true);
+    expect(styleOf('Item A1').transform).toContain('translateX(-50%)');
+
+    unmount();
+    renderAt({});
+    expect(styleOf('Item A1').transform).toContain('translateX(-50%)');
+  });
+
+  test('hugs the left edge on position: left', () => {
+    renderAt({ position: 'left' });
+
+    const style = styleOf('Item A1');
+    expect(style.left).toBe('0px');
+    expect(style.transform).not.toContain('translateX');
+  });
+
+  test('hugs the right edge on position: right', () => {
+    renderAt({ position: 'right' });
+
+    const style = styleOf('Item A1');
+    expect(style.right).toBe('0px');
+    expect(style.transform).not.toContain('translateX');
+  });
+});
+
+describe('gate and footer edge cases', () => {
+  test('the footer renders nothing when there is no sidebar to read', () => {
+    render(
+      <GeovisWorkspace
+        config={{ footer: true }}
+        visualizationSpec={visualizationSpec}
+      />,
+      { wrapper: Provider }
+    );
+
+    // No variations section means no variation to name; the bar stays away
+    // rather than rendering empty.
+    expect(screen.queryByTitle('Item A1')).toBeNull();
+  });
+
+  test('the footer steps above the compact timeline bar', async () => {
+    mockViewport(390);
+    jest.useFakeTimers();
+    try {
+      render(
+        <GeovisWorkspace
+          config={{
+            footer: true,
+            leftSidebar: { initialState: 'open', ...closeOnPlayPreview },
+          }}
+          visualizationSpec={visualizationSpec}
+          variables={{ variable: 'a1' }}
+        />,
+        { wrapper: Provider }
+      );
+
+      expect(window.getComputedStyle(screen.getByTitle('Item A1')).bottom).toBe(
+        '0px'
+      );
+
+      await openFiltros();
+      await click(screen.getByRole('button', { name: 'Play' }));
+
+      // The HUD now owns the bottom edge, so the bar lifts clear of it instead
+      // of hiding underneath.
+      expect(
+        window.getComputedStyle(screen.getByTitle('Item A1')).bottom
+      ).not.toBe('0px');
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  test('a gate falls back to the variation default before the selection seeds', () => {
+    // An empty controlled selection: `selection['variable']` is undefined, so
+    // the gate has to read the variations body's `defaultValue` ('a1') to
+    // decide. Without that fallback every gated tab would start disabled.
+    render(
+      <GeovisWorkspace
+        config={{ leftSidebar: { initialState: 'open', ...gatedPreview } }}
+        visualizationSpec={visualizationSpec}
+        variables={{}}
+      />,
+      { wrapper: Provider }
+    );
+
+    expect(screen.getByRole('button', { name: 'Filtros' })).toBeEnabled();
+  });
+
+  test('keeps the selected section when every gate is closed', () => {
+    // A config that gates itself shut entirely: there is no enabled section to
+    // fall back to, so the card keeps showing the selected one rather than
+    // rendering headerless and empty.
+    const allGated: Preview = {
+      sections: preview.sections.map((section) => {
+        return {
+          ...section,
+          enabledWhen: { menuId: 'variable', values: ['__none__'] },
+        };
+      }),
+    };
+
+    render(
+      <GeovisWorkspace
+        config={{ leftSidebar: { initialState: 'open', ...allGated } }}
+        visualizationSpec={visualizationSpec}
+        variables={{ variable: 'a1' }}
+      />,
+      { wrapper: Provider }
+    );
+
+    expect(screen.getByRole('button', { name: 'Variações' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Item A1' })).toBeInTheDocument();
+  });
+});
+
+test('a gate on a menu no section drives fails closed', () => {
+  // Nothing writes `__ghost__`, so the gate can never resolve a value. Failing
+  // closed makes a typo'd `menuId` visible as a permanently dimmed tab, rather
+  // than silently behaving as if the gate were not there.
+  const ghostGated: Preview = {
+    sections: preview.sections.map((section) => {
+      return section.body.kind === 'filters'
+        ? {
+            ...section,
+            enabledWhen: { menuId: '__ghost__', values: ['anything'] },
+          }
+        : section;
+    }),
+  };
+
+  render(
+    <GeovisWorkspace
+      config={{ leftSidebar: { initialState: 'open', ...ghostGated } }}
+      visualizationSpec={visualizationSpec}
+      variables={{ variable: 'a1' }}
+    />,
+    { wrapper: Provider }
+  );
+
+  expect(screen.getByRole('button', { name: 'Filtros' })).toBeDisabled();
 });

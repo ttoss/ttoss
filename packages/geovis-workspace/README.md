@@ -115,6 +115,23 @@ A `timeline` that declares a `menuId` publishes its `defaultValue ?? min` to the
 shared selection on mount, so an uncontrolled parent learns the initial value
 without moving the slider.
 
+Below the 640px breakpoint a timeline also gets a **HUD**: a control bar anchored
+to the bottom of the map, carrying the current value, a 3px rule marking where in
+the range playback sits, and prev / play-pause / next at touch size. No
+configuration turns it on — declaring a timeline is enough, and the rule is
+derived from `min`/`max`/`step`, so it draws with or without `histogram` (only
+the record count beside the value needs that data). It appears once play has been pressed and the
+sidebar is closed, which is what `closeOnPlay` produces: play would otherwise
+take the pause button away with the sidebar and leave the time-lapse running
+unattended. It survives pausing (so play can resume from it), hides while the
+sidebar is open, and can be dismissed until the next play. Above the breakpoint
+it never renders, since the sidebar's own control never leaves the screen.
+
+While the bar shows, the map's layer control is lifted clear of it by setting
+`control.offset.y` — the same mechanism that pushes the control sideways past an
+open sidebar, so the two compose. The compact legend panel rises with it for
+free: GeoVis anchors that panel off the control's own gap.
+
 ## Slots
 
 The workspace is built from six named slots. `map` fills the main area;
@@ -249,12 +266,13 @@ appears as an always-on placeholder.
 ### `GeovisWorkspaceConfig`
 
 | Property       | Type                                                                  | Description                                                                                                        |
-| -------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| -------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------- |
 | `appearance`   | `'card' \| 'bare'`                                                    | Container framing. `'card'` (default) draws a border/radius/background; `'bare'` fills edge-to-edge for embedding. |
 | `slots`        | `Partial<Record<GeovisWorkspaceSlotName, GeovisWorkspaceSlotConfig>>` | Per-slot override/hide. Omit an entry for the default.                                                             |
 | `legend`       | `GeovisWorkspaceLegendConfig`                                         | Content for the `legend` slot's default panel.                                                                     |
 | `leftSidebar`  | `GeovisWorkspaceLeftSidebarState`                                     | Left sidebar sections and open/closed state.                                                                       |
 | `rightSidebar` | `GeovisWorkspaceRightSidebarState`                                    | Right sidebar title, open/closed state, and detail API.                                                            |
+| `footer`       | `boolean                                                              | GeovisWorkspaceFooterConfig`                                                                                       | Shows a slim bar flush against the map’s bottom edge naming the selected variation. Omitted or `false`, nothing renders; `true` uses the defaults; `{ position: 'left' | 'center' | 'right' }`picks the edge it hugs (default`'center'`). Needs a `variations` section to name. |
 
 ### `GeovisWorkspaceSlotName`
 
@@ -285,14 +303,24 @@ breaking.
 | `body`   | `variations` \| `filters`                       | The section's content, discriminated by `kind`. |
 
 A **`variations`** body (`kind: 'variations'`) has a `menuId` (the selection
-key it drives), an optional `defaultValue`, and `groups` — each group
+key it drives), an optional `defaultValue`, an optional `closeOnSelect`, and
+`groups` — each group
 `{ id, label, icon?, color?, variations: [{ value, label, icon? }] }`; the
-groups are flattened into one ordered list. A **`filters`** body
+groups are flattened into one ordered list. `closeOnSelect` closes the sidebar
+as soon as a variation is picked, so the map it just recolored is visible
+without a second tap; it lives on the body, not on `leftSidebar`, because a
+`filters` section's timeline writes to the selection on every auto-advance tick
+and must not close anything. A **`filters`** body
 (`kind: 'filters'`) has `blocks` — each block
 `{ id, title, icon?, defaultOpen?, control }`, where `control` is a `timeline`
-(`{ kind, menuId?, min, max, step?, defaultValue?, histogram?, unitLabel? }`),
-`chips` (`{ kind, options, multiple?, defaultSelected? }`), or `locator`
-(`{ kind, placeholder?, minChars?, options }`).
+(`{ kind, menuId?, min, max, step?, defaultValue?, histogram?, unitLabel?, closeOnPlay? }`
+— `closeOnPlay` clears the sidebar off the map when playback starts, and only
+then: not on pause, the steppers, or each auto-advance tick),
+`chips` (`{ kind, menuId?, options, multiple?, defaultSelected? }` — with a
+`menuId` the active ids reach `selection[menuId]` joined by commas, `''` when
+none are active, which is both what the one-string-per-key selection holds and
+what a permalink needs; without one the selection stays visual-only), or
+`locator` (`{ kind, placeholder?, minChars?, options }`).
 
 ### `GeovisWorkspaceRightSidebarState`
 

@@ -76,4 +76,24 @@ export const messages = defineMessages({
     description:
       'Label for the timeline button that stops the auto-advancing value in the preview sidebar.',
   },
+  timelineHudCount: {
+    defaultMessage: '{count} rec.',
+    description:
+      'Abbreviated record count beside the current value in the compact timeline bar anchored to the map.',
+  },
+  timelineHudClose: {
+    defaultMessage: 'Close timeline',
+    description:
+      'Accessible label for the button that dismisses the compact timeline bar anchored to the map.',
+  },
+  timelineHudPrevious: {
+    defaultMessage: 'Previous step',
+    description:
+      'Accessible label for the back stepper in the compact timeline bar anchored to the map.',
+  },
+  timelineHudNext: {
+    defaultMessage: 'Next step',
+    description:
+      'Accessible label for the forward stepper in the compact timeline bar anchored to the map.',
+  },
 });

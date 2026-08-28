@@ -94,13 +94,16 @@ const VariationRow = ({
  * the shared selection (keyed by `menuId`), recoloring the map. Adapted to the
  * single coral accent — the per-group/per-variation colors from config are not
  * used, and the groups only set the list order.
+ *
+ * With `body.closeOnSelect`, picking a row also closes the sidebar, so the map
+ * it just recolored is visible without a second tap.
  */
 export const VariationsTab = ({
   body,
 }: {
   body: GeovisWorkspaceSidebarVariationsBody;
 }) => {
-  const { selection, setSelection } = useGeovisWorkspace();
+  const { selection, setSelection, setLeftSidebarOpen } = useGeovisWorkspace();
   const { menuId } = body;
 
   const selectedValue = selection[menuId] ?? body.defaultValue;
@@ -119,6 +122,9 @@ export const VariationsTab = ({
             on={variation.value === selectedValue}
             onSelect={() => {
               setSelection({ menuId, value: variation.value });
+              if (body.closeOnSelect) {
+                setLeftSidebarOpen({ open: false });
+              }
             }}
           />
         );

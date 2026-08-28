@@ -1,4 +1,8 @@
 {
+  "+YBKEN": {
+    "defaultMessage": "Next step",
+    "description": "Accessible label for the forward stepper in the compact timeline bar anchored to the map."
+  },
   "+cy6i0": {
     "defaultMessage": "Two map data entries declare the same dimension for the same source.",
     "description": "Warnings panel: mapData color/size dimension collides."
@@ -42,6 +46,10 @@
   "AVBgd7": {
     "defaultMessage": "Two sources conflict with each other.",
     "description": "Warnings panel: two sources declare overlapping scope."
+  },
+  "BJLxvK": {
+    "defaultMessage": "Close timeline",
+    "description": "Accessible label for the button that dismisses the compact timeline bar anchored to the map."
   },
   "IU+fm9": {
     "defaultMessage": "Open details",
@@ -91,6 +99,10 @@
     "defaultMessage": "The size mode configuration is invalid.",
     "description": "Warnings panel: sizeBy.mode is malformed."
   },
+  "Vd+Q3o": {
+    "defaultMessage": "{count} rec.",
+    "description": "Abbreviated record count beside the current value in the compact timeline bar anchored to the map."
+  },
   "Z+sHcw": {
     "defaultMessage": "{count, plural, one {# source} other {# sources}}",
     "description": "Metadata panel: number of data sources in the current spec."
@@ -130,6 +142,10 @@
   "ncOMIu": {
     "defaultMessage": "Close menu",
     "description": "Accessible label for the button that closes the left sidebar."
+  },
+  "oeivQo": {
+    "defaultMessage": "Previous step",
+    "description": "Accessible label for the back stepper in the compact timeline bar anchored to the map."
   },
   "s0Ww26": {
     "defaultMessage": "Map type: {map_type}",
