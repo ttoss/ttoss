@@ -37,7 +37,7 @@ export type IntentIssueCode =
   | 'sensitive-filter-field'
   | 'unsupported-filter-operator';
 
-/** Maps every `IntentIssueCode` this package can actually emit to its `IntentResultStatus` category (PRD-005 plan D9's `no-matching-dataset` rename included). */
+/** Maps every `IntentIssueCode` this package can actually emit to its `IntentResultStatus` category (PRD-005 plan D4's `no-matching-dataset` rename included). */
 export const INTENT_ISSUE_CODE_STATUS: Record<
   IntentIssueCode,
   IntentResultStatus
