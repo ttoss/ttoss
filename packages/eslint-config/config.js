@@ -256,17 +256,25 @@ export default defineConfig(
         },
       ],
 
-      // Test files legitimately have many test cases, long setup blocks, and
-      // deeply nested assertions — complexity/size rules add noise without value.
+      // Only the rules whose shape is wrong for a test suite are disabled here,
+      // measured across the repo's test files rather than assumed:
+      //
+      //   max-lines-per-function — a `describe` block is one function, so a
+      //     whole suite counts as a single 80-line function
+      //   max-nested-callbacks   — `describe > describe > test > callback` is
+      //     the standard shape of a suite, not accidental nesting
+      //   max-lines              — table-driven suites are legitimately long
+      //   complexity             — a handful of table-driven helpers exceed it
+      //   no-identical-functions — near-identical arrange/assert blocks are how
+      //     a suite stays readable, not duplication to factor out
+      //
+      // max-depth, max-params and cognitive-complexity are deliberately NOT
+      // disabled: they report zero violations across the test suites, so
+      // turning them off buys nothing and gives up the protection.
       complexity: 'off',
-      'max-depth': 'off',
       'max-lines': 'off',
       'max-lines-per-function': 'off',
       'max-nested-callbacks': 'off',
-      'max-params': 'off',
-      'sonarjs/cognitive-complexity': 'off',
-      // Test cases are deliberately repetitive — near-identical arrange/assert
-      // blocks are how a suite stays readable, not duplication to factor out.
       'sonarjs/no-identical-functions': 'off',
     },
   },
