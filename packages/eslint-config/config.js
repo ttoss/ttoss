@@ -256,25 +256,40 @@ export default defineConfig(
         },
       ],
 
-      // Only the rules whose shape is wrong for a test suite are disabled here,
-      // measured across the repo's test files rather than assumed:
+      // Test files get their own thresholds rather than a blanket opt-out. The
+      // source limits are calibrated for production code, and applying them
+      // verbatim here reports 399 violations across 39% of the suites — noise
+      // that buys nothing and invites blanket eslint-disable comments. These
+      // values were picked from the actual distribution across the repo's test
+      // files so that only genuine outliers report.
       //
-      //   max-lines-per-function — a `describe` block is one function, so a
-      //     whole suite counts as a single 80-line function
-      //   max-nested-callbacks   — `describe > describe > test > callback` is
-      //     the standard shape of a suite, not accidental nesting
-      //   max-lines              — table-driven suites are legitimately long
-      //   complexity             — a handful of table-driven helpers exceed it
+      // `describe > describe > test > callback` is depth 4, so the source limit
+      // of 3 flags the standard shape of a suite. Every violation at the source
+      // limit was depth 4 or 5; 5 reports none of them and still catches deeper
+      // accidental nesting.
+      'max-nested-callbacks': ['error', { max: 5 }],
+      // Suites run long legitimately. At 400 lines, 49 files report; at 1000,
+      // only the five genuinely unwieldy suites (1033–1645 lines) do.
+      'max-lines': [
+        'error',
+        { max: 1000, skipBlankLines: true, skipComments: true },
+      ],
+      // Test bodies are mostly linear, so the few that breach this are real:
+      // at 15 only two report, at complexity 21 and 27.
+      complexity: ['error', { max: 15 }],
+
+      // These two stay off, for reasons no threshold fixes:
+      //
+      //   max-lines-per-function — counts a `describe` callback as a function,
+      //     so an entire suite is measured as one. The unit is wrong, not the
+      //     limit: 158 files report, with a median of 122 lines.
       //   no-identical-functions — near-identical arrange/assert blocks are how
-      //     a suite stays readable, not duplication to factor out
+      //     a suite stays readable, not duplication to factor out.
       //
-      // max-depth, max-params and cognitive-complexity are deliberately NOT
-      // disabled: they report zero violations across the test suites, so
-      // turning them off buys nothing and gives up the protection.
-      complexity: 'off',
-      'max-lines': 'off',
+      // max-depth, max-params and cognitive-complexity are NOT relaxed at all:
+      // they report zero violations across the suites, so the source limits
+      // already fit test code.
       'max-lines-per-function': 'off',
-      'max-nested-callbacks': 'off',
       'sonarjs/no-identical-functions': 'off',
     },
   },

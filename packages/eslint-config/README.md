@@ -24,7 +24,7 @@ export default [...ttossEslintConfig];
 
 To keep code understandable and testable, this config limits cyclomatic complexity, cognitive complexity, and module size, and rejects duplicated branches, identical functions, and assignments that are never read. The rationale is explained in [Cognitive Complexity — because testability, understandability, and changeability matter](https://www.sonarsource.com/blog/cognitive-complexity-because-testability-understandability-and-changeability-matter/).
 
-For the current rule values, see [`config.js`](https://github.com/ttoss/ttoss/blob/main/packages/eslint-config/config.js). Test files (`*.spec.ts`, `*.test.ts`, `*.spec.tsx`, `*.test.tsx`) opt out of only the rules whose shape is wrong for a suite — a `describe` block counts as one long function, nested `describe`s are the standard shape, and repetitive arrange/assert blocks are how a suite stays readable. Depth, parameter count and cognitive complexity still apply there.
+For the current rule values, see [`config.js`](https://github.com/ttoss/ttoss/blob/main/packages/eslint-config/config.js). Test files (`*.spec.ts`, `*.test.ts`, `*.spec.tsx`, `*.test.tsx`) get thresholds calibrated for suites rather than a blanket opt-out: file length, callback nesting and cyclomatic complexity are all still enforced, just at limits picked so only genuine outliers report. Depth, parameter count and cognitive complexity apply unchanged. Only two rules are off there — `max-lines-per-function`, which counts a whole `describe` block as one function, and `no-identical-functions`, since repetitive arrange/assert blocks are how a suite stays readable.
 
 ### What this config cannot enforce
 
