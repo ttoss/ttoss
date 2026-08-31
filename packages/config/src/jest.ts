@@ -48,6 +48,16 @@ export const defaultConfig: Config = {
     '^.+\\.[jt]sx?$': 'babel-jest',
     '^.+\\.mjs$': 'babel-jest',
   },
+  /**
+   * Jest defaults to 5s, which is too tight for work that is deliberately
+   * slow — password hashing at OWASP iteration counts, or `userEvent`
+   * driving a component library — and produced CI timeouts that never
+   * reproduced locally. This raises the ceiling rather than weakening any
+   * assertion: a genuinely hung test still fails, just later. A package
+   * needing more (see `@ttoss/fsl-bench`) overrides it, since the package
+   * config wins the merge.
+   */
+  testTimeout: 30_000,
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
