@@ -364,7 +364,6 @@ export const WithCustomHeader: StoryObj = {
                 marginLeft: 'auto',
               }}
             >
-              {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
               <Text sx={{ fontSize: 'sm', color: 'text.secondary' }}>
                 Last updated: {new Date().toLocaleString()}
               </Text>
@@ -406,9 +405,7 @@ const WithFiltersChangeStory = () => {
   return (
     <Stack sx={{ gap: '4', width: '100%', height: '100vh', padding: '4' }}>
       <Box>
-        {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
         <Heading>Dashboard with Filter Change Handling</Heading>
-        {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
         <Text sx={{ marginTop: '2' }}>
           Open the browser console to see filter changes logged when you modify
           any filter.
@@ -1128,9 +1125,7 @@ const WithCustomHeaderChildrenStory = () => {
         onFiltersChange={setFilters}
         headerChildren={
           <>
-            {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
             <Button variant="secondary">Refresh</Button>
-            {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
             <Button variant="primary">Share</Button>
           </>
         }
@@ -1240,7 +1235,6 @@ const WithCardDetailStory = () => {
           borderColor: 'display.border.default',
         }}
       >
-        {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
         <Text sx={{ fontSize: 'sm', color: 'display.text.secondary.default' }}>
           👆 Click any card to open a full-width detail panel on the row below.
           Click the same card again to close. Click a different card to move it.
@@ -1321,7 +1315,6 @@ const WithCardDetailStory = () => {
                         >
                           {}
                           <Text sx={{ fontSize: 'sm' }}>{row.campaign}</Text>
-                          {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
                           <Text sx={{ fontSize: 'sm', fontWeight: 'bold' }}>
                             ${row.value.toLocaleString()}
                           </Text>
@@ -1467,7 +1460,6 @@ const ControlledSelectionStory = () => {
           borderRadius: 'default',
         }}
       >
-        {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
         <Text sx={{ fontSize: 'sm', fontWeight: 'bold', mb: 2 }}>
           External selection control
         </Text>
@@ -1483,7 +1475,6 @@ const ControlledSelectionStory = () => {
                   setSelectedKey(isSelected ? null : item.i);
                 }}
               >
-                {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
                 {isSelected ? '✓ ' : ''}
                 {card.title}
               </Button>
@@ -1507,7 +1498,6 @@ const ControlledSelectionStory = () => {
             color: 'display.text.secondary.default',
           }}
         >
-          {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
           Selected: {selectedKey ?? 'none'}
         </Text>
       </Box>
@@ -1529,7 +1519,6 @@ const ControlledSelectionStory = () => {
                   {}✕ Close
                 </Button>
               </Flex>
-              {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
               <Text sx={{ color: 'display.text.secondary.default' }}>
                 Detail panel for {card.title} — controlled externally.
               </Text>
@@ -1570,13 +1559,11 @@ const MultiSlotStory = () => {
           borderRadius: 'default',
         }}
       >
-        {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
         <Text sx={{ fontSize: 'sm' }}>
-          Click any card to expand it. With{' '}
-          {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
-          <code>{'detailMode="multi"'}</code>, each card gets its own
-          independent slot — multiple cards can be open at the same time. Click
-          the same card again (or its Close button) to collapse it.
+          Click any card to expand it. With <code>{'detailMode="multi"'}</code>,
+          each card gets its own independent slot — multiple cards can be open
+          at the same time. Click the same card again (or its Close button) to
+          collapse it.
         </Text>
       </Box>
       <Dashboard
@@ -1604,7 +1591,6 @@ const MultiSlotStory = () => {
               </Flex>
               <Flex sx={{ gap: 4, flexWrap: 'wrap' }}>
                 <Box sx={{ flex: '1 1 240px' }}>
-                  {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
                   <Text sx={{ fontSize: 'sm', fontWeight: 'bold', mb: 3 }}>
                     Top Campaigns
                   </Text>
@@ -1622,7 +1608,6 @@ const MultiSlotStory = () => {
                         >
                           {}
                           <Text sx={{ fontSize: 'sm' }}>{row.campaign}</Text>
-                          {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
                           <Text sx={{ fontSize: 'sm', fontWeight: 'bold' }}>
                             ${row.value.toLocaleString()}
                           </Text>
@@ -1632,7 +1617,6 @@ const MultiSlotStory = () => {
                   </Stack>
                 </Box>
                 <Box sx={{ flex: '1 1 240px' }}>
-                  {/* eslint-disable-next-line formatjs/no-literal-string-in-jsx */}
                   <Text sx={{ fontSize: 'sm', fontWeight: 'bold', mb: 3 }}>
                     Daily Trend
                   </Text>

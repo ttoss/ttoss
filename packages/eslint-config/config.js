@@ -100,7 +100,6 @@ export default defineConfig(
       'formatjs/enforce-placeholders': ['error'],
       'formatjs/no-camel-case': ['error'],
       'formatjs/no-emoji': ['error'],
-      'formatjs/no-literal-string-in-jsx': 'warn',
       'formatjs/no-multiple-whitespaces': ['error'],
       'formatjs/no-multiple-plurals': 'error',
       'formatjs/no-offset': 'error',
@@ -200,6 +199,19 @@ export default defineConfig(
         'error',
         { max: 150, skipBlankLines: true, skipComments: true },
       ],
+    },
+  },
+  {
+    // Untranslated JSX text only matters in what a package ships: tests,
+    // stories and the docs sites are allowed hardcoded copy. Scoping it here
+    // rather than repo-wide is what makes it enforceable — as a repo-wide
+    // 'warn' it reported 2216 times and `eslint --quiet` hid every one.
+    files: ['packages/*/src/**/*.tsx'],
+    rules: {
+      // No `props.exclude` here: it was measured to change nothing. The reports
+      // next to an <Icon /> come from adjacent text children, not from the icon
+      // attribute, so excluding the attribute is a no-op.
+      'formatjs/no-literal-string-in-jsx': 'error',
     },
   },
   {

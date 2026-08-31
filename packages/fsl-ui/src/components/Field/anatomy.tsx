@@ -547,6 +547,13 @@ export const useFieldLayout = (): FieldLayout => {
  * for a character every font already has, and so it inherits the label's size
  * and weight for free.
  */
+/**
+ * Decoration marking a required field. Rendered inside an `aria-hidden`
+ * element — the accessible requirement is conveyed by the field itself — so it
+ * is a glyph rather than translatable copy.
+ */
+const NECESSITY_MARKER = '*';
+
 export const FieldNecessityMarker = ({
   isRequired,
 }: {
@@ -562,7 +569,7 @@ export const FieldNecessityMarker = ({
       data-part="necessityMarker"
       style={{ marginInlineStart: vars.spacing.gap.inline.xs }}
     >
-      *
+      {NECESSITY_MARKER}
     </span>
   );
 };

@@ -1,7 +1,7 @@
 import { Flex, Image, Text } from '@ttoss/ui';
-import * as React from 'react';
+import type * as React from 'react';
 
-import { MultistepFlowMessageBase } from './types';
+import type { MultistepFlowMessageBase } from './types';
 
 export type MultistepFlowMessageImageTextProps = MultistepFlowMessageBase & {
   variant: 'image-text';

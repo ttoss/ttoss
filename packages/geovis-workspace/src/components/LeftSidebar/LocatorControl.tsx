@@ -1,8 +1,10 @@
+import { useI18n } from '@ttoss/react-i18n';
 import { Icon } from '@ttoss/react-icons';
 import { Box, Text } from '@ttoss/ui';
 import * as React from 'react';
 
 import type { GeovisWorkspaceSidebarLocatorFilter } from '../../context/GeovisWorkspaceContext';
+import { messages } from '../../messages';
 import { COLOR, FONT_HEAD, FONT_MONO } from './theme';
 
 type LocatorOption = GeovisWorkspaceSidebarLocatorFilter['options'][number];
@@ -143,6 +145,10 @@ const Results = ({
 
 /** The card summarizing the currently selected option. */
 const SelectedCard = ({ option }: { option: LocatorOption }) => {
+  const {
+    intl: { formatMessage },
+  } = useI18n();
+
   return (
     <Box
       sx={{
@@ -163,7 +169,7 @@ const SelectedCard = ({ option }: { option: LocatorOption }) => {
           marginBottom: '2px',
         }}
       >
-        Selecionado
+        {formatMessage(messages.locatorSelected)}
       </Text>
       <Text sx={{ fontSize: '13px', fontWeight: 500, color: COLOR.textStrong }}>
         {option.label}
@@ -186,6 +192,10 @@ const SelectedCard = ({ option }: { option: LocatorOption }) => {
 
 /** The zoom action, enabled only when an option is selected. */
 const ZoomButton = ({ selected }: { selected: LocatorOption | null }) => {
+  const {
+    intl: { formatMessage },
+  } = useI18n();
+
   const stateSx = selected
     ? {
         cursor: 'pointer',
@@ -223,7 +233,9 @@ const ZoomButton = ({ selected }: { selected: LocatorOption | null }) => {
       }}
     >
       <Icon icon="lucide:zoom-in" style={{ fontSize: '12px' }} />
-      {selected ? `Zoom em ${selected.label}` : 'Selecione um município'}
+      {selected
+        ? formatMessage(messages.locatorZoomTo, { label: selected.label })
+        : formatMessage(messages.locatorPlaceholder)}
     </Box>
   );
 };
