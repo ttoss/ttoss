@@ -92,17 +92,16 @@ Opaque API tokens work the same way — hash the presented token with `@ttoss/au
 
 ### Client discovery
 
-The [MCP authorization spec](https://spec.modelcontextprotocol.io/specification/2025-03-26/basic/authorization/) requires two behaviors so clients like Claude and Cursor can bootstrap OAuth without being pre-configured, and `createMcpRouter` handles both. The lifecycle methods `initialize` and `tools/list` bypass verification so the client can discover the server before authenticating — override the set with `publicMethods` (pass `[]` to require a token for every method). And when `resourceMetadataUrl` is set, a `401` advertises the [RFC 9728](https://www.rfc-editor.org/rfc/rfc9728) protected-resource document via `WWW-Authenticate: Bearer resource_metadata="…"`, pointing the client at the metadata that names the authorization server.
+The [MCP authorization spec](https://spec.modelcontextprotocol.io/specification/2025-03-26/basic/authorization/) requires two behaviors so clients like Claude and Cursor can bootstrap OAuth without being pre-configured, and `createMcpRouter` handles both. The lifecycle methods `initialize` and `tools/list` bypass verification so the client can discover the server before authenticating — override the set with `publicMethods` (pass `[]` to require a token for every method). And a `401` advertises the [RFC 9728](https://www.rfc-editor.org/rfc/rfc9728) protected-resource document via `WWW-Authenticate: Bearer resource_metadata="…"`, pointing the client at the metadata that names the authorization server.
 
 ```typescript
 const mcpRouter = createMcpRouter(mcpServer, {
   auth: {
     cognitoUserPool: { userPoolId: '...', clientId: '...' },
+    // Serves the metadata document and points 401s at it. The
+    // resource_metadata URL is derived from these two — do not hand-write it.
     resourceServerUrl: 'https://mcp.example.com',
     authorizationServerUrl: process.env.COGNITO_ISSUER_URL!,
-    // Emit RFC 9728 discovery on 401.
-    resourceMetadataUrl:
-      'https://mcp.example.com/.well-known/oauth-protected-resource',
     // Set publicMethods: [] when you need OAuth clients to authenticate
     // before anything else (see note below). Defaults to ['initialize', 'tools/list'].
     publicMethods: [],
@@ -110,9 +109,9 @@ const mcpRouter = createMcpRouter(mcpServer, {
 });
 ```
 
-Setting both `resourceServerUrl` and `authorizationServerUrl` also serves that metadata document at `/.well-known/oauth-protected-resource`, completing the discovery chain the `WWW-Authenticate` header points to.
+Setting both `resourceServerUrl` and `authorizationServerUrl` serves that metadata document — at the root and at the RFC 9728 §3.1 path-derived location — and derives the `WWW-Authenticate` URL from the same values, so the header cannot name a location the router does not serve. Completing the discovery chain takes no third field.
 
-**One document per path.** `oauthServer({ resource })` serves `/.well-known/oauth-protected-resource` too, so a deployment that hosts both halves ends up with two routers answering the same path — whichever mounted first wins, and nothing breaks because the bodies agree, which is exactly why nobody notices there are now two sources for one contract. When the authorization server is in the same deployment, set only `resourceMetadataUrl` on the MCP router and let the authorization server serve the document.
+**One document per path.** `oauthServer({ resource })` serves `/.well-known/oauth-protected-resource` too, so a deployment that hosts both halves ends up with two routers answering the same path — whichever mounted first wins, and nothing breaks because the bodies agree, which is exactly why nobody notices there are now two sources for one contract. When the authorization server is in the same deployment, leave `resourceServerUrl` and `authorizationServerUrl` off the MCP router, let the authorization server serve the document, and set `resourceMetadataUrl` on the MCP router to the location it serves it at. This is the one case where hand-writing that URL is right: the MCP router is deliberately not serving the document, so it has nothing to derive from, and without the field a `401` falls back to a bare `Bearer` that never starts discovery. Point it at the RFC 9728 location for the resource — `protectedResourceMetadataUrl({ resource })` from [`@ttoss/auth-core`](/docs/modules/packages/auth-core) computes it, which keeps the two halves agreeing without copying the derivation rule by hand.
 
 **Error envelopes swallow the `401`.** The router rejects with `ctx.throw(401, 'Unauthorized', { headers })`, and an app whose catch-all error middleware recognizes only its own error class turns that into a `500` with no `WWW-Authenticate` header. The client then gets an opaque server error where it expected the pointer to the authorization server, so discovery silently never starts and it reads like a client bug. Run caught values through `toHttpError` and `applyHttpErrorHeaders` from [`@ttoss/http-server`](/docs/modules/packages/http-server) before falling back to `500`.
 
