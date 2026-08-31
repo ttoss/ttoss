@@ -17,8 +17,20 @@
   "JEsxDw": {
     "defaultMessage": "Uploading..."
   },
+  "TqUkps": {
+    "defaultMessage": "Limpar Tudo",
+    "description": "Notifications menu: button clearing every notification."
+  },
   "XKyo5X": {
     "defaultMessage": "File Upload"
+  },
+  "d/l4Zg": {
+    "defaultMessage": "Deseja instalar o nosso aplicativo?",
+    "description": "PWA install banner: the question offering installation."
+  },
+  "dx4ZnR": {
+    "defaultMessage": "{name} logo",
+    "description": "OAuth consent: alt text for the requesting application logo."
   },
   "eRShvB": {
     "defaultMessage": "Maximum files reached"
@@ -29,12 +41,20 @@
   "fOOwej": {
     "defaultMessage": "{max_files, plural, one {Up to # file} other {Up to # files}}"
   },
+  "fcbTJg": {
+    "defaultMessage": "Nenhuma notificação",
+    "description": "Notifications menu: shown when there is nothing to list."
+  },
   "gy0Ynb": {
     "defaultMessage": "Click or drag files here"
   },
   "oYpm71": {
     "defaultMessage": "of {max}",
     "description": "Text shown before the max value, e.g. \"of 10\" or \"of ∞\"."
+  },
+  "rmaMPX": {
+    "defaultMessage": "Instalar",
+    "description": "PWA install banner: button that starts the installation."
   },
   "rskBv4": {
     "defaultMessage": "Unlimited",
