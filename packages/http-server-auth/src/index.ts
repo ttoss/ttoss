@@ -42,6 +42,10 @@ export {
   type OnAuthorizeResult,
   type OnRefreshTokenArgs,
   type OnRefreshTokenResult,
+  type ProtectedResourceMetadata,
+  protectedResourceMetadataDocument,
+  protectedResourceMetadataPaths,
+  protectedResourceMetadataUrl,
   type StoredAuthorizationCode,
 } from './oauthServer';
 export { isOriginAllowed } from './origin';
