@@ -63,7 +63,10 @@ export interface McpAuthOptions {
    *
    * Defaults to the location derived from `resourceServerUrl` + `path` — the
    * same location this router serves the document at — so the header cannot
-   * drift from the routes. Set it only to point at a document served
+   * drift from the routes. The default applies only when the document is
+   * actually served (both `resourceServerUrl` and `authorizationServerUrl`
+   * set); otherwise the header stays a bare `Bearer` rather than advertising a
+   * location with no route. Set it only to point at a document served
    * elsewhere; a hand-written value that names a location nothing serves fails
    * discovery silently.
    */
@@ -529,16 +532,31 @@ export const createMcpRouter = (
     const resourceUrl =
       base === undefined || path === '/' ? base : `${base}${path}`;
 
-    // The router already knows the two facts the metadata URL derives from, so
-    // it derives the default rather than making the consumer hand-write a URL
-    // that can silently name a location nothing serves — the same failure this
+    // Serving the document and advertising it are derived from **one** value,
+    // deliberately: both require `resourceServerUrl` *and*
+    // `authorizationServerUrl`, so binding them together is what stops a `401`
+    // from advertising a `resource_metadata` location whose route was never
+    // registered. Two independent conditions is exactly how that regressed
+    // once — gating the header on `resourceServerUrl` alone made a config with
+    // no `authorizationServerUrl` point every client at a 404.
+    const metadata =
+      resourceUrl !== undefined && auth.authorizationServerUrl !== undefined
+        ? {
+            document: protectedResourceMetadataDocument({
+              resource: resourceUrl,
+              authorizationServers: [auth.authorizationServerUrl],
+            }),
+            paths: protectedResourceMetadataPaths({ resource: resourceUrl }),
+            url: protectedResourceMetadataUrl({ resource: resourceUrl }),
+          }
+        : undefined;
+
+    // The router already knows the facts the metadata URL derives from, so it
+    // derives the default rather than making the consumer hand-write a URL that
+    // can silently name a location nothing serves — the same failure this
     // file's route registration fixes, one layer up. An explicit
     // `resourceMetadataUrl` still wins.
-    const resourceMetadataUrl =
-      auth.resourceMetadataUrl ??
-      (resourceUrl === undefined
-        ? undefined
-        : protectedResourceMetadataUrl({ resource: resourceUrl }));
+    const resourceMetadataUrl = auth.resourceMetadataUrl ?? metadata?.url;
 
     if (auth.publicMethods === undefined) {
       // `tools/list` exposing the full tool catalogue to unauthenticated
@@ -585,12 +603,7 @@ export const createMcpRouter = (
       await verify(ctx, next);
     };
 
-    if (resourceUrl !== undefined && auth.authorizationServerUrl) {
-      const body = protectedResourceMetadataDocument({
-        resource: resourceUrl,
-        authorizationServers: [auth.authorizationServerUrl],
-      });
-
+    if (metadata) {
       // `protectedResourceMetadataPaths` owns RFC 9728 §3.1's derivation rule
       // (the well-known segment goes between host and path, so a resource of
       // `https://host/mcp` is discovered at
@@ -598,11 +611,9 @@ export const createMcpRouter = (
       // the root as well, de-duplicated when the resource has no path.
       // Serving only the root made a spec-following client fail discovery
       // outright, measured against a deployed consumer mounted at `/mcp`.
-      for (const metadataPath of protectedResourceMetadataPaths({
-        resource: resourceUrl,
-      })) {
+      for (const metadataPath of metadata.paths) {
         router.get(metadataPath, (ctx: Context) => {
-          ctx.body = body;
+          ctx.body = metadata.document;
         });
       }
     }

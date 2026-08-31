@@ -88,9 +88,12 @@ describe('protectedResourceMetadataUrl', () => {
     ).toBe('https://host:8443/.well-known/oauth-protected-resource/api/mcp');
   });
 
-  test('falls back to the trimmed value when it is not an absolute URL', () => {
-    expect(protectedResourceMetadataUrl({ resource: 'not a url' })).toBe(
-      'not a url/.well-known/oauth-protected-resource'
-    );
+  test('throws rather than advertising an unparseable URL to clients', () => {
+    // `Paths` tolerates this (a bad route beats a crash at wiring time); this
+    // value goes into a response header, where garbage is a dead end for the
+    // client and invisible to whoever operates the server.
+    expect(() => {
+      return protectedResourceMetadataUrl({ resource: 'not a url' });
+    }).toThrow(/requires an absolute URL/);
   });
 });

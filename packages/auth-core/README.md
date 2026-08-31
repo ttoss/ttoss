@@ -330,6 +330,8 @@ protectedResourceMetadataUrl({ resource: 'https://host/mcp' });
 
 The subtlety worth centralising: RFC 9728 §3.1 derives the metadata URL by inserting the well-known segment **between the host and the resource's path** — `https://host/mcp` is discovered at `https://host/.well-known/oauth-protected-resource/mcp`, not at `https://host/mcp/.well-known/…` and not only at the root. A server that answers only at the root fails a client that applies the rule, so `protectedResourceMetadataPaths` returns every location the document must be served at (de-duplicated to just the root for an origin-only resource). `getWwwAuthenticateHeader` advertises the derived URL.
 
+The two differ on a malformed `resource` on purpose: `protectedResourceMetadataPaths` falls back to the root, because a path is matched against incoming requests and a bad value must not crash route registration, while `protectedResourceMetadataUrl` **throws**, because its result is handed to clients in a response header where an unparseable URL is a dead end they cannot work around and nobody operating the server would see.
+
 ### Client secrets
 
 `hashClientSecret` and `verifyClientSecret` hash a `client_secret` with SHA-256 and compare a presented value against a stored hash in constant time. Plain SHA-256 is deliberate: a registered secret is 32 random bytes, so there is no low-entropy guess space for `hashPassword`'s PBKDF2 to slow down.

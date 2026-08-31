@@ -701,6 +701,25 @@ describe('auth — resourceMetadataUrl default', () => {
     expect(res.status).toBe(401);
     expect(res.headers['www-authenticate']).toBe('Bearer');
   });
+
+  test('never advertises a location the router does not serve', async () => {
+    // The document needs both URLs, so the derived header needs both too:
+    // deriving it from `resourceServerUrl` alone advertised a 404.
+    const app = buildApp({
+      resourceServerUrl: 'https://mcp.example.com',
+      // authorizationServerUrl deliberately absent.
+    });
+
+    const res = await post(app);
+    expect(res.status).toBe(401);
+    expect(res.headers['www-authenticate']).toBe('Bearer');
+
+    // And the location a header would have named indeed has no route.
+    const doc = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource/mcp'
+    );
+    expect(doc.status).toBe(404);
+  });
 });
 
 describe('auth — OAuth Protected Resource metadata endpoint', () => {

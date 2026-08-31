@@ -110,6 +110,16 @@ export const protectedResourceMetadataPaths = (args: {
  * resource's own origin. This is the value to advertise in
  * `WWW-Authenticate: Bearer resource_metadata="…"`.
  *
+ * **Throws** when `resource` is not an absolute URL, unlike
+ * {@link protectedResourceMetadataPaths}, which falls back to the root. The
+ * asymmetry is deliberate: a path is matched against incoming requests, so
+ * tolerating a bad value costs a wrong route at worst and must not crash route
+ * registration — whereas this value is *handed to clients* in a response
+ * header, where an unparseable URL is a dead end the client cannot work around
+ * and nobody operating the server would see. Fail at wiring time instead.
+ *
+ * @throws {Error} when `resource` is not an absolute URL.
+ *
  * @example
  * ```typescript
  * protectedResourceMetadataUrl({ resource: 'https://host/mcp' });
@@ -117,9 +127,23 @@ export const protectedResourceMetadataPaths = (args: {
  * ```
  */
 export const protectedResourceMetadataUrl = (args: {
-  /** The resource identifier the document describes. */
+  /** The resource identifier the document describes. Must be an absolute URL. */
   resource: string;
 }): string => {
-  const { origin, path } = splitResource(args.resource);
-  return `${origin}${path ? `${WELL_KNOWN_PREFIX}${path}` : WELL_KNOWN_PREFIX}`;
+  const trimmed = args.resource.replace(/\/$/, '');
+
+  let url: URL;
+  try {
+    url = new URL(trimmed);
+  } catch {
+    throw new Error(
+      `protectedResourceMetadataUrl requires an absolute URL as "resource", ` +
+        `received ${JSON.stringify(args.resource)}. This value is advertised ` +
+        `to clients in WWW-Authenticate: Bearer resource_metadata="…", so it ` +
+        `cannot be derived from a relative or malformed identifier.`
+    );
+  }
+
+  const path = url.pathname === '/' ? '' : url.pathname.replace(/\/$/, '');
+  return `${url.origin}${path ? `${WELL_KNOWN_PREFIX}${path}` : WELL_KNOWN_PREFIX}`;
 };
