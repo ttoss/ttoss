@@ -638,6 +638,71 @@ describe('auth — public methods and RFC 9728 discovery', () => {
   });
 });
 
+describe('auth — resourceMetadataUrl default', () => {
+  const buildApp = (auth: Record<string, unknown>) => {
+    const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+    const app = new App();
+    app.use(bodyParser());
+    app.use(
+      createMcpRouter(mcpServer, {
+        auth: {
+          verifyToken: () => {
+            return Promise.reject(new Error('reject'));
+          },
+          publicMethods: [],
+          ...auth,
+        },
+      }).routes()
+    );
+    return app;
+  };
+
+  const post = (app: App) => {
+    return request(app.callback())
+      .post('/mcp')
+      .send(makeMcpRequest('initialize', initializeParams, 1))
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT);
+  };
+
+  test('401 advertises the location this router actually serves', async () => {
+    const res = await post(
+      buildApp({
+        resourceServerUrl: 'https://mcp.example.com',
+        authorizationServerUrl: 'https://auth.example.com',
+      })
+    );
+
+    // Derived from resourceServerUrl + path, so the header cannot name a
+    // location the router does not serve.
+    expect(res.status).toBe(401);
+    expect(res.headers['www-authenticate']).toBe(
+      'Bearer resource_metadata="https://mcp.example.com/.well-known/oauth-protected-resource/mcp"'
+    );
+  });
+
+  test('an explicit resourceMetadataUrl still wins', async () => {
+    const res = await post(
+      buildApp({
+        resourceServerUrl: 'https://mcp.example.com',
+        authorizationServerUrl: 'https://auth.example.com',
+        resourceMetadataUrl: 'https://elsewhere.example.com/prm',
+      })
+    );
+
+    expect(res.headers['www-authenticate']).toBe(
+      'Bearer resource_metadata="https://elsewhere.example.com/prm"'
+    );
+  });
+
+  test('falls back to a bare Bearer when there is no resourceServerUrl to derive from', async () => {
+    const res = await post(buildApp({}));
+
+    expect(res.status).toBe(401);
+    expect(res.headers['www-authenticate']).toBe('Bearer');
+  });
+});
+
 describe('auth — OAuth Protected Resource metadata endpoint', () => {
   test('resource includes the MCP mount path so clients following resource land on the working endpoint', async () => {
     const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });

@@ -1,5 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports -- value import required so declaration bundler emits `export { McpServer }` not `export type { McpServer }`
 import { McpServer } from '@modelcontextprotocol/server';
+import {
+  protectedResourceMetadataDocument,
+  protectedResourceMetadataPaths,
+  protectedResourceMetadataUrl,
+} from '@ttoss/auth-core';
 import { CognitoJwtVerifier } from '@ttoss/auth-core/amazon-cognito';
 import { Router } from '@ttoss/http-server';
 import { authMiddleware } from '@ttoss/http-server-auth';
@@ -52,8 +57,15 @@ export interface McpAuthOptions {
    */
   publicMethods?: string[];
   /**
-   * When set, a `401` carries `WWW-Authenticate: Bearer resource_metadata="…"`
-   * (RFC 9728) so MCP clients can discover the authorization server.
+   * URL advertised in `WWW-Authenticate: Bearer resource_metadata="…"`
+   * (RFC 9728) on a `401`, so MCP clients can discover the authorization
+   * server.
+   *
+   * Defaults to the location derived from `resourceServerUrl` + `path` — the
+   * same location this router serves the document at — so the header cannot
+   * drift from the routes. Set it only to point at a document served
+   * elsewhere; a hand-written value that names a location nothing serves fails
+   * discovery silently.
    */
   resourceMetadataUrl?: string;
   /**
@@ -81,14 +93,6 @@ export interface McpAuthOptions {
    */
   resourceIndicator?: string | string[];
 }
-
-/**
- * Well-known location of the OAuth Protected Resource Metadata document
- * (RFC 9728). Served both here and, for a non-root mount path, at the
- * path-derived location the spec's discovery rule produces.
- */
-const PROTECTED_RESOURCE_METADATA_PATH =
-  '/.well-known/oauth-protected-resource';
 
 /** MCP lifecycle/discovery methods reachable before a client authenticates. */
 const DEFAULT_PUBLIC_METHODS = ['initialize', 'tools/list'];
@@ -519,6 +523,23 @@ export const createMcpRouter = (
   if (auth) {
     const verifyToken = buildVerifyToken(auth);
 
+    // Append `path` to the base URL so clients that follow the `resource`
+    // value land on the actual MCP endpoint, not the bare origin.
+    const base = auth.resourceServerUrl?.replace(/\/$/, '');
+    const resourceUrl =
+      base === undefined || path === '/' ? base : `${base}${path}`;
+
+    // The router already knows the two facts the metadata URL derives from, so
+    // it derives the default rather than making the consumer hand-write a URL
+    // that can silently name a location nothing serves — the same failure this
+    // file's route registration fixes, one layer up. An explicit
+    // `resourceMetadataUrl` still wins.
+    const resourceMetadataUrl =
+      auth.resourceMetadataUrl ??
+      (resourceUrl === undefined
+        ? undefined
+        : protectedResourceMetadataUrl({ resource: resourceUrl }));
+
     if (auth.publicMethods === undefined) {
       // `tools/list` exposing the full tool catalogue to unauthenticated
       // callers is a surprising default for anyone who configured `auth`
@@ -549,7 +570,7 @@ export const createMcpRouter = (
         },
         requiredScopes: auth.requiredScopes,
       },
-      resourceMetadataUrl: auth.resourceMetadataUrl,
+      resourceMetadataUrl,
     });
 
     // Public lifecycle/discovery methods bypass verification so clients can
@@ -564,35 +585,25 @@ export const createMcpRouter = (
       await verify(ctx, next);
     };
 
-    if (auth.resourceServerUrl && auth.authorizationServerUrl) {
-      // Append `path` to the base URL so clients that follow the `resource`
-      // value land on the actual MCP endpoint, not the bare origin.
-      const base = auth.resourceServerUrl.replace(/\/$/, '');
-      const resourceUrl = path === '/' ? base : `${base}${path}`;
+    if (resourceUrl !== undefined && auth.authorizationServerUrl) {
+      const body = protectedResourceMetadataDocument({
+        resource: resourceUrl,
+        authorizationServers: [auth.authorizationServerUrl],
+      });
 
-      const serveMetadata = (ctx: Context) => {
-        ctx.body = {
-          resource: resourceUrl,
-          authorization_servers: [auth.authorizationServerUrl],
-        };
-      };
-
-      // RFC 9728 §3.1 derives the metadata URL from the resource identifier's
-      // *path*, inserting the well-known segment between host and path — so a
-      // resource of `https://host/mcp` is discovered at
-      // `https://host/.well-known/oauth-protected-resource/mcp`, not at the
-      // root. Serving only the root location made a spec-following client fail
-      // discovery outright, measured against a deployed consumer mounted at
-      // `/mcp`: the derived URL answered 404. Clients that instead follow the
-      // `resource_metadata` value in `WWW-Authenticate` (Claude does) reach the
-      // root document and were unaffected, which is why the gap went unnoticed.
-      //
-      // Both locations are served: the root for clients already relying on it,
-      // and the derived one for the spec's rule. `path === '/'` derives the
-      // root itself, so there is nothing extra to register in that case.
-      router.get(PROTECTED_RESOURCE_METADATA_PATH, serveMetadata);
-      if (path !== '/') {
-        router.get(`${PROTECTED_RESOURCE_METADATA_PATH}${path}`, serveMetadata);
+      // `protectedResourceMetadataPaths` owns RFC 9728 §3.1's derivation rule
+      // (the well-known segment goes between host and path, so a resource of
+      // `https://host/mcp` is discovered at
+      // `https://host/.well-known/oauth-protected-resource/mcp`) and returns
+      // the root as well, de-duplicated when the resource has no path.
+      // Serving only the root made a spec-following client fail discovery
+      // outright, measured against a deployed consumer mounted at `/mcp`.
+      for (const metadataPath of protectedResourceMetadataPaths({
+        resource: resourceUrl,
+      })) {
+        router.get(metadataPath, (ctx: Context) => {
+          ctx.body = body;
+        });
       }
     }
   }

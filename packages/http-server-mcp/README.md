@@ -314,6 +314,8 @@ The document is served at **two** locations, both unauthenticated:
 
 Serving only the root location makes a spec-following client fail discovery outright. When `path` is `'/'` the derivation produces the root itself, so only one route is registered.
 
+Both the locations and the document come from `protectedResourceMetadataPaths` / `protectedResourceMetadataDocument` in [`@ttoss/auth-core`](https://ttoss.dev/docs/modules/packages/auth-core), which every package here shares — so this router, `oauthServer`, `createProtectedResourceMetadataMiddleware`, and `getWwwAuthenticateHeader` cannot disagree about where the document lives.
+
 **With the built-in `auth` option** — add `resourceServerUrl` and `authorizationServerUrl`:
 
 ```typescript
@@ -370,25 +372,23 @@ The `WWW-Authenticate: Bearer resource_metadata="…"` header is how MCP clients
 The two behaviors the [MCP authorization spec](https://spec.modelcontextprotocol.io/specification/2025-03-26/basic/authorization/) requires for client bootstrapping are built into the `auth` option, so you no longer need the hand-rolled middleware shown above:
 
 - **`publicMethods`** — JSON-RPC methods that bypass verification, read from the request body's `method` field. Defaults to `['initialize', 'tools/list']` so clients can discover the server before authenticating. Pass `[]` to require a token for every method, or a custom list to change the exempt set. Leaving it unset serves the full tool catalogue — every tool name, description, and input schema — to unauthenticated callers, and logs a one-time warning explaining that and how to close it. Set `publicMethods` explicitly (even to the same default) to silence the warning.
-- **`resourceMetadataUrl`** — when set, a `401` responds with `WWW-Authenticate: Bearer resource_metadata="<resourceMetadataUrl>"` (RFC 9728) instead of a bare `Bearer`, pointing MCP clients at the protected-resource metadata document. When omitted, the header falls back to `Bearer`.
+- **`resourceMetadataUrl`** — the URL a `401` advertises as `WWW-Authenticate: Bearer resource_metadata="<url>"` (RFC 9728) instead of a bare `Bearer`, pointing MCP clients at the protected-resource metadata document. **You normally do not set it**: once `resourceServerUrl` is configured it defaults to the RFC 9728 location this router serves the document at, so the header and the routes cannot drift apart. Set it only to point at a document served elsewhere. With no `resourceServerUrl` to derive from, the header stays a bare `Bearer`.
 
 ```typescript
 createMcpRouter(mcpServer, {
   auth: {
     cognitoUserPool: { userPoolId: '...', clientId: '...' },
-    // Serve the metadata document (unauthenticated)...
+    // Serves the metadata document (unauthenticated) and points 401s at it
+    // for auto-discovery — resourceMetadataUrl is derived from these two.
     resourceServerUrl: 'https://mcp.example.com',
     authorizationServerUrl:
       'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_xxx',
-    // ...and point 401s at it for auto-discovery.
-    resourceMetadataUrl:
-      'https://mcp.example.com/.well-known/oauth-protected-resource',
     // publicMethods defaults to ['initialize', 'tools/list'].
   },
 });
 ```
 
-Both fields are optional. Omitting `resourceMetadataUrl` keeps the bare `Bearer` header, and the `publicMethods` default matches what MCP clients expect for discovery.
+Every field is optional, and the `publicMethods` default matches what MCP clients expect for discovery.
 
 ### Supporting clients that connect to the bare origin
 
@@ -503,7 +503,7 @@ Creates a Koa router configured to handle MCP protocol requests.
     - `auth.requiredScopes` — Router-level scope guard; returns 403 if any scope is missing
     - `auth.resourceServerUrl` + `auth.authorizationServerUrl` — Enable the protected-resource metadata document, served at both `/.well-known/oauth-protected-resource` and the RFC 9728 path-derived `/.well-known/oauth-protected-resource<path>`; the metadata `resource` is set to `resourceServerUrl + path` so clients following `resource` land on the actual MCP endpoint
     - `auth.publicMethods` — JSON-RPC methods that bypass verification (default `['initialize', 'tools/list']`)
-    - `auth.resourceMetadataUrl` — Emit RFC 9728 `WWW-Authenticate: Bearer resource_metadata="…"` on 401
+    - `auth.resourceMetadataUrl` — URL advertised in the RFC 9728 `WWW-Authenticate: Bearer resource_metadata="…"` header on a 401. Defaults to the location derived from `resourceServerUrl` + `path` (the one this router serves), so the header cannot drift from the routes; set it only to point at a document served elsewhere
     - `auth.resourceIndicator` — Expected `aud` value(s) (RFC 8707); rejects tokens minted for a different resource. See [Resource indicator validation](#resource-indicator-validation-rfc-8707)
 
 **Returns:** `Router` — Koa router instance

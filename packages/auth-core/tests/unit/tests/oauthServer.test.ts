@@ -995,4 +995,14 @@ describe('getWwwAuthenticateHeader', () => {
       'Bearer resource_metadata="https://mcp.example.com/.well-known/oauth-protected-resource"'
     );
   });
+
+  test('inserts the well-known segment between host and path (RFC 9728 §3.1)', () => {
+    // Previously produced `<resource>/.well-known/oauth-protected-resource`,
+    // a location the spec does not define and no server here serves.
+    expect(
+      getWwwAuthenticateHeader({ resource: 'https://mcp.example.com/mcp' })
+    ).toBe(
+      'Bearer resource_metadata="https://mcp.example.com/.well-known/oauth-protected-resource/mcp"'
+    );
+  });
 });

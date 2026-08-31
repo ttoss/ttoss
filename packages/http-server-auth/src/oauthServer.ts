@@ -1,4 +1,9 @@
-import { createOAuthHandlers, type OAuthServerOptions } from '@ttoss/auth-core';
+import {
+  createOAuthHandlers,
+  type OAuthServerOptions,
+  protectedResourceMetadataDocument,
+  protectedResourceMetadataPaths,
+} from '@ttoss/auth-core';
 import { type Context, type Middleware, Router } from '@ttoss/http-server';
 
 import { applyResponse, toAuthRequest } from './koaAdapter';
@@ -24,6 +29,10 @@ export {
   type OnAuthorizeResult,
   type OnRefreshTokenArgs,
   type OnRefreshTokenResult,
+  type ProtectedResourceMetadata,
+  protectedResourceMetadataDocument,
+  protectedResourceMetadataPaths,
+  protectedResourceMetadataUrl,
   type StoredAuthorizationCode,
 } from '@ttoss/auth-core';
 
@@ -55,10 +64,18 @@ export const oauthServer = (options: OAuthServerOptions): Router => {
   });
 
   const prm = engine.protectedResourceMetadata();
-  if (prm) {
-    router.get('/.well-known/oauth-protected-resource', (ctx: Context) => {
-      applyResponse(ctx, prm);
-    });
+  if (prm && options.resource) {
+    // RFC 9728 §3.1 derives the metadata URL from the resource identifier's
+    // path, so a resource with a path is discovered at
+    // `/.well-known/oauth-protected-resource<path>` — not only at the root.
+    // `protectedResourceMetadataPaths` owns that rule for every package here.
+    for (const metadataPath of protectedResourceMetadataPaths({
+      resource: options.resource,
+    })) {
+      router.get(metadataPath, (ctx: Context) => {
+        applyResponse(ctx, prm);
+      });
+    }
   }
 
   router.get(engine.paths.authorize, async (ctx: Context) => {
@@ -77,9 +94,13 @@ export const oauthServer = (options: OAuthServerOptions): Router => {
 };
 
 /**
- * Koa middleware that serves `GET /.well-known/oauth-protected-resource`
- * (RFC 9728). Mount it **before** `authMiddleware` so the discovery endpoint
+ * Koa middleware that serves the RFC 9728 Protected Resource Metadata
+ * document. Mount it **before** `authMiddleware` so the discovery endpoint
  * stays unauthenticated (clients fetch it before they have a token).
+ *
+ * It answers at every location `protectedResourceMetadataPaths` derives for
+ * the resource: the root, plus the path-derived location of RFC 9728 §3.1 when
+ * the resource identifier carries a path.
  */
 export const createProtectedResourceMetadataMiddleware = (args: {
   /** The protected resource's identifier URI. */
@@ -87,15 +108,17 @@ export const createProtectedResourceMetadataMiddleware = (args: {
   /** Authorization server issuer URIs that issue tokens for this resource. */
   authorizationServers: string[];
 }): Middleware => {
+  const metadataPaths = new Set(
+    protectedResourceMetadataPaths({ resource: args.resource })
+  );
+  const body = protectedResourceMetadataDocument({
+    resource: args.resource,
+    authorizationServers: args.authorizationServers,
+  });
+
   return async (ctx: Context, next) => {
-    if (
-      ctx.method === 'GET' &&
-      ctx.path === '/.well-known/oauth-protected-resource'
-    ) {
-      ctx.body = {
-        resource: args.resource,
-        authorization_servers: args.authorizationServers,
-      };
+    if (ctx.method === 'GET' && metadataPaths.has(ctx.path)) {
+      ctx.body = body;
       return;
     }
     await next();

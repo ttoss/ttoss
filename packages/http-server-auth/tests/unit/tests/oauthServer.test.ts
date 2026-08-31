@@ -106,6 +106,26 @@ describe('oauthServer (Koa adapter)', () => {
     expect(res.body.resource).toBe('https://mcp.example.com');
   });
 
+  test('also serves protected-resource metadata at the RFC 9728 path-derived location', async () => {
+    const app = buildApp({ resource: 'https://mcp.example.com/mcp' });
+
+    // RFC 9728 §3.1: the well-known segment goes between host and path, so a
+    // client deriving the URL asks here — serving only the root fails it.
+    const derived = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource/mcp'
+    );
+    expect(derived.status).toBe(200);
+    expect(derived.body.resource).toBe('https://mcp.example.com/mcp');
+
+    // The root keeps answering the same document for clients that follow the
+    // `resource_metadata` value instead of deriving.
+    const root = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource'
+    );
+    expect(root.status).toBe(200);
+    expect(root.body).toEqual(derived.body);
+  });
+
   test('authorize redirects with a code (normalizes array query params)', async () => {
     const res = await request(buildApp().callback())
       .get('/authorize')
@@ -171,6 +191,31 @@ describe('createProtectedResourceMetadataMiddleware', () => {
       resource: 'https://mcp.example.com',
       authorization_servers: ['https://api.example.com'],
     });
+  });
+
+  test('serves the metadata at the path-derived location for a path resource', async () => {
+    const app = new App();
+    app.use(
+      createProtectedResourceMetadataMiddleware({
+        resource: 'https://mcp.example.com/mcp',
+        authorizationServers: ['https://api.example.com'],
+      })
+    );
+
+    const derived = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource/mcp'
+    );
+    expect(derived.status).toBe(200);
+    expect(derived.body).toEqual({
+      resource: 'https://mcp.example.com/mcp',
+      authorization_servers: ['https://api.example.com'],
+    });
+
+    const root = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource'
+    );
+    expect(root.status).toBe(200);
+    expect(root.body).toEqual(derived.body);
   });
 
   test('passes through non-matching requests', async () => {
