@@ -745,6 +745,101 @@ describe('auth — OAuth Protected Resource metadata endpoint', () => {
     expect(res.status).toBe(404);
   });
 
+  test('serves the metadata at the RFC 9728 path-derived location too', async () => {
+    const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+    const app = new App();
+    app.use(bodyParser());
+    app.use(
+      createMcpRouter(mcpServer, {
+        auth: {
+          verifyToken: () => {
+            return Promise.resolve({ sub: 'u' });
+          },
+          resourceServerUrl: 'https://mcp.example.com',
+          authorizationServerUrl: 'https://auth.example.com',
+        },
+      }).routes()
+    );
+
+    // RFC 9728 §3.1: a client derives the metadata URL from the resource's
+    // path, so a resource of `https://host/mcp` is discovered here.
+    const derived = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource/mcp'
+    );
+
+    expect(derived.status).toBe(200);
+    expect(derived.body).toEqual({
+      resource: 'https://mcp.example.com/mcp',
+      authorization_servers: ['https://auth.example.com'],
+    });
+
+    // The root location keeps answering, identically, for clients that follow
+    // the `resource_metadata` value in `WWW-Authenticate` instead.
+    const root = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource'
+    );
+
+    expect(root.status).toBe(200);
+    expect(root.body).toEqual(derived.body);
+  });
+
+  test('path-derived location follows a custom, multi-segment path', async () => {
+    const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+    const app = new App();
+    app.use(bodyParser());
+    app.use(
+      createMcpRouter(mcpServer, {
+        path: '/api/mcp',
+        auth: {
+          verifyToken: () => {
+            return Promise.resolve({ sub: 'u' });
+          },
+          resourceServerUrl: 'https://mcp.example.com',
+          authorizationServerUrl: 'https://auth.example.com',
+        },
+      }).routes()
+    );
+
+    const res = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource/api/mcp'
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      resource: 'https://mcp.example.com/api/mcp',
+      authorization_servers: ['https://auth.example.com'],
+    });
+  });
+
+  test('the path-derived location is reachable without a token', async () => {
+    const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+    const app = new App();
+    app.use(bodyParser());
+    app.use(
+      createMcpRouter(mcpServer, {
+        aliases: ['/'],
+        auth: {
+          verifyToken: () => {
+            return Promise.reject(new Error('always reject'));
+          },
+          publicMethods: [],
+          resourceServerUrl: 'https://mcp.example.com',
+          authorizationServerUrl: 'https://auth.example.com',
+        },
+      }).routes()
+    );
+
+    // Discovery precedes the token, so the auth middleware must not intercept
+    // it — including under `publicMethods: []`, where every JSON-RPC method
+    // requires one.
+    const res = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource/mcp'
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body.resource).toBe('https://mcp.example.com/mcp');
+  });
+
   test('discovery endpoint is accessible without auth even when aliases include /', async () => {
     const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
     const app = new App();

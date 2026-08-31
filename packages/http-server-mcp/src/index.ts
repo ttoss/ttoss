@@ -82,6 +82,14 @@ export interface McpAuthOptions {
   resourceIndicator?: string | string[];
 }
 
+/**
+ * Well-known location of the OAuth Protected Resource Metadata document
+ * (RFC 9728). Served both here and, for a non-root mount path, at the
+ * path-derived location the spec's discovery rule produces.
+ */
+const PROTECTED_RESOURCE_METADATA_PATH =
+  '/.well-known/oauth-protected-resource';
+
 /** MCP lifecycle/discovery methods reachable before a client authenticates. */
 const DEFAULT_PUBLIC_METHODS = ['initialize', 'tools/list'];
 
@@ -561,12 +569,31 @@ export const createMcpRouter = (
       // value land on the actual MCP endpoint, not the bare origin.
       const base = auth.resourceServerUrl.replace(/\/$/, '');
       const resourceUrl = path === '/' ? base : `${base}${path}`;
-      router.get('/.well-known/oauth-protected-resource', (ctx: Context) => {
+
+      const serveMetadata = (ctx: Context) => {
         ctx.body = {
           resource: resourceUrl,
           authorization_servers: [auth.authorizationServerUrl],
         };
-      });
+      };
+
+      // RFC 9728 §3.1 derives the metadata URL from the resource identifier's
+      // *path*, inserting the well-known segment between host and path — so a
+      // resource of `https://host/mcp` is discovered at
+      // `https://host/.well-known/oauth-protected-resource/mcp`, not at the
+      // root. Serving only the root location made a spec-following client fail
+      // discovery outright, measured against a deployed consumer mounted at
+      // `/mcp`: the derived URL answered 404. Clients that instead follow the
+      // `resource_metadata` value in `WWW-Authenticate` (Claude does) reach the
+      // root document and were unaffected, which is why the gap went unnoticed.
+      //
+      // Both locations are served: the root for clients already relying on it,
+      // and the derived one for the spec's rule. `path === '/'` derives the
+      // root itself, so there is nothing extra to register in that case.
+      router.get(PROTECTED_RESOURCE_METADATA_PATH, serveMetadata);
+      if (path !== '/') {
+        router.get(`${PROTECTED_RESOURCE_METADATA_PATH}${path}`, serveMetadata);
+      }
     }
   }
 

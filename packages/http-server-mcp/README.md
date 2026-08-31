@@ -305,6 +305,15 @@ const mcpRouter = createMcpRouter(mcpServer, {
 
 MCP clients (Claude, Cursor, etc.) fetch `/.well-known/oauth-protected-resource` to discover which authorization server issues tokens for your MCP server. The endpoint must be **unauthenticated** — MCP clients call it before they have a token.
 
+The document is served at **two** locations, both unauthenticated:
+
+| Location                                      | Who fetches it                                                                                                                                                     |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `/.well-known/oauth-protected-resource`       | Clients following the `resource_metadata` value in the `WWW-Authenticate` header                                                                                   |
+| `/.well-known/oauth-protected-resource<path>` | Clients applying RFC 9728 §3.1, which derives the URL from the resource identifier's path — e.g. `/.well-known/oauth-protected-resource/mcp` for the default mount |
+
+Serving only the root location makes a spec-following client fail discovery outright. When `path` is `'/'` the derivation produces the root itself, so only one route is registered.
+
 **With the built-in `auth` option** — add `resourceServerUrl` and `authorizationServerUrl`:
 
 ```typescript
@@ -399,7 +408,7 @@ createMcpRouter(mcpServer, {
 });
 ```
 
-The discovery endpoint (`/.well-known/oauth-protected-resource`) remains publicly accessible even when `aliases` includes `'/'`.
+The discovery endpoints (both locations above) remain publicly accessible even when `aliases` includes `'/'`. Aliases themselves get no derived location — the metadata `resource` always names the primary `path`.
 
 ## Gated Tool Registrar
 
@@ -492,7 +501,7 @@ Creates a Koa router configured to handle MCP protocol requests.
     - `auth.cognitoUserPool` — Cognito user pool config (`userPoolId`, `clientId`, `tokenUse`)
     - `auth.verifyToken` — Custom async token verifier `(token: string) => Promise<unknown>`
     - `auth.requiredScopes` — Router-level scope guard; returns 403 if any scope is missing
-    - `auth.resourceServerUrl` + `auth.authorizationServerUrl` — Enable `/.well-known/oauth-protected-resource`; the metadata `resource` is set to `resourceServerUrl + path` so clients following `resource` land on the actual MCP endpoint
+    - `auth.resourceServerUrl` + `auth.authorizationServerUrl` — Enable the protected-resource metadata document, served at both `/.well-known/oauth-protected-resource` and the RFC 9728 path-derived `/.well-known/oauth-protected-resource<path>`; the metadata `resource` is set to `resourceServerUrl + path` so clients following `resource` land on the actual MCP endpoint
     - `auth.publicMethods` — JSON-RPC methods that bypass verification (default `['initialize', 'tools/list']`)
     - `auth.resourceMetadataUrl` — Emit RFC 9728 `WWW-Authenticate: Bearer resource_metadata="…"` on 401
     - `auth.resourceIndicator` — Expected `aud` value(s) (RFC 8707); rejects tokens minted for a different resource. See [Resource indicator validation](#resource-indicator-validation-rfc-8707)
