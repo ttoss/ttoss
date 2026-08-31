@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.14.1](https://github.com/ttoss/ttoss/compare/@ttoss/auth-core@0.14.0...@ttoss/auth-core@0.14.1) (2026-08-31)
+
+### Bug Fixes
+
+- **auth:** serve RFC 9728 protected-resource metadata at the path-derived location, from one shared primitive ([#1212](https://github.com/ttoss/ttoss/issues/1212)) ([174bfca](https://github.com/ttoss/ttoss/commit/174bfca15dfd7c5d5048f5fd87a5da81faf37189))
+
 # 0.14.0 (2026-08-31)
 
 ### Features
