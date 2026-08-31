@@ -18,6 +18,20 @@ import ttossEslintConfig from '@ttoss/eslint-config';
 export default [...ttossEslintConfig];
 ```
 
+### Relay projects
+
+Relay rules are not in the base config: every one of them operates on
+`graphql\`...\`` tagged template literals, so a project without them pays to load
+the plugin on every file and gets nothing back. Applications that do use Relay
+compose the extra config on top:
+
+```js
+import ttossEslintConfig from '@ttoss/eslint-config';
+import ttossEslintConfigRelay from '@ttoss/eslint-config/relay';
+
+export default [...ttossEslintConfig, ...ttossEslintConfigRelay];
+```
+
 ## Rules
 
 ### Complexity, module sizes, and duplication

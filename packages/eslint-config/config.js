@@ -12,7 +12,6 @@ import reactPlugin from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactNamespaceImport from 'eslint-plugin-react-namespace-import';
 import reactRefresh from 'eslint-plugin-react-refresh';
-import relay from 'eslint-plugin-relay';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import sonarjs from 'eslint-plugin-sonarjs';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
@@ -40,7 +39,6 @@ export default defineConfig(
     files: ['**/*.{jsx,tsx}'],
     ...reactPlugin.configs.flat['jsx-runtime'],
   },
-  relay.configs.recommended,
   // Not scoped to JSX: custom hooks live in plain .ts files, and scoping this
   // to {jsx,tsx} silently drops the hooks rules there.
   reactHooks.configs.flat.recommended,
@@ -50,7 +48,6 @@ export default defineConfig(
   },
   {
     plugins: {
-      relay,
       formatjs,
       'prefer-arrow-functions': preferArrowFunctions,
       'react-namespace-import': reactNamespaceImport,
@@ -170,11 +167,6 @@ export default defineConfig(
           allowConstantExport: true,
         },
       ],
-
-      // ── Relay ─────────────────────────────────────────────────────────────
-      // GraphQL Relay framework rules.
-      // https://relay.dev/
-      'relay/generated-flow-types': 'off',
 
       // ── Redundant and dead code (SonarJS) ─────────────────────────────────
       // Catch duplicated logic and assignments that are never read. ESLint sees
