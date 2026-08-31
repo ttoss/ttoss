@@ -66,9 +66,28 @@ export interface McpAuthOptions {
    * drift from the routes. The default applies only when the document is
    * actually served (both `resourceServerUrl` and `authorizationServerUrl`
    * set); otherwise the header stays a bare `Bearer` rather than advertising a
-   * location with no route. Set it only to point at a document served
-   * elsewhere; a hand-written value that names a location nothing serves fails
-   * discovery silently.
+   * location with no route.
+   *
+   * **Leave it unset when this router serves the document.** It exists for the
+   * one configuration where that is deliberately not the case: an
+   * authorization server in the same deployment (`oauthServer({ resource })`)
+   * already answers `/.well-known/oauth-protected-resource`, so mounting this
+   * router with `resourceServerUrl` + `authorizationServerUrl` too would put
+   * two routers on one path. Omit both there and set this instead — without
+   * it the `401` is a bare `Bearer`, which never starts a client's discovery.
+   *
+   * Derive the value rather than typing it: `protectedResourceMetadataUrl`
+   * from `@ttoss/auth-core` applies the same RFC 9728 §3.1 rule the serving
+   * side does. A hand-written value that names a location nothing serves
+   * fails discovery silently.
+   *
+   * @example
+   * ```typescript
+   * // Only when oauthServer (not this router) serves the document.
+   * resourceMetadataUrl: protectedResourceMetadataUrl({
+   *   resource: 'https://mcp.example.com/mcp',
+   * }),
+   * ```
    */
   resourceMetadataUrl?: string;
   /**

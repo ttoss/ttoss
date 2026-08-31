@@ -702,6 +702,32 @@ describe('auth — resourceMetadataUrl default', () => {
     expect(res.headers['www-authenticate']).toBe('Bearer');
   });
 
+  test('carries the split-deployment config: oauthServer serves the document, this router only advertises it', async () => {
+    // Why `resourceMetadataUrl` cannot be folded into the derived default.
+    // When an `oauthServer({ resource })` in the same deployment already
+    // answers `/.well-known/oauth-protected-resource`, this router is mounted
+    // *without* resourceServerUrl/authorizationServerUrl so the two do not
+    // both claim that path — leaving it nothing to derive from. Dropping this
+    // field would make the 401 a bare `Bearer`, which never starts an MCP
+    // client's OAuth discovery.
+    const app = buildApp({
+      resourceMetadataUrl:
+        'https://mcp.example.com/.well-known/oauth-protected-resource/mcp',
+    });
+
+    const res = await post(app);
+    expect(res.status).toBe(401);
+    expect(res.headers['www-authenticate']).toBe(
+      'Bearer resource_metadata="https://mcp.example.com/.well-known/oauth-protected-resource/mcp"'
+    );
+
+    // And this router indeed serves no document of its own here.
+    const doc = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource/mcp'
+    );
+    expect(doc.status).toBe(404);
+  });
+
   test('never advertises a location the router does not serve', async () => {
     // The document needs both URLs, so the derived header needs both too:
     // deriving it from `resourceServerUrl` alone advertised a 404.
