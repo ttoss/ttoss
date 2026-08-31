@@ -14,6 +14,7 @@ import reactNamespaceImport from 'eslint-plugin-react-namespace-import';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import relay from 'eslint-plugin-relay';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import sonarjs from 'eslint-plugin-sonarjs';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -50,6 +51,7 @@ export default defineConfig(
       'react-namespace-import': reactNamespaceImport,
       'react-refresh': reactRefresh,
       'simple-import-sort': simpleImportSort,
+      sonarjs,
       unicorn: eslintPluginUnicorn,
     },
     languageOptions: {
@@ -76,6 +78,11 @@ export default defineConfig(
         'error',
         { prefer: 'type-imports' },
       ],
+      // `any` is banned via @typescript-eslint/no-explicit-any (inherited from
+      // tseslint.configs.recommended). `unknown` is deliberately NOT banned:
+      // it is the safe counterpart to `any`, and TypeScript has no alternative
+      // for `as unknown as T` double assertions, `Record<string, unknown>`, or
+      // generic defaults. Banning it pushes code toward `any`, which is worse.
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
@@ -122,6 +129,10 @@ export default defineConfig(
       ],
       'max-nested-callbacks': ['error', { max: 3 }],
       'max-params': ['error', 5],
+      // Cognitive complexity weights nesting, so it tracks how hard code is to
+      // read rather than how many paths it has. Threshold reports above the
+      // value, so 21 enforces < 22.
+      'sonarjs/cognitive-complexity': ['error', 21],
 
       // ── Code quality ──────────────────────────────────────────────────────
       // Enforce clean control flow and idiomatic JavaScript patterns.
@@ -158,6 +169,21 @@ export default defineConfig(
       // GraphQL Relay framework rules.
       // https://relay.dev/
       'relay/generated-flow-types': 'off',
+
+      // ── Redundant and dead code (SonarJS) ─────────────────────────────────
+      // Catch duplicated logic and assignments that are never read. ESLint sees
+      // one file at a time: cross-file duplication and unused exports are out of
+      // reach here and need a dedicated tool (jscpd, Knip).
+      // https://github.com/SonarSource/eslint-plugin-sonarjs
+      'sonarjs/no-all-duplicated-branches': 'error',
+      'sonarjs/no-collapsible-if': 'error',
+      'sonarjs/no-dead-store': 'error',
+      'sonarjs/no-duplicated-branches': 'error',
+      'sonarjs/no-identical-expressions': 'error',
+      'sonarjs/no-identical-functions': 'error',
+      'sonarjs/no-redundant-boolean': 'error',
+      'sonarjs/no-redundant-jump': 'error',
+      'sonarjs/no-unused-collection': 'error',
 
       // ── Unicorn ───────────────────────────────────────────────────────────
       // Enforce modern JavaScript best practices and Node.js idioms.
@@ -226,6 +252,10 @@ export default defineConfig(
       'max-lines-per-function': 'off',
       'max-nested-callbacks': 'off',
       'max-params': 'off',
+      'sonarjs/cognitive-complexity': 'off',
+      // Test cases are deliberately repetitive — near-identical arrange/assert
+      // blocks are how a suite stays readable, not duplication to factor out.
+      'sonarjs/no-identical-functions': 'off',
     },
   },
   eslintPluginPrettierRecommended

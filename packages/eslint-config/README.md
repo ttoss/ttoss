@@ -30,8 +30,14 @@ export default [...ttossEslintConfig];
 
 ## Rules
 
-### Cyclomatic Complexity and Module Sizes
+### Complexity, module sizes, and duplication
 
-To keep code understandable and testable, this config enforces limits on complexity and size. The rationale is explained in [Cognitive Complexity — because testability, understandability, and changeability matter](https://www.sonarsource.com/blog/cognitive-complexity-because-testability-understandability-and-changeability-matter/).
+To keep code understandable and testable, this config limits cyclomatic complexity, cognitive complexity, and module size, and rejects duplicated branches, identical functions, and assignments that are never read. The rationale is explained in [Cognitive Complexity — because testability, understandability, and changeability matter](https://www.sonarsource.com/blog/cognitive-complexity-because-testability-understandability-and-changeability-matter/).
 
-For the current rule values, see [`config.js`](https://github.com/ttoss/ttoss/blob/main/packages/eslint-config/config.js). These rules are disabled for test files (`*.spec.ts`, `*.test.ts`, `*.spec.tsx`, `*.test.tsx`).
+For the current rule values, see [`config.js`](https://github.com/ttoss/ttoss/blob/main/packages/eslint-config/config.js). The size and complexity rules are disabled for test files (`*.spec.ts`, `*.test.ts`, `*.spec.tsx`, `*.test.tsx`), where repetitive arrange/assert blocks are how a suite stays readable.
+
+### What this config cannot enforce
+
+ESLint reads one file at a time and has no coverage or runtime data, so these quality gates need separate tooling: Halstead metrics (an escomplex-based reporter), test coverage and CRAP (Jest `coverageThreshold`), surviving mutants (Stryker), cross-file duplication (jscpd), and unused exports or modules (Knip).
+
+`any` is rejected via `@typescript-eslint/no-explicit-any`. `unknown` is deliberately allowed — it is the safe counterpart to `any`, and TypeScript has no alternative for `as unknown as T` double assertions, `Record<string, unknown>`, or generic defaults.
