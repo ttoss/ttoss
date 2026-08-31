@@ -18,16 +18,6 @@ import ttossEslintConfig from '@ttoss/eslint-config';
 export default [...ttossEslintConfig];
 ```
 
-### Next.js projects
-
-Add the following to your `eslint.config.mjs` file:
-
-```js
-import ttossEslintConfig from '@ttoss/eslint-config/next';
-
-export default [...ttossEslintConfig];
-```
-
 ## Rules
 
 ### Complexity, module sizes, and duplication

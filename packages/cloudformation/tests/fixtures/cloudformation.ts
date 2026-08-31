@@ -1,6 +1,5 @@
-import { CloudFormationTemplate } from '../../src';
+import type { CloudFormationTemplate } from '../../src';
 
-// eslint-disable-next-line import/no-default-export
 export default async ({ environment }: { environment: string }) => {
   const template: CloudFormationTemplate = {
     AWSTemplateFormatVersion: '2010-09-09',

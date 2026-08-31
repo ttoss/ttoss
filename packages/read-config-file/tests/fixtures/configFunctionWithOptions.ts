@@ -11,5 +11,4 @@ const getConfig = ({ foo, baz }: { foo: string; baz: string }): Config => {
   };
 };
 
-// eslint-disable-next-line import/no-default-export
 export default getConfig;

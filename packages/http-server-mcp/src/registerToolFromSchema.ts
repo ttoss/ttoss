@@ -4,7 +4,6 @@ import type {
   McpServer,
   StandardSchemaWithJSON,
 } from '@modelcontextprotocol/server';
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports -- value import required; fromJsonSchema is called at runtime
 import { fromJsonSchema } from '@modelcontextprotocol/server';
 
 /**

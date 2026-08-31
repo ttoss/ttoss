@@ -41,8 +41,13 @@ export default defineConfig(
     ...reactPlugin.configs.flat['jsx-runtime'],
   },
   relay.configs.recommended,
+  // Not scoped to JSX: custom hooks live in plain .ts files, and scoping this
+  // to {jsx,tsx} silently drops the hooks rules there.
   reactHooks.configs.flat.recommended,
-  jsxA11y.flatConfigs.recommended,
+  {
+    files: ['**/*.{jsx,tsx}'],
+    ...jsxA11y.flatConfigs.recommended,
+  },
   {
     plugins: {
       relay,
@@ -54,6 +59,11 @@ export default defineConfig(
       sonarjs,
       unicorn: eslintPluginUnicorn,
     },
+    linterOptions: {
+      // An eslint-disable comment for a rule that no longer reports is a lie
+      // about what is enforced. Report them so they get removed.
+      reportUnusedDisableDirectives: 'error',
+    },
     languageOptions: {
       globals: globals.builtin,
       parser: tsParser,
@@ -61,9 +71,6 @@ export default defineConfig(
     settings: {
       react: {
         version: 'detect',
-      },
-      import: {
-        ignore: ['node_modules'],
       },
       'import/resolver': {
         typescript: true,
@@ -108,7 +115,6 @@ export default defineConfig(
       // https://github.com/lydell/eslint-plugin-simple-import-sort
       'import/first': 'error',
       'import/newline-after-import': 'error',
-      'import/no-default-export': 'off',
       'import/no-duplicates': 'error',
       'import/no-unresolved': 'off',
       'simple-import-sort/imports': 'error',
@@ -205,7 +211,14 @@ export default defineConfig(
     },
   },
   {
-    files: ['**/*.js', '**/*.jsx', '**/*.cjs'],
+    files: ['**/*.{js,jsx,cjs,mjs}'],
+    // Tooling scripts, babel configs and CLIs run on Node. `globals.builtin`
+    // alone leaves `console`, `process` and `Buffer` undefined, which only
+    // produces no-undef noise — TypeScript files are unaffected because
+    // tseslint's recommended config already turns no-undef off for them.
+    languageOptions: {
+      globals: globals.node,
+    },
     rules: {
       '@typescript-eslint/consistent-type-imports': 'off',
       '@typescript-eslint/no-require-imports': 'off',
@@ -216,7 +229,7 @@ export default defineConfig(
   {
     files: ['**/*.cjs'],
     languageOptions: {
-      globals: globals.commonjs,
+      globals: { ...globals.node, ...globals.commonjs },
     },
   },
   {
@@ -232,7 +245,6 @@ export default defineConfig(
         ...jest.environments.globals.globals,
       },
 
-      ecmaVersion: 2019,
       sourceType: 'module',
     },
     rules: {

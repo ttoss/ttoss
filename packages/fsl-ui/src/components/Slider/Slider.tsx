@@ -255,7 +255,6 @@ export const Slider = <T extends number | number[] = number>({
               {state.values.map((_, index) => {
                 return (
                   <RACSliderThumb
-                    // eslint-disable-next-line react/no-array-index-key
                     key={index}
                     index={index}
                     data-scope="slider"
