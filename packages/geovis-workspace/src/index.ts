@@ -2,8 +2,6 @@ export {
   type GeovisWorkspaceConfig,
   type GeovisWorkspaceContextValue,
   type GeovisWorkspaceDetailState,
-  type GeovisWorkspaceFooterConfig,
-  type GeovisWorkspaceFooterPosition,
   type GeovisWorkspaceLeftSidebarState,
   type GeovisWorkspaceLegendConfig,
   type GeovisWorkspaceRightSidebarState,

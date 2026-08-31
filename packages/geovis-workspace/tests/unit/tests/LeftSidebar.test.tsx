@@ -293,7 +293,7 @@ test('the timeline seeds its year from a controlled selection', async () => {
 
   await openFiltros();
 
-  // Seeded at 2024 → the max stepper is a no-op and the footer shows 2024.
+  // Seeded at 2024 → the max stepper is a no-op and the slider reads 2024.
   const slider = screen.getByRole('slider');
   expect(slider).toHaveValue('2024');
 });
@@ -1014,7 +1014,7 @@ test('a timeline without histogram or unit still renders and drives the year', a
   );
 });
 
-test('a variations-only preview renders without a filters tab or footer year', () => {
+test('a variations-only preview renders without a filters tab', () => {
   // The section carries no `header.icon`, exercising the tab's icon fallback
   // and the header's icon-absent branch.
   const varsOnly: Preview = {
@@ -1061,7 +1061,7 @@ const gatedPreview = gate(preview);
 const gatedCloseOnPlayPreview = gate(closeOnPlayPreview);
 
 describe('a section gated by enabledWhen', () => {
-  test('renders an inert tab, and drops the footer value, while gated', async () => {
+  test('renders an inert tab while gated', async () => {
     const { rerender } = render(
       <GeovisWorkspace
         config={{ leftSidebar: { initialState: 'open', ...gatedPreview } }}
@@ -1071,9 +1071,8 @@ describe('a section gated by enabledWhen', () => {
       { wrapper: Provider }
     );
 
-    // Gate open: the tab works and the footer reads the timeline's year.
+    // Gate open: the tab works.
     expect(screen.getByRole('button', { name: 'Filtros' })).toBeEnabled();
-    expect(screen.getByText('2023')).toBeInTheDocument();
 
     rerender(
       <GeovisWorkspace
@@ -1089,9 +1088,6 @@ describe('a section gated by enabledWhen', () => {
     // Clicking it changes nothing: the header still mirrors the variations tab.
     await click(tab);
     expect(screen.getByText('Variações')).toBeInTheDocument();
-
-    // The footer's readout goes too — a frozen year describes nothing on screen.
-    expect(screen.queryByText('2023')).not.toBeInTheDocument();
   });
 
   test('falls back to an enabled section when the gate closes under it', async () => {
@@ -1200,172 +1196,7 @@ describe('a section gated by enabledWhen', () => {
   });
 });
 
-describe('the map footer', () => {
-  const configFor = (footer: boolean) => {
-    return {
-      footer,
-      leftSidebar: { initialState: 'open' as const, ...preview },
-    };
-  };
-
-  const renderFooter = (footer: boolean, variable = 'a1') => {
-    return render(
-      <GeovisWorkspace
-        config={configFor(footer)}
-        visualizationSpec={visualizationSpec}
-        variables={{ variable }}
-      />,
-      { wrapper: Provider }
-    );
-  };
-
-  /**
-   * The sidebar's own footer names the variation too, so plain text queries
-   * cannot tell the two apart. The map footer is the only one carrying the
-   * label as a `title` — it needs one anyway, to reveal a truncated label.
-   */
-  const mapFooter = (label: string) => {
-    return screen.queryByTitle(label);
-  };
-
-  test('mounts only when config.footer is set', () => {
-    renderFooter(false);
-    expect(mapFooter('Item A1')).toBeNull();
-  });
-
-  test('names the selected variation, and follows the selection', () => {
-    const { rerender } = renderFooter(true);
-    expect(mapFooter('Item A1')).toBeInTheDocument();
-
-    rerender(
-      <GeovisWorkspace
-        config={configFor(true)}
-        visualizationSpec={visualizationSpec}
-        variables={{ variable: 'b1' }}
-      />
-    );
-
-    expect(mapFooter('Item B1')).toBeInTheDocument();
-    expect(mapFooter('Item A1')).toBeNull();
-  });
-
-  test('survives the sidebar closing', async () => {
-    renderFooter(true);
-
-    await click(screen.getByRole('button', { name: 'Close menu' }));
-
-    // The sidebar took its own footer with it; this one is what still names
-    // the view, which is the whole reason it exists.
-    expect(
-      screen.getByRole('button', { name: 'Open menu' })
-    ).toBeInTheDocument();
-    expect(mapFooter('Item A1')).toBeInTheDocument();
-  });
-
-  test('renders nothing when no variation matches the selection', () => {
-    renderFooter(true, '__no_such_variation__');
-
-    expect(mapFooter('Item A1')).toBeNull();
-    expect(mapFooter('Item B1')).toBeNull();
-  });
-});
-
-describe('the map footer position', () => {
-  const renderAt = (footer: GeovisWorkspaceConfig['footer']) => {
-    return render(
-      <GeovisWorkspace
-        config={{ footer, leftSidebar: { initialState: 'open', ...preview } }}
-        visualizationSpec={visualizationSpec}
-        variables={{ variable: 'a1' }}
-      />,
-      { wrapper: Provider }
-    );
-  };
-
-  /**
-   * Asserted through the anchoring edges rather than a class name: `left: 0`
-   * versus `right: 0` versus the centring translate is the whole difference
-   * between the three positions.
-   */
-  const styleOf = (label: string) => {
-    const node = screen.getByTitle(label);
-    return window.getComputedStyle(node);
-  };
-
-  test('centres by default, on both the boolean and an empty object', () => {
-    const { unmount } = renderAt(true);
-    expect(styleOf('Item A1').transform).toContain('translateX(-50%)');
-
-    unmount();
-    renderAt({});
-    expect(styleOf('Item A1').transform).toContain('translateX(-50%)');
-  });
-
-  test('hugs the left edge on position: left', () => {
-    renderAt({ position: 'left' });
-
-    const style = styleOf('Item A1');
-    expect(style.left).toBe('0px');
-    expect(style.transform).not.toContain('translateX');
-  });
-
-  test('hugs the right edge on position: right', () => {
-    renderAt({ position: 'right' });
-
-    const style = styleOf('Item A1');
-    expect(style.right).toBe('0px');
-    expect(style.transform).not.toContain('translateX');
-  });
-});
-
-describe('gate and footer edge cases', () => {
-  test('the footer renders nothing when there is no sidebar to read', () => {
-    render(
-      <GeovisWorkspace
-        config={{ footer: true }}
-        visualizationSpec={visualizationSpec}
-      />,
-      { wrapper: Provider }
-    );
-
-    // No variations section means no variation to name; the bar stays away
-    // rather than rendering empty.
-    expect(screen.queryByTitle('Item A1')).toBeNull();
-  });
-
-  test('the footer steps above the compact timeline bar', async () => {
-    mockViewport(390);
-    jest.useFakeTimers();
-    try {
-      render(
-        <GeovisWorkspace
-          config={{
-            footer: true,
-            leftSidebar: { initialState: 'open', ...closeOnPlayPreview },
-          }}
-          visualizationSpec={visualizationSpec}
-          variables={{ variable: 'a1' }}
-        />,
-        { wrapper: Provider }
-      );
-
-      expect(window.getComputedStyle(screen.getByTitle('Item A1')).bottom).toBe(
-        '0px'
-      );
-
-      await openFiltros();
-      await click(screen.getByRole('button', { name: 'Play' }));
-
-      // The HUD now owns the bottom edge, so the bar lifts clear of it instead
-      // of hiding underneath.
-      expect(
-        window.getComputedStyle(screen.getByTitle('Item A1')).bottom
-      ).not.toBe('0px');
-    } finally {
-      jest.useRealTimers();
-    }
-  });
-
+describe('gate edge cases', () => {
   test('a gate falls back to the variation default before the selection seeds', () => {
     // An empty controlled selection: `selection['variable']` is undefined, so
     // the gate has to read the variations body's `defaultValue` ('a1') to
@@ -1434,4 +1265,138 @@ test('a gate on a menu no section drives fails closed', () => {
   );
 
   expect(screen.getByRole('button', { name: 'Filtros' })).toBeDisabled();
+});
+
+/** The filter blocks `preview` stacks into its single "Filtros" tab. */
+const previewBody = preview.sections[1].body;
+const previewBlocks = previewBody.kind === 'filters' ? previewBody.blocks : [];
+
+/**
+ * The same controls, split across two `filters` tabs: "Filtros" keeps the chips
+ * and the locator, "Período" holds the timeline alone. Only the timeline's tab
+ * carries the gate — scoping it to the one control it describes is what the
+ * split exists for.
+ */
+const splitPreview: Preview = {
+  sections: [
+    preview.sections[0],
+    {
+      id: 'filtros',
+      header: { title: 'Filtros', icon: 'lucide:filter' },
+      body: {
+        kind: 'filters',
+        blocks: previewBlocks.filter((block) => {
+          return block.control.kind !== 'timeline';
+        }),
+      },
+    },
+    {
+      id: 'periodo',
+      header: { title: 'Período', icon: 'lucide:clock' },
+      enabledWhen: { menuId: 'variable', values: ['a1'] },
+      body: {
+        kind: 'filters',
+        blocks: previewBlocks.filter((block) => {
+          return block.control.kind === 'timeline';
+        }),
+      },
+    },
+  ],
+};
+
+describe('filters split across two sections', () => {
+  const openPeriodo = async () => {
+    await click(screen.getByRole('button', { name: 'Período' }));
+  };
+
+  test("each tab renders the blocks it declares, not the sidebar's first set", async () => {
+    renderPreview({}, splitPreview);
+
+    await openFiltros();
+    expect(screen.getByText('Chips')).toBeInTheDocument();
+    expect(screen.queryByRole('slider')).not.toBeInTheDocument();
+
+    await openPeriodo();
+    expect(screen.getByText('Linha do tempo')).toBeInTheDocument();
+    expect(screen.getByRole('slider')).toBeInTheDocument();
+    expect(screen.queryByText('Chips')).not.toBeInTheDocument();
+  });
+
+  test('a timeline outside the first filters section still drives the map', async () => {
+    const onVariableChange = jest.fn();
+    renderPreview({ onVariableChange }, splitPreview);
+
+    // Published on mount, from a section the old lookup never reached.
+    expect(onVariableChange).toHaveBeenCalledWith(
+      expect.objectContaining({ ano: '2023' })
+    );
+
+    await openPeriodo();
+    await act(async () => {
+      fireEvent.change(screen.getByRole('slider'), {
+        target: { value: '2024' },
+      });
+    });
+
+    expect(onVariableChange).toHaveBeenCalledWith(
+      expect.objectContaining({ ano: '2024' })
+    );
+  });
+
+  test('the count badge sits on the tab that declares the chips', () => {
+    renderPreview({}, splitPreview);
+
+    // `defaultSelected: ['x']` → one active chip, advertised by its own tab
+    // rather than by every tab whose body happens to be `filters`.
+    const filtros = screen.getByRole('button', { name: 'Filtros' });
+    const periodo = screen.getByRole('button', { name: 'Período' });
+    expect(within(filtros).getByText('1')).toBeInTheDocument();
+    expect(within(periodo).queryByText('1')).not.toBeInTheDocument();
+  });
+
+  test('the gate scopes to the timeline tab and halts its playback', async () => {
+    jest.useFakeTimers();
+    try {
+      const onVariableChange = jest.fn();
+      const props = (variable: string) => {
+        return {
+          config: {
+            leftSidebar: { initialState: 'open' as const, ...splitPreview },
+          },
+          visualizationSpec,
+          variables: { variable },
+          onVariableChange,
+        };
+      };
+
+      const { rerender } = render(<GeovisWorkspace {...props('a1')} />, {
+        wrapper: Provider,
+      });
+
+      await openPeriodo();
+      await click(screen.getByRole('button', { name: 'Play' }));
+      act(() => {
+        jest.advanceTimersByTime(1000);
+      });
+      expect(onVariableChange).toHaveBeenCalledWith(
+        expect.objectContaining({ ano: '2024' })
+      );
+
+      rerender(<GeovisWorkspace {...props('a2')} />);
+      onVariableChange.mockClear();
+
+      // Only the timeline's own tab dims — the chips and locator answer to no
+      // gate and stay reachable.
+      expect(screen.getByRole('button', { name: 'Período' })).toBeDisabled();
+      expect(screen.getByRole('button', { name: 'Filtros' })).toBeEnabled();
+
+      // And the gate reaches the lifted timeline state, not just the tab.
+      act(() => {
+        jest.advanceTimersByTime(5000);
+      });
+      expect(onVariableChange).not.toHaveBeenCalled();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
 });

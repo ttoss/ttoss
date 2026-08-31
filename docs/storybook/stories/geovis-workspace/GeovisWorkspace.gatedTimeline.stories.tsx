@@ -29,10 +29,9 @@ import * as React from 'react';
  * In `Desktop`:
  *
  * 1. It opens on **Pontos por ano**, and the **Timeline** tab is live. Scrub to
- *    a middle year — the circles grow with it, and the footer reads the year.
+ *    a middle year — the circles grow with it.
  * 2. Switch to **Densidade**. The Timeline tab dims, stops responding to clicks
- *    and drops out of the focus order (Tab past it). The footer's year goes with
- *    it, since it now describes nothing on screen.
+ *    and drops out of the focus order (Tab past it).
  * 3. Do it again from the Timeline tab itself: open **Timeline**, then switch to
  *    **Regiões** from the Variações tab. The card falls back to Variações rather
  *    than stranding you on a body whose tab is disabled.

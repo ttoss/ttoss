@@ -344,18 +344,6 @@ export interface GeovisWorkspaceSidebarSection {
   enabledWhen?: GeovisWorkspaceSidebarEnabledWhen;
 }
 
-/**
- * Which bottom edge the map footer hugs. `'center'` is the default: it is the
- * one spot MapLibre's attribution control (bottom-right) never claims.
- */
-export type GeovisWorkspaceFooterPosition = 'left' | 'center' | 'right';
-
-/** Options for the map footer; see {@link GeovisWorkspaceConfig.footer}. */
-export interface GeovisWorkspaceFooterConfig {
-  /** Bottom edge the bar hugs. Defaults to `'center'`. */
-  position?: GeovisWorkspaceFooterPosition;
-}
-
 export interface GeovisWorkspaceConfig {
   /**
    * Visual framing of the workspace container. `'card'` (default) draws a
@@ -373,23 +361,6 @@ export interface GeovisWorkspaceConfig {
   leftSidebar?: GeovisWorkspaceLeftSidebarState;
   /** Right sidebar (hosts legend/warnings/inspector/metadata) title, open/closed state, and detail API. */
   rightSidebar?: GeovisWorkspaceRightSidebarState;
-  /**
-   * Shows a slim bar flush against the map's bottom edge naming the variation
-   * currently selected in the left sidebar. Omitted or `false`, nothing
-   * renders; `true` uses the defaults; an object also picks the edge to hug.
-   *
-   * It answers "what am I looking at?" without the sidebar open — the sidebar's
-   * own footer says the same thing, but goes away with it. The bar is read-only
-   * and sized to its text up to a cap, so a long variation label truncates
-   * rather than growing across the map.
-   *
-   * Requires a `variations` section to name: with none, nothing renders.
-   *
-   * @example
-   * footer: true                      // centred
-   * footer: { position: 'right' }     // hugs the bottom-right corner
-   */
-  footer?: boolean | GeovisWorkspaceFooterConfig;
 }
 
 /** Active item value per menu group, keyed by menu id. */

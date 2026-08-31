@@ -100,8 +100,8 @@ current selection anywhere inside the workspace with `useGeovisWorkspace()`.
 ## Left sidebar
 
 The left sidebar renders as a card with an icon **tab bar** — one tab per
-`leftSidebar.sections` entry — a header mirroring the active tab, the active
-tab's body, and a footer. Each section's `body` is one of two kinds:
+`leftSidebar.sections` entry — a header mirroring the active tab, and the active
+tab's body. Each section's `body` is one of two kinds:
 
 - **`variations`** — a flat list of selectable rows (grouped only for ordering)
   that drive the shared selection (`selection[menuId]`), recoloring the map.
@@ -110,6 +110,16 @@ tab's body, and a footer. Each section's `body` is one of two kinds:
   `selection[menuId]` when it declares one, otherwise visual-only), **chips**
   (visual-only toggle chips whose active count shows as a tab badge), or a
   **locator** (visual-only search box).
+
+A kind describes a body, not a tab, so several sections may carry `filters` —
+put the timeline in a tab of its own beside a tab holding the remaining
+controls, and each gets its own header, its own `enabledWhen` gate, and (for the
+timeline) a HUD scoped to it. Each tab renders only the blocks it declares.
+
+Two controls stay singular across the whole sidebar, wherever they are declared:
+the **timeline**, whose state is lifted above both surfaces that drive it (the
+sidebar control and the HUD), and the **chips**, whose selection is lifted so a
+tab can badge its count. Declare more than one of either and the first wins.
 
 A `timeline` that declares a `menuId` publishes its `defaultValue ?? min` to the
 shared selection on mount, so an uncontrolled parent learns the initial value
@@ -266,13 +276,12 @@ appears as an always-on placeholder.
 ### `GeovisWorkspaceConfig`
 
 | Property       | Type                                                                  | Description                                                                                                        |
-| -------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------- |
+| -------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | `appearance`   | `'card' \| 'bare'`                                                    | Container framing. `'card'` (default) draws a border/radius/background; `'bare'` fills edge-to-edge for embedding. |
 | `slots`        | `Partial<Record<GeovisWorkspaceSlotName, GeovisWorkspaceSlotConfig>>` | Per-slot override/hide. Omit an entry for the default.                                                             |
 | `legend`       | `GeovisWorkspaceLegendConfig`                                         | Content for the `legend` slot's default panel.                                                                     |
 | `leftSidebar`  | `GeovisWorkspaceLeftSidebarState`                                     | Left sidebar sections and open/closed state.                                                                       |
 | `rightSidebar` | `GeovisWorkspaceRightSidebarState`                                    | Right sidebar title, open/closed state, and detail API.                                                            |
-| `footer`       | `boolean                                                              | GeovisWorkspaceFooterConfig`                                                                                       | Shows a slim bar flush against the map’s bottom edge naming the selected variation. Omitted or `false`, nothing renders; `true` uses the defaults; `{ position: 'left' | 'center' | 'right' }`picks the edge it hugs (default`'center'`). Needs a `variations` section to name. |
 
 ### `GeovisWorkspaceSlotName`
 

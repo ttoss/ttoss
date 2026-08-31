@@ -17,7 +17,6 @@ import { LeftSidebar } from './LeftSidebar';
 import { COLOR } from './LeftSidebar/theme';
 import { isSectionEnabled, useSections } from './LeftSidebar/useSections';
 import { useTimeline } from './LeftSidebar/useTimeline';
-import { MapFooter } from './MapFooter';
 import { RightSidebar } from './RightSidebar';
 import { TimelineHud } from './TimelineHud';
 
@@ -242,22 +241,19 @@ const OpenRightSidebarButton = () => {
  * show — an explicit `hidden` always suppresses a slot regardless.
  */
 /**
- * The controls that float over the map: the two reopen buttons, the compact
- * timeline bar, and the footer naming the active variation. Grouped out of
- * `Layout` so its body stays about structure rather than about which overlay
- * currently applies.
+ * The controls that float over the map: the two reopen buttons and the compact
+ * timeline bar. Grouped out of `Layout` so its body stays about structure
+ * rather than about which overlay currently applies.
  */
 const MapOverlays = ({
   hasLeftSidebar,
   hasRightSidebar,
   hudVisible,
-  showFooter,
   onDismissHud,
 }: {
   hasLeftSidebar: boolean;
   hasRightSidebar: boolean;
   hudVisible: boolean;
-  showFooter: boolean;
   onDismissHud: () => void;
 }) => {
   return (
@@ -267,10 +263,6 @@ const MapOverlays = ({
       {hasRightSidebar && <OpenRightSidebarButton />}
 
       {hudVisible && <TimelineHud onDismiss={onDismissHud} />}
-
-      {/* The footer reads `hudVisible` too: the bar owns the bottom edge while
-          it is up, so the footer steps clear of it. */}
-      {showFooter && <MapFooter hudVisible={hudVisible} />}
     </>
   );
 };
@@ -278,23 +270,26 @@ const MapOverlays = ({
 /**
  * Whether the timeline is live. The gate is declared on the section that holds
  * the timeline rather than on the control itself, so it is resolved here and
- * threaded into both the timeline state and the compact HUD. A sidebar with no
- * filters section has no gate to honour.
+ * threaded into both the timeline state and the compact HUD. It is the
+ * timeline's own section that decides — not merely the first `filters` one:
+ * a config may put the timeline in a tab of its own, gated separately from the
+ * tab holding the remaining filters. A sidebar with no timeline has no gate to
+ * honour.
  */
 const resolveTimelineEnabled = ({
-  filtersSection,
+  timelineSection,
   sections,
   selection,
 }: {
-  filtersSection?: GeovisWorkspaceSidebarSection;
+  timelineSection?: GeovisWorkspaceSidebarSection;
   sections: GeovisWorkspaceSidebarSection[];
   selection: GeovisWorkspaceSelection;
 }): boolean => {
-  if (!filtersSection) {
+  if (!timelineSection) {
     return true;
   }
 
-  return isSectionEnabled({ section: filtersSection, sections, selection });
+  return isSectionEnabled({ section: timelineSection, sections, selection });
 };
 
 export const Layout = () => {
@@ -315,10 +310,10 @@ export const Layout = () => {
   // nearest common ancestor. Mounted once: a second `useTimeline` would run a
   // second auto-advance timer against the same selection.
   const sections = config.leftSidebar?.sections ?? [];
-  const { timeline, filtersSection } = useSections(sections);
+  const { timeline, timelineSection } = useSections(sections);
 
   const isTimelineEnabled = resolveTimelineEnabled({
-    filtersSection,
+    timelineSection,
     sections,
     selection,
   });
@@ -403,7 +398,6 @@ export const Layout = () => {
           hasLeftSidebar={hasLeftSidebar}
           hasRightSidebar={hasRightSidebar}
           hudVisible={hudVisible}
-          showFooter={Boolean(config.footer)}
           onDismissHud={dismissTimelineHud}
         />
       </Flex>

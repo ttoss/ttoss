@@ -4,52 +4,67 @@ import type {
   GeovisWorkspaceSidebarFilterBlock,
   GeovisWorkspaceSidebarSection,
   GeovisWorkspaceSidebarTimelineFilter,
-  GeovisWorkspaceSidebarVariation,
-  GeovisWorkspaceSidebarVariationsBody,
 } from '../../context/GeovisWorkspaceContext';
 
-const findVariationsBody = (
+/**
+ * Every filter block in the sidebar, paired with the section holding it.
+ * Flattened across sections because a config is free to split its filters over
+ * several `filters` sections — the timeline in a tab of its own, say, beside a
+ * tab holding the remaining controls.
+ */
+const findFilterBlocks = (
   sections: GeovisWorkspaceSidebarSection[]
-): GeovisWorkspaceSidebarVariationsBody | undefined => {
-  const body = sections.find((section) => {
-    return section.body.kind === 'variations';
-  })?.body;
-
-  return body?.kind === 'variations' ? body : undefined;
-};
-
-const findFiltersSection = (
-  sections: GeovisWorkspaceSidebarSection[]
-): GeovisWorkspaceSidebarSection | undefined => {
-  return sections.find((section) => {
-    return section.body.kind === 'filters';
+): Array<{
+  section: GeovisWorkspaceSidebarSection;
+  block: GeovisWorkspaceSidebarFilterBlock;
+}> => {
+  return sections.flatMap((section) => {
+    return section.body.kind === 'filters'
+      ? section.body.blocks.map((block) => {
+          return { section, block };
+        })
+      : [];
   });
 };
 
-const findBlocks = (
-  section?: GeovisWorkspaceSidebarSection
-): GeovisWorkspaceSidebarFilterBlock[] => {
-  return section?.body.kind === 'filters' ? section.body.blocks : [];
-};
-
+/**
+ * The sidebar's timeline and the section holding it. First one wins: the
+ * timeline state is mounted once, above the two surfaces that drive it, so a
+ * second timeline would run a second auto-advance timer against the same
+ * selection.
+ */
 const findTimeline = (
-  blocks: GeovisWorkspaceSidebarFilterBlock[]
-): GeovisWorkspaceSidebarTimelineFilter | undefined => {
-  const control = blocks.find((block) => {
-    return block.control.kind === 'timeline';
-  })?.control;
+  sections: GeovisWorkspaceSidebarSection[]
+): {
+  timeline?: GeovisWorkspaceSidebarTimelineFilter;
+  timelineSection?: GeovisWorkspaceSidebarSection;
+} => {
+  for (const { section, block } of findFilterBlocks(sections)) {
+    if (block.control.kind === 'timeline') {
+      return { timeline: block.control, timelineSection: section };
+    }
+  }
 
-  return control?.kind === 'timeline' ? control : undefined;
+  return {};
 };
 
+/**
+ * The sidebar's chips filter and the section holding it. First one wins, for
+ * the same reason as the timeline: one lifted selection, so one control.
+ */
 const findChips = (
-  blocks: GeovisWorkspaceSidebarFilterBlock[]
-): GeovisWorkspaceSidebarChipsFilter | undefined => {
-  const control = blocks.find((block) => {
-    return block.control.kind === 'chips';
-  })?.control;
+  sections: GeovisWorkspaceSidebarSection[]
+): {
+  chips?: GeovisWorkspaceSidebarChipsFilter;
+  chipsSection?: GeovisWorkspaceSidebarSection;
+} => {
+  for (const { section, block } of findFilterBlocks(sections)) {
+    if (block.control.kind === 'chips') {
+      return { chips: block.control, chipsSection: section };
+    }
+  }
 
-  return control?.kind === 'chips' ? control : undefined;
+  return {};
 };
 
 /**
@@ -129,56 +144,23 @@ export const isSectionEnabled = ({
 };
 
 /**
- * The variation currently selected in the sidebar's variations body, or
- * `undefined` when there is no variations section or nothing matches.
+ * Reads the sections into the two lifted controls and the sections that own
+ * them. A section's own blocks are read straight off its body where they are
+ * rendered; what has to be resolved globally is the timeline and the chips,
+ * whose state is lifted above the tab that holds them — and, with it, which
+ * section that is: the timeline's gate decides whether playback runs, and the
+ * chips' section is the tab that earns the count badge.
  *
- * Shared because two surfaces name the active variation — the sidebar's own
- * footer and the map footer — and they must never disagree.
- *
- * @param params.variationsBody - The variations body, if the sidebar has one.
- * @param params.selection - The shared selection.
- * @returns The matching variation.
+ * @param sections - The sidebar's sections.
+ * @returns The timeline and chips controls, each with its owning section;
+ * every field is `undefined` when no `filters` section declares that control.
  *
  * @example
- * findActiveVariation({ variationsBody, selection: { view: 'points' } })?.label;
+ * const { timeline, timelineSection } = useSections(sections);
  */
-export const findActiveVariation = ({
-  variationsBody,
-  selection,
-}: {
-  variationsBody?: GeovisWorkspaceSidebarVariationsBody;
-  selection: GeovisWorkspaceSelection;
-}): GeovisWorkspaceSidebarVariation | undefined => {
-  if (!variationsBody) {
-    return undefined;
-  }
-
-  const selectedValue =
-    selection[variationsBody.menuId] ?? variationsBody.defaultValue;
-
-  return variationsBody.groups
-    .flatMap((group) => {
-      return group.variations;
-    })
-    .find((variation) => {
-      return variation.value === selectedValue;
-    });
-};
-
-/** Reads the sections into the typed pieces the layout needs. */
 export const useSections = (sections: GeovisWorkspaceSidebarSection[]) => {
-  const filtersSection = findFiltersSection(sections);
-  const blocks = findBlocks(filtersSection);
+  const { timeline, timelineSection } = findTimeline(sections);
+  const { chips, chipsSection } = findChips(sections);
 
-  return {
-    variationsBody: findVariationsBody(sections),
-    blocks,
-    timeline: findTimeline(blocks),
-    chips: findChips(blocks),
-    /**
-     * The section holding the filter blocks. Callers that gate timeline
-     * behaviour need it: the gate lives on the section, not on the control.
-     */
-    filtersSection,
-  };
+  return { timeline, timelineSection, chips, chipsSection };
 };
