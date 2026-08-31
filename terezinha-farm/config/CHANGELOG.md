@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.6.18 (2026-08-31)
+
+**Note:** Version bump only for package @terezinha-farm/config
+
 ## 0.6.17 (2026-06-10)
 
 **Note:** Version bump only for package @terezinha-farm/config
