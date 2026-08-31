@@ -79,7 +79,6 @@ const redirectWithParams = (
 // Grant handlers
 // ---------------------------------------------------------------------------
 
-// eslint-disable-next-line complexity
 const handleAuthorizationCodeGrant = async (
   request: OAuthRequest,
   options: OAuthServerOptions

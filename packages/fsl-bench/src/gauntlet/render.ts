@@ -61,7 +61,6 @@ const getNativeRequire = (): NodeJS.Require => {
 const copyWindowGlobals = (window: AnyWindow): void => {
   const windowKeys = new Set<string>(Object.getOwnPropertyNames(window));
 
-  // eslint-disable-next-line guard-for-in
   for (const key in window) {
     windowKeys.add(key);
   }

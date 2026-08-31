@@ -12,8 +12,8 @@ import reactPlugin from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactNamespaceImport from 'eslint-plugin-react-namespace-import';
 import reactRefresh from 'eslint-plugin-react-refresh';
-import relay from 'eslint-plugin-relay';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import sonarjs from 'eslint-plugin-sonarjs';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -39,18 +39,27 @@ export default defineConfig(
     files: ['**/*.{jsx,tsx}'],
     ...reactPlugin.configs.flat['jsx-runtime'],
   },
-  relay.configs.recommended,
+  // Not scoped to JSX: custom hooks live in plain .ts files, and scoping this
+  // to {jsx,tsx} silently drops the hooks rules there.
   reactHooks.configs.flat.recommended,
-  jsxA11y.flatConfigs.recommended,
+  {
+    files: ['**/*.{jsx,tsx}'],
+    ...jsxA11y.flatConfigs.recommended,
+  },
   {
     plugins: {
-      relay,
       formatjs,
       'prefer-arrow-functions': preferArrowFunctions,
       'react-namespace-import': reactNamespaceImport,
       'react-refresh': reactRefresh,
       'simple-import-sort': simpleImportSort,
+      sonarjs,
       unicorn: eslintPluginUnicorn,
+    },
+    linterOptions: {
+      // An eslint-disable comment for a rule that no longer reports is a lie
+      // about what is enforced. Report them so they get removed.
+      reportUnusedDisableDirectives: 'error',
     },
     languageOptions: {
       globals: globals.builtin,
@@ -59,9 +68,6 @@ export default defineConfig(
     settings: {
       react: {
         version: 'detect',
-      },
-      import: {
-        ignore: ['node_modules'],
       },
       'import/resolver': {
         typescript: true,
@@ -76,6 +82,11 @@ export default defineConfig(
         'error',
         { prefer: 'type-imports' },
       ],
+      // `any` is banned via @typescript-eslint/no-explicit-any (inherited from
+      // tseslint.configs.recommended). `unknown` is deliberately NOT banned:
+      // it is the safe counterpart to `any`, and TypeScript has no alternative
+      // for `as unknown as T` double assertions, `Record<string, unknown>`, or
+      // generic defaults. Banning it pushes code toward `any`, which is worse.
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
@@ -89,7 +100,6 @@ export default defineConfig(
       'formatjs/enforce-placeholders': ['error'],
       'formatjs/no-camel-case': ['error'],
       'formatjs/no-emoji': ['error'],
-      'formatjs/no-literal-string-in-jsx': 'warn',
       'formatjs/no-multiple-whitespaces': ['error'],
       'formatjs/no-multiple-plurals': 'error',
       'formatjs/no-offset': 'error',
@@ -101,7 +111,6 @@ export default defineConfig(
       // https://github.com/lydell/eslint-plugin-simple-import-sort
       'import/first': 'error',
       'import/newline-after-import': 'error',
-      'import/no-default-export': 'off',
       'import/no-duplicates': 'error',
       'import/no-unresolved': 'off',
       'simple-import-sort/imports': 'error',
@@ -122,6 +131,10 @@ export default defineConfig(
       ],
       'max-nested-callbacks': ['error', { max: 3 }],
       'max-params': ['error', 5],
+      // Cognitive complexity weights nesting, so it tracks how hard code is to
+      // read rather than how many paths it has. Threshold reports above the
+      // value, so 21 enforces < 22.
+      'sonarjs/cognitive-complexity': ['error', 21],
 
       // ── Code quality ──────────────────────────────────────────────────────
       // Enforce clean control flow and idiomatic JavaScript patterns.
@@ -154,10 +167,20 @@ export default defineConfig(
         },
       ],
 
-      // ── Relay ─────────────────────────────────────────────────────────────
-      // GraphQL Relay framework rules.
-      // https://relay.dev/
-      'relay/generated-flow-types': 'off',
+      // ── Redundant and dead code (SonarJS) ─────────────────────────────────
+      // Catch duplicated logic and assignments that are never read. ESLint sees
+      // one file at a time: cross-file duplication and unused exports are out of
+      // reach here and need a dedicated tool (jscpd, Knip).
+      // https://github.com/SonarSource/eslint-plugin-sonarjs
+      'sonarjs/no-all-duplicated-branches': 'error',
+      'sonarjs/no-collapsible-if': 'error',
+      'sonarjs/no-dead-store': 'error',
+      'sonarjs/no-duplicated-branches': 'error',
+      'sonarjs/no-identical-expressions': 'error',
+      'sonarjs/no-identical-functions': 'error',
+      'sonarjs/no-redundant-boolean': 'error',
+      'sonarjs/no-redundant-jump': 'error',
+      'sonarjs/no-unused-collection': 'error',
 
       // ── Unicorn ───────────────────────────────────────────────────────────
       // Enforce modern JavaScript best practices and Node.js idioms.
@@ -179,7 +202,27 @@ export default defineConfig(
     },
   },
   {
-    files: ['**/*.js', '**/*.jsx', '**/*.cjs'],
+    // Untranslated JSX text only matters in what a package ships: tests,
+    // stories and the docs sites are allowed hardcoded copy. Scoping it here
+    // rather than repo-wide is what makes it enforceable — as a repo-wide
+    // 'warn' it reported 2216 times and `eslint --quiet` hid every one.
+    files: ['packages/*/src/**/*.tsx'],
+    rules: {
+      // No `props.exclude` here: it was measured to change nothing. The reports
+      // next to an <Icon /> come from adjacent text children, not from the icon
+      // attribute, so excluding the attribute is a no-op.
+      'formatjs/no-literal-string-in-jsx': 'error',
+    },
+  },
+  {
+    files: ['**/*.{js,jsx,cjs,mjs}'],
+    // Tooling scripts, babel configs and CLIs run on Node. `globals.builtin`
+    // alone leaves `console`, `process` and `Buffer` undefined, which only
+    // produces no-undef noise — TypeScript files are unaffected because
+    // tseslint's recommended config already turns no-undef off for them.
+    languageOptions: {
+      globals: globals.node,
+    },
     rules: {
       '@typescript-eslint/consistent-type-imports': 'off',
       '@typescript-eslint/no-require-imports': 'off',
@@ -190,7 +233,7 @@ export default defineConfig(
   {
     files: ['**/*.cjs'],
     languageOptions: {
-      globals: globals.commonjs,
+      globals: { ...globals.node, ...globals.commonjs },
     },
   },
   {
@@ -206,7 +249,6 @@ export default defineConfig(
         ...jest.environments.globals.globals,
       },
 
-      ecmaVersion: 2019,
       sourceType: 'module',
     },
     rules: {
@@ -218,14 +260,41 @@ export default defineConfig(
         },
       ],
 
-      // Test files legitimately have many test cases, long setup blocks, and
-      // deeply nested assertions — complexity/size rules add noise without value.
-      complexity: 'off',
-      'max-depth': 'off',
-      'max-lines': 'off',
+      // Test files get their own thresholds rather than a blanket opt-out. The
+      // source limits are calibrated for production code, and applying them
+      // verbatim here reports 399 violations across 39% of the suites — noise
+      // that buys nothing and invites blanket eslint-disable comments. These
+      // values were picked from the actual distribution across the repo's test
+      // files so that only genuine outliers report.
+      //
+      // `describe > describe > test > callback` is depth 4, so the source limit
+      // of 3 flags the standard shape of a suite. Every violation at the source
+      // limit was depth 4 or 5; 5 reports none of them and still catches deeper
+      // accidental nesting.
+      'max-nested-callbacks': ['error', { max: 5 }],
+      // Suites run long legitimately. At 400 lines, 49 files report; at 1000,
+      // only the five genuinely unwieldy suites (1033–1645 lines) do.
+      'max-lines': [
+        'error',
+        { max: 1000, skipBlankLines: true, skipComments: true },
+      ],
+      // Test bodies are mostly linear, so the few that breach this are real:
+      // at 15 only two report, at complexity 21 and 27.
+      complexity: ['error', { max: 15 }],
+
+      // These two stay off, for reasons no threshold fixes:
+      //
+      //   max-lines-per-function — counts a `describe` callback as a function,
+      //     so an entire suite is measured as one. The unit is wrong, not the
+      //     limit: 158 files report, with a median of 122 lines.
+      //   no-identical-functions — near-identical arrange/assert blocks are how
+      //     a suite stays readable, not duplication to factor out.
+      //
+      // max-depth, max-params and cognitive-complexity are NOT relaxed at all:
+      // they report zero violations across the suites, so the source limits
+      // already fit test code.
       'max-lines-per-function': 'off',
-      'max-nested-callbacks': 'off',
-      'max-params': 'off',
+      'sonarjs/no-identical-functions': 'off',
     },
   },
   eslintPluginPrettierRecommended

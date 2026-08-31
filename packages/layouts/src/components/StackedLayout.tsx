@@ -1,5 +1,5 @@
 import { Stack, type StackProps } from '@ttoss/ui';
-import * as React from 'react';
+import type * as React from 'react';
 
 import { getSematicElements } from '../getSemanticElements';
 import { LayoutProvider } from './LayoutProvider';

@@ -5,6 +5,46 @@ import { fireEvent, render, screen, waitFor } from '@ttoss/test-utils/react';
 
 import { Menu } from '../../../src/components/Menu';
 
+/**
+ * Reads a style property, falling back to parsing the inline `style`
+ * attribute: jsdom does not always reflect the component's positioning writes
+ * onto the `style` object.
+ */
+const readInlineStyle = (
+  node: HTMLElement,
+  property: string
+): string | undefined => {
+  const fromStyleObject = node.style.getPropertyValue(property);
+
+  if (fromStyleObject) {
+    return fromStyleObject;
+  }
+
+  const match = (node.getAttribute('style') ?? '').match(
+    new RegExp(`${property}\\s*:\\s*([^;]+)`)
+  );
+
+  return match?.[1]?.trim();
+};
+
+/**
+ * Climbs from a node inside the menu to the panel the component positioned,
+ * identified by `position: fixed`. Returns null if no such ancestor exists.
+ */
+const findFixedPanel = (from: HTMLElement | null): HTMLElement | null => {
+  let node = from;
+
+  while (node && node !== document.body) {
+    if (readInlineStyle(node, 'position') === 'fixed') {
+      return node;
+    }
+
+    node = node.parentElement;
+  }
+
+  return null;
+};
+
 describe('Menu', () => {
   test('opens when trigger is clicked', () => {
     render(
@@ -269,40 +309,19 @@ describe('Menu', () => {
       fireEvent.click(screen.getByRole('button'));
 
       await waitFor(() => {
-        const content = screen.getByText('Menu Content');
-        // climb ancestors to find the panel
-        let node = content.parentElement;
-        while (node && node !== document.body) {
-          const styleAttr = node.getAttribute && node.getAttribute('style');
-          if (
-            (node.style && node.style.position === 'fixed') ||
-            (styleAttr && /position\s*:\s*fixed/.test(styleAttr))
-          ) {
-            break;
-          }
-          node = node.parentElement;
+        const panel = findFixedPanel(
+          screen.getByText('Menu Content').parentElement
+        );
+
+        expect(panel).toBeTruthy();
+
+        if (!panel) {
+          return;
         }
-        expect(node).toBeTruthy();
-        if (!node) return;
-        // assert that compute persisted position: fixed and left/top set
-        const pos =
-          node.style.position ||
-          (node.getAttribute('style') || '')
-            .match(/position\s*:\s*([^;]+)/)?.[1]
-            ?.trim();
-        const left =
-          node.style.left ||
-          (node.getAttribute('style') || '')
-            .match(/left\s*:\s*([^;]+)/)?.[1]
-            ?.trim();
-        const top =
-          node.style.top ||
-          (node.getAttribute('style') || '')
-            .match(/top\s*:\s*([^;]+)/)?.[1]
-            ?.trim();
-        expect(pos).toBe('fixed');
-        expect(left).toBeTruthy();
-        expect(top).toBeTruthy();
+
+        expect(readInlineStyle(panel, 'position')).toBe('fixed');
+        expect(readInlineStyle(panel, 'left')).toBeTruthy();
+        expect(readInlineStyle(panel, 'top')).toBeTruthy();
       });
     } finally {
       gbcrSpy.mockRestore();
@@ -372,22 +391,20 @@ describe('Menu', () => {
       fireEvent.click(screen.getByRole('button'));
 
       await waitFor(() => {
-        const content = screen.getByText('Menu Content');
-        let node = content.parentElement;
-        while (node && node !== document.body) {
-          if (node.style && node.style.position === 'fixed') break;
-          const styleAttr = node.getAttribute && node.getAttribute('style');
-          if (styleAttr && /position\s*:\s*fixed/.test(styleAttr)) break;
-          node = node.parentElement;
+        const panel = findFixedPanel(
+          screen.getByText('Menu Content').parentElement
+        );
+
+        expect(panel).toBeTruthy();
+
+        if (!panel) {
+          return;
         }
-        expect(node).toBeTruthy();
-        if (!node) return;
-        // top should be above trigger (i.e., less than trigger bottom)
-        const topRaw =
-          node.style.top ||
-          (node.getAttribute('style') || '').match(/top\s*:\s*([^;]+)/)?.[1] ||
-          '0';
-        const topVal = parseInt(String(topRaw).replace('px', ''), 10);
+
+        // top should be above the trigger, i.e. less than the trigger bottom
+        const topRaw = readInlineStyle(panel, 'top') ?? '0';
+        const topVal = parseInt(topRaw.replace('px', ''), 10);
+
         expect(topVal).toBeLessThan(700);
       });
     } finally {

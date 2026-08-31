@@ -1,5 +1,5 @@
 import { Box, type BoxProps } from '@ttoss/ui';
-import * as React from 'react';
+import type * as React from 'react';
 import DrawerUi from 'react-modern-drawer';
 
 type DrawerUiProps = React.ComponentProps<typeof DrawerUi>;

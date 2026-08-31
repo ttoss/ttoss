@@ -133,6 +133,11 @@ export const ProgressBar = ({
       style={RAIL_ROOT_STYLE}
     >
       {({ percentage, valueText, isIndeterminate }) => {
+        // Built outside JSX deliberately: the status span is aria-hidden, so
+        // this is a formatted number echoing the value RAC already exposes
+        // accessibly — not copy for translation.
+        const statusText = valueText ?? `${Math.round(percentage ?? 0)}%`;
+
         return (
           <>
             {(label || showValueLabel) && (
@@ -155,7 +160,7 @@ export const ProgressBar = ({
                     data-part="status"
                     aria-hidden
                   >
-                    {valueText ?? `${Math.round(percentage ?? 0)}%`}
+                    {statusText}
                   </span>
                 )}
               </div>

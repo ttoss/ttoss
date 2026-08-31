@@ -22,3 +22,13 @@ test('should map css files in e2e config', () => {
     'identity-obj-proxy'
   );
 });
+
+test('should raise testTimeout above the 5s jest default', () => {
+  expect(defaultConfig.testTimeout).toBe(30_000);
+  expect(jestUnitConfig().testTimeout).toBe(30_000);
+  expect(jestE2EConfig().testTimeout).toBe(30_000);
+});
+
+test('should let a package override the default testTimeout', () => {
+  expect(jestUnitConfig({ testTimeout: 120_000 }).testTimeout).toBe(120_000);
+});

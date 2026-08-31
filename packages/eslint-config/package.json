@@ -2,28 +2,32 @@
   "name": "@ttoss/eslint-config",
   "version": "1.27.0",
   "description": "ESLint config.",
-  "license": "MIT",
-  "author": "ttoss",
-  "contributors": [
-    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  "keywords": [
+    "eslint",
+    "eslintconfig"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ttoss/ttoss.git",
     "directory": "packages/eslint-config"
   },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com/contact)"
+  ],
   "type": "module",
   "exports": {
     ".": "./index.js",
-    "./README.md": "./README.md"
+    "./README.md": "./README.md",
+    "./relay": "./relay.js"
   },
   "files": [
     "config.js",
-    "index.js"
+    "index.js",
+    "relay.js"
   ],
   "dependencies": {
-    "@eslint/compat": "^2.0.5",
-    "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^9",
     "@typescript-eslint/parser": "^8.59.0",
     "eslint-config-prettier": "^10.1.8",
@@ -41,6 +45,7 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "eslint-plugin-relay": "^2.0.0",
     "eslint-plugin-simple-import-sort": "^13.0.0",
+    "eslint-plugin-sonarjs": "^3.0.5",
     "eslint-plugin-unicorn": "^64.0.0",
     "globals": "^17.5.0",
     "typescript-eslint": "^8.59.0"
@@ -48,14 +53,11 @@
   "peerDependencies": {
     "eslint": "^9"
   },
-  "keywords": [
-    "eslint",
-    "eslintconfig"
-  ],
   "publishConfig": {
     "access": "public",
     "exports": {
-      ".": "./index.js"
+      ".": "./index.js",
+      "./relay": "./relay.js"
     },
     "provenance": true
   }

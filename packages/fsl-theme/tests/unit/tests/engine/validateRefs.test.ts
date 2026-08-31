@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { baseTheme as defaultTheme } from '../../../../src/baseTheme';
 import { buildTheme } from '../../../../src/createTheme';
 import { validateRefs } from '../../../../src/roots/validateRefs';

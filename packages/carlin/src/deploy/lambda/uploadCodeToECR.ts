@@ -1,7 +1,8 @@
-import { AWS_DEFAULT_REGION } from '../../config';
-import { getBaseStackResource } from '../baseStack/getBaseStackResource';
-import { getPackageVersion, waitCodeBuildFinish } from '../../utils';
 import AWS from 'aws-sdk';
+
+import { AWS_DEFAULT_REGION } from '../../config';
+import { getPackageVersion, waitCodeBuildFinish } from '../../utils';
+import { getBaseStackResource } from '../baseStack/getBaseStackResource';
 
 const codeBuild = new AWS.CodeBuild({ region: AWS_DEFAULT_REGION });
 
@@ -29,7 +30,7 @@ export const uploadCodeToECR = async ({
 
   const defaultDockerfile = [
     'FROM public.ecr.aws/lambda/nodejs:14',
-    // eslint-disable-next-line no-template-curly-in-string
+
     'COPY . ${LAMBDA_TASK_ROOT}',
     'RUN npm install',
   ].join('\n');
