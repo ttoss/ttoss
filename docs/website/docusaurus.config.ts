@@ -68,6 +68,10 @@ const config: Config = {
             to: '/docs/ai/agentic-development-principles',
             from: '/docs/product/product-development/agentic-development-principles',
           },
+          {
+            to: '/docs/ai/agentic-engineering-foundations/understandability',
+            from: '/docs/ai/agentic-engineering-foundations/context-availability',
+          },
         ],
       },
     ],
