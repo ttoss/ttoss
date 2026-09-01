@@ -20,3 +20,9 @@ export * from './ui/GeoVisLayerControl';
 export * from './ui/GeoVisLegend';
 export { formatCompactNumber } from './ui/GeoVisLegend.formatters';
 export * from './ui/GeoVisMarker';
+// Public so consumers branch behaviour on the same width the map's own overlays
+// collapse at, instead of each package picking its own breakpoint.
+export {
+  COMPACT_BREAKPOINT_PX,
+  useCompactViewport,
+} from './ui/useCompactViewport';

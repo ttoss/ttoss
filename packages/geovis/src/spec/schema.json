@@ -511,6 +511,10 @@
       "type": "boolean",
       "description": "Controls whether auto-generated legends are produced for the resolved mapType. Defaults to true."
     },
+    "attributionControlEnabled": {
+      "type": "boolean",
+      "description": "Controls whether MapLibre's attribution control (the round button in the map's bottom-right corner) is mounted. Defaults to true. Disable it only when the application renders the basemap credits elsewhere — attribution is generally a licensing requirement."
+    },
     "__resolved": {
       "type": "boolean",
       "description": "Internal marker set by resolveSpecFromMapType to prevent double-resolution. Consumers should not set this field directly."

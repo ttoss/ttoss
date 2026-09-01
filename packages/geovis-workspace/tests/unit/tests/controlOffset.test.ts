@@ -2,8 +2,10 @@ import type { VisualizationSpec } from '@ttoss/geovis';
 import {
   applyLeftSidebarControlOffset,
   applyRightSidebarLegendOffset,
+  applyTimelineHudControlOffset,
   LEFT_SIDEBAR_CONTROL_CLEARANCE,
   RIGHT_SIDEBAR_LEGEND_CLEARANCE,
+  TIMELINE_HUD_CONTROL_CLEARANCE,
 } from 'src/controlOffset';
 
 type Legend = NonNullable<VisualizationSpec['legends']>[number];
@@ -123,6 +125,76 @@ describe('applyLeftSidebarControlOffset', () => {
 
     expect(result.control?.offset).toEqual({
       x: LEFT_SIDEBAR_CONTROL_CLEARANCE,
+    });
+  });
+});
+
+describe('applyTimelineHudControlOffset', () => {
+  test('returns the spec untouched when it has no control', () => {
+    const result = applyTimelineHudControlOffset({
+      spec: baseSpec,
+      hudVisible: true,
+    });
+
+    expect(result).toBe(baseSpec);
+  });
+
+  test('returns the spec untouched while the HUD is hidden', () => {
+    const spec = withControl(control({ position: 'bottom-left' }));
+
+    const result = applyTimelineHudControlOffset({ spec, hudVisible: false });
+
+    expect(result).toBe(spec);
+  });
+
+  test.each(['top-left', 'top-right'] as const)(
+    'returns the spec untouched for a %s control the bottom bar never reaches',
+    (position) => {
+      const spec = withControl(control({ position }));
+
+      const result = applyTimelineHudControlOffset({ spec, hudVisible: true });
+
+      expect(result).toBe(spec);
+    }
+  );
+
+  test('lifts a bottom control clear of the bar, defaulting the position', () => {
+    const spec = withControl(control());
+
+    const result = applyTimelineHudControlOffset({ spec, hudVisible: true });
+
+    expect(result.control?.offset).toEqual({
+      y: TIMELINE_HUD_CONTROL_CLEARANCE,
+    });
+  });
+
+  test('preserves a horizontal offset so it composes with the sidebar shift', () => {
+    // What the two produce together: the sidebar pushes x, the HUD lifts y.
+    const spec = withControl(control({ position: 'bottom-left' }));
+
+    const shifted = applyLeftSidebarControlOffset({
+      spec,
+      leftSidebarOpen: true,
+    });
+    const result = applyTimelineHudControlOffset({
+      spec: shifted,
+      hudVisible: true,
+    });
+
+    expect(result.control?.offset).toEqual({
+      x: LEFT_SIDEBAR_CONTROL_CLEARANCE,
+      y: TIMELINE_HUD_CONTROL_CLEARANCE,
+    });
+  });
+
+  test('replaces a numeric offset, keeping it as the horizontal distance', () => {
+    const spec = withControl(control({ position: 'bottom-right', offset: 24 }));
+
+    const result = applyTimelineHudControlOffset({ spec, hudVisible: true });
+
+    expect(result.control?.offset).toEqual({
+      x: 24,
+      y: TIMELINE_HUD_CONTROL_CLEARANCE,
     });
   });
 });

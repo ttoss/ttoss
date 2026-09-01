@@ -9,11 +9,13 @@ import {
   buildItemStyle,
   buildItemThumbStyle,
   buildOuterStyle,
+  buildPanelStyle,
   buildTriggerStyle,
-  panelStyle,
+  compactBarStyle,
   TRIGGER_SIZE,
   triggerBadgeStyle,
 } from './GeoVisLayerControl.styles';
+import { useCompactViewport } from './useCompactViewport';
 
 /**
  * Whether an item should be visible, given the user's remembered choices.
@@ -169,6 +171,69 @@ const buildHoverHandlers = ({
 };
 
 /**
+ * The panel's open flag, controlled by the caller when it passes both
+ * `expanded` and `onExpandedChange`, and owned here otherwise. Uncontrolled
+ * updates forward the `SetStateAction` untouched, so a functional update still
+ * reads React's latest value rather than this render's.
+ */
+const useExpandedState = ({
+  expanded,
+  onExpandedChange,
+}: {
+  expanded?: boolean;
+  onExpandedChange?: (expanded: boolean) => void;
+}): [boolean, SetExpanded] => {
+  const [owned, setOwned] = React.useState(false);
+  const current = expanded ?? owned;
+  const setExpanded: SetExpanded = (action) => {
+    if (!onExpandedChange) {
+      setOwned(action);
+      return;
+    }
+    onExpandedChange(typeof action === 'function' ? action(current) : action);
+  };
+  return [current, setExpanded];
+};
+
+/**
+ * Order of the container's children, which is what decides where the panel
+ * opens. Roomy: the panel sits inboard of the trigger, so it grows toward the
+ * map's centre. Compact: the triggers share a row and the panel takes the line
+ * away from the anchored edge — above the row for bottom corners, below it for
+ * top ones.
+ */
+const arrangeChildren = ({
+  compact,
+  isTop,
+  isRight,
+  panel,
+  triggerButton,
+  trailingNode,
+}: {
+  compact: boolean;
+  isTop: boolean;
+  isRight: boolean;
+  panel: React.ReactNode;
+  triggerButton: React.ReactNode;
+  trailingNode: React.ReactNode;
+}): React.ReactNode[] => {
+  const row = isRight
+    ? [trailingNode, triggerButton]
+    : [triggerButton, trailingNode];
+  if (!compact) {
+    return isRight
+      ? [panel, trailingNode, triggerButton]
+      : [triggerButton, trailingNode, panel];
+  }
+  const bar = (
+    <div key="bar" style={compactBarStyle}>
+      {row}
+    </div>
+  );
+  return isTop ? [bar, panel] : [panel, bar];
+};
+
+/**
  * A single toggle button inside the expanded panel. Split out to keep the
  * per-item active/disabled derivation and its nested handlers off the main
  * component's cyclomatic complexity.
@@ -234,6 +299,7 @@ const LayerControlPanel = ({
   activeById,
   layerIds,
   hoveredId,
+  compact,
   onToggle,
   onHoverChange,
 }: {
@@ -242,11 +308,12 @@ const LayerControlPanel = ({
   activeById: Record<string, boolean>;
   layerIds: Set<string>;
   hoveredId: string | null;
+  compact: boolean;
   onToggle: (item: LayerControlItem) => void;
   onHoverChange: React.Dispatch<React.SetStateAction<string | null>>;
 }) => {
   return (
-    <div role="group" aria-label={label} style={panelStyle}>
+    <div role="group" aria-label={label} style={buildPanelStyle({ compact })}>
       {items.map((item) => {
         const disabled = !item.layers.some((id) => {
           return layerIds.has(id);
@@ -267,11 +334,37 @@ const LayerControlPanel = ({
   );
 };
 
-export const GeoVisLayerControl = () => {
+export const GeoVisLayerControl = ({
+  trailing,
+  expanded: expandedProp,
+  onExpandedChange,
+}: {
+  /**
+   * Extra control rendered beside the trigger, inside the same anchored row.
+   * Used below the compact breakpoint to sit the legend button next to this
+   * one; the two then share a single corner anchor instead of each computing
+   * its own offset and colliding when this control's panel opens sideways.
+   */
+  trailing?: React.ReactNode;
+  /**
+   * Whether the panel is open. Omit to let the control own that state — the
+   * default. Pass it (with `onExpandedChange`) to coordinate the panel with a
+   * sibling overlay: below the compact breakpoint `<GeoVisProvider>` does
+   * exactly that, so opening the legend closes this panel and vice versa,
+   * since both claim the space above the trigger row.
+   */
+  expanded?: boolean;
+  /** Called with the requested open state. Required for `expanded` to take effect. */
+  onExpandedChange?: (expanded: boolean) => void;
+} = {}) => {
   const { spec, dispatch } = useGeoVis();
   const control = spec.control;
 
-  const [expanded, setExpanded] = React.useState(false);
+  const isCompact = useCompactViewport();
+  const [expanded, setExpanded] = useExpandedState({
+    expanded: expandedProp,
+    onExpandedChange,
+  });
   const [hoveredId, setHoveredId] = React.useState<string | null>(null);
   const [activeById, setActiveById] = React.useState<Record<string, boolean>>(
     {}
@@ -318,7 +411,13 @@ export const GeoVisLayerControl = () => {
   const activeCount = control.items.filter((item) => {
     return resolveItemActive(item, activeById);
   }).length;
-  const hoverHandlers = buildHoverHandlers({ trigger, setExpanded });
+  // No hover handlers below the compact breakpoint: that layout is for touch,
+  // where there is no pointer to enter or leave, and the panel there sits
+  // outside the trigger row so a `mouseleave` on the row would close it while
+  // the pointer is over the panel. The trigger's own `onClick` still opens it.
+  const hoverHandlers = isCompact
+    ? {}
+    : buildHoverHandlers({ trigger, setExpanded });
 
   const toggleItem = (item: LayerControlItem) => {
     const existing = item.layers.filter((id) => {
@@ -359,24 +458,45 @@ export const GeoVisLayerControl = () => {
       activeById={activeById}
       layerIds={layerIds}
       hoveredId={hoveredId}
+      compact={isCompact}
       onToggle={toggleItem}
       onHoverChange={setHoveredId}
     />
   ) : null;
 
-  // The trigger stays pinned to the anchored corner; the panel expands to the
-  // side, growing toward the map's centre — to the trigger's right for left
-  // corners, to its left for right corners. Both align on the anchored
-  // horizontal edge (top for top corners, bottom for bottom).
-  const isRight = position.endsWith('right');
-  const children = isRight ? [panel, triggerButton] : [triggerButton, panel];
+  // Roomy layout: the trigger stays pinned to the anchored corner and the panel
+  // expands to the side, growing toward the map's centre — to the trigger's
+  // right for left corners, to its left for right corners. Both align on the
+  // anchored horizontal edge (top for top corners, bottom for bottom).
+  // `trailing` sits immediately inboard of the trigger, so the pair reads as one
+  // control bar.
+  //
+  // Compact layout: one row of square item cards cannot fit a phone's width, so
+  // the container becomes a column spanning the map and the panel opens away
+  // from the anchored edge — above the trigger row for bottom corners, below it
+  // for top ones. This mirrors the compact legend panel, which the trigger row
+  // sits beside.
+  const trailingNode = trailing ? (
+    <React.Fragment key="trailing">{trailing}</React.Fragment>
+  ) : null;
 
   return (
     <div
-      style={buildOuterStyle({ position, offset: control.offset })}
+      style={buildOuterStyle({
+        position,
+        offset: control.offset,
+        compact: isCompact,
+      })}
       {...hoverHandlers}
     >
-      {children}
+      {arrangeChildren({
+        compact: isCompact,
+        isTop: position.startsWith('top'),
+        isRight: position.endsWith('right'),
+        panel,
+        triggerButton,
+        trailingNode,
+      })}
     </div>
   );
 };

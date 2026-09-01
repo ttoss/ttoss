@@ -88,6 +88,7 @@ interface MockMap {
   on: jest.Mock;
   off: jest.Mock;
   getCanvas: jest.Mock;
+  getCanvasContainer: jest.Mock;
   getLayer: jest.Mock;
   getFeatureState: jest.Mock;
   isStyleLoaded: jest.Mock;
@@ -118,6 +119,9 @@ const buildMockMap = (): MockMap => {
     off: jest.fn((event: string, layerOrHandler) => {
       const layerId = typeof layerOrHandler === 'string' ? layerOrHandler : '*';
       handlers.delete(`${event}:${layerId}`);
+    }),
+    getCanvasContainer: jest.fn(() => {
+      return { addEventListener: jest.fn(), removeEventListener: jest.fn() };
     }),
     getCanvas: jest.fn(() => {
       return canvas;

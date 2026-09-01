@@ -10,9 +10,10 @@ import type { GeoVisRuntime } from '../runtime/createRuntime';
 import { createRuntime } from '../runtime/createRuntime';
 import { resolveSpecFromMapType } from '../spec/mapTypeDefaults';
 import type { GeoVisIssue, GeoVisResult } from '../spec/result';
-import type { VisualizationSpec } from '../spec/types';
+import type { LegendPosition, VisualizationSpec } from '../spec/types';
 import { GeoVisHoverTooltip } from '../ui/GeoVisHoverTooltip';
 import { GeoVisLayerControl } from '../ui/GeoVisLayerControl';
+import { buildOuterStyle } from '../ui/GeoVisLayerControl.styles';
 import { GeoVisLegend } from '../ui/GeoVisLegend';
 import {
   buildContainerStyle,
@@ -31,6 +32,8 @@ import {
   useMapClick,
   useMapHover,
 } from './hooks';
+import type { CompactOverlays } from './useCompactOverlays';
+import { useCompactOverlays } from './useCompactOverlays';
 
 // Re-export the contexts and hooks so existing public-API consumers
 // (`@ttoss/geovis` re-exports `./react/GeoVisProvider`) keep working after
@@ -208,6 +211,70 @@ const HoverProvider = ({
 };
 
 /**
+ * Spec-driven legend overlays: one `<GeoVisLegend>` per positioned legend, so
+ * consumers get the overlay just by declaring `position`, exactly like the
+ * auto-mounted hoverTooltip. Legends sharing a position stack inside one grouped
+ * container instead of overlapping as separate absolutely-positioned boxes.
+ *
+ * Defined at module scope alongside `ClickProvider`/`HoverProvider` to keep the
+ * provider's own render body within its line budget.
+ */
+const PositionedLegends = ({
+  spec,
+  groups,
+}: {
+  spec: VisualizationSpec;
+  groups: Map<LegendPosition, string[]>;
+}) => {
+  return Array.from(groups.entries()).flatMap(([position, ids]) => {
+    if (ids.length <= 1) {
+      return ids.map((id) => {
+        return <GeoVisLegend key={id} legendId={id} />;
+      });
+    }
+    // Legends sharing a position share one anchor, so the group wrapper carries
+    // the offset (all members get the same clearance from callers like the
+    // workspace pushing legends clear of an open sidebar).
+    const groupOffset = resolveLegend(spec, ids[0])?.offset;
+    return (
+      <div key={position} style={buildContainerStyle(position, groupOffset)}>
+        {ids.map((id) => {
+          return <GeoVisLegend key={id} legendId={id} noPositionWrap />;
+        })}
+      </div>
+    );
+  });
+};
+
+/**
+ * The map's anchored control bar. `spec.control` mounts the layer control
+ * automatically, exactly like the legend/tooltip overlays, and below the compact
+ * breakpoint the legend button rides along in its trigger row so the two share
+ * one corner anchor. With no `control` to ride along with, that button anchors
+ * the corner on its own — at the corner's default edge gap, there being no
+ * control offset to follow.
+ */
+const ControlBar = ({
+  hasControl,
+  legendTrigger,
+  layerControlProps,
+  position,
+}: {
+  hasControl: boolean;
+  legendTrigger: React.ReactNode;
+  layerControlProps: CompactOverlays['layerControlProps'];
+  position: LegendPosition;
+}) => {
+  if (hasControl) {
+    return (
+      <GeoVisLayerControl trailing={legendTrigger} {...layerControlProps} />
+    );
+  }
+  if (legendTrigger == null) return null;
+  return <div style={buildOuterStyle({ position })}>{legendTrigger}</div>;
+};
+
+/**
  * Surface validation failures on the console. A rejected spec renders
  * nothing (ADR-0001): the map silently blanks and the only trace otherwise
  * lives in `useGeoVis().result.issues`. Warning here makes schema/reference
@@ -285,6 +352,17 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
   const legendPositionGroups = React.useMemo(() => {
     return groupLegendIdsByPosition(committed.spec);
   }, [committed.spec]);
+
+  const {
+    isCompact,
+    position: compactControlPosition,
+    legendTrigger: compactLegendTrigger,
+    legendPanel: compactLegendPanel,
+    layerControlProps: compactLayerControlProps,
+  } = useCompactOverlays({
+    spec: committed.spec,
+    legendGroups: legendPositionGroups,
+  });
 
   React.useEffect(() => {
     let cancelled = false;
@@ -416,36 +494,21 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
           {children}
         </HoverProvider>
       </ClickProvider>
-      {/* Spec-driven legend overlays: mount one <GeoVisLegend> per positioned
-          legend so consumers get the overlay just by declaring `position` on
-          a legend, exactly like the auto-mounted hoverTooltip. Legends
-          sharing a position stack inside one grouped container instead of
-          overlapping as separate absolutely-positioned boxes. */}
-      {Array.from(legendPositionGroups.entries()).flatMap(([position, ids]) => {
-        if (ids.length <= 1) {
-          return ids.map((id) => {
-            return <GeoVisLegend key={id} legendId={id} />;
-          });
-        }
-        // Legends sharing a position share one anchor, so the group wrapper
-        // carries the offset (all members get the same clearance from callers
-        // like the workspace pushing legends clear of an open sidebar).
-        const groupOffset = resolveLegend(committed.spec, ids[0])?.offset;
-        return (
-          <div
-            key={position}
-            style={buildContainerStyle(position, groupOffset)}
-          >
-            {ids.map((id) => {
-              return <GeoVisLegend key={id} legendId={id} noPositionWrap />;
-            })}
-          </div>
-        );
-      })}
-      {/* Spec-driven layer-toggle panel: mounted automatically when the spec
-          declares `control`, exactly like the legend/tooltip overlays. The
-          component itself no-ops when `control` is absent. */}
-      {committed.spec.control && <GeoVisLayerControl />}
+      {/* Above the compact breakpoint only: below it these collapse into the
+          control bar's legend button (see useCompactOverlays). */}
+      {!isCompact && (
+        <PositionedLegends
+          spec={committed.spec}
+          groups={legendPositionGroups}
+        />
+      )}
+      <ControlBar
+        hasControl={committed.spec.control != null}
+        legendTrigger={compactLegendTrigger}
+        layerControlProps={compactLayerControlProps}
+        position={compactControlPosition}
+      />
+      {compactLegendPanel}
     </GeoVisContext.Provider>
   );
 };

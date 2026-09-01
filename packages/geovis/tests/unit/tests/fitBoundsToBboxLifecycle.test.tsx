@@ -112,6 +112,9 @@ const makeMapMock = () => {
       return false;
     }),
     setFeatureState: jest.fn(),
+    getCanvasContainer: jest.fn(() => {
+      return { addEventListener: jest.fn(), removeEventListener: jest.fn() };
+    }),
     getContainer: jest.fn(() => {
       return { clientWidth: 800, clientHeight: 520 };
     }),
