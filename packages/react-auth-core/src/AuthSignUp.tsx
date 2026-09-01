@@ -13,18 +13,32 @@ import { Flex, Link, Text } from '@ttoss/ui';
 import * as React from 'react';
 
 import { AuthCard } from './AuthCard';
-import type { OnSignUp, OnSignUpInput, SignUpTerms } from './types';
+import { AuthSocialSignIn } from './AuthSocialSignIn';
+import type {
+  OnSignUp,
+  OnSignUpInput,
+  OnSocialSignIn,
+  SignUpTerms,
+  SocialProvider,
+} from './types';
 
 export type AuthSignUpProps = {
   onSignUp: OnSignUp;
   onGoToSignIn: () => void;
   signUpTerms?: SignUpTerms;
   passwordMinimumLength?: number;
+  socialProviders?: SocialProvider[];
+  onSocialSignIn?: OnSocialSignIn;
 };
 
-export const AuthSignUp = (props: AuthSignUpProps) => {
+const useSignUpSchema = ({
+  isTermsRequired,
+  passwordMinimumLength,
+}: {
+  isTermsRequired?: boolean;
+  passwordMinimumLength: number;
+}) => {
   const { intl } = useI18n();
-  const { passwordMinimumLength = 8 } = props;
 
   const schema = React.useMemo(() => {
     return yup.object().shape({
@@ -76,7 +90,7 @@ export const AuthSignUp = (props: AuthSignUpProps) => {
             defaultMessage: 'Passwords are not the same',
           })
         ),
-      signUpTerms: props.signUpTerms?.isRequired
+      signUpTerms: isTermsRequired
         ? yup.boolean().required(
             intl.formatMessage({
               defaultMessage: 'You must accept the terms and conditions',
@@ -84,7 +98,19 @@ export const AuthSignUp = (props: AuthSignUpProps) => {
           )
         : yup.boolean(),
     });
-  }, [intl, props.signUpTerms?.isRequired, passwordMinimumLength]);
+  }, [intl, isTermsRequired, passwordMinimumLength]);
+
+  return schema;
+};
+
+export const AuthSignUp = (props: AuthSignUpProps) => {
+  const { intl } = useI18n();
+  const { passwordMinimumLength = 8 } = props;
+
+  const schema = useSignUpSchema({
+    isTermsRequired: props.signUpTerms?.isRequired,
+    passwordMinimumLength,
+  });
 
   const signUpTermsLabel = React.useMemo(() => {
     if (!props.signUpTerms) {
@@ -125,9 +151,8 @@ export const AuthSignUp = (props: AuthSignUpProps) => {
 
     if (props.signUpTerms.isRequired) {
       return <FormFieldCheckbox name="signUpTerms" label={signUpTermsLabel} />;
-    } else {
-      return <>{signUpTermsLabel}</>;
     }
+    return <>{signUpTermsLabel}</>;
   }, [props.signUpTerms, signUpTermsLabel]);
 
   const formMethods = useForm({
@@ -155,6 +180,14 @@ export const AuthSignUp = (props: AuthSignUpProps) => {
           defaultMessage: 'Sign up',
         })}
         isValidForm={formMethods.formState.isValid}
+        footer={
+          props.socialProviders && props.onSocialSignIn ? (
+            <AuthSocialSignIn
+              providers={props.socialProviders}
+              onSocialSignIn={props.onSocialSignIn}
+            />
+          ) : null
+        }
         extraButton={
           <Text
             sx={{ cursor: 'pointer' }}

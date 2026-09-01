@@ -11,7 +11,13 @@ import { NotificationsBox } from '@ttoss/react-notifications';
 import { Button, Flex, Link, Text } from '@ttoss/ui';
 
 import { AuthCard } from './AuthCard';
-import type { OnSignIn, OnSignInInput } from './types';
+import { AuthSocialSignIn } from './AuthSocialSignIn';
+import type {
+  OnSignIn,
+  OnSignInInput,
+  OnSocialSignIn,
+  SocialProvider,
+} from './types';
 
 export type AuthSignInProps = {
   onSignIn: OnSignIn;
@@ -19,6 +25,8 @@ export type AuthSignInProps = {
   onGoToForgotPassword?: () => void;
   defaultValues?: Partial<OnSignInInput>;
   passwordMinimumLength?: number;
+  socialProviders?: SocialProvider[];
+  onSocialSignIn?: OnSocialSignIn;
 };
 
 export const AuthSignIn = ({
@@ -27,6 +35,8 @@ export const AuthSignIn = ({
   defaultValues,
   onGoToForgotPassword,
   passwordMinimumLength = 8,
+  socialProviders,
+  onSocialSignIn,
 }: AuthSignInProps) => {
   const { intl } = useI18n();
 
@@ -90,6 +100,14 @@ export const AuthSignIn = ({
           defaultMessage: 'Sign in',
         })}
         isValidForm={formMethods.formState.isValid}
+        footer={
+          socialProviders && onSocialSignIn ? (
+            <AuthSocialSignIn
+              providers={socialProviders}
+              onSocialSignIn={onSocialSignIn}
+            />
+          ) : null
+        }
         extraButton={
           onGoToSignUp ? (
             <Button

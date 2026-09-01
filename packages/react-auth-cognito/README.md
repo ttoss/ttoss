@@ -113,6 +113,7 @@ The main authentication component that renders sign-in, sign-up, and password re
 - `logo?: React.ReactNode` - Optional logo to display in the authentication form
 - `layout?: 'default' | 'centered'` - Layout style for the authentication form
 - `onError?: (error: Error) => void` - Callback function invoked when authentication errors occur. Receives the error object from failed authentication operations (sign-in, sign-up, password reset, etc.)
+- `socialProviders?: ('Google' | 'Facebook')[]` - Federated identity providers to offer alongside email/password (see [Social sign-in](#social-sign-in))
 
 **Example:**
 
@@ -126,6 +127,40 @@ The main authentication component that renders sign-in, sign-up, and password re
   }}
 />
 ```
+
+### Social sign-in
+
+Pass `socialProviders` to render a "Continue with …" button per provider on the sign-in and sign-up screens. Clicking one calls Amplify's `signInWithRedirect`, which sends the user to the Cognito hosted UI.
+
+```tsx
+<Auth socialProviders={['Google', 'Facebook']} />
+```
+
+Three things must line up, or the button redirects to an error page:
+
+1. The provider is configured on the user pool and listed in the app client's `SupportedIdentityProviders` — `@ttoss/cloud-auth`'s `identityProviders` option does both.
+2. The user pool has a hosted UI domain, and the app client allows the redirect URLs.
+3. The Amplify config declares `Auth.Cognito.loginWith.oauth`:
+
+```ts
+const authConfig: ResourcesConfig['Auth'] = {
+  Cognito: {
+    userPoolId: '...',
+    userPoolClientId: '...',
+    loginWith: {
+      oauth: {
+        domain: 'my-app.auth.us-east-1.amazoncognito.com',
+        scopes: ['openid', 'email', 'profile'],
+        redirectSignIn: ['https://app.example.com/'],
+        redirectSignOut: ['https://app.example.com/auth'],
+        responseType: 'code',
+      },
+    },
+  },
+};
+```
+
+Cognito creates a **separate** user for a federated sign-in, with a new `sub`, even when the email matches an existing username/password user. Linking the two is a user-pool concern (a `preSignUp` Lambda calling `AdminLinkProviderForUser`), not something this component can do.
 
 ### `useAuth()`
 

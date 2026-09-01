@@ -10,6 +10,7 @@ jest.setTimeout(20_000);
 jest.mock('aws-amplify/auth', () => {
   return {
     signIn: jest.fn(),
+    signInWithRedirect: jest.fn(),
     signUp: jest.fn(),
     confirmSignUp: jest.fn(),
     resendSignUpCode: jest.fn(),
@@ -806,5 +807,64 @@ describe('forgot password code length validation', () => {
 
     // confirmResetPassword should not be called
     expect(amplifyAuth.confirmResetPassword).not.toHaveBeenCalled();
+  });
+});
+
+test('should call Amplify signInWithRedirect for a social provider', async () => {
+  jest.mocked(amplifyAuth.signInWithRedirect).mockResolvedValueOnce(undefined);
+
+  const user = userEvent.setup({ delay: null });
+
+  render(
+    <AuthProvider>
+      <Auth socialProviders={['Google', 'Facebook']} />
+    </AuthProvider>
+  );
+
+  await screen.findByText('Continue with Google');
+
+  await user.click(screen.getByText('Continue with Facebook'));
+
+  await waitFor(() => {
+    expect(amplifyAuth.signInWithRedirect).toHaveBeenCalledWith({
+      provider: 'Facebook',
+    });
+  });
+
+  expect(amplifyAuth.signIn).not.toHaveBeenCalled();
+});
+
+test('should not render social buttons when no provider is configured', async () => {
+  render(
+    <AuthProvider>
+      <Auth />
+    </AuthProvider>
+  );
+
+  await screen.findByLabelText('Email');
+
+  expect(screen.queryByText('Continue with Google')).not.toBeInTheDocument();
+});
+
+test('should report an error when the redirect cannot start', async () => {
+  const error = new Error('redirect failed');
+  jest.mocked(amplifyAuth.signInWithRedirect).mockRejectedValueOnce(error);
+
+  const onError = jest.fn();
+
+  const user = userEvent.setup({ delay: null });
+
+  render(
+    <AuthProvider>
+      <Auth socialProviders={['Google']} onError={onError} />
+    </AuthProvider>
+  );
+
+  await screen.findByText('Continue with Google');
+
+  await user.click(screen.getByText('Continue with Google'));
+
+  await waitFor(() => {
+    expect(onError).toHaveBeenCalledWith(error);
   });
 });

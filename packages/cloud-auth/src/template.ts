@@ -4,17 +4,44 @@ import type {
 } from '@ttoss/cloudformation';
 
 import { PASSWORD_MINIMUM_LENGTH } from './config';
+import {
+  type AdditionalAppClientConfig,
+  applyAdditionalAppClients,
+  applyDomain,
+  applyResourceServers,
+  type DomainConfig,
+  type OAuthConfig,
+  type ResourceServerConfig,
+} from './template-hosted-ui';
 import type { IdentityPoolConfig } from './template-identity-pool';
 import {
   applyIdentityPool,
   IdentityPoolAuthenticatedIAMRoleLogicalId,
   IdentityPoolUnauthenticatedIAMRoleLogicalId,
 } from './template-identity-pool';
+import {
+  applyIdentityProviders,
+  applyPrimaryAppClient,
+  type IdentityProviderConfig,
+} from './template-identity-providers';
 
 export type { CloudFormationTemplate };
 
 export type { IdentityPoolConfig };
+export type {
+  AdditionalAppClientConfig,
+  DomainConfig,
+  OAuthConfig,
+  ResourceServerConfig,
+  ResourceServerScope,
+} from './template-hosted-ui';
 export { defaultPrincipalTags } from './template-identity-pool';
+export type {
+  IdentityProviderConfig,
+  IdentityProviderType,
+} from './template-identity-providers';
+export { identityProviderLogicalId } from './template-identity-providers';
+export { toPascalCase } from './toPascalCase';
 
 const CognitoUserPoolLogicalId = 'CognitoUserPool';
 const CognitoUserPoolClientLogicalId = 'CognitoUserPoolClient';
@@ -51,34 +78,6 @@ type LambdaTriggers = {
   customSMSSender?: string | CloudFormationGetAtt;
 };
 
-export type DomainConfig = {
-  domainName: string;
-  certificateArn?: string;
-};
-
-export type ResourceServerScope = {
-  scopeName: string;
-  scopeDescription: string;
-};
-
-export type ResourceServerConfig = {
-  identifier: string;
-  name: string;
-  scopes: ResourceServerScope[];
-};
-
-export type OAuthConfig = {
-  flows: Array<'code' | 'implicit' | 'client_credentials'>;
-  scopes: string[];
-  callbackUrls: string[];
-};
-
-export type AdditionalAppClientConfig = {
-  name: string;
-  generateSecret?: boolean;
-  oauth?: OAuthConfig;
-};
-
 type CreateAuthTemplateParams = {
   autoVerifiedAttributes?: Array<'email' | 'phone_number'> | null | false;
   identityPool?: IdentityPoolConfig;
@@ -87,17 +86,10 @@ type CreateAuthTemplateParams = {
   lambdaTriggers?: LambdaTriggers;
   deletionProtection?: 'ACTIVE' | 'INACTIVE';
   domain?: DomainConfig;
+  oauth?: OAuthConfig;
+  identityProviders?: IdentityProviderConfig[];
   resourceServers?: ResourceServerConfig[];
   additionalAppClients?: AdditionalAppClientConfig[];
-};
-
-export const toPascalCase = (name: string) => {
-  return name
-    .split(/[-_\s]+/)
-    .map((part) => {
-      return part.charAt(0).toUpperCase() + part.slice(1);
-    })
-    .join('');
 };
 
 const buildBaseTemplate = ({
@@ -256,108 +248,6 @@ const applyLambdaTriggers = (
   }
 };
 
-const applyDomain = (
-  template: CloudFormationTemplate,
-  domain: DomainConfig
-) => {
-  template.Resources.CognitoUserPoolDomain = {
-    Type: 'AWS::Cognito::UserPoolDomain',
-    Properties: {
-      Domain: domain.domainName,
-      UserPoolId: { Ref: CognitoUserPoolLogicalId },
-      ...(domain.certificateArn && {
-        CustomDomainConfig: { CertificateArn: domain.certificateArn },
-      }),
-    },
-  };
-
-  const domainUrl = domain.certificateArn
-    ? `https://${domain.domainName}`
-    : {
-        'Fn::Sub': `https://${domain.domainName}.auth.\${AWS::Region}.amazoncognito.com`,
-      };
-
-  template.Outputs = {
-    ...template.Outputs,
-    CognitoUserPoolDomainUrl: {
-      Description: 'The Cognito hosted UI domain URL.',
-      Value: domainUrl,
-      Export: {
-        Name: {
-          'Fn::Join': [
-            ':',
-            [{ Ref: 'AWS::StackName' }, 'CognitoUserPoolDomainUrl'],
-          ],
-        },
-      },
-    },
-  };
-};
-
-const applyResourceServers = (
-  template: CloudFormationTemplate,
-  resourceServers: ResourceServerConfig[]
-) => {
-  for (const server of resourceServers) {
-    const logicalId = `CognitoUserPoolResourceServer${toPascalCase(server.identifier)}`;
-
-    template.Resources[logicalId] = {
-      Type: 'AWS::Cognito::UserPoolResourceServer',
-      Properties: {
-        Identifier: server.identifier,
-        Name: server.name,
-        Scopes: server.scopes.map((scope) => {
-          return {
-            ScopeName: scope.scopeName,
-            ScopeDescription: scope.scopeDescription,
-          };
-        }),
-        UserPoolId: { Ref: CognitoUserPoolLogicalId },
-      },
-    };
-  }
-};
-
-const applyAdditionalAppClients = (
-  template: CloudFormationTemplate,
-  additionalAppClients: AdditionalAppClientConfig[]
-) => {
-  for (const client of additionalAppClients) {
-    const pascalName = toPascalCase(client.name);
-    const logicalId = `AppClient${pascalName}`;
-    const outputKey = `AppClientId${pascalName}`;
-
-    template.Resources[logicalId] = {
-      Type: 'AWS::Cognito::UserPoolClient',
-      Properties: {
-        ClientName: client.name,
-        UserPoolId: { Ref: CognitoUserPoolLogicalId },
-        SupportedIdentityProviders: ['COGNITO'],
-        GenerateSecret: client.generateSecret ?? false,
-        ...(client.oauth && {
-          AllowedOAuthFlows: client.oauth.flows,
-          AllowedOAuthFlowsUserPoolClient: true,
-          AllowedOAuthScopes: client.oauth.scopes,
-          CallbackURLs: client.oauth.callbackUrls,
-        }),
-      },
-    };
-
-    template.Outputs = {
-      ...template.Outputs,
-      [outputKey]: {
-        Description: `App client ID for ${client.name}.`,
-        Value: { Ref: logicalId },
-        Export: {
-          Name: {
-            'Fn::Join': [':', [{ Ref: 'AWS::StackName' }, outputKey]],
-          },
-        },
-      },
-    };
-  }
-};
-
 const applyAll = (
   template: CloudFormationTemplate,
   params: CreateAuthTemplateParams
@@ -368,6 +258,9 @@ const applyAll = (
   if (params.lambdaTriggers)
     applyLambdaTriggers(template, params.lambdaTriggers);
   if (params.domain) applyDomain(template, params.domain);
+  if (params.identityProviders)
+    applyIdentityProviders(template, params.identityProviders);
+  applyPrimaryAppClient(template, params);
   if (params.resourceServers)
     applyResourceServers(template, params.resourceServers);
   if (params.additionalAppClients)
@@ -382,6 +275,12 @@ export const createAuthTemplate = (
     usernameAttributes = ['email'],
     deletionProtection,
   } = params;
+
+  if (params.identityProviders?.length && !params.domain) {
+    throw new Error(
+      'createAuthTemplate: `domain` is required when `identityProviders` is set — federated sign-in goes through the hosted UI.'
+    );
+  }
 
   const template = buildBaseTemplate({
     autoVerifiedAttributes,

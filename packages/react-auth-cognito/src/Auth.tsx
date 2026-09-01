@@ -6,6 +6,8 @@ import {
   type OnForgotPasswordResetPassword,
   type OnSignIn,
   type OnSignUp,
+  type OnSocialSignIn,
+  type SocialProvider,
   useAuthScreen,
 } from '@ttoss/react-auth-core';
 import { defineMessages, useI18n } from '@ttoss/react-i18n';
@@ -16,6 +18,7 @@ import {
   resendSignUpCode,
   resetPassword,
   signIn,
+  signInWithRedirect,
   signOut,
   signUp,
 } from 'aws-amplify/auth';
@@ -189,7 +192,22 @@ const useSignHandlers = ({
     [setScreen, addNotification, onError, fm]
   );
 
-  return { onSignIn, onSignUp, onConfirmSignUpWithCode };
+  const onSocialSignIn = React.useCallback<OnSocialSignIn>(
+    async ({ provider }) => {
+      try {
+        await signInWithRedirect({ provider });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        // The hosted UI runs in the same tab, so a rejection here means the
+        // redirect never started — there is no user mistake to report back.
+        onError?.(error);
+        addNotification({ type: 'error', message: fm(messages.genericError) });
+      }
+    },
+    [addNotification, fm, onError]
+  );
+
+  return { onSignIn, onSignUp, onConfirmSignUpWithCode, onSocialSignIn };
 };
 
 const usePasswordHandlers = ({
@@ -259,6 +277,12 @@ export type AuthProps = Pick<
    * Receives the error object that was caught.
    */
   onError?: (error: Error) => void;
+  /**
+   * Federated identity providers to offer alongside email/password. Each one
+   * must also be configured on the Cognito user pool and app client, and the
+   * app's Amplify config must declare `Auth.Cognito.loginWith.oauth`.
+   */
+  socialProviders?: SocialProvider[];
 };
 
 export const Auth = (props: AuthProps) => {
@@ -270,12 +294,13 @@ export const Auth = (props: AuthProps) => {
     return intl.formatMessage(m) as unknown as string;
   };
 
-  const { onSignIn, onSignUp, onConfirmSignUpWithCode } = useSignHandlers({
-    onError,
-    fm,
-    setScreen,
-    addNotification,
-  });
+  const { onSignIn, onSignUp, onConfirmSignUpWithCode, onSocialSignIn } =
+    useSignHandlers({
+      onError,
+      fm,
+      setScreen,
+      addNotification,
+    });
 
   const { onForgotPassword, onForgotPasswordResetPassword } =
     usePasswordHandlers({
@@ -298,6 +323,8 @@ export const Auth = (props: AuthProps) => {
       logo={props.logo}
       layout={props.layout}
       maxForgotPasswordCodeLength={6}
+      socialProviders={props.socialProviders}
+      onSocialSignIn={onSocialSignIn}
     />
   );
 };
