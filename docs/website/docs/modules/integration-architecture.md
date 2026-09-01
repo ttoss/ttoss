@@ -339,6 +339,6 @@ Just wrap your app with providers once, and all components work seamlessly.
 - **[Getting Started](/docs/design/getting-started)**: Set up providers in your app
 - **[Design Tokens](/docs/design/design-system/design-tokens)**: Understand theme tokens
 - **[Components](https://storybook.ttoss.dev)**: Browse available components
-- **[Engineering Technologies](/docs/engineering/technologies)**: Understand the tech stack
+- **[Engineering Guidelines](/docs/engineering/guidelines)**: Understand the standards these packages follow
 
 This context-based architecture is an engineering innovation that makes ttoss packages **truly modular and effortlessly integrated**.
