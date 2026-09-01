@@ -20,7 +20,7 @@ graph LR
 
 ## Where we are
 
-`@ttoss/geovis` renders validated specs (choropleth, dot density, proportional circles) with MapLibre, patches them incrementally, and enforces one cartography policy. `@ttoss/geovis-workspace` provides the layout shell (sidebars, provider, context). Everything AI-facing — structured errors, enforced capabilities, semantic actions, context packet, catalog, intent, resolution, evals — is designed ([GeoVis ADRs 0001–0004](https://github.com/ttoss/ttoss/tree/main/packages/geovis/docs/adr), [workspace ADRs 0001–0004](https://github.com/ttoss/ttoss/tree/main/packages/geovis-workspace/docs/adr), [research](./research/)) but not built.
+`@ttoss/geovis` renders validated specs (choropleth, dot density, proportional circles) with MapLibre, patches them incrementally, and enforces one cartography policy. R1 (structured result taxonomy, enforced `CapabilitySet`) and R2 (semantic action `dispatch()`, context packet) are implemented. `@ttoss/geovis-workspace` hoists `GeoVisProvider` above its layout and derives every default panel (legend, warnings/repair surface, inspector, metadata, layer list) from the runtime through named slots — R3a is implemented. `@ttoss/geovis-catalog` now exists with the R4 catalog contract (`validateCatalog`, `getCatalogIntrospection`, `getCatalogJSONSchema`) implemented. Still to build: R3b (workspace controls converging on R2's semantic actions instead of `onSelectionChange`), R4's constrained intent schema and deterministic resolver, and R5 evals ([GeoVis ADRs 0001–0004](https://github.com/ttoss/ttoss/tree/main/packages/geovis/docs/adr), [workspace ADRs 0001–0004](https://github.com/ttoss/ttoss/tree/main/packages/geovis-workspace/docs/adr), [research](./research/)) are designed but not built.
 
 ## R1 — Reliable Core
 
@@ -54,7 +54,7 @@ Exit criteria: an LLM can change metric, filter, layer, selection, and view thro
 
 The workspace becomes the default human surface for GeoVis maps, converging with AI steering on the same actions. It splits into two stages because their dependencies differ: the foundation needs only R1's taxonomy and runs **in parallel with R2** (different package, no shared code), while convergence needs R2's action surface.
 
-### R3a — Foundation (parallel with R2)
+### R3a — Foundation (parallel with R2) — implemented
 
 | Deliverable                                                                    | Package                   | Basis                                                                                                                                           |
 | ------------------------------------------------------------------------------ | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -74,13 +74,13 @@ Exit criteria — R3a: an application embeds the workspace without rebuilding co
 
 ## R4 — Grounded Generation
 
-Natural language becomes a validated map through catalog and deterministic resolution. This layer is new — its PRDs decide whether it lands in existing packages or a new one (e.g. `@ttoss/geovis-catalog`).
+Natural language becomes a validated map through catalog and deterministic resolution. This layer is new — it lands in existing packages (`@ttoss/geovis-catalog`).
 
-| Deliverable                                                 | Package   | Basis         |
-| ----------------------------------------------------------- | --------- | ------------- |
-| Catalog contract (metrics, geographies, joins, permissions) | new layer | Strategy §5.2 |
-| Constrained intent schema                                   | new layer | Strategy §5.1 |
-| Deterministic resolver: intent → validated spec             | new layer | Strategy §5.3 |
+| Deliverable                                                               | Package               | Basis         |
+| ------------------------------------------------------------------------- | --------------------- | ------------- |
+| Catalog contract (metrics, geographies, joins, permissions) — implemented | @ttoss/geovis-catalog | Strategy §5.2 |
+| Constrained intent schema                                                 | @ttoss/geovis-catalog | Strategy §5.1 |
+| Deterministic resolver: intent → validated spec                           | @ttoss/geovis-catalog | Strategy §5.3 |
 
 Exit criteria: an AI can only reference catalog entries; the resolver produces a valid map or a structured failure — never a guess.
 

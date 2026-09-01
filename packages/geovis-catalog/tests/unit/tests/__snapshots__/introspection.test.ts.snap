@@ -1,0 +1,993 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`getCatalogJSONSchema matches the committed schema shape (guards against accidental drift) 1`] = `
+{
+  "$defs": {
+    "CameraFraming": {
+      "additionalProperties": false,
+      "properties": {
+        "bbox": {
+          "prefixItems": [
+            {
+              "type": "number",
+            },
+            {
+              "type": "number",
+            },
+            {
+              "type": "number",
+            },
+            {
+              "type": "number",
+            },
+          ],
+          "type": "array",
+        },
+        "cameraCenter": {
+          "prefixItems": [
+            {
+              "type": "number",
+            },
+            {
+              "type": "number",
+            },
+          ],
+          "type": "array",
+        },
+        "cameraZoom": {
+          "type": "number",
+        },
+      },
+      "required": [
+        "bbox",
+      ],
+      "type": "object",
+    },
+    "CodedRef": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string",
+        },
+        "label": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "code",
+      ],
+      "type": "object",
+    },
+    "Collection": {
+      "additionalProperties": false,
+      "properties": {
+        "aliases": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "description": {
+          "type": "string",
+        },
+        "id": {
+          "type": "string",
+        },
+        "organization": {
+          "type": "string",
+        },
+        "publicReferenceUrl": {
+          "type": "string",
+        },
+        "slug": {
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "type": "string",
+        },
+        "sourceUrl": {
+          "type": "string",
+        },
+        "tags": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "title": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+      ],
+      "type": "object",
+    },
+    "Dataset": {
+      "additionalProperties": false,
+      "properties": {
+        "access": {
+          "$ref": "#/$defs/DatasetAccess",
+        },
+        "aliases": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "artifact": {
+          "additionalProperties": false,
+          "properties": {
+            "format": {
+              "enum": [
+                "csv",
+                "json",
+                "geojson",
+                "parquet",
+              ],
+              "type": "string",
+            },
+            "url": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "url",
+            "format",
+          ],
+          "type": "object",
+        },
+        "collectionId": {
+          "type": "string",
+        },
+        "columns": {
+          "additionalProperties": {
+            "type": "string",
+          },
+          "propertyNames": {
+            "type": "string",
+          },
+          "type": "object",
+        },
+        "description": {
+          "type": "string",
+        },
+        "fields": {
+          "items": {
+            "$ref": "#/$defs/DatasetField",
+          },
+          "type": "array",
+        },
+        "generatedBy": {
+          "type": "string",
+        },
+        "geographyIds": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "id": {
+          "type": "string",
+        },
+        "metricIds": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "provenance": {
+          "$ref": "#/$defs/DatasetProvenance",
+        },
+        "sensible": {
+          "type": "boolean",
+        },
+        "slug": {
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "type": "string",
+        },
+        "spatial": {
+          "$ref": "#/$defs/Spatial",
+        },
+        "temporal": {
+          "$ref": "#/$defs/Temporal",
+        },
+        "title": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "geographyIds",
+        "metricIds",
+      ],
+      "type": "object",
+    },
+    "DatasetAccess": {
+      "additionalProperties": false,
+      "properties": {
+        "containsPersonalData": {
+          "type": "boolean",
+        },
+        "level": {
+          "enum": [
+            "public",
+            "restricted",
+          ],
+          "type": "string",
+        },
+        "notes": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "level",
+        "containsPersonalData",
+      ],
+      "type": "object",
+    },
+    "DatasetField": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+        },
+        "role": {
+          "enum": [
+            "identifier",
+            "geometry",
+            "join",
+          ],
+          "type": "string",
+        },
+        "sensible": {
+          "type": "boolean",
+        },
+        "title": {
+          "type": "string",
+        },
+        "unit": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "name",
+      ],
+      "type": "object",
+    },
+    "DatasetProvenance": {
+      "additionalProperties": false,
+      "properties": {
+        "notes": {
+          "type": "string",
+        },
+        "url": {
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "Dimension": {
+      "additionalProperties": false,
+      "properties": {
+        "aliases": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "description": {
+          "type": "string",
+        },
+        "id": {
+          "type": "string",
+        },
+        "kind": {
+          "enum": [
+            "categorical",
+            "numeric",
+            "temporal",
+          ],
+          "type": "string",
+        },
+        "property": {
+          "type": "string",
+        },
+        "slug": {
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "type": "string",
+        },
+        "title": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "id",
+        "title",
+        "kind",
+        "property",
+      ],
+      "type": "object",
+    },
+    "FilterField": {
+      "additionalProperties": false,
+      "properties": {
+        "aliases": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "description": {
+          "type": "string",
+        },
+        "domain": {
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "const": "runtime",
+              "type": "string",
+            },
+          },
+          "required": [
+            "mode",
+          ],
+          "type": "object",
+        },
+        "id": {
+          "type": "string",
+        },
+        "kind": {
+          "enum": [
+            "categorical",
+            "numeric",
+            "temporal",
+          ],
+          "type": "string",
+        },
+        "metricId": {
+          "type": "string",
+        },
+        "multiple": {
+          "type": "boolean",
+        },
+        "operators": {
+          "items": {
+            "enum": [
+              "eq",
+              "neq",
+              "gt",
+              "gte",
+              "lt",
+              "lte",
+              "in",
+              "not-in",
+            ],
+            "type": "string",
+          },
+          "minItems": 1,
+          "type": "array",
+        },
+        "property": {
+          "type": "string",
+        },
+        "sensible": {
+          "type": "boolean",
+        },
+        "slug": {
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "type": "string",
+        },
+        "sourceDatasetId": {
+          "type": "string",
+        },
+        "sourceGeographyId": {
+          "type": "string",
+        },
+        "title": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "id",
+        "title",
+        "property",
+        "kind",
+        "operators",
+        "domain",
+      ],
+      "type": "object",
+    },
+    "Geography": {
+      "additionalProperties": false,
+      "properties": {
+        "aliases": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "cameraFraming": {
+          "$ref": "#/$defs/CameraFraming",
+        },
+        "codeScheme": {
+          "type": "string",
+        },
+        "description": {
+          "type": "string",
+        },
+        "id": {
+          "type": "string",
+        },
+        "kind": {
+          "enum": [
+            "administrative",
+            "grid",
+            "poi",
+            "custom",
+          ],
+          "type": "string",
+        },
+        "level": {
+          "type": "number",
+        },
+        "parentId": {
+          "type": "string",
+        },
+        "resolution": {
+          "type": "string",
+        },
+        "slug": {
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "type": "string",
+        },
+        "title": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+      ],
+      "type": "object",
+    },
+    "Interval": {
+      "additionalProperties": false,
+      "properties": {
+        "end": {
+          "type": "string",
+        },
+        "start": {
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "Join": {
+      "additionalProperties": false,
+      "properties": {
+        "cardinality": {
+          "enum": [
+            "1:1",
+            "1:m",
+            "m:1",
+          ],
+          "type": "string",
+        },
+        "from": {
+          "type": "string",
+        },
+        "on": {
+          "additionalProperties": false,
+          "properties": {
+            "left": {
+              "type": "string",
+            },
+            "right": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "left",
+            "right",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "from",
+        "to",
+        "on",
+        "cardinality",
+      ],
+      "type": "object",
+    },
+    "MapTypeCatalogEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "metricKinds": {
+          "items": {
+            "enum": [
+              "count",
+              "rate",
+              "ratio",
+              "index",
+              "density",
+              "distance",
+              "nominal",
+            ],
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "name": {
+          "enum": [
+            "choropleth",
+            "dotDensity",
+            "proportionalCircles",
+          ],
+          "type": "string",
+        },
+        "supportedGeometries": {
+          "items": {
+            "enum": [
+              "point",
+              "polygon",
+              "line",
+            ],
+            "type": "string",
+          },
+          "type": "array",
+        },
+      },
+      "required": [
+        "name",
+        "supportedGeometries",
+        "metricKinds",
+      ],
+      "type": "object",
+    },
+    "Metric": {
+      "additionalProperties": false,
+      "properties": {
+        "aliases": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "categories": {
+          "items": {
+            "$ref": "#/$defs/MetricCategory",
+          },
+          "type": "array",
+        },
+        "description": {
+          "type": "string",
+        },
+        "formatter": {
+          "enum": [
+            "number",
+            "percent",
+            "currency",
+            "compact",
+          ],
+          "type": "string",
+        },
+        "id": {
+          "type": "string",
+        },
+        "kind": {
+          "enum": [
+            "count",
+            "rate",
+            "ratio",
+            "index",
+            "density",
+            "distance",
+            "nominal",
+          ],
+          "type": "string",
+        },
+        "nullPolicy": {
+          "enum": [
+            "hide",
+            "zero",
+            "explain",
+          ],
+          "type": "string",
+        },
+        "slug": {
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "type": "string",
+        },
+        "title": {
+          "type": "string",
+        },
+        "unit": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "kind",
+        "nullPolicy",
+      ],
+      "type": "object",
+    },
+    "MetricCategory": {
+      "additionalProperties": false,
+      "properties": {
+        "colorToken": {
+          "type": "string",
+        },
+        "id": {
+          "type": "string",
+        },
+        "order": {
+          "type": "number",
+        },
+        "slug": {
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "type": "string",
+        },
+        "title": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "id",
+        "title",
+      ],
+      "type": "object",
+    },
+    "Series": {
+      "additionalProperties": false,
+      "properties": {
+        "dimensions": {
+          "items": {
+            "$ref": "#/$defs/Dimension",
+          },
+          "type": "array",
+        },
+        "id": {
+          "type": "string",
+        },
+        "metricId": {
+          "type": "string",
+        },
+        "spatialGrain": {
+          "$ref": "#/$defs/SpatialGrainRef",
+        },
+        "temporalGrain": {
+          "anyOf": [
+            {
+              "enum": [
+                "instant",
+                "irregular",
+                "continuous",
+                "unknown",
+              ],
+              "type": "string",
+            },
+            {
+              "pattern": "^P(?:\\d+Y)?(?:\\d+M)?(?:\\d+W)?(?:\\d+D)?(?:T(?:\\d+H)?(?:\\d+M)?(?:\\d+S)?)?$",
+              "type": "string",
+            },
+          ],
+        },
+      },
+      "required": [
+        "id",
+        "metricId",
+      ],
+      "type": "object",
+    },
+    "Spatial": {
+      "additionalProperties": false,
+      "properties": {
+        "coverage": {
+          "enum": [
+            "exhaustive",
+            "partial",
+            "sample",
+            "unknown",
+          ],
+          "type": "string",
+        },
+        "dimensionStatus": {
+          "enum": [
+            "described",
+            "not_applicable",
+            "unknown",
+          ],
+          "type": "string",
+        },
+        "extent": {
+          "items": {
+            "$ref": "#/$defs/CodedRef",
+          },
+          "type": "array",
+        },
+        "field": {
+          "anyOf": [
+            {
+              "type": "string",
+            },
+            {
+              "items": {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          ],
+        },
+        "precision": {
+          "enum": [
+            "rooftop",
+            "parcel",
+            "street",
+            "postal_centroid",
+            "locality_centroid",
+            "admin_centroid",
+            "not_applicable",
+            "unknown",
+          ],
+          "type": "string",
+        },
+        "spatialGeometry": {
+          "enum": [
+            "point",
+            "polygon",
+            "line",
+            "multipolygon",
+            "none",
+          ],
+          "type": "string",
+        },
+        "spatialGrain": {
+          "$ref": "#/$defs/SpatialGrain",
+        },
+        "srid": {
+          "type": "number",
+        },
+      },
+      "required": [
+        "dimensionStatus",
+      ],
+      "type": "object",
+    },
+    "SpatialGrain": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string",
+        },
+        "label": {
+          "type": "string",
+        },
+        "scheme": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "scheme",
+        "code",
+      ],
+      "type": "object",
+    },
+    "SpatialGrainRef": {
+      "additionalProperties": false,
+      "properties": {
+        "geographyId": {
+          "type": "string",
+        },
+        "label": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "geographyId",
+      ],
+      "type": "object",
+    },
+    "Temporal": {
+      "additionalProperties": false,
+      "properties": {
+        "dimensionStatus": {
+          "enum": [
+            "described",
+            "not_applicable",
+            "unknown",
+          ],
+          "type": "string",
+        },
+        "extent": {
+          "items": {
+            "$ref": "#/$defs/Interval",
+          },
+          "type": "array",
+        },
+        "field": {
+          "$ref": "#/$defs/TemporalFields",
+        },
+        "periods": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "end": {
+                "type": "string",
+              },
+              "label": {
+                "type": "string",
+              },
+              "start": {
+                "type": "string",
+              },
+            },
+            "required": [
+              "start",
+              "end",
+            ],
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "temporalGrain": {
+          "anyOf": [
+            {
+              "enum": [
+                "instant",
+                "irregular",
+                "continuous",
+                "unknown",
+              ],
+              "type": "string",
+            },
+            {
+              "pattern": "^P(?:\\d+Y)?(?:\\d+M)?(?:\\d+W)?(?:\\d+D)?(?:T(?:\\d+H)?(?:\\d+M)?(?:\\d+S)?)?$",
+              "type": "string",
+            },
+          ],
+        },
+        "temporalHistory": {
+          "enum": [
+            "snapshot",
+            "overwrite",
+            "append_only",
+            "revised",
+            "unknown",
+          ],
+          "type": "string",
+        },
+        "timezone": {
+          "type": "string",
+        },
+        "updateFrequency": {
+          "enum": [
+            "real_time",
+            "daily",
+            "weekly",
+            "monthly",
+            "quarterly",
+            "annual",
+            "irregular",
+            "on_demand",
+            "static",
+            "unknown",
+          ],
+          "type": "string",
+        },
+      },
+      "required": [
+        "dimensionStatus",
+      ],
+      "type": "object",
+    },
+    "TemporalFields": {
+      "additionalProperties": false,
+      "properties": {
+        "end": {
+          "type": "string",
+        },
+        "instant": {
+          "type": "string",
+        },
+        "recorded": {
+          "type": "string",
+        },
+        "start": {
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+  },
+  "$id": "https://ttoss.dev/geovis-catalog/catalog.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "collections": {
+      "items": {
+        "$ref": "#/$defs/Collection",
+      },
+      "type": "array",
+    },
+    "datasets": {
+      "items": {
+        "$ref": "#/$defs/Dataset",
+      },
+      "type": "array",
+    },
+    "domain": {
+      "type": "string",
+    },
+    "filters": {
+      "items": {
+        "$ref": "#/$defs/FilterField",
+      },
+      "type": "array",
+    },
+    "geographies": {
+      "items": {
+        "$ref": "#/$defs/Geography",
+      },
+      "type": "array",
+    },
+    "joins": {
+      "items": {
+        "$ref": "#/$defs/Join",
+      },
+      "type": "array",
+    },
+    "mapTypes": {
+      "items": {
+        "$ref": "#/$defs/MapTypeCatalogEntry",
+      },
+      "type": "array",
+    },
+    "metrics": {
+      "items": {
+        "$ref": "#/$defs/Metric",
+      },
+      "type": "array",
+    },
+    "permissions": {
+      "additionalProperties": {},
+      "propertyNames": {
+        "type": "string",
+      },
+      "type": "object",
+    },
+    "series": {
+      "items": {
+        "$ref": "#/$defs/Series",
+      },
+      "type": "array",
+    },
+    "version": {
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "required": [
+    "version",
+    "datasets",
+    "metrics",
+    "geographies",
+    "joins",
+    "mapTypes",
+    "filters",
+  ],
+  "title": "Catalog",
+  "type": "object",
+}
+`;
