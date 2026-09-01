@@ -53,6 +53,60 @@ export const applyLeftSidebarControlOffset = ({
 };
 
 /**
+ * Vertical clearance, in pixels, the map's layer control needs so it sits above
+ * the compact timeline HUD instead of under it. Sized to the bar's own
+ * footprint: its `14px` bottom inset plus its height (`6px` of padding either
+ * side of the `44px` controls) plus a gap.
+ */
+export const TIMELINE_HUD_CONTROL_CLEARANCE = 78;
+
+/**
+ * Returns `spec` with the map's layer control lifted clear of the compact
+ * timeline HUD while it is showing. The shift is purely vertical:
+ * `control.offset.y` becomes {@link TIMELINE_HUD_CONTROL_CLEARANCE} while any
+ * horizontal offset is preserved, so this composes with
+ * {@link applyLeftSidebarControlOffset} instead of fighting it.
+ *
+ * Lifting the control is enough to move the compact legend panel with it: GeoVis
+ * derives that panel's anchor from the control's own gap, so both rise together.
+ *
+ * The spec is returned untouched (same reference) when there is nothing to
+ * adjust — no `control`, no HUD showing, or a top-anchored control the bar never
+ * reaches — so `GeoVisProvider` sees a stable spec and does not re-sync
+ * needlessly.
+ */
+export const applyTimelineHudControlOffset = ({
+  spec,
+  hudVisible,
+}: {
+  spec: VisualizationSpec;
+  hudVisible: boolean;
+}): VisualizationSpec => {
+  const control = spec.control;
+
+  if (!control || !hudVisible) return spec;
+
+  // The bar spans the bottom edge, so only a bottom-anchored control is ever
+  // under it; the control defaults to `bottom-left` when no position is set.
+  const position = control.position ?? 'bottom-left';
+  if (!position.startsWith('bottom')) return spec;
+
+  const { offset } = control;
+  const x = typeof offset === 'number' ? offset : offset?.x;
+
+  return {
+    ...spec,
+    control: {
+      ...control,
+      offset: {
+        ...(x == null ? {} : { x }),
+        y: TIMELINE_HUD_CONTROL_CLEARANCE,
+      },
+    },
+  };
+};
+
+/**
  * Horizontal clearance, in pixels, a right-anchored legend needs so it sits
  * just past the open right sidebar instead of being covered by it. Sized to the
  * sidebar card's footprint (its width plus the overlay inset), matching

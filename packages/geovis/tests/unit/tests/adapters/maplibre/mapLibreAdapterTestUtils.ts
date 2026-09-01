@@ -44,6 +44,11 @@ export const makeMapMock = () => {
     on: jest.fn(),
     once: jest.fn(),
     remove: jest.fn(),
+    // `nonCancelableTouchMove` attaches its listener here, so the adapter
+    // throws without it.
+    getCanvasContainer: jest.fn(() => {
+      return { addEventListener: jest.fn(), removeEventListener: jest.fn() };
+    }),
     addControl: jest.fn(),
     addSource: jest.fn(),
     addLayer: jest.fn(),

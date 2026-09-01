@@ -1,12 +1,17 @@
 import { type GeovisWorkspaceConfig } from '@ttoss/geovis-workspace';
 
 /**
- * A rich left sidebar with two icon tabs whose header mirrors the active tab.
+ * A rich left sidebar with three icon tabs whose header mirrors the active tab.
  * The "Variações" tab is a flat list of icon-led variations (tagged by group)
- * that drive the shared `variable` selection (recoloring the map); the "Filtros"
- * tab stacks three visual-only controls — a timeline with a mini histogram and
- * play/pause, emoji chips, and a município locator. Mirrors the design
- * prototype's structure; only colors are rebranded.
+ * that drive the shared `variable` selection (recoloring the map); "Filtros"
+ * stacks emoji chips and a município locator; "Linha do Tempo" holds the
+ * timeline on its own.
+ *
+ * The last two are both `filters` sections — the kind describes the body, not
+ * the tab, so a config splits its controls across as many tabs as it wants.
+ * Worth keeping split here: the timeline is the one control with a gate
+ * (`enabledWhen`) and a compact HUD of its own, and a tab of its own is what
+ * lets either be scoped to it without dragging the chips and locator along.
  */
 export const sidebarPreviewConfig: GeovisWorkspaceConfig = {
   leftSidebar: {
@@ -187,30 +192,6 @@ export const sidebarPreviewConfig: GeovisWorkspaceConfig = {
           kind: 'filters',
           blocks: [
             {
-              id: 'timeline',
-              title: 'Linha do Tempo',
-              icon: 'lucide:clock',
-              control: {
-                kind: 'timeline',
-                min: 2015,
-                max: 2024,
-                defaultValue: 2022,
-                unitLabel: 'registros',
-                histogram: [
-                  { key: 2015, count: 38 },
-                  { key: 2016, count: 44 },
-                  { key: 2017, count: 51 },
-                  { key: 2018, count: 63 },
-                  { key: 2019, count: 70 },
-                  { key: 2020, count: 82 },
-                  { key: 2021, count: 95 },
-                  { key: 2022, count: 108 },
-                  { key: 2023, count: 121 },
-                  { key: 2024, count: 134 },
-                ],
-              },
-            },
-            {
               id: 'products',
               title: 'Tipo de Produção',
               icon: 'lucide:filter',
@@ -263,6 +244,42 @@ export const sidebarPreviewConfig: GeovisWorkspaceConfig = {
                 ].map((name) => {
                   return { id: name, label: name, sublabel: 'SP · Brasil' };
                 }),
+              },
+            },
+          ],
+        },
+      },
+      {
+        id: 'timeline',
+        header: {
+          title: 'Linha do Tempo',
+          icon: 'lucide:clock',
+        },
+        body: {
+          kind: 'filters',
+          blocks: [
+            {
+              id: 'year',
+              title: 'Ano',
+              icon: 'lucide:clock',
+              control: {
+                kind: 'timeline',
+                min: 2015,
+                max: 2024,
+                defaultValue: 2022,
+                unitLabel: 'registros',
+                histogram: [
+                  { key: 2015, count: 38 },
+                  { key: 2016, count: 44 },
+                  { key: 2017, count: 51 },
+                  { key: 2018, count: 63 },
+                  { key: 2019, count: 70 },
+                  { key: 2020, count: 82 },
+                  { key: 2021, count: 95 },
+                  { key: 2022, count: 108 },
+                  { key: 2023, count: 121 },
+                  { key: 2024, count: 134 },
+                ],
               },
             },
           ],

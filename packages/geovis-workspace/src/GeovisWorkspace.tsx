@@ -1,5 +1,5 @@
 import type { RepairOption, VisualizationSpec } from '@ttoss/geovis';
-import { GeoVisProvider } from '@ttoss/geovis';
+import { GeoVisProvider, useCompactViewport } from '@ttoss/geovis';
 import { Box } from '@ttoss/ui';
 import * as React from 'react';
 
@@ -11,6 +11,7 @@ import {
 import {
   applyLeftSidebarControlOffset,
   applyRightSidebarLegendOffset,
+  applyTimelineHudControlOffset,
 } from './controlOffset';
 import {
   GeovisWorkspaceProvider,
@@ -78,16 +79,37 @@ export const GeovisWorkspace = ({
     return config.rightSidebar?.initialState === 'open';
   });
 
+  // The compact timeline HUD is decided here for the same reason: it spans the
+  // map's bottom edge, so while it shows the layer control has to sit above it.
+  // `useTimeline` cannot own this — it needs the shared selection, which lives
+  // in the provider below — so it reports the first play up through
+  // `notifyPlaybackStart` and the flag is kept here.
+  const isCompact = useCompactViewport();
+  const [playbackStarted, setPlaybackStarted] = React.useState(false);
+  const [hudDismissed, setHudDismissed] = React.useState(false);
+
+  const isTimelineHudVisible =
+    isCompact && playbackStarted && !hudDismissed && !isLeftSidebarOpen;
+
   const spec = React.useMemo(() => {
     const withControlOffset = applyLeftSidebarControlOffset({
       spec: visualizationSpec,
       leftSidebarOpen: isLeftSidebarOpen,
     });
-    return applyRightSidebarLegendOffset({
+    const withHudOffset = applyTimelineHudControlOffset({
       spec: withControlOffset,
+      hudVisible: isTimelineHudVisible,
+    });
+    return applyRightSidebarLegendOffset({
+      spec: withHudOffset,
       rightSidebarOpen: isRightSidebarOpen,
     });
-  }, [visualizationSpec, isLeftSidebarOpen, isRightSidebarOpen]);
+  }, [
+    visualizationSpec,
+    isLeftSidebarOpen,
+    isRightSidebarOpen,
+    isTimelineHudVisible,
+  ]);
 
   return (
     // `GeoVisProvider` auto-mounts any spec legend (or the layer `control`)
@@ -109,6 +131,16 @@ export const GeovisWorkspace = ({
           onLeftSidebarOpenChange={setIsLeftSidebarOpen}
           isRightSidebarOpen={isRightSidebarOpen}
           onRightSidebarOpenChange={setIsRightSidebarOpen}
+          isTimelineHudVisible={isTimelineHudVisible}
+          onPlaybackStart={() => {
+            setPlaybackStarted(true);
+            // A later play brings the bar back after a dismissal — otherwise
+            // dismissing once would disarm it for the rest of the session.
+            setHudDismissed(false);
+          }}
+          onTimelineHudDismiss={() => {
+            setHudDismissed(true);
+          }}
         >
           <Layout />
         </GeovisWorkspaceProviderWithRuntime>

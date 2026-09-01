@@ -480,8 +480,8 @@ export const GroupedControls: Story = {
  * Drives the rich sidebar: seeds the shared `variable` selection from the
  * config's default variation and maps whichever variation is picked onto one of
  * the three real color scales `buildSpec` knows, so the map recolors as
- * variations are chosen. The Filtros tab's controls (timeline, chips, locator)
- * are visual-only for now.
+ * variations are chosen. The filter controls (timeline, chips, locator) are
+ * visual-only for now.
  */
 const SidebarPreviewStory = () => {
   const [selection, setSelection] = React.useState({ variable: 'farms' });
@@ -508,12 +508,16 @@ const SidebarPreviewStory = () => {
 };
 
 /**
- * A rich left sidebar with two icon tabs whose header mirrors the active tab.
- * The "Variações" tab is a flat list of icon-led variations (tagged by group)
- * that recolor the map through the shared selection; the "Filtros" tab has a
- * timeline with play/pause, emoji chips (their count shown as a tab badge), and
- * a município locator. The filter controls are visual-only for now (local
- * state, not yet wired to the map).
+ * A rich left sidebar with three icon tabs whose header mirrors the active tab.
+ * "Variações" is a flat list of icon-led variations (tagged by group) that
+ * recolor the map through the shared selection; "Filtros" holds emoji chips
+ * (their count shown as a badge on that tab alone) and a município locator; and
+ * "Linha do Tempo" holds the timeline with play/pause.
+ *
+ * The last two tabs show that a `filters` body is a body, not a tab: splitting
+ * the controls across two sections gives each its own header, its own gate, and
+ * — for the timeline — a HUD that follows only it. The filter controls are
+ * visual-only for now (local state, not yet wired to the map).
  */
 export const RichLeftSidebar: Story = {
   render: () => {

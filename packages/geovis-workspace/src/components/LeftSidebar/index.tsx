@@ -3,19 +3,19 @@ import { Box, Flex, IconButton, Text } from '@ttoss/ui';
 import * as React from 'react';
 
 import type {
-  GeovisWorkspaceSidebarFilterBlock,
+  GeovisWorkspaceSelection,
   GeovisWorkspaceSidebarSection,
-  GeovisWorkspaceSidebarVariationsBody,
 } from '../../context/GeovisWorkspaceContext';
+import type { TimelineContextValue } from '../../context/TimelineContext';
+import { useTimelineContext } from '../../context/TimelineContext';
 import { useGeovisWorkspace } from '../../hooks/useGeovisWorkspace';
 import { messages } from '../../messages';
 import { FiltersTab } from './FiltersTab';
 import { IconChip } from './IconChip';
 import { SidebarTab } from './SidebarTab';
-import { COLOR, FONT_HEAD, FONT_MONO } from './theme';
+import { COLOR, FONT_HEAD } from './theme';
 import { useChipSelection } from './useChipSelection';
-import { useSections } from './useSections';
-import { useTimeline } from './useTimeline';
+import { isSectionEnabled, useSections } from './useSections';
 import { VariationsTab } from './VariationsTab';
 
 /** The header band: the active section's icon chip, title, and close button. */
@@ -87,16 +87,24 @@ const Header = ({
   );
 };
 
-/** The icon tab bar: one tab per section, with a chip-count badge on filters. */
+/**
+ * The icon tab bar: one tab per section, with the chip-count badge on the tab
+ * that actually holds the chips — not on every `filters` tab, since a config
+ * may split its filters across several of them.
+ */
 const TabBar = ({
   sections,
   activeId,
   chipCount,
+  chipsSectionId,
+  disabledIds,
   onSelect,
 }: {
   sections: GeovisWorkspaceSidebarSection[];
   activeId?: string;
   chipCount: number;
+  chipsSectionId?: string;
+  disabledIds: Set<string>;
   onSelect: (id: string) => void;
 }) => {
   return (
@@ -110,7 +118,8 @@ const TabBar = ({
       }}
     >
       {sections.map((section) => {
-        const isFilters = section.body.kind === 'filters';
+        const hasChips = section.id === chipsSectionId;
+        const disabled = disabledIds.has(section.id);
 
         return (
           <SidebarTab
@@ -118,7 +127,10 @@ const TabBar = ({
             icon={section.header.icon ?? 'lucide:circle'}
             label={section.header.title}
             active={section.id === activeId}
-            badge={isFilters ? chipCount : undefined}
+            // A gated section's badge would advertise a count the user cannot
+            // reach, so it goes away with the gate.
+            badge={hasChips && !disabled ? chipCount : undefined}
+            disabled={disabled}
             onClick={() => {
               onSelect(section.id);
             }}
@@ -129,101 +141,77 @@ const TabBar = ({
   );
 };
 
-/** The footer: the active variation label and, when present, the current timeline value. */
-const Footer = ({
-  variationLabel,
-  value,
-  showValue,
+/**
+ * Ids of the sections whose `enabledWhen` gate is currently closed. Derived on
+ * every render: the gate reads the same selection the variations tab writes, so
+ * picking a variation opens or closes it in the same pass.
+ */
+const resolveDisabledIds = ({
+  sections,
+  selection,
 }: {
-  variationLabel?: string;
-  value: number;
-  showValue: boolean;
-}) => {
-  return (
-    <Flex
-      sx={{
-        flexShrink: 0,
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingX: '20px',
-        paddingY: '12px',
-        borderTop: `1px solid ${COLOR.border}`,
-      }}
-    >
-      <Flex sx={{ alignItems: 'center', gap: '6px', minWidth: 0 }}>
-        <Box
-          sx={{
-            flexShrink: 0,
-            width: '6px',
-            height: '6px',
-            borderRadius: '9999px',
-            backgroundColor: COLOR.primary,
-          }}
-        />
-        <Text
-          sx={{
-            fontFamily: FONT_MONO,
-            fontSize: '10px',
-            color: COLOR.textFaint,
-            maxWidth: '180px',
-            overflow: 'hidden',
-            whiteSpace: 'nowrap',
-            textOverflow: 'ellipsis',
-          }}
-        >
-          {variationLabel}
-        </Text>
-      </Flex>
+  sections: GeovisWorkspaceSidebarSection[];
+  selection: GeovisWorkspaceSelection;
+}): Set<string> => {
+  const disabled = new Set<string>();
 
-      {showValue ? (
-        <Text
-          sx={{
-            fontFamily: FONT_MONO,
-            fontSize: '10px',
-            color: COLOR.textGhost,
-          }}
-        >
-          {value}
-        </Text>
-      ) : null}
-    </Flex>
+  for (const section of sections) {
+    if (!isSectionEnabled({ section, sections, selection })) {
+      disabled.add(section.id);
+    }
+  }
+
+  return disabled;
+};
+
+/**
+ * The section whose body the card shows: the selected one, unless its gate has
+ * closed under the user — switching to a variation without a timeline while the
+ * timeline tab was open would otherwise leave its body on screen, reachable and
+ * interactive, with only its tab dimmed. With every gate closed there is
+ * nothing to fall back to, so the selection stands.
+ */
+const resolveActiveSection = ({
+  sections,
+  activeSectionId,
+  disabledIds,
+}: {
+  sections: GeovisWorkspaceSidebarSection[];
+  activeSectionId: string;
+  disabledIds: Set<string>;
+}): GeovisWorkspaceSidebarSection | undefined => {
+  const selected =
+    sections.find((section) => {
+      return section.id === activeSectionId;
+    }) ?? sections[0];
+
+  if (!selected || !disabledIds.has(selected.id)) {
+    return selected;
+  }
+
+  return (
+    sections.find((section) => {
+      return !disabledIds.has(section.id);
+    }) ?? selected
   );
 };
 
-/** Resolves the currently-active variation from the shared selection. */
-const useActiveVariation = (
-  variationsBody?: GeovisWorkspaceSidebarVariationsBody
-) => {
-  const { selection } = useGeovisWorkspace();
-
-  if (!variationsBody) {
-    return undefined;
-  }
-
-  const selectedValue =
-    selection[variationsBody.menuId] ?? variationsBody.defaultValue;
-
-  return variationsBody.groups
-    .flatMap((group) => {
-      return group.variations;
-    })
-    .find((variation) => {
-      return variation.value === selectedValue;
-    });
-};
-
-/** The scrollable body: renders the active section's variations or filters. */
+/**
+ * The scrollable body: renders the active section's variations or filters.
+ * Filter blocks come off the active section's own body, so each `filters` tab
+ * shows the blocks it declares rather than a list resolved once for the sidebar.
+ */
 const TabContent = ({
   section,
-  blocks,
   timeline,
   chips,
 }: {
   section?: GeovisWorkspaceSidebarSection;
-  blocks: GeovisWorkspaceSidebarFilterBlock[];
-  timeline: ReturnType<typeof useTimeline>;
+  timeline: TimelineContextValue;
   chips: ReturnType<typeof useChipSelection>;
 }) => {
+  const body = section?.body;
+
   return (
     <Box
       sx={{
@@ -233,11 +221,11 @@ const TabContent = ({
         '::-webkit-scrollbar': { display: 'none' },
       }}
     >
-      {section?.body.kind === 'variations' ? (
-        <VariationsTab body={section.body} />
-      ) : section?.body.kind === 'filters' ? (
+      {body?.kind === 'variations' ? (
+        <VariationsTab body={body} />
+      ) : body?.kind === 'filters' ? (
         <FiltersTab
-          blocks={blocks}
+          blocks={body.blocks}
           value={timeline.value}
           onValueChange={timeline.setValue}
           playing={timeline.playing}
@@ -256,24 +244,31 @@ const TabContent = ({
 /**
  * The workspace's left sidebar: a single ivory card with a header that mirrors
  * the active tab (its icon + title + a close button), an icon tab bar (one tab
- * per section), the active tab's body, and a footer showing the active variation
- * and current timeline value. The variations tab drives the shared selection;
- * the filter controls are visual-only, holding their state locally or lifted
- * here for the badge/footer.
+ * per section), and the active tab's body. The variations tab drives the shared
+ * selection; the filter controls are visual-only, holding their state locally or
+ * lifted here for the badge.
+ *
+ * Sections carrying filters may be several — the timeline in a tab of its own,
+ * beside a tab holding the remaining controls. Each renders its own blocks; only
+ * the timeline and the chips are resolved across the whole sidebar, because
+ * their state is lifted out of the tab that shows them.
  *
  * Reads its sections from `config.leftSidebar.sections`. A `controls` slot
  * override (`config.slots.controls.component`) replaces this panel entirely.
  * Rendered only when `Layout` determines the `controls` slot has content.
  */
 export const LeftSidebar = () => {
-  const { config, setLeftSidebarOpen } = useGeovisWorkspace();
+  const { config, selection, setLeftSidebarOpen } = useGeovisWorkspace();
 
   const sections = config.leftSidebar?.sections ?? [];
-  const { variationsBody, blocks, timeline, chips } = useSections(sections);
+  const { chips, chipsSection } = useSections(sections);
 
-  const timelineState = useTimeline(timeline);
+  const disabledIds = resolveDisabledIds({ sections, selection });
+
+  // Read, not owned: `Layout` holds it so the compact HUD can drive the same
+  // playback while this card is closed (see TimelineContext).
+  const timelineState = useTimelineContext();
   const chipsState = useChipSelection(chips);
-  const activeVariation = useActiveVariation(variationsBody);
 
   const [activeSectionId, setActiveSectionId] = React.useState<string>(() => {
     return sections[0]?.id ?? '';
@@ -282,10 +277,11 @@ export const LeftSidebar = () => {
   const ControlsOverride = config.slots?.controls?.component;
   if (ControlsOverride) return <ControlsOverride />;
 
-  const activeSection =
-    sections.find((section) => {
-      return section.id === activeSectionId;
-    }) ?? sections[0];
+  const activeSection = resolveActiveSection({
+    sections,
+    activeSectionId,
+    disabledIds,
+  });
 
   return (
     <Flex
@@ -313,20 +309,15 @@ export const LeftSidebar = () => {
         sections={sections}
         activeId={activeSection?.id}
         chipCount={chipsState.selected.length}
+        chipsSectionId={chipsSection?.id}
+        disabledIds={disabledIds}
         onSelect={setActiveSectionId}
       />
 
       <TabContent
         section={activeSection}
-        blocks={blocks}
         timeline={timelineState}
         chips={chipsState}
-      />
-
-      <Footer
-        variationLabel={activeVariation?.label}
-        value={timelineState.value}
-        showValue={Boolean(timeline)}
       />
     </Flex>
   );

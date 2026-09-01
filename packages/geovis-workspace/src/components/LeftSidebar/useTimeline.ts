@@ -24,11 +24,23 @@ const seedValue = ({
  * year, month, day, or any numeric step), its setter, and play/pause. Publishes
  * the value to the shared selection when the timeline carries a `menuId`, and
  * auto-advances while playing until it reaches the ceiling.
+ *
+ * `enabled` mirrors the gate on the section that holds the timeline (see
+ * `GeovisWorkspaceSidebarSection.enabledWhen`). While it is `false` the value
+ * freezes: playback is suspended, so auto-advance cannot go on publishing a
+ * value the user can neither see nor control, and the last value stays in the
+ * selection. Returning to an enabling variation resumes both the value and, if
+ * play was never toggled off, the playback itself.
  */
-export const useTimeline = (
-  timeline?: GeovisWorkspaceSidebarTimelineFilter
-) => {
-  const { selection, setSelection } = useGeovisWorkspace();
+export const useTimeline = ({
+  timeline,
+  enabled,
+}: {
+  timeline?: GeovisWorkspaceSidebarTimelineFilter;
+  enabled: boolean;
+}) => {
+  const { selection, setSelection, setLeftSidebarOpen, notifyPlaybackStart } =
+    useGeovisWorkspace();
 
   const timelineMenuId = timeline?.menuId;
   const timelineMax = timeline?.max ?? 0;
@@ -53,7 +65,14 @@ export const useTimeline = (
     }
   }, [timelineMenuId, value, selection, setSelection]);
 
-  const [playing, setPlaying] = React.useState(false);
+  const [playRequested, setPlayRequested] = React.useState(false);
+
+  // A closed gate suspends playback: without this, a time-lapse started while
+  // the timeline was reachable would keep ticking after the user switched to a
+  // variation it does not apply to, writing a value nothing on screen explains.
+  // Derived rather than pushed into state through an effect — an effect calling
+  // `setPlaying` here would cascade a second render on every gate change.
+  const playing = playRequested && enabled;
 
   // Seconds between auto-advance steps, editable via the timeline's interval
   // input; clamped to [0.1, 10] by that control.
@@ -70,7 +89,7 @@ export const useTimeline = (
     const id = setInterval(() => {
       setValue((current) => {
         if (current >= timelineMax) {
-          setPlaying(false);
+          setPlayRequested(false);
           return timelineMax;
         }
         return Math.min(timelineMax, current + timelineStep);
@@ -83,13 +102,28 @@ export const useTimeline = (
   }, [playing, timelineMax, timelineStep, intervalSeconds]);
 
   const togglePlay = () => {
-    setPlaying((current) => {
+    setPlayRequested((current) => {
       // Restart from the beginning when replaying from the ceiling.
       if (!current && value >= timelineMax) {
         setValue(timelineMin);
       }
       return !current;
     });
+    // `closeOnPlay` fires only on the transition into playback: the point is to
+    // clear the sidebar off the map that is about to animate, and pausing has
+    // no such reason (by then the sidebar is usually already closed). Reaching
+    // the ceiling stops playback through the auto-advance effect, not here, so
+    // it never touches the sidebar either. Read from the render's `playing`
+    // rather than the updater above, which must stay free of side effects.
+    if (!playing) {
+      // Reported upward rather than kept here: `GeovisWorkspace` needs it to
+      // lift the map's layer control clear of the compact HUD, and that offset
+      // is applied above this hook's provider.
+      notifyPlaybackStart();
+      if (timeline?.closeOnPlay) {
+        setLeftSidebarOpen({ open: false });
+      }
+    }
   };
 
   return {
