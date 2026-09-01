@@ -20,7 +20,9 @@ import type {
   OnForgotPasswordResetPassword,
   OnSignIn,
   OnSignUp,
+  OnSocialSignIn,
   SignUpTerms,
+  SocialProvider,
 } from './types';
 import { useAuthScreen } from './useAuthScreen';
 
@@ -36,6 +38,8 @@ type AuthLogicProps = {
   onConfirmSignUpWithCode?: OnConfirmSignUpWithCode;
   onForgotPassword?: OnForgotPassword;
   onForgotPasswordResetPassword?: OnForgotPasswordResetPassword;
+  socialProviders?: SocialProvider[];
+  onSocialSignIn?: OnSocialSignIn;
 };
 
 type AuthPropsBase = {
@@ -48,6 +52,9 @@ type AuthPropsBase = {
   onConfirmSignUpWithCode?: OnConfirmSignUpWithCode;
   onForgotPassword?: OnForgotPassword;
   onForgotPasswordResetPassword?: OnForgotPasswordResetPassword;
+  /** Federated identity providers to offer on the sign-in and sign-up screens. */
+  socialProviders?: SocialProvider[];
+  onSocialSignIn?: OnSocialSignIn;
 };
 
 type AuthPropsWithScreen = AuthPropsBase & {
@@ -62,20 +69,109 @@ type AuthPropsWithInitialScreen = AuthPropsBase & {
   initialScreen?: AuthScreen;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type NotificationsWrapper = (fn: any) => any;
+
+type ScreenProps = AuthLogicProps & {
+  wrap: NotificationsWrapper;
+  onGoToSignIn: () => void;
+  onGoToSignUp: () => void;
+  onGoToForgotPassword: () => void;
+  // Wrapped once here rather than at each call site: it is passed to two
+  // screens, and wrapping twice would make it two different functions.
+  wrappedSocialSignIn?: OnSocialSignIn;
+};
+
+const AuthPrimaryScreens = (props: ScreenProps) => {
+  const { screen, onSignUp, onForgotPassword, wrap } = props;
+
+  if (screen.value === 'signIn') {
+    return (
+      <AuthSignIn
+        onSignIn={wrap(props.onSignIn)}
+        onGoToSignUp={onSignUp && props.onGoToSignUp}
+        onGoToForgotPassword={onForgotPassword && props.onGoToForgotPassword}
+        passwordMinimumLength={props.passwordMinimumLength}
+        socialProviders={props.socialProviders}
+        onSocialSignIn={props.wrappedSocialSignIn}
+      />
+    );
+  }
+
+  if (screen.value === 'signUp' && onSignUp) {
+    return (
+      <AuthSignUp
+        onSignUp={wrap(onSignUp)}
+        passwordMinimumLength={props.passwordMinimumLength}
+        onGoToSignIn={props.onGoToSignIn}
+        signUpTerms={props.signUpTerms}
+        socialProviders={props.socialProviders}
+        onSocialSignIn={props.wrappedSocialSignIn}
+      />
+    );
+  }
+
+  return null;
+};
+
+const AuthPasswordRecoveryScreens = (props: ScreenProps) => {
+  const { screen, onSignUp, onForgotPassword, wrap } = props;
+
+  if (screen.value === 'forgotPassword' && onForgotPassword) {
+    return (
+      <AuthForgotPassword
+        onForgotPassword={wrap(onForgotPassword)}
+        onGoToSignIn={props.onGoToSignIn}
+        onGoToSignUp={onSignUp && props.onGoToSignUp}
+      />
+    );
+  }
+
+  if (
+    screen.value === 'confirmResetPassword' &&
+    props.onForgotPasswordResetPassword
+  ) {
+    return (
+      <AuthForgotPasswordResetPassword
+        onForgotPasswordResetPassword={wrap(
+          props.onForgotPasswordResetPassword
+        )}
+        onGoToSignIn={props.onGoToSignIn}
+        email={screen.context.email}
+        maxCodeLength={props.maxForgotPasswordCodeLength}
+      />
+    );
+  }
+
+  return null;
+};
+
+const AuthConfirmSignUpScreens = (props: ScreenProps) => {
+  const { screen, onConfirmSignUpWithCode, onConfirmSignUpCheckEmail } = props;
+
+  if (screen.value === 'confirmSignUpWithCode' && onConfirmSignUpWithCode) {
+    return (
+      <AuthConfirmSignUpWithCode
+        onConfirmSignUpWithCode={props.wrap(onConfirmSignUpWithCode)}
+        email={screen.context.email}
+      />
+    );
+  }
+
+  if (screen.value === 'confirmSignUpCheckEmail' && onConfirmSignUpCheckEmail) {
+    return (
+      <AuthConfirmSignUpCheckEmail
+        onConfirmSignUpCheckEmail={onConfirmSignUpCheckEmail}
+      />
+    );
+  }
+
+  return null;
+};
+
 const AuthLogic = (props: AuthLogicProps) => {
-  const {
-    screen,
-    setScreen,
-    onSignUp,
-    onForgotPassword,
-    onSignIn,
-    onConfirmSignUpCheckEmail,
-    onConfirmSignUpWithCode,
-    onForgotPasswordResetPassword,
-    passwordMinimumLength,
-    signUpTerms,
-    maxForgotPasswordCodeLength,
-  } = props;
+  const { screen, setScreen, onSignUp, onForgotPassword, onSocialSignIn } =
+    props;
 
   const { clearNotifications, setLoading } = useNotifications();
 
@@ -114,7 +210,7 @@ const AuthLogic = (props: AuthLogicProps) => {
   }, [onForgotPassword, setScreen]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const notificationsWrapper = (fn: any) => {
+  const wrap = (fn: any) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return async (input: any) => {
       if (fn) {
@@ -127,72 +223,22 @@ const AuthLogic = (props: AuthLogicProps) => {
     };
   };
 
-  if (screen.value === 'signIn') {
-    return (
-      <AuthSignIn
-        onSignIn={notificationsWrapper(onSignIn)}
-        onGoToSignUp={onSignUp && onGoToSignUp}
-        onGoToForgotPassword={onForgotPassword && onGoToForgotPassword}
-        passwordMinimumLength={passwordMinimumLength}
-      />
-    );
-  }
+  const screenProps: ScreenProps = {
+    ...props,
+    wrap,
+    onGoToSignIn,
+    onGoToSignUp,
+    onGoToForgotPassword,
+    wrappedSocialSignIn: onSocialSignIn && wrap(onSocialSignIn),
+  };
 
-  if (screen.value === 'signUp' && onSignUp) {
-    return (
-      <AuthSignUp
-        onSignUp={notificationsWrapper(onSignUp)}
-        passwordMinimumLength={passwordMinimumLength}
-        onGoToSignIn={onGoToSignIn}
-        signUpTerms={signUpTerms}
-      />
-    );
-  }
-
-  if (screen.value === 'forgotPassword' && onForgotPassword) {
-    return (
-      <AuthForgotPassword
-        onForgotPassword={notificationsWrapper(onForgotPassword)}
-        onGoToSignIn={onGoToSignIn}
-        onGoToSignUp={onSignUp && onGoToSignUp}
-      />
-    );
-  }
-
-  if (
-    screen.value === 'confirmResetPassword' &&
-    onForgotPasswordResetPassword
-  ) {
-    return (
-      <AuthForgotPasswordResetPassword
-        onForgotPasswordResetPassword={notificationsWrapper(
-          onForgotPasswordResetPassword
-        )}
-        onGoToSignIn={onGoToSignIn}
-        email={screen.context.email}
-        maxCodeLength={maxForgotPasswordCodeLength}
-      />
-    );
-  }
-
-  if (screen.value === 'confirmSignUpWithCode' && onConfirmSignUpWithCode) {
-    return (
-      <AuthConfirmSignUpWithCode
-        onConfirmSignUpWithCode={notificationsWrapper(onConfirmSignUpWithCode)}
-        email={screen.context.email}
-      />
-    );
-  }
-
-  if (screen.value === 'confirmSignUpCheckEmail' && onConfirmSignUpCheckEmail) {
-    return (
-      <AuthConfirmSignUpCheckEmail
-        onConfirmSignUpCheckEmail={onConfirmSignUpCheckEmail}
-      />
-    );
-  }
-
-  return null;
+  return (
+    <>
+      <AuthPrimaryScreens {...screenProps} />
+      <AuthPasswordRecoveryScreens {...screenProps} />
+      <AuthConfirmSignUpScreens {...screenProps} />
+    </>
+  );
 };
 
 type AuthLayout = {
@@ -230,6 +276,8 @@ export const Auth = (props: AuthProps) => {
             onConfirmSignUpWithCode={props.onConfirmSignUpWithCode}
             onForgotPassword={props.onForgotPassword}
             onForgotPasswordResetPassword={props.onForgotPasswordResetPassword}
+            socialProviders={props.socialProviders}
+            onSocialSignIn={props.onSocialSignIn}
           />
         </ErrorBoundary>
       </LogoProvider>

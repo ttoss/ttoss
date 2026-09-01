@@ -34,6 +34,10 @@
     "defaultMessage": "Sign up",
     "description": "Sign up"
   },
+  "F//XE4": {
+    "defaultMessage": "or",
+    "description": "Divider between the password form and the social buttons."
+  },
   "HT4tSM": {
     "defaultMessage": "Reset Password",
     "description": "Reset Password"
@@ -100,6 +104,10 @@
   "e3IQoc": {
     "defaultMessage": "New Password",
     "description": "New Password"
+  },
+  "ehCEm+": {
+    "defaultMessage": "Continue with {provider}",
+    "description": "Label of the button that signs in with a social provider."
   },
   "kdFYba": {
     "defaultMessage": "Password field is required",

@@ -19,6 +19,10 @@ export { AuthFullScreen, type AuthFullScreenProps } from './AuthFullScreen';
 export { AuthProvider, type AuthProviderProps, useAuth } from './AuthProvider';
 export { AuthSignIn, type AuthSignInProps } from './AuthSignIn';
 export { AuthSignUp, type AuthSignUpProps } from './AuthSignUp';
+export {
+  AuthSocialSignIn,
+  type AuthSocialSignInProps,
+} from './AuthSocialSignIn';
 export { ErrorBoundary } from './ErrorBoundary';
 export * from './types';
 export { useAuthScreen } from './useAuthScreen';

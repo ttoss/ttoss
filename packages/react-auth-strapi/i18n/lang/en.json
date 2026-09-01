@@ -43,6 +43,11 @@
     "defaultMessage": "Sign up",
     "description": "Sign up"
   },
+  "F//XE4": {
+    "module": "@ttoss/react-auth-core",
+    "defaultMessage": "or",
+    "description": "Divider between the password form and the social buttons."
+  },
   "HT4tSM": {
     "module": "@ttoss/react-auth-core",
     "defaultMessage": "Reset Password",
@@ -126,6 +131,11 @@
     "module": "@ttoss/react-auth-core",
     "defaultMessage": "New Password",
     "description": "New Password"
+  },
+  "ehCEm+": {
+    "module": "@ttoss/react-auth-core",
+    "defaultMessage": "Continue with {provider}",
+    "description": "Label of the button that signs in with a social provider."
   },
   "kdFYba": {
     "module": "@ttoss/react-auth-core",

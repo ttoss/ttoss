@@ -285,6 +285,47 @@ const template = createAuthTemplate({
 
 Output `CognitoUserPoolDomainUrl` is exported with the full URL.
 
+### Social Sign-In (Google and Facebook)
+
+Add Google and/or Facebook as identity providers on the same user pool. Existing username/password users are unaffected — `COGNITO` stays in the client's `SupportedIdentityProviders`, and the federated providers are appended.
+
+Federated sign-in always goes through the hosted UI, so `domain` is required and `oauth` configures the redirect URLs the app client accepts:
+
+```typescript
+const template = createAuthTemplate({
+  domain: { domainName: 'my-app' },
+  oauth: {
+    flows: ['code'],
+    scopes: ['openid', 'email', 'profile'],
+    callbackUrls: ['https://app.example.com/'],
+    logoutUrls: ['https://app.example.com/auth'],
+  },
+  identityProviders: [
+    {
+      providerType: 'Google',
+      clientId: '<google-oauth-client-id>',
+      clientSecret: '<google-oauth-client-secret>',
+    },
+    {
+      providerType: 'Facebook',
+      clientId: '<facebook-app-id>',
+      clientSecret: '<facebook-app-secret>',
+    },
+  ],
+});
+```
+
+`scopes` and `attributeMapping` are optional and default to:
+
+| Provider   | Default scopes         | Default attribute mapping |
+| ---------- | ---------------------- | ------------------------- |
+| `Google`   | `openid email profile` | `{ email: 'email' }`      |
+| `Facebook` | `public_profile,email` | `{ email: 'email' }`      |
+
+Each provider creates a `CognitoUserPoolIdentityProvider<ProviderType>` resource, and the default app client is given a `DependsOn` for it.
+
+**Account linking is not handled here.** Cognito creates a _separate_ user (with a new `sub`) for a federated sign-in, even when the email matches an existing native user. If your application keys records on the Cognito `sub`, add a `preSignUp` Lambda trigger that calls `AdminLinkProviderForUser` — and only link when the provider reports the email as verified, or the flow becomes an account-takeover path.
+
 ### Resource Servers and Custom Scopes
 
 Define resource servers with custom OAuth scopes to gate access to your APIs:
