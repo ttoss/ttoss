@@ -45,3 +45,5 @@ PRD-001 (actions report through the result taxonomy; validation needs the capabi
 
 - ~~Exact v1 action vocabulary (naming is product work).~~ Resolved: `toggle-layer`, `select-feature`, `set-map-data`, `set-filter`, `set-view-preset`.
 - Packet schema evolution policy relative to spec schema versioning. Still open — `getContextPacket()` ships `schemaVersion: 1` but no migration policy has been decided.
+- `set-filter` is gated per source type by `CapabilitySet.dataFeatures.filter`. Once PRD-004's `FilterField` compiles to layer filters, the action's allowed set is also catalog-derived; how the two gates compose is undesigned.
+- `set-view-preset` currently targets presets the application authors by hand. PRD-006 will additionally derive them from `Geography.cameraFraming`, so the packet must distinguish authored from derived presets or stop distinguishing deliberately.
