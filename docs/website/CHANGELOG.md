@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.3.1](https://github.com/ttoss/ttoss/compare/@docs/website@7.3.0...@docs/website@7.3.1) (2026-08-31)
+
+**Note:** Version bump only for package @docs/website
+
+# [7.3.0](https://github.com/ttoss/ttoss/compare/@docs/website@7.2.2...@docs/website@7.3.0) (2026-08-31)
+
+### Features
+
+- **eslint-config:** enforce the quality metrics ESLint can, drop the config that does nothing ([#1211](https://github.com/ttoss/ttoss/issues/1211)) ([5673a18](https://github.com/ttoss/ttoss/commit/5673a1817b104a403466d07ac2ecd589bc4ddd49)), closes [ttoss/i18n-cli#build-config](https://github.com/ttoss/i18n-cli/issues/build-config)
+
 ## [7.2.2](https://github.com/ttoss/ttoss/compare/@docs/website@7.2.1...@docs/website@7.2.2) (2026-08-24)
 
 ### Bug Fixes

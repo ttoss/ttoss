@@ -1,7 +1,7 @@
 import { Flex } from '@ttoss/ui';
 import * as React from 'react';
 
-import { MultistepFlowMessageProps } from './MultistepFlowMessage';
+import type { MultistepFlowMessageProps } from './MultistepFlowMessage';
 import { MultistepFooter } from './MultistepFooter';
 import {
   MultistepFormStepper,

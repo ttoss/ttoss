@@ -1,4 +1,10 @@
-import { I18nProvider } from '@ttoss/react-i18n';
+/**
+ * The left sidebar: tabs, variations, the three filter kinds and the
+ * `enabledWhen` gates. The compact timeline HUD has its own suite in
+ * LeftSidebar.timeline.test.tsx, and the shared preview config and
+ * helpers live in leftSidebarTestUtils.tsx.
+ */
+
 import {
   act,
   fireEvent,
@@ -7,159 +13,24 @@ import {
   within,
 } from '@ttoss/test-utils/react';
 import type * as React from 'react';
-import { GeovisWorkspace, type GeovisWorkspaceConfig } from 'src';
+import { GeovisWorkspace } from 'src';
 
-interface MockSpec {
-  mockResult?: unknown;
-}
+import {
+  click,
+  closeOnPlayPreview,
+  hudPlayControl,
+  mockViewport,
+  openFiltros,
+  type Preview,
+  preview,
+  Provider,
+  visualizationSpec,
+} from './leftSidebarTestUtils';
 
 jest.mock('@ttoss/geovis', () => {
-  const ReactModule = jest.requireActual('react');
-  const MockGeoVisContext = ReactModule.createContext<unknown>(null);
-
-  return {
-    GeoVisProvider: ({
-      spec,
-      children,
-    }: React.PropsWithChildren<{ spec: MockSpec }>) => {
-      const result = spec.mockResult ?? {
-        status: 'resolved',
-        spec,
-        warnings: [],
-      };
-      return (
-        <MockGeoVisContext.Provider
-          value={{ spec, result, click: null, dismiss: () => {} }}
-        >
-          <div data-testid="geovis-provider">{children}</div>
-        </MockGeoVisContext.Provider>
-      );
-    },
-    GeoVisCanvas: () => {
-      return <div data-testid="geovis-canvas" />;
-    },
-    useGeoVis: () => {
-      return ReactModule.useContext(MockGeoVisContext);
-    },
-    useGeoVisClick: () => {
-      return null;
-    },
-    useDismissGeoVisClick: () => {
-      return () => {};
-    },
-    GeoVisLegend: () => {
-      return null;
-    },
-    // Mirrors the real hook: it only reads `matchMedia`, which `mockViewport`
-    // stubs per test, and the HUD's whole point is to be compact-only.
-    // `globalThis`, not `window` — babel rejects out-of-scope refs in a
-    // `jest.mock` factory, and only `globalThis` is on its allowed list.
-    useCompactViewport: () => {
-      return Boolean(globalThis.matchMedia?.('(max-width: 639.98px)').matches);
-    },
-  };
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- the factory is hoisted above imports
+  return require('./leftSidebarTestUtils').createGeoVisMock();
 });
-
-const Provider = ({ children }: React.PropsWithChildren) => {
-  return <I18nProvider>{children}</I18nProvider>;
-};
-
-const visualizationSpec = {
-  engine: 'maplibre' as const,
-  sources: [],
-  layers: [],
-};
-
-type Preview = {
-  sections: NonNullable<GeovisWorkspaceConfig['leftSidebar']>['sections'];
-};
-
-/** A full two-tab preview: a flat variations list and the three filter kinds. */
-const preview: Preview = {
-  sections: [
-    {
-      id: 'vars',
-      header: { title: 'Variações', icon: 'lucide:layout-list' },
-      body: {
-        kind: 'variations',
-        menuId: 'variable',
-        defaultValue: 'a1',
-        groups: [
-          {
-            id: 'g1',
-            label: 'Grupo 1',
-            variations: [
-              { value: 'a1', label: 'Item A1', icon: 'lucide:map' },
-              { value: 'a2', label: 'Item A2' },
-            ],
-          },
-          {
-            id: 'g2',
-            label: 'Grupo 2',
-            variations: [{ value: 'b1', label: 'Item B1' }],
-          },
-        ],
-      },
-    },
-    {
-      id: 'filtros',
-      header: { title: 'Filtros', icon: 'lucide:filter' },
-      body: {
-        kind: 'filters',
-        blocks: [
-          {
-            id: 'periodo',
-            title: 'Linha do tempo',
-            icon: 'lucide:clock',
-            control: {
-              kind: 'timeline',
-              menuId: 'ano',
-              min: 2022,
-              max: 2024,
-              step: 1,
-              defaultValue: 2023,
-              unitLabel: 'itens',
-              histogram: [
-                { key: 2022, count: 10 },
-                { key: 2023, count: 20 },
-                { key: 2024, count: 30 },
-              ],
-            },
-          },
-          {
-            id: 'chips',
-            title: 'Chips',
-            control: {
-              kind: 'chips',
-              multiple: true,
-              defaultSelected: ['x'],
-              options: [
-                { id: 'x', label: 'Chip X', emoji: '🟢' },
-                { id: 'y', label: 'Chip Y', icon: 'lucide:leaf' },
-                { id: 'z', label: 'Chip Z' },
-              ],
-            },
-          },
-          {
-            id: 'loc',
-            title: 'Local',
-            icon: 'lucide:search',
-            defaultOpen: false,
-            control: {
-              kind: 'locator',
-              placeholder: 'Buscar município...',
-              minChars: 2,
-              options: [
-                { id: '1', label: 'São Paulo', sublabel: 'SP · Brasil' },
-                { id: '2', label: 'Santos' },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-};
 
 const renderPreview = (
   props: Partial<React.ComponentProps<typeof GeovisWorkspace>> = {},
@@ -173,16 +44,6 @@ const renderPreview = (
     />,
     { wrapper: Provider }
   );
-};
-
-const click = async (element: HTMLElement) => {
-  await act(async () => {
-    fireEvent.click(element);
-  });
-};
-
-const openFiltros = async () => {
-  await click(screen.getByRole('button', { name: 'Filtros' }));
 };
 
 test('header mirrors the active tab and the variations tab lists every variation', () => {
@@ -381,26 +242,6 @@ test('pressing play at the ceiling restarts from the minimum', async () => {
   }
 });
 
-/** The same preview with the timeline opted into closing when playback starts. */
-const closeOnPlayPreview: Preview = {
-  sections: preview.sections.map((section) => {
-    if (section.body.kind !== 'filters') {
-      return section;
-    }
-    return {
-      ...section,
-      body: {
-        ...section.body,
-        blocks: section.body.blocks.map((block) => {
-          return block.control.kind === 'timeline'
-            ? { ...block, control: { ...block.control, closeOnPlay: true } }
-            : block;
-        }),
-      },
-    };
-  }),
-};
-
 test('closeOnPlay collapses the sidebar and playback carries on behind it', async () => {
   jest.useFakeTimers();
   try {
@@ -454,248 +295,6 @@ test('the sidebar stays open on play without closeOnPlay', async () => {
     jest.useRealTimers();
   }
 });
-
-/**
- * Stubs `matchMedia` so `useCompactViewport` reports the compact layout, which
- * is the only one the HUD renders in. jsdom ships no implementation, so without
- * this the hook always answers "roomy".
- */
-const mockViewport = (width: number) => {
-  window.matchMedia = ((query: string) => {
-    const limit = Number(/max-width:\s*([\d.]+)px/.exec(query)?.[1]);
-    return {
-      matches: width <= limit,
-      media: query,
-      addEventListener: () => {},
-      removeEventListener: () => {},
-    };
-  }) as unknown as typeof window.matchMedia;
-};
-
-/** The HUD's pause/play control, absent until the bar shows. */
-const hudPlayControl = () => {
-  const controls = screen.queryAllByRole('button', { name: /^(Play|Pause)$/ });
-  // The sidebar's own control is the first; the HUD's is the one that outlives
-  // it, so after `closeOnPlay` there is exactly one left.
-  return controls.length === 1 ? controls[0] : null;
-};
-
-describe('the compact timeline HUD', () => {
-  beforeEach(() => {
-    mockViewport(390);
-  });
-
-  test('takes over the controls when play closes the sidebar', async () => {
-    jest.useFakeTimers();
-    try {
-      const onVariableChange = jest.fn();
-      renderPreview({ onVariableChange }, closeOnPlayPreview);
-      await openFiltros();
-
-      await click(screen.getByRole('button', { name: 'Play' }));
-
-      // Sidebar gone, and a play/pause control still on screen: the HUD's.
-      expect(
-        screen.getByRole('button', { name: 'Open menu' })
-      ).toBeInTheDocument();
-      expect(hudPlayControl()).not.toBeNull();
-
-      // It drives the same playback: pausing from the HUD stops the advance.
-      act(() => {
-        jest.advanceTimersByTime(1000);
-      });
-      expect(onVariableChange).toHaveBeenCalledWith(
-        expect.objectContaining({ ano: '2023' })
-      );
-
-      await click(hudPlayControl()!);
-      onVariableChange.mockClear();
-      act(() => {
-        jest.advanceTimersByTime(3000);
-      });
-      expect(onVariableChange).not.toHaveBeenCalled();
-
-      // And it stays after pausing, so play can resume from it.
-      expect(hudPlayControl()).not.toBeNull();
-    } finally {
-      jest.useRealTimers();
-    }
-  });
-
-  test('is dismissable, and comes back on the next play', async () => {
-    jest.useFakeTimers();
-    try {
-      renderPreview({}, closeOnPlayPreview);
-      await openFiltros();
-      await click(screen.getByRole('button', { name: 'Play' }));
-
-      await click(screen.getByRole('button', { name: 'Close timeline' }));
-      expect(hudPlayControl()).toBeNull();
-
-      // Reopen the menu, play again: the bar is armed once more.
-      await click(screen.getByRole('button', { name: 'Open menu' }));
-      await click(screen.getByRole('button', { name: 'Pause' }));
-      await click(screen.getByRole('button', { name: 'Play' }));
-      expect(hudPlayControl()).not.toBeNull();
-    } finally {
-      jest.useRealTimers();
-    }
-  });
-
-  test('never shows before playback starts', async () => {
-    renderPreview({}, closeOnPlayPreview);
-    await openFiltros();
-    await click(screen.getByRole('button', { name: 'Close menu' }));
-
-    // Sidebar closed, but nothing was played — no bar to show.
-    expect(hudPlayControl()).toBeNull();
-  });
-
-  test('its steppers move the year and stop playback', async () => {
-    jest.useFakeTimers();
-    try {
-      const onVariableChange = jest.fn();
-      renderPreview({ onVariableChange }, closeOnPlayPreview);
-      await openFiltros();
-      await click(screen.getByRole('button', { name: 'Play' }));
-
-      await click(screen.getByRole('button', { name: 'Previous step' }));
-      expect(onVariableChange).toHaveBeenLastCalledWith(
-        expect.objectContaining({ ano: '2022' })
-      );
-
-      await click(screen.getByRole('button', { name: 'Next step' }));
-      expect(onVariableChange).toHaveBeenLastCalledWith(
-        expect.objectContaining({ ano: '2023' })
-      );
-
-      // Stepping stops the auto-advance, so the year holds where it was put.
-      onVariableChange.mockClear();
-      act(() => {
-        jest.advanceTimersByTime(3000);
-      });
-      expect(onVariableChange).not.toHaveBeenCalled();
-    } finally {
-      jest.useRealTimers();
-    }
-  });
-
-  test('its rule jumps to the year of the bar pressed', async () => {
-    jest.useFakeTimers();
-    try {
-      const onVariableChange = jest.fn();
-      renderPreview({ onVariableChange }, closeOnPlayPreview);
-      await openFiltros();
-      await click(screen.getByRole('button', { name: 'Play' }));
-
-      // Each segment carries its own step as its only accessible name.
-      await click(screen.getByRole('button', { name: '2024' }));
-
-      expect(onVariableChange).toHaveBeenLastCalledWith(
-        expect.objectContaining({ ano: '2024' })
-      );
-    } finally {
-      jest.useRealTimers();
-    }
-  });
-
-  /** A single timeline section, no histogram, opted into closing on play. */
-  const bareTimeline = ({
-    min,
-    max,
-    step,
-  }: {
-    min: number;
-    max: number;
-    step?: number;
-  }): Preview => {
-    return {
-      sections: [
-        {
-          id: 'filtros',
-          header: { title: 'Filtros', icon: 'lucide:filter' },
-          body: {
-            kind: 'filters',
-            blocks: [
-              {
-                id: 'periodo',
-                title: 'Linha do tempo',
-                control: {
-                  kind: 'timeline',
-                  menuId: 'ano',
-                  min,
-                  max,
-                  step,
-                  defaultValue: min,
-                  closeOnPlay: true,
-                },
-              },
-            ],
-          },
-        },
-      ],
-    };
-  };
-
-  test('still draws the rule for a timeline that declares no histogram', async () => {
-    jest.useFakeTimers();
-    try {
-      renderPreview({}, bareTimeline({ min: 2022, max: 2024 }));
-
-      await click(screen.getByRole('button', { name: 'Play' }));
-
-      // The rule comes from min/max/step, so it is there regardless — it is the
-      // count beside the year that needs histogram data.
-      expect(hudPlayControl()).not.toBeNull();
-      expect(screen.getByRole('button', { name: '2022' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: '2024' })).toBeInTheDocument();
-      expect(screen.queryByText(/reg\./)).toBeNull();
-    } finally {
-      jest.useRealTimers();
-    }
-  });
-
-  test.each([
-    ['a single step has no range to draw', { min: 2024, max: 2024 }],
-    ['too many steps would be sub-pixel', { min: 1900, max: 2026 }],
-  ])('drops the rule when %s', async (_label, range) => {
-    jest.useFakeTimers();
-    try {
-      renderPreview({}, bareTimeline(range));
-
-      await click(screen.getByRole('button', { name: 'Play' }));
-
-      // The bar is still there to pause with; only the rule is skipped.
-      expect(hudPlayControl()).not.toBeNull();
-      expect(
-        screen.queryByRole('button', { name: String(range.min) })
-      ).toBeNull();
-    } finally {
-      jest.useRealTimers();
-    }
-  });
-
-  test('never shows above the compact breakpoint', async () => {
-    jest.useFakeTimers();
-    try {
-      mockViewport(1280);
-      renderPreview({}, closeOnPlayPreview);
-      await openFiltros();
-
-      await click(screen.getByRole('button', { name: 'Play' }));
-
-      // The sidebar still closed on play, but the roomy layout keeps its own
-      // control reachable, so no bar is added.
-      expect(
-        screen.getByRole('button', { name: 'Open menu' })
-      ).toBeInTheDocument();
-      expect(hudPlayControl()).toBeNull();
-    } finally {
-      jest.useRealTimers();
-    }
-  });
-});
-
 test('toggling and clearing chips updates the badge', async () => {
   renderPreview();
   await openFiltros();

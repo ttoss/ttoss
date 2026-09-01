@@ -14,7 +14,6 @@ jest.mock('src/Oidc/discovery', () => {
   };
 });
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { discoverOidcConfiguration } = jest.requireMock('src/Oidc/discovery');
 
 const ISSUER = 'https://login.microsoftonline.com/tenant/v2.0';

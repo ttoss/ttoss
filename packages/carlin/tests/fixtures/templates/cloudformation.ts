@@ -23,7 +23,6 @@ export const generateTemplate = ({
   return template;
 };
 
-// eslint-disable-next-line import/no-default-export
 export default async ({
   stackName,
   templatePath,

@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.4](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-auth@0.6.3...@ttoss/http-server-auth@0.6.4) (2026-08-31)
+
+### Bug Fixes
+
+- **auth:** serve RFC 9728 protected-resource metadata at the path-derived location, from one shared primitive ([#1212](https://github.com/ttoss/ttoss/issues/1212)) ([174bfca](https://github.com/ttoss/ttoss/commit/174bfca15dfd7c5d5048f5fd87a5da81faf37189))
+
+## 0.6.3 (2026-08-31)
+
+**Note:** Version bump only for package @ttoss/http-server-auth
+
 ## [0.6.2](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-auth@0.6.1...@ttoss/http-server-auth@0.6.2) (2026-07-30)
 
 **Note:** Version bump only for package @ttoss/http-server-auth

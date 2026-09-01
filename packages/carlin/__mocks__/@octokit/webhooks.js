@@ -31,5 +31,4 @@ class Webhooks {
   }
 }
 
-// eslint-disable-next-line no-undef
 module.exports = { Webhooks };

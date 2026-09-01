@@ -1,7 +1,5 @@
-import {
-  MultistepFlowMessageImageText,
-  MultistepFlowMessageImageTextProps,
-} from './MultistepFlowMessageImageText';
+import type { MultistepFlowMessageImageTextProps } from './MultistepFlowMessageImageText';
+import { MultistepFlowMessageImageText } from './MultistepFlowMessageImageText';
 
 export type MultistepFlowMessageProps = MultistepFlowMessageImageTextProps;
 

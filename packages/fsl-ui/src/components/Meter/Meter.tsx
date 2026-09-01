@@ -117,6 +117,11 @@ export const Meter = ({
       style={RAIL_ROOT_STYLE}
     >
       {({ percentage, valueText }) => {
+        // Built outside JSX deliberately: the status span is aria-hidden, so
+        // this is a formatted number echoing the value RAC already exposes
+        // accessibly — not copy for translation.
+        const statusText = valueText ?? `${Math.round(percentage)}%`;
+
         return (
           <>
             {(label || showValueLabel) && (
@@ -153,7 +158,7 @@ export const Meter = ({
                     aria-hidden
                     style={{ flex: 'none' } as React.CSSProperties}
                   >
-                    {valueText ?? `${Math.round(percentage)}%`}
+                    {statusText}
                   </span>
                 )}
               </div>

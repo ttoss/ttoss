@@ -173,3 +173,9 @@ path when the app versions its API; individual paths are overridable through
 ## OAuth authorization server
 
 The package also ships `oauthServer()` — a Koa `Router` that issues tokens (`/authorize`, `/token`, `/register`, discovery), a thin adapter over `createOAuthHandlers` from [`@ttoss/auth-core`](https://ttoss.dev/docs/modules/packages/auth-core). Pair it with the `oauth` verification strategy above when one deployment both issues and verifies. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline.
+
+### Protected resource metadata (RFC 9728)
+
+Passing `resource` to `oauthServer()` serves the protected-resource metadata document; `createProtectedResourceMetadataMiddleware` serves the same document when you bring your own auth middleware. Both answer at **every** location RFC 9728 defines for that resource — the root, plus the path-derived `/.well-known/oauth-protected-resource<path>` when the resource identifier carries a path, since §3.1 inserts the well-known segment between host and path. The locations and the document body come from `protectedResourceMetadataPaths` / `protectedResourceMetadataDocument` in `@ttoss/auth-core` (re-exported here), which is also what `getWwwAuthenticateHeader` derives its URL from — so the header and the routes cannot disagree.
+
+Mount either **before** `authMiddleware`: clients fetch discovery before they have a token.

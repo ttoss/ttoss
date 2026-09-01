@@ -59,6 +59,9 @@ const TrendDisplay = ({
   vsPreviousLabel: string;
 }) => {
   const trendColors = getTrendColors(trend);
+  // Built outside JSX: a formatted percentage, not translatable copy.
+  const trendText = `${trend.value.toFixed(1)}% `;
+
   return (
     <Flex sx={{ alignItems: 'center', gap: '1' }}>
       <Box
@@ -74,7 +77,7 @@ const TrendDisplay = ({
         }}
       >
         <TrendIcon trend={trend} />
-        {trend.value.toFixed(1)}%{' '}
+        {trendText}
       </Box>
       <Text
         sx={{

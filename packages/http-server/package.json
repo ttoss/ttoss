@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/http-server",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "HTTP Server for ttoss environment",
   "keywords": [
     "koa",

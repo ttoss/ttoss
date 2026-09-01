@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 import AWS from 'aws-sdk';
 import type { CommandModule, InferredOptionTypes } from 'yargs';
 

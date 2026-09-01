@@ -22,9 +22,24 @@
     "module": "@ttoss/components",
     "defaultMessage": "Uploading..."
   },
+  "TqUkps": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Limpar Tudo",
+    "description": "Notifications menu: button clearing every notification."
+  },
   "XKyo5X": {
     "module": "@ttoss/components",
     "defaultMessage": "File Upload"
+  },
+  "d/l4Zg": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Deseja instalar o nosso aplicativo?",
+    "description": "PWA install banner: the question offering installation."
+  },
+  "dx4ZnR": {
+    "module": "@ttoss/components",
+    "defaultMessage": "{name} logo",
+    "description": "OAuth consent: alt text for the requesting application logo."
   },
   "eRShvB": {
     "module": "@ttoss/components",
@@ -38,6 +53,11 @@
     "module": "@ttoss/components",
     "defaultMessage": "{max_files, plural, one {Up to # file} other {Up to # files}}"
   },
+  "fcbTJg": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Nenhuma notificação",
+    "description": "Notifications menu: shown when there is nothing to list."
+  },
   "gy0Ynb": {
     "module": "@ttoss/components",
     "defaultMessage": "Click or drag files here"
@@ -46,6 +66,11 @@
     "module": "@ttoss/components",
     "defaultMessage": "of {max}",
     "description": "Text shown before the max value, e.g. \"of 10\" or \"of ∞\"."
+  },
+  "rmaMPX": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Instalar",
+    "description": "PWA install banner: button that starts the installation."
   },
   "rskBv4": {
     "module": "@ttoss/components",
@@ -77,6 +102,11 @@
     "defaultMessage": ".",
     "description": "Decimal separator for number formatting (e.g., \".\" for 1.23 or \",\" for 1,23)"
   },
+  "mnFdKf": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "{current}/{total}",
+    "description": "Multistep form: position in the flow. Only the separator is translatable; both values are numbers."
+  },
   "yktL1M": {
     "module": "@ttoss/forms",
     "defaultMessage": ",",
@@ -106,6 +136,11 @@
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Dismiss selection",
     "description": "Accessible label for the button that clears the inspector panel selection."
+  },
+  "1DwZsQ": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "s",
+    "description": "Timeline filter: seconds unit shown after the playback interval. Abbreviated."
   },
   "26nzWk": {
     "module": "@ttoss/geovis-workspace",
@@ -146,6 +181,11 @@
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Close timeline",
     "description": "Accessible label for the button that dismisses the compact timeline bar anchored to the map."
+  },
+  "BWeqQA": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Selecionado",
+    "description": "Locator filter: heading above the currently selected place."
   },
   "IU+fm9": {
     "module": "@ttoss/geovis-workspace",
@@ -202,6 +242,11 @@
     "defaultMessage": "Play",
     "description": "Label for the timeline button that auto-advances the current value in the preview sidebar."
   },
+  "UKeLzU": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Zoom em {label}",
+    "description": "Locator filter: action zooming the map to the chosen place."
+  },
   "V3z2n/": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "The size mode configuration is invalid.",
@@ -211,6 +256,11 @@
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "{count} rec.",
     "description": "Abbreviated record count beside the current value in the compact timeline bar anchored to the map."
+  },
+  "YQPd8E": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Limpar {count, plural, one {# filtro} other {# filtros}}",
+    "description": "Chips filter: action clearing the selected chips, counting them."
   },
   "Z+sHcw": {
     "module": "@ttoss/geovis-workspace",
@@ -272,6 +322,11 @@
     "defaultMessage": "Map type: {map_type}",
     "description": "Metadata panel: the spec's mapType, when set."
   },
+  "ssMheo": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Intervalo de reprodução",
+    "description": "Timeline filter: label for the playback interval input."
+  },
   "uzIIpa": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "This layer type is not supported.",
@@ -281,6 +336,11 @@
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "The visualization spec targets an unsupported schema version.",
     "description": "Warnings panel: spec.schemaVersion is not supported."
+  },
+  "ymdThy": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Selecione um município",
+    "description": "Locator filter: zoom action label while nothing is selected yet."
   },
   "0XOzcH": {
     "module": "@ttoss/react-auth-core",

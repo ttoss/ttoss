@@ -66,6 +66,33 @@ export const messages = defineMessages({
     description:
       'Accessible label for the arrow that scrolls the grouped-menu carousel to later groups.',
   },
+  clearFilters: {
+    defaultMessage: 'Limpar {count, plural, one {# filtro} other {# filtros}}',
+    description:
+      'Chips filter: action clearing the selected chips, counting them.',
+  },
+  locatorSelected: {
+    defaultMessage: 'Selecionado',
+    description: 'Locator filter: heading above the currently selected place.',
+  },
+  locatorZoomTo: {
+    defaultMessage: 'Zoom em {label}',
+    description: 'Locator filter: action zooming the map to the chosen place.',
+  },
+  locatorPlaceholder: {
+    defaultMessage: 'Selecione um município',
+    description:
+      'Locator filter: zoom action label while nothing is selected yet.',
+  },
+  timelineIntervalLabel: {
+    defaultMessage: 'Intervalo de reprodução',
+    description: 'Timeline filter: label for the playback interval input.',
+  },
+  timelineIntervalUnit: {
+    defaultMessage: 's',
+    description:
+      'Timeline filter: seconds unit shown after the playback interval. Abbreviated.',
+  },
   play: {
     defaultMessage: 'Play',
     description:

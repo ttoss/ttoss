@@ -28,6 +28,83 @@ interface FormData {
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 type FormFieldName = keyof FormData;
 
+type FieldError = { type: string; message: string };
+
+/**
+ * One validation rule. Rules are evaluated in order and the first one that
+ * fails for a field wins, which is what gives `required` precedence over
+ * `pattern` and `minLength`.
+ */
+type FieldRule = {
+  field: FormFieldName;
+  isInvalid: (value?: string) => boolean;
+} & FieldError;
+
+const isBlank = (value?: string): boolean => {
+  return !value?.trim();
+};
+
+const FIELD_RULES: FieldRule[] = [
+  {
+    field: 'firstName',
+    type: 'required',
+    message: 'First name is required',
+    isInvalid: isBlank,
+  },
+  {
+    field: 'lastName',
+    type: 'required',
+    message: 'Last name is required',
+    isInvalid: isBlank,
+  },
+  {
+    field: 'email',
+    type: 'required',
+    message: 'Email is required',
+    isInvalid: isBlank,
+  },
+  {
+    field: 'email',
+    type: 'pattern',
+    message: 'Invalid email address',
+    isInvalid: (value) => {
+      return !emailPattern.test(value ?? '');
+    },
+  },
+  {
+    field: 'street',
+    type: 'required',
+    message: 'Street is required',
+    isInvalid: isBlank,
+  },
+  {
+    field: 'city',
+    type: 'required',
+    message: 'City is required',
+    isInvalid: isBlank,
+  },
+  {
+    field: 'country',
+    type: 'required',
+    message: 'Country is required',
+    isInvalid: isBlank,
+  },
+  {
+    field: 'phone',
+    type: 'required',
+    message: 'Phone must be at least 10 digits',
+    isInvalid: isBlank,
+  },
+  {
+    field: 'phone',
+    type: 'minLength',
+    message: 'Phone must be at least 10 digits',
+    isInvalid: (value) => {
+      return (value ?? '').trim().length < 10;
+    },
+  },
+];
+
 const validateFormData = ({
   values,
   fieldNames,
@@ -35,69 +112,17 @@ const validateFormData = ({
   values: Partial<FormData>;
   fieldNames?: string[];
 }) => {
-  const errors: Record<string, { type: string; message: string }> = {};
+  const errors: Record<string, FieldError> = {};
   const requestedFieldNames = fieldNames ? new Set(fieldNames) : undefined;
-  const shouldValidate = (fieldName: FormFieldName) => {
-    return !requestedFieldNames || requestedFieldNames.has(fieldName);
-  };
 
-  if (shouldValidate('firstName') && !values.firstName?.trim()) {
-    errors.firstName = {
-      type: 'required',
-      message: 'First name is required',
-    };
-  }
+  for (const { field, type, message, isInvalid } of FIELD_RULES) {
+    const skip =
+      (requestedFieldNames && !requestedFieldNames.has(field)) ||
+      Boolean(errors[field]);
 
-  if (shouldValidate('lastName') && !values.lastName?.trim()) {
-    errors.lastName = {
-      type: 'required',
-      message: 'Last name is required',
-    };
-  }
-
-  if (shouldValidate('email') && !values.email?.trim()) {
-    errors.email = {
-      type: 'required',
-      message: 'Email is required',
-    };
-  } else if (shouldValidate('email') && !emailPattern.test(values.email)) {
-    errors.email = {
-      type: 'pattern',
-      message: 'Invalid email address',
-    };
-  }
-
-  if (shouldValidate('street') && !values.street?.trim()) {
-    errors.street = {
-      type: 'required',
-      message: 'Street is required',
-    };
-  }
-
-  if (shouldValidate('city') && !values.city?.trim()) {
-    errors.city = {
-      type: 'required',
-      message: 'City is required',
-    };
-  }
-
-  if (shouldValidate('country') && !values.country?.trim()) {
-    errors.country = {
-      type: 'required',
-      message: 'Country is required',
-    };
-  }
-
-  if (shouldValidate('phone') && !values.phone?.trim()) {
-    errors.phone = {
-      type: 'required',
-      message: 'Phone must be at least 10 digits',
-    };
-  } else if (shouldValidate('phone') && values.phone.trim().length < 10) {
-    errors.phone = {
-      type: 'minLength',
-      message: 'Phone must be at least 10 digits',
-    };
+    if (!skip && isInvalid(values[field])) {
+      errors[field] = { type, message };
+    }
   }
 
   return errors;

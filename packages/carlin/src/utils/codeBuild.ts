@@ -51,7 +51,6 @@ export const waitCodeBuildFinish = async ({
   };
 
   while (!result) {
-    // eslint-disable-next-line no-await-in-loop
     result = await checkIfBuildIsFinished();
   }
 
