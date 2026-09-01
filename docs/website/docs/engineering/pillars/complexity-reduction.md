@@ -13,31 +13,21 @@ There is also a hard limit that has no equivalent for humans. A human facing an 
 
 "Keep functions simple" is advice, and advice is applied unevenly by humans and probabilistically by agents. A threshold enforced by the linter fails the build, fails identically for everyone, and costs no reviewer attention to apply — the same reason [Automation](/docs/engineering/pillars/automation) insists that a rule not enforced by a machine is not a rule. The value is not that any single threshold is optimal. It is that the constraint stops depending on whoever happens to be reviewing.
 
-## The Budget at ttoss
+## What the Budget Bounds
 
-These are the limits in `@ttoss/eslint-config`, applied to source code:
+Our shared lint configuration puts a ceiling on each dimension that makes code expensive to hold in your head: the number of independent paths through a function, its cognitive complexity, how deeply control structures and callbacks nest, how many parameters a function takes before an object is required, and how long a function or file may grow. The current values live in `@ttoss/eslint-config` and are deliberately not repeated here — they move as the codebase does, and the configuration is the source of truth.
 
-| Rule                           | Limit | What it bounds                          |
-| ------------------------------ | ----- | --------------------------------------- |
-| `complexity`                   | 10    | Independent paths through a function    |
-| `sonarjs/cognitive-complexity` | 21    | How hard a function is to _read_        |
-| `max-depth`                    | 4     | Nesting of control structures           |
-| `max-nested-callbacks`         | 3     | Callback pyramids                       |
-| `max-params`                   | 5     | Parameters before an object is required |
-| `max-lines-per-function`       | 80    | Function length                         |
-| `max-lines`                    | 400   | File length                             |
+Cyclomatic complexity and [cognitive complexity](https://www.sonarsource.com/blog/cognitive-complexity-because-testability-understandability-and-changeability-matter/) are both bounded because they measure different things. The first counts paths and treats a flat switch statement as complex; the second weights nesting, so it tracks how hard code is to hold in your head. A long flat function is usually fine. A short deeply nested one usually is not.
 
-Cyclomatic complexity and [cognitive complexity](https://www.sonarsource.com/blog/cognitive-complexity-because-testability-understandability-and-changeability-matter/) both appear because they measure different things. The first counts paths and treats a flat switch statement as complex; the second weights nesting, so it tracks how hard code is to hold in your head. A long flat function is usually fine. A short deeply nested one usually is not.
-
-Alongside the size budget sits a set of duplication and dead-code rules — `sonarjs/no-identical-functions`, `no-duplicated-branches`, `no-dead-store`, `no-collapsible-if` and others. These matter more in agentic work than they used to: generating a near-copy of an existing function is cheaper than finding it, so an agent will happily produce the fourth variant of something that should have one implementation. Duplication detection is how that tendency gets caught mechanically instead of in review.
+Alongside the size budget sits a set of duplication and dead-code rules — identical functions, duplicated branches, dead stores, collapsible conditionals. These matter more in agentic work than they used to: generating a near-copy of an existing function is cheaper than finding it, so an agent will happily produce the fourth variant of something that should have one implementation. Duplication detection is how that tendency gets caught mechanically instead of in review.
 
 ## Calibrate Thresholds From Your Own Distribution
 
-The number that makes this pillar work is not any number in the table above. It is the method behind them: every threshold was picked by measuring the repository's actual distribution and setting the limit where only genuine outliers report.
+What makes this pillar work is not any particular number. It is the method: every threshold is picked by measuring the repository's actual distribution and setting the limit where only genuine outliers report.
 
-The test-file overrides show what that produces. `max-lines` there is 1000 rather than 400, because at 400 the source limit flagged 49 files while at 1000 only five genuinely unwieldy suites do. `complexity` is 15, where exactly two files report — at complexity 21 and 27, both real. `max-nested-callbacks` is 5, because `describe > describe > test > callback` is depth 4, so the source limit of 3 would flag the standard shape of a Jest suite rather than anything wrong with it.
+The test-file overrides show what the method produces. When we last calibrated them, the source file-length limit flagged dozens of suites while a limit two and a half times higher flagged only the handful that were genuinely unwieldy; a relaxed path-complexity limit reported exactly two files, both real; and the callback-nesting limit had to rise by two because `describe > describe > test > callback` is the standard shape of a suite, not a defect in one.
 
-Two rules are off entirely in tests, for reasons no threshold fixes. `max-lines-per-function` counts a `describe` callback as one function, so it measures a whole suite as a single unit — the unit is wrong, not the limit. And `no-identical-functions` fights the near-identical arrange/assert blocks that are how a readable suite is written in the first place.
+Two rules are off entirely in tests, for reasons no threshold fixes. Function-length counts a `describe` callback as one function, so it measures a whole suite as a single unit — the unit is wrong, not the limit. And identical-function detection fights the near-identical arrange/assert blocks that are how a readable suite is written in the first place.
 
 What is deliberately _not_ relaxed says the most: `max-depth`, `max-params` and `sonarjs/cognitive-complexity` keep their source limits in test files, because they report zero violations there. Nothing about test code makes deep nesting or parameter soup legitimate.
 

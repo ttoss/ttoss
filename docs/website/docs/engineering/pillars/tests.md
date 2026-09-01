@@ -54,13 +54,11 @@ The loop also extends past the merge. Tests verify what the team predicted; tele
 
 ## How This Works at ttoss
 
-Verification is Jest across both frontend and backend packages, with `@ttoss/test-utils` supplying the provider context React components need. Structure is scaffolded rather than hand-rolled — `npx @ttoss/monorepo setup-tests` for unit tests, `--e2e` when a package needs the outer layer too.
-
-The mechanism that keeps this from eroding is the coverage ratchet: every package pins `coverageThreshold` in its Jest config, and it may never be lowered. Change code, and you update the threshold to match the new reality — upward only. This matters specifically because generated code accumulates faster than anyone audits it, and coverage that is merely observed will drift down one merge at a time. Coverage that is pinned cannot.
+The mechanism that keeps verification from eroding is the coverage ratchet: every package pins its coverage threshold, and the threshold may never be lowered. Change code, and you raise the threshold to match — upward only. This matters specifically because generated code accumulates faster than anyone audits it, and coverage that is merely observed drifts down one merge at a time. Coverage that is pinned cannot.
 
 Every pull request also gets a real deployed environment, courtesy of the pipeline described in [Automation](/docs/engineering/pillars/automation). That is what gives outer-loop tests something honest to run against.
 
-Implementation specifics — file layout, mocking conventions, `jest.mocked()` over casts — live in the [tests guideline](/docs/engineering/guidelines/tests).
+Frameworks, scaffolding, and mocking conventions live in the [tests guideline](/docs/engineering/guidelines/tests) — they change; the ratchet and the real environment do not.
 
 ## Failure Mode
 
