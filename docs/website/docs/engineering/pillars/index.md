@@ -34,6 +34,6 @@ The remaining foundations have no page here yet, which is a statement about our 
 - **Executable Intent** — we do this in practice, through acceptance criteria and typed contracts, but we have not reduced it to a mechanism worth documenting as a pillar.
 - **Observability** — partially covered by service-level practice, not yet by a standard every package meets.
 - **Reversibility** — the closest we have is mechanized in [feature flags](/docs/engineering/guidelines/feature-flags) and [breaking changes](/docs/engineering/guidelines/breaking-changes), plus trunk-based development and continuous deployment.
-- **Deterministic Guardrails**, in its authority sense — scoped agent permissions and graduated autonomy are still convention here, not structure.
+- **Deterministic Guardrails** — scoped agent permissions and graduated autonomy are still convention here, not structure.
 
-Treat the gap as the roadmap. A team building this from scratch should read the foundations for the full set of properties, and these pages for what mechanizing three of them actually looks like.
+A team building this from scratch should read the foundations for the full set of properties, and these pages for what mechanizing three of them actually looks like.

@@ -5,7 +5,7 @@ sidebar_position: 2
 
 A check a human runs by hand does not exist to an agent.
 
-This is the entire pillar, and it is worth sitting with before reading further. An agent cannot consult a wiki page it was not given, cannot infer a convention enforced only in review, and cannot ask whether this is one of the cases where the team makes an exception. It can run a command and read the output. Everything you want it to respect has to be reachable that way, or it is not a rule — it is a hope.
+This is the entire pillar. An agent cannot consult a wiki page it was not given, cannot infer a convention enforced only in review, and cannot ask whether this is one of the cases where the team makes an exception. It can run a command and read the output. Everything you want it to respect has to be reachable that way, or it is not a rule — it is a hope.
 
 Automation is therefore not the productivity pillar. It is the pillar that makes the others enforceable, which is why it sits underneath both [Tests](/docs/engineering/pillars/tests) and [Complexity Reduction](/docs/engineering/pillars/complexity-reduction).
 
@@ -36,6 +36,6 @@ flowchart LR
 
 ## Failure Mode
 
-The team has a convention — say, that recipes carry only color tokens — and it lives in a review checklist. Every human eventually internalizes it. Every agent violates it on first contact, because the rule was never in a form the agent could consume. Reviewers become the enforcement mechanism, review becomes the bottleneck, and the team concludes that agents are careless. The rule was simply never made real.
+The team has a convention — say, that recipes carry only color tokens — and it lives in a review checklist. Every human eventually internalizes it. Every agent violates it on first contact, because the rule was never in a form the agent could consume, and reviewers become the enforcement mechanism for something a linter could have caught.
 
 The fix is not a better prompt. It is a lint rule, a type, or a gate — after which the agent complies on every task, forever, and no reviewer spends attention on it again. Repository instruction files help agents cooperate, but they are advisory; only the pipeline is binding.

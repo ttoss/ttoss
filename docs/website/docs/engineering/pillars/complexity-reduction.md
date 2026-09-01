@@ -11,9 +11,7 @@ There is also a hard limit that has no equivalent for humans. A human facing an 
 
 ## Why a Budget and Not a Guideline
 
-"Keep functions simple" is advice, and advice is applied unevenly by humans and probabilistically by agents. A threshold enforced by the linter is a different kind of object: it fails the build, it fails identically for everyone, and it costs no reviewer attention to apply.
-
-This is the same structural-versus-behavioral distinction that runs through [Automation](/docs/engineering/pillars/automation). The value is not that any single threshold is optimal. It is that the constraint stops depending on whoever happens to be reviewing.
+"Keep functions simple" is advice, and advice is applied unevenly by humans and probabilistically by agents. A threshold enforced by the linter fails the build, fails identically for everyone, and costs no reviewer attention to apply — the same reason [Automation](/docs/engineering/pillars/automation) insists that a rule not enforced by a machine is not a rule. The value is not that any single threshold is optimal. It is that the constraint stops depending on whoever happens to be reviewing.
 
 ## The Budget at ttoss
 
@@ -47,4 +45,4 @@ The lesson generalizes. A threshold calibrated to a real distribution is one eve
 
 ## Failure Mode
 
-The code compiles, the tests pass, and every task requires loading three modules to change one line. Agents start guessing, because the smallest correct context no longer fits. Reviewers start approving, because reconstructing the reasoning costs more than trusting it. Both failures look like the system is working, right up until an incident reveals that nobody — human or agent — understood the change that caused it.
+The code compiles, the tests pass, and every task requires loading three modules to change one line. Agents guess, because the smallest correct context no longer fits. Reviewers approve, because reconstructing the reasoning costs more than trusting it. Nothing in the pipeline distinguishes this from a healthy system until an incident reveals that nobody — human or agent — understood the change that caused it.

@@ -42,7 +42,7 @@ The dotted arrow is the one that runs out. The thick one is the one worth invest
 
 ## The Part That Is Easy to Get Wrong
 
-Elevating the loop is not the same as loosening the inner one and hoping. If you stop reviewing a subsystem and do not build the outer loop that now covers it, you have not moved validation up — you have removed it. The teams that extract the most value from AI are not the ones that review least; they are the ones whose outer loops are strong enough to make reviewing less a defensible decision.
+Elevating the loop is not the same as loosening the inner one and hoping. If you stop reviewing a subsystem and do not build the outer loop that now covers it, you have not moved validation up — you have removed it. The teams that extract the most value from AI are not the ones that review least; they are the ones whose outer loops are strong enough that reviewing less becomes a defensible decision.
 
 Two properties determine whether an outer loop can carry that weight.
 
@@ -64,4 +64,4 @@ Implementation specifics — file layout, mocking conventions, `jest.mocked()` o
 
 ## Failure Mode
 
-An agent produces a week's worth of code in a day. The team keeps its inherited process and reviews all of it at the diff level. The review queue grows, reviewers start skimming, and the skimming is invisible because a skimmed approval looks exactly like a careful one. Regressions ship. The team concludes that agent output is low quality, when what actually failed was a sensor placed at a layer that no longer matches the volume of change flowing through it.
+An agent produces a week's worth of code in a day. The team keeps its inherited process and reviews all of it at the diff level. The queue grows, reviewers start skimming, and a skimmed approval looks exactly like a careful one. The regressions that follow are attributed to the agent. The sensor was at the wrong layer for the volume flowing through it.

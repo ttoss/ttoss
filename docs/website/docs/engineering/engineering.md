@@ -14,7 +14,7 @@ This section is written to be portable. The examples are ours — our lint budge
 
 ## How to Read This Section
 
-[Why Software Engineering Is Changing](/docs/engineering/why-engineering-is-changing) makes the case that the shift is structural rather than fashionable, and names the gap that the discipline has to close. The [Pillars](/docs/engineering/pillars) are the properties a delivery system needs before agentic execution produces leverage instead of motion. [Guidelines](/docs/engineering/guidelines) and [Workflow](/docs/engineering/workflow) are the ttoss-specific layer: exactly how we implement all of it in this repository.
+[Why Software Engineering Is Changing](/docs/engineering/why-engineering-is-changing) makes the case that the shift is structural rather than fashionable, names the gap the discipline has to close, and maps the stages teams pass through on the way — including where most of them stall. The [Pillars](/docs/engineering/pillars) are the properties a delivery system needs before agentic execution pays off. [Guidelines](/docs/engineering/guidelines) and [Workflow](/docs/engineering/workflow) are the ttoss-specific layer: exactly how we implement all of it in this repository.
 
 ## Where This Sits Relative to the AI Section
 
