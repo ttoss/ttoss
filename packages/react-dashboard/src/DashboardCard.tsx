@@ -66,9 +66,7 @@ export interface UnimplementedCard extends BaseDashboardCard {
 }
 
 export type DashboardCard =
-  | BigNumberCard
-  | BigNumberSparklineCard
-  | UnimplementedCard;
+  BigNumberCard | BigNumberSparklineCard | UnimplementedCard;
 
 export const DashboardCard = (props: DashboardCard) => {
   switch (props.type) {

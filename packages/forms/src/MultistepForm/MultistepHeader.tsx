@@ -62,8 +62,7 @@ const MultistepHeaderLogo = ({ onClose, src }: MultistepHeaderLogoProps) => {
 };
 
 export type MultistepHeaderProps =
-  | MultistepHeaderLogoProps
-  | MultistepHeaderTitledProps;
+  MultistepHeaderLogoProps | MultistepHeaderTitledProps;
 
 export const MultistepHeader = (props: MultistepHeaderProps) => {
   if (props.variant === 'logo') {

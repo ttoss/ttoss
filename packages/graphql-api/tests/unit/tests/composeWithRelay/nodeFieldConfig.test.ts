@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable jest/no-mocks-import */
+
+import { toGlobalId } from '@ttoss/ids';
 import { InterfaceTypeComposer, schemaComposer } from 'graphql-compose';
-import { UserTC, findByIdResolver } from './__mocks__/UserTC';
 import { getNodeFieldConfig } from 'src/composeWithRelay/nodeFieldConfig';
 import { getNodeInterface } from 'src/composeWithRelay/nodeInterface';
-import { toGlobalId } from '@ttoss/ids';
+
+import { findByIdResolver, UserTC } from './__mocks__/UserTC';
 
 describe('nodeFieldConfig', () => {
   const typeToFindByIdMap = {

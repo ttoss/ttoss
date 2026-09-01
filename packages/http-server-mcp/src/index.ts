@@ -1,5 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports -- value import required so declaration bundler emits `export { McpServer }` not `export type { McpServer }`
 import { McpServer } from '@modelcontextprotocol/server';
+import {
+  protectedResourceMetadataDocument,
+  protectedResourceMetadataPaths,
+  protectedResourceMetadataUrl,
+} from '@ttoss/auth-core';
 import { CognitoJwtVerifier } from '@ttoss/auth-core/amazon-cognito';
 import { Router } from '@ttoss/http-server';
 import { authMiddleware } from '@ttoss/http-server-auth';
@@ -52,8 +57,37 @@ export interface McpAuthOptions {
    */
   publicMethods?: string[];
   /**
-   * When set, a `401` carries `WWW-Authenticate: Bearer resource_metadata="…"`
-   * (RFC 9728) so MCP clients can discover the authorization server.
+   * URL advertised in `WWW-Authenticate: Bearer resource_metadata="…"`
+   * (RFC 9728) on a `401`, so MCP clients can discover the authorization
+   * server.
+   *
+   * Defaults to the location derived from `resourceServerUrl` + `path` — the
+   * same location this router serves the document at — so the header cannot
+   * drift from the routes. The default applies only when the document is
+   * actually served (both `resourceServerUrl` and `authorizationServerUrl`
+   * set); otherwise the header stays a bare `Bearer` rather than advertising a
+   * location with no route.
+   *
+   * **Leave it unset when this router serves the document.** It exists for the
+   * one configuration where that is deliberately not the case: an
+   * authorization server in the same deployment (`oauthServer({ resource })`)
+   * already answers `/.well-known/oauth-protected-resource`, so mounting this
+   * router with `resourceServerUrl` + `authorizationServerUrl` too would put
+   * two routers on one path. Omit both there and set this instead — without
+   * it the `401` is a bare `Bearer`, which never starts a client's discovery.
+   *
+   * Derive the value rather than typing it: `protectedResourceMetadataUrl`
+   * from `@ttoss/auth-core` applies the same RFC 9728 §3.1 rule the serving
+   * side does. A hand-written value that names a location nothing serves
+   * fails discovery silently.
+   *
+   * @example
+   * ```typescript
+   * // Only when oauthServer (not this router) serves the document.
+   * resourceMetadataUrl: protectedResourceMetadataUrl({
+   *   resource: 'https://mcp.example.com/mcp',
+   * }),
+   * ```
    */
   resourceMetadataUrl?: string;
   /**
@@ -511,6 +545,38 @@ export const createMcpRouter = (
   if (auth) {
     const verifyToken = buildVerifyToken(auth);
 
+    // Append `path` to the base URL so clients that follow the `resource`
+    // value land on the actual MCP endpoint, not the bare origin.
+    const base = auth.resourceServerUrl?.replace(/\/$/, '');
+    const resourceUrl =
+      base === undefined || path === '/' ? base : `${base}${path}`;
+
+    // Serving the document and advertising it are derived from **one** value,
+    // deliberately: both require `resourceServerUrl` *and*
+    // `authorizationServerUrl`, so binding them together is what stops a `401`
+    // from advertising a `resource_metadata` location whose route was never
+    // registered. Two independent conditions is exactly how that regressed
+    // once — gating the header on `resourceServerUrl` alone made a config with
+    // no `authorizationServerUrl` point every client at a 404.
+    const metadata =
+      resourceUrl !== undefined && auth.authorizationServerUrl !== undefined
+        ? {
+            document: protectedResourceMetadataDocument({
+              resource: resourceUrl,
+              authorizationServers: [auth.authorizationServerUrl],
+            }),
+            paths: protectedResourceMetadataPaths({ resource: resourceUrl }),
+            url: protectedResourceMetadataUrl({ resource: resourceUrl }),
+          }
+        : undefined;
+
+    // The router already knows the facts the metadata URL derives from, so it
+    // derives the default rather than making the consumer hand-write a URL that
+    // can silently name a location nothing serves — the same failure this
+    // file's route registration fixes, one layer up. An explicit
+    // `resourceMetadataUrl` still wins.
+    const resourceMetadataUrl = auth.resourceMetadataUrl ?? metadata?.url;
+
     if (auth.publicMethods === undefined) {
       // `tools/list` exposing the full tool catalogue to unauthenticated
       // callers is a surprising default for anyone who configured `auth`
@@ -541,7 +607,7 @@ export const createMcpRouter = (
         },
         requiredScopes: auth.requiredScopes,
       },
-      resourceMetadataUrl: auth.resourceMetadataUrl,
+      resourceMetadataUrl,
     });
 
     // Public lifecycle/discovery methods bypass verification so clients can
@@ -556,17 +622,19 @@ export const createMcpRouter = (
       await verify(ctx, next);
     };
 
-    if (auth.resourceServerUrl && auth.authorizationServerUrl) {
-      // Append `path` to the base URL so clients that follow the `resource`
-      // value land on the actual MCP endpoint, not the bare origin.
-      const base = auth.resourceServerUrl.replace(/\/$/, '');
-      const resourceUrl = path === '/' ? base : `${base}${path}`;
-      router.get('/.well-known/oauth-protected-resource', (ctx: Context) => {
-        ctx.body = {
-          resource: resourceUrl,
-          authorization_servers: [auth.authorizationServerUrl],
-        };
-      });
+    if (metadata) {
+      // `protectedResourceMetadataPaths` owns RFC 9728 §3.1's derivation rule
+      // (the well-known segment goes between host and path, so a resource of
+      // `https://host/mcp` is discovered at
+      // `https://host/.well-known/oauth-protected-resource/mcp`) and returns
+      // the root as well, de-duplicated when the resource has no path.
+      // Serving only the root made a spec-following client fail discovery
+      // outright, measured against a deployed consumer mounted at `/mcp`.
+      for (const metadataPath of metadata.paths) {
+        router.get(metadataPath, (ctx: Context) => {
+          ctx.body = metadata.document;
+        });
+      }
     }
   }
 

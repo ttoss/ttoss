@@ -232,9 +232,24 @@
     "module": "@ttoss/components",
     "defaultMessage": "Uploading..."
   },
+  "TqUkps": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Limpar Tudo",
+    "description": "Notifications menu: button clearing every notification."
+  },
   "XKyo5X": {
     "module": "@ttoss/components",
     "defaultMessage": "File Upload"
+  },
+  "d/l4Zg": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Deseja instalar o nosso aplicativo?",
+    "description": "PWA install banner: the question offering installation."
+  },
+  "dx4ZnR": {
+    "module": "@ttoss/components",
+    "defaultMessage": "{name} logo",
+    "description": "OAuth consent: alt text for the requesting application logo."
   },
   "eRShvB": {
     "module": "@ttoss/components",
@@ -248,6 +263,11 @@
     "module": "@ttoss/components",
     "defaultMessage": "{max_files, plural, one {Up to # file} other {Up to # files}}"
   },
+  "fcbTJg": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Nenhuma notificação",
+    "description": "Notifications menu: shown when there is nothing to list."
+  },
   "gy0Ynb": {
     "module": "@ttoss/components",
     "defaultMessage": "Click or drag files here"
@@ -256,6 +276,11 @@
     "module": "@ttoss/components",
     "defaultMessage": "of {max}",
     "description": "Text shown before the max value, e.g. \"of 10\" or \"of ∞\"."
+  },
+  "rmaMPX": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Instalar",
+    "description": "PWA install banner: button that starts the installation."
   },
   "rskBv4": {
     "module": "@ttoss/components",
@@ -286,6 +311,11 @@
     "module": "@ttoss/forms",
     "defaultMessage": ".",
     "description": "Decimal separator for number formatting (e.g., \".\" for 1.23 or \",\" for 1,23)"
+  },
+  "mnFdKf": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "{current}/{total}",
+    "description": "Multistep form: position in the flow. Only the separator is translatable; both values are numbers."
   },
   "yktL1M": {
     "module": "@ttoss/forms",

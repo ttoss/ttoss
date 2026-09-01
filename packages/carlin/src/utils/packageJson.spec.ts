@@ -1,3 +1,9 @@
+import { readFileSync } from 'node:fs';
+
+import { faker } from '@ttoss/test-utils/faker';
+
+import { getPackageName } from './packageJson';
+
 jest.mock('findup-sync', () => {
   return {
     __esModule: true,
@@ -11,14 +17,9 @@ jest.mock('fs', () => {
   };
 });
 
-import { faker } from '@ttoss/test-utils/faker';
-import { getPackageName } from './packageJson';
-import { readFileSync } from 'fs';
-
 const name = `@${faker.word.words()}/${faker.word.words()}`;
 
 beforeAll(() => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   (readFileSync as jest.Mock).mockReturnValue({
     toString: jest
       .fn()

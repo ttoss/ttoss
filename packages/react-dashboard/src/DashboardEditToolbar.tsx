@@ -1,4 +1,5 @@
 import { Drawer, Search } from '@ttoss/components';
+import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import { Box, Button, Flex, Input, Label, Text, useTheme } from '@ttoss/ui';
 import * as React from 'react';
 
@@ -11,11 +12,7 @@ import { useDashboard } from './DashboardProvider';
 import { DashboardSectionDivider } from './DashboardSectionDivider';
 
 export type CardCatalogGroup =
-  | 'sectionDivider'
-  | 'meta'
-  | 'oneclickads'
-  | 'api'
-  | 'oneclickads';
+  'sectionDivider' | 'meta' | 'oneclickads' | 'api' | 'oneclickads';
 
 const getCatalogGroup = (item: CardCatalogItem): CardCatalogGroup => {
   if (item.card.type === 'sectionDivider') return 'sectionDivider';
@@ -45,8 +42,48 @@ const GROUP_LABELS: Record<CardCatalogGroup, string> = {
   oneclickads: 'OneClickAds',
 };
 
+const messages = defineMessages({
+  edit: {
+    defaultMessage: 'Editar',
+    description: 'Dashboard toolbar: enters edit mode.',
+  },
+  addMetrics: {
+    defaultMessage: 'Adicionar Métricas',
+    description: 'Dashboard toolbar: opens the drawer for adding cards.',
+  },
+  save: {
+    defaultMessage: 'Salvar',
+    description: 'Dashboard toolbar: saves the current template.',
+  },
+  saveAsNewTemplate: {
+    defaultMessage: 'Salvar Novo Template',
+    description: 'Dashboard toolbar: saves the layout as a new template.',
+  },
+  cancelEdit: {
+    defaultMessage: 'Cancelar Edição',
+    description: 'Dashboard toolbar: leaves edit mode discarding changes.',
+  },
+  addMetricsTitle: {
+    defaultMessage: 'Adicionar métricas',
+    description: 'Add-card drawer: heading.',
+  },
+  addMetricsDescription: {
+    defaultMessage: 'Escolha a métrica para adicionar ao dashboard.',
+    description: 'Add-card drawer: explanation under the heading.',
+  },
+  templateTitleLabel: {
+    defaultMessage: 'Título do template',
+    description: 'Save-as-new drawer: label for the template name field.',
+  },
+  cancel: {
+    defaultMessage: 'Cancelar',
+    description: 'Save-as-new drawer: dismisses without saving.',
+  },
+});
+
 // eslint-disable-next-line max-lines-per-function, complexity
 export const DashboardEditToolbar = () => {
+  const { intl } = useI18n();
   const { theme } = useTheme();
   const {
     editable,
@@ -95,7 +132,7 @@ export const DashboardEditToolbar = () => {
     return (
       <Flex sx={{ gap: '3', alignItems: 'center' }}>
         <Button variant="primary" onClick={startEdit} rightIcon="lucide:pencil">
-          Editar
+          {intl.formatMessage(messages.edit)}
         </Button>
       </Flex>
     );
@@ -116,7 +153,7 @@ export const DashboardEditToolbar = () => {
           }}
           rightIcon="lucide:plus"
         >
-          Adicionar Métricas
+          {intl.formatMessage(messages.addMetrics)}
         </Button>
         {selectedTemplate?.editable && (
           <Button
@@ -124,7 +161,7 @@ export const DashboardEditToolbar = () => {
             onClick={saveEdit}
             rightIcon="lucide:save"
           >
-            Salvar
+            {intl.formatMessage(messages.save)}
           </Button>
         )}
         <Button
@@ -132,10 +169,10 @@ export const DashboardEditToolbar = () => {
           onClick={saveAsNew}
           rightIcon="lucide:copy-check"
         >
-          Salvar Novo Template
+          {intl.formatMessage(messages.saveAsNewTemplate)}
         </Button>
         <Button variant="secondary" onClick={cancelEdit} rightIcon="lucide:x">
-          Cancelar Edição
+          {intl.formatMessage(messages.cancelEdit)}
         </Button>
       </Flex>
 
@@ -168,10 +205,10 @@ export const DashboardEditToolbar = () => {
             }}
           >
             <Text sx={{ fontWeight: 'bold', fontSize: 'lg' }}>
-              Adicionar métricas
+              {intl.formatMessage(messages.addMetricsTitle)}
             </Text>
             <Text sx={{ color: 'text.muted', fontSize: 'sm' }}>
-              Escolha a métrica para adicionar ao dashboard.
+              {intl.formatMessage(messages.addMetricsDescription)}
             </Text>
             <Search
               key={addCardDrawerOpen ? 'open' : 'closed'}
@@ -281,7 +318,9 @@ export const DashboardEditToolbar = () => {
             height: '100%',
           }}
         >
-          <Label htmlFor="save-as-new-title">Título do template</Label>
+          <Label htmlFor="save-as-new-title">
+            {intl.formatMessage(messages.templateTitleLabel)}
+          </Label>
           <Box sx={{ flex: 1 }}>
             <Input
               id="save-as-new-title"
@@ -293,7 +332,7 @@ export const DashboardEditToolbar = () => {
           </Box>
           <Flex sx={{ gap: '3', justifyContent: 'flex-end' }}>
             <Button variant="secondary" onClick={cancelSaveAsNew}>
-              Cancelar
+              {intl.formatMessage(messages.cancel)}
             </Button>
             <Button
               variant="accent"
@@ -302,7 +341,7 @@ export const DashboardEditToolbar = () => {
                 confirmSaveAsNew(saveAsNewTitle);
               }}
             >
-              Salvar
+              {intl.formatMessage(messages.save)}
             </Button>
           </Flex>
         </Flex>

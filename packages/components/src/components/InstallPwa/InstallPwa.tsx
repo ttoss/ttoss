@@ -1,12 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as React from 'react';
+import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import { Button, Flex, Text } from '@ttoss/ui';
+import * as React from 'react';
 
 export type InstallPwaUiProps = {
   onInstall: React.MouseEventHandler<HTMLButtonElement>;
 };
 
+const messages = defineMessages({
+  prompt: {
+    defaultMessage: 'Deseja instalar o nosso aplicativo?',
+    description: 'PWA install banner: the question offering installation.',
+  },
+  install: {
+    defaultMessage: 'Instalar',
+    description: 'PWA install banner: button that starts the installation.',
+  },
+});
+
 export const InstallPwaUi = ({ onInstall }: InstallPwaUiProps) => {
+  const { intl } = useI18n();
+
   return (
     <Flex
       sx={{
@@ -29,8 +43,10 @@ export const InstallPwaUi = ({ onInstall }: InstallPwaUiProps) => {
           padding: 4,
         }}
       >
-        <Text>Deseja instalar o nosso aplicativo?</Text>
-        <Button onClick={onInstall}>Instalar</Button>
+        <Text>{intl.formatMessage(messages.prompt)}</Text>
+        <Button onClick={onInstall}>
+          {intl.formatMessage(messages.install)}
+        </Button>
       </Flex>
     </Flex>
   );

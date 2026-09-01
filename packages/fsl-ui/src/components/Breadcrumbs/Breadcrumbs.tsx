@@ -12,6 +12,12 @@ import type { ComponentMeta } from '../../semantics';
 import { FOCUS_RING_OFFSET, focusRingOutline } from '../../tokens/focusRing';
 import { resolveInteractiveStyle } from '../../tokens/resolveInteractiveStyle';
 
+/**
+ * Decoration between crumbs. Rendered inside an `aria-hidden` element, so it
+ * is a glyph rather than translatable copy.
+ */
+const CRUMB_SEPARATOR = '/';
+
 // ---------------------------------------------------------------------------
 // Semantic identity — Layer 1
 //
@@ -171,7 +177,7 @@ export const Breadcrumb = ({ href, children, ...props }: BreadcrumbProps) => {
                   userSelect: 'none',
                 }}
               >
-                /
+                {CRUMB_SEPARATOR}
               </span>
             )}
           </span>

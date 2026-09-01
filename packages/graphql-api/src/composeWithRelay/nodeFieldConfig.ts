@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { fromGlobalId } from '@ttoss/ids';
-import {
-  getProjectionFromAST,
+import type {
   InterfaceTypeComposer,
   ObjectTypeComposer,
   ObjectTypeComposerFieldConfigDefinition,
   Resolver,
 } from 'graphql-compose';
+import { getProjectionFromAST } from 'graphql-compose';
 import type { GraphQLResolveInfo } from 'graphql-compose/lib/graphql';
 
 export type TypeMapForRelayNode<TSource, TContext> = {
@@ -31,7 +31,7 @@ export const getNodeFieldConfig = (
         description: 'The globally unique ID among all types',
       },
     },
-    // eslint-disable-next-line max-params
+
     resolve: (
       source: any,
       args: { [argName: string]: any },

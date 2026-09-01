@@ -1,3 +1,4 @@
+import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import { Box, IconButton } from '@ttoss/ui';
 import type * as React from 'react';
 
@@ -8,10 +9,24 @@ import {
 } from './DashboardCard';
 import { DashboardSectionDivider } from './DashboardSectionDivider';
 
+const messages = defineMessages({
+  removeCard: {
+    defaultMessage: 'Remove card',
+    description: 'Accessible name for the button removing a dashboard card.',
+  },
+  dragCard: {
+    defaultMessage: 'Drag card',
+    description:
+      'Accessible name for the handle that reorders a dashboard card.',
+  },
+});
+
 export const RemoveCardButton = ({ onClick }: { onClick: () => void }) => {
+  const { intl } = useI18n();
+
   return (
     <IconButton
-      aria-label="Remove card"
+      aria-label={intl.formatMessage(messages.removeCard)}
       icon="close"
       onClick={onClick}
       sx={{
@@ -27,6 +42,8 @@ export const RemoveCardButton = ({ onClick }: { onClick: () => void }) => {
 };
 
 export const DragHandle = () => {
+  const { intl } = useI18n();
+
   return (
     <IconButton
       className="dashboard-card-drag-handle"
@@ -38,7 +55,7 @@ export const DragHandle = () => {
         cursor: 'grab',
         '&:active': { cursor: 'grabbing' },
       }}
-      aria-label="Drag card"
+      aria-label={intl.formatMessage(messages.dragCard)}
       icon="lucide:grip-vertical"
     />
   );

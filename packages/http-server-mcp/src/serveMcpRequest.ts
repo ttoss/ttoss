@@ -3,7 +3,6 @@ import {
   toNodeHandler,
 } from '@modelcontextprotocol/node';
 import type { McpServer } from '@modelcontextprotocol/server';
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports -- value imports required; both are called at runtime
 import {
   classifyInboundRequest,
   createMcpHandler,

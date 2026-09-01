@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import {
   FormField,
@@ -7,17 +6,10 @@ import {
   FormFieldRadio,
   yup,
 } from '@ttoss/forms';
-import { MultistepForm, MultistepFormProps } from '@ttoss/forms/multistep-form';
-import {
-  Flex,
-  Grid,
-  Image,
-  Label,
-  Link,
-  Radio,
-  Text,
-  ThemeUIStyleObject,
-} from '@ttoss/ui';
+import type { MultistepFormProps } from '@ttoss/forms/multistep-form';
+import { MultistepForm } from '@ttoss/forms/multistep-form';
+import type { ThemeUIStyleObject } from '@ttoss/ui';
+import { Flex, Grid, Image, Label, Link, Radio, Text } from '@ttoss/ui';
 import { action } from 'storybook/actions';
 
 const sxLinks: ThemeUIStyleObject = {

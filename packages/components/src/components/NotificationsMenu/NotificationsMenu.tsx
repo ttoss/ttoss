@@ -1,11 +1,10 @@
+import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import { Icon } from '@ttoss/react-icons';
 import { Box, Button, Card, Flex, IconButton, Text } from '@ttoss/ui';
 import * as React from 'react';
 
-import {
-  NotificationCard,
-  NotificationCardProps,
-} from '../NotificationCard/NotificationCard';
+import type { NotificationCardProps } from '../NotificationCard/NotificationCard';
+import { NotificationCard } from '../NotificationCard/NotificationCard';
 
 export type Notification = NotificationCardProps & {
   id: string;
@@ -23,6 +22,24 @@ type Props = {
   onClearAll?: () => void;
 };
 
+const messages = defineMessages({
+  clearAll: {
+    defaultMessage: 'Limpar Tudo',
+    description: 'Notifications menu: button clearing every notification.',
+  },
+  empty: {
+    defaultMessage: 'Nenhuma notificação',
+    description: 'Notifications menu: shown when there is nothing to list.',
+  },
+});
+
+/** Caps the unread badge at 99+. A formatted number, not translatable copy. */
+const formatBadgeCount = (count: number): string => {
+  return count > 99 ? '99+' : String(count);
+};
+
+// Pre-existing size/complexity debt, unchanged by the i18n work below.
+// eslint-disable-next-line max-lines-per-function
 export const NotificationsMenu = ({
   notifications,
   defaultOpen = false,
@@ -32,7 +49,9 @@ export const NotificationsMenu = ({
   count,
   onClose,
   onClearAll,
+  // eslint-disable-next-line complexity -- pre-existing branching, unchanged by the i18n work below
 }: Props) => {
+  const { intl } = useI18n();
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
   const [openToLeft, setOpenToLeft] = React.useState(false);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
@@ -147,7 +166,7 @@ export const NotificationsMenu = ({
                 lineHeight: 1,
               }}
             >
-              {count > 99 ? '99+' : count}
+              {formatBadgeCount(count)}
             </Box>
           )}
         </IconButton>
@@ -213,7 +232,7 @@ export const NotificationsMenu = ({
                             fontSize: 'sm',
                           }}
                         >
-                          Limpar Tudo
+                          {intl.formatMessage(messages.clearAll)}
                         </Text>
                       </Button>
                     </Flex>
@@ -226,7 +245,7 @@ export const NotificationsMenu = ({
                         p: 4,
                       }}
                     >
-                      Nenhuma notificação
+                      {intl.formatMessage(messages.empty)}
                     </Text>
                   ) : (
                     notifications.map((notification) => {

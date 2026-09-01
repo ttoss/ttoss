@@ -1,4 +1,3 @@
-/* eslint-disable formatjs/no-literal-string-in-jsx */
 import { Button } from '@chakra-ui/react';
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { Box, Flex } from '@ttoss/ui';

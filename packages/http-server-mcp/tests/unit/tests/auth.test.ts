@@ -638,6 +638,116 @@ describe('auth — public methods and RFC 9728 discovery', () => {
   });
 });
 
+describe('auth — resourceMetadataUrl default', () => {
+  const buildApp = (auth: Record<string, unknown>) => {
+    const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+    const app = new App();
+    app.use(bodyParser());
+    app.use(
+      createMcpRouter(mcpServer, {
+        auth: {
+          verifyToken: () => {
+            return Promise.reject(new Error('reject'));
+          },
+          publicMethods: [],
+          ...auth,
+        },
+      }).routes()
+    );
+    return app;
+  };
+
+  const post = (app: App) => {
+    return request(app.callback())
+      .post('/mcp')
+      .send(makeMcpRequest('initialize', initializeParams, 1))
+      .set('Content-Type', 'application/json')
+      .set('Accept', MCP_ACCEPT);
+  };
+
+  test('401 advertises the location this router actually serves', async () => {
+    const res = await post(
+      buildApp({
+        resourceServerUrl: 'https://mcp.example.com',
+        authorizationServerUrl: 'https://auth.example.com',
+      })
+    );
+
+    // Derived from resourceServerUrl + path, so the header cannot name a
+    // location the router does not serve.
+    expect(res.status).toBe(401);
+    expect(res.headers['www-authenticate']).toBe(
+      'Bearer resource_metadata="https://mcp.example.com/.well-known/oauth-protected-resource/mcp"'
+    );
+  });
+
+  test('an explicit resourceMetadataUrl still wins', async () => {
+    const res = await post(
+      buildApp({
+        resourceServerUrl: 'https://mcp.example.com',
+        authorizationServerUrl: 'https://auth.example.com',
+        resourceMetadataUrl: 'https://elsewhere.example.com/prm',
+      })
+    );
+
+    expect(res.headers['www-authenticate']).toBe(
+      'Bearer resource_metadata="https://elsewhere.example.com/prm"'
+    );
+  });
+
+  test('falls back to a bare Bearer when there is no resourceServerUrl to derive from', async () => {
+    const res = await post(buildApp({}));
+
+    expect(res.status).toBe(401);
+    expect(res.headers['www-authenticate']).toBe('Bearer');
+  });
+
+  test('carries the split-deployment config: oauthServer serves the document, this router only advertises it', async () => {
+    // Why `resourceMetadataUrl` cannot be folded into the derived default.
+    // When an `oauthServer({ resource })` in the same deployment already
+    // answers `/.well-known/oauth-protected-resource`, this router is mounted
+    // *without* resourceServerUrl/authorizationServerUrl so the two do not
+    // both claim that path — leaving it nothing to derive from. Dropping this
+    // field would make the 401 a bare `Bearer`, which never starts an MCP
+    // client's OAuth discovery.
+    const app = buildApp({
+      resourceMetadataUrl:
+        'https://mcp.example.com/.well-known/oauth-protected-resource/mcp',
+    });
+
+    const res = await post(app);
+    expect(res.status).toBe(401);
+    expect(res.headers['www-authenticate']).toBe(
+      'Bearer resource_metadata="https://mcp.example.com/.well-known/oauth-protected-resource/mcp"'
+    );
+
+    // And this router indeed serves no document of its own here.
+    const doc = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource/mcp'
+    );
+    expect(doc.status).toBe(404);
+  });
+
+  test('never advertises a location the router does not serve', async () => {
+    // The document needs both URLs, so the derived header needs both too:
+    // deriving it from `resourceServerUrl` alone advertised a 404.
+    const app = buildApp({
+      resourceServerUrl: 'https://mcp.example.com',
+      // authorizationServerUrl deliberately absent.
+    });
+
+    const res = await post(app);
+    expect(res.status).toBe(401);
+    expect(res.headers['www-authenticate']).toBe('Bearer');
+
+    // And the location a header would have named indeed has no route.
+    const doc = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource/mcp'
+    );
+    expect(doc.status).toBe(404);
+  });
+});
+
 describe('auth — OAuth Protected Resource metadata endpoint', () => {
   test('resource includes the MCP mount path so clients following resource land on the working endpoint', async () => {
     const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
@@ -743,6 +853,101 @@ describe('auth — OAuth Protected Resource metadata endpoint', () => {
     );
 
     expect(res.status).toBe(404);
+  });
+
+  test('serves the metadata at the RFC 9728 path-derived location too', async () => {
+    const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+    const app = new App();
+    app.use(bodyParser());
+    app.use(
+      createMcpRouter(mcpServer, {
+        auth: {
+          verifyToken: () => {
+            return Promise.resolve({ sub: 'u' });
+          },
+          resourceServerUrl: 'https://mcp.example.com',
+          authorizationServerUrl: 'https://auth.example.com',
+        },
+      }).routes()
+    );
+
+    // RFC 9728 §3.1: a client derives the metadata URL from the resource's
+    // path, so a resource of `https://host/mcp` is discovered here.
+    const derived = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource/mcp'
+    );
+
+    expect(derived.status).toBe(200);
+    expect(derived.body).toEqual({
+      resource: 'https://mcp.example.com/mcp',
+      authorization_servers: ['https://auth.example.com'],
+    });
+
+    // The root location keeps answering, identically, for clients that follow
+    // the `resource_metadata` value in `WWW-Authenticate` instead.
+    const root = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource'
+    );
+
+    expect(root.status).toBe(200);
+    expect(root.body).toEqual(derived.body);
+  });
+
+  test('path-derived location follows a custom, multi-segment path', async () => {
+    const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+    const app = new App();
+    app.use(bodyParser());
+    app.use(
+      createMcpRouter(mcpServer, {
+        path: '/api/mcp',
+        auth: {
+          verifyToken: () => {
+            return Promise.resolve({ sub: 'u' });
+          },
+          resourceServerUrl: 'https://mcp.example.com',
+          authorizationServerUrl: 'https://auth.example.com',
+        },
+      }).routes()
+    );
+
+    const res = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource/api/mcp'
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      resource: 'https://mcp.example.com/api/mcp',
+      authorization_servers: ['https://auth.example.com'],
+    });
+  });
+
+  test('the path-derived location is reachable without a token', async () => {
+    const mcpServer = new McpServer({ name: 'test', version: '1.0.0' });
+    const app = new App();
+    app.use(bodyParser());
+    app.use(
+      createMcpRouter(mcpServer, {
+        aliases: ['/'],
+        auth: {
+          verifyToken: () => {
+            return Promise.reject(new Error('always reject'));
+          },
+          publicMethods: [],
+          resourceServerUrl: 'https://mcp.example.com',
+          authorizationServerUrl: 'https://auth.example.com',
+        },
+      }).routes()
+    );
+
+    // Discovery precedes the token, so the auth middleware must not intercept
+    // it — including under `publicMethods: []`, where every JSON-RPC method
+    // requires one.
+    const res = await request(app.callback()).get(
+      '/.well-known/oauth-protected-resource/mcp'
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body.resource).toBe('https://mcp.example.com/mcp');
   });
 
   test('discovery endpoint is accessible without auth even when aliases include /', async () => {

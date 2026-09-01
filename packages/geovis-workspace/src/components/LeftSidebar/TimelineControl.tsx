@@ -167,6 +167,10 @@ const IntervalControl = ({
   seconds: number;
   onChange: (next: number) => void;
 }) => {
+  const {
+    intl: { formatMessage },
+  } = useI18n();
+
   return (
     <Flex
       sx={{
@@ -185,7 +189,7 @@ const IntervalControl = ({
           color: COLOR.textFaint,
         }}
       >
-        Intervalo de reprodução
+        {formatMessage(messages.timelineIntervalLabel)}
       </Text>
 
       <Flex sx={{ alignItems: 'center', gap: '6px' }}>
@@ -221,7 +225,7 @@ const IntervalControl = ({
             color: COLOR.textFaint,
           }}
         >
-          s
+          {formatMessage(messages.timelineIntervalUnit)}
         </Text>
       </Flex>
     </Flex>
