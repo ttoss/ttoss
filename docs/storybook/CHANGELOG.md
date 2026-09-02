@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.3.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@6.2.0...@docs/storybook@6.3.0) (2026-09-02)
+
+### Features
+
+- **geovis-workspace:** let a filters block hold a variations menu ([#1219](https://github.com/ttoss/ttoss/issues/1219)) ([5b6f195](https://github.com/ttoss/ttoss/commit/5b6f1952547e2f0c0b6034d8df5f650cebaf7496))
+
 # [6.2.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@6.1.2...@docs/storybook@6.2.0) (2026-09-01)
 
 ### Features
