@@ -429,6 +429,22 @@ describe('response headers options', () => {
   });
 });
 
+describe('redirect-to-trailing-slash option', () => {
+  test('should not redirect by default', async () => {
+    const argv = await parseCli('deploy static-app', {});
+    expect(argv.redirectToTrailingSlash).toEqual(false);
+  });
+
+  test('should accept redirect-to-trailing-slash option', async () => {
+    const argv = await parseCli(
+      'deploy static-app --cloudfront --append-index-html --redirect-to-trailing-slash',
+      {}
+    );
+
+    expect(argv.redirectToTrailingSlash).toEqual(true);
+  });
+});
+
 describe('viewer request function option', () => {
   test('should not define a viewer request function by default', async () => {
     const argv = await parseCli('deploy static-app', {});

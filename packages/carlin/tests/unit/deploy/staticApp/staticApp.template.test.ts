@@ -18,6 +18,8 @@ import {
 import {
   APPEND_INDEX_HTML_HELPER,
   FUNCTION_RUNTIME,
+  REDIRECT_TO_TRAILING_SLASH_FUNCTION_CODE,
+  REDIRECT_TO_TRAILING_SLASH_HELPER,
 } from 'src/deploy/staticApp/viewerRequestFunction';
 
 jest.mock('src/utils', () => {
@@ -312,7 +314,7 @@ describe('viewer request function', () => {
     ]);
   });
 
-  test('should inject the appendIndexHtml helper into the function code', () => {
+  test('should inject the helpers into the function code', () => {
     const template = getStaticAppTemplate({
       region,
       cloudfront: true,
@@ -322,7 +324,9 @@ describe('viewer request function', () => {
     expect(
       template.Resources[CLOUDFRONT_VIEWER_REQUEST_FUNCTION_LOGICAL_ID]
         .Properties?.FunctionCode
-    ).toEqual(`${APPEND_INDEX_HTML_HELPER}\n\n${viewerRequestFunctionCode}\n`);
+    ).toEqual(
+      `${APPEND_INDEX_HTML_HELPER}\n\n${REDIRECT_TO_TRAILING_SLASH_HELPER}\n\n${viewerRequestFunctionCode}\n`
+    );
   });
 
   /**
@@ -387,6 +391,79 @@ describe('viewer request function', () => {
         },
       },
     ]);
+  });
+});
+
+describe('redirect to trailing slash', () => {
+  const getFunctionAssociations = (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    template: any
+  ) => {
+    return template.Resources[CLOUDFRONT_DISTRIBUTION_LOGICAL_ID].Properties
+      .DistributionConfig.DefaultCacheBehavior.FunctionAssociations;
+  };
+
+  /**
+   * The shared base stack function is imported by ARN by every static app of
+   * the account, so redirecting this one cannot go through it.
+   */
+  test('should create a per app function instead of importing the shared one', () => {
+    const template = getStaticAppTemplate({
+      region,
+      cloudfront: true,
+      appendIndexHtml: true,
+      redirectToTrailingSlash: true,
+    });
+
+    const resource =
+      template.Resources[CLOUDFRONT_VIEWER_REQUEST_FUNCTION_LOGICAL_ID];
+
+    expect(resource.Type).toEqual('AWS::CloudFront::Function');
+    expect(resource.Properties?.FunctionCode).toEqual(
+      REDIRECT_TO_TRAILING_SLASH_FUNCTION_CODE
+    );
+
+    expect(getFunctionAssociations(template)).toEqual([
+      {
+        EventType: 'viewer-request',
+        FunctionARN: {
+          'Fn::GetAtt': [
+            CLOUDFRONT_VIEWER_REQUEST_FUNCTION_LOGICAL_ID,
+            'FunctionMetadata.FunctionARN',
+          ],
+        },
+      },
+    ]);
+
+    expect(JSON.stringify(template)).not.toContain(
+      BASE_STACK_CLOUDFRONT_FUNCTION_APPEND_INDEX_HTML_ARN_EXPORTED_NAME
+    );
+  });
+
+  test('should throw without appendIndexHtml', () => {
+    return expect(() => {
+      return getStaticAppTemplate({
+        region,
+        cloudfront: true,
+        redirectToTrailingSlash: true,
+      });
+    }).toThrow('requires the append-index-html option');
+  });
+
+  /**
+   * An extension-less URI of a SPA is a client route, so redirecting it would
+   * move every route of the app to a URL its router doesn't produce.
+   */
+  test('should throw with spa', () => {
+    return expect(() => {
+      return getStaticAppTemplate({
+        region,
+        cloudfront: true,
+        appendIndexHtml: true,
+        redirectToTrailingSlash: true,
+        spa: true,
+      });
+    }).toThrow('mutually exclusive');
   });
 });
 
