@@ -328,8 +328,19 @@ then: not on pause, the steppers, or each auto-advance tick),
 `chips` (`{ kind, menuId?, options, multiple?, defaultSelected? }` — with a
 `menuId` the active ids reach `selection[menuId]` joined by commas, `''` when
 none are active, which is both what the one-string-per-key selection holds and
-what a permalink needs; without one the selection stays visual-only), or
-`locator` (`{ kind, placeholder?, minChars?, options }`).
+what a permalink needs; without one the selection stays visual-only),
+`locator` (`{ kind, placeholder?, minChars?, options }`), or
+`variations` (`{ kind, menuId, variations, defaultValue?, closeOnSelect? }`).
+
+A `variations` **control** is the same menu a `variations` **body** renders —
+the same rows, the same shared selection, seeded the same way by
+`getInitialSelection` — but as a block rather than as a whole tab. That is the
+difference worth choosing between: a body is one menu per tab, so two menus cost
+the user a tab switch; as blocks, several menus stack in one tab, each under its
+own collapsible heading. Reach for the body when a tab belongs to one long menu,
+and for blocks when the menus are read together — an indicator and the age band
+it applies to, say. Both remain available, and a menu behaves identically either
+way, `enabledWhen` gates included.
 
 ### `GeovisWorkspaceRightSidebarState`
 

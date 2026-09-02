@@ -263,11 +263,48 @@ export interface GeovisWorkspaceSidebarLocatorFilter {
   options: GeovisWorkspaceSidebarLocatorOption[];
 }
 
+/**
+ * A variations control: one menu of variations driving `selection[menuId]`,
+ * rendered as the same rows the "Variações" tab uses.
+ *
+ * What this adds over {@link GeovisWorkspaceSidebarVariationsBody} is how many
+ * menus one tab can hold. A variations *body* is a single menu filling its tab —
+ * its `groups` share one `menuId` and flatten into one list — so two menus mean
+ * two tabs, and crossing between them costs a tab switch. As a filter *control*
+ * a menu becomes a block instead, and `filters` bodies stack blocks: several
+ * menus then share one tab, each under its own collapsible heading, exactly as
+ * the timeline and chips already do.
+ *
+ * Neither replaces the other. A tab given over to one long menu is still better
+ * as a body; menus read together — an indicator and the age band it applies to,
+ * say — are better as blocks.
+ */
+export interface GeovisWorkspaceSidebarVariationsFilter {
+  kind: 'variations';
+  /** Keys the shared selection this control drives (`selection[menuId]`). */
+  menuId: string;
+  /** The selectable variations, in the order they are rendered. */
+  variations: GeovisWorkspaceSidebarVariation[];
+  /**
+   * Variation selected on first render, seeded into the shared selection by
+   * `getInitialSelection` the same way a variations body's default is.
+   */
+  defaultValue?: string;
+  /**
+   * Closes the left sidebar right after a variation is picked. Defaults to
+   * `false`, and the default earns its keep here more than on a body: blocks
+   * sharing a tab are usually read together, so closing on the first pick would
+   * take the sibling menus away mid-decision.
+   */
+  closeOnSelect?: boolean;
+}
+
 /** A filter control, discriminated by `kind`. */
 export type GeovisWorkspaceSidebarFilterControl =
   | GeovisWorkspaceSidebarTimelineFilter
   | GeovisWorkspaceSidebarChipsFilter
-  | GeovisWorkspaceSidebarLocatorFilter;
+  | GeovisWorkspaceSidebarLocatorFilter
+  | GeovisWorkspaceSidebarVariationsFilter;
 
 /** A collapsible block wrapping one filter control. */
 export interface GeovisWorkspaceSidebarFilterBlock {
