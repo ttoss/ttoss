@@ -209,10 +209,15 @@ export const buildPolicyViolationSpec = (): VisualizationSpec => {
 export { sidebarPreviewConfig } from './GeovisWorkspace.sidebarPreview.fixture';
 
 /**
- * Multi-group variant: a single "Variações" tab whose 20+ variations are split
- * across six groups (Demografia, Renda, Saúde, …). The selection stays a single
- * value shared across every group; `defaultValue` ('renda-media') seeds it.
- * Picking any variation recolors the map.
+ * Two menus in one tab: an "Indicador" block with 30 variations and a "Faixa
+ * etária" block with three, both `variations` controls inside a single
+ * `filters` body.
+ *
+ * The point is the packaging, not the content. Declared as variations *bodies*
+ * these two menus would need a tab each, and comparing them would cost a tab
+ * switch; as blocks they stack in one tab, each collapsible under its own
+ * heading. Both drive the shared selection — `variable` picks the colour scale,
+ * `age` scales the metric — so the map reacts to either.
  */
 export const groupedWorkspaceConfig: GeovisWorkspaceConfig = {
   leftSidebar: {
@@ -222,91 +227,75 @@ export const groupedWorkspaceConfig: GeovisWorkspaceConfig = {
         id: 'variable',
         header: { title: 'Variações do mapa', icon: 'lucide:layout-list' },
         body: {
-          kind: 'variations',
-          menuId: 'variable',
-          defaultValue: 'renda-media',
-          defaultGroupId: 'renda',
-          groups: [
+          kind: 'filters',
+          blocks: [
             {
-              id: 'demografia',
-              label: 'Demografia',
+              // First on purpose: the short menu stays in view beside the long
+              // one, which is the whole thing this story has to show.
+              id: 'age',
+              title: 'Faixa etária',
               icon: 'lucide:users',
-              variations: [
-                { value: 'pop-total', label: 'População total' },
-                { value: 'densidade', label: 'Densidade demográfica' },
-                { value: 'faixa-etaria', label: 'Faixa etária' },
-                { value: 'crescimento', label: 'Crescimento populacional' },
-                { value: 'urbano-rural', label: 'Distribuição urbano/rural' },
-              ],
+              control: {
+                kind: 'variations',
+                menuId: 'age',
+                defaultValue: '65-plus',
+                variations: [
+                  { value: '65-plus', label: '65 anos ou mais' },
+                  { value: '70-plus', label: '70 anos ou mais' },
+                  { value: '75-plus', label: '75 anos ou mais' },
+                ],
+              },
             },
             {
-              id: 'renda',
-              label: 'Renda',
-              icon: 'lucide:dollar-sign',
-              variations: [
-                { value: 'renda-media', label: 'Renda média' },
-                { value: 'renda-mediana', label: 'Renda mediana' },
-                { value: 'gini', label: 'Índice de Gini' },
-                { value: 'pobreza', label: 'Taxa de pobreza' },
-                { value: 'informalidade', label: 'Informalidade' },
-              ],
-            },
-            {
-              id: 'saude',
-              label: 'Saúde',
-              icon: 'lucide:heart-pulse',
-              variations: [
-                { value: 'leitos', label: 'Leitos por mil hab.' },
-                {
-                  value: 'mortalidade-infantil',
-                  label: 'Mortalidade infantil',
-                },
-                {
-                  value: 'cobertura-aps',
-                  label: 'Cobertura de atenção básica',
-                },
-                { value: 'vacinacao', label: 'Cobertura vacinal' },
-                { value: 'expectativa', label: 'Expectativa de vida' },
-              ],
-            },
-            {
-              id: 'educacao',
-              label: 'Educação',
-              icon: 'lucide:graduation-cap',
-              variations: [
-                { value: 'alfabetizacao', label: 'Taxa de alfabetização' },
-                { value: 'ideb', label: 'IDEB' },
-                { value: 'evasao', label: 'Evasão escolar' },
-                {
-                  value: 'ensino-superior',
-                  label: 'Acesso ao ensino superior',
-                },
-                { value: 'matriculas', label: 'Matrículas por mil hab.' },
-              ],
-            },
-            {
-              id: 'trabalho',
-              label: 'Trabalho e emprego',
-              icon: 'lucide:briefcase',
-              variations: [
-                { value: 'desemprego', label: 'Taxa de desemprego' },
-                { value: 'ocupacao', label: 'Nível de ocupação' },
-                { value: 'carteira', label: 'Emprego com carteira' },
-                { value: 'rendimento', label: 'Rendimento do trabalho' },
-                { value: 'jornada', label: 'Jornada média' },
-              ],
-            },
-            {
-              id: 'habitacao',
-              label: 'Habitação',
-              icon: 'lucide:home',
-              variations: [
-                { value: 'deficit', label: 'Déficit habitacional' },
-                { value: 'saneamento', label: 'Acesso a saneamento' },
-                { value: 'agua', label: 'Abastecimento de água' },
-                { value: 'energia', label: 'Acesso à energia' },
-                { value: 'adensamento', label: 'Adensamento excessivo' },
-              ],
+              id: 'variable',
+              title: 'Indicador',
+              icon: 'lucide:layout-list',
+              control: {
+                kind: 'variations',
+                menuId: 'variable',
+                defaultValue: 'renda-media',
+                variations: [
+                  { value: 'pop-total', label: 'População total' },
+                  { value: 'densidade', label: 'Densidade demográfica' },
+                  { value: 'faixa-etaria', label: 'Faixa etária' },
+                  { value: 'crescimento', label: 'Crescimento populacional' },
+                  { value: 'urbano-rural', label: 'Distribuição urbano/rural' },
+                  { value: 'renda-media', label: 'Renda média' },
+                  { value: 'renda-mediana', label: 'Renda mediana' },
+                  { value: 'gini', label: 'Índice de Gini' },
+                  { value: 'pobreza', label: 'Taxa de pobreza' },
+                  { value: 'informalidade', label: 'Informalidade' },
+                  { value: 'leitos', label: 'Leitos por mil hab.' },
+                  {
+                    value: 'mortalidade-infantil',
+                    label: 'Mortalidade infantil',
+                  },
+                  {
+                    value: 'cobertura-aps',
+                    label: 'Cobertura de atenção básica',
+                  },
+                  { value: 'vacinacao', label: 'Cobertura vacinal' },
+                  { value: 'expectativa', label: 'Expectativa de vida' },
+                  { value: 'alfabetizacao', label: 'Taxa de alfabetização' },
+                  { value: 'ideb', label: 'IDEB' },
+                  { value: 'evasao', label: 'Evasão escolar' },
+                  {
+                    value: 'ensino-superior',
+                    label: 'Acesso ao ensino superior',
+                  },
+                  { value: 'matriculas', label: 'Matrículas por mil hab.' },
+                  { value: 'desemprego', label: 'Taxa de desemprego' },
+                  { value: 'ocupacao', label: 'Nível de ocupação' },
+                  { value: 'carteira', label: 'Emprego com carteira' },
+                  { value: 'rendimento', label: 'Rendimento do trabalho' },
+                  { value: 'jornada', label: 'Jornada média' },
+                  { value: 'deficit', label: 'Déficit habitacional' },
+                  { value: 'saneamento', label: 'Acesso a saneamento' },
+                  { value: 'agua', label: 'Abastecimento de água' },
+                  { value: 'energia', label: 'Acesso à energia' },
+                  { value: 'adensamento', label: 'Adensamento excessivo' },
+                ],
+              },
             },
           ],
         },

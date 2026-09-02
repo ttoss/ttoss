@@ -69,11 +69,14 @@ const findChips = (
 
 /**
  * Resolves a menu's effective value: the shared selection, falling back to the
- * `defaultValue` of the variations body that drives that menu.
+ * `defaultValue` of whichever declaration drives that menu — a variations body,
+ * or a variations control inside a `filters` body.
  *
  * The fallback is what keeps a gate stable on first paint — a consumer that
  * does not seed through `getInitialSelection` would otherwise read `undefined`
- * and flash every gated section as disabled before the first pick.
+ * and flash every gated section as disabled before the first pick. Both
+ * surfaces are searched so `enabledWhen` can gate on either kind of menu; a gate
+ * naming a menu declared as a block would otherwise never resolve.
  *
  * @param params.sections - The sidebar's sections.
  * @param params.selection - The shared selection.
@@ -96,6 +99,15 @@ export const resolveMenuValue = ({
 
   if (selected !== undefined) {
     return selected;
+  }
+
+  for (const { block } of findFilterBlocks(sections)) {
+    if (
+      block.control.kind === 'variations' &&
+      block.control.menuId === menuId
+    ) {
+      return block.control.defaultValue;
+    }
   }
 
   for (const section of sections) {
