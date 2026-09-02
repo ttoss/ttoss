@@ -11,9 +11,15 @@ import type {
   SetViewOptions,
   SpecPatch,
 } from '../../runtime/adapter';
+import { computeSourcesBbox } from '../../spec/bounds';
 import { applyMapDataPatchToSpec } from '../../spec/mapDataPatch';
-import type { MapData, VisualizationSpec } from '../../spec/types';
+import type {
+  GeoJSONBoundingBox,
+  MapData,
+  VisualizationSpec,
+} from '../../spec/types';
 import { applyBasemapLabelsVisibility } from './basemapLabels';
+import { attachFitToData } from './fitBoundsToData';
 import { toMaplibreLayer } from './layerTranslation';
 import { reapplyLegendDrivenFillPaint } from './legendFillPaint';
 import {
@@ -120,9 +126,53 @@ interface ViewState {
   map: maplibregl.Map;
   spec: VisualizationSpec;
   style: MapLibreStyle;
+  /** Bbox the "fit to data" auto-centering is currently attached to, or `null` when inactive. */
+  fitBbox: GeoJSONBoundingBox | null;
+  /** Detaches the currently-attached `attachFitToData` listeners, or `null` when none are attached. */
+  detachFit: (() => void) | null;
 }
 
 type ViewMap = Map<string, ViewState>;
+
+/**
+ * Auto-fit only fills in a camera the caller didn't ask for — an explicit
+ * `view.center`/`view.zoom` always wins, exactly like `syncMapView` already
+ * treats them as the source of truth once set.
+ */
+const hasExplicitView = (view: VisualizationSpec['view']): boolean => {
+  return view?.center !== undefined || view?.zoom !== undefined;
+};
+
+const bboxEqual = (
+  a: GeoJSONBoundingBox | null,
+  b: GeoJSONBoundingBox | null
+): boolean => {
+  if (a === b) return true;
+  if (!a || !b || a.length !== b.length) return false;
+  return a.every((value, index) => {
+    return value === b[index];
+  });
+};
+
+/**
+ * (Re)computes the data bbox for `spec` and, when it differs from
+ * `viewState.fitBbox`, detaches any previous auto-fit listeners and attaches
+ * fresh ones. A no-op when `spec.view` pins an explicit camera — auto-fit
+ * never overrides a caller-provided view — or when the bbox is unchanged
+ * (e.g. an unrelated `mapData` value update, which must never re-trigger a
+ * camera jump).
+ */
+const syncFitToData = (viewState: ViewState, spec: VisualizationSpec): void => {
+  const nextBbox = hasExplicitView(spec.view)
+    ? null
+    : computeSourcesBbox(spec.sources);
+  if (bboxEqual(viewState.fitBbox, nextBbox)) return;
+  viewState.detachFit?.();
+  viewState.fitBbox = nextBbox;
+  viewState.detachFit = nextBbox
+    ? attachFitToData(viewState.map, nextBbox)
+    : null;
+};
 
 const createMap = (
   spec: VisualizationSpec,
@@ -165,7 +215,15 @@ const mountView = (
   viewId: string
 ): MountedView => {
   const { map, style } = createMap(spec, container);
-  views.set(viewId, { map, spec, style });
+  const viewState: ViewState = {
+    map,
+    spec,
+    style,
+    fitBbox: null,
+    detachFit: null,
+  };
+  views.set(viewId, viewState);
+  syncFitToData(viewState, spec);
   map.on('load', () => {
     const viewState = views.get(viewId);
     if (!viewState) return;
@@ -185,6 +243,7 @@ const mountView = (
     destroy: () => {
       if (_removed) return;
       _removed = true;
+      viewState.detachFit?.();
       try {
         map.remove();
       } catch {
@@ -234,6 +293,7 @@ const updateView = (
   const previousSpec = viewState.spec;
   viewState.spec = spec;
   syncMapView(map, previousSpec.view, spec.view);
+  syncFitToData(viewState, spec);
 
   const onStyleReady = () => {
     const updated = views.get(viewId);
@@ -306,6 +366,7 @@ const applySetView = (map: maplibregl.Map, options: SetViewOptions): void => {
 
 const destroyAll = (views: ViewMap): void => {
   for (const viewState of views.values()) {
+    viewState.detachFit?.();
     try {
       viewState.map.remove();
     } catch {

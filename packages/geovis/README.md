@@ -74,6 +74,10 @@ Top-level spec object passed to `GeoVisProvider`.
 | `viewPresets`               | `ViewPreset[]`            |          | Named camera positions (`{ id, label?, view }`) `dispatch({ type: 'set-view-preset' })` can target by `id`. See [AI Action Surface](#ai-action-surface-dispatch).                                                                                                                                                                  |
 | `control`                   | `LayerControl`            |          | A floating layer-toggle panel, auto-mounted on the map. See [Layer Control](#layer-control).                                                                                                                                                                                                                                       |
 
+### Auto fit-to-data
+
+When `view.center` and `view.zoom` are both omitted, the MapLibre adapter automatically centers the camera on the bounding box of every `geojson` source's inline data (plus the corners of `image`/`video` sources), with a responsive padding of 6% of the container's own width/height on every side. This runs on mount and again whenever a source's geometry changes — never when only `mapData` (attribute values) changes, so the camera stays put while data is recolored or resized. Set `view.center`/`view.zoom` explicitly to opt out and take full manual control of the camera. Sources with no client-side geometry (`vector-tiles`, `raster-tiles`, `raster-dem`) and `geojson` sources whose `data` is a URL string are not considered — set `view` manually for those.
+
 ### `LegendSpec`
 
 Each entry in `spec.legends` (or `layer.legends`) defines one choropleth legend.
