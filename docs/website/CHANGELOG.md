@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.4.0](https://github.com/ttoss/ttoss/compare/@docs/website@7.3.2...@docs/website@7.4.0) (2026-09-02)
+
+### Features
+
+- **carlin:** add redirect-to-trailing-slash to static app deploys ([#1220](https://github.com/ttoss/ttoss/issues/1220)) ([7829480](https://github.com/ttoss/ttoss/commit/7829480a5470aa31a34075b440aed0008a9d4dc0))
+
 ## [7.3.2](https://github.com/ttoss/ttoss/compare/@docs/website@7.3.1...@docs/website@7.3.2) (2026-09-01)
 
 **Note:** Version bump only for package @docs/website
