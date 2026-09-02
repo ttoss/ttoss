@@ -134,6 +134,48 @@ single viewer request function, and this option associates the shared one carlin
 keeps in the base stack. A function of your own calls the `appendIndexHtml`
 helper instead.
 
+:::note
+On its own, this option answers `/docs/guide` and `/docs/guide/` with the same
+page, so every page of the site has a duplicate URL. Add
+[`--redirect-to-trailing-slash`](#--redirect-to-trailing-slash) to serve each
+page on a single URL.
+:::
+
+### --redirect-to-trailing-slash
+
+Answer an extension-less request URI with a `301` to its trailing slash form
+instead of serving the page on both.
+
+```bash
+carlin deploy static-app --cloudfront --append-index-html --redirect-to-trailing-slash
+```
+
+**Behavior**:
+
+- Request: `/docs/guide` → `301` to `/docs/guide/`, query string carried over
+- Request: `/docs/guide/` → Serves: `/docs/guide/index.html`
+- Request: `/assets/main.js` → Serves: `/assets/main.js`
+
+Without it both forms answer `200` with the same HTML, so search engines crawl
+and de-duplicate a twin of every page, inbound links split between two URLs, and
+a link written without the trailing slash works — which is what makes the
+mistake impossible to notice. The redirect closes all three: there is one URL
+per page, and the other form says so.
+
+The redirect is served by a CloudFront function carlin creates for this
+distribution, rather than by the shared one in the base stack that
+`--append-index-html` associates. That function is imported by every static app
+of the account, so redirecting through it would change the behavior of all of
+them on a version bump.
+
+**Requires**: `--append-index-html`. The redirect is a mode of the index
+appending — the trailing slash form it redirects to is still served by it.
+
+**Conflicts with**: `--spa`. An extension-less URI of a single page application
+is a client route rather than a directory, so redirecting `/user/profile` to
+`/user/profile/` would move every route of the app to a URL its router doesn't
+produce.
+
 ### --spa
 
 Enable Single Page Application (SPA) mode.
@@ -247,7 +289,9 @@ export default defineConfig({
 The file must declare a `function handler(event)`, which is the entry point
 CloudFront calls. carlin injects an `appendIndexHtml(request)` helper into the
 function, holding the same logic as [`--append-index-html`](#--append-index-html),
-so a site that needs both calls it where it belongs:
+and a `redirectToTrailingSlash(request)` helper holding that of
+[`--redirect-to-trailing-slash`](#--redirect-to-trailing-slash), so a site that
+needs both calls the one it wants where it belongs:
 
 ```javascript
 function handler(event) {
@@ -276,7 +320,7 @@ function reads.
 
 **Constraints**: CloudFront runs the code on the `cloudfront-js-2.0` runtime,
 with no network, filesystem, timers or dynamic evaluation, and no access to the
-request body. The composed function — your code plus the injected helper — must
+request body. The composed function — your code plus the injected helpers — must
 stay under 10 KB, which carlin checks before deploying.
 
 ### --skip-upload
@@ -349,6 +393,7 @@ pnpm build
 carlin deploy static-app \
   --cloudfront \
   --append-index-html \
+  --redirect-to-trailing-slash \
   --aliases docs.example.com \
   --acm arn:aws:acm:us-east-1:123456789012:certificate/abc123
 ```
