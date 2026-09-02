@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0](https://github.com/ttoss/ttoss/compare/carlin@2.3.0...carlin@2.4.0) (2026-09-02)
+
+### Features
+
+- **carlin:** add redirect-to-trailing-slash to static app deploys ([#1220](https://github.com/ttoss/ttoss/issues/1220)) ([7829480](https://github.com/ttoss/ttoss/commit/7829480a5470aa31a34075b440aed0008a9d4dc0))
+
 # [2.3.0](https://github.com/ttoss/ttoss/compare/carlin@2.2.2...carlin@2.3.0) (2026-08-31)
 
 ### Features
