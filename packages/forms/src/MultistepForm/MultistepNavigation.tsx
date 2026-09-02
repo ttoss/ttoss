@@ -1,3 +1,4 @@
+import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import { Icon } from '@ttoss/react-icons';
 import { Flex, Text } from '@ttoss/ui';
 
@@ -8,12 +9,22 @@ export type MultistepNavigationProps = {
   stepsLabel: string[];
 };
 
+const messages = defineMessages({
+  stepCounter: {
+    defaultMessage: '{current}/{total}',
+    description:
+      'Multistep form: position in the flow. Only the separator is translatable; both values are numbers.',
+  },
+});
+
 export const MultistepNavigation = ({
   amountOfSteps,
   currentStepNumber,
   onBack,
   stepsLabel,
 }: MultistepNavigationProps) => {
+  const { intl } = useI18n();
+
   return (
     <Flex
       sx={{
@@ -31,7 +42,10 @@ export const MultistepNavigation = ({
       </Flex>
 
       <Text sx={{ alignItems: 'center', color: '#ACADB7' }}>
-        {currentStepNumber}/{amountOfSteps}
+        {intl.formatMessage(messages.stepCounter, {
+          current: currentStepNumber,
+          total: amountOfSteps,
+        })}
       </Text>
     </Flex>
   );

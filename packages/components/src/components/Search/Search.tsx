@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { Input, type InputProps } from '@ttoss/ui';
 import { useDebounce } from '@ttoss/react-hooks';
+import { Input, type InputProps } from '@ttoss/ui';
+import * as React from 'react';
 
 export type SearchProps = Omit<InputProps, 'onChange'> & {
   loading?: boolean;

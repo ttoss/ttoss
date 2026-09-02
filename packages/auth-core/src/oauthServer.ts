@@ -11,6 +11,10 @@ import type {
   OAuthResponse,
   OAuthServerOptions,
 } from './oauthServerTypes';
+import {
+  protectedResourceMetadataDocument,
+  protectedResourceMetadataUrl,
+} from './protectedResourceMetadata';
 
 export * from './oauthServerTypes';
 
@@ -79,7 +83,6 @@ const redirectWithParams = (
 // Grant handlers
 // ---------------------------------------------------------------------------
 
-// eslint-disable-next-line complexity
 const handleAuthorizationCodeGrant = async (
   request: OAuthRequest,
   options: OAuthServerOptions
@@ -427,7 +430,10 @@ export const createOAuthHandlers = (
       }
       return {
         status: 200,
-        body: { resource, authorization_servers: [issuer] },
+        body: protectedResourceMetadataDocument({
+          resource,
+          authorizationServers: [issuer],
+        }),
       };
     },
 
@@ -461,19 +467,30 @@ export const createOAuthHandlers = (
  * resource, advertising the RFC 9728 resource-metadata URL so OAuth/MCP clients
  * can bootstrap discovery.
  *
+ * The URL comes from {@link protectedResourceMetadataUrl}, which applies
+ * RFC 9728 §3.1's derivation — the well-known segment goes **between** the
+ * host and the resource's path. A resource with no path is unaffected; one
+ * with a path previously produced `<resource>/.well-known/…`, a location the
+ * spec does not define and no server here serves.
+ *
  * @example
  * ```typescript
  * getWwwAuthenticateHeader({ resource: 'https://mcp.example.com' });
  * // => 'Bearer resource_metadata="https://mcp.example.com/.well-known/oauth-protected-resource"'
+ *
+ * getWwwAuthenticateHeader({ resource: 'https://mcp.example.com/mcp' });
+ * // => 'Bearer resource_metadata="https://mcp.example.com/.well-known/oauth-protected-resource/mcp"'
  * ```
  */
 export const getWwwAuthenticateHeader = (args: {
   /**
-   * The resource server URL. The metadata URL is derived as
-   * `<resource>/.well-known/oauth-protected-resource` per RFC 9728.
+   * The resource identifier. The metadata URL is derived from it per
+   * RFC 9728 §3.1.
    */
   resource: string;
 }): string => {
-  const metadataUrl = `${args.resource.replace(/\/$/, '')}/.well-known/oauth-protected-resource`;
+  const metadataUrl = protectedResourceMetadataUrl({
+    resource: args.resource,
+  });
   return `Bearer resource_metadata="${metadataUrl}"`;
 };

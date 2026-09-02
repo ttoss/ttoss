@@ -166,6 +166,22 @@ This is useful when you don't need to control the screen state externally. The `
 - `{ value: 'confirmSignUpWithCode', context: { email: string } }` - Code confirmation with email context
 - `{ value: 'confirmResetPassword', context: { email: string } }` - Password reset with email context
 
+### AuthSocialSignIn Component
+
+Renders one "Continue with …" button per federated identity provider. `Auth` renders it on the sign-in and sign-up screens when both `socialProviders` and `onSocialSignIn` are given — the component is exported for standalone use too.
+
+```tsx
+<Auth
+  onSignIn={onSignIn}
+  socialProviders={['Google', 'Facebook']}
+  onSocialSignIn={({ provider }) => {
+    return startFederatedSignIn(provider);
+  }}
+/>
+```
+
+`onSocialSignIn` receives `{ provider }` and is expected to hand off to the identity provider — this package is provider-agnostic and performs no redirect of its own. For Cognito, use `@ttoss/react-auth-cognito`, which wires it to Amplify's `signInWithRedirect`.
+
 ### useAuthScreen Hook
 
 Manages authentication screen state and transitions.

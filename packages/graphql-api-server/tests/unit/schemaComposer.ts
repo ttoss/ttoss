@@ -1,9 +1,6 @@
+import type { ResolverResolveParams } from '@ttoss/graphql-api';
+import { composeWithConnection, schemaComposer } from '@ttoss/graphql-api';
 import { GraphQLError } from 'graphql';
-import {
-  ResolverResolveParams,
-  composeWithConnection,
-  schemaComposer,
-} from '@ttoss/graphql-api';
 
 const AuthorTC = schemaComposer.createObjectTC({
   name: 'Author',
@@ -75,14 +72,14 @@ composeWithConnection(AuthorTC, {
     ID_ASC: {
       value: {},
       cursorFields: ['id'],
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars, max-params
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       beforeCursorQuery: (rawQuery, cursorData, resolveParams) => {
         if (!rawQuery.id) {
           rawQuery.id = {};
         }
         rawQuery.id.$lt = cursorData.id;
       },
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars, max-params
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       afterCursorQuery: (rawQuery, cursorData, resolveParams) => {
         if (!rawQuery.id) {
           rawQuery.id = {};

@@ -114,6 +114,9 @@ type TrendBadgeProps = {
 
 const TrendBadge = ({ trend, vsPreviousLabel }: TrendBadgeProps) => {
   const trendColors = getTrendColors(trend);
+  // Built outside JSX: a signed, formatted percentage, not translatable copy.
+  const trendText = `${trend.value > 0 ? '+' : ''}${trend.value.toFixed(1)}%`;
+
   return (
     <Flex sx={{ alignItems: 'center', gap: '1' }}>
       <Box
@@ -126,8 +129,7 @@ const TrendBadge = ({ trend, vsPreviousLabel }: TrendBadgeProps) => {
           borderRadius: 'sm',
         }}
       >
-        {trend.value > 0 ? '+' : ''}
-        {trend.value.toFixed(1)}%
+        {trendText}
       </Box>
       <Text
         sx={{

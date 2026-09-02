@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.2.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@6.1.2...@docs/storybook@6.2.0) (2026-09-01)
+
+### Features
+
+- **cloud-auth,react-auth:** add Google and Facebook sign-in ([#1214](https://github.com/ttoss/ttoss/issues/1214)) ([c593c06](https://github.com/ttoss/ttoss/commit/c593c063fbd6a60a66438c0f84d6ee299b0a5ed1))
+
+## [6.1.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@6.1.1...@docs/storybook@6.1.2) (2026-09-01)
+
+**Note:** Version bump only for package @docs/storybook
+
+## [6.1.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@6.1.0...@docs/storybook@6.1.1) (2026-09-01)
+
+**Note:** Version bump only for package @docs/storybook
+
+# [6.1.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@6.0.0...@docs/storybook@6.1.0) (2026-08-31)
+
+### Features
+
+- **eslint-config:** enforce the quality metrics ESLint can, drop the config that does nothing ([#1211](https://github.com/ttoss/ttoss/issues/1211)) ([5673a18](https://github.com/ttoss/ttoss/commit/5673a1817b104a403466d07ac2ecd589bc4ddd49)), closes [ttoss/i18n-cli#build-config](https://github.com/ttoss/i18n-cli/issues/build-config)
+
 # [6.0.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@5.2.0...@docs/storybook@6.0.0) (2026-08-22)
 
 - Feat/geovis workspace layout (#1201) ([22e2501](https://github.com/ttoss/ttoss/commit/22e2501eb886c16e303f23041b6cc5fa80512850)), closes [#1201](https://github.com/ttoss/ttoss/issues/1201)

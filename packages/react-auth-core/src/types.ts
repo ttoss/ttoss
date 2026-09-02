@@ -65,8 +65,18 @@ export type OnForgotPasswordResetPasswordInput = {
   newPassword: string;
 };
 
+export type SocialProvider = 'Google' | 'Facebook';
+
+export type OnSocialSignInInput = {
+  provider: SocialProvider;
+};
+
 // Handler function types
 export type OnSignIn = (input: OnSignInInput) => Promise<void> | void;
+
+export type OnSocialSignIn = (
+  input: OnSocialSignInInput
+) => Promise<void> | void;
 
 export type OnSignUp = (input: OnSignUpInput) => Promise<void> | void;
 

@@ -18,6 +18,7 @@ type AuthCardProps = {
   title: string;
   buttonLabel: string;
   extraButton?: React.ReactNode;
+  footer?: React.ReactNode;
   isValidForm?: boolean;
 };
 
@@ -26,6 +27,7 @@ export const AuthCard = ({
   title,
   buttonLabel,
   extraButton,
+  footer,
   isValidForm,
 }: AuthCardProps) => {
   const { logo } = React.useContext(LogoContext);
@@ -86,6 +88,7 @@ export const AuthCard = ({
           </Button>
           {extraButton}
         </Flex>
+        {footer}
       </Flex>
     </Box>
   );

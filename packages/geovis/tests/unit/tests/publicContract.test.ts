@@ -28,6 +28,10 @@ test('package exports expected public symbols', () => {
   expect(typeof geovis.validateSpec).toBe('function');
   expect(typeof geovis.useMapData).toBe('function');
   expect(typeof geovis.GeoVisLayerControl).toBe('function');
+  // Shared compact breakpoint: consumers branch on the same width the map's own
+  // overlays collapse at, rather than each picking one.
+  expect(typeof geovis.useCompactViewport).toBe('function');
+  expect(geovis.COMPACT_BREAKPOINT_PX).toBe(640);
   // Boundary group factory and helpers
   expect(typeof geovis.createBoundaryGroup).toBe('function');
   expect(typeof geovis.appendBoundaryGroup).toBe('function');

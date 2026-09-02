@@ -1,7 +1,9 @@
+import { useI18n } from '@ttoss/react-i18n';
 import { Icon } from '@ttoss/react-icons';
 import { Box, Flex } from '@ttoss/ui';
 
 import type { GeovisWorkspaceSidebarChipsFilter } from '../../context/GeovisWorkspaceContext';
+import { messages } from '../../messages';
 import { COLOR } from './theme';
 
 type ChipOption = GeovisWorkspaceSidebarChipsFilter['options'][number];
@@ -76,6 +78,9 @@ export const ChipsControl = ({
   onToggle: (id: string) => void;
   onClear: () => void;
 }) => {
+  const {
+    intl: { formatMessage },
+  } = useI18n();
   const { options } = control;
 
   return (
@@ -115,7 +120,7 @@ export const ChipsControl = ({
           }}
         >
           <Icon icon="lucide:x" style={{ fontSize: '10px' }} />
-          Limpar {selected.length} filtro{selected.length > 1 ? 's' : ''}
+          {formatMessage(messages.clearFilters, { count: selected.length })}
         </Box>
       ) : null}
     </Box>

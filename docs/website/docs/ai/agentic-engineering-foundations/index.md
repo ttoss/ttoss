@@ -31,7 +31,6 @@ flowchart TB
     end
     subgraph Understand
         U["Understandability"]
-        CA["Context Availability"]
     end
     subgraph Contain
         R["Reversibility"]
@@ -43,11 +42,10 @@ flowchart TB
 
 - **[Executable Intent](/docs/ai/agentic-engineering-foundations/executable-intent)** — requirements exist as verifiable constraints, not conversations.
 - **[Testability](/docs/ai/agentic-engineering-foundations/testability)** — changes can be verified cheaply, quickly, and deterministically.
-- **[Understandability](/docs/ai/agentic-engineering-foundations/understandability)** — the codebase is legible to humans and agents alike.
-- **[Context Availability](/docs/ai/agentic-engineering-foundations/context-availability)** — decisions and constraints live in artifacts agents can consume.
+- **[Understandability](/docs/ai/agentic-engineering-foundations/understandability)** — the code and the decisions behind it are legible to humans and agents alike.
 - **[Observability](/docs/ai/agentic-engineering-foundations/observability)** — systems fail loudly and explain their runtime behavior.
 - **[Reversibility](/docs/ai/agentic-engineering-foundations/reversibility)** — any change can be undone cheaply and quickly.
-- **[Deterministic Guardrails](/docs/ai/agentic-engineering-foundations/deterministic-guardrails)** — probabilistic execution is bounded by deterministic systems.
+- **[Deterministic Guardrails](/docs/ai/agentic-engineering-foundations/deterministic-guardrails)** — agent authority and blast radius are bounded by systems that cannot be persuaded.
 
 ## What This Means for Engineering Teams
 

@@ -1,4 +1,3 @@
-/* eslint-disable formatjs/no-literal-string-in-jsx */
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import type { NavListItem, Notification } from '@ttoss/components';
 import { NavList, NotificationsMenu } from '@ttoss/components';

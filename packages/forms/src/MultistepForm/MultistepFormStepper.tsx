@@ -1,11 +1,10 @@
 import { Button } from '@ttoss/ui';
-import * as React from 'react';
+import type * as React from 'react';
 
-import { Form, useForm, yup, yupResolver } from '../';
-import {
-  MultistepFlowMessage,
-  MultistepFlowMessageProps,
-} from './MultistepFlowMessage';
+import type { yup } from '../';
+import { Form, useForm, yupResolver } from '../';
+import type { MultistepFlowMessageProps } from './MultistepFlowMessage';
+import { MultistepFlowMessage } from './MultistepFlowMessage';
 import { MultistepQuestion } from './MultistepQuestion';
 
 export type MultistepFormStepperProps = {
@@ -40,6 +39,10 @@ export const MultistepFormStepper = ({
     defaultValues,
   });
 
+  // Built outside JSX: an automation hook keyed on the step index, not
+  // user-facing copy.
+  const stepButtonHandle = `btn-step-${stepNumber}`;
+
   return (
     <Form
       {...formMethods}
@@ -61,7 +64,7 @@ export const MultistepFormStepper = ({
           marginX: '6',
         }}
         rightIcon={isLastStep ? undefined : 'nav-right'}
-        aria-label={`btn-step-${stepNumber}`}
+        aria-label={stepButtonHandle}
         type="submit"
       >
         {submitLabel}

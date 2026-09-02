@@ -46,6 +46,10 @@ const buildRepairButtonSpecs = (
 
 /** Monospace reference to the issue's location in the spec. */
 const IssueSubject = ({ subject }: { subject: GeoVisIssue['subject'] }) => {
+  // Built outside JSX: punctuation around a spec identifier in a monospace
+  // code element, not translatable copy.
+  const idSuffix = subject.id ? ` (${subject.id})` : '';
+
   return (
     <Text
       as="code"
@@ -56,7 +60,7 @@ const IssueSubject = ({ subject }: { subject: GeoVisIssue['subject'] }) => {
       }}
     >
       {subject.path}
-      {subject.id ? ` (${subject.id})` : ''}
+      {idSuffix}
     </Text>
   );
 };

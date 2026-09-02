@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable jest/no-mocks-import */
+
+import { toGlobalId } from '@ttoss/ids';
+import { ObjectTypeComposer, schemaComposer } from 'graphql-compose';
 import {
+  graphql,
   GraphQLInterfaceType,
   GraphQLNonNull,
   GraphQLSchema,
-  graphql,
 } from 'graphql-compose/lib/graphql';
-import { ObjectTypeComposer, schemaComposer } from 'graphql-compose';
-import { UserTC } from './__mocks__/UserTC';
 import { composeWithRelay } from 'src/index';
-import { toGlobalId } from '@ttoss/ids';
+
+import { UserTC } from './__mocks__/UserTC';
 
 describe('composeWithRelay', () => {
   const userComposer = composeWithRelay(UserTC);

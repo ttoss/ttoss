@@ -68,6 +68,23 @@ const config: Config = {
             to: '/docs/ai/agentic-development-principles',
             from: '/docs/product/product-development/agentic-development-principles',
           },
+          {
+            to: '/docs/ai/agentic-engineering-foundations/understandability',
+            from: '/docs/ai/agentic-engineering-foundations/context-availability',
+          },
+          {
+            to: '/docs/engineering',
+            from: [
+              '/docs/engineering/onboarding',
+              '/docs/engineering/technologies',
+              '/docs/engineering/career',
+              '/docs/engineering/career/culture',
+              '/docs/engineering/career/roles',
+              '/docs/engineering/proposals',
+              '/docs/engineering/proposals/monorepo',
+              '/docs/engineering/proposals/tests-folder',
+            ],
+          },
         ],
       },
     ],

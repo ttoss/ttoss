@@ -66,6 +66,33 @@ export const messages = defineMessages({
     description:
       'Accessible label for the arrow that scrolls the grouped-menu carousel to later groups.',
   },
+  clearFilters: {
+    defaultMessage: 'Limpar {count, plural, one {# filtro} other {# filtros}}',
+    description:
+      'Chips filter: action clearing the selected chips, counting them.',
+  },
+  locatorSelected: {
+    defaultMessage: 'Selecionado',
+    description: 'Locator filter: heading above the currently selected place.',
+  },
+  locatorZoomTo: {
+    defaultMessage: 'Zoom em {label}',
+    description: 'Locator filter: action zooming the map to the chosen place.',
+  },
+  locatorPlaceholder: {
+    defaultMessage: 'Selecione um município',
+    description:
+      'Locator filter: zoom action label while nothing is selected yet.',
+  },
+  timelineIntervalLabel: {
+    defaultMessage: 'Intervalo de reprodução',
+    description: 'Timeline filter: label for the playback interval input.',
+  },
+  timelineIntervalUnit: {
+    defaultMessage: 's',
+    description:
+      'Timeline filter: seconds unit shown after the playback interval. Abbreviated.',
+  },
   play: {
     defaultMessage: 'Play',
     description:
@@ -75,5 +102,25 @@ export const messages = defineMessages({
     defaultMessage: 'Pause',
     description:
       'Label for the timeline button that stops the auto-advancing value in the preview sidebar.',
+  },
+  timelineHudCount: {
+    defaultMessage: '{count} rec.',
+    description:
+      'Abbreviated record count beside the current value in the compact timeline bar anchored to the map.',
+  },
+  timelineHudClose: {
+    defaultMessage: 'Close timeline',
+    description:
+      'Accessible label for the button that dismisses the compact timeline bar anchored to the map.',
+  },
+  timelineHudPrevious: {
+    defaultMessage: 'Previous step',
+    description:
+      'Accessible label for the back stepper in the compact timeline bar anchored to the map.',
+  },
+  timelineHudNext: {
+    defaultMessage: 'Next step',
+    description:
+      'Accessible label for the forward stepper in the compact timeline bar anchored to the map.',
   },
 });

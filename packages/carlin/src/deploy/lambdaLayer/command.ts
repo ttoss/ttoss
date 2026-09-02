@@ -1,6 +1,5 @@
-/* eslint-disable no-param-reassign */
 import log from 'npmlog';
-import { CommandModule, InferredOptionTypes } from 'yargs';
+import type { CommandModule, InferredOptionTypes } from 'yargs';
 
 import { NAME } from '../../config';
 import { addGroupToOptions } from '../../utils';

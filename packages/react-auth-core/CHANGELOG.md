@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.6.0...@ttoss/react-auth-core@0.7.0) (2026-09-01)
+
+### Features
+
+- **cloud-auth,react-auth:** add Google and Facebook sign-in ([#1214](https://github.com/ttoss/ttoss/issues/1214)) ([c593c06](https://github.com/ttoss/ttoss/commit/c593c063fbd6a60a66438c0f84d6ee299b0a5ed1))
+
+# 0.6.0 (2026-08-31)
+
+### Features
+
+- **eslint-config:** enforce the quality metrics ESLint can, drop the config that does nothing ([#1211](https://github.com/ttoss/ttoss/issues/1211)) ([5673a18](https://github.com/ttoss/ttoss/commit/5673a1817b104a403466d07ac2ecd589bc4ddd49)), closes [ttoss/i18n-cli#build-config](https://github.com/ttoss/i18n-cli/issues/build-config)
+
 ## [0.5.4](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.5.3...@ttoss/react-auth-core@0.5.4) (2026-06-28)
 
 **Note:** Version bump only for package @ttoss/react-auth-core

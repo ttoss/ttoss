@@ -60,15 +60,29 @@ export interface GeovisWorkspaceProviderProps {
    * closed. Pair it with `isRightSidebarOpen` to control the open state.
    */
   onRightSidebarOpenChange?: (open: boolean) => void;
+  /**
+   * Whether the compact timeline HUD is showing. Decided by `GeovisWorkspace`,
+   * which needs the same flag to lift the map's layer control clear of the bar.
+   * Defaults to `false`, so the provider is usable standalone.
+   */
+  isTimelineHudVisible?: boolean;
+  /** Called when timeline playback begins — what arms the HUD. */
+  onPlaybackStart?: () => void;
+  /** Called when the HUD's close button is pressed. */
+  onTimelineHudDismiss?: () => void;
 }
 
 /**
- * Builds the initial selection from the left sidebar's `variations` sections:
- * each seeds `selection[menuId]` with its `defaultValue`. Timeline filters are
- * intentionally NOT seeded here — `useTimeline` publishes a timeline's default
- * to the shared selection on mount, so seeding it here would suppress that
- * publish and leave uncontrolled consumers unaware of the initial value.
- * Use it to seed the parent's selection state when controlling the workspace.
+ * Builds the initial selection from every menu the left sidebar declares: a
+ * `variations` section body, and a `variations` control inside a `filters`
+ * body. Each seeds `selection[menuId]` with its `defaultValue`, so a menu is
+ * seeded the same way whichever of the two surfaces it is declared on.
+ *
+ * Timeline filters are intentionally NOT seeded here — `useTimeline` publishes a
+ * timeline's default to the shared selection on mount, so seeding it here would
+ * suppress that publish and leave uncontrolled consumers unaware of the initial
+ * value. Use it to seed the parent's selection state when controlling the
+ * workspace.
  */
 export const getInitialSelection = ({
   config,
@@ -82,6 +96,13 @@ export const getInitialSelection = ({
 
     if (body.kind === 'variations') {
       selection[body.menuId] = body.defaultValue;
+      continue;
+    }
+
+    for (const block of body.blocks) {
+      if (block.control.kind === 'variations') {
+        selection[block.control.menuId] = block.control.defaultValue;
+      }
     }
   }
 
@@ -104,6 +125,9 @@ export const GeovisWorkspaceProvider = ({
   onLeftSidebarOpenChange,
   isRightSidebarOpen: rightSidebarOpenProp,
   onRightSidebarOpenChange,
+  isTimelineHudVisible = false,
+  onPlaybackStart,
+  onTimelineHudDismiss,
 }: GeovisWorkspaceProviderProps) => {
   const isControlled = selection !== undefined;
 
@@ -172,6 +196,14 @@ export const GeovisWorkspaceProvider = ({
     [isRightControlled, onRightSidebarOpenChange]
   );
 
+  const notifyPlaybackStart = React.useCallback(() => {
+    onPlaybackStart?.();
+  }, [onPlaybackStart]);
+
+  const dismissTimelineHud = React.useCallback(() => {
+    onTimelineHudDismiss?.();
+  }, [onTimelineHudDismiss]);
+
   const value = React.useMemo(() => {
     return {
       config,
@@ -181,6 +213,9 @@ export const GeovisWorkspaceProvider = ({
       setLeftSidebarOpen,
       isRightSidebarOpen,
       setRightSidebarOpen,
+      isTimelineHudVisible,
+      dismissTimelineHud,
+      notifyPlaybackStart,
       onRepair,
       hasResolvedOnce,
     };
@@ -192,6 +227,9 @@ export const GeovisWorkspaceProvider = ({
     setLeftSidebarOpen,
     isRightSidebarOpen,
     setRightSidebarOpen,
+    isTimelineHudVisible,
+    dismissTimelineHud,
+    notifyPlaybackStart,
     onRepair,
     hasResolvedOnce,
   ]);

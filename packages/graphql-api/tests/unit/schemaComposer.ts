@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { fromGlobalId, toGlobalId } from '@ttoss/ids';
+
+import type { ResolverResolveParams } from '../../src';
 import {
-  ResolverResolveParams,
   composeWithConnection,
   composeWithRelay,
   schemaComposer,
 } from '../../src';
-import { fromGlobalId, toGlobalId } from '@ttoss/ids';
 
 type Book = {
   id: string;
@@ -185,14 +186,14 @@ composeWithConnection(AuthorTC, {
         scanIndexForward: true,
       },
       cursorFields: ['id'],
-      // eslint-disable-next-line max-params, @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       beforeCursorQuery: (rawQuery, cursorData, resolveParams) => {
         if (!rawQuery.id) {
           rawQuery.id = {};
         }
         rawQuery.id.$lt = cursorData.id;
       },
-      // eslint-disable-next-line max-params, @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       afterCursorQuery: (rawQuery, cursorData, resolveParams) => {
         if (!rawQuery.id) {
           rawQuery.id = {};
@@ -280,14 +281,14 @@ composeWithConnection(BookTC, {
     ASC: {
       value: {},
       cursorFields: ['id'],
-      // eslint-disable-next-line max-params, @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       beforeCursorQuery: (rawQuery, cursorData, resolveParams) => {
         if (!rawQuery.id) {
           rawQuery.id = {};
         }
         rawQuery.id.$lt = cursorData.id;
       },
-      // eslint-disable-next-line max-params, @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       afterCursorQuery: (rawQuery, cursorData, resolveParams) => {
         if (!rawQuery.id) {
           rawQuery.id = {};

@@ -109,6 +109,12 @@ export {
   type CreatePostgresConsentStoreOptions,
 } from './postgresConsentStore';
 export {
+  type ProtectedResourceMetadata,
+  protectedResourceMetadataDocument,
+  protectedResourceMetadataPaths,
+  protectedResourceMetadataUrl,
+} from './protectedResourceMetadata';
+export {
   type ClientDisplay,
   type ConsentGrant,
   type ConsentGrantStore,

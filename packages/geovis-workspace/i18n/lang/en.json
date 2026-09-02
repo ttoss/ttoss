@@ -1,4 +1,8 @@
 {
+  "+YBKEN": {
+    "defaultMessage": "Next step",
+    "description": "Accessible label for the forward stepper in the compact timeline bar anchored to the map."
+  },
   "+cy6i0": {
     "defaultMessage": "Two map data entries declare the same dimension for the same source.",
     "description": "Warnings panel: mapData color/size dimension collides."
@@ -14,6 +18,10 @@
   "0tNse0": {
     "defaultMessage": "Dismiss selection",
     "description": "Accessible label for the button that clears the inspector panel selection."
+  },
+  "1DwZsQ": {
+    "defaultMessage": "s",
+    "description": "Timeline filter: seconds unit shown after the playback interval. Abbreviated."
   },
   "26nzWk": {
     "defaultMessage": "Map could not be shown",
@@ -42,6 +50,14 @@
   "AVBgd7": {
     "defaultMessage": "Two sources conflict with each other.",
     "description": "Warnings panel: two sources declare overlapping scope."
+  },
+  "BJLxvK": {
+    "defaultMessage": "Close timeline",
+    "description": "Accessible label for the button that dismisses the compact timeline bar anchored to the map."
+  },
+  "BWeqQA": {
+    "defaultMessage": "Selecionado",
+    "description": "Locator filter: heading above the currently selected place."
   },
   "IU+fm9": {
     "defaultMessage": "Open details",
@@ -87,9 +103,21 @@
     "defaultMessage": "Play",
     "description": "Label for the timeline button that auto-advances the current value in the preview sidebar."
   },
+  "UKeLzU": {
+    "defaultMessage": "Zoom em {label}",
+    "description": "Locator filter: action zooming the map to the chosen place."
+  },
   "V3z2n/": {
     "defaultMessage": "The size mode configuration is invalid.",
     "description": "Warnings panel: sizeBy.mode is malformed."
+  },
+  "Vd+Q3o": {
+    "defaultMessage": "{count} rec.",
+    "description": "Abbreviated record count beside the current value in the compact timeline bar anchored to the map."
+  },
+  "YQPd8E": {
+    "defaultMessage": "Limpar {count, plural, one {# filtro} other {# filtros}}",
+    "description": "Chips filter: action clearing the selected chips, counting them."
   },
   "Z+sHcw": {
     "defaultMessage": "{count, plural, one {# source} other {# sources}}",
@@ -131,9 +159,17 @@
     "defaultMessage": "Close menu",
     "description": "Accessible label for the button that closes the left sidebar."
   },
+  "oeivQo": {
+    "defaultMessage": "Previous step",
+    "description": "Accessible label for the back stepper in the compact timeline bar anchored to the map."
+  },
   "s0Ww26": {
     "defaultMessage": "Map type: {map_type}",
     "description": "Metadata panel: the spec's mapType, when set."
+  },
+  "ssMheo": {
+    "defaultMessage": "Intervalo de reprodução",
+    "description": "Timeline filter: label for the playback interval input."
   },
   "uzIIpa": {
     "defaultMessage": "This layer type is not supported.",
@@ -142,5 +178,9 @@
   "yb6iwx": {
     "defaultMessage": "The visualization spec targets an unsupported schema version.",
     "description": "Warnings panel: spec.schemaVersion is not supported."
+  },
+  "ymdThy": {
+    "defaultMessage": "Selecione um município",
+    "description": "Locator filter: zoom action label while nothing is selected yet."
   }
 }

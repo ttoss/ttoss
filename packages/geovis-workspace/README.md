@@ -100,8 +100,8 @@ current selection anywhere inside the workspace with `useGeovisWorkspace()`.
 ## Left sidebar
 
 The left sidebar renders as a card with an icon **tab bar** — one tab per
-`leftSidebar.sections` entry — a header mirroring the active tab, the active
-tab's body, and a footer. Each section's `body` is one of two kinds:
+`leftSidebar.sections` entry — a header mirroring the active tab, and the active
+tab's body. Each section's `body` is one of two kinds:
 
 - **`variations`** — a flat list of selectable rows (grouped only for ordering)
   that drive the shared selection (`selection[menuId]`), recoloring the map.
@@ -111,9 +111,36 @@ tab's body, and a footer. Each section's `body` is one of two kinds:
   (visual-only toggle chips whose active count shows as a tab badge), or a
   **locator** (visual-only search box).
 
+A kind describes a body, not a tab, so several sections may carry `filters` —
+put the timeline in a tab of its own beside a tab holding the remaining
+controls, and each gets its own header, its own `enabledWhen` gate, and (for the
+timeline) a HUD scoped to it. Each tab renders only the blocks it declares.
+
+Two controls stay singular across the whole sidebar, wherever they are declared:
+the **timeline**, whose state is lifted above both surfaces that drive it (the
+sidebar control and the HUD), and the **chips**, whose selection is lifted so a
+tab can badge its count. Declare more than one of either and the first wins.
+
 A `timeline` that declares a `menuId` publishes its `defaultValue ?? min` to the
 shared selection on mount, so an uncontrolled parent learns the initial value
 without moving the slider.
+
+Below the 640px breakpoint a timeline also gets a **HUD**: a control bar anchored
+to the bottom of the map, carrying the current value, a 3px rule marking where in
+the range playback sits, and prev / play-pause / next at touch size. No
+configuration turns it on — declaring a timeline is enough, and the rule is
+derived from `min`/`max`/`step`, so it draws with or without `histogram` (only
+the record count beside the value needs that data). It appears once play has been pressed and the
+sidebar is closed, which is what `closeOnPlay` produces: play would otherwise
+take the pause button away with the sidebar and leave the time-lapse running
+unattended. It survives pausing (so play can resume from it), hides while the
+sidebar is open, and can be dismissed until the next play. Above the breakpoint
+it never renders, since the sidebar's own control never leaves the screen.
+
+While the bar shows, the map's layer control is lifted clear of it by setting
+`control.offset.y` — the same mechanism that pushes the control sideways past an
+open sidebar, so the two compose. The compact legend panel rises with it for
+free: GeoVis anchors that panel off the control's own gap.
 
 ## Slots
 
@@ -285,14 +312,35 @@ breaking.
 | `body`   | `variations` \| `filters`                       | The section's content, discriminated by `kind`. |
 
 A **`variations`** body (`kind: 'variations'`) has a `menuId` (the selection
-key it drives), an optional `defaultValue`, and `groups` — each group
+key it drives), an optional `defaultValue`, an optional `closeOnSelect`, and
+`groups` — each group
 `{ id, label, icon?, color?, variations: [{ value, label, icon? }] }`; the
-groups are flattened into one ordered list. A **`filters`** body
+groups are flattened into one ordered list. `closeOnSelect` closes the sidebar
+as soon as a variation is picked, so the map it just recolored is visible
+without a second tap; it lives on the body, not on `leftSidebar`, because a
+`filters` section's timeline writes to the selection on every auto-advance tick
+and must not close anything. A **`filters`** body
 (`kind: 'filters'`) has `blocks` — each block
 `{ id, title, icon?, defaultOpen?, control }`, where `control` is a `timeline`
-(`{ kind, menuId?, min, max, step?, defaultValue?, histogram?, unitLabel? }`),
-`chips` (`{ kind, options, multiple?, defaultSelected? }`), or `locator`
-(`{ kind, placeholder?, minChars?, options }`).
+(`{ kind, menuId?, min, max, step?, defaultValue?, histogram?, unitLabel?, closeOnPlay? }`
+— `closeOnPlay` clears the sidebar off the map when playback starts, and only
+then: not on pause, the steppers, or each auto-advance tick),
+`chips` (`{ kind, menuId?, options, multiple?, defaultSelected? }` — with a
+`menuId` the active ids reach `selection[menuId]` joined by commas, `''` when
+none are active, which is both what the one-string-per-key selection holds and
+what a permalink needs; without one the selection stays visual-only),
+`locator` (`{ kind, placeholder?, minChars?, options }`), or
+`variations` (`{ kind, menuId, variations, defaultValue?, closeOnSelect? }`).
+
+A `variations` **control** is the same menu a `variations` **body** renders —
+the same rows, the same shared selection, seeded the same way by
+`getInitialSelection` — but as a block rather than as a whole tab. That is the
+difference worth choosing between: a body is one menu per tab, so two menus cost
+the user a tab switch; as blocks, several menus stack in one tab, each under its
+own collapsible heading. Reach for the body when a tab belongs to one long menu,
+and for blocks when the menus are read together — an indicator and the age band
+it applies to, say. Both remain available, and a menu behaves identically either
+way, `enabledWhen` gates included.
 
 ### `GeovisWorkspaceRightSidebarState`
 

@@ -1,3 +1,4 @@
+import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import { Flex, Text } from '@ttoss/ui';
 import * as React from 'react';
 
@@ -6,7 +7,15 @@ type ClientLogoProps = {
   clientName: string;
 };
 
+const messages = defineMessages({
+  logoAlt: {
+    defaultMessage: '{name} logo',
+    description: 'OAuth consent: alt text for the requesting application logo.',
+  },
+});
+
 export const ClientLogo = ({ src, clientName }: ClientLogoProps) => {
+  const { intl } = useI18n();
   const [errored, setErrored] = React.useState(false);
 
   if (errored) {
@@ -38,7 +47,7 @@ export const ClientLogo = ({ src, clientName }: ClientLogoProps) => {
   return (
     <img
       src={src}
-      alt={`${clientName} logo`}
+      alt={intl.formatMessage(messages.logoAlt, { name: clientName })}
       onError={() => {
         return setErrored(true);
       }}

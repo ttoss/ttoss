@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/cloudformation",
-  "version": "0.13.11",
+  "version": "0.14.0",
   "description": "CloudFormation utils.",
   "keywords": [],
   "repository": {
