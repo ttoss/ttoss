@@ -56,27 +56,84 @@ const MyMap = () => (
 
 Top-level spec object passed to `GeoVisProvider`.
 
-| Field                       | Type                      | Required | Description                                                                                                                                                                                                                                                                                                                        |
-| --------------------------- | ------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `engine`                    | `'maplibre'`              | ✓        | Engine adapter to use. Currently only `'maplibre'` is supported.                                                                                                                                                                                                                                                                   |
-| `sources`                   | `DataSource[]`            | ✓        | Data sources referenced by layers. Supported types: `'geojson'`, `'vector-tiles'`, `'raster-tiles'`, `'raster-dem'`, `'image'`, `'video'`.                                                                                                                                                                                         |
-| `layers`                    | `VisualizationLayer[]`    | ✓        | Ordered list of layers to render (bottom-to-top).                                                                                                                                                                                                                                                                                  |
-| `title`                     | `string`                  |          | Human-readable title.                                                                                                                                                                                                                                                                                                              |
-| `description`               | `string`                  |          | Human-readable description.                                                                                                                                                                                                                                                                                                        |
-| `mapType`                   | `MapType`                 |          | Auto-configuration hint (`'choropleth'`). When set, layers and legends are auto-generated from `mapData` — see [mapType auto-configuration](#maptype-auto-configuration).                                                                                                                                                          |
-| `view`                      | `ViewState`               |          | Initial camera state: `center`, `zoom`, `maxZoomIn`, `maxZoomOut`, `pitch`, `bearing`, `projection`. `maxZoomIn` caps how far the user can zoom in and `maxZoomOut` caps how far out (interactive, `setView`, and programmatic `zoom` are all clamped); they default to MapLibre's `22` and `0`.                                   |
-| `basemap`                   | `BaseMapSpec`             |          | Basemap tile style. Pass `visible: false` to hide tiles and show only GeoJSON layers. When hidden, the canvas container receives a `#fcfcfc` background.                                                                                                                                                                           |
-| `legends`                   | `LegendSpec[]`            |          | Shared legend registry. Layers reference entries via `activeLegendId`.                                                                                                                                                                                                                                                             |
-| `legendEnabled`             | `boolean`                 |          | Controls whether the resolved `mapType` auto-generates legends. Defaults to `true`. Has no effect on legends supplied directly via `legends`.                                                                                                                                                                                      |
-| `attributionControlEnabled` | `boolean`                 |          | Controls whether MapLibre mounts its attribution control — the round button in the map’s bottom-right corner that expands into the basemap credits. Defaults to `true`. Set it to `false` only when the application shows the same credits elsewhere: basemap and source licences generally require attribution to remain visible. |
-| `mapData`                   | `MapData[]`               |          | Attribute datasets joined to GeoJSON sources for choropleth coloring and tooltips.                                                                                                                                                                                                                                                 |
-| `metadata`                  | `Record<string, unknown>` |          | Arbitrary consumer metadata; not read by the runtime.                                                                                                                                                                                                                                                                              |
-| `viewPresets`               | `ViewPreset[]`            |          | Named camera positions (`{ id, label?, view }`) `dispatch({ type: 'set-view-preset' })` can target by `id`. See [AI Action Surface](#ai-action-surface-dispatch).                                                                                                                                                                  |
-| `control`                   | `LayerControl`            |          | A floating layer-toggle panel, auto-mounted on the map. See [Layer Control](#layer-control).                                                                                                                                                                                                                                       |
+| Field                       | Type                      | Required | Description                                                                                                                                                                                                                                                                                                                                                                                     |
+| --------------------------- | ------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `engine`                    | `'maplibre'`              | ✓        | Engine adapter to use. Currently only `'maplibre'` is supported.                                                                                                                                                                                                                                                                                                                                |
+| `sources`                   | `DataSource[]`            | ✓        | Data sources referenced by layers. Supported types: `'geojson'`, `'vector-tiles'`, `'raster-tiles'`, `'raster-dem'`, `'image'`, `'video'`.                                                                                                                                                                                                                                                      |
+| `layers`                    | `VisualizationLayer[]`    | ✓        | Ordered list of layers to render (bottom-to-top).                                                                                                                                                                                                                                                                                                                                               |
+| `title`                     | `string`                  |          | Human-readable title.                                                                                                                                                                                                                                                                                                                                                                           |
+| `description`               | `string`                  |          | Human-readable description.                                                                                                                                                                                                                                                                                                                                                                     |
+| `mapType`                   | `MapType`                 |          | Auto-configuration hint (`'choropleth'`). When set, layers and legends are auto-generated from `mapData` — see [mapType auto-configuration](#maptype-auto-configuration).                                                                                                                                                                                                                       |
+| `view`                      | `ViewState`               |          | Initial camera state: `center`, `zoom`, `maxZoomIn`, `maxZoomOut`, `pitch`, `bearing`, `projection`. `maxZoomIn` caps how far the user can zoom in and `maxZoomOut` caps how far out (interactive, `setView`, and programmatic `zoom` are all clamped); they default to MapLibre's `22` and `0`. Omit `center`/`zoom` entirely to let the camera [auto-fit to data](#auto-fit-to-data) instead. |
+| `basemap`                   | `BaseMapSpec`             |          | Basemap tile style. Pass `visible: false` to hide tiles and show only GeoJSON layers. When hidden, the canvas container receives a `#fcfcfc` background.                                                                                                                                                                                                                                        |
+| `legends`                   | `LegendSpec[]`            |          | Shared legend registry. Layers reference entries via `activeLegendId`.                                                                                                                                                                                                                                                                                                                          |
+| `legendEnabled`             | `boolean`                 |          | Controls whether the resolved `mapType` auto-generates legends. Defaults to `true`. Has no effect on legends supplied directly via `legends`.                                                                                                                                                                                                                                                   |
+| `attributionControlEnabled` | `boolean`                 |          | Controls whether MapLibre mounts its attribution control — the round button in the map’s bottom-right corner that expands into the basemap credits. Defaults to `true`. Set it to `false` only when the application shows the same credits elsewhere: basemap and source licences generally require attribution to remain visible.                                                              |
+| `mapData`                   | `MapData[]`               |          | Attribute datasets joined to GeoJSON sources for choropleth coloring and tooltips.                                                                                                                                                                                                                                                                                                              |
+| `metadata`                  | `Record<string, unknown>` |          | Arbitrary consumer metadata; not read by the runtime.                                                                                                                                                                                                                                                                                                                                           |
+| `viewPresets`               | `ViewPreset[]`            |          | Named camera positions (`{ id, label?, view }`) `dispatch({ type: 'set-view-preset' })` can target by `id`. See [AI Action Surface](#ai-action-surface-dispatch).                                                                                                                                                                                                                               |
+| `control`                   | `LayerControl`            |          | A floating layer-toggle panel, auto-mounted on the map. See [Layer Control](#layer-control).                                                                                                                                                                                                                                                                                                    |
 
 ### Auto fit-to-data
 
 When `view.center` and `view.zoom` are both omitted, the MapLibre adapter automatically centers the camera on the bounding box of every `geojson` source's inline data (plus the corners of `image`/`video` sources), with a responsive padding of 6% of the container's own width/height on every side. This runs on mount and again whenever a source's geometry changes — never when only `mapData` (attribute values) changes, so the camera stays put while data is recolored or resized. Set `view.center`/`view.zoom` explicitly to opt out and take full manual control of the camera. Sources with no client-side geometry (`vector-tiles`, `raster-tiles`, `raster-dem`) and `geojson` sources whose `data` is a URL string are not considered — set `view` manually for those.
+
+**1. No `view` → auto-fit to data**
+
+```tsx
+const spec = {
+  engine: 'maplibre',
+  // view omitted entirely — camera fits the bbox of `sources` on mount.
+  sources: [{ id: 'points', type: 'geojson', data: featureCollection }],
+  layers: [{ id: 'points-layer', sourceId: 'points', geometry: 'point' }],
+};
+```
+
+**2. Explicit `center`/`zoom` → manual control, auto-fit bypassed**
+
+```tsx
+const spec = {
+  engine: 'maplibre',
+  view: { center: [-46.6, -23.5], zoom: 10 }, // auto-fit never runs
+  sources: [{ id: 'points', type: 'geojson', data: featureCollection }],
+  layers: [{ id: 'points-layer', sourceId: 'points', geometry: 'point' }],
+};
+```
+
+**3. Only `mapData` changes → camera preserved**
+
+```tsx
+// Re-coloring/resizing features via mapData does NOT refit the camera —
+// only a change to a source's own geometry does.
+applyPatch({
+  target: 'mapData',
+  mapDataId: 'population',
+  data: updatedValues, // camera stays exactly where it was
+});
+```
+
+#### Migrating from `FitBoundsToBbox`
+
+Consumers previously wrapped their spec with a `FitBoundsToBbox` helper (Storybook-only pattern) to get the same centering behavior. That helper is no longer needed — remove it and omit `view` instead:
+
+```diff
+-import { FitBoundsToBbox } from './helpers/FitBoundsToBbox';
+-
+ const spec = {
+   engine: 'maplibre',
+-  view: { center: computeCenter(data), zoom: computeZoom(data) },
++  // view omitted — the adapter now computes this itself
+   sources: [{ id: 'points', type: 'geojson', data }],
+   layers: [{ id: 'points-layer', sourceId: 'points', geometry: 'point' }],
+ };
+
+-<FitBoundsToBbox spec={spec}>
+-  <GeoVisCanvas viewId="main" />
+-</FitBoundsToBbox>
++<GeoVisCanvas viewId="main" />
+```
+
+If the spec already sets `view.center`/`view.zoom` explicitly (e.g. a saved camera preset), leave it as-is — auto-fit only activates when both are omitted.
 
 ### `LegendSpec`
 

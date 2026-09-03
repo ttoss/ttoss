@@ -76,6 +76,12 @@ const extendWithSource = (acc: BoundsAccumulator, source: DataSource): void => {
  * sources (`vector-tiles`, `raster-tiles`, `raster-dem`) have no
  * client-side geometry to walk and are skipped. Returns `null` when no
  * source contributes any usable coordinate.
+ *
+ * @example
+ * ```ts
+ * const bbox = computeSourcesBbox(spec.sources);
+ * // [-46.7, -23.6, -46.5, -23.4] | null
+ * ```
  */
 export const computeSourcesBbox = (
   sources: DataSource[]
@@ -97,6 +103,12 @@ export const computeSourcesBbox = (
  * Estimates a sensible `maxZoom` ceiling for a `fitBounds` call driven by
  * `bbox`, based on its approximate area in km². Prevents over-zoom on small
  * geometries that would lose geographic context.
+ *
+ * @example
+ * ```ts
+ * estimateMaxZoom([-46.7, -23.6, -46.5, -23.4]); // 13 — municipality-sized bbox
+ * estimateMaxZoom([-74, -35, -34, 5]);           // 8 — country-sized bbox
+ * ```
  */
 export const estimateMaxZoom = (bbox: GeoJSONBoundingBox): number => {
   const areaKm2 = (bbox[2] - bbox[0]) * (bbox[3] - bbox[1]) * 111 * 111;
