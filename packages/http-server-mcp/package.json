@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/http-server-mcp",
-  "version": "0.26.2",
+  "version": "0.27.1",
   "description": "Model Context Protocol (MCP) server integration for @ttoss/http-server",
   "keywords": [
     "ai",
@@ -26,6 +26,7 @@
     ".": "./src/index.ts"
   },
   "files": [
+    "MIGRATIONS.md",
     "dist"
   ],
   "scripts": {
@@ -41,6 +42,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@modelcontextprotocol/client": "^2.0.0",
     "@ttoss/config": "workspace:^",
     "@types/koa": "^3.0.3",
     "jest": "^30.4.2",
