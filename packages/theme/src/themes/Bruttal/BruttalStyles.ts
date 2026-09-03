@@ -1,4 +1,6 @@
-export const BruttalStyles = {
+import type { Theme } from 'theme-ui';
+
+export const BruttalStyles: Theme['styles'] = {
   root: {
     fontFamily: 'body',
     fontWeight: 'normal',
