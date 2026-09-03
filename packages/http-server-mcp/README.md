@@ -939,7 +939,8 @@ Keep the following in mind:
 ## Migrations
 
 Breaking changes and what they require of consumers are listed in
-[MIGRATIONS.md](./MIGRATIONS.md), newest first.
+[MIGRATIONS.md](https://github.com/ttoss/ttoss/blob/main/packages/http-server-mcp/MIGRATIONS.md),
+newest first.
 
 ## Related Packages
 

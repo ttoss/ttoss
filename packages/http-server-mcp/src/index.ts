@@ -66,14 +66,13 @@ export interface McpAuthOptions {
    *
    * @default ['initialize']
    *
-   * @example Restore unauthenticated tool discovery
+   * @example
    * ```typescript
+   * // Restore unauthenticated tool discovery.
    * publicMethods: ['initialize', 'tools/list'],
-   * ```
    *
-   * @example Require a token for the handshake too, so OAuth clients
-   * self-discover from the very first request
-   * ```typescript
+   * // Require a token for the handshake too, so an OAuth client
+   * // self-discovers from its very first request.
    * publicMethods: [],
    * ```
    */
