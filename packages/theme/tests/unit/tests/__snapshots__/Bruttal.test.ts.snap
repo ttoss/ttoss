@@ -361,8 +361,9 @@ exports[`Bruttal theme snapshot 1`] = `
   "forms": {
     "checkbox": {
       "&:is(svg, svg + svg)": {
-        "height": "min",
-        "width": "min",
+        "flexShrink": 0,
+        "height": "16px",
+        "width": "16px",
       },
       "input:checked ~ &": {
         "color": "input.text.accent.default",
@@ -480,8 +481,9 @@ exports[`Bruttal theme snapshot 1`] = `
     },
     "radio": {
       "&:is(svg, svg + svg)": {
-        "height": "min",
-        "width": "min",
+        "flexShrink": 0,
+        "height": "16px",
+        "width": "16px",
       },
       "color": "input.text.secondary.default",
       "fontFamily": "body",
