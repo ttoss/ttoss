@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.12.1](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.12.0...@ttoss/geovis-workspace@0.12.1) (2026-09-03)
+
+**Note:** Version bump only for package @ttoss/geovis-workspace
+
 # [0.12.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.11.2...@ttoss/geovis-workspace@0.12.0) (2026-09-02)
 
 ### Features
