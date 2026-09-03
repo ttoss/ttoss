@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  *
- * Contract tests for `attachFitToData` (`src/adapters/maplibre/fitBoundsToData.ts`),
+ * Contract tests for `attachFitToData` (`./fitBoundsToData.ts`),
  * the internal "fit to data" auto-centering wired into `MapLibreAdapter`.
  *
  * # Root cause — the race condition this guards against

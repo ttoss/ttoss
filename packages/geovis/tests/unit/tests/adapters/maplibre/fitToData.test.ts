@@ -264,6 +264,37 @@ describe('MapLibreAdapter — auto fit to data', () => {
 
     expect(map.fitBounds).not.toHaveBeenCalled();
   });
+
+  test('a view with only pitch/bearing set (no center/zoom) still auto-fits — the two paths run concurrently, neither disables the other', () => {
+    const map = makeFitMapMock();
+    jest.mocked(maplibregl.Map).mockImplementation(() => {
+      return map as never;
+    });
+
+    const adapter = createMapLibreAdapter();
+    const spec = makeSpecWithoutView([-47, -24, -46, -23]);
+    adapter.mount(makeContainer(), spec, 'v');
+    expect(map.fitBounds).toHaveBeenCalledTimes(1);
+    map.fitBounds.mockClear();
+
+    adapter.update({
+      ...makeSpecWithoutView([-10, -10, -9, -9]),
+      view: { pitch: 30, bearing: 45 },
+    });
+
+    // hasExplicitView only looks at center/zoom, so auto-fit still refits
+    // the new bbox...
+    expect(map.fitBounds).toHaveBeenCalledTimes(1);
+    const [bounds] = map.fitBounds.mock.calls[0];
+    expect(bounds).toEqual([
+      [-10, -10],
+      [-9, -9],
+    ]);
+    // ...while syncMapView independently applies pitch/bearing, since it
+    // only skips center/zoom when those specific fields are omitted.
+    expect(map.setPitch).toHaveBeenCalledWith(30);
+    expect(map.setBearing).toHaveBeenCalledWith(45);
+  });
 });
 
 describe('MapLibreAdapter — auto fit to data (URL-based geojson sources)', () => {
