@@ -1,6 +1,6 @@
 {
   "name": "@docs/website",
-  "version": "7.4.0",
+  "version": "8.0.0",
   "private": true,
   "scripts": {
     "build": "node scripts/generate-api-docs.mts && docusaurus build",
