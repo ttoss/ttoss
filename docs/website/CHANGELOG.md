@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.1](https://github.com/ttoss/ttoss/compare/@docs/website@8.0.0...@docs/website@8.0.1) (2026-09-03)
+
+### Bug Fixes
+
+- **http-server-mcp:** make the handshake public on both protocol eras ([#1223](https://github.com/ttoss/ttoss/issues/1223)) ([cb611ba](https://github.com/ttoss/ttoss/commit/cb611bab1f116eae1328d07ff0c373016be0c0f4))
+
 # [8.0.0](https://github.com/ttoss/ttoss/compare/@docs/website@7.4.0...@docs/website@8.0.0) (2026-09-03)
 
 - feat(http-server-mcp)!: require a token for tools/list by default (#1221) ([912b2bd](https://github.com/ttoss/ttoss/commit/912b2bd1cce4da3bb4add64594dda40dbdd0802c)), closes [#1221](https://github.com/ttoss/ttoss/issues/1221)
