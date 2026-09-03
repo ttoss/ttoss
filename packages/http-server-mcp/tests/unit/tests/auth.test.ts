@@ -545,9 +545,25 @@ describe('auth — public methods and RFC 9728 discovery', () => {
     expect(res.status).not.toBe(401);
   });
 
-  test('tools/list is public by default (no token required)', async () => {
+  test('tools/list requires a token by default', async () => {
     const res = await post(buildApp({}), 'tools/list');
-    expect(res.status).not.toBe(401);
+    expect(res.status).toBe(401);
+  });
+
+  /**
+   * The behaviour before the default tightened. Anyone who relied on
+   * unauthenticated tool discovery restores it by naming it explicitly, which
+   * is the whole migration.
+   */
+  test('unauthenticated tools/list is restorable by opting in explicitly', async () => {
+    const app = buildApp({ publicMethods: ['initialize', 'tools/list'] });
+
+    const listRes = await post(app, 'tools/list');
+    expect(listRes.status).not.toBe(401);
+
+    // Still no free pass for anything that actually does work.
+    const callRes = await post(app, 'tools/call');
+    expect(callRes.status).toBe(401);
   });
 
   test('protected methods still require a token by default', async () => {
@@ -570,42 +586,6 @@ describe('auth — public methods and RFC 9728 discovery', () => {
   test('empty publicMethods requires a token for every method', async () => {
     const res = await post(buildApp({ publicMethods: [] }), 'initialize');
     expect(res.status).toBe(401);
-  });
-
-  test('warns once when auth is configured without an explicit publicMethods', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-    buildApp({});
-
-    expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect(warnSpy.mock.calls[0][0]).toEqual(
-      expect.stringContaining('publicMethods')
-    );
-    expect(warnSpy.mock.calls[0][0]).toEqual(
-      expect.stringContaining('tools/list')
-    );
-
-    warnSpy.mockRestore();
-  });
-
-  test('does not warn when publicMethods is set explicitly, even to the default', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-    buildApp({ publicMethods: ['initialize', 'tools/list'] });
-
-    expect(warnSpy).not.toHaveBeenCalled();
-
-    warnSpy.mockRestore();
-  });
-
-  test('does not warn when publicMethods is set to an empty array', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-    buildApp({ publicMethods: [] });
-
-    expect(warnSpy).not.toHaveBeenCalled();
-
-    warnSpy.mockRestore();
   });
 
   test('a request without a method is treated as protected', async () => {
