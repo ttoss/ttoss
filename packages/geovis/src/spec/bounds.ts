@@ -3,6 +3,7 @@ import type {
   GeoJSONBoundingBox,
   GeoJSONGeometry,
   GeoJSONObject,
+  GeoJSONSource,
   LngLat,
 } from './types';
 
@@ -103,4 +104,65 @@ export const estimateMaxZoom = (bbox: GeoJSONBoundingBox): number => {
   if (areaKm2 > 5_000) return 10; // state / large region
   if (areaKm2 > 100) return 13; // municipality
   return 15; // neighbourhood / district
+};
+
+/**
+ * Detects whether any `geojson` source has URL-based data (string URL instead of inline object).
+ */
+export const hasUrlSources = (sources: DataSource[]): boolean => {
+  return sources.some((s) => {
+    return s.type === 'geojson' && typeof s.data === 'string';
+  });
+};
+
+/**
+ * Fetches URL-based GeoJSON sources in parallel and returns their parsed GeoJSONObjects.
+ * Non-URL sources are skipped. Failed fetches return null for that entry.
+ * Returns empty array if no URL sources exist.
+ */
+export const fetchUrlSourceData = async (
+  sources: DataSource[]
+): Promise<(GeoJSONObject | null)[]> => {
+  const urlSources = sources.filter(
+    (s): s is GeoJSONSource & { data: string } => {
+      return s.type === 'geojson' && typeof s.data === 'string';
+    }
+  );
+
+  return Promise.all(
+    urlSources.map((s) => {
+      return fetch(s.data)
+        .then((r) => {
+          return r.json();
+        })
+        .catch(() => {
+          return null;
+        });
+    })
+  );
+};
+
+/**
+ * Walks a list of already-fetched/parsed GeoJSON objects (as returned by
+ * {@link fetchUrlSourceData}) and returns their combined bounding box, using
+ * the same coordinate-walking logic as {@link computeSourcesBbox}. `null`
+ * entries (failed fetches) are skipped. Returns `null` when nothing
+ * contributes a usable coordinate.
+ */
+export const computeGeoJSONObjectsBbox = (
+  objects: (GeoJSONObject | null)[]
+): GeoJSONBoundingBox | null => {
+  const acc: BoundsAccumulator = {
+    minLng: Infinity,
+    minLat: Infinity,
+    maxLng: -Infinity,
+    maxLat: -Infinity,
+  };
+
+  for (const obj of objects) {
+    if (obj) extendWithGeoJSONObject(acc, obj);
+  }
+
+  if (!Number.isFinite(acc.minLng) || !Number.isFinite(acc.minLat)) return null;
+  return [acc.minLng, acc.minLat, acc.maxLng, acc.maxLat];
 };

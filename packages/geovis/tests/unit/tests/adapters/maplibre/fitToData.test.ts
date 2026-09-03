@@ -78,6 +78,59 @@ const makeFitMapMock = () => {
   };
 };
 
+/** A controllable promise, so a test can decide exactly when a `fetch` resolves. */
+const deferred = <T>(): {
+  promise: Promise<T>;
+  resolve: (value: T) => void;
+} => {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((r) => {
+    resolve = r;
+  });
+  return { promise, resolve };
+};
+
+/** Waits for every microtask already queued (fetch/`.then()` chains) to run. */
+const flushMicrotasks = (): Promise<void> => {
+  return new Promise((resolve) => {
+    setImmediate(resolve);
+  });
+};
+
+const fetchResponse = (body: unknown) => {
+  return {
+    json: () => {
+      return Promise.resolve(body);
+    },
+  } as Response;
+};
+
+const featureCollectionAt = (
+  bbox: [number, number, number, number]
+): unknown => {
+  return {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: null,
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [bbox[0], bbox[1]],
+              [bbox[2], bbox[1]],
+              [bbox[2], bbox[3]],
+              [bbox[0], bbox[3]],
+              [bbox[0], bbox[1]],
+            ],
+          ],
+        },
+      },
+    ],
+  };
+};
+
 const districtsSource = (bbox: [number, number, number, number]) => {
   return {
     id: 'districts',
@@ -208,6 +261,144 @@ describe('MapLibreAdapter — auto fit to data', () => {
         },
       ],
     });
+
+    expect(map.fitBounds).not.toHaveBeenCalled();
+  });
+});
+
+describe('MapLibreAdapter — auto fit to data (URL-based geojson sources)', () => {
+  const originalFetch = global.fetch;
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+  });
+
+  test('does NOT recenter when spec.view is explicit and a source is a URL that resolves later (real-world case: cozsolidarias SUDESTE_VIEW + assentamentos.json, imagemsp explicit view + distrito-municipal-v2.geojson)', async () => {
+    const map = makeFitMapMock();
+    jest.mocked(maplibregl.Map).mockImplementation(() => {
+      return map as never;
+    });
+
+    const fetchDeferred = deferred<Response>();
+    global.fetch = jest.fn(() => {
+      return fetchDeferred.promise;
+    }) as unknown as typeof fetch;
+
+    const adapter = createMapLibreAdapter();
+    adapter.mount(
+      makeContainer(),
+      {
+        engine: 'maplibre',
+        // Mirrors SUDESTE_VIEW / imagemsp's MapsView explicit camera.
+        view: { center: [-45.5, -20.0], zoom: 5 },
+        sources: [
+          { id: 'remote', type: 'geojson', data: '/geo/assentamentos.json' },
+        ],
+        layers: [{ id: 'fill', sourceId: 'remote', geometry: 'polygon' }],
+      },
+      'v'
+    );
+
+    expect(map.fitBounds).not.toHaveBeenCalled();
+
+    fetchDeferred.resolve(
+      fetchResponse(featureCollectionAt([-70, -30, -60, -25]))
+    );
+    await flushMicrotasks();
+    await flushMicrotasks();
+
+    expect(map.fitBounds).not.toHaveBeenCalled();
+  });
+
+  test('does NOT recenter when spec.view becomes explicit via update() while the URL fetch is still in flight', async () => {
+    const map = makeFitMapMock();
+    jest.mocked(maplibregl.Map).mockImplementation(() => {
+      return map as never;
+    });
+
+    const fetchDeferred = deferred<Response>();
+    global.fetch = jest.fn(() => {
+      return fetchDeferred.promise;
+    }) as unknown as typeof fetch;
+
+    const specWithoutView: VisualizationSpec = {
+      engine: 'maplibre',
+      sources: [
+        { id: 'remote', type: 'geojson', data: '/geo/assentamentos.json' },
+      ],
+      layers: [{ id: 'fill', sourceId: 'remote', geometry: 'polygon' }],
+    };
+
+    const adapter = createMapLibreAdapter();
+    adapter.mount(makeContainer(), specWithoutView, 'v');
+
+    // The app sets an explicit view (e.g. a "focus region" button) before the
+    // fetch resolves.
+    adapter.update({
+      ...specWithoutView,
+      view: { center: [-45.5, -20.0], zoom: 5 },
+    });
+
+    fetchDeferred.resolve(
+      fetchResponse(featureCollectionAt([-70, -30, -60, -25]))
+    );
+    await flushMicrotasks();
+    await flushMicrotasks();
+
+    expect(map.fitBounds).not.toHaveBeenCalled();
+  });
+
+  test('applies only the bbox of the most recently requested URL source when two updates race (an older fetch resolving late must not override a newer one)', async () => {
+    const map = makeFitMapMock();
+    jest.mocked(maplibregl.Map).mockImplementation(() => {
+      return map as never;
+    });
+
+    const firstFetch = deferred<Response>();
+    const secondFetch = deferred<Response>();
+    const fetchMock = jest
+      .fn()
+      .mockImplementationOnce(() => {
+        return firstFetch.promise;
+      })
+      .mockImplementationOnce(() => {
+        return secondFetch.promise;
+      });
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    const adapter = createMapLibreAdapter();
+    adapter.mount(
+      makeContainer(),
+      {
+        engine: 'maplibre',
+        sources: [{ id: 'remote', type: 'geojson', data: '/geo/first.json' }],
+        layers: [{ id: 'fill', sourceId: 'remote', geometry: 'polygon' }],
+      },
+      'v'
+    );
+
+    // Before the first fetch resolves, the app moves on to a different URL
+    // source (e.g. cozsolidarias toggling between modes).
+    adapter.update({
+      engine: 'maplibre',
+      sources: [{ id: 'remote', type: 'geojson', data: '/geo/second.json' }],
+      layers: [{ id: 'fill', sourceId: 'remote', geometry: 'polygon' }],
+    });
+
+    // The newer fetch resolves first.
+    secondFetch.resolve(fetchResponse(featureCollectionAt([-10, -10, -9, -9])));
+    await flushMicrotasks();
+    await flushMicrotasks();
+
+    expect(map.fitBounds).toHaveBeenCalledTimes(1);
+    map.fitBounds.mockClear();
+
+    // The stale first fetch resolves late — its bbox must be discarded.
+    firstFetch.resolve(
+      fetchResponse(featureCollectionAt([-70, -30, -60, -25]))
+    );
+    await flushMicrotasks();
+    await flushMicrotasks();
 
     expect(map.fitBounds).not.toHaveBeenCalled();
   });
