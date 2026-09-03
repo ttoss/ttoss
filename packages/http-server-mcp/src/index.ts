@@ -50,10 +50,13 @@ export interface McpAuthOptions {
   /**
    * JSON-RPC methods (read from `body.method`) that bypass verification.
    *
-   * `initialize` is public because the MCP authorization spec sanctions it: a
-   * client completes the lifecycle handshake before it can discover the
-   * authorization server. Nothing else is, so a server with `auth` configured
-   * serves no tool metadata to an unauthenticated caller.
+   * The lifecycle handshake is public because the MCP authorization spec
+   * sanctions it: a client completes it before it can discover the
+   * authorization server. That means one entry per protocol era —
+   * `initialize` on 2025, `server/discover` on `2026-07-28`, which removed
+   * `initialize` — so neither era is left unable to negotiate. Nothing else
+   * is public, so a server with `auth` configured serves no tool metadata to
+   * an unauthenticated caller.
    *
    * Opening `tools/list` is a deliberate choice, not a default. It serves the
    * full tool catalogue — every name, description, and input schema — to
@@ -64,7 +67,7 @@ export interface McpAuthOptions {
    * cannot call one. Set it only to serve callers that will never
    * authenticate.
    *
-   * @default ['initialize']
+   * @default ['initialize', 'server/discover']
    *
    * @example
    * ```typescript
@@ -138,13 +141,23 @@ export interface McpAuthOptions {
 }
 
 /**
- * MCP lifecycle methods reachable before a client authenticates.
+ * MCP lifecycle handshakes reachable before a client authenticates.
  *
- * Only `initialize`, which the MCP authorization spec sanctions: a client has
- * to complete the handshake before it can discover the authorization server.
- * `tools/list` is not here — see {@link McpAuthOptions.publicMethods}.
+ * One entry per protocol era, because the exemption the MCP authorization spec
+ * sanctions is about *the handshake* — a client has to complete it before it
+ * can discover the authorization server — not about a method name:
+ *
+ * - `initialize` is the 2025-era handshake.
+ * - `server/discover` is its `2026-07-28` replacement. That revision removed
+ *   `initialize` entirely, so naming only `initialize` left the modern era
+ *   with no public method at all — the asymmetry ttoss/ttoss#1222 fixed.
+ *
+ * A future revision that renames the handshake again needs a matching entry
+ * here; nothing detects that automatically.
+ *
+ * `tools/list` is deliberately absent — see {@link McpAuthOptions.publicMethods}.
  */
-const DEFAULT_PUBLIC_METHODS = ['initialize'];
+const DEFAULT_PUBLIC_METHODS = ['initialize', 'server/discover'];
 
 /**
  * Asserts that a verified token's `aud` claim includes at least one of the
@@ -467,9 +480,10 @@ export interface McpRouterOptions {
    * OAuth / JWT authentication configuration for the MCP endpoint.
    *
    * When set, incoming MCP requests must include a valid Bearer token in the
-   * `Authorization` header — except for `publicMethods` (by default just
-   * `initialize`), which bypasses verification so a client can complete the
-   * lifecycle handshake before authenticating. Invalid or missing tokens
+   * `Authorization` header — except for `publicMethods` (by default the
+   * lifecycle handshake of each protocol era: `initialize` and
+   * `server/discover`), which bypass verification so a client can complete
+   * the handshake before authenticating. Invalid or missing tokens
    * receive a `401` response with `WWW-Authenticate: Bearer` (or
    * `Bearer resource_metadata="..."` when `resourceMetadataUrl` is set, per
    * RFC 9728). Tokens that fail a `requiredScopes` check receive `403`.

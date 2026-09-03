@@ -566,19 +566,81 @@ describe('auth — public methods and RFC 9728 discovery', () => {
     expect(callRes.status).toBe(401);
   });
 
+  /**
+   * The exemption the spec sanctions is about the handshake, not the method
+   * name, so it has to hold on both protocol eras. `2026-07-28` removed
+   * `initialize` and replaced it with `server/discover`; naming only
+   * `initialize` left that era with no public method at all
+   * (ttoss/ttoss#1222).
+   */
+  describe('the handshake is public on both protocol eras', () => {
+    /** A request speaking `2026-07-28`: per-request envelope plus the header. */
+    const postModern = (app: ReturnType<typeof buildApp>, method: string) => {
+      return request(app.callback())
+        .post('/mcp')
+        .send({
+          jsonrpc: '2.0',
+          method,
+          id: 1,
+          params: {
+            _meta: {
+              'io.modelcontextprotocol/protocolVersion': '2026-07-28',
+              'io.modelcontextprotocol/clientCapabilities': {},
+            },
+          },
+        })
+        .set('Content-Type', 'application/json')
+        .set('Accept', MCP_ACCEPT)
+        .set('Mcp-Method', method);
+    };
+
+    test('server/discover is public by default', async () => {
+      const res = await postModern(buildApp({}), 'server/discover');
+      expect(res.status).not.toBe(401);
+    });
+
+    test('tools/list is still protected on the 2026 era', async () => {
+      const res = await postModern(buildApp({}), 'tools/list');
+      expect(res.status).toBe(401);
+    });
+
+    /**
+     * Narrowing the set to the 2025 handshake alone reproduces the asymmetry:
+     * the modern era loses its only reachable method. Asserting it keeps the
+     * fix from silently regressing to a single-era default.
+     */
+    test("publicMethods: ['initialize'] closes 2026 discovery", async () => {
+      const app = buildApp({ publicMethods: ['initialize'] });
+
+      const discoverRes = await postModern(app, 'server/discover');
+      expect(discoverRes.status).toBe(401);
+
+      // ...while the 2025 handshake is still reachable.
+      const initRes = await post(app, 'initialize');
+      expect(initRes.status).not.toBe(401);
+    });
+
+    test('empty publicMethods closes both handshakes', async () => {
+      const app = buildApp({ publicMethods: [] });
+
+      expect((await postModern(app, 'server/discover')).status).toBe(401);
+      expect((await post(app, 'initialize')).status).toBe(401);
+    });
+  });
+
   test('protected methods still require a token by default', async () => {
     const res = await post(buildApp({}), 'tools/call');
     expect(res.status).toBe(401);
   });
 
-  test('publicMethods overrides the default set', async () => {
+  test('publicMethods replaces the default set rather than extending it', async () => {
     const app = buildApp({ publicMethods: ['ping'] });
 
     // 'ping' now bypasses verification...
     const pingRes = await post(app, 'ping');
     expect(pingRes.status).not.toBe(401);
 
-    // ...while 'initialize' is no longer public.
+    // ...while neither era's handshake is public any more.
     const initRes = await post(app, 'initialize');
     expect(initRes.status).toBe(401);
   });
