@@ -49,11 +49,32 @@ export interface McpAuthOptions {
   requiredScopes?: string[];
   /**
    * JSON-RPC methods (read from `body.method`) that bypass verification.
-   * Leaving this unset serves `tools/list` — the full tool catalogue —
-   * to unauthenticated callers, and logs a one-time warning explaining how
-   * to close it. Set explicitly (even to the same default) to silence the
-   * warning; set to `['initialize']` to require a token for `tools/list` too.
-   * @default ['initialize', 'tools/list']
+   *
+   * `initialize` is public because the MCP authorization spec sanctions it: a
+   * client completes the lifecycle handshake before it can discover the
+   * authorization server. Nothing else is, so a server with `auth` configured
+   * serves no tool metadata to an unauthenticated caller.
+   *
+   * Opening `tools/list` is a deliberate choice, not a default. It serves the
+   * full tool catalogue — every name, description, and input schema — to
+   * anyone who can reach the endpoint, which for an OpenAPI-derived server is
+   * a map of the whole underlying API. It buys an OAuth client nothing: the
+   * `401` and its RFC 9728 `WWW-Authenticate` challenge are what start the
+   * authorization flow, and a client that lists tools anonymously still
+   * cannot call one. Set it only to serve callers that will never
+   * authenticate.
+   *
+   * @default ['initialize']
+   *
+   * @example
+   * ```typescript
+   * // Restore unauthenticated tool discovery.
+   * publicMethods: ['initialize', 'tools/list'],
+   *
+   * // Require a token for the handshake too, so an OAuth client
+   * // self-discovers from its very first request.
+   * publicMethods: [],
+   * ```
    */
   publicMethods?: string[];
   /**
@@ -116,8 +137,14 @@ export interface McpAuthOptions {
   resourceIndicator?: string | string[];
 }
 
-/** MCP lifecycle/discovery methods reachable before a client authenticates. */
-const DEFAULT_PUBLIC_METHODS = ['initialize', 'tools/list'];
+/**
+ * MCP lifecycle methods reachable before a client authenticates.
+ *
+ * Only `initialize`, which the MCP authorization spec sanctions: a client has
+ * to complete the handshake before it can discover the authorization server.
+ * `tools/list` is not here — see {@link McpAuthOptions.publicMethods}.
+ */
+const DEFAULT_PUBLIC_METHODS = ['initialize'];
 
 /**
  * Asserts that a verified token's `aud` claim includes at least one of the
@@ -440,9 +467,9 @@ export interface McpRouterOptions {
    * OAuth / JWT authentication configuration for the MCP endpoint.
    *
    * When set, incoming MCP requests must include a valid Bearer token in the
-   * `Authorization` header — except for `publicMethods` (by default
-   * `initialize` and `tools/list`), which bypass verification so clients can
-   * discover the server before authenticating. Invalid or missing tokens
+   * `Authorization` header — except for `publicMethods` (by default just
+   * `initialize`), which bypasses verification so a client can complete the
+   * lifecycle handshake before authenticating. Invalid or missing tokens
    * receive a `401` response with `WWW-Authenticate: Bearer` (or
    * `Bearer resource_metadata="..."` when `resourceMetadataUrl` is set, per
    * RFC 9728). Tokens that fail a `requiredScopes` check receive `403`.
@@ -576,26 +603,6 @@ export const createMcpRouter = (
     // file's route registration fixes, one layer up. An explicit
     // `resourceMetadataUrl` still wins.
     const resourceMetadataUrl = auth.resourceMetadataUrl ?? metadata?.url;
-
-    if (auth.publicMethods === undefined) {
-      // `tools/list` exposing the full tool catalogue to unauthenticated
-      // callers is a surprising default for anyone who configured `auth`
-      // without considering `publicMethods`. Warn once so operators find out
-      // from their own logs rather than from an unauthenticated tool listing
-      // in production. This default is a candidate to tighten to
-      // `['initialize']` in a future major — see
-      // https://github.com/ttoss/ttoss/issues/1176.
-      // eslint-disable-next-line no-console -- one-time operator-facing warning
-      console.warn(
-        `[@ttoss/http-server-mcp] "auth" is configured but "publicMethods" was not set, ` +
-          `so it defaults to ${JSON.stringify(DEFAULT_PUBLIC_METHODS)}. This means ` +
-          `"tools/list" — the full tool catalogue, including names, descriptions, and ` +
-          `input schemas — is served to unauthenticated callers. ` +
-          `To require a token for "tools/list" too, set publicMethods: ['initialize']. ` +
-          `To keep the current behaviour and silence this warning, set ` +
-          `publicMethods: ${JSON.stringify(DEFAULT_PUBLIC_METHODS)} explicitly.`
-      );
-    }
 
     const publicMethods = new Set(auth.publicMethods ?? DEFAULT_PUBLIC_METHODS);
 

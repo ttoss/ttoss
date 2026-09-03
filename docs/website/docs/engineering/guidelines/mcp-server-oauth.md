@@ -92,7 +92,7 @@ Opaque API tokens work the same way — hash the presented token with `@ttoss/au
 
 ### Client discovery
 
-The [MCP authorization spec](https://spec.modelcontextprotocol.io/specification/2025-03-26/basic/authorization/) requires two behaviors so clients like Claude and Cursor can bootstrap OAuth without being pre-configured, and `createMcpRouter` handles both. The lifecycle methods `initialize` and `tools/list` bypass verification so the client can discover the server before authenticating — override the set with `publicMethods` (pass `[]` to require a token for every method). And a `401` advertises the [RFC 9728](https://www.rfc-editor.org/rfc/rfc9728) protected-resource document via `WWW-Authenticate: Bearer resource_metadata="…"`, pointing the client at the metadata that names the authorization server.
+The [MCP authorization spec](https://spec.modelcontextprotocol.io/specification/2025-03-26/basic/authorization/) requires two behaviors so clients like Claude and Cursor can bootstrap OAuth without being pre-configured, and `createMcpRouter` handles both. The lifecycle method `initialize` bypasses verification so the client can complete the handshake before authenticating — override the set with `publicMethods` (pass `[]` to require a token for every method). And a `401` advertises the [RFC 9728](https://www.rfc-editor.org/rfc/rfc9728) protected-resource document via `WWW-Authenticate: Bearer resource_metadata="…"`, pointing the client at the metadata that names the authorization server.
 
 ```typescript
 const mcpRouter = createMcpRouter(mcpServer, {
@@ -103,7 +103,7 @@ const mcpRouter = createMcpRouter(mcpServer, {
     resourceServerUrl: 'https://mcp.example.com',
     authorizationServerUrl: process.env.COGNITO_ISSUER_URL!,
     // Set publicMethods: [] when you need OAuth clients to authenticate
-    // before anything else (see note below). Defaults to ['initialize', 'tools/list'].
+    // before anything else (see note below). Defaults to ['initialize'].
     publicMethods: [],
   },
 });
@@ -115,7 +115,9 @@ Setting both `resourceServerUrl` and `authorizationServerUrl` serves that metada
 
 **Error envelopes swallow the `401`.** The router rejects with `ctx.throw(401, 'Unauthorized', { headers })`, and an app whose catch-all error middleware recognizes only its own error class turns that into a `500` with no `WWW-Authenticate` header. The client then gets an opaque server error where it expected the pointer to the authorization server, so discovery silently never starts and it reads like a client bug. Run caught values through `toHttpError` and `applyHttpErrorHeaders` from [`@ttoss/http-server`](/docs/modules/packages/http-server) before falling back to `500`.
 
-**`publicMethods` and the OAuth flow.** With the default `['initialize', 'tools/list']`, an OAuth-aware client (Claude connector, Cursor) receives `200` on `initialize` and concludes the server is public — it never starts the OAuth PKCE flow, while `notifications/initialized` still returns `401`, silently breaking the handshake. The visible symptom is "connected, no tools available, no sign-in prompt". Setting `publicMethods: []` makes `initialize` return `401 + WWW-Authenticate`, which is what triggers the client's OAuth discovery and login. Use the default only when auth is handled outside the client-initiated OAuth flow (e.g. API keys or tokens injected by a gateway); set `publicMethods: []` whenever you want the client to authenticate itself before any other interaction.
+**`publicMethods` and the OAuth flow.** The default is `['initialize']`, so `initialize` answers `200` unauthenticated and everything after it carries the challenge. Some OAuth-aware clients (Claude connector, Cursor) have been observed to read that `200` as "this server is public" and never start the PKCE flow, while `notifications/initialized` still returns `401` — silently breaking the handshake, with the visible symptom "connected, no tools available, no sign-in prompt". Setting `publicMethods: []` makes `initialize` itself return `401 + WWW-Authenticate`, which starts discovery on the very first request. Use the default when auth is handled outside the client-initiated OAuth flow (e.g. API keys or tokens injected by a gateway); set `publicMethods: []` whenever you want the client to authenticate itself before any other interaction.
+
+**Do not add `tools/list` to the set.** It served the full tool catalogue — every name, description, and input schema — to unauthenticated callers, which for an OpenAPI-derived server is a map of the whole underlying API. It was removed from the default for that reason ([ttoss/ttoss#1176](https://github.com/ttoss/ttoss/issues/1176)) and buys an OAuth client nothing, since the `401` is what starts the flow and an anonymous caller still cannot invoke a tool.
 
 ## Authorization server: issuing tokens
 

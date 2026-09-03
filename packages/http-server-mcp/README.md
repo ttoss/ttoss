@@ -371,7 +371,7 @@ The `WWW-Authenticate: Bearer resource_metadata="…"` header is how MCP clients
 
 The two behaviors the [MCP authorization spec](https://spec.modelcontextprotocol.io/specification/2025-03-26/basic/authorization/) requires for client bootstrapping are built into the `auth` option, so you no longer need the hand-rolled middleware shown above:
 
-- **`publicMethods`** — JSON-RPC methods that bypass verification, read from the request body's `method` field. Defaults to `['initialize', 'tools/list']` so clients can discover the server before authenticating. Pass `[]` to require a token for every method, or a custom list to change the exempt set. Leaving it unset serves the full tool catalogue — every tool name, description, and input schema — to unauthenticated callers, and logs a one-time warning explaining that and how to close it. Set `publicMethods` explicitly (even to the same default) to silence the warning.
+- **`publicMethods`** — JSON-RPC methods that bypass verification, read from the request body's `method` field. Defaults to `['initialize']`, which the spec sanctions so a client can complete the lifecycle handshake before it can discover the authorization server. Pass `[]` to require a token for every method, or a custom list to change the exempt set. Adding `tools/list` serves the full tool catalogue — every tool name, description, and input schema — to unauthenticated callers; see [`publicMethods` and OAuth clients](#publicmethods-and-oauth-clients) before doing so.
 - **`resourceMetadataUrl`** — the URL a `401` advertises as `WWW-Authenticate: Bearer resource_metadata="<url>"` (RFC 9728) instead of a bare `Bearer`, pointing MCP clients at the protected-resource metadata document. **You normally do not set it**: when the document is served — i.e. both `resourceServerUrl` and `authorizationServerUrl` are configured — it defaults to the RFC 9728 location this router serves it at, so the header and the routes cannot drift apart. When the document is not served, the header stays a bare `Bearer` rather than naming a location with no route. The field exists for the one configuration where this router deliberately does not serve the document — an `oauthServer()` in the same deployment already answers that path, so this router is mounted without `resourceServerUrl`/`authorizationServerUrl` to avoid two routers on one path, and has nothing to derive from. Compute the value with `protectedResourceMetadataUrl` from [`@ttoss/auth-core`](https://ttoss.dev/docs/modules/packages/auth-core) rather than typing it, so both halves apply the same §3.1 rule.
 
 ```typescript
@@ -383,12 +383,12 @@ createMcpRouter(mcpServer, {
     resourceServerUrl: 'https://mcp.example.com',
     authorizationServerUrl:
       'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_xxx',
-    // publicMethods defaults to ['initialize', 'tools/list'].
+    // publicMethods defaults to ['initialize'].
   },
 });
 ```
 
-Every field is optional, and the `publicMethods` default matches what MCP clients expect for discovery.
+Every field is optional.
 
 ### Supporting clients that connect to the bare origin
 
@@ -502,7 +502,7 @@ Creates a Koa router configured to handle MCP protocol requests.
     - `auth.verifyToken` — Custom async token verifier `(token: string) => Promise<unknown>`
     - `auth.requiredScopes` — Router-level scope guard; returns 403 if any scope is missing
     - `auth.resourceServerUrl` + `auth.authorizationServerUrl` — Enable the protected-resource metadata document, served at both `/.well-known/oauth-protected-resource` and the RFC 9728 path-derived `/.well-known/oauth-protected-resource<path>`; the metadata `resource` is set to `resourceServerUrl + path` so clients following `resource` land on the actual MCP endpoint
-    - `auth.publicMethods` — JSON-RPC methods that bypass verification (default `['initialize', 'tools/list']`)
+    - `auth.publicMethods` — JSON-RPC methods that bypass verification (default `['initialize']`)
     - `auth.resourceMetadataUrl` — URL advertised in the RFC 9728 `WWW-Authenticate: Bearer resource_metadata="…"` header on a 401. Defaults to the location derived from `resourceServerUrl` + `path` (the one this router serves), so the header cannot drift from the routes; set it only when a separate `oauthServer()` serves the document and this router is mounted without `resourceServerUrl`/`authorizationServerUrl`
     - `auth.resourceIndicator` — Expected `aud` value(s) (RFC 8707); rejects tokens minted for a different resource. See [Resource indicator validation](#resource-indicator-validation-rfc-8707)
 
@@ -873,14 +873,19 @@ expect(call.status).toBe(200);
 
 ### `publicMethods` and OAuth clients
 
-`auth.publicMethods` defaults to `['initialize', 'tools/list']`, which lets clients discover the server before they have a token. This default has an important effect on OAuth-aware clients (e.g. a Claude connector):
+`auth.publicMethods` defaults to `['initialize']`: the handshake is reachable without a token, nothing else is.
 
-- With the default, `initialize` returns `200` unauthenticated, so an OAuth client concludes the server is public and never starts the OAuth flow — while `notifications/initialized` still returns `401`, breaking the handshake. The visible symptom is "connected, no tools available, no sign-in prompt".
-- Setting `publicMethods: []` makes `initialize` return `401` + `WWW-Authenticate`, which triggers the client's OAuth discovery and PKCE flow.
+**Adding `tools/list` is a deliberate exposure.** It serves the full tool catalogue — every name, description, and input schema — to anyone who can reach the endpoint. Those leak internal resource names and domain vocabulary, and for an OpenAPI-derived server the schemas mirror the REST surface, so the catalogue becomes an unauthenticated map of the whole API including operations the caller could never invoke. It buys an OAuth client nothing, because the `401` is what starts the authorization flow and a client that lists tools anonymously still cannot call one. Open it only to serve callers that will never authenticate:
 
-Use the default when token auth is handled outside the OAuth flow (Cognito, API keys, Bearer tokens). Set `publicMethods: []` only when you want OAuth clients to self-discover and authenticate before anything else.
+```typescript
+publicMethods: ['initialize', 'tools/list'],
+```
 
-Leaving `publicMethods` unset also exposes the full tool catalogue (`tools/list`) to unauthenticated callers — a tool's name, description, and input schema can leak internal resource names and, for an OpenAPI-derived server, the shape of the whole underlying API. A one-time warning is logged when `auth` is configured without an explicit `publicMethods`, naming the exposure and how to close it. This default is a candidate to tighten to `['initialize']` in a future major; track the decision in [ttoss/ttoss#1176](https://github.com/ttoss/ttoss/issues/1176).
+**Whether `initialize` should be public depends on how tokens are issued.** Keep the default when token auth is handled outside the OAuth flow (Cognito, API keys, Bearer tokens minted elsewhere). Set `publicMethods: []` when you want OAuth clients to authenticate before anything else — `initialize` then returns `401` + `WWW-Authenticate` on the very first request, so discovery starts there rather than one step later.
+
+Either way the authorization flow works. Driving the official MCP client SDK against this router shows the RFC 9728 challenge resolving to the protected-resource document, the authorization server, and the redirect, whether the `401` arrives on `initialize` (`publicMethods: []`) or on the request after it (the default). `tests/unit/tests/oauth-client-flow.test.ts` asserts it.
+
+On the `2026-07-28` revision `initialize` does not exist — discovery is `server/discover`, which is not in the default set and therefore always requires a token. That is deliberate: RFC 9728 discovery is driven by the challenge itself.
 
 ## AWS Lambda Deployment
 
@@ -930,6 +935,12 @@ Keep the following in mind:
 - **SSE streaming is not used** (`enableJsonResponse: true`), so a standard API Gateway integration is enough; Function URL response streaming is not required.
 
 > This differs from [`awslabs/run-model-context-protocol-servers-with-aws-lambda`](https://github.com/awslabs/run-model-context-protocol-servers-with-aws-lambda), which wraps **stdio**-based MCP servers into Lambda by spawning a child process per invocation. `@ttoss/http-server-mcp` already speaks Streamable HTTP, so that wrapper is unnecessary — you deploy it like any other HTTP handler.
+
+## Migrations
+
+Breaking changes and what they require of consumers are listed in
+[MIGRATIONS.md](https://github.com/ttoss/ttoss/blob/main/packages/http-server-mcp/MIGRATIONS.md),
+newest first.
 
 ## Related Packages
 

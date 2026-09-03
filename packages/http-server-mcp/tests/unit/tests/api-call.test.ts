@@ -55,6 +55,23 @@ describe('apiCall', () => {
     }
   });
 
+  test('throws HTTP <status> when the error body is JSON without an `error` key', async () => {
+    const { baseUrl, close } = await startRestServer((router) => {
+      router.get('/no-error-key', (ctx) => {
+        ctx.status = 500;
+        ctx.body = { message: 'something else entirely' };
+      });
+    });
+
+    try {
+      await expect(apiCall('GET', `${baseUrl}/no-error-key`)).rejects.toThrow(
+        'HTTP 500'
+      );
+    } finally {
+      await close();
+    }
+  });
+
   test('throws with statusText when error response body is not valid JSON', async () => {
     const { baseUrl, close } = await startRestServer((router) => {
       router.get('/v1/bad', (ctx) => {
