@@ -5,6 +5,7 @@
  * helpers live in leftSidebarTestUtils.tsx.
  */
 
+import { DEFAULT_LOCALE } from '@ttoss/react-i18n';
 import {
   act,
   fireEvent,
@@ -24,6 +25,7 @@ import {
   type Preview,
   preview,
   Provider,
+  PtBrProvider,
   visualizationSpec,
 } from './leftSidebarTestUtils';
 
@@ -67,6 +69,21 @@ test('header mirrors the active tab and the variations tab lists every variation
     'false'
   );
   expect(screen.getByRole('button', { name: 'Item B1' })).toBeInTheDocument();
+});
+
+test('each icon-only tab carries its section name as a hover tooltip', () => {
+  renderPreview();
+
+  // The tabs render nothing but an icon, so `aria-label` alone would leave a
+  // mouse user with no way to read the section's name.
+  expect(screen.getByRole('button', { name: 'Variações' })).toHaveAttribute(
+    'title',
+    'Variações'
+  );
+  expect(screen.getByRole('button', { name: 'Filtros' })).toHaveAttribute(
+    'title',
+    'Filtros'
+  );
 });
 
 test('the chip filter count shows as a badge on the Filtros tab', () => {
@@ -561,13 +578,31 @@ test('the playback interval input accepts valid seconds and rejects the rest', a
   expect(interval).toHaveValue(2.5);
 });
 
-test('collapsing a filter block hides its body', async () => {
+test('a collapsible block toggles its body from the header', async () => {
   renderPreview();
   await openFiltros();
 
+  // The locator is the preview's one `collapsible` block, declared closed.
+  expect(screen.queryByPlaceholderText('Buscar município...')).toBeNull();
+
+  await click(screen.getByRole('button', { name: /Local/ }));
+  expect(
+    screen.getByPlaceholderText('Buscar município...')
+  ).toBeInTheDocument();
+
+  await click(screen.getByRole('button', { name: /Local/ }));
+  expect(screen.queryByPlaceholderText('Buscar município...')).toBeNull();
+});
+
+test('a block keeps its header and its body without collapsible', async () => {
+  renderPreview();
+  await openFiltros();
+
+  // The header still reads the same — icon, uppercase title — it just does not
+  // toggle anything, so it is not a button and the body cannot be hidden.
+  expect(screen.getByText('Linha do tempo')).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /Linha do tempo/ })).toBeNull();
   expect(screen.getByRole('slider')).toBeInTheDocument();
-  await click(screen.getByRole('button', { name: /Linha do tempo/ }));
-  expect(screen.queryByRole('slider')).not.toBeInTheDocument();
 });
 
 test('the close button collapses the sidebar', async () => {
@@ -611,6 +646,150 @@ test('a timeline without histogram or unit still renders and drives the year', a
   expect(onVariableChange).toHaveBeenCalledWith(
     expect.objectContaining({ ano: '2' })
   );
+});
+
+/** A timeline whose counts are large enough to need grouping. */
+const populous: Preview = {
+  sections: [
+    preview.sections[0],
+    {
+      id: 'filtros',
+      header: { title: 'Filtros', icon: 'lucide:filter' },
+      body: {
+        kind: 'filters',
+        blocks: [
+          {
+            id: 'periodo',
+            title: 'Linha do tempo',
+            control: {
+              kind: 'timeline',
+              menuId: 'ano',
+              min: 2022,
+              max: 2024,
+              defaultValue: 2023,
+              unitLabel: 'pessoas',
+              histogram: [
+                { key: 2022, count: 987654 },
+                { key: 2023, count: 13453245 },
+                { key: 2024, count: 21000000 },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+};
+
+test('the histogram tooltip and the unit readout group their counts', async () => {
+  renderPreview({}, populous);
+  await openFiltros();
+
+  const group = (count: number) => {
+    return new Intl.NumberFormat(DEFAULT_LOCALE).format(count);
+  };
+
+  expect(screen.getByTitle(`2022: ${group(987654)}`)).toBeInTheDocument();
+  expect(screen.getByText(`${group(13453245)} pessoas`)).toBeInTheDocument();
+  // The year is left ungrouped: the readout would otherwise read `2,023`, and
+  // the bounds under the slider with it.
+  expect(screen.getByText('2023')).toBeInTheDocument();
+  expect(screen.getByText('2022')).toBeInTheDocument();
+});
+
+test('the counts follow the locale the app declared', async () => {
+  // What an app gets by declaring `locale="pt-BR"` without shipping a message
+  // bundle: react-intl still resolves strings against the default locale, so
+  // `intl.formatNumber` would group these with commas (see `useNumberFormat`).
+  render(
+    <GeovisWorkspace
+      config={{ leftSidebar: { initialState: 'open', ...populous } }}
+      visualizationSpec={visualizationSpec}
+    />,
+    { wrapper: PtBrProvider }
+  );
+  await openFiltros();
+
+  expect(screen.getByTitle('2022: 987.654')).toBeInTheDocument();
+  expect(screen.getByText('13.453.245 pessoas')).toBeInTheDocument();
+});
+
+/** The same preview with every section's header title dropped. */
+const untitled: Preview = {
+  sections: preview.sections.map((section) => {
+    return { ...section, header: { icon: section.header.icon } };
+  }),
+};
+
+test('untitled sections hand the top of the card to the tab bar', async () => {
+  renderPreview({}, untitled);
+
+  // No band: neither the name nor the icon chip that leads it is drawn.
+  expect(screen.queryByText('Variações')).toBeNull();
+
+  // The close button moved into the tab row, so the tabs are its neighbours
+  // rather than sitting under a strip of their own.
+  const close = screen.getByRole('button', { name: 'Close menu' });
+  const topRow = close.parentElement as HTMLElement;
+  expect(within(topRow).getByRole('button', { name: 'vars' })).toHaveAttribute(
+    'aria-current',
+    'true'
+  );
+
+  // And they still navigate; with no title they answer to their section id.
+  await click(within(topRow).getByRole('button', { name: 'filtros' }));
+  expect(screen.getByText('Linha do tempo')).toBeInTheDocument();
+});
+
+test('one titled section keeps the band for all of them', async () => {
+  const [vars, ...rest] = untitled.sections;
+  renderPreview(
+    {},
+    {
+      sections: [
+        { ...vars, header: { ...vars.header, title: 'Variações' } },
+        ...rest,
+      ],
+    }
+  );
+
+  // The band is back, headed by the active section's title, and the close
+  // button rides with it — outside the tab row.
+  expect(screen.getByText('Variações')).toBeInTheDocument();
+  const close = screen.getByRole('button', { name: 'Close menu' });
+  const band = close.parentElement as HTMLElement;
+  expect(within(band).queryByRole('button', { name: 'filtros' })).toBeNull();
+
+  // Switching to a section that names nothing keeps the band in place, empty:
+  // one that came and went per tab would shift the card under the pointer.
+  await click(screen.getByRole('button', { name: 'filtros' }));
+  expect(screen.queryByText('Variações')).toBeNull();
+  expect(
+    screen.getByRole('button', { name: 'Close menu' })
+  ).toBeInTheDocument();
+});
+
+test('a variations body heads its list when it declares a title', () => {
+  const [vars, ...rest] = untitled.sections;
+  renderPreview(
+    {},
+    {
+      sections: [
+        {
+          ...vars,
+          body:
+            vars.body.kind === 'variations'
+              ? { ...vars.body, title: 'Indicadores', icon: 'lucide:layers' }
+              : vars.body,
+        },
+        ...rest,
+      ],
+    }
+  );
+
+  // Named without a header band, and the rows are still there under it.
+  expect(screen.getByText('Indicadores')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Item A1' })).toBeInTheDocument();
 });
 
 test('a variations-only preview renders without a filters tab', () => {

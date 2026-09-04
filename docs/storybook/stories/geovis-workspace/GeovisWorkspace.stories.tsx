@@ -12,6 +12,7 @@ import {
 import { Box, Button, Flex, Text } from '@ttoss/ui';
 import * as React from 'react';
 
+import { withPtBr } from './GeovisWorkspace.decorators';
 import {
   buildBrokenSpec,
   buildPolicyViolationSpec,
@@ -161,6 +162,7 @@ const meta: Meta<typeof GeovisWorkspace> = {
   title: 'Geovis Workspace/GeovisWorkspace',
   component: GeovisWorkspace,
   tags: ['autodocs'],
+  decorators: [withPtBr],
   parameters: {
     docs: {
       description: {
@@ -472,7 +474,7 @@ const GroupedControlsStory = () => {
 /**
  * **Two menus sharing one tab.** "Faixa etária" (three variations) and
  * "Indicador" (thirty) are both `variations` controls inside a single `filters`
- * body, so they stack as collapsible blocks instead of claiming a tab each.
+ * body, so they stack as headed blocks instead of claiming a tab each.
  *
  * ## What to check
  *
@@ -527,16 +529,20 @@ const SidebarPreviewStory = () => {
 };
 
 /**
- * A rich left sidebar with three icon tabs whose header mirrors the active tab.
- * "Variações" is a flat list of icon-led variations (tagged by group) that
- * recolor the map through the shared selection; "Filtros" holds emoji chips
- * (their count shown as a badge on that tab alone) and a município locator; and
- * "Linha do Tempo" holds the timeline with play/pause.
+ * A rich left sidebar with three icon tabs and no header band: no section
+ * declares a `header.title`, so the tab bar itself heads the card — close button
+ * on its right — and the tabs carry the navigation on their own.
  *
- * The last two tabs show that a `filters` body is a body, not a tab: splitting
- * the controls across two sections gives each its own header, its own gate, and
- * — for the timeline — a HUD that follows only it. The filter controls are
- * visual-only for now (local state, not yet wired to the map).
+ * The first tab is a flat list of icon-led variations (tagged by group) that
+ * recolor the map through the shared selection; the second holds emoji chips
+ * (their count shown as a badge on that tab alone) and a município locator; the
+ * third holds the timeline with play/pause.
+ *
+ * The last two show that a `filters` body is a body, not a tab: splitting the
+ * controls across two sections gives each its own gate and — for the timeline —
+ * a HUD that follows only it. Only the locator block is `collapsible`; the rest
+ * draw a fixed header over their control. The filter controls are visual-only
+ * for now (local state, not yet wired to the map).
  */
 export const RichLeftSidebar: Story = {
   render: () => {

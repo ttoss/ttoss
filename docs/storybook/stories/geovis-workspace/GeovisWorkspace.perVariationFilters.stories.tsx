@@ -7,6 +7,8 @@ import {
 } from '@ttoss/geovis-workspace';
 import * as React from 'react';
 
+import { withPtBr } from './GeovisWorkspace.decorators';
+
 /**
  * **Filters that belong to a variation.** A map where each variation is backed
  * by different data: some carry a time dimension, some carry categories, some
@@ -362,6 +364,7 @@ const meta = {
   title: 'Geovis Workspace/PerVariationFilters',
   component: PerVariationFiltersDemo,
   tags: ['autodocs'],
+  decorators: [withPtBr],
 } satisfies Meta<typeof PerVariationFiltersDemo>;
 
 export default meta;

@@ -112,6 +112,13 @@ export interface GeovisWorkspaceSidebarVariation {
   label: string;
   /** Iconify token rendered before the label, e.g. `"lucide:tractor"`. */
   icon?: string;
+  /**
+   * Hover text for the row, rendered as the native `title`. Omit it and the row
+   * carries no `title` at all — a tooltip repeating the visible label would
+   * spend a hover delay to say what is already on screen. Use it for what the
+   * label cannot hold: what the variation measures, or the unit it is read in.
+   */
+  description?: string;
 }
 
 /**
@@ -138,6 +145,14 @@ export interface GeovisWorkspaceSidebarVariationGroup {
  */
 export interface GeovisWorkspaceSidebarVariationsBody {
   kind: 'variations';
+  /**
+   * Heads the list with the same label a filter block draws — worth setting
+   * when the sections carry no `header.title`, since the tab bar then names
+   * nothing and the rows would open straight against it.
+   */
+  title?: string;
+  /** Iconify token rendered before {@link title}. */
+  icon?: string;
   /** Keys the shared selection this zone drives (`selection[menuId]`). */
   menuId: string;
   /** The variation groups; flattened into one list in the given order. */
@@ -272,7 +287,7 @@ export interface GeovisWorkspaceSidebarLocatorFilter {
  * its `groups` share one `menuId` and flatten into one list — so two menus mean
  * two tabs, and crossing between them costs a tab switch. As a filter *control*
  * a menu becomes a block instead, and `filters` bodies stack blocks: several
- * menus then share one tab, each under its own collapsible heading, exactly as
+ * menus then share one tab, each under its own heading, exactly as
  * the timeline and chips already do.
  *
  * Neither replaces the other. A tab given over to one long menu is still better
@@ -306,21 +321,31 @@ export type GeovisWorkspaceSidebarFilterControl =
   | GeovisWorkspaceSidebarLocatorFilter
   | GeovisWorkspaceSidebarVariationsFilter;
 
-/** A collapsible block wrapping one filter control. */
+/** A headed block wrapping one filter control. */
 export interface GeovisWorkspaceSidebarFilterBlock {
   /** Unique id of the block. */
   id: string;
-  /** Heading shown on the block's collapsible header. */
+  /** Heading shown on the block's header. */
   title: string;
   /** Iconify token rendered before the title. */
   icon?: string;
-  /** Whether the block starts expanded. Defaults to `true`. */
+  /**
+   * Turns the header into a toggle for the block's body. Defaults to `false`:
+   * a block is a labelled control, and the chevron reads as an affordance the
+   * sidebar rarely needs — the tab bar is what puts controls out of the way.
+   * Opt in for a block long enough that its neighbours are pushed off screen.
+   */
+  collapsible?: boolean;
+  /**
+   * Whether the block starts expanded. Defaults to `true`, and is read only
+   * when {@link collapsible} is set — a fixed header has nothing to open.
+   */
   defaultOpen?: boolean;
   /** The control rendered inside the block. */
   control: GeovisWorkspaceSidebarFilterControl;
 }
 
-/** Zone body: a stack of collapsible filter blocks (the "Filtros" zone). */
+/** Zone body: a stack of headed filter blocks (the "Filtros" zone). */
 export interface GeovisWorkspaceSidebarFiltersBody {
   kind: 'filters';
   /** The filter blocks, top to bottom. */
@@ -333,9 +358,25 @@ export type GeovisWorkspaceSidebarBody =
 
 /** A zone's header: a leading icon chip and a title. */
 export interface GeovisWorkspaceSidebarHeader {
-  /** Title shown in the header. */
-  title: string;
-  /** Iconify token rendered in the leading chip. */
+  /**
+   * Names the section: it heads the sidebar band while the section is active,
+   * and labels the section's tab for assistive tech and on hover.
+   *
+   * Omit it on every section and the band goes away entirely: the tab bar moves
+   * up to the top of the card and takes the close button with it, so nothing is
+   * spent on an empty strip. Omit it on some and the band stays for all — one
+   * that appeared and vanished per tab would shift the card under the pointer —
+   * heading the untitled ones with nothing.
+   *
+   * Either way the tab keeps its `icon` and falls back to the section's `id`
+   * for its accessible name, which is a poor label; prefer a title unless the
+   * tab bar alone is meant to carry the navigation.
+   */
+  title?: string;
+  /**
+   * Iconify token, rendered in the tab and — while the section is active and
+   * carries a {@link title} — in the header band's leading chip.
+   */
   icon?: string;
   /** Color of the header icon (hex or token). */
   iconColor?: string;
@@ -403,13 +444,48 @@ export interface GeovisWorkspaceConfig {
 /** Active item value per menu group, keyed by menu id. */
 export type GeovisWorkspaceSelection = Record<string, string | undefined>;
 
+/**
+ * The variation whose change the consumer is still working on: set while the
+ * promise returned from `onVariableChange` is in flight, cleared when it
+ * settles. Every menu is inert meanwhile, so a second pick cannot race the
+ * first — which is the whole reason this is shared state rather than something
+ * a menu could hold on its own.
+ */
+export interface GeovisWorkspacePendingSelection {
+  /** Menu the pending change belongs to. */
+  menuId: string;
+  /** Value that was picked, whether or not the parent has committed it yet. */
+  value: string;
+}
+
 export interface GeovisWorkspaceContextValue {
   /** The config that drives the sidebars. */
   config: GeovisWorkspaceConfig;
   /** Active item value per menu group, keyed by menu id. */
   selection: GeovisWorkspaceSelection;
-  /** Sets the active item for a given menu group. */
-  setSelection: ({ menuId, value }: { menuId: string; value: string }) => void;
+  /**
+   * Sets the active item for a given menu group.
+   *
+   * `blocking` marks the change as one the consumer may need time to serve: if
+   * its selection handler returns a promise, that promise arms
+   * {@link pendingSelection} until it settles. Menus pass it; the timeline and
+   * the chips do not, since a timeline tick would otherwise freeze the sidebar
+   * once per frame of playback.
+   */
+  setSelection: ({
+    menuId,
+    value,
+    blocking,
+  }: {
+    menuId: string;
+    value: string;
+    blocking?: boolean;
+  }) => void;
+  /**
+   * The variation change still in flight, if any. Menus render their rows inert
+   * while it is set — see {@link GeovisWorkspacePendingSelection}.
+   */
+  pendingSelection?: GeovisWorkspacePendingSelection;
   /** Whether the left sidebar is currently open. */
   isLeftSidebarOpen: boolean;
   /** Opens or closes the left sidebar. */
