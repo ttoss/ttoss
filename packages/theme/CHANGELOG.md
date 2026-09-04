@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.12.2 (2026-09-04)
+
+### Bug Fixes
+
+- **theme:** give checkbox/radio icons a fixed size instead of min-content ([#1225](https://github.com/ttoss/ttoss/issues/1225)) ([46f61b2](https://github.com/ttoss/ttoss/commit/46f61b24719e796a9fb74174f32a8463ccbdd55d))
+
 ## 2.12.1 (2026-08-31)
 
 **Note:** Version bump only for package @ttoss/theme

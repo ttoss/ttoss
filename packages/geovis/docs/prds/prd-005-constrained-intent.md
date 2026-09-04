@@ -22,11 +22,12 @@ AI expresses what the map should answer, never how to draw it.
 
 ### Must
 
-- Intent schema capturing analytical task, metric, geography, time, filters, and unresolved ambiguity (strategy §5.1) — JSON Schema with hand-written TypeScript interface.
+- Intent schema capturing analytical task, metric, geography, time, filters, and unresolved ambiguity (strategy §5.1) — authored as a Zod schema (see plan D1), with the JSON Schema document derived on demand via `z.toJSONSchema`, not hand-maintained.
 - Validation of intents against a catalog, reporting through the PRD-001 taxonomy.
-- Analytical task vocabulary from strategy §12 (distribution, comparison, ranking, change over time, outlier detection, feature lookup, coverage).
-- Structured-output-friendly design: the JSON Schema usable directly as an LLM tool input schema.
+- Analytical task vocabulary from strategy §12 (distribution, comparison, ranking, change over time, outlier detection, feature lookup, coverage), extended to 9 entries — `composition` and `normalized-comparison` — after the plan's D9 found both load-bearing in a real production catalog (`cozsolidarias`' shipped `dataset_catalogue.json`); see plan D2 for the evidence and traceability.
+- Structured-output-friendly design: the derived JSON Schema usable directly as an LLM tool input schema.
 - Intent references a `categoryId` when the requested metric is nominal, so a categorical request is grounded in the catalog's closed category list rather than free text.
+- Intent references a `denominatorMetricId` for the `normalized-comparison` task, grounded against the catalog the same way `metricId` is, so a rate request names its denominator explicitly rather than leaving it implicit (plan D7).
 
 ### Won't (non-goals)
 

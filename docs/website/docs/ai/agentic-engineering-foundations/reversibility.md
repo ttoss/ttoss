@@ -1,6 +1,6 @@
 ---
 title: Reversibility
-sidebar_position: 7
+sidebar_position: 6
 ---
 
 Every change an agent produces must be cheap to undo. Agents multiply the volume of change entering the system, and no verification loop catches everything, so the cost of being wrong is governed by the cost of recovery. A team that can revert any change in minutes can afford to delegate aggressively; a team whose changes are entangled, unflagged, or irreversible must inspect everything before it ships — which caps agentic throughput at human review speed.

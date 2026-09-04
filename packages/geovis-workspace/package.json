@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/geovis-workspace",
-  "version": "0.11.2",
+  "version": "0.12.2",
   "description": "React component that combines a menu and canvas map interactions.",
   "keywords": [
     "react",

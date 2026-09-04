@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.27.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.27.0...@ttoss/http-server-mcp@0.27.1) (2026-09-03)
+
+### Bug Fixes
+
+- **http-server-mcp:** make the handshake public on both protocol eras ([#1223](https://github.com/ttoss/ttoss/issues/1223)) ([cb611ba](https://github.com/ttoss/ttoss/commit/cb611bab1f116eae1328d07ff0c373016be0c0f4))
+
+# [0.27.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.26.2...@ttoss/http-server-mcp@0.27.0) (2026-09-03)
+
+- feat(http-server-mcp)!: require a token for tools/list by default (#1221) ([912b2bd](https://github.com/ttoss/ttoss/commit/912b2bd1cce4da3bb4add64594dda40dbdd0802c)), closes [#1221](https://github.com/ttoss/ttoss/issues/1221)
+
+### BREAKING CHANGES
+
+- `auth.publicMethods` defaults to `['initialize']` instead of
+  `['initialize', 'tools/list']`, so an unauthenticated `tools/list` now returns
+  `401` rather than the tool catalogue. Consumers that configure `auth` and rely
+  on unauthenticated tool discovery must set
+  `publicMethods: ['initialize', 'tools/list']` explicitly. See
+  `packages/http-server-mcp/MIGRATIONS.md`. Closes #1176.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_015vN9NAdqTpNxHQBeVpVxaJ
+
+- fix(http-server-mcp): link MIGRATIONS.md absolutely so the docs site builds
+
+The docs site generates each package's API page from its README via
+typedoc-plugin-markdown, which rewrites a relative link to a sibling repo
+file into `_media/<file>` and copies the file there. Docusaurus ignores
+`_`-prefixed paths, so the rewritten link can never resolve and
+`@docs/website#build` fails:
+
+    MDX compilation failed for docs/modules/packages/http-server-mcp/index.md
+    Markdown link with URL `_media/MIGRATIONS.md` ... couldn't be resolved
+
+`./MIGRATIONS.md` was the only relative Markdown link in any package README,
+which is why nothing had hit this before. Use the absolute `blob/main` URL
+other READMEs already use for repo files, which also resolves for readers on
+npm.
+
+Regenerating the API docs surfaced a second defect in the same commit: the
+`publicMethods` `@example` name spanned two lines, so typedoc took the first
+line as the example name and left "self-discover from the very first request"
+orphaned in the rendered body. Both examples now live in one code block with
+the explanation as comments.
+
+Verified by reproducing the failure locally and rebuilding: the `_media` link
+is gone, the examples render as one clean block, and `docs/website` builds
+successfully.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_015vN9NAdqTpNxHQBeVpVxaJ
+
 ## [0.26.2](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.26.1...@ttoss/http-server-mcp@0.26.2) (2026-08-31)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp

@@ -8,7 +8,7 @@
       "outputs": ["dist/**"]
     },
     "i18n": {
-      "dependsOn": ["@ttoss/i18n-cli#build-config"],
+      "dependsOn": ["^i18n", "@ttoss/i18n-cli#build-config"],
       "outputs": ["i18n/**"]
     },
     "build": {

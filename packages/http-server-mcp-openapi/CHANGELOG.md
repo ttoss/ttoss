@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.10](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.2.9...@ttoss/http-server-mcp-openapi@0.2.10) (2026-09-03)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp-openapi
+
+## [0.2.9](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.2.8...@ttoss/http-server-mcp-openapi@0.2.9) (2026-09-03)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp-openapi
+
 ## [0.2.8](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.2.7...@ttoss/http-server-mcp-openapi@0.2.8) (2026-08-31)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp-openapi

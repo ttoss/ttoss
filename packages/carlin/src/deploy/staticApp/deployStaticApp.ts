@@ -23,6 +23,7 @@ export const deployStaticApp = async ({
   appendIndexHtml,
   buildFolder,
   cloudfront,
+  redirectToTrailingSlash,
   responseHeaders,
   responseHeadersPolicy,
   spa,
@@ -37,6 +38,7 @@ export const deployStaticApp = async ({
   appendIndexHtml?: boolean;
   buildFolder?: string;
   cloudfront?: boolean;
+  redirectToTrailingSlash?: boolean;
   responseHeaders?: ResponseHeader[];
   responseHeadersPolicy?: string;
   spa?: boolean;
@@ -60,6 +62,7 @@ export const deployStaticApp = async ({
       aliases,
       appendIndexHtml,
       cloudfront,
+      redirectToTrailingSlash,
       responseHeaders,
       responseHeadersPolicy,
       spa,

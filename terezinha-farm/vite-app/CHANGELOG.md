@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.21.4](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.21.3...@terezinha-farm/vite-app@0.21.4) (2026-09-04)
+
+**Note:** Version bump only for package @terezinha-farm/vite-app
+
+## [0.21.3](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.21.2...@terezinha-farm/vite-app@0.21.3) (2026-09-01)
+
+### Bug Fixes
+
+- **i18n:** invalidate a package's i18n task when a dependency's messages change ([#1217](https://github.com/ttoss/ttoss/issues/1217)) ([84a691c](https://github.com/ttoss/ttoss/commit/84a691c6d4b17cc71616940dc7eb15bd8b5f6ec7)), closes [pre-#1214](https://github.com/pre-/issues/1214)
+
 ## [0.21.2](https://github.com/ttoss/ttoss/compare/@terezinha-farm/vite-app@0.21.1...@terezinha-farm/vite-app@0.21.2) (2026-09-01)
 
 **Note:** Version bump only for package @terezinha-farm/vite-app
