@@ -18,11 +18,7 @@ import * as React from 'react';
 
 import type { ColorStep } from './helpers/choropleth-helpers';
 import { MapOverlayLegend } from './helpers/choropleth-helpers';
-import {
-  computeBbox,
-  FitBoundsToBbox,
-  MapLabel,
-} from './helpers/map-story-helpers';
+import { MapLabel } from './helpers/map-story-helpers';
 
 const DISTRICTS_URL =
   'https://api-forja.triangulos.tech/v1/files/13984ef1-a4b4-4476-869d-9b9cfd9c6788/download';
@@ -473,11 +469,6 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
       });
   }, []);
 
-  const districtBbox = React.useMemo(() => {
-    if (!districtGeoJson) return undefined;
-    return computeBbox(districtGeoJson as GeoJSON.FeatureCollection);
-  }, [districtGeoJson]);
-
   const mapDataEntries = React.useMemo(() => {
     if (!populationData) return [];
     const yearData = populationData[String(year)];
@@ -707,13 +698,6 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
       toggle(subprefeituraGroupRef.current);
   }, [showSubprefeituraOutlines, toggle, isVisible]);
 
-  // Small uniform padding on every edge — the map fills the container and the
-  // legend overlays it at its corner without shifting the fitBounds centre.
-  const fitInsets = React.useMemo(() => {
-    const pad = 24;
-    return { top: pad, bottom: pad, left: pad, right: pad };
-  }, []);
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <GeoVisProvider spec={spec}>
@@ -733,7 +717,6 @@ const MunicipalDistrictMapDataRender = (props: MunicipalDistrictStoryArgs) => {
             viewId="primary"
             style={{ width: '100%', height: '100%' }}
           />
-          <FitBoundsToBbox bbox={districtBbox} overlayInsets={fitInsets} />
           {!position && (
             <MapOverlayLegend
               label={`${dataProperty} population`}

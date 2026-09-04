@@ -6,6 +6,7 @@
  * feature-state handling in MapLibreAdapter.mapData.test.ts.
  */
 
+import { log } from '@ttoss/logger';
 import maplibregl from 'maplibre-gl';
 import createMapLibreAdapter from 'src/adapters/maplibre/MapLibreAdapter';
 import type { VisualizationLayer } from 'src/spec/types';
@@ -557,6 +558,121 @@ describe('syncSourcesAndLayers — GeoJSON setData', () => {
     adapter.update({ ...initialSpec });
 
     expect(setData).not.toHaveBeenCalled();
+  });
+});
+
+describe('applyPatch — unknown target', () => {
+  test('an unrecognized patch target logs a warning and applies nothing', () => {
+    const map = makeMapMock();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const warnSpy = jest.spyOn(log, 'warn').mockImplementation(() => {});
+
+    const adapter = createMapLibreAdapter();
+    adapter.mount(makeContainer(), makeSpec(), 'v');
+    adapter.applyPatch({
+      target: 'bogus',
+    } as never);
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('unknown patch target "bogus"')
+    );
+    warnSpy.mockRestore();
+  });
+});
+
+describe('setView — AI action camera control (applySetView)', () => {
+  const mountAdapter = () => {
+    const map = makeMapMock();
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+    const adapter = createMapLibreAdapter();
+    adapter.mount(makeContainer(), makeSpec(), 'v');
+    return { adapter, map };
+  };
+
+  test('calls flyTo (animated by default) with only the provided camera fields', () => {
+    const { adapter, map } = mountAdapter();
+
+    adapter.setView({ center: [1, 2], zoom: 5 });
+
+    expect(map.flyTo).toHaveBeenCalledWith({ center: [1, 2], zoom: 5 });
+    expect(map.jumpTo).not.toHaveBeenCalled();
+  });
+
+  test('pitch and bearing are forwarded independently of center/zoom', () => {
+    const { adapter, map } = mountAdapter();
+
+    adapter.setView({ pitch: 40, bearing: 90 });
+
+    expect(map.flyTo).toHaveBeenCalledWith({ pitch: 40, bearing: 90 });
+  });
+
+  test('animate: false calls jumpTo instead of flyTo', () => {
+    const { adapter, map } = mountAdapter();
+
+    adapter.setView({ center: [1, 2], animate: false });
+
+    expect(map.jumpTo).toHaveBeenCalledWith({ center: [1, 2] });
+    expect(map.flyTo).not.toHaveBeenCalled();
+  });
+
+  test('an options object with no camera fields calls neither flyTo nor jumpTo', () => {
+    const { adapter, map } = mountAdapter();
+
+    adapter.setView({});
+
+    expect(map.flyTo).not.toHaveBeenCalled();
+    expect(map.jumpTo).not.toHaveBeenCalled();
+  });
+
+  test('setView does nothing when no map is mounted', () => {
+    const adapter = createMapLibreAdapter();
+    expect(() => {
+      adapter.setView({ center: [1, 2] });
+    }).not.toThrow();
+  });
+});
+
+describe('update() — style not yet loaded defers sync to style.load', () => {
+  test('when the style is unchanged but isStyleLoaded() is false, sync is deferred and runs once style.load fires', () => {
+    const map = makeMapMock();
+    let styleLoadCb: (() => void) | undefined;
+    jest.mocked(map.once).mockImplementation((event, cb) => {
+      if (event === 'style.load') styleLoadCb = cb as () => void;
+    });
+    jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
+      return map as never;
+    });
+
+    const adapter = createMapLibreAdapter();
+    const initialSpec = { ...makeSpec(), sources: [], layers: [] };
+    adapter.mount(makeContainer(), initialSpec, 'v');
+
+    jest.mocked(map.isStyleLoaded).mockReturnValue(false);
+    adapter.update({
+      ...initialSpec,
+      sources: [
+        {
+          id: 'points',
+          type: 'geojson' as const,
+          data: { type: 'FeatureCollection' as const, features: [] },
+        },
+      ],
+      layers: [
+        { id: 'points-layer', sourceId: 'points', geometry: 'point' as const },
+      ],
+    });
+
+    // Deferred: nothing applied yet, but a style.load listener was registered.
+    expect(map.addSource).not.toHaveBeenCalled();
+    expect(styleLoadCb).toBeInstanceOf(Function);
+
+    // Once the style actually finishes loading, the deferred sync runs.
+    styleLoadCb?.();
+    expect(map.addSource).toHaveBeenCalled();
   });
 });
 
