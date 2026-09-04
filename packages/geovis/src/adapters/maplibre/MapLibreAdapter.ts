@@ -11,9 +11,20 @@ import type {
   SetViewOptions,
   SpecPatch,
 } from '../../runtime/adapter';
+import {
+  computeGeoJSONObjectsBbox,
+  computeSourcesBbox,
+  fetchUrlSourceData,
+  hasUrlSources,
+} from '../../spec/bounds';
 import { applyMapDataPatchToSpec } from '../../spec/mapDataPatch';
-import type { MapData, VisualizationSpec } from '../../spec/types';
+import type {
+  GeoJSONBoundingBox,
+  MapData,
+  VisualizationSpec,
+} from '../../spec/types';
 import { applyBasemapLabelsVisibility } from './basemapLabels';
+import { attachFitToData } from './fitBoundsToData';
 import { toMaplibreLayer } from './layerTranslation';
 import { reapplyLegendDrivenFillPaint } from './legendFillPaint';
 import {
@@ -27,91 +38,24 @@ import { applyLayerPatch, applySourcePatch } from './patchDispatch';
 import { applySelectionToMap } from './selection';
 import { toMaplibreSource } from './sourceTranslation';
 import { syncSourcesAndLayers } from './syncSourcesAndLayers';
+import { syncMapView } from './viewSync';
 
-// Re-exports preserved for public API and historical test imports.
 export { toMaplibreLayer, toMaplibreSource };
 
 const DEFAULT_STYLE = 'https://tiles.openfreemap.org/styles/positron';
 
-/**
- * A valid MapLibre style with no sources and no layers, producing a blank canvas.
- * Used when `spec.basemap.visible === false`.
- */
 const BLANK_STYLE: maplibregl.StyleSpecification = {
   version: 8,
   sources: {},
   layers: [],
 };
 
-/**
- * Returns the MapLibre style to use for this spec.
- * When `basemap.visible` is explicitly `false`, returns a blank style so that
- * GeoJSON layers render over a transparent/white canvas with no tile imagery.
- * Otherwise falls back to `basemap.styleUrl` or the MapLibre demo tiles.
- */
+// Blank style when basemap is hidden, else the spec's styleUrl or the default.
 const resolveStyle = (
   spec: VisualizationSpec
 ): string | maplibregl.StyleSpecification => {
   if (spec.basemap?.visible === false) return BLANK_STYLE;
   return spec.basemap?.styleUrl ?? DEFAULT_STYLE;
-};
-
-const syncCenter = (
-  map: maplibregl.Map,
-  prev: VisualizationSpec['view'],
-  next: VisualizationSpec['view']
-): void => {
-  if (!next?.center || next.center.length !== 2) return;
-  const [lng, lat] = next.center;
-  if (prev?.center?.[0] === lng && prev?.center?.[1] === lat) return;
-  map.setCenter(next.center as maplibregl.LngLatLike);
-};
-
-const syncZoom = (
-  map: maplibregl.Map,
-  prev: VisualizationSpec['view'],
-  next: VisualizationSpec['view']
-): void => {
-  if (next?.zoom === undefined || next.zoom === prev?.zoom) return;
-  map.setZoom(next.zoom);
-};
-
-const syncMaxZoom = (
-  map: maplibregl.Map,
-  prev: VisualizationSpec['view'],
-  next: VisualizationSpec['view']
-): void => {
-  if (prev?.maxZoomIn === next?.maxZoomIn) return;
-  map.setMaxZoom(next?.maxZoomIn ?? null);
-};
-
-const syncMinZoom = (
-  map: maplibregl.Map,
-  prev: VisualizationSpec['view'],
-  next: VisualizationSpec['view']
-): void => {
-  if (prev?.maxZoomOut === next?.maxZoomOut) return;
-  map.setMinZoom(next?.maxZoomOut ?? null);
-};
-
-/** Syncs map camera (center, zoom, pitch, bearing) to `next`, skipping values unchanged from `prev`. */
-const syncMapView = (
-  map: maplibregl.Map,
-  prev: VisualizationSpec['view'],
-  next: VisualizationSpec['view']
-): void => {
-  if (!next) return;
-  const p = prev ?? {};
-  syncCenter(map, prev, next);
-  syncMaxZoom(map, prev, next);
-  syncMinZoom(map, prev, next);
-  syncZoom(map, prev, next);
-  const pp = p.pitch ?? 0;
-  const np = next.pitch ?? 0;
-  if (pp !== np) map.setPitch(np);
-  const pb = p.bearing ?? 0;
-  const nb = next.bearing ?? 0;
-  if (pb !== nb) map.setBearing(nb);
 };
 
 type MapLibreStyle = string | maplibregl.StyleSpecification;
@@ -120,10 +64,30 @@ interface ViewState {
   map: maplibregl.Map;
   spec: VisualizationSpec;
   style: MapLibreStyle;
+  fitBbox: GeoJSONBoundingBox | null;
+  detachFit: (() => void) | null;
 }
 
 type ViewMap = Map<string, ViewState>;
 
+// Either center or zoom set manually disables auto-fit-to-data.
+const hasExplicitView = (view: VisualizationSpec['view']): boolean => {
+  return view?.center !== undefined || view?.zoom !== undefined;
+};
+
+// Value equality, since bbox arrays are recomputed (never the same reference).
+const bboxEqual = (
+  a: GeoJSONBoundingBox | null,
+  b: GeoJSONBoundingBox | null
+): boolean => {
+  if (a === b) return true;
+  if (!a || !b || a.length !== b.length) return false;
+  return a.every((value, index) => {
+    return value === b[index];
+  });
+};
+
+// Constructs the MapLibre instance with the spec's initial (static) camera.
 const createMap = (
   spec: VisualizationSpec,
   container: HTMLElement
@@ -139,9 +103,6 @@ const createMap = (
     minZoom: view.maxZoomOut,
     pitch: view.pitch ?? 0,
     bearing: view.bearing ?? 0,
-    // MapLibre mounts its attribution control unless this option is `false`, so
-    // every spec that stays silent keeps the button. Only an explicit opt-out
-    // removes it — see the field's own note on what the caller then owes.
     ...(spec.attributionControlEnabled === false
       ? { attributionControl: false as const }
       : {}),
@@ -158,43 +119,7 @@ const createMap = (
   return { map, style };
 };
 
-const mountView = (
-  views: ViewMap,
-  container: HTMLElement,
-  spec: VisualizationSpec,
-  viewId: string
-): MountedView => {
-  const { map, style } = createMap(spec, container);
-  views.set(viewId, { map, spec, style });
-  map.on('load', () => {
-    const viewState = views.get(viewId);
-    if (!viewState) return;
-    // Hide basemap labels while the style is loaded and before adding the user's
-    // sources (which flip the style back to "loading"). This applies on the very
-    // first frame, with no flash of labels. The trailing call re-applies once the
-    // sources settle (via `idle`) to also cover any user symbol layers.
-    applyBasemapLabelsVisibility(map, viewState.spec);
-    syncSourcesAndLayers(map, viewState.spec, null);
-    reapplyAllMapData(map, viewState.spec);
-    applyBasemapLabelsVisibility(map, viewState.spec);
-  });
-  let _removed = false;
-  return {
-    viewId,
-    container,
-    destroy: () => {
-      if (_removed) return;
-      _removed = true;
-      try {
-        map.remove();
-      } catch {
-        /* MapLibre can throw if the map was not fully initialized. */
-      }
-      views.delete(viewId);
-    },
-  };
-};
-
+// True if any mapData entry was added, removed, or changed value.
 const hasMapDataChanged = (
   previousMapData: MapData[] | undefined,
   nextMapData: MapData[] | undefined
@@ -209,6 +134,7 @@ const hasMapDataChanged = (
   });
 };
 
+// Clears feature-state for mapData entries removed or changed since the last spec.
 const removeStaleMapData = (
   map: maplibregl.Map,
   previousMapData: MapData[] | undefined,
@@ -223,20 +149,243 @@ const removeStaleMapData = (
   }
 };
 
-const updateView = (
-  views: ViewMap,
-  viewId: string,
+// Routes a SpecPatch to its target-specific handler (layer/source/mapData).
+const dispatchPatch = (viewState: ViewState, patch: SpecPatch): void => {
+  const { map } = viewState;
+  if (patch.target === 'layer') {
+    applyLayerPatch(map, viewState, patch as SpecPatch & { target: 'layer' });
+  } else if (patch.target === 'source') {
+    applySourcePatch(map, viewState, patch as SpecPatch & { target: 'source' });
+  } else if (patch.target === 'mapData') {
+    applyMapDataPatchToMap(map, viewState.spec.mapData ?? [], patch);
+    viewState.spec = applyMapDataPatchToSpec(viewState.spec, patch);
+    reapplyLegendDrivenFillPaint(map, viewState.spec);
+  } else {
+    log.warn(
+      `[geovis] MapLibreAdapter: unknown patch target "${
+        (patch as { target: unknown }).target
+      }" — patch was ignored.`
+    );
+  }
+};
+
+// Imperative camera call for the AI/runtime `setView` action — flyTo (animated) or jumpTo.
+const applySetView = (map: maplibregl.Map, options: SetViewOptions): void => {
+  const { center, zoom, pitch, bearing, animate = true } = options;
+  const camera: maplibregl.CameraOptions = {};
+  if (center !== undefined) camera.center = center as maplibregl.LngLatLike;
+  if (zoom !== undefined) camera.zoom = zoom;
+  if (pitch !== undefined) camera.pitch = pitch;
+  if (bearing !== undefined) camera.bearing = bearing;
+  if (Object.keys(camera).length === 0) return;
+  if (animate) {
+    map.flyTo(camera);
+  } else {
+    map.jumpTo(camera);
+  }
+};
+
+// Tears down every mounted view (detaches auto-fit listeners, removes the map).
+const destroyAll = (views: ViewMap): void => {
+  for (const viewState of views.values()) {
+    viewState.detachFit?.();
+    try {
+      viewState.map.remove();
+    } catch {
+      /* MapLibre can throw if the map was not fully initialized. */
+    }
+  }
+  views.clear();
+};
+
+const CAPABILITIES: CapabilitySet = {
+  sourceTypes: [
+    'geojson',
+    'vector-tiles',
+    'raster-tiles',
+    'raster-dem',
+    'image',
+    'video',
+  ],
+  layerGeometries: ['polygon', 'line', 'point', 'symbol', 'heatmap', 'raster'],
+  dataFeatures: {
+    featureState: ['geojson'],
+    filter: ['geojson'],
+  },
+  viewFeatures: {
+    pitch: true,
+    bearing: true,
+  },
+};
+
+type FetchCacheMap = Map<string, Promise<GeoJSONBoundingBox | null>>;
+
+interface AdapterState {
+  views: ViewMap;
+  prevSelection: GeoVisSelection | null;
+  urlFetchPromises: WeakMap<maplibregl.Map, FetchCacheMap>;
+  currentUrlSpecKeyByMap: WeakMap<maplibregl.Map, string>;
+}
+
+// Fetches URL-based geojson sources once per specKey, then attaches the
+// fit-to-data listener when the resolved bbox differs from the current one.
+const attachUrlSourceFit = (
+  state: AdapterState,
+  viewState: ViewState,
+  spec: VisualizationSpec,
+  specKey: string
+): void => {
+  state.currentUrlSpecKeyByMap.set(viewState.map, specKey);
+  let promiseCache = state.urlFetchPromises.get(viewState.map);
+  if (!promiseCache) {
+    promiseCache = new Map();
+    state.urlFetchPromises.set(viewState.map, promiseCache);
+  }
+  if (!promiseCache.has(specKey)) {
+    promiseCache.set(
+      specKey,
+      fetchUrlSourceData(spec.sources)
+        .then(computeGeoJSONObjectsBbox)
+        .catch(() => {
+          return null;
+        })
+    );
+  }
+  promiseCache.get(specKey)!.then((fetchedBbox) => {
+    if (!fetchedBbox) return;
+    if (state.currentUrlSpecKeyByMap.get(viewState.map) !== specKey) return;
+    if (hasExplicitView(viewState.spec.view)) return;
+    if (bboxEqual(viewState.fitBbox, fetchedBbox)) return;
+    viewState.detachFit?.();
+    viewState.fitBbox = fetchedBbox;
+    viewState.detachFit = attachFitToData(viewState.map, fetchedBbox);
+  });
+};
+
+// The `syncFit` closure both mountView and updateView call: decides whether
+// auto-fit applies (inline sources), needs an async URL fetch first, or is
+// disabled (explicit view) — attaching/detaching `attachFitToData` accordingly.
+const syncFitToData = (
+  state: AdapterState,
   viewState: ViewState,
   spec: VisualizationSpec
+): void => {
+  const explicitView = hasExplicitView(spec.view);
+  const nextBbox = explicitView ? null : computeSourcesBbox(spec.sources);
+
+  if (nextBbox !== null && bboxEqual(viewState.fitBbox, nextBbox)) return;
+
+  if (!explicitView && nextBbox === null && hasUrlSources(spec.sources)) {
+    const specKey = JSON.stringify(
+      spec.sources.filter((s) => {
+        return s.type === 'geojson' && typeof s.data === 'string';
+      })
+    );
+    attachUrlSourceFit(state, viewState, spec, specKey);
+    return;
+  }
+
+  if (bboxEqual(viewState.fitBbox, nextBbox)) return;
+  viewState.detachFit?.();
+  viewState.fitBbox = nextBbox;
+  viewState.detachFit = nextBbox
+    ? attachFitToData(viewState.map, nextBbox)
+    : null;
+};
+
+/**
+ * Mounts a brand-new map instance. Centering happens in two stages here:
+ * 1. `createMap` gives MapLibre a *synchronous* initial camera straight from
+ *    `spec.view` (or `[0, 0]`/zoom `1` if `view` is omitted) — this is only
+ *    ever a placeholder frame the user briefly sees before stage 2 corrects it.
+ * 2. `syncFit` (→ `syncFitToData`) runs right after, before `load` even
+ *    fires. When `view.center`/`view.zoom` are explicit it's a no-op — the
+ *    stage-1 camera stands. When they're omitted, it attaches
+ *    `attachFitToData`, which itself waits for the map's `idle` event to
+ *    animate an actual `fitBounds` to the data — so the real "auto-fit"
+ *    centering lands asynchronously, after this function has returned.
+ */
+const mountView = (
+  state: AdapterState,
+  container: HTMLElement,
+  spec: VisualizationSpec,
+  viewId: string,
+  syncFit: (vs: ViewState, s: VisualizationSpec) => void
+): MountedView => {
+  // Stage 1: synchronous placeholder camera (explicit view, or [0,0]/zoom 1).
+  const { map, style } = createMap(spec, container);
+  const viewState: ViewState = {
+    map,
+    spec,
+    style,
+    fitBbox: null,
+    detachFit: null,
+  };
+  state.views.set(viewId, viewState);
+  // Stage 2: attaches the async auto-fit-to-data correction (see doc above);
+  // only takes effect when spec.view.center/zoom are both omitted.
+  syncFit(viewState, spec);
+  map.on('load', () => {
+    const vs = state.views.get(viewId);
+    if (!vs) return;
+    applyBasemapLabelsVisibility(map, vs.spec);
+    syncSourcesAndLayers(map, vs.spec, null);
+    reapplyAllMapData(map, vs.spec);
+    applyBasemapLabelsVisibility(map, vs.spec);
+  });
+  let _removed = false;
+  return {
+    viewId,
+    container,
+    destroy: () => {
+      if (_removed) return;
+      _removed = true;
+      viewState.detachFit?.();
+      try {
+        map.remove();
+      } catch {
+        /* MapLibre can throw if the map was not fully initialized. */
+      }
+      state.views.delete(viewId);
+    },
+  };
+};
+
+/**
+ * Updates an already-mounted map — never recreates it, so centering here is
+ * purely imperative camera calls on the live `map`, not constructor options.
+ * Unlike `mountView`'s one-shot placeholder-then-correct sequence, the two
+ * centering paths below are mutually exclusive per update, driven by
+ * whether `spec.view` is explicit:
+ * - `syncMapView`: applies only explicit `view.center`/`zoom`/pitch/bearing
+ *   *diffs* against the previous spec, via instant `setCenter`/`setZoom`
+ *   (no animation). It no-ops entirely when `spec.view` (or its `center`)
+ *   is omitted — it never fights the auto-fit path below for control.
+ * - `syncFit` (→ `syncFitToData`): re-evaluates the data bbox and, when
+ *   `view` is still omitted and the bbox changed (e.g. a source's geometry
+ *   was patched), detaches the old `attachFitToData` listener and attaches
+ *   a new one — which re-fits with an animated `fitBounds`, same as on
+ *   mount. Switching a spec from explicit `view` to omitted `view` (or vice
+ *   versa) between updates is what hands control between these two paths.
+ */
+const updateView = (
+  state: AdapterState,
+  viewId: string,
+  viewState: ViewState,
+  spec: VisualizationSpec,
+  syncFit: (vs: ViewState, s: VisualizationSpec) => void
 ): void => {
   const { map } = viewState;
   const nextStyle = resolveStyle(spec);
   const previousSpec = viewState.spec;
   viewState.spec = spec;
+  // Explicit-view path: instant jump, no-ops when view.center is omitted.
   syncMapView(map, previousSpec.view, spec.view);
+  // Auto-fit path: animated re-fit when view is omitted and the bbox moved.
+  syncFit(viewState, spec);
 
   const onStyleReady = () => {
-    const updated = views.get(viewId);
+    const updated = state.views.get(viewId);
     if (!updated) return;
     syncSourcesAndLayers(map, updated.spec, null);
     reapplyAllMapData(map, updated.spec);
@@ -263,114 +412,45 @@ const updateView = (
   }
 };
 
-const dispatchPatch = (viewState: ViewState, patch: SpecPatch): void => {
-  const { map } = viewState;
-  if (patch.target === 'layer') {
-    applyLayerPatch(map, viewState, patch as SpecPatch & { target: 'layer' });
-  } else if (patch.target === 'source') {
-    applySourcePatch(map, viewState, patch as SpecPatch & { target: 'source' });
-  } else if (patch.target === 'mapData') {
-    applyMapDataPatchToMap(map, viewState.spec.mapData ?? [], patch);
-    viewState.spec = applyMapDataPatchToSpec(viewState.spec, patch);
-    reapplyLegendDrivenFillPaint(map, viewState.spec);
-  } else {
-    log.warn(
-      `[geovis] MapLibreAdapter: unknown patch target "${
-        (patch as { target: unknown }).target
-      }" — patch was ignored.`
-    );
-  }
-};
-
-/**
- * Applies an imperative camera move to a single map instance.
- * Uses `flyTo` for animated transitions and `jumpTo` for instant ones.
- * Only camera fields explicitly provided in `options` are applied —
- * `undefined` values are omitted so MapLibre keeps the current camera
- * state for those axes.
- */
-const applySetView = (map: maplibregl.Map, options: SetViewOptions): void => {
-  const { center, zoom, pitch, bearing, animate = true } = options;
-  const camera: maplibregl.CameraOptions = {};
-  if (center !== undefined) camera.center = center as maplibregl.LngLatLike;
-  if (zoom !== undefined) camera.zoom = zoom;
-  if (pitch !== undefined) camera.pitch = pitch;
-  if (bearing !== undefined) camera.bearing = bearing;
-  if (Object.keys(camera).length === 0) return;
-  if (animate) {
-    map.flyTo(camera);
-  } else {
-    map.jumpTo(camera);
-  }
-};
-
-const destroyAll = (views: ViewMap): void => {
-  for (const viewState of views.values()) {
-    try {
-      viewState.map.remove();
-    } catch {
-      /* ignore */
-    }
-  }
-  views.clear();
-};
-
-/**
- * Grounded in what `sourceTranslation.ts`/`layerTranslation.ts` actually
- * translate and what the package's test suite actually exercises — not
- * aspirational. `dataFeatures.featureState` is narrower than `sourceTypes`:
- * every source type mounts, but `setFeatureState` joining (`mapData`,
- * `sizeBy`) only works for `geojson`, whose features carry stable ids.
- * `dataFeatures.filter` (`VisualizationLayer.filter`, PRD-002) is declared
- * `geojson`-only for the same "declared means tested" reason, though
- * MapLibre's native `filter` works on any source with feature properties —
- * the narrower declaration reflects what's fixture-covered today, not an
- * engine limitation; it may widen once other source types are tested.
- * `pitch`/`bearing` are genuinely applied to the camera (see `applySetView`),
- * unlike the previous `supports3D: false` flag, which was dead and incorrect.
- */
-const CAPABILITIES: CapabilitySet = {
-  sourceTypes: [
-    'geojson',
-    'vector-tiles',
-    'raster-tiles',
-    'raster-dem',
-    'image',
-    'video',
-  ],
-  layerGeometries: ['polygon', 'line', 'point', 'symbol', 'heatmap', 'raster'],
-  dataFeatures: {
-    featureState: ['geojson'],
-    filter: ['geojson'],
-  },
-  viewFeatures: {
-    pitch: true,
-    bearing: true,
-  },
-};
-
+// Factory for the EngineAdapter implementation — one closure over shared
+// per-adapter state (`views`, selection, URL-fetch caches) for all views it mounts.
 const createMapLibreAdapter = (): EngineAdapter => {
   const _views: ViewMap = new Map();
-  // Tracks the selection currently applied on the map(s), so `setSelection`
-  // can clear the previously-selected feature before setting the next one —
-  // mirrors the click hook's old `prevSelectedState` ref, now owned here
-  // since selection is runtime-level state, not React-only (PRD-002 Phase 2).
   let _prevSelection: GeoVisSelection | null = null;
+  const _urlFetchPromises = new WeakMap<
+    maplibregl.Map,
+    Map<string, Promise<GeoJSONBoundingBox | null>>
+  >();
+  const _currentUrlSpecKeyByMap = new WeakMap<maplibregl.Map, string>();
+
+  const state: AdapterState = {
+    views: _views,
+    prevSelection: _prevSelection,
+    urlFetchPromises: _urlFetchPromises,
+    currentUrlSpecKeyByMap: _currentUrlSpecKeyByMap,
+  };
+
+  const syncFitClosure = (viewState: ViewState, spec: VisualizationSpec) => {
+    syncFitToData(state, viewState, spec);
+  };
+
   return {
     id: 'maplibre',
     getCapabilities: () => {
       return CAPABILITIES;
     },
     mount: (container, spec, viewId) => {
-      return mountView(_views, container, spec, viewId);
+      return mountView(state, container, spec, viewId, syncFitClosure);
     },
     update: (spec) => {
       for (const [viewId, viewState] of _views)
-        updateView(_views, viewId, viewState, spec);
+        updateView(state, viewId, viewState, spec, syncFitClosure);
     },
+    // Incremental layer/source/mapData edits — no re-mount, unlike `update`.
     applyPatch: (patch) => {
       for (const viewState of _views.values()) dispatchPatch(viewState, patch);
     },
+    // Direct camera control (AI action surface), independent of spec.view.
     setView: (options) => {
       for (const viewState of _views.values()) {
         applySetView(viewState.map, options);
