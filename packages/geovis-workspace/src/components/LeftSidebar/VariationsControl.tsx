@@ -3,6 +3,7 @@ import { Box } from '@ttoss/ui';
 import type { GeovisWorkspaceSidebarVariationsFilter } from '../../context/GeovisWorkspaceContext';
 import { useGeovisWorkspace } from '../../hooks/useGeovisWorkspace';
 import { VariationRow } from './VariationRow';
+import { variationRowState } from './variationRowState';
 
 /**
  * A menu of variations rendered inside a filter block: the same rows as the
@@ -28,7 +29,8 @@ export const VariationsControl = ({
 }: {
   control: GeovisWorkspaceSidebarVariationsFilter;
 }) => {
-  const { selection, setSelection, setLeftSidebarOpen } = useGeovisWorkspace();
+  const { selection, setSelection, setLeftSidebarOpen, pendingSelection } =
+    useGeovisWorkspace();
   const { menuId } = control;
 
   const selectedValue = selection[menuId] ?? control.defaultValue;
@@ -45,13 +47,21 @@ export const VariationsControl = ({
       }}
     >
       {control.variations.map((variation) => {
+        const { pending, disabled } = variationRowState({
+          pendingSelection,
+          menuId,
+          value: variation.value,
+        });
+
         return (
           <VariationRow
             key={variation.value}
             variation={variation}
             on={variation.value === selectedValue}
+            pending={pending}
+            disabled={disabled}
             onSelect={() => {
-              setSelection({ menuId, value: variation.value });
+              setSelection({ menuId, value: variation.value, blocking: true });
               if (control.closeOnSelect) {
                 setLeftSidebarOpen({ open: false });
               }

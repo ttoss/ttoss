@@ -7,6 +7,8 @@ import {
 } from '@ttoss/geovis-workspace';
 import * as React from 'react';
 
+import { withPtBr } from './GeovisWorkspace.decorators';
+
 /**
  * Connects the preview sidebar's **timeline** to the geovis **crossfade**: the
  * timeline writes the current year to `selection.year`; the story rebuilds the
@@ -162,6 +164,7 @@ const meta = {
   title: 'Geovis Workspace/TimelineCrossfade',
   component: TimelineCrossfadeDemo,
   tags: ['autodocs'],
+  decorators: [withPtBr],
 } satisfies Meta<typeof TimelineCrossfadeDemo>;
 
 export default meta;

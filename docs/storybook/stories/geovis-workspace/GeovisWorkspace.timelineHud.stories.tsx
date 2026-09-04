@@ -7,6 +7,8 @@ import {
 } from '@ttoss/geovis-workspace';
 import * as React from 'react';
 
+import { withPtBr } from './GeovisWorkspace.decorators';
+
 /**
  * The **compact timeline HUD**: below a 640px viewport, pressing play on the
  * timeline closes the left sidebar (`closeOnPlay`) and a control bar appears
@@ -226,6 +228,7 @@ const meta = {
   title: 'Geovis Workspace/TimelineHud',
   component: TimelineHudDemo,
   tags: ['autodocs'],
+  decorators: [withPtBr],
   parameters: {
     viewport: {
       options: {

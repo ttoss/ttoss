@@ -46,7 +46,18 @@ export interface GeovisWorkspaceProps {
   config: GeovisWorkspaceConfig;
   visualizationSpec: VisualizationSpec;
   variables?: GeovisWorkspaceSelection;
-  onVariableChange?: (variables: GeovisWorkspaceSelection) => void;
+  /**
+   * Called with the full next selection whenever a variation is chosen or the
+   * timeline advances.
+   *
+   * Return a promise when a variation costs a request: every menu goes inert
+   * until it settles (resolve or reject), so the user cannot stack picks while
+   * one is being served. Returning nothing keeps the menus live, which is what
+   * a synchronous consumer wants and what timeline ticks always get.
+   */
+  onVariableChange?: (
+    variables: GeovisWorkspaceSelection
+  ) => void | Promise<unknown>;
   /**
    * Called with the chosen `RepairOption` when a repair button is pressed in
    * the `warnings` slot's default panel. Omit to render repair buttons
