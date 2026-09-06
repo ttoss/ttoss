@@ -1,5 +1,0 @@
-environments:
-  Production:
-    aliases:
-      - terezinha-farm-spa.ttoss.dev
-    cloudfront: true

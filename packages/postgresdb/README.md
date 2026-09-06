@@ -391,8 +391,6 @@ describe('User model', () => {
 - **Sync schema**: Call `sequelize.sync()` after initialization to create tables based on your models.
 - **Schema validation**: Tests verify that all model properties are correctly defined. This prevents `sync --alter` from accidentally removing database columns due to missing or misconfigured model properties.
 
-For a complete working example with full test configuration, see the [terezinha-farm/postgresdb](https://github.com/ttoss/ttoss/tree/main/terezinha-farm/postgresdb) example in this repository.
-
 ## API Reference
 
 ### `initialize(options)`
