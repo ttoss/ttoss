@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.28.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.27.1...@ttoss/http-server-mcp@0.28.0) (2026-09-06)
+
+### Features
+
+- **http-server-mcp:** serve MCP Apps views with registerAppResource ([#1232](https://github.com/ttoss/ttoss/issues/1232)) ([c2ea69c](https://github.com/ttoss/ttoss/commit/c2ea69cc8649f2d8eeca32d72415f3b175ae9131)), closes [#1231](https://github.com/ttoss/ttoss/issues/1231)
+
 ## [0.27.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.27.0...@ttoss/http-server-mcp@0.27.1) (2026-09-03)
 
 ### Bug Fixes
