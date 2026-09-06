@@ -53,6 +53,19 @@ export interface RegisterToolFromSchemaParams {
    */
   validateArguments?: boolean;
   /**
+   * Tool metadata forwarded verbatim on `tools/list`.
+   *
+   * The MCP Apps extension links a tool to the view its result is rendered
+   * with through this field; build the bag with `toolMeta()` from
+   * `registerAppResource` rather than writing the keys by hand.
+   *
+   * @example
+   * ```typescript
+   * _meta: dashboard.toolMeta({ visibility: ['app'] }),
+   * ```
+   */
+  _meta?: Record<string, unknown>;
+  /**
    * Tool handler invoked when the AI client calls the tool.
    * Receives the request arguments, validated against `inputSchema` only when
    * `validateArguments` is enabled.
@@ -113,7 +126,7 @@ const toStandardSchema = ({
  *
  * @param server - The `McpServer` instance to register the tool on.
  * @param params - Tool configuration including name, description, inputSchema,
- *   validateArguments, and handler.
+ *   validateArguments, `_meta`, and handler.
  *
  * @example
  * ```typescript
@@ -145,6 +158,7 @@ export const registerToolFromSchema = (
     inputSchema = { type: 'object', properties: {} },
     validateArguments = false,
     handler,
+    _meta,
   } = params;
 
   server.registerTool(
@@ -152,6 +166,7 @@ export const registerToolFromSchema = (
     {
       description,
       inputSchema: toStandardSchema({ inputSchema, validateArguments }),
+      _meta,
     },
     async (args) => {
       return handler(args as Record<string, unknown>);

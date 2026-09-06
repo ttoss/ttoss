@@ -474,4 +474,58 @@ describe('registerToolFromSchema', () => {
     expect(router).toBeDefined();
     expect(typeof router.routes).toBe('function');
   });
+  describe('tool metadata', () => {
+    test('forwards _meta verbatim on tools/list', async () => {
+      const server = new McpServer({ name: 'test', version: '1.0.0' });
+      registerToolFromSchema(server, {
+        name: 'get-project',
+        description: 'Get a project by ID',
+        _meta: {
+          ui: { resourceUri: 'ui://projects/detail', visibility: ['app'] },
+        },
+        handler: async () => {
+          return { content: [{ type: 'text', text: 'ok' }] };
+        },
+      });
+
+      const app = new App();
+      app.use(bodyParser());
+      app.use(createMcpRouter(server).routes());
+
+      const response = await sendMcpRequest(app.callback(), {
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'tools/list',
+        params: {},
+      });
+
+      expect(response.body.result.tools[0]._meta).toEqual({
+        ui: { resourceUri: 'ui://projects/detail', visibility: ['app'] },
+      });
+    });
+
+    test('publishes no _meta when the tool declares none', async () => {
+      const server = new McpServer({ name: 'test', version: '1.0.0' });
+      registerToolFromSchema(server, {
+        name: 'get-project',
+        description: 'Get a project by ID',
+        handler: async () => {
+          return { content: [{ type: 'text', text: 'ok' }] };
+        },
+      });
+
+      const app = new App();
+      app.use(bodyParser());
+      app.use(createMcpRouter(server).routes());
+
+      const response = await sendMcpRequest(app.callback(), {
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'tools/list',
+        params: {},
+      });
+
+      expect(response.body.result.tools[0]).not.toHaveProperty('_meta');
+    });
+  });
 });
