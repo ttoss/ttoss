@@ -1,0 +1,51 @@
+{
+  "name": "@ttoss/cloud-cron",
+  "version": "0.0.1",
+  "description": "Create CloudFormation SAM templates for scheduled Lambda cron jobs.",
+  "license": "MIT",
+  "author": "ttoss",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/cloud-cron"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "jest"
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "@ttoss/cloudformation": "workspace:^"
+  },
+  "devDependencies": {
+    "@ttoss/config": "workspace:^",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.2.0",
+    "tsup": "^8.5.1"
+  },
+  "keywords": [
+    "cloudformation",
+    "cron",
+    "lambda",
+    "sam",
+    "serverless"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/esm/index.js",
+        "require": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      }
+    },
+    "provenance": true
+  }
+}
