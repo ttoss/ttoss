@@ -1,1 +1,0 @@
-type FeatureFlags = 'nice-hi';

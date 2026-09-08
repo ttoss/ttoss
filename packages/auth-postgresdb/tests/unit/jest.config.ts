@@ -3,9 +3,8 @@ import { jestUnitConfig } from '@ttoss/config';
 export default jestUnitConfig({
   /**
    * Babel cannot transform decorated `declare` fields, so the models are
-   * exercised through the `pretest` bundle — the same pattern
-   * `@terezinha-farm/postgresdb` uses. Coverage therefore measures the store
-   * adapters, which are plain functions.
+   * exercised through the `pretest` bundle. Coverage therefore measures the
+   * store adapters, which are plain functions.
    */
   moduleNameMapper: {
     '^dist/index$': '<rootDir>/../../dist/index.cjs',

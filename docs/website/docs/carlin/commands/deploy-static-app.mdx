@@ -18,6 +18,13 @@ This command:
 4. Uploads files to S3
 5. Configures caching and CDN
 
+Everything in the build folder is uploaded, including dot files and dot
+directories. That is what makes `/.well-known/` work: [RFC 8615](https://www.rfc-editor.org/rfc/rfc8615)
+puts the documents agents and clients fetch by convention there — an
+`ard.json` catalog, OAuth authorization server metadata, `security.txt` — and
+they have to answer on that exact path. Source maps are the one exception, and
+they have [an option](#--upload-source-maps).
+
 ## Quick Start
 
 Build and deploy a Vite app:

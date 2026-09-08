@@ -238,10 +238,6 @@ const config: Config = {
               label: 'AI',
               to: '/docs/ai',
             },
-            {
-              label: 'Challenge',
-              to: '/docs/challenge/the-project',
-            },
           ],
         },
         {

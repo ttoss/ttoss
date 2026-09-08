@@ -61,7 +61,7 @@ const template = createAuthTemplate({
 
 #### Complete Lambda Integration Example
 
-Based on the [Terezinha Farm implementation](https://github.com/ttoss/ttoss/tree/main/terezinha-farm/auth), here's how to integrate Lambda functions with your auth template:
+Here's how to integrate Lambda functions with your auth template:
 
 ```typescript
 // src/cloudformation.ts

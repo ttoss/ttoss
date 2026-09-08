@@ -404,6 +404,26 @@ describe('S3 Utils', () => {
     });
 
     /**
+     * RFC 8615 puts the files agents and clients fetch by convention under
+     * `.well-known/` — an ARD catalog, OAuth authorization server metadata,
+     * `security.txt`. glob skips any path segment starting with a dot unless
+     * told otherwise, so these would be absent from the deployed site with
+     * nothing failing to say so.
+     */
+    test('should upload files inside a dot directory', async () => {
+      fs.mkdirSync(path.join(directory, '.well-known'));
+      fs.writeFileSync(path.join(directory, '.well-known', 'ard.json'), 'x');
+      writeFiles(['index.html']);
+
+      await uploadDirectoryToS3({ bucket: 'test-bucket', directory });
+
+      expect(uploadedKeys().sort()).toEqual([
+        '.well-known/ard.json',
+        'index.html',
+      ]);
+    });
+
+    /**
      * "Directory has no files" means the build folder is probably wrong. A
      * directory holding only source maps is a different situation and must not
      * borrow that error, so the filter runs after the emptiness check.

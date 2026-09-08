@@ -100,13 +100,19 @@ export const uploadFileToS3 = async ({
 
 /**
  * Get all files inside $directory.
+ *
+ * `dot: true` because a static site's dot directories are content: RFC 8615
+ * puts the files agents and clients fetch by convention under `.well-known/`,
+ * and glob skips a segment starting with a dot by default. Without it those
+ * files are absent from the deployed site and nothing reports it — the deploy
+ * succeeds, the path 404s.
  */
 export const getAllFilesInsideADirectory = async ({
   directory,
 }: {
   directory: string;
 }) => {
-  const allFilesAndDirectories = await glob(`${directory}/**/*`);
+  const allFilesAndDirectories = await glob(`${directory}/**/*`, { dot: true });
 
   const allFiles = allFilesAndDirectories
     /**

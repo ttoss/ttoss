@@ -737,6 +737,18 @@ export const createMcpRouter = (
 };
 
 export {
+  registerAppResource,
+  type RegisterAppResourceParams,
+  type RegisteredAppResource,
+  type ToolMetaParams,
+  UI_EXTENSION_ID,
+  UI_RESOURCE_MIME_TYPE,
+  type UiResourceCsp,
+  type UiResourceMeta,
+  type UiResourcePermissions,
+  type UiToolVisibility,
+} from './registerAppResource';
+export {
   type JsonObjectSchema,
   registerToolFromSchema,
   type RegisterToolFromSchemaParams,
