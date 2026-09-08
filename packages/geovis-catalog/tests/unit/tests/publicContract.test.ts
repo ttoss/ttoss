@@ -1,5 +1,7 @@
 // Public contract smoke tests — verifies the package index exports the expected symbols.
 import type {
+  AnalyticalIntent,
+  AnalyticalTask,
   Catalog,
   CatalogIssue,
   CatalogIssueCode,
@@ -9,6 +11,9 @@ import type {
   FilterField,
   Geography,
   GeographyKind,
+  IntentIssue,
+  IntentIssueCode,
+  IntentResult,
   Join,
   MapTypeCatalogEntry,
   Metric,
@@ -22,6 +27,48 @@ test('package exports expected public symbols', () => {
   expect(typeof geovisCatalog.getCatalogJSONSchema).toBe('function');
   expect(typeof geovisCatalog.CATALOG_ISSUE_CODE_STATUS).toBe('object');
   expect(typeof geovisCatalog.resolveCatalogOverallStatus).toBe('function');
+});
+
+test('intent (PRD-005) public symbols are exported', () => {
+  expect(typeof geovisCatalog.validateIntent).toBe('function');
+  expect(typeof geovisCatalog.getIntentJSONSchema).toBe('function');
+  expect(typeof geovisCatalog.resolveIntentOverallStatus).toBe('function');
+  expect(typeof geovisCatalog.INTENT_ISSUE_CODE_STATUS).toBe('object');
+  expect(geovisCatalog.INTENT_SCHEMA_VERSION).toBe(1);
+  expect(typeof geovisCatalog.intentSchema.safeParse).toBe('function');
+  expect(typeof geovisCatalog.intentFilterSchema.safeParse).toBe('function');
+  expect(typeof geovisCatalog.intentTimeSchema.safeParse).toBe('function');
+  expect(geovisCatalog.ANALYTICAL_TASKS).toContain('normalized-comparison');
+  expect(geovisCatalog.ANALYTICAL_TASKS).toHaveLength(9);
+});
+
+test('AnalyticalIntent and IntentResult are part of the public contract', () => {
+  const intent: AnalyticalIntent = {
+    schemaVersion: 1,
+    analyticalTask: 'distribution' satisfies AnalyticalTask,
+    metricId: 'metric-populacao',
+    geographyId: 'geo-municipio',
+  };
+
+  const result: IntentResult = {
+    status: 'valid',
+    intent,
+    datasetId: 'dataset-demografia-municipio',
+    catalogVersion: '2026-Q3',
+  };
+
+  expect(result.status).toBe('valid');
+
+  const issue: IntentIssue = {
+    code: 'unknown-category' satisfies IntentIssueCode,
+    subject: { path: '/categoryId' },
+    message: "categoryId 'x' is not one of metric's categories",
+    repair: [
+      { kind: 'allowed-values', path: '/categoryId', values: ['urbano'] },
+    ],
+  };
+  const failure: IntentResult = { status: 'mismatch', issues: [issue] };
+  expect(failure.status).toBe('mismatch');
 });
 
 test('the Zod schemas are public, so downstream packages compose rather than re-declare', () => {

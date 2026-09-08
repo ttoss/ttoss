@@ -16,6 +16,31 @@ export type {
   FilterOption,
 } from './filterControls';
 export { computeFilterDomain, getFilterControls } from './filterControls';
+export { getIntentJSONSchema } from './intent/getIntentJSONSchema';
+export type {
+  IntentIssue,
+  IntentIssueCode,
+  IntentResult,
+  IntentResultStatus,
+} from './intent/intentResult';
+export {
+  INTENT_ISSUE_CODE_STATUS,
+  resolveIntentOverallStatus,
+} from './intent/intentResult';
+export type {
+  AnalyticalIntent,
+  IntentFilter,
+  IntentTime,
+} from './intent/schema';
+export {
+  INTENT_SCHEMA_VERSION,
+  intentFilterSchema,
+  intentSchema,
+  intentTimeSchema,
+} from './intent/schema';
+export type { AnalyticalTask } from './intent/taskVocabulary';
+export { ANALYTICAL_TASKS } from './intent/taskVocabulary';
+export { validateIntent } from './intent/validateIntent';
 export { getCatalogIntrospection, getCatalogJSONSchema } from './introspection';
 export {
   cameraFramingSchema,

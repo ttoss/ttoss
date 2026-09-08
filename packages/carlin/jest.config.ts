@@ -6,9 +6,9 @@ const config = jestConfig({
   coveragePathIgnorePatterns: ['<rootDir>/tests/'],
   coverageThreshold: {
     global: {
-      statements: 73.2,
-      branches: 65.3,
-      lines: 73.1,
+      statements: 73.23,
+      branches: 65.33,
+      lines: 73.16,
       functions: 75.3,
     },
   },

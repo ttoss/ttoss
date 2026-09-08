@@ -210,8 +210,12 @@ function validateIntent(intent: unknown, catalog: Catalog): GeoVisResult {
 **Implementation:**
 
 ```typescript
-import intentSchema from '@ttoss/geovis-catalog/intent.schema.json';
-import { validateIntent } from '@ttoss/geovis-catalog';
+import { getIntentJSONSchema, validateIntent } from '@ttoss/geovis-catalog';
+
+// No hand-maintained intent.schema.json file exists — getIntentJSONSchema()
+// derives the document from intentSchema (Zod) via z.toJSONSchema, so it
+// can never drift from what validateIntent actually enforces.
+const intentJSONSchema = getIntentJSONSchema();
 
 // Pass schema + catalog to LLM
 async function generateSpec(
@@ -235,14 +239,14 @@ Available geographies: ${catalog.geographies.map((g) => g.id).join(', ')}
 User query: ${userQuery}
 
 Respond with a JSON intent matching this schema:
-${JSON.stringify(intentSchema)}
+${JSON.stringify(intentJSONSchema)}
 `,
       },
     ],
     tools: [
       {
         name: 'generate_intent',
-        input_schema: intentSchema,
+        input_schema: intentJSONSchema,
       },
     ],
   });
