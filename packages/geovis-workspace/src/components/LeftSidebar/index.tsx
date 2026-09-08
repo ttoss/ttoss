@@ -1,5 +1,11 @@
 import { useI18n } from '@ttoss/react-i18n';
-import { Box, Flex, IconButton, Text } from '@ttoss/ui';
+import {
+  Box,
+  Flex,
+  IconButton,
+  Text,
+  type ThemeUIStyleObject,
+} from '@ttoss/ui';
 import * as React from 'react';
 
 import type {
@@ -18,6 +24,41 @@ import { useChipSelection } from './useChipSelection';
 import { isSectionEnabled, useSections } from './useSections';
 import { VariationsTab } from './VariationsTab';
 
+/**
+ * The sidebar's close control. Shared by the header band and the tab row, which
+ * take turns carrying it: whichever sits at the top of the card owns it.
+ */
+const CloseButton = ({
+  onClose,
+  sx,
+}: {
+  onClose: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  sx?: ThemeUIStyleObject;
+}) => {
+  const {
+    intl: { formatMessage },
+  } = useI18n();
+
+  return (
+    <IconButton
+      icon="lucide:x"
+      aria-label={formatMessage(messages.closeMenu)}
+      onClick={onClose}
+      sx={{
+        width: '28px',
+        height: '28px',
+        minWidth: 'auto',
+        color: COLOR.textGhost,
+        backgroundColor: 'transparent',
+        boxShadow: 'none',
+        borderRadius: 'md',
+        '&:hover': { color: COLOR.textMuted, backgroundColor: COLOR.fill },
+        ...sx,
+      }}
+    />
+  );
+};
+
 /** The header band: the active section's icon chip, title, and close button. */
 const Header = ({
   section,
@@ -26,10 +67,6 @@ const Header = ({
   section?: GeovisWorkspaceSidebarSection;
   onClose: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }) => {
-  const {
-    intl: { formatMessage },
-  } = useI18n();
-
   return (
     <Flex
       sx={{
@@ -41,48 +78,41 @@ const Header = ({
         borderBottom: `1px solid ${COLOR.border}`,
       }}
     >
+      {/*
+        Both halves hang on the title: the chip is there to lead a name, so a
+        section that declares none leaves the band empty rather than floating
+        an icon on its own. The icon still identifies the section on its tab.
+      */}
       <Flex sx={{ alignItems: 'center', gap: '10px' }}>
-        {section?.header.icon ? (
-          <IconChip
-            icon={section.header.icon}
-            color={section.header.iconColor ?? COLOR.primary}
-            background={section.header.iconBackground ?? COLOR.primaryTint}
-            size={28}
-            iconSize={14}
-          />
-        ) : null}
+        {section?.header.title ? (
+          <>
+            {section.header.icon ? (
+              <IconChip
+                icon={section.header.icon}
+                color={section.header.iconColor ?? COLOR.primary}
+                background={section.header.iconBackground ?? COLOR.primaryTint}
+                size={28}
+                iconSize={14}
+              />
+            ) : null}
 
-        {section ? (
-          <Text
-            sx={{
-              fontFamily: FONT_HEAD,
-              fontWeight: 600,
-              fontSize: '15px',
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-              color: COLOR.textStrong,
-            }}
-          >
-            {section.header.title}
-          </Text>
+            <Text
+              sx={{
+                fontFamily: FONT_HEAD,
+                fontWeight: 600,
+                fontSize: '15px',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                color: COLOR.textStrong,
+              }}
+            >
+              {section.header.title}
+            </Text>
+          </>
         ) : null}
       </Flex>
 
-      <IconButton
-        icon="lucide:x"
-        aria-label={formatMessage(messages.closeMenu)}
-        onClick={onClose}
-        sx={{
-          width: '28px',
-          height: '28px',
-          minWidth: 'auto',
-          color: COLOR.textGhost,
-          backgroundColor: 'transparent',
-          boxShadow: 'none',
-          borderRadius: 'md',
-          '&:hover': { color: COLOR.textMuted, backgroundColor: COLOR.fill },
-        }}
-      />
+      <CloseButton onClose={onClose} />
     </Flex>
   );
 };
@@ -91,6 +121,9 @@ const Header = ({
  * The icon tab bar: one tab per section, with the chip-count badge on the tab
  * that actually holds the chips — not on every `filters` tab, since a config
  * may split its filters across several of them.
+ *
+ * Takes the close button in with it (`onClose`) when no header band is drawn,
+ * so the tabs sit at the top of the card instead of under an empty strip.
  */
 const TabBar = ({
   sections,
@@ -99,6 +132,7 @@ const TabBar = ({
   chipsSectionId,
   disabledIds,
   onSelect,
+  onClose,
 }: {
   sections: GeovisWorkspaceSidebarSection[];
   activeId?: string;
@@ -106,37 +140,53 @@ const TabBar = ({
   chipsSectionId?: string;
   disabledIds: Set<string>;
   onSelect: (id: string) => void;
+  onClose?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }) => {
   return (
     <Flex
       sx={{
         flexShrink: 0,
         alignItems: 'flex-end',
-        gap: '4px',
+        justifyContent: 'space-between',
+        gap: '8px',
         paddingX: '16px',
         borderBottom: `1px solid ${COLOR.border}`,
       }}
     >
-      {sections.map((section) => {
-        const hasChips = section.id === chipsSectionId;
-        const disabled = disabledIds.has(section.id);
+      {/*
+        The tabs are grouped rather than laid out directly, so the row's
+        `space-between` pushes the close button to the far edge instead of
+        spreading the tabs across the card.
+      */}
+      <Flex sx={{ alignItems: 'flex-end', gap: '4px' }}>
+        {sections.map((section) => {
+          const hasChips = section.id === chipsSectionId;
+          const disabled = disabledIds.has(section.id);
 
-        return (
-          <SidebarTab
-            key={section.id}
-            icon={section.header.icon ?? 'lucide:circle'}
-            label={section.header.title}
-            active={section.id === activeId}
-            // A gated section's badge would advertise a count the user cannot
-            // reach, so it goes away with the gate.
-            badge={hasChips && !disabled ? chipCount : undefined}
-            disabled={disabled}
-            onClick={() => {
-              onSelect(section.id);
-            }}
-          />
-        );
-      })}
+          return (
+            <SidebarTab
+              key={section.id}
+              icon={section.header.icon ?? 'lucide:circle'}
+              // No title, no name for the tab but its id — see the note on
+              // `GeovisWorkspaceSidebarHeader.title`.
+              label={section.header.title ?? section.id}
+              active={section.id === activeId}
+              // A gated section's badge would advertise a count the user
+              // cannot reach, so it goes away with the gate.
+              badge={hasChips && !disabled ? chipCount : undefined}
+              disabled={disabled}
+              onClick={() => {
+                onSelect(section.id);
+              }}
+            />
+          );
+        })}
+      </Flex>
+
+      {/* Centered against the 40px tabs rather than sitting on the rule. */}
+      {onClose ? (
+        <CloseButton onClose={onClose} sx={{ alignSelf: 'center' }} />
+      ) : null}
     </Flex>
   );
 };
@@ -248,6 +298,9 @@ const TabContent = ({
  * selection; the filter controls are visual-only, holding their state locally or
  * lifted here for the badge.
  *
+ * Sections that declare no `header.title` at all drop the band and let the tab
+ * bar head the card, close button included.
+ *
  * Sections carrying filters may be several — the timeline in a tab of its own,
  * beside a tab holding the remaining controls. Each renders its own blocks; only
  * the timeline and the chips are resolved across the whole sidebar, because
@@ -283,6 +336,21 @@ export const LeftSidebar = () => {
     disabledIds,
   });
 
+  /*
+   * Decided across every section, not by the active one: a band that came and
+   * went as the user switched tabs would shift the whole card up and down under
+   * the pointer. So one titled section is enough to keep the band for all of
+   * them — the untitled ones simply head it with nothing.
+   */
+  const hasHeaderBand = sections.some((section) => {
+    return Boolean(section.header.title);
+  });
+
+  const closeSidebar = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.currentTarget.blur();
+    setLeftSidebarOpen({ open: false });
+  };
+
   return (
     <Flex
       sx={{
@@ -297,13 +365,9 @@ export const LeftSidebar = () => {
         boxShadow: ['none', '0 8px 40px rgba(0,0,0,0.14)'],
       }}
     >
-      <Header
-        section={activeSection}
-        onClose={(event) => {
-          event.currentTarget.blur();
-          setLeftSidebarOpen({ open: false });
-        }}
-      />
+      {hasHeaderBand ? (
+        <Header section={activeSection} onClose={closeSidebar} />
+      ) : null}
 
       <TabBar
         sections={sections}
@@ -312,6 +376,7 @@ export const LeftSidebar = () => {
         chipsSectionId={chipsSection?.id}
         disabledIds={disabledIds}
         onSelect={setActiveSectionId}
+        onClose={hasHeaderBand ? undefined : closeSidebar}
       />
 
       <TabContent

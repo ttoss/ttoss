@@ -5,7 +5,7 @@ import type {
   GeovisWorkspaceSidebarFilterControl,
 } from '../../context/GeovisWorkspaceContext';
 import { ChipsControl } from './ChipsControl';
-import { CollapsibleSection } from './CollapsibleSection';
+import { FilterBlockSection } from './FilterBlockSection';
 import { LocatorControl } from './LocatorControl';
 import { TimelineControl } from './TimelineControl';
 import { VariationsControl } from './VariationsControl';
@@ -78,7 +78,7 @@ const BlockControl = ({
 };
 
 /**
- * The "Filtros" tab: a stack of collapsible blocks (timeline, chips, locator,
+ * The "Filtros" tab: a stack of headed blocks (timeline, chips, locator,
  * variations). Timeline value and play/pause are lifted; the chips selection is
  * lifted so the tab-bar badge can count it. A variations block reads the shared
  * selection directly, so several of them can share one tab.
@@ -121,14 +121,15 @@ export const FiltersTab = ({
     >
       {blocks.map((block) => {
         return (
-          <CollapsibleSection
+          <FilterBlockSection
             key={block.id}
             title={block.title}
             icon={block.icon}
-            defaultOpen={block.defaultOpen ?? true}
+            collapsible={block.collapsible}
+            defaultOpen={block.defaultOpen}
           >
             <BlockControl control={block.control} lifted={lifted} />
-          </CollapsibleSection>
+          </FilterBlockSection>
         );
       })}
     </Flex>
