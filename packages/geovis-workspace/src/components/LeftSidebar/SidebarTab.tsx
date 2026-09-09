@@ -59,6 +59,12 @@ export const SidebarTab = ({
     <Box
       as="button"
       {...({ type: 'button', disabled } as object)}
+      /*
+       * The tab is icon-only, so the section's name reaches a mouse user only
+       * on hover: `aria-label` alone leaves it to assistive tech. A disabled tab
+       * keeps its tooltip — it still has to say which section is unavailable.
+       */
+      title={label}
       aria-label={label}
       aria-current={isActive ? 'true' : undefined}
       aria-disabled={disabled ? 'true' : undefined}

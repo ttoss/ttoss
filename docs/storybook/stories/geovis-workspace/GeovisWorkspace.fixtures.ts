@@ -215,8 +215,7 @@ export { sidebarPreviewConfig } from './GeovisWorkspace.sidebarPreview.fixture';
  *
  * The point is the packaging, not the content. Declared as variations *bodies*
  * these two menus would need a tab each, and comparing them would cost a tab
- * switch; as blocks they stack in one tab, each collapsible under its own
- * heading. Both drive the shared selection — `variable` picks the colour scale,
+ * switch; as blocks they stack in one tab, each under its own heading. Both drive the shared selection — `variable` picks the colour scale,
  * `age` scales the metric — so the map reacts to either.
  */
 export const groupedWorkspaceConfig: GeovisWorkspaceConfig = {

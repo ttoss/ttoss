@@ -4,6 +4,7 @@ import * as React from 'react';
 import {
   type GeovisWorkspaceConfig,
   GeovisWorkspaceContext,
+  type GeovisWorkspacePendingSelection,
   type GeovisWorkspaceSelection,
 } from './context/GeovisWorkspaceContext';
 
@@ -21,8 +22,17 @@ export interface GeovisWorkspaceProviderProps {
   /**
    * Called with the full next selection whenever a variation is chosen (or the
    * timeline advances). Use it to rebuild the `visualizationSpec` in the parent.
+   *
+   * Return a promise when serving a *variation* costs a request, and the menus
+   * go inert until it settles — no second pick can race the first, and none is
+   * queued behind it. Nothing else has to be wired: the promise is the signal.
+   * A rejection re-enables them the same way a resolve does, since a failed
+   * request is a reason to let the user try again, not to strand the sidebar.
+   * Returns from a timeline tick are ignored (see `setSelection`).
    */
-  onSelectionChange?: (selection: GeovisWorkspaceSelection) => void;
+  onSelectionChange?: (
+    selection: GeovisWorkspaceSelection
+  ) => void | Promise<unknown>;
   /**
    * Called with the chosen `RepairOption` when a repair button is pressed in
    * the `warnings` slot's default panel. Omit to render repair buttons
@@ -161,15 +171,56 @@ export const GeovisWorkspaceProvider = ({
     ? rightSidebarOpenProp
     : internalRightSidebarOpen;
 
+  const [pendingSelection, setPendingSelection] = React.useState<
+    GeovisWorkspacePendingSelection | undefined
+  >(undefined);
+
+  /*
+   * Names the wait that is current. A settle only clears the pending state when
+   * its own token is still the live one, so a promise that resolves late — the
+   * consumer swapped handlers, or a slow first request landing after a faster
+   * second — cannot unlock menus that a newer wait has since locked.
+   */
+  const waitToken = React.useRef(0);
+
   const setSelection = React.useCallback(
-    ({ menuId, value }: { menuId: string; value: string }) => {
+    ({
+      menuId,
+      value,
+      blocking = false,
+    }: {
+      menuId: string;
+      value: string;
+      blocking?: boolean;
+    }) => {
       const next = { ...currentSelection, [menuId]: value };
 
       if (!isControlled) {
         setInternalSelection(next);
       }
 
-      onSelectionChange?.(next);
+      const result = onSelectionChange?.(next);
+
+      // A thenable is the consumer saying it is not done yet. Anything else —
+      // including every timeline tick, which never asks to block — leaves the
+      // sidebar as responsive as it was.
+      const thenable = result as Promise<unknown> | undefined;
+
+      if (!blocking || typeof thenable?.then !== 'function') {
+        return;
+      }
+
+      const token = waitToken.current + 1;
+      waitToken.current = token;
+      setPendingSelection({ menuId, value });
+
+      const release = () => {
+        if (waitToken.current === token) {
+          setPendingSelection(undefined);
+        }
+      };
+
+      void Promise.resolve(thenable).then(release, release);
     },
     [currentSelection, isControlled, onSelectionChange]
   );
@@ -209,6 +260,7 @@ export const GeovisWorkspaceProvider = ({
       config,
       selection: currentSelection,
       setSelection,
+      pendingSelection,
       isLeftSidebarOpen,
       setLeftSidebarOpen,
       isRightSidebarOpen,
@@ -223,6 +275,7 @@ export const GeovisWorkspaceProvider = ({
     config,
     currentSelection,
     setSelection,
+    pendingSelection,
     isLeftSidebarOpen,
     setLeftSidebarOpen,
     isRightSidebarOpen,

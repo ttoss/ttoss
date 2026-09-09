@@ -3,6 +3,7 @@ import { Icon } from '@ttoss/react-icons';
 import { Box, Flex, IconButton, Text } from '@ttoss/ui';
 
 import type { GeovisWorkspaceSidebarTimelineFilter } from '../../context/GeovisWorkspaceContext';
+import { useNumberFormat } from '../../hooks/useNumberFormat';
 import { messages } from '../../messages';
 import { COLOR, FONT_HEAD, FONT_MONO } from './theme';
 
@@ -49,6 +50,8 @@ const Histogram = ({
   value: number;
   onChange: (next: number) => void;
 }) => {
+  const formatNumber = useNumberFormat();
+
   const maxCount = Math.max(
     ...histogram.map((entry) => {
       return entry.count;
@@ -79,7 +82,9 @@ const Histogram = ({
             as="button"
             {...({
               type: 'button',
-              title: `${entry.key}: ${entry.count}`,
+              // The count is grouped for the locale (`13.453.245` in pt-BR);
+              // the key is a year, and grouping it would read as `2.021`.
+              title: `${entry.key}: ${formatNumber(entry.count)}`,
             } as object)}
             onClick={() => {
               onChange(entry.key);
@@ -233,6 +238,18 @@ const IntervalControl = ({
 };
 
 /**
+ * The scale's endpoints under the slider. Darker than the sidebar's other
+ * secondary text: at 10px the ghost tone sits near 2:1 against the ivory
+ * surface, and these two numbers are what say which range the slider spans —
+ * the one label in the block that has to be read rather than glanced at.
+ */
+const boundSx = {
+  fontFamily: FONT_MONO,
+  fontSize: '10px',
+  color: COLOR.textMuted,
+};
+
+/**
  * The timeline filter: histogram + big value readout + range slider + a
  * prev / play-pause / next row, plus a playback-interval input. Play/pause, the
  * current value and the interval are lifted to the sidebar so the footer and
@@ -255,6 +272,8 @@ export const TimelineControl = ({
   intervalSeconds: number;
   onIntervalChange: (next: number) => void;
 }) => {
+  const formatNumber = useNumberFormat();
+
   const { min, max, step = 1, histogram, unitLabel } = control;
 
   const currentEntry = histogram?.find((entry) => {
@@ -293,7 +312,7 @@ export const TimelineControl = ({
               color: COLOR.textFaint,
             }}
           >
-            {currentEntry.count} {unitLabel}
+            {formatNumber(currentEntry.count)} {unitLabel}
           </Text>
         ) : null}
       </Flex>
@@ -317,24 +336,8 @@ export const TimelineControl = ({
           marginBottom: '16px',
         }}
       >
-        <Text
-          sx={{
-            fontFamily: FONT_MONO,
-            fontSize: '10px',
-            color: COLOR.textGhost,
-          }}
-        >
-          {min}
-        </Text>
-        <Text
-          sx={{
-            fontFamily: FONT_MONO,
-            fontSize: '10px',
-            color: COLOR.textGhost,
-          }}
-        >
-          {max}
-        </Text>
+        <Text sx={boundSx}>{min}</Text>
+        <Text sx={boundSx}>{max}</Text>
       </Flex>
 
       <Flex sx={{ alignItems: 'center', gap: '8px' }}>

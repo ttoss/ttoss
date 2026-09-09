@@ -2,6 +2,7 @@ import { useI18n } from '@ttoss/react-i18n';
 import { Box, Flex, IconButton, Text } from '@ttoss/ui';
 
 import { useTimelineContext } from '../context/TimelineContext';
+import { useNumberFormat } from '../hooks/useNumberFormat';
 import { messages } from '../messages';
 import { COLOR, FONT_MONO } from './LeftSidebar/theme';
 
@@ -167,6 +168,7 @@ const HudRule = ({
  */
 export const TimelineHud = ({ onDismiss }: { onDismiss: () => void }) => {
   const { intl } = useI18n();
+  const formatNumber = useNumberFormat();
   const timeline = useTimelineContext();
 
   if (!timeline.filter) return null;
@@ -222,7 +224,16 @@ export const TimelineHud = ({ onDismiss }: { onDismiss: () => void }) => {
                 color: COLOR.textMuted,
               }}
             >
-              {intl.formatMessage(messages.timelineHudCount, { count })}
+              {/*
+                Grouped before it reaches the message rather than through a
+                `{count, number}` placeholder: react-intl would format it
+                against the IntlProvider's locale, which is the default one
+                unless the app also ships a message bundle (see
+                `useNumberFormat`). The sidebar timeline shows the same count.
+              */}
+              {intl.formatMessage(messages.timelineHudCount, {
+                count: formatNumber(count),
+              })}
             </Text>
           )}
         </Flex>

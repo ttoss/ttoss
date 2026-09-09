@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.13.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.12.2...@ttoss/geovis-workspace@0.13.0) (2026-09-08)
+
+### Features
+
+- **geovis-workspace:** sidebar tooltips, fixed block headers, async-… ([#1228](https://github.com/ttoss/ttoss/issues/1228)) ([6fe51f5](https://github.com/ttoss/ttoss/commit/6fe51f510d26602291df86558322b7be811e8d96))
+
+### BREAKING CHANGES
+
+- **geovis-workspace:** filter blocks no longer collapse unless they declare
+  `collapsible: true`. Every `filters` block used to collapse, so consumers that
+  want the chevron back have to opt in per block.
+
+Co-authored-by: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
 ## [0.12.2](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.12.1...@ttoss/geovis-workspace@0.12.2) (2026-09-04)
 
 **Note:** Version bump only for package @ttoss/geovis-workspace
