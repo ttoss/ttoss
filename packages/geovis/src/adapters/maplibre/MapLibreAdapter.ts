@@ -319,13 +319,16 @@ const destroyAll = (views: ViewMap): void => {
  * Grounded in what `sourceTranslation.ts`/`layerTranslation.ts` actually
  * translate and what the package's test suite actually exercises — not
  * aspirational. `dataFeatures.featureState` is narrower than `sourceTypes`:
- * every source type mounts, but `setFeatureState` joining (`mapData`,
- * `sizeBy`) only works for `geojson`, whose features carry stable ids.
- * `dataFeatures.filter` (`VisualizationLayer.filter`, PRD-002) is declared
- * `geojson`-only for the same "declared means tested" reason, though
- * MapLibre's native `filter` works on any source with feature properties —
- * the narrower declaration reflects what's fixture-covered today, not an
- * engine limitation; it may widen once other source types are tested.
+ * every source type mounts, but `setFeatureState` joining (`mapData`, and the
+ * `sizeBy` path that reads through it) only works for `geojson`, whose
+ * features carry stable ids — a `sizeBy` driven by `propertyName` needs no
+ * join and is not covered by this entry.
+ * `dataFeatures.filter` (`VisualizationLayer.filter`, PRD-002) covers
+ * `vector-tiles` too: MapLibre's native `filter` reads `feature.properties`
+ * on any source that carries them, and the `cluster-tiles` fixture
+ * (`GeoVis/ClusterTiles`) exercises the compiled expression against a tiled
+ * source, which is what the "declared means tested" bar asks for. The
+ * remaining source types stay out until something covers them.
  * `pitch`/`bearing` are genuinely applied to the camera (see `applySetView`),
  * unlike the previous `supports3D: false` flag, which was dead and incorrect.
  */
@@ -341,7 +344,7 @@ const CAPABILITIES: CapabilitySet = {
   layerGeometries: ['polygon', 'line', 'point', 'symbol', 'heatmap', 'raster'],
   dataFeatures: {
     featureState: ['geojson'],
-    filter: ['geojson'],
+    filter: ['geojson', 'vector-tiles'],
   },
   viewFeatures: {
     pitch: true,

@@ -332,18 +332,42 @@ const buildHeatmap: Builder = (base, _layer, paint, _ctx) => {
   } as maplibregl.LayerSpecification;
 };
 
+/**
+ * Builds the `symbol` layer's `layout` block — the label text, size, fontstack
+ * and icon. GeoVis carries these in the `paint` bag, which MapLibre splits
+ * between `paint` and `layout`.
+ *
+ * `icon-image` is omitted rather than written as `undefined` when the layer
+ * declares no icon. MapLibre validates `layout` on `addLayer` and rejects the
+ * whole layer with `'undefined' value invalid, use null instead`, which aborts
+ * the surrounding layer sync — `stripUndefinedPaint` cleans `paint` only, so a
+ * text-only symbol layer would never reach the map.
+ *
+ * `text-font` is always written, defaulting to `Noto Sans Regular`. MapLibre's
+ * own default fontstack (`Open Sans Regular`, `Arial Unicode MS Regular`) is
+ * served by neither OpenFreeMap nor most OpenMapTiles-derived basemaps, so
+ * leaving it unset 404s the glyph request and draws no text — a silent failure
+ * that looks like the layer never mounted.
+ *
+ * Split out of `buildSymbol` so each stays under the complexity budget the
+ * ESLint config enforces; `paint` and `layout` have no shared defaults.
+ */
+const buildSymbolLayout = (sp: SymbolPaint): Record<string, unknown> => {
+  return {
+    'text-field': sp.textField ?? '',
+    'text-size': sp.textSize ?? 12,
+    'text-font': sp.textFont ?? ['Noto Sans Regular'],
+    ...(sp.iconImage === undefined ? {} : { 'icon-image': sp.iconImage }),
+  };
+};
+
 /** Builds a MapLibre `symbol` layer spec from a GeoVis symbol layer. */
 const buildSymbol: Builder = (base, _layer, paint, _ctx) => {
   const sp = (paint ?? {}) as SymbolPaint;
   return {
     ...base,
     type: 'symbol',
-    layout: {
-      ...base.layout,
-      'text-field': sp.textField ?? '',
-      'text-size': sp.textSize ?? 12,
-      'icon-image': sp.iconImage,
-    },
+    layout: { ...base.layout, ...buildSymbolLayout(sp) },
     paint: {
       'text-color': sp.textColor ?? '#000000',
       'text-opacity': sp.textOpacity ?? 1,

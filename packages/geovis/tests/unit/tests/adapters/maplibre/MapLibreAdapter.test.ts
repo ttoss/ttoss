@@ -158,7 +158,7 @@ describe('createMapLibreAdapter', () => {
       ],
       dataFeatures: {
         featureState: ['geojson'],
-        filter: ['geojson'],
+        filter: ['geojson', 'vector-tiles'],
       },
       viewFeatures: {
         pitch: true,
@@ -601,7 +601,7 @@ describe('basemap.labels — symbol layer visibility', () => {
     };
   };
 
-  test('labels:false hides every symbol layer on load (basemap + user)', () => {
+  test('labels:false hides basemap symbol layers and leaves user ones alone', () => {
     const { map, fire } = makeMapWithStyle([
       { id: 'bg', type: 'background' },
       { id: 'roads', type: 'line' },
@@ -633,10 +633,13 @@ describe('basemap.labels — symbol layer visibility', () => {
       'visibility',
       'none'
     );
-    expect(map.setLayoutProperty).toHaveBeenCalledWith(
+    // `basemap.labels` declares what the BASEMAP draws. A user symbol layer's
+    // visibility is declared by `layer.visible`, so hiding place names to make
+    // room for the map's own labels must not take those labels with it.
+    expect(map.setLayoutProperty).not.toHaveBeenCalledWith(
       'my-symbols',
       'visibility',
-      'none'
+      expect.anything()
     );
     expect(map.setLayoutProperty).not.toHaveBeenCalledWith(
       'roads',

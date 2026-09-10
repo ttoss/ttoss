@@ -33,32 +33,37 @@ const collectManagedLayerIds = (spec: VisualizationSpec): Set<string> => {
  * Resolves the visibility to apply to a single `symbol` layer, or `null` when
  * the layer must be left untouched.
  *
- * - When labels are hidden, every symbol layer becomes `'none'`.
- * - When labels are shown, only basemap layers are restored to `'visible'`;
- *   managed (user) layers are skipped so their own visibility wins.
+ * Managed (user) layers are skipped in **both** directions: `basemap.labels`
+ * declares what the basemap draws, and a user symbol layer's own visibility is
+ * declared by `layer.visible`. Hiding those too made the two settings
+ * unreachable together — a map that hides place names to make room for its own
+ * labels lost its own labels as well, with no field able to bring them back.
  */
 const resolveSymbolVisibility = (
   layerId: string,
   labelsVisible: boolean,
   managedIds: Set<string>
 ): 'none' | 'visible' | null => {
-  if (!labelsVisible) {
-    return 'none';
+  if (managedIds.has(layerId)) {
+    return null;
   }
-  return managedIds.has(layerId) ? null : 'visible';
+  return labelsVisible ? 'visible' : 'none';
 };
 
 /**
  * Applies `spec.basemap.labels` to the live map's `symbol` layers.
  *
- * - `labels === false` hides **every** `symbol` layer — basemap labels/icons
- *   AND any user-defined `symbol` layers — matching the historical
- *   `HideBasemapLabels` component behaviour.
- * - `labels === true` restores the basemap's own `symbol` layers to `visible`.
- *   User layers and their companions are skipped so their own visibility
- *   management (`layer.visible`, feature-state filters) is preserved.
+ * - `labels === false` hides the basemap's own `symbol` layers (place, road and
+ *   POI names/icons).
+ * - `labels === true` restores those same layers to `visible`.
  * - `labels === undefined` leaves the style untouched, preserving the basemap's
  *   native label visibility.
+ *
+ * User layers and their companions are never touched, whichever way `labels`
+ * points, so their own visibility management (`layer.visible`, feature-state
+ * filters) is preserved. This is narrower than the historical
+ * `HideBasemapLabels` component, which hid every `symbol` layer on the map:
+ * hide `layer.visible` on a user symbol layer to get that back for one layer.
  *
  * Safe to call repeatedly and on every sync. When the style is still loading
  * (e.g. right after large GeoJSON sources are added on initial mount), setting

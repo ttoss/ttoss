@@ -285,9 +285,36 @@ describe('toMaplibreLayer', () => {
     expect(result).toMatchObject({ type: 'symbol' });
     expect(
       (result as { layout: Record<string, unknown> }).layout
-    ).toMatchObject({ 'text-field': 'Hello', 'text-size': 14 });
+    ).toMatchObject({
+      'text-field': 'Hello',
+      'text-size': 14,
+      // MapLibre's own default fontstack is served by no OpenMapTiles basemap,
+      // so an unset `textFont` 404s the glyphs and draws nothing.
+      'text-font': ['Noto Sans Regular'],
+    });
     expect((result as { paint: Record<string, unknown> }).paint).toMatchObject({
       'text-color': '#000000',
+    });
+  });
+
+  test('symbol layout takes an explicit fontstack and per-feature expressions', () => {
+    const layer: VisualizationLayer = {
+      ...base,
+      geometry: 'symbol',
+      paint: {
+        textField: ['get', 'count'],
+        textSize: ['step', ['get', 'count'], 11, 100, 14],
+        textFont: ['Noto Sans Bold'],
+      } as SymbolPaint,
+    };
+    // The adapter hands `paint` straight to the style, so an expression has to
+    // survive the translation verbatim to reach `text-field`/`text-size`.
+    expect(
+      (toMaplibreLayer(layer) as { layout: Record<string, unknown> }).layout
+    ).toMatchObject({
+      'text-field': ['get', 'count'],
+      'text-size': ['step', ['get', 'count'], 11, 100, 14],
+      'text-font': ['Noto Sans Bold'],
     });
   });
 
