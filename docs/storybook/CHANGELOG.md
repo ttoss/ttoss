@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.0.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@6.3.2...@docs/storybook@7.0.0) (2026-09-08)
+
+### Features
+
+- **geovis-workspace:** sidebar tooltips, fixed block headers, async-… ([#1228](https://github.com/ttoss/ttoss/issues/1228)) ([6fe51f5](https://github.com/ttoss/ttoss/commit/6fe51f510d26602291df86558322b7be811e8d96))
+
+### BREAKING CHANGES
+
+- **geovis-workspace:** filter blocks no longer collapse unless they declare
+  `collapsible: true`. Every `filters` block used to collapse, so consumers that
+  want the chevron back have to opt in per block.
+
+Co-authored-by: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+## [6.3.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@6.3.1...@docs/storybook@6.3.2) (2026-09-04)
+
+**Note:** Version bump only for package @docs/storybook
+
+## [6.3.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@6.3.0...@docs/storybook@6.3.1) (2026-09-03)
+
+**Note:** Version bump only for package @docs/storybook
+
+# [6.3.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@6.2.0...@docs/storybook@6.3.0) (2026-09-02)
+
+### Features
+
+- **geovis-workspace:** let a filters block hold a variations menu ([#1219](https://github.com/ttoss/ttoss/issues/1219)) ([5b6f195](https://github.com/ttoss/ttoss/commit/5b6f1952547e2f0c0b6034d8df5f650cebaf7496))
+
 # [6.2.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@6.1.2...@docs/storybook@6.2.0) (2026-09-01)
 
 ### Features

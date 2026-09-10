@@ -7,7 +7,7 @@ slug: ./
 
 **ttoss** (Terezinha Tech Operations) provides this library of modular solutions designed to enhance your product development process. These reusable packages simplify common challenges, allowing development teams to focus on delivering high-impact features efficiently.
 
-These libraries are built in accordance with the technologies defined by our engineering department. For more information on these standards, please refer to [the Engineering technologies](/docs/engineering/technologies).
+These libraries are built in accordance with the standards defined by our engineering department. For more information, see the [Engineering guidelines](/docs/engineering/guidelines).
 
 ## Context-Based Integration
 

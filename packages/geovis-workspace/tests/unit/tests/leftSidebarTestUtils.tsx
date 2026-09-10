@@ -70,6 +70,15 @@ export const Provider = ({ children }: React.PropsWithChildren) => {
   return <I18nProvider>{children}</I18nProvider>;
 };
 
+/**
+ * An app that declares a locale for its own text without shipping a message
+ * bundle for it — the shape that separates the declared locale from the one
+ * react-intl resolves messages with.
+ */
+export const PtBrProvider = ({ children }: React.PropsWithChildren) => {
+  return <I18nProvider locale="pt-BR">{children}</I18nProvider>;
+};
+
 export const visualizationSpec = {
   engine: 'maplibre' as const,
   sources: [],
@@ -150,6 +159,7 @@ export const preview: Preview = {
             id: 'loc',
             title: 'Local',
             icon: 'lucide:search',
+            collapsible: true,
             defaultOpen: false,
             control: {
               kind: 'locator',

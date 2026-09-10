@@ -22,6 +22,7 @@ export {
   type GeovisWorkspaceSidebarVariation,
   type GeovisWorkspaceSidebarVariationGroup,
   type GeovisWorkspaceSidebarVariationsBody,
+  type GeovisWorkspaceSidebarVariationsFilter,
   type GeovisWorkspaceSlotConfig,
   type GeovisWorkspaceSlotName,
   type GeovisWorkspaceSource,

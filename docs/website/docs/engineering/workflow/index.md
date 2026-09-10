@@ -47,12 +47,10 @@ For developers starting the process:
 
 1. Read the [Goals](./goals) to understand the principles
 2. Study the [Development Process](./development-process) for the complete process
-3. Check the [onboarding documentation](/docs/engineering/onboarding) for initial setup
-4. See the [technologies used](/docs/engineering/technologies) in our projects
+3. Review the [Pillars](/docs/engineering/pillars) that this workflow depends on
 
 ## Related Links
 
 - [Product Workflow](/docs/product/workflow) - Product development process
 - [Engineering Guidelines](/docs/engineering/guidelines) - Code standards and practices
-- [Onboarding](/docs/engineering/onboarding) - Guide for new developers
-- [Technologies](/docs/engineering/technologies) - Technology stack used
+- [Pillars](/docs/engineering/pillars) - Properties this workflow relies on

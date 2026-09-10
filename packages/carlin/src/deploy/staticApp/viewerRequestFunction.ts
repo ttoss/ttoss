@@ -43,6 +43,82 @@ export const APPEND_INDEX_HTML_HELPER = `function appendIndexHtml(request) {
 }`;
 
 /**
+ * `redirectToTrailingSlash` injected into every app-supplied viewer request
+ * function, and the whole behavior of the `redirectToTrailingSlash` option.
+ *
+ * `appendIndexHtml` answers `/docs/guide` and `/docs/guide/` with the same
+ * object, so every page of a site has a duplicate that search engines crawl and
+ * have to de-duplicate, and nothing signals a link written without the trailing
+ * slash. This helper serves the trailing slash form as `appendIndexHtml` does
+ * and redirects the extension-less one to it, so a page answers on one URL.
+ *
+ * The query string is carried over verbatim — the values CloudFront exposes are
+ * the ones the viewer sent, so re-encoding them would double-encode a
+ * `?utm_content=a%20b`, and dropping them would break attribution on the
+ * redirected request. A parameter sent without a value (`?flag`) is rebuilt as
+ * `?flag=`, which every query string parser reads the same way.
+ *
+ * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/functions-event-structure.html
+ */
+export const REDIRECT_TO_TRAILING_SLASH_HELPER = `function redirectToTrailingSlash(request) {
+  var uri = request.uri;
+
+  if (uri.endsWith('/')) {
+    request.uri += 'index.html';
+    return request;
+  }
+
+  if (uri.includes('.')) {
+    return request;
+  }
+
+  var querystring = '';
+
+  for (var name in request.querystring) {
+    var parameter = request.querystring[name];
+    var values = parameter.multiValue || [parameter];
+
+    for (var i = 0; i < values.length; i++) {
+      querystring += (querystring ? '&' : '?') + name + '=' + values[i].value;
+    }
+  }
+
+  return {
+    statusCode: 301,
+    statusDescription: 'Moved Permanently',
+    headers: { location: { value: uri + '/' + querystring } },
+  };
+}`;
+
+/**
+ * Code of the per-app function the `redirectToTrailingSlash` option creates.
+ *
+ * The redirect cannot go into the shared base stack function the
+ * `appendIndexHtml` option associates: that one is imported by ARN by every
+ * static app in the account, so changing it would redirect all of them at once,
+ * on someone else's version bump. A per-app function keeps the choice with the
+ * app, and costs no base stack update before the option can be used.
+ */
+export const REDIRECT_TO_TRAILING_SLASH_FUNCTION_CODE = `${REDIRECT_TO_TRAILING_SLASH_HELPER}
+
+function handler(event) {
+  return redirectToTrailingSlash(event.request);
+}
+`;
+
+/**
+ * Helpers carlin makes available to an app-supplied function, in the order they
+ * are injected. They count against the size budget of every function, so a
+ * helper is added here only when it holds behavior an option of carlin also
+ * provides — an app that supplies its own function can reach for it instead of
+ * losing the option.
+ */
+const INJECTED_HELPERS = [
+  APPEND_INDEX_HTML_HELPER,
+  REDIRECT_TO_TRAILING_SLASH_HELPER,
+].join('\n\n');
+
+/**
  * The entry point CloudFront calls. A function whose code doesn't declare it
  * fails at deploy time with an opaque error, so it's checked at synth time.
  */
@@ -68,8 +144,8 @@ export const readViewerRequestFunctionCode = ({
 };
 
 /**
- * Composes the source of the per-app `AWS::CloudFront::Function`: the
- * `appendIndexHtml` helper followed by the app code, which owns the `handler`.
+ * Composes the source of the per-app `AWS::CloudFront::Function`: the injected
+ * helpers followed by the app code, which owns the `handler`.
  */
 export const getViewerRequestFunctionCode = ({
   code,
@@ -88,17 +164,17 @@ export const getViewerRequestFunctionCode = ({
     );
   }
 
-  const functionCode = `${APPEND_INDEX_HTML_HELPER}\n\n${code.trim()}\n`;
+  const functionCode = `${INJECTED_HELPERS}\n\n${code.trim()}\n`;
 
   /**
-   * The helper counts against the app budget, so the size of the composed
+   * The helpers count against the app budget, so the size of the composed
    * source is what CloudFront rejects.
    */
   const size = Buffer.byteLength(functionCode, 'utf8');
 
   if (size > MAX_FUNCTION_SIZE_BYTES) {
     throw new Error(
-      `The viewer request function is ${size} bytes, above the ${MAX_FUNCTION_SIZE_BYTES} bytes CloudFront allows. The \`appendIndexHtml\` helper carlin injects counts against this budget.`
+      `The viewer request function is ${size} bytes, above the ${MAX_FUNCTION_SIZE_BYTES} bytes CloudFront allows. The helpers carlin injects count against this budget.`
     );
   }
 

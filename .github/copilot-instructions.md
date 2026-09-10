@@ -24,9 +24,7 @@ ttoss/
 │       ├── docs.instructions.md      # For documentation work
 │       └── packages.instructions.md  # For package development
 ├── packages/                # All packages in the monorepo
-├── docs/                    # Documentation and website
-├── challenge/              # Challenge projects
-└── terezinha-farm/        # Farm-related projects
+└── docs/                    # Documentation and website
 ```
 
 ## Path-Specific Instructions

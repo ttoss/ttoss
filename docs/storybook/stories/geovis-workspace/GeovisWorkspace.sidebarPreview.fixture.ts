@@ -1,17 +1,24 @@
 import { type GeovisWorkspaceConfig } from '@ttoss/geovis-workspace';
 
 /**
- * A rich left sidebar with three icon tabs whose header mirrors the active tab.
- * The "Variações" tab is a flat list of icon-led variations (tagged by group)
- * that drive the shared `variable` selection (recoloring the map); "Filtros"
- * stacks emoji chips and a município locator; "Linha do Tempo" holds the
- * timeline on its own.
+ * A rich left sidebar with three icon tabs. The first is a flat list of icon-led
+ * variations (tagged by group) that drive the shared `variable` selection
+ * (recoloring the map); the second stacks emoji chips and a município locator;
+ * the third holds the timeline on its own.
  *
  * The last two are both `filters` sections — the kind describes the body, not
  * the tab, so a config splits its controls across as many tabs as it wants.
  * Worth keeping split here: the timeline is the one control with a gate
  * (`enabledWhen`) and a compact HUD of its own, and a tab of its own is what
  * lets either be scoped to it without dragging the chips and locator along.
+ *
+ * Two variations under "Produção Agrícola" carry a `description`, which is what
+ * a row shows on hover; the rest are left without one, since a tooltip that only
+ * repeated the label would say nothing the row does not already.
+ *
+ * No section declares a header `title`, so the band is not drawn at all: the tab
+ * bar heads the card, carrying the close button. The icons stay — they are what
+ * identifies each tab, and it is only the band that goes away.
  */
 export const sidebarPreviewConfig: GeovisWorkspaceConfig = {
   leftSidebar: {
@@ -19,12 +26,11 @@ export const sidebarPreviewConfig: GeovisWorkspaceConfig = {
     sections: [
       {
         id: 'variations',
-        header: {
-          title: 'Variações',
-          icon: 'lucide:layout-list',
-        },
+        header: { icon: 'lucide:layout-list' },
         body: {
           kind: 'variations',
+          title: 'Variações',
+          icon: 'lucide:layout-list',
           menuId: 'variable',
           defaultGroupId: 'production',
           defaultValue: 'farms',
@@ -77,6 +83,7 @@ export const sidebarPreviewConfig: GeovisWorkspaceConfig = {
                   value: 'volume',
                   label: 'Volume por Cultura',
                   icon: 'lucide:bar-chart-2',
+                  description: 'Toneladas colhidas na safra corrente',
                 },
                 {
                   value: 'harvest',
@@ -87,6 +94,8 @@ export const sidebarPreviewConfig: GeovisWorkspaceConfig = {
                   value: 'certs',
                   label: 'Certificações Orgânicas',
                   icon: 'lucide:badge-check',
+                  description:
+                    'Selos válidos por propriedade, auditados em 2025',
                 },
                 {
                   value: 'irrigation',
@@ -184,10 +193,7 @@ export const sidebarPreviewConfig: GeovisWorkspaceConfig = {
       },
       {
         id: 'filters',
-        header: {
-          title: 'Filtros',
-          icon: 'lucide:filter',
-        },
+        header: { icon: 'lucide:filter' },
         body: {
           kind: 'filters',
           blocks: [
@@ -213,6 +219,9 @@ export const sidebarPreviewConfig: GeovisWorkspaceConfig = {
               id: 'municipality',
               title: 'Município',
               icon: 'lucide:navigation',
+              // The one block that toggles: its list is long, and it is the
+              // only one declared to start closed.
+              collapsible: true,
               control: {
                 kind: 'locator',
                 placeholder: 'Buscar município...',
@@ -251,10 +260,7 @@ export const sidebarPreviewConfig: GeovisWorkspaceConfig = {
       },
       {
         id: 'timeline',
-        header: {
-          title: 'Linha do Tempo',
-          icon: 'lucide:clock',
-        },
+        header: { icon: 'lucide:clock' },
         body: {
           kind: 'filters',
           blocks: [
@@ -268,17 +274,20 @@ export const sidebarPreviewConfig: GeovisWorkspaceConfig = {
                 max: 2024,
                 defaultValue: 2022,
                 unitLabel: 'registros',
+                // Counts in the thousands, so the story exercises the
+                // grouping the bars' tooltips and the unit readout apply — a
+                // two-digit series would separate the same either way.
                 histogram: [
-                  { key: 2015, count: 38 },
-                  { key: 2016, count: 44 },
-                  { key: 2017, count: 51 },
-                  { key: 2018, count: 63 },
-                  { key: 2019, count: 70 },
-                  { key: 2020, count: 82 },
-                  { key: 2021, count: 95 },
-                  { key: 2022, count: 108 },
-                  { key: 2023, count: 121 },
-                  { key: 2024, count: 134 },
+                  { key: 2015, count: 38412 },
+                  { key: 2016, count: 44207 },
+                  { key: 2017, count: 51930 },
+                  { key: 2018, count: 63118 },
+                  { key: 2019, count: 70455 },
+                  { key: 2020, count: 82309 },
+                  { key: 2021, count: 95674 },
+                  { key: 2022, count: 108240 },
+                  { key: 2023, count: 121836 },
+                  { key: 2024, count: 134502 },
                 ],
               },
             },

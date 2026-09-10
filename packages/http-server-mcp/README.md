@@ -371,7 +371,7 @@ The `WWW-Authenticate: Bearer resource_metadata="…"` header is how MCP clients
 
 The two behaviors the [MCP authorization spec](https://spec.modelcontextprotocol.io/specification/2025-03-26/basic/authorization/) requires for client bootstrapping are built into the `auth` option, so you no longer need the hand-rolled middleware shown above:
 
-- **`publicMethods`** — JSON-RPC methods that bypass verification, read from the request body's `method` field. Defaults to `['initialize', 'tools/list']` so clients can discover the server before authenticating. Pass `[]` to require a token for every method, or a custom list to change the exempt set. Leaving it unset serves the full tool catalogue — every tool name, description, and input schema — to unauthenticated callers, and logs a one-time warning explaining that and how to close it. Set `publicMethods` explicitly (even to the same default) to silence the warning.
+- **`publicMethods`** — JSON-RPC methods that bypass verification, read from the request body's `method` field. Defaults to `['initialize', 'server/discover']` — the lifecycle handshake of each protocol era, which the spec sanctions so a client can complete it before it can discover the authorization server. Pass `[]` to require a token for every method, or a custom list to change the exempt set. Adding `tools/list` serves the full tool catalogue — every tool name, description, and input schema — to unauthenticated callers; see [`publicMethods` and OAuth clients](#publicmethods-and-oauth-clients) before doing so.
 - **`resourceMetadataUrl`** — the URL a `401` advertises as `WWW-Authenticate: Bearer resource_metadata="<url>"` (RFC 9728) instead of a bare `Bearer`, pointing MCP clients at the protected-resource metadata document. **You normally do not set it**: when the document is served — i.e. both `resourceServerUrl` and `authorizationServerUrl` are configured — it defaults to the RFC 9728 location this router serves it at, so the header and the routes cannot drift apart. When the document is not served, the header stays a bare `Bearer` rather than naming a location with no route. The field exists for the one configuration where this router deliberately does not serve the document — an `oauthServer()` in the same deployment already answers that path, so this router is mounted without `resourceServerUrl`/`authorizationServerUrl` to avoid two routers on one path, and has nothing to derive from. Compute the value with `protectedResourceMetadataUrl` from [`@ttoss/auth-core`](https://ttoss.dev/docs/modules/packages/auth-core) rather than typing it, so both halves apply the same §3.1 rule.
 
 ```typescript
@@ -383,12 +383,12 @@ createMcpRouter(mcpServer, {
     resourceServerUrl: 'https://mcp.example.com',
     authorizationServerUrl:
       'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_xxx',
-    // publicMethods defaults to ['initialize', 'tools/list'].
+    // publicMethods defaults to ['initialize', 'server/discover'].
   },
 });
 ```
 
-Every field is optional, and the `publicMethods` default matches what MCP clients expect for discovery.
+Every field is optional.
 
 ### Supporting clients that connect to the bare origin
 
@@ -478,6 +478,78 @@ register({
 
 **`buildContext`** injects request-scoped values (DB clients, tenant IDs) into every handler call without threading them through each individual tool. It receives the full `ToolCallContext` so context can vary by identity or by call args.
 
+## MCP Apps (interactive UIs)
+
+The [`io.modelcontextprotocol/ui`](https://github.com/modelcontextprotocol/ext-apps) extension lets a tool result render as an interactive view instead of text. The view is a `ui://` resource holding an HTML document, which the host loads into a sandboxed iframe and talks to over `postMessage`; the tool points at it through its `_meta`.
+
+The extension asks nothing of the transport, so `createMcpRouter` serves it as-is on both protocol revisions. `registerAppResource` owns the parts that are easy to get wrong — the `ui://` scheme, the exact MIME type, `_meta.ui` on both the declaration and the read result, and the deprecated flat linkage key that is still legal until the extension reaches GA.
+
+```typescript
+import {
+  McpServer,
+  registerAppResource,
+  UI_EXTENSION_ID,
+  UI_RESOURCE_MIME_TYPE,
+  z,
+} from '@ttoss/http-server-mcp';
+
+const server = new McpServer(
+  { name: 'weather', version: '1.0.0' },
+  {
+    capabilities: {
+      extensions: { [UI_EXTENSION_ID]: { mimeTypes: [UI_RESOURCE_MIME_TYPE] } },
+    },
+  }
+);
+
+const dashboard = registerAppResource({
+  server,
+  name: 'weather_dashboard',
+  uri: 'ui://weather/dashboard',
+  description: 'Interactive weather dashboard',
+  html: dashboardHtml, // a string, or ({ uri }) => string built per read
+  ui: {
+    csp: { connectDomains: ['https://api.openweathermap.org'] },
+    prefersBorder: true,
+  },
+});
+
+server.registerTool(
+  'get-weather',
+  {
+    description: 'Get the weather for a location',
+    inputSchema: { location: z.string() },
+    _meta: dashboard.toolMeta(),
+  },
+  async ({ location }) => {
+    const forecast = await fetchForecast(location);
+    return {
+      // Text stays meaningful: it is what a host without Apps renders.
+      content: [{ type: 'text', text: summarise(forecast) }],
+      structuredContent: forecast,
+    };
+  }
+);
+```
+
+`toolMeta()` is the linkage for **every** registration path — `registerTool`, [`registerToolFromSchema`](#registertoolfromschemaserver-params), and a [`GatedToolDef`](#creategatedtoolregistraroptions) all take `_meta`:
+
+```typescript
+registerToolFromSchema(server, {
+  name: 'refresh-dashboard',
+  description: 'Refresh dashboard data',
+  // Callable by the view, hidden from the model.
+  _meta: dashboard.toolMeta({ visibility: ['app'] }),
+  handler: async () => ({ content: [{ type: 'text', text: 'refreshed' }] }),
+});
+```
+
+### Register the linkage unconditionally
+
+The spec suggests checking the client's declared capability before registering UI-enabled tools. Do not: that read is only reliable on the `2026-07-28` revision, where the capability arrives in each request's envelope. In this package's default [stateless mode](#stateless-vs-stateful-mode) there is no remembered `initialize` for a 2025-era client, so a capability-gated registration silently drops the view for every one of them.
+
+Declaring it always is also strictly more compatible — a host without Apps support ignores `_meta` and renders the tool's `content`, which is the extension's own graceful-degradation contract. Keep every tool's text result meaningful on its own and the fallback takes care of itself.
+
 ## Issuing tokens for MCP clients
 
 The `auth` option above covers the **resource-server** half of MCP authorization — it verifies tokens issued by an external authorization server (Cognito, Auth0, …). To make your own first-party server _issue_ the tokens an MCP client runs the full OAuth flow against, add the [`@ttoss/http-server-auth`](https://ttoss.dev/docs/modules/packages/http-server-auth) plugin's `oauthServer()` and pair it with `createMcpRouter({ auth: { verifyToken } })` so one deployment both issues and verifies tokens. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline.
@@ -502,7 +574,7 @@ Creates a Koa router configured to handle MCP protocol requests.
     - `auth.verifyToken` — Custom async token verifier `(token: string) => Promise<unknown>`
     - `auth.requiredScopes` — Router-level scope guard; returns 403 if any scope is missing
     - `auth.resourceServerUrl` + `auth.authorizationServerUrl` — Enable the protected-resource metadata document, served at both `/.well-known/oauth-protected-resource` and the RFC 9728 path-derived `/.well-known/oauth-protected-resource<path>`; the metadata `resource` is set to `resourceServerUrl + path` so clients following `resource` land on the actual MCP endpoint
-    - `auth.publicMethods` — JSON-RPC methods that bypass verification (default `['initialize', 'tools/list']`)
+    - `auth.publicMethods` — JSON-RPC methods that bypass verification (default `['initialize', 'server/discover']`)
     - `auth.resourceMetadataUrl` — URL advertised in the RFC 9728 `WWW-Authenticate: Bearer resource_metadata="…"` header on a 401. Defaults to the location derived from `resourceServerUrl` + `path` (the one this router serves), so the header cannot drift from the routes; set it only when a separate `oauthServer()` serves the document and this router is mounted without `resourceServerUrl`/`authorizationServerUrl`
     - `auth.resourceIndicator` — Expected `aud` value(s) (RFC 8707); rejects tokens minted for a different resource. See [Resource indicator validation](#resource-indicator-validation-rfc-8707)
 
@@ -582,6 +654,7 @@ The `GatedToolDef` passed to `register` has:
 - `requiredScope` — Single scope that must appear in `identity.scopes`.
 - `inputSchema` — Zod field map or `ZodObject`, forwarded to `server.registerTool`.
 - `gates` (`Array<(ctx: ToolCallContext) => void | Promise<void>>`, optional) — Per-tool guards appended after the global `gates`. Receive the full `ToolCallContext` enabling arg-conditional authorization.
+- `_meta` (`Record<string, unknown>`, optional) — Tool metadata forwarded verbatim on `tools/list`; how a gated tool links to an [MCP Apps](#mcp-apps-interactive-uis) view.
 - `method` — Async handler. Receives merged call args + `buildContext` output.
 
 **`ToolCallContext`** is the object passed to gates, `buildContext`, and `onError`:
@@ -589,6 +662,33 @@ The `GatedToolDef` passed to `register` has:
 - `identity` (`ToolIdentity`) — The resolved caller identity (`{ userId, scopes? }`).
 - `args` (`Record<string, unknown>`) — The validated tool input (post SDK parse).
 - `handler` (`string`) — The tool name, for error attribution.
+
+### `registerAppResource(params)`
+
+Registers an [MCP Apps](#mcp-apps-interactive-uis) view: a `ui://` resource whose HTML a host renders for a linked tool's result.
+
+**Parameters (`params`):**
+
+- `server` (`McpServer`) — The MCP server to register the resource on.
+- `name` (`string`) — Resource name, as listed by `resources/list`.
+- `uri` (`string`) — Resource URI. Must use the `ui://` scheme, or the call throws.
+- `description` (`string`, optional) — What the view does and when a host should render it.
+- `html` (`string | ({ uri: URL }) => string | Promise<string>`) — The view's HTML5 document, or a builder invoked per `resources/read`.
+- `ui` (`UiResourceMeta`, optional) — Rendering and security configuration relayed to the host as `_meta.ui`:
+  - `csp` (`UiResourceCsp`) — Origins the view may reach, mapped onto the iframe's Content Security Policy: `connectDomains` (`connect-src`), `resourceDomains` (scripts/styles/images/fonts/media), `frameDomains` (`frame-src`), `baseUriDomains` (`base-uri`). An omitted list is the restrictive default, not "no restriction".
+  - `permissions` (`UiResourcePermissions`) — Browser capabilities requested for the view (`camera`, `microphone`, `geolocation`, `clipboardWrite`), each as `{}`. A host _may_ grant them, so feature-detect in the view rather than assuming.
+  - `domain` (`string`) — Dedicated sandbox origin, for views needing a stable one (OAuth callbacks, CORS, API key allowlists). The format is host-specific.
+  - `prefersBorder` (`boolean`) — Whether the host should draw a border and background around the view.
+
+**Returns:** `RegisteredAppResource`
+
+- `uri` (`string`) — The URI tools link to.
+- `resource` (`RegisteredResource`) — The SDK's registration handle, for `update`/`disable`/`remove`.
+- `toolMeta(params?)` — Builds the `_meta` bag linking a tool to this view, writing both `_meta.ui.resourceUri` and the deprecated flat `_meta['ui/resourceUri']`. Takes `visibility` (`Array<'model' | 'app'>`, optional — the spec's default is both) and `_meta` (`Record<string, unknown>`, optional) to merge further entries in.
+
+### `UI_EXTENSION_ID` / `UI_RESOURCE_MIME_TYPE`
+
+`'io.modelcontextprotocol/ui'` and `'text/html;profile=mcp-app'`. Use the first as the `capabilities.extensions` key when advertising Apps support on the `McpServer`, and the second as the MIME type a host negotiates.
 
 ### `registerToolFromSchema(server, params)`
 
@@ -603,6 +703,7 @@ Use this when tool definitions are shared between the MCP server and an AI SDK a
 - `params.description` (`string`, optional) — Human-readable description
 - `params.inputSchema` (`JsonObjectSchema`, optional) — Plain JSON Schema object (defaults to `{ type: 'object', properties: {} }`)
 - `params.validateArguments` (`boolean`, optional) — Enforce `inputSchema` on `tools/call` (default: `false`); see [Argument validation](#argument-validation)
+- `params._meta` (`Record<string, unknown>`, optional) — Tool metadata forwarded verbatim on `tools/list`; how a tool links to an [MCP Apps](#mcp-apps-interactive-uis) view
 - `params.handler` (`(args: Record<string, unknown>) => CallToolResult | Promise<CallToolResult>`) — Tool handler receiving the raw request arguments
 
 **Returns:** `void`
@@ -873,14 +974,19 @@ expect(call.status).toBe(200);
 
 ### `publicMethods` and OAuth clients
 
-`auth.publicMethods` defaults to `['initialize', 'tools/list']`, which lets clients discover the server before they have a token. This default has an important effect on OAuth-aware clients (e.g. a Claude connector):
+`auth.publicMethods` defaults to `['initialize', 'server/discover']`: the lifecycle handshake is reachable without a token, nothing else is. There are two entries because the exemption is about _the handshake_, not the method name — `initialize` is the 2025-era handshake and `server/discover` its `2026-07-28` replacement, since that revision removed `initialize` outright. Naming only one leaves the other era unable to negotiate at all.
 
-- With the default, `initialize` returns `200` unauthenticated, so an OAuth client concludes the server is public and never starts the OAuth flow — while `notifications/initialized` still returns `401`, breaking the handshake. The visible symptom is "connected, no tools available, no sign-in prompt".
-- Setting `publicMethods: []` makes `initialize` return `401` + `WWW-Authenticate`, which triggers the client's OAuth discovery and PKCE flow.
+**Adding `tools/list` is a deliberate exposure.** It serves the full tool catalogue — every name, description, and input schema — to anyone who can reach the endpoint. Those leak internal resource names and domain vocabulary, and for an OpenAPI-derived server the schemas mirror the REST surface, so the catalogue becomes an unauthenticated map of the whole API including operations the caller could never invoke. It buys an OAuth client nothing, because the `401` is what starts the authorization flow and a client that lists tools anonymously still cannot call one. Open it only to serve callers that will never authenticate:
 
-Use the default when token auth is handled outside the OAuth flow (Cognito, API keys, Bearer tokens). Set `publicMethods: []` only when you want OAuth clients to self-discover and authenticate before anything else.
+```typescript
+publicMethods: ['initialize', 'tools/list'],
+```
 
-Leaving `publicMethods` unset also exposes the full tool catalogue (`tools/list`) to unauthenticated callers — a tool's name, description, and input schema can leak internal resource names and, for an OpenAPI-derived server, the shape of the whole underlying API. A one-time warning is logged when `auth` is configured without an explicit `publicMethods`, naming the exposure and how to close it. This default is a candidate to tighten to `['initialize']` in a future major; track the decision in [ttoss/ttoss#1176](https://github.com/ttoss/ttoss/issues/1176).
+**Whether `initialize` should be public depends on how tokens are issued.** Keep the default when token auth is handled outside the OAuth flow (Cognito, API keys, Bearer tokens minted elsewhere). Set `publicMethods: []` when you want OAuth clients to authenticate before anything else — `initialize` then returns `401` + `WWW-Authenticate` on the very first request, so discovery starts there rather than one step later.
+
+Either way the authorization flow works. Driving the official MCP client SDK against this router shows the RFC 9728 challenge resolving to the protected-resource document, the authorization server, and the redirect, whether the `401` arrives on `initialize` (`publicMethods: []`) or on the request after it (the default). `tests/unit/tests/oauth-client-flow.test.ts` asserts it.
+
+**Whether the handshake should be public at all is a separate question.** `publicMethods: []` closes both eras, and the authorization flow still works — RFC 9728 discovery is driven by the challenge itself, so a client authenticates from its very first request instead of one step later.
 
 ## AWS Lambda Deployment
 
@@ -931,6 +1037,12 @@ Keep the following in mind:
 
 > This differs from [`awslabs/run-model-context-protocol-servers-with-aws-lambda`](https://github.com/awslabs/run-model-context-protocol-servers-with-aws-lambda), which wraps **stdio**-based MCP servers into Lambda by spawning a child process per invocation. `@ttoss/http-server-mcp` already speaks Streamable HTTP, so that wrapper is unnecessary — you deploy it like any other HTTP handler.
 
+## Migrations
+
+Breaking changes and what they require of consumers are listed in
+[MIGRATIONS.md](https://github.com/ttoss/ttoss/blob/main/packages/http-server-mcp/MIGRATIONS.md),
+newest first.
+
 ## Related Packages
 
 - [@ttoss/http-server](https://ttoss.dev/docs/modules/packages/http-server) - HTTP server foundation
@@ -943,3 +1055,4 @@ Keep the following in mind:
 - [MCP Documentation](https://modelcontextprotocol.io)
 - [MCP Specification](https://spec.modelcontextprotocol.io/)
 - [MCP SDK TypeScript](https://github.com/modelcontextprotocol/typescript-sdk)
+- [MCP Apps extension (`io.modelcontextprotocol/ui`)](https://github.com/modelcontextprotocol/ext-apps)

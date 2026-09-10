@@ -61,6 +61,41 @@ describe('aliases implies acm', () => {
   });
 });
 
+describe('redirect to trailing slash', () => {
+  test('should throw without append-index-html', () => {
+    return expect(
+      parse({ cloudfront: true, redirectToTrailingSlash: true })
+    ).rejects.toThrow('requires the append-index-html option');
+  });
+
+  /**
+   * An extension-less URI of a SPA is a client route, so redirecting it would
+   * move every route of the app to a URL its router doesn't produce.
+   */
+  test('should throw with spa', () => {
+    return expect(
+      parse({
+        cloudfront: true,
+        appendIndexHtml: true,
+        redirectToTrailingSlash: true,
+        spa: true,
+      })
+    ).rejects.toThrow('mutually exclusive');
+  });
+
+  test('should not throw with append-index-html', () => {
+    const options = {
+      cloudfront: true,
+      appendIndexHtml: true,
+      redirectToTrailingSlash: true,
+    };
+
+    return expect(parse(options)).resolves.toEqual(
+      expect.objectContaining(options)
+    );
+  });
+});
+
 describe('handling methods', () => {
   test.each([
     {

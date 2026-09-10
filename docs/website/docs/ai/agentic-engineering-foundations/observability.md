@@ -1,6 +1,6 @@
 ---
 title: Observability
-sidebar_position: 6
+sidebar_position: 5
 ---
 
 Agentic teams need systems that fail loudly and explain themselves. Logs, traces, metrics, domain events, assertions, and debugging hooks are essential because they give humans the evidence needed to validate whether agent-produced changes behave correctly in the real world. Without observability, humans are asked to approve outputs they cannot truly evaluate.

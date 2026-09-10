@@ -1,15 +1,19 @@
 ---
 title: Deterministic Guardrails
-sidebar_position: 8
+sidebar_position: 7
 ---
 
-Agentic execution must be bounded by deterministic systems. Permissions, protected environments, schemas, policy checks, type systems, lint rules, CI gates, and scoped edit surfaces are what keep probabilistic agents from turning local plausibility into systemic damage. Prompts cannot carry this burden.
+Agentic execution must be bounded by systems that cannot be persuaded. Permissions, protected environments, scoped edit surfaces, sandboxed execution, and approval gates on irreversible actions are what keep probabilistic agents from turning local plausibility into systemic damage. Prompts cannot carry this burden.
 
-The distinction that matters is structural versus behavioral constraint. A prompt instruction ("never touch the billing module") is behavioral: the agent will probably comply. A permission boundary is structural: the agent cannot do otherwise. Probabilistic compliance is acceptable for style; for anything with an asymmetric downside, the constraint must be enforced by a system that cannot be persuaded.
+The distinction that matters is structural versus behavioral constraint. A prompt instruction ("never touch the billing module") is behavioral: the agent will probably comply. A permission boundary is structural: the agent cannot do otherwise. Probabilistic compliance is acceptable for style; for anything with an asymmetric downside, the constraint must be enforced by a system that cannot be talked out of it.
+
+## Scope: Authority, Not Correctness
+
+This pillar governs what an agent is allowed to reach, not whether its output is right. Mechanical correctness checks belong to the pillars that own them — types and schemas to [Executable Intent](/docs/ai/agentic-engineering-foundations/executable-intent), lint rules and CI gates to [Testability](/docs/ai/agentic-engineering-foundations/testability) — and they all answer the same question: is this change valid? Guardrails answer a different one: how much can this change break, and who authorized that reach? A team can have exemplary CI and still hand every agent production credentials.
 
 ## What It Looks Like in Practice
 
-Agents operate with the least access their task requires — scoped file surfaces, sandboxed execution, no production credentials by default. Rules that reviews would otherwise catch are encoded as lint rules, type constraints, and CI gates, so violations fail mechanically instead of depending on reviewer attention. Autonomy is graduated: low-risk exploratory work runs freely, while actions with irreversible consequences require deterministic checks or human approval to pass.
+Agents operate with the least access their task requires — scoped file surfaces, sandboxed execution, no production credentials by default. Autonomy is graduated: low-risk exploratory work runs freely, while actions whose consequences cannot be undone require a deterministic check or a human approval to proceed. The blast radius of a task is decided before the task starts, not discovered afterward in an incident review.
 
 ## Grounding Principles
 
@@ -17,4 +21,4 @@ This pillar operationalizes [The Principle of Structural Determinism](/docs/ai/a
 
 ## Failure Mode
 
-The team trusts a strong model with broad repo and production access but lacks hard boundaries on what it may change or execute. A low-probability mistake becomes a high-cost incident because nothing structural existed to stop it.
+The team trusts a strong model with broad repository and production access but sets no hard boundary on what it may change or execute. Every correctness gate passes: the agent does exactly what it was asked, in a place it should never have been able to reach. A low-probability mistake becomes a high-cost incident because nothing structural existed to stop it.

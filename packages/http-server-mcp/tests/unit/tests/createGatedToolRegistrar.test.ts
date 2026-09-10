@@ -614,4 +614,52 @@ describe('createGatedToolRegistrar', () => {
       expect(handler).not.toHaveBeenCalled();
     });
   });
+  describe('tool metadata', () => {
+    test('forwards _meta to registerTool, e.g. an MCP Apps view linkage', () => {
+      const { server } = patchServer();
+      const { register } = createGatedToolRegistrar({
+        server,
+        resolveIdentity: () => {
+          return makeIdentity();
+        },
+      });
+
+      register({
+        name: 'gated-tool',
+        description: 'gated',
+        requiredScope: 'read',
+        inputSchema: {},
+        _meta: { ui: { resourceUri: 'ui://app/view' } },
+        method: jest.fn(),
+      });
+
+      expect(jest.mocked(server.registerTool).mock.calls[0][1]).toEqual(
+        expect.objectContaining({
+          _meta: { ui: { resourceUri: 'ui://app/view' } },
+        })
+      );
+    });
+
+    test('passes _meta as undefined when the tool declares none', () => {
+      const { server } = patchServer();
+      const { register } = createGatedToolRegistrar({
+        server,
+        resolveIdentity: () => {
+          return makeIdentity();
+        },
+      });
+
+      register({
+        name: 'gated-tool',
+        description: 'gated',
+        requiredScope: 'read',
+        inputSchema: {},
+        method: jest.fn(),
+      });
+
+      expect(
+        jest.mocked(server.registerTool).mock.calls[0][1]._meta
+      ).toBeUndefined();
+    });
+  });
 });

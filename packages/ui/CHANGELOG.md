@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 6.9.30 (2026-09-04)
+
+**Note:** Version bump only for package @ttoss/ui
+
 ## 6.9.29 (2026-08-31)
 
 **Note:** Version bump only for package @ttoss/ui

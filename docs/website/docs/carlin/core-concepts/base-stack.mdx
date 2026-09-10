@@ -76,6 +76,11 @@ carlin deploy static-app --append-index-html
 # Uses CloudFront function from base stack
 ```
 
+Every static app in the account associates this same function by ARN, so a
+change to it changes all of them at once. Options that alter this behavior for a
+single app — such as [`--redirect-to-trailing-slash`](/docs/carlin/commands/deploy-static-app#--redirect-to-trailing-slash)
+— deploy a CloudFront function of their own instead.
+
 ### Lambda Layer Builder
 
 CodeBuild project for creating Lambda layers from `package.json` dependencies.

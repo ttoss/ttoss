@@ -6,56 +6,29 @@ slug: /engineering
 
 # Engineering at ttoss
 
-**Modern engineering practices and tools designed for velocity, quality, and scalability.**
+Engineering at ttoss is being rebuilt around agents. Not as a tooling upgrade, but as a change in what engineers spend the day doing and what the delivery system has to guarantee on their behalf.
 
-ttoss's Engineering pillar combines battle-tested development practices with cutting-edge automation tools. Our open-source engineering department demonstrates how technical excellence and speed can coexist, enabling teams to build robust products while maintaining rapid iteration cycles.
+The premise is simple and uncomfortable: when generating code becomes cheap, code stops being the constraint. What stays scarce is knowing what to build, proving that what was built is correct, and being able to undo it when it is not. Every page in this section exists to make one of those three cheap enough to do at the speed agents now produce change.
 
-## What You'll Find Here
+This section is written to be portable. The examples are ours — our lint budgets, our pipelines, our coverage gates — but the pillars are meant to be lifted into any team's codebase. If you are here to build agentic engineering on your own team, the examples are illustrations, not requirements.
 
-- **[Workflow Processes](/docs/engineering/workflow)**: Development methodologies from code to deployment
-- **Career Development**: Growth paths and skill development frameworks
-- **Technical Standards**: Code quality, architecture, and best practice guidelines
-- **DevOps Automation**: Infrastructure as code and deployment strategies
+## How to Read This Section
 
-## Technical Foundation
+[Why Software Engineering Is Changing](/docs/engineering/why-engineering-is-changing) makes the case that the shift is structural rather than fashionable, names the gap the discipline has to close, and maps the stages teams pass through on the way — including where most of them stall. The [Pillars](/docs/engineering/pillars) are the properties a delivery system needs before agentic execution pays off. [Guidelines](/docs/engineering/guidelines) and [Workflow](/docs/engineering/workflow) are the ttoss-specific layer: exactly how we implement all of it in this repository.
 
-Our engineering approach is built on proven technologies and practices:
+## Where This Sits Relative to the AI Section
 
-- **TypeScript-First**: Full type safety across the entire stack
-- **Modular Architecture**: 30+ reusable packages working in harmony
-- **Cloud-Native**: AWS-optimized infrastructure and deployment patterns
-- **GraphQL APIs**: Efficient data fetching and strong typing
-- **React Ecosystem**: Modern frontend development with proven libraries
+The [AI section](/docs/ai) and this one describe the same shift at different altitudes, and the split is deliberate.
 
-## Core Engineering Principles
+```mermaid
+flowchart TB
+    P["Agentic Development Principles<br/>the laws that govern human-AI work"]
+    F["Agentic Engineering Foundations<br/>what must be true of a team"]
+    E["Engineering Pillars<br/>what we mechanized to make it true"]
+    G["Guidelines and Workflow<br/>how ttoss does it, concretely"]
+    P --> F --> E --> G
+```
 
-- **Automation Over Manual Work**: Reduce toil through intelligent tooling
-- **Quality at Speed**: Maintain code quality while moving fast
-- **Modular Design**: Build reusable components that accelerate future development
-- **Infrastructure as Code**: Predictable, versioned infrastructure management
+[Agentic Development Principles](/docs/ai/agentic-development-principles) state what is true whether or not you act on it. [Agentic Engineering Foundations](/docs/ai/agentic-engineering-foundations) state the preconditions those laws impose on a team. This section is the layer below: the mechanisms we actually built, with real thresholds and real pipelines, and the reasoning that would let you build different ones.
 
-## Getting Started
-
-1. **New to ttoss Engineering?** Start with our [Workflow documentation](/docs/engineering/workflow)
-2. **Looking to contribute?** Check our development guidelines and standards
-3. **Want to use our tools?** Explore [Carlin CLI](/docs/carlin) and [Modules](/docs/modules)
-
-## Integration with ttoss Ecosystem
-
-Engineering at ttoss seamlessly integrates with:
-
-- **[Product workflows](/docs/product)** for rapid feature delivery and validation
-- **[Design systems](/docs/design)** for consistent user interface implementation
-- **[Carlin CLI](/docs/carlin)** for automated AWS deployments and infrastructure
-- **[Module library](/docs/modules)** providing pre-built, tested solutions
-
-## Tools That Power Our Velocity
-
-- **[Carlin CLI](/docs/carlin)**: Command-line automation for AWS operations and deployments
-- **[Module Ecosystem](/docs/modules)**: 30+ NPM packages covering authentication, APIs, UI components, and more
-- **Modern Stack**: React, TypeScript, GraphQL, AWS, Tailwind CSS, and Node.js
-- **Quality Assurance**: Automated testing, type checking, and deployment pipelines
-
----
-
-_Our engineering practices are open source and production-tested - proven approaches that help teams build better software faster._
+Read top-down if you want to understand why the practices are shaped this way. Read bottom-up if you have a codebase to change on Monday.

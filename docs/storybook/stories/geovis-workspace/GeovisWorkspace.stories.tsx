@@ -12,6 +12,7 @@ import {
 import { Box, Button, Flex, Text } from '@ttoss/ui';
 import * as React from 'react';
 
+import { withPtBr } from './GeovisWorkspace.decorators';
 import {
   buildBrokenSpec,
   buildPolicyViolationSpec,
@@ -161,6 +162,7 @@ const meta: Meta<typeof GeovisWorkspace> = {
   title: 'Geovis Workspace/GeovisWorkspace',
   component: GeovisWorkspace,
   tags: ['autodocs'],
+  decorators: [withPtBr],
   parameters: {
     docs: {
       description: {
@@ -433,11 +435,12 @@ const KNOWN_VARIABLES = [
 ] as const;
 
 /**
- * Drives the grouped/carousel variant: holds the single shared selection and
- * derives the map spec from it. The 20 grouped values are demo labels, so each
- * one is mapped deterministically onto one of the three real color scales
- * `buildSpec` knows — enough to see the map recolor as different variations are
- * picked across groups.
+ * Drives the two-menus-in-one-tab variant: holds the shared selection both
+ * blocks write into, and derives the map spec from both keys. The 30 indicator
+ * values are demo labels, so each is mapped deterministically onto one of the
+ * three real color scales `buildSpec` knows; the age value is real, and scales
+ * the metric. Picking in either block recolors the map, which is how the two
+ * menus can be told apart at a glance.
  */
 const GroupedControlsStory = () => {
   const [selection, setSelection] = React.useState(() => {
@@ -452,7 +455,10 @@ const GroupedControlsStory = () => {
         return sum + char.charCodeAt(0);
       }, 0) % KNOWN_VARIABLES.length;
 
-    return buildSpec({ variable: KNOWN_VARIABLES[index], age: '65-plus' });
+    return buildSpec({
+      variable: KNOWN_VARIABLES[index],
+      age: selection.age ?? '65-plus',
+    });
   }, [selection]);
 
   return (
@@ -466,9 +472,24 @@ const GroupedControlsStory = () => {
 };
 
 /**
- * The left sidebar's "Variações" tab groups 20+ variations across six groups
- * (Demografia, Renda, Saúde, Educação, …). `defaultValue` ('renda-media') seeds
- * the shared selection; picking any variation recolors the map.
+ * **Two menus sharing one tab.** "Faixa etária" (three variations) and
+ * "Indicador" (thirty) are both `variations` controls inside a single `filters`
+ * body, so they stack as headed blocks instead of claiming a tab each.
+ *
+ * ## What to check
+ *
+ * 1. One tab in the bar, two headings inside it. Collapse either block — the
+ *    other stays put.
+ * 2. Pick an age: the map recolors, because that block drives `selection.age`.
+ *    Pick an indicator: it recolors again, from `selection.variable`. Two
+ *    independent menus, one shared selection object.
+ * 3. Both defaults are seeded before any click — `getInitialSelection` reads a
+ *    `variations` control the same way it reads a `variations` body.
+ *
+ * Declared as bodies these two menus would need a tab each; the tab bar, the
+ * header and the gate all work per section, so comparing them would cost a
+ * switch. The body form is unchanged and still the right shape for a tab given
+ * over to one long menu — `RichLeftSidebar` and `PerVariationFilters` show it.
  */
 export const GroupedControls: Story = {
   render: () => {
@@ -508,16 +529,20 @@ const SidebarPreviewStory = () => {
 };
 
 /**
- * A rich left sidebar with three icon tabs whose header mirrors the active tab.
- * "Variações" is a flat list of icon-led variations (tagged by group) that
- * recolor the map through the shared selection; "Filtros" holds emoji chips
- * (their count shown as a badge on that tab alone) and a município locator; and
- * "Linha do Tempo" holds the timeline with play/pause.
+ * A rich left sidebar with three icon tabs and no header band: no section
+ * declares a `header.title`, so the tab bar itself heads the card — close button
+ * on its right — and the tabs carry the navigation on their own.
  *
- * The last two tabs show that a `filters` body is a body, not a tab: splitting
- * the controls across two sections gives each its own header, its own gate, and
- * — for the timeline — a HUD that follows only it. The filter controls are
- * visual-only for now (local state, not yet wired to the map).
+ * The first tab is a flat list of icon-led variations (tagged by group) that
+ * recolor the map through the shared selection; the second holds emoji chips
+ * (their count shown as a badge on that tab alone) and a município locator; the
+ * third holds the timeline with play/pause.
+ *
+ * The last two show that a `filters` body is a body, not a tab: splitting the
+ * controls across two sections gives each its own gate and — for the timeline —
+ * a HUD that follows only it. Only the locator block is `collapsible`; the rest
+ * draw a fixed header over their control. The filter controls are visual-only
+ * for now (local state, not yet wired to the map).
  */
 export const RichLeftSidebar: Story = {
   render: () => {

@@ -56,6 +56,12 @@ export const options = {
     hidden: true,
     type: 'string',
   },
+  'redirect-to-trailing-slash': {
+    default: false,
+    describe:
+      'Answer an extension-less request URI with a `301` to its trailing slash form instead of serving the page on both, so each page of the site has a single URL. Requires the `append-index-html` option.',
+    type: 'boolean',
+  },
   'response-headers': {
     coerce: parseResponseHeaders,
     default: [],
@@ -136,6 +142,36 @@ export const deployStaticAppCommand: CommandModule<
                   ? 'response-headers'
                   : 'response-headers-policy'
               } option requires the cloudfront option.`
+            );
+          }
+
+          return true;
+        })
+        .check(({ appendIndexHtml, redirectToTrailingSlash, spa }) => {
+          if (!redirectToTrailingSlash) {
+            return true;
+          }
+
+          /**
+           * The redirect is a mode of the index appending, not a behavior of
+           * its own: it still serves `/docs/guide/` as
+           * `/docs/guide/index.html`, and only changes what answers
+           * `/docs/guide`.
+           */
+          if (!appendIndexHtml) {
+            throw new Error(
+              'The redirect-to-trailing-slash option requires the append-index-html option. It changes how an extension-less URI is answered, so the index appending it redirects to has to be on.'
+            );
+          }
+
+          /**
+           * An extension-less URI of a SPA is a client route rather than a
+           * directory, so redirecting it to a trailing slash would move every
+           * route of the app to a URL its router doesn't produce.
+           */
+          if (spa) {
+            throw new Error(
+              'The redirect-to-trailing-slash and spa options are mutually exclusive. An extension-less URI of a SPA is a client route, not a directory, so redirecting it to a trailing slash changes the URL of every route.'
             );
           }
 

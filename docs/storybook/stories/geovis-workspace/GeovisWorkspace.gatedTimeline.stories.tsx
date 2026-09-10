@@ -7,6 +7,8 @@ import {
 } from '@ttoss/geovis-workspace';
 import * as React from 'react';
 
+import { withPtBr } from './GeovisWorkspace.decorators';
+
 /**
  * A **gated section**: `enabledWhen` ties a sidebar section to another menu's
  * selection, so a control only offers itself where it means something.
@@ -199,7 +201,6 @@ const config: GeovisWorkspaceConfig = {
               id: 'periodo',
               title: 'Linha do tempo',
               icon: 'lucide:calendar-clock',
-              defaultOpen: true,
               control: {
                 kind: 'timeline',
                 menuId: 'ano',
@@ -250,6 +251,7 @@ const meta = {
   title: 'Geovis Workspace/GatedTimeline',
   component: GatedTimelineDemo,
   tags: ['autodocs'],
+  decorators: [withPtBr],
   parameters: {
     viewport: {
       options: {

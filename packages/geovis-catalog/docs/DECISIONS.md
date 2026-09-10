@@ -29,7 +29,7 @@ already-implemented decision set this document doesn't re-describe.
 **Implementation:**
 
 - `metricKindSchema` — the seven-value enum above.
-- `metricCategorySchema` (`MetricCategory`) — `{ id, label, order?, colorToken? }`. `colorToken` is a `@ttoss/ui`/`@ttoss/theme` token, never a raw color, so a categorical choropleth stays on-theme.
+- `metricCategorySchema` (`MetricCategory`) — `{ id, title, slug?, order?, colorToken? }` (D16 renamed `label`→`title`, added `slug`). `colorToken` is a `@ttoss/ui`/`@ttoss/theme` token, never a raw color, so a categorical choropleth stays on-theme.
 - `metricSchema.check()` enforces the pairing both ways: nominal without categories fails, categories on a non-nominal kind fails.
 
 **Rationale:**

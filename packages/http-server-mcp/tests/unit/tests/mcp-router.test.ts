@@ -322,6 +322,53 @@ describe('createMcpRouter', () => {
     expect(response.body.error).toMatch(/getApiHeaders failed/);
   });
 
+  test('POST handler returns 500 when getApiHeaders throws a non-Error', async () => {
+    const mcpServer = new McpServer({
+      name: 'test-server',
+      version: '1.0.0',
+    });
+
+    const app = new App();
+    app.use(bodyParser());
+    app.use(
+      createMcpRouter(mcpServer, {
+        getApiHeaders: () => {
+          throw 'a bare string, not an Error';
+        },
+      }).routes()
+    );
+
+    const response = await request(app.callback())
+      .post('/mcp')
+      .send({ jsonrpc: '2.0', method: 'tools/list', id: 1, params: {} })
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json, text/event-stream');
+
+    expect(response.status).toBe(500);
+    expect(response.body.error).toBe('Internal server error');
+  });
+
+  test('DELETE handler returns 500 when getApiHeaders throws a non-Error', async () => {
+    const mcpServer = new McpServer({
+      name: 'test-server',
+      version: '1.0.0',
+    });
+
+    const app = new App();
+    app.use(
+      createMcpRouter(mcpServer, {
+        getApiHeaders: () => {
+          throw 'a bare string, not an Error';
+        },
+      }).routes()
+    );
+
+    const response = await request(app.callback()).delete('/mcp');
+
+    expect(response.status).toBe(500);
+    expect(response.body.error).toBe('Internal server error');
+  });
+
   describe('2026-07-28 protocol revision', () => {
     /**
      * A request speaking the 2026-07-28 revision: the per-request envelope in

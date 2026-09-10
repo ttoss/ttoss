@@ -545,9 +545,87 @@ describe('auth — public methods and RFC 9728 discovery', () => {
     expect(res.status).not.toBe(401);
   });
 
-  test('tools/list is public by default (no token required)', async () => {
+  test('tools/list requires a token by default', async () => {
     const res = await post(buildApp({}), 'tools/list');
-    expect(res.status).not.toBe(401);
+    expect(res.status).toBe(401);
+  });
+
+  /**
+   * The behaviour before the default tightened. Anyone who relied on
+   * unauthenticated tool discovery restores it by naming it explicitly, which
+   * is the whole migration.
+   */
+  test('unauthenticated tools/list is restorable by opting in explicitly', async () => {
+    const app = buildApp({ publicMethods: ['initialize', 'tools/list'] });
+
+    const listRes = await post(app, 'tools/list');
+    expect(listRes.status).not.toBe(401);
+
+    // Still no free pass for anything that actually does work.
+    const callRes = await post(app, 'tools/call');
+    expect(callRes.status).toBe(401);
+  });
+
+  /**
+   * The exemption the spec sanctions is about the handshake, not the method
+   * name, so it has to hold on both protocol eras. `2026-07-28` removed
+   * `initialize` and replaced it with `server/discover`; naming only
+   * `initialize` left that era with no public method at all
+   * (ttoss/ttoss#1222).
+   */
+  describe('the handshake is public on both protocol eras', () => {
+    /** A request speaking `2026-07-28`: per-request envelope plus the header. */
+    const postModern = (app: ReturnType<typeof buildApp>, method: string) => {
+      return request(app.callback())
+        .post('/mcp')
+        .send({
+          jsonrpc: '2.0',
+          method,
+          id: 1,
+          params: {
+            _meta: {
+              'io.modelcontextprotocol/protocolVersion': '2026-07-28',
+              'io.modelcontextprotocol/clientCapabilities': {},
+            },
+          },
+        })
+        .set('Content-Type', 'application/json')
+        .set('Accept', MCP_ACCEPT)
+        .set('Mcp-Method', method);
+    };
+
+    test('server/discover is public by default', async () => {
+      const res = await postModern(buildApp({}), 'server/discover');
+      expect(res.status).not.toBe(401);
+    });
+
+    test('tools/list is still protected on the 2026 era', async () => {
+      const res = await postModern(buildApp({}), 'tools/list');
+      expect(res.status).toBe(401);
+    });
+
+    /**
+     * Narrowing the set to the 2025 handshake alone reproduces the asymmetry:
+     * the modern era loses its only reachable method. Asserting it keeps the
+     * fix from silently regressing to a single-era default.
+     */
+    test("publicMethods: ['initialize'] closes 2026 discovery", async () => {
+      const app = buildApp({ publicMethods: ['initialize'] });
+
+      const discoverRes = await postModern(app, 'server/discover');
+      expect(discoverRes.status).toBe(401);
+
+      // ...while the 2025 handshake is still reachable.
+      const initRes = await post(app, 'initialize');
+      expect(initRes.status).not.toBe(401);
+    });
+
+    test('empty publicMethods closes both handshakes', async () => {
+      const app = buildApp({ publicMethods: [] });
+
+      expect((await postModern(app, 'server/discover')).status).toBe(401);
+      expect((await post(app, 'initialize')).status).toBe(401);
+    });
   });
 
   test('protected methods still require a token by default', async () => {
@@ -555,14 +633,14 @@ describe('auth — public methods and RFC 9728 discovery', () => {
     expect(res.status).toBe(401);
   });
 
-  test('publicMethods overrides the default set', async () => {
+  test('publicMethods replaces the default set rather than extending it', async () => {
     const app = buildApp({ publicMethods: ['ping'] });
 
     // 'ping' now bypasses verification...
     const pingRes = await post(app, 'ping');
     expect(pingRes.status).not.toBe(401);
 
-    // ...while 'initialize' is no longer public.
+    // ...while neither era's handshake is public any more.
     const initRes = await post(app, 'initialize');
     expect(initRes.status).toBe(401);
   });
@@ -570,42 +648,6 @@ describe('auth — public methods and RFC 9728 discovery', () => {
   test('empty publicMethods requires a token for every method', async () => {
     const res = await post(buildApp({ publicMethods: [] }), 'initialize');
     expect(res.status).toBe(401);
-  });
-
-  test('warns once when auth is configured without an explicit publicMethods', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-    buildApp({});
-
-    expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect(warnSpy.mock.calls[0][0]).toEqual(
-      expect.stringContaining('publicMethods')
-    );
-    expect(warnSpy.mock.calls[0][0]).toEqual(
-      expect.stringContaining('tools/list')
-    );
-
-    warnSpy.mockRestore();
-  });
-
-  test('does not warn when publicMethods is set explicitly, even to the default', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-    buildApp({ publicMethods: ['initialize', 'tools/list'] });
-
-    expect(warnSpy).not.toHaveBeenCalled();
-
-    warnSpy.mockRestore();
-  });
-
-  test('does not warn when publicMethods is set to an empty array', async () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-    buildApp({ publicMethods: [] });
-
-    expect(warnSpy).not.toHaveBeenCalled();
-
-    warnSpy.mockRestore();
   });
 
   test('a request without a method is treated as protected', async () => {

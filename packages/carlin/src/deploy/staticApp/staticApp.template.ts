@@ -18,6 +18,7 @@ import {
 import {
   FUNCTION_RUNTIME,
   getViewerRequestFunctionCode,
+  REDIRECT_TO_TRAILING_SLASH_FUNCTION_CODE,
 } from './viewerRequestFunction';
 
 const PACKAGE_VERSION = getPackageVersion();
@@ -185,6 +186,7 @@ const getCloudFrontTemplate = ({
   acm,
   aliases = [],
   appendIndexHtml,
+  redirectToTrailingSlash,
   responseHeaders = [],
   responseHeadersPolicy,
   spa,
@@ -195,6 +197,7 @@ const getCloudFrontTemplate = ({
   aliases?: string[];
   appendIndexHtml?: boolean;
   cloudfront: true;
+  redirectToTrailingSlash?: boolean;
   responseHeaders?: ResponseHeader[];
   responseHeadersPolicy?: string;
   spa?: boolean;
@@ -488,7 +491,46 @@ const getCloudFrontTemplate = ({
     );
   }
 
-  if (viewerRequestFunctionCode) {
+  /**
+   * The redirect is a mode of the index appending, not a behavior of its own:
+   * it still serves `/docs/guide/` as `/docs/guide/index.html`, and only
+   * changes what answers `/docs/guide`.
+   */
+  if (redirectToTrailingSlash && !appendIndexHtml) {
+    throw new Error(
+      'The redirect-to-trailing-slash option requires the append-index-html option. It changes how an extension-less URI is answered, so the index appending it redirects to has to be on.'
+    );
+  }
+
+  /**
+   * An extension-less URI of a SPA is a client route rather than a directory,
+   * so redirecting it to a trailing slash would move every route of the app to
+   * a URL its router doesn't produce.
+   */
+  if (redirectToTrailingSlash && spa) {
+    throw new Error(
+      'The redirect-to-trailing-slash and spa options are mutually exclusive. An extension-less URI of a SPA is a client route, not a directory, so redirecting it to a trailing slash changes the URL of every route.'
+    );
+  }
+
+  /**
+   * The redirect cannot go into the shared base stack function, which every
+   * static app of the account imports by ARN, so it is deployed as a function
+   * of this app instead.
+   */
+  const perAppFunctionCode = (() => {
+    if (viewerRequestFunctionCode) {
+      return getViewerRequestFunctionCode({ code: viewerRequestFunctionCode });
+    }
+
+    if (redirectToTrailingSlash) {
+      return REDIRECT_TO_TRAILING_SLASH_FUNCTION_CODE;
+    }
+
+    return undefined;
+  })();
+
+  if (perAppFunctionCode) {
     template.Resources[CLOUDFRONT_VIEWER_REQUEST_FUNCTION_LOGICAL_ID] = {
       Type: 'AWS::CloudFront::Function',
       Properties: {
@@ -507,16 +549,14 @@ const getCloudFrontTemplate = ({
           },
           Runtime: FUNCTION_RUNTIME,
         },
-        FunctionCode: getViewerRequestFunctionCode({
-          code: viewerRequestFunctionCode,
-        }),
+        FunctionCode: perAppFunctionCode,
         AutoPublish: true,
       },
     };
   }
 
   const viewerRequestFunctionArn = (() => {
-    if (viewerRequestFunctionCode) {
+    if (perAppFunctionCode) {
       return {
         'Fn::GetAtt': [
           CLOUDFRONT_VIEWER_REQUEST_FUNCTION_LOGICAL_ID,
@@ -591,6 +631,7 @@ export const getStaticAppTemplate = ({
   aliases,
   appendIndexHtml,
   cloudfront,
+  redirectToTrailingSlash,
   responseHeaders,
   responseHeadersPolicy,
   spa,
@@ -602,6 +643,7 @@ export const getStaticAppTemplate = ({
   aliases?: string[];
   appendIndexHtml?: boolean;
   cloudfront?: boolean;
+  redirectToTrailingSlash?: boolean;
   responseHeaders?: ResponseHeader[];
   responseHeadersPolicy?: string;
   spa?: boolean;
@@ -615,6 +657,7 @@ export const getStaticAppTemplate = ({
       aliases,
       appendIndexHtml,
       cloudfront,
+      redirectToTrailingSlash,
       responseHeaders,
       responseHeadersPolicy,
       spa,

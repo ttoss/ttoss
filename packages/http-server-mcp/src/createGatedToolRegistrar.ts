@@ -40,6 +40,11 @@ export type GatedToolDef = {
    * Throw to reject the call; return (or resolve) to continue.
    */
   gates?: Array<(ctx: ToolCallContext) => void | Promise<void>>;
+  /**
+   * Tool metadata forwarded verbatim on `tools/list` — how a gated tool links
+   * to an MCP Apps view (`registerAppResource(...).toolMeta()`).
+   */
+  _meta?: Record<string, unknown>;
   /** The tool handler. Receives merged call args + `buildContext` output. */
   method: (args: Record<string, unknown>) => Promise<unknown>;
 };
@@ -204,6 +209,7 @@ export const createGatedToolRegistrar = ({
       {
         description: def.description,
         inputSchema: def.inputSchema as RegisterToolArgs[1]['inputSchema'],
+        _meta: def._meta,
       },
       handler as unknown as RegisterToolArgs[2]
     );
