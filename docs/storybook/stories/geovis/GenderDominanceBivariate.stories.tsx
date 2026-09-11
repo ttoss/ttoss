@@ -15,11 +15,7 @@ import {
   normalizePopulationData,
   sumValues,
 } from './helpers/gender-dominance-helpers';
-import {
-  computeBbox,
-  FitBoundsToBbox,
-  MapLabel,
-} from './helpers/map-story-helpers';
+import { computeBbox, MapLabel } from './helpers/map-story-helpers';
 
 export default {
   title: 'GeoVis/GenderDominanceBivariate',
@@ -202,7 +198,6 @@ export const GenderDominanceBivariate: StoryFn<{
             viewId="primary"
             style={{ width: '100%', height: '100%' }}
           />
-          <FitBoundsToBbox bbox={districtBbox} />
         </div>
       </GeoVisProvider>
     </div>

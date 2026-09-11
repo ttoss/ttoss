@@ -1,40 +1,44 @@
 /**
  * @jest-environment jsdom
  *
- * Full rendering-lifecycle test for the FitBoundsToBbox camera preservation.
+ * Full rendering-lifecycle test for the internal "fit to data" auto-centering
+ * (`src/adapters/maplibre/fitBoundsToData.ts`, wired into `MapLibreAdapter`).
  *
  * # Problem
  *
  * After `fitBounds` positions the camera on mount, the component's spec
  * changes because async data (e.g. `mapData`) arrives. `GeoVisProvider` calls
- * `runtime.update(newSpec)` → `adapter.update(newSpec)` → `syncMapView`.
+ * `runtime.update(newSpec)` → `adapter.update(newSpec)` → `syncFitToData`.
  *
- * `syncMapView` compares `previousSpec.view` with `newSpec.view` by value.
- * If the values are identical (only `mapData` changed), it is a no-op and the
- * camera set by `fitBounds` is preserved. If there is a bug that accidentally
- * changes `spec.view`, `setCenter`/`setZoom` would be called, overriding the
- * fit with the default initial position.
+ * `syncFitToData` compares the *computed sources bbox*, not `spec.view` — so
+ * a `mapData`-only update (attribute values, no geometry change) must be a
+ * no-op and the camera set by the initial `fitBounds` must be preserved. Only
+ * a change to `sources` geometry (or `spec.view` going from absent to
+ * explicit) must trigger anything.
  *
  * # What these tests verify
  *
- * 1. `fitBounds` is called on mount with the correct bounds and insets.
- * 2. After a spec update that only changes `mapData` (same `view` values),
- *    `setCenter` and `setZoom` are NOT called — the camera is preserved.
- * 3. `fitBounds` is not called again when only `mapData` changes (the
- *    `FitBoundsToBbox` effect deps `[runtime, bounds, insets]` are stable).
+ * 1. `fitBounds` is called on mount with the bbox derived from `spec.sources`
+ *    and the default responsive padding.
+ * 2. After a spec update that only changes `mapData` (no geometry change),
+ *    `setCenter`/`setZoom` are NOT called and `fitBounds` is NOT called again
+ *    — the camera set by the initial fit is preserved.
+ * 3. `fitBounds` IS called again when the update replaces `sources` with
+ *    different geometry.
  *
  * # Approach
  *
- * Uses the real `GeoVisProvider`, `createRuntime`, and `MapLibreAdapter` so
- * that `syncMapView` executes for real. `maplibre-gl` is mocked so all
- * map method calls are tracked via `jest.fn()`.
+ * Uses the real `GeoVisProvider`, `createRuntime`, and `MapLibreAdapter` —
+ * no hand-copied inline replica of the fit pattern — so this exercises the
+ * actual production code path. `maplibre-gl` is mocked so all map method
+ * calls are tracked via `jest.fn()`.
  */
 
 import { act, render, waitFor } from '@testing-library/react';
 import maplibregl from 'maplibre-gl';
 import * as React from 'react';
 import { GeoVisCanvas } from 'src/react/GeoVisCanvas';
-import { GeoVisProvider, useGeoVis } from 'src/react/GeoVisProvider';
+import { GeoVisProvider } from 'src/react/GeoVisProvider';
 import type { VisualizationSpec } from 'src/spec/types';
 
 // ---------------------------------------------------------------------------
@@ -42,7 +46,7 @@ import type { VisualizationSpec } from 'src/spec/types';
 //
 // Intercepts `new maplibregl.Map(...)` so every method call is trackable.
 // The real MapLibreAdapter, createRuntime, and GeoVisProvider are NOT mocked:
-// syncMapView runs for real, which is the core of what this test exercises.
+// syncFitToData runs for real, which is the core of what this test exercises.
 // ---------------------------------------------------------------------------
 
 jest.mock('maplibre-gl', () => {
@@ -118,6 +122,9 @@ const makeMapMock = () => {
     getContainer: jest.fn(() => {
       return { clientWidth: 800, clientHeight: 520 };
     }),
+    loaded: jest.fn(() => {
+      return true;
+    }),
     resize: jest.fn(),
     fitBounds: jest.fn(),
   };
@@ -132,86 +139,67 @@ const SP_BOUNDS: [[number, number], [number, number]] = [
   [-46.3653, -23.3567],
 ];
 
-const INSETS = { top: 8, bottom: 8, left: 152, right: 8 };
+const OTHER_BOUNDS: [[number, number], [number, number]] = [
+  [-10, -10],
+  [-9, -9],
+];
 
-// ---------------------------------------------------------------------------
-// Inline FitBoundsToBbox
-//
-// Exact replica of the production pattern.
-// Must be placed AFTER GeoVisCanvas in the JSX tree so that runtime.mount()
-// has already registered the native map when this effect fires.
-// ---------------------------------------------------------------------------
+const RESPONSIVE_PADDING = { top: 31, bottom: 31, left: 48, right: 48 };
 
-const FitBoundsToBboxInline = ({
-  bounds,
-  insets,
-}: {
-  bounds: [[number, number], [number, number]];
-  insets: typeof INSETS;
-}) => {
-  const { runtime } = useGeoVis();
-
-  React.useEffect(() => {
-    if (!runtime) return;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const map = runtime.getAdapter().getNativeInstance() as any;
-    if (!map) return;
-
-    const apply = () => {
-      const container = map.getContainer();
-      if (container.clientWidth === 0 || container.clientHeight === 0) return;
-      map.resize();
-      map.fitBounds(bounds, { padding: insets, animate: false, duration: 0 });
-    };
-
-    map.once('idle', apply);
-
-    const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
-      const rect = entries[0]?.contentRect;
-      if (!rect || rect.width === 0 || rect.height === 0) return;
-      apply();
-    });
-    observer.observe(map.getContainer());
-
-    return () => {
-      map.off('idle', apply);
-      observer.disconnect();
-    };
-  }, [runtime, bounds, insets]);
-
-  return null;
+const districtsSource = (bounds: [[number, number], [number, number]]) => {
+  const [[minLng, minLat], [maxLng, maxLat]] = bounds;
+  return {
+    id: 'districts',
+    type: 'geojson' as const,
+    data: {
+      type: 'FeatureCollection' as const,
+      features: [
+        {
+          type: 'Feature' as const,
+          properties: null,
+          geometry: {
+            type: 'Polygon' as const,
+            coordinates: [
+              [
+                [minLng, minLat],
+                [maxLng, minLat],
+                [maxLng, maxLat],
+                [minLng, maxLat],
+                [minLng, minLat],
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  };
 };
 
 // ---------------------------------------------------------------------------
-// Minimal component under test
+// Component under test
 //
 // Mirrors the story pattern at the smallest possible scale:
 //   - `entries` state is empty on mount (populationData not yet loaded)
-//   - `loadData()` simulates the async fetch completing
-//   - `spec.view` is the same literal values in both renders
-//   - GeoVisCanvas comes BEFORE FitBoundsToBboxInline (correct ordering)
+//   - `loadData()` simulates the async mapData fetch completing
+//   - `replaceGeometry()` simulates the source's geometry being replaced
+//   - `spec.view` is intentionally absent, so the internal auto-fit is active
 // ---------------------------------------------------------------------------
 
 type MapDataRow = { geometryId: number; value: number };
 
 interface MapController {
   loadData: () => void;
+  replaceGeometry: () => void;
 }
 
-const buildSpec = (mapDataEntries: MapDataRow[]): VisualizationSpec => {
+const buildSpec = (
+  mapDataEntries: MapDataRow[],
+  bounds: [[number, number], [number, number]]
+): VisualizationSpec => {
   return {
     engine: 'maplibre',
-    // view values are intentionally identical across renders — only mapData changes.
-    view: { center: [-46.6333, -23.5505] as [number, number], zoom: 10 },
     basemap: { styleUrl: 'https://tiles.example.com/style.json' },
-    sources: [
-      {
-        id: 'districts',
-        type: 'geojson',
-        data: { type: 'FeatureCollection', features: [] },
-      },
-    ],
+    sources: [districtsSource(bounds)],
     layers: [{ id: 'fill', sourceId: 'districts', geometry: 'polygon' }],
     mapData: [
       { mapDataId: 'population', mapId: 'districts', data: mapDataEntries },
@@ -221,27 +209,26 @@ const buildSpec = (mapDataEntries: MapDataRow[]): VisualizationSpec => {
 
 const MinimalMap = React.forwardRef<MapController, object>((_, ref) => {
   const [entries, setEntries] = React.useState<MapDataRow[]>([]);
+  const [bounds, setBounds] = React.useState(SP_BOUNDS);
 
   React.useImperativeHandle(ref, () => {
     return {
       loadData: () => {
         setEntries([{ geometryId: 1, value: 50_000 }]);
       },
+      replaceGeometry: () => {
+        setBounds(OTHER_BOUNDS);
+      },
     };
   }, []);
 
   const spec = React.useMemo(() => {
-    return buildSpec(entries);
-  }, [entries]);
+    return buildSpec(entries, bounds);
+  }, [entries, bounds]);
 
   return (
     <GeoVisProvider spec={spec}>
-      <div>
-        {/* GeoVisCanvas MUST come first so runtime.mount() registers the map
-            before FitBoundsToBboxInline's effect fires. */}
-        <GeoVisCanvas viewId="default" />
-        <FitBoundsToBboxInline bounds={SP_BOUNDS} insets={INSETS} />
-      </div>
+      <GeoVisCanvas viewId="default" />
     </GeoVisProvider>
   );
 });
@@ -259,13 +246,6 @@ beforeEach(() => {
 
   mapMock = makeMapMock();
 
-  // `once('idle', cb)` fires asynchronously (deferred via setTimeout) to
-  // simulate the real MapLibre behaviour where `idle` fires after the style
-  // loads, which is always async. Assertions use `waitFor` accordingly.
-  mapMock.once.mockImplementation((event: string, cb: () => void) => {
-    if (event === 'idle') setTimeout(cb, 0);
-  });
-
   jest.mocked(maplibregl.Map).mockImplementation(() => {
     return mapMock as never;
   });
@@ -275,8 +255,8 @@ beforeEach(() => {
 // Tests
 // ---------------------------------------------------------------------------
 
-describe('FitBoundsToBbox camera preservation across spec lifecycle', () => {
-  test('fitBounds is called on mount with correct bounds and insets', async () => {
+describe('MapLibreAdapter auto fit-to-data — camera preservation across spec lifecycle', () => {
+  test('fitBounds is called on mount with the sources bbox and responsive padding', async () => {
     await act(async () => {
       render(<MinimalMap ref={React.createRef()} />);
     });
@@ -284,11 +264,9 @@ describe('FitBoundsToBbox camera preservation across spec lifecycle', () => {
     await waitFor(() => {
       expect(mapMock.fitBounds).toHaveBeenCalledTimes(1);
     });
-    expect(mapMock.fitBounds).toHaveBeenCalledWith(SP_BOUNDS, {
-      padding: INSETS,
-      animate: false,
-      duration: 0,
-    });
+    const [bounds, options] = mapMock.fitBounds.mock.calls[0];
+    expect(bounds).toEqual(SP_BOUNDS);
+    expect(options).toMatchObject({ padding: RESPONSIVE_PADDING });
   });
 
   test('setCenter and setZoom are NOT called after mapData loads (camera preserved)', async () => {
@@ -298,17 +276,13 @@ describe('FitBoundsToBbox camera preservation across spec lifecycle', () => {
       render(<MinimalMap ref={ref} />);
     });
 
-    // Wait for the async idle callback to fire and fitBounds to be called.
     await waitFor(() => {
       expect(mapMock.fitBounds).toHaveBeenCalledTimes(1);
     });
 
-    // Camera is now positioned by fitBounds. Clear tracking before the update.
     mapMock.setCenter.mockClear();
     mapMock.setZoom.mockClear();
 
-    // Simulate async mapData arriving — spec.view values are identical.
-    // syncMapView compares numbers by value, so both axes are no-ops.
     await act(async () => {
       ref.current?.loadData();
     });
@@ -324,20 +298,40 @@ describe('FitBoundsToBbox camera preservation across spec lifecycle', () => {
       render(<MinimalMap ref={ref} />);
     });
 
-    // Wait for the initial async idle callback to fire.
     await waitFor(() => {
       expect(mapMock.fitBounds).toHaveBeenCalledTimes(1);
     });
 
-    // fitBounds was called on mount. Clear so the next assertion is isolated.
     mapMock.fitBounds.mockClear();
 
     await act(async () => {
       ref.current?.loadData();
     });
 
-    // FitBoundsToBboxInline deps are [runtime, bounds, insets] — none changed.
-    // The effect must NOT re-run, so fitBounds must NOT be called again.
+    // The bbox derived from `spec.sources` is unchanged — mapData carries
+    // values, not geometry — so the camera must not jump.
     expect(mapMock.fitBounds).not.toHaveBeenCalled();
+  });
+
+  test('fitBounds IS called again when source geometry changes', async () => {
+    const ref = React.createRef<MapController>();
+
+    await act(async () => {
+      render(<MinimalMap ref={ref} />);
+    });
+
+    await waitFor(() => {
+      expect(mapMock.fitBounds).toHaveBeenCalledTimes(1);
+    });
+
+    mapMock.fitBounds.mockClear();
+
+    await act(async () => {
+      ref.current?.replaceGeometry();
+    });
+
+    expect(mapMock.fitBounds).toHaveBeenCalledTimes(1);
+    const [bounds] = mapMock.fitBounds.mock.calls[0];
+    expect(bounds).toEqual(OTHER_BOUNDS);
   });
 });
