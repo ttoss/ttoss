@@ -10,7 +10,7 @@
  * not reliably provided by either the `node` or `jsdom` Jest environments.
  *
  * Tests that need specific mock behaviour (e.g. `useClickAnchor.test.tsx`,
- * `fitBoundsToBboxLifecycle.test.tsx`) override this stub by declaring their
+ * `fitBoundsToDataLifecycle.test.tsx`) override this stub by declaring their
  * own `jest.mock('maplibre-gl', factory)` — babel-jest hoists those calls
  * above the module resolution, so the factory wins over this file.
  */

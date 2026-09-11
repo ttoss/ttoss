@@ -354,19 +354,25 @@ const mountView = (
 /**
  * Updates an already-mounted map — never recreates it, so centering here is
  * purely imperative camera calls on the live `map`, not constructor options.
- * Unlike `mountView`'s one-shot placeholder-then-correct sequence, the two
- * centering paths below are mutually exclusive per update, driven by
- * whether `spec.view` is explicit:
- * - `syncMapView`: applies only explicit `view.center`/`zoom`/pitch/bearing
- *   *diffs* against the previous spec, via instant `setCenter`/`setZoom`
- *   (no animation). It no-ops entirely when `spec.view` (or its `center`)
- *   is omitted — it never fights the auto-fit path below for control.
+ * Unlike `mountView`'s one-shot placeholder-then-correct sequence, `center`/
+ * `zoom` control is exclusive per update, driven by whether they're explicit
+ * (`hasExplicitView` only looks at `center`/`zoom` — `pitch`/`bearing`/
+ * `maxZoomIn`/`maxZoomOut` are independent of it and always go through
+ * `syncMapView` below, even while auto-fit is also active):
+ * - `syncMapView`: applies explicit `view.center`/`zoom` *diffs* against the
+ *   previous spec, via instant `setCenter`/`setZoom` (no animation), plus
+ *   `pitch`/`bearing`/`maxZoomIn`/`maxZoomOut` diffs unconditionally. Its
+ *   `center`/`zoom` sync no-ops when those fields are omitted from
+ *   `spec.view` — but a `view` with only e.g. `pitch` set still runs the
+ *   pitch/bearing/zoom-limit sync below, concurrently with auto-fit.
  * - `syncFit` (→ `syncFitToData`): re-evaluates the data bbox and, when
- *   `view` is still omitted and the bbox changed (e.g. a source's geometry
- *   was patched), detaches the old `attachFitToData` listener and attaches
- *   a new one — which re-fits with an animated `fitBounds`, same as on
- *   mount. Switching a spec from explicit `view` to omitted `view` (or vice
- *   versa) between updates is what hands control between these two paths.
+ *   `center`/`zoom` are still omitted and the bbox changed (e.g. a source's
+ *   geometry was patched), detaches the old `attachFitToData` listener and
+ *   attaches a new one — which re-fits with an animated `fitBounds`, same as
+ *   on mount. Switching a spec's `center`/`zoom` from explicit to omitted
+ *   (or vice versa) between updates is what hands control of the camera's
+ *   position between these two paths — `pitch`/`bearing`/zoom-limits are
+ *   never handed over, since `syncMapView` always owns them.
  */
 const updateView = (
   state: AdapterState,
@@ -379,9 +385,10 @@ const updateView = (
   const nextStyle = resolveStyle(spec);
   const previousSpec = viewState.spec;
   viewState.spec = spec;
-  // Explicit-view path: instant jump, no-ops when view.center is omitted.
+  // Center/zoom: instant jump when explicit, no-op when omitted; pitch/bearing/
+  // zoom-limits sync unconditionally, even while auto-fit (below) is active.
   syncMapView(map, previousSpec.view, spec.view);
-  // Auto-fit path: animated re-fit when view is omitted and the bbox moved.
+  // Auto-fit: animated re-fit of center/zoom when they're omitted and the bbox moved.
   syncFit(viewState, spec);
 
   const onStyleReady = () => {
