@@ -198,6 +198,11 @@ const destroyAll = (views: ViewMap): void => {
   views.clear();
 };
 
+// `filter` covers `vector-tiles` as well as `geojson`: MapLibre's native filter
+// reads `feature.properties` on any source that carries them, and the
+// `cluster-tiles` fixture exercises the compiled expression against a tiled
+// source — which is the "declared means tested" bar. `featureState` stays
+// `geojson`-only, since `setFeatureState` joining needs stable feature ids.
 const CAPABILITIES: CapabilitySet = {
   sourceTypes: [
     'geojson',
@@ -210,7 +215,7 @@ const CAPABILITIES: CapabilitySet = {
   layerGeometries: ['polygon', 'line', 'point', 'symbol', 'heatmap', 'raster'],
   dataFeatures: {
     featureState: ['geojson'],
-    filter: ['geojson'],
+    filter: ['geojson', 'vector-tiles'],
   },
   viewFeatures: {
     pitch: true,

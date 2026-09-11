@@ -11,6 +11,7 @@ import type { MapClickInfo } from './contexts';
 import {
   coerceFeatureStateValue,
   queryLayerFeatures,
+  readFeatureState,
   TRACKED_FIELD_SEP,
   TRACKED_RECORD_SEP,
 } from './hooks.builders';
@@ -201,10 +202,7 @@ export const buildHandleClick = ({
       featureId: feature.id,
     });
 
-    const state = map.getFeatureState({
-      source: sourceId,
-      id: feature.id,
-    }) as { value?: unknown };
+    const state = readFeatureState({ map, feature, sourceId });
 
     const featureLngLat = resolveFeatureLngLat({ feature, latKey, lngKey });
 

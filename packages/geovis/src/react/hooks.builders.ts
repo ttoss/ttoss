@@ -50,6 +50,48 @@ export const coerceFeatureStateValue = (
   return null;
 };
 
+/**
+ * Reads the clicked/hovered feature's `feature-state`, addressing it the way
+ * its source requires.
+ *
+ * A vector source needs `sourceLayer`: without it MapLibre fires
+ * `'The sourceLayer parameter must be provided for vector source types.'` and
+ * returns `undefined`, so the caller's `state.value` throws and the whole
+ * handler dies — no tooltip, no click. The layer name is read off the queried
+ * feature itself (`feature.layer['source-layer']`), which is where MapLibre
+ * already resolved it. `?? {}` covers the remaining `undefined` returns (an
+ * unknown source id, a feature with no id).
+ *
+ * @param map - The live map.
+ * @param feature - The queried feature the state belongs to.
+ * @param sourceId - Source the feature's layer reads from.
+ * @returns The feature-state bag, `{}` when MapLibre could not address it.
+ *
+ * @example
+ * ```typescript
+ * const state = readFeatureState({ map, feature, sourceId });
+ * const value = coerceFeatureStateValue(state.value);
+ * ```
+ */
+export const readFeatureState = ({
+  map,
+  feature,
+  sourceId,
+}: {
+  map: MapLibreMap;
+  feature: MapGeoJSONFeature;
+  sourceId: string;
+}): { value?: unknown } => {
+  const sourceLayer =
+    feature.layer && 'source-layer' in feature.layer
+      ? feature.layer['source-layer']
+      : undefined;
+  const state = sourceLayer
+    ? map.getFeatureState({ source: sourceId, sourceLayer, id: feature.id })
+    : map.getFeatureState({ source: sourceId, id: feature.id });
+  return (state ?? {}) as { value?: unknown };
+};
+
 export type PrevFeatureState = {
   current: { sourceId: string; id: string | number } | null;
 };
@@ -166,10 +208,7 @@ export const buildHandleMove = ({
       prevHoveredState.current = null;
     }
 
-    const state = map.getFeatureState({
-      source: sourceId,
-      id: feature.id,
-    }) as { value?: unknown };
+    const state = readFeatureState({ map, feature, sourceId });
 
     // Keep the last valid cursor position so the window-focus recheck can
     // query the same point without waiting for a new mousemove event.
@@ -255,10 +294,7 @@ export const buildHandleWindowFocus = ({
     } else {
       prevHoveredState.current = null;
     }
-    const state = map.getFeatureState({
-      source: sourceId,
-      id: feature.id,
-    }) as { value?: unknown };
+    const state = readFeatureState({ map, feature, sourceId });
     // Convert the retained canvas-relative point to viewport-absolute so
     // the snapshot matches the coordinate space produced by buildHandleMove.
     const rect = map.getCanvas().getBoundingClientRect();

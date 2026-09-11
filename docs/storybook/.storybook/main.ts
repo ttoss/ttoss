@@ -17,6 +17,13 @@ const config: StorybookConfig = {
    * https://storybook.js.org/docs/react/configure/overview#configure-story-loading
    */
   stories: ['../stories/**/*.mdx', '../stories/**/*.stories.@(js|jsx|ts|tsx)'],
+  /**
+   * Served at the root of both `storybook dev` and the built site, so stories
+   * can reference generated assets by absolute path. Currently holds the
+   * vector-tile pyramid behind `GeoVis/ClusterTiles`, built by
+   * `packages/geovis/scripts/generateClusterFixtureTiles.ts`.
+   */
+  staticDirs: ['../public'],
   addons: [
     getAbsolutePath('@storybook/addon-links'),
     getAbsolutePath('@storybook/addon-webpack5-compiler-babel'),

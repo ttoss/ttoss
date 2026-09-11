@@ -206,6 +206,20 @@ export interface HeatmapPaint {
   heatmapWeight?: number;
 }
 
+/**
+ * A MapLibre expression: an operator followed by its arguments. Declared
+ * because the adapter hands `paint` straight to the style — the JSON schema
+ * types `layer.paint` as `additionalProperties: true`, so an expression both
+ * validates and reaches `text-field`/`text-size` intact. Only these two
+ * declarations were narrower than what the adapter already passed through.
+ *
+ * @example
+ * ```typescript
+ * const textField: SymbolExpression = ['get', 'count'];
+ * ```
+ */
+export type SymbolExpression = [string, ...unknown[]];
+
 export interface SymbolPaint {
   // Paint properties
   textColor?: string;
@@ -215,8 +229,27 @@ export interface SymbolPaint {
   iconColor?: string;
   iconOpacity?: number;
   // Layout properties (GeoVis treats them uniformly in the paint bag)
-  textField?: string;
-  textSize?: number;
+  /**
+   * The label's text. A `{property}` token, a literal, or a
+   * {@link SymbolExpression} when the label has to be computed per feature
+   * (formatting a count, picking between properties).
+   */
+  textField?: string | SymbolExpression;
+  /**
+   * Label size in pixels, or a {@link SymbolExpression} to drive it from a
+   * feature property (`['step', ['get', 'count'], 11, 100, 14]`).
+   */
+  textSize?: number | SymbolExpression;
+  /**
+   * Fontstack the glyphs are requested from. Defaults to
+   * `['Noto Sans Regular']`, which OpenFreeMap and most OpenMapTiles-derived
+   * basemaps serve — MapLibre's own default (`Open Sans Regular`,
+   * `Arial Unicode MS Regular`) is served by neither, and a missing fontstack
+   * 404s the glyph request and rasterizes no text at all.
+   *
+   * @default ['Noto Sans Regular']
+   */
+  textFont?: string[];
   iconImage?: string;
 }
 

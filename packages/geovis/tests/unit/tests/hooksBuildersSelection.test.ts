@@ -120,6 +120,36 @@ describe('buildHandleClick', () => {
     });
   });
 
+  test('a click on a tiled feature survives: state is read through sourceLayer', () => {
+    // Mimics MapLibre: a vector source addressed without `sourceLayer` returns
+    // `undefined`, which used to crash the handler on `state.value`.
+    const map = {
+      getFeatureState: jest.fn((target: { sourceLayer?: string }) => {
+        return target.sourceLayer ? { value: 7 } : undefined;
+      }),
+    } as unknown as MapLibreMap;
+    const setClick = jest.fn();
+    const handleClick = buildHandleClick({
+      map,
+      layerId: 'lyr-tiled',
+      sourceByLayerId: new Map([['lyr-tiled', 'tiles']]),
+      setClick,
+      runtime: makeRuntime(null),
+    });
+
+    handleClick({
+      features: [
+        { id: 42, layer: { id: 'lyr-tiled', 'source-layer': 'clusters' } },
+      ],
+      lngLat: { lng: -46.6, lat: -23.5 },
+      point: { x: 10, y: 20 },
+    } as unknown as MapLayerMouseEvent);
+
+    expect(setClick).toHaveBeenCalledWith(
+      expect.objectContaining({ featureId: 42, value: 7 })
+    );
+  });
+
   test('resolves featureLngLat from Point geometry when no latKey/lngKey', () => {
     const setClick = jest.fn();
     const handleClick = buildHandleClick({

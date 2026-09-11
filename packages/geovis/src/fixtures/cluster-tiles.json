@@ -1,0 +1,119 @@
+{
+  "title": "Clustered vector tiles",
+  "description": "20,000 fictitious points around eight Brazilian capitals, clustered at tile-generation time by tippecanoe and styled from the tiles' own `count` attribute.",
+  "engine": "maplibre",
+  "basemap": {
+    "styleUrl": "https://tiles.openfreemap.org/styles/positron"
+  },
+  "view": {
+    "center": [-47.5, -17.5],
+    "zoom": 3.2
+  },
+  "metadata": {
+    "generator": "packages/geovis/scripts/generateClusterFixtureTiles.ts",
+    "tileLayer": "clusters",
+    "countAttribute": "count"
+  },
+  "sources": [
+    {
+      "id": "cluster-points",
+      "type": "vector-tiles",
+      "tiles": ["/tiles/cluster-demo/{z}/{x}/{y}.pbf"],
+      "sourceLayer": "clusters",
+      "minzoom": 2,
+      "maxzoom": 8
+    }
+  ],
+  "layers": [
+    {
+      "id": "cluster-singles",
+      "title": "Lone points",
+      "sourceId": "cluster-points",
+      "sourceLayer": "clusters",
+      "geometry": "point",
+      "filter": { "property": "count", "operator": "lt", "value": 2 },
+      "paint": {
+        "circleColor": "#64748b",
+        "circleRadius": 4,
+        "circleOpacity": 0.9,
+        "circleStrokeColor": "#ffffff",
+        "circleStrokeWidth": 1
+      }
+    },
+    {
+      "id": "cluster-small",
+      "title": "Clusters under 100",
+      "sourceId": "cluster-points",
+      "sourceLayer": "clusters",
+      "geometry": "point",
+      "propertyName": "count",
+      "filter": { "property": "count", "operator": "gte", "value": 2 },
+      "sizeBy": {
+        "mode": "stepped",
+        "range": [9, 34],
+        "thresholds": [25, 100, 1000]
+      },
+      "paint": {
+        "circleColor": "#7dd3fc",
+        "circleOpacity": 0.85,
+        "circleStrokeColor": "#ffffff",
+        "circleStrokeWidth": 1
+      }
+    },
+    {
+      "id": "cluster-medium",
+      "title": "Clusters from 100",
+      "sourceId": "cluster-points",
+      "sourceLayer": "clusters",
+      "geometry": "point",
+      "propertyName": "count",
+      "filter": { "property": "count", "operator": "gte", "value": 100 },
+      "sizeBy": {
+        "mode": "stepped",
+        "range": [9, 34],
+        "thresholds": [25, 100, 1000]
+      },
+      "paint": {
+        "circleColor": "#38bdf8",
+        "circleOpacity": 0.85,
+        "circleStrokeColor": "#ffffff",
+        "circleStrokeWidth": 1
+      }
+    },
+    {
+      "id": "cluster-large",
+      "title": "Clusters from 1,000",
+      "sourceId": "cluster-points",
+      "sourceLayer": "clusters",
+      "geometry": "point",
+      "propertyName": "count",
+      "filter": { "property": "count", "operator": "gte", "value": 1000 },
+      "sizeBy": {
+        "mode": "stepped",
+        "range": [9, 34],
+        "thresholds": [25, 100, 1000]
+      },
+      "paint": {
+        "circleColor": "#0369a1",
+        "circleOpacity": 0.9,
+        "circleStrokeColor": "#ffffff",
+        "circleStrokeWidth": 1
+      }
+    },
+    {
+      "id": "cluster-labels",
+      "title": "Cluster counts",
+      "sourceId": "cluster-points",
+      "sourceLayer": "clusters",
+      "geometry": "symbol",
+      "filter": { "property": "count", "operator": "gte", "value": 2 },
+      "paint": {
+        "textField": "{count}",
+        "textSize": 11,
+        "textColor": "#0f172a",
+        "textHaloColor": "#ffffff",
+        "textHaloWidth": 1.4
+      }
+    }
+  ]
+}

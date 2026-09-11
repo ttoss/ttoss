@@ -86,6 +86,25 @@ describe('applyBasemapLabelsVisibility', () => {
         ['road-labels', 'visibility', 'none'],
       ]);
     });
+
+    test('leaves managed user symbol layers alone', () => {
+      const { map } = makeMapMock({
+        styleLoaded: true,
+        layers: [
+          { id: 'place-labels', type: 'symbol' },
+          { id: 'cities', type: 'symbol' },
+          { id: 'cities-click-anchor', type: 'symbol' },
+        ],
+      });
+
+      applyBasemapLabelsVisibility(map, makeSpec(false, ['cities']));
+
+      // Symmetrical with the restore case: `basemap.labels` only ever declares
+      // what the basemap draws, so a map can hide place names AND keep its own
+      // labels — which hiding every symbol layer made impossible.
+      const calls = jest.mocked(map.setLayoutProperty).mock.calls;
+      expect(calls).toEqual([['place-labels', 'visibility', 'none']]);
+    });
   });
 
   describe('labels === true (restore)', () => {

@@ -22,6 +22,28 @@ const makeSpec = (): VisualizationSpec => {
   };
 };
 
+/** A spec whose layer reads from vector tiles, so it declares a `sourceLayer`. */
+const makeTiledSpec = (): VisualizationSpec => {
+  return {
+    engine: 'maplibre',
+    sources: [
+      {
+        id: 'tiles',
+        type: 'vector-tiles',
+        tiles: ['https://x/{z}/{x}/{y}.pbf'],
+      },
+    ],
+    layers: [
+      {
+        id: 'lyr-tiled',
+        sourceId: 'tiles',
+        sourceLayer: 'clusters',
+        geometry: 'point',
+      },
+    ],
+  } as unknown as VisualizationSpec;
+};
+
 describe('applySelectionToMap', () => {
   test("setting a selection on a known layer sets selected: true, keyed by the layer's sourceId", () => {
     const map = makeMap();
@@ -74,6 +96,21 @@ describe('applySelectionToMap', () => {
     const map = makeMap();
     applySelectionToMap(map, makeSpec(), null, null);
     expect(map.setFeatureState).not.toHaveBeenCalled();
+  });
+
+  test("a tiled layer's selection carries sourceLayer, which vector sources require", () => {
+    // Without it MapLibre fires 'The sourceLayer parameter must be provided for
+    // vector source types.' and writes nothing, so the `-selected-outline` and
+    // `-click-anchor` companions never light up.
+    const map = makeMap();
+    applySelectionToMap(map, makeTiledSpec(), null, {
+      layerId: 'lyr-tiled',
+      featureId: 42,
+    });
+    expect(map.setFeatureState).toHaveBeenCalledWith(
+      { source: 'tiles', sourceLayer: 'clusters', id: 42 },
+      { selected: true }
+    );
   });
 
   test('a selection whose layerId is not in spec.layers is silently skipped (sourceId cannot be resolved)', () => {

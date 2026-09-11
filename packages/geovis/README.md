@@ -65,7 +65,7 @@ Top-level spec object passed to `GeoVisProvider`.
 | `description`               | `string`                  |          | Human-readable description.                                                                                                                                                                                                                                                                                                                                                                     |
 | `mapType`                   | `MapType`                 |          | Auto-configuration hint (`'choropleth'`). When set, layers and legends are auto-generated from `mapData` — see [mapType auto-configuration](#maptype-auto-configuration).                                                                                                                                                                                                                       |
 | `view`                      | `ViewState`               |          | Initial camera state: `center`, `zoom`, `maxZoomIn`, `maxZoomOut`, `pitch`, `bearing`, `projection`. `maxZoomIn` caps how far the user can zoom in and `maxZoomOut` caps how far out (interactive, `setView`, and programmatic `zoom` are all clamped); they default to MapLibre's `22` and `0`. Omit `center`/`zoom` entirely to let the camera [auto-fit to data](#auto-fit-to-data) instead. |
-| `basemap`                   | `BaseMapSpec`             |          | Basemap tile style. Pass `visible: false` to hide tiles and show only GeoJSON layers. When hidden, the canvas container receives a `#fcfcfc` background.                                                                                                                                                                                                                                        |
+| `basemap`                   | `BaseMapSpec`             |          | Basemap tile style. Pass `visible: false` to hide tiles and show only GeoJSON layers. When hidden, the canvas container receives a `#fcfcfc` background. `labels: false` hides the basemap's own place/road/POI labels; your own `symbol` layers are never touched, whichever way `labels` points — hide those with `layer.visible`.                                                            |
 | `legends`                   | `LegendSpec[]`            |          | Shared legend registry. Layers reference entries via `activeLegendId`.                                                                                                                                                                                                                                                                                                                          |
 | `legendEnabled`             | `boolean`                 |          | Controls whether the resolved `mapType` auto-generates legends. Defaults to `true`. Has no effect on legends supplied directly via `legends`.                                                                                                                                                                                                                                                   |
 | `attributionControlEnabled` | `boolean`                 |          | Controls whether MapLibre mounts its attribution control — the round button in the map’s bottom-right corner that expands into the basemap credits. Defaults to `true`. Set it to `false` only when the application shows the same credits elsewhere: basemap and source licences generally require attribution to remain visible.                                                              |
@@ -230,6 +230,94 @@ paint: {
   circleStrokeWidth: 1,         // circle-stroke-width (pixels)
 }
 ```
+
+**Symbol (`geometry: 'symbol'`) — `SymbolPaint`**
+
+Labels and icons. `paint` reaches the style verbatim, so `textField` and
+`textSize` also accept a MapLibre expression when the label has to be computed
+per feature:
+
+```typescript
+paint: {
+  textField: ['number-format', ['get', 'count'], { locale: 'pt-BR' }],
+  textSize: ['step', ['get', 'count'], 11, 100, 14],
+  textFont: ['Noto Sans Bold'],  // text-font, defaults to ['Noto Sans Regular']
+  textColor: '#ffffff',
+  textHaloColor: '#14532d',
+  textHaloWidth: 1.5,
+}
+```
+
+`textFont` defaults to `Noto Sans Regular` rather than to MapLibre's own
+default (`Open Sans Regular`, `Arial Unicode MS Regular`), which OpenFreeMap
+and most OpenMapTiles-derived basemaps do not serve: a missing fontstack 404s
+the glyph request and rasterizes no text at all, which looks like the layer
+never mounted. Override it only with a fontstack the basemap serves.
+
+## Clustered vector tiles
+
+A dataset large enough to need tiles cannot use MapLibre's `cluster: true`:
+that option belongs to `geojson` sources and runs supercluster over every point
+in browser memory. Cluster such data when the tiles are **generated** instead
+(`tippecanoe --cluster-distance`), and style the merged features from their own
+attributes. `GeoVis/ClusterTiles` in Storybook is a working example, generated
+by `scripts/generateClusterFixtureTiles.ts`.
+
+Have the generator write a counter on every input point and accumulate it, so
+each merged feature reports how many original points it stands for:
+
+```bash
+tippecanoe --cluster-distance=40 --accumulate-attribute=count:sum \
+  --minimum-zoom=2 --maximum-zoom=8 --no-tile-compression \
+  --layer=clusters --output-to-directory=tiles/ points.ndjson
+```
+
+`tippecanoe` also writes `point_count` on each cluster, but that counts the
+features merged **at one zoom level** — and since every level clusters the
+previous level's already-merged features, it under-reports the original total.
+Size and label by the accumulated attribute, not by `point_count`.
+
+Three layer fields then carry the rendering, with no `mapData` join — none is
+possible against a tiled source, whose features carry no stable ids:
+
+```typescript
+{
+  id: 'clusters',
+  sourceId: 'points',
+  sourceLayer: 'clusters',     // layer name inside the tiles
+  geometry: 'point',
+  propertyName: 'count',       // circle-radius reads ['get', 'count']
+  sizeBy: { mode: 'stepped', range: [9, 34], thresholds: [25, 100, 1000] },
+  filter: { property: 'count', operator: 'gte', value: 2 },
+  paint: { circleColor: '#38bdf8' },
+}
+```
+
+A `symbol` layer over it labels each circle — `paint.textField` is passed to
+MapLibre verbatim, so its `{property}` token expands per feature, and an
+expression can format the number instead (see
+[Paint properties](#paint-properties)):
+
+```typescript
+paint: { textField: '{count}', textSize: 11 }
+```
+
+Hover, `click` and selection work on a tiled layer: the adapter addresses
+`feature-state` with the layer's `sourceLayer`, which vector sources require.
+So `clickAnchor` and `selectedPaint` light up from a tile feature's own id —
+promote one at generation time (`tippecanoe --use-attribute-for-id`), since
+there is no `mapData` join to supply it.
+
+Two limits are worth knowing before designing around this. Colour cannot be
+driven by a tile attribute: `colorBy` and the legend pipeline read
+feature-state, which is `geojson`-only, so colour bands have to be one layer
+per band with a static colour. And a `LayerFilter` holds a single predicate, so
+a closed range (`100 <= count < 1000`) is not expressible — stack layers with
+one-sided `gte` filters and let the topmost match win.
+
+Tile URL templates must be absolute. MapLibre resolves them inside a Web
+Worker, where a root-relative path has no base and fails silently, leaving the
+layer empty.
 
 ## Data-driven maps
 
