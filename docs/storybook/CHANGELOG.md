@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.1.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@7.0.0...@docs/storybook@7.1.0) (2026-09-11)
+
+### Features
+
+- **geovis:** internal auto fit-to-data camera centering in @ttoss/geovis ([#1218](https://github.com/ttoss/ttoss/issues/1218)) ([aead868](https://github.com/ttoss/ttoss/commit/aead868b86326becce3fdfad7229a8e29cb09dce))
+
 # [7.0.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@6.3.2...@docs/storybook@7.0.0) (2026-09-08)
 
 ### Features
