@@ -5,12 +5,7 @@ import * as React from 'react';
 
 import fixture from '../../../../packages/geovis/src/fixtures/split-compare.json';
 import type { LockRef, MapRef } from './helpers/map-story-helpers';
-import {
-  computeBbox,
-  FitBoundsToBbox,
-  MapLabel,
-  MapSync,
-} from './helpers/map-story-helpers';
+import { computeBbox, MapLabel, MapSync } from './helpers/map-story-helpers';
 
 export default {
   title: 'GeoVis/SplitCompare',
@@ -111,7 +106,6 @@ export const SplitCompare: StoryFn = () => {
           <MapLabel>Territorial coverage (fill)</MapLabel>
           <GeoVisProvider spec={leftSpec}>
             <GeoVisCanvas viewId="left" style={canvasStyle} />
-            <FitBoundsToBbox bbox={splitCompareBbox} />
             <MapSync
               selfRef={leftMapRef}
               peerRef={rightMapRef}
@@ -124,7 +118,6 @@ export const SplitCompare: StoryFn = () => {
           <MapLabel>Zone perimeters (line)</MapLabel>
           <GeoVisProvider spec={rightSpec}>
             <GeoVisCanvas viewId="right" style={canvasStyle} />
-            <FitBoundsToBbox bbox={splitCompareBbox} />
             <MapSync
               selfRef={rightMapRef}
               peerRef={leftMapRef}

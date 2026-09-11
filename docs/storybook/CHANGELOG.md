@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.1.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@7.0.0...@docs/storybook@7.1.0) (2026-09-11)
+
+### Features
+
+- **geovis:** internal auto fit-to-data camera centering in @ttoss/geovis ([#1218](https://github.com/ttoss/ttoss/issues/1218)) ([aead868](https://github.com/ttoss/ttoss/commit/aead868b86326becce3fdfad7229a8e29cb09dce))
+
+# [7.0.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@6.3.2...@docs/storybook@7.0.0) (2026-09-08)
+
+### Features
+
+- **geovis-workspace:** sidebar tooltips, fixed block headers, async-… ([#1228](https://github.com/ttoss/ttoss/issues/1228)) ([6fe51f5](https://github.com/ttoss/ttoss/commit/6fe51f510d26602291df86558322b7be811e8d96))
+
+### BREAKING CHANGES
+
+- **geovis-workspace:** filter blocks no longer collapse unless they declare
+  `collapsible: true`. Every `filters` block used to collapse, so consumers that
+  want the chevron back have to opt in per block.
+
+Co-authored-by: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
 ## [6.3.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@6.3.1...@docs/storybook@6.3.2) (2026-09-04)
 
 **Note:** Version bump only for package @docs/storybook

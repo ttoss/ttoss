@@ -92,7 +92,15 @@ export const Example = () => {
 
 `variables` and `onVariableChange` are optional: omit both to let the workspace
 manage the selection internally (seeded from each `variations` section's
-`defaultValue`). Provide them to control it from the parent — required when the
+`defaultValue`).
+
+Return a promise from `onVariableChange` when serving a variation costs a
+request, and every menu goes inert until it settles — the picked row keeps its
+active look and spins, the rest dim — so a user cannot stack picks the app then
+has to serve out of order. A rejection releases them exactly like a resolve, and
+returning nothing keeps the menus live. Timeline ticks never lock anything, even
+from a handler that always returns a promise: what blocks is decided by where
+the change came from. Provide them to control it from the parent — required when the
 selection must drive the `visualizationSpec`. Selection is keyed by each
 control's `menuId`: choosing a variation only affects its own key. Read the
 current selection anywhere inside the workspace with `useGeovisWorkspace()`.
@@ -101,11 +109,16 @@ current selection anywhere inside the workspace with `useGeovisWorkspace()`.
 
 The left sidebar renders as a card with an icon **tab bar** — one tab per
 `leftSidebar.sections` entry — a header mirroring the active tab, and the active
-tab's body. Each section's `body` is one of two kinds:
+tab's body. `header.title` names the section: it heads that band, labels the
+section's tab for assistive tech, and shows on hover. Leave it out on every
+section and the band goes away — the tab bar takes the top of the card, close
+button included — so the tabs alone carry the navigation; leave it out on only
+some and the band stays for all, empty on those. The tab keeps its icon either
+way and falls back to the section `id` for its accessible name. Each section's `body` is one of two kinds:
 
 - **`variations`** — a flat list of selectable rows (grouped only for ordering)
   that drive the shared selection (`selection[menuId]`), recoloring the map.
-- **`filters`** — a stack of collapsible blocks, each wrapping one control:
+- **`filters`** — a stack of headed blocks, each wrapping one control:
   a **timeline** (numeric range with an optional histogram and play/pause; drives
   `selection[menuId]` when it declares one, otherwise visual-only), **chips**
   (visual-only toggle chips whose active count shows as a tab badge), or a
@@ -305,26 +318,36 @@ breaking.
 
 ### `GeovisWorkspaceSidebarSection`
 
-| Property | Type                                            | Description                                     |
-| -------- | ----------------------------------------------- | ----------------------------------------------- |
-| `id`     | `string`                                        | Unique section id.                              |
-| `header` | `{ title; icon?; iconColor?; iconBackground? }` | The tab/header icon chip and title.             |
-| `body`   | `variations` \| `filters`                       | The section's content, discriminated by `kind`. |
+| Property | Type                                             | Description                                     |
+| -------- | ------------------------------------------------ | ----------------------------------------------- |
+| `id`     | `string`                                         | Unique section id.                              |
+| `header` | `{ title?; icon?; iconColor?; iconBackground? }` | The tab/header icon chip and title.             |
+| `body`   | `variations` \| `filters`                        | The section's content, discriminated by `kind`. |
 
 A **`variations`** body (`kind: 'variations'`) has a `menuId` (the selection
-key it drives), an optional `defaultValue`, an optional `closeOnSelect`, and
+key it drives), an optional `title` and `icon` heading the list with the same
+label a filter block draws, an optional `defaultValue`, an optional
+`closeOnSelect`, and
 `groups` — each group
-`{ id, label, icon?, color?, variations: [{ value, label, icon? }] }`; the
-groups are flattened into one ordered list. `closeOnSelect` closes the sidebar
+`{ id, label, icon?, color?, variations: [{ value, label, icon?, description? }] }`;
+the groups are flattened into one ordered list. A variation's `description` is
+its hover tooltip, so give it what the label cannot hold — what the variation
+measures, or the unit it is read in — and omit it otherwise: a row without one
+renders no tooltip rather than one repeating the label. `closeOnSelect` closes the sidebar
 as soon as a variation is picked, so the map it just recolored is visible
 without a second tap; it lives on the body, not on `leftSidebar`, because a
 `filters` section's timeline writes to the selection on every auto-advance tick
 and must not close anything. A **`filters`** body
 (`kind: 'filters'`) has `blocks` — each block
-`{ id, title, icon?, defaultOpen?, control }`, where `control` is a `timeline`
+`{ id, title, icon?, collapsible?, defaultOpen?, control }`, where `control` is
+a `timeline`
 (`{ kind, menuId?, min, max, step?, defaultValue?, histogram?, unitLabel?, closeOnPlay? }`
 — `closeOnPlay` clears the sidebar off the map when playback starts, and only
-then: not on pause, the steppers, or each auto-advance tick),
+then: not on pause, the steppers, or each auto-advance tick; `histogram` counts
+are grouped wherever they show — the bars' tooltips, the `unitLabel` readout and
+the compact HUD — using the locale declared on `I18nProvider`, whether or not a
+message bundle was loaded for it, while the keys stay ungrouped because they are
+years),
 `chips` (`{ kind, menuId?, options, multiple?, defaultSelected? }` — with a
 `menuId` the active ids reach `selection[menuId]` joined by commas, `''` when
 none are active, which is both what the one-string-per-key selection holds and
@@ -332,12 +355,17 @@ what a permalink needs; without one the selection stays visual-only),
 `locator` (`{ kind, placeholder?, minChars?, options }`), or
 `variations` (`{ kind, menuId, variations, defaultValue?, closeOnSelect? }`).
 
+A block draws a fixed header over its control. Declaring `collapsible` turns
+that header into a toggle — which is what `defaultOpen` answers to — and is
+worth it for a block long enough to push its neighbours off screen; the tab bar
+is what puts whole sets of controls away.
+
 A `variations` **control** is the same menu a `variations` **body** renders —
 the same rows, the same shared selection, seeded the same way by
 `getInitialSelection` — but as a block rather than as a whole tab. That is the
 difference worth choosing between: a body is one menu per tab, so two menus cost
 the user a tab switch; as blocks, several menus stack in one tab, each under its
-own collapsible heading. Reach for the body when a tab belongs to one long menu,
+own heading. Reach for the body when a tab belongs to one long menu,
 and for blocks when the menus are read together — an indicator and the age band
 it applies to, say. Both remain available, and a menu behaves identically either
 way, `enabledWhen` gates included.

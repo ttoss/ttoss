@@ -3,11 +3,8 @@ import type { VisualizationSpec } from '@ttoss/geovis';
 import { GeoVisCanvas, GeoVisProvider } from '@ttoss/geovis';
 
 import singleMapSpec from '../../../../packages/geovis/src/fixtures/single-map.json';
-import { computeBbox, FitBoundsToBbox } from './helpers/map-story-helpers';
 
 const baseSpec = singleMapSpec as unknown as VisualizationSpec;
-
-const bbox = computeBbox(baseSpec.sources[0].data as GeoJSON.FeatureCollection);
 
 /**
  * Demonstrates `basemap.labels`. Toggle the `labels` control to hide or show
@@ -25,7 +22,6 @@ const BasemapLabelsDemo = ({ labels }: { labels: boolean }) => {
     <div style={{ width: '100%', height: 560, border: '1px solid #d4d4d8' }}>
       <GeoVisProvider spec={spec}>
         <GeoVisCanvas viewId="primary" />
-        {bbox != null ? <FitBoundsToBbox bbox={bbox} /> : null}
       </GeoVisProvider>
     </div>
   );

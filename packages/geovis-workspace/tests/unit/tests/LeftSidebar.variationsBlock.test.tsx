@@ -51,7 +51,11 @@ const twoMenus: Preview = {
               defaultValue: 'renda',
               variations: [
                 { value: 'renda', label: 'Renda média', icon: 'lucide:map' },
-                { value: 'gini', label: 'Índice de Gini' },
+                {
+                  value: 'gini',
+                  label: 'Índice de Gini',
+                  description: 'Concentração de renda, de 0 a 1',
+                },
               ],
             },
           },
@@ -80,16 +84,29 @@ test('renders both menus in a single tab, each under its own heading', () => {
 
   // One tab, not two: the whole point of declaring the menus as blocks.
   expect(screen.getAllByRole('button', { name: 'Controles' })).toHaveLength(1);
-  expect(
-    screen.getByRole('button', { name: 'Faixa etária' })
-  ).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Indicador' })).toBeInTheDocument();
+  // Headings, not toggles: a block draws a fixed header unless it opts into
+  // `collapsible`.
+  expect(screen.getByText('Faixa etária')).toBeInTheDocument();
+  expect(screen.getByText('Indicador')).toBeInTheDocument();
   expect(
     screen.getByRole('button', { name: '65 ou mais' })
   ).toBeInTheDocument();
   expect(
     screen.getByRole('button', { name: 'Renda média' })
   ).toBeInTheDocument();
+});
+
+test('a description becomes the row tooltip, and only where one is given', () => {
+  renderPreview();
+
+  expect(
+    screen.getByRole('button', { name: 'Índice de Gini' })
+  ).toHaveAttribute('title', 'Concentração de renda, de 0 a 1');
+  // No `description`, no `title`: an empty tooltip on hover would be worse
+  // than none, and repeating the label says nothing the row does not.
+  expect(
+    screen.getByRole('button', { name: 'Renda média' })
+  ).not.toHaveAttribute('title');
 });
 
 test('marks each menu default as pressed before any pick', () => {
