@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.2.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@7.1.1...@docs/storybook@7.2.0) (2026-09-11)
+
+### Features
+
+- **geovis:** support interaction and labels on vector-tile layers ([#1234](https://github.com/ttoss/ttoss/issues/1234)) ([f7baf24](https://github.com/ttoss/ttoss/commit/f7baf24a06c358b6ad5fb0a9348174931449ec60))
+
 ## [7.1.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@7.1.0...@docs/storybook@7.1.1) (2026-09-11)
 
 **Note:** Version bump only for package @docs/storybook
