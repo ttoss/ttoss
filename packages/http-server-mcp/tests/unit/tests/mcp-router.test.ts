@@ -393,7 +393,14 @@ describe('createMcpRouter', () => {
       };
     };
 
-    const buildApp = () => {
+    const legacyRequest = {
+      jsonrpc: '2.0',
+      method: 'tools/list',
+      id: 1,
+      params: {},
+    };
+
+    const buildMcpServer = () => {
       const mcpServer = new McpServer({
         name: 'test-server',
         version: '1.0.0',
@@ -405,21 +412,41 @@ describe('createMcpRouter', () => {
           return { content: [{ type: 'text', text: param }] };
         }
       );
+      return mcpServer;
+    };
+
+    /**
+     * The router as a consumer serving both eras wires it: one `McpServer` for
+     * 2025-era traffic, and a factory the SDK calls per 2026-07-28 request.
+     */
+    const buildApp = ({ serveModernEra = true } = {}) => {
       const app = new App();
       app.use(bodyParser());
-      app.use(createMcpRouter(mcpServer).routes());
-      return app;
+      app.use(
+        createMcpRouter(buildMcpServer(), {
+          ...(serveModernEra && { createMcpServer: buildMcpServer }),
+        }).routes()
+      );
+      return app.callback();
+    };
+
+    const post = (
+      callback: ReturnType<typeof buildApp>,
+      body: unknown,
+      headers: Record<string, string> = {}
+    ) => {
+      return request(callback)
+        .post('/mcp')
+        .send(body as object)
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json, text/event-stream')
+        .set(headers);
     };
 
     test('serves tools/list from the same registered tools', async () => {
       const { body, headers } = modernRequest('tools/list');
 
-      const response = await request(buildApp().callback())
-        .post('/mcp')
-        .send(body)
-        .set('Content-Type', 'application/json')
-        .set('Accept', 'application/json, text/event-stream')
-        .set(headers);
+      const response = await post(buildApp(), body, headers);
 
       expect(response.status).toBe(200);
       expect(response.body.result.tools).toEqual([
@@ -430,28 +457,159 @@ describe('createMcpRouter', () => {
     test('answers with plain JSON, same as 2025-era traffic', async () => {
       const { body, headers } = modernRequest('tools/list');
 
-      const response = await request(buildApp().callback())
-        .post('/mcp')
-        .send(body)
-        .set('Content-Type', 'application/json')
-        .set('Accept', 'application/json, text/event-stream')
-        .set(headers);
+      const response = await post(buildApp(), body, headers);
 
       expect(response.headers['content-type']).toMatch(/application\/json/);
     });
 
     test('a 2025-era request is still served by the legacy transport', async () => {
-      const response = await request(buildApp().callback())
-        .post('/mcp')
-        .send({ jsonrpc: '2.0', method: 'tools/list', id: 1, params: {} })
-        .set('Content-Type', 'application/json')
-        .set('Accept', 'application/json, text/event-stream');
+      const response = await post(buildApp(), legacyRequest);
 
       expect(response.status).toBe(200);
       expect(response.headers['content-type']).toMatch(/application\/json/);
       expect(response.body.result.tools).toEqual([
         expect.objectContaining({ name: 'test-tool' }),
       ]);
+    });
+
+    /**
+     * The negotiated revision is instance state on `McpServer`: serving one
+     * 2026-07-28 request marks the instance modern for good, and it then
+     * validates every later message against that revision. Serving both eras
+     * from the one instance the router is handed therefore answers every
+     * subsequent 2025-era request — which is all traffic from today's MCP
+     * clients — `-32602 … missing the required _meta envelope` at HTTP 200,
+     * for the life of the process. The per-request factory is what keeps the
+     * eras off each other's instance.
+     */
+    test('a 2026-07-28 request does not pin the shared server to that revision', async () => {
+      const callback = buildApp();
+      const { body, headers } = modernRequest('tools/list');
+
+      const modern = await post(callback, body, headers);
+      expect(modern.status).toBe(200);
+
+      const legacy = await post(callback, legacyRequest);
+
+      expect(legacy.status).toBe(200);
+      expect(legacy.body.error).toBeUndefined();
+      expect(legacy.body.result.tools).toEqual([
+        expect.objectContaining({ name: 'test-tool' }),
+      ]);
+    });
+
+    describe('without createMcpServer', () => {
+      test('answers 2026-07-28 traffic with unsupported protocol version', async () => {
+        const { body, headers } = modernRequest('tools/list');
+
+        const response = await post(
+          buildApp({ serveModernEra: false }),
+          body,
+          headers
+        );
+
+        expect(response.status).toBe(400);
+        expect(response.body.error.code).toBe(-32022);
+        expect(response.body.error.message).toMatch(
+          /Unsupported protocol version/
+        );
+        expect(response.body.error.data.supported).toEqual(
+          expect.arrayContaining(['2025-06-18'])
+        );
+        expect(response.body.id).toBe(1);
+      });
+
+      test('leaves 2025-era traffic untouched, before and after', async () => {
+        const callback = buildApp({ serveModernEra: false });
+        const { body, headers } = modernRequest('tools/list');
+
+        const before = await post(callback, legacyRequest);
+        await post(callback, body, headers);
+        const after = await post(callback, legacyRequest);
+
+        for (const response of [before, after]) {
+          expect(response.status).toBe(200);
+          expect(response.body.result.tools).toEqual([
+            expect.objectContaining({ name: 'test-tool' }),
+          ]);
+        }
+      });
+    });
+
+    /**
+     * `classifyInboundRequest` answers with a three-way union, and a
+     * `kind: 'reject'` outcome is a complete answer: the HTTP status, the
+     * JSON-RPC code, the message and the structured data the SDK chose. Each
+     * case below asserts that answer reaches the wire as the SDK wrote it —
+     * consuming the classification as a boolean instead would route these to
+     * whichever handler owns the other branch.
+     */
+    describe('classifier rejections', () => {
+      test.each([true, false])(
+        'a modern header without the envelope is rejected as the SDK wrote it (createMcpServer: %s)',
+        async (serveModernEra) => {
+          const response = await post(
+            buildApp({ serveModernEra }),
+            legacyRequest,
+            { 'MCP-Protocol-Version': '2026-07-28' }
+          );
+
+          expect(response.status).toBe(400);
+          expect(response.body).toEqual({
+            jsonrpc: '2.0',
+            error: {
+              code: -32602,
+              message: expect.stringContaining(
+                'the MCP-Protocol-Version header names protocol revision 2026-07-28'
+              ),
+              data: { envelope: { missing: ['_meta'] } },
+            },
+            id: 1,
+          });
+        }
+      );
+
+      test('a body that is not a JSON-RPC message is rejected with a null id', async () => {
+        const response = await post(buildApp(), { not: 'json-rpc' });
+
+        expect(response.status).toBe(400);
+        expect(response.body).toEqual({
+          jsonrpc: '2.0',
+          error: {
+            code: -32600,
+            message: expect.stringContaining('not a valid JSON-RPC message'),
+          },
+          id: null,
+        });
+      });
+
+      test('a rejection echoes a request id only when the body names a method', async () => {
+        const callback = buildApp();
+
+        const withMethod = await post(callback, {
+          ...legacyRequest,
+          id: 'string-id',
+          jsonrpc: '1.0',
+        });
+        const withoutMethod = await post(callback, { jsonrpc: '2.0', id: 7 });
+        const withObjectId = await post(callback, {
+          ...legacyRequest,
+          id: { not: 'scalar' },
+          jsonrpc: '1.0',
+        });
+
+        expect(withMethod.body.id).toBe('string-id');
+        expect(withoutMethod.body.id).toBeNull();
+        expect(withObjectId.body.id).toBeNull();
+      });
+
+      test('a JSON-RPC batch is rejected without reaching either era', async () => {
+        const response = await post(buildApp(), []);
+
+        expect(response.status).toBe(400);
+        expect(response.body.error.code).toBe(-32600);
+        expect(response.body.id).toBeNull();
+      });
     });
   });
 

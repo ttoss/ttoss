@@ -1,5 +1,47 @@
 # Migrations
 
+## The `2026-07-28` revision needs `createMcpServer`
+
+Requests carrying that revision's per-request envelope are served only when
+`createMcpRouter` is given a `createMcpServer` factory. Without it they are
+answered with the unsupported-protocol-version error naming the 2025-era
+revisions the endpoint does serve.
+
+```diff
++const buildServer = () => {
++  const mcpServer = new McpServer({ name: 'my-server', version: '1.0.0' });
++  registerEverything(mcpServer);
++  return mcpServer;
++};
++
+-createMcpRouter(mcpServer, {
++createMcpRouter(buildServer(), {
++  createMcpServer: buildServer,
+   auth: { ... },
+ });
+```
+
+**Why it cannot default to the server you already pass.** The negotiated
+protocol revision is _instance_ state on `McpServer`: the SDK marks an instance
+modern when it serves one modern request, and that instance then validates
+every later message against `2026-07-28`. Serving both eras from one instance
+therefore lets a single `2026-07-28` request pin it, after which every 2025-era
+request — which is all traffic from today's MCP clients — is answered
+`-32602 Request is missing the required _meta envelope for protocol revision
+2026-07-28` at **HTTP 200**, for the life of the process. Because the status is
+`200` and the tool list is simply absent, a client can attach zero tools and
+carry on without either side reporting a fault. The SDK's own serving entries
+take a factory and call it once per request for exactly this reason.
+
+**What you will observe if you miss this.** A client speaking `2026-07-28` gets
+`400` with `-32022 Unsupported protocol version` and `data.supported` listing
+the 2025-era revisions, which is a renegotiation signal it can act on. Clients
+on 2025-era revisions are unaffected either way.
+
+**Who is affected.** Only deployments actually receiving `2026-07-28` traffic.
+Every client that does not send the per-request envelope is served exactly as
+before.
+
 ## `tools/list` is no longer public by default
 
 `auth.publicMethods` now defaults to `['initialize']` instead of

@@ -906,7 +906,27 @@ app.listen(3000);
 
 This package implements the [Model Context Protocol](https://spec.modelcontextprotocol.io/) over HTTP using JSON responses (no SSE streaming), and serves each request over the protocol revision it actually speaks.
 
-Requests are classified once at the boundary. Traffic from today's MCP clients is served over `NodeStreamableHTTPServerTransport` with `enableJsonResponse: true`, adapting Koa's context-based middleware to the SDK's Node.js request/response expectations. Requests carrying the `2026-07-28` revision's per-request envelope are served by that revision's stateless core (`createMcpHandler`) instead. Both paths are served from the same `McpServer` instance and the same registered tools, so supporting the newer revision requires no configuration.
+Requests are classified once at the boundary, and the classifier's answer is three-way. Traffic from today's MCP clients is served over `NodeStreamableHTTPServerTransport` with `enableJsonResponse: true`, adapting Koa's context-based middleware to the SDK's Node.js request/response expectations. Requests carrying the `2026-07-28` revision's per-request envelope are served by that revision's stateless core (`createMcpHandler`). Requests the classifier refuses outright are answered with its own rejection — the status, code, message and structured data it chose — rather than being passed to either era's handler.
+
+### Serving the `2026-07-28` revision
+
+Set `createMcpServer` — a factory returning an `McpServer` with the same tools registered — to serve that revision:
+
+```typescript
+const buildServer = () => {
+  const mcpServer = new McpServer({ name: 'my-server', version: '1.0.0' });
+  registerEverything(mcpServer);
+  return mcpServer;
+};
+
+const mcpRouter = createMcpRouter(buildServer(), {
+  createMcpServer: buildServer,
+});
+```
+
+It has to be a factory, and the router cannot default it to the server it was given, because the negotiated revision is _instance_ state on `McpServer`: the SDK marks an instance modern when it serves one modern request, and that instance then validates every later message against `2026-07-28`. One instance serving both eras is therefore pinned to the newer revision by the first client that speaks it, after which every 2025-era request — all traffic from today's MCP clients — is answered `-32602 Request is missing the required _meta envelope…` at HTTP 200 for the life of the process. The SDK's own serving entries take a factory and call it once per request for the same reason.
+
+Without `createMcpServer`, requests carrying the `2026-07-28` envelope are answered with the unsupported-protocol-version error listing the revisions this endpoint does serve, so that client renegotiates and every other client is untouched.
 
 **Supported HTTP methods:**
 

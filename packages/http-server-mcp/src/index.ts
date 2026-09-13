@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports -- value import required so declaration bundler emits `export { McpServer }` not `export type { McpServer }`
-import { McpServer } from '@modelcontextprotocol/server';
+import { McpServer, type McpServerFactory } from '@modelcontextprotocol/server';
 import {
   protectedResourceMetadataDocument,
   protectedResourceMetadataPaths,
@@ -442,6 +442,40 @@ export interface McpRouterOptions {
   sessionIdGenerator?: () => string;
 
   /**
+   * Per-request factory building the `McpServer` that serves one `2026-07-28`
+   * request. **Set it to serve that revision at all** — without it, requests
+   * carrying its per-request envelope are answered with the
+   * unsupported-protocol-version error naming the 2025-era revisions this
+   * endpoint does serve, and every other client is untouched.
+   *
+   * It cannot default to the `server` argument, and the reason is not
+   * fastidiousness: the negotiated protocol revision is *instance* state on
+   * `McpServer`. The SDK marks an instance modern when it serves one modern
+   * request, and from then on that instance validates every inbound message
+   * against `2026-07-28`. Serving both eras from one instance therefore lets a
+   * single `2026-07-28` request pin the shared server to that revision, after
+   * which every 2025-era request — which is all traffic from today's MCP
+   * clients — is answered `-32602 Request is missing the required _meta
+   * envelope…` at HTTP 200 for the life of the process. A factory is what the
+   * SDK's own serving entries take, and they call it once per request.
+   *
+   * Register the same tools, resources and prompts here as on `server`, so the
+   * two eras cannot drift apart.
+   *
+   * @example
+   * ```typescript
+   * const buildServer = () => {
+   *   const mcpServer = new McpServer({ name: 'my-server', version: '1.0.0' });
+   *   registerEverything(mcpServer);
+   *   return mcpServer;
+   * };
+   *
+   * createMcpRouter(buildServer(), { createMcpServer: buildServer });
+   * ```
+   */
+  createMcpServer?: McpServerFactory;
+
+  /**
    * Base URL prepended to relative paths passed to `apiCall` (paths starting
    * with `/`). Tool handlers can then call `apiCall('GET', '/resource')` without
    * specifying a host.
@@ -561,6 +595,7 @@ export const createMcpRouter = (
     path = '/mcp',
     aliases = [],
     sessionIdGenerator,
+    createMcpServer,
     apiBaseUrl,
     getApiHeaders,
     auth,
@@ -572,8 +607,13 @@ export const createMcpRouter = (
 
   // Serves each request over the protocol revision it actually speaks: the
   // existing transport wiring for 2025-era traffic, the 2026-07-28 stateless
-  // core for requests carrying that revision's per-request envelope.
-  const serveRequest = createMcpRequestServer({ server, sessionIdGenerator });
+  // core for requests carrying that revision's per-request envelope, and the
+  // classifier's own rejection for requests it refused outright.
+  const serveRequest = createMcpRequestServer({
+    server,
+    sessionIdGenerator,
+    createMcpServer,
+  });
 
   const router = new Router();
 
