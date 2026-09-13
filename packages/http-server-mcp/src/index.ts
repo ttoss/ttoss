@@ -442,25 +442,17 @@ export interface McpRouterOptions {
   sessionIdGenerator?: () => string;
 
   /**
-   * Per-request factory building the `McpServer` that serves one `2026-07-28`
-   * request. **Set it to serve that revision at all** — without it, requests
-   * carrying its per-request envelope are answered with the
-   * unsupported-protocol-version error naming the 2025-era revisions this
-   * endpoint does serve, and every other client is untouched.
+   * Per-request factory for the `McpServer` serving one `2026-07-28` request.
+   * Set it to serve that revision; without it, requests carrying its
+   * per-request envelope get the unsupported-protocol-version error naming the
+   * 2025-era revisions this endpoint does serve. Register the same tools here
+   * as on `server`, so the two eras cannot drift apart.
    *
-   * It cannot default to the `server` argument, and the reason is not
-   * fastidiousness: the negotiated protocol revision is *instance* state on
-   * `McpServer`. The SDK marks an instance modern when it serves one modern
-   * request, and from then on that instance validates every inbound message
-   * against `2026-07-28`. Serving both eras from one instance therefore lets a
-   * single `2026-07-28` request pin the shared server to that revision, after
-   * which every 2025-era request — which is all traffic from today's MCP
-   * clients — is answered `-32602 Request is missing the required _meta
-   * envelope…` at HTTP 200 for the life of the process. A factory is what the
-   * SDK's own serving entries take, and they call it once per request.
-   *
-   * Register the same tools, resources and prompts here as on `server`, so the
-   * two eras cannot drift apart.
+   * It cannot default to `server`: the negotiated revision is instance state,
+   * so one instance serving both eras is pinned to `2026-07-28` by the first
+   * client to speak it, and every 2025-era request after that is answered
+   * `-32602 … missing the required _meta envelope` at HTTP 200. The SDK's own
+   * serving entries take a factory and call it once per request.
    *
    * @example
    * ```typescript
@@ -605,10 +597,8 @@ export const createMcpRouter = (
     getApiHeaders !== undefined ||
     auth !== undefined;
 
-  // Serves each request over the protocol revision it actually speaks: the
-  // existing transport wiring for 2025-era traffic, the 2026-07-28 stateless
-  // core for requests carrying that revision's per-request envelope, and the
-  // classifier's own rejection for requests it refused outright.
+  // Serves each request over the protocol revision it actually speaks, and
+  // emits the classifier's own rejection for requests it refused outright.
   const serveRequest = createMcpRequestServer({
     server,
     sessionIdGenerator,

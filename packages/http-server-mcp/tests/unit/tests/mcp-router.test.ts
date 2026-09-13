@@ -415,10 +415,7 @@ describe('createMcpRouter', () => {
       return mcpServer;
     };
 
-    /**
-     * The router as a consumer serving both eras wires it: one `McpServer` for
-     * 2025-era traffic, and a factory the SDK calls per 2026-07-28 request.
-     */
+    /** One `McpServer` for 2025-era traffic, a factory for 2026-07-28. */
     const buildApp = ({ serveModernEra = true } = {}) => {
       const app = new App();
       app.use(bodyParser());
@@ -473,14 +470,9 @@ describe('createMcpRouter', () => {
     });
 
     /**
-     * The negotiated revision is instance state on `McpServer`: serving one
-     * 2026-07-28 request marks the instance modern for good, and it then
-     * validates every later message against that revision. Serving both eras
-     * from the one instance the router is handed therefore answers every
-     * subsequent 2025-era request — which is all traffic from today's MCP
-     * clients — `-32602 … missing the required _meta envelope` at HTTP 200,
-     * for the life of the process. The per-request factory is what keeps the
-     * eras off each other's instance.
+     * Serving one 2026-07-28 request marks an `McpServer` modern for good. Were
+     * both eras on one instance, every 2025-era request after this one would be
+     * answered `-32602 … missing the required _meta envelope` at HTTP 200.
      */
     test('a 2026-07-28 request does not pin the shared server to that revision', async () => {
       const callback = buildApp();
@@ -537,12 +529,8 @@ describe('createMcpRouter', () => {
     });
 
     /**
-     * `classifyInboundRequest` answers with a three-way union, and a
-     * `kind: 'reject'` outcome is a complete answer: the HTTP status, the
-     * JSON-RPC code, the message and the structured data the SDK chose. Each
-     * case below asserts that answer reaches the wire as the SDK wrote it —
-     * consuming the classification as a boolean instead would route these to
-     * whichever handler owns the other branch.
+     * A `kind: 'reject'` outcome is a complete answer — status, code, message
+     * and data — and must reach the wire as the SDK wrote it.
      */
     describe('classifier rejections', () => {
       test.each([true, false])(

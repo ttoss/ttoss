@@ -42,10 +42,9 @@ const legacy = (server: McpServer, method: string, params: unknown = {}) => {
  * `Mcp-Name` header, or the revision's own guard rejects the request before it
  * reaches a handler.
  *
- * Takes a builder rather than an instance because the router does: serving one
- * request on this revision pins an `McpServer` to it for good, so the modern
- * era gets a fresh instance per request — see `createMcpServer` on
- * `McpRouterOptions`.
+ * Takes a builder rather than an instance because the router does: this
+ * revision pins an `McpServer` to it for good, so it gets a fresh one per
+ * request — see `createMcpServer` on `McpRouterOptions`.
  */
 const modern = (
   build: () => McpServer,

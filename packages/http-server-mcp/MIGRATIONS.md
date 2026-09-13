@@ -2,10 +2,8 @@
 
 ## The `2026-07-28` revision needs `createMcpServer`
 
-Requests carrying that revision's per-request envelope are served only when
-`createMcpRouter` is given a `createMcpServer` factory. Without it they are
-answered with the unsupported-protocol-version error naming the 2025-era
-revisions the endpoint does serve.
+That revision is served only when `createMcpRouter` is given a
+`createMcpServer` factory.
 
 ```diff
 +const buildServer = () => {
@@ -22,25 +20,20 @@ revisions the endpoint does serve.
 ```
 
 **Why it cannot default to the server you already pass.** The negotiated
-protocol revision is _instance_ state on `McpServer`: the SDK marks an instance
-modern when it serves one modern request, and that instance then validates
-every later message against `2026-07-28`. Serving both eras from one instance
-therefore lets a single `2026-07-28` request pin it, after which every 2025-era
-request — which is all traffic from today's MCP clients — is answered
+revision is instance state: serving one `2026-07-28` request marks that
+`McpServer` modern for good, and it then validates every later message against
+that revision. One instance serving both eras is pinned by the first client to
+speak the newer one, after which every 2025-era request is answered
 `-32602 Request is missing the required _meta envelope for protocol revision
-2026-07-28` at **HTTP 200**, for the life of the process. Because the status is
-`200` and the tool list is simply absent, a client can attach zero tools and
-carry on without either side reporting a fault. The SDK's own serving entries
-take a factory and call it once per request for exactly this reason.
+2026-07-28` at **HTTP 200** for the life of the process — a status and body a
+client reads as "no tools" rather than as a fault. The SDK's own serving
+entries take a factory and call it once per request for this reason.
 
 **What you will observe if you miss this.** A client speaking `2026-07-28` gets
 `400` with `-32022 Unsupported protocol version` and `data.supported` listing
-the 2025-era revisions, which is a renegotiation signal it can act on. Clients
-on 2025-era revisions are unaffected either way.
-
-**Who is affected.** Only deployments actually receiving `2026-07-28` traffic.
-Every client that does not send the per-request envelope is served exactly as
-before.
+the 2025-era revisions, which it can renegotiate from. Only deployments
+actually receiving that traffic are affected; every client without the
+per-request envelope is served exactly as before.
 
 ## `tools/list` is no longer public by default
 
