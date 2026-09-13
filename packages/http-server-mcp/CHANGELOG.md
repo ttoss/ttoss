@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.28.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.28.0...@ttoss/http-server-mcp@0.28.1) (2026-09-13)
+
+### Bug Fixes
+
+- **http-server-mcp:** branch on all three inbound classification outcomes ([#1235](https://github.com/ttoss/ttoss/issues/1235)) ([99beea4](https://github.com/ttoss/ttoss/commit/99beea4dafa100377cb697047923d08ab26340e0))
+
 # [0.28.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.27.1...@ttoss/http-server-mcp@0.28.0) (2026-09-06)
 
 ### Features
