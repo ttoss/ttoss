@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports -- value import required so declaration bundler emits `export { McpServer }` not `export type { McpServer }`
-import { McpServer } from '@modelcontextprotocol/server';
+import { McpServer, type McpServerFactory } from '@modelcontextprotocol/server';
 import {
   protectedResourceMetadataDocument,
   protectedResourceMetadataPaths,
@@ -442,6 +442,32 @@ export interface McpRouterOptions {
   sessionIdGenerator?: () => string;
 
   /**
+   * Per-request factory for the `McpServer` serving one `2026-07-28` request.
+   * Set it to serve that revision; without it, requests carrying its
+   * per-request envelope get the unsupported-protocol-version error naming the
+   * 2025-era revisions this endpoint does serve. Register the same tools here
+   * as on `server`, so the two eras cannot drift apart.
+   *
+   * It cannot default to `server`: the negotiated revision is instance state,
+   * so one instance serving both eras is pinned to `2026-07-28` by the first
+   * client to speak it, and every 2025-era request after that is answered
+   * `-32602 … missing the required _meta envelope` at HTTP 200. The SDK's own
+   * serving entries take a factory and call it once per request.
+   *
+   * @example
+   * ```typescript
+   * const buildServer = () => {
+   *   const mcpServer = new McpServer({ name: 'my-server', version: '1.0.0' });
+   *   registerEverything(mcpServer);
+   *   return mcpServer;
+   * };
+   *
+   * createMcpRouter(buildServer(), { createMcpServer: buildServer });
+   * ```
+   */
+  createMcpServer?: McpServerFactory;
+
+  /**
    * Base URL prepended to relative paths passed to `apiCall` (paths starting
    * with `/`). Tool handlers can then call `apiCall('GET', '/resource')` without
    * specifying a host.
@@ -561,6 +587,7 @@ export const createMcpRouter = (
     path = '/mcp',
     aliases = [],
     sessionIdGenerator,
+    createMcpServer,
     apiBaseUrl,
     getApiHeaders,
     auth,
@@ -570,10 +597,13 @@ export const createMcpRouter = (
     getApiHeaders !== undefined ||
     auth !== undefined;
 
-  // Serves each request over the protocol revision it actually speaks: the
-  // existing transport wiring for 2025-era traffic, the 2026-07-28 stateless
-  // core for requests carrying that revision's per-request envelope.
-  const serveRequest = createMcpRequestServer({ server, sessionIdGenerator });
+  // Serves each request over the protocol revision it actually speaks, and
+  // emits the classifier's own rejection for requests it refused outright.
+  const serveRequest = createMcpRequestServer({
+    server,
+    sessionIdGenerator,
+    createMcpServer,
+  });
 
   const router = new Router();
 

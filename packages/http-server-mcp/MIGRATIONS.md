@@ -1,5 +1,40 @@
 # Migrations
 
+## The `2026-07-28` revision needs `createMcpServer`
+
+That revision is served only when `createMcpRouter` is given a
+`createMcpServer` factory.
+
+```diff
++const buildServer = () => {
++  const mcpServer = new McpServer({ name: 'my-server', version: '1.0.0' });
++  registerEverything(mcpServer);
++  return mcpServer;
++};
++
+-createMcpRouter(mcpServer, {
++createMcpRouter(buildServer(), {
++  createMcpServer: buildServer,
+   auth: { ... },
+ });
+```
+
+**Why it cannot default to the server you already pass.** The negotiated
+revision is instance state: serving one `2026-07-28` request marks that
+`McpServer` modern for good, and it then validates every later message against
+that revision. One instance serving both eras is pinned by the first client to
+speak the newer one, after which every 2025-era request is answered
+`-32602 Request is missing the required _meta envelope for protocol revision
+2026-07-28` at **HTTP 200** for the life of the process — a status and body a
+client reads as "no tools" rather than as a fault. The SDK's own serving
+entries take a factory and call it once per request for this reason.
+
+**What you will observe if you miss this.** A client speaking `2026-07-28` gets
+`400` with `-32022 Unsupported protocol version` and `data.supported` listing
+the 2025-era revisions, which it can renegotiate from. Only deployments
+actually receiving that traffic are affected; every client without the
+per-request envelope is served exactly as before.
+
 ## `tools/list` is no longer public by default
 
 `auth.publicMethods` now defaults to `['initialize']` instead of

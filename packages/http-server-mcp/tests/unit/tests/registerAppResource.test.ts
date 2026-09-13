@@ -20,6 +20,14 @@ const mount = (server: McpServer) => {
   return app.callback();
 };
 
+/** Mounts a router that serves both protocol eras from the same definition. */
+const mountBothEras = (build: () => McpServer) => {
+  const app = new App();
+  app.use(bodyParser());
+  app.use(createMcpRouter(build(), { createMcpServer: build }).routes());
+  return app.callback();
+};
+
 /** A 2025-era call — no per-request envelope. */
 const legacy = (server: McpServer, method: string, params: unknown = {}) => {
   return request(mount(server))
@@ -33,14 +41,18 @@ const legacy = (server: McpServer, method: string, params: unknown = {}) => {
  * A `2026-07-28` call. Name-carrying methods must repeat the selector in the
  * `Mcp-Name` header, or the revision's own guard rejects the request before it
  * reaches a handler.
+ *
+ * Takes a builder rather than an instance because the router does: this
+ * revision pins an `McpServer` to it for good, so it gets a fresh one per
+ * request — see `createMcpServer` on `McpRouterOptions`.
  */
 const modern = (
-  server: McpServer,
+  build: () => McpServer,
   method: string,
   params: Record<string, unknown> = {}
 ) => {
   const name = (params.name ?? params.uri) as string | undefined;
-  return request(mount(server))
+  return request(mountBothEras(build))
     .post('/mcp')
     .send({
       jsonrpc: '2.0',
@@ -97,15 +109,18 @@ describe('registerAppResource', () => {
     });
 
     test('serves the same content on the 2026-07-28 revision', async () => {
-      const server = buildServer();
-      registerAppResource({
-        server,
-        name: 'weather_dashboard',
-        uri: UI_URI,
-        html: HTML,
-      });
+      const build = () => {
+        const server = buildServer();
+        registerAppResource({
+          server,
+          name: 'weather_dashboard',
+          uri: UI_URI,
+          html: HTML,
+        });
+        return server;
+      };
 
-      const response = await modern(server, 'resources/read', { uri: UI_URI });
+      const response = await modern(build, 'resources/read', { uri: UI_URI });
 
       expect(response.status).toBe(200);
       expect(response.body.result.contents[0]).toEqual({
@@ -292,24 +307,27 @@ describe('registerAppResource', () => {
     });
 
     test('links a tool registered with registerTool, on both revisions', async () => {
-      const server = buildServer();
-      const app = registerAppResource({
-        server,
-        name: 'dash',
-        uri: UI_URI,
-        html: HTML,
-      });
-      server.registerTool(
-        'get_weather',
-        {
-          description: 'Get the weather',
-          inputSchema: { location: z.string() },
-          _meta: app.toolMeta(),
-        },
-        async ({ location }) => {
-          return { content: [{ type: 'text', text: location }] };
-        }
-      );
+      const build = () => {
+        const server = buildServer();
+        const app = registerAppResource({
+          server,
+          name: 'dash',
+          uri: UI_URI,
+          html: HTML,
+        });
+        server.registerTool(
+          'get_weather',
+          {
+            description: 'Get the weather',
+            inputSchema: { location: z.string() },
+            _meta: app.toolMeta(),
+          },
+          async ({ location }) => {
+            return { content: [{ type: 'text', text: location }] };
+          }
+        );
+        return server;
+      };
 
       const expected = {
         ui: { resourceUri: UI_URI },
@@ -317,10 +335,10 @@ describe('registerAppResource', () => {
       };
 
       expect(
-        (await legacy(server, 'tools/list')).body.result.tools[0]._meta
+        (await legacy(build(), 'tools/list')).body.result.tools[0]._meta
       ).toEqual(expected);
       expect(
-        (await modern(server, 'tools/list')).body.result.tools[0]._meta
+        (await modern(build, 'tools/list')).body.result.tools[0]._meta
       ).toEqual(expected);
     });
 
