@@ -127,6 +127,17 @@ const data = await apiCall('GET', 'https://partner.api.com/data', {
 
 `apiCall` throws with a clear message when called with a relative path and no `apiBaseUrl` is configured in the context.
 
+### Errors
+
+A non-2xx response throws, with the message read off the error body — `{ error: 'text' }` and `{ error: { code, message } }` both work, the latter as `code: message`. A body naming neither falls back to `HTTP <status>`.
+
+```typescript
+// { "error": { "code": "plan_limit_reached", "message": "Upgrade to add more." } }
+// → Error: plan_limit_reached: Upgrade to add more.
+```
+
+Inside a tool handler the thrown message is what the MCP SDK returns to the client, so it is the whole answer the calling model acts on.
+
 ## Authentication
 
 `createMcpRouter` supports OAuth 2.0 Bearer token authentication via the `auth` option. Incoming MCP requests must include a valid `Authorization: Bearer <token>` header — invalid or missing tokens receive a `401 Unauthorized` response. The MCP lifecycle methods `initialize` and `tools/list` are exempt by default so clients can discover the server before authenticating (see [Public methods and discovery](#public-methods-and-discovery)).
@@ -592,6 +603,8 @@ Generic HTTP helper for use inside MCP tool handlers.
 - `options.headers` (`Record<string, string>`, optional) — Per-call header overrides; merged on top of context-injected headers
 
 **Returns:** `Promise<unknown>` — Parsed JSON response body
+
+**Throws:** `Error` on a non-2xx response, carrying the error body's message (see [Errors](#errors))
 
 ### `getIdentity<T>()`
 

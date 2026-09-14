@@ -142,6 +142,80 @@ describe('apiCall', () => {
     }
   });
 
+  /**
+   * REST APIs answer a failure in two shapes: `{ error: 'text' }` and a
+   * structured `{ error: { code, message } }`. The object one reached
+   * `new Error(...)` unread, so everything it carried arrived as
+   * `[object Object]` — and inside a tool handler that string is the whole
+   * answer the calling model gets.
+   */
+  describe('the message a failed call throws', () => {
+    const messageFor = async (body: unknown, status: number) => {
+      const { baseUrl, close } = await startRestServer((router) => {
+        router.get('/fail', (ctx) => {
+          ctx.status = status;
+          ctx.body = body;
+        });
+      });
+
+      try {
+        return await apiCall('GET', `${baseUrl}/fail`).then(
+          () => {
+            return 'apiCall resolved on a non-2xx response';
+          },
+          (error: Error) => {
+            return error.message;
+          }
+        );
+      } finally {
+        await close();
+      }
+    };
+
+    test('names the code and the message of a structured error', async () => {
+      const message = await messageFor(
+        {
+          error: {
+            code: 'plan_feature_not_included',
+            message: 'Guardrails are not included on the free plan.',
+          },
+        },
+        403
+      );
+
+      expect(message).toBe(
+        'plan_feature_not_included: Guardrails are not included on the free plan.'
+      );
+      expect(message).not.toContain('[object Object]');
+    });
+
+    test('reads a message that names no code', async () => {
+      await expect(
+        messageFor({ error: { message: 'Agent not found.' } }, 404)
+      ).resolves.toBe('Agent not found.');
+    });
+
+    test('reads a code that carries no message', async () => {
+      await expect(
+        messageFor({ error: { code: 'rate_limited' } }, 429)
+      ).resolves.toBe('rate_limited');
+    });
+
+    test('falls back to the status when the error object names neither', async () => {
+      await expect(
+        messageFor({ error: { details: { field: 'name' } } }, 422)
+      ).resolves.toBe('HTTP 422');
+    });
+
+    test('falls back to the status when the body is not an object', async () => {
+      await expect(messageFor(['nope'], 400)).resolves.toBe('HTTP 400');
+    });
+
+    test('falls back to the status when the error is an empty string', async () => {
+      await expect(messageFor({ error: '' }, 500)).resolves.toBe('HTTP 500');
+    });
+  });
+
   test('normalizes double slash when apiBaseUrl ends with a slash', async () => {
     const { baseUrl, close } = await startRestServer((router) => {
       router.get('/v1/data', (ctx) => {
