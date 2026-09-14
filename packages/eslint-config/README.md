@@ -32,6 +32,21 @@ import ttossEslintConfigRelay from '@ttoss/eslint-config/relay';
 export default [...ttossEslintConfig, ...ttossEslintConfigRelay];
 ```
 
+## TypeScript 7
+
+TypeScript 7 is the native compiler, and its npm package no longer exposes the
+JavaScript compiler API that `typescript-eslint` and `eslint-plugin-sonarjs`
+read the AST through. This config therefore depends on TypeScript 6 and pins the
+plugins that need that API to it, as the
+[side-by-side setup](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/#running-side-by-side-with-typescript-6.0)
+recommends.
+
+Nothing is required of the consumer: build with TypeScript 7 and lint with this
+config, and the two resolve independently. Projects still on TypeScript 6 share
+the single copy. Because linting parses with the TypeScript 6 API, syntax
+introduced after TypeScript 6.0 is not understood until `typescript-eslint`
+supports TypeScript 7 ([typescript-eslint#10940](https://github.com/typescript-eslint/typescript-eslint/issues/10940)).
+
 ## Rules
 
 ### Complexity, module sizes, and duplication
