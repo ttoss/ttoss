@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.28.1 (2026-09-14)
+
+### Bug Fixes
+
+- **eslint-config:** support TypeScript 7 ([#1237](https://github.com/ttoss/ttoss/issues/1237)) ([3b390c1](https://github.com/ttoss/ttoss/commit/3b390c165dc6b40548ab03e8042e6fea0a1625b2))
+- **theme:** give checkbox/radio icons a fixed size instead of min-content ([#1225](https://github.com/ttoss/ttoss/issues/1225)) ([46f61b2](https://github.com/ttoss/ttoss/commit/46f61b24719e796a9fb74174f32a8463ccbdd55d))
+
 # 1.28.0 (2026-08-31)
 
 ### Features
