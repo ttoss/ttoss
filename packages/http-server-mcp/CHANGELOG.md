@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.28.2](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.28.1...@ttoss/http-server-mcp@0.28.2) (2026-09-14)
+
+### Bug Fixes
+
+- **http-server-mcp:** read the message off a structured error body ([#1236](https://github.com/ttoss/ttoss/issues/1236)) ([9064b30](https://github.com/ttoss/ttoss/commit/9064b30e9b4c3748057d24b2bbbb51ec942e02b8))
+
 ## [0.28.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.28.0...@ttoss/http-server-mcp@0.28.1) (2026-09-13)
 
 ### Bug Fixes
