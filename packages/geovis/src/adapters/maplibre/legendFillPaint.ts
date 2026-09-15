@@ -32,9 +32,9 @@ export const cancelPendingStyleListenersForLayer = (
 };
 
 /**
- * Applies a paint property immediately when the map's style is loaded,
- * otherwise defers the assignment to the next `style.load` event. Centralised
- * here so all legend-driven paint mutations share one race-free entry point.
+ * Applies a paint property as soon as its layer is on the map, deferring to
+ * the next `styledata` event when it is not there yet. Centralised here so all
+ * legend-driven paint mutations share one race-free entry point.
  */
 export const setPaintWhenReady = (
   map: maplibregl.Map,
@@ -78,16 +78,15 @@ export const setPaintWhenReady = (
     map.on('styledata', onStyleData);
   };
 
-  if (map.isStyleLoaded()) {
-    const applied = apply();
-    if (!applied) applyWhenLayerAppears();
-    return;
-  }
-
-  map.once('style.load', () => {
-    const applied = apply();
-    if (!applied) applyWhenLayerAppears();
-  });
+  // No style-readiness gate: `apply` already returns `false` unless the layer
+  // is on the map, and a layer can only be there once the stylesheet parsed —
+  // so the layer check is the readiness check, and `styledata` (which fires
+  // repeatedly, style load included) is what waits for it. A gate on
+  // `isStyleLoaded()` would be both too strict (it also reports `false` while
+  // tiles are in flight) and parked on `style.load`, which never fires again
+  // after the first parse.
+  const applied = apply();
+  if (!applied) applyWhenLayerAppears();
 };
 
 /** Re-applies legend-driven polygon fill expressions for layers with active legends. */

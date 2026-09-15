@@ -505,6 +505,11 @@ describe('syncSourcesAndLayers — GeoJSON setData', () => {
   const mountAndFireLoad = () => {
     const map = makeMapMock();
     const setData = jest.fn();
+    let loadCb: (() => void) | undefined;
+    jest.mocked(map.on).mockImplementation((event, cb) => {
+      if (event === 'load') loadCb = cb as () => void;
+      return map as never;
+    });
     jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
       return map as never;
     });
@@ -521,6 +526,8 @@ describe('syncSourcesAndLayers — GeoJSON setData', () => {
       layers: [],
     };
     adapter.mount(makeContainer(), initialSpec, 'v');
+    // The stylesheet parsing that `update` requires before it touches the map.
+    loadCb?.();
     // Simulate source already registered on the map and expose setData mock.
     jest
       .mocked(map.getSource)
@@ -636,12 +643,14 @@ describe('setView — AI action camera control (applySetView)', () => {
   });
 });
 
-describe('update() — style not yet loaded defers sync to style.load', () => {
-  test('when the style is unchanged but isStyleLoaded() is false, sync is deferred and runs once style.load fires', () => {
+describe('update() — readiness is the parsed stylesheet, not loaded tiles', () => {
+  /** Mounts an adapter over a mock map, exposing the `load` handler unfired. */
+  const mountWithPendingLoad = () => {
     const map = makeMapMock();
-    let styleLoadCb: (() => void) | undefined;
-    jest.mocked(map.once).mockImplementation((event, cb) => {
-      if (event === 'style.load') styleLoadCb = cb as () => void;
+    let loadCb: (() => void) | undefined;
+    jest.mocked(map.on).mockImplementation((event, cb) => {
+      if (event === 'load') loadCb = cb as () => void;
+      return map as never;
     });
     jest.mocked(maplibregl.Map).mockImplementationOnce(() => {
       return map as never;
@@ -651,9 +660,16 @@ describe('update() — style not yet loaded defers sync to style.load', () => {
     const initialSpec = { ...makeSpec(), sources: [], layers: [] };
     adapter.mount(makeContainer(), initialSpec, 'v');
 
-    jest.mocked(map.isStyleLoaded).mockReturnValue(false);
-    adapter.update({
-      ...initialSpec,
+    const fireLoad = () => {
+      loadCb?.();
+    };
+
+    return { adapter, map, initialSpec, fireLoad };
+  };
+
+  const withPoints = (spec: ReturnType<typeof makeSpec>) => {
+    return {
+      ...spec,
       sources: [
         {
           id: 'points',
@@ -664,15 +680,65 @@ describe('update() — style not yet loaded defers sync to style.load', () => {
       layers: [
         { id: 'points-layer', sourceId: 'points', geometry: 'point' as const },
       ],
+    };
+  };
+
+  test('an update before the stylesheet parses is applied by the load handler, not queued', () => {
+    const { adapter, map, initialSpec, fireLoad } = mountWithPendingLoad();
+
+    adapter.update(withPoints(initialSpec));
+
+    // Nothing on the map yet, and nothing parked on `style.load` — that event
+    // fires once and would strand the update if it had already passed.
+    expect(map.addSource).not.toHaveBeenCalled();
+    expect(map.once).not.toHaveBeenCalledWith(
+      'style.load',
+      expect.any(Function)
+    );
+
+    // The load handler reads the newest spec out of the view state.
+    fireLoad();
+    expect(map.addSource).toHaveBeenCalledWith('points', expect.anything());
+  });
+
+  test('an update applies while tiles are still in flight', () => {
+    const { adapter, map, initialSpec, fireLoad } = mountWithPendingLoad();
+    fireLoad();
+    jest.mocked(map.addSource).mockClear();
+
+    // `isStyleLoaded()` reports the whole style — tiles included — so it is
+    // false whenever anything is loading. Adding sources and layers is safe
+    // regardless, and holding the update back is what used to lose it.
+    jest.mocked(map.isStyleLoaded).mockReturnValue(false);
+    adapter.update(withPoints(initialSpec));
+
+    expect(map.addSource).toHaveBeenCalledWith('points', expect.anything());
+    expect(map.addLayer).toHaveBeenCalled();
+  });
+
+  test('a basemap change still waits for the new stylesheet', () => {
+    const { adapter, map, initialSpec, fireLoad } = mountWithPendingLoad();
+    fireLoad();
+    jest.mocked(map.addSource).mockClear();
+
+    let styleLoadCb: (() => void) | undefined;
+    jest.mocked(map.once).mockImplementation((event, cb) => {
+      if (event === 'style.load') styleLoadCb = cb as () => void;
+      return map as never;
     });
 
-    // Deferred: nothing applied yet, but a style.load listener was registered.
-    expect(map.addSource).not.toHaveBeenCalled();
-    expect(styleLoadCb).toBeInstanceOf(Function);
+    adapter.update({
+      ...withPoints(initialSpec),
+      basemap: { styleUrl: 'https://example.com/other.json' },
+    });
 
-    // Once the style actually finishes loading, the deferred sync runs.
+    // `setStyle` throws the stylesheet away, so this one genuinely has to wait
+    // — and here `style.load` does fire again.
+    expect(map.setStyle).toHaveBeenCalled();
+    expect(map.addSource).not.toHaveBeenCalled();
+
     styleLoadCb?.();
-    expect(map.addSource).toHaveBeenCalled();
+    expect(map.addSource).toHaveBeenCalledWith('points', expect.anything());
   });
 });
 
