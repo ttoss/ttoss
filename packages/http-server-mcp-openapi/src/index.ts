@@ -8,6 +8,7 @@ export {
   buildPathFn,
   buildQueryFn,
   dereferenceSchema,
+  type QueryParamSerialization,
   resolveParameter,
   resolveSchema,
 } from './schema';

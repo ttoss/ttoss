@@ -100,6 +100,10 @@ export interface OperationSpec {
     in?: string;
     required?: boolean;
     description?: string;
+    /** Query serialisation style, e.g. `form` (default) or `deepObject`. */
+    style?: string;
+    /** Whether each value gets its own key. Defaults to `true` for `form`. */
+    explode?: boolean;
     schema?: {
       type?: string;
       items?: { type?: string };

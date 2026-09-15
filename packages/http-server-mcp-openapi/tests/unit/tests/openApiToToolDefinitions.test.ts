@@ -136,6 +136,16 @@ describe('openApiToToolDefinitions', () => {
       expect(qs).toBe('?limit=10&tags=a&tags=b&project_id=prj_1');
     });
 
+    test('serialises a deepObject param as bracketed keys', () => {
+      const qs = tool.query?.({
+        projectId: 'prj_1',
+        filters: { documentId: { $eq: 'doc_1' } },
+      });
+      expect(qs).toBe(
+        '?project_id=prj_1&filters%5BdocumentId%5D%5B%24eq%5D=doc_1'
+      );
+    });
+
     test('omits undefined and null query values', () => {
       const qs = tool.query?.({ projectId: 'prj_1', limit: undefined });
       expect(qs).toBe('?project_id=prj_1');

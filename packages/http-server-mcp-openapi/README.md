@@ -69,6 +69,11 @@ path-item one with the same `name`+`in`.
 Tool arguments are **camelCase** (`agentId`, `projectId`); the generated
 request path, query string, and body use the original **snake_case** names.
 
+Query params honour their declared `style` and `explode`. `form` (the default)
+repeats array values, `spaceDelimited`/`pipeDelimited` join them, and
+`deepObject` emits bracketed keys — including nested objects and arrays, so
+`{ documentId: { $eq: 'doc_1' } }` becomes `filters[documentId][$eq]=doc_1`.
+
 ## `registerOpenApiTools`
 
 | Field      | Description                                                                                                   |
