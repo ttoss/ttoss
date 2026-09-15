@@ -1,3 +1,4 @@
+import { withAdvisoryLock } from './advisoryLock';
 import type { Sequelize, SyncOptions } from './sequelize-typescript';
 
 export type SyncWithAdvisoryLockOptions = {
@@ -49,11 +50,6 @@ export type SyncWithAdvisoryLockOptions = {
  * instance runs the sync at a time; the others block until the holder finishes
  * and then run against the already-migrated schema (a no-op).
  *
- * The lock is acquired and released on a single dedicated connection — a naive
- * `sequelize.query()` lock/unlock pair can land on different pooled backends
- * and try to unlock a lock the current connection never held. The lock is
- * always released on both the success and failure paths.
- *
  * @example
  * ```ts
  * await syncWithAdvisoryLock({
@@ -69,44 +65,12 @@ export const syncWithAdvisoryLock = async ({
   sync,
   lockTimeoutMs,
 }: SyncWithAdvisoryLockOptions): Promise<void> => {
-  const connectionManager = sequelize.connectionManager;
-
-  const connection = (await connectionManager.getConnection({
-    type: 'write',
-  })) as {
-    query: (sql: string, values?: unknown[]) => Promise<unknown>;
-  };
-
-  const bounded =
-    typeof lockTimeoutMs === 'number' &&
-    Number.isInteger(lockTimeoutMs) &&
-    lockTimeoutMs > 0;
-
-  try {
-    if (bounded) {
-      // `lockTimeoutMs` is validated as a positive integer here, so inlining it
-      // is safe — SET does not accept bind parameters. If the lock is held
-      // beyond this, pg_advisory_lock below rejects with
-      // "canceling statement due to lock timeout".
-      await connection.query(`SET lock_timeout = ${lockTimeoutMs}`);
-    }
-
-    await connection.query('SELECT pg_advisory_lock($1)', [key]);
-
-    try {
+  await withAdvisoryLock({
+    sequelize,
+    key,
+    lockTimeoutMs,
+    fn: async () => {
       await sequelize.sync(sync);
-    } finally {
-      await connection.query('SELECT pg_advisory_unlock($1)', [key]);
-    }
-  } finally {
-    if (bounded) {
-      // Restore the default so the timeout does not leak onto later borrowers
-      // of this pooled connection. Best-effort: the connection may already be
-      // in an error state.
-      await connection.query('SET lock_timeout = 0').catch(() => {
-        return undefined;
-      });
-    }
-    connectionManager.releaseConnection(connection);
-  }
+    },
+  });
 };

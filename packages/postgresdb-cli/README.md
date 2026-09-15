@@ -71,6 +71,66 @@ Then run `pnpm sync -e Development` or `pnpm sync --alter -e Production` from th
 - `--alter`: Alter schema to match models (default: `false`)
 - `--environment, -e`: **(Required)** Specify environment to load `.env.<environment>` file
 
+### `migrate`
+
+Run the migrations a project exports, recorded in a ledger so only what is
+pending happens. `sync` creates missing tables and never alters an existing
+one, so a release that changes a populated table needs one of these instead.
+
+The project exports them from `src/migrations.ts` (or `--migrations-path`),
+built with `defineMigration` from [@ttoss/postgresdb](https://ttoss.dev/docs/modules/packages/postgresdb/),
+which documents how to write one and what the ledger records:
+
+```typescript
+// src/migrations.ts
+import { defineMigration } from '@ttoss/postgresdb';
+
+export const sync = async () => {
+  /* the project's own schema sync, reached as ctx.sync() */
+};
+
+export const migrations = [
+  defineMigration({
+    name: 'add-project-id',
+    up: async (ctx) => {
+      await ctx.addColumnIfMissing({
+        table: 'tasks',
+        column: 'project_id',
+        type: 'INTEGER',
+      });
+      await ctx.sync();
+      await ctx.setNotNull({ table: 'tasks', column: 'project_id' });
+    },
+  }),
+];
+```
+
+```bash
+pnpm dlx @ttoss/postgresdb-cli migrate -e Development status
+pnpm dlx @ttoss/postgresdb-cli migrate -e Development run --dry-run
+pnpm dlx @ttoss/postgresdb-cli migrate -e Development run
+```
+
+**Commands:**
+
+- `status`: Every migration and when it was applied. Exits `1` if the ledger holds a name nothing declares
+- `run [name...]`: Applies what is pending, or only the named ones. `--dry-run` reports and writes nothing
+- `baseline (<name...> | --all)`: Records migrations as applied without running them, for a database migrated before the ledger existed
+- `help`
+
+Flags a migration declares are passed straight through: `run --owner-email ana@acme.com`.
+A run missing a required one fails before any migration starts.
+
+**Options:**
+
+- `--migrations-path, -m`: File exporting `migrations` and, optionally, `sync` (default: `src/migrations.ts`)
+- `--tag`: Recorded with every migration this run applies, e.g. the release version
+- `--environment, -e`: **(Required)** Specify environment to load `.env.<environment>` file
+
+This command bundles the project's sources on every run, so it is the local
+development face. A deployed image carries `dist` rather than sources and calls
+`runMigrationsCli` from its own entrypoint instead.
+
 ### `erd`
 
 Generate an [Entity-Relationship Diagram](https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model) from your models:

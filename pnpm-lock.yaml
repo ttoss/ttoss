@@ -1829,6 +1829,9 @@ importers:
 
   packages/postgresdb-cli:
     dependencies:
+      '@ttoss/postgresdb':
+        specifier: workspace:^
+        version: link:../postgresdb
       commander:
         specifier: ^14.0.3
         version: 14.0.3
