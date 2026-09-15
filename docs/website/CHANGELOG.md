@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 9.0.1 (2026-09-15)
+
+**Note:** Version bump only for package @docs/website
+
 # 9.0.0 (2026-09-06)
 
 - feat(http-server-mcp)!: require a token for tools/list by default (#1221) ([912b2bd](https://github.com/ttoss/ttoss/commit/912b2bd1cce4da3bb4add64594dda40dbdd0802c)), closes [#1221](https://github.com/ttoss/ttoss/issues/1221)
