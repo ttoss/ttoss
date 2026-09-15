@@ -221,6 +221,43 @@ const buildVerifyToken = (
   };
 };
 
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+};
+
+const readText = (value: unknown): string | undefined => {
+  return typeof value === 'string' && value !== '' ? value : undefined;
+};
+
+/**
+ * The message an error body carries, across the two shapes REST APIs answer
+ * with: `{ error: 'text' }` and `{ error: { code?, message? } }`.
+ *
+ * The structured one is why this is read rather than taken: an object handed
+ * to `new Error()` renders as `[object Object]`, and inside a tool handler
+ * that string is the whole answer the calling model acts on.
+ */
+const errorBodyMessage = (body: unknown): string | undefined => {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+
+  const { error } = body;
+
+  if (!isRecord(error)) {
+    return readText(error);
+  }
+
+  const code = readText(error.code);
+  const message = readText(error.message);
+
+  if (message === undefined) {
+    return code;
+  }
+
+  return code === undefined ? message : `${code}: ${message}`;
+};
+
 /**
  * Options for a single `apiCall` request.
  */
@@ -337,13 +374,11 @@ export const apiCall = async (
   });
 
   if (!response.ok) {
-    const err = await response.json().catch(() => {
+    const errorBody = await response.json().catch(() => {
       return { error: response.statusText };
     });
 
-    throw new Error(
-      (err as { error?: string }).error || `HTTP ${response.status}`
-    );
+    throw new Error(errorBodyMessage(errorBody) ?? `HTTP ${response.status}`);
   }
 
   // 204/205 responses have no body.

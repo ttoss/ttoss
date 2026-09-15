@@ -27,6 +27,14 @@ export const testSpec: OpenApiSpec = {
             schema: { type: 'array', items: { type: 'string' } },
           },
           { $ref: '#/components/parameters/ProjectId' },
+          {
+            name: 'filters',
+            in: 'query',
+            required: false,
+            description: 'Structured filters',
+            style: 'deepObject',
+            schema: { type: 'object' },
+          },
         ],
       },
       post: {

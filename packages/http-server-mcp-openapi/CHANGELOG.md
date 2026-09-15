@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.14](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.2.13...@ttoss/http-server-mcp-openapi@0.2.14) (2026-09-15)
+
+### Bug Fixes
+
+- **http-server-mcp-openapi:** serialise query params by their OpenAPI style ([#1238](https://github.com/ttoss/ttoss/issues/1238)) ([0084265](https://github.com/ttoss/ttoss/commit/0084265a3c547054613a2c247fd15c2d361b34dd))
+
+## [0.2.13](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.2.12...@ttoss/http-server-mcp-openapi@0.2.13) (2026-09-14)
+
+**Note:** Version bump only for package @ttoss/http-server-mcp-openapi
+
 ## [0.2.12](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.2.11...@ttoss/http-server-mcp-openapi@0.2.12) (2026-09-13)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp-openapi
