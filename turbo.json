@@ -40,6 +40,10 @@
       "dependsOn": ["i18n", "build-config"],
       "outputs": []
     },
+    "@ttoss/auth-postgresdb#test": {
+      "dependsOn": ["i18n", "build-config", "build"],
+      "outputs": []
+    },
     "deploy": {
       "cache": false,
       "dependsOn": ["i18n", "build", "carlin#build", "^deploy"],
