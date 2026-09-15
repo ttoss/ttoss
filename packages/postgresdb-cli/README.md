@@ -118,6 +118,13 @@ pnpm dlx @ttoss/postgresdb-cli migrate -e Development run
 - `baseline (<name...> | --all)`: Records migrations as applied without running them, for a database migrated before the ledger existed
 - `help`
 
+Running against a database that already has tables while its ledger is empty is
+refused, because the runner cannot tell a new database from one migrated before
+the ledger existed. Use `baseline` when those migrations already ran, or
+`run --allow-unbaselined` when they genuinely never did. See the
+[@ttoss/postgresdb](https://ttoss.dev/docs/modules/packages/postgresdb/) docs
+for how a migration can answer that question for itself.
+
 Flags a migration declares are passed straight through: `run --owner-email ana@acme.com`.
 A run missing a required one fails before any migration starts.
 

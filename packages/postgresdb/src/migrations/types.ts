@@ -90,6 +90,25 @@ export type Migration = {
    * run.
    */
   up: (context: MigrationContext) => Promise<void>;
+  /**
+   * Whether the database already carries this migration's change, answered
+   * from the schema rather than from the ledger.
+   *
+   * It exists for the database migrated before the ledger did: with no row to
+   * go on, the runner cannot tell "never ran" from "ran before anything was
+   * recorded", and would re-run it. A migration that can recognise its own
+   * work — the column it adds is there, the column it drops is gone — says so
+   * here, and the runner records it instead of running it.
+   *
+   * Answer from the change itself, and only when the answer is certain: a
+   * probe that guesses wrong skips work that was never done. A migration that
+   * cannot tell (a data rewrite that leaves no trace) declares none, and the
+   * operator baselines it.
+   *
+   * The context is always in dry-run mode, so a write from here is reported
+   * rather than performed.
+   */
+  isApplied?: (context: MigrationContext) => Promise<boolean>;
 };
 
 /**

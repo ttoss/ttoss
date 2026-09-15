@@ -20,21 +20,44 @@ type LedgerArgs = {
 };
 
 /**
+ * Everything the ledger carries besides `name`, which is the primary key and
+ * so can only come from the CREATE. Each one is nullable or has a default, so
+ * adding it to a table that already holds rows always succeeds.
+ *
+ * A row here is how the ledger's own schema moves: see `ensureLedger`.
+ */
+const LEDGER_COLUMNS: [column: string, definition: string][] = [
+  ['applied_at', 'TIMESTAMPTZ NOT NULL DEFAULT now()'],
+  ['duration_ms', 'INTEGER NOT NULL DEFAULT 0'],
+  ['version', 'VARCHAR(64)'],
+  ['args', 'JSONB'],
+  ['baseline', 'BOOLEAN NOT NULL DEFAULT false'],
+];
+
+/**
  * The runner owns its ledger table rather than the application's models: it
  * has to exist before the first migration runs, which is usually before the
  * models describe anything at all.
+ *
+ * The columns are added separately rather than trusted to the CREATE, because
+ * `CREATE TABLE IF NOT EXISTS` does nothing at all to a table that already
+ * exists — the same reason the migrations this runs exist in the first place.
+ * Without this, a release that gave the ledger a new column would leave every
+ * older deployment reading a column that is not there, and the runner would
+ * fail before it could migrate anything.
  */
 const ensureLedger = async ({ client, table }: LedgerArgs): Promise<void> => {
+  const name = quoteIdentifier(table);
+
   await client.query(
-    `CREATE TABLE IF NOT EXISTS ${quoteIdentifier(table)} (
-       "name"        VARCHAR(255) PRIMARY KEY,
-       "applied_at"  TIMESTAMPTZ  NOT NULL DEFAULT now(),
-       "duration_ms" INTEGER      NOT NULL DEFAULT 0,
-       "version"     VARCHAR(64),
-       "args"        JSONB,
-       "baseline"    BOOLEAN      NOT NULL DEFAULT false
-     )`
+    `CREATE TABLE IF NOT EXISTS ${name} ("name" VARCHAR(255) PRIMARY KEY)`
   );
+
+  for (const [column, definition] of LEDGER_COLUMNS) {
+    await client.query(
+      `ALTER TABLE ${name} ADD COLUMN IF NOT EXISTS ${quoteIdentifier(column)} ${definition}`
+    );
+  }
 };
 
 export const readLedger = async ({
@@ -90,4 +113,28 @@ export const recordMigration = async (
       ],
     }
   );
+};
+
+/**
+ * Whether the database holds anything besides the ledger itself.
+ *
+ * It is how the runner tells a database that predates the ledger from one that
+ * is genuinely new: an empty ledger beside a populated schema means the
+ * migrations may well have run before anything was recorded.
+ */
+export const hasApplicationTables = async ({
+  client,
+  table,
+}: LedgerArgs): Promise<boolean> => {
+  const rows = await select<{ count: string }>({
+    client,
+    sql: `SELECT count(*)::text AS count
+            FROM information_schema.tables
+           WHERE table_schema = 'public'
+             AND table_type = 'BASE TABLE'
+             AND table_name <> $1`,
+    values: [table],
+  });
+
+  return Number(rows[0]?.count ?? 0) > 0;
 };

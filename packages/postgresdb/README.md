@@ -277,6 +277,11 @@ throws leaves no row and is retried from the top on the next run, so every
 migration must be idempotent as well: guard with `tableExists` and
 `columnExists`, and prefer the `IF NOT EXISTS` helpers.
 
+The table reconciles its own columns on every read, adding any this version
+expects that an older one did not create. It has to: `CREATE TABLE IF NOT
+EXISTS` does nothing whatever to a table that already exists, which is the same
+reason the migrations it records have to exist at all.
+
 Runs are serialized across instances with the same advisory lock mechanism as
 `syncWithAdvisoryLock`, on a key of their own. A migration that calls
 `ctx.sync()` reaches your `syncWithAdvisoryLock` on another connection, so the
@@ -286,19 +291,68 @@ two keys must differ — the defaults already do.
 run leaves the ledger holding a name nothing declares, and the runner then
 refuses to run rather than silently skipping it.
 
-### Baselining a database migrated before the ledger
+### Adopting the ledger on a database that predates it
 
-A database that was migrated by hand already has the schema, so running those
-migrations again is at best wasted work. `baseline` records them as applied
-without running anything:
+A database migrated by hand already has the schema, but no ledger to say so.
+An empty ledger beside a populated schema is genuinely ambiguous — the database
+could be new, or it could be one that was migrated before anything was
+recorded — and guessing "new" re-runs history. So the runner does not guess.
 
-```bash
-migrate baseline --all              # every declared migration
-migrate baseline add-project-id     # or just the ones already applied
+**It refuses**, naming what it cannot decide:
+
+```
+This database already holds tables but its migration ledger is empty, so the
+runner cannot tell a new database from one migrated before the ledger existed.
+If these migrations already ran against it, record them with `baseline` (or
+`baseline --all`). If they genuinely never ran, re-run with --allow-unbaselined.
 ```
 
-Run it once per environment, as a step of the release that introduces the
-ledger. It writes to the ledger only; it never touches the schema.
+There are three ways out, and the first is usually right:
+
+```bash
+migrate baseline --all           # they already ran: record them, run nothing
+migrate baseline add-project-id  # or name just the ones that already ran
+migrate run --allow-unbaselined  # they never ran: this database only looks old
+```
+
+`baseline` writes to the ledger only and never touches the schema. Run it once
+per environment, as a step of the release that introduces the ledger.
+
+The guard is narrow on purpose. It fires only when the ledger is **completely**
+empty, so a later release that adds a migration to an adopted database needs
+nothing; and an empty database trips nothing, because there is no history it
+could be hiding.
+
+#### Letting a migration answer for itself
+
+The other way out is for the migration to recognise its own work, from the
+schema rather than from the ledger. A migration that can do that declares
+`isApplied`, and the runner records it instead of running it:
+
+```typescript
+defineMigration({
+  name: 'add-project-id',
+  up: async (ctx) => {
+    await ctx.addColumnIfMissing({
+      table: 'tasks',
+      column: 'project_id',
+      type: 'INTEGER',
+    });
+  },
+  // The change is its own evidence: if the column is there, this has run.
+  isApplied: async (ctx) => {
+    return ctx.columnExists({ table: 'tasks', column: 'project_id' });
+  },
+});
+```
+
+A probe that answers — either way — resolves the ambiguity, so it also takes
+that migration out of what the guard refuses. The context it receives is always
+in dry-run mode, so a write attempted from a probe is reported, never performed.
+
+Only declare one when the answer is certain: a probe that guesses wrong skips
+work that was never done. A migration that leaves no trace to recognise — a
+pure data rewrite — declares none, and the operator baselines it.
 
 ### Migration context
 

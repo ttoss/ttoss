@@ -33,6 +33,25 @@ const quiet = () => {
   return undefined;
 };
 
+const ctxCount = async (sql: string): Promise<number> => {
+  const result = await rows<{ count: string }>(sql);
+
+  return Number(result[0]?.count ?? 0);
+};
+
+/**
+ * The fixture database below always holds a `widgets` table, which is exactly
+ * what the unbaselined guard refuses to run against. These tests are about
+ * everything else, and their premise is that the migrations have not run
+ * against that fixture, so they say so once here. The guard has tests of its
+ * own.
+ */
+const runnerFor = (
+  options: Parameters<typeof createMigrationRunner>[0]
+): ReturnType<typeof createMigrationRunner> => {
+  return createMigrationRunner({ allowUnbaselined: true, ...options });
+};
+
 beforeAll(async () => {
   postgresContainer = await new PostgreSqlContainer(
     'pgvector/pgvector:0.8.1-pg18-trixie'
@@ -74,7 +93,7 @@ describe('createMigrationRunner', () => {
   test('applies pending migrations in declaration order and records each one', async () => {
     const order: string[] = [];
 
-    const runner = createMigrationRunner({
+    const runner = runnerFor({
       version: 'v1.2.3',
       log: quiet,
       migrations: [
@@ -112,6 +131,7 @@ describe('createMigrationRunner', () => {
       expect(first).toEqual({
         applied: ['add-color', 'paint-widgets'],
         skipped: [],
+        detected: [],
       });
       expect(order).toEqual(['add-color', 'paint-widgets']);
 
@@ -147,6 +167,7 @@ describe('createMigrationRunner', () => {
       expect(second).toEqual({
         applied: [],
         skipped: ['add-color', 'paint-widgets'],
+        detected: [],
       });
       expect(order).toHaveLength(2);
 
@@ -171,7 +192,7 @@ describe('createMigrationRunner', () => {
       return undefined;
     });
 
-    const runner = createMigrationRunner({
+    const runner = runnerFor({
       sync,
       log: (message) => {
         said.push(message);
@@ -232,7 +253,7 @@ describe('createMigrationRunner', () => {
   test('a migration that throws leaves no row, and the next run retries it', async () => {
     let attempts = 0;
 
-    const runner = createMigrationRunner({
+    const runner = runnerFor({
       log: quiet,
       migrations: [
         defineMigration({
@@ -261,6 +282,7 @@ describe('createMigrationRunner', () => {
       const retry = await runner.run();
 
       expect(retry.applied).toEqual(['flaky', 'after-flaky']);
+      expect(retry.detected).toEqual([]);
       expect(attempts).toBe(2);
       expect(
         (await ledgerRows()).map((row) => {
@@ -277,7 +299,7 @@ describe('createMigrationRunner', () => {
       return undefined;
     });
 
-    const runner = createMigrationRunner({
+    const runner = runnerFor({
       log: quiet,
       migrations: [
         defineMigration({ name: 'one', up }),
@@ -314,6 +336,7 @@ describe('createMigrationRunner', () => {
       expect(await runner.run()).toEqual({
         applied: [],
         skipped: ['one', 'two', 'three'],
+        detected: [],
       });
     } finally {
       await runner.close();
@@ -321,7 +344,7 @@ describe('createMigrationRunner', () => {
   });
 
   test('refuses to run while the ledger holds a name nothing declares', async () => {
-    const seeded = createMigrationRunner({
+    const seeded = runnerFor({
       log: quiet,
       migrations: [
         defineMigration({
@@ -338,7 +361,7 @@ describe('createMigrationRunner', () => {
     const up = jest.fn(async () => {
       return undefined;
     });
-    const runner = createMigrationRunner({
+    const runner = runnerFor({
       log: quiet,
       migrations: [defineMigration({ name: 'new-name', up })],
     });
@@ -366,7 +389,7 @@ describe('createMigrationRunner', () => {
       return undefined;
     });
 
-    const runner = createMigrationRunner({
+    const runner = runnerFor({
       log: quiet,
       migrations: [
         defineMigration({ name: 'first', up }),
@@ -395,6 +418,7 @@ describe('createMigrationRunner', () => {
       expect(await runner.run({ names: ['first'] })).toEqual({
         applied: ['first'],
         skipped: [],
+        detected: [],
       });
     } finally {
       await runner.close();
@@ -412,7 +436,7 @@ describe('createMigrationRunner', () => {
       });
     };
 
-    const runner = createMigrationRunner({
+    const runner = runnerFor({
       log: quiet,
       migrations: [migration('a'), migration('b'), migration('c')],
     });
@@ -426,12 +450,14 @@ describe('createMigrationRunner', () => {
       expect(await runner.run({ names: ['c', 'a'] })).toEqual({
         applied: ['a', 'c'],
         skipped: [],
+        detected: [],
       });
       expect(ran).toEqual(['a', 'c']);
 
       expect(await runner.run()).toEqual({
         applied: ['b'],
         skipped: ['a', 'c'],
+        detected: [],
       });
     } finally {
       await runner.close();
@@ -445,7 +471,7 @@ describe('createMigrationRunner', () => {
       );
     });
 
-    const runner = createMigrationRunner({
+    const runner = runnerFor({
       sync,
       log: quiet,
       migrations: [
@@ -516,7 +542,7 @@ describe('createMigrationRunner', () => {
   });
 
   test('a migration that calls sync() without one configured fails clearly', async () => {
-    const runner = createMigrationRunner({
+    const runner = runnerFor({
       log: quiet,
       migrations: [
         defineMigration({
@@ -537,7 +563,7 @@ describe('createMigrationRunner', () => {
   });
 
   test('uses the ledger table name and connection it is given', async () => {
-    const runner = createMigrationRunner({
+    const runner = runnerFor({
       sequelize: verify as never,
       ledgerTable: 'my_ledger',
       log: quiet,
@@ -587,6 +613,313 @@ describe('createMigrationRunner', () => {
   });
 });
 
+describe('the ledger table itself', () => {
+  test('gains columns a newer runner expects, which CREATE TABLE IF NOT EXISTS cannot add', async () => {
+    // The shape an older release of the runner would have left behind.
+    await verify.query('DROP TABLE IF EXISTS schema_migrations');
+    await verify.query(
+      `CREATE TABLE schema_migrations (
+         name VARCHAR(255) PRIMARY KEY,
+         applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
+       )`
+    );
+    await verify.query(
+      `INSERT INTO schema_migrations (name) VALUES ('create-widgets')`
+    );
+
+    const up = jest.fn(async () => {
+      return undefined;
+    });
+
+    const runner = runnerFor({
+      log: quiet,
+      migrations: [
+        defineMigration({ name: 'create-widgets', up }),
+        defineMigration({ name: 'later', up }),
+      ],
+    });
+
+    try {
+      const report = await runner.status();
+
+      // The row written before the columns existed still reads, defaulted.
+      expect(report.unknown).toEqual([]);
+      expect(report.migrations[0].applied).toMatchObject({
+        name: 'create-widgets',
+        duration_ms: 0,
+        version: null,
+        args: null,
+        baseline: false,
+      });
+      expect(report.migrations[1].applied).toBeNull();
+
+      // And the runner works from there: the recorded one is skipped.
+      expect(await runner.run()).toEqual({
+        applied: ['later'],
+        skipped: ['create-widgets'],
+        detected: [],
+      });
+      expect(up).toHaveBeenCalledTimes(1);
+    } finally {
+      await runner.close();
+    }
+
+    const columns = await rows<{ column_name: string }>(
+      `SELECT column_name FROM information_schema.columns
+        WHERE table_name = 'schema_migrations' ORDER BY column_name`
+    );
+    expect(
+      columns.map((row) => {
+        return row.column_name;
+      })
+    ).toEqual([
+      'applied_at',
+      'args',
+      'baseline',
+      'duration_ms',
+      'name',
+      'version',
+    ]);
+  });
+});
+
+describe('a database migrated before the ledger existed', () => {
+  const painted = defineMigration({
+    name: 'add-color',
+    up: async (ctx) => {
+      await ctx.addColumnIfMissing({
+        table: 'widgets',
+        column: 'color',
+        type: 'TEXT',
+      });
+    },
+    isApplied: async (ctx) => {
+      return ctx.columnExists({ table: 'widgets', column: 'color' });
+    },
+  });
+
+  test('refuses to run when nothing can tell it whether the migrations already ran', async () => {
+    const up = jest.fn(async () => {
+      return undefined;
+    });
+    const said: string[] = [];
+
+    // `widgets` exists (see beforeEach) and the ledger is empty: either this
+    // database is new, or it was migrated before the ledger.
+    const runner = createMigrationRunner({
+      log: (message) => {
+        said.push(message);
+      },
+      migrations: [defineMigration({ name: 'opaque', up })],
+    });
+
+    try {
+      await expect(runner.run()).rejects.toThrow(/ledger is empty/);
+      expect(up).not.toHaveBeenCalled();
+      expect(await ledgerRows()).toEqual([]);
+      expect(said).toContain(
+        'opaque: pending, and cannot recognise its own work'
+      );
+
+      // Baselining resolves it, and so does asserting the database is new.
+      await runner.baseline({ all: true });
+      expect(await runner.run()).toEqual({
+        applied: [],
+        skipped: ['opaque'],
+        detected: [],
+      });
+      expect(up).not.toHaveBeenCalled();
+    } finally {
+      await runner.close();
+    }
+  });
+
+  test('--allow-unbaselined is the operator asserting the database is new', async () => {
+    const up = jest.fn(async () => {
+      return undefined;
+    });
+
+    const runner = createMigrationRunner({
+      log: quiet,
+      migrations: [defineMigration({ name: 'opaque', up })],
+    });
+
+    try {
+      expect(await runner.run({ allowUnbaselined: true })).toEqual({
+        applied: ['opaque'],
+        skipped: [],
+        detected: [],
+      });
+      expect(up).toHaveBeenCalledTimes(1);
+    } finally {
+      await runner.close();
+    }
+  });
+
+  test('a migration that recognises its own work is recorded, not run', async () => {
+    // The column is already there, as it would be on a hand-migrated database.
+    await verify.query('ALTER TABLE widgets ADD COLUMN color TEXT');
+
+    const said: string[] = [];
+    const runner = createMigrationRunner({
+      version: 'v9',
+      log: (message) => {
+        said.push(message);
+      },
+      migrations: [painted],
+    });
+
+    try {
+      const result = await runner.run();
+
+      expect(result).toEqual({
+        applied: [],
+        skipped: [],
+        detected: ['add-color'],
+      });
+      expect(said).toContain(
+        'add-color: already applied to this database, recorded without running'
+      );
+
+      const ledger = await ledgerRows();
+      expect(ledger).toEqual([
+        { name: 'add-color', version: 'v9', args: null, baseline: true },
+      ]);
+
+      // And it stays recorded rather than being re-probed into a second row.
+      expect(await runner.run()).toEqual({
+        applied: [],
+        skipped: ['add-color'],
+        detected: [],
+      });
+    } finally {
+      await runner.close();
+    }
+  });
+
+  test('a probe that says no lets the migration run, guard and all', async () => {
+    const runner = createMigrationRunner({
+      log: quiet,
+      migrations: [painted],
+    });
+
+    try {
+      // `widgets` exists and the ledger is empty, but the probe answers from
+      // the schema, so there is nothing ambiguous for the guard to refuse.
+      expect(await runner.run()).toEqual({
+        applied: ['add-color'],
+        skipped: [],
+        detected: [],
+      });
+      expect(
+        await rows<{ column_name: string }>(
+          `SELECT column_name FROM information_schema.columns
+            WHERE table_name = 'widgets' AND column_name = 'color'`
+        )
+      ).toHaveLength(1);
+    } finally {
+      await runner.close();
+    }
+  });
+
+  test('a probe cannot write, and a dry run records nothing it detected', async () => {
+    await verify.query('ALTER TABLE widgets ADD COLUMN color TEXT');
+
+    const said: string[] = [];
+    const runner = createMigrationRunner({
+      log: (message) => {
+        said.push(message);
+      },
+      migrations: [
+        defineMigration({
+          name: 'add-color',
+          up: async () => {
+            return undefined;
+          },
+          isApplied: async (ctx) => {
+            // Whatever a probe attempts, the context is in dry-run mode.
+            await ctx.run({ sql: `DELETE FROM widgets` });
+
+            return ctx.columnExists({ table: 'widgets', column: 'color' });
+          },
+        }),
+      ],
+    });
+
+    try {
+      const result = await runner.run({ dryRun: true });
+
+      expect(result.detected).toEqual(['add-color']);
+      expect(said).toContain('add-color: would run DELETE FROM widgets');
+      // The probe's write never happened.
+      expect(
+        await ctxCount('SELECT count(*)::text AS count FROM widgets')
+      ).toBe(2);
+      // Nor did the dry run record what it detected.
+      expect(await ledgerRows()).toEqual([]);
+    } finally {
+      await runner.close();
+    }
+  });
+
+  test('the guard only applies to an empty ledger, not to every later release', async () => {
+    const up = jest.fn(async () => {
+      return undefined;
+    });
+
+    const first = createMigrationRunner({
+      log: quiet,
+      allowUnbaselined: true,
+      migrations: [defineMigration({ name: 'one', up })],
+    });
+    await first.run();
+    await first.close();
+
+    // The ledger is no longer empty, so a release that adds a migration needs
+    // no baseline and no override.
+    const second = createMigrationRunner({
+      log: quiet,
+      migrations: [
+        defineMigration({ name: 'one', up }),
+        defineMigration({ name: 'two', up }),
+      ],
+    });
+
+    try {
+      expect(await second.run()).toEqual({
+        applied: ['two'],
+        skipped: ['one'],
+        detected: [],
+      });
+    } finally {
+      await second.close();
+    }
+  });
+
+  test('an empty database needs no baseline, because nothing could have run', async () => {
+    await verify.query('DROP TABLE widgets');
+
+    const up = jest.fn(async () => {
+      return undefined;
+    });
+    const runner = createMigrationRunner({
+      log: quiet,
+      migrations: [defineMigration({ name: 'opaque', up })],
+    });
+
+    try {
+      expect(await runner.run()).toEqual({
+        applied: ['opaque'],
+        skipped: [],
+        detected: [],
+      });
+      expect(up).toHaveBeenCalledTimes(1);
+    } finally {
+      await runner.close();
+    }
+  });
+});
+
 describe('parseArgv', () => {
   test('separates the command, positionals and flags', () => {
     expect(
@@ -626,6 +959,8 @@ describe('runMigrationsCli', () => {
     return {
       out,
       err,
+      // Same fixture premise as `runnerFor` above.
+      allowUnbaselined: true,
       print: (message: string) => {
         out.push(message);
       },

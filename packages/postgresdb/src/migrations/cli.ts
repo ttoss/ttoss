@@ -68,6 +68,8 @@ const usage = (args: { bin: string; migrations: Migration[] }): string => {
     '  status                          Every migration and when it was applied.',
     '  run [name...] [--dry-run]       Apply what is pending, or only the named ones.',
     '                                  --dry-run reports and writes nothing.',
+    '                                  --allow-unbaselined runs against a populated',
+    '                                  database whose ledger is empty.',
     '  baseline (<name...> | --all)    Record migrations as applied without running',
     '                                  them, for a database migrated before the ledger.',
     '  help',
@@ -138,9 +140,20 @@ const runCommand = async (params: {
 }): Promise<number> => {
   const { runner, names, flags, log } = params;
 
-  const { 'dry-run': dryRun, ...args } = flags;
+  const {
+    'dry-run': dryRun,
+    'allow-unbaselined': allowUnbaselined,
+    ...args
+  } = flags;
 
-  const result = await runner.run({ names, dryRun: dryRun === true, args });
+  const result = await runner.run({
+    names,
+    dryRun: dryRun === true,
+    // Spread rather than passed outright: the flag can only turn the guard
+    // off, never back on over a runner that already defaults it off.
+    ...(allowUnbaselined === true ? { allowUnbaselined: true } : {}),
+    args,
+  });
 
   for (const name of result.skipped) {
     log(`${name}: already applied, skipped`);
