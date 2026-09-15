@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.1.5 (2026-09-15)
+
+**Note:** Version bump only for package @ttoss/auth-postgresdb
+
 ## 0.1.4 (2026-09-06)
 
 **Note:** Version bump only for package @ttoss/auth-postgresdb

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.3.0 (2026-09-15)
+
+### Features
+
+- **postgresdb:** add ledger-backed migrations and a migrate CLI command ([#1240](https://github.com/ttoss/ttoss/issues/1240)) ([bced70d](https://github.com/ttoss/ttoss/commit/bced70dfc2c1940994a565251d57e6a31bf72f4f))
+
 ## 0.2.18 (2026-08-31)
 
 **Note:** Version bump only for package @ttoss/postgresdb-cli
