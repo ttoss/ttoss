@@ -160,6 +160,8 @@ export const resolveParameter = (
   in?: string;
   required?: boolean;
   description?: string;
+  style?: string;
+  explode?: boolean;
   schema?: {
     type?: string;
     items?: { type?: string };
@@ -191,28 +193,161 @@ export const buildPathFn = (
   };
 };
 
+/** Query parameter with the OpenAPI serialisation rules declared for it. */
+export type QueryParamSerialization = {
+  name: string;
+  camelName: string;
+  /** OpenAPI `style` (`form`, `deepObject`, `spaceDelimited`, `pipeDelimited`). */
+  style?: string;
+  /** OpenAPI `explode`. Defaults to `true` for `form`, `false` otherwise. */
+  explode?: boolean;
+};
+
+const NON_EXPLODED_DELIMITERS: Record<string, string> = {
+  form: ',',
+  spaceDelimited: ' ',
+  pipeDelimited: '|',
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+};
+
+/**
+ * Appends a `deepObject` value as bracketed keys — `filters[documentId][$eq]`.
+ * OpenAPI only defines one level, but the APIs that ask for `deepObject`
+ * (Strapi, Directus) nest, so nested objects and arrays recurse instead of
+ * being stringified into `[object Object]`.
+ */
+const appendDeepObject = (args: {
+  search: URLSearchParams;
+  key: string;
+  value: unknown;
+}): void => {
+  if (args.value === undefined || args.value === null) return;
+
+  if (Array.isArray(args.value)) {
+    for (const [index, item] of args.value.entries()) {
+      appendDeepObject({
+        search: args.search,
+        key: `${args.key}[${index}]`,
+        value: item,
+      });
+    }
+    return;
+  }
+
+  if (isRecord(args.value)) {
+    for (const [property, propertyValue] of Object.entries(args.value)) {
+      appendDeepObject({
+        search: args.search,
+        key: `${args.key}[${property}]`,
+        value: propertyValue,
+      });
+    }
+    return;
+  }
+
+  args.search.append(args.key, String(args.value));
+};
+
+const appendArrayValue = (args: {
+  search: URLSearchParams;
+  name: string;
+  value: unknown[];
+  explode: boolean;
+  delimiter: string;
+}): void => {
+  if (args.explode) {
+    for (const item of args.value) {
+      args.search.append(args.name, String(item));
+    }
+    return;
+  }
+  args.search.append(args.name, args.value.map(String).join(args.delimiter));
+};
+
+const appendObjectValue = (args: {
+  search: URLSearchParams;
+  name: string;
+  value: Record<string, unknown>;
+  explode: boolean;
+  delimiter: string;
+}): void => {
+  const entries = Object.entries(args.value).filter(([, entryValue]) => {
+    return entryValue !== undefined && entryValue !== null;
+  });
+
+  if (args.explode) {
+    for (const [property, entryValue] of entries) {
+      args.search.append(property, String(entryValue));
+    }
+    return;
+  }
+
+  args.search.append(
+    args.name,
+    entries
+      .flatMap(([property, entryValue]) => {
+        return [property, String(entryValue)];
+      })
+      .join(args.delimiter)
+  );
+};
+
+const appendQueryValue = (args: {
+  search: URLSearchParams;
+  param: QueryParamSerialization;
+  value: unknown;
+}): void => {
+  const style = args.param.style ?? 'form';
+
+  if (style === 'deepObject') {
+    appendDeepObject({
+      search: args.search,
+      key: args.param.name,
+      value: args.value,
+    });
+    return;
+  }
+
+  const serialization = {
+    search: args.search,
+    name: args.param.name,
+    // Per OpenAPI, `explode` defaults to true only for `form`.
+    explode: args.param.explode ?? style === 'form',
+    delimiter: NON_EXPLODED_DELIMITERS[style] ?? ',',
+  };
+
+  if (Array.isArray(args.value)) {
+    appendArrayValue({ ...serialization, value: args.value });
+    return;
+  }
+
+  if (isRecord(args.value)) {
+    appendObjectValue({ ...serialization, value: args.value });
+    return;
+  }
+
+  args.search.append(args.param.name, String(args.value));
+};
+
 /**
  * Builds a function that serialises query params into a query string
- * (including the leading `?`). Returns `undefined` when the op has no query
- * params. Array values are appended once per element.
+ * (including the leading `?`), honouring each param's OpenAPI `style` and
+ * `explode`. Returns `undefined` when the op has no query params.
  */
 export const buildQueryFn = (
-  queryParams: Array<{ name: string; camelName: string }>
+  queryParams: QueryParamSerialization[]
 ): ((args: Record<string, unknown>) => string) | undefined => {
   if (queryParams.length === 0) return undefined;
 
   return (args: Record<string, unknown>) => {
     const search = new URLSearchParams();
-    for (const { name, camelName } of queryParams) {
-      const value = args[camelName];
+    for (const param of queryParams) {
+      const value = args[param.camelName];
       if (value === undefined || value === null) continue;
-      if (Array.isArray(value)) {
-        for (const item of value) {
-          search.append(name, String(item));
-        }
-      } else {
-        search.append(name, String(value));
-      }
+      appendQueryValue({ search, param, value });
     }
     const qs = search.toString();
     return qs ? `?${qs}` : '';

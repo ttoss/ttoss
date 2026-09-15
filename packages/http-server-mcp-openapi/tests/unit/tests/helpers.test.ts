@@ -214,6 +214,94 @@ describe('buildQueryFn', () => {
     const fn = buildQueryFn([{ name: 'a', camelName: 'a' }]);
     expect(fn?.({})).toBe('');
   });
+
+  describe('style: deepObject', () => {
+    const fn = buildQueryFn([
+      { name: 'filters', camelName: 'filters', style: 'deepObject' },
+    ]);
+
+    test('serialises nested keys as brackets', () => {
+      expect(fn?.({ filters: { documentId: { $eq: 'doc_1' } } })).toBe(
+        '?filters%5BdocumentId%5D%5B%24eq%5D=doc_1'
+      );
+    });
+
+    test('indexes array entries', () => {
+      expect(fn?.({ filters: { $or: [{ a: 1 }, { a: 2 }] } })).toBe(
+        '?filters%5B%24or%5D%5B0%5D%5Ba%5D=1&filters%5B%24or%5D%5B1%5D%5Ba%5D=2'
+      );
+    });
+
+    test('skips nested undefined and null values', () => {
+      expect(fn?.({ filters: { a: undefined, b: null, c: 'kept' } })).toBe(
+        '?filters%5Bc%5D=kept'
+      );
+    });
+
+    test('appends a primitive value under the param name', () => {
+      expect(fn?.({ filters: 'raw' })).toBe('?filters=raw');
+    });
+  });
+
+  describe('style: form', () => {
+    test('explodes an object into one key per property', () => {
+      const fn = buildQueryFn([{ name: 'page', camelName: 'page' }]);
+      expect(fn?.({ page: { size: 10, number: 2, missing: null } })).toBe(
+        '?size=10&number=2'
+      );
+    });
+
+    test('joins an unexploded object into name=key,value pairs', () => {
+      const fn = buildQueryFn([
+        { name: 'page', camelName: 'page', explode: false },
+      ]);
+      expect(fn?.({ page: { size: 10, number: 2 } })).toBe(
+        '?page=size%2C10%2Cnumber%2C2'
+      );
+    });
+
+    test('joins an unexploded array with commas', () => {
+      const fn = buildQueryFn([
+        { name: 'tags', camelName: 'tags', explode: false },
+      ]);
+      expect(fn?.({ tags: ['a', 'b'] })).toBe('?tags=a%2Cb');
+    });
+  });
+
+  describe('delimited styles', () => {
+    test('pipeDelimited joins array values with a pipe', () => {
+      const fn = buildQueryFn([
+        { name: 'tags', camelName: 'tags', style: 'pipeDelimited' },
+      ]);
+      expect(fn?.({ tags: ['a', 'b'] })).toBe('?tags=a%7Cb');
+    });
+
+    test('spaceDelimited joins array values with a space', () => {
+      const fn = buildQueryFn([
+        { name: 'tags', camelName: 'tags', style: 'spaceDelimited' },
+      ]);
+      expect(fn?.({ tags: ['a', 'b'] })).toBe('?tags=a+b');
+    });
+
+    test('explodes a delimited style when explode is set', () => {
+      const fn = buildQueryFn([
+        {
+          name: 'tags',
+          camelName: 'tags',
+          style: 'pipeDelimited',
+          explode: true,
+        },
+      ]);
+      expect(fn?.({ tags: ['a', 'b'] })).toBe('?tags=a&tags=b');
+    });
+
+    test('falls back to commas for an unknown style', () => {
+      const fn = buildQueryFn([
+        { name: 'tags', camelName: 'tags', style: 'unknown' },
+      ]);
+      expect(fn?.({ tags: ['a', 'b'] })).toBe('?tags=a%2Cb');
+    });
+  });
 });
 
 describe('path param without a name', () => {

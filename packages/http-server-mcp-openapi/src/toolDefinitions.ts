@@ -204,6 +204,8 @@ export const extractQueryParams = (args: {
   description: string;
   required: boolean;
   type: string;
+  style?: string;
+  explode?: boolean;
 }> => {
   const params = (args.parameters || [])
     .map((p) => {
@@ -219,6 +221,8 @@ export const extractQueryParams = (args: {
         description: p.description || '',
         required: p.required || false,
         type: p.schema?.type || 'string',
+        style: p.style,
+        explode: p.explode,
       };
     });
   return dedupeByName(params);
