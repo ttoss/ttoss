@@ -66,6 +66,18 @@ interface ViewState {
   style: MapLibreStyle;
   fitBbox: GeoJSONBoundingBox | null;
   detachFit: (() => void) | null;
+  /**
+   * Whether the map's stylesheet has been parsed, which is the only thing
+   * `addSource`/`addLayer` require (MapLibre's `_checkLoaded` tests exactly
+   * that). Set from the `load` handler that owns the first sync, and cleared
+   * whenever `setStyle` replaces the stylesheet.
+   *
+   * Deliberately NOT `map.isStyleLoaded()`: that reports `style.loaded()`,
+   * which is also `false` while any tile is in flight — so a spec update that
+   * arrives while the basemap is still fetching tiles would be held back even
+   * though applying it right then is safe.
+   */
+  styleReady: boolean;
 }
 
 type ViewMap = Map<string, ViewState>;
@@ -325,14 +337,20 @@ const mountView = (
     style,
     fitBbox: null,
     detachFit: null,
+    styleReady: false,
   };
   state.views.set(viewId, viewState);
   // Stage 2: attaches the async auto-fit-to-data correction (see doc above);
   // only takes effect when spec.view.center/zoom are both omitted.
   syncFit(viewState, spec);
+  // Reads `vs.spec` rather than the `spec` argument: an update that lands
+  // before this fires has already written the newer spec into `viewState`, and
+  // this is what applies it — which is why `updateView` can simply return while
+  // `styleReady` is false instead of queueing anything.
   map.on('load', () => {
     const vs = state.views.get(viewId);
     if (!vs) return;
+    vs.styleReady = true;
     applyBasemapLabelsVisibility(map, vs.spec);
     syncSourcesAndLayers(map, vs.spec, null);
     reapplyAllMapData(map, vs.spec);
@@ -396,9 +414,13 @@ const updateView = (
   // Auto-fit: animated re-fit of center/zoom when they're omitted and the bbox moved.
   syncFit(viewState, spec);
 
+  // `setStyle` discards the whole stylesheet, so the rebuild starts from
+  // nothing on the map: `null` as the previous spec is what keeps
+  // `syncSourcesAndLayers` from trying to remove layers that no longer exist.
   const onStyleReady = () => {
     const updated = state.views.get(viewId);
     if (!updated) return;
+    updated.styleReady = true;
     syncSourcesAndLayers(map, updated.spec, null);
     reapplyAllMapData(map, updated.spec);
     reapplyLegendDrivenFillPaint(map, updated.spec);
@@ -407,21 +429,26 @@ const updateView = (
 
   if (nextStyle !== viewState.style) {
     viewState.style = nextStyle;
+    viewState.styleReady = false;
     map.once('style.load', onStyleReady);
     map.setStyle(nextStyle);
     return;
   }
-  if (map.isStyleLoaded()) {
-    syncSourcesAndLayers(map, spec, previousSpec);
-    if (hasMapDataChanged(previousSpec.mapData, spec.mapData)) {
-      removeStaleMapData(map, previousSpec.mapData, spec.mapData);
-      reapplyAllMapData(map, spec);
-      reapplyLegendDrivenFillPaint(map, spec);
-    }
-    applyBasemapLabelsVisibility(map, spec);
-  } else {
-    map.once('style.load', onStyleReady);
+  // Nothing is queued while the stylesheet is still being parsed: `viewState`
+  // already holds this spec, and `mountView`'s `load` handler reads it from
+  // there when it fires. Queueing on `style.load` would be worse than useless —
+  // past the first parse that event never fires again, so the update would be
+  // dropped and the map would sit on the previous spec until something else
+  // changed it.
+  if (!viewState.styleReady) return;
+
+  syncSourcesAndLayers(map, spec, previousSpec);
+  if (hasMapDataChanged(previousSpec.mapData, spec.mapData)) {
+    removeStaleMapData(map, previousSpec.mapData, spec.mapData);
+    reapplyAllMapData(map, spec);
+    reapplyLegendDrivenFillPaint(map, spec);
   }
+  applyBasemapLabelsVisibility(map, spec);
 };
 
 // Factory for the EngineAdapter implementation — one closure over shared
