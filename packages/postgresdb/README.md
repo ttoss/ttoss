@@ -168,6 +168,219 @@ const user = await db.User.create({
 });
 ```
 
+## Migrations
+
+`sequelize.sync()` creates missing _tables_. It never adds a column to an
+existing one, nor drops one, so a release that changes a populated table needs
+a migration: add the column nullable, sync so the indexes land, backfill, then
+apply the constraint the models declare.
+
+Declare each one with `defineMigration` and export them in the order they run:
+
+```typescript
+// src/migrations.ts
+import { defineMigration } from '@ttoss/postgresdb';
+
+import { syncSchema } from './sync';
+
+export const sync = syncSchema;
+
+export const migrations = [
+  defineMigration({
+    name: 'add-project-id',
+    description: 'Gives every task a project.',
+    options: [
+      {
+        flag: 'owner-email',
+        description: 'Who owns the rows that predate projects.',
+        required: true,
+      },
+    ],
+    up: async (ctx) => {
+      if (!(await ctx.tableExists({ table: 'tasks' }))) {
+        ctx.say('no tasks table yet, nothing to migrate');
+
+        return;
+      }
+
+      await ctx.addColumnIfMissing({
+        table: 'tasks',
+        column: 'project_id',
+        type: 'INTEGER',
+      });
+
+      // Now the column exists, the sync can build the index over it.
+      await ctx.sync();
+
+      await ctx.run({
+        sql: 'UPDATE tasks SET project_id = $1 WHERE project_id IS NULL',
+        values: [await projectFor(ctx.args['owner-email'])],
+      });
+
+      await ctx.setNotNull({ table: 'tasks', column: 'project_id' });
+    },
+  }),
+];
+```
+
+Run them from the application's own entrypoint, which is what an image does
+because it carries `dist` rather than sources:
+
+```typescript
+// src/migrateCli.ts
+import { runMigrationsCli } from '@ttoss/postgresdb';
+
+import { migrations, sync } from './migrations';
+
+runMigrationsCli({
+  argv: process.argv.slice(2),
+  bin: 'migrate',
+  migrations,
+  sync,
+  version: process.env.APP_VERSION,
+}).then((code) => {
+  process.exitCode = code;
+});
+```
+
+```bash
+migrate status                         # every migration, and when it was applied
+migrate run --dry-run                  # what a real run would do; writes nothing
+migrate run --owner-email ana@acme.com # apply everything pending
+migrate run add-project-id             # apply only this one, if it is pending
+```
+
+During development, `@ttoss/postgresdb-cli` runs the same commands against
+`src/migrations.ts` without building first:
+
+```bash
+pnpm dlx @ttoss/postgresdb-cli migrate -e Development run --dry-run
+```
+
+### The ledger
+
+Each migration that finishes is recorded in a `schema_migrations` table, so a
+deploy can run `migrate run` on every release and only what is pending happens.
+The runner creates the table itself; there is nothing to add to your models.
+
+| Column        | What it answers                                             |
+| ------------- | ----------------------------------------------------------- |
+| `name`        | Which migration. The primary key, so each runs at most once |
+| `applied_at`  | When                                                        |
+| `duration_ms` | How long it took                                            |
+| `version`     | Which release ran it, from the runner's `version`           |
+| `args`        | What it was told, limited to the flags it declares          |
+| `baseline`    | Whether it was recorded without running — see below         |
+
+**The ledger records what finished, not what half-ran.** A migration that
+throws leaves no row and is retried from the top on the next run, so every
+migration must be idempotent as well: guard with `tableExists` and
+`columnExists`, and prefer the `IF NOT EXISTS` helpers.
+
+The table reconciles its own columns on every read, adding any this version
+expects that an older one did not create. It has to: `CREATE TABLE IF NOT
+EXISTS` does nothing whatever to a table that already exists, which is the same
+reason the migrations it records have to exist at all.
+
+Runs are serialized across instances with the same advisory lock mechanism as
+`syncWithAdvisoryLock`, on a key of their own. A migration that calls
+`ctx.sync()` reaches your `syncWithAdvisoryLock` on another connection, so the
+two keys must differ — the defaults already do.
+
+**Names are the identity.** Renaming or deleting a migration that has already
+run leaves the ledger holding a name nothing declares, and the runner then
+refuses to run rather than silently skipping it.
+
+### Adopting the ledger on a database that predates it
+
+A database migrated by hand already has the schema, but no ledger to say so.
+An empty ledger beside a populated schema is genuinely ambiguous — the database
+could be new, or it could be one that was migrated before anything was
+recorded — and guessing "new" re-runs history. So the runner does not guess.
+
+**It refuses**, naming what it cannot decide:
+
+```
+This database already holds tables but its migration ledger is empty, so the
+runner cannot tell a new database from one migrated before the ledger existed.
+If these migrations already ran against it, record them with `baseline` (or
+`baseline --all`). If they genuinely never ran, re-run with --allow-unbaselined.
+```
+
+There are three ways out, and the first is usually right:
+
+```bash
+migrate baseline --all           # they already ran: record them, run nothing
+migrate baseline add-project-id  # or name just the ones that already ran
+migrate run --allow-unbaselined  # they never ran: this database only looks old
+```
+
+`baseline` writes to the ledger only and never touches the schema. Run it once
+per environment, as a step of the release that introduces the ledger.
+
+The guard is narrow on purpose. It fires only when the ledger is **completely**
+empty, so a later release that adds a migration to an adopted database needs
+nothing; and an empty database trips nothing, because there is no history it
+could be hiding.
+
+#### Letting a migration answer for itself
+
+The other way out is for the migration to recognise its own work, from the
+schema rather than from the ledger. A migration that can do that declares
+`isApplied`, and the runner records it instead of running it:
+
+```typescript
+defineMigration({
+  name: 'add-project-id',
+  up: async (ctx) => {
+    await ctx.addColumnIfMissing({
+      table: 'tasks',
+      column: 'project_id',
+      type: 'INTEGER',
+    });
+  },
+  // The change is its own evidence: if the column is there, this has run.
+  isApplied: async (ctx) => {
+    return ctx.columnExists({ table: 'tasks', column: 'project_id' });
+  },
+});
+```
+
+A probe that answers — either way — resolves the ambiguity, so it also takes
+that migration out of what the guard refuses. The context it receives is always
+in dry-run mode, so a write attempted from a probe is reported, never performed.
+
+Only declare one when the answer is certain: a probe that guesses wrong skips
+work that was never done. A migration that leaves no trace to recognise — a
+pure data rewrite — declares none, and the operator baselines it.
+
+### Migration context
+
+`up` receives a context that runs raw SQL on the runner's own connection,
+deliberately beside the ORM: a migration running through the models would
+describe the schema it is in the middle of changing.
+
+| Member                                        | What it does                                                             |
+| --------------------------------------------- | ------------------------------------------------------------------------ |
+| `select({ sql, values })`                     | Rows out. Always executes, even on a dry run                             |
+| `run({ sql, values })`                        | Any statement that writes. Skipped on a dry run                          |
+| `countOf({ sql, values })`                    | One number out of a `count(*)`                                           |
+| `tableExists`, `columnExists`, `indexExists`  | Probes, so a fresh database is a no-op                                   |
+| `addColumnIfMissing({ table, column, type })` | `ADD COLUMN IF NOT EXISTS`, nullable                                     |
+| `setNotNull`, `dropColumnIfExists`            | Idempotent by construction                                               |
+| `sync()`                                      | The application's schema sync, when the runner was given one             |
+| `say(message)`                                | A progress line                                                          |
+| `args`, `dryRun`, `client`                    | What it was told, whether to write, and the connection for anything else |
+
+`--dry-run` makes every write helper report what it would do and do nothing,
+while the probes still read, so a dry run can report what a real one would
+change. It writes no ledger row either.
+
+Because a dry run writes nothing, a migration that depends on a schema change
+an _earlier pending_ migration would have made will fail during it — the column
+it probes is not there yet. A dry run answers for the next migration against
+the schema you have, not for a whole unapplied chain.
+
 ## Vector Support (pgvector)
 
 This package includes built-in support for [pgvector](https://github.com/pgvector/pgvector), enabling vector similarity search for AI/ML applications like semantic search, recommendations, and RAG systems.
@@ -412,6 +625,28 @@ Serializes a boot-time `sequelize.sync()` across concurrently-starting instances
 - `sequelize` (required): The Sequelize instance to synchronize
 - `key` (required): A stable, caller-chosen 64-bit integer used as the advisory lock key. Keep it constant across releases
 - `sync` (optional): Options forwarded to `sequelize.sync()` (e.g. `{ alter: true }`)
+
+### `createMigrationRunner(options)`
+
+Builds a runner over an application's migrations, backed by a ledger table.
+Returns `{ status, run, baseline, close }`.
+
+**Options:**
+
+- `migrations` (required): Built with `defineMigration`, in the order they run
+- `sync` (optional): The application's schema sync, reached as `ctx.sync()`
+- `sequelize` (optional): The connection to use. Omitted, the runner opens its own from `DATABASE_*` and closes it on `close()`
+- `lockKey` (optional): Advisory lock key. Must differ from the application's sync lock key
+- `lockTimeoutMs` (optional): Bound on waiting for the lock — see `syncWithAdvisoryLock`
+- `ledgerTable` (optional): Defaults to `schema_migrations`
+- `version` (optional): Recorded with every migration this run applies
+- `log` (optional): Where progress goes. Defaults to stderr
+
+### `runMigrationsCli(options)`
+
+Parses `argv`, drives a runner, and resolves to the exit code rather than
+calling `process.exit`, so the caller decides how the process ends. Takes every
+`createMigrationRunner` option plus `argv`, `bin` and `print`.
 
 ### Decorators
 

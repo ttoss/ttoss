@@ -2,9 +2,13 @@ import {
   BeforeCreate,
   BeforeUpdate,
   Column,
+  createMigrationRunner,
   DataType,
+  defineMigration,
   initialize,
   Model,
+  parseArgv,
+  runMigrationsCli,
   syncWithAdvisoryLock,
   Table,
 } from '@ttoss/postgresdb';
@@ -95,4 +99,11 @@ export const models = {
   Product,
 };
 
-export { initialize, syncWithAdvisoryLock };
+export {
+  createMigrationRunner,
+  defineMigration,
+  initialize,
+  parseArgv,
+  runMigrationsCli,
+  syncWithAdvisoryLock,
+};

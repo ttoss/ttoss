@@ -30,6 +30,7 @@
     "build-config": "tsdown"
   },
   "dependencies": {
+    "@ttoss/postgresdb": "workspace:^",
     "commander": "^14.0.3",
     "dotenv": "^17.4.2",
     "esbuild": "^0.28.0",
