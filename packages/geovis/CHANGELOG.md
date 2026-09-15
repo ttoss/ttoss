@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.21.1](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.21.0...@ttoss/geovis@0.21.1) (2026-09-15)
+
+### Bug Fixes
+
+- **geovis:** stop dropping spec updates while the style is still parsing ([#1239](https://github.com/ttoss/ttoss/issues/1239)) ([47069c3](https://github.com/ttoss/ttoss/commit/47069c37a502579b3d2466c85e84ffeb139f2fcc))
+
 # [0.21.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.20.1...@ttoss/geovis@0.21.0) (2026-09-11)
 
 ### Features
