@@ -114,7 +114,7 @@ section's tab for assistive tech, and shows on hover. Leave it out on every
 section and the band goes away — the tab bar takes the top of the card, close
 button included — so the tabs alone carry the navigation; leave it out on only
 some and the band stays for all, empty on those. The tab keeps its icon either
-way and falls back to the section `id` for its accessible name. Each section's `body` is one of two kinds:
+way and falls back to the section `id` for its accessible name. Each section's `body` is one of three kinds:
 
 - **`variations`** — a flat list of selectable rows (grouped only for ordering)
   that drive the shared selection (`selection[menuId]`), recoloring the map.
@@ -123,6 +123,14 @@ way and falls back to the section `id` for its accessible name. Each section's `
   `selection[menuId]` when it declares one, otherwise visual-only), **chips**
   (visual-only toggle chips whose active count shows as a tab badge), or a
   **locator** (visual-only search box).
+- **`settings`** — a stack of headed blocks changing _how_ the active variation
+  is drawn rather than which data it shows: a **slider** (a continuous range, or
+  a ladder of named rungs) or a **toggle** (one switch). Both publish to
+  `selection[menuId]`.
+
+A filter narrows the data; a setting re-renders the same data differently. They
+are separate kinds so the two control unions stay apart — a `toggle` in a filter
+block would publish a selection nothing filters on.
 
 A kind describes a body, not a tab, so several sections may carry `filters` —
 put the timeline in a tab of its own beside a tab holding the remaining
@@ -322,7 +330,7 @@ breaking.
 | -------- | ------------------------------------------------ | ----------------------------------------------- |
 | `id`     | `string`                                         | Unique section id.                              |
 | `header` | `{ title?; icon?; iconColor?; iconBackground? }` | The tab/header icon chip and title.             |
-| `body`   | `variations` \| `filters`                        | The section's content, discriminated by `kind`. |
+| `body`   | `variations` \| `filters` \| `settings`          | The section's content, discriminated by `kind`. |
 
 A **`variations`** body (`kind: 'variations'`) has a `menuId` (the selection
 key it drives), an optional `title` and `icon` heading the list with the same
@@ -354,6 +362,29 @@ none are active, which is both what the one-string-per-key selection holds and
 what a permalink needs; without one the selection stays visual-only),
 `locator` (`{ kind, placeholder?, minChars?, options }`), or
 `variations` (`{ kind, menuId, variations, defaultValue?, closeOnSelect? }`).
+
+A **`settings`** body (`kind: 'settings'`) has `blocks` — each block
+`{ id, title, icon?, collapsible?, defaultOpen?, hint?, control }`, where
+`control` is a `slider`
+(`{ kind, menuId, stops?, min?, max?, step?, defaultValue, unit?, endLabels?, stepButtons? }`)
+or a `toggle` (`{ kind, menuId, icon?, defaultValue }`). Both publish to
+`selection[menuId]` as strings — a slider its number, a toggle `'true'`/`'false'`
+— seeded from the selection on first render, so a controlled value wins over the
+control's own default.
+
+A slider with `stops` is a **ladder**: the handle snaps between the rungs and
+reads each one's `label` (and `hint` beside it), while `min`/`max`/`step` are
+ignored. Rungs need not be evenly spaced, because the track runs over their
+indices rather than their values — spacing the track by value would bunch the
+handle wherever the rungs crowd together. Without `stops` the track sweeps
+`min`..`max` and reads its own number with `unit`. `endLabels` names the two ends
+in one caption under the track, and `stepButtons` puts a −/+ pair beside it;
+either renders that row, so neither implies the other.
+
+A `toggle` renders its block's `title` inside the switch row, so the block draws
+no header above it — a header there would say the same words twice. Its state
+reaches assistive tech through `aria-pressed` on the row, which is also the whole
+click target: a 34×20 switch is a small thing to aim at.
 
 A block draws a fixed header over its control. Declaring `collapsible` turns
 that header into a toggle — which is what `defaultOpen` answers to — and is

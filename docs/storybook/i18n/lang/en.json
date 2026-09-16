@@ -142,6 +142,11 @@
     "defaultMessage": "s",
     "description": "Timeline filter: seconds unit shown after the playback interval. Abbreviated."
   },
+  "1cnQMu": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Increase",
+    "description": "Accessible label for the button that steps a setting's slider up."
+  },
   "26nzWk": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Map could not be shown",
@@ -341,6 +346,11 @@
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Selecione um município",
     "description": "Locator filter: zoom action label while nothing is selected yet."
+  },
+  "zija6w": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Decrease",
+    "description": "Accessible label for the button that steps a setting's slider down."
   },
   "0XOzcH": {
     "module": "@ttoss/react-auth-core",

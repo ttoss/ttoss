@@ -23,6 +23,10 @@
     "defaultMessage": "s",
     "description": "Timeline filter: seconds unit shown after the playback interval. Abbreviated."
   },
+  "1cnQMu": {
+    "defaultMessage": "Increase",
+    "description": "Accessible label for the button that steps a setting's slider up."
+  },
   "26nzWk": {
     "defaultMessage": "Map could not be shown",
     "description": "Title shown in the map area on first mount when the spec fails before anything has ever resolved."
@@ -182,5 +186,9 @@
   "ymdThy": {
     "defaultMessage": "Selecione um município",
     "description": "Locator filter: zoom action label while nothing is selected yet."
+  },
+  "zija6w": {
+    "defaultMessage": "Decrease",
+    "description": "Accessible label for the button that steps a setting's slider down."
   }
 }

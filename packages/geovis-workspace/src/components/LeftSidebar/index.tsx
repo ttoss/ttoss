@@ -18,6 +18,7 @@ import { useGeovisWorkspace } from '../../hooks/useGeovisWorkspace';
 import { messages } from '../../messages';
 import { FiltersTab } from './FiltersTab';
 import { IconChip } from './IconChip';
+import { SettingsTab } from './SettingsTab';
 import { SidebarTab } from './SidebarTab';
 import { COLOR, FONT_HEAD } from './theme';
 import { useChipSelection } from './useChipSelection';
@@ -273,6 +274,8 @@ const TabContent = ({
     >
       {body?.kind === 'variations' ? (
         <VariationsTab body={body} />
+      ) : body?.kind === 'settings' ? (
+        <SettingsTab blocks={body.blocks} />
       ) : body?.kind === 'filters' ? (
         <FiltersTab
           blocks={body.blocks}
