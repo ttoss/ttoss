@@ -124,11 +124,11 @@ Calling `sequelize.sync({ alter: true })` on boot behind more than one instance
 `ALTER TABLE` DDL runs concurrently against the same database and can deadlock,
 error, or leave the schema inconsistent.
 
-`syncWithAdvisoryLock` serializes the sync across instances using a Postgres
-session-level advisory lock (`pg_advisory_lock`). One instance runs the sync
-while the others block, then run against the already-migrated schema (a no-op).
-The lock is acquired and released on a single dedicated connection and is
-always released on both the success and failure paths.
+`syncWithAdvisoryLock` serializes it on a Postgres session-level advisory lock
+held on one dedicated connection, released on both the success and failure
+paths. One instance syncs; the others block, then meet the migrated schema and
+no-op. `key` is caller-chosen and must stay constant across releases so every
+instance competes for the same lock.
 
 ```typescript
 import { syncWithAdvisoryLock } from '@ttoss/postgresdb';
@@ -149,11 +149,8 @@ const db = await initialize({
 });
 ```
 
-A blocking session-level lock (not `pg_try_advisory_lock`) is used on purpose:
-waiters must block until the holder finishes rather than skip the sync. The
-lock `key` is caller-supplied and must be a stable 64-bit integer kept constant
-across releases so every instance competes for the same lock. Single-instance
-boot is unaffected — the lock is acquired and released with no contention.
+The lock blocks rather than tries (`pg_advisory_lock`, not
+`pg_try_advisory_lock`): a waiter must wait out the holder, never skip the sync.
 
 ### CRUD Operations
 
@@ -250,6 +247,44 @@ migrate run --owner-email ana@acme.com # apply everything pending
 migrate run add-project-id             # apply only this one, if it is pending
 ```
 
+### Atomicity is per `run`
+
+`ctx.run` executes through the Sequelize pool, so two calls can land on
+different connections: `BEGIN` in one and `COMMIT` in another is not a
+transaction. What is atomic is a single `run` — Postgres wraps all the
+statements of one multi-statement simple query in an implicit transaction. A
+step that must not half-land goes in one `run`, as one string.
+
+**Multi-statement SQL and `values` are mutually exclusive.** Bind parameters
+put the query on the extended protocol, which carries exactly one statement. A
+multi-statement `run` therefore takes no `values`, so anything interpolated
+into it must be a literal you control.
+
+**In a deploy, `migrate run` comes before `sync`, never after.** `sync` builds
+today's models, so it creates the indexes today's models declare — over columns
+a pending migration has not added yet. Run first it does not skip them, it
+fails, inside `addIndex`, and takes the deploy with it before the migration that
+would have added the column ever ran:
+
+```bash
+migrate run    # first: bring the schema up to what this release expects
+sync           # then: create whatever tables are simply missing
+```
+
+The sync a migration needs is the one it calls itself, at the step its own
+schema can take one. The standalone `sync` is for the case no migration covers:
+a fresh database, where every `isApplied` answers true and nothing else would
+create the tables.
+
+**Nothing runs a migration's `up()` until the deployment does.** A suite over
+migrations asks `isApplied`; `--dry-run` exercises the probe and writes nothing;
+there is no `down`. So run a new migration once by hand before it merges, against
+the schema it is written for: `sync` today's models, undo your own change on a
+scratch database, run `migrate run` then `sync`, and check that it applied, that
+the change is back, that the write it was _for_ works, and that a second run
+applies nothing. By hand rather than as a test — the wind-back differs for every
+migration, and each `up()` runs exactly once, on one database, ever.
+
 During development, `@ttoss/postgresdb-cli` runs the same commands against
 `src/migrations.ts` without building first:
 
@@ -285,7 +320,19 @@ reason the migrations it records have to exist at all.
 Runs are serialized across instances with the same advisory lock mechanism as
 `syncWithAdvisoryLock`, on a key of their own. A migration that calls
 `ctx.sync()` reaches your `syncWithAdvisoryLock` on another connection, so the
-two keys must differ — the defaults already do.
+two keys must differ — the defaults already do. Give the runner the plain sync
+rather than the locked one: it already holds its lock for the whole run.
+
+**Reading the ledger is a write.** `status()` — and anything else that reads the
+table — runs `CREATE TABLE IF NOT EXISTS` first, which is not race-safe:
+concurrent creators collide on the system catalogue. Do not call it from
+something that runs on every instance, such as a boot-time check across a
+rolling deploy. Query the table directly instead, treating "not there" as
+"nothing applied":
+
+```sql
+SELECT to_regclass('public.schema_migrations') IS NOT NULL AS present
+```
 
 **Names are the identity.** Renaming or deleting a migration that has already
 run leaves the ledger holding a name nothing declares, and the runner then
@@ -349,6 +396,12 @@ defineMigration({
 A probe that answers — either way — resolves the ambiguity, so it also takes
 that migration out of what the guard refuses. The context it receives is always
 in dry-run mode, so a write attempted from a probe is reported, never performed.
+
+**Every probe runs before any `up()`.** The runner evaluates all pending
+`isApplied` probes first, then applies what is left, so a probe answers for the
+database as it stands now — never as an earlier pending migration will leave
+it. Where two pending migrations touch the same table, distinguish the states
+explicitly rather than testing one column.
 
 Only declare one when the answer is certain: a probe that guesses wrong skips
 work that was never done. A migration that leaves no trace to recognise — a
@@ -500,15 +553,13 @@ export const db = initialize({ models });
 
 ## Testing
 
-Testing models with decorators requires special configuration because Jest's Babel transformer doesn't properly transpile TypeScript decorators. The solution is to build your models before running tests.
+Jest's Babel transformer does not transpile TypeScript decorators, so tests
+must import models from the compiled output (`dist/index`) rather than from
+source ([why](https://stackoverflow.com/a/53920890/8786986)). Build before
+testing.
 
-**Why test your models?** Beyond validating functionality, tests serve as a critical safety check for schema changes. They ensure that running `sync --alter` won't accidentally remove columns or relationships from your database. If a model property is missing or incorrectly defined, tests will fail before you can damage production data.
-
-:::warning Import from compiled output
-
-Tests must import models from the compiled output (`dist/index`), not source files, because decorators aren't transpiled by Jest's Babel transformer. See [this Stack Overflow answer](https://stackoverflow.com/a/53920890/8786986) for details.
-
-:::
+Tests over models are also the check that `sync --alter` will not drop a
+column: a property missing from a model fails here rather than in production.
 
 ### Setup
 
@@ -597,13 +648,6 @@ describe('User model', () => {
 });
 ```
 
-### Key Points
-
-- **Testcontainers**: Use [`@testcontainers/postgresql`](https://www.npmjs.com/package/@testcontainers/postgresql) to spin up isolated PostgreSQL instances for each test run.
-- **Timeout**: Set a longer timeout with `jest.setTimeout(60000)` as container startup can take time.
-- **Sync schema**: Call `sequelize.sync()` after initialization to create tables based on your models.
-- **Schema validation**: Tests verify that all model properties are correctly defined. This prevents `sync --alter` from accidentally removing database columns due to missing or misconfigured model properties.
-
 ## API Reference
 
 ### `initialize(options)`
@@ -654,74 +698,10 @@ All [sequelize-typescript](https://www.npmjs.com/package/sequelize-typescript) d
 
 #### Hooks
 
-Lifecycle hooks allow you to execute code at specific points in the model lifecycle. All hook decorators from sequelize-typescript are available:
-
-**Instance Hooks:**
-
-- `@BeforeValidate`, `@AfterValidate`, `@ValidationFailed`
-- `@BeforeCreate`, `@AfterCreate`
-- `@BeforeUpdate`, `@AfterUpdate`
-- `@BeforeDestroy`, `@AfterDestroy`
-- `@BeforeSave`, `@AfterSave` (v4 only)
-- `@BeforeUpsert`, `@AfterUpsert` (v4 only)
-- `@BeforeRestore`, `@AfterRestore`
-
-**Bulk Hooks:**
-
-- `@BeforeBulkCreate`, `@AfterBulkCreate`
-- `@BeforeBulkUpdate`, `@AfterBulkUpdate`
-- `@BeforeBulkDestroy`, `@AfterBulkDestroy`
-- `@BeforeBulkRestore`, `@AfterBulkRestore`
-- `@BeforeBulkSync`, `@AfterBulkSync`
-
-**Query Hooks:**
-
-- `@BeforeFind`, `@AfterFind`
-- `@BeforeFindAfterExpandIncludeAll`, `@BeforeFindAfterOptions`
-- `@BeforeCount`
-
-**Connection Hooks:**
-
-- `@BeforeConnect`, `@AfterConnect`
-- `@BeforeDefine`, `@AfterDefine`
-- `@BeforeInit`, `@AfterInit`
-
-**Example:**
-
-```typescript
-import {
-  Table,
-  Column,
-  Model,
-  BeforeCreate,
-  BeforeUpdate,
-} from '@ttoss/postgresdb';
-
-@Table
-class Product extends Model {
-  @Column
-  declare name: string;
-
-  @Column
-  declare slug: string;
-
-  @BeforeCreate
-  static generateSlug(instance: Product) {
-    if (instance.name && !instance.slug) {
-      instance.slug = instance.name.toLowerCase().replace(/\s+/g, '-');
-    }
-  }
-
-  @BeforeUpdate
-  static updateSlug(instance: Product) {
-    if (instance.changed('name') && instance.name) {
-      instance.slug = instance.name.toLowerCase().replace(/\s+/g, '-');
-    }
-  }
-}
-```
-
-See the [sequelize-typescript hooks documentation](https://github.com/sequelize/sequelize-typescript#hooks) for more details.
+Every sequelize-typescript lifecycle hook decorator is exported —
+`@BeforeCreate`, `@AfterFind`, `@BeforeBulkUpdate` and the rest. See the
+[sequelize-typescript hooks documentation](https://github.com/sequelize/sequelize-typescript#hooks)
+for the full list and semantics.
 
 ### DataType
 
