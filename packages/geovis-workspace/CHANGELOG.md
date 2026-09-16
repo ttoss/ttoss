@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.14.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.13.4...@ttoss/geovis-workspace@0.14.0) (2026-09-16)
+
+### Features
+
+- **geovis-workspace:** add a settings zone to the left sidebar ([#1243](https://github.com/ttoss/ttoss/issues/1243)) ([0d78c39](https://github.com/ttoss/ttoss/commit/0d78c396d1b17f40f0b9a2c90caddbfe351ac935))
+
 ## [0.13.4](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.13.3...@ttoss/geovis-workspace@0.13.4) (2026-09-15)
 
 **Note:** Version bump only for package @ttoss/geovis-workspace

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.3.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@7.2.1...@docs/storybook@7.3.0) (2026-09-16)
+
+### Features
+
+- **geovis-workspace:** add a settings zone to the left sidebar ([#1243](https://github.com/ttoss/ttoss/issues/1243)) ([0d78c39](https://github.com/ttoss/ttoss/commit/0d78c396d1b17f40f0b9a2c90caddbfe351ac935))
+
 ## [7.2.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@7.2.0...@docs/storybook@7.2.1) (2026-09-15)
 
 ### Bug Fixes
