@@ -176,6 +176,99 @@ export const preview: Preview = {
     },
   ],
 };
+/**
+ * A settings zone covering both slider shapes and the toggle.
+ *
+ * The four sliders cover the matrix: `malha` is a ladder with a caption and
+ * steppers, `opacidade` a continuous range with steppers but no caption,
+ * `simples` a caption without steppers, and `minimo` neither — so the row under
+ * the track is absent entirely. None but `opacidade` declares `min`/`max`/`step`,
+ * which is what exercises the control's own fallbacks.
+ */
+export const settingsPreview: Preview = {
+  sections: [
+    preview.sections[0],
+    {
+      id: 'config',
+      header: { title: 'Configurações', icon: 'lucide:settings' },
+      body: {
+        kind: 'settings',
+        blocks: [
+          {
+            id: 'malha',
+            title: 'Malha',
+            icon: 'lucide:hexagon',
+            control: {
+              kind: 'slider',
+              menuId: 'malha',
+              stops: [
+                { value: 320, label: '320 km', hint: '10 células' },
+                { value: 160, label: '160 km', hint: '40 células' },
+                { value: 80, label: '80 km', hint: '160 células' },
+              ],
+              defaultValue: 160,
+              endLabels: ['Panorâmico', 'Detalhado'],
+              stepButtons: true,
+            },
+          },
+          {
+            id: 'opacidade',
+            title: 'Opacidade',
+            control: {
+              kind: 'slider',
+              menuId: 'opacidade',
+              min: 30,
+              max: 100,
+              step: 5,
+              defaultValue: 85,
+              unit: '%',
+              stepButtons: true,
+            },
+          },
+          {
+            id: 'simples',
+            title: 'Simples',
+            collapsible: true,
+            defaultOpen: false,
+            hint: 'Sem passos nem unidade.',
+            control: {
+              kind: 'slider',
+              menuId: 'simples',
+              defaultValue: 10,
+              endLabels: ['Pouco', 'Muito'],
+            },
+          },
+          {
+            id: 'minimo',
+            title: 'Mínimo',
+            control: { kind: 'slider', menuId: 'minimo', defaultValue: 4 },
+          },
+          {
+            id: 'ocultar',
+            title: 'Ocultar vazios',
+            hint: 'Células sem registro somem.',
+            control: {
+              kind: 'toggle',
+              menuId: 'ocultar',
+              icon: 'lucide:eye-off',
+              defaultValue: false,
+            },
+          },
+          {
+            id: 'rotulos',
+            title: 'Rótulos',
+            control: {
+              kind: 'toggle',
+              menuId: 'rotulos',
+              defaultValue: true,
+            },
+          },
+        ],
+      },
+    },
+  ],
+};
+
 export const click = async (element: HTMLElement) => {
   await act(async () => {
     fireEvent.click(element);
@@ -184,6 +277,10 @@ export const click = async (element: HTMLElement) => {
 
 export const openFiltros = async () => {
   await click(screen.getByRole('button', { name: 'Filtros' }));
+};
+
+export const openConfig = async () => {
+  await click(screen.getByRole('button', { name: 'Configurações' }));
 };
 
 /** The same preview with the timeline opted into closing when playback starts. */

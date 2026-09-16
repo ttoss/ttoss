@@ -352,9 +352,108 @@ export interface GeovisWorkspaceSidebarFiltersBody {
   blocks: GeovisWorkspaceSidebarFilterBlock[];
 }
 
+/** One rung of a {@link GeovisWorkspaceSidebarSliderSetting} ladder. */
+export interface GeovisWorkspaceSidebarSliderStop {
+  /** Position on the track; the value reported for this rung. */
+  value: number;
+  /** The rung's readout, e.g. `'5 km'`. */
+  label: string;
+  /** Secondary readout beside the label, e.g. `'2.374 cells'`. */
+  hint?: string;
+}
+
+/**
+ * A numeric setting: a continuous range, or a ladder when {@link stops} is
+ * given.
+ *
+ * The two are one control because they are one gesture — drag a handle along a
+ * track — and splitting them would put the stepper buttons, the end captions
+ * and the readout in two places to drift apart. `stops` is what decides which:
+ * with rungs the handle snaps between them and reads their labels, without them
+ * it sweeps `min`..`max` and reads the number itself.
+ */
+export interface GeovisWorkspaceSidebarSliderSetting {
+  kind: 'slider';
+  /** Menu id the value is reported under. */
+  menuId: string;
+  /**
+   * Discrete rungs, in track order. When given, the handle snaps to them and
+   * `min`/`max`/`step` are ignored — the rungs already say where it can rest.
+   */
+  stops?: GeovisWorkspaceSidebarSliderStop[];
+  /** Lowest value of a continuous track. Ignored when {@link stops} is set. */
+  min?: number;
+  /** Highest value of a continuous track. Ignored when {@link stops} is set. */
+  max?: number;
+  /** Granularity of a continuous track. Defaults to `1`. */
+  step?: number;
+  /** Value the track starts at. */
+  defaultValue: number;
+  /** Suffix on a continuous track's readout, e.g. `'%'`. */
+  unit?: string;
+  /**
+   * The two ends of the scale, e.g. `['Broad', 'Detailed']`. Rendered as one
+   * caption joining them with an em dash, centred under the track — they name
+   * what the direction means, which the values alone cannot.
+   */
+  endLabels?: [string, string];
+  /** Adds the −/+ buttons under the track. Defaults to `false`. */
+  stepButtons?: boolean;
+}
+
+/** A boolean setting: one switch, labelled by its block. */
+export interface GeovisWorkspaceSidebarToggleSetting {
+  kind: 'toggle';
+  /** Menu id the state is reported under. */
+  menuId: string;
+  /** Iconify token shown beside the label. */
+  icon?: string;
+  /** State the switch starts in. */
+  defaultValue: boolean;
+}
+
+/** A settings control, discriminated by `kind`. */
+export type GeovisWorkspaceSidebarSettingsControl =
+  GeovisWorkspaceSidebarSliderSetting | GeovisWorkspaceSidebarToggleSetting;
+
+/** A headed block wrapping one settings control. */
+export interface GeovisWorkspaceSidebarSettingsBlock {
+  /** Unique id of the block. */
+  id: string;
+  /** Heading shown on the block's header. */
+  title: string;
+  /** Iconify token rendered before the title. */
+  icon?: string;
+  /** Turns the header into a toggle for the block's body. Defaults to `false`. */
+  collapsible?: boolean;
+  /** Whether the block starts expanded. Read only while collapsible. */
+  defaultOpen?: boolean;
+  /** Explanatory line under the header, above the control. */
+  hint?: string;
+  /** The control rendered inside the block. */
+  control: GeovisWorkspaceSidebarSettingsControl;
+}
+
+/**
+ * Zone body: a stack of headed settings blocks (the "Settings" zone).
+ *
+ * Separate from {@link GeovisWorkspaceSidebarFiltersBody} although both stack
+ * headed blocks: a filter narrows which data is shown, a setting changes how
+ * the same data is drawn. Keeping the control unions apart is what stops a
+ * `toggle` landing in a filter block, where it would report a selection nothing
+ * filters on.
+ */
+export interface GeovisWorkspaceSidebarSettingsBody {
+  kind: 'settings';
+  /** The settings blocks, top to bottom. */
+  blocks: GeovisWorkspaceSidebarSettingsBlock[];
+}
+
 /** A zone body, discriminated by `kind`. */
 export type GeovisWorkspaceSidebarBody =
-  GeovisWorkspaceSidebarVariationsBody | GeovisWorkspaceSidebarFiltersBody;
+  | GeovisWorkspaceSidebarVariationsBody
+  | GeovisWorkspaceSidebarFiltersBody
+  | GeovisWorkspaceSidebarSettingsBody;
 
 /** A zone's header: a leading icon chip and a title. */
 export interface GeovisWorkspaceSidebarHeader {

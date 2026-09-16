@@ -33,6 +33,16 @@ export const messages = defineMessages({
     description:
       'Title shown in the map area on first mount when the spec fails before anything has ever resolved.',
   },
+  settingDecrease: {
+    defaultMessage: 'Decrease',
+    description:
+      "Accessible label for the button that steps a setting's slider down.",
+  },
+  settingIncrease: {
+    defaultMessage: 'Increase',
+    description:
+      "Accessible label for the button that steps a setting's slider up.",
+  },
   dismissInspector: {
     defaultMessage: 'Dismiss selection',
     description:
