@@ -102,7 +102,7 @@ Without it the runner refuses to run against a populated database with an empty 
 
 The runner evaluates all pending `isApplied` probes first, then applies what is left. So a probe answers for the database **as it stands now**, never as an earlier pending migration will leave it.
 
-This bites when two pending migrations touch the same table. A probe that asks "does `memories.content` exist?" reads as *already applied* on a database where the previous pending migration has not yet renamed `memory_entries` to `memories` — skipping the work on exactly the databases that need it. Distinguish the states explicitly:
+This bites when two pending migrations touch the same table. A probe that asks "does `memories.content` exist?" reads as _already applied_ on a database where the previous pending migration has not yet renamed `memory_entries` to `memories` — skipping the work on exactly the databases that need it. Distinguish the states explicitly:
 
 ```typescript
 isApplied: async (ctx) => {
@@ -125,7 +125,7 @@ Answer only when the answer is certain. A probe that guesses wrong skips work th
 
 **Order is a contract.** Migrations run in the order they are listed. A later one may assume an earlier one has happened; nothing may assume the reverse.
 
-**There is no `down`.** Migrations that discard data cannot be reversed. Roll forward with a new one. This is also why a deploy should prove the image can boot *before* it migrates: a release that migrates and then meets an image that will not start has moved the schema forward with nothing safe to go back to.
+**There is no `down`.** Migrations that discard data cannot be reversed. Roll forward with a new one. This is also why a deploy should prove the image can boot _before_ it migrates: a release that migrates and then meets an image that will not start has moved the schema forward with nothing safe to go back to.
 
 ## Running them
 
@@ -137,11 +137,11 @@ migrate run                    # apply what is pending
 
 Each finished migration is recorded in a `schema_migrations` table the runner creates and maintains itself, so `migrate run` is safe on **every** release rather than something to remember.
 
-### Run it *before* `sync`, never after
+### Run it _before_ `sync`, never after
 
 This is the one ordering mistake that costs a release, and it is easy to get backwards because the opposite reads so reasonably — "sync first, so the migrations meet the tables the models describe."
 
-`sync` builds **today's** models, so it creates what today's models declare over columns and tables a pending migration has not made yet. Run first it does not skip them, it *fails*:
+`sync` builds **today's** models, so it creates what today's models declare over columns and tables a pending migration has not made yet. Run first it does not skip them, it _fails_:
 
 ```text
 # a database predating the migration that adds users.public_id
@@ -184,7 +184,7 @@ Close that before it merges, against the schema the migration is written for:
 1. **`sync` today's models**, so the schema is the one this release ships.
 2. **Undo your own change** — drop the column you added, restore the default you removed. This is the state the deployment is in.
 3. **Run `migrate run`, then `sync`**, in that order, which is the deploy's.
-4. **Check four things**: it applied, the change is back, the write it was *for* works against the migrated schema, and a second `migrate run` applies nothing.
+4. **Check four things**: it applied, the change is back, the write it was _for_ works against the migrated schema, and a second `migrate run` applies nothing.
 
 Step 4's third item is the one people leave out, and it is the one that catches a migration that lands a column the application then cannot use.
 

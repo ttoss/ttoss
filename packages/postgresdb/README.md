@@ -281,7 +281,7 @@ migrations asks `isApplied`; `--dry-run` exercises the probe and writes nothing;
 there is no `down`. So run a new migration once by hand before it merges, against
 the schema it is written for: `sync` today's models, undo your own change on a
 scratch database, run `migrate run` then `sync`, and check that it applied, that
-the change is back, that the write it was *for* works, and that a second run
+the change is back, that the write it was _for_ works, and that a second run
 applies nothing. By hand rather than as a test — the wind-back differs for every
 migration, and each `up()` runs exactly once, on one database, ever.
 
