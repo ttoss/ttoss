@@ -177,13 +177,17 @@ export const preview: Preview = {
   ],
 };
 /**
- * A settings zone covering both slider shapes and the toggle.
+ * A settings zone covering both slider shapes, the color ramp, and the toggle.
  *
  * The four sliders cover the matrix: `malha` is a ladder with a caption and
  * steppers, `opacidade` a continuous range with steppers but no caption,
  * `simples` a caption without steppers, and `minimo` neither — so the row under
  * the track is absent entirely. None but `opacidade` declares `min`/`max`/`step`,
  * which is what exercises the control's own fallbacks.
+ *
+ * The three ramp blocks cover where the chosen ramp comes from: `cores`
+ * declares a `defaultValue` off the first option, `cores-auto` declares none
+ * and falls to the first option, and `cores-vazio` has no options to fall to.
  */
 export const settingsPreview: Preview = {
   sections: [
@@ -242,6 +246,49 @@ export const settingsPreview: Preview = {
             id: 'minimo',
             title: 'Mínimo',
             control: { kind: 'slider', menuId: 'minimo', defaultValue: 4 },
+          },
+          {
+            id: 'cores',
+            title: 'Cor da malha',
+            icon: 'lucide:droplet',
+            control: {
+              kind: 'colorRamp',
+              menuId: 'cores',
+              defaultValue: 'verdes',
+              options: [
+                {
+                  id: 'azuis',
+                  label: 'Azuis',
+                  colors: ['#C6DBEF', '#6BAED6', '#2171B5', '#08306B'],
+                },
+                {
+                  id: 'verdes',
+                  label: 'Verdes',
+                  colors: ['#C7E9C0', '#74C476', '#238B45', '#00441B'],
+                },
+              ],
+            },
+          },
+          {
+            id: 'cores-auto',
+            title: 'Cor automática',
+            control: {
+              kind: 'colorRamp',
+              menuId: 'coresAuto',
+              options: [
+                {
+                  id: 'quente',
+                  label: 'Quente',
+                  colors: ['#FEE6CE', '#E6550D'],
+                },
+                { id: 'fria', label: 'Fria', colors: ['#DEEBF7', '#3182BD'] },
+              ],
+            },
+          },
+          {
+            id: 'cores-vazio',
+            title: 'Cor sem rampas',
+            control: { kind: 'colorRamp', menuId: 'coresVazio', options: [] },
           },
           {
             id: 'ocultar',

@@ -125,8 +125,9 @@ way and falls back to the section `id` for its accessible name. Each section's `
   **locator** (visual-only search box).
 - **`settings`** — a stack of headed blocks changing _how_ the active variation
   is drawn rather than which data it shows: a **slider** (a continuous range, or
-  a ladder of named rungs) or a **toggle** (one switch). Both publish to
-  `selection[menuId]`.
+  a ladder of named rungs), a **color ramp** (the ramps listed one per row,
+  each showing the colors it stands for), or a **toggle** (one switch). All
+  publish to `selection[menuId]`.
 
 A filter narrows the data; a setting re-renders the same data differently. They
 are separate kinds so the two control unions stay apart — a `toggle` in a filter
@@ -366,11 +367,12 @@ what a permalink needs; without one the selection stays visual-only),
 A **`settings`** body (`kind: 'settings'`) has `blocks` — each block
 `{ id, title, icon?, collapsible?, defaultOpen?, hint?, control }`, where
 `control` is a `slider`
-(`{ kind, menuId, stops?, min?, max?, step?, defaultValue, unit?, endLabels?, stepButtons? }`)
-or a `toggle` (`{ kind, menuId, icon?, defaultValue }`). Both publish to
-`selection[menuId]` as strings — a slider its number, a toggle `'true'`/`'false'`
-— seeded from the selection on first render, so a controlled value wins over the
-control's own default.
+(`{ kind, menuId, stops?, min?, max?, step?, defaultValue, unit?, endLabels?, stepButtons? }`),
+a `colorRamp` (`{ kind, menuId, options, defaultValue? }`), or a `toggle`
+(`{ kind, menuId, icon?, defaultValue }`). All publish to `selection[menuId]` as
+strings — a slider its number, a ramp the chosen option's `id`, a toggle
+`'true'`/`'false'` — seeded from the selection on first render, so a controlled
+value wins over the control's own default.
 
 A slider with `stops` is a **ladder**: the handle snaps between the rungs and
 reads each one's `label` (and `hint` beside it), while `min`/`max`/`step` are
@@ -380,6 +382,16 @@ handle wherever the rungs crowd together. Without `stops` the track sweeps
 `min`..`max` and reads its own number with `unit`. `endLabels` names the two ends
 in one caption under the track, and `stepButtons` puts a −/+ pair beside it;
 either renders that row, so neither implies the other.
+
+A `colorRamp` lists its `options` — each `{ id, label, colors }` — one per row,
+with the chosen one marked by a check rather than the dot a variation row uses:
+the row already carries its own colors, and a coloured dot beside the swatches
+would read as one more of them. The `colors` are the ramp, not a preview of one
+declared elsewhere: they draw the strip, and the selection carries only the
+chosen `id` back, so the app repaints from the config it already holds. An `id`
+matching no option — a stale permalink, or a ramp since dropped — rests on the
+first one rather than leaving the list unmarked. Anything the list needs said in
+words goes in the block's `hint`, which holds for every ramp in it.
 
 A `toggle` renders its block's `title` inside the switch row, so the block draws
 no header above it — a header there would say the same words twice. Its state

@@ -412,9 +412,43 @@ export interface GeovisWorkspaceSidebarToggleSetting {
   defaultValue: boolean;
 }
 
+/** One selectable ramp in a {@link GeovisWorkspaceSidebarColorRampSetting}. */
+export interface GeovisWorkspaceSidebarColorRampOption {
+  /** Value reported through `selection[menuId]` when this ramp is chosen. */
+  id: string;
+  /** Text shown beside the swatch strip. */
+  label: string;
+  /**
+   * The ramp's classes, in the order the map reads them. Rendered as the strip
+   * and returned through the selection, so the swatches *are* the ramp rather
+   * than a preview kept in sync with one declared elsewhere.
+   */
+  colors: string[];
+}
+
+/**
+ * A color-ramp setting: a list of ramps, one chosen at a time.
+ *
+ * A ramp is a choice among named alternatives, which is why this is its own
+ * control rather than a slider over a palette index: the options are unordered
+ * — there is no "more" direction to drag towards — and each has to show the
+ * colors it stands for before it is picked.
+ */
+export interface GeovisWorkspaceSidebarColorRampSetting {
+  kind: 'colorRamp';
+  /** Menu id the chosen ramp's `id` is reported under. */
+  menuId: string;
+  /** The selectable ramps, in the order they are rendered. */
+  options: GeovisWorkspaceSidebarColorRampOption[];
+  /** Ramp chosen on first render. Defaults to the first option. */
+  defaultValue?: string;
+}
+
 /** A settings control, discriminated by `kind`. */
 export type GeovisWorkspaceSidebarSettingsControl =
-  GeovisWorkspaceSidebarSliderSetting | GeovisWorkspaceSidebarToggleSetting;
+  | GeovisWorkspaceSidebarSliderSetting
+  | GeovisWorkspaceSidebarToggleSetting
+  | GeovisWorkspaceSidebarColorRampSetting;
 
 /** A headed block wrapping one settings control. */
 export interface GeovisWorkspaceSidebarSettingsBlock {
