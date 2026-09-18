@@ -85,14 +85,24 @@ export const messages = defineMessages({
     defaultMessage: 'Selecionado',
     description: 'Locator filter: heading above the currently selected place.',
   },
-  locatorZoomTo: {
-    defaultMessage: 'Zoom em {label}',
-    description: 'Locator filter: action zooming the map to the chosen place.',
-  },
-  locatorPlaceholder: {
-    defaultMessage: 'Selecione um município',
+  locatorClearSearch: {
+    defaultMessage: 'Limpar busca',
     description:
-      'Locator filter: zoom action label while nothing is selected yet.',
+      'Locator filter: accessible label for the button clearing the search field.',
+  },
+  locatorRemoveSelection: {
+    defaultMessage: 'Remover seleção',
+    description:
+      'Locator filter: accessible label for the button clearing the chosen place.',
+  },
+  locatorNoResults: {
+    defaultMessage: 'Nada corresponde a "{query}"',
+    description:
+      'Locator filter: shown when a long-enough query matches no option.',
+  },
+  locatorRecent: {
+    defaultMessage: 'Buscas recentes',
+    description: 'Locator filter: heading above the recently picked places.',
   },
   timelineIntervalLabel: {
     defaultMessage: 'Intervalo de reprodução',

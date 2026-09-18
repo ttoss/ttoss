@@ -9,7 +9,10 @@ import { act, fireEvent, screen } from '@ttoss/test-utils/react';
 import type * as React from 'react';
 // Type-only: this module is required from a `jest.mock` factory, so it must
 // not pull `src` (and through it the mocked `@ttoss/geovis`) in at runtime.
-import { type GeovisWorkspaceConfig } from 'src';
+import {
+  type GeovisWorkspaceConfig,
+  type GeovisWorkspaceSidebarLocatorFilter,
+} from 'src';
 
 interface MockSpec {
   mockResult?: unknown;
@@ -22,6 +25,12 @@ interface MockSpec {
 export const createGeoVisMock = () => {
   const ReactModule = jest.requireActual('react');
   const MockGeoVisContext = ReactModule.createContext<unknown>(null);
+  // Shared with the suites below, so a test can assert on what a control asked
+  // the runtime for without reaching into the provider. `dispatch` carries the
+  // bounded actions; `setView` is the imperative camera call an entry with its
+  // own `view` goes through.
+  const dispatch = jest.fn();
+  const setView = jest.fn();
 
   return {
     GeoVisProvider: ({
@@ -35,7 +44,22 @@ export const createGeoVisMock = () => {
       };
       return (
         <MockGeoVisContext.Provider
-          value={{ spec, result, click: null, dismiss: () => {} }}
+          value={{
+            spec,
+            result,
+            click: null,
+            dismiss: () => {},
+            // A fresh identity per render, like the real provider's, whose
+            // `dispatch` is a `useCallback` over the committed result. A
+            // control that re-dispatches on every provider render would look
+            // correct against a stable mock and flood the action log in the app.
+            dispatch: (action: unknown) => {
+              return dispatch(action);
+            },
+            setView: (options: unknown) => {
+              return setView(options);
+            },
+          }}
         >
           <div data-testid="geovis-provider">{children}</div>
         </MockGeoVisContext.Provider>
@@ -56,6 +80,9 @@ export const createGeoVisMock = () => {
     GeoVisLegend: () => {
       return null;
     },
+    /** Test-only handles on the mocked runtime calls. */
+    __dispatch: dispatch,
+    __setView: setView,
     // Mirrors the real hook: it only reads `matchMedia`, which `mockViewport`
     // stubs per test, and the HUD's whole point is to be compact-only.
     // `globalThis`, not `window` — babel rejects out-of-scope refs in a
@@ -165,9 +192,37 @@ export const preview: Preview = {
               kind: 'locator',
               placeholder: 'Buscar município...',
               minChars: 2,
+              menuId: 'local',
               options: [
-                { id: '1', label: 'São Paulo', sublabel: 'SP · Brasil' },
-                { id: '2', label: 'Santos' },
+                {
+                  id: '1',
+                  label: 'São Paulo',
+                  sublabel: 'SP · Brasil',
+                  viewPresetId: 'sp',
+                },
+                { id: '2', label: 'Santos', viewPresetId: 'santos' },
+                // Shares a prefix with `Santos`, so one query returns two
+                // results — which is what the arrow keys need to walk. It
+                // declares no camera at all, so picking it moves nothing.
+                { id: '3', label: 'Santo André', value: '1.240' },
+                // Carries its own camera instead of naming a preset, the form a
+                // list out of the app's own data takes. Matches no `san` query,
+                // so it stays out of the suites that walk the results.
+                {
+                  id: '4',
+                  label: 'Recife',
+                  view: { center: [-34.88, -8.05], zoom: 9 },
+                  animation: { duration: 2400, essential: true },
+                },
+                // Stands for a shape already on the map: framed and marked
+                // rather than travelled to. Also out of every `san` query.
+                {
+                  id: '3106200',
+                  label: 'Belo Horizonte',
+                  sublabel: 'MG',
+                  feature: { layerId: 'municipios', featureId: 3106200 },
+                  animation: { duration: 2400, essential: true },
+                },
               ],
             },
           },
@@ -348,6 +403,36 @@ export const closeOnPlayPreview: Preview = {
       },
     };
   }),
+};
+
+/**
+ * The same preview with its locator swapped for `control`, so a suite can vary
+ * the one block it is about without restating the two tabs around it.
+ *
+ * @param control - The locator to put in the block's place.
+ * @returns The preview.
+ */
+export const locatorPreview = (
+  control: GeovisWorkspaceSidebarLocatorFilter
+): Preview => {
+  return {
+    sections: preview.sections.map((section) => {
+      if (section.body.kind !== 'filters') {
+        return section;
+      }
+      return {
+        ...section,
+        body: {
+          ...section.body,
+          blocks: section.body.blocks.map((block) => {
+            return block.control.kind === 'locator'
+              ? { ...block, control }
+              : block;
+          }),
+        },
+      };
+    }),
+  };
 };
 
 /**
