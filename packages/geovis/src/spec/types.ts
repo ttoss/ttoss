@@ -643,12 +643,51 @@ export interface VisualizationSpec {
 
 export type GeovisSpec = VisualizationSpec;
 
+/**
+ * How the camera travels to a {@link ViewPreset}.
+ *
+ * Declared on the preset rather than on the action, because the flight belongs
+ * to the destination: the app that curated a country-wide overview and a city
+ * knows that the trip between them is long enough to be worth watching, and
+ * whatever asks for the move — a sidebar, an agent — should not have to.
+ */
+export interface ViewAnimation {
+  /**
+   * Whether the camera flies rather than lands. Defaults to `true`; `false` is
+   * an instant cut, which is what a move the user is not meant to follow wants.
+   */
+  animate?: boolean;
+  /**
+   * Milliseconds the flight takes. Omitted, the engine derives one from the
+   * distance, which makes a short hop and a continental flight read alike.
+   */
+  duration?: number;
+  /**
+   * How far the camera pulls back on the way. Higher arcs higher, which is what
+   * shows the route rather than just the ends of it. MapLibre defaults to 1.42.
+   */
+  curve?: number;
+  /** Ground speed of the flight, ignored when `duration` is given. */
+  speed?: number;
+  /**
+   * Fly even for a viewer who asked their system to reduce motion. Off by
+   * default, so that request is honoured and the camera cuts instead.
+   *
+   * Turn it on only where the flight carries the meaning — where the point is
+   * *where* the map went, not that it went somewhere — since it overrides an
+   * accessibility preference the viewer set deliberately.
+   */
+  essential?: boolean;
+}
+
 /** A named camera position `set-view-preset` can target by `id`. */
 export interface ViewPreset {
   id: string;
   /** Human-readable label, e.g. for a UI picker. */
   label?: string;
   view: ViewState;
+  /** How the camera travels here. Omitted, the engine's own flight applies. */
+  animation?: ViewAnimation;
 }
 
 /**

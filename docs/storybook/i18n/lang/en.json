@@ -177,6 +177,11 @@
     "defaultMessage": "No value",
     "description": "Shown in the inspector panel when the selected feature has no bound value."
   },
+  "8Drt0l": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Buscas recentes",
+    "description": "Locator filter: heading above the recently picked places."
+  },
   "AVBgd7": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Two sources conflict with each other.",
@@ -217,6 +222,11 @@
     "defaultMessage": "This data feature is not supported.",
     "description": "Warnings panel: a data-level feature is not implemented by the engine adapter."
   },
+  "KvV4pR": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Nada corresponde a \"{query}\"",
+    "description": "Locator filter: shown when a long-enough query matches no option."
+  },
   "NNlALX": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Pause",
@@ -232,6 +242,11 @@
     "defaultMessage": "Two map data entries collide on the same feature-state key.",
     "description": "Warnings panel: resolved stateKey collides across mapData entries."
   },
+  "Rdl2hc": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Limpar busca",
+    "description": "Locator filter: accessible label for the button clearing the search field."
+  },
   "SypGjh": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Two map data entries share the same id.",
@@ -246,11 +261,6 @@
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Play",
     "description": "Label for the timeline button that auto-advances the current value in the preview sidebar."
-  },
-  "UKeLzU": {
-    "module": "@ttoss/geovis-workspace",
-    "defaultMessage": "Zoom em {label}",
-    "description": "Locator filter: action zooming the map to the chosen place."
   },
   "V3z2n/": {
     "module": "@ttoss/geovis-workspace",
@@ -276,6 +286,11 @@
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "The visualization spec does not match the expected schema.",
     "description": "Warnings panel: spec fails JSON schema validation."
+  },
+  "b+PIz+": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Remover seleção",
+    "description": "Locator filter: accessible label for the button clearing the chosen place."
   },
   "cDAeJo": {
     "module": "@ttoss/geovis-workspace",
@@ -341,11 +356,6 @@
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "The visualization spec targets an unsupported schema version.",
     "description": "Warnings panel: spec.schemaVersion is not supported."
-  },
-  "ymdThy": {
-    "module": "@ttoss/geovis-workspace",
-    "defaultMessage": "Selecione um município",
-    "description": "Locator filter: zoom action label while nothing is selected yet."
   },
   "zija6w": {
     "module": "@ttoss/geovis-workspace",

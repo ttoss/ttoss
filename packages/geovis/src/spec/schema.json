@@ -606,6 +606,18 @@
           },
           "view": {
             "$ref": "#/$defs/ViewState"
+          },
+          "animation": {
+            "description": "How the camera travels to this preset. Omitted, the engine's own flight applies — which a viewer's reduced-motion setting turns into a jump unless `essential` is set.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "animate": { "type": "boolean" },
+              "duration": { "type": "number", "minimum": 0 },
+              "curve": { "type": "number", "exclusiveMinimum": 0 },
+              "speed": { "type": "number", "exclusiveMinimum": 0 },
+              "essential": { "type": "boolean" }
+            }
           }
         }
       }

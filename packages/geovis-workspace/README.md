@@ -122,11 +122,14 @@ way and falls back to the section `id` for its accessible name. Each section's `
   a **timeline** (numeric range with an optional histogram and play/pause; drives
   `selection[menuId]` when it declares one, otherwise visual-only), **chips**
   (visual-only toggle chips whose active count shows as a tab badge), or a
-  **locator** (visual-only search box).
+  **locator** (a combobox over the options it declares, with keyboard-walkable
+  results, recent picks and a card for the current one; a pick can move the
+  camera and reach `selection[menuId]`).
 - **`settings`** — a stack of headed blocks changing _how_ the active variation
   is drawn rather than which data it shows: a **slider** (a continuous range, or
-  a ladder of named rungs) or a **toggle** (one switch). Both publish to
-  `selection[menuId]`.
+  a ladder of named rungs), a **color ramp** (the ramps listed one per row,
+  each showing the colors it stands for), or a **toggle** (one switch). All
+  publish to `selection[menuId]`.
 
 A filter narrows the data; a setting re-renders the same data differently. They
 are separate kinds so the two control unions stay apart — a `toggle` in a filter
@@ -360,17 +363,21 @@ years),
 `menuId` the active ids reach `selection[menuId]` joined by commas, `''` when
 none are active, which is both what the one-string-per-key selection holds and
 what a permalink needs; without one the selection stays visual-only),
-`locator` (`{ kind, placeholder?, minChars?, options }`), or
+`locator` (`{ kind, menuId?, placeholder?, minChars?, options }`, each option
+`{ id, label, sublabel?, value?, feature?, view?, animation?, viewPresetId? }` —
+`value` is an already-formatted readout shown after the label in the results
+and, larger, on the selected card), or
 `variations` (`{ kind, menuId, variations, defaultValue?, closeOnSelect? }`).
 
 A **`settings`** body (`kind: 'settings'`) has `blocks` — each block
 `{ id, title, icon?, collapsible?, defaultOpen?, hint?, control }`, where
 `control` is a `slider`
-(`{ kind, menuId, stops?, min?, max?, step?, defaultValue, unit?, endLabels?, stepButtons? }`)
-or a `toggle` (`{ kind, menuId, icon?, defaultValue }`). Both publish to
-`selection[menuId]` as strings — a slider its number, a toggle `'true'`/`'false'`
-— seeded from the selection on first render, so a controlled value wins over the
-control's own default.
+(`{ kind, menuId, stops?, min?, max?, step?, defaultValue, unit?, endLabels?, stepButtons? }`),
+a `colorRamp` (`{ kind, menuId, options, defaultValue? }`), or a `toggle`
+(`{ kind, menuId, icon?, defaultValue }`). All publish to `selection[menuId]` as
+strings — a slider its number, a ramp the chosen option's `id`, a toggle
+`'true'`/`'false'` — seeded from the selection on first render, so a controlled
+value wins over the control's own default.
 
 A slider with `stops` is a **ladder**: the handle snaps between the rungs and
 reads each one's `label` (and `hint` beside it), while `min`/`max`/`step` are
@@ -380,6 +387,84 @@ handle wherever the rungs crowd together. Without `stops` the track sweeps
 `min`..`max` and reads its own number with `unit`. `endLabels` names the two ends
 in one caption under the track, and `stepButtons` puts a −/+ pair beside it;
 either renders that row, so neither implies the other.
+
+A `colorRamp` lists its `options` — each `{ id, label, colors }` — one per row,
+with the chosen one marked by a check rather than the dot a variation row uses:
+the row already carries its own colors, and a coloured dot beside the swatches
+would read as one more of them. The `colors` are the ramp, not a preview of one
+declared elsewhere: they draw the strip, and the selection carries only the
+chosen `id` back, so the app repaints from the config it already holds. An `id`
+matching no option — a stale permalink, or a ramp since dropped — rests on the
+first one rather than leaving the list unmarked. Anything the list needs said in
+words goes in the block's `hint`, which holds for every ramp in it.
+
+A `locator` pick does two independent things, each opted into on its own: it
+moves the camera, and it reports the choice.
+
+The camera comes from the entry. `view` (with an optional `animation`) carries
+it on the entry itself and is applied through `runtime.setView()` — the move
+never rebuilds the spec, so the layers and sources on screen are not re-created
+to pan. This is the form for a list that comes out of the app's own data:
+
+```ts
+options: municipios.map((m) => ({
+  id: m.id,
+  label: m.nome,
+  sublabel: m.uf,
+  view: { center: [m.lng, m.lat], zoom: 9 },
+  animation: { duration: 2400, curve: 1.6, essential: true },
+}));
+```
+
+The rows are already the app's, so their coordinates ride along and the spec
+stays out of it. Declaring one `ViewPreset` per row instead would put thousands
+of entries in a document revalidated on every rebuild, and list them all back in
+every repair payload, to name positions no agent should be enumerating.
+
+`feature` is the form for an entry that _is_ a shape already on the map — a
+territory, a district, a catchment. It names the layer, and the pick both frames
+that shape and marks it:
+
+```ts
+options: municipios.map((m) => ({
+  id: m.ibge,
+  label: m.nome,
+  sublabel: m.uf,
+  feature: { layerId: 'municipios', featureId: Number(m.ibge) },
+  animation: { duration: 2400, essential: true },
+}));
+```
+
+No coordinates at all: `fit-feature` reads the bounds off the source the layer
+draws, so how close the camera ends up is the size of the territory rather than
+a `zoom` guessed in advance, and `select-feature` sets `feature-state.selected`,
+which the layer's `selectedPaint` is what draws. The marking outlives the
+framing — drag the map away and the shape stays marked as the one searched for —
+and clearing the pick takes it off. `featureId` defaults to the entry's own `id`,
+which is the arrangement to aim for: one key that searches, frames, marks and
+travels in the permalink.
+
+`viewPresetId` is the other form, for a camera the app curated and named in
+`spec.viewPresets`. It dispatches `set-view-preset`, so the move lands in the
+action log and the same framing stays reachable by other means — an agent's
+among them; a preset the spec does not declare is a rejected dispatch that
+surfaces in the warnings panel rather than failing silently. Declare one form
+only: given more than one, `feature` wins over `viewPresetId`, which wins over
+`view` — an entry that is a shape is framed as one, and a named, spec-declared
+camera is more deliberate than an inline position.
+
+With `menuId` the chosen entry's `id` reaches `selection[menuId]`. It is read
+back too, so a restored permalink opens with that entry on the card — including
+when the options arrive after the first render, which is what a list loaded from
+a file does; the spec's own `view` still frames the first paint. Clearing the
+pick — from the field's own `x`, from the card's, or by emptying the query —
+publishes `''`, the same "nothing chosen" the chips publish when their last one
+goes; the camera is left where the last pick took it, since a journey already
+made is not undone by clearing the search that started it.
+
+Searching is accent- and case-insensitive over each entry's `label`: `sao` finds
+`São Paulo`, `goiania` finds `Goiânia`. The result still reads with its accents,
+because the matched run is mapped back onto the label as written.
 
 A `toggle` renders its block's `title` inside the switch row, so the block draws
 no header above it — a header there would say the same words twice. Its state

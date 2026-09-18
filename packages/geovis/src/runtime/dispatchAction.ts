@@ -1,6 +1,8 @@
+import { computeFeatureBbox, estimateMaxZoom } from '../spec/bounds';
 import type { GeoVisIssue } from '../spec/result';
 import type { VisualizationLayer, VisualizationSpec } from '../spec/types';
 import type {
+  FitFeatureAction,
   GeoVisAction,
   GeoVisSelection,
   SelectFeatureAction,
@@ -242,10 +244,11 @@ const buildUnknownViewPresetIssue = (
 
 /**
  * Compiles `set-view-preset` to the existing `runtime.setView()` mechanism —
- * resolves `presetId` against `spec.viewPresets` and hands back its `view`
- * as `SetViewOptions`. `projection` is not carried over: `setView`'s
- * imperative camera move never supported it (a pre-existing limitation,
- * not introduced here) — only `update(spec)` can change projection.
+ * resolves `presetId` against `spec.viewPresets` and hands back its `view`,
+ * with whatever flight the preset declares, as `SetViewOptions`. `projection`
+ * is not carried over: `setView`'s imperative camera move never supported it
+ * (a pre-existing limitation, not introduced here) — only `update(spec)` can
+ * change projection.
  */
 const compileSetViewPreset = (
   spec: VisualizationSpec,
@@ -258,7 +261,101 @@ const compileSetViewPreset = (
     return { issue: buildUnknownViewPresetIssue(spec, action.presetId) };
   }
   const { center, zoom, pitch, bearing } = preset.view;
-  return { setViewOptions: { center, zoom, pitch, bearing } };
+  return {
+    setViewOptions: { center, zoom, pitch, bearing, ...preset.animation },
+  };
+};
+
+/** Builds the `unknown-source` issue for a layer whose `sourceId` is not declared. */
+const buildUnknownSourceIssue = (layer: VisualizationLayer): GeoVisIssue => {
+  return {
+    code: 'unknown-source',
+    subject: { path: 'layer.sourceId', id: layer.sourceId },
+    message: `layer '${layer.id}' references unknown source '${layer.sourceId}'`,
+    repair: [],
+  };
+};
+
+/**
+ * Builds the `unknown-feature-id` issue for a `fit-feature` action whose
+ * feature has no box to frame — either the source carries no client-side
+ * geometry (URL-referenced or tiled), or it carries some and this feature is
+ * not among it.
+ *
+ * No `allowed-values` repair: the answer would be every feature id in the
+ * source, which for a boundary mesh is thousands of them — a repair payload
+ * nobody can act on. The message names the source instead, which is where the
+ * caller has to look.
+ */
+const buildUnframeableFeatureIssue = (
+  layer: VisualizationLayer,
+  featureId: string | number
+): GeoVisIssue => {
+  return {
+    code: 'unknown-feature-id',
+    subject: { path: 'action.featureId', id: String(featureId) },
+    message: `source '${layer.sourceId}' has no geometry to frame for featureId '${featureId}'`,
+    repair: [],
+  };
+};
+
+/** Pixels of breathing room a framed feature gets when the action names none. */
+const FIT_FEATURE_PADDING = 40;
+
+/**
+ * Compiles `fit-feature` to `runtime.setView()` with the feature's own bounds.
+ *
+ * The box is read from the source the layer draws, which is why the action can
+ * stay geometry-free: the caller says which feature, the spec already holds
+ * where it is. `estimateMaxZoom` caps how close the camera may end up, so a
+ * small feature is framed with its surroundings rather than filling the screen
+ * with one shape and no context.
+ *
+ * A source with no client-side geometry — a URL-referenced or tiled one — has
+ * no box to compute, and is rejected rather than silently framing nothing: the
+ * data has to be fetched first, the way auto-fit does it.
+ */
+const compileFitFeature = (
+  spec: VisualizationSpec,
+  action: FitFeatureAction
+): ActionOutcome => {
+  const layer = spec.layers.find((l) => {
+    return l.id === action.layerId;
+  });
+  if (!layer) {
+    return {
+      issue: buildUnknownLayerIdIssue(spec, action.layerId, 'action.layerId'),
+    };
+  }
+
+  const source = spec.sources.find((entry) => {
+    return entry.id === layer.sourceId;
+  });
+  if (!source) {
+    return { issue: buildUnknownSourceIssue(layer) };
+  }
+
+  const promoteId = spec.mapData?.find((entry) => {
+    return entry.mapId === source.id && entry.joinKey;
+  })?.joinKey;
+
+  const bbox = computeFeatureBbox({
+    source,
+    featureId: action.featureId,
+    promoteId,
+  });
+  if (!bbox) {
+    return { issue: buildUnframeableFeatureIssue(layer, action.featureId) };
+  }
+
+  return {
+    setViewOptions: {
+      bounds: bbox,
+      padding: action.padding ?? FIT_FEATURE_PADDING,
+      maxZoom: estimateMaxZoom(bbox),
+      ...action.animation,
+    },
+  };
 };
 
 /**
@@ -282,5 +379,7 @@ export const compileAction = (
       return compileSetFilter(spec, action);
     case 'set-view-preset':
       return compileSetViewPreset(spec, action);
+    case 'fit-feature':
+      return compileFitFeature(spec, action);
   }
 };

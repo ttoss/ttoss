@@ -1,4 +1,9 @@
-import type { MapClickInfo, RepairOption } from '@ttoss/geovis';
+import type {
+  MapClickInfo,
+  RepairOption,
+  ViewAnimation,
+  ViewState,
+} from '@ttoss/geovis';
 import * as React from 'react';
 
 export interface GeovisWorkspaceSource {
@@ -261,15 +266,110 @@ export interface GeovisWorkspaceSidebarLocatorOption {
   label: string;
   /** Secondary line shown under the label in the selected card. */
   sublabel?: string;
+  /**
+   * Readout shown after the label in the results and, larger, in the selected
+   * card — the figure that makes one result worth picking over another, already
+   * formatted. Omit it and neither place draws anything.
+   *
+   * A string, not a number: what it reads in belongs to the app (a count, a
+   * rate, a currency), and so does the locale it is grouped for.
+   */
+  value?: string;
+  /**
+   * Id of the `ViewPreset` in `spec.viewPresets` the camera moves to when this
+   * entry is picked.
+   *
+   * For a camera the app curated and named — a handful of framings it also
+   * wants reachable by other means, an agent's `set-view-preset` among them.
+   * The move is dispatched, so it lands in the action log.
+   *
+   * Use {@link view} instead for entries that come from the app's own data, and
+   * declare one or the other: given both, the preset wins, since a named,
+   * spec-declared camera is the more deliberate of the two.
+   */
+  viewPresetId?: string;
+  /**
+   * Camera this entry moves to when it is picked, carried on the entry itself.
+   *
+   * For a list that comes out of the app's data — a file of municipalities, a
+   * search index — where declaring one `ViewPreset` per row would put thousands
+   * of entries in the spec, to be revalidated on every rebuild and listed back
+   * in every repair payload, for positions no agent should be enumerating
+   * anyway. The rows are already the app's; their coordinates ride along.
+   *
+   * Applied through `runtime.setView()`: the camera moves without the spec
+   * being rebuilt, exactly as a preset does. It is not dispatched, so unlike
+   * {@link viewPresetId} it leaves no entry in the action log — this is user
+   * navigation, not a step an agent took.
+   *
+   * Only `center`, `zoom`, `pitch` and `bearing` are applied; `projection` is
+   * not, the same limitation `setView` has everywhere.
+   */
+  view?: ViewState;
+  /**
+   * How the camera travels to {@link view} or {@link feature} — a flight of a
+   * given duration, or an instant cut. A {@link viewPresetId} carries its own
+   * animation instead, declared on the preset.
+   */
+  animation?: ViewAnimation;
+  /**
+   * The feature this entry stands for: a shape already drawn on the map. The
+   * pick frames that shape and marks it as selected.
+   *
+   * For a list whose entries *are* geometry — territories, districts,
+   * catchments — where a `center`/`zoom` would be a guess at what the shape
+   * already knows: how close the camera ends up is the size of the thing.
+   * Framing reads the bounds off the source the layer draws, so nothing here
+   * carries coordinates; marking goes through `feature-state.selected`, which
+   * the layer's `selectedPaint` is what draws.
+   *
+   * `featureId` defaults to the entry's own `id`, which is the arrangement to
+   * aim for: one key — an IBGE code, a district code — that searches, frames,
+   * marks and travels in the permalink. Declare it only where the entry's id
+   * and the feature's id genuinely differ.
+   *
+   * Takes precedence over {@link view} and {@link viewPresetId}: an entry that
+   * is a shape is framed as one.
+   */
+  feature?: {
+    /** Id of the layer the shape is drawn on — must match `spec.layers[].id`. */
+    layerId: string;
+    /** Feature id, when it is not the entry's own `id`. */
+    featureId?: string | number;
+    /** Pixels of breathing room around the framed shape. Defaults to `40`. */
+    padding?: number;
+  };
 }
 
 /**
- * A locator filter: a search box that filters a list and, once an entry is
- * chosen, shows a selected card and a "zoom" action. Visual-only in the
- * preview — no real map navigation happens.
+ * A locator filter: a combobox over {@link options}, with a results list the
+ * arrow keys walk, the picks made so far offered back while the field is empty,
+ * and a card for the current one.
+ *
+ * A pick does two independent things, each opted into on its own: the entry's
+ * own camera moves the map — {@link GeovisWorkspaceSidebarLocatorOption.feature}
+ * to frame and mark a shape already on the map,
+ * {@link GeovisWorkspaceSidebarLocatorOption.view} for a position out of the
+ * app's data, or {@link GeovisWorkspaceSidebarLocatorOption.viewPresetId} for
+ * one the spec named — and {@link menuId} reports which entry was chosen. They are separate
+ * because they answer different questions — where the map looks, and what the
+ * app should do about the choice — and a locator may want either alone.
+ *
+ * Searching is accent- and case-insensitive over each entry's `label`, which is
+ * what lets a list of Brazilian place names be found by typing without accents.
  */
 export interface GeovisWorkspaceSidebarLocatorFilter {
   kind: 'locator';
+  /**
+   * Keys the shared selection this locator drives: the chosen entry's `id`
+   * reaches `selection[menuId]`. Omit to keep the pick inside the control.
+   *
+   * Read on first render too, so an app restoring a permalink opens with that
+   * entry on the card. The camera is *not* moved to match: the spec's own
+   * `view` is what frames the first paint, and a preset dispatched on mount
+   * would race it.
+   */
+  menuId?: string;
   /** Placeholder shown in the search box. */
   placeholder?: string;
   /** Minimum characters before results are shown. Defaults to `2`. */
@@ -412,9 +512,43 @@ export interface GeovisWorkspaceSidebarToggleSetting {
   defaultValue: boolean;
 }
 
+/** One selectable ramp in a {@link GeovisWorkspaceSidebarColorRampSetting}. */
+export interface GeovisWorkspaceSidebarColorRampOption {
+  /** Value reported through `selection[menuId]` when this ramp is chosen. */
+  id: string;
+  /** Text shown beside the swatch strip. */
+  label: string;
+  /**
+   * The ramp's classes, in the order the map reads them. Rendered as the strip
+   * and returned through the selection, so the swatches *are* the ramp rather
+   * than a preview kept in sync with one declared elsewhere.
+   */
+  colors: string[];
+}
+
+/**
+ * A color-ramp setting: a list of ramps, one chosen at a time.
+ *
+ * A ramp is a choice among named alternatives, which is why this is its own
+ * control rather than a slider over a palette index: the options are unordered
+ * — there is no "more" direction to drag towards — and each has to show the
+ * colors it stands for before it is picked.
+ */
+export interface GeovisWorkspaceSidebarColorRampSetting {
+  kind: 'colorRamp';
+  /** Menu id the chosen ramp's `id` is reported under. */
+  menuId: string;
+  /** The selectable ramps, in the order they are rendered. */
+  options: GeovisWorkspaceSidebarColorRampOption[];
+  /** Ramp chosen on first render. Defaults to the first option. */
+  defaultValue?: string;
+}
+
 /** A settings control, discriminated by `kind`. */
 export type GeovisWorkspaceSidebarSettingsControl =
-  GeovisWorkspaceSidebarSliderSetting | GeovisWorkspaceSidebarToggleSetting;
+  | GeovisWorkspaceSidebarSliderSetting
+  | GeovisWorkspaceSidebarToggleSetting
+  | GeovisWorkspaceSidebarColorRampSetting;
 
 /** A headed block wrapping one settings control. */
 export interface GeovisWorkspaceSidebarSettingsBlock {
