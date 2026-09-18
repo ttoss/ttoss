@@ -1,6 +1,7 @@
 export type {
   Flag,
   GenerateCliRouteManifestArgs,
+  ParameterLocation,
   Route,
 } from './generateCliRoutes';
 export {

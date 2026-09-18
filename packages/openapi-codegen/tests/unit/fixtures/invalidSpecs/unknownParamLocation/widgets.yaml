@@ -1,0 +1,17 @@
+openapi: 3.0.3
+tags:
+  - name: Widgets
+paths:
+  /widgets:
+    get:
+      operationId: listWidgets
+      tags: [Widgets]
+      parameters:
+        - name: page
+          in: formData
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: ok
+components: {}

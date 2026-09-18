@@ -2,7 +2,7 @@ import type { Route } from './generateCliRoutes';
 
 const renderRouteEntry = (command: string, route: Route): string => {
   const flags = JSON.stringify(route.flags);
-  return `  '${command}': { serviceClass: '${route.serviceClass}', operationId: '${route.operationId}', description: ${JSON.stringify(route.description)}, moduleDocsUrl: ${JSON.stringify(route.moduleDocsUrl)}, httpMethod: '${route.httpMethod}', pathParams: ${JSON.stringify(route.pathParams)}, queryParams: ${JSON.stringify(route.queryParams)}, flags: ${flags} },`;
+  return `  '${command}': { serviceClass: '${route.serviceClass}', operationId: '${route.operationId}', description: ${JSON.stringify(route.description)}, moduleDocsUrl: ${JSON.stringify(route.moduleDocsUrl)}, httpMethod: '${route.httpMethod}', pathParams: ${JSON.stringify(route.pathParams)}, queryParams: ${JSON.stringify(route.queryParams)}, headerParams: ${JSON.stringify(route.headerParams)}, cookieParams: ${JSON.stringify(route.cookieParams)}, flags: ${flags} },`;
 };
 
 /**
@@ -28,7 +28,11 @@ export const renderCliRoutesSource = (
     '  pathParams: string[];',
     '  /** snake_case query parameter names */',
     '  queryParams: string[];',
-    '  /** snake_case flags (path, query, body) with metadata for --help. */',
+    '  /** snake_case header parameter names */',
+    '  headerParams: string[];',
+    '  /** snake_case cookie parameter names */',
+    '  cookieParams: string[];',
+    '  /** snake_case flags (every parameter location, plus body) with metadata for --help. */',
     '  flags: Flag[];',
     '}',
     '',
@@ -38,7 +42,7 @@ export const renderCliRoutesSource = (
     '  description: string;',
     '  required: boolean;',
     '  type: string;',
-    "  in: 'path' | 'query' | 'body';",
+    "  in: 'path' | 'query' | 'header' | 'cookie' | 'body';",
     '}',
     '',
     'export const routes: Record<string, Route> = {',
