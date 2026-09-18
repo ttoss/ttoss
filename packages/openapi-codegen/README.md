@@ -45,8 +45,8 @@ Feed the resulting file to a spec-to-client generator such as
 
 Reads the same per-module spec files and builds a map from CLI command name
 (kebab-case, derived from `operationId`) to the SDK service class, HTTP
-method, path/query parameters, and request-body flags needed to dispatch and
-document that command — without running any HTTP-client codegen.
+method, parameters, and request-body flags needed to dispatch and document
+that command — without running any HTTP-client codegen.
 
 ```ts
 import fs from 'node:fs';
@@ -67,6 +67,22 @@ fs.writeFileSync('./src/generated/routes.ts', renderCliRoutesSource(routes));
 A CLI entry point (e.g. built with [`commander`](https://www.npmjs.com/package/commander))
 then reads `routes.ts` and dynamically calls the matching SDK service method
 for each command.
+
+### Parameters
+
+Every OpenAPI parameter location becomes a CLI flag: `path`, `query`,
+`header`, and `cookie`. Each `Route` also lists the parameter names per
+location (`pathParams`, `queryParams`, `headerParams`, `cookieParams`) so the
+CLI entry point knows where to send each value. Path parameters default to
+required; every other location defaults to optional unless the spec says
+`required: true`.
+
+A parameter a spec declares must always reach the CLI, so
+`generateCliRouteManifest` throws — rather than dropping the parameter — when
+it meets one it cannot turn into a flag: a `$ref` it cannot resolve (only
+same-file refs into `components.parameters` are supported) or an `in` value
+that is not one of the four locations above. Silently dropping either would
+leave the flag missing from `--help` with nothing to explain why.
 
 ### Naming conventions
 
