@@ -33,6 +33,16 @@ export const tagToPascalClassName = (tag: string): string => {
 
 const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete'] as const;
 
+/**
+ * Every location OpenAPI allows a parameter to live in. All four become CLI
+ * flags: a parameter a spec declares but the CLI never exposes is invisible
+ * to the person running `--help`, so there is no "unsupported location" case
+ * that silently drops one.
+ */
+const PARAMETER_LOCATIONS = ['path', 'query', 'header', 'cookie'] as const;
+
+export type ParameterLocation = (typeof PARAMETER_LOCATIONS)[number];
+
 /** Metadata for a single CLI flag, used to render `--help` output. */
 export interface Flag {
   /** flag name in snake_case (e.g. project_id) */
@@ -40,8 +50,8 @@ export interface Flag {
   description: string;
   required: boolean;
   type: string;
-  /** where the value is sent: path, query, or body */
-  in: 'path' | 'query' | 'body';
+  /** where the value is sent: a parameter location, or the request body */
+  in: ParameterLocation | 'body';
 }
 
 export interface Route {
@@ -57,12 +67,21 @@ export interface Route {
   pathParams: string[];
   /** snake_case query parameter names */
   queryParams: string[];
-  /** snake_case flags (path, query, body) with metadata for --help. */
+  /** snake_case header parameter names */
+  headerParams: string[];
+  /** snake_case cookie parameter names */
+  cookieParams: string[];
+  /** snake_case flags (every parameter location, plus body) with metadata for --help. */
   flags: Flag[];
 }
 
 /** Resolves same-file `$ref`s against a single spec's `components`. */
 interface RefResolvers {
+  /**
+   * Resolves a parameter and validates it, throwing when it cannot be
+   * resolved or declares an unknown location — both cases used to drop the
+   * parameter from the generated CLI without a word.
+   */
   resolveParam: (p: OpenApiParameterFull) => OpenApiParameterFull;
   resolveSchema: (
     schema: OpenApiRequestBodySchema & { $ref?: string }
@@ -72,12 +91,33 @@ interface RefResolvers {
   ) => OpenApiRequestBodyProperty;
 }
 
-const createRefResolvers = (spec: CliOpenApiSpec): RefResolvers => {
+const createRefResolvers = (args: {
+  spec: CliOpenApiSpec;
+  specLabel: string;
+}): RefResolvers => {
+  const { spec, specLabel } = args;
+
   return {
     resolveParam: (p) => {
-      if (!p.$ref) return p;
-      const refKey = p.$ref.replace('#/components/parameters/', '');
-      return spec.components?.parameters?.[refKey] ?? p;
+      const refKey = p.$ref?.replace('#/components/parameters/', '');
+      const resolved = refKey ? spec.components?.parameters?.[refKey] : p;
+
+      if (!resolved) {
+        throw new Error(
+          `${specLabel}: cannot resolve parameter $ref "${p.$ref}". Only ` +
+            'same-file refs into `components.parameters` are supported.'
+        );
+      }
+
+      if (!PARAMETER_LOCATIONS.includes(resolved.in)) {
+        throw new Error(
+          `${specLabel}: parameter "${resolved.name}" declares \`in: ` +
+            `${resolved.in}\`, which is not a valid OpenAPI parameter ` +
+            `location. Expected one of: ${PARAMETER_LOCATIONS.join(', ')}.`
+        );
+      }
+
+      return resolved;
     },
     resolveSchema: (schema) => {
       if (!schema.$ref) return schema;
@@ -111,19 +151,36 @@ const mergeParams = (args: {
   ];
 };
 
+/**
+ * Builds one flag per parameter, whatever its location. `resolveParam` has
+ * already rejected anything that is not a valid location, so no parameter
+ * can reach here and be dropped.
+ */
 const buildParamFlags = (params: OpenApiParameterFull[]): Flag[] => {
+  return params.map((p) => {
+    return {
+      name: p.name,
+      description: p.description ?? '',
+      // OpenAPI requires path parameters to be required; others default to optional.
+      required: p.required ?? p.in === 'path',
+      type: p.schema?.type ?? 'string',
+      in: p.in,
+    };
+  });
+};
+
+/** Names of the parameters sent in a given location, in spec order. */
+const paramNamesIn = (args: {
+  params: OpenApiParameterFull[];
+  location: ParameterLocation;
+}): string[] => {
+  const { params, location } = args;
   return params
-    .filter((p): p is OpenApiParameterFull & { in: 'path' | 'query' } => {
-      return p.in === 'path' || p.in === 'query';
+    .filter((p) => {
+      return p.in === location;
     })
     .map((p) => {
-      return {
-        name: p.name,
-        description: p.description ?? '',
-        required: p.required ?? p.in === 'path',
-        type: p.schema?.type ?? 'string',
-        in: p.in,
-      };
+      return p.name;
     });
 };
 
@@ -220,20 +277,10 @@ const buildRoute = (args: {
       .trim(),
     moduleDocsUrl,
     httpMethod: method,
-    pathParams: params
-      .filter((p) => {
-        return p.in === 'path';
-      })
-      .map((p) => {
-        return p.name;
-      }),
-    queryParams: params
-      .filter((p) => {
-        return p.in === 'query';
-      })
-      .map((p) => {
-        return p.name;
-      }),
+    pathParams: paramNamesIn({ params, location: 'path' }),
+    queryParams: paramNamesIn({ params, location: 'query' }),
+    headerParams: paramNamesIn({ params, location: 'header' }),
+    cookieParams: paramNamesIn({ params, location: 'cookie' }),
     flags,
   };
 };
@@ -316,7 +363,7 @@ const processSpecFile = (args: {
   const moduleSlug = path.basename(filePath, path.extname(filePath));
   const docsUrl = moduleDocsUrl(moduleSlug);
   const moduleTag = spec.tags?.[0]?.name;
-  const resolvers = createRefResolvers(spec);
+  const resolvers = createRefResolvers({ spec, specLabel: filePath });
 
   for (const pathItem of Object.values(spec.paths ?? {})) {
     processPathItem({

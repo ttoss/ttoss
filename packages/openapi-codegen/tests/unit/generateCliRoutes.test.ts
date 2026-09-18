@@ -8,6 +8,9 @@ import {
 import { renderCliRoutesSource } from 'src/renderCliRoutesSource';
 
 const specsDir = path.join(__dirname, 'fixtures/cliSpecs');
+const invalidSpecsDir = (name: string) => {
+  return path.join(__dirname, 'fixtures/invalidSpecs', name);
+};
 
 describe('operationIdToKebabCommand', () => {
   test('converts camelCase to kebab-case', () => {
@@ -46,6 +49,39 @@ describe('generateCliRouteManifest', () => {
     expect(routes['list-widgets'].pathParams).toEqual(['project_id']);
     expect(routes['list-widgets'].queryParams).toEqual(['page']);
     expect(routes['create-widget'].pathParams).toEqual(['project_id']);
+  });
+
+  test('exposes header and cookie parameters alongside path and query ones', () => {
+    const routes = generateCliRouteManifest({ specsDir, moduleDocsUrl });
+
+    expect(routes['list-widgets'].headerParams).toEqual(['x_tenant_id']);
+    expect(routes['list-widgets'].cookieParams).toEqual(['session']);
+    // The header is declared at the path level, so every operation gets it.
+    expect(routes['create-widget'].headerParams).toEqual(['x_tenant_id']);
+    expect(routes['create-widget'].cookieParams).toEqual([]);
+  });
+
+  test('builds a --help flag for header and cookie parameters', () => {
+    const routes = generateCliRouteManifest({ specsDir, moduleDocsUrl });
+
+    const flagsByName = Object.fromEntries(
+      routes['list-widgets'].flags.map((flag) => {
+        return [flag.name, flag];
+      })
+    );
+
+    expect(flagsByName.x_tenant_id).toMatchObject({
+      required: true,
+      in: 'header',
+      type: 'string',
+      description: 'Tenant the widget belongs to',
+    });
+    expect(flagsByName.session).toMatchObject({
+      required: false,
+      in: 'cookie',
+      type: 'string',
+      description: 'Opaque session cookie',
+    });
   });
 
   test('marks path parameters as required and query parameters per their schema', () => {
@@ -159,6 +195,24 @@ describe('generateCliRouteManifest', () => {
     });
   });
 
+  test('throws on a parameter $ref it cannot resolve instead of dropping it', () => {
+    expect(() => {
+      return generateCliRouteManifest({
+        specsDir: invalidSpecsDir('unresolvedParamRef'),
+        moduleDocsUrl,
+      });
+    }).toThrow(/cannot resolve parameter \$ref/);
+  });
+
+  test('throws on a parameter with an unknown `in` instead of dropping it', () => {
+    expect(() => {
+      return generateCliRouteManifest({
+        specsDir: invalidSpecsDir('unknownParamLocation'),
+        moduleDocsUrl,
+      });
+    }).toThrow(/parameter "page" declares `in: formData`/);
+  });
+
   test('supports overriding the command and class naming functions', () => {
     const routes = generateCliRouteManifest({
       specsDir,
@@ -192,5 +246,10 @@ describe('renderCliRoutesSource', () => {
     expect(source).toContain('export const routes: Record<string, Route> = {');
     expect(source).toContain("'list-widgets': { serviceClass: 'Widgets'");
     expect(source).toContain("operationId: 'createWidget'");
+    expect(source).toContain(
+      "  in: 'path' | 'query' | 'header' | 'cookie' | 'body';"
+    );
+    expect(source).toContain('headerParams: ["x_tenant_id"]');
+    expect(source).toContain('cookieParams: ["session"]');
   });
 });

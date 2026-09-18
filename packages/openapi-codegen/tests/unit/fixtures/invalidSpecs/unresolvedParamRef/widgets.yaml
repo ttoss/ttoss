@@ -1,0 +1,14 @@
+openapi: 3.0.3
+tags:
+  - name: Widgets
+paths:
+  /widgets/{widget_id}:
+    parameters:
+      - $ref: './shared.yaml#/components/parameters/WidgetId'
+    get:
+      operationId: getWidget
+      tags: [Widgets]
+      responses:
+        '200':
+          description: ok
+components: {}

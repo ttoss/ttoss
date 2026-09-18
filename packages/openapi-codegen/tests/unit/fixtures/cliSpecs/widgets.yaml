@@ -9,6 +9,12 @@ paths:
         required: true
         schema:
           type: string
+      - name: x_tenant_id
+        in: header
+        required: true
+        description: Tenant the widget belongs to
+        schema:
+          type: string
     get:
       operationId: listWidgets
       tags: [Widgets]
@@ -18,6 +24,11 @@ paths:
           in: query
           schema:
             type: integer
+        - name: session
+          in: cookie
+          description: Opaque session cookie
+          schema:
+            type: string
       responses:
         '200':
           description: ok

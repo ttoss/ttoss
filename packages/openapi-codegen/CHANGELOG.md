@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.3.1 (2026-09-18)
+
+### Bug Fixes
+
+- **openapi-codegen:** stop silently dropping header and cookie parameters ([#1246](https://github.com/ttoss/ttoss/issues/1246)) ([96be791](https://github.com/ttoss/ttoss/commit/96be791cfcb12c9d7521c60091a2b76303fa3924))
+
 # 0.3.0 (2026-08-31)
 
 ### Features
