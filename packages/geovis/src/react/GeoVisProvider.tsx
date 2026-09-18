@@ -311,6 +311,49 @@ const initialCommittedState = (
 };
 
 /**
+ * Whether `next` differs from `prev` in nothing but its camera.
+ *
+ * A camera move — `runtime.setView()`, or an action that compiles to it — is
+ * already on the map by the time it returns: the adapter moved it, and a flight
+ * is under way. What must not happen next is the resulting spec being pushed
+ * back through `runtime.update()`, because `update` applies a `view` that
+ * changed with `setCenter`/`setZoom` — an instant jump, landing on top of the
+ * flight one render after it started, so every animated move arrives as a cut.
+ *
+ * Keeping the camera out of `effectiveSpec` also leaves the adapter's record of
+ * the *declared* view alone, which is what lets a later rebuild that re-declares
+ * the same `spec.view` — the shape of any app that rebuilds its spec from state
+ * — pass without yanking the camera back to it.
+ *
+ * Every other key survives `setRuntimeView`'s spread by reference, so comparing
+ * them with `===` is exact rather than a guess.
+ *
+ * @param prev - The spec the runtime held before the action.
+ * @param next - The spec it holds now.
+ * @returns Whether only `view` changed.
+ */
+const isCameraOnlyChange = (
+  prev: VisualizationSpec,
+  next: VisualizationSpec
+): boolean => {
+  if (prev === next) return true;
+
+  const keys = new Set([...Object.keys(prev), ...Object.keys(next)]);
+  keys.delete('view');
+
+  for (const key of keys) {
+    if (
+      prev[key as keyof VisualizationSpec] !==
+      next[key as keyof VisualizationSpec]
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+/**
  * Provides a GeoVis runtime context for child components.
  * Resolves the appropriate engine adapter based on the spec's engine field,
  * initializes the runtime, and keeps it in sync with spec updates.
@@ -436,12 +479,14 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
     (options: SetViewOptions) => {
       if (!runtime) return;
       runtime.setView(options);
-      setPatchState({ forSpec: spec, patchedSpec: runtime.spec });
+      // Deliberately no `setPatchState` — see `isCameraOnlyChange`. The map has
+      // already moved; only `committed` is refreshed, so `useGeoVis().spec`
+      // reads the new camera without the spec being pushed back at the adapter.
       setCommitted((prev) => {
         return { ...prev, spec: runtime.spec };
       });
     },
-    [runtime, spec]
+    [runtime]
   );
 
   // Mirrors `applyPatch` above: `dispatch()` mutates `runtime.spec` directly
@@ -453,9 +498,12 @@ export const GeoVisProvider = ({ spec, children }: GeoVisProviderProps) => {
   const dispatch = React.useCallback(
     (action: GeoVisAction) => {
       if (!runtime) return committed.result;
+      const before = runtime.spec;
       const result = runtime.dispatch(action);
       if (result.status === 'resolved') {
-        setPatchState({ forSpec: spec, patchedSpec: runtime.spec });
+        if (!isCameraOnlyChange(before, runtime.spec)) {
+          setPatchState({ forSpec: spec, patchedSpec: runtime.spec });
+        }
         setCommitted({ spec: result.spec, result: withPolicyWarnings(result) });
       } else {
         setCommitted((prev) => {

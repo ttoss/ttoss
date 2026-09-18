@@ -1,4 +1,8 @@
-import { computeSourcesBbox, estimateMaxZoom } from 'src/spec/bounds';
+import {
+  computeFeatureBbox,
+  computeSourcesBbox,
+  estimateMaxZoom,
+} from 'src/spec/bounds';
 import type { DataSource } from 'src/spec/types';
 
 describe('computeSourcesBbox', () => {
@@ -238,5 +242,91 @@ describe('estimateMaxZoom', () => {
 
   test('allows the highest zoom for small neighbourhood-sized bounding boxes', () => {
     expect(estimateMaxZoom([-46.65, -23.56, -46.63, -23.54])).toBe(15);
+  });
+});
+
+describe('computeFeatureBbox', () => {
+  const square = (
+    id: string | number,
+    lng: number,
+    size: number,
+    props: Record<string, unknown> = {}
+  ) => {
+    return {
+      type: 'Feature' as const,
+      id,
+      properties: props,
+      geometry: {
+        type: 'Polygon' as const,
+        coordinates: [
+          [
+            [lng, 0],
+            [lng + size, 0],
+            [lng + size, size],
+            [lng, size],
+            [lng, 0],
+          ],
+        ],
+      },
+    };
+  };
+
+  const mesh = (): DataSource => {
+    return {
+      id: 'malha',
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: [
+          square(3550308, -46, 1),
+          square(1302603, -60, 4, { codigo: '1302603' }),
+        ],
+      },
+    };
+  };
+
+  test('returns the box of the addressed feature alone, not of the source', () => {
+    expect(computeFeatureBbox({ source: mesh(), featureId: 3550308 })).toEqual([
+      -46, 0, -45, 1,
+    ]);
+  });
+
+  /*
+   * An id that travelled through a permalink or a selection comes back as a
+   * string, while the mesh that declared it wrote a number.
+   */
+  test('matches across the string/number divide', () => {
+    expect(
+      computeFeatureBbox({ source: mesh(), featureId: '3550308' })
+    ).toEqual([-46, 0, -45, 1]);
+  });
+
+  test('addresses by a promoted property when one is given', () => {
+    expect(
+      computeFeatureBbox({
+        source: mesh(),
+        featureId: '1302603',
+        promoteId: 'codigo',
+      })
+    ).toEqual([-60, 0, -56, 4]);
+  });
+
+  test('a feature the source does not hold has no box', () => {
+    expect(
+      computeFeatureBbox({ source: mesh(), featureId: 'ghost' })
+    ).toBeNull();
+  });
+
+  /*
+   * A URL source has no client-side geometry to walk: framing one of its
+   * features needs the data fetched first, the way auto-fit does it.
+   */
+  test('a URL-referenced source has no box to compute', () => {
+    const source: DataSource = {
+      id: 'remota',
+      type: 'geojson',
+      data: 'https://example.test/malha.geojson',
+    };
+    expect(computeFeatureBbox({ source, featureId: 1 })).toBeNull();
   });
 });

@@ -47,6 +47,7 @@ export const makeMapMock = () => {
     remove: jest.fn(),
     flyTo: jest.fn(),
     jumpTo: jest.fn(),
+    fitBounds: jest.fn(),
     // `nonCancelableTouchMove` attaches its listener here, so the adapter
     // throws without it.
     getCanvasContainer: jest.fn(() => {

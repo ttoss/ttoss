@@ -71,7 +71,7 @@ Top-level spec object passed to `GeoVisProvider`.
 | `attributionControlEnabled` | `boolean`                 |          | Controls whether MapLibre mounts its attribution control — the round button in the map’s bottom-right corner that expands into the basemap credits. Defaults to `true`. Set it to `false` only when the application shows the same credits elsewhere: basemap and source licences generally require attribution to remain visible.                                                              |
 | `mapData`                   | `MapData[]`               |          | Attribute datasets joined to GeoJSON sources for choropleth coloring and tooltips.                                                                                                                                                                                                                                                                                                              |
 | `metadata`                  | `Record<string, unknown>` |          | Arbitrary consumer metadata; not read by the runtime.                                                                                                                                                                                                                                                                                                                                           |
-| `viewPresets`               | `ViewPreset[]`            |          | Named camera positions (`{ id, label?, view }`) `dispatch({ type: 'set-view-preset' })` can target by `id`. See [AI Action Surface](#ai-action-surface-dispatch).                                                                                                                                                                                                                               |
+| `viewPresets`               | `ViewPreset[]`            |          | Named camera positions (`{ id, label?, view, animation? }`) `dispatch({ type: 'set-view-preset' })` can target by `id`. See [AI Action Surface](#ai-action-surface-dispatch).                                                                                                                                                                                                                   |
 | `control`                   | `LayerControl`            |          | A floating layer-toggle panel, auto-mounted on the map. See [Layer Control](#layer-control).                                                                                                                                                                                                                                                                                                    |
 
 ### Auto fit-to-data
@@ -1412,6 +1412,45 @@ runtime.dispatch({
 ```
 
 Compiles to the same `runtime.setView()` mechanism a UI camera control already uses — no new engine code. An unknown `presetId` is rejected with the declared preset ids as repair. Only `center`/`zoom`/`pitch`/`bearing` are applied; `view.projection` isn't — `setView()`'s imperative camera move never supported switching projection (a pre-existing limitation, not introduced by this action); use `update(spec)` for that.
+
+A preset can also say how the camera travels to it, which matters when the trip is long enough to be worth watching — the flight is what shows where the destination sits relative to where the map was:
+
+```ts
+{
+  id: 'capital',
+  view: { center: [-47.9, -15.8], zoom: 10 },
+  animation: { duration: 2200, curve: 1.6, essential: true },
+}
+```
+
+`duration` (ms), `curve` (how far the camera pulls back on the way) and `speed` shape the flight; `animate: false` makes it an instant cut instead. Left out, the engine derives a flight from the distance.
+
+`essential` is the one to think about: MapLibre turns a `flyTo` into a jump for a viewer whose system asks for reduced motion, and `essential: true` overrides that. It belongs on presets where the flight carries the meaning, not on every preset — it is an accessibility preference the viewer set deliberately.
+
+The flight describes the trip, not the destination, so it is handed to the adapter and left out of `spec.view`, which stays a `ViewState`.
+
+A camera move is applied once, by the adapter, and is never pushed back through `update()`. That matters for two reasons. A move that animates would otherwise be overtaken one render later by the same camera arriving declaratively, and `update()` applies a changed `view` with `setCenter`/`setZoom` — so every flight would land as an instant cut. And the adapter keeps comparing against the view the spec last _declared_, so an app that rebuilds its spec from state and re-declares the same `spec.view` does not yank the camera back to it on every rebuild. `useGeoVis().spec` still reads the moved camera; only the push is skipped.
+
+`spec.view` is therefore the camera the app declares — the first paint, and any later framing it changes deliberately — while `setView` and the actions compiling to it are how the camera moves in between.
+
+`fit-feature` frames one feature instead of going to a position, which is what an extent asks for — how close the camera ends up is the size of the thing, not a number chosen in advance:
+
+```ts
+runtime.dispatch({
+  type: 'fit-feature',
+  layerId: 'municipios',
+  featureId: 3550308,
+  animation: { duration: 2400, essential: true },
+});
+```
+
+Like every other action it carries no geometry: `featureId` is the same stable id `mapData` rows, clicks and `select-feature` already key on, and the bounds are read off the source the layer draws — addressed by the feature's own `id`, or by the `mapData` `joinKey` when there is one. `estimateMaxZoom` caps how close the result may come, so a small feature is framed with its surroundings rather than filling the screen with one shape.
+
+It compiles to `setView({ bounds, padding, maxZoom })`, which `SetViewOptions` also accepts directly. `bounds` wins over `center`/`zoom` — the two answer the same question and the box is the more specific answer — and the flight fields apply either way, since `fitBounds` is a `flyTo` that works out its own destination. A bounds fit leaves `spec.view` alone: where it lands is the engine's answer to the box, known only once the camera settles.
+
+A source with no client-side geometry — URL-referenced or tiled — has no box to compute, and is rejected with `unknown-feature-id` rather than silently framing nothing; the data has to be fetched first, the way auto-fit does it.
+
+Pairing it with `select-feature` is what turns a search into a result the viewer can see: the layer's `selectedPaint` draws a companion outline wherever `feature-state.selected` is set, so one dispatch frames the shape and the other marks it.
 
 ### Action log
 

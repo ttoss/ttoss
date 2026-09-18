@@ -380,6 +380,55 @@ describe('GeoVisProvider setView', () => {
 
     expect(mockRuntimeSetView).toHaveBeenCalledWith({ zoom: 8 });
   });
+
+  /*
+   * The adapter has already moved the map by the time `setView` returns, and a
+   * flight may be under way. Pushing the resulting spec back through
+   * `runtime.update()` would hand the same camera over a second time as a
+   * declarative change, which `update` applies with `setCenter`/`setZoom` — an
+   * instant jump one render after the flight started.
+   */
+  test('setView does not push the moved camera back through runtime.update', async () => {
+    const Consumer = ({
+      onReady,
+    }: {
+      onReady: (ctx: ReturnType<typeof useGeoVis>) => void;
+    }) => {
+      const ctx = useGeoVis();
+      onReady(ctx);
+      return null;
+    };
+
+    let latestCtx: ReturnType<typeof useGeoVis> | undefined;
+    await act(async () => {
+      render(
+        <GeoVisProvider spec={baseSpec}>
+          <Consumer
+            onReady={(ctx) => {
+              latestCtx = ctx;
+            }}
+          />
+        </GeoVisProvider>
+      );
+    });
+
+    const updatesAfterMount = mockRuntimeUpdate.mock.calls.length;
+
+    // The runtime merges the camera into its own spec, which is what a new
+    // reference here stands for.
+    mockRuntimeSpec = { ...baseSpec, view: { center: [1, 2], zoom: 8 } };
+
+    await act(async () => {
+      latestCtx?.setView({ center: [1, 2], zoom: 8 });
+    });
+
+    expect(mockRuntimeUpdate).toHaveBeenCalledTimes(updatesAfterMount);
+
+    // The context still reads the camera, which is the other half of the point.
+    expect(latestCtx?.spec).toMatchObject({
+      view: { center: [1, 2], zoom: 8 },
+    });
+  });
 });
 
 describe('GeoVisProvider effectiveSpec synchronization', () => {

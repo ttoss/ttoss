@@ -797,6 +797,51 @@ describe('createRuntime — dispatch set-view-preset (PRD-002 Phase 5)', () => {
     expect(result).toBe(runtime.result);
   });
 
+  /*
+   * The flight describes the trip, not the destination: `spec.view` is a
+   * `ViewState`, and a `duration` parked in it would come back as a camera
+   * field the next time the spec is read or serialised.
+   */
+  test("hands the preset's flight to the adapter but keeps it out of spec.view", () => {
+    const adapter = makeAdapter();
+    const spec = makeSpecWithPresets();
+    const runtime = createRuntime(adapter, {
+      ...spec,
+      viewPresets: [
+        {
+          id: 'overview',
+          view: { center: [10, 20], zoom: 3 },
+          animation: { duration: 2200, essential: true },
+        },
+      ],
+    });
+
+    runtime.dispatch({ type: 'set-view-preset', presetId: 'overview' });
+
+    expect(adapter.setView).toHaveBeenCalledWith(
+      expect.objectContaining({ duration: 2200, essential: true })
+    );
+    expect(runtime.spec.view).toEqual({ center: [10, 20], zoom: 3 });
+  });
+
+  /*
+   * A box has no destination to write down: where it lands is the engine's
+   * answer to the extent, known only once the camera settles. `spec.view` keeps
+   * saying what it said, and the live camera is read off the map.
+   */
+  test('a bounds fit reaches the adapter and leaves spec.view untouched', () => {
+    const adapter = makeAdapter();
+    const runtime = createRuntime(adapter, makeSpecWithPresets());
+    const viewBefore = runtime.spec.view;
+
+    runtime.setView({ bounds: [-46, -24, -45, -23], padding: 40, maxZoom: 13 });
+
+    expect(adapter.setView).toHaveBeenCalledWith(
+      expect.objectContaining({ bounds: [-46, -24, -45, -23], maxZoom: 13 })
+    );
+    expect(runtime.spec.view).toEqual(viewBefore);
+  });
+
   test('never calls adapter.applyPatch (a camera move is not a SpecPatch)', () => {
     const adapter = makeAdapter();
     const runtime = createRuntime(adapter, makeSpecWithPresets());

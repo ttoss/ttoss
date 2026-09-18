@@ -100,6 +100,77 @@ export const computeSourcesBbox = (
 };
 
 /**
+ * The axis-aligned bounding box of the one feature `featureId` addresses in
+ * `source`, or `null` when the source holds no geometry to walk or the feature
+ * is not in it.
+ *
+ * A feature is addressed the same way the live map addresses it: by its
+ * top-level `id`, or — when `promoteId` is given, which is what a `mapData`
+ * `joinKey` amounts to — by that property. Matching is loose across the
+ * string/number divide, because an id that travels through a URL or a
+ * selection comes back as a string while the file that declared it may well
+ * have written a number.
+ *
+ * Read from the source's own data rather than from what the map has rendered:
+ * MapLibre only holds the features of the tiles it has loaded, and a feature
+ * that someone just searched for is, by definition, usually not one of them.
+ *
+ * URL-referenced and tile-based sources have no client-side geometry to walk,
+ * so they answer `null` — framing one of their features needs the data fetched
+ * first, the way auto-fit does it.
+ *
+ * @param params.source - The source the feature belongs to.
+ * @param params.featureId - The id addressing it.
+ * @param params.promoteId - Property carrying the id, when it is not top-level.
+ * @returns The feature's bbox, or `null`.
+ *
+ * @example
+ * ```ts
+ * computeFeatureBbox({ source, featureId: '3550308', promoteId: 'codigoIbge' });
+ * // [-46.8, -24.0, -46.3, -23.3] | null
+ * ```
+ */
+export const computeFeatureBbox = ({
+  source,
+  featureId,
+  promoteId,
+}: {
+  source: DataSource;
+  featureId: string | number;
+  promoteId?: string;
+}): GeoJSONBoundingBox | null => {
+  if (source.type !== 'geojson' || typeof source.data === 'string') return null;
+
+  const wanted = String(featureId);
+  const features =
+    source.data.type === 'FeatureCollection'
+      ? source.data.features
+      : source.data.type === 'Feature'
+        ? [source.data]
+        : [];
+
+  const match = features.find((feature) => {
+    const own = promoteId
+      ? (feature.properties?.[promoteId] as unknown)
+      : feature.id;
+    return own !== undefined && own !== null && String(own) === wanted;
+  });
+
+  if (!match?.geometry) return null;
+
+  const acc: BoundsAccumulator = {
+    minLng: Infinity,
+    minLat: Infinity,
+    maxLng: -Infinity,
+    maxLat: -Infinity,
+  };
+  extendWithGeometry(acc, match.geometry);
+
+  if (!Number.isFinite(acc.minLng) || !Number.isFinite(acc.minLat)) return null;
+  return [acc.minLng, acc.minLat, acc.maxLng, acc.maxLat];
+};
+
+/**
  * Estimates a sensible `maxZoom` ceiling for a `fitBounds` call driven by
  * `bbox`, based on its approximate area in km². Prevents over-zoom on small
  * geometries that would lose geographic context.

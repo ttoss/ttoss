@@ -289,6 +289,11 @@ describe('compileAction — set-view-preset', () => {
           view: { center: [0, 0], zoom: 2 },
         },
         { id: 'detail', view: { zoom: 8, pitch: 30, bearing: 45 } },
+        {
+          id: 'flight',
+          view: { center: [1, 2], zoom: 9 },
+          animation: { duration: 2200, curve: 1.6, essential: true },
+        },
       ],
     };
   };
@@ -318,6 +323,28 @@ describe('compileAction — set-view-preset', () => {
     });
   });
 
+  /*
+   * The flight rides along with the camera fields: the preset owns both where
+   * the map goes and how it gets there, so nothing downstream has to decide.
+   */
+  test("carries the preset's declared animation into the setViewOptions", () => {
+    const outcome = compileAction(specWithPresets(), {
+      type: 'set-view-preset',
+      presetId: 'flight',
+    });
+    expect(outcome).toEqual({
+      setViewOptions: {
+        center: [1, 2],
+        zoom: 9,
+        pitch: undefined,
+        bearing: undefined,
+        duration: 2200,
+        curve: 1.6,
+        essential: true,
+      },
+    });
+  });
+
   test('an unknown presetId compiles to an unknown-view-preset issue listing declared preset ids', () => {
     const outcome = compileAction(specWithPresets(), {
       type: 'set-view-preset',
@@ -330,7 +357,7 @@ describe('compileAction — set-view-preset', () => {
         {
           kind: 'allowed-values',
           path: 'action.presetId',
-          values: ['overview', 'detail'],
+          values: ['overview', 'detail', 'flight'],
         },
       ],
     });
@@ -344,6 +371,132 @@ describe('compileAction — set-view-preset', () => {
     expect('issue' in outcome && outcome.issue).toMatchObject({
       code: 'unknown-view-preset',
       repair: [{ kind: 'allowed-values', values: [] }],
+    });
+  });
+});
+
+describe('compileAction — fit-feature', () => {
+  const meshSpec = (): VisualizationSpec => {
+    return {
+      ...makeSpec(),
+      sources: [
+        {
+          id: 'malha',
+          type: 'geojson',
+          data: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                id: 3550308,
+                properties: {},
+                geometry: {
+                  type: 'Polygon',
+                  // A fifth of a degree each way — roughly 500 km², which is
+                  // municipality-sized, so `estimateMaxZoom` answers with its
+                  // municipality rung rather than its state one.
+                  coordinates: [
+                    [
+                      [-46, -24],
+                      [-45.8, -24],
+                      [-45.8, -23.8],
+                      [-46, -23.8],
+                      [-46, -24],
+                    ],
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      ],
+      layers: [{ id: 'municipios', sourceId: 'malha', geometry: 'polygon' }],
+    };
+  };
+
+  /*
+   * The action carries no geometry: it says which feature, and the box comes
+   * off the source the layer draws. `maxZoom` is what keeps a small shape from
+   * filling the screen with no surroundings to place it against.
+   */
+  test("compiles to the feature's own bounds, capped and padded", () => {
+    const outcome = compileAction(meshSpec(), {
+      type: 'fit-feature',
+      layerId: 'municipios',
+      featureId: '3550308',
+      animation: { duration: 2400, essential: true },
+    });
+
+    expect(outcome).toEqual({
+      setViewOptions: {
+        bounds: [-46, -24, -45.8, -23.8],
+        padding: 40,
+        maxZoom: 13,
+        duration: 2400,
+        essential: true,
+      },
+    });
+  });
+
+  test('an explicit padding overrides the default', () => {
+    const outcome = compileAction(meshSpec(), {
+      type: 'fit-feature',
+      layerId: 'municipios',
+      featureId: 3550308,
+      padding: 120,
+    });
+
+    expect('setViewOptions' in outcome && outcome.setViewOptions.padding).toBe(
+      120
+    );
+  });
+
+  test('an unknown layerId is rejected with the declared layer ids', () => {
+    const outcome = compileAction(meshSpec(), {
+      type: 'fit-feature',
+      layerId: 'ghost',
+      featureId: 1,
+    });
+
+    expect('issue' in outcome && outcome.issue).toMatchObject({
+      code: 'unknown-layer-id',
+      repair: [{ kind: 'allowed-values', values: ['municipios'] }],
+    });
+  });
+
+  /*
+   * No `allowed-values` repair: the answer would be every feature id in the
+   * mesh, which for a real one is thousands nobody can act on.
+   */
+  test('a feature with no geometry to frame is rejected, naming the source', () => {
+    const outcome = compileAction(meshSpec(), {
+      type: 'fit-feature',
+      layerId: 'municipios',
+      featureId: '9999999',
+    });
+
+    expect('issue' in outcome && outcome.issue).toMatchObject({
+      code: 'unknown-feature-id',
+      subject: { path: 'action.featureId', id: '9999999' },
+      repair: [],
+    });
+    expect(
+      'issue' in outcome && outcome.issue.message.includes("'malha'")
+    ).toBe(true);
+  });
+
+  test('a layer pointing at a source the spec does not declare is rejected', () => {
+    const spec = meshSpec();
+    const outcome = compileAction(
+      {
+        ...spec,
+        layers: [{ id: 'municipios', sourceId: 'sumida', geometry: 'polygon' }],
+      },
+      { type: 'fit-feature', layerId: 'municipios', featureId: 1 }
+    );
+
+    expect('issue' in outcome && outcome.issue).toMatchObject({
+      code: 'unknown-source',
     });
   });
 });
