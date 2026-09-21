@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.4.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@7.3.0...@docs/storybook@7.4.0) (2026-09-21)
+
+### Features
+
+- **geovis-workspace:** add a color-ramp control to the settings zone ([#1245](https://github.com/ttoss/ttoss/issues/1245)) ([87796e8](https://github.com/ttoss/ttoss/commit/87796e8d4c631c1ce6701f4effd5c285356d5698))
+
 # [7.3.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@7.2.1...@docs/storybook@7.3.0) (2026-09-16)
 
 ### Features

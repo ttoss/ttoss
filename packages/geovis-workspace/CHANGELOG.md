@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.15.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.14.0...@ttoss/geovis-workspace@0.15.0) (2026-09-21)
+
+### Features
+
+- **geovis-workspace:** add a color-ramp control to the settings zone ([#1245](https://github.com/ttoss/ttoss/issues/1245)) ([87796e8](https://github.com/ttoss/ttoss/commit/87796e8d4c631c1ce6701f4effd5c285356d5698))
+
 # [0.14.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis-workspace@0.13.4...@ttoss/geovis-workspace@0.14.0) (2026-09-16)
 
 ### Features
