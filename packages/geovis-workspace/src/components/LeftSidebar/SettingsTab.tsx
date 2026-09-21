@@ -4,6 +4,7 @@ import type {
   GeovisWorkspaceSidebarSettingsBlock,
   GeovisWorkspaceSidebarSettingsControl,
 } from '../../context/GeovisWorkspaceContext';
+import { ColorRampSettingControl } from './ColorRampSettingControl';
 import { FilterBlockSection } from './FilterBlockSection';
 import { SliderSettingControl } from './SliderSettingControl';
 import { COLOR } from './theme';
@@ -12,8 +13,8 @@ import { ToggleSettingControl } from './ToggleSettingControl';
 /**
  * Renders one block's control.
  *
- * The slider is matched by name and the toggle is left to exhaustion, so the
- * final `control` is narrowed to it: adding a kind to
+ * Every kind but the last is matched by name, so the final `control` is
+ * narrowed to the toggle by exhaustion: adding a kind to
  * {@link GeovisWorkspaceSidebarSettingsControl} turns that last line into a
  * type error instead of silently routing the new kind into the toggle.
  */
@@ -26,6 +27,10 @@ const BlockControl = ({
 }) => {
   if (control.kind === 'slider') {
     return <SliderSettingControl control={control} />;
+  }
+
+  if (control.kind === 'colorRamp') {
+    return <ColorRampSettingControl control={control} label={label} />;
   }
 
   return <ToggleSettingControl control={control} label={label} />;

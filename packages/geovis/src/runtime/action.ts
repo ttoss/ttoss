@@ -1,5 +1,5 @@
 import type { GeoVisResult } from '../spec/result';
-import type { LayerFilter } from '../spec/types';
+import type { LayerFilter, ViewAnimation } from '../spec/types';
 
 /**
  * Closed, typed vocabulary of semantic operations `GeoVisRuntime.dispatch()`
@@ -7,14 +7,15 @@ import type { LayerFilter } from '../spec/types';
  * stable spec id — the same ids `getContextPacket()` names — never a raw
  * `SpecPatch` path or engine expression. Grows one variant per PRD-002
  * phase; currently: `toggle-layer`, `select-feature`, `set-map-data`,
- * `set-filter`, `set-view-preset`.
+ * `set-filter`, `set-view-preset`, `fit-feature`.
  */
 export type GeoVisAction =
   | ToggleLayerAction
   | SelectFeatureAction
   | SetMapDataAction
   | SetFilterAction
-  | SetViewPresetAction;
+  | SetViewPresetAction
+  | FitFeatureAction;
 
 /** Flips (or explicitly sets) a layer's visibility. */
 export interface ToggleLayerAction {
@@ -91,6 +92,35 @@ export interface SetViewPresetAction {
   type: 'set-view-preset';
   /** Id of the preset to move to — must match `spec.viewPresets[].id`. */
   presetId: string;
+  /** Optional free-text reason, preserved on the action log entry for audit. */
+  rationale?: string;
+}
+
+/**
+ * Frames one feature: the camera ends up showing that feature's own extent,
+ * with the zoom worked out from its size rather than chosen in advance.
+ *
+ * Carries no geometry, like every other action — `featureId` is the same
+ * stable id `mapData` rows, clicks and `select-feature` already key on. The
+ * bounds are read from the source the layer draws, so what the caller needs to
+ * know is which feature it means, not where that feature is.
+ *
+ * Compiles to `runtime.setView()` with `bounds`, so it moves the camera
+ * without the spec being rebuilt, exactly as `set-view-preset` does.
+ */
+export interface FitFeatureAction {
+  type: 'fit-feature';
+  /** Id of the layer the feature is drawn on — must match `spec.layers[].id`. */
+  layerId: string;
+  /** Feature id to frame — the same id `select-feature` takes. */
+  featureId: string | number;
+  /** Pixels of breathing room around the feature. Defaults to `40`. */
+  padding?: number;
+  /**
+   * How the camera travels there. Left out, the engine flies its own way — and
+   * cuts instead for a viewer who asked for reduced motion.
+   */
+  animation?: ViewAnimation;
   /** Optional free-text reason, preserved on the action log entry for audit. */
   rationale?: string;
 }

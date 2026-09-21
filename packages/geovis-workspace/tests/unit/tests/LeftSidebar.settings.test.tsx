@@ -1,6 +1,7 @@
 /**
- * The settings zone: the two slider shapes, the toggle, and the block layout
- * around them. The rest of the left sidebar is covered in LeftSidebar.test.tsx.
+ * The settings zone: the two slider shapes, the color ramp, the toggle, and the
+ * block layout around them. The rest of the left sidebar is covered in
+ * LeftSidebar.test.tsx.
  */
 
 import { fireEvent, render, screen } from '@ttoss/test-utils/react';
@@ -196,6 +197,97 @@ describe('a continuous slider', () => {
     await click(screen.getByRole('button', { name: /Simples/ }));
 
     expect(screen.getByText('Sem passos nem unidade.')).toBeInTheDocument();
+  });
+});
+
+describe('a color ramp setting', () => {
+  test('lists every ramp and marks the chosen one', async () => {
+    renderSettings();
+    await openConfig();
+
+    expect(
+      screen.getByRole('group', { name: 'Cor da malha' })
+    ).toBeInTheDocument();
+
+    // `cores` defaults to the second option, not the first.
+    expect(screen.getByRole('button', { name: /Verdes/ })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
+    expect(screen.getByRole('button', { name: /Azuis/ })).toHaveAttribute(
+      'aria-pressed',
+      'false'
+    );
+  });
+
+  test('publishes the chosen ramp id and moves the mark', async () => {
+    const onVariableChange = jest.fn();
+    renderSettings({ onVariableChange });
+    await openConfig();
+
+    await click(screen.getByRole('button', { name: /Azuis/ }));
+
+    expect(onVariableChange).toHaveBeenCalledWith(
+      expect.objectContaining({ cores: 'azuis' })
+    );
+    expect(screen.getByRole('button', { name: /Azuis/ })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
+    expect(screen.getByRole('button', { name: /Verdes/ })).toHaveAttribute(
+      'aria-pressed',
+      'false'
+    );
+  });
+
+  test('starts from the shared selection, not from its default', async () => {
+    renderSettings({ variables: { cores: 'azuis' } });
+    await openConfig();
+
+    expect(screen.getByRole('button', { name: /Azuis/ })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
+  });
+
+  /* No `defaultValue`: the first ramp is the one the list opens on. */
+  test('falls to its first ramp when the block names no default', async () => {
+    renderSettings();
+    await openConfig();
+
+    expect(screen.getByRole('button', { name: /Quente/ })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
+  });
+
+  /*
+   * A ramp list computed from data can come back empty. The block still draws
+   * its header — the setting exists, it just has nothing to offer yet — and the
+   * group is simply empty rather than the control throwing on `options[0]`.
+   */
+  test('draws an empty group when the block declares no ramps', async () => {
+    renderSettings();
+    await openConfig();
+
+    expect(
+      screen.getByRole('group', { name: 'Cor sem rampas' })
+    ).toBeEmptyDOMElement();
+  });
+
+  /*
+   * A stale permalink, or a ramp dropped from the config: the list rests on the
+   * first option rather than leaving nothing marked while the map is painted by
+   * a ramp the user cannot see selected.
+   */
+  test('rests on the first ramp when the selection names none of them', async () => {
+    renderSettings({ variables: { cores: 'removida' } });
+    await openConfig();
+
+    expect(screen.getByRole('button', { name: /Azuis/ })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    );
   });
 });
 

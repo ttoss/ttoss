@@ -3,6 +3,7 @@
  */
 
 import { act, renderHook, waitFor } from '@testing-library/react';
+import createMapLibreAdapter from 'src/adapters/maplibre/MapLibreAdapter';
 import { GeoVisProvider, useGeoVis } from 'src/react/GeoVisProvider';
 import type { VisualizationSpec } from 'src/spec/types';
 
@@ -103,6 +104,67 @@ describe('GeoVisProvider — dispatch (PRD-002 Phase 2 correction)', () => {
       expect(result.current.result.status).toBe('mismatch');
     });
     expect(result.current.spec).toBe(specBefore);
+  });
+
+  /*
+   * The whole point of compiling a camera action to `runtime.setView()` is that
+   * the adapter moves the map itself. Feeding the resulting spec back through
+   * `update()` would hand the same camera over again declaratively, and an
+   * update applies a changed `view` with `setCenter`/`setZoom` — an instant
+   * jump landing on top of the flight `setView` just started.
+   */
+  test('a camera action moves the adapter without a second update', async () => {
+    const specWithPreset: VisualizationSpec = {
+      ...buildSpec(),
+      viewPresets: [
+        {
+          id: 'capital',
+          view: { center: [-47.9, -15.8], zoom: 10 },
+          animation: { duration: 2400, essential: true },
+        },
+      ],
+    };
+
+    const { result } = renderHook(
+      () => {
+        return useGeoVis();
+      },
+      {
+        wrapper: ({ children }) => {
+          return (
+            <GeoVisProvider spec={specWithPreset}>{children}</GeoVisProvider>
+          );
+        },
+      }
+    );
+
+    await waitFor(() => {
+      expect(result.current.runtime).not.toBeNull();
+    });
+
+    const adapter = jest.mocked(createMapLibreAdapter).mock.results[0]
+      .value as {
+      setView: jest.Mock;
+      update: jest.Mock;
+    };
+    const updatesBefore = adapter.update.mock.calls.length;
+
+    await act(async () => {
+      result.current.dispatch({
+        type: 'set-view-preset',
+        presetId: 'capital',
+      });
+    });
+
+    expect(adapter.setView).toHaveBeenCalledWith(
+      expect.objectContaining({
+        center: [-47.9, -15.8],
+        zoom: 10,
+        duration: 2400,
+        essential: true,
+      })
+    );
+    expect(adapter.update).toHaveBeenCalledTimes(updatesBefore);
   });
 
   test('dispatch is a no-op returning the current result before the runtime is ready', () => {

@@ -626,6 +626,94 @@ describe('setView — AI action camera control (applySetView)', () => {
     expect(map.flyTo).not.toHaveBeenCalled();
   });
 
+  /*
+   * Only the declared flight fields are handed over: MapLibre reads a missing
+   * `duration` as "derive one from the distance", which an explicit
+   * `undefined` would not say.
+   */
+  test('passes the declared flight fields to flyTo, and no others', () => {
+    const { adapter, map } = mountAdapter();
+
+    adapter.setView({
+      center: [1, 2],
+      zoom: 5,
+      duration: 2200,
+      curve: 1.6,
+      essential: true,
+    });
+
+    expect(map.flyTo).toHaveBeenCalledWith({
+      center: [1, 2],
+      zoom: 5,
+      duration: 2200,
+      curve: 1.6,
+      essential: true,
+    });
+  });
+
+  test('speed reaches flyTo for a flight that declares no duration', () => {
+    const { adapter, map } = mountAdapter();
+
+    adapter.setView({ center: [1, 2], speed: 0.6 });
+
+    expect(map.flyTo).toHaveBeenCalledWith({ center: [1, 2], speed: 0.6 });
+  });
+
+  /*
+   * A box and a `center`/`zoom` answer the same question, and the box is the
+   * more specific answer: it says how close to end up rather than being told.
+   */
+  test('bounds frame an extent through fitBounds, carrying the flight', () => {
+    const { adapter, map } = mountAdapter();
+
+    adapter.setView({
+      bounds: [-46, -24, -45, -23],
+      padding: 40,
+      maxZoom: 13,
+      duration: 2400,
+      essential: true,
+    });
+
+    expect(map.fitBounds).toHaveBeenCalledWith(
+      [
+        [-46, -24],
+        [-45, -23],
+      ],
+      {
+        padding: 40,
+        maxZoom: 13,
+        duration: 2400,
+        essential: true,
+        animate: true,
+      }
+    );
+    expect(map.flyTo).not.toHaveBeenCalled();
+  });
+
+  test('bounds win over a center/zoom declared alongside them', () => {
+    const { adapter, map } = mountAdapter();
+
+    adapter.setView({ bounds: [0, 0, 1, 1], center: [9, 9], zoom: 2 });
+
+    expect(map.fitBounds).toHaveBeenCalled();
+    expect(map.flyTo).not.toHaveBeenCalled();
+    expect(map.jumpTo).not.toHaveBeenCalled();
+  });
+
+  test('animate: false frames the box without a flight', () => {
+    const { adapter, map } = mountAdapter();
+
+    adapter.setView({ bounds: [0, 0, 1, 1], animate: false });
+
+    expect(map.fitBounds).toHaveBeenCalledWith(
+      [
+        [0, 0],
+        [1, 1],
+      ],
+      { animate: false }
+    );
+  });
+
   test('an options object with no camera fields calls neither flyTo nor jumpTo', () => {
     const { adapter, map } = mountAdapter();
 

@@ -780,6 +780,31 @@ describe('validateSpec — viewPresets (PRD-002 Phase 5)', () => {
     }
   });
 
+  test('a viewPresets entry may declare how the camera travels to it', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      viewPresets: [
+        {
+          id: 'capital',
+          view: { center: [0, 0], zoom: 10 },
+          animation: { duration: 2200, curve: 1.6, essential: true },
+        },
+        { id: 'cut', view: { zoom: 4 }, animation: { animate: false } },
+      ],
+    });
+    expect(result.status).toBe('resolved');
+  });
+
+  test('an unrecognised field on a preset animation fails schema validation', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      viewPresets: [
+        { id: 'overview', view: { zoom: 2 }, animation: { easing: 'linear' } },
+      ],
+    });
+    expect(result.status).toBe('invalid');
+  });
+
   test('an unrecognised field on a viewPresets entry fails schema validation', () => {
     const result = validateSpec({
       ...baseSpec,

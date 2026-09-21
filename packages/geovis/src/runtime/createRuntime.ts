@@ -338,20 +338,44 @@ const applyPatchToRuntime = (
   return result;
 };
 
-/** Moves the adapter's camera and merges the defined fields into `state.spec.view`. */
+/**
+ * Moves the adapter's camera and merges the defined camera fields into
+ * `state.spec.view`.
+ *
+ * Only the fields a `ViewState` holds are merged. The flight describes the trip
+ * rather than the destination, and a `bounds` fit has no destination to write
+ * down at all — where it lands is the engine's answer to the box, known only
+ * after the camera settles — so `spec.view` keeps saying what it said, and
+ * whoever needs the live camera reads it off the map.
+ */
 const setRuntimeView = (
   adapter: EngineAdapter,
   state: RuntimeState,
   options: SetViewOptions
 ): void => {
-  const { animate: _a, ...cameraFields } = options;
+  const {
+    animate: _animate,
+    duration: _duration,
+    curve: _curve,
+    speed: _speed,
+    essential: _essential,
+    bounds,
+    padding: _padding,
+    maxZoom: _maxZoom,
+    ...cameraFields
+  } = options;
   const definedFields = Object.fromEntries(
     Object.entries(cameraFields).filter(([, v]) => {
       return v !== undefined;
     })
   );
-  if (Object.keys(definedFields).length === 0) return;
+
+  if (!bounds && Object.keys(definedFields).length === 0) return;
+
   adapter.setView(options);
+
+  if (bounds || Object.keys(definedFields).length === 0) return;
+
   const prevView = state.spec.view ?? {};
   const nextView = { ...prevView, ...definedFields };
   state.spec = { ...state.spec, view: nextView };

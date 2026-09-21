@@ -30,16 +30,19 @@ import { withPtBr } from './GeovisWorkspace.decorators';
  * would let a `toggle` land in a filter block, where it would publish a
  * selection nothing filters on.
  *
- * Two controls cover the zone:
+ * Three controls cover the zone:
  *
  * - `slider` — a continuous range, or a **ladder** when `stops` is given. The
  *   rungs need not be evenly spaced, so the track runs over their indices and
  *   the handle reads each rung's own label.
+ * - `colorRamp` — the ramps listed one per row, each showing the colors it
+ *   stands for. Unordered alternatives, which is why it is a list and not a
+ *   slider over a palette index: there is no "more" direction to drag towards.
  * - `toggle` — one switch. Its block's title is rendered inside the switch row,
  *   so the block skips its header rather than saying the same words twice.
  *
- * Both publish to the shared selection under their `menuId`, exactly as the
- * timeline does, which is what wires them to the map below.
+ * All three publish to the shared selection under their `menuId`, exactly as
+ * the timeline does, which is what wires them to the map below.
  *
  * ```ts
  * { id: 'settings', header: { icon: 'lucide:settings' }, body: { kind: 'settings', blocks: [...] } }
@@ -56,13 +59,16 @@ import { withPtBr } from './GeovisWorkspace.decorators';
  *    and the class breaks with it: halving the cell roughly quarters every
  *    count, so breaks fixed at one radius would flatten the map at the next.
  *    The cell count beside the readout is the real one, recomputed per rung.
- * 2. Drag **Opacidade da malha** — the fill alone changes, the geometry does
+ * 2. Pick a ramp under **Cor da Malha**. The map repaints without re-binning:
+ *    the breaks are untouched, only the colors they are read through change.
+ *    The no-data grey stays out of every ramp — "caught nothing" is not a class.
+ * 3. Drag **Opacidade da malha** — the fill alone changes, the geometry does
  *    not, so it stays smooth where the resolution slider has to re-bin.
- * 3. Toggle **Ocultar hexágonos vazios**. Cells that caught nothing leave the
+ * 4. Toggle **Ocultar hexágonos vazios**. Cells that caught nothing leave the
  *    source entirely, so Brazil's silhouette breaks up into the populated arc.
  *    Toggle it back and the grey cells return — "caught nothing" is information,
  *    which is why it is hidden by choice rather than by default.
- * 4. Switch to **Pontos**. The gear tab dims and stops responding: the mesh
+ * 5. Switch to **Pontos**. The gear tab dims and stops responding: the mesh
  *    settings have nothing to say about a scatter plot.
  */
 
@@ -87,26 +93,75 @@ const POINTS = syntheticPoints({
   seed: 20260914,
 }).filter(insideBrazil);
 
-/** Sequential blues: light reads as few, dark as many, with no hue change. */
-const CLASS_COLORS = ['#C6DBEF', '#6BAED6', '#2171B5', '#08306B'];
+/**
+ * The selectable ramps. Every one is sequential and four classes wide: light
+ * reads as few and dark as many, with no hue change along the way — a diverging
+ * ramp would claim a meaningful midpoint, and counts have none.
+ */
+const RAMPS = [
+  {
+    id: 'azuis',
+    label: 'Azuis',
+    colors: ['#C6DBEF', '#6BAED6', '#2171B5', '#08306B'],
+  },
+  {
+    id: 'verdes',
+    label: 'Verdes',
+    colors: ['#C7E9C0', '#74C476', '#238B45', '#00441B'],
+  },
+  {
+    id: 'laranjas',
+    label: 'Laranjas',
+    colors: ['#FDD0A2', '#FD8D3C', '#D94801', '#7F2704'],
+  },
+  {
+    id: 'roxos',
+    label: 'Roxos',
+    colors: ['#DADAEB', '#9E9AC8', '#6A51A3', '#3F007D'],
+  },
+];
+
+const DEFAULT_RAMP = 'azuis';
+
+const rampFor = (id: string) => {
+  return (
+    RAMPS.find((ramp) => {
+      return ramp.id === id;
+    }) ?? RAMPS[0]
+  );
+};
 
 /** Cells that caught nothing. Grey, so "none" never reads as "few". */
 const EMPTY_COLOR = '#ECECEC';
 
 /**
- * The palette trimmed to the classes the breaks actually produced. Quantile
+ * The legend's distance from the map edges, overriding GeoVis's own 24px.
+ *
+ * It is the left sidebar card's inset — the workspace insets that card by the
+ * theme's `3` space (`0.75rem`) — so the two cards sit the same distance off
+ * their edges and their bottoms line up, rather than the legend floating a
+ * further 12px in on a map the sidebar is read against.
+ */
+const LEGEND_OFFSET = 12;
+
+/**
+ * The chosen ramp trimmed to the classes the breaks actually produced. Quantile
  * breaks collapse when counts tie, and at a fine cell radius most cells hold 0
  * or 1 — so the ramp has to shrink with them. Both ends are always kept.
  */
-const colorsFor = (thresholds: number[]): string[] => {
+const colorsFor = ({
+  thresholds,
+  colors,
+}: {
+  thresholds: number[];
+  colors: string[];
+}): string[] => {
   const classes = thresholds.length + 1;
-  if (classes >= CLASS_COLORS.length) return CLASS_COLORS;
-  if (classes === 1) return [CLASS_COLORS[CLASS_COLORS.length - 1]];
+  if (classes >= colors.length) return colors;
+  if (classes === 1) return [colors[colors.length - 1]];
 
   return Array.from({ length: classes }, (_, index) => {
-    return CLASS_COLORS[
-      Math.round((index * (CLASS_COLORS.length - 1)) / (classes - 1))
-    ];
+    return colors[Math.round((index * (colors.length - 1)) / (classes - 1))];
   });
 };
 
@@ -165,15 +220,18 @@ const stopsWithCounts = MESH_STOPS.map((stop) => {
 const buildSpec = ({
   variation,
   radiusKm,
+  rampId,
   opacity,
   hideEmpty,
 }: {
   variation: string;
   radiusKm: number;
+  rampId: string;
   opacity: number;
   hideEmpty: boolean;
 }): VisualizationSpec => {
   const cells = hexbin({ points: POINTS, bbox: BBOX, radiusKm });
+  const ramp = rampFor(rampId);
 
   // Recomputed per radius, not written down: halving the cell size roughly
   // quarters every count, so breaks fixed at one radius would paint the whole
@@ -182,7 +240,7 @@ const buildSpec = ({
     counts: cells.map((cell) => {
       return cell.count;
     }),
-    classes: CLASS_COLORS.length,
+    classes: ramp.colors.length,
   });
 
   // `hideEmpty` drops the cells from the SOURCE, not from the join: a cell left
@@ -225,6 +283,10 @@ const buildSpec = ({
   return {
     engine: 'maplibre',
     view: { center: [-54, -14], zoom: 3.1 },
+    // The story shows the settings zone, not the basemap's credits, and the
+    // expand button sat in the same corner as the legend. A real app dropping
+    // this control still owes the basemap its attribution somewhere else.
+    attributionControlEnabled: false,
     sources: [
       { id: 'hexgrid', type: 'geojson', data: grid },
       { id: 'observations', type: 'geojson', data: pointsSource },
@@ -267,13 +329,14 @@ const buildSpec = ({
         title: 'Observações por célula',
         subtitle: `Classes por quantis sobre células de ${radiusKm} km.`,
         position: 'bottom-right',
+        offset: LEGEND_OFFSET,
         noDataLabel: 'Sem observações',
         colorBy: {
           type: 'quantitative',
           property: 'value',
           scale: 'threshold',
           thresholds,
-          colors: colorsFor(thresholds),
+          colors: colorsFor({ thresholds, colors: ramp.colors }),
           defaultColor: EMPTY_COLOR,
         },
       },
@@ -283,6 +346,19 @@ const buildSpec = ({
 
 const config: GeovisWorkspaceConfig = {
   appearance: 'bare',
+  /*
+   * No right sidebar in this story: it has nothing to say about the settings
+   * zone, and the `metadata` panel alone was enough to open it. All four of its
+   * slots are hidden rather than only that one, so a later edit — a legend
+   * `description`, or a click reaching the inspector — cannot bring the panel
+   * back over the map the settings are meant to be read against.
+   */
+  slots: {
+    legend: { hidden: true },
+    warnings: { hidden: true },
+    inspector: { hidden: true },
+    metadata: { hidden: true },
+  },
   leftSidebar: {
     initialState: 'open',
     sections: [
@@ -315,6 +391,17 @@ const config: GeovisWorkspaceConfig = {
                 defaultValue: DEFAULT_RADIUS_KM,
                 endLabels: ['Panorâmico', 'Detalhado'],
                 stepButtons: true,
+              },
+            },
+            {
+              id: 'cor',
+              title: 'Cor da Malha',
+              icon: 'lucide:droplet',
+              control: {
+                kind: 'colorRamp',
+                menuId: 'hexRamp',
+                defaultValue: DEFAULT_RAMP,
+                options: RAMPS,
               },
             },
             {
@@ -357,12 +444,13 @@ const SettingsDemo = () => {
 
   const variation = selection.variacao ?? MESH_VARIATION;
   const radiusKm = Number(selection.hexResolution) || DEFAULT_RADIUS_KM;
+  const rampId = selection.hexRamp ?? DEFAULT_RAMP;
   const opacity = Number(selection.hexOpacity) || DEFAULT_OPACITY;
   const hideEmpty = selection.hideEmpty === 'true';
 
   const spec = React.useMemo(() => {
-    return buildSpec({ variation, radiusKm, opacity, hideEmpty });
-  }, [variation, radiusKm, opacity, hideEmpty]);
+    return buildSpec({ variation, radiusKm, rampId, opacity, hideEmpty });
+  }, [variation, radiusKm, rampId, opacity, hideEmpty]);
 
   return (
     <div style={{ height: 640 }}>
@@ -403,7 +491,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** Steps 1–4: the ladder re-binning, the opacity, the switch, and the gate. */
+/** Steps 1–5: the ladder, the ramps, the opacity, the switch, and the gate. */
 export const Desktop: Story = {
   globals: { viewport: { value: 'roomy', isRotated: false } },
 };

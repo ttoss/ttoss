@@ -51,6 +51,10 @@
     "defaultMessage": "No value",
     "description": "Shown in the inspector panel when the selected feature has no bound value."
   },
+  "8Drt0l": {
+    "defaultMessage": "Buscas recentes",
+    "description": "Locator filter: heading above the recently picked places."
+  },
   "AVBgd7": {
     "defaultMessage": "Two sources conflict with each other.",
     "description": "Warnings panel: two sources declare overlapping scope."
@@ -83,6 +87,10 @@
     "defaultMessage": "This data feature is not supported.",
     "description": "Warnings panel: a data-level feature is not implemented by the engine adapter."
   },
+  "KvV4pR": {
+    "defaultMessage": "Nada corresponde a \"{query}\"",
+    "description": "Locator filter: shown when a long-enough query matches no option."
+  },
   "NNlALX": {
     "defaultMessage": "Pause",
     "description": "Label for the timeline button that stops the auto-advancing value in the preview sidebar."
@@ -95,6 +103,10 @@
     "defaultMessage": "Two map data entries collide on the same feature-state key.",
     "description": "Warnings panel: resolved stateKey collides across mapData entries."
   },
+  "Rdl2hc": {
+    "defaultMessage": "Limpar busca",
+    "description": "Locator filter: accessible label for the button clearing the search field."
+  },
   "SypGjh": {
     "defaultMessage": "Two map data entries share the same id.",
     "description": "Warnings panel: mapData ids collide."
@@ -106,10 +118,6 @@
   "U20GSl": {
     "defaultMessage": "Play",
     "description": "Label for the timeline button that auto-advances the current value in the preview sidebar."
-  },
-  "UKeLzU": {
-    "defaultMessage": "Zoom em {label}",
-    "description": "Locator filter: action zooming the map to the chosen place."
   },
   "V3z2n/": {
     "defaultMessage": "The size mode configuration is invalid.",
@@ -130,6 +138,10 @@
   "ZBWmDx": {
     "defaultMessage": "The visualization spec does not match the expected schema.",
     "description": "Warnings panel: spec fails JSON schema validation."
+  },
+  "b+PIz+": {
+    "defaultMessage": "Remover seleção",
+    "description": "Locator filter: accessible label for the button clearing the chosen place."
   },
   "cDAeJo": {
     "defaultMessage": "This source type is not supported.",
@@ -182,10 +194,6 @@
   "yb6iwx": {
     "defaultMessage": "The visualization spec targets an unsupported schema version.",
     "description": "Warnings panel: spec.schemaVersion is not supported."
-  },
-  "ymdThy": {
-    "defaultMessage": "Selecione um município",
-    "description": "Locator filter: zoom action label while nothing is selected yet."
   },
   "zija6w": {
     "defaultMessage": "Decrease",

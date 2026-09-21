@@ -1,7 +1,9 @@
 import type {
   DataSource,
+  GeoJSONBoundingBox,
   GeoVisGeometryType,
   LngLat,
+  ViewAnimation,
   VisualizationSpec,
 } from '../spec/types';
 import type { GeoVisSelection } from './action';
@@ -11,14 +13,33 @@ import type { GeoVisSelection } from './action';
  * All camera fields are optional — only provided values are applied.
  * When `animate` is true (default) the adapter uses a smooth flyTo transition;
  * when false it uses an instant jumpTo.
+ *
+ * The flight itself is shaped by {@link ViewAnimation}'s fields, which a
+ * `ViewPreset` declares and `set-view-preset` carries through. Left out, the
+ * engine picks its own flight — and turns it into a jump for a viewer who
+ * asked for reduced motion, unless `essential` says the flight is the point.
  */
-export interface SetViewOptions {
+export interface SetViewOptions extends ViewAnimation {
   center?: LngLat;
   zoom?: number;
   pitch?: number;
   bearing?: number;
-  /** Whether to animate the transition. Defaults to `true`. */
-  animate?: boolean;
+  /**
+   * Frame this box instead of going to a `center`/`zoom`, which is what an
+   * extent — a territory, a district, a catchment — asks for: how close the
+   * camera ends up is the size of the thing, not a number chosen in advance.
+   *
+   * Given, it wins over `center`/`zoom`, and those are left out of the move.
+   */
+  bounds?: GeoJSONBoundingBox;
+  /** Pixels of breathing room around {@link bounds}. */
+  padding?: number;
+  /**
+   * How close {@link bounds} may bring the camera. Without it a small enough
+   * extent fills the screen with a single shape and no surroundings to place
+   * it against.
+   */
+  maxZoom?: number;
 }
 
 export interface EngineAdapter {

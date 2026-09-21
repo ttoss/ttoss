@@ -8,7 +8,6 @@ import type {
   CapabilitySet,
   EngineAdapter,
   MountedView,
-  SetViewOptions,
   SpecPatch,
 } from '../../runtime/adapter';
 import {
@@ -23,6 +22,7 @@ import type {
   MapData,
   VisualizationSpec,
 } from '../../spec/types';
+import { applySetView } from './applySetView';
 import { applyBasemapLabelsVisibility } from './basemapLabels';
 import { attachFitToData } from './fitBoundsToData';
 import { toMaplibreLayer } from './layerTranslation';
@@ -178,22 +178,6 @@ const dispatchPatch = (viewState: ViewState, patch: SpecPatch): void => {
         (patch as { target: unknown }).target
       }" — patch was ignored.`
     );
-  }
-};
-
-// Imperative camera call for the AI/runtime `setView` action — flyTo (animated) or jumpTo.
-const applySetView = (map: maplibregl.Map, options: SetViewOptions): void => {
-  const { center, zoom, pitch, bearing, animate = true } = options;
-  const camera: maplibregl.CameraOptions = {};
-  if (center !== undefined) camera.center = center as maplibregl.LngLatLike;
-  if (zoom !== undefined) camera.zoom = zoom;
-  if (pitch !== undefined) camera.pitch = pitch;
-  if (bearing !== undefined) camera.bearing = bearing;
-  if (Object.keys(camera).length === 0) return;
-  if (animate) {
-    map.flyTo(camera);
-  } else {
-    map.jumpTo(camera);
   }
 };
 
