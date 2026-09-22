@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.23.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.22.0...@ttoss/geovis@0.23.0) (2026-09-22)
+
+### Features
+
+- **geovis:** close validateSpec coverage gaps for golden test set ([#1250](https://github.com/ttoss/ttoss/issues/1250)) ([d2129f9](https://github.com/ttoss/ttoss/commit/d2129f94f033fef9bcb24005e3171e302d4dc070))
+
 # [0.22.0](https://github.com/ttoss/ttoss/compare/@ttoss/geovis@0.21.1...@ttoss/geovis@0.22.0) (2026-09-21)
 
 ### Features
