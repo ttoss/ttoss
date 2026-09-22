@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 0.2.15 (2026-09-22)
+
+### Bug Fixes
+
+- **http-server-mcp-openapi:** resolve allOf body props instead of defaulting to string ([#1252](https://github.com/ttoss/ttoss/issues/1252)) ([ae24f59](https://github.com/ttoss/ttoss/commit/ae24f592e7d8209d67b595791ab58650c9fd3301))
+
 ## [0.2.14](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.2.13...@ttoss/http-server-mcp-openapi@0.2.14) (2026-09-15)
 
 ### Bug Fixes
