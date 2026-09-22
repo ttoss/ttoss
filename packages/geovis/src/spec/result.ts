@@ -38,6 +38,8 @@ export type GeoVisIssueCode =
   | 'unsupported-view-feature'
   | 'unsupported-engine'
   | 'unsupported-patch-target'
+  | 'missing-source-layer'
+  | 'missing-map-data-for-map-type'
   | 'policy-violation';
 
 /**
@@ -70,6 +72,8 @@ export const ISSUE_CODE_STATUS: Record<
   'unsupported-view-feature': 'unsupported',
   'unsupported-engine': 'unsupported',
   'unsupported-patch-target': 'unsupported',
+  'missing-source-layer': 'mismatch',
+  'missing-map-data-for-map-type': 'mismatch',
 };
 
 /** Precedence order used to pick one overall status when issues span categories. */

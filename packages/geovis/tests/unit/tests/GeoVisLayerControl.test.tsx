@@ -15,6 +15,7 @@ jest.mock('src/adapters/maplibre/MapLibreAdapter', () => {
         id: 'maplibre',
         getCapabilities: jest.fn(() => {
           return {
+            engine: 'maplibre',
             sourceTypes: ['geojson'],
             layerGeometries: ['point', 'polygon'],
             dataFeatures: { featureState: ['geojson'], filter: ['geojson'] },

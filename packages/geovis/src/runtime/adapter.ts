@@ -80,6 +80,8 @@ export interface MountedView {
  * rendering partially or misbehaving at the engine level.
  */
 export interface CapabilitySet {
+  /** The engine adapter this capability set describes — see `EngineAdapter.id`. */
+  engine: EngineAdapter['id'];
   /** Source types the adapter can mount onto the map. */
   sourceTypes: DataSource['type'][];
   /** Layer geometries the adapter can translate and render. */

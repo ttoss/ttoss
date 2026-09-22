@@ -141,6 +141,7 @@ describe('createMapLibreAdapter', () => {
   test('getCapabilities returns the structured capability tree (ADR-0002)', () => {
     const adapter = createMapLibreAdapter();
     expect(adapter.getCapabilities()).toEqual({
+      engine: 'maplibre',
       sourceTypes: [
         'geojson',
         'vector-tiles',
