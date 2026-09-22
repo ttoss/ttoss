@@ -1,0 +1,102 @@
+# Formation Naturali — agent `geovis-spec-generator`
+#
+# Estratégia B (escolhida): agent aponta direto pra um `naturali_ai_provider`
+# (sem model_route). Sem failover automático de modelo — troca de modelo =
+# redeploy deste resource. Ver bloco comentado no fim pra estratégia A
+# (model_route + failover), registrada como alternativa caso resiliência de
+# modelo vire requisito.
+#
+# output_schema usa $ref remoto pro schema publicado do geovis
+# (https://ttoss.dev/geovis/spec.schema.json). Se o validador da Naturali não
+# resolver $ref externo, inline o conteúdo de packages/geovis/src/spec/schema.json
+# em `$defs` e troque o $ref por local (#/$defs/VisualizationSpec).
+
+resources:
+  geovis_spec_provider:
+    type: naturali_ai_provider
+    properties:
+      default_model: claude-sonnet-4.6
+
+  geovis_spec_generator:
+    type: agent
+    depends_on:
+      - geovis_spec_provider
+    properties:
+      name: geovis-spec-generator
+      ai_provider_id: { ref: geovis_spec_provider }
+      max_steps: 1
+      temperature: 0.1
+      trace_content_mode: none
+      instructions: |
+        Converte uma descrição em linguagem natural para um VisualizationSpec do
+        @ttoss/geovis. Use quando o pedido descrever um mapa/visualização (ex.:
+        "monta um mapa coroplético dos municípios por IVS", "cria um spec de
+        pontos proporcionais para os assentamentos").
+
+        Responda SOMENTE com o objeto JSON definido pelo output_schema — nunca
+        implementação, nunca prosa, nunca markdown/code fences ao redor do JSON.
+
+        Se o pedido for ambíguo, citar um mapType não suportado pelo schema
+        (apenas choropleth, dotDensity, proportionalCircles são válidos), ou
+        depender de dado que não foi fornecido, retorne o branch de erro com o
+        `code` mais específico em vez de inventar uma spec.
+      output_schema:
+        type: object
+        oneOf:
+          - type: object
+            required: [status, spec]
+            additionalProperties: false
+            properties:
+              status: { const: ok }
+              spec: { $ref: 'https://ttoss.dev/geovis/spec.schema.json' }
+          - type: object
+            required: [status, error]
+            additionalProperties: false
+            properties:
+              status: { const: error }
+              error:
+                type: object
+                required: [code, message]
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                      - ambiguous_request
+                      - unsupported_map_type
+                      - missing_data
+                  message:
+                    type: string
+
+outputs:
+  agentId: { ref: geovis_spec_generator }
+
+# --- Estratégia A (alternativa, não deployada) -----------------------------
+# Trade-off vs B: +1 resource (`model_route`), mas failover ordenado entre
+# providers/models sem precisar redeploy do agent pra trocar de modelo.
+#
+# Confirmado via validate-formation (naturali MCP): cada target é objeto
+# { ai_provider_id, model } — não array de valor único — e AMBOS os campos
+# precisam ser string LITERAL. `{ ref: ... }` e `{ param: ... }` não são
+# resolvidos dentro de `targets[]` (validate-formation rejeita com "must be a
+# string" mesmo com o parâmetro declarado e default_model presente no
+# catálogo de /v1/models). Ou seja: `ai_provider_id` aqui tem que ser o ID
+# físico de um ai_provider já existente (ex.: criado fora desta formation ou
+# em deploy anterior), não uma ref a `geovis_spec_provider` acima.
+#
+# resources:
+#   geovis_spec_route:
+#     type: model_route
+#     properties:
+#       name: geovis-spec-generator-route
+#       targets:
+#         - { ai_provider_id: "ap_xxxxxxxx", model: claude-sonnet-4.6 }
+#         - { ai_provider_id: "ap_xxxxxxxx", model: claude-haiku-4.5 }
+#
+#   geovis_spec_generator:
+#     type: agent
+#     depends_on: [geovis_spec_route]
+#     properties:
+#       name: geovis-spec-generator
+#       model_route_id: { ref: geovis_spec_route }
+#       # ... demais properties iguais à B (instructions, output_schema, etc.)
