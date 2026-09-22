@@ -7,6 +7,10 @@
     "defaultMessage": "Two map data entries declare the same dimension for the same source.",
     "description": "Warnings panel: mapData color/size dimension collides."
   },
+  "/LbTu2": {
+    "defaultMessage": "Nova escala de cor",
+    "description": "Label of the button that opens the editor for building a color ramp."
+  },
   "/NbUv5": {
     "defaultMessage": "This view feature is not supported.",
     "description": "Warnings panel: a view-level feature is not implemented by the engine adapter."
@@ -51,9 +55,21 @@
     "defaultMessage": "No value",
     "description": "Shown in the inspector panel when the selected feature has no bound value."
   },
+  "6eNUHi": {
+    "defaultMessage": "Cor personalizada",
+    "description": "Accessible label for the free color input in the color-ramp editor."
+  },
+  "87ss09": {
+    "defaultMessage": "Cancelar",
+    "description": "Accessible label for the button that closes the color-ramp editor."
+  },
   "8Drt0l": {
     "defaultMessage": "Buscas recentes",
     "description": "Locator filter: heading above the recently picked places."
+  },
+  "9WPqwF": {
+    "defaultMessage": "Escolha a cor base",
+    "description": "Heading of the color-ramp editor, above the base swatches."
   },
   "AVBgd7": {
     "defaultMessage": "Two sources conflict with each other.",
@@ -66,6 +82,14 @@
   "BWeqQA": {
     "defaultMessage": "Selecionado",
     "description": "Locator filter: heading above the currently selected place."
+  },
+  "CI5FMY": {
+    "defaultMessage": "Remover escala",
+    "description": "Accessible label for the button that removes a ramp the reader built."
+  },
+  "GT4LWE": {
+    "defaultMessage": "Adicionar",
+    "description": "Label of the button that saves the ramp built in the color-ramp editor."
   },
   "IU+fm9": {
     "defaultMessage": "Open details",
@@ -142,6 +166,10 @@
   "b+PIz+": {
     "defaultMessage": "Remover seleção",
     "description": "Locator filter: accessible label for the button clearing the chosen place."
+  },
+  "bVxrZo": {
+    "defaultMessage": "Nome da escala",
+    "description": "Placeholder of the name field in the color-ramp editor."
   },
   "cDAeJo": {
     "defaultMessage": "This source type is not supported.",

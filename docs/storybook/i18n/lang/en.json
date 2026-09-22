@@ -122,6 +122,11 @@
     "defaultMessage": "Two map data entries declare the same dimension for the same source.",
     "description": "Warnings panel: mapData color/size dimension collides."
   },
+  "/LbTu2": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Nova escala de cor",
+    "description": "Label of the button that opens the editor for building a color ramp."
+  },
   "/NbUv5": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "This view feature is not supported.",
@@ -177,10 +182,25 @@
     "defaultMessage": "No value",
     "description": "Shown in the inspector panel when the selected feature has no bound value."
   },
+  "6eNUHi": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Cor personalizada",
+    "description": "Accessible label for the free color input in the color-ramp editor."
+  },
+  "87ss09": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Cancelar",
+    "description": "Accessible label for the button that closes the color-ramp editor."
+  },
   "8Drt0l": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Buscas recentes",
     "description": "Locator filter: heading above the recently picked places."
+  },
+  "9WPqwF": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Escolha a cor base",
+    "description": "Heading of the color-ramp editor, above the base swatches."
   },
   "AVBgd7": {
     "module": "@ttoss/geovis-workspace",
@@ -196,6 +216,16 @@
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Selecionado",
     "description": "Locator filter: heading above the currently selected place."
+  },
+  "CI5FMY": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Remover escala",
+    "description": "Accessible label for the button that removes a ramp the reader built."
+  },
+  "GT4LWE": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Adicionar",
+    "description": "Label of the button that saves the ramp built in the color-ramp editor."
   },
   "IU+fm9": {
     "module": "@ttoss/geovis-workspace",
@@ -291,6 +321,11 @@
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Remover seleção",
     "description": "Locator filter: accessible label for the button clearing the chosen place."
+  },
+  "bVxrZo": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Nome da escala",
+    "description": "Placeholder of the name field in the color-ramp editor."
   },
   "cDAeJo": {
     "module": "@ttoss/geovis-workspace",
