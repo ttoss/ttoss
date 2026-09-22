@@ -8,6 +8,7 @@ const RESOLVED = (spec: VisualizationSpec): GeoVisResult => {
 };
 
 const CAPABILITIES: CapabilitySet = {
+  engine: 'maplibre',
   sourceTypes: ['geojson'],
   layerGeometries: ['polygon'],
   dataFeatures: { featureState: ['geojson'], filter: ['geojson'] },

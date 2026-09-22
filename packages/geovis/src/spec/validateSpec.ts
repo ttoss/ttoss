@@ -6,6 +6,7 @@ import { resolveOverallStatus } from './result';
 import schema from './schema.json';
 import type { VisualizationSpec } from './types';
 import {
+  validateEngineCapability,
   validateFilterCapabilities,
   validateLayerCapabilities,
   validateSourceCapabilities,
@@ -60,6 +61,7 @@ export const validateSpec = (
     ...validateLegendThresholdOrder(spec),
     ...validateSizeBy(spec),
     ...validateMapDataDimensions(spec),
+    ...(capabilities ? validateEngineCapability(spec, capabilities) : []),
     ...(capabilities ? validateSourceCapabilities(spec, capabilities) : []),
     ...(capabilities ? validateLayerCapabilities(spec, capabilities) : []),
     ...(capabilities ? validateFilterCapabilities(spec, capabilities) : []),

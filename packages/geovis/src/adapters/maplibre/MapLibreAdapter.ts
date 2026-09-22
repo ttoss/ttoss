@@ -200,6 +200,7 @@ const destroyAll = (views: ViewMap): void => {
 // source — which is the "declared means tested" bar. `featureState` stays
 // `geojson`-only, since `setFeatureState` joining needs stable feature ids.
 const CAPABILITIES: CapabilitySet = {
+  engine: 'maplibre',
   sourceTypes: [
     'geojson',
     'vector-tiles',

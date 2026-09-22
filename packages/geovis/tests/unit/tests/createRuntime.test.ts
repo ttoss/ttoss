@@ -7,6 +7,7 @@ import { createRuntime } from 'src/runtime/createRuntime';
 import type { VisualizationSpec } from 'src/spec/types';
 
 const PERMISSIVE_CAPABILITIES: CapabilitySet = {
+  engine: 'maplibre',
   sourceTypes: [
     'geojson',
     'vector-tiles',

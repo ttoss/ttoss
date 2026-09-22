@@ -190,7 +190,7 @@ Each entry in `spec.layers` describes one rendered layer.
 | `legends`        | `LegendSpec[]`                                                                                                           |          | Alternative legend definitions exposed as runtime toggles.                                                                                                                                                                                                                                                                                                   |
 | `activeLegendId` | `string`                                                                                                                 |          | Active entry from `legends[]`. Enables choropleth coloring and the hover tooltip.                                                                                                                                                                                                                                                                            |
 | `mapDataId`      | `string`                                                                                                                 |          | References a `MapData.mapDataId` for per-feature value joining (choropleth / tooltip). When a `MapData` declares `dimension`, the adapter auto-discovers color/size.                                                                                                                                                                                         |
-| `propertyName`   | `string`                                                                                                                 |          | Reads circle size directly from `feature.properties[propertyName]` via `['get', propertyName]`. Alternative to `mapData` — when both are set, `mapDataId` takes precedence. See [Alternative data source](#alternative-data-source-propertyname).                                                                                                            |
+| `propertyName`   | `string`                                                                                                                 |          | Reads circle size directly from `feature.properties[propertyName]` via `['get', propertyName]`. Alternative to `mapData` — mutually exclusive with `mapDataId` on the same layer (schema-enforced, `invalid-schema`). See [Alternative data source](#alternative-data-source-propertyname).                                                                  |
 | `hoverPaint`     | `{ lineColor?: string; lineWidth?: number }`                                                                             |          | Outline rendered on the hovered feature via a companion MapLibre line layer driven by `feature-state.hover`.                                                                                                                                                                                                                                                 |
 | `selectedPaint`  | `{ lineColor?: string; lineWidth?: number }`                                                                             |          | Outline rendered on the selected feature via `feature-state.selected`.                                                                                                                                                                                                                                                                                       |
 | `clickAnchor`    | `{ iconImage?: string; iconSize?: number; color?: string; offset?: [number, number]; latKey?: string; lngKey?: string }` |          | Spec-driven click marker. Use `iconImage` to render a sprite icon; use `color` for the built-in SVG pin. For a custom HTML element, use `<GeoVisMarker>` instead. Set `latKey`/`lngKey` to read the anchor position from the clicked feature's properties (surfaced as `MapClickInfo.featureLngLat`) instead of the click point — avoids drift at high zoom. |
@@ -718,10 +718,13 @@ const spec = {
 };
 ```
 
-When both `propertyName` and `mapDataId` are set on a layer, `mapDataId`
-takes precedence. The `propertyName` path requires inline GeoJSON data (not a
-URL) for `scaleMaxValue` computation — when the source is a URL, the resolver
-skips the default ceiling and the adapter falls back to legend-driven sizing.
+`propertyName` and `mapDataId` are mutually exclusive on the same layer — the
+schema rejects a layer declaring both (`invalid-schema`), since they name two
+different ways of resolving the same value and setting both is always a
+mistake, never an intentional fallback. The `propertyName` path requires
+inline GeoJSON data (not a URL) for `scaleMaxValue` computation — when the
+source is a URL, the resolver skips the default ceiling and the adapter falls
+back to legend-driven sizing.
 
 #### Disabling the auto-generated legend
 
@@ -1941,27 +1944,32 @@ Returns a `GeoVisResult`: `{ status: 'resolved', spec: VisualizationSpec, warnin
 
 Each `GeoVisIssue` is `{ code, subject: { path, id? }, message, repair? }`:
 
-| `code`                     | Failure status | Meaning                                                                                      |
-| -------------------------- | -------------- | -------------------------------------------------------------------------------------------- |
-| `invalid-schema`           | `invalid`      | value fails the JSON Schema                                                                  |
-| `invalid-schema-version`   | `invalid`      | `schemaVersion` is declared but doesn't match `SPEC_SCHEMA_VERSION`                          |
-| `invalid-threshold-order`  | `invalid`      | legend/sizeBy thresholds not strictly ascending                                              |
-| `invalid-threshold-value`  | `invalid`      | non-finite threshold value                                                                   |
-| `invalid-size-range`       | `invalid`      | `sizeBy.range` not finite, or `min >= max`, or `min <= 0`                                    |
-| `invalid-size-mode`        | `invalid`      | stepped `sizeBy` without thresholds or an active threshold legend                            |
-| `duplicate-map-data-id`    | `mismatch`     | non-unique `mapData.mapDataId`                                                               |
-| `unknown-map-data-id`      | `mismatch`     | layer references an undeclared `mapDataId`                                                   |
-| `unknown-source`           | `mismatch`     | layer or `mapData` references an undeclared source                                           |
-| `source-scope-conflict`    | `mismatch`     | layer's `sourceId` doesn't match its `mapDataId`'s source                                    |
-| `duplicate-dimension`      | `mismatch`     | two `mapData` entries claim the same `dimension` on one source                               |
-| `state-key-collision`      | `mismatch`     | dimensioned `mapData` entries share a `stateKey`                                             |
-| `unsupported-source-type`  | `unsupported`  | source type isn't feature-state-capable, or isn't declared by the active adapter             |
-| `unsupported-layer-type`   | `unsupported`  | layer geometry isn't declared by the active adapter                                          |
-| `unsupported-view-feature` | `unsupported`  | `view.pitch`/`view.bearing` set but not declared by the active adapter                       |
-| `unsupported-patch-target` | `unsupported`  | `applyPatch` called with a target other than `layer`/`source`/`mapData`                      |
-| `policy-violation`         | warning        | cartography policy violation (never blocks rendering — see `GeoVisResult.resolved.warnings`) |
+| `code`                          | Failure status | Meaning                                                                                      |
+| ------------------------------- | -------------- | -------------------------------------------------------------------------------------------- |
+| `invalid-schema`                | `invalid`      | value fails the JSON Schema                                                                  |
+| `invalid-schema-version`        | `invalid`      | `schemaVersion` is declared but doesn't match `SPEC_SCHEMA_VERSION`                          |
+| `invalid-threshold-order`       | `invalid`      | legend/sizeBy thresholds not strictly ascending                                              |
+| `invalid-threshold-value`       | `invalid`      | non-finite threshold value                                                                   |
+| `invalid-size-range`            | `invalid`      | `sizeBy.range` not finite, or `min >= max`, or `min <= 0`                                    |
+| `invalid-size-mode`             | `invalid`      | stepped `sizeBy` without thresholds or an active threshold legend                            |
+| `duplicate-map-data-id`         | `mismatch`     | non-unique `mapData.mapDataId`                                                               |
+| `unknown-map-data-id`           | `mismatch`     | layer references an undeclared `mapDataId`                                                   |
+| `unknown-source`                | `mismatch`     | layer or `mapData` references an undeclared source                                           |
+| `source-scope-conflict`         | `mismatch`     | layer's `sourceId` doesn't match its `mapDataId`'s source                                    |
+| `duplicate-dimension`           | `mismatch`     | two `mapData` entries claim the same `dimension` on one source                               |
+| `state-key-collision`           | `mismatch`     | dimensioned `mapData` entries share a `stateKey`                                             |
+| `unsupported-source-type`       | `unsupported`  | source type isn't feature-state-capable, or isn't declared by the active adapter             |
+| `unsupported-layer-type`        | `unsupported`  | layer geometry isn't declared by the active adapter                                          |
+| `unsupported-view-feature`      | `unsupported`  | `view.pitch`/`view.bearing` set but not declared by the active adapter                       |
+| `unsupported-engine`            | `unsupported`  | `spec.engine` doesn't match the active adapter's declared `CapabilitySet.engine`             |
+| `unsupported-patch-target`      | `unsupported`  | `applyPatch` called with a target other than `layer`/`source`/`mapData`                      |
+| `missing-source-layer`          | `mismatch`     | layer mounted on a `vector-tiles` source without declaring `sourceLayer`                     |
+| `missing-map-data-for-map-type` | `mismatch`     | `mapType` is set but no `mapData` entry maps to a declared source                            |
+| `policy-violation`              | warning        | cartography policy violation (never blocks rendering — see `GeoVisResult.resolved.warnings`) |
 
 `repair` is present only when the check already has the correct alternative in hand (e.g. the declared `mapDataId`/source ids, the adapter's declared capability list, or the other side of a scope mismatch) — never an invented or guessed value. Its entries are `{ kind: 'allowed-values', path, values }` or `{ kind: 'set-value', path, value, label? }`.
+
+Two related checks are deliberately **not** implemented, pending a product decision: (1) requiring a legend to cover "the painted variable" whenever `mapType` is set — `VisualizationSpec` also allows manual paint via `['get', ...]` expressions with no `mapType` set, and there is no general way to detect "this paint expression encodes a variable" without parsing paint expressions; (2) rejecting a manual legend that duplicates the `proportionalCircles` auto-generated size legend for the same dataset ("double-legend") — there is no precise definition yet of "same variable" across a manual and an auto-generated legend. Both would need a defined heuristic before they can be added as `GeoVisIssueCode`s.
 
 #### Capabilities (`CapabilitySet`)
 
@@ -1969,6 +1977,7 @@ Each `GeoVisIssue` is `{ code, subject: { path, id? }, message, repair? }`:
 
 ```ts
 interface CapabilitySet {
+  engine: EngineAdapter['id'];
   sourceTypes: DataSource['type'][];
   layerGeometries: GeoVisGeometryType[];
   dataFeatures: { featureState: DataSource['type'][] };
@@ -1980,12 +1989,13 @@ interface CapabilitySet {
 
 | Category                        | Declared                                                                  |
 | ------------------------------- | ------------------------------------------------------------------------- |
+| `engine`                        | `'maplibre'`                                                              |
 | `sourceTypes`                   | `geojson`, `vector-tiles`, `raster-tiles`, `raster-dem`, `image`, `video` |
 | `layerGeometries`               | `polygon`, `line`, `point`, `symbol`, `heatmap`, `raster`                 |
 | `dataFeatures.featureState`     | `geojson` only — `mapData`/`sizeBy` depend on stable per-feature ids      |
 | `viewFeatures.pitch`/`.bearing` | both `true` — genuinely applied to the camera (`applySetView`)            |
 
-`validateSpec`/`createRuntime` reject anything the spec requires but the active adapter doesn't declare, before mount — a spec requiring an unsupported capability never reaches the engine.
+`validateSpec`/`createRuntime` reject anything the spec requires but the active adapter doesn't declare, before mount — a spec requiring an unsupported capability never reaches the engine. This includes `engine` itself: `unsupported-engine` fires when `spec.engine` doesn't match `CapabilitySet.engine` — in practice this only happens when validating a spec against a different adapter's capabilities than the one it targets, since v1 has exactly one adapter (`maplibre`) and the schema only allows that engine value today.
 
 ## Legend Type Surface
 
