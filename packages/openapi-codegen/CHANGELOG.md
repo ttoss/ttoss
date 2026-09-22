@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.2](https://github.com/ttoss/ttoss/compare/@ttoss/openapi-codegen@0.3.1...@ttoss/openapi-codegen@0.3.2) (2026-09-22)
+
+### Bug Fixes
+
+- **openapi-codegen:** stop typing an untyped schema `string`, and resolve `$ref`s across files ([#1248](https://github.com/ttoss/ttoss/issues/1248)) ([21283be](https://github.com/ttoss/ttoss/commit/21283be5bd895e9dac37d73e4f1a3176df7c3e3c))
+
 ## 0.3.1 (2026-09-18)
 
 ### Bug Fixes
