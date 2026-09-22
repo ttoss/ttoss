@@ -1,0 +1,13 @@
+openapi: 3.0.3
+paths:
+  /widgets:
+    get:
+      operationId: listWidgets
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: './shared.yaml#/components/schemas/Widget'
+components: {}

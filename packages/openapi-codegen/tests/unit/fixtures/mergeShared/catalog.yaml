@@ -1,0 +1,21 @@
+openapi: 3.0.3
+components:
+  parameters:
+    CatalogId:
+      name: catalog_id
+      in: query
+      schema:
+        type: string
+  schemas:
+    Catalog:
+      type: object
+      properties:
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatalogEntry'
+    CatalogEntry:
+      type: object
+      properties:
+        label:
+          $ref: './labels.yaml#/components/schemas/Label'

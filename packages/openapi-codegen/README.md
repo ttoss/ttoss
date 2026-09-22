@@ -25,6 +25,16 @@ cross-file `$ref`s (e.g. `./widgets.yaml#/components/schemas/Widget`) are
 rewritten to local refs (`#/components/schemas/Widget`) so the merged
 document is self-contained.
 
+A `$ref` into a file that is not in `specsDir` — a shared components file —
+pulls the component it names into the merged document, together with whatever
+that component refs in turn, so the rewritten local ref has something to point
+at. `schemas`, `responses` and `parameters` can be pulled; a cross-file ref
+naming anything else, a file that is not there, a component that file does not
+declare, or a remote document is rejected rather than rewritten into a
+dangling ref. A pulled component keeps its name, so a name a different
+definition already holds is an error: the ref that lost would otherwise point
+at the definition that won.
+
 ```ts
 import fs from 'node:fs';
 
@@ -113,10 +123,8 @@ The pointer has to name a component — `#/components/schemas/...` or
 `#/components/parameters/...`. A ref to a whole file, to anything outside
 `components`, or to a remote document is rejected rather than half-resolved.
 
-`mergeOpenApiSpecs` merges only the files in `specsDir`, so keep shared files
-there too when the same specs feed the merged SDK document: a file kept
-outside it resolves for the CLI manifest, but its components never reach the
-merge.
+The same layout feeds the merged SDK document: `mergeOpenApiSpecs` pulls a
+referenced file's components in rather than leaving the ref dangling.
 
 ### Naming conventions
 

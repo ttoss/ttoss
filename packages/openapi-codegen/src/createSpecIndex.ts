@@ -5,7 +5,6 @@
  */
 
 import fs from 'node:fs';
-import path from 'node:path';
 
 import { load } from 'js-yaml';
 
@@ -14,6 +13,7 @@ import type {
   OpenApiParameterFull,
   OpenApiSchema,
 } from './openApiOperationTypes';
+import { parseRef } from './parseRef';
 
 /**
  * Every location OpenAPI allows a parameter to live in. All four become CLI
@@ -75,31 +75,6 @@ const REF_SECTION_LABEL = {
 } as const;
 
 type RefSection = keyof typeof REF_SECTION_LABEL;
-
-/** A `$ref` naming a document to fetch over the network rather than a file. */
-const REMOTE_REF = /^[a-z][a-z\d+.-]*:\/\//i;
-
-/**
- * Splits a `$ref` into the document it names and the pointer into it. A ref
- * with no file part is same-file; a file part is resolved against the
- * directory of the spec that wrote it, so a shared components file can point
- * at a third file of its own and be read from wherever it is referenced.
- */
-const parseRef = (args: {
-  ref: string;
-  fromSpecPath: string;
-}): { pointer: string; remote: boolean; specPath: string } => {
-  const { ref, fromSpecPath } = args;
-  const [filePart, pointer = ''] = ref.split('#');
-
-  return {
-    pointer,
-    remote: Boolean(filePart && REMOTE_REF.test(filePart)),
-    specPath: filePart
-      ? path.resolve(path.dirname(fromSpecPath), filePart)
-      : fromSpecPath,
-  };
-};
 
 /**
  * Reads the component a `$ref` names, from this document or from the file the
