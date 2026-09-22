@@ -43,6 +43,10 @@
     "defaultMessage": "Scroll groups backward",
     "description": "Accessible label for the arrow that scrolls the grouped-menu carousel to earlier groups."
   },
+  "3YPvxe": {
+    "defaultMessage": "Add",
+    "description": "Label of the button that saves the ramp built in the color-ramp editor."
+  },
   "4Kaze0": {
     "defaultMessage": "A layer references a source that does not exist.",
     "description": "Warnings panel: layer.sourceId has no matching source."
@@ -74,6 +78,10 @@
   "IUwKDh": {
     "defaultMessage": "This field cannot be updated without a full spec update.",
     "description": "Warnings panel: an applyPatch call targeted a field outside SpecPatchTarget."
+  },
+  "Jx/CgZ": {
+    "defaultMessage": "Cancel",
+    "description": "Accessible label for the button that closes the color-ramp editor."
   },
   "KAQU1v": {
     "defaultMessage": "A layer references a map data id that does not exist.",
@@ -155,6 +163,14 @@
     "defaultMessage": "The size range for proportional circles is invalid.",
     "description": "Warnings panel: sizeBy.range is malformed."
   },
+  "dTVHTA": {
+    "defaultMessage": "Scale name",
+    "description": "Placeholder of the name field in the color-ramp editor."
+  },
+  "dmGXlk": {
+    "defaultMessage": "New color scale",
+    "description": "Label of the button that opens the editor for building a color ramp."
+  },
   "e0csSw": {
     "defaultMessage": "Toggle visibility of layer {layer_id}",
     "description": "Accessible label for the checkbox that toggles a layer in the layer-list controls variant."
@@ -166,6 +182,18 @@
   "j3dtho": {
     "defaultMessage": "Close details",
     "description": "Accessible label for the button that closes the right sidebar."
+  },
+  "mKndH6": {
+    "defaultMessage": "Custom color",
+    "description": "Accessible label for the free color input in the color-ramp editor."
+  },
+  "miWkqv": {
+    "defaultMessage": "Choose the base color",
+    "description": "Heading of the color-ramp editor, above the base swatches."
+  },
+  "n1N8Xr": {
+    "defaultMessage": "Remove scale",
+    "description": "Accessible label for the button that removes a ramp the reader built."
   },
   "n6ryYu": {
     "defaultMessage": "{message}",

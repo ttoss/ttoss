@@ -1,10 +1,15 @@
+import { useI18n } from '@ttoss/react-i18n';
 import { Icon } from '@ttoss/react-icons';
 import { Box, Flex, Text } from '@ttoss/ui';
+import * as React from 'react';
 
 import type {
+  GeovisWorkspaceSidebarColorRampCreate,
   GeovisWorkspaceSidebarColorRampOption,
   GeovisWorkspaceSidebarColorRampSetting,
 } from '../../context/GeovisWorkspaceContext';
+import { messages } from '../../messages';
+import { ColorRampEditor, FALLBACK_CLASSES } from './ColorRampEditor';
 import { COLOR } from './theme';
 import { useSettingValue } from './useSettingValue';
 
@@ -45,11 +50,16 @@ const RampRow = ({
   option,
   on,
   onSelect,
+  onRemove,
 }: {
   option: GeovisWorkspaceSidebarColorRampOption;
   on: boolean;
   onSelect: () => void;
+  /** Present only when the row is the reader's to dismiss. */
+  onRemove?: () => void;
 }) => {
+  const { intl } = useI18n();
+
   return (
     <Box
       as="button"
@@ -90,8 +100,142 @@ const RampRow = ({
           style={{ flexShrink: 0, fontSize: '12px', color: COLOR.primary }}
         />
       ) : null}
+
+      {onRemove ? (
+        /*
+         * Nested inside the row's button, so it stops the pick: dismissing a
+         * ramp must not first make it the active one. `as="span"` with a button
+         * role keeps the markup valid — a button inside a button is not.
+         */
+        <Box
+          as="span"
+          {...({
+            role: 'button',
+            tabIndex: 0,
+            'aria-label': intl.formatMessage(messages.removeColorScale),
+          } as object)}
+          onClick={(event: React.MouseEvent) => {
+            event.stopPropagation();
+            onRemove();
+          }}
+          onKeyDown={(event: React.KeyboardEvent) => {
+            if (event.key !== 'Enter' && event.key !== ' ') return;
+            event.preventDefault();
+            event.stopPropagation();
+            onRemove();
+          }}
+          sx={{
+            display: 'flex',
+            flexShrink: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '20px',
+            height: '20px',
+            marginRight: '-4px',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            color: COLOR.textFaint,
+            '&:hover': { backgroundColor: COLOR.fill, color: COLOR.textMuted },
+          }}
+        >
+          <Icon icon="lucide:x" style={{ fontSize: '11px' }} />
+        </Box>
+      ) : null}
     </Box>
   );
+};
+
+/** The affordance that opens the editor: a slot, drawn as one. */
+const NewRampButton = ({ onOpen }: { onOpen: () => void }) => {
+  const { intl } = useI18n();
+
+  return (
+    <Box
+      as="button"
+      {...({ type: 'button' } as object)}
+      onClick={onOpen}
+      sx={{
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '9px',
+        marginTop: '6px',
+        padding: '8px 9px',
+        borderRadius: '7px',
+        cursor: 'pointer',
+        textAlign: 'left',
+        backgroundColor: 'transparent',
+        border: `1px dashed ${COLOR.textDisabled}`,
+        color: COLOR.textMuted,
+        transition: 'background-color 0.15s ease, border-color 0.15s ease',
+        '&:hover': {
+          backgroundColor: COLOR.fill,
+          borderColor: COLOR.textGhost,
+        },
+      }}
+    >
+      <Icon
+        icon="lucide:plus"
+        style={{ flexShrink: 0, fontSize: '12px', color: COLOR.textFaint }}
+      />
+      <Text sx={{ flex: 1, minWidth: 0, fontSize: '12px' }}>
+        {intl.formatMessage(messages.newColorScale)}
+      </Text>
+    </Box>
+  );
+};
+
+/**
+ * How many classes a built ramp gets.
+ *
+ * The list's own width unless the spec names one, so a new ramp is read at the
+ * same resolution as the ones beside it. An empty list has no width to match,
+ * which is what the constant is for.
+ *
+ * @param params.create - The create spec.
+ * @param params.options - The ramps already listed.
+ * @returns The class count.
+ *
+ * @example
+ * rampClasses({ create, options }); // 4, matching the list
+ */
+const rampClasses = ({
+  create,
+  options,
+}: {
+  create: GeovisWorkspaceSidebarColorRampCreate;
+  options: GeovisWorkspaceSidebarColorRampOption[];
+}): number => {
+  return create.classes ?? options[0]?.colors.length ?? FALLBACK_CLASSES;
+};
+
+/**
+ * An id no ramp in the list holds.
+ *
+ * Built here rather than by the app because the control publishes it to the
+ * selection on the same commit that reports the ramp — the app would have to
+ * send its id back through a channel that carries one string per key.
+ *
+ * @param options - The ramps already listed.
+ * @returns The id.
+ *
+ * @example
+ * nextRampId([{ id: 'custom-1', label: 'Mine', colors: [] }]); // 'custom-2'
+ */
+const nextRampId = (
+  options: GeovisWorkspaceSidebarColorRampOption[]
+): string => {
+  const taken = new Set(
+    options.map((option) => {
+      return option.id;
+    })
+  );
+
+  let index = options.length + 1;
+
+  while (taken.has(`custom-${index}`)) index += 1;
+
+  return `custom-${index}`;
 };
 
 /**
@@ -118,7 +262,9 @@ export const ColorRampSettingControl = ({
   control: GeovisWorkspaceSidebarColorRampSetting;
   label: string;
 }) => {
-  const { options } = control;
+  const { options, create, onRemove } = control;
+
+  const [editing, setEditing] = React.useState(false);
 
   const [raw, setRaw] = useSettingValue({
     menuId: control.menuId,
@@ -136,23 +282,62 @@ export const ColorRampSettingControl = ({
     }) ?? options[0];
 
   return (
-    <Flex
-      role="group"
-      aria-label={label}
-      sx={{ flexDirection: 'column', gap: '4px' }}
-    >
-      {options.map((option) => {
-        return (
-          <RampRow
-            key={option.id}
-            option={option}
-            on={option.id === chosen?.id}
-            onSelect={() => {
-              setRaw(option.id);
-            }}
-          />
-        );
-      })}
-    </Flex>
+    <Box>
+      <Flex
+        role="group"
+        aria-label={label}
+        sx={{ flexDirection: 'column', gap: '4px' }}
+      >
+        {options.map((option) => {
+          return (
+            <RampRow
+              key={option.id}
+              option={option}
+              on={option.id === chosen?.id}
+              onSelect={() => {
+                setRaw(option.id);
+              }}
+              onRemove={
+                option.removable && onRemove
+                  ? () => {
+                      return onRemove({ id: option.id });
+                    }
+                  : undefined
+              }
+            />
+          );
+        })}
+      </Flex>
+
+      {create && !editing ? (
+        <NewRampButton
+          onOpen={() => {
+            setEditing(true);
+          }}
+        />
+      ) : null}
+
+      {create && editing ? (
+        <ColorRampEditor
+          create={create}
+          classes={rampClasses({ create, options })}
+          onCancel={() => {
+            setEditing(false);
+          }}
+          onCommit={({ option, baseColor }) => {
+            const id = nextRampId(options);
+
+            setEditing(false);
+            // Published before the app is told, so the ramp the reader just
+            // built is the active one by the time the new list arrives.
+            setRaw(id);
+            create.onCreate({
+              option: { ...option, id, removable: true },
+              baseColor,
+            });
+          }}
+        />
+      ) : null}
+    </Box>
   );
 };

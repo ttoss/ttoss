@@ -1,6 +1,39 @@
 import { defineMessages } from '@ttoss/react-i18n';
 
 export const messages = defineMessages({
+  newColorScale: {
+    defaultMessage: 'Nova escala de cor',
+    description:
+      'Label of the button that opens the editor for building a color ramp.',
+  },
+  chooseBaseColor: {
+    defaultMessage: 'Escolha a cor base',
+    description: 'Heading of the color-ramp editor, above the base swatches.',
+  },
+  customColor: {
+    defaultMessage: 'Cor personalizada',
+    description:
+      'Accessible label for the free color input in the color-ramp editor.',
+  },
+  colorScaleName: {
+    defaultMessage: 'Nome da escala',
+    description: 'Placeholder of the name field in the color-ramp editor.',
+  },
+  addColorScale: {
+    defaultMessage: 'Adicionar',
+    description:
+      'Label of the button that saves the ramp built in the color-ramp editor.',
+  },
+  cancelColorScale: {
+    defaultMessage: 'Cancelar',
+    description:
+      'Accessible label for the button that closes the color-ramp editor.',
+  },
+  removeColorScale: {
+    defaultMessage: 'Remover escala',
+    description:
+      'Accessible label for the button that removes a ramp the reader built.',
+  },
   detailsTitle: {
     defaultMessage: 'Details',
     description: 'Default title shown in the right sidebar when none is set.',

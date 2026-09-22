@@ -524,6 +524,62 @@ export interface GeovisWorkspaceSidebarColorRampOption {
    * than a preview kept in sync with one declared elsewhere.
    */
   colors: string[];
+  /**
+   * Offers this row's remove affordance. Meant for the ramps the reader built,
+   * which is why it is per option rather than per setting: the ones the app
+   * ships with are not the reader's to throw away. Needs `onRemove` on the
+   * setting — without it the affordance would have nowhere to report.
+   */
+  removable?: boolean;
+}
+
+/**
+ * The "new ramp" affordance and the editor it opens.
+ *
+ * The control draws and validates; the app owns the list. It has to be that way
+ * round: a selection holds one string per key, so a built ramp — a name and its
+ * classes — cannot travel back through it. The app keeps the ramps it is handed
+ * and passes them in `options` like any other.
+ */
+export interface GeovisWorkspaceSidebarColorRampCreate {
+  /** Base colors offered as presets, in the order they are rendered. */
+  baseColors: GeovisWorkspaceSidebarColorRampBaseColor[];
+  /** Offers the free-color input beside the presets. @default true */
+  allowCustomColor?: boolean;
+  /**
+   * Classes the built ramp has. Defaults to the length of the first option, so
+   * a new ramp is read at the same resolution as the ones beside it rather than
+   * at a width of its own.
+   */
+  classes?: number;
+  /**
+   * Builds the ramp from the chosen base color. Omitted, the control sweeps the
+   * base color's own hue from light to dark.
+   *
+   * Whatever this returns is what the preview draws *and* what `onCreate`
+   * receives, so the reader never saves something other than what they saw.
+   */
+  rampFrom?: (params: { baseColor: string; classes: number }) => string[];
+  /**
+   * The reader confirmed. The option arrives complete, its `id` already
+   * assigned, because the control publishes that id to the selection on the
+   * same commit — the new ramp is the active one by the time this returns. The
+   * app's part is to keep the option and pass it back in `options`.
+   */
+  onCreate: (params: {
+    option: GeovisWorkspaceSidebarColorRampOption;
+    baseColor: string;
+  }) => void;
+}
+
+/** One base color offered by {@link GeovisWorkspaceSidebarColorRampCreate}. */
+export interface GeovisWorkspaceSidebarColorRampBaseColor {
+  /** Distinguishes the swatch; not shown. */
+  id: string;
+  /** Accessible name of the swatch. */
+  name: string;
+  /** The color itself, as any CSS hex the browser accepts. */
+  color: string;
 }
 
 /**
@@ -542,6 +598,10 @@ export interface GeovisWorkspaceSidebarColorRampSetting {
   options: GeovisWorkspaceSidebarColorRampOption[];
   /** Ramp chosen on first render. Defaults to the first option. */
   defaultValue?: string;
+  /** Lets the reader build a ramp. Omitted, the list is exactly `options`. */
+  create?: GeovisWorkspaceSidebarColorRampCreate;
+  /** A removable row was dismissed. The app drops that id from `options`. */
+  onRemove?: (params: { id: string }) => void;
 }
 
 /** A settings control, discriminated by `kind`. */
@@ -672,6 +732,27 @@ export interface GeovisWorkspaceConfig {
   leftSidebar?: GeovisWorkspaceLeftSidebarState;
   /** Right sidebar (hosts legend/warnings/inspector/metadata) title, open/closed state, and detail API. */
   rightSidebar?: GeovisWorkspaceRightSidebarState;
+  /**
+   * What to draw over the map while a variation change is in flight, centered
+   * on the map area.
+   *
+   * The workspace owns *when* and *where*; the app owns *what*, because a
+   * loading indicator is the app's voice and the package has no business
+   * picking it. Omitted, nothing is drawn and the wait reads only in the
+   * sidebar, as it did before.
+   *
+   * It covers the map for as long as it shows: a reader who pans towards
+   * something while the answer is still coming would be panning over a map
+   * about to be repainted under them.
+   *
+   * Only variation changes arm it. Other blocking picks still make the menus
+   * inert, but they do not put anything over the map — a setting that repaints
+   * in place is not worth hiding the map for.
+   *
+   * @example
+   * renderLoading: () => <Spinner />
+   */
+  renderLoading?: () => React.ReactNode;
 }
 
 /** Active item value per menu group, keyed by menu id. */

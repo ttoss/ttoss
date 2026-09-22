@@ -19,6 +19,13 @@ import {
 } from '../geovis/helpers/hexbin-helpers';
 import type { Bbox } from '../geovis/helpers/map-story-helpers';
 import { withPtBr } from './GeovisWorkspace.decorators';
+import type { Ramp } from './GeovisWorkspace.ramps';
+import {
+  BASE_COLORS,
+  DEFAULT_RAMP,
+  rampFor,
+  RAMPS,
+} from './GeovisWorkspace.ramps';
 
 /**
  * A **settings section**: `kind: 'settings'` gives the sidebar a third zone,
@@ -38,6 +45,10 @@ import { withPtBr } from './GeovisWorkspace.decorators';
  * - `colorRamp` — the ramps listed one per row, each showing the colors it
  *   stands for. Unordered alternatives, which is why it is a list and not a
  *   slider over a palette index: there is no "more" direction to drag towards.
+ *   With `create`, the list ends in an affordance that opens an editor for
+ *   building one more; the control reports the finished ramp and the app is
+ *   what keeps it, because a selection carries one string per key and a ramp
+ *   is a name and its classes.
  * - `toggle` — one switch. Its block's title is rendered inside the switch row,
  *   so the block skips its header rather than saying the same words twice.
  *
@@ -62,9 +73,15 @@ import { withPtBr } from './GeovisWorkspace.decorators';
  * 2. Pick a ramp under **Cor da Malha**. The map repaints without re-binning:
  *    the breaks are untouched, only the colors they are read through change.
  *    The no-data grey stays out of every ramp — "caught nothing" is not a class.
- * 3. Drag **Opacidade da malha** — the fill alone changes, the geometry does
+ * 3. Build one under **Nova escala de cor**: pick a base color, watch the strip
+ *    preview the sweep it would add, name it and add it. The ramp lands at the
+ *    end of the list, already chosen, and the map repaints from it — same path
+ *    as the ramps the story ships, because by then it is one of them. The `×`
+ *    on its row drops it again; the shipped ramps have no `×`, since they are
+ *    not the reader's to throw away.
+ * 4. Drag **Opacidade da malha** — the fill alone changes, the geometry does
  *    not, so it stays smooth where the resolution slider has to re-bin.
- * 4. Toggle **Ocultar hexágonos vazios**. Cells that caught nothing leave the
+ * 5. Toggle **Ocultar hexágonos vazios**. Cells that caught nothing leave the
  *    source entirely, so Brazil's silhouette breaks up into the populated arc.
  *    Toggle it back and the grey cells return — "caught nothing" is information,
  *    which is why it is hidden by choice rather than by default.
@@ -92,44 +109,6 @@ const POINTS = syntheticPoints({
   bbox: BBOX,
   seed: 20260914,
 }).filter(insideBrazil);
-
-/**
- * The selectable ramps. Every one is sequential and four classes wide: light
- * reads as few and dark as many, with no hue change along the way — a diverging
- * ramp would claim a meaningful midpoint, and counts have none.
- */
-const RAMPS = [
-  {
-    id: 'azuis',
-    label: 'Azuis',
-    colors: ['#C6DBEF', '#6BAED6', '#2171B5', '#08306B'],
-  },
-  {
-    id: 'verdes',
-    label: 'Verdes',
-    colors: ['#C7E9C0', '#74C476', '#238B45', '#00441B'],
-  },
-  {
-    id: 'laranjas',
-    label: 'Laranjas',
-    colors: ['#FDD0A2', '#FD8D3C', '#D94801', '#7F2704'],
-  },
-  {
-    id: 'roxos',
-    label: 'Roxos',
-    colors: ['#DADAEB', '#9E9AC8', '#6A51A3', '#3F007D'],
-  },
-];
-
-const DEFAULT_RAMP = 'azuis';
-
-const rampFor = (id: string) => {
-  return (
-    RAMPS.find((ramp) => {
-      return ramp.id === id;
-    }) ?? RAMPS[0]
-  );
-};
 
 /** Cells that caught nothing. Grey, so "none" never reads as "few". */
 const EMPTY_COLOR = '#ECECEC';
@@ -221,17 +200,19 @@ const buildSpec = ({
   variation,
   radiusKm,
   rampId,
+  ramps,
   opacity,
   hideEmpty,
 }: {
   variation: string;
   radiusKm: number;
   rampId: string;
+  ramps: Ramp[];
   opacity: number;
   hideEmpty: boolean;
 }): VisualizationSpec => {
   const cells = hexbin({ points: POINTS, bbox: BBOX, radiusKm });
-  const ramp = rampFor(rampId);
+  const ramp = rampFor({ id: rampId, ramps });
 
   // Recomputed per radius, not written down: halving the cell size roughly
   // quarters every count, so breaks fixed at one radius would paint the whole
@@ -344,103 +325,122 @@ const buildSpec = ({
   };
 };
 
-const config: GeovisWorkspaceConfig = {
-  appearance: 'bare',
-  /*
-   * No right sidebar in this story: it has nothing to say about the settings
-   * zone, and the `metadata` panel alone was enough to open it. All four of its
-   * slots are hidden rather than only that one, so a later edit — a legend
-   * `description`, or a click reaching the inspector — cannot bring the panel
-   * back over the map the settings are meant to be read against.
-   */
-  slots: {
-    legend: { hidden: true },
-    warnings: { hidden: true },
-    inspector: { hidden: true },
-    metadata: { hidden: true },
-  },
-  leftSidebar: {
-    initialState: 'open',
-    sections: [
-      {
-        id: 'variacoes',
-        header: { title: 'Variações', icon: 'lucide:layers' },
-        body: {
-          kind: 'variations',
-          menuId: 'variacao',
-          defaultValue: MESH_VARIATION,
-          groups: [{ id: 'base', label: 'Base', variations: VARIATIONS }],
+const buildConfig = ({
+  ramps,
+  onCreate,
+  onRemove,
+}: {
+  ramps: Ramp[];
+  onCreate: (params: { option: Ramp }) => void;
+  onRemove: (params: { id: string }) => void;
+}): GeovisWorkspaceConfig => {
+  return {
+    appearance: 'bare',
+    /*
+     * No right sidebar in this story: it has nothing to say about the settings
+     * zone, and the `metadata` panel alone was enough to open it. All four of its
+     * slots are hidden rather than only that one, so a later edit — a legend
+     * `description`, or a click reaching the inspector — cannot bring the panel
+     * back over the map the settings are meant to be read against.
+     */
+    slots: {
+      legend: { hidden: true },
+      warnings: { hidden: true },
+      inspector: { hidden: true },
+      metadata: { hidden: true },
+    },
+    leftSidebar: {
+      initialState: 'open',
+      sections: [
+        {
+          id: 'variacoes',
+          header: { title: 'Variações', icon: 'lucide:layers' },
+          body: {
+            kind: 'variations',
+            menuId: 'variacao',
+            defaultValue: MESH_VARIATION,
+            groups: [{ id: 'base', label: 'Base', variations: VARIATIONS }],
+          },
         },
-      },
-      {
-        id: 'configuracoes',
-        header: { title: 'Configurações', icon: 'lucide:settings' },
-        // The mesh controls only mean something where there is a mesh.
-        enabledWhen: { menuId: 'variacao', values: [MESH_VARIATION] },
-        body: {
-          kind: 'settings',
-          blocks: [
-            {
-              id: 'resolucao',
-              title: 'Malha de Hexágonos',
-              icon: 'lucide:hexagon',
-              control: {
-                kind: 'slider',
-                menuId: 'hexResolution',
-                stops: stopsWithCounts,
-                defaultValue: DEFAULT_RADIUS_KM,
-                endLabels: ['Panorâmico', 'Detalhado'],
-                stepButtons: true,
+        {
+          id: 'configuracoes',
+          header: { title: 'Configurações', icon: 'lucide:settings' },
+          // The mesh controls only mean something where there is a mesh.
+          enabledWhen: { menuId: 'variacao', values: [MESH_VARIATION] },
+          body: {
+            kind: 'settings',
+            blocks: [
+              {
+                id: 'resolucao',
+                title: 'Malha de Hexágonos',
+                icon: 'lucide:hexagon',
+                control: {
+                  kind: 'slider',
+                  menuId: 'hexResolution',
+                  stops: stopsWithCounts,
+                  defaultValue: DEFAULT_RADIUS_KM,
+                  endLabels: ['Panorâmico', 'Detalhado'],
+                  stepButtons: true,
+                },
               },
-            },
-            {
-              id: 'cor',
-              title: 'Cor da Malha',
-              icon: 'lucide:droplet',
-              control: {
-                kind: 'colorRamp',
-                menuId: 'hexRamp',
-                defaultValue: DEFAULT_RAMP,
-                options: RAMPS,
+              {
+                id: 'cor',
+                title: 'Cor da Malha',
+                icon: 'lucide:droplet',
+                control: {
+                  kind: 'colorRamp',
+                  menuId: 'hexRamp',
+                  defaultValue: DEFAULT_RAMP,
+                  options: ramps,
+                  create: { baseColors: BASE_COLORS, onCreate },
+                  onRemove,
+                },
               },
-            },
-            {
-              id: 'opacidade',
-              title: 'Opacidade da malha',
-              icon: 'lucide:droplets',
-              control: {
-                kind: 'slider',
-                menuId: 'hexOpacity',
-                min: 30,
-                max: 100,
-                step: 5,
-                defaultValue: DEFAULT_OPACITY,
-                unit: '%',
-                endLabels: ['Transparente', 'Opaca'],
-                stepButtons: true,
+              {
+                id: 'opacidade',
+                title: 'Opacidade da malha',
+                icon: 'lucide:droplets',
+                control: {
+                  kind: 'slider',
+                  menuId: 'hexOpacity',
+                  min: 30,
+                  max: 100,
+                  step: 5,
+                  defaultValue: DEFAULT_OPACITY,
+                  unit: '%',
+                  endLabels: ['Transparente', 'Opaca'],
+                  stepButtons: true,
+                },
               },
-            },
-            {
-              id: 'ocultar-vazios',
-              title: 'Ocultar hexágonos vazios',
-              control: {
-                kind: 'toggle',
-                menuId: 'hideEmpty',
-                icon: 'lucide:eye-off',
-                defaultValue: false,
+              {
+                id: 'ocultar-vazios',
+                title: 'Ocultar hexágonos vazios',
+                control: {
+                  kind: 'toggle',
+                  menuId: 'hideEmpty',
+                  icon: 'lucide:eye-off',
+                  defaultValue: false,
+                },
               },
-            },
-          ],
+            ],
+          },
         },
-      },
-    ],
-  },
+      ],
+    },
+  };
 };
 
 const SettingsDemo = () => {
   const [selection, setSelection] = React.useState<GeovisWorkspaceSelection>({
     variacao: MESH_VARIATION,
   });
+
+  /*
+   * The ramps the reader builds live here, beside the ones the story ships:
+   * the control reports a finished ramp and the app is what keeps it, which is
+   * why the list is state rather than the constant it was.
+   */
+  const [ramps, setRamps] = React.useState<Ramp[]>(RAMPS);
 
   const variation = selection.variacao ?? MESH_VARIATION;
   const radiusKm = Number(selection.hexResolution) || DEFAULT_RADIUS_KM;
@@ -449,8 +449,33 @@ const SettingsDemo = () => {
   const hideEmpty = selection.hideEmpty === 'true';
 
   const spec = React.useMemo(() => {
-    return buildSpec({ variation, radiusKm, rampId, opacity, hideEmpty });
-  }, [variation, radiusKm, rampId, opacity, hideEmpty]);
+    return buildSpec({
+      variation,
+      radiusKm,
+      rampId,
+      ramps,
+      opacity,
+      hideEmpty,
+    });
+  }, [variation, radiusKm, rampId, ramps, opacity, hideEmpty]);
+
+  const config = React.useMemo(() => {
+    return buildConfig({
+      ramps,
+      onCreate: ({ option }) => {
+        setRamps((current) => {
+          return [...current, option];
+        });
+      },
+      onRemove: ({ id }) => {
+        setRamps((current) => {
+          return current.filter((ramp) => {
+            return ramp.id !== id;
+          });
+        });
+      },
+    });
+  }, [ramps]);
 
   return (
     <div style={{ height: 640 }}>

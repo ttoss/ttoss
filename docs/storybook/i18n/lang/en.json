@@ -167,6 +167,11 @@
     "defaultMessage": "Scroll groups backward",
     "description": "Accessible label for the arrow that scrolls the grouped-menu carousel to earlier groups."
   },
+  "3YPvxe": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Add",
+    "description": "Label of the button that saves the ramp built in the color-ramp editor."
+  },
   "4Kaze0": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "A layer references a source that does not exist.",
@@ -206,6 +211,11 @@
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "This field cannot be updated without a full spec update.",
     "description": "Warnings panel: an applyPatch call targeted a field outside SpecPatchTarget."
+  },
+  "Jx/CgZ": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Cancel",
+    "description": "Accessible label for the button that closes the color-ramp editor."
   },
   "KAQU1v": {
     "module": "@ttoss/geovis-workspace",
@@ -307,6 +317,16 @@
     "defaultMessage": "The size range for proportional circles is invalid.",
     "description": "Warnings panel: sizeBy.range is malformed."
   },
+  "dTVHTA": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Scale name",
+    "description": "Placeholder of the name field in the color-ramp editor."
+  },
+  "dmGXlk": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "New color scale",
+    "description": "Label of the button that opens the editor for building a color ramp."
+  },
   "e0csSw": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Toggle visibility of layer {layer_id}",
@@ -321,6 +341,21 @@
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Close details",
     "description": "Accessible label for the button that closes the right sidebar."
+  },
+  "mKndH6": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Custom color",
+    "description": "Accessible label for the free color input in the color-ramp editor."
+  },
+  "miWkqv": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Choose the base color",
+    "description": "Heading of the color-ramp editor, above the base swatches."
+  },
+  "n1N8Xr": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Remove scale",
+    "description": "Accessible label for the button that removes a ramp the reader built."
   },
   "n6ryYu": {
     "module": "@ttoss/geovis-workspace",
