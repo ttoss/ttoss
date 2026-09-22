@@ -1,9 +1,11 @@
 import { GeoVisCanvas, useGeoVis, useGeoVisClick } from '@ttoss/geovis';
 import { useI18n } from '@ttoss/react-i18n';
 import { Box, Flex, IconButton, Text } from '@ttoss/ui';
-import type * as React from 'react';
+import * as React from 'react';
 
 import type {
+  GeovisWorkspaceConfig,
+  GeovisWorkspacePendingSelection,
   GeovisWorkspaceSelection,
   GeovisWorkspaceSidebarSection,
 } from '../context/GeovisWorkspaceContext';
@@ -19,6 +21,8 @@ import { isSectionEnabled, useSections } from './LeftSidebar/useSections';
 import { useTimeline } from './LeftSidebar/useTimeline';
 import { RightSidebar } from './RightSidebar';
 import { TimelineHud } from './TimelineHud';
+import type { MapInset } from './useMapInset';
+import { useMapInset } from './useMapInset';
 
 /** Default content of the `map` slot: the GeoVis canvas filling the main area. */
 const DefaultMapPanel = () => {
@@ -93,16 +97,20 @@ const SidebarOverlay = ({
   side,
   open,
   children,
+  innerRef,
 }: {
   side: 'left' | 'right';
   open: boolean;
   children: React.ReactNode;
+  /** Measured by `useMapInset` to learn how much of the map it covers. */
+  innerRef?: React.RefObject<HTMLDivElement | null>;
 }) => {
   const hiddenTransform =
     side === 'left' ? 'translateX(-100%)' : 'translateX(100%)';
 
   return (
     <Box
+      ref={innerRef}
       aria-hidden={!open}
       sx={{
         position: 'absolute',
@@ -268,6 +276,88 @@ const MapOverlays = ({
 };
 
 /**
+ * What the app draws while a variation is being served, centered on the map.
+ *
+ * It sits above the map and below the sidebars, and it takes the pointer: the
+ * map underneath is not interactive for as long as this shows. Panning towards
+ * something while the answer is still coming would be panning over a map about
+ * to be repainted, and the gesture would be spent on a view that no longer
+ * exists once it arrives.
+ *
+ * `aria-live="polite"` rather than `assertive`: the wait is worth announcing
+ * once it settles into the page, not worth interrupting whatever the reader is
+ * being told at the moment it starts.
+ */
+const LoadingOverlay = ({
+  children,
+  inset,
+}: {
+  children: React.ReactNode;
+  inset: MapInset;
+}) => {
+  if (!children) return null;
+
+  return (
+    <Box
+      aria-live="polite"
+      aria-busy
+      sx={{
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        // Centered on the map that is left, not on the workspace: an open
+        // sidebar covers part of the map without shrinking it, so centering on
+        // the whole box would put this behind the panel.
+        left: `${inset.left}px`,
+        right: `${inset.right}px`,
+        // Slides with the panel instead of jumping once it has finished opening.
+        transition: 'left 0.25s ease-in-out, right 0.25s ease-in-out',
+        zIndex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        // Takes the pointer rather than merely sitting on top: without this the
+        // map would keep answering drags through a transparent overlay.
+        pointerEvents: 'auto',
+      }}
+    >
+      {children}
+    </Box>
+  );
+};
+
+/**
+ * What to draw over the map right now, if anything.
+ *
+ * Lifted out of `Layout` for the same reason the timeline gate is: resolved
+ * inline it is another branch on a body that is already about structure.
+ *
+ * Keyed on `pendingSelection` alone, which is variation-only by construction:
+ * `blocking` is what arms it, and only `VariationsControl` and `VariationsTab`
+ * pass it — the timeline and the chips deliberately do not. Re-deriving
+ * "is this a variation" from the config here would be a second source of truth
+ * for something the call sites already decide, free to drift from them.
+ *
+ * @param params.config - The workspace config, which may declare `renderLoading`.
+ * @param params.pendingSelection - The change in flight, if any.
+ * @returns What the app wants drawn, or `undefined` for nothing.
+ *
+ * @example
+ * resolveLoadingOverlay({ config, pendingSelection }); // <Spinner /> | undefined
+ */
+const resolveLoadingOverlay = ({
+  config,
+  pendingSelection,
+}: {
+  config: GeovisWorkspaceConfig;
+  pendingSelection?: GeovisWorkspacePendingSelection;
+}): React.ReactNode => {
+  if (!pendingSelection) return undefined;
+
+  return config.renderLoading?.();
+};
+
+/**
  * Whether the timeline is live. The gate is declared on the section that holds
  * the timeline rather than on the control itself, so it is resolved here and
  * threaded into both the timeline state and the compact HUD. It is the
@@ -296,6 +386,7 @@ export const Layout = () => {
   const {
     config,
     selection,
+    pendingSelection,
     isLeftSidebarOpen,
     isRightSidebarOpen,
     hasResolvedOnce,
@@ -311,6 +402,10 @@ export const Layout = () => {
   // second auto-advance timer against the same selection.
   const sections = config.leftSidebar?.sections ?? [];
   const { timeline, timelineSection } = useSections(sections);
+
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const leftSidebarRef = React.useRef<HTMLDivElement>(null);
+  const rightSidebarRef = React.useRef<HTMLDivElement>(null);
 
   const isTimelineEnabled = resolveTimelineEnabled({
     timelineSection,
@@ -352,12 +447,23 @@ export const Layout = () => {
   // spec above this tree. Two conditions are added here — with no sidebar there
   // is no timeline to drive, and a closed gate must take the HUD with it, or it
   // would keep offering the very control the disabled tab just withdrew.
+  const mapInset = useMapInset({
+    container: containerRef,
+    left: leftSidebarRef,
+    right: rightSidebarRef,
+    leftOpen: hasLeftSidebar && isLeftSidebarOpen,
+    rightOpen: hasRightSidebar && isRightSidebarOpen,
+  });
+
+  const loading = resolveLoadingOverlay({ config, pendingSelection });
+
   const hudVisible =
     isTimelineHudVisible && hasLeftSidebar && isTimelineEnabled;
 
   return (
     <TimelineContext.Provider value={{ ...timelineState, filter: timeline }}>
       <Flex
+        ref={containerRef}
         sx={{
           position: 'relative',
           overflow: 'hidden',
@@ -383,13 +489,18 @@ export const Layout = () => {
           making the sidebar vanish abruptly. Keeping it mounted lets `open` fall
           to `false` and the overlay animate closed. The reopen buttons stay
           gated on content — an empty sidebar has nothing to reopen. */}
-        <SidebarOverlay side="left" open={hasLeftSidebar && isLeftSidebarOpen}>
+        <SidebarOverlay
+          side="left"
+          open={hasLeftSidebar && isLeftSidebarOpen}
+          innerRef={leftSidebarRef}
+        >
           <LeftSidebar />
         </SidebarOverlay>
 
         <SidebarOverlay
           side="right"
           open={hasRightSidebar && isRightSidebarOpen}
+          innerRef={rightSidebarRef}
         >
           <RightSidebar />
         </SidebarOverlay>
@@ -400,6 +511,8 @@ export const Layout = () => {
           hudVisible={hudVisible}
           onDismissHud={dismissTimelineHud}
         />
+
+        <LoadingOverlay inset={mapInset}>{loading}</LoadingOverlay>
       </Flex>
     </TimelineContext.Provider>
   );

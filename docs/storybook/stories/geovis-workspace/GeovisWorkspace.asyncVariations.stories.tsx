@@ -30,6 +30,13 @@ import { buildSpec } from './GeovisWorkspace.fixtures';
  * />
  * ```
  *
+ * The wait also reads on the map, when the app asks for it. `config.renderLoading`
+ * returns whatever the app wants drawn, and the workspace centers it over the map
+ * and takes the pointer for as long as it shows — panning towards something while
+ * the answer is still coming would be panning over a map about to be repainted.
+ * It is optional, and only a variation arms it: other blocking picks still make
+ * the menus inert, but they repaint in place and are not worth hiding the map for.
+ *
  * Returning nothing keeps the menus live, which is what a synchronous consumer
  * wants. And a rejection releases them exactly like a resolve: a request that
  * failed is a reason to let the user pick again, not to strand the sidebar.
@@ -37,7 +44,8 @@ import { buildSpec } from './GeovisWorkspace.fixtures';
  * ## What to check
  *
  * 1. Pick another **Indicador**. Its row spins; every other row in *both* menus
- *    dims and stops responding. After ~1.2s the map recolors and they return.
+ *    dims and stops responding; a spinner sits over the map, which does not pan
+ *    or zoom while it shows. After ~1.2s the map recolors and they return.
  * 2. During that second, try clicking a dimmed row of **Faixa etária** — the
  *    lock is across menus, not per menu, because the request being served is
  *    for the whole selection.
@@ -164,6 +172,43 @@ const config: GeovisWorkspaceConfig = {
  * one that spins) and hands back the request. Which is the honest order — the
  * pick is the user's, the wait is the network's.
  */
+/**
+ * A plain spinner, standing in for whatever the app would actually draw.
+ *
+ * Deliberately unremarkable: `renderLoading` exists so the indicator is the
+ * app's own, and a story that shipped a polished one would read as the package
+ * having an opinion it does not have.
+ */
+const Spinner = () => {
+  return (
+    <div
+      role="status"
+      aria-label="Carregando variação"
+      style={{
+        width: '38px',
+        height: '38px',
+        borderRadius: '50%',
+        border: '3px solid rgba(0,0,0,0.12)',
+        borderTopColor: '#337C59',
+        animation: 'geovis-story-spin 0.8s linear infinite',
+        background: 'transparent',
+      }}
+    >
+      <style>
+        {'@keyframes geovis-story-spin { to { transform: rotate(360deg) } }'}
+      </style>
+    </div>
+  );
+};
+
+/** The story's config, with the overlay the workspace draws while it waits. */
+const configWithLoading: GeovisWorkspaceConfig = {
+  ...config,
+  renderLoading: () => {
+    return <Spinner />;
+  },
+};
+
 const AsyncVariationsDemo = () => {
   const [selection, setSelection] = React.useState<GeovisWorkspaceSelection>({
     variable: 'cumulative-rate',
@@ -180,7 +225,7 @@ const AsyncVariationsDemo = () => {
 
   return (
     <GeovisWorkspace
-      config={config}
+      config={configWithLoading}
       visualizationSpec={spec}
       variables={selection}
       onVariableChange={(next) => {
