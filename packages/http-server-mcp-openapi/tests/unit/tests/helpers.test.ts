@@ -355,8 +355,8 @@ describe('sparse parameters fall back to defaults', () => {
     >;
     // Unnamed query param camelCases to '' and defaults to a string.
     expect(props['']).toEqual({ type: 'string', description: '' });
-    // Typeless body prop defaults to string with an empty description.
-    expect(props.bare).toEqual({ type: 'string', description: '' });
+    // Typeless body prop is untyped (accepts any value), not a guessed string.
+    expect(props.bare).toEqual({ description: '' });
     expect(tool.inputSchema.required).toBeUndefined();
   });
 });
