@@ -8,6 +8,7 @@ paths:
       tags: [Gadgets]
       parameters:
         - $ref: './a-widgets.yaml#/components/parameters/ProjectId'
+        - $ref: '../mergeShared/catalog.yaml#/components/parameters/CatalogId'
       responses:
         '200':
           description: ok
@@ -23,4 +24,8 @@ components:
       type: object
       properties:
         widget:
-          $ref: './a-widgets.yaml#/components/schemas/Widget'
+          # Answered by the merged namespace: `Widget` is declared in
+          # a-widgets.yaml, not here.
+          $ref: '#/components/schemas/Widget'
+        catalog:
+          $ref: '../mergeShared/catalog.yaml#/components/schemas/Catalog'

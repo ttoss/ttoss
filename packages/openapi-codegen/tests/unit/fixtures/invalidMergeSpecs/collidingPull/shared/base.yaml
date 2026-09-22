@@ -1,0 +1,8 @@
+openapi: 3.0.3
+components:
+  schemas:
+    Widget:
+      type: object
+      properties:
+        sharedField:
+          type: string

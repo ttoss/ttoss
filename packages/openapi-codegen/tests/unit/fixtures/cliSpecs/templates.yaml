@@ -1,0 +1,101 @@
+openapi: 3.0.3
+tags:
+  - name: Templates
+paths:
+  /templates:
+    parameters:
+      - name: tenant
+        in: query
+        description: Tenant the template belongs to
+      - name: format
+        in: query
+        description: Template format
+        schema:
+          oneOf:
+            - type: string
+            - type: string
+              enum: [json, yaml]
+    post:
+      operationId: createTemplate
+      tags: [Templates]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [template]
+              properties:
+                template:
+                  $ref: '#/components/schemas/TemplateInput'
+                labels:
+                  description: Free-form labels
+                spec:
+                  $ref: '#/components/schemas/TemplateSpec'
+                alias:
+                  $ref: '#/components/schemas/TemplateName'
+                related:
+                  $ref: '#/components/schemas/RelatedTemplate'
+      responses:
+        '201':
+          description: created
+  /templates/import:
+    put:
+      operationId: importTemplate
+      tags: [Templates]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/ImportFromUrl'
+                - $ref: '#/components/schemas/ImportInline'
+      responses:
+        '200':
+          description: ok
+components:
+  schemas:
+    TemplateInput:
+      description: A template object, or the YAML text of one
+      oneOf:
+        - $ref: '#/components/schemas/Template'
+        - type: string
+    Template:
+      type: object
+      properties:
+        name:
+          type: string
+    TemplateSpec:
+      description: A template with a name
+      allOf:
+        - $ref: '#/components/schemas/Template'
+        - required: [name]
+    TemplateName:
+      $ref: '#/components/schemas/ShortString'
+    ShortString:
+      type: string
+      description: Resolved through a chain of $refs
+    RelatedTemplate:
+      description: A related template, or the name of one
+      oneOf:
+        - $ref: '#/components/schemas/RelatedTemplate'
+        - type: string
+    ImportFromUrl:
+      type: object
+      required: [url, format]
+      properties:
+        url:
+          type: string
+          description: Where to fetch the template from
+        format:
+          type: string
+          description: Template format
+    ImportInline:
+      type: object
+      required: [format]
+      properties:
+        body:
+          type: string
+          description: Template body
+        format:
+          type: string
+          description: Template format

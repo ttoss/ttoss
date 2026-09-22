@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/openapi-codegen@0.3.2...@ttoss/openapi-codegen@0.4.0) (2026-09-22)
+
+### Features
+
+- **openapi-codegen:** pull referenced files into the merged document ([#1249](https://github.com/ttoss/ttoss/issues/1249)) ([0da2566](https://github.com/ttoss/ttoss/commit/0da25663f72e22e403c7182eee9951b58c9c14e1))
+
+## [0.3.2](https://github.com/ttoss/ttoss/compare/@ttoss/openapi-codegen@0.3.1...@ttoss/openapi-codegen@0.3.2) (2026-09-22)
+
+### Bug Fixes
+
+- **openapi-codegen:** stop typing an untyped schema `string`, and resolve `$ref`s across files ([#1248](https://github.com/ttoss/ttoss/issues/1248)) ([21283be](https://github.com/ttoss/ttoss/commit/21283be5bd895e9dac37d73e4f1a3176df7c3e3c))
+
 ## 0.3.1 (2026-09-18)
 
 ### Bug Fixes

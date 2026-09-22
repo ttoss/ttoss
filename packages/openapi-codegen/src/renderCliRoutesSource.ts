@@ -41,6 +41,7 @@ export const renderCliRoutesSource = (
     '  name: string;',
     '  description: string;',
     '  required: boolean;',
+    "  /** JSON type of the value, or 'unknown' when the spec does not constrain it to one. */",
     '  type: string;',
     "  in: 'path' | 'query' | 'header' | 'cookie' | 'body';",
     '}',
