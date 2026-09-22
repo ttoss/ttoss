@@ -3,8 +3,8 @@ import { jestUnitConfig } from '@ttoss/config';
 const config = jestUnitConfig({
   coverageThreshold: {
     global: {
-      statements: 99.4,
-      branches: 93,
+      statements: 99.5,
+      branches: 95.2,
       lines: 100,
       functions: 100,
     },

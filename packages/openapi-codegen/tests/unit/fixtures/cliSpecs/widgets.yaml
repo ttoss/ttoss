@@ -50,4 +50,8 @@ paths:
                 color:
                   type: string
                   description: Widget color
-components: {}
+components:
+  schemas:
+    WidgetRef:
+      type: string
+      description: Id of an existing widget

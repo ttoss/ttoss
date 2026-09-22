@@ -1,0 +1,6 @@
+openapi: 3.0.3
+components:
+  schemas:
+    Currency:
+      type: string
+      description: ISO 4217 currency code
