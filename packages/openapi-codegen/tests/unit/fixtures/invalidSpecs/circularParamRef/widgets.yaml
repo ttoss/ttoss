@@ -1,0 +1,19 @@
+openapi: 3.0.3
+tags:
+  - name: Widgets
+paths:
+  /widgets:
+    parameters:
+      - $ref: '#/components/parameters/WidgetId'
+    get:
+      operationId: getWidget
+      tags: [Widgets]
+      responses:
+        '200':
+          description: ok
+components:
+  parameters:
+    WidgetId:
+      $ref: '#/components/parameters/WidgetIdAlias'
+    WidgetIdAlias:
+      $ref: '#/components/parameters/WidgetId'

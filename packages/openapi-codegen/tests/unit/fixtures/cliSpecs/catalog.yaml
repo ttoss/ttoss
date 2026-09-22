@@ -1,0 +1,30 @@
+openapi: 3.0.3
+tags:
+  - name: Catalog
+paths:
+  /catalog/items:
+    parameters:
+      - $ref: './common.yaml#/components/parameters/TenantId'
+      - $ref: './common.yaml#/components/parameters/RegionId'
+    post:
+      operationId: createCatalogItem
+      tags: [Catalog]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  $ref: './common.yaml#/components/schemas/Label'
+                metadata:
+                  $ref: './common.yaml#/components/schemas/Metadata'
+                widget:
+                  $ref: './widgets.yaml#/components/schemas/WidgetRef'
+                currency:
+                  $ref: '../sharedComponents/base.yaml#/components/schemas/Currency'
+      responses:
+        '201':
+          description: created
+components: {}

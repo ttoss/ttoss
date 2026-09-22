@@ -1,0 +1,8 @@
+openapi: 3.0.3
+components:
+  requestBodies:
+    CreateWidget:
+      content:
+        application/json:
+          schema:
+            type: object

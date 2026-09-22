@@ -8,6 +8,7 @@ export {
   generateCliRouteManifest,
   operationIdToKebabCommand,
   tagToPascalClassName,
+  UNKNOWN_FLAG_TYPE,
 } from './generateCliRoutes';
 export type { MergeOpenApiSpecsArgs } from './mergeOpenApiSpecs';
 export { mergeOpenApiSpecs } from './mergeOpenApiSpecs';

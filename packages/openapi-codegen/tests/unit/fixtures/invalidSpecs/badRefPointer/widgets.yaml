@@ -1,0 +1,17 @@
+openapi: 3.0.3
+tags:
+  - name: Widgets
+paths:
+  /widgets:
+    post:
+      operationId: createWidget
+      tags: [Widgets]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/definitions/CreateWidget'
+      responses:
+        '201':
+          description: created
+components: {}

@@ -10,9 +10,23 @@ export interface OpenApiParameter {
   $ref?: string;
 }
 
+/**
+ * The slice of JSON Schema this package reads. Parameter schemas,
+ * request-body schemas and body properties are all the same shape in
+ * OpenAPI, so they share one type — and one resolver.
+ */
 export interface OpenApiSchema {
   type?: string;
   default?: unknown;
+  description?: string;
+  nullable?: boolean;
+  $ref?: string;
+  required?: string[];
+  properties?: Record<string, OpenApiSchema>;
+  /** OpenAPI 3.0 has no union `type`, so a union is spelled with these. */
+  oneOf?: OpenApiSchema[];
+  anyOf?: OpenApiSchema[];
+  allOf?: OpenApiSchema[];
 }
 
 export interface OpenApiParameterFull extends OpenApiParameter {
@@ -21,24 +35,11 @@ export interface OpenApiParameterFull extends OpenApiParameter {
   schema?: OpenApiSchema;
 }
 
-export interface OpenApiRequestBodyProperty {
-  type?: string;
-  description?: string;
-  nullable?: boolean;
-  $ref?: string;
-}
-
-export interface OpenApiRequestBodySchema {
-  required?: string[];
-  properties?: Record<string, OpenApiRequestBodyProperty>;
-  oneOf?: OpenApiRequestBodySchema[];
-}
-
 export interface OpenApiRequestBody {
   required?: boolean;
   content?: {
     'application/json'?: {
-      schema?: OpenApiRequestBodySchema;
+      schema?: OpenApiSchema;
     };
   };
 }
@@ -63,7 +64,7 @@ export interface OpenApiPathItem {
 
 export interface OpenApiComponents {
   parameters?: Record<string, OpenApiParameterFull>;
-  schemas?: Record<string, OpenApiRequestBodySchema & { $ref?: string }>;
+  schemas?: Record<string, OpenApiSchema>;
 }
 
 export interface CliOpenApiSpec {

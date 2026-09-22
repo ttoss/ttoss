@@ -11,7 +11,23 @@ paths:
       responses:
         '200':
           $ref: './a-widgets.yaml#/components/responses/WidgetList'
+    post:
+      operationId: createWidget
+      tags: [Widgets]
+      requestBody:
+        # A section the merge does not carry: a same-file ref to one is left
+        # alone rather than treated as something to pull.
+        $ref: '#/components/requestBodies/CreateWidget'
+      responses:
+        '201':
+          description: created
 components:
+  requestBodies:
+    CreateWidget:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Widget'
   schemas:
     Widget:
       type: object

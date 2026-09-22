@@ -1,0 +1,11 @@
+openapi: 3.0.3
+paths:
+  /widgets:
+    post:
+      operationId: createWidget
+      requestBody:
+        $ref: './shared/base.yaml#/components/requestBodies/CreateWidget'
+      responses:
+        '201':
+          description: created
+components: {}
