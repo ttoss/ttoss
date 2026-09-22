@@ -1,0 +1,20 @@
+openapi: 3.0.3
+components:
+  parameters:
+    TenantId:
+      name: tenant_id
+      in: header
+      required: true
+      description: Tenant the request belongs to
+      schema:
+        $ref: './primitives.yaml#/components/schemas/ShortString'
+    RegionId:
+      $ref: './primitives.yaml#/components/parameters/Region'
+  schemas:
+    Label:
+      $ref: './primitives.yaml#/components/schemas/ShortString'
+    Metadata:
+      description: Arbitrary metadata, an object or the JSON text of one
+      oneOf:
+        - type: object
+        - type: string

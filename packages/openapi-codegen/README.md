@@ -79,10 +79,44 @@ required; every other location defaults to optional unless the spec says
 
 A parameter a spec declares must always reach the CLI, so
 `generateCliRouteManifest` throws — rather than dropping the parameter — when
-it meets one it cannot turn into a flag: a `$ref` it cannot resolve (only
-same-file refs into `components.parameters` are supported) or an `in` value
-that is not one of the four locations above. Silently dropping either would
-leave the flag missing from `--help` with nothing to explain why.
+it meets one it cannot turn into a flag: a `$ref` it cannot resolve, or an
+`in` value that is not one of the four locations above. Silently dropping
+either would leave the flag missing from `--help` with nothing to explain why.
+
+### Flag types
+
+Every flag carries the JSON `type` its schema names, so the CLI knows which
+values to parse as JSON before sending them. A schema that constrains the
+value to no single type is typed `unknown` (exported as `UNKNOWN_FLAG_TYPE`)
+rather than guessed as `string`: in OpenAPI 3.0 an absent `type` means
+unconstrained — 3.0 has no union `type`, so every `oneOf`/`anyOf` schema omits
+it — and `string` is the one type a CLI must _not_ parse as JSON, so guessing
+it would send an object flag to the server as text and leave the manifest
+unable to say whether the spec really asked for a string.
+
+`$ref`s and composition keywords are read through first: a union whose members
+all agree takes their type, and an `allOf` takes the type of the member that
+names one. As with parameters, a schema `$ref` that cannot be resolved throws,
+naming the spec that wrote it and what was missing, rather than silently
+degrading the flag it types.
+
+### Shared components across files
+
+A `$ref` may name another file — `./common.yaml#/components/schemas/Metadata`
+— and is read relative to the spec that wrote it, so a shared components file
+can point at a third file of its own. Refs are followed across files wherever
+they appear: a path or operation parameter, a request body, a body property, a
+`oneOf` member. Each file is parsed once per run, however many specs point
+into it.
+
+The pointer has to name a component — `#/components/schemas/...` or
+`#/components/parameters/...`. A ref to a whole file, to anything outside
+`components`, or to a remote document is rejected rather than half-resolved.
+
+`mergeOpenApiSpecs` merges only the files in `specsDir`, so keep shared files
+there too when the same specs feed the merged SDK document: a file kept
+outside it resolves for the CLI manifest, but its components never reach the
+merge.
 
 ### Naming conventions
 

@@ -1,0 +1,13 @@
+openapi: 3.0.3
+components:
+  parameters:
+    Region:
+      name: region
+      in: query
+      description: Region the request is served from
+      schema:
+        type: string
+  schemas:
+    ShortString:
+      type: string
+      description: A short string
