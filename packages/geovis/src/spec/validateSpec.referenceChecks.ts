@@ -68,6 +68,84 @@ const validateLayerMapDataRefs = (
   return issues;
 };
 
+/**
+ * Validates that every layer mounted on a `vector-tiles` source declares
+ * `sourceLayer`. Without it the tileset has no way to know which layer of
+ * the tile to read, so the layer renders nothing. No `repair` is offered:
+ * the correct `sourceLayer` name is external tileset metadata this check
+ * has no way to know.
+ */
+const validateSourceLayerPresence = (
+  layers: VisualizationSpec['layers'],
+  sourcesById: Map<string, VisualizationSpec['sources'][number]>
+): GeoVisIssue[] => {
+  const issues: GeoVisIssue[] = [];
+  for (const layer of layers) {
+    const source = sourcesById.get(layer.sourceId);
+    if (source?.type === 'vector-tiles' && !layer.sourceLayer) {
+      issues.push({
+        code: 'missing-source-layer',
+        subject: { path: `layers[${layer.id}].sourceLayer`, id: layer.id },
+        message: `layer '${layer.id}' uses a vector-tiles source but does not declare sourceLayer`,
+      });
+    }
+  }
+  return issues;
+};
+
+/**
+ * True when a `proportionalCircles` spec derives its size data from a
+ * layer's `propertyName` against an inline (non-URL) geojson source —
+ * the one case where `mapType` may legitimately omit `mapData` entirely,
+ * since size values are read straight from `feature.properties` instead of
+ * a joined dataset. Mirrors `findSizeFromPropertyName` in
+ * `spec/mapTypeDefaults/proportionalCircles.ts`.
+ */
+const hasInlinePropertyNameSizeSource = (spec: VisualizationSpec): boolean => {
+  if (spec.mapType !== 'proportionalCircles') return false;
+  const propLayer = spec.layers.find((l) => {
+    return l.propertyName;
+  });
+  if (!propLayer) return false;
+  const source = spec.sources.find((s) => {
+    return s.id === propLayer.sourceId;
+  });
+  return (
+    source?.type === 'geojson' &&
+    typeof (source as { data?: unknown }).data !== 'string'
+  );
+};
+
+/**
+ * Validates that when `mapType` is set, at least one `mapData` entry maps
+ * to a declared source — otherwise the mapType's zero-config layer/legend
+ * resolution has nothing to render against and the map ends up empty.
+ * Skipped for `proportionalCircles` specs that derive size from a layer's
+ * `propertyName` against an inline geojson source (see
+ * `hasInlinePropertyNameSizeSource`), which is a documented `mapData`-free
+ * path for that mapType.
+ */
+const validateMapDataForMapType = (
+  spec: VisualizationSpec,
+  sourcesById: Map<string, VisualizationSpec['sources'][number]>
+): GeoVisIssue[] => {
+  if (!spec.mapType) return [];
+  if (hasInlinePropertyNameSizeSource(spec)) return [];
+
+  const hasValidMapData = (spec.mapData ?? []).some((md) => {
+    return sourcesById.has(md.mapId);
+  });
+  if (hasValidMapData) return [];
+
+  return [
+    {
+      code: 'missing-map-data-for-map-type',
+      subject: { path: 'mapType' },
+      message: `spec.mapType is '${spec.mapType}', but no mapData entry maps to a declared source; the map will render empty`,
+    },
+  ];
+};
+
 /** Checks referential integrity constraints not expressible in JSON Schema (unique mapDataId, FK sources, FK layers). */
 export const validateReferences = (
   spec: VisualizationSpec,
@@ -142,6 +220,9 @@ export const validateReferences = (
       mapDataById
     )
   );
+
+  issues.push(...validateSourceLayerPresence(spec.layers, sourcesById));
+  issues.push(...validateMapDataForMapType(spec, sourcesById));
 
   return issues;
 };

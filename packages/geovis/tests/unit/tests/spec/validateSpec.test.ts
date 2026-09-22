@@ -813,3 +813,244 @@ describe('validateSpec — viewPresets (PRD-002 Phase 5)', () => {
     expect(result.status).toBe('invalid');
   });
 });
+
+describe('validateSpec — layers[].mapDataId and layers[].propertyName are mutually exclusive', () => {
+  const baseSpec = {
+    engine: 'maplibre' as const,
+    view: { center: [0, 0] as [number, number], zoom: 1 },
+    sources: [
+      {
+        id: 'states',
+        type: 'geojson' as const,
+        data: { type: 'FeatureCollection' as const, features: [] },
+      },
+    ],
+  };
+
+  test('rejects a layer declaring both mapDataId and propertyName', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      mapData: [
+        {
+          mapDataId: 'pop',
+          mapId: 'states',
+          data: [{ geometryId: 'BR', value: 211 }],
+        },
+      ],
+      layers: [
+        {
+          id: 'states-fill',
+          sourceId: 'states',
+          geometry: 'polygon',
+          mapDataId: 'pop',
+          propertyName: 'pop',
+        },
+      ],
+    });
+    expect(result.status).toBe('invalid');
+    if (result.status !== 'resolved') {
+      expect(
+        result.issues.some((issue) => {
+          return issue.code === 'invalid-schema';
+        })
+      ).toBe(true);
+    }
+  });
+
+  test('accepts a layer declaring only mapDataId', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      mapData: [
+        {
+          mapDataId: 'pop',
+          mapId: 'states',
+          data: [{ geometryId: 'BR', value: 211 }],
+        },
+      ],
+      layers: [
+        {
+          id: 'states-fill',
+          sourceId: 'states',
+          geometry: 'polygon',
+          mapDataId: 'pop',
+        },
+      ],
+    });
+    expect(result.status).toBe('resolved');
+  });
+
+  test('accepts a layer declaring only propertyName', () => {
+    const result = validateSpec({
+      ...baseSpec,
+      layers: [
+        {
+          id: 'states-fill',
+          sourceId: 'states',
+          geometry: 'polygon',
+          propertyName: 'pop',
+        },
+      ],
+    });
+    expect(result.status).toBe('resolved');
+  });
+});
+
+describe('validateSpec — missing-source-layer (vector-tiles layers without sourceLayer)', () => {
+  const vectorTilesSpec = {
+    engine: 'maplibre' as const,
+    view: { center: [0, 0] as [number, number], zoom: 1 },
+    sources: [
+      {
+        id: 'tiles',
+        type: 'vector-tiles' as const,
+        tiles: ['https://example/{z}/{x}/{y}.pbf'],
+      },
+    ],
+  };
+
+  test('rejects a layer over a vector-tiles source without sourceLayer', () => {
+    const result = validateSpec({
+      ...vectorTilesSpec,
+      layers: [{ id: 'l', sourceId: 'tiles', geometry: 'polygon' }],
+    });
+    expect(result.status).toBe('mismatch');
+    if (result.status !== 'resolved') {
+      const issue = result.issues.find((i) => {
+        return i.code === 'missing-source-layer';
+      });
+      expect(issue).toBeDefined();
+      expect(issue?.subject).toEqual({
+        path: 'layers[l].sourceLayer',
+        id: 'l',
+      });
+      expect(issue?.repair).toBeUndefined();
+    }
+  });
+
+  test('accepts a layer over a vector-tiles source with sourceLayer declared', () => {
+    const result = validateSpec({
+      ...vectorTilesSpec,
+      layers: [
+        {
+          id: 'l',
+          sourceId: 'tiles',
+          geometry: 'polygon',
+          sourceLayer: 'states',
+        },
+      ],
+    });
+    expect(result.status).toBe('resolved');
+  });
+
+  test('a layer over a geojson source without sourceLayer is unaffected', () => {
+    const result = validateSpec({
+      engine: 'maplibre',
+      view: { center: [0, 0], zoom: 1 },
+      sources: [
+        {
+          id: 'states',
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: [] },
+        },
+      ],
+      layers: [{ id: 'l', sourceId: 'states', geometry: 'polygon' }],
+    });
+    expect(result.status).toBe('resolved');
+  });
+});
+
+describe('validateSpec — missing-map-data-for-map-type', () => {
+  const sourceOnlySpec = {
+    engine: 'maplibre' as const,
+    view: { center: [0, 0] as [number, number], zoom: 1 },
+    sources: [
+      {
+        id: 'states',
+        type: 'geojson' as const,
+        data: {
+          type: 'FeatureCollection' as const,
+          features: [
+            {
+              type: 'Feature' as const,
+              properties: { pop: 10 },
+              geometry: null,
+            },
+          ],
+        },
+      },
+    ],
+  };
+
+  test.each(['choropleth', 'dotDensity', 'proportionalCircles'] as const)(
+    'accepts mapType "%s" when a mapData entry maps to a declared source',
+    (mapType) => {
+      const result = validateSpec({
+        ...sourceOnlySpec,
+        mapType,
+        mapData: [
+          {
+            mapDataId: 'pop',
+            mapId: 'states',
+            data: [{ geometryId: 'BR', value: 211 }],
+          },
+        ],
+        layers: [{ id: 'l', sourceId: 'states', geometry: 'polygon' }],
+      });
+      expect(result.status).toBe('resolved');
+    }
+  );
+
+  test('rejects mapType set without any mapData entry', () => {
+    const result = validateSpec({
+      ...sourceOnlySpec,
+      mapType: 'choropleth',
+      layers: [{ id: 'l', sourceId: 'states', geometry: 'polygon' }],
+    });
+    expect(result.status).toBe('mismatch');
+    if (result.status !== 'resolved') {
+      const issue = result.issues.find((i) => {
+        return i.code === 'missing-map-data-for-map-type';
+      });
+      expect(issue).toBeDefined();
+      expect(issue?.subject).toEqual({ path: 'mapType' });
+    }
+  });
+
+  test('rejects mapType set when mapData.mapId does not match any declared source', () => {
+    const result = validateSpec({
+      ...sourceOnlySpec,
+      mapType: 'choropleth',
+      mapData: [
+        {
+          mapDataId: 'pop',
+          mapId: 'ghost-source',
+          data: [{ geometryId: 'BR', value: 211 }],
+        },
+      ],
+      layers: [{ id: 'l', sourceId: 'states', geometry: 'polygon' }],
+    });
+    expect(result.status).toBe('mismatch');
+    if (result.status !== 'resolved') {
+      const issue = result.issues.find((i) => {
+        return i.code === 'missing-map-data-for-map-type';
+      });
+      expect(issue).toBeDefined();
+    }
+  });
+
+  test('accepts mapType "proportionalCircles" without mapData when a layer uses propertyName over an inline geojson source', () => {
+    const result = validateSpec({
+      ...sourceOnlySpec,
+      mapType: 'proportionalCircles',
+      layers: [
+        {
+          id: 'l',
+          sourceId: 'states',
+          geometry: 'point',
+          propertyName: 'pop',
+        },
+      ],
+    });
+    expect(result.status).toBe('resolved');
+  });
+});

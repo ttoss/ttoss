@@ -91,6 +91,34 @@ export const validateFilterCapabilities = (
   return issues;
 };
 
+/**
+ * Validates that the spec's declared `engine` matches the active adapter's
+ * own engine, as reported by `CapabilitySet.engine`. The repair is always
+ * known with certainty here — it is simply `capabilities.engine`.
+ */
+export const validateEngineCapability = (
+  spec: VisualizationSpec,
+  capabilities: CapabilitySet
+): GeoVisIssue[] => {
+  const issues: GeoVisIssue[] = [];
+  if (capabilities.engine !== spec.engine) {
+    issues.push({
+      code: 'unsupported-engine',
+      subject: { path: 'engine' },
+      message: `spec declares engine '${spec.engine}', but the active adapter is '${capabilities.engine}'`,
+      repair: [
+        {
+          kind: 'set-value',
+          path: 'engine',
+          value: capabilities.engine,
+          label: `Use engine "${capabilities.engine}"`,
+        },
+      ],
+    });
+  }
+  return issues;
+};
+
 /** Validates that requested camera features (pitch, bearing) are supported by the active adapter. */
 export const validateViewCapabilities = (
   spec: VisualizationSpec,

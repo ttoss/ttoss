@@ -18,6 +18,7 @@ const baseSpec = {
 
 /** A deliberately restrictive capability set — only geojson/polygon, no camera tilt. */
 const restrictiveCapabilities: CapabilitySet = {
+  engine: 'maplibre',
   sourceTypes: ['geojson'],
   layerGeometries: ['polygon'],
   dataFeatures: { featureState: ['geojson'], filter: ['geojson'] },
@@ -47,7 +48,14 @@ describe('validateSpec — capabilities (ADR-0002)', () => {
           tiles: ['https://example/{z}/{x}/{y}.pbf'],
         },
       ],
-      layers: [{ id: 'l', sourceId: 'tiles', geometry: 'polygon' as const }],
+      layers: [
+        {
+          id: 'l',
+          sourceId: 'tiles',
+          geometry: 'polygon' as const,
+          sourceLayer: 'tile-layer',
+        },
+      ],
     };
     const result = validateSpec(spec, restrictiveCapabilities);
     expect(result.status).toBe('unsupported');
@@ -206,6 +214,7 @@ describe('validateSpec — capabilities (ADR-0002)', () => {
 
   test('a permissive capability set accepts everything the restrictive one rejects', () => {
     const permissive: CapabilitySet = {
+      engine: 'maplibre',
       sourceTypes: ['geojson', 'vector-tiles'],
       layerGeometries: ['polygon', 'heatmap'],
       dataFeatures: { featureState: ['geojson'], filter: ['geojson'] },
@@ -223,10 +232,51 @@ describe('validateSpec — capabilities (ADR-0002)', () => {
       ],
       layers: [
         ...baseSpec.layers,
-        { id: 'heat', sourceId: 'tiles', geometry: 'heatmap' as const },
+        {
+          id: 'heat',
+          sourceId: 'tiles',
+          geometry: 'heatmap' as const,
+          sourceLayer: 'tile-layer',
+        },
       ],
       view: { ...baseSpec.view, pitch: 45, bearing: 90 },
     };
     expect(validateSpec(spec, permissive).status).toBe('resolved');
+  });
+
+  test('accepts a spec whose engine matches the active adapter', () => {
+    expect(validateSpec(baseSpec, restrictiveCapabilities).status).toBe(
+      'resolved'
+    );
+  });
+
+  test('omitting capabilities skips the engine check', () => {
+    // `capabilities` unset entirely, regardless of what a future adapter's
+    // capabilities would say — schema-valid `engine: 'maplibre'` is untouched.
+    expect(validateSpec(baseSpec).status).toBe('resolved');
+  });
+
+  test('rejects a spec whose engine does not match the active adapter, with a set-value repair', () => {
+    // Simulates validating a `maplibre` spec against a different adapter's
+    // declared capabilities (e.g. a future `deckgl` adapter mounted instead).
+    const deckglCapabilities: CapabilitySet = {
+      ...restrictiveCapabilities,
+      engine: 'deckgl',
+    };
+    const result = validateSpec(baseSpec, deckglCapabilities);
+    expect(result.status).toBe('unsupported');
+    if (result.status === 'resolved') return;
+    const issue = result.issues.find((i) => {
+      return i.code === 'unsupported-engine';
+    });
+    expect(issue?.subject).toEqual({ path: 'engine' });
+    expect(issue?.repair).toEqual([
+      {
+        kind: 'set-value',
+        path: 'engine',
+        value: 'deckgl',
+        label: 'Use engine "deckgl"',
+      },
+    ]);
   });
 });

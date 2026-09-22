@@ -266,122 +266,100 @@
     "layers": {
       "type": "array",
       "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["id", "sourceId", "geometry"],
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "sourceId": {
-            "type": "string"
-          },
-          "geometry": {
-            "type": "string",
-            "enum": ["point", "line", "polygon", "raster", "symbol", "heatmap"]
-          },
-          "sourceLayer": {
-            "type": "string"
-          },
-          "title": {
-            "type": "string"
-          },
-          "visible": {
-            "type": "boolean"
-          },
-          "minzoom": {
-            "type": "number"
-          },
-          "maxzoom": {
-            "type": "number"
-          },
-          "paint": {
-            "type": "object",
-            "additionalProperties": true
-          },
-          "legends": {
-            "type": "array",
-            "items": {
-              "$ref": "#/$defs/LegendSpec"
-            }
-          },
-          "activeLegendId": {
-            "type": "string",
-            "minLength": 1
-          },
-          "mapDataId": {
-            "type": "string",
-            "minLength": 1
-          },
-          "hoverPaint": {
+        "allOf": [
+          {
             "type": "object",
             "additionalProperties": false,
+            "required": ["id", "sourceId", "geometry"],
             "properties": {
-              "lineColor": {
+              "id": {
                 "type": "string"
               },
-              "lineWidth": {
+              "sourceId": {
+                "type": "string"
+              },
+              "geometry": {
+                "type": "string",
+                "enum": [
+                  "point",
+                  "line",
+                  "polygon",
+                  "raster",
+                  "symbol",
+                  "heatmap"
+                ]
+              },
+              "sourceLayer": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "visible": {
+                "type": "boolean"
+              },
+              "minzoom": {
                 "type": "number"
-              }
-            }
-          },
-          "selectedPaint": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "lineColor": {
-                "type": "string"
               },
-              "lineWidth": {
-                "type": "number"
-              }
-            }
-          },
-          "clickAnchor": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "iconImage": {
-                "type": "string"
-              },
-              "iconSize": {
+              "maxzoom": {
                 "type": "number"
               },
-              "color": {
-                "type": "string"
+              "paint": {
+                "type": "object",
+                "additionalProperties": true
               },
-              "offset": {
+              "legends": {
                 "type": "array",
                 "items": {
-                  "type": "number"
-                },
-                "minItems": 2,
-                "maxItems": 2
+                  "$ref": "#/$defs/LegendSpec"
+                }
               },
-              "latKey": {
-                "type": "string"
+              "activeLegendId": {
+                "type": "string",
+                "minLength": 1
               },
-              "lngKey": {
-                "type": "string"
-              }
-            }
-          },
-          "hoverTooltip": {
-            "type": "object",
-            "additionalProperties": true
-          },
-          "click": {
-            "type": "object",
-            "additionalProperties": true
-          },
-          "sizeBy": {
-            "allOf": [
-              {
+              "mapDataId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "hoverPaint": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": ["range"],
                 "properties": {
-                  "range": {
+                  "lineColor": {
+                    "type": "string"
+                  },
+                  "lineWidth": {
+                    "type": "number"
+                  }
+                }
+              },
+              "selectedPaint": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "lineColor": {
+                    "type": "string"
+                  },
+                  "lineWidth": {
+                    "type": "number"
+                  }
+                }
+              },
+              "clickAnchor": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "iconImage": {
+                    "type": "string"
+                  },
+                  "iconSize": {
+                    "type": "number"
+                  },
+                  "color": {
+                    "type": "string"
+                  },
+                  "offset": {
                     "type": "array",
                     "items": {
                       "type": "number"
@@ -389,107 +367,157 @@
                     "minItems": 2,
                     "maxItems": 2
                   },
-                  "mode": {
-                    "type": "string",
-                    "enum": ["continuous", "stepped"]
+                  "latKey": {
+                    "type": "string"
                   },
-                  "thresholds": {
-                    "type": "array",
-                    "items": {
-                      "type": "number"
-                    }
-                  },
-                  "transform": {
-                    "type": "string",
-                    "enum": ["linear", "sqrt"]
+                  "lngKey": {
+                    "type": "string"
                   }
                 }
               },
-              {
-                "not": {
-                  "allOf": [
-                    {
-                      "required": ["mode"],
-                      "properties": {
-                        "mode": {
-                          "const": "stepped"
+              "hoverTooltip": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "click": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "sizeBy": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["range"],
+                    "properties": {
+                      "range": {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 2,
+                        "maxItems": 2
+                      },
+                      "mode": {
+                        "type": "string",
+                        "enum": ["continuous", "stepped"]
+                      },
+                      "thresholds": {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
                         }
-                      }
-                    },
-                    {
-                      "required": ["transform"],
-                      "properties": {
-                        "transform": {
-                          "const": "sqrt"
-                        }
+                      },
+                      "transform": {
+                        "type": "string",
+                        "enum": ["linear", "sqrt"]
                       }
                     }
-                  ]
-                }
-              }
-            ]
-          },
-          "propertyName": {
-            "type": "string",
-            "description": "GeoJSON feature property name for direct data access. When set (and mapDataId is absent), the expression reads from feature.properties[propertyName] via ['get', ...]."
-          },
-          "filter": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["property", "operator", "value"],
-            "properties": {
-              "property": {
-                "type": "string",
-                "minLength": 1
-              },
-              "operator": {
-                "type": "string",
-                "enum": ["eq", "neq", "gt", "gte", "lt", "lte", "in", "not-in"]
-              },
-              "value": {
-                "oneOf": [
-                  {
-                    "type": "string"
                   },
                   {
-                    "type": "number"
-                  },
-                  {
-                    "type": "array",
-                    "items": {
-                      "oneOf": [
+                    "not": {
+                      "allOf": [
                         {
-                          "type": "string"
+                          "required": ["mode"],
+                          "properties": {
+                            "mode": {
+                              "const": "stepped"
+                            }
+                          }
                         },
                         {
-                          "type": "number"
+                          "required": ["transform"],
+                          "properties": {
+                            "transform": {
+                              "const": "sqrt"
+                            }
+                          }
                         }
                       ]
                     }
                   }
                 ]
+              },
+              "propertyName": {
+                "type": "string",
+                "description": "GeoJSON feature property name for direct data access. When set (and mapDataId is absent), the expression reads from feature.properties[propertyName] via ['get', ...]."
+              },
+              "filter": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["property", "operator", "value"],
+                "properties": {
+                  "property": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "operator": {
+                    "type": "string",
+                    "enum": [
+                      "eq",
+                      "neq",
+                      "gt",
+                      "gte",
+                      "lt",
+                      "lte",
+                      "in",
+                      "not-in"
+                    ]
+                  },
+                  "value": {
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "oneOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "number"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "transition": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["kind"],
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": ["crossfade"]
+                  },
+                  "durationMs": {
+                    "type": "number"
+                  },
+                  "easing": {
+                    "type": "string",
+                    "enum": ["linear", "ease-out", "ease-in-out"]
+                  }
+                }
               }
             }
           },
-          "transition": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["kind"],
-            "properties": {
-              "kind": {
-                "type": "string",
-                "enum": ["crossfade"]
-              },
-              "durationMs": {
-                "type": "number"
-              },
-              "easing": {
-                "type": "string",
-                "enum": ["linear", "ease-out", "ease-in-out"]
-              }
+          {
+            "not": {
+              "allOf": [
+                { "required": ["mapDataId"] },
+                { "required": ["propertyName"] }
+              ]
             }
           }
-        }
+        ]
       }
     },
     "metadata": {
