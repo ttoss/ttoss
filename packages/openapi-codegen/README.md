@@ -84,6 +84,23 @@ same-file refs into `components.parameters` are supported) or an `in` value
 that is not one of the four locations above. Silently dropping either would
 leave the flag missing from `--help` with nothing to explain why.
 
+### Flag types
+
+Every flag carries the JSON `type` its schema names, so the CLI knows which
+values to parse as JSON before sending them. A schema that constrains the
+value to no single type is typed `unknown` (exported as `UNKNOWN_FLAG_TYPE`)
+rather than guessed as `string`: in OpenAPI 3.0 an absent `type` means
+unconstrained — 3.0 has no union `type`, so every `oneOf`/`anyOf` schema omits
+it — and `string` is the one type a CLI must _not_ parse as JSON, so guessing
+it would send an object flag to the server as text and leave the manifest
+unable to say whether the spec really asked for a string.
+
+`$ref`s and composition keywords are read through first: a union whose members
+all agree takes their type, and an `allOf` takes the type of the member that
+names one. As with parameters, a schema `$ref` that cannot be resolved (only
+same-file refs into `components.schemas` are supported) throws, naming the
+spec file and the ref, rather than silently degrading the flag it types.
+
 ### Naming conventions
 
 By default, `operationId`s are converted to kebab-case commands
