@@ -53,19 +53,16 @@ const sanitizeDescription = (description: string | undefined): string => {
 };
 
 /**
- * Builds a single body/query property's `JsonSchemaProperty`. Split out of
- * {@link buildInputSchema} to keep that function's size and branching down.
+ * Forwards a property's `oneOf` / `anyOf` / multi-entry `allOf` verbatim, or
+ * returns `undefined` when it declares none.
  */
-const buildTypedProperty = (param: {
-  type: string;
+const buildComposedProperty = (param: {
   description: string;
-  items?: unknown;
-  nullable?: boolean;
   oneOf?: unknown[];
   anyOf?: unknown[];
-}): JsonSchemaProperty => {
-  const description = sanitizeDescription(param.description);
-
+  allOf?: unknown[];
+}): JsonSchemaProperty | undefined => {
+  const { description } = param;
   // A property with `oneOf`/`anyOf` (e.g. a string-or-object union) is
   // forwarded verbatim rather than collapsed to a single guessed primitive —
   // collapsing would reject every alternative shape except whichever one the
@@ -75,6 +72,37 @@ const buildTypedProperty = (param: {
   }
   if (param.anyOf && param.anyOf.length > 0) {
     return { anyOf: param.anyOf, description };
+  }
+  // A multi-entry `allOf` has no single type to collapse to; forwarding it
+  // keeps every constraint the REST API enforces.
+  if (param.allOf && param.allOf.length > 0) {
+    return { allOf: param.allOf, description };
+  }
+  return undefined;
+};
+
+/**
+ * Builds a single body/query property's `JsonSchemaProperty`. Split out of
+ * {@link buildInputSchema} to keep that function's size and branching down.
+ */
+const buildTypedProperty = (param: {
+  type?: string;
+  description: string;
+  items?: unknown;
+  nullable?: boolean;
+  oneOf?: unknown[];
+  anyOf?: unknown[];
+  allOf?: unknown[];
+}): JsonSchemaProperty => {
+  const description = sanitizeDescription(param.description);
+
+  const composed = buildComposedProperty({ ...param, description });
+  if (composed) return composed;
+  // No declared type (e.g. a bare `{}` schema or an unresolvable `$ref`):
+  // advertise an untyped schema rather than guessing `string`, which would
+  // make every non-string value the API accepts impossible to send.
+  if (param.type === undefined) {
+    return { description };
   }
 
   const jsonType = getJsonSchemaType(param.type);
@@ -108,11 +136,12 @@ export const buildInputSchema = (
     camelName: string;
     description: string;
     required: boolean;
-    type: string;
+    type?: string;
     items?: unknown;
     nullable?: boolean;
     oneOf?: unknown[];
     anyOf?: unknown[];
+    allOf?: unknown[];
   }>
 ): JsonObjectSchema => {
   const allParams = [...pathParams, ...queryParams, ...bodyProps];
@@ -146,7 +175,7 @@ export const buildInputSchema = (
   const properties: Record<string, JsonSchemaProperty> = {};
   for (const param of allParams) {
     properties[param.camelName] =
-      'type' in param
+      'description' in param
         ? buildTypedProperty(param)
         : { type: 'string', description: '' }; // path param
   }
@@ -249,6 +278,27 @@ export const extractAcceptedBodyFields = (args: {
   return Object.keys(bodySchema?.properties ?? {});
 };
 
+const isPlainObject = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+};
+
+/**
+ * Folds a single-entry `allOf` into the property that wraps it. OpenAPI
+ * declares `allOf: [{ $ref }]` so a property can carry its own `description`
+ * next to a referenced schema; without folding, the referenced `type`,
+ * `nullable` and `items` would be lost. Keys on the wrapper win over the
+ * referenced schema's. Multi-entry `allOf` is left intact.
+ */
+const flattenSingleAllOf = (
+  schema: Record<string, unknown>
+): Record<string, unknown> => {
+  const { allOf, ...rest } = schema;
+  if (!Array.isArray(allOf) || allOf.length !== 1) return schema;
+  const [entry] = allOf;
+  if (!isPlainObject(entry)) return rest;
+  return { ...flattenSingleAllOf(entry), ...rest };
+};
+
 export const extractBodyProps = (args: {
   requestBody?: RequestBodySpec;
   spec: OpenApiSpec;
@@ -258,11 +308,12 @@ export const extractBodyProps = (args: {
   camelName: string;
   description: string;
   required: boolean;
-  type: string;
+  type?: string;
   items?: unknown;
   nullable: boolean;
   oneOf?: unknown[];
   anyOf?: unknown[];
+  allOf?: unknown[];
 }> => {
   const bodySchema = resolveBodySchema(args);
   if (!bodySchema?.properties) return [];
@@ -273,24 +324,26 @@ export const extractBodyProps = (args: {
     }
   );
   return entries.map(([key, value]: [string, unknown]) => {
-    const val = value as {
+    const val = flattenSingleAllOf(value as Record<string, unknown>) as {
       description?: unknown;
       type?: unknown;
       items?: unknown;
       nullable?: unknown;
       oneOf?: unknown;
       anyOf?: unknown;
+      allOf?: unknown;
     };
     return {
       snakeName: key,
       camelName: snakeToCamel(key),
       description: typeof val.description === 'string' ? val.description : '',
       required: (bodySchema.required || []).includes(key),
-      type: typeof val.type === 'string' ? val.type : 'string',
+      type: typeof val.type === 'string' ? val.type : undefined,
       items: val.items,
       nullable: val.nullable === true,
       oneOf: Array.isArray(val.oneOf) ? val.oneOf : undefined,
       anyOf: Array.isArray(val.anyOf) ? val.anyOf : undefined,
+      allOf: Array.isArray(val.allOf) ? val.allOf : undefined,
     };
   });
 };

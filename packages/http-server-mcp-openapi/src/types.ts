@@ -13,7 +13,9 @@ export type JsonSchemaPrimitiveType =
  * client-side validator enforces the same alternatives the REST API does,
  * rather than collapsing to a single guessed primitive. `type` may be an
  * array of two entries (e.g. `['string', 'null']`) to represent an OpenAPI
- * `nullable: true` property without losing its declared type.
+ * `nullable: true` property without losing its declared type. A property with
+ * no declared type is emitted untyped (only `description`), so it accepts any
+ * value instead of a guessed `string`.
  */
 export type JsonSchemaProperty =
   | {
@@ -24,6 +26,7 @@ export type JsonSchemaProperty =
   | {
       oneOf?: unknown[];
       anyOf?: unknown[];
+      allOf?: unknown[];
       description?: string;
     };
 

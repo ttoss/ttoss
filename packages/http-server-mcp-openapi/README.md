@@ -61,7 +61,11 @@ Each OpenAPI operation with an `operationId` and a supported HTTP method
 | operation `description`   | tool description (quotes/newlines sanitised) |
 
 Path params are always required strings. Query and body params carry their
-declared type and `required` flag. Array params keep their `items` schema.
+declared type and `required` flag. Array params keep their `items` schema. A
+body property declared as a single-entry `allOf` (usually `allOf: [{ $ref }]`
+beside its own `description`) takes `type`, `nullable` and `items` from the
+referenced schema; a multi-entry `allOf` is forwarded verbatim, and a property
+with no declared type is advertised untyped so it accepts any value.
 Parameters declared at the **path-item level** (shared by every operation on a
 path) are merged into each operation; an operation-level parameter overrides a
 path-item one with the same `name`+`in`.
