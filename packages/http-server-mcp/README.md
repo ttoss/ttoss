@@ -138,6 +138,20 @@ A non-2xx response throws, with the message read off the error body — `{ error
 
 Inside a tool handler the thrown message is what the MCP SDK returns to the client, so it is the whole answer the calling model acts on.
 
+### Using your own HTTP client
+
+A handler that does not use `apiCall` can still reuse its two request-scoped pieces: `getApiHeaders()` returns the headers `getApiHeaders` produced for the current MCP request, and `errorBodyMessage(body)` renders an error body exactly as `apiCall` does.
+
+```typescript
+import { errorBodyMessage, getApiHeaders } from '@ttoss/http-server-mcp';
+
+const response = await fetch(url, { headers: getApiHeaders() });
+if (!response.ok) {
+  const body = await response.json().catch(() => undefined);
+  throw new Error(errorBodyMessage(body) ?? `HTTP ${response.status}`);
+}
+```
+
 ## Authentication
 
 `createMcpRouter` supports OAuth 2.0 Bearer token authentication via the `auth` option. Incoming MCP requests must include a valid `Authorization: Bearer <token>` header — invalid or missing tokens receive a `401 Unauthorized` response. The MCP lifecycle methods `initialize` and `tools/list` are exempt by default so clients can discover the server before authenticating (see [Public methods and discovery](#public-methods-and-discovery)).
@@ -605,6 +619,18 @@ Generic HTTP helper for use inside MCP tool handlers.
 **Returns:** `Promise<unknown>` — Parsed JSON response body
 
 **Throws:** `Error` on a non-2xx response, carrying the error body's message (see [Errors](#errors))
+
+### `getApiHeaders()`
+
+Returns a copy of the headers `createMcpRouter`'s `getApiHeaders` option produced for the current MCP request — the same headers `apiCall` injects.
+
+**Returns:** `Record<string, string>` — `{}` outside a request or when `getApiHeaders` is not configured
+
+### `errorBodyMessage(body)`
+
+Reads the message off a REST error body — `{ error: 'text' }` or `{ error: { code?, message? } }` (rendered `code: message`).
+
+**Returns:** `string | undefined` — `undefined` when the body carries no message
 
 ### `getIdentity<T>()`
 

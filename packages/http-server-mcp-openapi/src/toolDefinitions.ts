@@ -1,34 +1,32 @@
 import type { JsonObjectSchema } from '@ttoss/http-server-mcp';
 
 import {
+  argNameMapper,
+  collectServerManagedParameters,
+  extractPathParams,
+  extractQueryParams,
+  snakeToCamel,
+  type ToArgName,
+} from './parameters';
+import {
   buildBodyFn,
   buildPathFn,
   buildQueryFn,
   dereferenceSchema,
-  resolveParameter,
   resolveSchema,
 } from './schema';
 import {
   DEFAULT_EXCLUDE_EXTENSION,
   DEFAULT_SERVER_MANAGED_EXTENSION,
   type JsonSchemaProperty,
+  type OpenApiDocuments,
   type OpenApiSpec,
   type OpenApiToToolsOptions,
   type OperationSpec,
   type RequestBodySpec,
+  type ResolvedToolOptions,
   type ToolDefinition,
 } from './types';
-
-/**
- * Folds `_` and `-` separators into camelCase. OpenAPI operation and parameter
- * names may be snake_case (`agent_id`) or kebab-case (`list-tools`), and MCP
- * tool inputs are camelCase by convention, so both are folded here.
- */
-export const snakeToCamel = (str: string): string => {
-  return str.replace(/[_-]([a-z])/g, (_, letter) => {
-    return letter.toUpperCase();
-  });
-};
 
 /** Converts a camelCase `operationId` to a kebab-case tool name. */
 export const operationIdToToolName = (operationId: string): string => {
@@ -123,17 +121,18 @@ const buildTypedProperty = (param: {
 };
 
 export const buildInputSchema = (
-  pathParams: Array<{ name: string; camelName: string }>,
+  pathParams: Array<{ name: string; argName: string; serverManaged?: boolean }>,
   queryParams: Array<{
     name: string;
-    camelName: string;
+    argName: string;
     description: string;
     required: boolean;
     type: string;
+    serverManaged?: boolean;
   }>,
   bodyProps: Array<{
     snakeName: string;
-    camelName: string;
+    argName: string;
     description: string;
     required: boolean;
     type?: string;
@@ -144,7 +143,14 @@ export const buildInputSchema = (
     allOf?: unknown[];
   }>
 ): JsonObjectSchema => {
-  const allParams = [...pathParams, ...queryParams, ...bodyProps];
+  // Server-managed parameters are filled by the consumer, never by the model.
+  const modelPathParams = pathParams.filter((p) => {
+    return !p.serverManaged;
+  });
+  const modelQueryParams = queryParams.filter((p) => {
+    return !p.serverManaged;
+  });
+  const allParams = [...modelPathParams, ...modelQueryParams, ...bodyProps];
 
   if (allParams.length === 0) {
     return {
@@ -153,28 +159,28 @@ export const buildInputSchema = (
   }
 
   const requiredFields = [
-    ...pathParams.map((p) => {
-      return p.camelName;
+    ...modelPathParams.map((p) => {
+      return p.argName;
     }),
-    ...queryParams
+    ...modelQueryParams
       .filter((p) => {
         return p.required;
       })
       .map((p) => {
-        return p.camelName;
+        return p.argName;
       }),
     ...bodyProps
       .filter((p) => {
         return p.required;
       })
       .map((p) => {
-        return p.camelName;
+        return p.argName;
       }),
   ];
 
   const properties: Record<string, JsonSchemaProperty> = {};
   for (const param of allParams) {
-    properties[param.camelName] =
+    properties[param.argName] =
       'description' in param
         ? buildTypedProperty(param)
         : { type: 'string', description: '' }; // path param
@@ -191,79 +197,18 @@ export const buildInputSchema = (
   };
 };
 
-/**
- * Deduplicates parameter entries by `name`, keeping the last occurrence. When
- * path-item-level and operation-level parameters are concatenated (operation
- * last), this makes the operation-level entry win — as the OpenAPI spec requires.
- */
-const dedupeByName = <T extends { name: string }>(items: T[]): T[] => {
-  const byName = new Map<string, T>();
-  for (const item of items) {
-    byName.set(item.name, item);
-  }
-  return [...byName.values()];
-};
-
-export const extractPathParams = (args: {
-  parameters?: Array<{ name?: string; in?: string; [key: string]: unknown }>;
-  spec: OpenApiSpec;
-}): Array<{ name: string; camelName: string }> => {
-  const params = (args.parameters || [])
-    .map((p) => {
-      return resolveParameter(p, args.spec);
-    })
-    .filter((p) => {
-      return p.in === 'path';
-    })
-    .map((p) => {
-      return {
-        name: p.name || '',
-        camelName: snakeToCamel(p.name || ''),
-      };
-    });
-  return dedupeByName(params);
-};
-
-export const extractQueryParams = (args: {
-  parameters?: Array<{ name?: string; in?: string; [key: string]: unknown }>;
-  spec: OpenApiSpec;
-}): Array<{
-  name: string;
-  camelName: string;
-  description: string;
-  required: boolean;
-  type: string;
-  style?: string;
-  explode?: boolean;
-}> => {
-  const params = (args.parameters || [])
-    .map((p) => {
-      return resolveParameter(p, args.spec);
-    })
-    .filter((p) => {
-      return p.in === 'query';
-    })
-    .map((p) => {
-      return {
-        name: p.name || '',
-        camelName: snakeToCamel(p.name || ''),
-        description: p.description || '',
-        required: p.required || false,
-        type: p.schema?.type || 'string',
-        style: p.style,
-        explode: p.explode,
-      };
-    });
-  return dedupeByName(params);
-};
-
 const resolveBodySchema = (args: {
   requestBody?: RequestBodySpec;
   spec: OpenApiSpec;
+  documents?: OpenApiDocuments;
 }) => {
   const rawBodySchema = args.requestBody?.content?.['application/json']?.schema;
-  const dereferencedBodySchema = dereferenceSchema(rawBodySchema, args.spec);
-  return resolveSchema(dereferencedBodySchema, args.spec);
+  const dereferencedBodySchema = dereferenceSchema(
+    rawBodySchema,
+    args.spec,
+    args.documents
+  );
+  return resolveSchema(dereferencedBodySchema, args.spec, args.documents);
 };
 
 /**
@@ -273,6 +218,7 @@ const resolveBodySchema = (args: {
 export const extractAcceptedBodyFields = (args: {
   requestBody?: RequestBodySpec;
   spec: OpenApiSpec;
+  documents?: OpenApiDocuments;
 }): string[] => {
   const bodySchema = resolveBodySchema(args);
   return Object.keys(bodySchema?.properties ?? {});
@@ -303,9 +249,12 @@ export const extractBodyProps = (args: {
   requestBody?: RequestBodySpec;
   spec: OpenApiSpec;
   serverManagedExtension: string;
+  documents?: OpenApiDocuments;
+  /** Maps a spec name to its tool argument name. @default snakeToCamel */
+  toArgName?: ToArgName;
 }): Array<{
   snakeName: string;
-  camelName: string;
+  argName: string;
   description: string;
   required: boolean;
   type?: string;
@@ -315,6 +264,7 @@ export const extractBodyProps = (args: {
   anyOf?: unknown[];
   allOf?: unknown[];
 }> => {
+  const toArgName = args.toArgName ?? snakeToCamel;
   const bodySchema = resolveBodySchema(args);
   if (!bodySchema?.properties) return [];
   const entries = Object.entries(bodySchema.properties).filter(
@@ -335,7 +285,7 @@ export const extractBodyProps = (args: {
     };
     return {
       snakeName: key,
-      camelName: snakeToCamel(key),
+      argName: toArgName(key),
       description: typeof val.description === 'string' ? val.description : '',
       required: (bodySchema.required || []).includes(key),
       type: typeof val.type === 'string' ? val.type : undefined,
@@ -366,7 +316,7 @@ export const processOperation = (args: {
   method: string;
   operation: OperationSpec;
   spec: OpenApiSpec;
-  options: Required<OpenApiToToolsOptions>;
+  options: ResolvedToolOptions;
   /**
    * Parameters declared at the path-item level (shared by every operation on
    * the path). Merged ahead of the operation's own parameters so operation-level
@@ -398,20 +348,31 @@ export const processOperation = (args: {
     ...(args.operation.parameters ?? []),
   ];
 
+  const { documents, serverManagedExtension } = args.options;
+  const toArgName = argNameMapper(args.options.argumentNames);
+
   const pathParams = extractPathParams({
     parameters,
     spec: args.spec,
+    documents,
+    toArgName,
+    serverManagedExtension,
   });
 
   const queryParams = extractQueryParams({
     parameters,
     spec: args.spec,
+    documents,
+    toArgName,
+    serverManagedExtension,
   });
 
   const bodyProps = extractBodyProps({
     requestBody: args.operation.requestBody,
     spec: args.spec,
-    serverManagedExtension: args.options.serverManagedExtension,
+    serverManagedExtension,
+    documents,
+    toArgName,
   });
 
   const inputSchema = buildInputSchema(pathParams, queryParams, bodyProps);
@@ -419,6 +380,7 @@ export const processOperation = (args: {
   const acceptedBodyFields = extractAcceptedBodyFields({
     requestBody: args.operation.requestBody,
     spec: args.spec,
+    documents,
   });
 
   return {
@@ -433,6 +395,10 @@ export const processOperation = (args: {
     body: buildBodyFn(bodyProps),
     acceptedBodyFields,
     extensions: extractExtensions(args.operation),
+    serverManagedParameters: collectServerManagedParameters({
+      pathParams,
+      queryParams,
+    }),
   };
 };
 
@@ -440,7 +406,7 @@ export const processPath = (args: {
   pathTemplate: string;
   pathItem: Record<string, OperationSpec>;
   spec: OpenApiSpec;
-  options: Required<OpenApiToToolsOptions>;
+  options: ResolvedToolOptions;
 }): ToolDefinition[] => {
   // `parameters` is a path-item-level key (shared params), not an operation.
   const rawPathItemParameters = (args.pathItem as { parameters?: unknown })
@@ -467,6 +433,19 @@ export const processPath = (args: {
   return tools;
 };
 
+/** Applies the defaults to {@link OpenApiToToolsOptions}. */
+const resolveOptions = (
+  options: OpenApiToToolsOptions = {}
+): ResolvedToolOptions => {
+  return {
+    excludeExtension: options.excludeExtension ?? DEFAULT_EXCLUDE_EXTENSION,
+    serverManagedExtension:
+      options.serverManagedExtension ?? DEFAULT_SERVER_MANAGED_EXTENSION,
+    argumentNames: options.argumentNames ?? 'camelCase',
+    documents: options.documents,
+  };
+};
+
 /**
  * Translates one or more OpenAPI documents into REST-backed MCP tool
  * definitions. Each translatable operation (has an `operationId`, a supported
@@ -483,12 +462,7 @@ export const openApiToToolDefinitions = (args: {
   spec: OpenApiSpec | OpenApiSpec[];
   options?: OpenApiToToolsOptions;
 }): ToolDefinition[] => {
-  const options: Required<OpenApiToToolsOptions> = {
-    excludeExtension:
-      args.options?.excludeExtension ?? DEFAULT_EXCLUDE_EXTENSION,
-    serverManagedExtension:
-      args.options?.serverManagedExtension ?? DEFAULT_SERVER_MANAGED_EXTENSION,
-  };
+  const options = resolveOptions(args.options);
 
   const specs = Array.isArray(args.spec) ? args.spec : [args.spec];
   const tools: ToolDefinition[] = [];
