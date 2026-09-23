@@ -10,18 +10,46 @@ if echo "$REMOTE_TAGS_FULL" | awk '{print $1}' | grep -q "^$HEAD_SHA$"; then
   exit 0
 fi
 
-# Extract tag names (excluding peeled annotated-tag objects ^{}).
-REMOTE_TAGS=$(echo "$REMOTE_TAGS_FULL" | grep -v '\^{}' | awk '{print $2}' | sed 's|refs/tags/||')
+# Find the most recent tagged ancestor of HEAD — the last release — the way
+# `git describe` would, but without fetching every tag. Sorting tag names
+# instead (`sort -V | tail -1`) picks the alphabetically last package's tag,
+# which can be weeks old; the `...[$LATEST_TAG_SHA]` filters below then treat
+# every package changed since that release as changed, pulling the whole
+# monorepo into scope.
+#
+# `ls-remote` lists the commit SHA for lightweight tags and, on the peeled
+# `^{}` line, for annotated ones, so a commit is tagged iff its SHA appears.
+TAGGED_SHAS=$(echo "$REMOTE_TAGS_FULL" | awk '{print $1}')
 
-# Find the latest tag name.
-export LATEST_TAG=$(echo "$REMOTE_TAGS" | sort -V | tail -1)
+find_latest_tagged_commit() {
+  for sha in $(git rev-list HEAD); do
+    if echo "$TAGGED_SHAS" | grep -qx "$sha"; then
+      echo "$sha"
+      return
+    fi
+  done
+}
 
-# Fetch only that one tag so its commit object exists in the local repo.
-# This avoids downloading all tags while still letting turbo resolve the SHA.
+export LATEST_TAG_SHA=$(find_latest_tagged_commit)
+
+# The checkout is shallow (fetch-depth: 20); deepen once if the last release
+# is further back than that.
+if [ -z "$LATEST_TAG_SHA" ]; then
+  git fetch --deepen=200 origin main
+  export LATEST_TAG_SHA=$(find_latest_tagged_commit)
+fi
+
+if [ -z "$LATEST_TAG_SHA" ]; then
+  echo "Error: no tagged ancestor of HEAD found."
+  exit 1
+fi
+
+# Any tag on that commit names the release.
+export LATEST_TAG=$(echo "$REMOTE_TAGS_FULL" | grep "^$LATEST_TAG_SHA" | awk '{print $2}' | sed 's|refs/tags/||; s|\^{}$||' | head -1)
+echo "Latest release: $LATEST_TAG ($LATEST_TAG_SHA)"
+
+# Fetch only that one tag, so lerna finds it locally, without downloading all tags.
 git fetch origin "refs/tags/$LATEST_TAG:refs/tags/$LATEST_TAG"
-
-# Now resolve the SHA locally (works for both lightweight and annotated tags).
-export LATEST_TAG_SHA=$(git rev-list -n 1 "$LATEST_TAG")
 
 # Setup NPM token.
 # Using ~/.npmrc instead of .npmrc because pnpm uses .npmrc and appending
