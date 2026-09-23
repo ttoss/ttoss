@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.3.0...@ttoss/http-server-mcp-openapi@0.4.0) (2026-09-23)
+
+### Features
+
+- **http-server-mcp-openapi:** nested nullable, pinned parameters, several server-managed extensions ([#1258](https://github.com/ttoss/ttoss/issues/1258)) ([060cb3c](https://github.com/ttoss/ttoss/commit/060cb3cd3a8964d866704b714d62b3cba4f0754e)), closes [#1257](https://github.com/ttoss/ttoss/issues/1257)
+
 # [0.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.2.15...@ttoss/http-server-mcp-openapi@0.3.0) (2026-09-23)
 
 ### Features
