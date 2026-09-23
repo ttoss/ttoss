@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp-openapi@0.2.15...@ttoss/http-server-mcp-openapi@0.3.0) (2026-09-23)
+
+### Features
+
+- **http-server-mcp-openapi:** cover what OpenAPI → MCP consumers re-implement ([#1255](https://github.com/ttoss/ttoss/issues/1255)) ([f585de5](https://github.com/ttoss/ttoss/commit/f585de5469d0371375140c2796f38e6524aa2c77)), closes [#1254](https://github.com/ttoss/ttoss/issues/1254) [#1253](https://github.com/ttoss/ttoss/issues/1253)
+
 ## 0.2.15 (2026-09-22)
 
 ### Bug Fixes
