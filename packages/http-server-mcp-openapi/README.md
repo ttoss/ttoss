@@ -31,12 +31,15 @@ registerOpenApiTools({
   server,
   spec: openApiDocument,
   // You own how the request is executed — base URL, auth, fetch impl.
-  callApi: async ({ method, url, body }) => {
+  // `headers` is what createMcpRouter's `getApiHeaders` produced for this
+  // MCP request — typically the caller's credentials.
+  callApi: async ({ method, url, body, headers }) => {
     const res = await fetch(`https://api.example.com${url}`, {
       method,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...headers, 'Content-Type': 'application/json' },
       body: body ? JSON.stringify(body) : undefined,
     });
+    if (res.status === 204) return undefined;
     return res.json();
   },
 });
@@ -55,9 +58,9 @@ Each OpenAPI operation with an `operationId` and a supported HTTP method
 | OpenAPI                   | MCP tool                                     |
 | ------------------------- | -------------------------------------------- |
 | `operationId: listAgents` | tool name `list-agents` (kebab-case)         |
-| path/query/body params    | a single camelCase `inputSchema` object      |
+| path/query/body params    | a single `inputSchema` object                |
 | `$ref`, `oneOf`, `anyOf`  | dereferenced and merged into a flat schema   |
-| snake_case body fields    | camelCase tool inputs, mapped back on call   |
+| snake_case names          | camelCase tool inputs, mapped back on call   |
 | operation `description`   | tool description (quotes/newlines sanitised) |
 
 Path params are always required strings. Query and body params carry their
@@ -70,8 +73,10 @@ Parameters declared at the **path-item level** (shared by every operation on a
 path) are merged into each operation; an operation-level parameter overrides a
 path-item one with the same `name`+`in`.
 
-Tool arguments are **camelCase** (`agentId`, `projectId`); the generated
-request path, query string, and body use the original **snake_case** names.
+By default tool arguments are **camelCase** (`agentId`, `projectId`) and the
+generated request path, query string, and body use the spec's original names.
+Set `argumentNames: 'verbatim'` to use the spec's names as the arguments too,
+so the MCP contract matches the REST contract exactly.
 
 Query params honour their declared `style` and `explode`. `form` (the default)
 repeats array values, `spaceDelimited`/`pipeDelimited` join them, and
@@ -80,13 +85,18 @@ repeats array values, `spaceDelimited`/`pipeDelimited` join them, and
 
 ## `registerOpenApiTools`
 
-| Field      | Description                                                                                                   |
-| ---------- | ------------------------------------------------------------------------------------------------------------- |
-| `server`   | The `McpServer` to register tools on.                                                                         |
-| `spec`     | One OpenAPI document, or an array of them (tools are flattened).                                              |
-| `callApi`  | Runs the resolved `{ method, url, body, tool }` request and returns the raw data.                             |
-| `toText?`  | Serialises the raw data into the tool's text payload. Defaults to pretty JSON; strings pass through verbatim. |
-| `options?` | See [Options](#options).                                                                                      |
+| Field               | Description                                                                                                   |
+| ------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `server`            | The `McpServer` to register tools on.                                                                         |
+| `spec`              | One OpenAPI document, or an array of them (tools are flattened).                                              |
+| `callApi`           | Runs the resolved `{ method, url, body, tool, headers }` request and returns the raw data.                    |
+| `toText?`           | Serialises the raw data into the tool's text payload. Defaults to pretty JSON; strings pass through verbatim. |
+| `serverParameters?` | Supplies server-managed path/query parameter values. See [Server-managed values](#server-managed-values).     |
+| `options?`          | See [Options](#options).                                                                                      |
+
+The default `toText` answers `NO_CONTENT_TEXT` (`Succeeded. The operation
+returned no content.`) when `callApi` resolves `undefined` or `''`, so a `204`
+reaches the client as a success.
 
 Returns the list of `ToolDefinition`s that were registered.
 
@@ -109,7 +119,7 @@ for (const tool of tools) {
 
 Each `ToolDefinition` exposes `name`, `description`, `inputSchema`, `method`,
 `pathTemplate`, `operationId`, the `path`/`query`/`body` builders,
-`acceptedBodyFields`, and `extensions`.
+`acceptedBodyFields`, `extensions`, and `serverManagedParameters`.
 
 ## Options
 
@@ -120,17 +130,48 @@ registerOpenApiTools({
   callApi,
   options: {
     excludeExtension: 'x-mcp-exclude', // operations flagged truthy are skipped
-    serverManagedExtension: 'x-mcp-server-managed', // body fields hidden from the input schema
+    serverManagedExtension: 'x-mcp-server-managed', // values hidden from the input schema
+    argumentNames: 'camelCase', // or 'verbatim'
+    documents: { './tags.yaml': tagsDocument }, // targets of cross-file $refs
   },
 });
 ```
 
 - **`excludeExtension`** (default `x-mcp-exclude`) — an operation with this
   extension set truthy is omitted from the tool surface.
-- **`serverManagedExtension`** (default `x-mcp-server-managed`) — a request-body
-  property with this extension set truthy is hidden from the tool's
-  `inputSchema` (the caller can't set it) but still appears in
-  `acceptedBodyFields`.
+- **`serverManagedExtension`** (default `x-mcp-server-managed`) — see
+  [Server-managed values](#server-managed-values).
+- **`argumentNames`** (default `camelCase`) — `verbatim` keeps the spec's
+  parameter and property names as tool argument names.
+- **`documents`** — sibling documents for `$ref`s with a file part, keyed by
+  that part as the spec writes it (a leading `./` is optional). In
+  `./tags.yaml#/components/schemas/Tag` the key is `./tags.yaml`; refs inside
+  a sibling resolve against that sibling. A ref to a file missing from the map
+  resolves to an empty schema, which accepts any value.
+
+### Server-managed values
+
+A value flagged with `serverManagedExtension` is never offered to the model:
+
+- A **request-body property** is hidden from `inputSchema` and never sent (the
+  API sets it itself). It still appears in `acceptedBodyFields`.
+- A **path or query parameter** is hidden from `inputSchema` and listed in
+  `tool.serverManagedParameters`. `registerOpenApiTools` discards anything the
+  model sent for it and fills it from `serverParameters`, keyed by spec name:
+
+```typescript
+registerOpenApiTools({
+  server,
+  spec,
+  callApi,
+  serverParameters: ({ tool, headers }) => ({
+    project_id: projectIdFromToken(headers.Authorization),
+  }),
+});
+```
+
+With `openApiToToolDefinitions`, set each entry's `argName` in the args before
+calling `tool.path` / `tool.query`.
 
 ### Reading custom extensions
 

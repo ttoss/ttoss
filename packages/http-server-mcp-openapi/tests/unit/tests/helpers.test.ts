@@ -55,7 +55,7 @@ describe('buildInputSchema', () => {
       [
         {
           snakeName: 'ids',
-          camelName: 'ids',
+          argName: 'ids',
           description: 'the ids',
           required: false,
           type: 'array',
@@ -78,7 +78,7 @@ describe('buildInputSchema', () => {
       [
         {
           snakeName: 'enabled',
-          camelName: 'enabled',
+          argName: 'enabled',
           description: '',
           required: true,
           type: 'boolean',
@@ -204,20 +204,20 @@ describe('dereferenceSchema', () => {
 
 describe('buildPathFn', () => {
   test('leaves the placeholder when the arg is missing', () => {
-    const fn = buildPathFn('/a/{id}', [{ name: 'id', camelName: 'id' }]);
+    const fn = buildPathFn('/a/{id}', [{ name: 'id', argName: 'id' }]);
     expect(fn({})).toBe('/a/{id}');
   });
 });
 
 describe('buildQueryFn', () => {
   test('returns an empty string when every value is absent', () => {
-    const fn = buildQueryFn([{ name: 'a', camelName: 'a' }]);
+    const fn = buildQueryFn([{ name: 'a', argName: 'a' }]);
     expect(fn?.({})).toBe('');
   });
 
   describe('style: deepObject', () => {
     const fn = buildQueryFn([
-      { name: 'filters', camelName: 'filters', style: 'deepObject' },
+      { name: 'filters', argName: 'filters', style: 'deepObject' },
     ]);
 
     test('serialises nested keys as brackets', () => {
@@ -245,7 +245,7 @@ describe('buildQueryFn', () => {
 
   describe('style: form', () => {
     test('explodes an object into one key per property', () => {
-      const fn = buildQueryFn([{ name: 'page', camelName: 'page' }]);
+      const fn = buildQueryFn([{ name: 'page', argName: 'page' }]);
       expect(fn?.({ page: { size: 10, number: 2, missing: null } })).toBe(
         '?size=10&number=2'
       );
@@ -253,7 +253,7 @@ describe('buildQueryFn', () => {
 
     test('joins an unexploded object into name=key,value pairs', () => {
       const fn = buildQueryFn([
-        { name: 'page', camelName: 'page', explode: false },
+        { name: 'page', argName: 'page', explode: false },
       ]);
       expect(fn?.({ page: { size: 10, number: 2 } })).toBe(
         '?page=size%2C10%2Cnumber%2C2'
@@ -262,7 +262,7 @@ describe('buildQueryFn', () => {
 
     test('joins an unexploded array with commas', () => {
       const fn = buildQueryFn([
-        { name: 'tags', camelName: 'tags', explode: false },
+        { name: 'tags', argName: 'tags', explode: false },
       ]);
       expect(fn?.({ tags: ['a', 'b'] })).toBe('?tags=a%2Cb');
     });
@@ -271,14 +271,14 @@ describe('buildQueryFn', () => {
   describe('delimited styles', () => {
     test('pipeDelimited joins array values with a pipe', () => {
       const fn = buildQueryFn([
-        { name: 'tags', camelName: 'tags', style: 'pipeDelimited' },
+        { name: 'tags', argName: 'tags', style: 'pipeDelimited' },
       ]);
       expect(fn?.({ tags: ['a', 'b'] })).toBe('?tags=a%7Cb');
     });
 
     test('spaceDelimited joins array values with a space', () => {
       const fn = buildQueryFn([
-        { name: 'tags', camelName: 'tags', style: 'spaceDelimited' },
+        { name: 'tags', argName: 'tags', style: 'spaceDelimited' },
       ]);
       expect(fn?.({ tags: ['a', 'b'] })).toBe('?tags=a+b');
     });
@@ -287,7 +287,7 @@ describe('buildQueryFn', () => {
       const fn = buildQueryFn([
         {
           name: 'tags',
-          camelName: 'tags',
+          argName: 'tags',
           style: 'pipeDelimited',
           explode: true,
         },
@@ -297,7 +297,7 @@ describe('buildQueryFn', () => {
 
     test('falls back to commas for an unknown style', () => {
       const fn = buildQueryFn([
-        { name: 'tags', camelName: 'tags', style: 'unknown' },
+        { name: 'tags', argName: 'tags', style: 'unknown' },
       ]);
       expect(fn?.({ tags: ['a', 'b'] })).toBe('?tags=a%2Cb');
     });

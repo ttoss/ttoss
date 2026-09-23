@@ -19,3 +19,15 @@ export const requestContextStore = new AsyncLocalStorage<RequestContext>();
 export const getIdentity = <T = unknown>(): T | undefined => {
   return requestContextStore.getStore()?.identity as T | undefined;
 };
+
+/**
+ * Returns the headers `getApiHeaders` produced for the current MCP request —
+ * the same headers `apiCall` injects. Use it inside a tool handler that runs
+ * its own HTTP client instead of `apiCall`, so caller credentials still reach
+ * the upstream API.
+ *
+ * Returns `{}` outside a request, or when `getApiHeaders` is not configured.
+ */
+export const getApiHeaders = (): Record<string, string> => {
+  return { ...(requestContextStore.getStore()?.apiHeaders ?? {}) };
+};

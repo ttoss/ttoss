@@ -236,8 +236,20 @@ const readText = (value: unknown): string | undefined => {
  * The structured one is why this is read rather than taken: an object handed
  * to `new Error()` renders as `[object Object]`, and inside a tool handler
  * that string is the whole answer the calling model acts on.
+ *
+ * Exported so a tool handler with its own HTTP client renders error bodies
+ * exactly as `apiCall` does. Returns `undefined` when the body carries no
+ * message.
+ *
+ * @example
+ * ```typescript
+ * if (!response.ok) {
+ *   const body = await response.json().catch(() => undefined);
+ *   throw new Error(errorBodyMessage(body) ?? `HTTP ${response.status}`);
+ * }
+ * ```
  */
-const errorBodyMessage = (body: unknown): string | undefined => {
+export const errorBodyMessage = (body: unknown): string | undefined => {
   if (!isRecord(body)) {
     return undefined;
   }
@@ -394,7 +406,7 @@ export const apiCall = async (
   return response.text();
 };
 
-export { getIdentity } from './context';
+export { getApiHeaders, getIdentity } from './context';
 
 /**
  * Asserts that the current request's token contains all required scopes.
