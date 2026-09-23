@@ -69,6 +69,10 @@ body property declared as a single-entry `allOf` (usually `allOf: [{ $ref }]`
 beside its own `description`) takes `type`, `nullable` and `items` from the
 referenced schema; a multi-entry `allOf` is forwarded verbatim, and a property
 with no declared type is advertised untyped so it accepts any value.
+OpenAPI's `nullable` becomes JSON Schema at every depth — inside `items`,
+`properties`, `additionalProperties` and `oneOf` / `anyOf` / `allOf`
+alternatives: `nullable: true` adds `'null'` to the `type`, and the keyword is
+dropped.
 Parameters declared at the **path-item level** (shared by every operation on a
 path) are merged into each operation; an operation-level parameter overrides a
 path-item one with the same `name`+`in`.
@@ -130,7 +134,7 @@ registerOpenApiTools({
   callApi,
   options: {
     excludeExtension: 'x-mcp-exclude', // operations flagged truthy are skipped
-    serverManagedExtension: 'x-mcp-server-managed', // values hidden from the input schema
+    serverManagedExtension: 'x-mcp-server-managed', // or several: ['x-a', 'x-b']
     argumentNames: 'camelCase', // or 'verbatim'
     documents: { './tags.yaml': tagsDocument }, // targets of cross-file $refs
   },
@@ -139,8 +143,8 @@ registerOpenApiTools({
 
 - **`excludeExtension`** (default `x-mcp-exclude`) — an operation with this
   extension set truthy is omitted from the tool surface.
-- **`serverManagedExtension`** (default `x-mcp-server-managed`) — see
-  [Server-managed values](#server-managed-values).
+- **`serverManagedExtension`** (default `x-mcp-server-managed`) — one name or
+  an array of names; see [Server-managed values](#server-managed-values).
 - **`argumentNames`** (default `camelCase`) — `verbatim` keeps the spec's
   parameter and property names as tool argument names.
 - **`documents`** — sibling documents for `$ref`s with a file part, keyed by
@@ -172,6 +176,12 @@ registerOpenApiTools({
 
 With `openApiToToolDefinitions`, set each entry's `argName` in the args before
 calling `tool.path` / `tool.query`.
+
+A **string** extension value pins the parameter: `wait` declared with
+`x-mcp-server-managed: 'true'` is always sent as `wait=true`. `tool.path` and
+`tool.query` apply pinned values themselves, over anything in the args or
+`serverParameters`, and the entry in `serverManagedParameters` carries it as
+`value`.
 
 ### Reading custom extensions
 
