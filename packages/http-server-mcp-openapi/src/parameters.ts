@@ -1,5 +1,9 @@
 import { resolveParameter } from './schema';
 import {
+  readServerManaged,
+  type ServerManagedExtension,
+} from './serverManaged';
+import {
   DEFAULT_SERVER_MANAGED_EXTENSION,
   type OpenApiDocuments,
   type OpenApiSpec,
@@ -44,6 +48,15 @@ const dedupeByName = <T extends { name: string }>(items: T[]): T[] => {
   return [...byName.values()];
 };
 
+const managedFields = (flag: {
+  managed: boolean;
+  value?: string;
+}): { serverManaged: boolean; pinnedValue?: string } => {
+  return flag.value === undefined
+    ? { serverManaged: flag.managed }
+    : { serverManaged: true, pinnedValue: flag.value };
+};
+
 /** Arguments shared by the parameter extractors. */
 type ExtractParamsArgs = {
   parameters?: Array<{ name?: string; in?: string; [key: string]: unknown }>;
@@ -53,12 +66,17 @@ type ExtractParamsArgs = {
   /** Maps a spec name to its tool argument name. @default snakeToCamel */
   toArgName?: ToArgName;
   /** @default DEFAULT_SERVER_MANAGED_EXTENSION */
-  serverManagedExtension?: string;
+  serverManagedExtension?: ServerManagedExtension;
 };
 
 export const extractPathParams = (
   args: ExtractParamsArgs
-): Array<{ name: string; argName: string; serverManaged: boolean }> => {
+): Array<{
+  name: string;
+  argName: string;
+  serverManaged: boolean;
+  pinnedValue?: string;
+}> => {
   const toArgName = args.toArgName ?? snakeToCamel;
   const flag = args.serverManagedExtension ?? DEFAULT_SERVER_MANAGED_EXTENSION;
   const params = (args.parameters || [])
@@ -72,7 +90,7 @@ export const extractPathParams = (
       return {
         name: p.name || '',
         argName: toArgName(p.name || ''),
-        serverManaged: Boolean(p[flag]),
+        ...managedFields(readServerManaged({ node: p, extension: flag })),
       };
     });
   return dedupeByName(params);
@@ -89,6 +107,7 @@ export const extractQueryParams = (
   style?: string;
   explode?: boolean;
   serverManaged: boolean;
+  pinnedValue?: string;
 }> => {
   const toArgName = args.toArgName ?? snakeToCamel;
   const flag = args.serverManagedExtension ?? DEFAULT_SERVER_MANAGED_EXTENSION;
@@ -108,16 +127,23 @@ export const extractQueryParams = (
         type: p.schema?.type || 'string',
         style: p.style,
         explode: p.explode,
-        serverManaged: Boolean(p[flag]),
+        ...managedFields(readServerManaged({ node: p, extension: flag })),
       };
     });
   return dedupeByName(params);
 };
 
 /** Lists the path and query params flagged as server-managed. */
+type ManagedParam = {
+  name: string;
+  argName: string;
+  serverManaged: boolean;
+  pinnedValue?: string;
+};
+
 export const collectServerManagedParameters = (args: {
-  pathParams: Array<{ name: string; argName: string; serverManaged: boolean }>;
-  queryParams: Array<{ name: string; argName: string; serverManaged: boolean }>;
+  pathParams: ManagedParam[];
+  queryParams: ManagedParam[];
 }): ServerManagedParameter[] => {
   const tagged = [
     ...args.pathParams.map((p) => {
@@ -132,6 +158,11 @@ export const collectServerManagedParameters = (args: {
       return p.serverManaged;
     })
     .map((p) => {
-      return { name: p.name, in: p.in, argName: p.argName };
+      return {
+        name: p.name,
+        in: p.in,
+        argName: p.argName,
+        ...(p.pinnedValue === undefined ? {} : { value: p.pinnedValue }),
+      };
     });
 };

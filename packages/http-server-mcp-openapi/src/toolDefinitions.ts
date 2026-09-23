@@ -16,6 +16,13 @@ import {
   resolveSchema,
 } from './schema';
 import {
+  normalizeNullable,
+  pinnedArgs,
+  readServerManaged,
+  type ServerManagedExtension,
+  withPinned,
+} from './serverManaged';
+import {
   DEFAULT_EXCLUDE_EXTENSION,
   DEFAULT_SERVER_MANAGED_EXTENSION,
   type JsonSchemaProperty,
@@ -182,7 +189,7 @@ export const buildInputSchema = (
   for (const param of allParams) {
     properties[param.argName] =
       'description' in param
-        ? buildTypedProperty(param)
+        ? (normalizeNullable(buildTypedProperty(param)) as JsonSchemaProperty)
         : { type: 'string', description: '' }; // path param
   }
 
@@ -248,7 +255,7 @@ const flattenSingleAllOf = (
 export const extractBodyProps = (args: {
   requestBody?: RequestBodySpec;
   spec: OpenApiSpec;
-  serverManagedExtension: string;
+  serverManagedExtension: ServerManagedExtension;
   documents?: OpenApiDocuments;
   /** Maps a spec name to its tool argument name. @default snakeToCamel */
   toArgName?: ToArgName;
@@ -270,7 +277,10 @@ export const extractBodyProps = (args: {
   const entries = Object.entries(bodySchema.properties).filter(
     ([, value]: [string, unknown]) => {
       const val = value as Record<string, unknown>;
-      return !val[args.serverManagedExtension];
+      return !readServerManaged({
+        node: val,
+        extension: args.serverManagedExtension,
+      }).managed;
     }
   );
   return entries.map(([key, value]: [string, unknown]) => {
@@ -377,6 +387,12 @@ export const processOperation = (args: {
 
   const inputSchema = buildInputSchema(pathParams, queryParams, bodyProps);
 
+  const serverManagedParameters = collectServerManagedParameters({
+    pathParams,
+    queryParams,
+  });
+  const pinned = pinnedArgs(serverManagedParameters);
+
   const acceptedBodyFields = extractAcceptedBodyFields({
     requestBody: args.operation.requestBody,
     spec: args.spec,
@@ -390,15 +406,15 @@ export const processOperation = (args: {
     method: httpMethod,
     pathTemplate: args.pathTemplate,
     operationId: args.operation.operationId,
-    path: buildPathFn(args.pathTemplate, pathParams),
-    query: buildQueryFn(queryParams),
+    path: withPinned({
+      build: buildPathFn(args.pathTemplate, pathParams),
+      pinned,
+    })!,
+    query: withPinned({ build: buildQueryFn(queryParams), pinned }),
     body: buildBodyFn(bodyProps),
     acceptedBodyFields,
     extensions: extractExtensions(args.operation),
-    serverManagedParameters: collectServerManagedParameters({
-      pathParams,
-      queryParams,
-    }),
+    serverManagedParameters,
   };
 };
 

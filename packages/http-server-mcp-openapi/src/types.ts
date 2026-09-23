@@ -88,6 +88,11 @@ export interface ServerManagedParameter {
   in: 'path' | 'query';
   /** The args key `path` / `query` read the value from. */
   argName: string;
+  /**
+   * The value the spec pins, when the extension is a string. `path` / `query`
+   * always send it, whatever the args or `serverParameters` carry.
+   */
+  value?: string;
 }
 
 /** Minimal shape of an OpenAPI document consumed by the generator. */
@@ -159,11 +164,14 @@ export interface OpenApiToToolsOptions {
    * - On a **request-body property**, the property stays in
    *   `acceptedBodyFields` and is never sent (the API sets it itself).
    * - On a **path or query parameter**, the parameter is listed in
-   *   `serverManagedParameters` and the consumer supplies its value.
+   *   `serverManagedParameters` and the consumer supplies its value. A string
+   *   extension value (`'true'`) pins it: the builders always send that value.
+   *
+   * Several names may be given; a node flagged by any of them is managed.
    *
    * @default 'x-mcp-server-managed'
    */
-  serverManagedExtension?: string;
+  serverManagedExtension?: string | string[];
   /**
    * How tool argument names are derived from the spec's parameter and
    * body-property names.
