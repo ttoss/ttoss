@@ -438,6 +438,51 @@ describe('S3 Utils', () => {
       expect(Upload).not.toHaveBeenCalled();
     });
 
+    /**
+     * RFC 9727 fixes both the extensionless path and the media type of an API
+     * catalog, and no file extension maps to `application/linkset+json`.
+     */
+    test('should set the content type a path is mapped to', async () => {
+      const linkset =
+        'application/linkset+json; profile="https://www.rfc-editor.org/info/rfc9727"';
+      fs.mkdirSync(path.join(directory, '.well-known'));
+      fs.writeFileSync(path.join(directory, '.well-known', 'api-catalog'), 'x');
+      writeFiles(['index.html']);
+
+      await uploadDirectoryToS3({
+        bucket: 'test-bucket',
+        contentTypes: { '.well-known/api-catalog': linkset },
+        directory,
+      });
+
+      const contentTypes = Object.fromEntries(
+        jest.mocked(Upload).mock.calls.map((call) => {
+          return [call[0].params.Key, call[0].params.ContentType];
+        })
+      );
+
+      expect(contentTypes).toEqual({
+        '.well-known/api-catalog': linkset,
+        'index.html': 'text/html; charset=utf-8',
+      });
+    });
+
+    test('should throw, uploading nothing, when a mapped path matches no file', async () => {
+      writeFiles(['index.html']);
+
+      await expect(
+        uploadDirectoryToS3({
+          bucket: 'test-bucket',
+          contentTypes: { '.well-known/api-catalg': 'application/json' },
+          directory,
+        })
+      ).rejects.toThrow(
+        'The content-types option maps .well-known/api-catalg, which is not a file in the build folder.'
+      );
+
+      expect(Upload).not.toHaveBeenCalled();
+    });
+
     test('should still throw when the directory is empty', async () => {
       await expect(
         uploadDirectoryToS3({ bucket: 'test-bucket', directory })

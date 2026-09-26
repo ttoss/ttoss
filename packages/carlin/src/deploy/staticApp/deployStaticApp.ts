@@ -1,5 +1,6 @@
 import { deploy } from '../cloudformation.core';
 import { handleDeployError, handleDeployInitialization } from '../utils';
+import { type ContentTypes } from './contentTypes';
 import { getStaticAppBucket } from './getStaticAppBucket';
 import { invalidateCloudFront } from './invalidateCloudFront';
 import { type ResponseHeader } from './responseHeaders';
@@ -23,6 +24,7 @@ export const deployStaticApp = async ({
   appendIndexHtml,
   buildFolder,
   cloudfront,
+  contentTypes,
   redirectToTrailingSlash,
   responseHeaders,
   responseHeadersPolicy,
@@ -38,6 +40,7 @@ export const deployStaticApp = async ({
   appendIndexHtml?: boolean;
   buildFolder?: string;
   cloudfront?: boolean;
+  contentTypes?: ContentTypes;
   redirectToTrailingSlash?: boolean;
   responseHeaders?: ResponseHeader[];
   responseHeadersPolicy?: string;
@@ -76,17 +79,27 @@ export const deployStaticApp = async ({
     const bucket = await getStaticAppBucket({ stackName });
 
     /**
+     * Both paths below upload, and every upload option must reach both: an
+     * option forwarded through only one would apply on some deploys and not
+     * others.
+     */
+    const upload = ({ bucket }: { bucket: string }) => {
+      return uploadBuiltAppToS3({
+        buildFolder,
+        bucket,
+        cloudfront,
+        contentTypes,
+        uploadSourceMaps,
+      });
+    };
+
+    /**
      * Stack already exists. Upload files first after changing the files routes
      * because of the version changing.
      */
     if (bucket) {
       if (!skipUpload) {
-        await uploadBuiltAppToS3({
-          buildFolder,
-          bucket,
-          cloudfront,
-          uploadSourceMaps,
-        });
+        await upload({ bucket });
       }
 
       const { Outputs } = await deploy({ params, template });
@@ -106,12 +119,7 @@ export const deployStaticApp = async ({
         throw new Error(`Cannot find bucket at ${stackName}.`);
       }
 
-      await uploadBuiltAppToS3({
-        buildFolder,
-        bucket: newBucket,
-        cloudfront,
-        uploadSourceMaps,
-      });
+      await upload({ bucket: newBucket });
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
