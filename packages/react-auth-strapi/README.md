@@ -51,6 +51,7 @@ function AuthenticatedApp() {
 
 - **Zero configuration**: Pre-configured Strapi authentication handlers
 - **Complete auth flows**: Sign in, sign up, forgot password, email confirmation
+- **Social sign-in**: Google/Facebook via Strapi's Users & Permissions providers
 - **Token management**: Automatic refresh token handling with secure storage
 - **Error handling**: Built-in notifications for authentication errors
 - **Email verification**: Automatic resend confirmation emails for unverified accounts
@@ -88,6 +89,8 @@ flowchart LR
 - `POST /auth/send-email-confirmation` - Resend email confirmation
 - `POST /auth/local/refresh` - Refresh access token
 - `GET /users/me` - Get current user profile
+- `GET /connect/:provider` - Kicks off a Users & Permissions social provider (e.g. Google)
+- `GET /auth/:provider/callback` - Exchanges the provider's callback query string for a Strapi JWT
 
 ## API Reference
 
@@ -135,6 +138,7 @@ The component automatically handles:
     sideContent: <BrandingContent />,
     sideContentPosition: 'left',
   }}
+  socialProviders={['Google']} // Optional: renders social sign-in buttons
 />
 ```
 
@@ -287,6 +291,99 @@ sequenceDiagram
     S-->>A: Success
     A->>A: setScreen({ value: 'signIn' })
     A-->>U: Display Sign In screen with success notification
+```
+
+## Social Sign-In (Google, Facebook)
+
+### Strapi Provider Setup
+
+In Strapi Admin → **Settings → Users & Permissions → Providers**, enable the provider (e.g. Google), set its Client ID/Secret, and set **"The redirect URL to your front-end app"** to the route this package's callback handler is mounted at, e.g.:
+
+```
+https://your-app.com/connect/google/redirect
+```
+
+### Enabling the Button
+
+Pass `socialProviders` to `Auth` to render the "Continue with Google" button on the sign-in/sign-up screens. Clicking it redirects the browser to `${apiUrl}/connect/google`, which Strapi uses to start the OAuth flow:
+
+```tsx
+import { Auth } from '@ttoss/react-auth-strapi';
+
+function LoginPage() {
+  return <Auth socialProviders={['Google']} />;
+}
+```
+
+### Handling the Redirect
+
+Strapi completes the OAuth exchange itself and redirects the browser back to the URL configured in the admin panel, appending a callback query string (e.g. `?access_token=...`). Mount `AuthSocialSignInCallback` at that route to forward the query string to `${apiUrl}/auth/google/callback` and authenticate the user:
+
+```tsx
+import { useNavigate } from 'react-router-dom';
+import { AuthSocialSignInCallback } from '@ttoss/react-auth-strapi';
+
+function GoogleRedirectPage() {
+  const navigate = useNavigate();
+
+  return (
+    <AuthSocialSignInCallback
+      provider="google"
+      onSuccess={() => {
+        return navigate('/');
+      }}
+      onError={() => {
+        return navigate('/auth');
+      }}
+    >
+      <p>Signing you in…</p>
+    </AuthSocialSignInCallback>
+  );
+}
+```
+
+```tsx
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from '@ttoss/react-auth-strapi';
+
+function App() {
+  return (
+    <AuthProvider apiUrl="https://your-strapi-api.com/api">
+      <BrowserRouter>
+        <Routes>
+          <Route path="/auth" element={<AuthPage />} />
+          <Route
+            path="/connect/google/redirect"
+            element={<GoogleRedirectPage />}
+          />
+          <Route path="/" element={<HomePage />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
+}
+```
+
+### Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant A as Auth Component
+    participant S as Strapi API
+    participant G as Google
+    participant C as AuthSocialSignInCallback
+
+    U->>A: Click "Continue with Google"
+    A->>S: Redirect to /connect/google
+    S->>G: Redirect to Google OAuth consent
+    G-->>S: Redirect back with provider code
+    S-->>U: Redirect to /connect/google/redirect?access_token=...
+    U->>C: Browser loads redirect route
+    C->>S: GET /auth/google/callback?access_token=...
+    S-->>C: { jwt, refreshToken, user }
+    C->>C: setAuthData({ user, tokens, isAuthenticated: true })
+    C-->>U: onSuccess() navigates into the app
 ```
 
 ## Error Handling
