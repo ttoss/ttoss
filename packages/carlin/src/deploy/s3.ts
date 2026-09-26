@@ -159,11 +159,17 @@ export const copyRoot404To404Index = async ({ bucket }: { bucket: string }) => {
 export const uploadDirectoryToS3 = async ({
   bucket,
   bucketKey = '',
+  contentTypes = {},
   directory,
   uploadSourceMaps = false,
 }: {
   bucket: string;
   bucketKey?: string;
+  /**
+   * Content types keyed by path relative to `directory`, set instead of the
+   * one the file extension implies.
+   */
+  contentTypes?: { [path: string]: string };
   directory: string;
   uploadSourceMaps?: boolean;
 }) => {
@@ -180,6 +186,23 @@ export const uploadDirectoryToS3 = async ({
    */
   if (allFiles.length === 0) {
     throw new Error(`Directory ${directory}/ has no files.`);
+  }
+
+  const relativePath = (file: string) => {
+    return path.relative(directory, file).split(path.sep).join('/');
+  };
+
+  /**
+   * A mapped path that matches no file is a typo or a stale entry, and it would
+   * otherwise fail silently: the file it meant keeps its extension's type.
+   */
+  const builtPaths = new Set(allFiles.map(relativePath));
+  for (const mappedPath of Object.keys(contentTypes)) {
+    if (!builtPaths.has(mappedPath)) {
+      throw new Error(
+        `The content-types option maps ${mappedPath}, which is not a file in the build folder.`
+      );
+    }
   }
 
   /**
@@ -227,6 +250,7 @@ export const uploadDirectoryToS3 = async ({
       groupOfFiles.map((file) => {
         return uploadFileToS3({
           bucket,
+          contentType: contentTypes[relativePath(file)],
           key: path.join(bucketKey, path.relative(directory, file)),
           filePath: file,
         });

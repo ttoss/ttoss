@@ -4,6 +4,7 @@ import type { CommandModule, InferredOptionTypes } from 'yargs';
 import { CLOUDFRONT_REGION, NAME } from '../../config';
 import { addGroupToOptions } from '../../utils';
 import { destroyCloudFormation } from '../cloudformation';
+import { parseContentTypes } from './contentTypes';
 import { deployStaticApp } from './deployStaticApp';
 import { defaultBuildFolders } from './findDefaultBuildFolder';
 import { parseResponseHeaders } from './responseHeaders';
@@ -38,6 +39,12 @@ export const options = {
       'A CloudFront resource is created along with S3 if this option is `true`.',
     require: false,
     type: 'boolean',
+  },
+  'content-types': {
+    coerce: parseContentTypes,
+    default: {},
+    describe:
+      'Content types set on uploaded files instead of the one their extension implies. Pass an object whose keys are file paths relative to the build folder and values are content types.',
   },
   'hosted-zone-name': {
     required: false,
