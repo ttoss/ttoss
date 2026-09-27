@@ -1,0 +1,50 @@
+openapi: 3.0.3
+tags:
+  - name: Bags
+paths:
+  /bags/{bag_id}/labels:
+    parameters:
+      - name: bag_id
+        in: path
+        required: true
+        schema:
+          type: string
+    put:
+      operationId: replaceBagLabels
+      tags: [Bags]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabelBag'
+      responses:
+        '200':
+          description: ok
+  /bags/{bag_id}/notes:
+    parameters:
+      - name: bag_id
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      operationId: addBagNote
+      tags: [Bags]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              description: The note text
+      responses:
+        '201':
+          description: created
+components:
+  schemas:
+    LabelBag:
+      type: object
+      additionalProperties:
+        type: string
+      description: Key-value labels on a bag
+      x-cli-flag-name: labels

@@ -54,6 +54,72 @@ export const withPinned = <T>(args: {
   };
 };
 
+const parseNumber = (value: string): number | undefined => {
+  const parsed = Number(value);
+  return value.trim() !== '' && Number.isFinite(parsed) ? parsed : undefined;
+};
+
+/** Each JSON type a pin can hold, and how its text reads as that type. */
+const PIN_PARSERS: Record<
+  string,
+  (value: string) => string | number | boolean | undefined
+> = {
+  string: (value) => {
+    return value;
+  },
+  boolean: (value) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return undefined;
+  },
+  number: parseNumber,
+  integer: (value) => {
+    const parsed = parseNumber(value);
+    return parsed !== undefined && Number.isInteger(parsed)
+      ? parsed
+      : undefined;
+  },
+};
+
+/**
+ * Reads a pinned body value as the JSON type its schema declares. A body is
+ * JSON, so `'true'` on a boolean must reach the API as `true`; a query string
+ * carries the text either way. A pin the type cannot hold is a spec error.
+ */
+export const typedPin = (args: {
+  value: string;
+  type: unknown;
+  /** Names the operation and property in the error. */
+  where: string;
+}): string | number | boolean => {
+  const { value, type, where } = args;
+  const parser = typeof type === 'string' ? PIN_PARSERS[type] : undefined;
+  const typed = parser?.(value);
+  if (typed !== undefined) return typed;
+  throw new Error(
+    `${where}: cannot pin '${value}' on a property of type ${JSON.stringify(type ?? 'any')}; ` +
+      'a pinned body property must be a boolean, integer, number or string that holds the value.'
+  );
+};
+
+/**
+ * Wraps a `body` builder so pinned values replace whatever the args carry. An
+ * operation whose only body properties are pinned still gets a builder.
+ */
+export const withPinnedBody = (args: {
+  build:
+    ((values: Record<string, unknown>) => Record<string, unknown>) | undefined;
+  pinned: Record<string, unknown>;
+}):
+  | ((values: Record<string, unknown>) => Record<string, unknown>)
+  | undefined => {
+  const { build, pinned } = args;
+  if (Object.keys(pinned).length === 0) return build;
+  return (values) => {
+    return { ...(build ? build(values) : {}), ...pinned };
+  };
+};
+
 const isPlainObject = (value: unknown): value is Record<string, unknown> => {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 };

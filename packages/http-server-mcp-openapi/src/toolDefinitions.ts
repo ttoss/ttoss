@@ -1,36 +1,30 @@
 import type { JsonObjectSchema } from '@ttoss/http-server-mcp';
 
 import {
+  extractAcceptedBodyFields,
+  extractBodyProps,
+  extractPinnedBody,
+} from './body';
+import {
   argNameMapper,
   collectServerManagedParameters,
   extractPathParams,
   extractQueryParams,
-  snakeToCamel,
-  type ToArgName,
 } from './parameters';
-import {
-  buildBodyFn,
-  buildPathFn,
-  buildQueryFn,
-  dereferenceSchema,
-  resolveSchema,
-} from './schema';
+import { buildBodyFn, buildPathFn, buildQueryFn } from './schema';
 import {
   normalizeNullable,
   pinnedArgs,
-  readServerManaged,
-  type ServerManagedExtension,
   withPinned,
+  withPinnedBody,
 } from './serverManaged';
 import {
   DEFAULT_EXCLUDE_EXTENSION,
   DEFAULT_SERVER_MANAGED_EXTENSION,
   type JsonSchemaProperty,
-  type OpenApiDocuments,
   type OpenApiSpec,
   type OpenApiToToolsOptions,
   type OperationSpec,
-  type RequestBodySpec,
   type ResolvedToolOptions,
   type ToolDefinition,
 } from './types';
@@ -204,110 +198,6 @@ export const buildInputSchema = (
   };
 };
 
-const resolveBodySchema = (args: {
-  requestBody?: RequestBodySpec;
-  spec: OpenApiSpec;
-  documents?: OpenApiDocuments;
-}) => {
-  const rawBodySchema = args.requestBody?.content?.['application/json']?.schema;
-  const dereferencedBodySchema = dereferenceSchema(
-    rawBodySchema,
-    args.spec,
-    args.documents
-  );
-  return resolveSchema(dereferencedBodySchema, args.spec, args.documents);
-};
-
-/**
- * snake_case names of every top-level property an operation's request schema
- * declares, including server-managed ones.
- */
-export const extractAcceptedBodyFields = (args: {
-  requestBody?: RequestBodySpec;
-  spec: OpenApiSpec;
-  documents?: OpenApiDocuments;
-}): string[] => {
-  const bodySchema = resolveBodySchema(args);
-  return Object.keys(bodySchema?.properties ?? {});
-};
-
-const isPlainObject = (value: unknown): value is Record<string, unknown> => {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-};
-
-/**
- * Folds a single-entry `allOf` into the property that wraps it. OpenAPI
- * declares `allOf: [{ $ref }]` so a property can carry its own `description`
- * next to a referenced schema; without folding, the referenced `type`,
- * `nullable` and `items` would be lost. Keys on the wrapper win over the
- * referenced schema's. Multi-entry `allOf` is left intact.
- */
-const flattenSingleAllOf = (
-  schema: Record<string, unknown>
-): Record<string, unknown> => {
-  const { allOf, ...rest } = schema;
-  if (!Array.isArray(allOf) || allOf.length !== 1) return schema;
-  const [entry] = allOf;
-  if (!isPlainObject(entry)) return rest;
-  return { ...flattenSingleAllOf(entry), ...rest };
-};
-
-export const extractBodyProps = (args: {
-  requestBody?: RequestBodySpec;
-  spec: OpenApiSpec;
-  serverManagedExtension: ServerManagedExtension;
-  documents?: OpenApiDocuments;
-  /** Maps a spec name to its tool argument name. @default snakeToCamel */
-  toArgName?: ToArgName;
-}): Array<{
-  snakeName: string;
-  argName: string;
-  description: string;
-  required: boolean;
-  type?: string;
-  items?: unknown;
-  nullable: boolean;
-  oneOf?: unknown[];
-  anyOf?: unknown[];
-  allOf?: unknown[];
-}> => {
-  const toArgName = args.toArgName ?? snakeToCamel;
-  const bodySchema = resolveBodySchema(args);
-  if (!bodySchema?.properties) return [];
-  const entries = Object.entries(bodySchema.properties).filter(
-    ([, value]: [string, unknown]) => {
-      const val = value as Record<string, unknown>;
-      return !readServerManaged({
-        node: val,
-        extension: args.serverManagedExtension,
-      }).managed;
-    }
-  );
-  return entries.map(([key, value]: [string, unknown]) => {
-    const val = flattenSingleAllOf(value as Record<string, unknown>) as {
-      description?: unknown;
-      type?: unknown;
-      items?: unknown;
-      nullable?: unknown;
-      oneOf?: unknown;
-      anyOf?: unknown;
-      allOf?: unknown;
-    };
-    return {
-      snakeName: key,
-      argName: toArgName(key),
-      description: typeof val.description === 'string' ? val.description : '',
-      required: (bodySchema.required || []).includes(key),
-      type: typeof val.type === 'string' ? val.type : undefined,
-      items: val.items,
-      nullable: val.nullable === true,
-      oneOf: Array.isArray(val.oneOf) ? val.oneOf : undefined,
-      anyOf: Array.isArray(val.anyOf) ? val.anyOf : undefined,
-      allOf: Array.isArray(val.allOf) ? val.allOf : undefined,
-    };
-  });
-};
-
 /** Collects every `x-` prefixed extension declared on the operation. */
 const extractExtensions = (
   operation: OperationSpec
@@ -377,13 +267,13 @@ export const processOperation = (args: {
     serverManagedExtension,
   });
 
-  const bodyProps = extractBodyProps({
+  const bodyArgs = {
     requestBody: args.operation.requestBody,
     spec: args.spec,
     serverManagedExtension,
     documents,
-    toArgName,
-  });
+  };
+  const bodyProps = extractBodyProps({ ...bodyArgs, toArgName });
 
   const inputSchema = buildInputSchema(pathParams, queryParams, bodyProps);
 
@@ -392,12 +282,6 @@ export const processOperation = (args: {
     queryParams,
   });
   const pinned = pinnedArgs(serverManagedParameters);
-
-  const acceptedBodyFields = extractAcceptedBodyFields({
-    requestBody: args.operation.requestBody,
-    spec: args.spec,
-    documents,
-  });
 
   return {
     name: toolName,
@@ -411,8 +295,14 @@ export const processOperation = (args: {
       pinned,
     })!,
     query: withPinned({ build: buildQueryFn(queryParams), pinned }),
-    body: buildBodyFn(bodyProps),
-    acceptedBodyFields,
+    body: withPinnedBody({
+      build: buildBodyFn(bodyProps),
+      pinned: extractPinnedBody({
+        ...bodyArgs,
+        operationId: args.operation.operationId,
+      }),
+    }),
+    acceptedBodyFields: extractAcceptedBodyFields(bodyArgs),
     extensions: extractExtensions(args.operation),
     serverManagedParameters,
   };

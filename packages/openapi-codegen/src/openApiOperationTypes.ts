@@ -27,6 +27,11 @@ export interface OpenApiSchema {
   oneOf?: OpenApiSchema[];
   anyOf?: OpenApiSchema[];
   allOf?: OpenApiSchema[];
+  /**
+   * On a request-body schema that names no property: the CLI flag carrying
+   * the whole body. `body` when absent.
+   */
+  'x-cli-flag-name'?: string;
 }
 
 export interface OpenApiParameterFull extends OpenApiParameter {

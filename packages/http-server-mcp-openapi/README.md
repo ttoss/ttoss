@@ -157,8 +157,9 @@ registerOpenApiTools({
 
 A value flagged with `serverManagedExtension` is never offered to the model:
 
-- A **request-body property** is hidden from `inputSchema` and never sent (the
-  API sets it itself). It still appears in `acceptedBodyFields`.
+- A **request-body property** is hidden from `inputSchema` and, unless pinned,
+  never sent (the API sets it itself). It still appears in
+  `acceptedBodyFields`.
 - A **path or query parameter** is hidden from `inputSchema` and listed in
   `tool.serverManagedParameters`. `registerOpenApiTools` discards anything the
   model sent for it and fills it from `serverParameters`, keyed by spec name:
@@ -182,6 +183,12 @@ A **string** extension value pins the parameter: `wait` declared with
 `tool.query` apply pinned values themselves, over anything in the args or
 `serverParameters`, and the entry in `serverManagedParameters` carries it as
 `value`.
+
+A pinned **request-body property** is sent by `tool.body`, over anything in the
+args, as the JSON type its schema declares: `'true'` on a `boolean` is `true`,
+`'3'` on an `integer` is `3`. A pin its type cannot hold (`'yes'` on a
+`boolean`, any pin on an `object`, `array` or untyped property) throws while
+the tools are generated, naming the operation and property.
 
 ### Reading custom extensions
 
