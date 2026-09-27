@@ -69,8 +69,12 @@ export interface Flag {
    * send them as text.
    */
   type: string;
-  /** where the value is sent: a parameter location, or the request body */
-  in: ParameterLocation | 'body';
+  /**
+   * Where the value is sent: a parameter location, a property of the request
+   * body (`body`), or the entire request body (`body-root`), for a body that
+   * names no property.
+   */
+  in: ParameterLocation | 'body' | 'body-root';
 }
 
 export interface Route {
@@ -233,8 +237,31 @@ const collectSchemaProperties = (args: {
  * into one flag set; a field is only required when every variant requires
  * it (or, with no `oneOf`, when the single schema requires it).
  */
-const buildBodyFlags = (bodySchema: ResolvedSchema): Flag[] => {
-  const { resolveSchema, value: schema } = bodySchema;
+const DEFAULT_ROOT_BODY_FLAG = 'body';
+
+/**
+ * The one flag for a body that names no property — a map, a scalar, an
+ * array — which a flag per property would leave with no way to be sent.
+ */
+const buildRootBodyFlag = (args: {
+  bodySchema: ResolvedSchema;
+  required: boolean;
+}): Flag => {
+  const { resolveSchema, value: schema } = args.bodySchema;
+  return {
+    name: schema['x-cli-flag-name'] ?? DEFAULT_ROOT_BODY_FLAG,
+    description: schema.description ?? '',
+    required: args.required,
+    type: deriveFlagType({ resolveSchema, schema }),
+    in: 'body-root',
+  };
+};
+
+const buildBodyFlags = (args: {
+  bodySchema: ResolvedSchema;
+  required: boolean;
+}): Flag[] => {
+  const { resolveSchema, value: schema } = args.bodySchema;
   // Variants are resolved up front so a `oneOf` of `$ref`s contributes its
   // targets' properties instead of nothing at all.
   const variants = (schema.oneOf ?? [schema]).map((variant) => {
@@ -254,6 +281,10 @@ const buildBodyFlags = (bodySchema: ResolvedSchema): Flag[] => {
     });
   };
 
+  if (Object.keys(mergedProperties).length === 0) {
+    return [buildRootBodyFlag(args)];
+  }
+
   return Object.entries(mergedProperties).map(([propName, prop]) => {
     return {
       name: propName,
@@ -266,6 +297,29 @@ const buildBodyFlags = (bodySchema: ResolvedSchema): Flag[] => {
       in: 'body' as const,
     };
   });
+};
+
+/**
+ * A whole-body flag is told apart from a parameter only by its name, so the
+ * two sharing one would leave the CLI unable to route the value.
+ */
+const assertRootBodyFlagFree = (args: {
+  operationId: string;
+  flags: Flag[];
+  bodyFlags: Flag[];
+}) => {
+  const taken = new Set(
+    args.flags.map((flag) => {
+      return flag.name;
+    })
+  );
+  for (const flag of args.bodyFlags) {
+    if (flag.in === 'body-root' && taken.has(flag.name)) {
+      throw new Error(
+        `${args.operationId}: the whole-body flag '${flag.name}' shares its name with a parameter; name it with x-cli-flag-name on the body schema.`
+      );
+    }
+  }
 };
 
 const buildRoute = (args: {
@@ -282,7 +336,12 @@ const buildRoute = (args: {
 
   const flags = buildParamFlags(params);
   if (bodySchema) {
-    flags.push(...buildBodyFlags(bodySchema));
+    const bodyFlags = buildBodyFlags({
+      bodySchema,
+      required: op.requestBody?.required === true,
+    });
+    assertRootBodyFlagFree({ operationId: op.operationId, flags, bodyFlags });
+    flags.push(...bodyFlags);
   }
 
   return {

@@ -1,0 +1,23 @@
+openapi: 3.0.3
+tags:
+  - name: Bags
+paths:
+  /bags:
+    post:
+      operationId: createBag
+      tags: [Bags]
+      parameters:
+        - name: body
+          in: query
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '201':
+          description: created
+components: {}

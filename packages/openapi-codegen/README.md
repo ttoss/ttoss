@@ -93,6 +93,26 @@ it meets one it cannot turn into a flag: a `$ref` it cannot resolve, or an
 `in` value that is not one of the four locations above. Silently dropping
 either would leave the flag missing from `--help` with nothing to explain why.
 
+### Request bodies
+
+Each property of a JSON request body becomes a flag with `in: 'body'`, sent
+as that property of the body. A body that names no property — a map, a scalar
+or an array — would get no flag that way, so it gets one flag with
+`in: 'body-root'`, whose value is the entire body. It is named `body`, or
+whatever the body schema's `x-cli-flag-name` says, and it is required when the
+`requestBody` is:
+
+```yaml
+TagBag:
+  type: object
+  additionalProperties:
+    type: string
+  x-cli-flag-name: tags # replace-actor-tags --tags '{"team":"finance"}'
+```
+
+A whole-body flag sharing its name with a parameter throws, since the CLI could
+not tell which one a value is for.
+
 ### Flag types
 
 Every flag carries the JSON `type` its schema names, so the CLI knows which

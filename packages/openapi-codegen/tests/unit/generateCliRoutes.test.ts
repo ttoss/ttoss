@@ -141,6 +141,48 @@ describe('generateCliRouteManifest', () => {
     expect(flagsByName.name).toMatchObject({ required: true, in: 'body' });
   });
 
+  test('a body naming no property is one flag carrying the whole body', () => {
+    const routes = generateCliRouteManifest({ specsDir, moduleDocsUrl });
+
+    expect(routes['replace-bag-labels'].flags).toEqual([
+      {
+        name: 'bag_id',
+        description: '',
+        required: true,
+        type: 'string',
+        in: 'path',
+      },
+      {
+        name: 'labels',
+        description: 'Key-value labels on a bag',
+        required: true,
+        type: 'object',
+        in: 'body-root',
+      },
+    ]);
+  });
+
+  test('a whole-body flag is named `body` unless the schema names it, and follows requestBody.required', () => {
+    const routes = generateCliRouteManifest({ specsDir, moduleDocsUrl });
+
+    expect(routes['add-bag-note'].flags).toContainEqual({
+      name: 'body',
+      description: 'The note text',
+      required: false,
+      type: 'string',
+      in: 'body-root',
+    });
+  });
+
+  test('throws when a whole-body flag would share a parameter flag name', () => {
+    expect(() => {
+      return generateCliRouteManifest({
+        specsDir: invalidSpecsDir('rootBodyFlagCollision'),
+        moduleDocsUrl,
+      });
+    }).toThrow(/createBag.*body/);
+  });
+
   test('sets serviceClass from the operation tag and moduleDocsUrl from the builder', () => {
     const routes = generateCliRouteManifest({ specsDir, moduleDocsUrl });
 
@@ -454,7 +496,7 @@ describe('renderCliRoutesSource', () => {
     expect(source).toContain("'list-widgets': { serviceClass: 'Widgets'");
     expect(source).toContain("operationId: 'createWidget'");
     expect(source).toContain(
-      "  in: 'path' | 'query' | 'header' | 'cookie' | 'body';"
+      "  in: 'path' | 'query' | 'header' | 'cookie' | 'body' | 'body-root';"
     );
     expect(source).toContain('headerParams: ["x_tenant_id"]');
     expect(source).toContain('cookieParams: ["session"]');
