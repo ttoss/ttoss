@@ -210,6 +210,186 @@ describe('server-managed parameters pinned by the spec', () => {
   });
 });
 
+describe('server-managed body properties pinned by the spec', () => {
+  const decisionsSpec = (wait: Record<string, unknown>): OpenApiSpec => {
+    return {
+      paths: {
+        '/deciders/{decider_id}/decisions': {
+          post: {
+            operationId: 'createDecision',
+            parameters: [{ name: 'decider_id', in: 'path', required: true }],
+            requestBody: {
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    required: ['state'],
+                    properties: {
+                      state: { type: 'string' },
+                      wait: { 'x-mcp-server-managed': 'true', ...wait },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+  };
+
+  const tool = toolFor(decisionsSpec({ type: 'boolean' }));
+
+  test('are hidden from the input schema', () => {
+    expect(Object.keys(tool.inputSchema.properties ?? {})).toEqual([
+      'decider_id',
+      'state',
+    ]);
+  });
+
+  test('are sent by the body builder, typed by their schema', () => {
+    expect(tool.body!({ decider_id: 'd', state: 's' })).toEqual({
+      state: 's',
+      wait: true,
+    });
+  });
+
+  test('win over a value in the args', () => {
+    expect(tool.body!({ state: 's', wait: false })).toEqual({
+      state: 's',
+      wait: true,
+    });
+  });
+
+  test.each([
+    ['integer', '3', 3],
+    ['number', '0.5', 0.5],
+    ['string', 'fast', 'fast'],
+    ['boolean', 'false', false],
+  ])('read a %s pin as that type', (type, pinned, expected) => {
+    const typed = toolFor(
+      decisionsSpec({ type, 'x-mcp-server-managed': pinned })
+    );
+    expect(typed.body!({ state: 's' }).wait).toEqual(expected);
+  });
+
+  test('read the type through a single-entry allOf', () => {
+    const wrapped = toolFor({
+      paths: {
+        '/x': {
+          post: {
+            operationId: 'createX',
+            requestBody: {
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      wait: {
+                        'x-mcp-server-managed': 'true',
+                        allOf: [{ $ref: '#/components/schemas/Flag' }],
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      components: { schemas: { Flag: { type: 'boolean' } } },
+    });
+    expect(wrapped.body!({})).toEqual({ wait: true });
+  });
+
+  test('give a body builder to an operation whose only property is pinned', () => {
+    const only = toolFor({
+      paths: {
+        '/x': {
+          post: {
+            operationId: 'createX',
+            requestBody: {
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      wait: { type: 'boolean', 'x-mcp-server-managed': 'true' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    expect(only.inputSchema).toEqual({ type: 'object' });
+    expect(only.body!({})).toEqual({ wait: true });
+  });
+
+  test.each([
+    [
+      'a boolean pin that is not true or false',
+      { type: 'boolean', 'x-mcp-server-managed': 'yes' },
+    ],
+    [
+      'a number pin that is not a number',
+      { type: 'integer', 'x-mcp-server-managed': 'many' },
+    ],
+    [
+      'an integer pin with a fraction',
+      { type: 'integer', 'x-mcp-server-managed': '1.5' },
+    ],
+    ['a pin on an object property', { type: 'object' }],
+    ['a pin on an untyped property', {}],
+  ])('refuse %s, naming the operation and property', (_, wait) => {
+    expect(() => {
+      return toolFor(decisionsSpec(wait));
+    }).toThrow(/createDecision.*wait/);
+  });
+
+  test('leave an unpinned server-managed body property unsent', () => {
+    const hidden = toolFor(
+      decisionsSpec({ type: 'boolean', 'x-mcp-server-managed': true })
+    );
+    expect(hidden.body!({ state: 's', wait: false })).toEqual({ state: 's' });
+  });
+
+  test('reach callApi through registerOpenApiTools', async () => {
+    const calls: ResolvedRequest[] = [];
+    const server = new McpServer({ name: 'test', version: '1.0.0' });
+    registerOpenApiTools({
+      server,
+      spec: decisionsSpec({ type: 'boolean' }),
+      options: { argumentNames: 'verbatim' },
+      callApi: (req) => {
+        calls.push(req);
+        return { ok: true };
+      },
+    });
+    const app = new App();
+    app.use(bodyParser());
+    app.use(createMcpRouter(server).routes());
+
+    await request(app.callback())
+      .post('/mcp')
+      .send({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'tools/call',
+        params: {
+          name: 'create-decision',
+          arguments: { decider_id: 'dcd_1', state: 's' },
+        },
+      })
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json, text/event-stream');
+
+    expect(calls[0]!.body).toEqual({ state: 's', wait: true });
+  });
+});
+
 describe('several server-managed extensions', () => {
   const spec: OpenApiSpec = {
     paths: {
