@@ -35,8 +35,10 @@ const GROUP_ORDER: CardCatalogGroup[] = [
   'oneclickads',
   'api',
 ];
-const GROUP_LABELS: Record<CardCatalogGroup, string> = {
-  sectionDivider: 'Divisor de seção',
+const GROUP_LABELS: Record<
+  Exclude<CardCatalogGroup, 'sectionDivider'>,
+  string
+> = {
   meta: 'Meta',
   api: 'API',
   oneclickads: 'OneClickAds',
@@ -44,40 +46,48 @@ const GROUP_LABELS: Record<CardCatalogGroup, string> = {
 
 const messages = defineMessages({
   edit: {
-    defaultMessage: 'Editar',
+    defaultMessage: 'Edit',
     description: 'Dashboard toolbar: enters edit mode.',
   },
   addMetrics: {
-    defaultMessage: 'Adicionar Métricas',
+    defaultMessage: 'Add metrics',
     description: 'Dashboard toolbar: opens the drawer for adding cards.',
   },
   save: {
-    defaultMessage: 'Salvar',
+    defaultMessage: 'Save',
     description: 'Dashboard toolbar: saves the current template.',
   },
   saveAsNewTemplate: {
-    defaultMessage: 'Salvar Novo Template',
+    defaultMessage: 'Save as new template',
     description: 'Dashboard toolbar: saves the layout as a new template.',
   },
   cancelEdit: {
-    defaultMessage: 'Cancelar Edição',
+    defaultMessage: 'Cancel editing',
     description: 'Dashboard toolbar: leaves edit mode discarding changes.',
   },
   addMetricsTitle: {
-    defaultMessage: 'Adicionar métricas',
+    defaultMessage: 'Add metrics',
     description: 'Add-card drawer: heading.',
   },
   addMetricsDescription: {
-    defaultMessage: 'Escolha a métrica para adicionar ao dashboard.',
+    defaultMessage: 'Choose a metric to add to the dashboard.',
     description: 'Add-card drawer: explanation under the heading.',
   },
   templateTitleLabel: {
-    defaultMessage: 'Título do template',
+    defaultMessage: 'Template title',
     description: 'Save-as-new drawer: label for the template name field.',
   },
   cancel: {
-    defaultMessage: 'Cancelar',
+    defaultMessage: 'Cancel',
     description: 'Save-as-new drawer: dismisses without saving.',
+  },
+  searchPlaceholder: {
+    defaultMessage: 'Search...',
+    description: 'Add-card drawer: placeholder of the metric search field.',
+  },
+  sectionDividerGroup: {
+    defaultMessage: 'Section divider',
+    description: 'Add-card drawer: heading of the section-divider group.',
   },
 });
 
@@ -212,7 +222,7 @@ export const DashboardEditToolbar = () => {
             </Text>
             <Search
               key={addCardDrawerOpen ? 'open' : 'closed'}
-              placeholder="Buscar..."
+              placeholder={intl.formatMessage(messages.searchPlaceholder)}
               defaultValue=""
               onChange={(val) => {
                 setAddCardSearch(String(val ?? ''));
@@ -248,7 +258,9 @@ export const DashboardEditToolbar = () => {
                         letterSpacing: 'wider',
                       }}
                     >
-                      {GROUP_LABELS[group]}
+                      {group === 'sectionDivider'
+                        ? intl.formatMessage(messages.sectionDividerGroup)
+                        : GROUP_LABELS[group]}
                     </Text>
                     <Flex sx={{ flexDirection: 'column', gap: '2' }}>
                       {itemsInGroup.map((item) => {

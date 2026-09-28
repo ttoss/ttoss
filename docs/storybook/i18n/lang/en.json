@@ -596,6 +596,101 @@
     "defaultMessage": "Confirmation code",
     "description": "Confirmation code"
   },
+  "4Es6pi": {
+    "module": "@ttoss/react-billing",
+    "defaultMessage": "Cancelled",
+    "description": "Subscription panel status badge: the subscription was cancelled."
+  },
+  "AhCpt2": {
+    "module": "@ttoss/react-billing",
+    "defaultMessage": "Update scheduled",
+    "description": "Subscription panel badge: a plan change is scheduled for the next cycle."
+  },
+  "BSgyVr": {
+    "module": "@ttoss/react-billing",
+    "defaultMessage": "Inactive",
+    "description": "Subscription panel status badge: the subscription is inactive."
+  },
+  "FvMOyQ": {
+    "module": "@ttoss/react-billing",
+    "defaultMessage": "Renewal cancelled",
+    "description": "Subscription panel badge: the subscription will not renew at the end of the cycle."
+  },
+  "vRSfVR": {
+    "module": "@ttoss/react-billing",
+    "defaultMessage": "Active",
+    "description": "Subscription panel status badge: the subscription is active."
+  },
+  "5s17r1": {
+    "module": "@ttoss/react-dashboard",
+    "defaultMessage": "Add metrics",
+    "description": "Dashboard toolbar: opens the drawer for adding cards."
+  },
+  "EvQudW": {
+    "module": "@ttoss/react-dashboard",
+    "defaultMessage": "Drag card",
+    "description": "Accessible name for the handle that reorders a dashboard card."
+  },
+  "LhSC/f": {
+    "module": "@ttoss/react-dashboard",
+    "defaultMessage": "Add metrics",
+    "description": "Add-card drawer: heading."
+  },
+  "OSj1RL": {
+    "module": "@ttoss/react-dashboard",
+    "defaultMessage": "Section divider",
+    "description": "Add-card drawer: heading of the section-divider group."
+  },
+  "PyYJde": {
+    "module": "@ttoss/react-dashboard",
+    "defaultMessage": "Save",
+    "description": "Dashboard toolbar: saves the current template."
+  },
+  "SHctoe": {
+    "module": "@ttoss/react-dashboard",
+    "defaultMessage": "Remove card",
+    "description": "Accessible name for the button removing a dashboard card."
+  },
+  "a0SqRm": {
+    "module": "@ttoss/react-dashboard",
+    "defaultMessage": "Cancel editing",
+    "description": "Dashboard toolbar: leaves edit mode discarding changes."
+  },
+  "ar3i5K": {
+    "module": "@ttoss/react-dashboard",
+    "defaultMessage": "Edit",
+    "description": "Dashboard toolbar: enters edit mode."
+  },
+  "ca9umV": {
+    "module": "@ttoss/react-dashboard",
+    "defaultMessage": "vs. previous",
+    "description": "Trend badge label comparing current value to previous period"
+  },
+  "iFn0iX": {
+    "module": "@ttoss/react-dashboard",
+    "defaultMessage": "Cancel",
+    "description": "Save-as-new drawer: dismisses without saving."
+  },
+  "kNAjIM": {
+    "module": "@ttoss/react-dashboard",
+    "defaultMessage": "Search...",
+    "description": "Add-card drawer: placeholder of the metric search field."
+  },
+  "pmaBu4": {
+    "module": "@ttoss/react-dashboard",
+    "defaultMessage": "Save as new template",
+    "description": "Dashboard toolbar: saves the layout as a new template."
+  },
+  "qsZ4he": {
+    "module": "@ttoss/react-dashboard",
+    "defaultMessage": "Choose a metric to add to the dashboard.",
+    "description": "Add-card drawer: explanation under the heading."
+  },
+  "uujK2G": {
+    "module": "@ttoss/react-dashboard",
+    "defaultMessage": "Template title",
+    "description": "Save-as-new drawer: label for the template name field."
+  },
   "5lZ8VT": {
     "module": "@ttoss/react-wizard",
     "defaultMessage": "Finish",

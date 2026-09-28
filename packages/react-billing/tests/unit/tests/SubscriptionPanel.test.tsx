@@ -1,4 +1,6 @@
+import { I18nProvider } from '@ttoss/react-i18n';
 import { render, screen } from '@ttoss/test-utils/react';
+import { ThemeProvider } from '@ttoss/ui';
 
 import { SubscriptionPanel } from '../../../src';
 import { getSubscriptionPanelAccentBarSx } from '../../../src/components/subscriptionPanel/SubscriptionPanel.styles';
@@ -29,7 +31,7 @@ test('renders basic subscription card with required props', () => {
 
   expect(screen.getByText('Starter Plan')).toBeInTheDocument();
   expect(screen.getByText(/R\$\s*49,90\s*\/mês/)).toBeInTheDocument();
-  expect(screen.getByText('Ativo')).toBeInTheDocument();
+  expect(screen.getByText('Active')).toBeInTheDocument();
   expect(screen.getByText('Mensal')).toBeInTheDocument();
 });
 
@@ -135,7 +137,7 @@ test('renders different subscription statuses correctly', () => {
     />
   );
 
-  expect(screen.getByText('Ativo')).toBeInTheDocument();
+  expect(screen.getByText('Active')).toBeInTheDocument();
 
   rerender(
     <SubscriptionPanel
@@ -146,7 +148,7 @@ test('renders different subscription statuses correctly', () => {
     />
   );
 
-  expect(screen.getByText('Inativo')).toBeInTheDocument();
+  expect(screen.getByText('Inactive')).toBeInTheDocument();
 
   rerender(
     <SubscriptionPanel
@@ -157,7 +159,7 @@ test('renders different subscription statuses correctly', () => {
     />
   );
 
-  expect(screen.getByText('Cancelado')).toBeInTheDocument();
+  expect(screen.getByText('Cancelled')).toBeInTheDocument();
 });
 
 test('renders different variants correctly', () => {
@@ -252,6 +254,40 @@ test('renders scheduled update and cancellation badges when enabled', () => {
     />
   );
 
+  expect(screen.getByText('Update scheduled')).toBeInTheDocument();
+  expect(screen.getByText('Renewal cancelled')).toBeInTheDocument();
+});
+
+test('renders the badges from the pt-BR catalog', async () => {
+  render(
+    <SubscriptionPanel
+      icon={'fluent:shield-24-regular'}
+      planName="Premium Plan"
+      price={{ value: 'R$ 99,00', interval: 'mês' }}
+      status={{
+        status: 'active',
+        hasScheduledUpdate: true,
+        hasCancellation: true,
+      }}
+    />,
+    {
+      wrapper: ({ children }: { children: React.ReactNode }) => {
+        return (
+          <I18nProvider
+            locale="pt-BR"
+            loadLocaleData={async () => {
+              return (await import('../../../i18n/compiled/pt-BR.json'))
+                .default;
+            }}
+          >
+            <ThemeProvider>{children}</ThemeProvider>
+          </I18nProvider>
+        );
+      },
+    }
+  );
+
+  expect(await screen.findByText('Ativo')).toBeInTheDocument();
   expect(screen.getByText('Alteração Agendada')).toBeInTheDocument();
   expect(screen.getByText('Renovação Cancelada')).toBeInTheDocument();
 });

@@ -8,7 +8,7 @@ import type {
   StatusIndicator,
   TrendIndicator,
 } from '../DashboardCard';
-import { formatNumber, getTrendColors } from './cardUtils';
+import { formatNumber, formatPercent, getTrendColors } from './cardUtils';
 import { CardWrapper } from './Wrapper';
 
 const messages = defineMessages({
@@ -53,13 +53,15 @@ const TrendIcon = ({ trend }: { trend: TrendIndicator }) => {
 const TrendDisplay = ({
   trend,
   vsPreviousLabel,
+  locale,
 }: {
   trend: TrendIndicator;
   vsPreviousLabel: string;
+  locale?: string;
 }) => {
   const trendColors = getTrendColors(trend);
   // Built outside JSX: a formatted percentage, not translatable copy.
-  const trendText = `${trend.value.toFixed(1)}% `;
+  const trendText = `${formatPercent({ value: trend.value, fractionDigits: 1, locale })} `;
 
   return (
     <Flex sx={{ alignItems: 'center', gap: '1' }}>
@@ -176,6 +178,7 @@ export const BigNumber = (props: BigNumberCard) => {
           <TrendDisplay
             trend={props.trend!}
             vsPreviousLabel={vsPreviousLabel}
+            locale={locale}
           />
         )}
 

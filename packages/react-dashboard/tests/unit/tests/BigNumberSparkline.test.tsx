@@ -89,6 +89,19 @@ describe('BigNumberSparkline', () => {
     ).toBeInTheDocument();
   });
 
+  test('formats the signed trend in the provided locale', () => {
+    const card: DashboardCard = {
+      ...baseCard,
+      trend: { value: 12.3, status: 'positive' },
+    };
+    render(<BigNumberSparkline {...card} locale="pt-BR" />);
+    expect(
+      screen.getByText((_, el) => {
+        return el?.textContent === '+12,3%';
+      })
+    ).toBeInTheDocument();
+  });
+
   test('neutral trend does not render as positive (green)', () => {
     const card: DashboardCard = {
       ...baseCard,

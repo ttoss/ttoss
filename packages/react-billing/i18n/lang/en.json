@@ -1,0 +1,105 @@
+{
+  "4Es6pi": {
+    "defaultMessage": "Cancelled",
+    "description": "Subscription panel status badge: the subscription was cancelled."
+  },
+  "AhCpt2": {
+    "defaultMessage": "Update scheduled",
+    "description": "Subscription panel badge: a plan change is scheduled for the next cycle."
+  },
+  "BSgyVr": {
+    "defaultMessage": "Inactive",
+    "description": "Subscription panel status badge: the subscription is inactive."
+  },
+  "FvMOyQ": {
+    "defaultMessage": "Renewal cancelled",
+    "description": "Subscription panel badge: the subscription will not renew at the end of the cycle."
+  },
+  "vRSfVR": {
+    "defaultMessage": "Active",
+    "description": "Subscription panel status badge: the subscription is active."
+  },
+  "0EjvY6": {
+    "module": "@ttoss/components",
+    "defaultMessage": "∞",
+    "description": "Infinity symbol used when the maximum limit is unlimited."
+  },
+  "0oVaj5": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Would you like to install our app?",
+    "description": "PWA install banner: the question offering installation."
+  },
+  "1DbX9V": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Near limit",
+    "description": "Alert shown when usage is close to the limit."
+  },
+  "4+7L57": {
+    "module": "@ttoss/components",
+    "defaultMessage": "No notifications",
+    "description": "Notifications menu: shown when there is nothing to list."
+  },
+  "4NwCn9": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Reached limit",
+    "description": "Alert shown when usage has reached or exceeded the limit."
+  },
+  "G/yZLu": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Remove"
+  },
+  "JEsxDw": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Uploading..."
+  },
+  "UD/D6v": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Install",
+    "description": "PWA install banner: button that starts the installation."
+  },
+  "WhMFgF": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Clear all",
+    "description": "Notifications menu: button clearing every notification."
+  },
+  "XKyo5X": {
+    "module": "@ttoss/components",
+    "defaultMessage": "File Upload"
+  },
+  "dx4ZnR": {
+    "module": "@ttoss/components",
+    "defaultMessage": "{name} logo",
+    "description": "OAuth consent: alt text for the requesting application logo."
+  },
+  "eRShvB": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Maximum files reached"
+  },
+  "fDCMA6": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Select Files"
+  },
+  "fOOwej": {
+    "module": "@ttoss/components",
+    "defaultMessage": "{max_files, plural, one {Up to # file} other {Up to # files}}"
+  },
+  "gy0Ynb": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Click or drag files here"
+  },
+  "oYpm71": {
+    "module": "@ttoss/components",
+    "defaultMessage": "of {max}",
+    "description": "Text shown before the max value, e.g. \"of 10\" or \"of ∞\"."
+  },
+  "rskBv4": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Unlimited",
+    "description": "Shown when a metric has no maximum limit."
+  },
+  "zr0OS6": {
+    "module": "@ttoss/components",
+    "defaultMessage": "{percentage}% used",
+    "description": "Footer shown for percentage metrics, e.g. \"80% used\"."
+  }
+}

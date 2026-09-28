@@ -1,4 +1,6 @@
+import { I18nProvider } from '@ttoss/react-i18n';
 import { fireEvent, render, screen } from '@ttoss/test-utils/react';
+import { ThemeProvider } from '@ttoss/ui';
 import { DashboardEditToolbar } from 'src/DashboardEditToolbar';
 import { useDashboard } from 'src/DashboardProvider';
 
@@ -157,10 +159,41 @@ describe('DashboardEditToolbar', () => {
     expect(container.firstChild).toBeNull();
   });
 
+  test('should render the toolbar from the pt-BR catalog', async () => {
+    mockUseDashboard.mockReturnValue(
+      buildDashboardState({
+        isEditMode: true,
+      }) as never
+    );
+
+    render(<DashboardEditToolbar />, {
+      wrapper: ({ children }: { children: React.ReactNode }) => {
+        return (
+          <I18nProvider
+            locale="pt-BR"
+            loadLocaleData={async () => {
+              return (await import('../../../i18n/compiled/pt-BR.json'))
+                .default;
+            }}
+          >
+            <ThemeProvider>{children}</ThemeProvider>
+          </I18nProvider>
+        );
+      },
+    });
+
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Adicionar Métricas' })
+    );
+
+    expect(screen.getByText('Divisor de seção')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Buscar...')).toBeInTheDocument();
+  });
+
   test('should render edit button and start edit mode', () => {
     render(<DashboardEditToolbar />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Editar' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
 
     expect(startEdit).toHaveBeenCalledTimes(1);
   });
@@ -175,21 +208,21 @@ describe('DashboardEditToolbar', () => {
     render(<DashboardEditToolbar />);
 
     expect(
-      screen.getByRole('button', { name: 'Adicionar Métricas' })
+      screen.getByRole('button', { name: 'Add metrics' })
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Salvar' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Salvar Novo Template' })
+      screen.getByRole('button', { name: 'Save as new template' })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Cancelar Edição' })
+      screen.getByRole('button', { name: 'Cancel editing' })
     ).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Salvar' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
     fireEvent.click(
-      screen.getByRole('button', { name: 'Salvar Novo Template' })
+      screen.getByRole('button', { name: 'Save as new template' })
     );
-    fireEvent.click(screen.getByRole('button', { name: 'Cancelar Edição' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel editing' }));
 
     expect(saveEdit).toHaveBeenCalledTimes(1);
     expect(saveAsNew).toHaveBeenCalledTimes(1);
@@ -212,7 +245,7 @@ describe('DashboardEditToolbar', () => {
     render(<DashboardEditToolbar />);
 
     expect(
-      screen.queryByRole('button', { name: 'Salvar' })
+      screen.queryByRole('button', { name: 'Save' })
     ).not.toBeInTheDocument();
   });
 
@@ -225,9 +258,9 @@ describe('DashboardEditToolbar', () => {
 
     render(<DashboardEditToolbar />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Adicionar Métricas' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Add metrics' }));
 
-    expect(screen.getByText('Divisor de seção')).toBeInTheDocument();
+    expect(screen.getByText('Section divider')).toBeInTheDocument();
     expect(screen.getByText('Meta')).toBeInTheDocument();
     expect(screen.getByText('OneClickAds')).toBeInTheDocument();
     expect(screen.getAllByText('API')).toHaveLength(1);
@@ -245,7 +278,7 @@ describe('DashboardEditToolbar', () => {
     );
 
     render(<DashboardEditToolbar />);
-    fireEvent.click(screen.getByRole('button', { name: 'Adicionar Métricas' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Add metrics' }));
 
     fireEvent.change(screen.getByLabelText('Search cards'), {
       target: { value: 'meta' },
@@ -274,19 +307,19 @@ describe('DashboardEditToolbar', () => {
 
     render(<DashboardEditToolbar />);
 
-    const titleInput = screen.getByLabelText('Título do template');
+    const titleInput = screen.getByLabelText('Template title');
     expect(titleInput).toHaveValue('Clone de Main Template');
 
     fireEvent.change(titleInput, {
       target: { value: '  ' },
     });
-    expect(screen.getAllByRole('button', { name: 'Salvar' })[1]).toBeDisabled();
+    expect(screen.getAllByRole('button', { name: 'Save' })[1]).toBeDisabled();
 
     fireEvent.change(titleInput, {
       target: { value: 'Copied Template' },
     });
-    fireEvent.click(screen.getAllByRole('button', { name: 'Salvar' })[1]);
-    fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }));
+    fireEvent.click(screen.getAllByRole('button', { name: 'Save' })[1]);
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
 
     expect(confirmSaveAsNew).toHaveBeenCalledWith('Copied Template');
     expect(cancelSaveAsNew).toHaveBeenCalledTimes(1);

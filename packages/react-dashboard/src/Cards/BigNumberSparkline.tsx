@@ -2,7 +2,7 @@ import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import { Box, Flex, Text } from '@ttoss/ui';
 
 import type { BigNumberSparklineCard, TrendIndicator } from '../DashboardCard';
-import { formatNumber, getTrendColors } from './cardUtils';
+import { formatNumber, formatPercent, getTrendColors } from './cardUtils';
 import { CardWrapper } from './Wrapper';
 
 const messages = defineMessages({
@@ -109,12 +109,18 @@ export const Sparkline = ({
 type TrendBadgeProps = {
   trend: TrendIndicator;
   vsPreviousLabel: string;
+  locale?: string;
 };
 
-const TrendBadge = ({ trend, vsPreviousLabel }: TrendBadgeProps) => {
+const TrendBadge = ({ trend, vsPreviousLabel, locale }: TrendBadgeProps) => {
   const trendColors = getTrendColors(trend);
   // Built outside JSX: a signed, formatted percentage, not translatable copy.
-  const trendText = `${trend.value > 0 ? '+' : ''}${trend.value.toFixed(1)}%`;
+  const trendText = formatPercent({
+    value: trend.value,
+    fractionDigits: 1,
+    locale,
+    signed: true,
+  });
 
   return (
     <Flex sx={{ alignItems: 'center', gap: '1' }}>
@@ -192,7 +198,11 @@ export const BigNumberSparkline = (props: BigNumberSparklineCard) => {
         </Text>
 
         {typeof props.trend?.value === 'number' && (
-          <TrendBadge trend={props.trend} vsPreviousLabel={vsPreviousLabel} />
+          <TrendBadge
+            trend={props.trend}
+            vsPreviousLabel={vsPreviousLabel}
+            locale={locale}
+          />
         )}
 
         {daily && daily.length >= 2 && (

@@ -90,6 +90,6 @@ describe('DashboardHeader', () => {
       </DashboardProvider>
     );
 
-    expect(screen.getByRole('button', { name: 'Editar' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Edit' })).toBeInTheDocument();
   });
 });
