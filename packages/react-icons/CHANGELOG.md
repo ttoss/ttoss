@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-icons@0.9.0...@ttoss/react-icons@0.10.0) (2026-09-28)
+
+### Features
+
+- **geovis:** pin icon images and a "Ver mais" panel for long layer l… ([#1264](https://github.com/ttoss/ttoss/issues/1264)) ([287e879](https://github.com/ttoss/ttoss/commit/287e8796653b65469ae60e7b7f63cd42d9476f65))
+
 # 0.9.0 (2026-09-28)
 
 ### Features

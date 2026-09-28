@@ -1,6 +1,6 @@
 {
   "name": "@docs/storybook",
-  "version": "7.4.3",
+  "version": "7.5.0",
   "private": true,
   "author": "ttoss",
   "scripts": {

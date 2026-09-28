@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.5.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@7.4.3...@docs/storybook@7.5.0) (2026-09-28)
+
+### Features
+
+- **geovis:** pin icon images and a "Ver mais" panel for long layer l… ([#1264](https://github.com/ttoss/ttoss/issues/1264)) ([287e879](https://github.com/ttoss/ttoss/commit/287e8796653b65469ae60e7b7f63cd42d9476f65))
+
 ## [7.4.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@7.4.2...@docs/storybook@7.4.3) (2026-09-28)
 
 **Note:** Version bump only for package @docs/storybook
