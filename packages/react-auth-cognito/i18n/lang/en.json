@@ -266,6 +266,11 @@
     "module": "@ttoss/components",
     "defaultMessage": "File Upload"
   },
+  "Yvbvep": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Select a period",
+    "description": "Date range picker: placeholder when no range is selected, and the mobile panel title when there is no label."
+  },
   "dx4ZnR": {
     "module": "@ttoss/components",
     "defaultMessage": "{name} logo",

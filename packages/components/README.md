@@ -105,6 +105,8 @@ import { DatePicker } from '@ttoss/components';
 />;
 ```
 
+Dates, the placeholder and the calendar's month and weekday names follow the `I18nProvider` locale (the calendar supports English, Spanish and Portuguese, falling back to English). Preset labels are yours to translate.
+
 ### Drawer
 
 Slide-out panels from screen edges. [Docs](https://storybook.ttoss.dev/?path=/docs/components-drawer--docs)
