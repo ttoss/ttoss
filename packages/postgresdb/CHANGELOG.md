@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.13.0 (2026-09-28)
+
+### Features
+
+- **openapi-codegen:** pull referenced files into the merged document ([#1249](https://github.com/ttoss/ttoss/issues/1249)) ([0da2566](https://github.com/ttoss/ttoss/commit/0da25663f72e22e403c7182eee9951b58c9c14e1))
+
 ## [0.12.1](https://github.com/ttoss/ttoss/compare/@ttoss/postgresdb@0.12.0...@ttoss/postgresdb@0.12.1) (2026-09-16)
 
 **Note:** Version bump only for package @ttoss/postgresdb

@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/react-wizard",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "A React wizard component for guiding users through multi-step flows with configurable step list layouts.",
   "keywords": [
     "React",
@@ -25,7 +25,8 @@
     ".": "./src/index.ts"
   },
   "files": [
-    "dist"
+    "dist",
+    "i18n"
   ],
   "scripts": {
     "build": "tsdown",

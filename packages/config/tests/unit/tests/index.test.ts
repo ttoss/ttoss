@@ -3,6 +3,9 @@ import * as allConfigs from 'src/index';
 test('configs should be exported', () => {
   expect(allConfigs.babelConfig).toBeDefined();
   expect(allConfigs.commitlintConfig).toBeDefined();
+  expect(allConfigs.formatjsBabelPlugin).toBeDefined();
+  expect(allConfigs.formatjsSwcPlugin).toBeDefined();
+  expect(allConfigs.I18N_ID_INTERPOLATION_PATTERN).toBeDefined();
   expect(allConfigs.jestConfig).toBeDefined();
   expect(allConfigs.jestE2EConfig).toBeDefined();
   expect(allConfigs.jestRootConfig).toBeDefined();

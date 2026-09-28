@@ -3,12 +3,16 @@ import { jestUnitConfig } from '@ttoss/config';
 const config = jestUnitConfig({
   coverageThreshold: {
     global: {
-      statements: 95.28,
-      branches: 81.81,
-      lines: 95.28,
-      functions: 95.45,
+      statements: 98.7,
+      branches: 85.4,
+      lines: 98.7,
+      functions: 99.9,
     },
   },
+  // @formatjs/cli-lib and its fs-extra dependency ship ESM only.
+  transformIgnorePatterns: [
+    '/node_modules/(?!(\\.pnpm/)?(@formatjs|fs-extra))',
+  ],
 });
 
 export default config;

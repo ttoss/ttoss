@@ -50,7 +50,7 @@ import { NotificationsProvider } from '@ttoss/react-notifications';
 function App() {
   return (
     <ThemeProvider theme={bruttalTheme}>
-      <I18nProvider locale="pt-BR" messages={translations}>
+      <I18nProvider locale="pt-BR" loadLocaleData={loadLocaleData}>
         <NotificationsProvider>
           {/* All ttoss packages automatically use:
               - Bruttal theme for styling
@@ -220,7 +220,7 @@ Change everything from one place:
 
 ```tsx
 // Switch from English to Portuguese
-<I18nProvider locale="pt-BR" messages={ptBR}>
+<I18nProvider locale="pt-BR" loadLocaleData={loadLocaleData}>
 
 // Switch from Bruttal to Oca theme
 <ThemeProvider theme={ocaTheme}>
