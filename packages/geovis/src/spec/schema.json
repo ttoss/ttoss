@@ -618,6 +618,27 @@
         }
       }
     },
+    "images": {
+      "type": "array",
+      "description": "Images registered on the map for symbol layers to reference by id (paint.iconImage).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind", "icon", "color"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "kind": { "type": "string", "enum": ["pin"] },
+          "icon": {
+            "type": "string",
+            "minLength": 1,
+            "description": "@ttoss/react-icons (Iconify) name of the icon drawn inside the pin, e.g. 'maki:hospital'."
+          },
+          "color": { "type": "string", "minLength": 1 },
+          "iconColor": { "type": "string", "minLength": 1 },
+          "size": { "type": "number", "exclusiveMinimum": 0 }
+        }
+      }
+    },
     "viewPresets": {
       "type": "array",
       "items": {
@@ -687,6 +708,11 @@
         "trigger": {
           "type": "string",
           "enum": ["hover", "click"]
+        },
+        "maxVisibleItems": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Items shown before the rest collapse behind a 'Ver mais' card that opens a panel with every item. When omitted, every item is shown."
         },
         "items": {
           "type": "array",

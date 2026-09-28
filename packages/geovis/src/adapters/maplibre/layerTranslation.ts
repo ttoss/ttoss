@@ -333,6 +333,33 @@ const buildHeatmap: Builder = (base, _layer, paint, _ctx) => {
 };
 
 /**
+ * MapLibre `layout` keys of the symbol icon, by `SymbolPaint` field. Each is
+ * written only when the layer sets it, for the same reason as `icon-image`
+ * in `buildSymbolLayout` below: an `undefined` layout value makes MapLibre
+ * reject the whole layer.
+ */
+const ICON_LAYOUT_KEYS = {
+  iconImage: 'icon-image',
+  iconSize: 'icon-size',
+  iconAnchor: 'icon-anchor',
+  iconOffset: 'icon-offset',
+  iconAllowOverlap: 'icon-allow-overlap',
+} as const satisfies Partial<Record<keyof SymbolPaint, string>>;
+
+/** The icon's `layout` entries the layer declares, and none it does not. */
+const buildIconLayout = (sp: SymbolPaint): Record<string, unknown> => {
+  return Object.fromEntries(
+    Object.entries(ICON_LAYOUT_KEYS)
+      .filter(([field]) => {
+        return sp[field as keyof typeof ICON_LAYOUT_KEYS] !== undefined;
+      })
+      .map(([field, key]) => {
+        return [key, sp[field as keyof typeof ICON_LAYOUT_KEYS]];
+      })
+  );
+};
+
+/**
  * Builds the `symbol` layer's `layout` block — the label text, size, fontstack
  * and icon. GeoVis carries these in the `paint` bag, which MapLibre splits
  * between `paint` and `layout`.
@@ -357,7 +384,7 @@ const buildSymbolLayout = (sp: SymbolPaint): Record<string, unknown> => {
     'text-field': sp.textField ?? '',
     'text-size': sp.textSize ?? 12,
     'text-font': sp.textFont ?? ['Noto Sans Regular'],
-    ...(sp.iconImage === undefined ? {} : { 'icon-image': sp.iconImage }),
+    ...buildIconLayout(sp),
   };
 };
 

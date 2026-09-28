@@ -250,8 +250,82 @@ export interface SymbolPaint {
    * @default ['Noto Sans Regular']
    */
   textFont?: string[];
+  /**
+   * Image drawn at each feature: the `id` of a {@link ImageSpec} in
+   * `spec.images`, or the name of an icon in the basemap's sprite.
+   */
   iconImage?: string;
+  /** Scale factor applied to the image. @default 1 */
+  iconSize?: number;
+  /**
+   * Which part of the image sits on the feature's coordinate. A pin
+   * ({@link PinImage}) points with its bottom tip, so it takes `'bottom'`;
+   * MapLibre's default, `'center'`, would leave it floating half its height
+   * above the place it marks.
+   *
+   * @default 'center'
+   */
+  iconAnchor?:
+    | 'center'
+    | 'left'
+    | 'right'
+    | 'top'
+    | 'bottom'
+    | 'top-left'
+    | 'top-right'
+    | 'bottom-left'
+    | 'bottom-right';
+  /** Offset of the image from its anchor, in pixels `[x, y]`. */
+  iconOffset?: [number, number];
+  /**
+   * Whether an image stays drawn when it collides with another. MapLibre
+   * hides colliding symbols by default, which is right for labels but drops
+   * markers of neighbouring places — set `true` to keep every one.
+   *
+   * @default false
+   */
+  iconAllowOverlap?: boolean;
 }
+
+/**
+ * A map pin: a teardrop in `color` with an icon drawn inside it. GeoVis builds
+ * the image itself and registers it on the map under `id`, so a `symbol` layer
+ * shows it with `paint.iconImage: id`.
+ *
+ * @example
+ * ```typescript
+ * const pin: PinImage = {
+ *   id: 'hospital-pin',
+ *   kind: 'pin',
+ *   icon: 'maki:hospital',
+ *   color: '#C0392B',
+ * };
+ * ```
+ */
+export interface PinImage {
+  /** Name the image is registered under — what `paint.iconImage` refers to. */
+  id: string;
+  kind: 'pin';
+  /**
+   * `@ttoss/react-icons` (Iconify) name of the icon drawn inside the pin, e.g.
+   * `'maki:hospital'`. Resolved from the icons registered with `addIcon`, or
+   * fetched from the Iconify API when it is not registered.
+   */
+  icon: string;
+  /** Fill colour of the pin. */
+  color: string;
+  /** Colour of the icon inside the pin. @default '#ffffff' */
+  iconColor?: string;
+  /** Pin width in CSS pixels; its height follows the teardrop's shape. @default 28 */
+  size?: number;
+}
+
+/**
+ * An image GeoVis registers on the map for `symbol` layers to draw, declared
+ * in `spec.images`. Only pins today; the `kind` discriminant leaves room for
+ * other image kinds.
+ */
+export type ImageSpec = PinImage;
 
 export type LayerPaint =
   | FillPaint
@@ -580,6 +654,13 @@ export interface VisualizationSpec {
    * per-feature `value`s for use in styling, tooltips, charts.
    */
   mapData?: MapData[];
+  /**
+   * Images registered on the map, for `symbol` layers to reference by id
+   * (`paint.iconImage`). They are built and loaded asynchronously; a layer
+   * drawing one shows it as soon as it is ready, and again after a basemap
+   * change.
+   */
+  images?: ImageSpec[];
   metadata?: Record<string, unknown>;
   /**
    * @deprecated No longer used by the adapter. Kept for backward compatibility
@@ -726,6 +807,15 @@ export interface LayerControl {
    * still respond to a click so touch devices can open a hover panel.
    */
   trigger?: 'hover' | 'click';
+  /**
+   * How many items the expanded panel shows before collapsing the rest behind
+   * a "Ver mais" card. Clicking that card opens a larger panel listing every
+   * item, which stays open until dismissed (close button, `Escape` or a click
+   * outside) even for the `'hover'` trigger. The first `maxVisibleItems` of
+   * `items`, in order, are the ones shown. When omitted — or when `items` has
+   * no more than this many entries — every item is shown and no card appears.
+   */
+  maxVisibleItems?: number;
   /** The toggle buttons revealed when the panel is expanded. */
   items: LayerControlItem[];
 }

@@ -359,3 +359,128 @@ export const activeBadgeStyle: React.CSSProperties = {
   top: 4,
   width: 18,
 };
+
+// The "Ver mais" card's square: a neutral tile the size of an item thumbnail,
+// holding the hidden-item count, so the summary strip keeps a uniform rhythm.
+export const moreThumbStyle: React.CSSProperties = {
+  alignItems: 'center',
+  backgroundColor: HOVER_BG,
+  borderRadius: 8,
+  boxShadow: CARD_SHADOW,
+  color: TEXT,
+  display: 'flex',
+  fontFamily: FONT,
+  fontSize: 18,
+  fontWeight: 600,
+  height: ITEM_THUMB_SIZE,
+  justifyContent: 'center',
+  position: 'relative',
+  width: ITEM_THUMB_SIZE,
+};
+
+// Count of active items hidden behind the "Ver mais" card, in the accent the
+// active-item check badge uses, so it reads as "this many are on in there".
+export const moreActiveBadgeStyle: React.CSSProperties = {
+  ...activeBadgeStyle,
+  borderRadius: 999,
+  color: '#ffffff',
+  fontFamily: FONT,
+  fontSize: 10,
+  fontWeight: 600,
+  minWidth: 18,
+  padding: '0 4px',
+  width: 'auto',
+};
+
+// Columns of the full panel in the roomy layout: wide enough to show most lists
+// in a few rows while fitting beside the trigger above the compact breakpoint
+// (5 × 84px cards + gaps + padding ≈ 460px, next to a 52px trigger).
+const FULL_PANEL_COLUMNS = 5;
+const FULL_PANEL_GAP = 4;
+
+/**
+ * The full panel opened from the "Ver mais" card: a titled card holding every
+ * item in a grid. Roomy layouts size the grid to at most
+ * {@link FULL_PANEL_COLUMNS} fixed-width columns; compact layouts stretch the
+ * card across the pinned container and let the columns fill that width. Both
+ * cap the height and scroll, so a long list never pushes the trigger off the
+ * map.
+ *
+ * @param compact - Whether to build the narrow-viewport form.
+ * @returns Inline style for the full panel card.
+ */
+export const buildFullPanelStyle = ({
+  compact,
+}: {
+  compact: boolean;
+}): React.CSSProperties => {
+  return {
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    boxShadow: CARD_SHADOW,
+    boxSizing: 'border-box',
+    color: TEXT,
+    display: 'flex',
+    flexDirection: 'column',
+    fontFamily: FONT,
+    gap: 8,
+    maxHeight: '60vh',
+    // Focused programmatically on open; the card itself needs no focus ring.
+    outline: 'none',
+    padding: 12,
+    ...(compact ? { alignSelf: 'stretch' } : {}),
+  };
+};
+
+/**
+ * The full panel's item grid, which scrolls on its own so the header stays put.
+ *
+ * @param compact - Whether to build the narrow-viewport form.
+ * @param itemCount - Number of items, so a short list leaves no empty columns.
+ * @returns Inline style for the grid.
+ */
+export const buildFullPanelGridStyle = ({
+  compact,
+  itemCount,
+}: {
+  compact: boolean;
+  itemCount: number;
+}): React.CSSProperties => {
+  const columns = Math.max(1, Math.min(itemCount, FULL_PANEL_COLUMNS));
+  return {
+    display: 'grid',
+    gap: FULL_PANEL_GAP,
+    gridTemplateColumns: compact
+      ? `repeat(auto-fill, minmax(${ITEM_WIDTH}px, 1fr))`
+      : `repeat(${columns}, ${ITEM_WIDTH}px)`,
+    justifyItems: 'center',
+    overflowY: 'auto',
+  };
+};
+
+export const fullPanelHeaderStyle: React.CSSProperties = {
+  alignItems: 'center',
+  display: 'flex',
+  justifyContent: 'space-between',
+};
+
+export const fullPanelTitleStyle: React.CSSProperties = {
+  color: TEXT,
+  fontFamily: FONT,
+  fontSize: 14,
+  fontWeight: 600,
+};
+
+export const fullPanelCloseStyle: React.CSSProperties = {
+  alignItems: 'center',
+  backgroundColor: 'transparent',
+  border: 'none',
+  borderRadius: 999,
+  color: TEXT_MUTED,
+  cursor: 'pointer',
+  display: 'flex',
+  height: 28,
+  justifyContent: 'center',
+  padding: 0,
+  width: 28,
+};

@@ -24,6 +24,11 @@ import { computeBbox } from './helpers/map-story-helpers';
  * 2. **Auto-disable** — the "Coroplético" mode has no kitchen layer at all, so
  *    the "Localização das cozinhas" button renders greyed and non-interactive,
  *    while "Linhas dos estados" keeps working.
+ * 3. **"Ver mais"** — `control.maxVisibleItems: 3` keeps the panel to the first
+ *    three items plus a "Ver mais" card counting the rest. Clicking it opens a
+ *    larger panel with every item, which stays open when the pointer leaves
+ *    (close it with ✕, `Escape` or a click on the map). Turn on a layer in it
+ *    and close it: the "Ver mais" card badges how many hidden items are on.
  */
 export default {
   title: 'GeoVis/SpecDrivenLayerControl',
@@ -96,12 +101,85 @@ const KITCHENS_THUMB =
 const STATES_THUMB =
   "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><rect width='64' height='64' fill='rgb(234,238,227)'/><path d='M8 12 L40 8 L56 28 L44 52 L14 48 Z' fill='none' stroke='rgb(31,41,55)' stroke-width='3'/></svg>";
 
+/**
+ * Extra point layers present in every mode — enough items to overflow
+ * `maxVisibleItems` and exercise the "Ver mais" panel. Each gets its own
+ * colour, used both for its dots and for its thumbnail.
+ */
+const EXTRA_OVERLAYS = [
+  { id: 'hospitals', label: 'Hospitais', color: 'rgb(220,38,38)' },
+  { id: 'schools', label: 'Escolas', color: 'rgb(37,99,235)' },
+  { id: 'parks', label: 'Parques', color: 'rgb(22,163,74)' },
+  { id: 'metro', label: 'Estações de metrô', color: 'rgb(147,51,234)' },
+  { id: 'libraries', label: 'Bibliotecas', color: 'rgb(202,138,4)' },
+  { id: 'markets', label: 'Feiras livres', color: 'rgb(234,88,12)' },
+  { id: 'sports', label: 'Centros esportivos', color: 'rgb(8,145,178)' },
+  { id: 'museums', label: 'Museus', color: 'rgb(190,24,93)' },
+];
+
+// A few scattered points per overlay, spread across both states and offset by
+// the overlay's index so the layers do not sit exactly on top of each other.
+const extraPoints = (index: number): GeoJSONFeatureCollection => {
+  const base: [number, number][] = [
+    [-46.9, -23.3],
+    [-45.6, -23.1],
+    [-44.4, -22.5],
+    [-43.4, -22.9],
+  ];
+  return {
+    type: 'FeatureCollection',
+    features: base.map(([lng, lat], pointIndex) => {
+      return {
+        type: 'Feature',
+        id: `${index}-${pointIndex}`,
+        properties: {},
+        geometry: {
+          type: 'Point',
+          coordinates: [lng + index * 0.12, lat - index * 0.08],
+        },
+      };
+    }),
+  };
+};
+
+const dotsThumb = (color: string) => {
+  return `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><rect width='64' height='64' fill='rgb(234,238,227)'/><circle cx='18' cy='20' r='6' fill='${color}'/><circle cx='44' cy='28' r='6' fill='${color}'/><circle cx='26' cy='46' r='6' fill='${color}'/></svg>`;
+};
+
+const extraSources: VisualizationSpec['sources'] = EXTRA_OVERLAYS.map(
+  (overlay, index) => {
+    return {
+      id: overlay.id,
+      type: 'geojson' as const,
+      data: extraPoints(index),
+    };
+  }
+);
+
+const extraLayers: VisualizationSpec['layers'] = EXTRA_OVERLAYS.map(
+  (overlay) => {
+    return {
+      id: `${overlay.id}-pts`,
+      sourceId: overlay.id,
+      geometry: 'point' as const,
+      paint: {
+        circleColor: overlay.color,
+        circleRadius: 5,
+        circleStrokeColor: '#ffffff',
+        circleStrokeWidth: 1,
+      },
+    };
+  }
+);
+
 /** The single control, reused verbatim across every mode (the 1b pattern). */
 const control: NonNullable<VisualizationSpec['control']> = {
   id: 'layers',
   label: 'Camadas',
   position: 'bottom-left',
   trigger: 'hover',
+  // Ten items: the panel shows the first three plus a "Ver mais" card (+7).
+  maxVisibleItems: 3,
   items: [
     {
       id: 'kitchens',
@@ -117,6 +195,16 @@ const control: NonNullable<VisualizationSpec['control']> = {
       thumbnail: STATES_THUMB,
       layers: ['states-line'],
     },
+    ...EXTRA_OVERLAYS.map((overlay) => {
+      return {
+        id: overlay.id,
+        label: overlay.label,
+        thumbnail: dotsThumb(overlay.color),
+        layers: [`${overlay.id}-pts`],
+        // Start off so the map stays readable; turn them on from the panel.
+        defaultActive: false,
+      };
+    }),
   ],
 };
 
@@ -139,6 +227,7 @@ const buildSpec = (mode: Mode): VisualizationSpec => {
     });
   }
   layers.push(statesLineLayer);
+  layers.push(...extraLayers);
   if (mode === 'pontos') {
     layers.push({
       id: 'kitchens-pts',
@@ -172,12 +261,14 @@ const buildSpec = (mode: Mode): VisualizationSpec => {
     description:
       'Hover "Camadas" (bottom-left) to toggle layer groups. Hide the kitchens, ' +
       'then switch mode — the choice persists. In "Coroplético" the kitchens ' +
-      'item is disabled (no kitchen layer in that mode).',
+      'item is disabled (no kitchen layer in that mode). Click "Ver mais" to ' +
+      'see every layer.',
     engine: 'maplibre',
     basemap: { visible: false },
     sources: [
       { id: 'states', type: 'geojson', data: states },
       { id: 'kitchens', type: 'geojson', data: kitchens },
+      ...extraSources,
     ],
     layers,
     control,

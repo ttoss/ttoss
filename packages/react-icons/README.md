@@ -51,6 +51,17 @@ addIcon('company-logo', {
 <Icon icon="company-logo" width={32} />;
 ```
 
+## Icon Data Outside React
+
+`loadIcon` resolves an icon's data — from the ones registered with `addIcon`, or fetched from the Iconify API — and `buildIcon` turns it into SVG attributes and body. Use them when an icon has to be drawn somewhere a component cannot go, such as a canvas or a map image:
+
+```ts
+import { buildIcon, loadIcon } from '@ttoss/react-icons';
+
+const { attributes, body } = buildIcon(await loadIcon('maki:hospital'));
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${attributes.viewBox}">${body}</svg>`;
+```
+
 ## API
 
 ### Icon Props
