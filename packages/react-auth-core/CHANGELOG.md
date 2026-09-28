@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.10.0...@ttoss/react-auth-core@0.11.0) (2026-09-28)
+
+### Features
+
+- **components:** make the date picker follow the I18nProvider locale ([#1275](https://github.com/ttoss/ttoss/issues/1275)) ([d877468](https://github.com/ttoss/ttoss/commit/d8774686b39aa7b1f45df282fbc65ced4a9c6197)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262)
+
 # [0.10.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.9.2...@ttoss/react-auth-core@0.10.0) (2026-09-28)
 
 ### Features
