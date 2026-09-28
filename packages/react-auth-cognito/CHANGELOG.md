@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.13.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.12.5...@ttoss/react-auth-cognito@2.13.0) (2026-09-28)
+
+### Features
+
+- **react-auth-cognito:** ship pt-BR translations ([#1271](https://github.com/ttoss/ttoss/issues/1271)) ([b9e4eec](https://github.com/ttoss/ttoss/commit/b9e4eec8984d1f622a983250c45a09c43ea61e75))
+
 ## [2.12.5](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.12.4...@ttoss/react-auth-cognito@2.12.5) (2026-09-28)
 
 **Note:** Version bump only for package @ttoss/react-auth-cognito
