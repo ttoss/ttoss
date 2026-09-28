@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/lambda-postgres-query",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Create a Lambda function that queries a PostgreSQL database.",
   "keywords": [
     "aws",

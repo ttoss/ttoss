@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.39.1](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.39.0...@ttoss/config@1.39.1) (2026-09-28)
+
+### Bug Fixes
+
+- **react-dashboard:** messages shipped without ids, and a build guard in @ttoss/config ([#1270](https://github.com/ttoss/ttoss/issues/1270)) ([98fc6b7](https://github.com/ttoss/ttoss/commit/98fc6b7d5baef98b111c6e5e5551df6ee0b4a615))
+
 # 1.39.0 (2026-09-28)
 
 ### Features
