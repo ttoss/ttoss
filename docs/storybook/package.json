@@ -21,6 +21,7 @@
     "@ttoss/forms": "workspace:^",
     "@ttoss/geovis": "workspace:^",
     "@ttoss/geovis-workspace": "workspace:^",
+    "@ttoss/i18n-core": "workspace:^",
     "@ttoss/landing-pages": "workspace:^",
     "@ttoss/layouts": "workspace:^",
     "@ttoss/react-auth-core": "workspace:^",

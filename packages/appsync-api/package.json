@@ -30,7 +30,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@ttoss/cloudformation": "workspace:^"
+    "@ttoss/cloudformation": "workspace:^",
+    "@ttoss/i18n-core": "workspace:^"
   },
   "devDependencies": {
     "@ttoss/config": "workspace:^",

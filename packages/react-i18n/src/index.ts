@@ -6,6 +6,11 @@ export {
 } from './i18Provider';
 export { useI18n } from './useI18n';
 export {
+  LocalizedText,
+  type LocalizedTextProps,
+  useMessageRef,
+} from './useMessageRef';
+export {
   defineMessage,
   defineMessages,
   FormattedMessage,

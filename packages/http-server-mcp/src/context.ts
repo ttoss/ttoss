@@ -4,6 +4,8 @@ export interface RequestContext {
   apiBaseUrl?: string;
   apiHeaders: Record<string, string>;
   identity?: unknown;
+  /** The MCP request's `Accept-Language` header, when the client sent one. */
+  acceptLanguage?: string;
 }
 
 export const requestContextStore = new AsyncLocalStorage<RequestContext>();
@@ -30,4 +32,13 @@ export const getIdentity = <T = unknown>(): T | undefined => {
  */
 export const getApiHeaders = (): Record<string, string> => {
   return { ...(requestContextStore.getStore()?.apiHeaders ?? {}) };
+};
+
+/**
+ * The `Accept-Language` header of the current MCP request, or `undefined`
+ * outside a request or when the client sent none. The default locale source
+ * for `createGatedToolRegistrar`'s `i18n` option.
+ */
+export const getRequestLocale = (): string | undefined => {
+  return requestContextStore.getStore()?.acceptLanguage;
 };

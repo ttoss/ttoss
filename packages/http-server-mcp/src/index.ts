@@ -406,7 +406,7 @@ export const apiCall = async (
   return response.text();
 };
 
-export { getApiHeaders, getIdentity } from './context';
+export { getApiHeaders, getIdentity, getRequestLocale } from './context';
 
 /**
  * Asserts that the current request's token contains all required scopes.
@@ -758,9 +758,11 @@ export const createMcpRouter = (
       ctx.respond = false;
     };
 
-    if (needsContext) {
+    const acceptLanguage = ctx.get('Accept-Language') || undefined;
+
+    if (needsContext || acceptLanguage) {
       await requestContextStore.run(
-        { apiBaseUrl, apiHeaders, identity },
+        { apiBaseUrl, apiHeaders, identity, acceptLanguage },
         runRequest
       );
     } else {

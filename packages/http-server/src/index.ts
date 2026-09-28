@@ -12,6 +12,7 @@ export {
   type NormalizedHttpError,
   toHttpError,
 } from './httpError';
+export { i18nMiddleware, type I18nState } from './i18n';
 export type { File as MulterFile } from '@koa/multer';
 export type { Context, Middleware, Next } from 'koa';
 

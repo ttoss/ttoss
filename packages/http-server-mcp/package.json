@@ -39,6 +39,7 @@
     "@ttoss/auth-core": "workspace:^",
     "@ttoss/http-server": "workspace:^",
     "@ttoss/http-server-auth": "workspace:^",
+    "@ttoss/i18n-core": "workspace:^",
     "zod": "^4.4.3"
   },
   "devDependencies": {

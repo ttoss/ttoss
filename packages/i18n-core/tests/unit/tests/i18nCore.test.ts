@@ -9,6 +9,8 @@ import {
   LocalizedError,
   msg,
   negotiateLocale,
+  renderLocalizedError,
+  renderMessageRef,
 } from 'src/index';
 
 const messages = defineMessages({
@@ -472,5 +474,57 @@ describe('LocalizedError', () => {
       false
     );
     expect(isLocalizedError(undefined)).toBe(false);
+  });
+});
+
+describe('renderLocalizedError', () => {
+  const i18n = createI18n({
+    locale: 'pt-BR',
+    messages: {
+      [messages.paused.id!]:
+        'A campanha {campaign} foi <b>pausada</b> porque {reason}.',
+      [messages.reason.id!]: 'o orçamento acabou',
+    },
+  });
+  const error = new LocalizedError({
+    code: 'CAMPAIGN_PAUSED',
+    message: msg(messages.paused, {
+      campaign: '<Loja>',
+      reason: msg(messages.reason),
+    }),
+  });
+
+  test('renders the code and the message in the reader locale', () => {
+    expect(renderLocalizedError({ error, i18n })).toEqual({
+      code: 'CAMPAIGN_PAUSED',
+      message: 'A campanha <Loja> foi pausada porque o orçamento acabou.',
+    });
+    expect(renderLocalizedError({ error, i18n, mode: 'html' })).toEqual({
+      code: 'CAMPAIGN_PAUSED',
+      message:
+        'A campanha &lt;Loja&gt; foi <b>pausada</b> porque o orçamento acabou.',
+    });
+  });
+
+  test('leaves every other value alone', () => {
+    expect(
+      renderLocalizedError({ error: new Error('x'), i18n })
+    ).toBeUndefined();
+    expect(renderLocalizedError({ error: 'x', i18n })).toBeUndefined();
+  });
+});
+
+describe('renderMessageRef', () => {
+  test('renders with a bare IntlShape, as react-intl provides', () => {
+    const { formatMessage, formatNumber, formatDate, formatRelativeTime } =
+      createI18n({ locale: 'en', messages: {} });
+
+    expect(
+      renderMessageRef({
+        intl: { formatMessage, formatNumber, formatDate, formatRelativeTime },
+        ref: msg(messages.greeting, { name: 'Ana' }),
+        mode: 'text',
+      })
+    ).toBe('Hello, Ana!');
   });
 });
