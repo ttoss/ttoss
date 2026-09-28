@@ -1,3 +1,4 @@
+import { I18nProvider } from '@ttoss/react-i18n';
 import {
   fireEvent,
   render,
@@ -5,8 +6,10 @@ import {
   userEvent,
   waitFor,
 } from '@ttoss/test-utils/react';
+import type * as React from 'react';
 
 import { DatePicker, type DateRange } from '../../../src/components/DatePicker';
+import { getDayPickerLocale } from '../../../src/components/DatePicker/dayPickerLocale';
 
 describe('DatePicker', () => {
   const user = userEvent.setup({ delay: null });
@@ -15,20 +18,20 @@ describe('DatePicker', () => {
     test('should render without label', () => {
       render(<DatePicker />);
 
-      expect(screen.getByText('Selecione o período')).toBeInTheDocument();
+      expect(screen.getByText('Select a period')).toBeInTheDocument();
     });
 
     test('should render with label', () => {
       render(<DatePicker label="Date Range" />);
 
       expect(screen.getByText('Date Range')).toBeInTheDocument();
-      expect(screen.getByText('Selecione o período')).toBeInTheDocument();
+      expect(screen.getByText('Select a period')).toBeInTheDocument();
     });
 
     test('should show placeholder when no value is selected', () => {
       render(<DatePicker label="Date Range" />);
 
-      expect(screen.getByText('Selecione o período')).toBeInTheDocument();
+      expect(screen.getByText('Select a period')).toBeInTheDocument();
     });
 
     test('should display selected date range', () => {
@@ -38,8 +41,8 @@ describe('DatePicker', () => {
 
       render(<DatePicker label="Date Range" value={value} />);
 
-      expect(screen.getByText(/01\/01\/2024/)).toBeInTheDocument();
-      expect(screen.getByText(/31\/01\/2024/)).toBeInTheDocument();
+      expect(screen.getByText(/\b1\/1\/2024/)).toBeInTheDocument();
+      expect(screen.getByText(/1\/31\/2024/)).toBeInTheDocument();
     });
 
     test('should display only from date when to is undefined', () => {
@@ -48,14 +51,14 @@ describe('DatePicker', () => {
 
       render(<DatePicker label="Date Range" value={value} />);
 
-      expect(screen.getByText(/01\/01\/2024/)).toBeInTheDocument();
-      expect(screen.queryByText(/31\/01\/2024/)).not.toBeInTheDocument();
+      expect(screen.getByText(/\b1\/1\/2024/)).toBeInTheDocument();
+      expect(screen.queryByText(/1\/31\/2024/)).not.toBeInTheDocument();
     });
 
     test('should update displayed value when value prop changes', () => {
       const { rerender } = render(<DatePicker value={undefined} />);
 
-      expect(screen.getByText('Selecione o período')).toBeInTheDocument();
+      expect(screen.getByText('Select a period')).toBeInTheDocument();
 
       const fromDate = new Date(2024, 0, 1);
       const toDate = new Date(2024, 0, 31);
@@ -63,8 +66,8 @@ describe('DatePicker', () => {
 
       rerender(<DatePicker value={newValue} />);
 
-      expect(screen.getByText(/01\/01\/2024/)).toBeInTheDocument();
-      expect(screen.getByText(/31\/01\/2024/)).toBeInTheDocument();
+      expect(screen.getByText(/\b1\/1\/2024/)).toBeInTheDocument();
+      expect(screen.getByText(/1\/31\/2024/)).toBeInTheDocument();
     });
   });
 
@@ -72,7 +75,7 @@ describe('DatePicker', () => {
     test('should open date picker when button is clicked', async () => {
       render(<DatePicker label="Date Range" />);
 
-      const button = screen.getByText('Selecione o período').closest('button');
+      const button = screen.getByText('Select a period').closest('button');
       expect(button).toBeInTheDocument();
 
       if (button) {
@@ -95,7 +98,7 @@ describe('DatePicker', () => {
     test('should close date picker when button is clicked again', async () => {
       render(<DatePicker label="Date Range" />);
 
-      const button = screen.getByText('Selecione o período').closest('button');
+      const button = screen.getByText('Select a period').closest('button');
       expect(button).toBeInTheDocument();
 
       if (button) {
@@ -133,7 +136,7 @@ describe('DatePicker', () => {
         </div>
       );
 
-      const button = screen.getByText('Selecione o período').closest('button');
+      const button = screen.getByText('Select a period').closest('button');
       expect(button).toBeInTheDocument();
 
       if (button) {
@@ -167,7 +170,7 @@ describe('DatePicker', () => {
     test('should not close date picker when clicking inside', async () => {
       render(<DatePicker label="Date Range" />);
 
-      const button = screen.getByText('Selecione o período').closest('button');
+      const button = screen.getByText('Select a period').closest('button');
       expect(button).toBeInTheDocument();
 
       if (button) {
@@ -204,7 +207,7 @@ describe('DatePicker', () => {
     test('should close date picker when clicking mobile close button', async () => {
       render(<DatePicker label="Date Range" />);
 
-      const button = screen.getByText('Selecione o período').closest('button');
+      const button = screen.getByText('Select a period').closest('button');
       expect(button).toBeInTheDocument();
 
       if (button) {
@@ -249,7 +252,7 @@ describe('DatePicker', () => {
     test('should close date picker when clicking mobile backdrop', async () => {
       render(<DatePicker label="Date Range" />);
 
-      const button = screen.getByText('Selecione o período').closest('button');
+      const button = screen.getByText('Select a period').closest('button');
       expect(button).toBeInTheDocument();
 
       if (button) {
@@ -315,7 +318,7 @@ describe('DatePicker', () => {
 
       render(<DatePicker label="Date Range" presets={presets} />);
 
-      const button = screen.getByText('Selecione o período').closest('button');
+      const button = screen.getByText('Select a period').closest('button');
       expect(button).toBeInTheDocument();
 
       if (button) {
@@ -328,7 +331,7 @@ describe('DatePicker', () => {
     test('should not render presets section when presets array is empty', async () => {
       render(<DatePicker label="Date Range" presets={[]} />);
 
-      const button = screen.getByText('Selecione o período').closest('button');
+      const button = screen.getByText('Select a period').closest('button');
       expect(button).toBeInTheDocument();
 
       if (button) {
@@ -359,7 +362,7 @@ describe('DatePicker', () => {
         />
       );
 
-      const button = screen.getByText('Selecione o período').closest('button');
+      const button = screen.getByText('Select a period').closest('button');
       expect(button).toBeInTheDocument();
 
       if (button) {
@@ -416,7 +419,7 @@ describe('DatePicker', () => {
 
       render(<DatePicker label="Date Range" onChange={handleChange} />);
 
-      const button = screen.getByText('Selecione o período').closest('button');
+      const button = screen.getByText('Select a period').closest('button');
       if (button) {
         await user.click(button);
         // The actual date selection would require interacting with react-day-picker
@@ -443,7 +446,7 @@ describe('DatePicker', () => {
         <DatePicker label="Date Range" value={value} onChange={handleChange} />
       );
 
-      const button = screen.getByText(/01\/01\/2024/).closest('button');
+      const button = screen.getByText(/\b1\/1\/2024/).closest('button');
       if (button) {
         await user.click(button);
         // When a complete range exists and user clicks a day,
@@ -471,7 +474,7 @@ describe('DatePicker', () => {
         <DatePicker label="Date Range" value={value} onChange={handleChange} />
       );
 
-      const button = screen.getByText(/01\/01\/2024/).closest('button');
+      const button = screen.getByText(/\b1\/1\/2024/).closest('button');
       if (button) {
         await user.click(button);
         await waitFor(
@@ -512,7 +515,7 @@ describe('DatePicker', () => {
 
       render(<DatePicker label="Date Range" onChange={handleChange} />);
 
-      const button = screen.getByText('Selecione o período').closest('button');
+      const button = screen.getByText('Select a period').closest('button');
       if (button) {
         await user.click(button);
         await waitFor(
@@ -546,7 +549,7 @@ describe('DatePicker', () => {
         <DatePicker label="Date Range" value={value} onChange={handleChange} />
       );
 
-      const button = screen.getByText(/01\/01\/2024/).closest('button');
+      const button = screen.getByText(/\b1\/1\/2024/).closest('button');
       if (button) {
         await user.click(button);
         await waitFor(
@@ -588,7 +591,7 @@ describe('DatePicker', () => {
     test('should handle undefined value prop', () => {
       render(<DatePicker label="Date Range" value={undefined} />);
 
-      expect(screen.getByText('Selecione o período')).toBeInTheDocument();
+      expect(screen.getByText('Select a period')).toBeInTheDocument();
     });
 
     test('should handle value with both dates undefined', () => {
@@ -596,7 +599,7 @@ describe('DatePicker', () => {
 
       render(<DatePicker label="Date Range" value={value} />);
 
-      expect(screen.getByText('Selecione o período')).toBeInTheDocument();
+      expect(screen.getByText('Select a period')).toBeInTheDocument();
     });
 
     test('should handle value with only to date', () => {
@@ -606,13 +609,13 @@ describe('DatePicker', () => {
       render(<DatePicker label="Date Range" value={value} />);
 
       // Component should handle this edge case gracefully
-      expect(screen.getByText('Selecione o período')).toBeInTheDocument();
+      expect(screen.getByText('Select a period')).toBeInTheDocument();
     });
 
     test('should work without onChange handler', async () => {
       render(<DatePicker label="Date Range" />);
 
-      const button = screen.getByText('Selecione o período').closest('button');
+      const button = screen.getByText('Select a period').closest('button');
       if (button) {
         await user.click(button);
         await waitFor(
@@ -629,16 +632,69 @@ describe('DatePicker', () => {
   });
 
   describe('Date formatting', () => {
-    test('should format dates in pt-BR locale', () => {
-      const fromDate = new Date(2024, 0, 15);
-      const toDate = new Date(2024, 0, 20);
-      const value: DateRange = { from: fromDate, to: toDate };
+    test('should format dates in the provider locale', () => {
+      const value: DateRange = {
+        from: new Date(2024, 0, 15),
+        to: new Date(2024, 0, 20),
+      };
 
       render(<DatePicker label="Date Range" value={value} />);
 
-      // Dates should be formatted as DD/MM/YYYY in pt-BR
-      expect(screen.getByText(/15\/01\/2024/)).toBeInTheDocument();
-      expect(screen.getByText(/20\/01\/2024/)).toBeInTheDocument();
+      expect(screen.getByText('1/15/2024 - 1/20/2024')).toBeInTheDocument();
+    });
+
+    test('should render dates, copy and calendar in pt-BR', async () => {
+      const value: DateRange = {
+        from: new Date(2024, 0, 15),
+        to: new Date(2024, 0, 20),
+      };
+
+      const PtBrProvider = ({ children }: { children: React.ReactNode }) => {
+        return (
+          <I18nProvider
+            locale="pt-BR"
+            loadLocaleData={async () => {
+              return (await import('../../../i18n/compiled/pt-BR.json'))
+                .default;
+            }}
+          >
+            {children}
+          </I18nProvider>
+        );
+      };
+
+      const { rerender } = render(<DatePicker value={value} />, {
+        wrapper: PtBrProvider,
+      });
+
+      expect(
+        await screen.findByText('15/01/2024 - 20/01/2024')
+      ).toBeInTheDocument();
+
+      rerender(<DatePicker value={undefined} />);
+      const button = (await screen.findByText('Selecione o período')).closest(
+        'button'
+      );
+      await user.click(button!);
+
+      await waitFor(() => {
+        expect(document.querySelector('.rdp-weekday')?.textContent).toMatch(
+          /^seg/i
+        );
+      });
+    });
+  });
+
+  describe('getDayPickerLocale', () => {
+    test.each([
+      ['pt-BR', 'pt-BR'],
+      ['pt', 'pt-BR'],
+      ['es-MX', 'es'],
+      ['en-US', 'en-US'],
+      ['fr', 'en-US'],
+      [undefined, 'en-US'],
+    ])('maps %s to the %s calendar', (locale, expected) => {
+      expect(getDayPickerLocale(locale).code).toBe(expected);
     });
   });
 });

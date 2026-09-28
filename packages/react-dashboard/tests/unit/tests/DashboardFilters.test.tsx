@@ -72,7 +72,7 @@ describe('DashboardFilters', () => {
     );
 
     expect(screen.getByText('Date Range')).toBeInTheDocument();
-    expect(screen.getByText('Selecione o período')).toBeInTheDocument();
+    expect(screen.getByText('Select a period')).toBeInTheDocument();
   });
 
   test('should call onChange when text filter value changes', async () => {

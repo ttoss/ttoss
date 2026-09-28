@@ -39,6 +39,10 @@
     "defaultMessage": "Upload de Arquivo",
     "description": null
   },
+  "Yvbvep": {
+    "defaultMessage": "Selecione o período",
+    "description": "Date range picker: placeholder when no range is selected, and the mobile panel title when there is no label."
+  },
   "dx4ZnR": {
     "defaultMessage": "Logo de {name}",
     "description": "OAuth consent: alt text for the requesting application logo."

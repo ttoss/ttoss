@@ -25,7 +25,7 @@ describe('FormFieldDatePicker', () => {
       render(<RenderForm />);
 
       expect(screen.getByText('Date Range')).toBeInTheDocument();
-      expect(screen.getByText('Selecione o período')).toBeInTheDocument();
+      expect(screen.getByText('Select a period')).toBeInTheDocument();
     });
 
     test('should render without label', () => {
@@ -44,7 +44,7 @@ describe('FormFieldDatePicker', () => {
 
       render(<RenderForm />);
 
-      expect(screen.getByText('Selecione o período')).toBeInTheDocument();
+      expect(screen.getByText('Select a period')).toBeInTheDocument();
     });
 
     test('should display selected date range', () => {
@@ -70,8 +70,8 @@ describe('FormFieldDatePicker', () => {
 
       render(<RenderForm />);
 
-      expect(screen.getByText(/01\/01\/2024/)).toBeInTheDocument();
-      expect(screen.getByText(/31\/01\/2024/)).toBeInTheDocument();
+      expect(screen.getByText(/\b1\/1\/2024/)).toBeInTheDocument();
+      expect(screen.getByText(/1\/31\/2024/)).toBeInTheDocument();
     });
   });
 
@@ -234,7 +234,7 @@ describe('FormFieldDatePicker', () => {
 
       render(<RenderForm />);
 
-      const button = screen.getByText('Selecione o período').closest('button');
+      const button = screen.getByText('Select a period').closest('button');
       expect(button).toBeInTheDocument();
 
       if (button) {
@@ -276,7 +276,7 @@ describe('FormFieldDatePicker', () => {
 
       render(<RenderForm />);
 
-      const button = screen.getByText('Selecione o período').closest('button');
+      const button = screen.getByText('Select a period').closest('button');
       expect(button).toBeInTheDocument();
 
       if (button) {
@@ -380,8 +380,8 @@ describe('FormFieldDatePicker', () => {
 
       render(<RenderForm />);
 
-      expect(screen.getByText(/01\/01\/2024/)).toBeInTheDocument();
-      expect(screen.getByText(/31\/01\/2024/)).toBeInTheDocument();
+      expect(screen.getByText(/\b1\/1\/2024/)).toBeInTheDocument();
+      expect(screen.getByText(/1\/31\/2024/)).toBeInTheDocument();
 
       await user.click(screen.getByText('Submit'));
 
@@ -412,7 +412,7 @@ describe('FormFieldDatePicker', () => {
 
       render(<RenderForm />);
 
-      expect(screen.getByText(/01\/01\/2024/)).toBeInTheDocument();
+      expect(screen.getByText(/\b1\/1\/2024/)).toBeInTheDocument();
 
       await user.click(screen.getByText('Submit'));
 
@@ -462,7 +462,7 @@ describe('FormFieldDatePicker', () => {
       onSubmit.mockClear();
 
       // Open picker and select a preset
-      const button = screen.getByText('Selecione o período').closest('button');
+      const button = screen.getByText('Select a period').closest('button');
       if (button) {
         await user.click(button);
         await waitFor(() => {
@@ -589,7 +589,7 @@ describe('FormFieldDatePicker', () => {
 
       render(<RenderForm />);
 
-      expect(screen.getByText('Selecione o período')).toBeInTheDocument();
+      expect(screen.getByText('Select a period')).toBeInTheDocument();
 
       await user.click(screen.getByText('Submit'));
 
@@ -619,7 +619,7 @@ describe('FormFieldDatePicker', () => {
 
       render(<RenderForm />);
 
-      expect(screen.getByText('Selecione o período')).toBeInTheDocument();
+      expect(screen.getByText('Select a period')).toBeInTheDocument();
 
       await user.click(screen.getByText('Submit'));
 

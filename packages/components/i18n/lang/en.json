@@ -36,6 +36,10 @@
   "XKyo5X": {
     "defaultMessage": "File Upload"
   },
+  "Yvbvep": {
+    "defaultMessage": "Select a period",
+    "description": "Date range picker: placeholder when no range is selected, and the mobile panel title when there is no label."
+  },
   "dx4ZnR": {
     "defaultMessage": "{name} logo",
     "description": "OAuth consent: alt text for the requesting application logo."

@@ -14,7 +14,7 @@ describe('DateRangeFilter', () => {
   test('should show placeholder when no value is selected', () => {
     render(<DateRangeFilter label="Date Range" value={undefined} />);
 
-    expect(screen.getByText('Selecione o período')).toBeInTheDocument();
+    expect(screen.getByText('Select a period')).toBeInTheDocument();
   });
 
   test('should display selected date range', () => {
@@ -24,8 +24,8 @@ describe('DateRangeFilter', () => {
 
     render(<DateRangeFilter label="Date Range" value={value} />);
 
-    expect(screen.getByText(/01\/01\/2024/)).toBeInTheDocument();
-    expect(screen.getByText(/31\/01\/2024/)).toBeInTheDocument();
+    expect(screen.getByText(/\b1\/1\/2024/)).toBeInTheDocument();
+    expect(screen.getByText(/1\/31\/2024/)).toBeInTheDocument();
   });
 
   test('should display only from date when to is undefined', () => {
@@ -34,14 +34,14 @@ describe('DateRangeFilter', () => {
 
     render(<DateRangeFilter label="Date Range" value={value} />);
 
-    expect(screen.getByText(/01\/01\/2024/)).toBeInTheDocument();
-    expect(screen.queryByText(/31\/01\/2024/)).not.toBeInTheDocument();
+    expect(screen.getByText(/\b1\/1\/2024/)).toBeInTheDocument();
+    expect(screen.queryByText(/1\/31\/2024/)).not.toBeInTheDocument();
   });
 
   test('should open date picker when button is clicked', async () => {
     render(<DateRangeFilter label="Date Range" value={undefined} />);
 
-    const button = screen.getByText('Selecione o período').closest('button');
+    const button = screen.getByText('Select a period').closest('button');
     expect(button).toBeInTheDocument();
 
     if (button) {
@@ -93,7 +93,7 @@ describe('DateRangeFilter', () => {
       <DateRangeFilter label="Date Range" value={undefined} presets={presets} />
     );
 
-    const button = screen.getByText('Selecione o período').closest('button');
+    const button = screen.getByText('Select a period').closest('button');
     expect(button).toBeInTheDocument();
 
     if (button) {
@@ -135,7 +135,7 @@ describe('DateRangeFilter', () => {
       <DateRangeFilter label="Date Range" value={undefined} />
     );
 
-    expect(screen.getByText('Selecione o período')).toBeInTheDocument();
+    expect(screen.getByText('Select a period')).toBeInTheDocument();
 
     const newValue: DateRange = {
       from: new Date(2024, 0, 1),
@@ -144,8 +144,8 @@ describe('DateRangeFilter', () => {
 
     rerender(<DateRangeFilter label="Date Range" value={newValue} />);
 
-    expect(screen.getByText(/01\/01\/2024/)).toBeInTheDocument();
-    expect(screen.getByText(/31\/01\/2024/)).toBeInTheDocument();
+    expect(screen.getByText(/\b1\/1\/2024/)).toBeInTheDocument();
+    expect(screen.getByText(/1\/31\/2024/)).toBeInTheDocument();
   });
 
   test('should close picker when clicking outside', async () => {
@@ -156,7 +156,7 @@ describe('DateRangeFilter', () => {
       </div>
     );
 
-    const button = screen.getByText('Selecione o período').closest('button');
+    const button = screen.getByText('Select a period').closest('button');
     expect(button).toBeInTheDocument();
 
     if (button) {
@@ -191,7 +191,7 @@ describe('DateRangeFilter', () => {
       />
     );
 
-    const button = screen.getByText('Selecione o período').closest('button');
+    const button = screen.getByText('Select a period').closest('button');
     expect(button).toBeInTheDocument();
 
     if (button) {
@@ -229,7 +229,7 @@ describe('DateRangeFilter', () => {
       />
     );
 
-    const button = screen.getByText('Selecione o período').closest('button');
+    const button = screen.getByText('Select a period').closest('button');
     expect(button).toBeInTheDocument();
 
     if (button) {
@@ -260,7 +260,7 @@ describe('DateRangeFilter', () => {
       />
     );
 
-    const button = screen.getByText(/15\/01\/2024/).closest('button');
+    const button = screen.getByText(/1\/15\/2024/).closest('button');
     expect(button).toBeInTheDocument();
 
     if (button) {
@@ -299,7 +299,7 @@ describe('DateRangeFilter', () => {
       />
     );
 
-    const button = screen.getByText(/15\/01\/2024/).closest('button');
+    const button = screen.getByText(/1\/15\/2024/).closest('button');
     expect(button).toBeInTheDocument();
 
     if (button) {
@@ -322,7 +322,7 @@ describe('DateRangeFilter', () => {
       />
     );
 
-    const button = screen.getByText(/15\/01\/2024/).closest('button');
+    const button = screen.getByText(/1\/15\/2024/).closest('button');
     expect(button).toBeInTheDocument();
 
     if (button) {
@@ -345,7 +345,7 @@ describe('DateRangeFilter', () => {
     );
 
     // The handleDayPickerSelect should handle cases with only from or to
-    expect(screen.getByText(/15\/01\/2024/)).toBeInTheDocument();
+    expect(screen.getByText(/1\/15\/2024/)).toBeInTheDocument();
   });
 
   test('should handle handleDayPickerSelect with selected.to only', async () => {
@@ -382,7 +382,7 @@ describe('DateRangeFilter', () => {
     );
 
     // Open the calendar
-    const button = screen.getByText(/15\/01\/2024/).closest('button');
+    const button = screen.getByText(/1\/15\/2024/).closest('button');
     if (button) {
       await user.click(button);
 
@@ -419,7 +419,7 @@ describe('DateRangeFilter', () => {
     );
 
     // Open calendar
-    const button = screen.getByText('Selecione o período').closest('button');
+    const button = screen.getByText('Select a period').closest('button');
     if (button) {
       await user.click(button);
 
@@ -453,7 +453,7 @@ describe('DateRangeFilter', () => {
     );
 
     // Open calendar with both dates set
-    const button = screen.getByText(/15\/01\/2024/).closest('button');
+    const button = screen.getByText(/1\/15\/2024/).closest('button');
     if (button) {
       await user.click(button);
 
@@ -488,7 +488,7 @@ describe('DateRangeFilter', () => {
     );
 
     // Open calendar
-    const button = screen.getByText('Selecione o período').closest('button');
+    const button = screen.getByText('Select a period').closest('button');
     if (button) {
       await user.click(button);
 
@@ -525,7 +525,7 @@ describe('DateRangeFilter', () => {
     );
 
     // Open calendar
-    const button = screen.getByText('Selecione o período').closest('button');
+    const button = screen.getByText('Select a period').closest('button');
     if (button) {
       await user.click(button);
 
@@ -549,7 +549,7 @@ describe('DateRangeFilter', () => {
     );
 
     // Open calendar
-    const button = screen.getByText('Selecione o período').closest('button');
+    const button = screen.getByText('Select a period').closest('button');
     if (button) {
       await user.click(button);
 
@@ -575,7 +575,7 @@ describe('DateRangeFilter', () => {
     );
 
     // Open calendar
-    const button = screen.getByText(/15\/01\/2024/).closest('button');
+    const button = screen.getByText(/1\/15\/2024/).closest('button');
     if (button) {
       await user.click(button);
 
@@ -612,7 +612,7 @@ describe('DateRangeFilter', () => {
     );
 
     // Open calendar
-    const button = screen.getByText(/15\/01\/2024/).closest('button');
+    const button = screen.getByText(/1\/15\/2024/).closest('button');
     if (button) {
       await user.click(button);
 
@@ -648,7 +648,7 @@ describe('DateRangeFilter', () => {
     );
 
     // Open calendar
-    const button = screen.getByText('Selecione o período').closest('button');
+    const button = screen.getByText('Select a period').closest('button');
     if (button) {
       await user.click(button);
 
