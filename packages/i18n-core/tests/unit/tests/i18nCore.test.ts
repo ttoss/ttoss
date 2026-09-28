@@ -1,0 +1,476 @@
+import {
+  createCatalog,
+  createI18n,
+  defineMessages,
+  fmt,
+  isFormatValue,
+  isLocalizedError,
+  isMessageRef,
+  LocalizedError,
+  msg,
+  negotiateLocale,
+} from 'src/index';
+
+const messages = defineMessages({
+  greeting: {
+    defaultMessage: 'Hello, {name}!',
+    description: 'Greeting',
+  },
+  spent: {
+    defaultMessage: 'You spent {amount} on {date}.',
+    description: 'Spend summary',
+  },
+  campaigns: {
+    defaultMessage:
+      '{count, plural, =0 {No campaigns} one {# campaign} other {# campaigns}}',
+    description: 'Campaign count',
+  },
+  paused: {
+    defaultMessage: 'Campaign {campaign} was <b>paused</b> because {reason}.',
+    description: 'Paused campaign',
+  },
+  reason: {
+    defaultMessage: 'its budget ran out',
+    description: 'Pause reason',
+  },
+  lineBreak: {
+    defaultMessage: 'First<br></br>Second',
+    description: 'Two lines',
+  },
+  flag: {
+    defaultMessage: '{enabled, select, true {On} other {Off}}',
+    description: 'Toggle state',
+  },
+  optional: {
+    defaultMessage: 'Note: {note}',
+    description: 'Optional note',
+  },
+  accessLost: {
+    defaultMessage: 'We lost access to ad account {account}.',
+    description: 'Access lost error',
+  },
+  explicit: {
+    // `@ttoss/eslint-config` enables `formatjs/no-id`, whose autofix deletes
+    // explicit ids; a persisted reference needs one.
+    // eslint-disable-next-line formatjs/no-id
+    id: 'billing.renewal',
+    defaultMessage: 'Your plan renews {when}.',
+    description: 'Renewal date',
+  },
+});
+
+const ptBR = {
+  [messages.greeting.id]: 'Olá, {name}!',
+  [messages.spent.id]: 'Você gastou {amount} em {date}.',
+  [messages.paused.id]:
+    'A campanha {campaign} foi <b>pausada</b> porque {reason}.',
+  [messages.reason.id]: 'o orçamento acabou',
+};
+
+describe('msg', () => {
+  test('creates a JSON-safe reference that round-trips', () => {
+    const ref = msg(messages.greeting, { name: 'Ana' });
+
+    expect(ref).toEqual({
+      id: messages.greeting.id,
+      defaultMessage: messages.greeting.defaultMessage,
+      values: { name: 'Ana' },
+    });
+    expect(JSON.parse(JSON.stringify(ref))).toEqual(ref);
+  });
+
+  test('omits values when none are given', () => {
+    expect(msg(messages.reason)).not.toHaveProperty('values');
+  });
+
+  test('keeps an explicit id', () => {
+    expect(msg(messages.explicit).id).toBe('billing.renewal');
+  });
+
+  test('throws on a descriptor without an id', () => {
+    expect(() => {
+      return msg({ defaultMessage: 'No id' });
+    }).toThrow(TypeError);
+  });
+
+  test('throws on a descriptor without a defaultMessage', () => {
+    expect(() => {
+      return msg({ id: 'only.id' });
+    }).toThrow('only.id');
+  });
+});
+
+describe('isMessageRef', () => {
+  test.each([
+    [msg(messages.reason), true],
+    [{ id: 'a', defaultMessage: [] }, true],
+    [{ id: 'a' }, false],
+    [{ defaultMessage: 'a' }, false],
+    [fmt.number({ value: 1 }), false],
+    ['text', false],
+    [null, false],
+  ])('%j → %s', (value, expected) => {
+    expect(isMessageRef(value)).toBe(expected);
+  });
+});
+
+describe('fmt', () => {
+  test('uppercases the currency code', () => {
+    expect(fmt.currency({ value: 10, currency: 'usd' })).toEqual({
+      $fmt: 'currency',
+      value: 10,
+      currency: 'USD',
+    });
+  });
+
+  test('stores dates as ISO strings', () => {
+    expect(
+      fmt.date({ value: new Date('2026-09-28T12:00:00Z'), timeZone: 'UTC' })
+    ).toEqual({
+      $fmt: 'date',
+      value: '2026-09-28T12:00:00.000Z',
+      timeZone: 'UTC',
+    });
+    expect(fmt.relativeTime({ value: '2026-09-28T12:00:00Z' })).toEqual({
+      $fmt: 'relativeTime',
+      value: '2026-09-28T12:00:00.000Z',
+    });
+  });
+
+  test('rejects an invalid date where it is created', () => {
+    expect(() => {
+      return fmt.date({ value: 'not a date' });
+    }).toThrow(RangeError);
+  });
+
+  test('isFormatValue recognizes every kind and nothing else', () => {
+    expect(isFormatValue(fmt.percent({ ratio: 0.5 }))).toBe(true);
+    expect(isFormatValue({ $fmt: 'unknown' })).toBe(false);
+    expect(isFormatValue(msg(messages.reason))).toBe(false);
+  });
+});
+
+describe('createI18n', () => {
+  const pt = createI18n({ locale: 'pt-BR', messages: ptBR });
+  const en = createI18n({ locale: 'en', messages: {} });
+
+  test('renders a reference from the catalog', () => {
+    expect(pt.render(msg(messages.greeting, { name: 'Ana' }))).toBe(
+      'Olá, Ana!'
+    );
+  });
+
+  test('falls back to defaultMessage when the catalog lacks the id', () => {
+    const onError = jest.fn();
+    const i18n = createI18n({ locale: 'pt-BR', messages: {}, onError });
+
+    expect(i18n.render(msg(messages.greeting, { name: 'Ana' }))).toBe(
+      'Hello, Ana!'
+    );
+    expect(onError).toHaveBeenCalledWith(
+      expect.objectContaining({ code: 'MISSING_TRANSLATION' })
+    );
+  });
+
+  test('reports no missing translation for the source locale', () => {
+    const onError = jest.fn();
+    const i18n = createI18n({
+      locale: 'pt-BR',
+      defaultLocale: 'pt-BR',
+      messages: {},
+      onError,
+    });
+
+    i18n.render(msg(messages.reason));
+
+    expect(onError).not.toHaveBeenCalled();
+  });
+
+  test('formats deferred values in the reader locale, keeping the currency', () => {
+    const ref = msg(messages.spent, {
+      amount: fmt.currency({ value: 1234.5, currency: 'USD' }),
+      date: fmt.date({ value: '2026-09-28T12:00:00Z', timeZone: 'UTC' }),
+    });
+
+    expect(pt.render(ref)).toBe('Você gastou US$\u00a01.234,50 em 28/09/2026.');
+    expect(en.render(ref)).toBe('You spent $1,234.50 on 9/28/26.');
+  });
+
+  test('formats numbers, percents and date styles', () => {
+    expect(
+      pt.formatValue(
+        fmt.number({ value: 1234.567, options: { maximumFractionDigits: 1 } })
+      )
+    ).toBe('1.234,6');
+    expect(
+      pt.formatValue(fmt.percent({ ratio: 0.125, maximumFractionDigits: 1 }))
+    ).toBe('12,5%');
+    expect(
+      en.formatValue(
+        fmt.date({
+          value: '2026-09-28T15:30:00Z',
+          timeZone: 'America/Sao_Paulo',
+          timeStyle: 'short',
+        })
+      )
+    ).toBe('12:30 PM');
+    expect(
+      en.formatValue(
+        fmt.date({
+          value: '2026-09-28T15:30:00Z',
+          timeZone: 'UTC',
+          dateStyle: 'long',
+        })
+      )
+    ).toBe('September 28, 2026');
+  });
+
+  test('formats relative time against now', () => {
+    jest.setSystemTime(new Date('2026-09-28T12:00:00Z'));
+
+    expect(
+      en.formatValue(fmt.relativeTime({ value: '2026-09-27T12:00:00Z' }))
+    ).toBe('yesterday');
+    expect(
+      pt.formatValue(fmt.relativeTime({ value: '2026-09-28T15:00:00Z' }))
+    ).toBe('em 3 horas');
+    expect(
+      en.formatValue(fmt.relativeTime({ value: '2026-09-28T12:00:00Z' }))
+    ).toBe('now');
+  });
+
+  test('keeps plural arguments numeric', () => {
+    expect(en.render(msg(messages.campaigns, { count: 0 }))).toBe(
+      'No campaigns'
+    );
+    expect(en.render(msg(messages.campaigns, { count: 1 }))).toBe('1 campaign');
+    expect(en.render(msg(messages.campaigns, { count: 1200 }))).toBe(
+      '1,200 campaigns'
+    );
+  });
+
+  test('renders booleans for select and null as empty', () => {
+    expect(en.render(msg(messages.flag, { enabled: true }))).toBe('On');
+    expect(en.render(msg(messages.flag, { enabled: false }))).toBe('Off');
+    expect(en.render(msg(messages.optional, { note: null }))).toBe('Note: ');
+  });
+
+  test('renders nested references in the same locale', () => {
+    const ref = msg(messages.paused, {
+      campaign: 'Black Friday',
+      reason: msg(messages.reason),
+    });
+
+    expect(pt.render(ref)).toBe(
+      'A campanha Black Friday foi pausada porque o orçamento acabou.'
+    );
+    expect(pt.renderHtml(ref)).toBe(
+      'A campanha Black Friday foi <b>pausada</b> porque o orçamento acabou.'
+    );
+  });
+
+  test('renderHtml escapes values but not the message markup', () => {
+    const ref = msg(messages.paused, {
+      campaign: '<script>alert("x")</script>',
+      reason: msg(messages.reason),
+    });
+
+    expect(en.renderHtml(ref)).toBe(
+      'Campaign &lt;script&gt;alert(&quot;x&quot;)&lt;/script&gt; was <b>paused</b> because its budget ran out.'
+    );
+    expect(en.render(ref)).toBe(
+      'Campaign <script>alert("x")</script> was paused because its budget ran out.'
+    );
+  });
+
+  test('renders void tags', () => {
+    expect(en.render(msg(messages.lineBreak))).toBe('First\nSecond');
+    expect(en.renderHtml(msg(messages.lineBreak))).toBe('First<br>Second');
+  });
+
+  test('passes plain strings through, escaped for html', () => {
+    expect(pt.render('Texto legado')).toBe('Texto legado');
+    expect(pt.renderHtml('a < b & c')).toBe('a &lt; b &amp; c');
+  });
+
+  test('renders a reference that went through JSON', () => {
+    const stored = JSON.parse(
+      JSON.stringify(
+        msg(messages.spent, {
+          amount: fmt.currency({ value: 5, currency: 'BRL' }),
+          date: fmt.date({ value: '2026-01-02T00:00:00Z', timeZone: 'UTC' }),
+        })
+      )
+    );
+
+    expect(pt.render(stored)).toBe('Você gastou R$\u00a05,00 em 02/01/2026.');
+  });
+
+  test('is still an IntlShape', () => {
+    expect(pt.locale).toBe('pt-BR');
+    expect(pt.formatMessage(messages.greeting, { name: 'Ana' })).toBe(
+      'Olá, Ana!'
+    );
+  });
+});
+
+describe('negotiateLocale', () => {
+  const supported = ['en', 'pt-BR', 'es'];
+
+  test.each<[string | string[] | null | undefined, string]>([
+    [undefined, 'pt-BR'],
+    [null, 'pt-BR'],
+    ['', 'pt-BR'],
+    ['en', 'en'],
+    ['EN-us', 'en'],
+    ['pt-br', 'pt-BR'],
+    ['pt', 'pt-BR'],
+    ['pt-PT', 'pt-BR'],
+    ['es-MX', 'es'],
+    ['fr', 'pt-BR'],
+    ['fr-CA,fr;q=0.9,es;q=0.8,en;q=0.7', 'es'],
+    ['en;q=0.5, pt-BR', 'pt-BR'],
+    ['*', 'pt-BR'],
+    ['en;q=0', 'pt-BR'],
+    ['not a locale!!, es', 'es'],
+    [['fr', 'en'], 'en'],
+  ])('%j → %s', (requested, expected) => {
+    expect(negotiateLocale({ requested, supported, fallback: 'pt-BR' })).toBe(
+      expected
+    );
+  });
+
+  test('prefers a truncated exact match over another region', () => {
+    expect(
+      negotiateLocale({
+        requested: 'pt-PT',
+        supported: ['pt-BR', 'pt'],
+        fallback: 'en',
+      })
+    ).toBe('pt');
+  });
+});
+
+describe('createCatalog', () => {
+  test('loads each negotiated locale once', async () => {
+    const load = jest.fn((locale: string) => {
+      return locale === 'pt-BR' ? ptBR : {};
+    });
+    const catalog = createCatalog({
+      supported: ['en', 'pt-BR'],
+      fallback: 'en',
+      load,
+    });
+
+    const first = await catalog.getI18n('pt-BR,pt;q=0.9');
+    const second = await catalog.getI18n('pt');
+    const fallback = await catalog.getI18n(undefined);
+
+    expect(first).toBe(second);
+    expect(first.render(msg(messages.reason))).toBe('o orçamento acabou');
+    expect(fallback.locale).toBe('en');
+    expect(load).toHaveBeenCalledTimes(2);
+    expect(catalog.negotiate('es')).toBe('en');
+  });
+
+  test('retries a load that failed', async () => {
+    const load = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('S3 is down'))
+      .mockResolvedValueOnce(ptBR);
+    const catalog = createCatalog({
+      supported: ['pt-BR'],
+      fallback: 'pt-BR',
+      defaultLocale: 'pt-BR',
+      load,
+    });
+
+    await expect(catalog.getI18n()).rejects.toThrow('S3 is down');
+
+    const i18n = await catalog.getI18n();
+
+    expect(i18n.render(msg(messages.greeting, { name: 'Ana' }))).toBe(
+      'Olá, Ana!'
+    );
+    expect(load).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('LocalizedError', () => {
+  const ref = msg(messages.accessLost, { account: 'Loja' });
+
+  test('carries a code and a reference, with the source text as message', () => {
+    const cause = new Error('OAuthException');
+    const error = new LocalizedError({
+      code: 'META_ACCESS_LOST',
+      message: ref,
+      cause,
+    });
+
+    expect(error).toBeInstanceOf(Error);
+    expect(error.name).toBe('LocalizedError');
+    expect(error.code).toBe('META_ACCESS_LOST');
+    expect(error.message).toBe('We lost access to ad account Loja.');
+    expect(error.messageRef).toBe(ref);
+    expect(error.cause).toBe(cause);
+  });
+
+  test('omits cause when none is given', () => {
+    expect('cause' in new LocalizedError({ code: 'X', message: ref })).toBe(
+      false
+    );
+  });
+
+  test('serializes to JSON with its reference', () => {
+    const error = new LocalizedError({
+      code: 'META_ACCESS_LOST',
+      message: ref,
+    });
+
+    expect(JSON.parse(JSON.stringify(error))).toEqual({
+      name: 'LocalizedError',
+      code: 'META_ACCESS_LOST',
+      message: 'We lost access to ad account Loja.',
+      messageRef: ref,
+    });
+  });
+
+  test('renders in the reader locale at the edge', () => {
+    const error = new LocalizedError({
+      code: 'META_ACCESS_LOST',
+      message: ref,
+    });
+    const i18n = createI18n({
+      locale: 'pt-BR',
+      messages: {
+        [messages.accessLost.id]:
+          'Perdemos o acesso à conta de anúncios {account}.',
+      },
+    });
+
+    expect(i18n.render(error.messageRef)).toBe(
+      'Perdemos o acesso à conta de anúncios Loja.'
+    );
+  });
+
+  test('isLocalizedError matches by shape, not by class', () => {
+    class ForeignError extends Error {
+      code = 'FOREIGN';
+
+      messageRef = ref;
+    }
+
+    expect(
+      isLocalizedError(new LocalizedError({ code: 'X', message: ref }))
+    ).toBe(true);
+    expect(isLocalizedError(new ForeignError())).toBe(true);
+    expect(
+      isLocalizedError(JSON.parse(JSON.stringify(new ForeignError())))
+    ).toBe(true);
+    expect(isLocalizedError(new Error('plain'))).toBe(false);
+    expect(isLocalizedError({ code: 'X', messageRef: { id: 'x' } })).toBe(
+      false
+    );
+    expect(isLocalizedError(undefined)).toBe(false);
+  });
+});

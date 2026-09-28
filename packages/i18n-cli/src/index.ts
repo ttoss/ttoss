@@ -1,344 +1,476 @@
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 
-import { compile, extract } from '@formatjs/cli-lib';
-import fg from 'fast-glob';
+import { compile } from '@formatjs/cli-lib';
 import minimist from 'minimist';
 
-// Types and interfaces
-interface PackageJson {
-  dependencies?: Record<string, string>;
-  peerDependencies?: Record<string, string>;
-  devDependencies?: Record<string, string>;
-}
+import {
+  DEFAULT_SCOPES,
+  DEFAULT_SOURCE_LOCALE,
+  getI18nConfig,
+  type I18nConfig,
+  type TranslationData,
+} from './config';
+import {
+  type DependencyCatalog,
+  getDependencyCatalogs,
+  getDependencyMessagesForLocale,
+  getDependencySourceMessages,
+} from './dependencies';
+import {
+  type DuplicateId,
+  extractTranslationsFromSource,
+  findDuplicateIds,
+  findGeneratedIds,
+  type GeneratedIdViolation,
+} from './extract';
 
-interface TranslationData {
-  [key: string]: {
-    defaultMessage?: string;
-    description?: string;
-    module?: string;
-  };
-}
+export {
+  DEFAULT_SCOPES,
+  DEFAULT_SOURCE_LOCALE,
+  getI18nConfig,
+  type I18nConfig,
+  ID_INTERPOLATION_PATTERN,
+  type TranslationData,
+} from './config';
+export {
+  type DependencyCatalog,
+  findPackageDir,
+  getDependencyCatalogs,
+  getDependencyMessagesForLocale,
+  getDependencySourceMessages,
+  readDependencyCatalog,
+} from './dependencies';
+export {
+  extractTranslationsFromSource,
+  findDuplicateIds,
+  findGeneratedIds,
+} from './extract';
 
-interface I18nConfig {
-  defaultDir: string;
-  extractDir: string;
-  extractFile: string;
-  compileDir: string;
-  missingDir: string;
-  unusedDir: string;
-}
+export type I18nCliOptions = {
+  cwd: string;
+  pattern: string | string[];
+  ignore: string[];
+  sourceLocale: string;
+  scopes: string[];
+  ignoreDependencies: boolean;
+  compile: boolean;
+  explicitIds: string[];
+  locales?: string[];
+};
 
-const DEFAULT_DIR = 'i18n';
+const toList = (value: unknown): string[] | undefined => {
+  if (value === undefined || value === true || value === false) {
+    return undefined;
+  }
 
-const EXTRACT_DIR = path.join(DEFAULT_DIR, 'lang');
+  return (Array.isArray(value) ? value : [value])
+    .flatMap((item) => {
+      return String(item).split(',');
+    })
+    .map((item) => {
+      return item.trim();
+    })
+    .filter(Boolean);
+};
 
-const EXTRACT_FILE = path.join(EXTRACT_DIR, 'en.json');
-
-const COMPILE_DIR = path.join(DEFAULT_DIR, 'compiled');
-
-const MISSING_DIR = path.join(DEFAULT_DIR, 'missing');
-
-const UNUSED_DIR = path.join(DEFAULT_DIR, 'unused');
-
-const argv = minimist(process.argv.slice(2));
-
-// Configuration function
-export const getI18nConfig = (): I18nConfig => {
+export const parseOptions = ({
+  argv,
+  cwd = process.cwd(),
+}: {
+  argv: minimist.ParsedArgs;
+  cwd?: string;
+}): I18nCliOptions => {
   return {
-    defaultDir: DEFAULT_DIR,
-    extractDir: EXTRACT_DIR,
-    extractFile: EXTRACT_FILE,
-    compileDir: COMPILE_DIR,
-    missingDir: MISSING_DIR,
-    unusedDir: UNUSED_DIR,
+    cwd,
+    pattern: argv.pattern || 'src/**/*.{ts,tsx}',
+    ignore: toList(argv.ignore) ?? ['src/**/*.test.{ts,tsx}', 'src/**/*.d.ts'],
+    sourceLocale: argv['source-locale'] || DEFAULT_SOURCE_LOCALE,
+    scopes: toList(argv.scope) ?? DEFAULT_SCOPES,
+    ignoreDependencies: Boolean(
+      argv['ignore-dependencies'] || argv['ignore-ttoss-packages']
+    ),
+    // minimist reads `--no-compile` as `compile: false`.
+    compile: argv.compile !== false,
+    explicitIds: toList(argv['explicit-ids']) ?? [],
+    locales: toList(argv.locales),
   };
 };
 
-// Extract translations from source files
-export const extractTranslationsFromSource = async (
-  pattern: string,
-  ignore: string[]
-): Promise<string> => {
-  return extract(fg.sync(pattern, { ignore }), {
-    idInterpolationPattern: '[sha512:contenthash:base64:6]',
-  });
+const writeJson = async (file: string, data: unknown) => {
+  await fs.promises.mkdir(path.dirname(file), { recursive: true });
+  await fs.promises.writeFile(file, JSON.stringify(data, undefined, 2));
 };
 
-export const getTtossExtractedTranslations =
-  async (): Promise<TranslationData> => {
-    // Read package.json to get dependencies
-    const readPackageJson = async (): Promise<PackageJson> => {
-      const packageJsonAsString = await fs.promises.readFile(
-        path.join(process.cwd(), 'package.json')
-      );
-      return JSON.parse(packageJsonAsString.toString());
-    };
+const readJsonIfExists = (file: string): TranslationData | undefined => {
+  if (!fs.existsSync(file)) {
+    return undefined;
+  }
+  return JSON.parse(fs.readFileSync(file, 'utf8'));
+};
 
-    // Get ttoss dependencies from package.json
-    const getTtossDependencies = (packageJson: PackageJson): string[] => {
-      return Object.keys({
-        ...packageJson.dependencies,
-        ...packageJson.peerDependencies,
-      })
-        .filter((dependency) => {
-          return dependency.startsWith('@ttoss');
-        })
-        .filter((dependency) => {
-          return dependency !== '@ttoss/react-i18n';
-        })
-        .filter((dependency, index, array) => {
-          return array.indexOf(dependency) === index;
-        });
-    };
+/**
+ * Locales with a file in `i18n/lang`, the source locale included.
+ */
+export const getLangLocales = (config: I18nConfig) => {
+  if (!fs.existsSync(config.extractDir)) {
+    return [];
+  }
 
-    // Load translations from a ttoss dependency
-    const loadDependencyTranslations = (
-      dependency: string
-    ): TranslationData => {
-      try {
-        const dependencyPath = path.join(
-          process.cwd(),
-          'node_modules',
-          dependency
-        );
-        const config = getI18nConfig();
-        const requirePath = path.join(dependencyPath, config.extractFile);
+  return fs
+    .readdirSync(config.extractDir)
+    .filter((file) => {
+      return file.endsWith('.json');
+    })
+    .map((file) => {
+      return file.slice(0, -'.json'.length);
+    })
+    .sort();
+};
 
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const extractedTranslations = require(requirePath);
+export type ExtractionResult = {
+  config: I18nConfig;
+  own: TranslationData;
+  catalogs: DependencyCatalog[];
+  /** The source catalog: own messages plus every dependency's, own winning. */
+  source: TranslationData;
+  generatedIds: GeneratedIdViolation[];
+  duplicates: DuplicateId[];
+};
 
-        return Object.keys(extractedTranslations).reduce((accumulator, key) => {
-          accumulator[key] = {
-            module: dependency,
-            ...extractedTranslations[key],
-          };
-          return accumulator;
-        }, {} as TranslationData);
-      } catch {
-        return {};
-      }
-    };
-
-    const packageJson = await readPackageJson();
-    const ttossDependencies = getTtossDependencies(packageJson);
-    const ttossExtractedTranslations: TranslationData = {};
-
-    for (const dependency of ttossDependencies) {
-      const dependencyTranslations = loadDependencyTranslations(dependency);
-      Object.assign(ttossExtractedTranslations, dependencyTranslations);
-    }
-
-    return ttossExtractedTranslations;
-  };
-
-// Compile translations
-export const compileTranslations = async (
-  config: I18nConfig
-): Promise<void> => {
-  const translations = fg.sync('**/*.json', {
-    cwd: config.extractDir,
-    absolute: true,
+export const runExtraction = async (
+  options: I18nCliOptions
+): Promise<ExtractionResult> => {
+  const config = getI18nConfig({
+    cwd: options.cwd,
+    sourceLocale: options.sourceLocale,
   });
 
-  await fs.promises.mkdir(config.compileDir, { recursive: true });
+  const own = await extractTranslationsFromSource({
+    cwd: options.cwd,
+    pattern: options.pattern,
+    ignore: options.ignore,
+  });
 
-  for (const translation of translations) {
-    const filename = translation.split('/').pop();
+  const generatedIds =
+    options.explicitIds.length > 0
+      ? await findGeneratedIds({
+          cwd: options.cwd,
+          explicitIds: options.explicitIds,
+          ignore: options.ignore,
+        })
+      : [];
 
-    const compiledDataAsString = await compile([translation], {
-      ast: true,
-    });
+  const catalogs = options.ignoreDependencies
+    ? []
+    : getDependencyCatalogs({ cwd: options.cwd, scopes: options.scopes });
 
-    if (filename) {
+  const dependencySource = getDependencySourceMessages({
+    catalogs,
+    locale: options.sourceLocale,
+  });
+
+  const source: TranslationData = { ...own };
+  for (const [id, entry] of Object.entries(dependencySource)) {
+    source[id] ??= entry;
+  }
+
+  const duplicates = findDuplicateIds([
+    { module: '.', messages: own },
+    ...catalogs.map((catalog) => {
+      return {
+        module: catalog.module,
+        messages: catalog.locales[catalog.sourceLocale],
+      };
+    }),
+  ]);
+
+  return { config, own, catalogs, source, generatedIds, duplicates };
+};
+
+/**
+ * The messages compiled for `locale`: what the dependencies provide for it,
+ * overridden by the package's own `i18n/lang/<locale>.json`.
+ */
+export const getMessagesForLocale = ({
+  extraction,
+  locale,
+}: {
+  extraction: ExtractionResult;
+  locale: string;
+}): TranslationData => {
+  const { config, catalogs, source } = extraction;
+
+  if (locale === config.sourceLocale) {
+    return source;
+  }
+
+  const own =
+    readJsonIfExists(path.join(config.extractDir, `${locale}.json`)) ?? {};
+
+  return {
+    ...getDependencyMessagesForLocale({ catalogs, locale }),
+    ...own,
+  };
+};
+
+export const compileTranslations = async (extraction: ExtractionResult) => {
+  const { config } = extraction;
+  const tmpDir = await fs.promises.mkdtemp(
+    path.join(os.tmpdir(), 'ttoss-i18n-')
+  );
+
+  try {
+    await fs.promises.mkdir(config.compileDir, { recursive: true });
+
+    for (const locale of getLangLocales(config)) {
+      const merged = path.join(tmpDir, `${locale}.json`);
+      await writeJson(merged, getMessagesForLocale({ extraction, locale }));
       await fs.promises.writeFile(
-        path.join(config.compileDir, filename),
-        compiledDataAsString
+        path.join(config.compileDir, `${locale}.json`),
+        await compile([merged], { ast: true })
       );
     }
+  } finally {
+    await fs.promises.rm(tmpDir, { recursive: true, force: true });
   }
 };
 
-// Write final extracted data to file
-export const writeFinalExtractedData = async (
-  finalData: string,
-  config: I18nConfig
-): Promise<void> => {
-  await fs.promises.mkdir(config.extractDir, { recursive: true });
-  await fs.promises.writeFile(config.extractFile, finalData);
-};
+export const compareTranslations = ({
+  source,
+  translation,
+  provided = {},
+}: {
+  source: TranslationData;
+  translation: TranslationData;
+  /** Ids a dependency already translates, so they are not missing. */
+  provided?: TranslationData;
+}) => {
+  const missingTranslations: TranslationData = {};
+  const unusedTranslations: TranslationData = {};
+  const cleanTranslations: TranslationData = {};
 
-// Compare translations to find missing and unused
-export const compareTranslations = (
-  extractedTranslations: TranslationData,
-  translationData: TranslationData
-) => {
-  const missingTranslations = Object.keys(extractedTranslations).reduce(
-    (accumulator, key) => {
-      if (!translationData[key]) {
-        accumulator[key] = extractedTranslations[key];
-      }
-      return accumulator;
-    },
-    {} as TranslationData
-  );
+  for (const id of Object.keys(source)) {
+    if (!translation[id] && !provided[id]) {
+      missingTranslations[id] = source[id];
+    }
+  }
 
-  const unusedTranslations = Object.keys(translationData).reduce(
-    (accumulator, key) => {
-      if (!extractedTranslations[key]) {
-        accumulator[key] = translationData[key];
-      }
-      return accumulator;
-    },
-    {} as TranslationData
-  );
-
-  const cleanTranslations = Object.keys(translationData).reduce(
-    (accumulator, key) => {
-      if (extractedTranslations[key]) {
-        accumulator[key] = translationData[key];
-      }
-      return accumulator;
-    },
-    {} as TranslationData
-  );
+  for (const [id, entry] of Object.entries(translation)) {
+    if (source[id]) {
+      cleanTranslations[id] = entry;
+    } else {
+      unusedTranslations[id] = entry;
+    }
+  }
 
   return { missingTranslations, unusedTranslations, cleanTranslations };
 };
 
-// Write missing translations to file
-export const writeMissingTranslations = async (
-  filename: string,
-  missingTranslations: TranslationData,
-  config: I18nConfig
-): Promise<void> => {
-  await fs.promises.writeFile(
-    path.join(config.missingDir, filename),
-    JSON.stringify(missingTranslations, undefined, 2)
-  );
-};
-
-// Write unused translations to file
-export const writeUnusedTranslations = async (
-  filename: string,
-  unusedTranslations: TranslationData,
-  config: I18nConfig
-): Promise<void> => {
-  try {
-    const existingUnusedData = await fs.promises.readFile(
-      path.join(config.unusedDir, filename)
-    );
-    const existingUnused = JSON.parse(existingUnusedData.toString());
-
-    const updatedUnused = {
-      ...existingUnused,
-      ...unusedTranslations,
-    };
-
-    await fs.promises.writeFile(
-      path.join(config.unusedDir, filename),
-      JSON.stringify(updatedUnused, undefined, 2)
-    );
-  } catch {
-    await fs.promises.writeFile(
-      path.join(config.unusedDir, filename),
-      JSON.stringify(unusedTranslations, undefined, 2)
-    );
-  }
-};
-
-// Write clean translations back to the lang directory
-export const writeCleanTranslations = async (
-  filename: string,
-  cleanTranslations: TranslationData,
-  config: I18nConfig
-): Promise<void> => {
-  await fs.promises.writeFile(
-    path.join(config.extractDir, filename),
-    JSON.stringify(cleanTranslations, undefined, 2)
-  );
-};
-
-// Analyze missing and unused translations
+/**
+ * Write `i18n/missing/<locale>.json` and append to `i18n/unused/<locale>.json`
+ * for every translation file, and drop unused ids from the translation file.
+ */
 export const analyzeMissingAndUnusedTranslations = async (
-  finalExtractedData: string,
-  config: I18nConfig
-): Promise<void> => {
-  const translations = fg.sync('**/*.json', {
-    cwd: config.extractDir,
-    absolute: true,
-  });
+  extraction: ExtractionResult
+) => {
+  const { config, catalogs, source } = extraction;
 
-  await fs.promises.mkdir(config.missingDir, { recursive: true });
-  await fs.promises.mkdir(config.unusedDir, { recursive: true });
-
-  const extractedTranslations = JSON.parse(finalExtractedData);
-
-  for (const translation of translations) {
-    const filename = translation.split('/').pop();
-
-    if (filename === 'en.json') {
+  for (const locale of getLangLocales(config)) {
+    if (locale === config.sourceLocale) {
       continue;
     }
 
-    const translationData = JSON.parse(
-      fs.readFileSync(translation, { encoding: 'utf8' })
-    );
+    const file = `${locale}.json`;
+    const translation =
+      readJsonIfExists(path.join(config.extractDir, file)) ?? {};
 
     const { missingTranslations, unusedTranslations, cleanTranslations } =
-      compareTranslations(extractedTranslations, translationData);
+      compareTranslations({
+        source,
+        translation,
+        provided: getDependencyMessagesForLocale({ catalogs, locale }),
+      });
 
-    if (filename) {
-      await writeMissingTranslations(filename, missingTranslations, config);
-      await writeUnusedTranslations(filename, unusedTranslations, config);
-      await writeCleanTranslations(filename, cleanTranslations, config);
-    }
+    await writeJson(path.join(config.missingDir, file), missingTranslations);
+    await writeJson(path.join(config.unusedDir, file), {
+      ...readJsonIfExists(path.join(config.unusedDir, file)),
+      ...unusedTranslations,
+    });
+    await writeJson(path.join(config.extractDir, file), cleanTranslations);
   }
 };
 
-export const executeI18nCli = async () => {
-  const config = getI18nConfig();
-  const pattern = argv.pattern || 'src/**/*.{ts,tsx}';
-  const ignore = argv.ignore || ['src/**/*.test.{ts,tsx}', 'src/**/*.d.ts'];
-  const ignoreTtossPackages = argv['ignore-ttoss-packages'];
+const formatGeneratedIds = (generatedIds: GeneratedIdViolation[]) => {
+  return generatedIds
+    .map(({ id, defaultMessage }) => {
+      return `  - ${id}: ${JSON.stringify(defaultMessage)}`;
+    })
+    .join('\n');
+};
 
-  // Extract translations from source files
-  const extractedDataAsString = await extractTranslationsFromSource(
-    pattern,
-    ignore
-  );
+/**
+ * `ttoss-i18n`: extract the source catalog, then compile every locale and
+ * report what is missing and unused.
+ */
+export const runBuild = async (options: I18nCliOptions) => {
+  const extraction = await runExtraction(options);
+  const { config, source, generatedIds } = extraction;
 
-  // Get ttoss package translations if not ignored
-  const ttossExtractedTranslations = ignoreTtossPackages
-    ? {}
-    : await getTtossExtractedTranslations();
-
-  // Merge extracted data with ttoss translations
-  const finalExtractedData = (() => {
-    if (ignoreTtossPackages) {
-      return extractedDataAsString;
-    }
-
-    const parsedExtractedData = JSON.parse(extractedDataAsString);
-    const finalData = {
-      ...parsedExtractedData,
-      ...ttossExtractedTranslations,
-    };
-
-    return JSON.stringify(finalData, undefined, 2);
-  })();
-
-  // Write final extracted data to file
-  await writeFinalExtractedData(finalExtractedData, config);
-
-  // Skip compilation if requested
-  if (argv['no-compile']) {
-    return;
+  if (generatedIds.length > 0) {
+    throw new Error(
+      `ttoss-i18n: messages in ${options.explicitIds.join(', ')} must have an explicit id, because references to them are persisted:\n${formatGeneratedIds(generatedIds)}`
+    );
   }
 
-  // Compile translations
-  await compileTranslations(config);
+  await writeJson(config.extractFile, source);
 
-  // Analyze missing and unused translations
-  await analyzeMissingAndUnusedTranslations(finalExtractedData, config);
+  if (config.sourceLocale === DEFAULT_SOURCE_LOCALE) {
+    await fs.promises.rm(config.manifestFile, { force: true });
+  } else {
+    await writeJson(config.manifestFile, { sourceLocale: config.sourceLocale });
+  }
+
+  if (!options.compile) {
+    return extraction;
+  }
+
+  await compileTranslations(extraction);
+  await analyzeMissingAndUnusedTranslations(extraction);
+
+  return extraction;
+};
+
+export type CheckResult = {
+  ok: boolean;
+  missing: Record<string, string[]>;
+  duplicates: DuplicateId[];
+  generatedIds: GeneratedIdViolation[];
+};
+
+const findMissing = ({
+  extraction,
+  locales,
+}: {
+  extraction: ExtractionResult;
+  locales: string[];
+}) => {
+  const { config, catalogs, source } = extraction;
+  const missing: Record<string, string[]> = {};
+
+  for (const locale of locales) {
+    const { missingTranslations } = compareTranslations({
+      source,
+      translation:
+        readJsonIfExists(path.join(config.extractDir, `${locale}.json`)) ?? {},
+      provided: getDependencyMessagesForLocale({ catalogs, locale }),
+    });
+    const ids = Object.keys(missingTranslations);
+    if (ids.length > 0) {
+      missing[locale] = ids;
+    }
+  }
+
+  return missing;
+};
+
+const MAX_LISTED = 20;
+
+const describeProblems = ({
+  extraction,
+  missing,
+  explicitIds,
+}: {
+  extraction: ExtractionResult;
+  missing: Record<string, string[]>;
+  explicitIds: string[];
+}) => {
+  const { source, duplicates, generatedIds } = extraction;
+  const problems: string[] = [];
+
+  for (const [locale, ids] of Object.entries(missing)) {
+    const listed = ids
+      .slice(0, MAX_LISTED)
+      .map((id) => {
+        return `  - ${id}: ${JSON.stringify(source[id]?.defaultMessage)}`;
+      })
+      .join('\n');
+    const more =
+      ids.length > MAX_LISTED
+        ? `\n  … and ${ids.length - MAX_LISTED} more`
+        : '';
+    problems.push(
+      `${ids.length} message(s) missing a ${locale} translation:\n${listed}${more}`
+    );
+  }
+
+  for (const { id, modules } of duplicates) {
+    problems.push(
+      `id ${id} is declared with different text by ${modules.join(', ')}`
+    );
+  }
+
+  if (generatedIds.length > 0) {
+    problems.push(
+      `${generatedIds.length} message(s) in ${explicitIds.join(', ')} need an explicit id:\n${formatGeneratedIds(generatedIds)}`
+    );
+  }
+
+  return problems;
+};
+
+/**
+ * `ttoss-i18n check`: fail CI when a required locale is missing a
+ * translation, an id is declared twice with different text, or a persisted
+ * message has no explicit id. Writes nothing.
+ */
+export const runCheck = async (
+  options: I18nCliOptions,
+  log: Pick<Console, 'log' | 'error'> = console
+): Promise<CheckResult> => {
+  const extraction = await runExtraction(options);
+  const { config, source, duplicates, generatedIds } = extraction;
+
+  const locales = (options.locales ?? getLangLocales(config)).filter(
+    (locale) => {
+      return locale !== config.sourceLocale;
+    }
+  );
+
+  const missing = findMissing({ extraction, locales });
+  const problems = describeProblems({
+    extraction,
+    missing,
+    explicitIds: options.explicitIds,
+  });
+  const ok = problems.length === 0;
+
+  if (ok) {
+    log.log(
+      `ttoss-i18n check: ${Object.keys(source).length} messages, ${locales.length} locale(s) checked, no problems.`
+    );
+  } else {
+    log.error(`ttoss-i18n check failed:\n\n${problems.join('\n\n')}`);
+  }
+
+  return { ok, missing, duplicates, generatedIds };
+};
+
+export const executeI18nCli = async (
+  args: string[] = process.argv.slice(2),
+  cwd: string = process.cwd()
+) => {
+  const argv = minimist(args);
+  const options = parseOptions({ argv, cwd });
+
+  if (argv._[0] === 'check') {
+    const result = await runCheck(options);
+    if (!result.ok) {
+      process.exitCode = 1;
+    }
+    return result;
+  }
+
+  return runBuild(options);
 };
