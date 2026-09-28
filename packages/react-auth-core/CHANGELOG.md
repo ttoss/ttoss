@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.9.0...@ttoss/react-auth-core@0.9.1) (2026-09-28)
+
+### Bug Fixes
+
+- **components:** write the NotificationsMenu and InstallPwa sources in English ([#1268](https://github.com/ttoss/ttoss/issues/1268)) ([7bf67c6](https://github.com/ttoss/ttoss/commit/7bf67c6b2462ffcc295126e97065150cf0bd4059))
+
 # [0.9.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.8.2...@ttoss/react-auth-core@0.9.0) (2026-09-28)
 
 ### Features

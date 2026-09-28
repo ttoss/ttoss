@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.6.2](https://github.com/ttoss/ttoss/compare/@docs/storybook@7.6.1...@docs/storybook@7.6.2) (2026-09-28)
+
+### Bug Fixes
+
+- **components:** write the NotificationsMenu and InstallPwa sources in English ([#1268](https://github.com/ttoss/ttoss/issues/1268)) ([7bf67c6](https://github.com/ttoss/ttoss/commit/7bf67c6b2462ffcc295126e97065150cf0bd4059))
+
 ## [7.6.1](https://github.com/ttoss/ttoss/compare/@docs/storybook@7.6.0...@docs/storybook@7.6.1) (2026-09-28)
 
 **Note:** Version bump only for package @docs/storybook

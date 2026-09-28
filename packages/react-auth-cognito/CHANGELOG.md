@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.12.4](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.12.3...@ttoss/react-auth-cognito@2.12.4) (2026-09-28)
+
+### Bug Fixes
+
+- **components:** write the NotificationsMenu and InstallPwa sources in English ([#1268](https://github.com/ttoss/ttoss/issues/1268)) ([7bf67c6](https://github.com/ttoss/ttoss/commit/7bf67c6b2462ffcc295126e97065150cf0bd4059))
+
 ## [2.12.3](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.12.2...@ttoss/react-auth-cognito@2.12.3) (2026-09-28)
 
 **Note:** Version bump only for package @ttoss/react-auth-cognito
