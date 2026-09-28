@@ -9,11 +9,11 @@ export type InstallPwaUiProps = {
 
 const messages = defineMessages({
   prompt: {
-    defaultMessage: 'Deseja instalar o nosso aplicativo?',
+    defaultMessage: 'Would you like to install our app?',
     description: 'PWA install banner: the question offering installation.',
   },
   install: {
-    defaultMessage: 'Instalar',
+    defaultMessage: 'Install',
     description: 'PWA install banner: button that starts the installation.',
   },
 });

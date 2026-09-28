@@ -5,22 +5,20 @@ describe('InstallPwaUi', () => {
   test('renders install button', () => {
     render(<InstallPwaUi onInstall={jest.fn()} />);
     expect(
-      screen.getByRole('button', { name: /instalar/i })
+      screen.getByRole('button', { name: /^install$/i })
     ).toBeInTheDocument();
   });
 
   test('calls onInstall when button clicked', () => {
     const onInstall = jest.fn();
     render(<InstallPwaUi onInstall={onInstall} />);
-    fireEvent.click(screen.getByRole('button', { name: /instalar/i }));
+    fireEvent.click(screen.getByRole('button', { name: /^install$/i }));
     expect(onInstall).toHaveBeenCalledTimes(1);
   });
 
   test('shows install prompt text', () => {
     render(<InstallPwaUi onInstall={jest.fn()} />);
-    expect(
-      screen.getByText(/instalar o nosso aplicativo/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/install our app/i)).toBeInTheDocument();
   });
 });
 
@@ -44,7 +42,7 @@ describe('InstallPwa', () => {
     });
 
     expect(
-      screen.getByRole('button', { name: /instalar/i })
+      screen.getByRole('button', { name: /^install$/i })
     ).toBeInTheDocument();
   });
 });

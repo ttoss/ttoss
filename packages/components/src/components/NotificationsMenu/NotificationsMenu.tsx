@@ -24,11 +24,11 @@ type Props = {
 
 const messages = defineMessages({
   clearAll: {
-    defaultMessage: 'Limpar Tudo',
+    defaultMessage: 'Clear all',
     description: 'Notifications menu: button clearing every notification.',
   },
   empty: {
-    defaultMessage: 'Nenhuma notificação',
+    defaultMessage: 'No notifications',
     description: 'Notifications menu: shown when there is nothing to list.',
   },
 });

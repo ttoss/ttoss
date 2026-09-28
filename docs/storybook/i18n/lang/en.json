@@ -4,10 +4,20 @@
     "defaultMessage": "∞",
     "description": "Infinity symbol used when the maximum limit is unlimited."
   },
+  "0oVaj5": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Would you like to install our app?",
+    "description": "PWA install banner: the question offering installation."
+  },
   "1DbX9V": {
     "module": "@ttoss/components",
     "defaultMessage": "Near limit",
     "description": "Alert shown when usage is close to the limit."
+  },
+  "4+7L57": {
+    "module": "@ttoss/components",
+    "defaultMessage": "No notifications",
+    "description": "Notifications menu: shown when there is nothing to list."
   },
   "4NwCn9": {
     "module": "@ttoss/components",
@@ -22,19 +32,19 @@
     "module": "@ttoss/components",
     "defaultMessage": "Uploading..."
   },
-  "TqUkps": {
+  "UD/D6v": {
     "module": "@ttoss/components",
-    "defaultMessage": "Limpar Tudo",
+    "defaultMessage": "Install",
+    "description": "PWA install banner: button that starts the installation."
+  },
+  "WhMFgF": {
+    "module": "@ttoss/components",
+    "defaultMessage": "Clear all",
     "description": "Notifications menu: button clearing every notification."
   },
   "XKyo5X": {
     "module": "@ttoss/components",
     "defaultMessage": "File Upload"
-  },
-  "d/l4Zg": {
-    "module": "@ttoss/components",
-    "defaultMessage": "Deseja instalar o nosso aplicativo?",
-    "description": "PWA install banner: the question offering installation."
   },
   "dx4ZnR": {
     "module": "@ttoss/components",
@@ -53,11 +63,6 @@
     "module": "@ttoss/components",
     "defaultMessage": "{max_files, plural, one {Up to # file} other {Up to # files}}"
   },
-  "fcbTJg": {
-    "module": "@ttoss/components",
-    "defaultMessage": "Nenhuma notificação",
-    "description": "Notifications menu: shown when there is nothing to list."
-  },
   "gy0Ynb": {
     "module": "@ttoss/components",
     "defaultMessage": "Click or drag files here"
@@ -66,11 +71,6 @@
     "module": "@ttoss/components",
     "defaultMessage": "of {max}",
     "description": "Text shown before the max value, e.g. \"of 10\" or \"of ∞\"."
-  },
-  "rmaMPX": {
-    "module": "@ttoss/components",
-    "defaultMessage": "Instalar",
-    "description": "PWA install banner: button that starts the installation."
   },
   "rskBv4": {
     "module": "@ttoss/components",

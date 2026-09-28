@@ -3,9 +3,17 @@
     "defaultMessage": "∞",
     "description": "Infinity symbol used when the maximum limit is unlimited."
   },
+  "0oVaj5": {
+    "defaultMessage": "Would you like to install our app?",
+    "description": "PWA install banner: the question offering installation."
+  },
   "1DbX9V": {
     "defaultMessage": "Near limit",
     "description": "Alert shown when usage is close to the limit."
+  },
+  "4+7L57": {
+    "defaultMessage": "No notifications",
+    "description": "Notifications menu: shown when there is nothing to list."
   },
   "4NwCn9": {
     "defaultMessage": "Reached limit",
@@ -17,16 +25,16 @@
   "JEsxDw": {
     "defaultMessage": "Uploading..."
   },
-  "TqUkps": {
-    "defaultMessage": "Limpar Tudo",
+  "UD/D6v": {
+    "defaultMessage": "Install",
+    "description": "PWA install banner: button that starts the installation."
+  },
+  "WhMFgF": {
+    "defaultMessage": "Clear all",
     "description": "Notifications menu: button clearing every notification."
   },
   "XKyo5X": {
     "defaultMessage": "File Upload"
-  },
-  "d/l4Zg": {
-    "defaultMessage": "Deseja instalar o nosso aplicativo?",
-    "description": "PWA install banner: the question offering installation."
   },
   "dx4ZnR": {
     "defaultMessage": "{name} logo",
@@ -41,20 +49,12 @@
   "fOOwej": {
     "defaultMessage": "{max_files, plural, one {Up to # file} other {Up to # files}}"
   },
-  "fcbTJg": {
-    "defaultMessage": "Nenhuma notificação",
-    "description": "Notifications menu: shown when there is nothing to list."
-  },
   "gy0Ynb": {
     "defaultMessage": "Click or drag files here"
   },
   "oYpm71": {
     "defaultMessage": "of {max}",
     "description": "Text shown before the max value, e.g. \"of 10\" or \"of ∞\"."
-  },
-  "rmaMPX": {
-    "defaultMessage": "Instalar",
-    "description": "PWA install banner: button that starts the installation."
   },
   "rskBv4": {
     "defaultMessage": "Unlimited",
