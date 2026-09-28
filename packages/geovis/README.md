@@ -1072,15 +1072,40 @@ const spec: VisualizationSpec = {
 
 ### `LayerControl` fields
 
-| Field      | Type                                   | Required | Description                                                                                                                                                                                                                                                                                                                                            |
-| ---------- | -------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `id`       | `string`                               | ✓        | Unique identifier for the panel.                                                                                                                                                                                                                                                                                                                       |
-| `items`    | `LayerControlItem[]`                   | ✓        | The toggle buttons revealed when the panel is expanded.                                                                                                                                                                                                                                                                                                |
-| `position` | `LegendPosition`                       |          | Corner the panel is anchored to. Defaults to `'bottom-left'`.                                                                                                                                                                                                                                                                                          |
-| `offset`   | `number \| { x?: number; y?: number }` |          | Distance in pixels from the anchored edges. Defaults to `40`. A number applies to both edges; `{ x, y }` offsets each axis independently (each falling back to `40`) — e.g. push the control clear of a side panel horizontally without lifting it off the bottom edge. A changed `offset` animates, so the control slides across rather than jumping. |
-| `label`    | `string`                               |          | Accessible label / tooltip for the icon-only trigger. Defaults to `'Layers'`.                                                                                                                                                                                                                                                                          |
-| `icon`     | `string`                               |          | Icon on the collapsed trigger, a `@ttoss/react-icons` name (e.g. `'lucide:layers'`). Defaults to a built-in stacked-sheets glyph.                                                                                                                                                                                                                      |
-| `trigger`  | `'hover' \| 'click'`                   |          | How the panel expands. `'hover'` (default) also opens on click, for touch devices.                                                                                                                                                                                                                                                                     |
+| Field             | Type                                   | Required | Description                                                                                                                                                                                                                                                                                                                                            |
+| ----------------- | -------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `id`              | `string`                               | ✓        | Unique identifier for the panel.                                                                                                                                                                                                                                                                                                                       |
+| `items`           | `LayerControlItem[]`                   | ✓        | The toggle buttons revealed when the panel is expanded.                                                                                                                                                                                                                                                                                                |
+| `position`        | `LegendPosition`                       |          | Corner the panel is anchored to. Defaults to `'bottom-left'`.                                                                                                                                                                                                                                                                                          |
+| `offset`          | `number \| { x?: number; y?: number }` |          | Distance in pixels from the anchored edges. Defaults to `40`. A number applies to both edges; `{ x, y }` offsets each axis independently (each falling back to `40`) — e.g. push the control clear of a side panel horizontally without lifting it off the bottom edge. A changed `offset` animates, so the control slides across rather than jumping. |
+| `label`           | `string`                               |          | Accessible label / tooltip for the icon-only trigger. Defaults to `'Layers'`.                                                                                                                                                                                                                                                                          |
+| `icon`            | `string`                               |          | Icon on the collapsed trigger, a `@ttoss/react-icons` name (e.g. `'lucide:layers'`). Defaults to a built-in stacked-sheets glyph.                                                                                                                                                                                                                      |
+| `trigger`         | `'hover' \| 'click'`                   |          | How the panel expands. `'hover'` (default) also opens on click, for touch devices.                                                                                                                                                                                                                                                                     |
+| `maxVisibleItems` | `number`                               |          | Items shown before the rest collapse behind a "Ver mais" card. Omitted (or when every item fits), all items are shown. See [Long item lists](#long-item-lists).                                                                                                                                                                                        |
+
+### Long item lists
+
+With many items the single row of cards outgrows the map. Set
+`maxVisibleItems` to show only the first items, in `items` order, followed by a
+**"Ver mais"** card with the hidden count (`+7`). Clicking it swaps the row for a
+larger panel, anchored in the same corner, listing every item in a grid under
+the control's `label` — up to five columns, capped at `60vh` and scrolling past
+that; below the compact breakpoint it spans the map's width instead.
+
+The larger panel stays open until the user closes it — its ✕ button, `Escape`,
+a click outside the control, or the trigger — even with `trigger: 'hover'`, so
+a pointer drifting off it does not throw the list away. Closing it collapses the
+whole control; the next expansion starts from the short row again. When hidden
+items are on, the "Ver mais" card shows how many in an accent badge.
+
+```typescript
+control: {
+  id: 'layers',
+  label: 'Camadas',
+  maxVisibleItems: 3, // three cards + "Ver mais"
+  items: [/* ten items */],
+},
+```
 
 ### `LayerControlItem` fields
 

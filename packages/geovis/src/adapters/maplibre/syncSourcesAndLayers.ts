@@ -7,6 +7,7 @@ import {
   stripUndefinedPaint,
   toMaplibreLayer,
 } from './layerTranslation';
+import { syncImages } from './pinImages';
 import {
   resolvePromoteIdForSource,
   toMaplibreSource,
@@ -422,7 +423,7 @@ export const enforceManagedLayerOrder = (
 /**
  * Reconciles the live MapLibre map's sources and layers with `spec`.
  * When `previousSpec` is `null` (first mount or style reset), only additive operations run.
- * Call order enforces MapLibre's dependency invariant: remove layers → remove sources → upsert sources → upsert layers.
+ * Call order enforces MapLibre's dependency invariant: remove layers → remove sources → upsert sources → sync images → upsert layers.
  * A final `enforceManagedLayerOrder` pass reconciles paint order to `spec.layers` order.
  */
 export const syncSourcesAndLayers = (
@@ -444,6 +445,8 @@ export const syncSourcesAndLayers = (
     removeStaleSources(map, spec, previousSpec);
   }
   upsertSources(map, spec, previousSpec, deferredSourceIds);
+  // Before the layers, so a symbol layer drawing a pin finds it registered.
+  syncImages(map, spec, previousSpec);
   upsertLayers(map, spec);
   enforceManagedLayerOrder(map, spec);
   runCrossfades(map, spec, previousSpec);

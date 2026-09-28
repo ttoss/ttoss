@@ -318,6 +318,44 @@ describe('toMaplibreLayer', () => {
     });
   });
 
+  test('symbol layout writes the icon keys the layer sets, and no others', () => {
+    const pin: VisualizationLayer = {
+      ...base,
+      geometry: 'symbol',
+      paint: {
+        iconImage: 'hospital-pin',
+        iconSize: 1.5,
+        iconAnchor: 'bottom',
+        iconOffset: [0, 2],
+        iconAllowOverlap: true,
+      } as SymbolPaint,
+    };
+    const textOnly: VisualizationLayer = {
+      ...base,
+      geometry: 'symbol',
+      paint: { textField: 'Hello' } as SymbolPaint,
+    };
+
+    expect(
+      (toMaplibreLayer(pin) as { layout: Record<string, unknown> }).layout
+    ).toMatchObject({
+      'icon-image': 'hospital-pin',
+      'icon-size': 1.5,
+      'icon-anchor': 'bottom',
+      'icon-offset': [0, 2],
+      'icon-allow-overlap': true,
+    });
+    // An `undefined` layout value makes MapLibre reject the whole layer.
+    expect(
+      Object.keys(
+        (toMaplibreLayer(textOnly) as { layout: Record<string, unknown> })
+          .layout
+      ).filter((key) => {
+        return key.startsWith('icon-');
+      })
+    ).toEqual([]);
+  });
+
   test('heatmap → heatmap layer with heatmap paint properties', () => {
     const layer: VisualizationLayer = {
       ...base,

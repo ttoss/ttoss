@@ -21,9 +21,10 @@ const tabAppearance = ({
 
   return {
     isActive,
-    // `default`, not `not-allowed`: the dimmed tab already says the control is
-    // unavailable, and the barred cursor reads as a rejection of the click.
-    cursor: disabled ? 'default' : 'pointer',
+    // `not-allowed` on a disabled tab: dimming alone can read as a styling
+    // choice, while the barred cursor says outright, before the click, that the
+    // section cannot be opened for the current selection.
+    cursor: disabled ? 'not-allowed' : 'pointer',
     opacity: disabled ? 0.4 : 1,
     color: isActive ? COLOR.textStrong : COLOR.textGhost,
     boxShadow: isActive ? `inset 0 -3px 0 ${COLOR.textStrong}` : 'none',
