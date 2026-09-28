@@ -1,0 +1,38 @@
+{
+  "4iVwXU": {
+    "defaultMessage": "E-mail ou senha incorretos.",
+    "description": "Shown when the user enters wrong sign-in credentials."
+  },
+  "DMiLA3": {
+    "defaultMessage": "O código informado está incorreto. Tente novamente.",
+    "description": "Shown when the user types a wrong confirmation code."
+  },
+  "DZm5/m": {
+    "defaultMessage": "Por segurança, redefina sua senha em 'Esqueceu sua senha?' antes de continuar.",
+    "description": "Shown when Cognito requires a password reset on sign in."
+  },
+  "FGojIS": {
+    "defaultMessage": "Sua conta não está verificada. Entre em contato com o suporte para verificar sua conta antes de redefinir a senha.",
+    "description": "Shown on forgot-password when the account has no verified email."
+  },
+  "H8LG4D": {
+    "defaultMessage": "Nenhuma conta encontrada com este e-mail.",
+    "description": "Shown when no Cognito user exists for the given email."
+  },
+  "MJ01Sw": {
+    "defaultMessage": "Já existe uma conta com este e-mail. Faça login.",
+    "description": "Shown when a user tries to sign up with an existing email."
+  },
+  "NJvJrM": {
+    "defaultMessage": "Login realizado com sucesso",
+    "description": "Success notification after sign in."
+  },
+  "ay85xa": {
+    "defaultMessage": "Algo deu errado. Tente novamente.",
+    "description": "Fallback message for unexpected authentication errors."
+  },
+  "nL+H/D": {
+    "defaultMessage": "Sua sessão expirou. Faça login novamente.",
+    "description": "Shown when a stale Amplify session is detected."
+  }
+}
