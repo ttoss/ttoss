@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.28.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.27.0...@ttoss/appsync-api@0.28.0) (2026-09-28)
+
+### Features
+
+- explicit ids in \*.persisted.messages files, and pt-BR for components, forms, react-auth-core ([#1267](https://github.com/ttoss/ttoss/issues/1267)) ([6333695](https://github.com/ttoss/ttoss/commit/63336959e3e06e8e0ba9d244291bc897440c74e3))
+
 # [0.27.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.26.0...@ttoss/appsync-api@0.27.0) (2026-09-28)
 
 ### Features

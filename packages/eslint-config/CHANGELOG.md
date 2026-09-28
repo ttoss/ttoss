@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.29.0 (2026-09-28)
+
+### Bug Fixes
+
+- **http-server-mcp-openapi:** resolve allOf body props instead of defaulting to string ([#1252](https://github.com/ttoss/ttoss/issues/1252)) ([ae24f59](https://github.com/ttoss/ttoss/commit/ae24f592e7d8209d67b595791ab58650c9fd3301))
+
+### Features
+
+- explicit ids in \*.persisted.messages files, and pt-BR for components, forms, react-auth-core ([#1267](https://github.com/ttoss/ttoss/issues/1267)) ([6333695](https://github.com/ttoss/ttoss/commit/63336959e3e06e8e0ba9d244291bc897440c74e3))
+
 ## 1.28.1 (2026-09-14)
 
 ### Bug Fixes

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.9.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.8.2...@ttoss/react-auth-core@0.9.0) (2026-09-28)
+
+### Features
+
+- explicit ids in \*.persisted.messages files, and pt-BR for components, forms, react-auth-core ([#1267](https://github.com/ttoss/ttoss/issues/1267)) ([6333695](https://github.com/ttoss/ttoss/commit/63336959e3e06e8e0ba9d244291bc897440c74e3))
+
 ## [0.8.2](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-core@0.8.1...@ttoss/react-auth-core@0.8.2) (2026-09-28)
 
 **Note:** Version bump only for package @ttoss/react-auth-core
