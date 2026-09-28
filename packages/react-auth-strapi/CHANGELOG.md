@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.9.0...@ttoss/react-auth-strapi@0.9.1) (2026-09-28)
+
+### Bug Fixes
+
+- **react-auth-strapi:** time out the social sign-in callback exchange ([#1273](https://github.com/ttoss/ttoss/issues/1273)) ([2f9acaa](https://github.com/ttoss/ttoss/commit/2f9acaab44374e7046c862151622b0288394ec5d))
+
 # [0.9.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.8.6...@ttoss/react-auth-strapi@0.9.0) (2026-09-28)
 
 ### Features

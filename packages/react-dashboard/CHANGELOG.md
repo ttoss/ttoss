@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.15.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.14.6...@ttoss/react-dashboard@0.15.0) (2026-09-28)
+
+### Features
+
+- **react-dashboard,react-billing:** translatable copy and locale-aware percentages ([#1274](https://github.com/ttoss/ttoss/issues/1274)) ([38f2003](https://github.com/ttoss/ttoss/commit/38f200388b07d711ff62f6acc227b27854fde9dd)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262)
+
 ## [0.14.6](https://github.com/ttoss/ttoss/compare/@ttoss/react-dashboard@0.14.5...@ttoss/react-dashboard@0.14.6) (2026-09-28)
 
 **Note:** Version bump only for package @ttoss/react-dashboard

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.8.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@7.7.0...@docs/storybook@7.8.0) (2026-09-28)
+
+### Features
+
+- **react-dashboard,react-billing:** translatable copy and locale-aware percentages ([#1274](https://github.com/ttoss/ttoss/issues/1274)) ([38f2003](https://github.com/ttoss/ttoss/commit/38f200388b07d711ff62f6acc227b27854fde9dd)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262)
+
 # [7.7.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@7.6.3...@docs/storybook@7.7.0) (2026-09-28)
 
 ### Features
