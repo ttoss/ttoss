@@ -29,6 +29,7 @@ export {
   MANUAL_PHONE_COUNTRY_CODE,
 } from './phoneCountryCodes';
 export { yup } from './yup/yup';
+export { configureZodI18n, useZodI18n } from './zod/i18n';
 export { z } from './zod/zod';
 export { yupResolver } from '@hookform/resolvers/yup';
 export { zodResolver } from '@hookform/resolvers/zod';

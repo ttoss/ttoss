@@ -6,6 +6,7 @@ import { FormProvider } from 'react-hook-form';
 
 import { FormActions } from './FormActions';
 import { FormGroup } from './FormGroup';
+import { useZodI18n } from './zod/i18n';
 
 const FormBase = <
   TFieldValues extends FieldValues,
@@ -22,6 +23,8 @@ const FormBase = <
   onSubmit?: (data: TTransformedValues) => Promise<void> | void;
   sx?: BoxProps['sx'];
 } & FormProviderProps<TFieldValues, TContext, TTransformedValues>) => {
+  useZodI18n();
+
   return (
     <FormProvider {...formMethods}>
       <Box

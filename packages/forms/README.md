@@ -56,7 +56,12 @@ All React Hook Form APIs (`useForm`, `useController`, `useFieldArray`, `useFormC
 
 ## Zod Validation (Recommended)
 
-Import `z` and `zodResolver` directly from `@ttoss/forms`. Invalid fields display i18n-backed default messages (`"Field is required"`, `"Invalid Value for Field of type {expected}"`, `"Field must be at least {min} characters"`). Run `pnpm run i18n` to extract them and translate per locale in your app's i18n files. See the [i18n-CLI documentation](https://ttoss.dev/docs/modules/packages/i18n-cli/) for details.
+Import `z` and `zodResolver` directly from `@ttoss/forms`. `Form` configures Zod's error messages for the current `I18nProvider` locale:
+
+- **Messages ttoss owns** come from this package's catalog, which ships pt-BR: a missing value or an empty string (`"Field is required"`), a string below `min` (`"Field must be at least {min} characters"`), and the `cpf()`, `cnpj()` and `passwordSchema` checks. Translate them in your app's i18n files like any other message; see the [i18n-CLI documentation](https://ttoss.dev/docs/modules/packages/i18n-cli/).
+- **Everything else** uses Zod's own translation for the locale (`en`, `es`, `pt`), and English otherwise.
+
+A message you pass to a schema (`z.string().min(3, { error: '…' })`, `.cpf('…')`) always wins. Zod's configuration is global, so the messages apply to every Zod schema in the app once a `Form` has mounted; outside one, call `configureZodI18n({ locale, formatMessage })` or the `useZodI18n()` hook yourself.
 
 ### Custom Validations
 
@@ -66,7 +71,7 @@ The package extends Zod with custom validation methods:
 import { z, passwordSchema } from '@ttoss/forms';
 
 const schema = z.object({
-  cpf: z.string().cpf(), // "Invalid CPF"
+  cpf: z.string().cpf(), // "Invalid CPF", in the current locale
   cnpj: z.string().cnpj('Invalid CNPJ'), // custom message
   password: passwordSchema({ required: true }), // min 8 chars
   optionalPassword: passwordSchema(), // empty or min 8 chars

@@ -7,6 +7,11 @@ import * as z from 'zod';
 
 import { isCnpjValid } from '../Brazil/FormFieldCNPJ';
 import { isCpfValid } from '../Brazil/FormFieldCPF';
+import { installZodFallbackErrorMap, ttossIssue } from './i18n';
+
+installZodFallbackErrorMap();
+
+const PASSWORD_MIN_LENGTH = 8;
 
 /**
  * Zod refinement for Brazilian CNPJ validation.
@@ -53,7 +58,12 @@ export const passwordSchema = (options?: { required?: boolean }) => {
   const schema = z
     .string()
     .trim()
-    .min(8, 'Password must be at least 8 characters long');
+    .refine(
+      (value) => {
+        return value.length >= PASSWORD_MIN_LENGTH;
+      },
+      ttossIssue('passwordMinLength', { min: PASSWORD_MIN_LENGTH })
+    );
 
   if (options?.required) {
     return schema;
@@ -64,10 +74,18 @@ export const passwordSchema = (options?: { required?: boolean }) => {
 };
 
 // Extend ZodString prototype with custom validation methods
-z.ZodString.prototype.cnpj = function (message = 'Invalid CNPJ') {
-  return this.refine(cnpjRefinement, { error: message });
+// Without a message, the error comes from the ttoss catalog in the current
+// locale (see ./i18n.ts); a message passed here always wins.
+z.ZodString.prototype.cnpj = function (message?: string) {
+  return this.refine(
+    cnpjRefinement,
+    message === undefined ? ttossIssue('invalidCnpj') : { error: message }
+  );
 };
 
-z.ZodString.prototype.cpf = function (message = 'Invalid CPF') {
-  return this.refine(cpfRefinement, { error: message });
+z.ZodString.prototype.cpf = function (message?: string) {
+  return this.refine(
+    cpfRefinement,
+    message === undefined ? ttossIssue('invalidCpf') : { error: message }
+  );
 };
