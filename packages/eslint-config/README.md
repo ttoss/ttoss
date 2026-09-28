@@ -59,6 +59,10 @@ For the current rule values, see [`config.js`](https://github.com/ttoss/ttoss/bl
 
 `formatjs/no-literal-string-in-jsx` applies to `packages/*/src/**/*.tsx` only — what a package ships. Tests, Storybook stories and the docs sites are allowed hardcoded copy, and scoping it there is what makes it enforceable: repo-wide it reported 2216 times, every one of them hidden by `eslint --quiet`.
 
+### Message ids
+
+`formatjs/no-id` rejects explicit message ids (and `--fix` deletes them), because ids are content hashes injected at build time. The exception is `*.persisted.messages.{ts,tsx,js}`: a message reference stored in a database must keep its id when the copy changes, so those files declare ids by hand (see [`@ttoss/i18n-core`](https://ttoss.dev/docs/modules/packages/i18n-core/)).
+
 ### What this config cannot enforce
 
 ESLint reads one file at a time and has no coverage or runtime data, so these quality gates need separate tooling: Halstead metrics (an escomplex-based reporter), test coverage and CRAP (Jest `coverageThreshold`), surviving mutants (Stryker), cross-file duplication (jscpd), and unused exports or modules (Knip).

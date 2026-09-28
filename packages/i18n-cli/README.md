@@ -241,10 +241,10 @@ The extracted file becomes `i18n/lang/pt-BR.json`, translations go in the other 
 
 ### Explicit ids for persisted messages
 
-Content-hash ids change whenever the text does. That is fine for text rendered immediately, but a message **reference** stored in a database (see [`@ttoss/i18n-core`](https://ttoss.dev/docs/modules/packages/i18n-core/)) would be orphaned by the next copy edit. Keep those messages in dedicated files and give them explicit ids:
+Content-hash ids change whenever the text does. That is fine for text rendered immediately, but a message **reference** stored in a database (see [`@ttoss/i18n-core`](https://ttoss.dev/docs/modules/packages/i18n-core/)) would be orphaned by the next copy edit. Keep those messages in `*.persisted.messages.ts` files, where [`@ttoss/eslint-config`](https://ttoss.dev/docs/modules/packages/eslint-config/) allows explicit ids, and make extraction require them:
 
 ```sh
-ttoss-i18n --explicit-ids 'src/notifications/messages.ts'
+ttoss-i18n --explicit-ids '**/*.persisted.messages.ts'
 ```
 
 ## `ttoss-i18n check`
@@ -256,7 +256,7 @@ For CI. Writes nothing and exits non-zero when:
 - a message in an `--explicit-ids` file relies on a hashed id.
 
 ```sh
-ttoss-i18n check --source-locale pt-BR --locales en --explicit-ids 'src/notifications/**'
+ttoss-i18n check --source-locale pt-BR --locales en --explicit-ids '**/*.persisted.messages.ts'
 ```
 
 ## Integration with ttoss Ecosystem
