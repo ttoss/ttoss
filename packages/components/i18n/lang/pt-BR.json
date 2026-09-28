@@ -1,0 +1,58 @@
+{
+  "0EjvY6": {
+    "defaultMessage": "∞",
+    "description": "Infinity symbol used when the maximum limit is unlimited."
+  },
+  "1DbX9V": {
+    "defaultMessage": "Próximo do limite",
+    "description": "Alert shown when usage is close to the limit."
+  },
+  "4NwCn9": {
+    "defaultMessage": "Limite atingido",
+    "description": "Alert shown when usage has reached or exceeded the limit."
+  },
+  "G/yZLu": {
+    "defaultMessage": "Remover",
+    "description": null
+  },
+  "JEsxDw": {
+    "defaultMessage": "Enviando...",
+    "description": null
+  },
+  "XKyo5X": {
+    "defaultMessage": "Upload de Arquivo",
+    "description": null
+  },
+  "dx4ZnR": {
+    "defaultMessage": "Logo de {name}",
+    "description": "OAuth consent: alt text for the requesting application logo."
+  },
+  "eRShvB": {
+    "defaultMessage": "Máximo de arquivos atingido",
+    "description": null
+  },
+  "fDCMA6": {
+    "defaultMessage": "Selecionar Arquivos",
+    "description": null
+  },
+  "fOOwej": {
+    "defaultMessage": "{max_files, plural, one {Até # arquivo} other {Até # arquivos}}",
+    "description": null
+  },
+  "gy0Ynb": {
+    "defaultMessage": "Clique ou arraste arquivos aqui",
+    "description": null
+  },
+  "oYpm71": {
+    "defaultMessage": "de {max}",
+    "description": "Text shown before the max value, e.g. \"of 10\" or \"of ∞\"."
+  },
+  "rskBv4": {
+    "defaultMessage": "Ilimitado",
+    "description": "Shown when a metric has no maximum limit."
+  },
+  "zr0OS6": {
+    "defaultMessage": "{percentage}% usado",
+    "description": "Footer shown for percentage metrics, e.g. \"80% used\"."
+  }
+}

@@ -1,0 +1,154 @@
+{
+  "0XOzcH": {
+    "defaultMessage": "Campo obrigatório",
+    "description": "Required field."
+  },
+  "38HSjr": {
+    "defaultMessage": "Entrar",
+    "description": "Sign In"
+  },
+  "5E12mO": {
+    "defaultMessage": "Email",
+    "description": "Email label."
+  },
+  "6PdOcy": {
+    "defaultMessage": "Cancelar",
+    "description": "Cancel"
+  },
+  "8GMUPk": {
+    "defaultMessage": "Já estou cadastrado",
+    "description": "Link to sign in on sign up."
+  },
+  "9cApwd": {
+    "defaultMessage": "Por favor, insira um e-mail válido",
+    "description": "Invalid email."
+  },
+  "BtK6KR": {
+    "defaultMessage": "Esqueceu sua senha?",
+    "description": "Forgot password?"
+  },
+  "Co3exe": {
+    "defaultMessage": "Ao se cadastrar, você concorda com os seguintes Termos e Condições.",
+    "description": null
+  },
+  "EZ3YF2": {
+    "defaultMessage": "Cadastre-se",
+    "description": "Sign up"
+  },
+  "F//XE4": {
+    "defaultMessage": "ou",
+    "description": "Divider between the password form and the social buttons."
+  },
+  "HT4tSM": {
+    "defaultMessage": "Redefinir Senha",
+    "description": "Reset Password"
+  },
+  "KY2T6J": {
+    "defaultMessage": "Código de confirmação",
+    "description": "Sign up confirmation code"
+  },
+  "NJ57Qj": {
+    "defaultMessage": "Confirmação de senha é obrigatória",
+    "description": "Confirm Password is required."
+  },
+  "OhDL0i": {
+    "defaultMessage": "E-mail inválido",
+    "description": "Invalid email."
+  },
+  "PylVqx": {
+    "defaultMessage": "Senha",
+    "description": "Password label."
+  },
+  "S3pjKw": {
+    "defaultMessage": "Mínimo de {value} caracteres",
+    "description": "Minimum {value} characters."
+  },
+  "S4bbEj": {
+    "defaultMessage": "Recuperar a senha",
+    "description": "Recovering Password"
+  },
+  "SQJto2": {
+    "defaultMessage": "Entrar",
+    "description": null
+  },
+  "SfWKyS": {
+    "defaultMessage": "Máximo de {value} caracteres",
+    "description": "Maximum {value} characters."
+  },
+  "TZ4WUk": {
+    "defaultMessage": "Senha requer no mínimo {value} caracteres",
+    "description": "Password must be at least {value} characters long."
+  },
+  "UNttd+": {
+    "defaultMessage": "Confirmar",
+    "description": "Confirm"
+  },
+  "URJDrG": {
+    "defaultMessage": "Cadastro",
+    "description": "Create account."
+  },
+  "WU/CqP": {
+    "defaultMessage": "As senhas são diferentes",
+    "description": "Passwords are not the same"
+  },
+  "XreZg+": {
+    "defaultMessage": "E-mail cadastrado",
+    "description": "Registered Email"
+  },
+  "cGR2eI": {
+    "defaultMessage": "Confirmação",
+    "description": "Confirmation"
+  },
+  "d1YCuH": {
+    "defaultMessage": "Insira o seu endereço de e-mail",
+    "description": "Email is a required field."
+  },
+  "e3IQoc": {
+    "defaultMessage": "Nova Senha",
+    "description": "New Password"
+  },
+  "ehCEm+": {
+    "defaultMessage": "Continuar com {provider}",
+    "description": "Label of the button that signs in with a social provider."
+  },
+  "kdFYba": {
+    "defaultMessage": "Campo \"Senha\" é obrigatório",
+    "description": "Password is required."
+  },
+  "khMx/2": {
+    "defaultMessage": "Ocorreu um erro com sua autenticação. Tente novamente.",
+    "description": null
+  },
+  "lY+cuM": {
+    "defaultMessage": "Confirmar senha",
+    "description": "Confirm Password label."
+  },
+  "lZvoYL": {
+    "defaultMessage": "Cadastre-se agora",
+    "description": "Sign up now"
+  },
+  "mZzmNV": {
+    "defaultMessage": "Recuperar a senha",
+    "description": "Recover Password"
+  },
+  "oayEC3": {
+    "defaultMessage": "Cadastro",
+    "description": "Title on sign up."
+  },
+  "pwv2cR": {
+    "defaultMessage": "Enviamos um código de confirmação para seu endereço de e-mail. Insira o código abaixo.",
+    "description": null
+  },
+  "qTQ4hP": {
+    "defaultMessage": "Um e-mail foi enviado para o seu endereço. Por favor, verifique sua caixa de entrada e siga as instruções para confirmar seu cadastro.",
+    "description": null
+  },
+  "qnQYqN": {
+    "defaultMessage": "Você deve aceitar os termos e condições",
+    "description": null
+  },
+  "s1OmP0": {
+    "defaultMessage": "Código de confirmação",
+    "description": "Confirmation code"
+  }
+}

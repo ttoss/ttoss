@@ -27,6 +27,7 @@ flowchart LR
 Messages are declared with `defineMessages`, exactly as in React. [`@ttoss/config`](https://ttoss.dev/docs/modules/packages/config/)'s build and Jest presets inject the ids; `ttoss-i18n` extracts them.
 
 ```ts
+// src/notifications.persisted.messages.ts
 import { defineMessages } from '@ttoss/i18n-core';
 
 export const messages = defineMessages({
@@ -41,9 +42,7 @@ export const messages = defineMessages({
 });
 ```
 
-> `@ttoss/eslint-config` enables `formatjs/no-id`, and its `--fix` **deletes** explicit ids. Until that rule is scoped, disable it on the line (`// eslint-disable-next-line formatjs/no-id`) for every persisted message.
-
-Hashed ids are fine for text rendered immediately. A reference that is **persisted** needs an explicit `id`: a content-hash id changes whenever the source text changes, which would orphan every stored reference. `ttoss-i18n --explicit-ids '<glob>'` enforces it.
+Hashed ids are fine for text rendered immediately. A reference that is **persisted** needs an explicit `id`: a content-hash id changes whenever the source text changes, which would orphan every stored reference. Keep those messages in `*.persisted.messages.ts` files: [`@ttoss/eslint-config`](https://ttoss.dev/docs/modules/packages/eslint-config/) turns `formatjs/no-id` off there (and only there), and `ttoss-i18n --explicit-ids '**/*.persisted.messages.ts'` fails extraction when one of them relies on a hashed id.
 
 ### Produce a reference
 

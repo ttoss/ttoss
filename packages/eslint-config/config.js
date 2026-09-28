@@ -215,6 +215,15 @@ export default defineConfig(
     },
   },
   {
+    // A persisted message reference must keep its id when the copy is edited
+    // (see @ttoss/i18n-core), so these files declare explicit ids — which
+    // `formatjs/no-id --fix` would delete. Everywhere else ids stay hashed.
+    files: ['**/*.persisted.messages.{ts,tsx,js}'],
+    rules: {
+      'formatjs/no-id': 'off',
+    },
+  },
+  {
     files: ['**/*.{js,jsx,cjs,mjs}'],
     // Tooling scripts, babel configs and CLIs run on Node. `globals.builtin`
     // alone leaves `console`, `process` and `Buffer` undefined, which only

@@ -48,8 +48,8 @@ export type ErrorTypeArgs = {
  * Only `error.name` (AppSync's `errorType`) and `error.message` survive the
  * Direct Lambda boundary, so the error is rewritten in place: `message`
  * becomes the rendered text and `name` becomes `errorType(...)`. The default
- * is the bare code. Pass `({ name, code }) => \`${name}[${code}]\`` to keep
- * the class visible, or `({ name }) => name` to leave `errorType` as it was.
+ * is the bare code; see the example to keep the class visible, or pass
+ * `({ name }) => name` to leave `errorType` as it was.
  * The error object itself is kept, so markers such as an `expected` flag
  * still reach whatever reports it. Any other error passes through untouched.
  *
@@ -58,6 +58,14 @@ export type ErrorTypeArgs = {
  *
  * If the catalog cannot be loaded, the error is rethrown unrendered. The
  * client then sees the source-language message rather than losing the error.
+ *
+ * @example
+ * ```ts
+ * createAppSyncI18nMiddleware({
+ *   catalog,
+ *   errorType: ({ name, code }) => `${name}[${code}]`,
+ * });
+ * ```
  */
 export const createAppSyncI18nMiddleware = <TContext = unknown>({
   catalog,
