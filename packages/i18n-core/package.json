@@ -1,0 +1,52 @@
+{
+  "name": "@ttoss/i18n-core",
+  "version": "0.0.0",
+  "description": "Framework-agnostic i18n for any JavaScript runtime: message references, deferred formatting, locale negotiation and localized errors.",
+  "keywords": [
+    "i18n",
+    "intl",
+    "formatjs",
+    "node"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttoss/ttoss.git",
+    "directory": "packages/i18n-core"
+  },
+  "license": "MIT",
+  "author": "ttoss",
+  "contributors": [
+    "Pedro Arantes <pedro@arantespp.com> (https://arantespp.com)"
+  ],
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "jest --projects tests/unit"
+  },
+  "dependencies": {
+    "@formatjs/intl": "^4.1.12"
+  },
+  "devDependencies": {
+    "@ttoss/config": "workspace:^",
+    "jest": "^30.4.2",
+    "tsdown": "^0.22.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.cjs",
+        "types": "./dist/index.d.mts"
+      }
+    },
+    "provenance": true
+  }
+}

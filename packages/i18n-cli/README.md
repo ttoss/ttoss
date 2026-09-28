@@ -221,19 +221,52 @@ The CLI automatically generates helpful reports to assist with translation manag
 
 ## Command Options
 
-| Option                    | Description                                                              |
-| ------------------------- | ------------------------------------------------------------------------ |
-| `--no-compile`            | Extract only, skip compilation step                                      |
-| `--ignore-ttoss-packages` | Skip extraction from ttoss dependencies                                  |
-| `--pattern <glob>`        | Custom file pattern for extraction (default: `src/**/*.{js,jsx,ts,tsx}`) |
-| `--ignore <patterns>`     | Files/patterns to ignore during extraction                               |
+| Option                     | Description                                                                                                                     |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `--no-compile`             | Extract only, skip compilation and the reports                                                                                  |
+| `--source-locale <locale>` | The language your `defaultMessage`s are written in (default `en`). The extracted file is `i18n/lang/<locale>.json`              |
+| `--scope <scope>`          | Package scopes whose catalogs are merged, repeatable or comma-separated (default `@ttoss`), e.g. `--scope @ttoss --scope @acme` |
+| `--explicit-ids <glob>`    | Files whose messages must declare an explicit `id` (see below). Extraction fails otherwise                                      |
+| `--ignore-dependencies`    | Skip dependency catalogs (`--ignore-ttoss-packages` is an alias)                                                                |
+| `--pattern <glob>`         | Custom file pattern for extraction (default: `src/**/*.{ts,tsx}`)                                                               |
+| `--ignore <patterns>`      | Files/patterns to ignore during extraction                                                                                      |
+
+### Authoring in a language other than English
+
+```sh
+ttoss-i18n --source-locale pt-BR
+```
+
+The extracted file becomes `i18n/lang/pt-BR.json`, translations go in the other files (`en.json`, `es.json`), and `i18n/manifest.json` records the source locale so packages depending on yours merge its catalog correctly. Pair it with `defaultLocale="pt-BR"` on `I18nProvider` (or `createI18n`) so fallback text is formatted with the right rules.
+
+### Explicit ids for persisted messages
+
+Content-hash ids change whenever the text does. That is fine for text rendered immediately, but a message **reference** stored in a database (see [`@ttoss/i18n-core`](https://ttoss.dev/docs/modules/packages/i18n-core/)) would be orphaned by the next copy edit. Keep those messages in dedicated files and give them explicit ids:
+
+```sh
+ttoss-i18n --explicit-ids 'src/notifications/messages.ts'
+```
+
+## `ttoss-i18n check`
+
+For CI. Writes nothing and exits non-zero when:
+
+- a required locale is missing a translation (`--locales en,es`; defaults to every file in `i18n/lang` but the source);
+- an id is declared with different text by your package and a dependency, or by two dependencies;
+- a message in an `--explicit-ids` file relies on a hashed id.
+
+```sh
+ttoss-i18n check --source-locale pt-BR --locales en --explicit-ids 'src/notifications/**'
+```
 
 ## Integration with ttoss Ecosystem
 
-When using ttoss packages like [@ttoss/react-i18n](https://ttoss.dev/docs/modules/packages/react-i18n/), the CLI automatically:
+The CLI reads the catalogs of every in-scope dependency — direct and transitive, nearest first — and:
 
-- Extracts translations from installed ttoss packages
-- Merges them with your application translations
-- Provides unified translation management
+- adds their messages to your source file, in your source locale when the dependency ships it;
+- compiles each locale with **every translation the dependencies ship**, so you never re-translate a string `@ttoss/forms` already translates; your own files override them;
+- leaves those ids out of `i18n/missing`, since they are covered.
 
-This eliminates manual copying of package translations and ensures consistency across your application.
+A dependency catalog that exists but cannot be parsed fails the run rather than being skipped silently.
+
+Every `@ttoss/*` build injects ids with `@ttoss/config`'s `I18N_ID_INTERPOLATION_PATTERN`, which is also what the CLI extracts with. Configure your own bundler with the same pattern — `formatjsSwcPlugin()` / `formatjsBabelPlugin()` from `@ttoss/config` — or no id will match and every message silently falls back to its `defaultMessage`.
