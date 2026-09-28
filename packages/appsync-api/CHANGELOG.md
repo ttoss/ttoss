@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.27.0](https://github.com/ttoss/ttoss/compare/@ttoss/appsync-api@0.26.0...@ttoss/appsync-api@0.27.0) (2026-09-28)
+
+### Features
+
+- i18n boundary adapters (appsync-api, http-server, MCP) and LocalizedText ([#1266](https://github.com/ttoss/ttoss/issues/1266)) ([297b436](https://github.com/ttoss/ttoss/commit/297b436523c11809746ee56f8abd6a0463767935))
+
 # 0.26.0 (2026-09-28)
 
 ### Features
