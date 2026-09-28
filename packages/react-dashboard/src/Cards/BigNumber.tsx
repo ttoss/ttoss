@@ -1,7 +1,6 @@
-import { useI18n } from '@ttoss/react-i18n';
+import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import { Icon } from '@ttoss/react-icons';
 import { Box, Flex, Text } from '@ttoss/ui';
-import { defineMessages } from 'react-intl';
 
 import type {
   BigNumberCard,
