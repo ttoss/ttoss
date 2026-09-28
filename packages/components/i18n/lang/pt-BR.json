@@ -3,9 +3,17 @@
     "defaultMessage": "∞",
     "description": "Infinity symbol used when the maximum limit is unlimited."
   },
+  "0oVaj5": {
+    "defaultMessage": "Deseja instalar o nosso aplicativo?",
+    "description": "PWA install banner: the question offering installation."
+  },
   "1DbX9V": {
     "defaultMessage": "Próximo do limite",
     "description": "Alert shown when usage is close to the limit."
+  },
+  "4+7L57": {
+    "defaultMessage": "Nenhuma notificação",
+    "description": "Notifications menu: shown when there is nothing to list."
   },
   "4NwCn9": {
     "defaultMessage": "Limite atingido",
@@ -18,6 +26,14 @@
   "JEsxDw": {
     "defaultMessage": "Enviando...",
     "description": null
+  },
+  "UD/D6v": {
+    "defaultMessage": "Instalar",
+    "description": "PWA install banner: button that starts the installation."
+  },
+  "WhMFgF": {
+    "defaultMessage": "Limpar Tudo",
+    "description": "Notifications menu: button clearing every notification."
   },
   "XKyo5X": {
     "defaultMessage": "Upload de Arquivo",

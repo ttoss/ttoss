@@ -36,7 +36,7 @@ describe('NotificationsMenu', () => {
 
   test('shows empty state message when no notifications', () => {
     render(<NotificationsMenu notifications={[]} count={0} defaultOpen />);
-    expect(screen.getByText('Nenhuma notificação')).toBeInTheDocument();
+    expect(screen.getByText('No notifications')).toBeInTheDocument();
   });
 
   test('calls onOpenChange when toggled', () => {
@@ -62,7 +62,7 @@ describe('NotificationsMenu', () => {
         onClearAll={onClearAll}
       />
     );
-    const clearBtn = screen.getByText('Limpar Tudo');
+    const clearBtn = screen.getByText('Clear all');
     expect(clearBtn).toBeInTheDocument();
     fireEvent.click(clearBtn.closest('button')!);
     expect(onClearAll).toHaveBeenCalledTimes(1);
