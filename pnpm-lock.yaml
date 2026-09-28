@@ -2047,6 +2047,12 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
+      '@ttoss/i18n-cli':
+        specifier: workspace:^
+        version: link:../i18n-cli
+      '@ttoss/react-i18n':
+        specifier: workspace:^
+        version: link:../react-i18n
       '@ttoss/test-utils':
         specifier: workspace:^
         version: link:../test-utils
@@ -2065,18 +2071,6 @@ importers:
 
   packages/react-dashboard:
     dependencies:
-      '@ttoss/forms':
-        specifier: workspace:^
-        version: link:../forms
-      '@ttoss/react-i18n':
-        specifier: workspace:^
-        version: link:../react-i18n
-      '@ttoss/react-icons':
-        specifier: workspace:^
-        version: link:../react-icons
-      '@ttoss/ui':
-        specifier: workspace:^
-        version: link:../ui
       react-day-picker:
         specifier: ^9.13.0
         version: 9.14.0(react@19.2.6)
@@ -2093,9 +2087,24 @@ importers:
       '@ttoss/config':
         specifier: workspace:^
         version: link:../config
+      '@ttoss/forms':
+        specifier: workspace:^
+        version: link:../forms
+      '@ttoss/i18n-cli':
+        specifier: workspace:^
+        version: link:../i18n-cli
+      '@ttoss/react-i18n':
+        specifier: workspace:^
+        version: link:../react-i18n
+      '@ttoss/react-icons':
+        specifier: workspace:^
+        version: link:../react-icons
       '@ttoss/test-utils':
         specifier: workspace:^
         version: link:../test-utils
+      '@ttoss/ui':
+        specifier: workspace:^
+        version: link:../ui
       '@types/react':
         specifier: ^19.2.14
         version: 19.2.15

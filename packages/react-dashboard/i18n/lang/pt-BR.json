@@ -1,0 +1,58 @@
+{
+  "5s17r1": {
+    "defaultMessage": "Adicionar Métricas",
+    "description": "Dashboard toolbar: opens the drawer for adding cards."
+  },
+  "EvQudW": {
+    "defaultMessage": "Arrastar card",
+    "description": "Accessible name for the handle that reorders a dashboard card."
+  },
+  "LhSC/f": {
+    "defaultMessage": "Adicionar métricas",
+    "description": "Add-card drawer: heading."
+  },
+  "OSj1RL": {
+    "defaultMessage": "Divisor de seção",
+    "description": "Add-card drawer: heading of the section-divider group."
+  },
+  "PyYJde": {
+    "defaultMessage": "Salvar",
+    "description": "Dashboard toolbar: saves the current template."
+  },
+  "SHctoe": {
+    "defaultMessage": "Remover card",
+    "description": "Accessible name for the button removing a dashboard card."
+  },
+  "a0SqRm": {
+    "defaultMessage": "Cancelar Edição",
+    "description": "Dashboard toolbar: leaves edit mode discarding changes."
+  },
+  "ar3i5K": {
+    "defaultMessage": "Editar",
+    "description": "Dashboard toolbar: enters edit mode."
+  },
+  "ca9umV": {
+    "defaultMessage": "vs. anterior",
+    "description": "Trend badge label comparing current value to previous period"
+  },
+  "iFn0iX": {
+    "defaultMessage": "Cancelar",
+    "description": "Save-as-new drawer: dismisses without saving."
+  },
+  "kNAjIM": {
+    "defaultMessage": "Buscar...",
+    "description": "Add-card drawer: placeholder of the metric search field."
+  },
+  "pmaBu4": {
+    "defaultMessage": "Salvar Novo Template",
+    "description": "Dashboard toolbar: saves the layout as a new template."
+  },
+  "qsZ4he": {
+    "defaultMessage": "Escolha a métrica para adicionar ao dashboard.",
+    "description": "Add-card drawer: explanation under the heading."
+  },
+  "uujK2G": {
+    "defaultMessage": "Título do template",
+    "description": "Save-as-new drawer: label for the template name field."
+  }
+}

@@ -95,6 +95,21 @@ describe('BigNumber', () => {
     expect(screen.getByText('45.67%')).toBeInTheDocument();
   });
 
+  test('should format percentage and trend in the provided locale', () => {
+    render(
+      <BigNumber
+        {...baseCard}
+        numberType="percentage"
+        locale="pt-BR"
+        data={{ value: 45.67 }}
+        trend={{ value: 10.5, status: 'positive' }}
+      />
+    );
+
+    expect(screen.getByText('45,67%')).toBeInTheDocument();
+    expect(screen.getByText(/10,5%/)).toBeInTheDocument();
+  });
+
   test('should display dash when value is undefined', () => {
     render(<BigNumber {...baseCard} data={{ value: undefined }} />);
 

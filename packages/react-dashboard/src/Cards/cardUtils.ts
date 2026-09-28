@@ -1,5 +1,28 @@
 import type { TrendIndicator } from '../DashboardCard';
 
+/**
+ * Formats a value already expressed in percent units (`12.5` → `12.5%`) in
+ * `locale`, so the decimal separator and sign follow the reader's language.
+ */
+export const formatPercent = ({
+  value,
+  fractionDigits,
+  locale,
+  signed = false,
+}: {
+  value: number;
+  fractionDigits: number;
+  locale?: string;
+  signed?: boolean;
+}): string => {
+  return new Intl.NumberFormat(locale, {
+    style: 'percent',
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
+    signDisplay: signed ? 'exceptZero' : 'auto',
+  }).format(value / 100);
+};
+
 export const formatByType = ({
   value,
   type,
@@ -20,7 +43,11 @@ export const formatByType = ({
         currency,
       }).format(value);
     case 'percentage':
-      return `${value.toFixed(numberDecimalPlaces ?? 2)}%`;
+      return formatPercent({
+        value,
+        fractionDigits: numberDecimalPlaces ?? 2,
+        locale,
+      });
     case 'number':
     default:
       return new Intl.NumberFormat(locale, {

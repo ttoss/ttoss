@@ -7,8 +7,14 @@ A comprehensive React dashboard module that provides customizable dashboard func
 ## Installation
 
 ```shell
-pnpm add @ttoss/react-dashboard
+pnpm add @ttoss/react-dashboard @ttoss/components @ttoss/forms @ttoss/react-i18n @ttoss/react-icons @ttoss/ui
 ```
+
+The `@ttoss/*` foundation packages are peer dependencies, so the dashboard shares your app's providers (theme, `I18nProvider`) instead of bundling its own copies.
+
+### Internationalization
+
+The toolbar and card copy come from `@ttoss/react-i18n`, and numbers and percentages are formatted in the `I18nProvider` locale (or a card's `locale`). Source messages are English; `i18n/lang/pt-BR.json` ships the Portuguese translations, which `ttoss-i18n` picks up from your dependencies when you compile your app's catalogs.
 
 ## Getting Started
 

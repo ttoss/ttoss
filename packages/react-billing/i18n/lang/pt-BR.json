@@ -1,0 +1,22 @@
+{
+  "4Es6pi": {
+    "defaultMessage": "Cancelado",
+    "description": "Subscription panel status badge: the subscription was cancelled."
+  },
+  "AhCpt2": {
+    "defaultMessage": "Alteração Agendada",
+    "description": "Subscription panel badge: a plan change is scheduled for the next cycle."
+  },
+  "BSgyVr": {
+    "defaultMessage": "Inativo",
+    "description": "Subscription panel status badge: the subscription is inactive."
+  },
+  "FvMOyQ": {
+    "defaultMessage": "Renovação Cancelada",
+    "description": "Subscription panel badge: the subscription will not renew at the end of the cycle."
+  },
+  "vRSfVR": {
+    "defaultMessage": "Ativo",
+    "description": "Subscription panel status badge: the subscription is active."
+  }
+}

@@ -12,7 +12,7 @@ pnpm add @ttoss/react-billing
 
 ## Quick Start
 
-This package expects your app to be wrapped with `@ttoss/ui` `ThemeProvider`.
+This package expects your app to be wrapped with `@ttoss/ui` `ThemeProvider` and `@ttoss/react-i18n` `I18nProvider` (a peer dependency). `SubscriptionPanel`'s status badges are translatable messages with English sources; `i18n/lang/pt-BR.json` ships the Portuguese translations, which `ttoss-i18n` picks up from your dependencies when you compile your app's catalogs.
 
 ### PlanCard
 

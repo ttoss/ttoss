@@ -1,4 +1,5 @@
 import { EnhancedTitle, MetricCard } from '@ttoss/components';
+import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import { Card, Flex, Spinner } from '@ttoss/ui';
 
 import { getSubscriptionPanelAccentBarSx } from './SubscriptionPanel.styles';
@@ -7,6 +8,33 @@ import type {
   SubscriptionPanelProps,
 } from './SubscriptionPanel.types';
 import { SubscriptionPanelActionsSlot } from './SubscriptionPanelActionsSlot';
+
+const messages = defineMessages({
+  statusActive: {
+    defaultMessage: 'Active',
+    description: 'Subscription panel status badge: the subscription is active.',
+  },
+  statusInactive: {
+    defaultMessage: 'Inactive',
+    description:
+      'Subscription panel status badge: the subscription is inactive.',
+  },
+  statusCancelled: {
+    defaultMessage: 'Cancelled',
+    description:
+      'Subscription panel status badge: the subscription was cancelled.',
+  },
+  scheduledUpdate: {
+    defaultMessage: 'Update scheduled',
+    description:
+      'Subscription panel badge: a plan change is scheduled for the next cycle.',
+  },
+  renewalCancelled: {
+    defaultMessage: 'Renewal cancelled',
+    description:
+      'Subscription panel badge: the subscription will not renew at the end of the cycle.',
+  },
+});
 
 /**
  * Renders a metric card based on its type.
@@ -70,6 +98,8 @@ export const SubscriptionPanel = ({
   isLoading = false,
   // eslint-disable-next-line complexity
 }: SubscriptionPanelProps) => {
+  const { intl } = useI18n();
+
   if (isLoading) {
     /**
      * use skeleton loader in the future here
@@ -127,7 +157,7 @@ export const SubscriptionPanel = ({
               ...(status.status === 'active'
                 ? [
                     {
-                      label: 'Ativo',
+                      label: intl.formatMessage(messages.statusActive),
                       variant: 'positive' as const,
                       icon: 'fluent:checkmark-circle-24-filled',
                     },
@@ -135,14 +165,14 @@ export const SubscriptionPanel = ({
                 : status.status === 'inactive'
                   ? [
                       {
-                        label: 'Inativo',
+                        label: intl.formatMessage(messages.statusInactive),
                         variant: 'muted' as const,
                         icon: 'fluent:dismiss-circle-24-filled',
                       },
                     ]
                   : [
                       {
-                        label: 'Cancelado',
+                        label: intl.formatMessage(messages.statusCancelled),
                         variant: 'negative' as const,
                         icon: 'fluent:error-circle-24-filled',
                       },
@@ -160,7 +190,7 @@ export const SubscriptionPanel = ({
               ...(status.hasScheduledUpdate
                 ? [
                     {
-                      label: 'Alteração Agendada',
+                      label: intl.formatMessage(messages.scheduledUpdate),
                       variant: 'informative' as const,
                       icon: 'fluent:clock-24-regular',
                     },
@@ -170,7 +200,7 @@ export const SubscriptionPanel = ({
               ...(status.hasCancellation
                 ? [
                     {
-                      label: 'Renovação Cancelada',
+                      label: intl.formatMessage(messages.renewalCancelled),
                       variant: 'negative' as const,
                       icon: 'fluent:dismiss-circle-24-regular',
                     },
