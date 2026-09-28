@@ -2,6 +2,7 @@ import { transformAsync } from '@babel/core';
 import type { Rolldown } from 'tsdown';
 
 import { configCreator } from './configCreator';
+import { formatjsBabelPlugin } from './i18n';
 import * as typescriptConfig from './typescriptConfig';
 
 /**
@@ -31,15 +32,7 @@ const formatjsPlugin: Rolldown.Plugin = {
       filename: chunk.fileName,
       configFile: false,
       babelrc: false,
-      plugins: [
-        [
-          'formatjs',
-          {
-            idInterpolationPattern: '[sha512:contenthash:base64:6]',
-            ast: true,
-          },
-        ],
-      ],
+      plugins: [formatjsBabelPlugin()],
     });
 
     if (transformedFile?.code) {

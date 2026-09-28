@@ -34,6 +34,8 @@ module.exports = {
         [
           'formatjs',
           {
+            // Must equal I18N_ID_INTERPOLATION_PATTERN (src/i18n.ts); a test
+            // enforces it, since this file cannot import TypeScript.
             idInterpolationPattern: '[sha512:contenthash:base64:6]',
             ast: true,
           },

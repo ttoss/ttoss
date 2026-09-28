@@ -242,6 +242,26 @@ Configure the `build` script on `package.json`:
 }
 ```
 
+### i18n message ids
+
+`ttoss-i18n` extracts messages with one id pattern, and a catalog only applies when the bundler injects ids with the same one — a mismatch fails silently, every message falling back to its `defaultMessage`. Import the pattern instead of retyping it:
+
+```ts
+import {
+  formatjsBabelPlugin, // ['formatjs', { idInterpolationPattern, ast: true }]
+  formatjsSwcPlugin, // ['@swc/plugin-formatjs', { idInterpolationPattern, ast: true }]
+  I18N_ID_INTERPOLATION_PATTERN,
+} from '@ttoss/config';
+
+// vite.config.ts with @vitejs/plugin-react-swc
+react({ plugins: [formatjsSwcPlugin()] });
+
+// vite.config.ts with @vitejs/plugin-react
+react({ babel: { plugins: [formatjsBabelPlugin()] } });
+```
+
+The Jest (`babelConfig`) and build (`tsdownConfig`, `tsupConfig`) presets already use it.
+
 ### TypeScript
 
 Install [TypeScript](https://www.npmjs.com/package/typescript) on your package:

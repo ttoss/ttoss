@@ -1,6 +1,7 @@
 import { transformAsync } from '@babel/core';
 
 import { configCreator } from './configCreator';
+import { formatjsBabelPlugin } from './i18n';
 import * as typescriptConfig from './typescriptConfig';
 
 /**
@@ -35,15 +36,7 @@ const formatjsPlugin: any = {
               supportsStaticESM: true,
             },
             filename: outputFile.path,
-            plugins: [
-              [
-                'formatjs',
-                {
-                  idInterpolationPattern: '[sha512:contenthash:base64:6]',
-                  ast: true,
-                },
-              ],
-            ],
+            plugins: [formatjsBabelPlugin()],
           });
 
           if (transformedFile?.code) {

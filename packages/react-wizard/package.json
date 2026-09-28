@@ -25,7 +25,8 @@
     ".": "./src/index.ts"
   },
   "files": [
-    "dist"
+    "dist",
+    "i18n"
   ],
   "scripts": {
     "build": "tsdown",

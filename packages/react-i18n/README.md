@@ -115,87 +115,41 @@ export default function App() {
 
 Configure Vite to properly handle message extraction. Choose between Babel or SWC based on your setup:
 
-#### Option 1: Using Babel (with @ttoss/config)
+The ids your bundler injects must match the ids `ttoss-i18n` extracts, or no translation ever applies and every message silently falls back to its `defaultMessage`. `@ttoss/config` exports the canonical pattern as ready-made plugin presets, so there is nothing to retype:
 
-```ts title="vite.config.ts"
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import { babelConfig } from '@ttoss/config';
-
-export default defineConfig({
-  plugins: [
-    react({
-      babel: {
-        plugins: babelConfig().plugins,
-      },
-    }),
-  ],
-});
-```
-
-#### Option 2: Using Babel (manual configuration)
-
-First, install the Babel plugin:
+#### Option 1: Using SWC
 
 ```shell
-pnpm add -D babel-plugin-formatjs
+pnpm add -D @swc/plugin-formatjs @ttoss/config
 ```
-
-Then configure Vite:
 
 ```ts title="vite.config.ts"
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-
-export default defineConfig({
-  plugins: [
-    react({
-      babel: {
-        plugins: [
-          [
-            'formatjs',
-            {
-              idInterpolationPattern: '[sha512:contenthash:base64:6]',
-              ast: true,
-            },
-          ],
-        ],
-      },
-    }),
-  ],
-});
-```
-
-#### Option 3: Using SWC
-
-First, install the SWC plugin:
-
-```shell
-pnpm add -D @swc/plugin-formatjs
-```
-
-Then configure Vite with SWC:
-
-```ts title="vite.config.ts"
+import { formatjsSwcPlugin } from '@ttoss/config';
 import react from '@vitejs/plugin-react-swc';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  plugins: [
-    react({
-      plugins: [
-        [
-          '@swc/plugin-formatjs',
-          {
-            idInterpolationPattern: '[sha512:contenthash:base64:6]',
-            ast: true,
-          },
-        ],
-      ],
-    }),
-  ],
+  plugins: [react({ plugins: [formatjsSwcPlugin()] })],
 });
 ```
+
+#### Option 2: Using Babel
+
+```shell
+pnpm add -D babel-plugin-formatjs @ttoss/config
+```
+
+```ts title="vite.config.ts"
+import { formatjsBabelPlugin } from '@ttoss/config';
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  plugins: [react({ babel: { plugins: [formatjsBabelPlugin()] } })],
+});
+```
+
+Both presets expand to the plugin with `idInterpolationPattern: I18N_ID_INTERPOLATION_PATTERN` and `ast: true`. Use the constant directly if you configure the plugin another way.
 
 #### Configuration Options
 
@@ -393,9 +347,10 @@ Main provider component that configures internationalization context.
 
 **Props:**
 
-- `locale?: string` - Initial locale (defaults to browser language)
+- `locale?: string` - The locale to render. Changing it after mount loads that locale, exactly like `setLocale`
+- `defaultLocale?: string` - The locale your `defaultMessage`s are written in (default `en`). Set it when your app authors in another language, or untranslated messages report `MISSING_TRANSLATION` and fall back with English formatting
 - `loadLocaleData?: LoadLocaleData` - Function to load translation data
-- `onError?: (error: Error) => void` - Error handler for translation issues
+- `onError?: (error: Error) => void` - Receives translation errors and errors thrown by `loadLocaleData`
 - `children: ReactNode` - Child components
 
 ```tsx
@@ -413,7 +368,7 @@ Returns internationalization utilities and state.
 {
   intl: IntlShape;           // FormatJS intl object
   locale: string;            // Current locale
-  defaultLocale: string;     // Default locale ('en')
+  defaultLocale: string;     // The source locale ('en' unless set)
   setLocale: (locale: string) => void; // Change locale function
   messages?: Messages;       // Current translation messages
 }

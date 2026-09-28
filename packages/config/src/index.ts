@@ -1,6 +1,11 @@
 export { babelConfig } from './babel';
 export { commitlintConfig } from './commitlint';
 export {
+  formatjsBabelPlugin,
+  formatjsSwcPlugin,
+  I18N_ID_INTERPOLATION_PATTERN,
+} from './i18n';
+export {
   jestConfig,
   jestE2EConfig,
   jestRootConfig,
