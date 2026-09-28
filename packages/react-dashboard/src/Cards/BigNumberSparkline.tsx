@@ -1,6 +1,5 @@
-import { useI18n } from '@ttoss/react-i18n';
+import { defineMessages, useI18n } from '@ttoss/react-i18n';
 import { Box, Flex, Text } from '@ttoss/ui';
-import { defineMessages } from 'react-intl';
 
 import type { BigNumberSparklineCard, TrendIndicator } from '../DashboardCard';
 import { formatNumber, getTrendColors } from './cardUtils';

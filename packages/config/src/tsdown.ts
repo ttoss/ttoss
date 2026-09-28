@@ -13,7 +13,15 @@ import * as typescriptConfig from './typescriptConfig';
  * Check [Automatic ID Generation](https://formatjs.github.io/docs/getting-started/message-extraction#automatic-id-generation)
  * for more information.
  */
-const formatjsPlugin: Rolldown.Plugin = {
+/**
+ * `babel-plugin-formatjs` recognizes a descriptor call by the callee's name.
+ * When a chunk imports `defineMessages` from two modules, the bundler renames
+ * one to `defineMessages$1`, and every message declared through it ships
+ * without an id, which throws at render time (@ttoss/react-dashboard 0.14.x).
+ */
+const RENAMED_DESCRIPTOR_CALL = /\b(defineMessages?)\$\d+\s*\(/;
+
+export const formatjsPlugin: Rolldown.Plugin = {
   name: 'formatjs',
   renderChunk: async (code, chunk) => {
     if (
@@ -22,6 +30,13 @@ const formatjsPlugin: Rolldown.Plugin = {
       !chunk.fileName.endsWith('.cjs')
     ) {
       return null;
+    }
+
+    const renamed = RENAMED_DESCRIPTOR_CALL.exec(code);
+    if (renamed) {
+      throw new Error(
+        `@ttoss/config: ${chunk.fileName} calls a renamed ${renamed[1]} (${renamed[0].trim()}), so its messages would ship without ids. Import ${renamed[1]} from a single module, such as @ttoss/react-i18n.`
+      );
     }
 
     const transformedFile = await transformAsync(code, {
