@@ -4,6 +4,7 @@ import {
   getAllFilesInsideADirectory,
   uploadDirectoryToS3,
 } from '../s3';
+import { type ContentTypes } from './contentTypes';
 import {
   defaultBuildFolders,
   findDefaultBuildFolder,
@@ -12,11 +13,13 @@ import {
 export const uploadBuiltAppToS3 = async ({
   buildFolder: directory,
   bucket,
+  contentTypes,
   uploadSourceMaps,
 }: {
   buildFolder?: string;
   bucket: string;
   cloudfront?: boolean;
+  contentTypes?: ContentTypes;
   uploadSourceMaps?: boolean;
 }) => {
   /**
@@ -28,7 +31,12 @@ export const uploadBuiltAppToS3 = async ({
     if (files.length > 0) {
       await deleteOldS3Files({ bucket, retentionDays: 7 });
     }
-    await uploadDirectoryToS3({ bucket, directory, uploadSourceMaps });
+    await uploadDirectoryToS3({
+      bucket,
+      contentTypes,
+      directory,
+      uploadSourceMaps,
+    });
     return;
   }
 
@@ -38,6 +46,7 @@ export const uploadBuiltAppToS3 = async ({
     await deleteOldS3Files({ bucket, retentionDays: 7 });
     await uploadDirectoryToS3({
       bucket,
+      contentTypes,
       directory: defaultDirectory,
       uploadSourceMaps,
     });

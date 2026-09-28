@@ -1,4 +1,9 @@
 export {
+  extractAcceptedBodyFields,
+  extractBodyProps,
+  extractPinnedBody,
+} from './body';
+export {
   extractPathParams,
   extractQueryParams,
   snakeToCamel,
@@ -21,8 +26,6 @@ export {
 } from './schema';
 export {
   buildInputSchema,
-  extractAcceptedBodyFields,
-  extractBodyProps,
   getJsonSchemaType,
   openApiToToolDefinitions,
   operationIdToToolName,

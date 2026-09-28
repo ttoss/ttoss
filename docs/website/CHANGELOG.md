@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 9.1.0 (2026-09-26)
+
+### Features
+
+- **carlin:** set a file's content type explicitly with content-types ([#1261](https://github.com/ttoss/ttoss/issues/1261)) ([f9e1914](https://github.com/ttoss/ttoss/commit/f9e1914d85f74c3f519626424d63661cb5ffc50a)), closes [#1260](https://github.com/ttoss/ttoss/issues/1260)
+- **geovis-workspace:** add a color-ramp control to the settings zone ([#1245](https://github.com/ttoss/ttoss/issues/1245)) ([87796e8](https://github.com/ttoss/ttoss/commit/87796e8d4c631c1ce6701f4effd5c285356d5698))
+
 ## [9.0.2](https://github.com/ttoss/ttoss/compare/@docs/website@9.0.1...@docs/website@9.0.2) (2026-09-16)
 
 **Note:** Version bump only for package @docs/website

@@ -87,6 +87,36 @@ describe('uploadSourceMaps', () => {
   );
 });
 
+describe('contentTypes', () => {
+  const contentTypes = { 'data/feed': 'application/feed+json' };
+
+  test('should forward contentTypes when the bucket already exists', async () => {
+    (getStaticAppBucket as jest.Mock).mockResolvedValue(bucket);
+    (deploy as jest.Mock).mockResolvedValue({ Outputs: [] });
+
+    await deployStaticApp({ buildFolder, contentTypes, region });
+
+    expect(uploadBuiltAppToS3).toHaveBeenCalledWith(
+      expect.objectContaining({ bucket, contentTypes })
+    );
+  });
+
+  test('should forward contentTypes when the bucket is created by this deploy', async () => {
+    const newBucket = faker.word.words();
+
+    (getStaticAppBucket as jest.Mock)
+      .mockResolvedValueOnce(undefined)
+      .mockResolvedValueOnce(newBucket);
+    (deploy as jest.Mock).mockResolvedValue({ Outputs: [] });
+
+    await deployStaticApp({ buildFolder, contentTypes, region });
+
+    expect(uploadBuiltAppToS3).toHaveBeenCalledWith(
+      expect.objectContaining({ bucket: newBucket, contentTypes })
+    );
+  });
+});
+
 // uploadDirectoryToS3 bucket key must be undefined if cloudfront is false
 // test.skip('uploadDirectoryToS3 bucket key must not be undefined if cloudfront is true', async () => {
 //   const cloudfront = true;

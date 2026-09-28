@@ -159,4 +159,50 @@ describe('uploadBuiltAppToS3', () => {
       }
     );
   });
+
+  /**
+   * Same two branches, same reason: a mapping forwarded through only one would
+   * serve a file with its mapped type on some deploys and its extension's type
+   * on others.
+   */
+  describe('contentTypes forwarding', () => {
+    const contentTypes = { 'data/feed': 'application/feed+json' };
+
+    test('should forward contentTypes when buildFolder is provided', async () => {
+      jest
+        .spyOn(s3, 'getAllFilesInsideADirectory')
+        .mockResolvedValue(['file1.js']);
+      jest.spyOn(s3, 'deleteOldS3Files').mockResolvedValue(0);
+      jest.spyOn(s3, 'uploadDirectoryToS3').mockResolvedValue();
+
+      await uploadBuiltAppToS3({
+        buildFolder: mockDirectory,
+        bucket: mockBucket,
+        contentTypes,
+      });
+
+      expect(s3.uploadDirectoryToS3).toHaveBeenCalledWith(
+        expect.objectContaining({ contentTypes, directory: mockDirectory })
+      );
+    });
+
+    test('should forward contentTypes when using the default build folder', async () => {
+      const mockDefaultDirectory = '/default/build';
+      jest
+        .spyOn(findDefaultBuildFolder, 'findDefaultBuildFolder')
+        .mockResolvedValue(mockDefaultDirectory);
+      jest.spyOn(s3, 'deleteOldS3Files').mockResolvedValue(0);
+      jest.spyOn(s3, 'uploadDirectoryToS3').mockResolvedValue();
+      jest.spyOn(s3, 'copyRoot404To404Index').mockResolvedValue();
+
+      await uploadBuiltAppToS3({ bucket: mockBucket, contentTypes });
+
+      expect(s3.uploadDirectoryToS3).toHaveBeenCalledWith(
+        expect.objectContaining({
+          contentTypes,
+          directory: mockDefaultDirectory,
+        })
+      );
+    });
+  });
 });

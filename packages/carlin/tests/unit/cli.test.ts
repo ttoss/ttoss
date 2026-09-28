@@ -399,6 +399,38 @@ describe('upload-source-maps option', () => {
   });
 });
 
+describe('content-types option', () => {
+  test('should map no path by default', async () => {
+    const argv = await parseCli('deploy static-app', {});
+    expect(argv.contentTypes).toEqual({});
+  });
+
+  test('should accept content-types option', async () => {
+    const argv = await parseCli(
+      'deploy static-app --content-types.data/feed=application/feed+json',
+      {}
+    );
+
+    expect(argv.contentTypes).toEqual({ 'data/feed': 'application/feed+json' });
+  });
+
+  /**
+   * The paths this option exists for sit under `.well-known/`, and a config
+   * file is where a deploy states them; the dot must not split the key.
+   */
+  test('should keep a dotted path read from the config file', async () => {
+    const linkset =
+      'application/linkset+json; profile="https://www.rfc-editor.org/info/rfc9727"';
+    (deepmerge.all as jest.Mock).mockReturnValueOnce({
+      contentTypes: { '.well-known/api-catalog': linkset },
+    });
+
+    const argv = await parseCli('deploy static-app', {});
+
+    expect(argv.contentTypes).toEqual({ '.well-known/api-catalog': linkset });
+  });
+});
+
 describe('response headers options', () => {
   test('should not define response headers by default', async () => {
     const argv = await parseCli('deploy static-app', {});

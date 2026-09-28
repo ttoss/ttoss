@@ -367,6 +367,32 @@ option off, those comments will point at files that return 404. Strip them at
 build time (most source-map upload tools do this for you) if that matters to
 you.
 
+### --content-types
+
+Content types set on uploaded files instead of the one their extension implies.
+
+Every file is uploaded with the content type of its extension. That can't
+describe a media type no extension maps to, such as the
+`application/linkset+json` [RFC 9727](https://www.rfc-editor.org/rfc/rfc9727)
+requires of `/.well-known/api-catalog`, or a file with no extension at all,
+which S3 would otherwise serve with its default binary type. Map those files by
+their path relative to the build folder:
+
+```typescript
+import { defineConfig } from 'carlin/config';
+
+export default defineConfig({
+  contentTypes: {
+    '.well-known/api-catalog':
+      'application/linkset+json; profile="https://www.rfc-editor.org/info/rfc9727"',
+  },
+});
+```
+
+Paths match exactly, and a leading slash is optional. A mapped path with no file
+in the build folder fails the deploy rather than being ignored, so a typo can't
+leave a file with the wrong type unnoticed.
+
 ### --region
 
 :::note

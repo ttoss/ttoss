@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.8.0 (2026-09-26)
+
+### Bug Fixes
+
+- **openapi-codegen:** stop silently dropping header and cookie parameters ([#1246](https://github.com/ttoss/ttoss/issues/1246)) ([96be791](https://github.com/ttoss/ttoss/commit/96be791cfcb12c9d7521c60091a2b76303fa3924))
+
+### Features
+
+- **react-auth-strapi:** support Google/social sign-in via Strapi providers ([#1259](https://github.com/ttoss/ttoss/issues/1259)) ([25bc4d9](https://github.com/ttoss/ttoss/commit/25bc4d94bff4b989457078cb325c3449cb6ec08f))
+
 ## [0.7.1](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-strapi@0.7.0...@ttoss/react-auth-strapi@0.7.1) (2026-09-04)
 
 **Note:** Version bump only for package @ttoss/react-auth-strapi
