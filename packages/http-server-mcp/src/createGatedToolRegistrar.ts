@@ -1,5 +1,5 @@
 import type { McpServer } from '@modelcontextprotocol/server';
-import { type Catalog, renderLocalizedError } from '@ttoss/i18n-core';
+import type { Catalog } from '@ttoss/i18n-core';
 
 import { getIdentity, getRequestLocale } from './context';
 
@@ -142,6 +142,9 @@ const localizedToolError = async ({
     const requested = i18n.getLocale
       ? await i18n.getLocale(ctx)
       : getRequestLocale();
+    // Loaded here, not at import: `@ttoss/i18n-core` pulls in the ESM-only
+    // FormatJS runtime, which an app without `i18n` should never load.
+    const { renderLocalizedError } = await import('@ttoss/i18n-core');
     const rendered = renderLocalizedError({
       error,
       i18n: await i18n.catalog.getI18n(requested),

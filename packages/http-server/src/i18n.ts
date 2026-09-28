@@ -1,9 +1,4 @@
-import {
-  type Catalog,
-  type I18n,
-  isLocalizedError,
-  renderLocalizedError,
-} from '@ttoss/i18n-core';
+import type { Catalog, I18n } from '@ttoss/i18n-core';
 import type { Context, Middleware } from 'koa';
 
 type Requested = string | string[] | null | undefined;
@@ -23,6 +18,16 @@ const readStatus = (error: object): number | undefined => {
   };
   const raw = status ?? statusCode;
   return typeof raw === 'number' ? raw : undefined;
+};
+
+/**
+ * Loaded on the first error, not at import: `@ttoss/i18n-core` pulls in the
+ * ESM-only FormatJS runtime, which every app importing `@ttoss/http-server`
+ * would otherwise load (and configure Jest for) whether it localizes or not.
+ */
+const renderLocalizedError = async (args: { error: unknown; i18n: I18n }) => {
+  const i18nCore = await import('@ttoss/i18n-core');
+  return i18nCore.renderLocalizedError(args);
 };
 
 const isClientError = (error: object) => {
@@ -72,18 +77,18 @@ export const i18nMiddleware = ({
     try {
       await next();
     } catch (error) {
-      const rendered = renderLocalizedError({ error, i18n });
+      const rendered = await renderLocalizedError({ error, i18n });
 
-      if (!rendered || !isLocalizedError(error)) {
+      if (!rendered) {
         throw error;
       }
 
-      if (!isClientError(error)) {
-        error.message = rendered.message;
+      if (!isClientError(error as object)) {
+        (error as Error).message = rendered.message;
         throw error;
       }
 
-      ctx.status = readStatus(error) ?? 400;
+      ctx.status = readStatus(error as object) ?? 400;
       ctx.body = { error: rendered };
     }
   };

@@ -1,10 +1,18 @@
-import {
-  type Catalog,
-  isLocalizedError,
-  renderLocalizedError,
-} from '@ttoss/i18n-core';
+import type { Catalog, MessageRef } from '@ttoss/i18n-core';
 
 import { type AppSyncInfo, createAppSyncMiddleware } from './appSyncMiddleware';
+
+type LocalizedErrorShape = Error & { code: string; messageRef: MessageRef };
+
+/**
+ * Loaded on the first error, not at import: `@ttoss/i18n-core` pulls in the
+ * ESM-only FormatJS runtime, which an app that never uses this middleware
+ * should not have to load (or configure Jest for).
+ */
+const isLocalizedError = async (error: unknown): Promise<boolean> => {
+  const i18nCore = await import('@ttoss/i18n-core');
+  return i18nCore.isLocalizedError(error);
+};
 
 type Requested = string | string[] | null | undefined;
 
@@ -74,7 +82,7 @@ export const createAppSyncI18nMiddleware = <TContext = unknown>({
     context,
     info,
   }: {
-    error: Error & { code: string };
+    error: LocalizedErrorShape;
     context: TContext;
     info: AppSyncInfo;
   }) => {
@@ -83,13 +91,9 @@ export const createAppSyncI18nMiddleware = <TContext = unknown>({
         ? await getLocale({ context, info })
         : getRequestLocale(context as Parameters<typeof getRequestLocale>[0]);
       const i18n = await catalog.getI18n(requested);
-      const rendered = renderLocalizedError({ error, i18n });
-
-      if (rendered) {
-        const name = error.name;
-        error.message = rendered.message;
-        error.name = errorType({ code: rendered.code, name });
-      }
+      const name = error.name;
+      error.message = i18n.render(error.messageRef);
+      error.name = errorType({ code: error.code, name });
     } catch {
       // Rendering is best effort: the original error is still the answer.
     }
@@ -102,14 +106,22 @@ export const createAppSyncI18nMiddleware = <TContext = unknown>({
       try {
         const result = await resolve(source, args, context, info);
 
-        if (result instanceof Error && isLocalizedError(result)) {
-          return localize({ error: result, context, info });
+        if (result instanceof Error && (await isLocalizedError(result))) {
+          return localize({
+            error: result as LocalizedErrorShape,
+            context,
+            info,
+          });
         }
 
         return result;
       } catch (error) {
-        if (isLocalizedError(error)) {
-          throw await localize({ error, context, info });
+        if (await isLocalizedError(error)) {
+          throw await localize({
+            error: error as LocalizedErrorShape,
+            context,
+            info,
+          });
         }
 
         throw error;
