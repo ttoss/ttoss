@@ -1,6 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/server';
+import { type Catalog, renderLocalizedError } from '@ttoss/i18n-core';
 
-import { getIdentity } from './context';
+import { getIdentity, getRequestLocale } from './context';
 
 /** Resolved identity for a gated tool call. */
 export type ToolIdentity = { userId: string; scopes?: string[] };
@@ -90,15 +91,65 @@ export type CreateGatedToolRegistrarOptions = {
    * `null` or `undefined`. Defaults to `"Not found"`.
    */
   notFoundMessage?: string;
+  /**
+   * Renders a `LocalizedError` — thrown by a gate or by the handler — as an
+   * `isError` result `{ error: <message>, code }` in the caller's locale,
+   * instead of letting the SDK surface its source-language message. Gates run
+   * outside the handler, so this is the one place both are covered.
+   *
+   * `getLocale` defaults to the MCP request's `Accept-Language`
+   * (`getRequestLocale()`); return a fixed locale to pin the agent contract to
+   * one language. `onError` still runs for a handler error before it is
+   * rendered. Errors that are not localized behave exactly as without this
+   * option.
+   */
+  i18n?: {
+    catalog: Pick<Catalog, 'getI18n'>;
+    getLocale?: (
+      ctx: ToolCallContext
+    ) =>
+      | string
+      | string[]
+      | null
+      | undefined
+      | Promise<string | string[] | null | undefined>;
+  };
 };
 
-const toolError = (message: string) => {
+const toolError = (message: string, code?: string) => {
+  const payload =
+    code === undefined ? { error: message } : { error: message, code };
   return {
-    content: [
-      { type: 'text' as const, text: JSON.stringify({ error: message }) },
-    ],
+    content: [{ type: 'text' as const, text: JSON.stringify(payload) }],
     isError: true as const,
   };
+};
+
+/**
+ * The localized `isError` result for `error`, or `undefined` when it is not
+ * a `LocalizedError` or rendering fails — the caller then keeps its usual path.
+ */
+const localizedToolError = async ({
+  error,
+  ctx,
+  i18n,
+}: {
+  error: unknown;
+  ctx: ToolCallContext;
+  i18n: NonNullable<CreateGatedToolRegistrarOptions['i18n']>;
+}) => {
+  try {
+    const requested = i18n.getLocale
+      ? await i18n.getLocale(ctx)
+      : getRequestLocale();
+    const rendered = renderLocalizedError({
+      error,
+      i18n: await i18n.catalog.getI18n(requested),
+    });
+    return rendered ? toolError(rendered.message, rendered.code) : undefined;
+  } catch {
+    return undefined;
+  }
 };
 
 /**
@@ -120,6 +171,8 @@ const toolError = (message: string) => {
  * 4. Merges `buildContext` output into the handler args.
  * 5. Wraps `null`/`undefined` results in a configurable "Not found" error result.
  * 6. Calls `onError` on handler throw before rethrowing.
+ * 7. With `i18n`, renders a `LocalizedError` from a gate or the handler as an
+ *    `isError` result in the caller's locale instead of rethrowing it.
  *
  * @example
  * ```typescript
@@ -175,7 +228,31 @@ export const createGatedToolRegistrar = ({
   onError,
   buildContext,
   notFoundMessage = 'Not found',
+  i18n,
 }: CreateGatedToolRegistrarOptions) => {
+  // Render a LocalizedError as a tool result, or rethrow anything else.
+  const renderOrRethrow = async (error: unknown, ctx: ToolCallContext) => {
+    const localized = i18n
+      ? await localizedToolError({ error, ctx, i18n })
+      : undefined;
+    if (localized) return localized;
+    throw error;
+  };
+
+  const runMethod = async (def: GatedToolDef, ctx: ToolCallContext) => {
+    const extra = buildContext ? buildContext(ctx) : {};
+    try {
+      const result = await def.method({ ...ctx.args, ...extra });
+      if (result == null) return toolError(notFoundMessage);
+      return {
+        content: [{ type: 'text' as const, text: JSON.stringify(result) }],
+      };
+    } catch (error) {
+      if (onError) await onError(error, ctx);
+      return renderOrRethrow(error, ctx);
+    }
+  };
+
   const register = (def: GatedToolDef): void => {
     const handler = async (args: Record<string, unknown>) => {
       const identity = resolveIdentity() as ToolIdentity | undefined;
@@ -188,19 +265,13 @@ export const createGatedToolRegistrar = ({
         if (scopeError) return scopeError;
       }
 
-      await runGates([...gates, ...(def.gates ?? [])], ctx);
-
-      const extra = buildContext ? buildContext(ctx) : {};
       try {
-        const result = await def.method({ ...args, ...extra });
-        if (result == null) return toolError(notFoundMessage);
-        return {
-          content: [{ type: 'text' as const, text: JSON.stringify(result) }],
-        };
+        await runGates([...gates, ...(def.gates ?? [])], ctx);
       } catch (error) {
-        if (onError) await onError(error, ctx);
-        throw error;
+        return renderOrRethrow(error, ctx);
       }
+
+      return runMethod(def, ctx);
     };
 
     type RegisterToolArgs = Parameters<McpServer['registerTool']>;

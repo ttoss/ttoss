@@ -10,4 +10,8 @@ export default jestUnitConfig({
     },
   },
   setupFilesAfterEnv: ['<rootDir>/setupTests.ts'],
+  // @ttoss/i18n-core depends on @formatjs/intl, which ships ESM only.
+  transformIgnorePatterns: [
+    '/node_modules/(?!(\\.pnpm/)?(@formatjs|intl-messageformat))',
+  ],
 });

@@ -191,6 +191,27 @@ app.use(async (ctx, next) => {
 });
 ```
 
+### Localization
+
+`i18nMiddleware` negotiates the request locale and renders [`LocalizedError`](https://ttoss.dev/docs/modules/packages/i18n-core/)s:
+
+```ts
+import { App, i18nMiddleware, type I18nState } from '@ttoss/http-server';
+
+app.use(
+  i18nMiddleware({ catalog, getUserLocale: (ctx) => ctx.state.user?.locale })
+);
+
+router.get('/summary', (ctx) => {
+  const { i18n } = ctx.state as I18nState;
+  ctx.body = { text: i18n.render(summaryRef) };
+});
+```
+
+- `ctx.state.locale` and `ctx.state.i18n` come from `getUserLocale`, then `Accept-Language`, then the catalog's fallback.
+- A client-facing `LocalizedError` (a 4xx `status`, or `expected: true`) answers `{ error: { code, message } }` with that status (400 by default).
+- Any other `LocalizedError` has its `message` rendered in place and is rethrown to your error handling; every other error passes through untouched.
+
 ## OAuth
 
 Authentication lives in [`@ttoss/http-server-auth`](https://ttoss.dev/docs/modules/packages/http-server-auth) — `authMiddleware` (verify Bearer tokens, including an `oauth` strategy) and `oauthServer()` (issue tokens), a thin Koa layer over the runner-agnostic engine in [`@ttoss/auth-core`](https://ttoss.dev/docs/modules/packages/auth-core). This base runner stays auth-free. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline.

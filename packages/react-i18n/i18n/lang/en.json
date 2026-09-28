@@ -7,6 +7,10 @@
     "defaultMessage": "Untranslated Message",
     "description": "Untranslated Message"
   },
+  "qPpakp": {
+    "defaultMessage": "Campaign {campaign} spent {amount}.",
+    "description": "Spend line"
+  },
   "tPkQ38": {
     "defaultMessage": "Other message",
     "description": "Other message"

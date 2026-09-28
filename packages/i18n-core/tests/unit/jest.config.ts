@@ -4,9 +4,9 @@ export default jestUnitConfig({
   coverageThreshold: {
     global: {
       statements: 99.3,
-      branches: 95.5,
+      branches: 95.8,
       lines: 99.3,
-      functions: 97.7,
+      functions: 97.8,
     },
   },
   // @formatjs/intl and intl-messageformat ship ESM only.

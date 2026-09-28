@@ -10,6 +10,11 @@ export {
   type CreateContext,
 } from './createAppSyncResolverHandler';
 export {
+  createAppSyncI18nMiddleware,
+  type ErrorTypeArgs,
+  getRequestLocale,
+} from './i18n';
+export {
   AWSDateTC,
   AWSDateTimeTC,
   AWSEmailTC,

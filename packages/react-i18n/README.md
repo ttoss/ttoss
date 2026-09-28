@@ -339,6 +339,21 @@ function LanguageSelector() {
 }
 ```
 
+### Rendering backend message references
+
+A backend built with [`@ttoss/i18n-core`](https://ttoss.dev/docs/modules/packages/i18n-core/) can send text as a **message reference** — JSON with an id, a `defaultMessage` and values — instead of a pre-rendered string. `LocalizedText` and `useMessageRef` render it in the current locale, formatting deferred values (`fmt.currency`, `fmt.date`, …) with the reader's conventions:
+
+```tsx
+import { LocalizedText, useMessageRef } from '@ttoss/react-i18n';
+
+<LocalizedText value={notification.body} />;
+
+const render = useMessageRef();
+addNotification({ message: render(error.messageRef) });
+```
+
+A plain string renders unchanged, so rows written before references existed keep working.
+
 ## API Reference
 
 ### I18nProvider

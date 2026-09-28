@@ -193,6 +193,9 @@ importers:
       '@ttoss/geovis-workspace':
         specifier: workspace:^
         version: link:../../packages/geovis-workspace
+      '@ttoss/i18n-core':
+        specifier: workspace:^
+        version: link:../../packages/i18n-core
       '@ttoss/landing-pages':
         specifier: workspace:^
         version: link:../../packages/landing-pages
@@ -372,6 +375,9 @@ importers:
       '@ttoss/cloudformation':
         specifier: workspace:^
         version: link:../cloudformation
+      '@ttoss/i18n-core':
+        specifier: workspace:^
+        version: link:../i18n-core
     devDependencies:
       '@ttoss/config':
         specifier: workspace:^
@@ -1431,6 +1437,9 @@ importers:
       '@koa/router':
         specifier: ^15.6.0
         version: 15.6.0(koa@3.2.1)
+      '@ttoss/i18n-core':
+        specifier: workspace:^
+        version: link:../i18n-core
       koa:
         specifier: ^3.2.1
         version: 3.2.1
@@ -1508,6 +1517,9 @@ importers:
       '@ttoss/http-server-auth':
         specifier: workspace:^
         version: link:../http-server-auth
+      '@ttoss/i18n-core':
+        specifier: workspace:^
+        version: link:../i18n-core
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -2148,6 +2160,9 @@ importers:
 
   packages/react-i18n:
     dependencies:
+      '@ttoss/i18n-core':
+        specifier: workspace:^
+        version: link:../i18n-core
       react-intl:
         specifier: ^10.1.1
         version: 10.1.9(@types/react@19.2.15)(react@19.2.6)

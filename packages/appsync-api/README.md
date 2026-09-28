@@ -153,6 +153,43 @@ return {
 };
 ```
 
+### Localized errors
+
+`createAppSyncI18nMiddleware` renders a thrown (or returned) [`LocalizedError`](https://ttoss.dev/docs/modules/packages/i18n-core/) in the request locale before it leaves the Lambda. Only `error.name` (AppSync's `errorType`) and `error.message` survive the Direct Lambda boundary, so the error is rewritten in place: `message` becomes the rendered text, `name` becomes `errorType({ code, name })`. Everything else passes through untouched.
+
+```ts
+import {
+  createAppSyncI18nMiddleware,
+  createAppSyncResolverHandler,
+} from '@ttoss/appsync-api';
+import { createCatalog } from '@ttoss/i18n-core';
+
+const catalog = createCatalog({
+  supported: ['pt-BR', 'en'],
+  fallback: 'pt-BR',
+  defaultLocale: 'pt-BR',
+  load: async (locale) =>
+    (await import(`../i18n/compiled/${locale}.json`)).default,
+});
+
+export const handler = createAppSyncResolverHandler({
+  schemaComposer,
+  middlewares: [
+    // First, so it also sees errors thrown by the middlewares after it.
+    createAppSyncI18nMiddleware({
+      catalog,
+      // Default: the request's Accept-Language (see `getRequestLocale`).
+      getLocale: ({ context }) => context.user?.locale,
+      // Default: the bare code. Keep the class visible instead:
+      errorType: ({ name, code }) => `${name}[${code}]`,
+    }),
+    authorizationMiddleware,
+  ],
+});
+```
+
+The error object is kept, so markers such as an `expected` flag still reach your reporting. If the catalog cannot be loaded, the error is rethrown unrendered.
+
 ### Custom domain name
 
 You can add a custom domain name to your API using the `customDomain` option.

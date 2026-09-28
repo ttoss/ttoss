@@ -127,6 +127,23 @@ if (isLocalizedError(error)) {
 
 `code` is for machines and never changes with the copy; `messageRef` is rendered in the request locale; `error.message` holds the source text, for logs. `isLocalizedError` checks the **shape** (`code` string plus `messageRef`), not the class, so an errors package that must stay dependency-free can produce compatible errors, and errors that crossed a bundle boundary are still recognized.
 
+## Boundary adapters
+
+These render a thrown `LocalizedError` at the edge, so producers never need a locale:
+
+- `@ttoss/appsync-api`: `createAppSyncI18nMiddleware`
+- `@ttoss/http-server`: `i18nMiddleware`
+- `@ttoss/http-server-mcp`: `createGatedToolRegistrar({ i18n })`
+- `@ttoss/react-i18n`: `LocalizedText` / `useMessageRef`
+
+## Testing with Jest
+
+`@formatjs/intl` ships ESM only. If your Jest config does not transform `node_modules`, let it transform FormatJS:
+
+```ts
+transformIgnorePatterns: ['/node_modules/(?!(\\.pnpm/)?(@formatjs|intl-messageformat))'],
+```
+
 ## API
 
 | Export                                                                   | What it is                                                       |

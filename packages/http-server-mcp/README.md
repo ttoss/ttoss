@@ -503,6 +503,25 @@ register({
 
 **`buildContext`** injects request-scoped values (DB clients, tenant IDs) into every handler call without threading them through each individual tool. It receives the full `ToolCallContext` so context can vary by identity or by call args.
 
+### Localized refusals and errors
+
+Pass `i18n` to render a [`LocalizedError`](https://ttoss.dev/docs/modules/packages/i18n-core/) thrown by a **gate** or by the **handler** as an `isError` result `{ "error": "<message>", "code": "<CODE>" }` in the caller's locale. Gates run outside the handler, so the registrar is the one place that covers both.
+
+```ts
+const { register } = createGatedToolRegistrar({
+  server,
+  gates: [subscriptionGate],
+  i18n: {
+    catalog,
+    // Default: the MCP request's Accept-Language (`getRequestLocale()`).
+    // Pin the agent contract to one language instead:
+    getLocale: () => 'en',
+  },
+});
+```
+
+`onError` still runs for a handler error before it is rendered. Errors that are not localized behave exactly as without the option.
+
 ## MCP Apps (interactive UIs)
 
 The [`io.modelcontextprotocol/ui`](https://github.com/modelcontextprotocol/ext-apps) extension lets a tool result render as an interactive view instead of text. The view is a `ui://` resource holding an HTML document, which the host loads into a sandboxed iframe and talks to over `postMessage`; the tool points at it through its `_meta`.

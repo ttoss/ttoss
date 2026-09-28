@@ -40,7 +40,18 @@ const RICH_TEXT_TAGS = [
 
 const VOID_TAGS = ['br'] as const;
 
-type Mode = 'text' | 'html';
+export type RenderMode = 'text' | 'html';
+
+/**
+ * The part of an `IntlShape` rendering needs — satisfied by `createI18n` and
+ * by react-intl's `useIntl()` alike.
+ */
+export type IntlFormatters = Pick<
+  IntlShape,
+  'formatMessage' | 'formatNumber' | 'formatDate' | 'formatRelativeTime'
+>;
+
+type Mode = RenderMode;
 
 const escapeHtml = (value: string) => {
   return value
@@ -102,7 +113,7 @@ export type I18n = IntlShape & {
   formatValue: (value: FormatValue) => string;
 };
 
-const formatValue = (intl: IntlShape, value: FormatValue): string => {
+const formatValue = (intl: IntlFormatters, value: FormatValue): string => {
   switch (value.$fmt) {
     case 'currency':
       return intl.formatNumber(value.value, {
@@ -147,7 +158,7 @@ const resolveValue = ({
   mode,
   render,
 }: {
-  intl: IntlShape;
+  intl: IntlFormatters;
   value: MessageValue;
   mode: Mode;
   render: (ref: MessageRef) => string;
@@ -173,12 +184,18 @@ const resolveValue = ({
   return typeof value === 'boolean' ? String(value) : value;
 };
 
-const renderRef = ({
+/**
+ * Render a reference with any FormatJS `IntlShape` — the one `createI18n`
+ * builds, or react-intl's `useIntl()` — so every runtime renders references
+ * identically. `text` drops rich-text markup; `html` keeps it and escapes
+ * every interpolated value.
+ */
+export const renderMessageRef = ({
   intl,
   ref,
   mode,
 }: {
-  intl: IntlShape;
+  intl: IntlFormatters;
   ref: MessageRef | string;
   mode: Mode;
 }): string => {
@@ -194,7 +211,7 @@ const renderRef = ({
       value,
       mode,
       render: (nested) => {
-        return renderRef({ intl, ref: nested, mode });
+        return renderMessageRef({ intl, ref: nested, mode });
       },
     });
   }
@@ -234,10 +251,10 @@ export const createI18n = ({
 
   return Object.assign(intl, {
     render: (ref: MessageRef | string) => {
-      return renderRef({ intl, ref, mode: 'text' });
+      return renderMessageRef({ intl, ref, mode: 'text' });
     },
     renderHtml: (ref: MessageRef | string) => {
-      return renderRef({ intl, ref, mode: 'html' });
+      return renderMessageRef({ intl, ref, mode: 'html' });
     },
     formatValue: (value: FormatValue) => {
       return formatValue(intl, value);

@@ -3,7 +3,10 @@ export {
   createI18n,
   DEFAULT_LOCALE,
   type I18n,
+  type IntlFormatters,
   type Messages,
+  renderMessageRef,
+  type RenderMode,
 } from './createI18n';
 export {
   fmt,
@@ -20,6 +23,7 @@ export {
   msg,
 } from './messageRef';
 export { negotiateLocale } from './negotiateLocale';
+export { renderLocalizedError } from './renderLocalizedError';
 export {
   defineMessage,
   defineMessages,
