@@ -18,6 +18,16 @@ export type AuthSocialSignInCallbackProps = {
 
 const GENERIC_ERROR_MESSAGE = 'An error occurred during social sign in.';
 
+const TIMEOUT_ERROR_MESSAGE =
+  'Sign in is taking longer than expected. Please try again.';
+
+// The callback exchange has no bound otherwise: a slow/hung CMS request
+// leaves the caller's "signing in..." UI spinning forever, with no error to
+// react to. 15s covers a normal round trip (including the slower
+// account-linking path some providers take) while still failing fast enough
+// to let the user retry.
+const CALLBACK_TIMEOUT_MS = 15_000;
+
 const exchangeSocialSignInCallback = async ({
   apiUrl,
   provider,
@@ -25,9 +35,26 @@ const exchangeSocialSignInCallback = async ({
   apiUrl: string;
   provider: string;
 }): Promise<AuthData> => {
-  const response = await fetch(
-    `${apiUrl}/auth/${provider}/callback${window.location.search}`
-  );
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => {
+    return controller.abort();
+  }, CALLBACK_TIMEOUT_MS);
+
+  let response: Response;
+
+  try {
+    response = await fetch(
+      `${apiUrl}/auth/${provider}/callback${window.location.search}`,
+      { signal: controller.signal }
+    );
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error(TIMEOUT_ERROR_MESSAGE);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   const data = await response.json();
 

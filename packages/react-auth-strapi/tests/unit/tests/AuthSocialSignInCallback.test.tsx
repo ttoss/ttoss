@@ -86,7 +86,8 @@ describe('AuthSocialSignInCallback', () => {
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith(
-        'https://api.test.com/api/auth/google/callback?access_token=google-access-token'
+        'https://api.test.com/api/auth/google/callback?access_token=google-access-token',
+        expect.objectContaining({ signal: expect.any(AbortSignal) })
       );
     });
 
@@ -122,5 +123,45 @@ describe('AuthSocialSignInCallback', () => {
         type: 'error',
       })
     );
+  });
+
+  test('calls onError with a timeout message when the callback exchange is aborted', async () => {
+    const onError = jest.fn();
+
+    mockFetch.mockImplementationOnce(() => {
+      const error = new Error('The operation was aborted.');
+      error.name = 'AbortError';
+      return Promise.reject(error);
+    });
+
+    render(
+      <TestWrapper>
+        <AuthSocialSignInCallback provider="google" onError={onError} />
+      </TestWrapper>
+    );
+
+    await waitFor(() => {
+      expect(onError).toHaveBeenCalledWith(
+        'Sign in is taking longer than expected. Please try again.'
+      );
+    });
+  });
+
+  test('propagates a non-abort fetch failure as-is', async () => {
+    const onError = jest.fn();
+
+    mockFetch.mockImplementationOnce(() => {
+      return Promise.reject(new TypeError('Failed to fetch'));
+    });
+
+    render(
+      <TestWrapper>
+        <AuthSocialSignInCallback provider="google" onError={onError} />
+      </TestWrapper>
+    );
+
+    await waitFor(() => {
+      expect(onError).toHaveBeenCalledWith('Failed to fetch');
+    });
   });
 });
