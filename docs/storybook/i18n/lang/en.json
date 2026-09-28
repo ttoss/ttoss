@@ -87,6 +87,11 @@
     "defaultMessage": "Field must be at least {min} characters",
     "description": "Min length field"
   },
+  "MALixo": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "Invalid CNPJ",
+    "description": "Zod refinement: the value is not a valid Brazilian CNPJ."
+  },
   "MfWGyg": {
     "module": "@ttoss/forms",
     "defaultMessage": "Field is required",
@@ -97,10 +102,20 @@
     "defaultMessage": "Invalid Value for Field of type {type}",
     "description": "Invalid Value"
   },
+  "gV/1TF": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "Invalid CPF",
+    "description": "Zod refinement: the value is not a valid Brazilian CPF."
+  },
   "i6IsKy": {
     "module": "@ttoss/forms",
     "defaultMessage": ".",
     "description": "Decimal separator for number formatting (e.g., \".\" for 1.23 or \",\" for 1,23)"
+  },
+  "k66mC/": {
+    "module": "@ttoss/forms",
+    "defaultMessage": "Password must be at least {min} characters long",
+    "description": "passwordSchema: the password is shorter than the minimum."
   },
   "mnFdKf": {
     "module": "@ttoss/forms",

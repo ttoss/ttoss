@@ -3,6 +3,10 @@
     "defaultMessage": "O campo deve ter no mínimo {min} caracteres",
     "description": "Min length field"
   },
+  "MALixo": {
+    "defaultMessage": "CNPJ inválido",
+    "description": "Zod refinement: the value is not a valid Brazilian CNPJ."
+  },
   "MfWGyg": {
     "defaultMessage": "Campo Obrigatório",
     "description": "Field is required"
@@ -11,9 +15,17 @@
     "defaultMessage": "Valor inválido para o campo {type}",
     "description": "Invalid Value"
   },
+  "gV/1TF": {
+    "defaultMessage": "CPF inválido",
+    "description": "Zod refinement: the value is not a valid Brazilian CPF."
+  },
   "i6IsKy": {
     "defaultMessage": ",",
     "description": "Decimal separator for number formatting (e.g., \".\" for 1.23 or \",\" for 1,23)"
+  },
+  "k66mC/": {
+    "defaultMessage": "A senha deve ter no mínimo {min} caracteres",
+    "description": "passwordSchema: the password is shorter than the minimum."
   },
   "mnFdKf": {
     "defaultMessage": "{current}/{total}",

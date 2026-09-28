@@ -1,31 +1,17 @@
-import { defineMessage } from '@ttoss/react-i18n';
 import { setLocale } from 'yup';
+
+import { validationMessages } from '../i18n/messages';
 
 setLocale({
   mixed: {
-    required: defineMessage({
-      defaultMessage: 'Field is required',
-      description: 'Field is required',
-    }),
+    required: validationMessages.required,
     notType: ({ type }) => {
-      return {
-        ...defineMessage({
-          defaultMessage: 'Invalid Value for Field of type {type}',
-          description: 'Invalid Value',
-        }),
-        values: { type },
-      };
+      return { ...validationMessages.invalidType, values: { type } };
     },
   },
   string: {
     min: ({ min }) => {
-      return {
-        ...defineMessage({
-          defaultMessage: 'Field must be at least {min} characters',
-          description: 'Min length field',
-        }),
-        values: { min },
-      };
+      return { ...validationMessages.minLength, values: { min } };
     },
   },
 });
