@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.14.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.13.0...@ttoss/react-auth-cognito@2.14.0) (2026-09-28)
+
+### Features
+
+- **forms:** render Zod errors in the current locale ([#1272](https://github.com/ttoss/ttoss/issues/1272)) ([2f7579e](https://github.com/ttoss/ttoss/commit/2f7579e67b29f57bc68a48058d8618ee61361e61)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262)
+
 # [2.13.0](https://github.com/ttoss/ttoss/compare/@ttoss/react-auth-cognito@2.12.5...@ttoss/react-auth-cognito@2.13.0) (2026-09-28)
 
 ### Features

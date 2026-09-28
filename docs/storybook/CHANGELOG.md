@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.7.0](https://github.com/ttoss/ttoss/compare/@docs/storybook@7.6.3...@docs/storybook@7.7.0) (2026-09-28)
+
+### Features
+
+- **forms:** render Zod errors in the current locale ([#1272](https://github.com/ttoss/ttoss/issues/1272)) ([2f7579e](https://github.com/ttoss/ttoss/commit/2f7579e67b29f57bc68a48058d8618ee61361e61)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262)
+
 ## [7.6.3](https://github.com/ttoss/ttoss/compare/@docs/storybook@7.6.2...@docs/storybook@7.6.3) (2026-09-28)
 
 **Note:** Version bump only for package @docs/storybook
