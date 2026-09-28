@@ -1,75 +1,367 @@
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import { usePluginData } from '@docusaurus/useGlobalData';
 import Heading from '@theme/Heading';
 import Layout from '@theme/Layout';
+import * as React from 'react';
 
 import styles from './index.module.css';
 
-interface BentoCardProps {
-  title: string;
-  description: string;
-  icon: string;
-  link: string;
-  size: 'large' | 'small';
-}
+const AGENT_INSTRUCTION =
+  'Fetch and follow the instructions at\nhttps://ttoss.dev/ttoss-instructions.txt.';
 
-const BentoCard = ({
-  title,
-  description,
-  icon,
-  link,
-  size,
-}: BentoCardProps) => {
+const SCARCITIES = [
+  {
+    title: 'Knowing what to build',
+    body: 'Small batches, fast feedback, and decisions priced in economic terms instead of opinions.',
+    link: '/docs/product',
+    linkLabel: 'Product development',
+  },
+  {
+    title: 'Proving it is correct',
+    body: 'Verification is the loop that makes generated code committable. Coverage never goes down.',
+    link: '/docs/engineering/pillars/tests',
+    linkLabel: 'Tests pillar',
+  },
+  {
+    title: 'Undoing it when it is not',
+    body: 'Atomic changes, feature flags, and migrations written with their rollback, so being wrong is survivable.',
+    link: '/docs/ai/agentic-engineering-foundations/reversibility',
+    linkLabel: 'Reversibility',
+  },
+];
+
+const LAYERS = [
+  {
+    name: 'Principles',
+    question:
+      'What is true about working with agents, whether or not you act on it?',
+    link: '/docs/ai/agentic-development-principles',
+  },
+  {
+    name: 'Foundations',
+    question: 'What must be true of a team before agentic execution pays off?',
+    link: '/docs/ai/agentic-engineering-foundations',
+  },
+  {
+    name: 'Pillars',
+    question:
+      'Which properties did we mechanize so they hold when attention does not?',
+    link: '/docs/engineering/pillars',
+  },
+  {
+    name: 'Guidelines & workflow',
+    question: 'How exactly do we do it in this repository?',
+    link: '/docs/engineering',
+  },
+  {
+    name: 'Packages & Carlin',
+    question: 'What can I install instead of writing it again?',
+    link: '/docs/modules',
+  },
+];
+
+const MECHANISMS = [
+  {
+    rule: 'Coverage thresholds live in every package’s Jest config and are only ever raised.',
+    where: 'tests/unit/jest.config.ts',
+  },
+  {
+    rule: 'Pull requests fail if lint would change a single file.',
+    where: '.cicd/commands/pr.sh',
+  },
+  {
+    rule: 'Dependency versions must match across the whole monorepo.',
+    where: 'syncpack lint',
+  },
+  {
+    rule: 'This site refuses to build with a broken link or anchor.',
+    where: 'docusaurus.config.ts',
+  },
+];
+
+const PACKAGE_GROUPS = [
+  {
+    area: 'Interface',
+    packages: ['ui', 'fsl-ui', 'fsl-theme', 'forms', 'react-i18n'],
+  },
+  {
+    area: 'Server',
+    packages: ['http-server', 'graphql-api', 'postgresdb', 'http-server-mcp'],
+  },
+  {
+    area: 'Cloud',
+    packages: ['carlin', 'cloudformation', 'cloud-auth', 'cloud-vpc'],
+  },
+  {
+    area: 'Tooling',
+    packages: ['config', 'i18n-cli', 'monorepo', 'test-utils'],
+  },
+];
+
+type PrinciplesGraphData = {
+  nodes: { type: 'principle' | 'corollary' }[];
+};
+
+const usePrincipleCount = () => {
+  const data = usePluginData('principles-graph-plugin') as
+    PrinciplesGraphData | undefined;
+
+  return (data?.nodes ?? []).filter((node) => {
+    return node.type === 'principle';
+  }).length;
+};
+
+const AgentInstruction = () => {
+  const [copied, setCopied] = React.useState(false);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(AGENT_INSTRUCTION.replace('\n', ' '));
+      setCopied(true);
+      window.setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    } catch {
+      setCopied(false);
+    }
+  };
+
   return (
-    <div
-      className={`${styles.bentoCard} ${size === 'large' ? styles.bentoCardLarge : styles.bentoCardSmall}`}
-    >
-      <span className={styles.bentoCardIcon}>{icon}</span>
-      <h3 className={styles.bentoCardTitle}>{title}</h3>
-      <p className={styles.bentoCardDescription}>{description}</p>
-      <Link to={link} className={styles.bentoCardLink}>
-        Learn more →
-      </Link>
-    </div>
+    <figure className={styles.agentPanel}>
+      <div className={styles.agentHeader}>
+        <figcaption className={styles.agentCaption}>
+          Brief your agent in one line
+        </figcaption>
+        <button
+          type="button"
+          className={styles.copyButton}
+          onClick={copy}
+          aria-live="polite"
+        >
+          {copied ? 'Copied' : 'Copy'}
+        </button>
+      </div>
+      <pre className={styles.agentCode}>
+        <code>{AGENT_INSTRUCTION}</code>
+      </pre>
+      <p className={styles.agentHint}>
+        Paste it into Copilot, Cursor, Claude, or any agent’s instructions so it
+        checks the ttoss packages before writing new code.{' '}
+        <Link to="/docs/ai/agent-context">How it works</Link>
+      </p>
+    </figure>
   );
 };
 
-interface StatCardProps {
-  number: string;
-  label: string;
-}
-
-const StatCard = ({ number, label }: StatCardProps) => {
+const HeroSection = () => {
   return (
-    <div className={styles.statCard}>
-      <div className={styles.statNumber}>{number}</div>
-      <div className={styles.statLabel}>{label}</div>
-    </div>
+    <section className={styles.hero}>
+      <div className={styles.container}>
+        <p className={styles.eyebrow}>Terezinha Tech Operations</p>
+        <Heading as="h1" className={styles.heroTitle}>
+          Code got cheap.
+          <br />
+          <span className={styles.heroTitleAccent}>Judgment didn’t.</span>
+        </Heading>
+        <div className={styles.heroGrid}>
+          <div>
+            <p className={styles.heroLead}>
+              ttoss is how we build products with AI agents, written down and
+              open-sourced: the principles we reason from, the guardrails that
+              enforce them, and 50+ TypeScript packages your agents can reuse
+              instead of reinventing.
+            </p>
+            <div className={styles.heroActions}>
+              <Link to="/docs/ai" className={styles.buttonPrimary}>
+                Read the principles
+              </Link>
+              <Link to="/docs/modules" className={styles.buttonSecondary}>
+                Browse packages
+              </Link>
+            </div>
+          </div>
+          <AgentInstruction />
+        </div>
+      </div>
+    </section>
   );
 };
 
-interface StakeholderCardProps {
-  icon: string;
-  title: string;
-  items: string[];
-}
-
-const StakeholderCard = ({ icon, title, items }: StakeholderCardProps) => {
+const ScarcitySection = () => {
   return (
-    <div className={styles.stakeholderCard}>
-      <div className={styles.stakeholderIcon}>{icon}</div>
-      <h3 className={styles.stakeholderTitle}>{title}</h3>
-      <ul className={styles.stakeholderList}>
-        {items.map((item, index) => {
-          return (
-            <li key={index} className={styles.stakeholderListItem}>
-              <span className={styles.stakeholderListIcon}>✓</span>
-              {item}
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+    <section className={styles.section}>
+      <div className={styles.container}>
+        <Heading as="h2" className={styles.sectionTitle}>
+          When generating code is cheap, three things stay scarce.
+        </Heading>
+        <ol className={styles.scarcityList}>
+          {SCARCITIES.map((item, index) => {
+            return (
+              <li key={item.title} className={styles.scarcity}>
+                <span className={styles.scarcityNumber} aria-hidden>
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <h3 className={styles.scarcityTitle}>{item.title}</h3>
+                <p className={styles.scarcityBody}>{item.body}</p>
+                <Link to={item.link} className={styles.inlineLink}>
+                  {item.linkLabel} →
+                </Link>
+              </li>
+            );
+          })}
+        </ol>
+        <p className={styles.sectionNote}>
+          Every page on this site exists to make one of those three cheap enough
+          to do at the speed agents produce change.
+        </p>
+      </div>
+    </section>
+  );
+};
+
+const LayersSection = () => {
+  const principleCount = usePrincipleCount();
+
+  return (
+    <section className={`${styles.section} ${styles.sectionMuted}`}>
+      <div className={`${styles.container} ${styles.split}`}>
+        <div>
+          <Heading as="h2" className={styles.sectionTitle}>
+            From laws to code, one layer at a time.
+          </Heading>
+          <p className={styles.sectionLead}>
+            Read top-down to understand why the practices look the way they do.
+            Read bottom-up if you have a codebase to change on Monday.
+          </p>
+          {principleCount > 0 && (
+            <p className={styles.sectionLead}>
+              <Link to="/docs/ai/agentic-development-principles/graph">
+                Explore all {principleCount} principles as a graph →
+              </Link>
+            </p>
+          )}
+        </div>
+        <ol className={styles.layers}>
+          {LAYERS.map((layer) => {
+            return (
+              <li key={layer.name} className={styles.layer}>
+                <Link to={layer.link} className={styles.layerLink}>
+                  <span className={styles.layerName}>{layer.name}</span>
+                  <span className={styles.layerQuestion}>{layer.question}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+    </section>
+  );
+};
+
+const MechanismsSection = () => {
+  return (
+    <section className={styles.section}>
+      <div className={`${styles.container} ${styles.split}`}>
+        <div>
+          <Heading as="h2" className={styles.sectionTitle}>
+            Enforced, not remembered.
+          </Heading>
+          <p className={styles.sectionLead}>
+            An agent has no institutional memory. It complies with what is
+            enforced and interpolates the rest. So every rule we care about is a
+            check a machine runs — including on this repository.
+          </p>
+          <Link to="/docs/engineering/pillars" className={styles.inlineLink}>
+            Engineering pillars →
+          </Link>
+        </div>
+        <ul className={styles.mechanisms}>
+          {MECHANISMS.map((mechanism) => {
+            return (
+              <li key={mechanism.rule} className={styles.mechanism}>
+                <span className={styles.mechanismRule}>{mechanism.rule}</span>
+                <code className={styles.mechanismWhere}>{mechanism.where}</code>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
+  );
+};
+
+const PackagesSection = () => {
+  return (
+    <section className={`${styles.section} ${styles.sectionMuted}`}>
+      <div className={styles.container}>
+        <Heading as="h2" className={styles.sectionTitle}>
+          Configure once at the root. Every package adapts.
+        </Heading>
+        <p className={styles.sectionLead}>
+          Theme, translations, and notifications come from providers, not props
+          — so packages compose without prop drilling, and an agent has one
+          convention to follow instead of fifty.
+        </p>
+        <div className={styles.packageGroups}>
+          {PACKAGE_GROUPS.map((group) => {
+            return (
+              <div key={group.area} className={styles.packageGroup}>
+                <h3 className={styles.packageArea}>{group.area}</h3>
+                <ul className={styles.packageList}>
+                  {group.packages.map((name) => {
+                    return (
+                      <li key={name}>
+                        <Link
+                          to={`/docs/modules/packages/${name}`}
+                          className={styles.packageName}
+                        >
+                          @ttoss/{name}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            );
+          })}
+        </div>
+        <div className={styles.heroActions}>
+          <Link to="/docs/modules" className={styles.buttonSecondary}>
+            See all packages
+          </Link>
+          <Link
+            to="/docs/modules/integration-architecture"
+            className={styles.inlineLink}
+          >
+            Integration architecture →
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const ClosingSection = () => {
+  return (
+    <section className={styles.closing}>
+      <div className={styles.container}>
+        <Heading as="h2" className={styles.closingTitle}>
+          Start with why the rules exist.
+        </Heading>
+        <div className={styles.heroActions}>
+          <Link to="/docs/ai" className={styles.buttonPrimary}>
+            Read the principles
+          </Link>
+          <Link
+            href="https://github.com/ttoss/ttoss"
+            className={styles.buttonSecondary}
+          >
+            View on GitHub
+          </Link>
+        </div>
+      </div>
+    </section>
   );
 };
 
@@ -77,331 +369,15 @@ const Home = () => {
   const { siteConfig } = useDocusaurusContext();
 
   return (
-    <Layout
-      title={'Terezinha Tech Operations'}
-      description={siteConfig.tagline}
-    >
-      {/* Hero Section */}
-      <section className={styles.heroSection}>
-        <div className={styles.containerCustom}>
-          <div className={styles.heroContent}>
-            <div className={styles.heroText}>
-              <div className={styles.heroBadge}>
-                <span className={styles.heroBadgeDot} />
-                AI-Native Development Platform
-              </div>
-              <Heading as="h1" className={styles.heroTitle}>
-                Build Products Faster with{' '}
-                <span className={styles.heroTitleGradient}>
-                  AI-Augmented Teams
-                </span>
-              </Heading>
-              <p className={styles.heroDescription}>
-                Modular libraries, agentic development principles, and
-                battle-tested infrastructure for teams that ship. Configure
-                once, integrate everywhere.
-              </p>
-              <div className={styles.heroButtons}>
-                <Link to="/docs/ai" className={styles.heroButtonPrimary}>
-                  Start with AI →
-                </Link>
-                <Link to="/docs/modules" className={styles.heroButtonSecondary}>
-                  Explore Modules
-                </Link>
-              </div>
-            </div>
-            <div>
-              <img
-                src="img/terezinha_500x500.webp"
-                alt="Terezinha - ttoss"
-                className={styles.heroImage}
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className={styles.statsSection}>
-        <div className={styles.containerCustom}>
-          <div className={styles.statsContainer}>
-            <StatCard number="30+" label="Production Modules" />
-            <StatCard number="5" label="Core Pillars" />
-            <StatCard number="AI-Native" label="Workflows" />
-            <StatCard number="100%" label="TypeScript" />
-          </div>
-        </div>
-      </section>
-
-      {/* Bento Grid Section - Five Pillars */}
-      <section className={styles.bentoSection}>
-        <div className={styles.containerCustom}>
-          <div className={styles.sectionHeader}>
-            <span className={styles.sectionLabel}>Platform</span>
-            <Heading as="h2" className={styles.sectionTitle}>
-              Five Pillars of ttoss
-            </Heading>
-            <p className={styles.sectionDescription}>
-              A complete ecosystem for AI-augmented product development—from
-              principles to production.
-            </p>
-          </div>
-
-          <div className={styles.bentoGrid}>
-            <BentoCard
-              icon="🤖"
-              title="AI & Agentic Development"
-              description="Principles and patterns for human-AI collaboration. Scale development velocity with agentic workflows while maintaining quality through structural guardrails."
-              link="/docs/ai"
-              size="large"
-            />
-            <BentoCard
-              icon="📚"
-              title="Modular Library"
-              description="30+ production-ready NPM packages. GraphQL APIs, React components, auth, i18n—everything you need."
-              link="/docs/modules"
-              size="large"
-            />
-            <BentoCard
-              icon="🎨"
-              title="Design System"
-              description="Design tokens, themes, and accessible UI components for consistent interfaces."
-              link="/docs/design"
-              size="small"
-            />
-            <BentoCard
-              icon="🏗️"
-              title="Operational Processes"
-              description="Structured workflows for Product, Engineering, and Design teams."
-              link="/docs/product"
-              size="small"
-            />
-            <BentoCard
-              icon="🛠️"
-              title="Carlin CLI"
-              description="Automated AWS deployments and infrastructure management."
-              link="/docs/carlin"
-              size="small"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* AI Principles Section */}
-      <section className={styles.principlesSection}>
-        <div className={styles.containerCustom}>
-          <div className={styles.sectionHeader}>
-            <span className={styles.sectionLabel}>Human-AI Collaboration</span>
-            <Heading as="h2" className={styles.sectionTitle}>
-              Agentic Development, Done Right
-            </Heading>
-            <p className={styles.sectionDescription}>
-              AI amplifies velocity, humans provide judgment. We define the
-              principles and patterns that make this partnership work in
-              production.
-            </p>
-          </div>
-
-          <div className={styles.principlesGrid}>
-            <div className={styles.principleCard}>
-              <div className={styles.principleCardHeader}>
-                <span className={styles.principleCardIcon}>🧠</span>
-                <h3 className={styles.principleCardTitle}>
-                  Agentic Development Principles
-                </h3>
-              </div>
-              <p className={styles.principleCardDescription}>
-                AI agents are probabilistic, not deterministic. Our principles
-                help you design workflows that work with the grain of the
-                technology.
-              </p>
-              <ul className={styles.principleList}>
-                <li className={styles.principleListItem}>
-                  <span className={styles.principleListIcon}>✓</span>
-                  <span className={styles.principleListText}>
-                    <strong>Structural Determinism:</strong> Enforce constraints
-                    via schemas, not prompts
-                  </span>
-                </li>
-                <li className={styles.principleListItem}>
-                  <span className={styles.principleListIcon}>✓</span>
-                  <span className={styles.principleListText}>
-                    <strong>Context Economics:</strong> Treat every token as a
-                    scarce resource
-                  </span>
-                </li>
-                <li className={styles.principleListItem}>
-                  <span className={styles.principleListIcon}>✓</span>
-                  <span className={styles.principleListText}>
-                    <strong>Delegated Agency:</strong> Scale autonomy with
-                    verification capability
-                  </span>
-                </li>
-              </ul>
-              <Link
-                to="/docs/ai/agentic-development-principles"
-                className={styles.principleCardLink}
-              >
-                Explore Principles →
-              </Link>
-            </div>
-
-            <div className={styles.principleCard}>
-              <div className={styles.principleCardHeader}>
-                <span className={styles.principleCardIcon}>⚙️</span>
-                <h3 className={styles.principleCardTitle}>
-                  Production-Ready Patterns
-                </h3>
-              </div>
-              <p className={styles.principleCardDescription}>
-                Reusable design patterns that solve cost, latency, reliability,
-                and risk challenges in every agentic system.
-              </p>
-              <ul className={styles.principleList}>
-                <li className={styles.principleListItem}>
-                  <span className={styles.principleListIcon}>✓</span>
-                  <span className={styles.principleListText}>
-                    <strong>Immediate Feedback Loops:</strong> AI integrated
-                    directly into dev flow
-                  </span>
-                </li>
-                <li className={styles.principleListItem}>
-                  <span className={styles.principleListIcon}>✓</span>
-                  <span className={styles.principleListText}>
-                    <strong>Artificial Friction:</strong> Guardrails that
-                    prevent entropy accumulation
-                  </span>
-                </li>
-                <li className={styles.principleListItem}>
-                  <span className={styles.principleListIcon}>✓</span>
-                  <span className={styles.principleListText}>
-                    <strong>Chain of Thought:</strong> Decompose complex tasks
-                    for reliable output
-                  </span>
-                </li>
-              </ul>
-              <Link
-                to="/docs/ai/agentic-design-patterns"
-                className={styles.principleCardLink}
-              >
-                View Patterns →
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stakeholders Section */}
-      <section className={styles.stakeholdersSection}>
-        <div className={styles.containerCustom}>
-          <div className={styles.sectionHeader}>
-            <span className={styles.sectionLabel}>For Your Team</span>
-            <Heading as="h2" className={styles.sectionTitle}>
-              Why Teams Choose ttoss
-            </Heading>
-            <p className={styles.sectionDescription}>
-              From individual developers to investment-ready startups—ship
-              faster without sacrificing quality.
-            </p>
-          </div>
-
-          <div className={styles.grid4}>
-            <StakeholderCard
-              icon="👩‍💻"
-              title="For Developers"
-              items={[
-                'Type-safe modules that just work together',
-                'AI patterns that amplify your expertise',
-                'Less boilerplate, more building',
-              ]}
-            />
-            <StakeholderCard
-              icon="📊"
-              title="For Product Managers"
-              items={[
-                'Faster iteration with reusable infrastructure',
-                'Documented workflows for cross-team alignment',
-                'Predictable delivery with battle-tested patterns',
-              ]}
-            />
-            <StakeholderCard
-              icon="🎨"
-              title="For Designers"
-              items={[
-                'Unified design system with tokens and themes',
-                'Component library that matches your designs',
-                'Design-to-code consistency out of the box',
-              ]}
-            />
-            <StakeholderCard
-              icon="💼"
-              title="For Investors"
-              items={[
-                'Reduced technical risk with proven architecture',
-                'Faster time-to-market means faster validation',
-                'Scalable foundation for growth',
-              ]}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Tech Stack Section */}
-      <section className={styles.techSection}>
-        <div className={styles.containerCustom}>
-          <div className={styles.sectionHeader}>
-            <span className={styles.sectionLabel}>Technology</span>
-            <Heading as="h2" className={styles.sectionTitle}>
-              Modern, AI-Ready Stack
-            </Heading>
-            <p className={styles.sectionDescription}>
-              Enterprise-grade technologies designed for AI-augmented
-              development
-            </p>
-          </div>
-
-          <div className={styles.techGrid}>
-            {[
-              'TypeScript',
-              'React',
-              'GraphQL',
-              'AWS',
-              'Node.js',
-              'AI Agents',
-            ].map((tech) => {
-              return (
-                <div key={tech} className={styles.techBadge}>
-                  {tech}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className={styles.ctaSection}>
-        <div className={styles.containerCustom}>
-          <div className={styles.ctaContent}>
-            <Heading as="h2" className={styles.ctaTitle}>
-              Build Faster with AI-Augmented Development
-            </Heading>
-            <p className={styles.ctaDescription}>
-              Explore our modular libraries, learn agentic development
-              principles, and deploy with confidence using battle-tested
-              infrastructure.
-            </p>
-            <div className={styles.ctaButtons}>
-              <Link to="/docs/ai" className={styles.ctaButtonPrimary}>
-                Start with AI →
-              </Link>
-              <Link to="/docs/modules" className={styles.ctaButtonSecondary}>
-                Browse Modules
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+    <Layout title="Terezinha Tech Operations" description={siteConfig.tagline}>
+      <main>
+        <HeroSection />
+        <ScarcitySection />
+        <LayersSection />
+        <MechanismsSection />
+        <PackagesSection />
+        <ClosingSection />
+      </main>
     </Layout>
   );
 };
