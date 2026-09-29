@@ -716,6 +716,9 @@ The `GatedToolDef` passed to `register` has:
 - `inputSchema` — Zod field map or `ZodObject`, forwarded to `server.registerTool`.
 - `gates` (`Array<(ctx: ToolCallContext) => void | Promise<void>>`, optional) — Per-tool guards appended after the global `gates`. Receive the full `ToolCallContext` enabling arg-conditional authorization.
 - `_meta` (`Record<string, unknown>`, optional) — Tool metadata forwarded verbatim on `tools/list`; how a gated tool links to an [MCP Apps](#mcp-apps-interactive-uis) view.
+- `title` (`string`, optional) — Display name forwarded on `tools/list`.
+- `annotations` (`ToolAnnotations`, optional) — Behaviour hints forwarded on `tools/list`: `readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`. Clients use them to decide when to ask for confirmation; they never replace `requiredScope` or `gates`.
+- `outputSchema` (Zod field map or `ZodObject`, optional) — Result schema forwarded on `tools/list`. When set, a successful result is returned as `structuredContent` **and** as the same JSON in a `TextContent` block, and the SDK validates it against the schema. Without it, the result is a single `TextContent`, as before.
 - `method` — Async handler. Receives merged call args + `buildContext` output.
 
 **`ToolCallContext`** is the object passed to gates, `buildContext`, and `onError`:
