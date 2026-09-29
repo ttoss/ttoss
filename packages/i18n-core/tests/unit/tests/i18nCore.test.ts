@@ -351,6 +351,15 @@ describe('negotiateLocale', () => {
       })
     ).toBe('pt');
   });
+
+  test('returns undefined when nothing matches and no fallback is given', () => {
+    expect(negotiateLocale({ requested: 'fr', supported })).toBeUndefined();
+    expect(negotiateLocale({ requested: null, supported })).toBeUndefined();
+  });
+
+  test('still matches without a fallback', () => {
+    expect(negotiateLocale({ requested: 'pt-PT', supported })).toBe('pt-BR');
+  });
 });
 
 describe('createCatalog', () => {
