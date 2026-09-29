@@ -114,7 +114,7 @@ negotiateLocale({
 }); // → 'es'
 ```
 
-For each requested locale, in preference order: an exact match, then the locale with subtags dropped (`pt-BR` → `pt`), then any supported locale of the same language (`pt-PT` → `pt-BR`). `fallback` applies only when nothing matches.
+For each requested locale, in preference order: an exact match, then the locale with subtags dropped (`pt-BR` → `pt`), then any supported locale of the same language (`pt-PT` → `pt-BR`). `fallback` applies only when nothing matches. Omit it to learn whether anything matched at all, for example before saving a browser's language as a user preference: the result is then `undefined` when nothing does.
 
 ### Localized errors
 
@@ -153,15 +153,15 @@ transformIgnorePatterns: ['/node_modules/(?!(\\.pnpm/)?(@formatjs|intl-messagefo
 
 ## API
 
-| Export                                                                   | What it is                                                             |
-| ------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
-| `defineMessage`, `defineMessages`                                        | FormatJS authoring, re-exported                                        |
-| `msg(descriptor, values?)`                                               | Create a `MessageRef`; throws on a descriptor without id or text       |
-| `isMessageRef(value)`                                                    | Structural check, survives JSON                                        |
-| `fmt.*`, `isFormatValue(value)`                                          | Deferred formatting                                                    |
-| `createI18n({ locale, messages, defaultLocale?, onError? })`             | `IntlShape` plus `render`, `renderHtml`, `formatValue`, `isTranslated` |
-| `isMessageRefTranslated({ intl, ref })`                                  | Whether a reference renders in `intl.locale` without falling back      |
-| `createCatalog({ supported, fallback, load, defaultLocale?, onError? })` | `{ getI18n, negotiate, supported, fallback }`                          |
-| `negotiateLocale({ requested, supported, fallback })`                    | Best supported locale                                                  |
-| `LocalizedError`, `isLocalizedError(error)`                              | Errors with a stable code and a reference                              |
-| `DEFAULT_LOCALE`                                                         | `'en'`, the source locale of every `@ttoss/*` package                  |
+| Export                                                                   | What it is                                                                         |
+| ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| `defineMessage`, `defineMessages`                                        | FormatJS authoring, re-exported                                                    |
+| `msg(descriptor, values?)`                                               | Create a `MessageRef`; throws on a descriptor without id or text                   |
+| `isMessageRef(value)`                                                    | Structural check, survives JSON                                                    |
+| `fmt.*`, `isFormatValue(value)`                                          | Deferred formatting                                                                |
+| `createI18n({ locale, messages, defaultLocale?, onError? })`             | `IntlShape` plus `render`, `renderHtml`, `formatValue`, `isTranslated`             |
+| `isMessageRefTranslated({ intl, ref })`                                  | Whether a reference renders in `intl.locale` without falling back                  |
+| `createCatalog({ supported, fallback, load, defaultLocale?, onError? })` | `{ getI18n, negotiate, supported, fallback }`                                      |
+| `negotiateLocale({ requested, supported, fallback? })`                   | Best supported locale; `undefined` when nothing matches and there is no `fallback` |
+| `LocalizedError`, `isLocalizedError(error)`                              | Errors with a stable code and a reference                                          |
+| `DEFAULT_LOCALE`                                                         | `'en'`, the source locale of every `@ttoss/*` package                              |
