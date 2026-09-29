@@ -6,6 +6,7 @@ import {
   isFormatValue,
   isLocalizedError,
   isMessageRef,
+  isMessageRefTranslated,
   LocalizedError,
   msg,
   negotiateLocale,
@@ -313,6 +314,67 @@ describe('createI18n', () => {
     expect(pt.formatMessage(messages.greeting, { name: 'Ana' })).toBe(
       'Olá, Ana!'
     );
+  });
+});
+
+describe('isTranslated', () => {
+  const pt = createI18n({ locale: 'pt-BR', messages: ptBR });
+
+  test('is true when the catalog holds the reference', () => {
+    expect(pt.isTranslated(msg(messages.greeting, { name: 'Ana' }))).toBe(true);
+  });
+
+  test('is false when the catalog lacks the id', () => {
+    expect(pt.isTranslated(msg(messages.campaigns, { count: 2 }))).toBe(false);
+  });
+
+  test('checks nested references too', () => {
+    const translated = msg(messages.paused, {
+      campaign: 'Black Friday',
+      reason: msg(messages.reason),
+    });
+    const untranslated = msg(messages.paused, {
+      campaign: 'Black Friday',
+      reason: msg(messages.optional, { note: 'x' }),
+    });
+
+    expect(pt.isTranslated(translated)).toBe(true);
+    expect(pt.isTranslated(untranslated)).toBe(false);
+  });
+
+  test('ignores values that are not references', () => {
+    const ref = msg(messages.spent, {
+      amount: fmt.currency({ value: 10, currency: 'BRL' }),
+      date: '2026-09-28',
+    });
+
+    expect(pt.isTranslated(ref)).toBe(true);
+  });
+
+  test('treats a plain string as untranslated outside the source locale', () => {
+    expect(pt.isTranslated('Hello')).toBe(false);
+  });
+
+  test('is always true in the source locale', () => {
+    const source = createI18n({
+      locale: 'pt-BR',
+      defaultLocale: 'pt-br',
+      messages: {},
+    });
+
+    expect(source.isTranslated(msg(messages.greeting, { name: 'Ana' }))).toBe(
+      true
+    );
+    expect(source.isTranslated('Olá')).toBe(true);
+  });
+
+  test('works with a bare IntlShape, as react-intl provides', () => {
+    expect(
+      isMessageRefTranslated({
+        intl: { locale: 'pt-BR', defaultLocale: 'en', messages: ptBR },
+        ref: msg(messages.reason),
+      })
+    ).toBe(true);
   });
 });
 
