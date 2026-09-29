@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.31.0](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.30.3...@ttoss/http-server-mcp@0.31.0) (2026-09-29)
+
+### Features
+
+- **http-server-mcp:** notify and close for 2026-07-28 listen streams ([#1278](https://github.com/ttoss/ttoss/issues/1278)) ([fb17b7e](https://github.com/ttoss/ttoss/commit/fb17b7ea4ab07a322bb158beec206364f949e475))
+
 ## [0.30.3](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.30.2...@ttoss/http-server-mcp@0.30.3) (2026-09-29)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp
