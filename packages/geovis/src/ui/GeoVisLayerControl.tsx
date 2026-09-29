@@ -1,16 +1,17 @@
 import { Icon } from '@ttoss/react-icons';
 import * as React from 'react';
 
+import { layerControlItems } from '../spec/layerControl';
 import type { LayerControlItem } from '../spec/types';
 import { useGeoVis } from './contexts';
 import { resolveItemActive } from './GeoVisLayerControl.items';
 import { LayerControlExpandedPanel } from './GeoVisLayerControl.panels';
 import {
   buildHoverHandlers,
+  useControlView,
   useDismissFullPanel,
   useExpandedState,
   useLayerVisibilitySync,
-  useShowAll,
 } from './GeoVisLayerControl.state';
 import {
   buildOuterStyle,
@@ -137,6 +138,11 @@ const LayerControlTrigger = ({
  * panel with every item, which stays open until closed (its close button,
  * `Escape`, a click outside, or the trigger) — even for the `'hover'` trigger.
  *
+ * An entry with `items` is a category ({@link LayerControlGroup}): its card
+ * shows how many of its items are on, and clicking it opens a panel of those
+ * items — held open the same way, with a back button to the view it was
+ * opened from. A control without categories is exactly a flat list of toggles.
+ *
  * Renders `null` when `spec.control` is absent.
  */
 export const GeoVisLayerControl = ({
@@ -170,7 +176,7 @@ export const GeoVisLayerControl = ({
     expanded: expandedProp,
     onExpandedChange,
   });
-  const [fullPanelOpen, openFullPanel] = useShowAll(expanded);
+  const { view, pinned, openFull, openGroup, back } = useControlView(expanded);
   const [hoveredId, setHoveredId] = React.useState<string | null>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [activeById, setActiveById] = React.useState<Record<string, boolean>>(
@@ -196,7 +202,7 @@ export const GeoVisLayerControl = ({
     return setExpanded(false);
   };
   useDismissFullPanel({
-    active: fullPanelOpen,
+    active: pinned,
     ref: containerRef,
     onDismiss: collapse,
   });
@@ -205,7 +211,7 @@ export const GeoVisLayerControl = ({
 
   const label = control.label ?? 'Layers';
   const position = control.position ?? 'bottom-left';
-  const activeCount = control.items.filter((item) => {
+  const activeCount = layerControlItems(control.items).filter((item) => {
     return resolveItemActive(item, activeById);
   }).length;
   // No hover handlers below the compact breakpoint: that layout is for touch,
@@ -216,7 +222,7 @@ export const GeoVisLayerControl = ({
     ? {}
     : buildHoverHandlers({
         trigger: control.trigger ?? 'hover',
-        pinned: fullPanelOpen,
+        pinned,
         setExpanded,
       });
 
@@ -254,13 +260,17 @@ export const GeoVisLayerControl = ({
       compact={isCompact}
       items={control.items}
       maxVisibleItems={control.maxVisibleItems}
-      showAll={fullPanelOpen}
-      onShowAll={openFullPanel}
+      view={view}
+      onShowAll={openFull}
+      onBack={back}
       onClose={collapse}
       activeById={activeById}
       layerIds={layerIds}
       hoveredId={hoveredId}
       onToggle={toggleItem}
+      onOpenGroup={(group) => {
+        return openGroup(group.id);
+      }}
       onHoverChange={setHoveredId}
     />
   ) : null;

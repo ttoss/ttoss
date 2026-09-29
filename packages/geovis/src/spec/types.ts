@@ -816,9 +816,51 @@ export interface LayerControl {
    * no more than this many entries — every item is shown and no card appears.
    */
   maxVisibleItems?: number;
-  /** The toggle buttons revealed when the panel is expanded. */
+  /**
+   * What the expanded panel shows: toggle buttons ({@link LayerControlItem}),
+   * and optionally categories ({@link LayerControlGroup}) holding more of
+   * them, in any mix and in the order given. A control without groups behaves
+   * exactly as a flat list of toggles.
+   */
+  items: LayerControlEntry[];
+}
+
+/**
+ * A category inside a {@link LayerControl}: a card that, when clicked, opens a
+ * panel with its own toggle buttons rather than toggling anything itself.
+ * Groups hold items only — they do not nest.
+ *
+ * The card shows how many of its items are on, and renders disabled when every
+ * one of them is (none of their layers exist in the current spec).
+ *
+ * @example
+ * ```ts
+ * {
+ *   id: 'saude',
+ *   label: 'Saúde',
+ *   items: [
+ *     { id: 'ubs', label: 'UBS', layers: ['ubs-pins'] },
+ *     { id: 'hospitais', label: 'Hospitais', layers: ['hospitais-pins'] },
+ *   ],
+ * }
+ * ```
+ */
+export interface LayerControlGroup {
+  /** Stable identity for the category. Must not repeat any item's id. */
+  id: string;
+  /** Text shown on the category's card and as its panel's title. */
+  label: string;
+  /**
+   * Image shown on the category's card, as for an item. When omitted, the
+   * built-in stylised map preview is used.
+   */
+  thumbnail?: string;
+  /** The toggle buttons the category's panel lists. */
   items: LayerControlItem[];
 }
+
+/** One entry of {@link LayerControl.items}: a toggle, or a category of them. */
+export type LayerControlEntry = LayerControlItem | LayerControlGroup;
 
 /**
  * One toggle button inside a {@link LayerControl}. Clicking it flips the

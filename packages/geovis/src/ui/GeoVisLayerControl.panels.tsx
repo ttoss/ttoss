@@ -1,6 +1,7 @@
 import * as React from 'react';
 
-import type { LayerControlItem } from '../spec/types';
+import { isLayerControlGroup, layerControlItems } from '../spec/layerControl';
+import type { LayerControlEntry, LayerControlGroup } from '../spec/types';
 import {
   type ItemListProps,
   LayerControlItemList,
@@ -25,6 +26,9 @@ const MORE_LABEL = 'Ver mais';
 /** Accessible name of the full panel's close button. */
 const CLOSE_LABEL = 'Fechar';
 
+/** Accessible name of a category panel's back button. */
+const BACK_LABEL = 'Voltar';
+
 /** Cross glyph for the full panel's close button. */
 const CloseIcon = () => {
   return (
@@ -36,6 +40,21 @@ const CloseIcon = () => {
       aria-hidden
     >
       <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+    </svg>
+  );
+};
+
+/** Back-arrow glyph for a category panel's back button. */
+const BackIcon = () => {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+    >
+      <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
     </svg>
   );
 };
@@ -88,22 +107,26 @@ const LayerControlMoreButton = ({
 };
 
 /**
- * The larger panel opened from the "Ver mais" card, listing every item in a
- * grid under a title and a close button. Anchored where the summary strip was,
- * so it grows toward the map's centre the same way.
+ * A larger panel listing entries in a grid under a title and a close button:
+ * the one the "Ver mais" card opens, with every entry, and a category's, with
+ * its items and a back button. Anchored where the summary strip was, so it
+ * grows toward the map's centre the same way.
  */
 const LayerControlFullPanel = ({
   label,
   compact,
   onClose,
+  onBack,
   ...listProps
 }: ItemListProps & {
   label: string;
   compact: boolean;
   onClose: () => void;
+  /** Set for a category's panel: returns to the view it was opened from. */
+  onBack?: () => void;
 }) => {
-  // The "Ver mais" button that opened this panel unmounts with the summary
-  // strip, so move focus here instead of letting it drop to the page.
+  // The card that opened this panel unmounts with the view it sat in, so move
+  // focus here instead of letting it drop to the page.
   const ref = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     ref.current?.focus();
@@ -119,7 +142,27 @@ const LayerControlFullPanel = ({
       style={buildFullPanelStyle({ compact })}
     >
       <div style={fullPanelHeaderStyle}>
-        <span style={fullPanelTitleStyle}>{label}</span>
+        {onBack ? (
+          <button
+            type="button"
+            aria-label={BACK_LABEL}
+            title={BACK_LABEL}
+            style={fullPanelCloseStyle}
+            onClick={onBack}
+          >
+            <BackIcon />
+          </button>
+        ) : null}
+        <span
+          style={{
+            ...fullPanelTitleStyle,
+            flex: 1,
+            margin: onBack ? '0 6px' : 0,
+            minWidth: 0,
+          }}
+        >
+          {label}
+        </span>
         <button
           type="button"
           aria-label={CLOSE_LABEL}
@@ -150,9 +193,9 @@ const LayerControlFullPanel = ({
  * already fits within it, so no "Ver mais" card is needed.
  */
 const splitItems = (
-  items: LayerControlItem[],
+  items: LayerControlEntry[],
   maxVisibleItems: number | undefined
-): { visible: LayerControlItem[]; hidden: LayerControlItem[] } => {
+): { visible: LayerControlEntry[]; hidden: LayerControlEntry[] } => {
   if (maxVisibleItems == null || items.length <= maxVisibleItems) {
     return { visible: items, hidden: [] };
   }
@@ -163,29 +206,50 @@ const splitItems = (
 };
 
 /**
- * The expanded panel's content: the summary strip — every item, or, when
+ * The expanded panel's content: the summary strip — every entry, or, when
  * `maxVisibleItems` hides some, the first ones followed by a "Ver mais" card —
- * or, once that card is clicked (`showAll`), the full panel listing them all.
+ * the full panel listing them all once that card is clicked, or a category's
+ * panel once its card is. A category whose id is gone from the spec (the
+ * control was rebuilt without it) falls back to the view beneath it.
  */
 export const LayerControlExpandedPanel = ({
   label,
   compact,
   items,
   maxVisibleItems,
-  showAll,
+  view,
   onShowAll,
+  onBack,
   onClose,
   ...listProps
 }: Omit<ItemListProps, 'items'> & {
   label: string;
   compact: boolean;
-  items: LayerControlItem[];
+  items: LayerControlEntry[];
   maxVisibleItems: number | undefined;
-  showAll: boolean;
+  view: { full: boolean; groupId: string | null };
   onShowAll: () => void;
+  onBack: () => void;
   onClose: () => void;
 }) => {
-  if (showAll) {
+  const group = items.find((entry): entry is LayerControlGroup => {
+    return isLayerControlGroup(entry) && entry.id === view.groupId;
+  });
+
+  if (group) {
+    return (
+      <LayerControlFullPanel
+        label={group.label}
+        compact={compact}
+        items={group.items}
+        onClose={onClose}
+        onBack={onBack}
+        {...listProps}
+      />
+    );
+  }
+
+  if (view.full) {
     return (
       <LayerControlFullPanel
         label={label}
@@ -198,7 +262,8 @@ export const LayerControlExpandedPanel = ({
   }
 
   const { visible, hidden } = splitItems(items, maxVisibleItems);
-  const hiddenActiveCount = hidden.filter((item) => {
+  // Counts toggles, so a category hidden behind the card counts its items.
+  const hiddenActiveCount = layerControlItems(hidden).filter((item) => {
     return resolveItemActive(item, listProps.activeById);
   }).length;
 

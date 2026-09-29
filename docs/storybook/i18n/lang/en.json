@@ -347,6 +347,11 @@
     "defaultMessage": "The visualization spec does not match the expected schema.",
     "description": "Warnings panel: spec fails JSON schema validation."
   },
+  "ZoQ4ZH": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Two layer-control entries share an id; each toggle and category needs its own.",
+    "description": "Warnings panel: an id repeats among the layer control toggles and categories."
+  },
   "b+PIz+": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Remover seleção",
@@ -441,6 +446,11 @@
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "This layer type is not supported.",
     "description": "Warnings panel: layer.geometry is not implemented by the engine adapter."
+  },
+  "w48FrG": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Hex",
+    "description": "Short caption beside the hex code field of the custom color picker."
   },
   "yb6iwx": {
     "module": "@ttoss/geovis-workspace",

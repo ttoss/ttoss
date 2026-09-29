@@ -1075,7 +1075,7 @@ const spec: VisualizationSpec = {
 | Field             | Type                                   | Required | Description                                                                                                                                                                                                                                                                                                                                            |
 | ----------------- | -------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `id`              | `string`                               | ✓        | Unique identifier for the panel.                                                                                                                                                                                                                                                                                                                       |
-| `items`           | `LayerControlItem[]`                   | ✓        | The toggle buttons revealed when the panel is expanded.                                                                                                                                                                                                                                                                                                |
+| `items`           | `LayerControlEntry[]`                  | ✓        | The toggle buttons, and categories of them (see [Categories](#categories)).                                                                                                                                                                                                                                                                            |
 | `position`        | `LegendPosition`                       |          | Corner the panel is anchored to. Defaults to `'bottom-left'`.                                                                                                                                                                                                                                                                                          |
 | `offset`          | `number \| { x?: number; y?: number }` |          | Distance in pixels from the anchored edges. Defaults to `40`. A number applies to both edges; `{ x, y }` offsets each axis independently (each falling back to `40`) — e.g. push the control clear of a side panel horizontally without lifting it off the bottom edge. A changed `offset` animates, so the control slides across rather than jumping. |
 | `label`           | `string`                               |          | Accessible label / tooltip for the icon-only trigger. Defaults to `'Layers'`.                                                                                                                                                                                                                                                                          |
@@ -1106,6 +1106,54 @@ control: {
   items: [/* ten items */],
 },
 ```
+
+### Categories
+
+An entry of `items` that carries `items` instead of `layers` is a **category**
+(`LayerControlGroup`). Its card toggles nothing: clicking it opens a panel of
+the category's own toggles, titled after it, with a back arrow and a close
+button. The card carries a chevron and a badge counting its items that are on,
+and renders disabled when every item in it is. Categories and loose toggles mix
+freely, in the order given, and `maxVisibleItems` counts both alike.
+
+```typescript
+control: {
+  id: 'camadas',
+  label: 'Camadas',
+  items: [
+    { id: 'parques', label: 'Parques', layers: ['parques-fill'] },
+    {
+      id: 'saude',
+      label: 'Saúde',
+      items: [
+        { id: 'ubs', label: 'UBS', layers: ['ubs-pins'] },
+        { id: 'hospitais', label: 'Hospitais', layers: ['hospitais-pins'] },
+      ],
+    },
+  ],
+},
+```
+
+A category's panel is held open like the full panel — through a pointer
+leaving a `'hover'` control, until its close button, `Escape`, a click outside
+or the trigger — and its back arrow returns to the view it was opened from:
+the strip, or the full panel when the category was reached through "Ver mais".
+Every toggle keeps its own on/off state by `id`, wherever it sits, and the
+trigger's badge counts them all. Categories do not nest, need at least one
+item, and no id may repeat among the toggles and categories
+(`duplicate-control-item-id`). A control without categories is exactly the flat
+list of toggles it has always been. `isLayerControlGroup` and
+`layerControlItems` (the toggles, categories flattened) are exported for apps
+that read a control.
+
+### `LayerControlGroup` fields
+
+| Field       | Type                 | Required | Description                                                              |
+| ----------- | -------------------- | -------- | ------------------------------------------------------------------------ |
+| `id`        | `string`             | ✓        | Stable identity. Must not repeat any other entry's id.                   |
+| `label`     | `string`             | ✓        | Text on the category's card and its panel's title.                       |
+| `thumbnail` | `string`             |          | Image (URL or data URI) filling the card. Defaults to the map preview.   |
+| `items`     | `LayerControlItem[]` | ✓        | The toggles the category's panel lists — at least one; they do not nest. |
 
 ### `LayerControlItem` fields
 
