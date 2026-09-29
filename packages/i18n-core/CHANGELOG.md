@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/ttoss/ttoss/compare/@ttoss/i18n-core@0.4.0...@ttoss/i18n-core@0.5.0) (2026-09-29)
+
+### Features
+
+- **i18n-core:** negotiate a locale without a fallback ([#1277](https://github.com/ttoss/ttoss/issues/1277)) ([49216cf](https://github.com/ttoss/ttoss/commit/49216cf60b87f2f23db13516c2c65aa02f62deb1))
+
 # [0.4.0](https://github.com/ttoss/ttoss/compare/@ttoss/i18n-core@0.3.1...@ttoss/i18n-core@0.4.0) (2026-09-29)
 
 ### Features
