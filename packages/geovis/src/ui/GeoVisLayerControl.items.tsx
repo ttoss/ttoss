@@ -6,10 +6,7 @@ import type {
   LayerControlGroup,
   LayerControlItem,
 } from '../spec/types';
-import {
-  buildGroupThumbStyle,
-  groupChevronStyle,
-} from './GeoVisLayerControl.groupStyles';
+import { buildGroupThumbStyle } from './GeoVisLayerControl.groupStyles';
 import {
   activeBadgeStyle,
   buildItemLabelStyle,
@@ -159,24 +156,9 @@ const isItemDisabled = (
   });
 };
 
-/** Chevron glyph on a category card: it opens a panel, it does not toggle. */
-const ChevronIcon = () => {
-  return (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden
-    >
-      <path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z" />
-    </svg>
-  );
-};
-
 /**
- * A category's card: its thumbnail with a chevron, and a badge counting the
- * items in it that are on. Clicking it opens the category's panel — it never
+ * A category's card: its thumbnail, and a badge counting the items in it that
+ * are on. Clicking it opens the category's panel — it never
  * toggles anything itself. Disabled when every item in it is.
  */
 const LayerControlGroupButton = ({
@@ -220,9 +202,6 @@ const LayerControlGroupButton = ({
         {activeCount > 0 ? (
           <span style={moreActiveBadgeStyle}>{activeCount}</span>
         ) : null}
-        <span style={groupChevronStyle}>
-          <ChevronIcon />
-        </span>
       </span>
       <span style={buildItemLabelStyle({ active: false, disabled })}>
         {group.label}

@@ -15,15 +15,14 @@ import { computeBbox } from './helpers/map-story-helpers';
  *
  * ## What to check
  *
- * 1. Hover **Camadas** (bottom-left). "Limites" is a loose toggle, as in any
+ * 1. Click **Camadas** (bottom-left). "Limites" is a loose toggle, as in any
  *    flat control; "Saúde", "Transporte" and "Lazer" are categories — each card
- *    carries a chevron, and a badge counting its items that are on.
+ *    carries a badge counting its items that are on.
  * 2. Click **Saúde**. Its panel replaces the strip, titled after it, with a
  *    back arrow and a close button. Toggle the pins: the map follows, and the
  *    trigger's badge counts every toggle that is on, across categories.
- * 3. Move the pointer off the control: the category panel stays (it was opened
- *    by a click). Press the back arrow to return to the strip, where "Saúde"
- *    now badges how many of its items are on.
+ * 3. Press the back arrow to return to the strip, where "Saúde" now badges
+ *    how many of its items are on.
  * 4. `Escape`, a click on the map or the close button collapse the control,
  *    and it reopens on the strip.
  * 5. "Lazer" references a layer this spec lacks, so its card is disabled —
@@ -189,7 +188,7 @@ const ENTRIES: LayerControlEntry[] = [
 const spec: VisualizationSpec = {
   title: 'Layer-control categories',
   description:
-    'Hover "Camadas" (bottom-left): "Limites" toggles directly; the other ' +
+    'Click "Camadas" (bottom-left): "Limites" toggles directly; the other ' +
     'cards are categories that open a panel of their own toggles.',
   engine: 'maplibre',
   basemap: { visible: false },
@@ -224,7 +223,7 @@ const spec: VisualizationSpec = {
     id: 'camadas',
     label: 'Camadas',
     position: 'bottom-left',
-    trigger: 'hover',
+    trigger: 'click',
     items: ENTRIES,
   },
 };

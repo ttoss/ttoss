@@ -1112,8 +1112,8 @@ control: {
 An entry of `items` that carries `items` instead of `layers` is a **category**
 (`LayerControlGroup`). Its card toggles nothing: clicking it opens a panel of
 the category's own toggles, titled after it, with a back arrow and a close
-button. The card carries a chevron and a badge counting its items that are on,
-and renders disabled when every item in it is. Categories and loose toggles mix
+button. The card carries a badge counting its items that are on, and renders
+disabled when every item in it is. Categories and loose toggles mix
 freely, in the order given, and `maxVisibleItems` counts both alike.
 
 ```typescript

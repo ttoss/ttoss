@@ -186,6 +186,7 @@ const buildSpec = (pins: PinImage[]): VisualizationSpec => {
     control: {
       id: 'places',
       label: 'Lugares',
+      trigger: 'click',
       items: LAYERS.map((layer) => {
         return {
           id: layer.id,

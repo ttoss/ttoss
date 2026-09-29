@@ -4,11 +4,10 @@ import { TRIGGER_SIZE } from './GeoVisLayerControl.styles';
 
 /*
  * Styles of the layer control's categories: the card that opens a category's
- * panel, and the back button in that panel's header. Kept beside the item
- * styles (`GeoVisLayerControl.styles.ts`) and in their palette.
+ * panel. Kept beside the item styles (`GeoVisLayerControl.styles.ts`) and in
+ * their palette.
  */
 
-const TEXT = '#3c4043';
 const CARD_SHADOW = '0 1px 4px rgba(0,0,0,0.3)';
 
 /**
@@ -31,23 +30,4 @@ export const buildGroupThumbStyle = (
     position: 'relative',
     width: TRIGGER_SIZE,
   };
-};
-
-/**
- * The chevron pinned to a category card's corner: the sign that the card
- * opens a panel of its own rather than switching anything on.
- */
-export const groupChevronStyle: React.CSSProperties = {
-  alignItems: 'center',
-  backgroundColor: 'rgba(255,255,255,0.92)',
-  borderRadius: 5,
-  bottom: 4,
-  boxShadow: '0 1px 2px rgba(0,0,0,0.3)',
-  color: TEXT,
-  display: 'flex',
-  height: 18,
-  justifyContent: 'center',
-  position: 'absolute',
-  right: 4,
-  width: 18,
 };
