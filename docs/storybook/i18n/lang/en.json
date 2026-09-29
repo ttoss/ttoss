@@ -192,6 +192,11 @@
     "defaultMessage": "Scroll groups backward",
     "description": "Accessible label for the arrow that scrolls the grouped-menu carousel to earlier groups."
   },
+  "3wGIVX": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Aplicar",
+    "description": "Label of the button that applies the color chosen in the custom color picker."
+  },
   "4Kaze0": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "A layer references a source that does not exist.",
@@ -216,6 +221,11 @@
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Buscas recentes",
     "description": "Locator filter: heading above the recently picked places."
+  },
+  "8TPNSp": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Matiz",
+    "description": "Accessible label for the hue bar of the custom color picker."
   },
   "9WPqwF": {
     "module": "@ttoss/geovis-workspace",
@@ -347,6 +357,11 @@
     "defaultMessage": "Nome da escala",
     "description": "Placeholder of the name field in the color-ramp editor."
   },
+  "c+KiO6": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Customizar estilos",
+    "description": "Tooltip (title) of the pipette button that opens the custom color picker in the color-ramp editor."
+  },
   "cDAeJo": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "This source type is not supported.",
@@ -377,6 +392,16 @@
     "defaultMessage": "Close details",
     "description": "Accessible label for the button that closes the right sidebar."
   },
+  "kd0jJX": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "{base} personalizado",
+    "description": "Default name of a color ramp saved without one, built from the base color preset named `base`."
+  },
+  "kwKAUT": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Cancelar",
+    "description": "Label of the button that closes the custom color picker without applying the color."
+  },
   "n6ryYu": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "{message}",
@@ -397,10 +422,20 @@
     "defaultMessage": "Map type: {map_type}",
     "description": "Metadata panel: the spec's mapType, when set."
   },
+  "sZMdqx": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Saturação e brilho",
+    "description": "Accessible label for the square of the custom color picker that sets saturation and brightness."
+  },
   "ssMheo": {
     "module": "@ttoss/geovis-workspace",
     "defaultMessage": "Intervalo de reprodução",
     "description": "Timeline filter: label for the playback interval input."
+  },
+  "tyaZ8Q": {
+    "module": "@ttoss/geovis-workspace",
+    "defaultMessage": "Hexadecimal",
+    "description": "Accessible label for the hex code field of the custom color picker."
   },
   "uzIIpa": {
     "module": "@ttoss/geovis-workspace",

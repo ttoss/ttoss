@@ -398,6 +398,20 @@ matching no option — a stale permalink, or a ramp since dropped — rests on t
 first one rather than leaving the list unmarked. Anything the list needs said in
 words goes in the block's `hint`, which holds for every ramp in it.
 
+With `create` (`{ baseColors, onCreate, allowCustomColor?, classes?, rampFrom? }`)
+the list ends in a **Nova escala de cor** affordance that opens an editor: the
+reader picks a base color, sees the strip it would add, and adds it. The
+`baseColors` are presets; unless `allowCustomColor: false`, a pipette beside them
+(titled "Customizar estilos") opens a picker card — a saturation/brightness
+square, a hue bar and a hex field, then **Cancelar** or **Aplicar** — that sets
+any other base. The card is rendered in a portal on `document.body`, fixed under
+the pipette (above it when there is no room), so the sidebar never clips it. The
+name is optional: applying a picked color writes its hex code into an empty name
+field, and a ramp saved with no name is called after its preset ("Azul
+personalizado") or its hex code. `onCreate` receives the finished option — the
+app keeps it and passes it back in `options`, where it carries `removable` and
+an `×` that reports through the setting's `onRemove`.
+
 A `locator` pick does two independent things, each opted into on its own: it
 moves the camera, and it reports the choice.
 

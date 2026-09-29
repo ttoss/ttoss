@@ -8,6 +8,7 @@ import type {
   GeovisWorkspaceSidebarColorRampOption,
 } from '../../context/GeovisWorkspaceContext';
 import { messages } from '../../messages';
+import { ColorPickerCard } from './ColorPickerCard';
 import { rampFromBase } from './rampFromBase';
 import { COLOR, FONT_HEAD } from './theme';
 
@@ -103,20 +104,94 @@ const EditorHeader = ({ onCancel }: { onCancel: () => void }) => {
   );
 };
 
-/** The presets, and the free input that reaches past them. */
+/**
+ * The pipette: opens the custom-color picker beside it, and shows it is open —
+ * tinted and solid-bordered while the picker is up, dashed at rest.
+ */
+const CustomColorButton = ({
+  baseColor,
+  onPick,
+}: {
+  baseColor: string;
+  onPick: (color: string) => void;
+}) => {
+  const { intl } = useI18n();
+  const [button, setButton] = React.useState<HTMLElement | null>(null);
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <>
+      <Box
+        as="button"
+        ref={setButton}
+        {...({
+          type: 'button',
+          'aria-label': intl.formatMessage(messages.customColor),
+          // Shown on hover: the button is an icon alone.
+          title: intl.formatMessage(messages.customizeStyles),
+          'aria-expanded': open,
+          'aria-haspopup': 'dialog',
+        } as object)}
+        onClick={() => {
+          setOpen((current) => {
+            return !current;
+          });
+        }}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '26px',
+          height: '26px',
+          padding: 0,
+          borderRadius: '6px',
+          cursor: 'pointer',
+          backgroundColor: open ? COLOR.primaryTint : COLOR.surface,
+          border: open
+            ? `1px solid ${COLOR.primarySoft}`
+            : `1px dashed ${COLOR.textDisabled}`,
+          color: open ? COLOR.primary : COLOR.textFaint,
+        }}
+      >
+        <Icon icon="lucide:pipette" style={{ fontSize: '12px' }} />
+      </Box>
+
+      {/* The button is set on mount, before any click can open the picker. */}
+      {open && button ? (
+        <ColorPickerCard
+          anchor={button}
+          color={baseColor}
+          onApply={(color) => {
+            onPick(color);
+            setOpen(false);
+          }}
+          onCancel={() => {
+            setOpen(false);
+          }}
+        />
+      ) : null}
+    </>
+  );
+};
+
+/**
+ * The presets, and the custom-color picker that reaches past them. A color
+ * applied from the picker is reported apart (`onCustomPick`), since it also
+ * names the ramp.
+ */
 const BaseColorRow = ({
   baseColors,
   allowCustomColor,
   baseColor,
   onPick,
+  onCustomPick,
 }: {
   baseColors: GeovisWorkspaceSidebarColorRampCreate['baseColors'];
   allowCustomColor: boolean;
   baseColor: string;
   onPick: (color: string) => void;
+  onCustomPick: (color: string) => void;
 }) => {
-  const { intl } = useI18n();
-
   return (
     <Flex sx={{ flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
       {baseColors.map((swatch) => {
@@ -134,39 +209,7 @@ const BaseColorRow = ({
       })}
 
       {allowCustomColor ? (
-        <Box
-          as="label"
-          sx={{
-            position: 'relative',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '26px',
-            height: '26px',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            backgroundColor: COLOR.surface,
-            border: `1px dashed ${COLOR.textDisabled}`,
-            color: COLOR.textFaint,
-          }}
-        >
-          <Icon icon="lucide:pipette" style={{ fontSize: '12px' }} />
-          <input
-            type="color"
-            value={baseColor}
-            aria-label={intl.formatMessage(messages.customColor)}
-            onChange={(event) => {
-              onPick(event.target.value);
-            }}
-            style={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-              opacity: 0,
-              cursor: 'pointer',
-            }}
-          />
-        </Box>
+        <CustomColorButton baseColor={baseColor} onPick={onCustomPick} />
       ) : null}
     </Flex>
   );
@@ -261,7 +304,29 @@ const NameRow = ({
 };
 
 /**
- * The editor for a ramp the reader builds: a base color, a preview, and a name.
+ * The name a ramp gets when the reader leaves the field empty: the preset's
+ * name with "personalizado" when the base is a preset, its hex code otherwise.
+ */
+const useDefaultName = ({
+  baseColors,
+  baseColor,
+}: {
+  baseColors: GeovisWorkspaceSidebarColorRampCreate['baseColors'];
+  baseColor: string;
+}): string => {
+  const { intl } = useI18n();
+  const preset = baseColors.find((swatch) => {
+    return swatch.color.toLowerCase() === baseColor.toLowerCase();
+  });
+
+  return preset
+    ? intl.formatMessage(messages.customColorScaleName, { base: preset.name })
+    : baseColor.toUpperCase();
+};
+
+/**
+ * The editor for a ramp the reader builds: a base color, a preview, and a name
+ * — optional, defaulting to one drawn from the base (see `useDefaultName`).
  *
  * It replaces the affordance that opened it rather than opening over the panel.
  * The list it is adding to has to stay visible — the reader is choosing a color
@@ -298,16 +363,33 @@ export const ColorRampEditor = ({
     return baseColors[0]?.color ?? '#000000';
   });
   const [name, setName] = React.useState('');
+  /*
+   * The hex a picker apply wrote into the name field, if any. A later apply
+   * replaces it with the new code; a name the reader typed is never
+   * overwritten.
+   */
+  const autoName = React.useRef<string | null>(null);
+
+  const pickCustom = (color: string) => {
+    setBaseColor(color);
+    const hex = color.toUpperCase();
+    if (name.trim() === '' || name === autoName.current) {
+      setName(hex);
+      autoName.current = hex;
+    }
+  };
 
   const build = rampFrom ?? rampFromBase;
   const colors = build({ baseColor, classes });
+  const defaultName = useDefaultName({ baseColors, baseColor });
 
   /*
    * A ramp with no classes has nothing to save: an unparseable custom color
-   * yields an empty sweep, and saving it would put a nameless blank row in the
-   * list. The button goes quiet instead of failing after the fact.
+   * yields an empty sweep, and saving it would put a blank row in the list. The
+   * button goes quiet instead of failing after the fact. The name no longer
+   * holds it back — an empty one falls back to `defaultName`.
    */
-  const ready = name.trim().length > 0 && colors.length > 0;
+  const ready = colors.length > 0;
 
   return (
     <Box
@@ -326,6 +408,7 @@ export const ColorRampEditor = ({
         allowCustomColor={allowCustomColor}
         baseColor={baseColor}
         onPick={setBaseColor}
+        onCustomPick={pickCustom}
       />
 
       <RampPreview colors={colors} />
@@ -335,7 +418,10 @@ export const ColorRampEditor = ({
         ready={ready}
         onName={setName}
         onCommit={() => {
-          onCommit({ option: { label: name.trim(), colors }, baseColor });
+          onCommit({
+            option: { label: name.trim() || defaultName, colors },
+            baseColor,
+          });
         }}
       />
     </Box>
