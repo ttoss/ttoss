@@ -463,7 +463,7 @@ export const checkScopes = (required: string[]): void => {
  * The router {@link createMcpRouter} returns: a Koa router, plus the two
  * operations on the `2026-07-28` streams it serves.
  */
-export type McpRouter = InstanceType<typeof Router> & {
+export type McpRouter = Router & {
   /**
    * Publishes the `list_changed` notifications (and `resources/updated`) to
    * every open `subscriptions/listen` stream that opted in. Call
