@@ -111,6 +111,11 @@ export type I18n = IntlShape & {
    * Format a deferred value on its own, outside a message.
    */
   formatValue: (value: FormatValue) => string;
+  /**
+   * Whether a reference renders entirely in this instance's locale rather
+   * than falling back to its `defaultMessage` — see `isMessageRefTranslated`.
+   */
+  isTranslated: (ref: MessageRef | string) => boolean;
 };
 
 const formatValue = (intl: IntlFormatters, value: FormatValue): string => {
@@ -228,6 +233,44 @@ export const renderMessageRef = ({
   return Array.isArray(result) ? result.join('') : String(result);
 };
 
+const sameLocale = (a: string, b: string) => {
+  return a.toLowerCase() === b.toLowerCase();
+};
+
+/**
+ * Whether a reference renders entirely in `intl.locale`: every message it
+ * holds, nested references included, has an entry in `intl.messages`. In the
+ * source locale (`intl.defaultLocale`) every reference is translated, since
+ * its `defaultMessage` is already that language, and so is a plain string;
+ * in any other locale a plain string is untranslated source text.
+ *
+ * `render` never says when it fell back, so this is how a caller records
+ * which locale it actually served — a stored rendering, a wrong-locale alert.
+ */
+export const isMessageRefTranslated = ({
+  intl,
+  ref,
+}: {
+  intl: Pick<IntlShape, 'locale' | 'defaultLocale' | 'messages'>;
+  ref: MessageRef | string;
+}): boolean => {
+  if (sameLocale(intl.locale, intl.defaultLocale)) {
+    return true;
+  }
+
+  if (typeof ref === 'string') {
+    return false;
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(intl.messages, ref.id)) {
+    return false;
+  }
+
+  return Object.values(ref.values ?? {}).every((value) => {
+    return !isMessageRef(value) || isMessageRefTranslated({ intl, ref: value });
+  });
+};
+
 export const createI18n = ({
   locale,
   messages,
@@ -258,6 +301,9 @@ export const createI18n = ({
     },
     formatValue: (value: FormatValue) => {
       return formatValue(intl, value);
+    },
+    isTranslated: (ref: MessageRef | string) => {
+      return isMessageRefTranslated({ intl, ref });
     },
   });
 };

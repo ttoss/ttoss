@@ -94,6 +94,14 @@ i18n.renderHtml(body); // email: values escaped, <b>/<i>/<p>/<br>… kept
 
 `createCatalog` loads each locale once per process and retries a load that failed. `createI18n({ locale, messages, defaultLocale })` is the same thing without the cache, and both return a full FormatJS `IntlShape`, so `formatMessage`, `formatNumber` and the rest are there too. `render` passes a plain string through unchanged, so rows written before references existed keep rendering.
 
+`render` falls back to a reference's `defaultMessage` silently when the catalog lacks its id. To record which language was actually served, for a stored rendering or a wrong-locale alert, ask first. `isTranslated` is true when every message in the reference has an entry in the catalog, nested references included, and is always true in the source locale:
+
+```ts
+const served = i18n.isTranslated(body) ? i18n.locale : i18n.defaultLocale;
+```
+
+With react-intl, `isMessageRefTranslated({ intl: useIntl(), ref })` gives the same answer.
+
 ### Negotiate a locale
 
 ```ts
@@ -151,7 +159,8 @@ transformIgnorePatterns: ['/node_modules/(?!(\\.pnpm/)?(@formatjs|intl-messagefo
 | `msg(descriptor, values?)`                                               | Create a `MessageRef`; throws on a descriptor without id or text                   |
 | `isMessageRef(value)`                                                    | Structural check, survives JSON                                                    |
 | `fmt.*`, `isFormatValue(value)`                                          | Deferred formatting                                                                |
-| `createI18n({ locale, messages, defaultLocale?, onError? })`             | `IntlShape` plus `render`, `renderHtml`, `formatValue`                             |
+| `createI18n({ locale, messages, defaultLocale?, onError? })`             | `IntlShape` plus `render`, `renderHtml`, `formatValue`, `isTranslated`             |
+| `isMessageRefTranslated({ intl, ref })`                                  | Whether a reference renders in `intl.locale` without falling back                  |
 | `createCatalog({ supported, fallback, load, defaultLocale?, onError? })` | `{ getI18n, negotiate, supported, fallback }`                                      |
 | `negotiateLocale({ requested, supported, fallback? })`                   | Best supported locale; `undefined` when nothing matches and there is no `fallback` |
 | `LocalizedError`, `isLocalizedError(error)`                              | Errors with a stable code and a reference                                          |

@@ -4,6 +4,7 @@ export {
   DEFAULT_LOCALE,
   type I18n,
   type IntlFormatters,
+  isMessageRefTranslated,
   type Messages,
   renderMessageRef,
   type RenderMode,
