@@ -611,6 +611,9 @@ Creates a Koa router configured to handle MCP protocol requests.
   - `path` (`string`) — HTTP path for MCP endpoint (default: `'/mcp'`)
   - `aliases` (`string[]`) — Additional paths where the MCP handler is also mounted; use `['/']` to also handle requests at the bare root (default: `[]`)
   - `sessionIdGenerator` (`() => string`) — Session ID generator for stateful servers (default: `undefined` for stateless)
+  - `createMcpServer` (`McpServerFactory`) — Per-request factory serving the `2026-07-28` revision; see [Serving the `2026-07-28` revision](#serving-the-2026-07-28-revision)
+  - `bus` (`ServerEventBus`) — Change-event bus `subscriptions/listen` streams subscribe to (default: in-process); see [Change notifications and shutdown](#change-notifications-and-shutdown)
+  - `keepAliveMs` (`number`) — SSE keepalive interval for `2026-07-28` streams (default: `15000`)
   - `apiBaseUrl` (`string`) — Base URL prepended to relative paths in `apiCall`
   - `getApiHeaders` (`(ctx: Context) => Record<string, string>`) — Return headers to inject into every `apiCall` for this request
   - `auth` (`McpAuthOptions`) — OAuth/JWT authentication; see [Authentication](#authentication)
@@ -622,7 +625,7 @@ Creates a Koa router configured to handle MCP protocol requests.
     - `auth.resourceMetadataUrl` — URL advertised in the RFC 9728 `WWW-Authenticate: Bearer resource_metadata="…"` header on a 401. Defaults to the location derived from `resourceServerUrl` + `path` (the one this router serves), so the header cannot drift from the routes; set it only when a separate `oauthServer()` serves the document and this router is mounted without `resourceServerUrl`/`authorizationServerUrl`
     - `auth.resourceIndicator` — Expected `aud` value(s) (RFC 8707); rejects tokens minted for a different resource. See [Resource indicator validation](#resource-indicator-validation-rfc-8707)
 
-**Returns:** `Router` — Koa router instance
+**Returns:** `McpRouter` — the Koa router, plus `notify` (publish `list_changed` notifications to open `subscriptions/listen` streams) and `close()` (announce that the lists may have changed, then end every open `2026-07-28` exchange)
 
 ### `apiCall(method, url, options?)`
 
@@ -962,7 +965,7 @@ app.listen(3000);
 
 ## Protocol Details
 
-This package implements the [Model Context Protocol](https://spec.modelcontextprotocol.io/) over HTTP using JSON responses (no SSE streaming), and serves each request over the protocol revision it actually speaks.
+This package implements the [Model Context Protocol](https://spec.modelcontextprotocol.io/) over HTTP using JSON responses — SSE only for `2026-07-28` `subscriptions/listen` streams — and serves each request over the protocol revision it actually speaks.
 
 Requests are classified once at the boundary, and the classifier's answer is three-way. Traffic from today's MCP clients is served over `NodeStreamableHTTPServerTransport` with `enableJsonResponse: true`, adapting Koa's context-based middleware to the SDK's Node.js request/response expectations. Requests carrying the `2026-07-28` revision's per-request envelope are served by that revision's stateless core (`createMcpHandler`). Requests the classifier refuses outright are answered with its own rejection — the status, code, message and data it chose — rather than passed to either era's handler.
 
@@ -985,6 +988,29 @@ const mcpRouter = createMcpRouter(buildServer(), {
 It has to be a factory, and cannot default to the server the router was given, because the negotiated revision is instance state: serving one `2026-07-28` request marks that `McpServer` modern for good, and it then validates every later message against that revision. One instance serving both eras is pinned by the first client to speak the newer one, after which every 2025-era request is answered `-32602 Request is missing the required _meta envelope…` at HTTP 200 for the life of the process. The SDK's own serving entries take a factory and call it once per request for the same reason.
 
 Without `createMcpServer`, `2026-07-28` requests get the unsupported-protocol-version error listing the revisions this endpoint does serve, so that client renegotiates and no other client is affected.
+
+### Change notifications and shutdown
+
+A `2026-07-28` client learns about a changed tool list over a `subscriptions/listen` stream it holds open. The router serves those streams; `notify` publishes to them. Call `notify.toolsChanged()` after registering or removing a tool at runtime:
+
+```typescript
+const mcpRouter = createMcpRouter(buildServer(), {
+  createMcpServer: buildServer,
+});
+
+mcpRouter.notify.toolsChanged();
+```
+
+A deploy changes the surface too, and the new process cannot know what a client cached — so the old one says so on its way out. Call `close()` on shutdown, before the HTTP server's own `close()`. It tells every open stream that the tool, prompt and resource lists may have changed, then ends the streams. That order matters twice: a client that does not re-list on reconnect learns to, and `server.close()` — which waits for every open request — is no longer held open by streams that never finish on their own, which would otherwise make every graceful shutdown wait out its whole grace period.
+
+```typescript
+process.on('SIGTERM', async () => {
+  await mcpRouter.close();
+  httpServer.close();
+});
+```
+
+The default bus is in-process, so `notify` reaches the streams this process holds. Behind several replicas, pass a `bus` implementing `ServerEventBus` over a shared pub/sub. Keep `keepAliveMs` below the idle timeout of anything in front of the server, or a quiet stream is cut there. 2025-era traffic is served statelessly, so it holds no stream to notify.
 
 **Supported HTTP methods:**
 
