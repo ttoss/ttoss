@@ -7,6 +7,8 @@ import type {
   InboundLadderRejection,
   McpServer,
   McpServerFactory,
+  ServerEventBus,
+  ServerNotifier,
 } from '@modelcontextprotocol/server';
 import {
   classifyInboundRequest,
@@ -32,7 +34,46 @@ export interface CreateMcpRequestServerParams {
    * Required to serve that revision — see {@link createMcpRequestServer}.
    */
   createMcpServer?: McpServerFactory;
+  /**
+   * The change-event bus `subscriptions/listen` streams subscribe to. Defaults
+   * to the SDK's in-process bus; a deployment with several replicas passes one
+   * over its own pub/sub so a change published by one reaches every stream.
+   */
+  bus?: ServerEventBus;
+  /**
+   * SSE keepalive interval for `2026-07-28` streams, in milliseconds. Keep it
+   * below the idle timeout of anything in front of the server — a CDN or load
+   * balancer — or a quiet `subscriptions/listen` stream is cut there.
+   * @default 15000
+   */
+  keepAliveMs?: number;
 }
+
+/** What {@link createMcpRequestServer} returns. */
+export interface McpRequestServer {
+  /** Serves one HTTP request over the protocol revision it speaks. */
+  serve: (ctx: Context, body?: unknown) => Promise<void>;
+  /**
+   * Publishes change notifications to every open `2026-07-28`
+   * `subscriptions/listen` stream that opted in. A no-op when that revision is
+   * not served, or no stream is open.
+   */
+  notify: ServerNotifier;
+  /**
+   * Ends every open `2026-07-28` exchange, `subscriptions/listen` streams
+   * included, so a graceful `server.close()` is not held open by them.
+   */
+  close: () => Promise<void>;
+}
+
+// Nothing to notify and nothing to close when `2026-07-28` is not served: the
+// 2025-era legacy transports hold no stream between requests.
+const NO_NOTIFIER: ServerNotifier = {
+  toolsChanged: () => {},
+  promptsChanged: () => {},
+  resourcesChanged: () => {},
+  resourceUpdated: () => {},
+};
 
 /**
  * Stops compiling if the classifier's union grows a fourth `kind`, so the new
@@ -153,15 +194,15 @@ export const createMcpRequestServer = ({
   createMcpServer,
   server,
   sessionIdGenerator,
-}: CreateMcpRequestServerParams): ((
-  ctx: Context,
-  body?: unknown
-) => Promise<void>) => {
+  bus,
+  keepAliveMs,
+}: CreateMcpRequestServerParams): McpRequestServer => {
   const isStateful = sessionIdGenerator !== undefined;
 
-  const modernHandler = createMcpServer
-    ? toNodeHandler(createMcpHandler(createMcpServer, { legacy: 'reject' }))
+  const modern = createMcpServer
+    ? createMcpHandler(createMcpServer, { legacy: 'reject', bus, keepAliveMs })
     : undefined;
+  const modernHandler = modern ? toNodeHandler(modern) : undefined;
 
   // Stateful mode: single shared transport connected once at startup.
   let sharedTransport: NodeStreamableHTTPServerTransport | undefined;
@@ -190,7 +231,7 @@ export const createMcpRequestServer = ({
     return result;
   };
 
-  return async (ctx: Context, body?: unknown): Promise<void> => {
+  const serve = async (ctx: Context, body?: unknown): Promise<void> => {
     const outcome = classifyInboundRequest({
       httpMethod: ctx.method,
       protocolVersionHeader: header(ctx, 'mcp-protocol-version'),
@@ -235,5 +276,13 @@ export const createMcpRequestServer = ({
         await transport.close();
       }
     });
+  };
+
+  return {
+    serve,
+    notify: modern ? modern.notify : NO_NOTIFIER,
+    close: async () => {
+      await modern?.close();
+    },
   };
 };

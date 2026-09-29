@@ -1,5 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports -- value import required so declaration bundler emits `export { McpServer }` not `export type { McpServer }`
-import { McpServer, type McpServerFactory } from '@modelcontextprotocol/server';
+import {
+  McpServer,
+  type McpServerFactory,
+  type ServerEventBus,
+  type ServerNotifier,
+} from '@modelcontextprotocol/server';
 import {
   protectedResourceMetadataDocument,
   protectedResourceMetadataPaths,
@@ -455,6 +460,30 @@ export const checkScopes = (required: string[]): void => {
 };
 
 /**
+ * The router {@link createMcpRouter} returns: a Koa router, plus the two
+ * operations on the `2026-07-28` streams it serves.
+ */
+export type McpRouter = Router & {
+  /**
+   * Publishes the `list_changed` notifications (and `resources/updated`) to
+   * every open `subscriptions/listen` stream that opted in. Call
+   * `notify.toolsChanged()` after registering or removing a tool at runtime.
+   * A no-op without `createMcpServer`, or with no stream open.
+   */
+  notify: ServerNotifier;
+  /**
+   * Tells every open `subscriptions/listen` stream that the tool, prompt and
+   * resource lists may have changed, then ends every open `2026-07-28`
+   * exchange. Call it on shutdown, before `server.close()`: an open stream
+   * never finishes on its own, so a graceful close would otherwise wait out
+   * the whole grace period, and the notification is what tells a client that
+   * does not re-list on reconnect that the next process may serve a different
+   * surface.
+   */
+  close: () => Promise<void>;
+};
+
+/**
  * Options for configuring the MCP router
  */
 export interface McpRouterOptions {
@@ -513,6 +542,23 @@ export interface McpRouterOptions {
    * ```
    */
   createMcpServer?: McpServerFactory;
+
+  /**
+   * The change-event bus `2026-07-28` `subscriptions/listen` streams subscribe
+   * to, which {@link McpRouter.notify} publishes onto. Defaults to an
+   * in-process bus, which reaches only the streams this process holds: with
+   * several replicas, pass one over a shared pub/sub so a change published by
+   * one replica reaches every client.
+   */
+  bus?: ServerEventBus;
+
+  /**
+   * SSE keepalive interval for `2026-07-28` streams, in milliseconds. Keep it
+   * below the idle timeout of whatever sits in front of the server (a CDN or
+   * load balancer), or a quiet `subscriptions/listen` stream is cut there.
+   * @default 15000
+   */
+  keepAliveMs?: number;
 
   /**
    * Base URL prepended to relative paths passed to `apiCall` (paths starting
@@ -629,12 +675,14 @@ export const createMcpRouter = (
   server: McpServer,
   options: McpRouterOptions = {}
   // eslint-disable-next-line complexity
-) => {
+): McpRouter => {
   const {
     path = '/mcp',
     aliases = [],
     sessionIdGenerator,
     createMcpServer,
+    bus,
+    keepAliveMs,
     apiBaseUrl,
     getApiHeaders,
     auth,
@@ -646,10 +694,12 @@ export const createMcpRouter = (
 
   // Serves each request over the protocol revision it actually speaks, and
   // emits the classifier's own rejection for requests it refused outright.
-  const serveRequest = createMcpRequestServer({
+  const requestServer = createMcpRequestServer({
     server,
     sessionIdGenerator,
     createMcpServer,
+    bus,
+    keepAliveMs,
   });
 
   const router = new Router();
@@ -752,7 +802,7 @@ export const createMcpRouter = (
     (ctx.req as unknown as { auth?: unknown }).auth = identity;
 
     const runRequest = async (): Promise<void> => {
-      await serveRequest(ctx, body);
+      await requestServer.serve(ctx, body);
       // Prevent Koa from sending its own response
       // The MCP SDK has already handled the response
       ctx.respond = false;
@@ -812,7 +862,19 @@ export const createMcpRouter = (
     }
   }
 
-  return router;
+  const close = async (): Promise<void> => {
+    requestServer.notify.toolsChanged();
+    requestServer.notify.promptsChanged();
+    requestServer.notify.resourcesChanged();
+    // Publishing only queues the frames; closing in the same tick would end
+    // each stream before they are written, and a client would never see them.
+    await new Promise((resolve) => {
+      setImmediate(resolve);
+    });
+    await requestServer.close();
+  };
+
+  return Object.assign(router, { notify: requestServer.notify, close });
 };
 
 export {
@@ -837,6 +899,12 @@ export {
  * Re-export MCP SDK types and classes for convenience
  */
 export { McpServer } from '@modelcontextprotocol/server';
+export {
+  InMemoryServerEventBus,
+  type ServerEvent,
+  type ServerEventBus,
+  type ServerNotifier,
+} from '@modelcontextprotocol/server';
 
 /**
  * Re-export Zod for request/response schema definitions
