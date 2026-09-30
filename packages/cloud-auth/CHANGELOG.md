@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.17.0 (2026-09-30)
+
+### Features
+
+- **cloud-auth,react-auth:** add Google and Facebook sign-in ([#1214](https://github.com/ttoss/ttoss/issues/1214)) ([c593c06](https://github.com/ttoss/ttoss/commit/c593c063fbd6a60a66438c0f84d6ee299b0a5ed1))
+
 ## [0.16.1](https://github.com/ttoss/ttoss/compare/@ttoss/cloud-auth@0.16.0...@ttoss/cloud-auth@0.16.1) (2026-09-28)
 
 **Note:** Version bump only for package @ttoss/cloud-auth

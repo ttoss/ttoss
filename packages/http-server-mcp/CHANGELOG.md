@@ -3,6 +3,69 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.32.0 (2026-09-30)
+
+- feat(http-server-mcp)!: require a token for tools/list by default (#1221) ([912b2bd](https://github.com/ttoss/ttoss/commit/912b2bd1cce4da3bb4add64594dda40dbdd0802c)), closes [#1221](https://github.com/ttoss/ttoss/issues/1221)
+
+### Bug Fixes
+
+- **auth:** serve RFC 9728 protected-resource metadata at the path-derived location, from one shared primitive ([#1212](https://github.com/ttoss/ttoss/issues/1212)) ([174bfca](https://github.com/ttoss/ttoss/commit/174bfca15dfd7c5d5048f5fd87a5da81faf37189))
+- **http-server-mcp:** branch on all three inbound classification outcomes ([#1235](https://github.com/ttoss/ttoss/issues/1235)) ([99beea4](https://github.com/ttoss/ttoss/commit/99beea4dafa100377cb697047923d08ab26340e0))
+- **http-server-mcp:** make the handshake public on both protocol eras ([#1223](https://github.com/ttoss/ttoss/issues/1223)) ([cb611ba](https://github.com/ttoss/ttoss/commit/cb611bab1f116eae1328d07ff0c373016be0c0f4))
+- **http-server-mcp:** read the message off a structured error body ([#1236](https://github.com/ttoss/ttoss/issues/1236)) ([9064b30](https://github.com/ttoss/ttoss/commit/9064b30e9b4c3748057d24b2bbbb51ec942e02b8))
+
+### Features
+
+- **eslint-config:** enforce the quality metrics ESLint can, drop the config that does nothing ([#1211](https://github.com/ttoss/ttoss/issues/1211)) ([5673a18](https://github.com/ttoss/ttoss/commit/5673a1817b104a403466d07ac2ecd589bc4ddd49)), closes [ttoss/i18n-cli#build-config](https://github.com/ttoss/i18n-cli/issues/build-config)
+- **http-server-mcp-openapi:** cover what OpenAPI → MCP consumers re-implement ([#1255](https://github.com/ttoss/ttoss/issues/1255)) ([f585de5](https://github.com/ttoss/ttoss/commit/f585de5469d0371375140c2796f38e6524aa2c77)), closes [#1254](https://github.com/ttoss/ttoss/issues/1254) [#1253](https://github.com/ttoss/ttoss/issues/1253)
+- **http-server-mcp,auth-core:** add resource indicator and OIDC verifier ([#1170](https://github.com/ttoss/ttoss/issues/1170)) ([7646b7c](https://github.com/ttoss/ttoss/commit/7646b7ca55844a2d087587865cb9e218b392141b))
+- **http-server-mcp:** notify and close for 2026-07-28 listen streams ([#1278](https://github.com/ttoss/ttoss/issues/1278)) ([fb17b7e](https://github.com/ttoss/ttoss/commit/fb17b7ea4ab07a322bb158beec206364f949e475))
+- **http-server-mcp:** serve MCP Apps views with registerAppResource ([#1232](https://github.com/ttoss/ttoss/issues/1232)) ([c2ea69c](https://github.com/ttoss/ttoss/commit/c2ea69cc8649f2d8eeca32d72415f3b175ae9131)), closes [#1231](https://github.com/ttoss/ttoss/issues/1231)
+- **http-server-mcp:** serve the MCP 2026-07-28 revision alongside 2025-era traffic ([#1171](https://github.com/ttoss/ttoss/issues/1171)) ([b9fcc16](https://github.com/ttoss/ttoss/commit/b9fcc16e66c4c1df8277af956d0301e695f6ea4b))
+- **http-server-mcp:** warn when auth is configured without explicit publicMethods ([#1177](https://github.com/ttoss/ttoss/issues/1177)) ([fcd5a40](https://github.com/ttoss/ttoss/commit/fcd5a40611809ed67dd1e448c2f30237aaeae32f)), closes [#1168](https://github.com/ttoss/ttoss/issues/1168)
+- i18n boundary adapters (appsync-api, http-server, MCP) and LocalizedText ([#1266](https://github.com/ttoss/ttoss/issues/1266)) ([297b436](https://github.com/ttoss/ttoss/commit/297b436523c11809746ee56f8abd6a0463767935))
+
+### BREAKING CHANGES
+
+- `auth.publicMethods` defaults to `['initialize']` instead of
+  `['initialize', 'tools/list']`, so an unauthenticated `tools/list` now returns
+  `401` rather than the tool catalogue. Consumers that configure `auth` and rely
+  on unauthenticated tool discovery must set
+  `publicMethods: ['initialize', 'tools/list']` explicitly. See
+  `packages/http-server-mcp/MIGRATIONS.md`. Closes #1176.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_015vN9NAdqTpNxHQBeVpVxaJ
+
+- fix(http-server-mcp): link MIGRATIONS.md absolutely so the docs site builds
+
+The docs site generates each package's API page from its README via
+typedoc-plugin-markdown, which rewrites a relative link to a sibling repo
+file into `_media/<file>` and copies the file there. Docusaurus ignores
+`_`-prefixed paths, so the rewritten link can never resolve and
+`@docs/website#build` fails:
+
+    MDX compilation failed for docs/modules/packages/http-server-mcp/index.md
+    Markdown link with URL `_media/MIGRATIONS.md` ... couldn't be resolved
+
+`./MIGRATIONS.md` was the only relative Markdown link in any package README,
+which is why nothing had hit this before. Use the absolute `blob/main` URL
+other READMEs already use for repo files, which also resolves for readers on
+npm.
+
+Regenerating the API docs surfaced a second defect in the same commit: the
+`publicMethods` `@example` name spanned two lines, so typedoc took the first
+line as the example name and left "self-discover from the very first request"
+orphaned in the rendered body. Both examples now live in one code block with
+the explanation as comments.
+
+Verified by reproducing the failure locally and rebuilding: the `_media` link
+is gone, the examples render as one clean block, and `docs/website` builds
+successfully.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_015vN9NAdqTpNxHQBeVpVxaJ
+
 ## [0.31.1](https://github.com/ttoss/ttoss/compare/@ttoss/http-server-mcp@0.31.0...@ttoss/http-server-mcp@0.31.1) (2026-09-29)
 
 **Note:** Version bump only for package @ttoss/http-server-mcp

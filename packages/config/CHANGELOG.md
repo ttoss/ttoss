@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 1.40.0 (2026-09-30)
+
+### Bug Fixes
+
+- **config:** transform .cjs files in Jest so a published build's dynamic import() runs ([#1281](https://github.com/ttoss/ttoss/issues/1281)) ([f7905d1](https://github.com/ttoss/ttoss/commit/f7905d1d1dc191bfd301e4e4428a557186be53fc))
+- **react-dashboard:** messages shipped without ids, and a build guard in @ttoss/config ([#1270](https://github.com/ttoss/ttoss/issues/1270)) ([98fc6b7](https://github.com/ttoss/ttoss/commit/98fc6b7d5baef98b111c6e5e5551df6ee0b4a615))
+
+### Features
+
+- **eslint-config:** enforce the quality metrics ESLint can, drop the config that does nothing ([#1211](https://github.com/ttoss/ttoss/issues/1211)) ([5673a18](https://github.com/ttoss/ttoss/commit/5673a1817b104a403466d07ac2ecd589bc4ddd49)), closes [ttoss/i18n-cli#build-config](https://github.com/ttoss/i18n-cli/issues/build-config)
+- i18n Phase 0 + Phase 1 — @ttoss/i18n-core, multi-locale ttoss-i18n, canonical id pattern ([#1265](https://github.com/ttoss/ttoss/issues/1265)) ([4533535](https://github.com/ttoss/ttoss/commit/4533535869f543724ef170929e99ae723b3efb70)), closes [#1262](https://github.com/ttoss/ttoss/issues/1262) [#1056](https://github.com/ttoss/ttoss/issues/1056) [#1056](https://github.com/ttoss/ttoss/issues/1056)
+
 ## [1.39.1](https://github.com/ttoss/ttoss/compare/@ttoss/config@1.39.0...@ttoss/config@1.39.1) (2026-09-28)
 
 ### Bug Fixes

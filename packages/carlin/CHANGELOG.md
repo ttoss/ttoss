@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 3.0.0 (2026-09-30)
+
+- feat(carlin)!: exclude source maps from the static-app S3 upload by default (#1196) ([b37f275](https://github.com/ttoss/ttoss/commit/b37f27533cccaea1ed28ddd79e6bf4cacb81032e)), closes [#1196](https://github.com/ttoss/ttoss/issues/1196)
+
+### Bug Fixes
+
+- **carlin:** build a valid response headers policy when vary is defined ([#1206](https://github.com/ttoss/ttoss/issues/1206)) ([12abe77](https://github.com/ttoss/ttoss/commit/12abe773a8832ba046627faa9c90c859bba958ff))
+- **carlin:** honor a caller-defined Vary in static app response headers ([#1205](https://github.com/ttoss/ttoss/issues/1205)) ([4758429](https://github.com/ttoss/ttoss/commit/47584295344ebbaf6aa885e3578d932fecf5f724))
+- **carlin:** upload dot files and directories to S3 ([#1229](https://github.com/ttoss/ttoss/issues/1229)) ([4928aa0](https://github.com/ttoss/ttoss/commit/4928aa0a77cf57bdcf75496a947aa83be659e40f))
+
+### Features
+
+- **carlin:** add redirect-to-trailing-slash to static app deploys ([#1220](https://github.com/ttoss/ttoss/issues/1220)) ([7829480](https://github.com/ttoss/ttoss/commit/7829480a5470aa31a34075b440aed0008a9d4dc0))
+- **carlin:** add response headers options to deploy static-app ([#1203](https://github.com/ttoss/ttoss/issues/1203)) ([5014a32](https://github.com/ttoss/ttoss/commit/5014a32c7ab032fcd1ab121bf2e07218dfaa55e4))
+- **carlin:** add viewer request function option to deploy static-app ([#1204](https://github.com/ttoss/ttoss/issues/1204)) ([7edd029](https://github.com/ttoss/ttoss/commit/7edd029faf2d16e2bb1b75646ea512ea7c860b72))
+- **carlin:** set a file's content type explicitly with content-types ([#1261](https://github.com/ttoss/ttoss/issues/1261)) ([f9e1914](https://github.com/ttoss/ttoss/commit/f9e1914d85f74c3f519626424d63661cb5ffc50a)), closes [#1260](https://github.com/ttoss/ttoss/issues/1260)
+- **eslint-config:** enforce the quality metrics ESLint can, drop the config that does nothing ([#1211](https://github.com/ttoss/ttoss/issues/1211)) ([5673a18](https://github.com/ttoss/ttoss/commit/5673a1817b104a403466d07ac2ecd589bc4ddd49)), closes [ttoss/i18n-cli#build-config](https://github.com/ttoss/i18n-cli/issues/build-config)
+
+### BREAKING CHANGES
+
+- `carlin deploy static-app` no longer uploads `.map` files by
+  default. Deployments that relied on source maps being served publicly must now
+  pass `--upload-source-maps`; without it those files start returning 404, and
+  nothing fails at deploy time.
+
+Claude-Session: https://claude.ai/code/session_0197A4HuutzqfL2JN7cqDYk2
+
+Co-authored-by: Claude <noreply@anthropic.com>
+
 ## [2.6.2](https://github.com/ttoss/ttoss/compare/carlin@2.6.1...carlin@2.6.2) (2026-09-28)
 
 **Note:** Version bump only for package carlin

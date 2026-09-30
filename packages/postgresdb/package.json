@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/postgresdb",
-  "version": "0.13.1",
+  "version": "0.14.0",
   "description": "A library to handle PostgreSQL database connections and queries",
   "keywords": [
     "database",

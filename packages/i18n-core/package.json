@@ -1,6 +1,6 @@
 {
   "name": "@ttoss/i18n-core",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Framework-agnostic i18n for any JavaScript runtime: message references, deferred formatting, locale negotiation and localized errors.",
   "keywords": [
     "i18n",
