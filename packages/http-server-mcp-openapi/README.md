@@ -104,6 +104,43 @@ reaches the client as a success.
 
 Returns the list of `ToolDefinition`s that were registered.
 
+## Calling the API In-Process
+
+When the REST API runs in the same process as the MCP server,
+`createInProcessCallApi` dispatches each tool call through the app's own
+middleware chain with no socket (see `dispatchInProcess` in
+[@ttoss/http-server](https://ttoss.dev/docs/modules/packages/http-server)), so
+validation, authorization and error handling exist once, in the routes. The MCP
+request's headers — what `createMcpRouter`'s `getApiHeaders` produced — are
+forwarded onto the dispatched request.
+
+```typescript
+import {
+  createInProcessCallApi,
+  registerOpenApiTools,
+} from '@ttoss/http-server-mcp-openapi';
+
+registerOpenApiTools({
+  server,
+  spec,
+  callApi: createInProcessCallApi({
+    app, // or () => app, when the app is built after the tools
+    headers: () => ({ 'x-via': 'mcp' }), // optional, added to every call
+  }),
+});
+
+const router = createMcpRouter(server, {
+  getApiHeaders: (ctx) => ({ authorization: ctx.headers.authorization ?? '' }),
+});
+app.use(router.routes());
+```
+
+A 2xx answers its body. Anything else throws, so the client sees a tool error
+rather than an error body rendered as a result: the message is read from a
+string body, `{ error: '…' }`, `{ error: { code, message } }` (as
+`code: message`) or `{ message: '…' }` (exported as `errorMessageOf`), falling
+back to `HTTP <status>`. Pass `toError` to build the error yourself.
+
 ## `openApiToToolDefinitions`
 
 Use the lower-level function when you want the tool definitions without

@@ -4,6 +4,11 @@ export {
   extractPinnedBody,
 } from './body';
 export {
+  createInProcessCallApi,
+  type CreateInProcessCallApiArgs,
+  errorMessageOf,
+} from './inProcessCallApi';
+export {
   extractPathParams,
   extractQueryParams,
   snakeToCamel,
