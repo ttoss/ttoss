@@ -212,6 +212,32 @@ router.get('/summary', (ctx) => {
 - A client-facing `LocalizedError` (a 4xx `status`, or `expected: true`) answers `{ error: { code, message } }` with that status (400 by default).
 - Any other `LocalizedError` has its `message` rendered in place and is rethrown to your error handling; every other error passes through untouched.
 
+### Serving a Request In-Process
+
+`dispatchInProcess` runs one request through an app's whole middleware chain
+with no socket and no port, and answers `{ status, headers, body }` as a client
+would read them — a JSON body round-trips through `JSON.stringify`, so a `Date`
+arrives as its ISO string. It lets one surface of an application call another
+(an MCP tool calling the REST route it was generated from) without a second
+implementation of validation or authorization, and without a loopback request.
+
+```ts
+import { dispatchInProcess } from '@ttoss/http-server';
+
+const { status, body } = await dispatchInProcess({
+  app,
+  method: 'POST',
+  path: '/api/v1/items?notify=true',
+  headers: { authorization: `Bearer ${token}` },
+  body: { name: 'Item' }, // sent as JSON
+});
+```
+
+An unmatched route answers `404` with `Not Found`, and an error that escapes
+the middleware answers as Koa would — its `status` (or `500`), with its message
+only when `expose` is set — and is emitted on the app's `error` event if it has
+a listener. A streamed response body is not supported.
+
 ## OAuth
 
 Authentication lives in [`@ttoss/http-server-auth`](https://ttoss.dev/docs/modules/packages/http-server-auth) — `authMiddleware` (verify Bearer tokens, including an `oauth` strategy) and `oauthServer()` (issue tokens), a thin Koa layer over the runner-agnostic engine in [`@ttoss/auth-core`](https://ttoss.dev/docs/modules/packages/auth-core). This base runner stays auth-free. See the [OAuth Authorization Server](https://ttoss.dev/docs/engineering/guidelines/oauth-authorization-server) guideline.
@@ -226,6 +252,7 @@ All exports are re-exported from established Koa ecosystem packages:
 - **`cors`** - [Koa CORS](https://github.com/koajs/cors) for cross-origin requests
 - **`multer`** - [Koa multer](https://github.com/koajs/multer) for file uploads
 - **`serve`** - [Koa static](https://github.com/koajs/static) for serving static files
+- **`dispatchInProcess({ app, method, path, headers?, body? })`** - Serves one request through the app's middleware chain without a socket; resolves to `{ status, headers, body }`
 - **`addHealthCheck({ app, path? })`** - Adds a health endpoint (defaults to `/health`) returning `{ status: 'ok' }`
 - **`toHttpError(error)`** - Normalizes a deliberate, exposable 4xx into `{ status, message, headers }`; `undefined` for anything else
 - **`applyHttpErrorHeaders({ ctx, error })`** - Copies headers attached to a thrown error onto the response (e.g. `WWW-Authenticate`)

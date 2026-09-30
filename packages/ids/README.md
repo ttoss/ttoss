@@ -92,3 +92,29 @@ const [partitionKey, sortKey] = fromRecordId(recordId);
 console.log(partitionKey); // USER
 console.log(sortKey); // 1
 ```
+
+### Public ids
+
+A public id is a type prefix, an underscore and random characters —
+`task_x7kp2mq4vb`. The server assigns it and stores it beside the internal
+primary key, so the key rows join on can change without any id a client holds
+changing.
+
+```typescript
+import { createPublicId, isPublicId, publicIdPattern } from '@ttoss/ids';
+
+const id = createPublicId({ prefix: 'task' }); // task_x7kp2mq4vb
+
+isPublicId({ value: id, prefix: 'task' }); // true
+isPublicId({ value: id, prefix: 'proj' }); // false
+
+// For a validator at the API boundary, e.g. z.string().regex(pattern).
+const pattern = publicIdPattern({ prefix: 'task' });
+```
+
+The random part uses lowercase Crockford base32 (`PUBLIC_ID_ALPHABET`), which
+leaves out `i`, `l`, `o` and `u`, so an id copied by hand or by a model is not
+misread as `1` or `0`. It comes from `crypto.getRandomValues`, so ids are not
+guessable, and it works in Node.js and in browsers. The default length is 10
+characters (`DEFAULT_PUBLIC_ID_LENGTH`), about 50 bits; pass `length` to change
+it. A prefix must be lowercase letters and digits, starting with a letter.

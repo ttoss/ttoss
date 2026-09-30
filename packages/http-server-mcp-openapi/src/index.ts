@@ -3,6 +3,12 @@ export {
   extractBodyProps,
   extractPinnedBody,
 } from './body';
+export { buildFullInputSchema, toToolSchema } from './fullSchema';
+export {
+  createInProcessCallApi,
+  type CreateInProcessCallApiArgs,
+  errorMessageOf,
+} from './inProcessCallApi';
 export {
   extractPathParams,
   extractQueryParams,
