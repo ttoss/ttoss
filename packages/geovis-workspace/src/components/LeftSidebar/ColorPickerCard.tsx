@@ -10,49 +10,74 @@ import {
   HueRow,
   SaturationArea,
 } from './ColorPickerControls';
-import { hexToHsv, type Hsv, hsvToHex, isHex6 } from './hsv';
+import { hexToHsv, type Hsv, hsvToHex, isHex } from './hsv';
 import { COLOR } from './theme';
 
-/** The card's width, and the height it is placed by — above when it would overflow below. */
+/** The card's size, which it is placed by. */
 const CARD_WIDTH = 232;
-const CARD_HEIGHT = 264;
+const CARD_HEIGHT = 272;
 /** Gap between the button and the card, which the arrow bridges. */
-const GAP = 10;
+const GAP = 12;
 /** The card never sits closer than this to the viewport's edges. */
 const EDGE = 8;
+/** The arrow keeps this far from the card's corners, however the card shifts. */
+const ARROW_INSET = 12;
 
 type Placement = {
   top: number;
   left: number;
-  /** The arrow's left offset inside the card, so it points at the button. */
-  arrowLeft: number;
-  below: boolean;
+  /** Which side of the button the card sits on. */
+  side: 'right' | 'below' | 'above';
+  /**
+   * The arrow's offset along the card edge facing the button — from the top
+   * for `right`, from the left otherwise — so it points at the button.
+   */
+  arrow: number;
+};
+
+const clamp = (value: number, min: number, max: number): number => {
+  return Math.min(Math.max(value, min), max);
 };
 
 /**
- * Where the card sits: under the button, centred on it and kept inside the
- * viewport, or above it when there is no room below. Recomputed on resize and
- * on any scroll, since the card is fixed to the viewport while the button
- * scrolls with the sidebar.
+ * Where the card sits for a button: to its right, level with it, when the
+ * viewport has room there — beside the editor, so the ramp it feeds stays in
+ * view — otherwise under it, centred on it, or above it when there is no room
+ * below either. Always kept inside the viewport.
+ */
+const placeCard = (box: DOMRect): Placement => {
+  const { innerWidth: width, innerHeight: height } = window;
+  const middle = box.top + box.height / 2;
+  const centre = box.left + box.width / 2;
+
+  if (box.right + GAP + CARD_WIDTH + EDGE <= width) {
+    const top = clamp(middle - 40, EDGE, height - CARD_HEIGHT - EDGE);
+    return {
+      side: 'right',
+      top,
+      left: box.right + GAP,
+      arrow: clamp(middle - top - 5, ARROW_INSET, CARD_HEIGHT - 22),
+    };
+  }
+
+  const left = clamp(centre - CARD_WIDTH / 2, EDGE, width - CARD_WIDTH - EDGE);
+  const arrow = clamp(centre - left - 5, ARROW_INSET, CARD_WIDTH - 22);
+  return box.bottom + GAP + CARD_HEIGHT <= height
+    ? { side: 'below', top: box.bottom + GAP, left, arrow }
+    : { side: 'above', top: box.top - GAP - CARD_HEIGHT, left, arrow };
+};
+
+/**
+ * The card's placement (see {@link placeCard}), recomputed on resize and on
+ * any scroll, since the card is fixed to the viewport while the button scrolls
+ * with the sidebar.
  */
 const usePlacement = (anchor: HTMLElement): Placement | null => {
   const [placement, setPlacement] = React.useState<Placement | null>(null);
 
   React.useLayoutEffect(() => {
     const place = () => {
-      const box = anchor.getBoundingClientRect();
-      const centre = box.left + box.width / 2;
-      const left = Math.min(
-        Math.max(EDGE, centre - CARD_WIDTH / 2),
-        window.innerWidth - CARD_WIDTH - EDGE
-      );
-      const below = box.bottom + GAP + CARD_HEIGHT <= window.innerHeight;
-      setPlacement({
-        top: below ? box.bottom + GAP : box.top - GAP - CARD_HEIGHT,
-        left,
-        arrowLeft: centre - left - 5,
-        below,
-      });
+      setPlacement(placeCard(anchor.getBoundingClientRect()));
     };
 
     place();
@@ -103,6 +128,37 @@ const useDismiss = ({
   }, [card, anchor]);
 };
 
+/** Where the arrow sits for each side, and which of its borders show. */
+const ARROW_EDGES: Record<
+  Placement['side'],
+  (offset: number, edge: string) => Record<string, string>
+> = {
+  right: (offset, edge) => {
+    return {
+      left: '-6px',
+      top: `${offset}px`,
+      borderLeft: edge,
+      borderBottom: edge,
+    };
+  },
+  below: (offset, edge) => {
+    return {
+      top: '-6px',
+      left: `${offset}px`,
+      borderLeft: edge,
+      borderTop: edge,
+    };
+  },
+  above: (offset, edge) => {
+    return {
+      bottom: '-6px',
+      left: `${offset}px`,
+      borderRight: edge,
+      borderBottom: edge,
+    };
+  },
+};
+
 /** The small diamond that points the card at the button that opened it. */
 const Arrow = ({ placement }: { placement: Placement }) => {
   const edge = `1px solid ${COLOR.border}`;
@@ -115,23 +171,20 @@ const Arrow = ({ placement }: { placement: Placement }) => {
         height: '10px',
         backgroundColor: '#ffffff',
         transform: 'rotate(45deg)',
-        left: `${placement.arrowLeft}px`,
-        ...(placement.below
-          ? { top: '-6px', borderLeft: edge, borderTop: edge }
-          : { bottom: '-6px', borderRight: edge, borderBottom: edge }),
+        ...ARROW_EDGES[placement.side](placement.arrow, edge),
       }}
     />
   );
 };
 
 /**
- * The custom-color picker the ramp editor's pipette opens: a
- * saturation/brightness square, a hue bar and a hex field, then cancel or
- * apply. It replaces the browser's native color input, whose dialog looks
+ * The custom-color picker the ramp editor opens — for its base (the pipette)
+ * or for any one tone of the ramp: a saturation/brightness square, a hue bar
+ * and a hex field, then cancel or apply. It replaces the browser's native color input, whose dialog looks
  * different on every platform and cannot be kept beside the ramp it feeds.
  *
- * Rendered in a portal on `document.body` and fixed to the viewport, under the
- * button that opened it (above it when there is no room). The sidebar slides
+ * Rendered in a portal on `document.body` and fixed to the viewport, beside
+ * the button that opened it (see `placeCard`). The sidebar slides
  * with a CSS transform, and a fixed element inside a transformed one is placed
  * against that element rather than the viewport — it would be clipped by the
  * sidebar's own overflow.
@@ -176,10 +229,10 @@ export const ColorPickerCard = ({
   };
   const changeDraft = (next: string) => {
     setDraft(next);
-    if (isHex6(next)) setHsv(hexToHsv(next));
+    if (isHex(next)) setHsv(hexToHsv(next));
   };
   const apply = () => {
-    if (isHex6(draft)) onApply(hsvToHex(hsv));
+    if (isHex(draft)) onApply(hsvToHex(hsv));
   };
 
   if (!placement) return null;
@@ -212,7 +265,7 @@ export const ColorPickerCard = ({
           <HueRow hsv={hsv} onChange={changeHsv} />
           <HexField draft={draft} onDraft={changeDraft} onApply={apply} />
           <Actions
-            canApply={isHex6(draft)}
+            canApply={isHex(draft)}
             onCancel={onCancel}
             onApply={apply}
           />

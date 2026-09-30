@@ -39,6 +39,21 @@ export const messages = defineMessages({
     description:
       'Default name of a color ramp saved without one, built from the base color preset named `base`.',
   },
+  toneRowLabel: {
+    defaultMessage: 'Tons · clique para ajustar',
+    description:
+      'Heading of the row of tones in the color-ramp editor; each tone opens the custom color picker.',
+  },
+  resetTones: {
+    defaultMessage: 'Restaurar',
+    description:
+      'Button in the color-ramp editor that drops every tone adjustment, back to the ramp built from the base color.',
+  },
+  toneTitle: {
+    defaultMessage: 'Tom {index} · {color}',
+    description:
+      'Tooltip and accessible name of one tone in the color-ramp editor: its position and hex code.',
+  },
   colorPickerSaturation: {
     defaultMessage: 'Saturação e brilho',
     description:

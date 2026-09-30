@@ -3,7 +3,7 @@ import { Box, Flex, Text } from '@ttoss/ui';
 import * as React from 'react';
 
 import { messages } from '../../messages';
-import { type Hsv, hsvToHex, isHex6, pointerFraction } from './hsv';
+import { type Hsv, hsvToHex, isHex, pointerFraction } from './hsv';
 import { COLOR, FONT_HEAD, FONT_MONO } from './theme';
 
 /*
@@ -210,8 +210,9 @@ export const HueRow = ({
 };
 
 /**
- * The hex field. It takes hex digits only, up to six; a full code moves the
- * square and the bar to it, and anything shorter is marked, not applied.
+ * The hex field. It takes hex digits only, up to six; a complete code — three
+ * digits (short for six) or six — moves the square and the bar to it, and
+ * anything else is marked, not applied.
  */
 export const HexField = ({
   draft,
@@ -236,7 +237,7 @@ export const HexField = ({
           padding: '0 8px',
           borderRadius: '6px',
           backgroundColor: COLOR.fillAlt,
-          border: `1px solid ${isHex6(draft) ? COLOR.border : INVALID_BORDER}`,
+          border: `1px solid ${isHex(draft) ? COLOR.border : INVALID_BORDER}`,
         }}
       >
         <Text
@@ -254,7 +255,7 @@ export const HexField = ({
           maxLength={6}
           spellCheck={false}
           aria-label={intl.formatMessage(messages.colorPickerHex)}
-          aria-invalid={!isHex6(draft)}
+          aria-invalid={!isHex(draft)}
           onChange={(event) => {
             onDraft(
               event.target.value

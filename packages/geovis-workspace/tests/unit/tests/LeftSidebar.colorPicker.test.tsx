@@ -301,28 +301,58 @@ describe('the custom-color picker', () => {
     box.mockRestore();
   });
 
-  test('opens above the pipette when there is no room below', async () => {
-    await openEditor();
-    const box = jest.spyOn(pipette(), 'getBoundingClientRect').mockReturnValue({
-      left: 200,
-      top: window.innerHeight - 40,
+  /** A pipette at `left`/`top` in a 1024×768 viewport. */
+  const placePipette = (left: number, top: number) => {
+    return jest.spyOn(pipette(), 'getBoundingClientRect').mockReturnValue({
+      left,
+      top,
       width: 26,
       height: 26,
-      right: 226,
-      bottom: window.innerHeight - 14,
-      x: 200,
-      y: window.innerHeight - 40,
+      right: left + 26,
+      bottom: top + 26,
+      x: left,
+      y: top,
       toJSON: () => {
         return {};
       },
     });
+  };
+
+  // Placed through `sx`, so the position is in the computed style.
+  const cardBox = () => {
+    const style = getComputedStyle(picker()!);
+    return { top: parseFloat(style.top), left: parseFloat(style.left) };
+  };
+
+  test('opens to the right of the pipette when there is room', async () => {
+    await openEditor();
+    const box = placePipette(200, 300);
 
     await click(pipette());
 
-    const top = parseFloat(
-      picker()?.style.top || getComputedStyle(picker()!).top
-    );
-    expect(top).toBeLessThan(window.innerHeight - 40);
+    // Beside it, level with it: right of its right edge plus the gap.
+    expect(cardBox().left).toBe(226 + 12);
+    expect(cardBox().top).toBe(300 + 13 - 40);
+    box.mockRestore();
+  });
+
+  test('opens below the pipette when the right side has no room', async () => {
+    await openEditor();
+    const box = placePipette(window.innerWidth - 60, 100);
+
+    await click(pipette());
+
+    expect(cardBox().top).toBe(100 + 26 + 12);
+    box.mockRestore();
+  });
+
+  test('opens above the pipette when neither side nor below has room', async () => {
+    await openEditor();
+    const box = placePipette(window.innerWidth - 60, window.innerHeight - 40);
+
+    await click(pipette());
+
+    expect(cardBox().top).toBe(window.innerHeight - 40 - 12 - 272);
     box.mockRestore();
   });
 });

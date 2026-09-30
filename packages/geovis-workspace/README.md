@@ -400,13 +400,17 @@ words goes in the block's `hint`, which holds for every ramp in it.
 
 With `create` (`{ baseColors, onCreate, allowCustomColor?, classes?, rampFrom? }`)
 the list ends in a **Nova escala de cor** affordance that opens an editor: the
-reader picks a base color, sees the strip it would add, and adds it. The
+reader picks a base color, sees the tones it would add, and adds it. The
 `baseColors` are presets; unless `allowCustomColor: false`, a pipette beside them
 (titled "Customizar estilos") opens a picker card — a saturation/brightness
 square, a hue bar and a hex field, then **Cancelar** or **Aplicar** — that sets
-any other base. The card is rendered in a portal on `document.body`, fixed under
-the pipette (above it when there is no room), so the sidebar never clips it. The
-name is optional: applying a picked color writes its hex code into an empty name
+any other base. The same card adjusts any one tone: the tones are a row of
+buttons ("Tons · clique para ajustar"), an adjusted one carries a dot,
+**Restaurar** drops every adjustment, and a new base rebuilds the sweep without
+them — what `onCreate` receives is the row as shown. The card is rendered in a
+portal on `document.body`, fixed beside the button that opened it (below it, or
+above, when the viewport has no room to the right), so the sidebar never clips
+it. The hex field takes three digits or six. The name is optional: applying a picked color writes its hex code into an empty name
 field, and a ramp saved with no name is called after its preset ("Azul
 personalizado") or its hex code. `onCreate` receives the finished option — the
 app keeps it and passes it back in `options`, where it carries `removable` and

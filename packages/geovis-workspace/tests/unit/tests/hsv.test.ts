@@ -1,7 +1,7 @@
 import {
   hexToHsv,
   hsvToHex,
-  isHex6,
+  isHex,
   pointerFraction,
 } from 'src/components/LeftSidebar/hsv';
 
@@ -33,16 +33,22 @@ describe('hsv', () => {
     expect(hexToHsv('#ff00ff').h).toBe(300);
   });
 
+  test('reads the short form as its full code', () => {
+    expect(hsvToHex(hexToHsv('#f00'))).toBe('#ff0000');
+    expect(hsvToHex(hexToHsv('3b8'))).toBe('#33bb88');
+  });
+
   test('a grey keeps hue 0, and black has no saturation', () => {
     expect(hexToHsv('#808080')).toEqual({ h: 0, s: 0, v: 128 / 255 });
     expect(hexToHsv('#000000')).toEqual({ h: 0, s: 0, v: 0 });
   });
 
   test('anything but six hex digits reads as black', () => {
-    expect(isHex6('3B82F6')).toBe(true);
-    expect(isHex6(' #3b82f6 ')).toBe(true);
-    expect(isHex6('3B8')).toBe(false);
-    expect(isHex6('3B82FZ')).toBe(false);
+    expect(isHex('3B82F6')).toBe(true);
+    expect(isHex(' #3b82f6 ')).toBe(true);
+    expect(isHex('3B8')).toBe(true);
+    expect(isHex('3B82')).toBe(false);
+    expect(isHex('3B82FZ')).toBe(false);
     expect(hexToHsv('nope')).toEqual({ h: 0, s: 0, v: 0 });
   });
 

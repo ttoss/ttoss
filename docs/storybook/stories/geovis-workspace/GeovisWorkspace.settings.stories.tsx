@@ -73,8 +73,11 @@ import {
  * 2. Pick a ramp under **Cor da Malha**. The map repaints without re-binning:
  *    the breaks are untouched, only the colors they are read through change.
  *    The no-data grey stays out of every ramp — "caught nothing" is not a class.
- * 3. Build one under **Nova escala de cor**: pick a base color, watch the strip
- *    preview the sweep it would add, and add it. The name is optional — left
+ * 3. Build one under **Nova escala de cor**: pick a base color, and the row of
+ *    tones under **Tons · clique para ajustar** shows the sweep it would add.
+ *    Click a tone to adjust it alone in the picker: once applied it carries a
+ *    white dot, and **Restaurar** appears to put every tone back. A new base
+ *    rebuilds the sweep and drops the adjustments. Then add it. The name is optional — left
  *    empty, the ramp is called after its base ("Azul personalizado"), or after
  *    its hex code for a custom color. The ramp lands at the end of the list,
  *    already chosen, and the map repaints from it — same path as the ramps the
@@ -82,10 +85,11 @@ import {
  *    it again; the shipped ramps have no `×`, since they are not the reader's
  *    to throw away.
  * 4. For a color outside the presets, press the pipette. A picker card opens
- *    under it, pointing at it: drag the square for saturation and brightness
- *    and the bar for hue (the arrow keys nudge both, Shift for bigger steps),
- *    or type a hex code — the field turns red until it has six digits, and
- *    Enter applies. **Aplicar** makes it the base and writes its hex code into
+ *    beside it (below it when the viewport has no room to the right),
+ *    pointing at it: drag the square for saturation and brightness and the
+ *    bar for hue (the arrow keys nudge both, Shift for bigger steps), or type a
+ *    hex code — three digits or six; the field turns red until it holds one,
+ *    and Enter applies. **Aplicar** makes it the base and writes its hex code into
  *    the empty name field (a name you typed is kept); **Cancelar**, `Escape`
  *    or a click outside close it without changing anything. The card sits on the
  *    page rather than inside the sidebar, so it is never clipped by it.

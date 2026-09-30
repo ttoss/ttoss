@@ -7,21 +7,35 @@
 /** `h` in degrees (0–360), `s` and `v` 0–1. */
 export type Hsv = { h: number; s: number; v: number };
 
-/** Six hex digits, with or without `#`, in either case. */
-const HEX6 = /^#?[0-9a-f]{6}$/i;
+/** Three or six hex digits, with or without `#`, in either case. */
+const HEX = /^#?(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
 
 /**
- * Whether a string is a full six-digit hex color.
+ * Whether a string is a complete hex color, short (`#abc`) or full.
  *
  * @param value - The candidate, with or without `#`.
- * @returns `true` for `#1a2b3c` or `1A2B3C`.
+ * @returns `true` for `#1a2b3c`, `1A2B3C` or `abc`.
  *
  * @example
- * isHex6('3B82F6'); // true
- * isHex6('3B8'); // false
+ * isHex('3B82F6'); // true
+ * isHex('3B8'); // true — short for 33BB88
+ * isHex('3B82'); // false
  */
-export const isHex6 = (value: string): boolean => {
-  return HEX6.test(value.trim());
+export const isHex = (value: string): boolean => {
+  return HEX.test(value.trim());
+};
+
+/** Six hex digits, lower case, no `#` — the short form expanded (`abc` → `aabbcc`). */
+const fullHex = (value: string): string => {
+  const clean = value.trim().replace(/^#/, '').toLowerCase();
+  return clean.length === 3
+    ? clean
+        .split('')
+        .map((digit) => {
+          return digit + digit;
+        })
+        .join('')
+    : clean;
 };
 
 /** Clamps to `[min, max]`; a non-number reads as `min`, never as `NaN`. */
@@ -64,19 +78,19 @@ export const hsvToHex = ({ h, s, v }: Hsv): string => {
 };
 
 /**
- * A `#rrggbb` string to HSV. A grey keeps hue 0, so the hue bar parks at red
- * rather than jumping.
+ * A hex color to HSV. A grey keeps hue 0, so the hue bar parks at red rather
+ * than jumping.
  *
- * @param hex - Six hex digits, with or without `#`.
- * @returns The color, or black when the string is not a six-digit hex.
+ * @param hex - Three or six hex digits, with or without `#`.
+ * @returns The color, or black when the string is not a hex color.
  *
  * @example
  * hexToHsv('#ff0000'); // { h: 0, s: 1, v: 1 }
  */
 export const hexToHsv = (hex: string): Hsv => {
-  if (!isHex6(hex)) return { h: 0, s: 0, v: 0 };
+  if (!isHex(hex)) return { h: 0, s: 0, v: 0 };
 
-  const clean = hex.trim().replace(/^#/, '');
+  const clean = fullHex(hex);
   const [r, g, b] = [0, 2, 4].map((start) => {
     return parseInt(clean.slice(start, start + 2), 16) / 255;
   }) as [number, number, number];
