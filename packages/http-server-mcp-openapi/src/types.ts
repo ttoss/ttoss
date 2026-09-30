@@ -129,6 +129,7 @@ export type RequestBodySpec = {
 
 export interface OperationSpec {
   operationId?: string;
+  summary?: string;
   description?: string;
   parameters?: Array<{
     name?: string;
@@ -192,13 +193,44 @@ export interface OpenApiToToolsOptions {
    * to an empty schema, which accepts any value.
    */
   documents?: OpenApiDocuments;
+  /**
+   * How much of each parameter's and body property's schema reaches the
+   * tool's `inputSchema`.
+   *
+   * - `'compact'` keeps the `type`, `items` and `description` of each
+   *   top-level argument, with descriptions flattened to one line.
+   * - `'full'` keeps the whole schema — `enum`, `format`, `pattern`,
+   *   `minimum`, `default`, nested `properties` and `required`, `oneOf` — and
+   *   changes only what JSON Schema cannot say: `allOf` is merged, `nullable`
+   *   becomes a `'null'` type (and joins an `enum`), and OpenAPI-only keywords
+   *   and `x-` extensions are dropped. Descriptions stay verbatim.
+   *
+   * @default 'compact'
+   */
+  schemaDetail?: 'compact' | 'full';
+  /**
+   * Builds each tool's description from its operation. The default is the
+   * operation's `description`, flattened to one line.
+   *
+   * @example
+   * ```typescript
+   * describe: ({ operation, method, pathTemplate }) =>
+   *   `${operation.summary}\n\n${operation.description}\n\n(${method} ${pathTemplate})`,
+   * ```
+   */
+  describe?: (args: {
+    operation: OperationSpec;
+    /** Uppercase HTTP method. */
+    method: string;
+    pathTemplate: string;
+  }) => string;
 }
 
 /** {@link OpenApiToToolsOptions} with every default applied. */
 export type ResolvedToolOptions = Required<
-  Omit<OpenApiToToolsOptions, 'documents'>
+  Omit<OpenApiToToolsOptions, 'documents' | 'describe' | 'schemaDetail'>
 > &
-  Pick<OpenApiToToolsOptions, 'documents'>;
+  Pick<OpenApiToToolsOptions, 'documents' | 'describe' | 'schemaDetail'>;
 
 export const DEFAULT_EXCLUDE_EXTENSION = 'x-mcp-exclude';
 export const DEFAULT_SERVER_MANAGED_EXTENSION = 'x-mcp-server-managed';

@@ -174,6 +174,8 @@ registerOpenApiTools({
     serverManagedExtension: 'x-mcp-server-managed', // or several: ['x-a', 'x-b']
     argumentNames: 'camelCase', // or 'verbatim'
     documents: { './tags.yaml': tagsDocument }, // targets of cross-file $refs
+    schemaDetail: 'full', // or 'compact' (default)
+    describe: ({ operation, method, pathTemplate }) => operation.summary ?? '',
   },
 });
 ```
@@ -189,6 +191,31 @@ registerOpenApiTools({
   `./tags.yaml#/components/schemas/Tag` the key is `./tags.yaml`; refs inside
   a sibling resolve against that sibling. A ref to a file missing from the map
   resolves to an empty schema, which accepts any value.
+
+- **`schemaDetail`** (default `compact`) — see [Schema detail](#schema-detail).
+- **`describe`** — builds each tool's description from `{ operation, method, pathTemplate }`
+  (method uppercase). The default is the operation's `description` flattened to one line.
+
+### Schema detail
+
+`compact` gives each top-level argument its `type`, `items` and `description`,
+with descriptions flattened to one line. It is the smallest surface, and the
+model learns nothing about which values are allowed.
+
+`full` gives each argument its whole schema: `enum`, `format`, `pattern`,
+`minimum`/`maximum`, `default`, nested `properties` and `required`, `oneOf`,
+`additionalProperties`, and descriptions verbatim. It changes only what JSON
+Schema cannot express:
+
+- `allOf` is merged — the properties and `required` of an object composition,
+  or a single referenced scalar with the wrapper's own `description` winning;
+- `nullable: true` adds `'null'` to the `type`, and `null` to an `enum`;
+- OpenAPI-only keywords (`example`, `discriminator`, `xml`, `externalDocs`) and
+  `x-` extensions are dropped;
+- a path or query parameter's own `description` wins over its schema's.
+
+`properties` is always present in `full`, even when empty. The same
+transformation is exported as `toToolSchema`, for a schema you derive yourself.
 
 ### Server-managed values
 
