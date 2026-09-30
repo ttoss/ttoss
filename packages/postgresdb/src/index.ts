@@ -1,4 +1,5 @@
 export { withAdvisoryLock, type WithAdvisoryLockOptions } from './advisoryLock';
+export { atomically, type AtomicallyOptions } from './atomically';
 export { initialize } from './initialize';
 export * from './migrations';
 export type { ModelColumns } from './ModelColumns';
